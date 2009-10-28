@@ -184,15 +184,58 @@ function Minimap_ZoomOut()
 	MinimapZoomOut:Click();
 end
 
+function EyeTemplate_OnUpdate(self, elapsed)
+	AnimateTexCoords(self.texture, 512, 256, 64, 64, 29, elapsed)
+end
+
+function EyeTemplate_StartAnimating(eye)
+	eye:SetScript("OnUpdate", EyeTemplate_OnUpdate);
+end
+
+function EyeTemplate_StopAnimating(eye)
+	eye:SetScript("OnUpdate", nil);
+	if ( eye.texture.frame ) then
+		eye.texture.frame = 1;	--To start the animation over.
+	end
+	eye.texture:SetTexCoord(0, 0.125, 0, .25);
+end
+
+function MiniMapLFG_UpdateIsShown()
+	local mode, submode = GetLFGMode();
+	if ( mode ) then
+		MiniMapLFGFrame:Show();
+		if ( mode == "queued" or mode == "listed" ) then
+			EyeTemplate_StartAnimating(MiniMapLFGFrame.eye);
+		else
+			EyeTemplate_StopAnimating(MiniMapLFGFrame.eye);
+		end
+	else
+		MiniMapLFGFrame:Hide();
+	end
+end
+
+function MiniMapLFGFrame_TeleportIn()
+	LFGTeleport(false);
+end
+
+function MiniMapLFGFrame_TeleportOut()
+	LFGTeleport(true);
+end
+
 function MiniMapLFGFrameDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 	
-	local mode, submode = GetLFDMode();
+	local mode, submode = GetLFGMode();
 
 	--This one can appear in addition to others, so we won't just check the mode.
 	if ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
-		info.text = TELEPORT_TO_DUNGEON;
-		info.func = LFGTeleport;
+		if ( IsInLFGDungeon() ) then
+			info.text = TELEPORT_OUT_OF_DUNGEON;
+			info.func = MiniMapLFGFrame_TeleportOut;
+		else
+			info.text = TELEPORT_TO_DUNGEON;
+			info.func = MiniMapLFGFrame_TeleportIn;
+		end
 		UIDropDownMenu_AddButton(info);
 	end
 	
@@ -209,11 +252,20 @@ function MiniMapLFGFrameDropDown_Update()
 		info.func = LeaveLFG;
 		info.disabled = (submode == "unempowered");
 		UIDropDownMenu_AddButton(info);
+	elseif ( mode == "listed" ) then
+		if ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) then
+			info.text = UNLIST_MY_GROUP;
+		else
+			info.text = UNLIST_ME;
+		end
+		info.func = LeaveLFG;
+		info.disabled = (submode == "unempowered");
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function MiniMapLFGFrame_OnClick(self, button)
-	local mode, submode = GetLFDMode();
+	local mode, submode = GetLFGMode();
 	if ( button == "RightButton" or mode == "lfgparty" ) then
 		--Display dropdown
 		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", 0, -5);
@@ -221,27 +273,34 @@ function MiniMapLFGFrame_OnClick(self, button)
 		StaticPopupSpecial_Show(LFDDungeonReadyPopup);
 	elseif ( mode == "queued" or mode == "rolecheck" ) then
 		ToggleLFDParentFrame();
+	elseif ( mode == "listed" ) then
+		ToggleLFRParentFrame();
 	end
 end
 
 function MiniMapLFGFrame_OnEnter(self)
-	local mode, submode = GetLFDMode();
+	local mode, submode = GetLFGMode();
 	if ( mode == "queued" ) then
 		LFDSearchStatus:Show();
 	elseif ( mode == "proposal" ) then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		GameTooltip:AddLine(DUNGEON_GROUP_FOUND_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(CLICK_HERE_FOR_MORE_INFO, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:Show();
 	elseif ( mode == "rolecheck" ) then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		GameTooltip:AddLine(ROLE_CHECK_IN_PROGRESS_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:Show();
+	elseif ( mode == "listed" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip:SetText(LOOKING_FOR_RAID);
+		GameTooltip:AddLine(YOU_ARE_LISTED_IN_LFR, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+		GameTooltip:Show();
 	elseif ( mode == "lfgparty" ) then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		GameTooltip:AddLine(YOU_ARE_IN_DUNGEON_GROUP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:Show();

@@ -552,7 +552,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGE"));
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -726,7 +726,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.texture:SetTexCoord(GetTexCoordsForRole("DAMAGE"));
+						self.texture:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -740,7 +740,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.texture:SetTexCoord(GetTexCoordsForRole("DAMAGE"));
+						self.texture:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -754,7 +754,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.texture:SetTexCoord(GetTexCoordsForRole("DAMAGE"));
+						self.texture:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -885,8 +885,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGE"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGE"));
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGER"));
 								self.background:SetAlpha(0.6);
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 							</OnLoad>
@@ -937,9 +937,60 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="LFDQueueFrameTypeDropDown_OnLoad"/>
-							<OnShow function="LFDQueueFrameTypeDropDown_OnLoad"/>
+							<OnShow function="LFDQueueFrameTypeDropDown_SetUp"/>
 						</Scripts>
+					</Frame>
+					<Frame name="$parentNoLFDWhileLFR" frameStrata="HIGH" hidden="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="330" y="257"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-7" y="28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFD_WHILE_LFR" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="-0" y="-70"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+											LeaveLFG();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
 					</Frame>
 					<Frame name="$parentRandom" setAllPoints="true">
 						<Frames>
@@ -1344,16 +1395,18 @@
 									<OnVerticalScroll>
 										FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFDQueueFrameSpecificList_Update);
 									</OnVerticalScroll>
-									<OnShow>
-										LFDQueueFrame_Update();
-									</OnShow>
 								</Scripts>
 							</ScrollFrame>
 						</Frames>
+						<Scripts>
+							<OnShow>
+								LFDQueueFrame_Update();
+							</OnShow>
+						</Scripts>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="FIND_DUNGEON">
+					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="FIND_A_GROUP">
 						<Size>
-							<AbsDimension x="115" y="22"/>
+							<AbsDimension x="135" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
@@ -1364,8 +1417,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								local mode, subMode = GetLFDMode();
-								if ( mode == "queued" or mode == "rolecheck" ) then
+								local mode, subMode = GetLFGMode();
+								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" ) then
 									LeaveLFG();
 								else
 									LFDQueueFrame_Join();

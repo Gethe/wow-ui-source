@@ -946,7 +946,7 @@
 			</OnMouseUp> 
 		</Scripts>
 	</Button>
-	<Button name="RaidFrameAddMemberButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="ADD_RAID_MEMBER">
+	<Button name="RaidFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="LOOKING_FOR_RAID">
 		<Size>
 			<AbsDimension x="90" y="21"/>
 		</Size>
@@ -959,12 +959,7 @@
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				if ( UnitCanCooperate("player", "target") ) then
-					InviteUnit(UnitName("target"));
-					PlaySound("UChatScrollButton");
-				else
-					StaticPopup_Show("ADD_RAIDMEMBER");
-				end
+				ShowUIPanel(LFRParentFrame);
 			</OnClick>
 		</Scripts>
 		<NormalFont style="GameFontNormalSmall"/>
@@ -976,7 +971,7 @@
 			<AbsDimension x="90" y="21"/>
 		</Size>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidFrameAddMemberButton" relativePoint="RIGHT">
+			<Anchor point="LEFT" relativeTo="RaidFrameRaidBrowserButton" relativePoint="RIGHT">
 				<Offset>
 					<AbsDimension x="2" y="0"/>
 				</Offset>

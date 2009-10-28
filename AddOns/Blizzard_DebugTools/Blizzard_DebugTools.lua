@@ -389,27 +389,29 @@ function ScriptErrorsFrame_OnError (message, keepHidden)
 	
 	local messageStack = message..stack; -- Fix me later
 	
-	local index = _ScriptErrorsFrame.seen[messageStack];
-	if ( index ) then
-		_ScriptErrorsFrame.count[index] = _ScriptErrorsFrame.count[index] + 1;
-		_ScriptErrorsFrame.messages[index] = message;
-		_ScriptErrorsFrame.times[index] = date();
-		_ScriptErrorsFrame.locals[index] = debuglocals(DEBUGLOCALS_LEVEL);
-	else
-		tinsert(_ScriptErrorsFrame.order, stack);
-		index = #_ScriptErrorsFrame.order;
-		_ScriptErrorsFrame.count[index] = 1;
-		_ScriptErrorsFrame.messages[index] = message;
-		_ScriptErrorsFrame.times[index] = date();
-		_ScriptErrorsFrame.seen[messageStack] = index;
-		_ScriptErrorsFrame.locals[index] = debuglocals(DEBUGLOCALS_LEVEL);
-	end
-	
-	if ( not _ScriptErrorsFrame:IsShown() and not keepHidden ) then
-		_ScriptErrorsFrame.index = index;
-		_ScriptErrorsFrame:Show();
-	else
-		ScriptErrorsFrame_Update();
+	if ( _ScriptErrorsFrame ) then
+		local index = _ScriptErrorsFrame.seen[messageStack];
+		if ( index ) then
+			_ScriptErrorsFrame.count[index] = _ScriptErrorsFrame.count[index] + 1;
+			_ScriptErrorsFrame.messages[index] = message;
+			_ScriptErrorsFrame.times[index] = date();
+			_ScriptErrorsFrame.locals[index] = debuglocals(DEBUGLOCALS_LEVEL);
+		else
+			tinsert(_ScriptErrorsFrame.order, stack);
+			index = #_ScriptErrorsFrame.order;
+			_ScriptErrorsFrame.count[index] = 1;
+			_ScriptErrorsFrame.messages[index] = message;
+			_ScriptErrorsFrame.times[index] = date();
+			_ScriptErrorsFrame.seen[messageStack] = index;
+			_ScriptErrorsFrame.locals[index] = debuglocals(DEBUGLOCALS_LEVEL);
+		end
+		
+		if ( not _ScriptErrorsFrame:IsShown() and not keepHidden ) then
+			_ScriptErrorsFrame.index = index;
+			_ScriptErrorsFrame:Show();
+		else
+			ScriptErrorsFrame_Update();
+		end
 	end
 end
 

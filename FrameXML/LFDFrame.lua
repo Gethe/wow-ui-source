@@ -27,6 +27,7 @@ local NUM_STATISTIC_TYPES = 1;
 function LFDFrame_OnLoad(self)
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
+	self:RegisterEvent("LFG_PROPOSAL_FAILED");
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
@@ -34,7 +35,6 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("LFG_BOOT_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_ROLE_UPDATE");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
-	self:RegisterEvent("LFG_PROPOSAL_FAILED");
 end
 
 function LFDFrame_OnEvent(self, event, ...)
@@ -81,9 +81,6 @@ function LFDFrame_OnEvent(self, event, ...)
 			LFDQueueFrameRandom_UpdateFrame();
 		end
 	end
-
-	LFG_UpdateRolesChangeable();
-	LFDQueueFrameFindGroupButton_Update();
 end
 
 --Role-related functions
@@ -179,7 +176,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		
 		if ( info[LFG_RETURN_VALUES.typeID] == TYPEID_HEROIC_DIFFICULTY ) then
 			button.heroicIcon:Show();
-			button.instanceName:SetPoint("LEFT", button.heroicIcon, "RIGHT", 0, 0);
+			button.instanceName:SetPoint("LEFT", button.heroicIcon, "RIGHT", 0, 1);
 		else
 			button.heroicIcon:Hide();
 			button.instanceName:SetPoint("LEFT", 40, 0);
@@ -194,7 +191,9 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP");
 		end
 	else
-		local name, minRecLevel, maxRecLevel = info[LFG_RETURN_VALUES.name], info[LFG_RETURN_VALUES.minRecLevel], info[LFG_RETURN_VALUES.maxRecLevel];
+		local name =  info[LFG_RETURN_VALUES.name];
+		local minLevel, maxLevel = info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel];
+		local minRecLevel, maxRecLevel = info[LFG_RETURN_VALUES.minRecLevel], info[LFG_RETURN_VALUES.maxRecLevel];
 		
 		button.instanceName:SetText(name);
 		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
@@ -202,20 +201,19 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.heroicIcon:Hide();
 		button.instanceName:SetPoint("LEFT", 40, 0);
 			
-		if ( minRecLevel == maxRecLevel ) then
-			button.level:SetText(format(LFD_LEVEL_FORMAT_SINGLE, minRecLevel));
+		if ( minLevel == maxLevel ) then
+			button.level:SetText(format(LFD_LEVEL_FORMAT_SINGLE, minLevel));
 		else
-			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minRecLevel, maxRecLevel));
+			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel));
 		end
 		button.level:Show();
+		local difficultyColor = GetQuestDifficultyColor((minRecLevel + maxRecLevel)/2);
+		button.level:SetFontObject(difficultyColor.font);
 		
-		if ( mode == "rolecheck" or mode == "queued" or not LFG_IsEmpowered()) then
+		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered()) then
 			button.instanceName:SetFontObject(QuestDifficulty_Header);
-			button.level:SetFontObject(QuestDifficulty_Header);
 		else
-			local difficultyColor = GetQuestDifficultyColor((minRecLevel + maxRecLevel)/2)
 			button.instanceName:SetFontObject(difficultyColor.font);
-			button.level:SetFontObject(difficultyColor.font);
 		end
 		
 		
@@ -232,13 +230,13 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.lockedIndicator:Hide();
 	end
 	
-	if ( mode == "queued" ) then
+	if ( mode == "queued" or mode == "listed" ) then
 		button.enableButton:SetChecked(LFGQueuedForList[dungeonID]);
 	else
 		button.enableButton:SetChecked(LFGEnabledList[dungeonID]);
 	end
 	
-	if ( mode == "rolecheck" or mode == "queued" or not LFG_IsEmpowered() ) then
+	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered() ) then
 		button.enableButton:Disable();
 	else
 		button.enableButton:Enable();
@@ -255,7 +253,7 @@ function LFDQueueFrameSpecificList_Update()
 	
 	local areButtonsBig = not LFDQueueFrameSpecificListScrollFrame:IsShown();
 	
-	local mode, subMode = GetLFDMode();
+	local mode, subMode = GetLFGMode();
 	
 	for i = 1, NUM_LFD_CHOICE_BUTTONS do
 		local button = _G["LFDQueueFrameSpecificListButton"..i];
@@ -477,7 +475,14 @@ function LFDDungeonReadyDialog_UpdateRewards(dungeonID)
 
 	
 	for i = 1, numRewards do
-		LFDDungeonReadyDialogReward_SetReward(_G["LFDDungeonReadyDialogRewardsFrameReward"..(i + rewardsOffset)], dungeonID, i)
+		local frameID = (i + rewardsOffset);
+		local frame = _G["LFDDungeonReadyDialogRewardsFrameReward"..frameID];
+		if ( not frame ) then
+			frame = CreateFrame("FRAME", "LFDDungeonReadyDialogRewardsFrameReward"..frameID, LFDDungeonReadyDialogRewardsFrame, LFDDungeonReadyRewardTemplate);
+			frame:SetID(frameID);
+			LFD_MAX_REWARDS = frameID;
+		end
+		LFDDungeonReadyDialogReward_SetReward(frame, dungeonID, i)
 	end
 	
 	local usedButtons = numRewards + rewardsOffset;
@@ -556,9 +561,9 @@ function LFDDungeonReadyDialogInstanceInfo_OnEnter(self)
 	for i=1, numBosses do
 		local bossName, texture, isKilled = GetLFGProposalEncounter(i);
 		if ( isKilled ) then
-			GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, 1, 0, 0, 1, 0, 0);
+			GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		else
-			GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, 0, 1, 0, 0, 1, 0);
+			GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 		end
 	end
 	GameTooltip:Show();
@@ -580,7 +585,7 @@ function LFDDungeonReadyStatus_UpdateIcon(button)
 	button:Show();
 end
 
-function LFDQueueFrameTypeDropDown_OnLoad(self)
+function LFDQueueFrameTypeDropDown_SetUp(self)
 	UIDropDownMenu_SetWidth(self, 180);
 	UIDropDownMenu_Initialize(self, LFDQueueFrameTypeDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, LFDQueueFrame.type);
@@ -828,7 +833,7 @@ function LFDSearchStatus_UpdateRoles()
 	end
 	if ( damage ) then
 		local icon = _G["LFDSearchStatusRoleIcon"..currentIcon]
-		icon:SetTexCoord(GetTexCoordsForRole("DAMAGE"));
+		icon:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 		icon:Show();
 		currentIcon = currentIcon + 1;
 	end
@@ -887,7 +892,7 @@ function LFDSearchStatus_Update()
 		local statistic = LFDSearchStatus.displayedStatistic;
 		if ( statistic == 1 ) then --If the average wait is 0, we have no data for this instance, so showing it is useless.
 			if ( averageWait ~= 0 ) then
-				LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, instanceName, SecondsToTime(averageWait, true));
+				LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, instanceName, SecondsToTime(averageWait, false, false, 1));
 			else
 				LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT_UNKNOWN, instanceName);
 			end
@@ -896,17 +901,23 @@ function LFDSearchStatus_Update()
 end
 
 function LFDQueueFrameFindGroupButton_Update()
-	local mode, subMode = GetLFDMode();
+	local mode, subMode = GetLFGMode();
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal") then
 		LFDQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
-		LFDQueueFrameFindGroupButton:SetText(FIND_DUNGEON);
+		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+			LFDQueueFrameFindGroupButton:SetText(JOIN_AS_PARTY);
+		else
+			LFDQueueFrameFindGroupButton:SetText(FIND_A_GROUP);
+		end
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal") then --During the proposal, they must use the proposal buttons to leave the queue.
+	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "listed" ) then --During the proposal, they must use the proposal buttons to leave the queue.
 		LFDQueueFrameFindGroupButton:Enable();
+		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
 	else
 		LFDQueueFrameFindGroupButton:Disable();
+		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
 	end
 end
 

@@ -7,14 +7,9 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentTexture" setAllPoints="true" file="Interface\LFGFrame\LFG-Eye"/>
+				<Texture name="$parentTexture" setAllPoints="true" file="Interface\LFGFrame\LFG-Eye" parentKey="texture"/>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnUpdate>
-				AnimateTexCoords(_G[self:GetName().."Texture"], 512, 256, 64, 64, 29, elapsed)
-			</OnUpdate>
-		</Scripts>
 	</Frame>
 	<Button name="MiniMapButtonTemplate" virtual="true">
 		<Scripts>
@@ -535,7 +530,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame name="$parentIcon" inherits="EyeTemplate" hidden="false">
+									<Frame name="$parentIcon" inherits="EyeTemplate" hidden="false" parentKey="eye">
 										<Size x="30" y="30"/>
 										<Anchors>
 											<Anchor point="CENTER"/>
@@ -559,14 +554,7 @@
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>
 									<OnClick function="MiniMapLFGFrame_OnClick"/>
-									<OnEvent>
-											local mode, submode = GetLFDMode();
-											if ( mode ) then
-												MiniMapLFGFrame:Show();
-											else
-												MiniMapLFGFrame:Hide();
-											end
-									</OnEvent>
+									<OnEvent function="MiniMapLFG_UpdateIsShown"/>
 									<OnEnter function="MiniMapLFGFrame_OnEnter"/>
 									<OnLeave function="MiniMapLFGFrame_OnLeave"/>
 								</Scripts>						

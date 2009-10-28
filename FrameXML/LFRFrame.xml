@@ -2,6 +2,156 @@
 ..\FrameXML\UI.xsd">
 	<Script file="LFRFrame.lua"/>
 	
+	<Button name="LFRBrowseFrameColumnHeaderTemplate" inherits="WhoFrameColumnHeaderTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				if ( self.sortType ) then
+					SearchLFGSort(self.sortType);
+				end
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="LFRBrowseFrameColumnHeaderRoleTemplate" inherits="LFRBrowseFrameColumnHeaderTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\LFGFrame\LFGRole"  parentKey="icon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>					
+		<Scripts>
+			<OnMouseDown>
+				self.icon:SetPoint("CENTER", 1, -2);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.icon:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+	<Button name="LFRBrowseButtonTemplate" hidden="true" registerForClicks="LeftButtonUp,RightButtonUp" motionScriptsWhileDisabled="true" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name">
+					<Size>
+						<AbsDimension x="88" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="level">
+					<Size>
+						<AbsDimension x="20" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="9" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="class">
+					<Size>
+						<AbsDimension x="72" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentRoleTankIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="tankIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentClass" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="0.75" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRoleHealerIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="healerIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRoleTankIcon" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="6" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRoleDamageIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="damageIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRoleHealerIcon" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="6" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.25" right="0.5" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentPartyIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="partyIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRoleDamageIcon" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="LFRBrowseButton_OnClick"/>
+			<OnEnter function="LFRBrowseButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="298" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="5" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
 	<Frame name="LFRFrameDungeonChoiceTemplate" inherits="LFGSpecificChoiceTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -15,7 +165,7 @@
 		<Size x="355" y="440"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
+				<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFR-PORTRAIT">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -112,16 +262,68 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGE"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGE"));
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGER"));
 								self.background:SetAlpha(0.6);
 								self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
 							</OnLoad>
 						</Scripts>
 					</Button>
+					<Frame name="$parentNoLFRWhileLFD" frameStrata="HIGH" hidden="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="327" y="285"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-7" y="30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFR_WHILE_LFD" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="-0" y="-70"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LEAVE_QUEUE">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+											LeaveLFG();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
 					<ScrollFrame name="$parentCommentScrollFrame" inherits="UIPanelScrollFrameTemplate">
 						<Size>
-							<AbsDimension x="290" y="62"/>
+							<AbsDimension x="290" y="42"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
@@ -138,7 +340,7 @@
 						<ScrollChild>
 							<EditBox name="LFRQueueFrameComment" multiLine="true" letters="255" autoFocus="false" countInvisibleLetters="true">
 								<Size>
-									<AbsDimension x="290" y="62"/>
+									<AbsDimension x="290" y="42"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
@@ -171,7 +373,7 @@
 					</ScrollFrame>
 					<Button name="LFRQueueFrameCommentTextButton">
 						<Size>
-							<AbsDimension x="290" y="62"/>
+							<AbsDimension x="290" y="42"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCommentScrollFrame" relativePoint="TOPLEFT"/>
@@ -357,32 +559,51 @@
 									<OnVerticalScroll>
 										FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRQueueFrameSpecificList_Update);
 									</OnVerticalScroll>
-									<OnShow>
-										LFRQueueFrame_Update();
-									</OnShow>
 								</Scripts>
 							</ScrollFrame>
 						</Frames>
+						<Scripts>
+							<OnShow>
+								LFRQueueFrame_Update();
+							</OnShow>
+						</Scripts>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="LIST">
+					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
 						<Size>
-							<AbsDimension x="115" y="22"/>
+							<AbsDimension x="153" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="18" y="6"/>
+									<AbsDimension x="25" y="10"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								local mode, subMode = GetLFDMode();
-								if ( mode == "queued" or mode == "rolecheck" ) then
+								local mode, subMode = GetLFGMode();
+								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" ) then
 									LeaveLFG();
 								else
 									LFRQueueFrame_Join();
 								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentAcceptCommentButton" inherits="UIPanelButtonTemplate2" text="ACCEPT_COMMENT">
+						<Size>
+							<AbsDimension x="153" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								EditBox_ClearFocus(LFRQueueFrameComment);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -398,10 +619,464 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
+			<Frame name="LFRBrowseFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-BROWSE">
+							<Size>
+								<AbsDimension x="512" y="512"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitleText" inherits="GameFontNormal" text="LOOKING_FOR_RAID">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="12" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentRaidDropDown" inherits="UIDropDownMenuTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="151" y="-39"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="BROWSING">
+									<Size>
+										<AbsDimension x="80" y="12"/>
+									</Size>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="0" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow function="LFRBrowseFrameRaidDropDown_SetUp"/>
+						</Scripts>
+					</Frame>
+					<Button name="$parentColumnHeader1" inherits="LFRBrowseFrameColumnHeaderTemplate" text="NAME">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbSDimension x="26" y="-73"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 97);
+								self.sortType = "name";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentColumnHeader2" inherits="LFRBrowseFrameColumnHeaderTemplate" text="LEVEL_ABBR">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentColumnHeader1" relativePoint="RIGHT">
+								<Offset>
+									<AbSDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 34);
+								self.sortType = "level";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentColumnHeader3" inherits="LFRBrowseFrameColumnHeaderTemplate" text="CLASS">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentColumnHeader2" relativePoint="RIGHT">
+								<Offset>
+									<AbSDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								WhoFrameColumn_SetWidth(self, 80);
+								self.sortType = "class";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentColumnHeader4" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentColumnHeader3" relativePoint="RIGHT">
+								<Offset>
+									<AbSDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.icon:SetTexCoord(0.5, 0.75, 0, 1);
+								WhoFrameColumn_SetWidth(self, 25);
+								self.sortType = "tank";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentColumnHeader5" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentColumnHeader4" relativePoint="RIGHT">
+								<Offset>
+									<AbSDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.icon:SetTexCoord(0.75, 1, 0, 1);
+								WhoFrameColumn_SetWidth(self, 25);
+								self.sortType = "healer";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentColumnHeader6" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentColumnHeader5" relativePoint="RIGHT">
+								<Offset>
+									<AbSDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.icon:SetTexCoord(0.25, 0.5, 0, 1);
+								WhoFrameColumn_SetWidth(self, 25);
+								self.sortType = "damage";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentColumnHeader7" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentColumnHeader6" relativePoint="RIGHT">
+								<Offset>
+									<AbSDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.icon:SetTexCoord(0, 0.25, 0, 1);
+								WhoFrameColumn_SetWidth(self, 25);
+								self.sortType = "group";
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentListButton1" inherits="LFRBrowseButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-100"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton2" inherits="LFRBrowseButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton3" inherits="LFRBrowseButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton4" inherits="LFRBrowseButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton5" inherits="LFRBrowseButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton6" inherits="LFRBrowseButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton7" inherits="LFRBrowseButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton8" inherits="LFRBrowseButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton9" inherits="LFRBrowseButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton10" inherits="LFRBrowseButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton11" inherits="LFRBrowseButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton10" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton12" inherits="LFRBrowseButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton11" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton13" inherits="LFRBrowseButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton12" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton14" inherits="LFRBrowseButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton13" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton15" inherits="LFRBrowseButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton14" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton16" inherits="LFRBrowseButtonTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton15" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton17" inherits="LFRBrowseButtonTemplate" id="17">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton16" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton18" inherits="LFRBrowseButtonTemplate" id="18">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton17" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentListButton19" inherits="LFRBrowseButtonTemplate" id="19">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton18" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentListButton19" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRBrowseFrameList_Update);
+							</OnVerticalScroll>
+							<OnShow function="RefreshLFGList"/>
+						</Scripts>
+					</ScrollFrame>
+					<Button name="$parentSendMessageButton" inherits="UIPanelButtonTemplate2" text="SEND_MESSAGE">
+						<Size>
+							<AbsDimension x="113" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="25" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("UChatScrollButton");
+								ChatFrame_SendTell(LFRBrowseFrame.selectedName);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentInviteButton" inherits="UIPanelButtonTemplate2" text="INVITE">
+						<Size>
+							<AbsDimension x="100" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentSendMessageButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="3" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("UChatScrollButton");
+								InviteUnit(LFRBrowseFrame.selectedName);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentRefreshButton" inherits="UIPanelButtonTemplate2" text="REFRESH">
+						<Size>
+							<AbsDimension x="104" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentInviteButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="3" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("UChatScrollButton");
+								RefreshLFGList();
+							</OnClick>
+							<OnUpdate function="LFRBrowseFrameRefreshButton_OnUpdate"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHOOSE_RAID">
+                <Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-25"/>
+						</Offset>
+					</Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(CHOOSE_RAID, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnClick>
+						LFRFrame_SetActiveTab(1);
+						PlaySound("igCharacterInfoTab");
+					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+            </Button>
+            <Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BROWSE">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(BROWSE, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnClick>
+						LFRFrame_SetActiveTab(2);
+						PlaySound("igCharacterInfoTab");
+					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+            </Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="LFDFrame_OnLoad"/>
-			<OnEvent function="LFDFrame_OnEvent"/>
+			<OnLoad function="LFRFrame_OnLoad"/>
+			<OnEvent function="LFRFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 

@@ -67,23 +67,50 @@
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" justifyV="CENTER">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="30" y="-100"/>
-						<Anchor point="BOTTOMRIGHT" x="-15" y="40"/>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0"/>
-				</FontString>
-				<Texture name="TutorialTextBorder" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentText" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentText" x="0" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="0" b="0"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<ScrollFrame name="TutorialFrameTextScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-100"/>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="40"/>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="TutorialFrameTextScrollChildFrame">
+						<Size x="1" y="1"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="TutorialFrameText" inherits="GameFontNormal" justifyH="LEFT">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								<Color r="1.0" g="1.0" b="1.0"/>
+								</FontString>									
+							</Layer>
+						</Layers>
+					</Frame>
+				</ScrollChild>
+			<Scripts>
+				<OnLoad>
+--					self.scrollBarHideable = true;
+					ScrollFrame_OnLoad(self);
+				</OnLoad>
+			</Scripts>
+			</ScrollFrame>
+			<Frame name="TutorialTextBorder" frameStrata="TOOLTIP" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TutorialFrameTextScrollFrame" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TutorialFrameTextScrollFrame" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="tomtest" setAllPoints="true">
+							<Color r="1.0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame name="$parentCallOut" frameStrata="TOOLTIP" hidden="true">
 				<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
 					<EdgeSize>
@@ -96,7 +123,7 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<CheckButton name="$parentCheckButton" checked="true" inherits="UICheckButtonTemplate">
+			<CheckButton name="$parentCheckButton" checked="true" inherits="UICheckButtonTemplate" hidden="true">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="20" y="5"/>
@@ -142,6 +169,23 @@
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="0"/>
 		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBadge" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME" hidden="true">
+					<Size x="53" y="52"/>
+					<Anchors>
+						<Anchor point="CENTER" x="30" y="20"/>
+					</Anchors>
+					<TexCoords left="0.1542969" right="0.2558594" top="0.8789063" bottom="0.9785156"/>
+				</Texture>
+				<FontString name="$parentBadgeText" inherits="GameFontNormal" justifyH="CENTER" justifyV="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="TutorialFrameAlertButtonBadge" x="0" y="1"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

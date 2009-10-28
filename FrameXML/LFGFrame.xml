@@ -89,16 +89,16 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeroicIcon" file="Interface/LFGFrame/UI-LFG-ICON-HEROIC" parentKey="heroicIcon">
 					<Size>
-						<AbsDimension x="16" y="16"/>
+						<AbsDimension x="16" y="20"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="40" y="0"/>
+								<AbsDimension x="40" y="-1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.0" right="0.5" top="0" bottom="0.5"/>
+					<TexCoords left="0.0" right="0.5" top="0" bottom="0.625"/>
 				</Texture>
 				<FontString name="$parentInstanceLevel" inherits="GameFontNormal" justifyH="LEFT" parentKey="level">
 					<Size>

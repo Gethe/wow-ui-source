@@ -692,6 +692,9 @@
 	<Binding name="TOGGLELFGPARENT"> <!--Keeping the name as the old LFG so that people's bindings aren't reset -->
 		ToggleLFDParentFrame();
 	</Binding>
+	<Binding name="TOGGLELFRPARENT">
+		ToggleLFRParentFrame();
+	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES">
 		ToggleWorldStateScoreFrame();
 	</Binding>

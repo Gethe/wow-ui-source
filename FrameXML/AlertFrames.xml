@@ -3,7 +3,197 @@
 
 <Script file="AlertFrames.lua"/>
 
-<Button name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true">
+<Frame name="AlertFrameTemplate" virtual="true">
+	<Scripts>
+		<OnEnter function="AlertFrame_StopOutAnimation"/>
+		<OnLeave function="AlertFrame_ResumeOutAnimation"/>
+	</Scripts>
+</Frame>
+
+<Frame name="DungeonCompletionAlertFrameRewardTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="36" y="36"/>
+	</Size>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture name="$parentTexture" parentKey="texture">
+				<Size>
+					<AbsDimension x="27" y="27"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="-3" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentBorder" setAllPoints="true" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING">
+				<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnEnter function="DungeonCompletionAlertFrameReward_OnEnter"/>
+		<OnLeave function="DungeonCompletionAlertFrameReward_OnLeave"/>
+	</Scripts>
+</Frame>
+	
+<Frame name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<Size>
+		<AbsDimension x="336" y="80"/>
+	</Size>
+	<Anchors>
+		<Anchor point="BOTTOM">
+			<Offset>
+				<AbsDimension x="0" y="128"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="$parentDungeonTexture" parentKey="dungeonTexture">
+				<Size x="45" y="45"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="13" y="13"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+				<Size x="70" y="72"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<TexCoords left="0" right="0.546875" top="0.28515" bottom="0.5664"/>
+			</Texture>
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+				<Size x="15" y="72"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<TexCoords left="0.5546875" right="0.671875" top="0.28515" bottom="0.5664"/>
+			</Texture>
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+				<Size x="127" y="72"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="69" y="0"/>
+				</Anchors>
+				<TexCoords left="0" right="0.9921875" top="0" bottom="0.28125"/>
+			</Texture>
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+				<Size x="127" y="72"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-14" y="0"/>
+				</Anchors>
+				<TexCoords left="0" right="0.9921875" top="0.58203" bottom="0.86328"/>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString inherits="GameFontWhiteTiny" text="DUNGEON_COMPLETED">
+				<Size x="200" y="12"/>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="25" y="-29"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentInstanceName" inherits="GameFontNormal" parentKey="instanceName">
+				<!--Size x="200" y="16"/-->
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="25" y="-44"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<Texture name="$parentHeroicIcon" file="Interface/LFGFrame/UI-LFG-ICON-HEROIC" parentKey="heroicIcon">
+				<Size>
+					<AbsDimension x="16" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeto="$parentInstanceName" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0.0" right="0.5" top="0" bottom="0.625"/>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="shine">
+				<Size>
+					<AbsDimension x="67" y="72"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame name="$parentReward1" inherits="DungeonCompletionAlertFrameRewardTemplate"/>
+		<Frame name="$parentGlowFrame" setAllPoints="true" enableMouse="false" parentKey="glowFrame">
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="glow">
+						<Size>
+							<AbsDimension x="415" y="171"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Animations>
+							<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+								<Alpha change="1" duration="0.2" order="1"/>
+								<Alpha change="-1" duration="0.5" order="2"/>
+							</AnimationGroup>
+						</Animations>
+						<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad function="RaiseFrameLevel"/>
+			</Scripts>
+		</Frame>
+	</Frames>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Scripts>
+		<OnLoad function="DungeonCompletionAlertFrame_OnLoad"/>
+		<OnHide function="DungeonCompletionAlertFrame_OnHide"/>
+	</Scripts>
+</Frame>
+
+<Button name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size>
 		<AbsDimension x="300" y="88"/>
 	</Size>
@@ -44,7 +234,7 @@
 			</FontString>
 		</Layer>
 		<Layer level="OVERLAY">
-			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
+			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="glow">
 				<Size>
 					<AbsDimension x="400" y="171"/>
 				</Size>
@@ -53,17 +243,30 @@
 						<Offset x="0" y="0"/>
 					</Anchor>
 				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
 				<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
 			</Texture>
-			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD">
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="shine">
 				<Size>
 					<AbsDimension x="67" y="72"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="0" y="8"/>
 					</Anchor>
 				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="240" offsetY="0" duration="0.85" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
 				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
 			</Texture>
 		</Layer>		
@@ -207,6 +410,21 @@
 			</Scripts>
 		</Frame>
 	</Frames>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
 	<Scripts>
 		<OnLoad>
 			AchievementAlertFrame_OnLoad(self);
@@ -214,8 +432,11 @@
 		<OnClick>
 			AchievementAlertFrame_OnClick(self, button, down);
 		</OnClick>
+		<OnHide function="AchievementAlertFrame_OnHide"/>
 	</Scripts>
 </Button>
+
+<Button name="DungeonCompletionAlertFrame1" inherits="DungeonCompletionAlertFrameTemplate"/>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">
 	<Scripts>

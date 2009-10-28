@@ -541,7 +541,6 @@ end
 -- [[ Display Options Panel ]] --
 
 DisplayPanelOptions = {
-	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT" },
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
 	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT" },
 	showLootSpam = { text = "SHOW_LOOT_SPAM" },
@@ -567,9 +566,6 @@ function InterfaceOptionsDisplayPanel_OnEvent (self, event, ...)
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local control;
-
-		control = InterfaceOptionsDisplayPanelBuffDurations;
-		control.setFunc(GetCVar(control.cvar));
 
 		control = InterfaceOptionsDisplayPanelShowClock;
 		control.setFunc(GetCVar(control.cvar));
@@ -1140,8 +1136,6 @@ UnitFramePanelOptions = {
 	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
 	hidePartyInRaid = { text = "HIDE_PARTY_INTERFACE_TEXT" },
 	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
-	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
-	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
 	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 	showArenaEnemyCastbar = { text = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
@@ -1208,7 +1202,7 @@ function InterfaceOptionsCameraPanelStyleDropDown_OnEvent(self, event, ...)
 			self.tooltip = _G["OPTION_TOOLTIP_CAMERA"..value];
 		end	
 
-		UIDropDownMenu_SetWidth(self, 144);
+		UIDropDownMenu_SetWidth(self, 180);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsCameraPanelStyleDropDown_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, value);
 
@@ -1263,6 +1257,18 @@ function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 	info.tooltipText = OPTION_TOOLTIP_CAMERA_SMART;
 	UIDropDownMenu_AddButton(info);
 
+	info.text = CAMERA_SMARTER;
+	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;
+	info.value = "4";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CAMERA_SMARTER;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_SMARTER;
+	UIDropDownMenu_AddButton(info);
+
 	info.text = CAMERA_ALWAYS;
 	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;
 	info.value = "2";
@@ -1286,6 +1292,34 @@ function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 	info.tooltipTitle = CAMERA_NEVER;
 	info.tooltipText = OPTION_TOOLTIP_CAMERA_NEVER;
 	UIDropDownMenu_AddButton(info);
+end
+
+-- [[ Buffs Options Panel ]] --
+
+BuffsPanelOptions = {
+	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT" },
+	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
+	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },	
+	consolidateBuffs = { text = "CONSOLIDATE_BUFFS_TEXT" },	
+	showCastableDebuffs = { text = "SHOW_CASTABLE_DEBUFFS_TEXT" },
+}
+
+function InterfaceOptionsBuffsPanel_OnLoad (self)
+	self.name = BUFFOPTIONS_LABEL;
+	self.options = BuffsPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsBuffsPanel_OnEvent);
+end
+
+function InterfaceOptionsBuffsPanel_OnEvent (self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local control;
+		control = InterfaceOptionsBuffsPanelBuffDurations;
+		control.setFunc(GetCVar(control.cvar));
+	end
 end
 
 -- [[ Mouse Options Panel ]] --

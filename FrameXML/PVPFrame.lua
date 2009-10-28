@@ -565,7 +565,9 @@ function TogglePVPFrame()
 	if ( PVPFrame_IsJustBG() ) then
 		PVPFrame_SetJustBG(false);
 	else
-		ToggleFrame(PVPParentFrame);
+		if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
+			ToggleFrame(PVPParentFrame);
+		end
 	end
 end
 

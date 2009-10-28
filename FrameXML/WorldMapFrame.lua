@@ -140,12 +140,13 @@ function WorldMapFrame_OnLoad(self)
 	
 	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
-	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapPOIFrame.ratio = WORLDMAP_RATIO_SMALL;
 	WorldMapFrame.scale = WORLDMAP_RATIO_SMALL;
 	WorldMapQuestDetailScrollChildFrame:SetScale(0.9);
 	WorldMapQuestRewardScrollChildFrame:SetScale(0.9);
 	WorldMapFrame.numQuests = 0;
 	WorldMapFrame.showObjectives = WorldMapQuestShowObjectives:GetChecked();
+	WorldMapPOIFrame.allowBlobTooltip = true;
 end
 
 function WorldMapFrame_OnShow(self)
@@ -163,7 +164,8 @@ function WorldMapFrame_OnShow(self)
 	if ( WorldMapFrame.showObjectives ) then
 		WorldMapFrame_UpdateQuests();
 	end
-	WorldMapFrame_AdjustMapAndQuestList();
+	WorldMapBlobFrame_CalculateHitTranslations();
+	WorldMapFrame_AdjustMapAndQuestList();	
 end
 
 function WorldMapFrame_OnHide(self)
@@ -1106,6 +1108,7 @@ function WorldMapUnit_OnLoad(self)
 end
 
 function WorldMapUnit_OnEnter(self, motion)
+	WorldMapPOIFrame.allowBlobTooltip = false;
 	-- Adjust the tooltip based on which side the unit button is on
 	local x, y = self:GetCenter();
 	local parentX, parentY = self:GetParent():GetCenter();
@@ -1185,6 +1188,7 @@ function WorldMapUnit_OnEnter(self, motion)
 end
 
 function WorldMapUnit_OnLeave(self, motion)
+	WorldMapPOIFrame.allowBlobTooltip = true;
 	WorldMapTooltip:Hide();
 end
 
@@ -1324,7 +1328,7 @@ function WorldMapFrameSizeDownButton_OnClick()
 	else
 		SetMapByID(mapID);
 	end
-	WorldMapFrame_UpdateQuests();	
+	WorldMapFrame_UpdateQuests();
 end
 
 function WorldMap_ToggleSizeUp()
@@ -1344,7 +1348,7 @@ function WorldMap_ToggleSizeUp()
 	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
 	WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
-	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_SMALL);
+	WorldMapPOIFrame.ratio = WORLDMAP_RATIO_SMALL;
 	-- adjust quest frames
 	WorldMapQuestScrollFrame:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPRIGHT", 6, 0)
 	WorldMapQuestScrollFrame:SetHeight(670);
@@ -1392,7 +1396,7 @@ function WorldMap_ToggleSizeDown()
 	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_MINI);
 	WorldMapDetailFrame:SetPoint("TOPLEFT", 20, -42);
 	WorldMapButton:SetScale(WORLDMAP_RATIO_MINI);
-	WorldMapPOIFrame:SetScale(WORLDMAP_RATIO_MINI);
+	WorldMapPOIFrame.ratio = WORLDMAP_RATIO_MINI;
 	-- adjust quest frames
 	WorldMapQuestScrollFrame:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPRIGHT", 4, -1)
 	WorldMapQuestScrollFrame:SetHeight(384);
@@ -1457,7 +1461,7 @@ function WorldMapFrame_UpdateQuests()
 		questId, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(i);
 		if ( questLogIndex and questLogIndex > 0 ) then
 			questCount = questCount + 1;
-			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questLogIndex);	
+			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questLogIndex);
 			questFrame = WorldMapFrame_GetQuestFrame(questCount);
 			if ( lastFrame ) then
 				questFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, 0);
@@ -1555,8 +1559,8 @@ function WorldMapFrame_DisplayQuestPOI(questFrame, posX, posY)
 	-- position frame
 	local _, posX, posY = QuestPOIGetIconInfo(questFrame.questId);
 	if ( posX and posY ) then
-		posX = posX * WorldMapDetailFrame:GetWidth();
-		posY = -posY * WorldMapDetailFrame:GetHeight();
+		posX = posX * WorldMapDetailFrame:GetWidth() * WorldMapPOIFrame.ratio;
+		posY = -posY * WorldMapDetailFrame:GetHeight() * WorldMapPOIFrame.ratio;
 		frame:SetPoint("CENTER", "WorldMapBlobFrame", "TOPLEFT", posX, posY);
 	end
 	frame.quest = questFrame;
@@ -1631,35 +1635,67 @@ function WorldMapQuestPOI_OnClick(self)
 	end
 end
 
+function WorldMapQuestPOI_OnEnter(self)
+	WorldMapPOIFrame.allowBlobTooltip = false;
+	WorldMapQuestPOI_SetTooltip(self.quest.questLogIndex);	
+end
+
+function WorldMapQuestPOI_OnLeave(self)
+	WorldMapPOIFrame.allowBlobTooltip = true;
+end
+
+function WorldMapQuestPOI_SetTooltip(questLogIndex, numObjectives)
+	local title, _, _, _, _, _, isComplete = GetQuestLogTitle(questLogIndex);
+	WorldMapTooltip:SetOwner(WorldMapFrame, "ANCHOR_CURSOR");		
+	WorldMapTooltip:SetText(title);	
+	if ( isComplete ) then
+		WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, 1);
+	else
+		local text, finished;
+		numObjectives = numObjectives or GetNumQuestLeaderBoards(questLogIndex);
+		for i = 1, numObjectives do
+			text, _, finished = GetQuestLogLeaderBoard(i, questLogIndex);
+			if ( text and not finished ) then
+				WorldMapTooltip:AddLine("- "..WorldMapFrame_ReverseQuestObjective(text), 1, 1, 1, 1);
+			end
+		end
+	end	
+	WorldMapTooltip:Show();
+end
+
 function WorldMapBlobFrame_OnLoad(self)
 	self:SetFillTexture("Interface\\WorldMap\\UI-QuestBlob-Inside");
 	self:SetBorderTexture("Interface\\WorldMap\\UI-QuestBlob-Outside");
-	self:SetFillAlpha(64);
-	self:SetBorderAlpha(128);
+	self:SetFillAlpha(128);
+	self:SetBorderAlpha(192);
 	self:SetBorderScalar(1.0);
 end
 
 function WorldMapBlobFrame_OnUpdate(self)
+	if ( not WorldMapPOIFrame.allowBlobTooltip or not WorldMapDetailFrame:IsMouseOver() ) then
+		return;
+	end
 
 	local x, y = GetCursorPosition();
-	x = x / self:GetEffectiveScale();
-	y = y / self:GetEffectiveScale();
+	local adjustedX = x / self.xRatio - self.xOffset;
+	local adjustedY = self.yOffset - y / self.yRatio;
+	local questLogIndex, numObjectives = self:UpdateMouseOverTooltip(adjustedX, adjustedY);
+	if(numObjectives) then
+		WorldMapTooltip:SetOwner(WorldMapFrame, "ANCHOR_CURSOR");
+		WorldMapQuestPOI_SetTooltip(questLogIndex, numObjectives);
+	else
+		WorldMapTooltip:Hide();
+	end
+end
 
+function WorldMapBlobFrame_CalculateHitTranslations()
+	self = WorldMapBlobFrame;
 	local centerX, centerY = self:GetCenter();
 	local width = self:GetWidth();
 	local height = self:GetHeight();
-	local adjustedY = (centerY + (height/2) - y) / height;
-	local adjustedX = (x - (centerX - (width/2))) / width;
-	local questLogIndex, numObjectives = self:UpdateMouseOverTooltip(adjustedX, adjustedY);
-
---[[ TEST CODE FOR LEADERBOARD/TOOLTIP!!!
-	if(numObjectives) then
-		local questText;
-		for j = 1, numObjectives do
-			text, _, finished = GetQuestLogLeaderBoard(j, questLogIndex);
-			if(text) then
-			end
-		end
-	end
---]]
+	local scale = self:GetEffectiveScale();
+	self.yOffset = centerY / height + 0.5;
+	self.yRatio = height * scale;
+	self.xOffset = centerX / width - 0.5;
+	self.xRatio = width * scale;
 end

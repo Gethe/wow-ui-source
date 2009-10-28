@@ -193,6 +193,8 @@
 		</Layers>
 		<Scripts>
 			<OnClick function="WorldMapQuestPOI_OnClick" />
+			<OnEnter function="WorldMapQuestPOI_OnEnter" />
+			<OnLeave function="WorldMapQuestPOI_OnLeave" />
 		</Scripts>
 	</Button>
 	<Frame name="WorldMapQuestFrameTemplate" enableMouse="true" virtual="true">

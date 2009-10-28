@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBarMicroButtons.lua"/>
-	<Button name="MainMenuBarMicroButton" virtual="true">
+	<Button name="MainMenuBarMicroButton" motionScriptsWhileDisabled="true" virtual="true">
 		<Size>
 			<AbsDimension x="28" y="58"/>
 		</Size>
@@ -10,8 +10,21 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+				if ( self:IsEnabled() == 1 or self.minLevel ) then
+					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+					GameTooltip:AddLine(" ");
+					if ( self:IsEnabled() == 0 and self.minLevel ) then
+						GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+						GameTooltip:Show();
+					end
+				end
 			</OnEnter>
+			<OnEnable>
+				self:SetAlpha(1);
+			</OnEnable>
+			<OnDisable>
+				self:SetAlpha(0.5);
+			</OnDisable>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
@@ -107,6 +120,7 @@
 				LoadMicroButtonTextures(self, "Talents");
 				self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
 				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
+				self.minLevel = SHOW_TALENT_LEVEL;
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("UNIT_LEVEL");
@@ -128,15 +142,17 @@
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Achievement");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("RECEIVED_ACHIEVEMENT_LIST");
+				self:RegisterEvent("ACHIEVEMENT_EARNED");
+				self:RegisterEvent("UPDATE_BINDINGS");
+				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
+				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
+				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
 			</OnLoad>
-			<OnEvent function="AchievementMicroButton_Update"/>
+			<OnEvent function="AchievementMicroButton_OnEvent"/>
 			<OnClick> 
 				ToggleAchievementFrame();
 			</OnClick>
-			<OnEnter>
-				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
-				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ACHIEVEMENT);
-			</OnEnter>
 		</Scripts>
 	</Button>
 	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -193,7 +209,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-                <Texture name="$parentTexture">
+                <Texture name="$parentTexture" parentKey="texture">
                     <Size>
                         <AbsDimension x="36" y="36"/>
                     </Size>
@@ -220,37 +236,50 @@
 				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
+				self.minLevel = SHOW_PVP_LEVEL;
 			</OnLoad>
 			<OnEvent>
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
 			</OnEvent>
 			<OnMouseDown>
-				if ( self.down ) then
-					self.down = nil;
-					TogglePVPFrame();
-					return;
-				end
-				PVPMicroButton_SetPushed();
-				self.down = 1;
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self.down ) then
-					self.down = nil;
-					if ( self:IsMouseOver() ) then
+				if ( self:IsEnabled() ~= 0 ) then
+					if ( self.down ) then
+						self.down = nil;
 						TogglePVPFrame();
+						return;
 					end
-					UpdateMicroButtons();
-					return;
-				end
-				if ( self:GetButtonState() == "NORMAL" ) then
 					PVPMicroButton_SetPushed();
 					self.down = 1;
-				else
-					PVPMicroButton_SetNormal();
-					self.down = 1;
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self:IsEnabled() ~= 0 ) then
+					if ( self.down ) then
+						self.down = nil;
+						if ( self:IsMouseOver() ) then
+							TogglePVPFrame();
+						end
+						UpdateMicroButtons();
+						return;
+					end
+					if ( self:GetButtonState() == "NORMAL" ) then
+						PVPMicroButton_SetPushed();
+						self.down = 1;
+					else
+						PVPMicroButton_SetNormal();
+						self.down = 1;
+					end
 				end
 			</OnMouseUp>
+			<OnEnable>
+				self:SetAlpha(1);
+				SetDesaturation(self.texture, false);
+			</OnEnable>
+			<OnDisable>
+				self:SetAlpha(0.5);
+				SetDesaturation(self.texture, true);
+			</OnDisable>
 		</Scripts>
 	</Button>
 	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
@@ -264,8 +293,10 @@
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "LFG");
+				SetDesaturation(self:GetDisabledTexture(), true);
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+				self.minLevel = SHOW_LFD_LEVEL;
 			</OnLoad>
 			<OnEvent>
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");

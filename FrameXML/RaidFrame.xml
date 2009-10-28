@@ -140,23 +140,56 @@
 		</Scripts>
 	</Button>
 	<Frame name="RaidFrame" setAllPoints="true" hidden="true" parent="FriendsFrame">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="RaidFrameRaidDescription" inherits="GameFontNormal" text="RAID_DESCRIPTION" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="300" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="29" y="-85"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame name="RaidFrameNotInRaid" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="RaidFrameRaidDescription" inherits="GameFontNormal" text="RAID_DESCRIPTION" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="300" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="29" y="-85"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="RaidFrameRaidBrowserDescription" inherits="GameFontHighlight" text="RAID_BROWSER_DESCRIPTION" justifyH="CENTER">
+							<Size>
+								<AbsDimension x="300" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="RaidFrameRaidDescription" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="-0" y="-50"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentRaidBrowserButton" inherits="UIPanelButtonTemplate2" text="OPEN_RAID_BROWSER">
+						<Size>
+							<AbsDimension x="260" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="RaidFrameRaidBrowserDescription" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ShowUIPanel(LFRParentFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<Button name="RaidFrameConvertToRaidButton" inherits="UIPanelButtonTemplate" text="CONVERT_TO_RAID">
 				<Size>
 					<AbsDimension x="115" y="21"/>

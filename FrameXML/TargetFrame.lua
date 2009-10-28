@@ -62,6 +62,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
+	self:RegisterEvent("CVAR_UPDATE");
 	if ( self.showLevel ) then
 		self:RegisterEvent("UNIT_LEVEL");
 	end
@@ -202,7 +203,13 @@ function TargetFrame_OnEvent (self, event, ...)
 		end
 		CloseDropDownMenus();
 	elseif ( event == "VARIABLES_LOADED" ) then
-		FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));		
+		FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
+	elseif ( event == "CVAR_UPDATE" ) then
+		if ( arg1 == "SHOW_CASTABLE_DEBUFFS_TEXT" and self:IsShown() ) then
+			-- have to set uvar manually or it will be the previous value
+			SHOW_CASTABLE_DEBUFFS = GetCVar("showCastableDebuffs");
+			TargetFrame_UpdateAuras(self);
+		end		
 	end
 end
 
@@ -386,6 +393,7 @@ function TargetFrame_UpdateAuras (self)
 	local color;
 	local frameBorder;
 	local numDebuffs = 0;
+	local isEnemy = UnitCanAttack("player", self.unit);
 	for i = 1, MAX_TARGET_DEBUFFS do
 		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, i);
 		frameName = selfName.."Debuff"..i;
@@ -398,7 +406,7 @@ function TargetFrame_UpdateAuras (self)
 				frame.unit = self.unit;
 			end
 		end
-		if ( icon and ( not self.maxDebuffs or i <= self.maxDebuffs ) ) then
+		if ( icon and ( not self.maxDebuffs or i <= self.maxDebuffs ) and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" ) ) then
 			frame:SetID(i);
 
 			-- set the icon
@@ -694,7 +702,6 @@ function TargetFrame_CreateTargetofTarget(self, unit)
 						 _G[thisName.."ManaBar"], _G[thisName.."TextureFrameManaBarText"]);
 	SetTextStatusBarTextZeroText(frame.healthbar, DEAD);
 	frame.deadText = _G[thisName.."TextureFrameDeadText"];
-	frame:RegisterEvent("UNIT_AURA");
 	SecureUnitButton_OnLoad(frame, unit);
 end
 

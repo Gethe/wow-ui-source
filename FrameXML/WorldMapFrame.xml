@@ -600,7 +600,7 @@
 				<Scripts>
 					<OnLoad function="WorldMapBlobFrame_OnLoad" />
 					<OnUpdate function="WorldMapBlobFrame_OnUpdate"/>
-        </Scripts>
+				</Scripts>
 			</QuestPOIFrame>
 			<Button name="WorldMapButton">
 				<Size>
@@ -1072,6 +1072,8 @@
 					<OnClick>
 						SetCVar("questPOI", self:GetChecked());
 						WorldMapQuestShowObjectives_Toggle();
+						WorldMapFrame_UpdateQuests();
+						WorldMapFrame_AdjustMapAndQuestList();
 					</OnClick>
 					<OnEnter>
 						WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");

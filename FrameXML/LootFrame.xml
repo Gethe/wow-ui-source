@@ -248,7 +248,7 @@
 	</Frame>
 	<Frame name="GroupLootFrameTemplate" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="243" y="84"/>
+			<AbsDimension x="253" y="84"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -401,7 +401,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-37" y="-14"/>
+							<AbsDimension x="-48" y="-14"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -435,7 +435,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentGreedButton" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="0" y="0"/>
+							<AbsDimension x="3" y="3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -444,9 +444,9 @@
 						self.label = ROLL_DISENCHANT;
 					</OnLoad>
 				</Scripts>
-				<NormalTexture file="Interface\Icons\inv_enchant_disenchant"/>
-				<HighlightTexture file="Interface\Icons\inv_enchant_disenchant" alphaMode="ADD"/>
-				<PushedTexture file="Interface\Icons\inv_enchant_disenchant"/>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-DE-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>
 			</Button>
 			<StatusBar name="$parentTimer" drawLayer="BACKGROUND" minValue="0" maxValue="60000" defaultValue="0">
 				<Size>

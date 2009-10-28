@@ -2773,6 +2773,19 @@ StaticPopupDialogs["LAG_SUCCESS"] = {
 	timeout = 0,
 }
 
+StaticPopupDialogs["LFG_OFFER_CONTINUE"] = {
+	text = LFG_OFFER_CONTINUE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		ClearAllLFGDungeons();
+		SetLFGDungeon(self.data2, self.data);
+		JoinLFG();
+	end,
+	noCancelOnReuse = 1,
+	timeout = 0,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

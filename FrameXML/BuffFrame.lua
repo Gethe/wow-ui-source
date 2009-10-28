@@ -119,7 +119,7 @@ end
 
 function AuraButton_Update(buttonName, index, filter)
 	local unit = PlayerFrame.unit;
-	local name, rank, texture, count, debuffType, duration, expirationTime = UnitAura(unit, index, filter);
+	local name, rank, texture, count, debuffType, duration, expirationTime, _, _, shouldConsolidate = UnitAura(unit, index, filter);
 
 	local buffName = buttonName..index;
 	local buff = _G[buffName];
@@ -176,7 +176,6 @@ function AuraButton_Update(buttonName, index, filter)
 			end
 		end
 
-		local exitTime;
 		if ( duration > 0 and expirationTime ) then
 			if ( SHOW_BUFF_DURATIONS == "1" ) then
 				buff.duration:Show();
@@ -190,7 +189,6 @@ function AuraButton_Update(buttonName, index, filter)
 			else
 				buff.timeLeft = expirationTime - GetTime();
 			end
-			exitTime = expirationTime - max(10, duration / 10);
 		else
 			buff.duration:Hide();
 			if ( buff.timeLeft ) then
@@ -214,6 +212,15 @@ function AuraButton_Update(buttonName, index, filter)
 		-- Refresh tooltip
 		if ( GameTooltip:IsOwned(buff) ) then
 			GameTooltip:SetUnitAura(PlayerFrame.unit, index, filter);
+		end
+
+		if ( CONSOLIDATE_BUFFS == "1" and shouldConsolidate ) then
+			if ( buff.timeLeft and duration > 30 ) then
+				buff.exitTime = expirationTime - max(10, duration / 10);
+			end
+			buff.expirationTime = expirationTime;			
+			buff.consolidated = true;
+			table.insert(consolidatedBuffs, buff);
 		end
 	end
 	return 1;
@@ -492,7 +499,7 @@ function ConsolidatedBuffs_OnUpdate(self)
 		local needUpdate = false;
 		local timeNow = GetTime();
 		for buffIndex, buff in pairs(consolidatedBuffs) do
-			if ( buff.exitTime < timeNow ) then
+			if ( buff.exitTime and buff.exitTime < timeNow ) then
 				buff.consolidated = false;
 				buff.timeLeft = buff.expirationTime - timeNow;
 				tremove(consolidatedBuffs, buffIndex);

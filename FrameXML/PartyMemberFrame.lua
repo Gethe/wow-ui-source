@@ -129,10 +129,10 @@ function PartyMemberFrame_UpdateMember (self)
 	else
 		self:Hide();
 	end
+	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdatePvPStatus(self);
 	RefreshDebuffs(self, "party"..id);
 	PartyMemberFrame_UpdateVoiceStatus(self);
-	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
 	PartyMemberFrame_UpdateOnlineStatus(self);
 	UpdatePartyMemberBackground();

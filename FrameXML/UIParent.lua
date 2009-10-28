@@ -46,7 +46,7 @@ UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
 UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["LFDParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["LFRParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["LFRParentFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["PVPParentFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
@@ -351,7 +351,7 @@ function InspectAchievements (unit)
 end
 
 function ToggleAchievementFrame(stats)
-	if ( not CanShowAchievementUI() ) then
+	if ( not CanShowAchievementUI() or not HasCompletedAnyAchievement() ) then
 		return;
 	end
 	AchievementFrame_LoadUI();
@@ -456,10 +456,12 @@ function ToggleLFGParentFrame(tab)
 end
 
 function ToggleLFDParentFrame()
-	if ( LFDParentFrame:IsShown() ) then
-		HideUIPanel(LFDParentFrame);
-	else
-		ShowUIPanel(LFDParentFrame);
+	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
+		if ( LFDParentFrame:IsShown() ) then
+			HideUIPanel(LFDParentFrame);
+		else
+			ShowUIPanel(LFDParentFrame);
+		end
 	end
 end
 
@@ -3310,7 +3312,8 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 
 	local unitStatus, statusColor;
 	local debuffTotal = 0;
-	local name, rank, icon, count, debuffType, duration, expirationTime;
+	local name, rank, icon, count, debuffType, duration, expirationTime, caster;
+	local isEnemy = UnitCanAttack("player", unit);	
 	for i=1, numDebuffs do
 		if ( unit == "party"..i ) then
 			unitStatus = _G[frameName.."Status"];
@@ -3320,10 +3323,10 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 		if ( checkCVar and GetCVarBool("showDispelDebuffs") ) then
 			filter = "RAID";
 		end
-		name, rank, icon, count, debuffType, duration, expirationTime = UnitDebuff(unit, i, filter);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i, filter);
 
 		local debuffName = frameName..suffix..i;
-		if ( icon ) then
+		if ( icon and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" ) ) then
 			-- if we have an icon to show then proceed with setting up the aura
 
 			-- set the icon
@@ -3566,7 +3569,12 @@ function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridW
 	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
 end
 
-function GetLFDMode()
+function LFG_IsEmpowered()
+	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
+		not (IsPartyLeader() or IsRaidLeader() or IsRaidOfficer()) );
+end
+
+function GetLFGMode()
 	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
 	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
 	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
@@ -3576,14 +3584,19 @@ function GetLFDMode()
 	elseif ( proposalExists ) then
 		return "proposal", "accepted";
 	elseif ( queued ) then
-		if ( inParty and not IsPartyLeader() ) then
-			return "queued", "unempowered";
-		else
-			return "queued", "empowered";
-		end
+		return "queued", (LFG_IsEmpowered() and "empowered" or "unempowered");
 	elseif ( roleCheckInProgress ) then
 		return "rolecheck";
 	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
 		return "lfgparty";
+	else
+		--Check if we are listed
+		if ( LFGQueuedForList ) then
+			for _, queued in pairs(LFGQueuedForList) do
+				if ( queued ) then
+					return "listed", (LFG_IsEmpowered() and "empowered" or "unempowered");
+				end
+			end
+		end
 	end
 end

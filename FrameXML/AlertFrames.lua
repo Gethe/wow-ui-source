@@ -1,5 +1,8 @@
+MAX_ACHIEVEMENT_ALERTS = 2;
+
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
+	self:RegisterEvent("LFG_COMPLETION_REWARD");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -11,21 +14,168 @@ function AlertFrame_OnEvent (self, event, ...)
 		end
 		
 		AchievementAlertFrame_ShowAlert(id);
+	elseif ( event == "LFG_COMPLETION_REWARD" ) then
+		DungeonCompletionAlertFrame_ShowAlert();
 	end
+end
+
+function AlertFrame_FixAnchors()
+	AchievementAlertFrame_FixAnchors();
+	DungeonCompletionAlertFrame_FixAnchors();
+end
+
+function AlertFrame_AnimateIn(frame)
+	frame:Show();
+	frame.animIn:Play();
+	frame.glow.animIn:Play();
+	frame.shine.animIn:Play();
+	frame.waitAndAnimOut:Stop();	--Just in case it's already animating out, but we want to reinstate it.
+	if ( frame:IsMouseOver() ) then
+		frame.waitAndAnimOut.animOut:SetStartDelay(1);
+	else
+		frame.waitAndAnimOut.animOut:SetStartDelay(4.05);
+		frame.waitAndAnimOut:Play();
+	end
+end
+
+function AlertFrame_StopOutAnimation(frame)
+	frame.waitAndAnimOut:Stop();
+	frame.waitAndAnimOut.animOut:SetStartDelay(1);
+end
+
+function AlertFrame_ResumeOutAnimation(frame)
+	frame.waitAndAnimOut:Play();
+end
+
+-- [[ DungeonCompletionAlertFrame ]] --
+function DungeonCompletionAlertFrame_OnLoad (self)
+	self.glow = self.glowFrame.glow;
+end
+
+function DungeonCompletionAlertFrame_FixAnchors()
+	for i=MAX_ACHIEVEMENT_ALERTS, 1, -1 do
+		local frame = _G["AchievementAlertFrame"..i];
+		if ( frame and frame:IsShown() ) then
+			DungeonCompletionAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
+			return;
+		end
+	end
+	
+	for i=NUM_GROUP_LOOT_FRAMES, 1, -1 do
+		local frame = _G["GroupLootFrame"..i];
+		if ( frame and frame:IsShown() ) then
+			DungeonCompletionAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
+			return;
+		end
+	end
+	
+	DungeonCompletionAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
+end
+
+DUNGEON_COMPLETION_MAX_REWARDS = 1;
+function DungeonCompletionAlertFrame_ShowAlert()
+	local frame = DungeonCompletionAlertFrame1;
+	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
+	local name, typeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards= GetLFGCompletionReward();
+	
+	
+	--Set up the rewards
+	local moneyAmount = moneyBase + moneyVar * numStrangers;
+	local experienceGained = experienceBase + experienceVar * numStrangers;
+	
+	local rewardsOffset = 0;
+
+	if ( moneyAmount > 0 or experienceGained > 0 ) then --hasMiscReward ) then
+		SetPortraitToTexture(DungeonCompletionAlertFrame1Reward1.texture, "Interface\\Icons\\inv_misc_coin_02");
+		DungeonCompletionAlertFrame1Reward1.rewardID = 0;
+		DungeonCompletionAlertFrame1Reward1:Show();
+
+		rewardsOffset = 1;
+	end
+	
+	for i = 1, numRewards do
+		local frameID = (i + rewardsOffset);
+		local reward = _G["DungeonCompletionAlertFrame1Reward"..frameID];
+		if ( not reward ) then
+			reward = CreateFrame("FRAME", "DungeonCompletionAlertFrame1Reward"..frameID, DungeonCompletionAlertFrame1, "DungeonCompletionAlertFrameRewardTemplate");
+			reward:SetID(frameID);
+			DUNGEON_COMPLETION_MAX_REWARDS = frameID;
+		end
+		DungeonCompletionAlertFrameReward_SetReward(reward, i);
+	end
+	
+	local usedButtons = numRewards + rewardsOffset;
+	--Hide the unused ones
+	for i = usedButtons + 1, DUNGEON_COMPLETION_MAX_REWARDS do
+		_G["DungeonCompletionAlertFrame1Reward"..i]:Hide();
+	end
+	
+	if ( usedButtons > 0 ) then
+		--Set up positions
+		local spacing = 36;
+		DungeonCompletionAlertFrame1Reward1:SetPoint("TOP", DungeonCompletionAlertFrame1, "TOP", -spacing/2 * usedButtons + 41, 0);
+		for i = 2, usedButtons do
+			_G["DungeonCompletionAlertFrame1Reward"..i]:SetPoint("CENTER", "DungeonCompletionAlertFrame1Reward"..(i - 1), "CENTER", spacing, 0);
+		end
+	end
+	
+	--Set up the text and icons.
+	
+	frame.instanceName:SetText(name);
+	if ( typeID == TYPEID_HEROIC_DIFFICULTY ) then
+		frame.heroicIcon:Show();
+		frame.instanceName:SetPoint("TOP", 33, -44);
+	else
+		frame.heroicIcon:Hide();
+		frame.instanceName:SetPoint("TOP", 25, -44);
+	end
+		
+	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
+	
+	AlertFrame_AnimateIn(frame)
+	
+	
+	AlertFrame_FixAnchors();
+end
+
+function DungeonCompletionAlertFrameReward_SetReward(frame, index)
+	local texturePath, quantity = GetLFGCompletionRewardItem(index);
+	SetPortraitToTexture(frame.texture, texturePath);
+	frame.rewardID = index;
+	frame:Show();
+end
+
+function DungeonCompletionAlertFrameReward_OnEnter(self)
+	AlertFrame_StopOutAnimation(self:GetParent());
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( self.rewardID == 0 ) then
+		GameTooltip:AddLine(YOU_RECEIVED);
+		local name, typeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
+
+		local moneyAmount = moneyBase + moneyVar * numStrangers;
+		local experienceGained = experienceBase + experienceVar * numStrangers;
+		
+		if ( experienceGained > 0 ) then
+			GameTooltip:AddLine(string.format(GAIN_EXPERIENCE, experienceGained));
+		end
+		if ( moneyAmount > 0 ) then
+			SetTooltipMoney(GameTooltip, moneyAmount, nil);
+		end
+	else
+		GameTooltip:SetLFGCompletionReward(self.rewardID);
+	end
+	GameTooltip:Show();
+end
+
+function DungeonCompletionAlertFrameReward_OnLeave(frame)
+	AlertFrame_ResumeOutAnimation(frame:GetParent());
+	GameTooltip:Hide();
 end
 
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_OnLoad (self)
 	self:RegisterForClicks("LeftButtonUp");
-	self.glow = _G[self:GetName().."Glow"];
-	self.shine = _G[self:GetName().."Shine"];
-	-- Setup a continous timescale since the table values are offsets
-	self.fadeinDuration = 0.2;
-	self.flashDuration = 0.5;
-	self.shineStartTime = 0.3;
-	self.shineDuration = 0.85;
-	self.holdDuration = 3;
-	self.fadeoutDuration = 1.5;
 end
 
 function AchievementAlertFrame_FixAnchors ()
@@ -35,20 +185,15 @@ function AchievementAlertFrame_FixAnchors ()
 		return;
 	end
 	
-	
-	local lastVisibleLootFrame;
-	for i=1, NUM_GROUP_LOOT_FRAMES do
+	for i=NUM_GROUP_LOOT_FRAMES, 1, -1  do
 		local frame = _G["GroupLootFrame"..i];
 		if ( frame and frame:IsShown() ) then
-			lastVisibleLootFrame = frame;
+			AchievementAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
+			return;
 		end
 	end
 	
-	if ( lastVisibleLootFrame ) then
-		AchievementAlertFrame1:SetPoint("BOTTOM", lastVisibleLootFrame, "TOP", 0, 10);
-	else
-		AchievementAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
-	end
+	AchievementAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
 end
 
 function AchievementAlertFrame_ShowAlert (achievementID)
@@ -58,8 +203,6 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 		-- We ran out of frames! Bail!
 		return;
 	end
-
-	AchievementAlertFrame_FixAnchors();
 
 	_G[frame:GetName() .. "Name"]:SetText(name);
 	
@@ -72,19 +215,17 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 	end
 	
 	_G[frame:GetName() .. "IconTexture"]:SetTexture(icon);
-	frame.elapsed = 0;
-	frame.state = nil;
-	frame:SetAlpha(0);
-	frame:Show();
+	
 	frame.id = achievementID;
 	
-	frame:SetScript("OnUpdate", AchievementAlertFrame_OnUpdate);
+	AlertFrame_AnimateIn(frame);
+	
+	AlertFrame_FixAnchors();
 end
 
 function AchievementAlertFrame_GetAlertFrame()
-	local maxAlerts = 2;
 	local name, frame, previousFrame;
-	for i=1, maxAlerts do
+	for i=1, MAX_ACHIEVEMENT_ALERTS do
 		name = "AchievementAlertFrame"..i;
 		frame = _G[name];
 		if ( frame ) then
@@ -105,94 +246,12 @@ function AchievementAlertFrame_GetAlertFrame()
 	return nil;
 end
 
-function AchievementAlertFrame_OnUpdate (self, elapsed)
-	local state = self.state;
-	local alpha;
-	local deltaTime = elapsed;
-	--initialize
-	if ( not state ) then
-		state = "fadein";
-		self.glow:Show();
-		self.glow:SetAlpha(0);
-		self.totalElapsed = 0;
-	end
-	self.totalElapsed = self.totalElapsed+elapsed;
-	elapsed = self.elapsed + elapsed;
-	if ( state == "fadein" ) then
-		if ( elapsed >= self.fadeinDuration ) then
-			state = "flash";
-			elapsed = 0;
-			self:SetAlpha(1);
-			self.glow:Show();
-		else
-			self:SetAlpha(elapsed/self.fadeinDuration);
-			self.glow:SetAlpha(elapsed/self.fadeinDuration);
-		end
-	elseif ( state == "flash" ) then
-		if ( elapsed >= self.flashDuration ) then
-			state = "hold";
-			elapsed = 0;
-			self.glow:Hide();
-		else
-			self.glow:SetAlpha(1-(elapsed/self.flashDuration));
-		end
-	elseif ( state == "hold" ) then
-		if ( elapsed >= self.holdDuration ) then
-			state = "fadeout";
-			elapsed = 0;
-		end
-	elseif ( state == "fadeout" ) then
-		if ( elapsed >= self.fadeoutDuration ) then
-			state = nil;
-			self:SetScript("OnUpdate", nil);
-			self:Hide();
-			self.id = nil;
-		else
-			self:SetAlpha(1-(elapsed/self.fadeoutDuration));
-		end
-	end
-
-	--Handle shine
-	local normalizedTime = self.totalElapsed - self.shineStartTime;
-	if ( normalizedTime >= 0 and normalizedTime <= self.shineDuration ) then
-		if ( not self.shine:IsShown() ) then
-			self.shine:Show();
-			self.shine:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -8);
-			self.shine:SetAlpha(1);
-		end
-		local target = 239;
-		local _,_,_,x = self.shine:GetPoint();
-		if ( x ~= target ) then
-			x = x +(target-x)*(deltaTime/(self.shineDuration/3));
-			if ( floor(abs(target - x)) >= 0 ) then
-				x = target;
-			end
-		end
-		
-		self.shine:SetPoint("TOPLEFT", self, "TOPLEFT", x, -8);
-		self.shine:SetAlpha(1);
-		local startShineFade = 0.8*self.shineDuration;
-		if ( normalizedTime >= startShineFade ) then
-			self.shine:SetAlpha(1-((normalizedTime-startShineFade)/(self.shineDuration-startShineFade)));
-		end
-	else
-		if ( self.shine:IsShown() ) then
-			self.shine:Hide();
-			self.vel = nil;
-		end
-	end
-
-	self.state = state;
-	self.elapsed = elapsed;
-end
-
 function AchievementAlertFrame_OnClick (self)
 	local id = self.id;
 	if ( not id ) then
 		return;
 	end
 	
-	self.elapsed = 0;
 	CloseAllWindows();
 	ShowUIPanel(AchievementFrame);
 	
@@ -204,4 +263,8 @@ function AchievementAlertFrame_OnClick (self)
 	end
 	
 	AchievementFrame_SelectAchievement(id)
+end
+
+function AchievementAlertFrame_OnHide (self)
+	AlertFrame_FixAnchors();
 end

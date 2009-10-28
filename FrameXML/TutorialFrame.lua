@@ -13,40 +13,54 @@ TUTORIAL_DATA = {
 	[1] = "QuestGiver",
 	[2] = "Movement",
 	[3] = "LookAround",
-	[4] = "Moved",
+	[4] = "QuestGiver",
 	[5] = "Combat1",
 	[6] = "Spells",
 	[7] = "LootPig",
 	[8] = "LootedItem",
 	[9] = "OnUseItem",
 	[10] = "Bags",
+	[11] = "Food",
+	[12] = "Drink",
 	[13] = "Talents",
+	[14] = "Trainer",
 	[15] = "SpellBook",
 	[16] = "Rep",
 	[17] = "Reply",
+	[18] = "Grouping",
 	[19] = "Players",
+	[20] = "Vendor",
 	[21] = "QuestLog",
 	[22] = "Friends",
 	[24] = "Equip",
 	[25] = "Death",
+	[27] = "Fat",
+	[29] = "Breath",
 	[30] = "Resting",
 	[31] = "Hearthstones",
 	[32] = "Pvp",
 	[33] = "Jumping",
 	[34] = "QuestComplete",
 	[35] = "Travel",
+	[36] = "DamagedItems",
 	[37] = "BrokenItems",
 	[38] = "Professions",
 	[39] = "Groups",
 	[40] = "Spellbook2",
-	[41] = "EliteQuests",
+	[41] = "LeetQuests",
 	[42] = "Welcome",
+	[43] = "QuestGray",
+	[44] = "Ranged",
 	[46] = "RaidGroups",
     [47] = "TotemBar",
+	[48] = "Battleground1",
+	[49] = "Battleground2",
+	[50] = "Keyring",
+	[51] = "LFG",
 	[52] = "CosmeticPets",
 	[53] = "Mounts",
 	[54] = "ThreatWarnings",
-	[55] = "LevelUp",
+	[55] = "Ding",
 	[56] = "HealthManaBar",
     [57] = "EnemyHealth",
     [58] = "FullBags",
@@ -57,32 +71,32 @@ TUTORIAL_DATA = {
 DISPLAY_DATA = {
 	-- Do not remove "Base" it is the default
 	["Base"] = {
-		tileHeight = 7, 
+		tileHeight = 6, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["BaseTall"] = {
-		tileHeight = 12, 
+		tileHeight = 11, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 
 	-- layers can be BACKGROUND, BORDER, ARTWORK, OVERLAY, HIGHLIGHT
 	-- if you don't assign one it will default to ARTWORK
 	["QuestGiver"] = {
-		tileHeight = 20, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -18, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "CENTER", xOff = 0, yOff = 10},
-		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGiver", align = "CENTER", xOff = -40, yOff = 30},
-		mouseData = {image = "RightClick", align = "CENTER", xOff = 80, yOff = 30},
+		tileHeight = 18, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "TOP", xOff = 0, yOff = -110},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGiver", align = "TOP", xOff = -40, yOff = -50},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -60},
 	},
 	
 	["Movement"] = {
-		tileHeight = 15, 
+		tileHeight = 12, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 15},
 		keyData1 = {command = "TURNLEFT", layer = "OVERLAY", align = "TOPLEFT", xOff = 105, yOff = -80},
 		keyData2 = {command = "MOVEBACKWARD", layer = "OVERLAY", align = "TOPLEFT", xOff = 160, yOff = -80},
 		keyData3 = {command = "TURNRIGHT", layer = "OVERLAY", align = "TOPLEFT", xOff = 215, yOff = -80},
@@ -92,284 +106,433 @@ DISPLAY_DATA = {
 	["Moved"] = {
 		tileHeight = 20, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 15},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "CENTER", xOff = 0, yOff = 10},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGiver", align = "CENTER", xOff = -40, yOff = 30},
 		mouseData = {image = "RightClick", align = "CENTER", xOff = 80, yOff = 30},
 	},
 	
-	["LevelUp"] = {
-		tileHeight = 25, 
+	["Ding"] = {
+		tileHeight = 20, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -50, width = 37, height = 34},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -215, bottomRight_xOff = -18, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LevelUp", align = "CENTER", xOff = 10, yOff = 5},
+		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -6, width = 78, height = 78},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -210, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LevelUp", align = "TOP", xOff = 10, yOff = -30},
 	},
 	
 	["OnUseItem"] = {
 		tileHeight = 20, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -18, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-OnUseItem", align = "CENTER", xOff = -35, yOff = 10},
-		mouseData = {image = "RightClick", align = "CENTER", xOff = 110, yOff = 15},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-OnUseItem", align = "TOP", xOff = -35, yOff = -70},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -95},
 	},
 	
 	["LootedItem"] = {
 		tileHeight = 20, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -18, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootedItem", align = "CENTER", xOff = 5, yOff = 25},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -190, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootedItem", align = "TOP", xOff = 5, yOff = -55},
 	},
 	
 	["LootPig"] = {
 		tileHeight = 20, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -18, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCorpse", align = "CENTER", xOff = -60, yOff = 10},
-		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCursor", align = "CENTER", xOff = 40, yOff = 25},
-		mouseData = {image = "RightClick", align = "CENTER", xOff = 110, yOff = 25},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCorpse", align = "TOP", xOff = -60, yOff = -13},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCursor", align = "TOP", xOff = 40, yOff = -90},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
 	},
 
 	["Spells"] = {
-		tileHeight = 7, 
+		tileHeight = 11, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = -200},
-		callOut	= {parent = "MainMenuBar", align = "TOPLEFT", xOff = -5, yOff = -5, width = 525, height = 50},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -120, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell01", align = "TOP", xOff = -60, yOff = -50},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell02", align = "TOP", xOff = 10, yOff = -50},
+		imageData3 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell03", align = "TOP", xOff = 80, yOff = -50},
 	},
 
 	["Combat1"] = {
 		tileHeight = 18, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = -150},
 		callOut	= {parent = "MainMenuBar", align = "TOPLEFT", xOff = -5, yOff = -5, width = 525, height = 50},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -145, bottomRight_xOff = -18, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-AttackCursor", align = "CENTER", xOff = -60, yOff = 40},
-		mouseData = {image = "LeftClick", align = "CENTER", xOff = 50, yOff = 45},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -145, bottomRight_xOff = -29, bottomRight_yOff = 18},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-AttackCursor", align = "TOP", xOff = -60, yOff = -60},
+		mouseData = {image = "LeftClick", align = "TOP", xOff = 50, yOff = -45},
 	},
 
 	["LookAround"] = {
-		tileHeight = 16, 
+		tileHeight = 15, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -170, bottomRight_xOff = -18, bottomRight_yOff = 35},
-		mouseData = {image = "LeftClick", align = "CENTER", xOff = 5, yOff = 20},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 10},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 5, yOff = -50},
 		arrowCurveLeft = {layer = "OVERLAY", align = "TOPRIGHT", xOff = -215, yOff = -55},
 		arrowCurveRight = {layer = "OVERLAY", align = "TOPRIGHT", xOff = -70, yOff = -55},
 	},
 	
 	["Hotbar"] = {
-		tileHeight = 7, 
+		tileHeight = 11, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = -150},
 		callOut	= {parent = "MainMenuBar", align = "TOPLEFT", xOff = -5, yOff = -5, width = 525, height = 50},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -120, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell01", align = "TOP", xOff = -60, yOff = -50},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell02", align = "TOP", xOff = 10, yOff = -50},
+		imageData3 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell03", align = "TOP", xOff = 80, yOff = -50},
 	},
 
 	["SpellBook"] = {
-		tileHeight = 12, 
+		tileHeight = 25, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "SpellbookMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spellbook", align = "TOP", xOff = 10, yOff = -50},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -215, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},	
 	
 	["Death"] = {
-		tileHeight = 11, 
+		tileHeight = 19, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-SpiritRez", align = "TOP", xOff = 10, yOff = -50},
 	},	
 	
 	["Resting"] = {
 		tileHeight = 11, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -6, width = 78, height = 78},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 32, yOff = -4, width = 85, height = 85},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 
 	["Hearthstones"] = {
-		tileHeight = 10, 
+		tileHeight = 14, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -110, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Hearthstone", align = "TOP", xOff = 10, yOff = -50},
 	},	
 
 	["Pvp"] = {
 		tileHeight = 10, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
 		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -6, width = 78, height = 78},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},	
 	
 	["Jumping"] = {
 		tileHeight = 10, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},	
 	
 	["QuestComplete"] = {
-		tileHeight = 10, 
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 115},
+		tileHeight = 20, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "TOP", xOff = 0, yOff = -110},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestComplete", align = "TOP", xOff = -40, yOff = -50},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -60},
 	},
 	
 	["Travel"] = {
-		tileHeight = 15, 
+		tileHeight = 24, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FlightCursor", align = "TOP", xOff = 0, yOff = -110},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FlightMaster", align = "TOP", xOff = -40, yOff = -50},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -60},
 	},	
 	
-	["BrokenItems"] = {
-		tileHeight = 12, 
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 0},
+	["DamagedItems"] = {
+		tileHeight = 16, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = -20},
 		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = 0, yOff = 8, width = 58, height = 90},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-RepairCursor", align = "TOP", xOff = 0, yOff = -60},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
 	},
 	
-	["Professions"] = {
-		tileHeight = 12, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+	["BrokenItems"] = {
+		tileHeight = 16, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = -20},
+		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = 0, yOff = 8, width = 58, height = 90},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-RepairCursor", align = "TOP", xOff = 0, yOff = -60},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
 	},
+	
+--	["Professions"] = {
+--		tileHeight = 11, 
+--		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+--		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
+--	},
 	
 	["Groups"] = {
-		tileHeight = 12, 
+		tileHeight = 11, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Spellbook2"] = {
-		tileHeight = 12, 
+		tileHeight = 25, 
 		anchorData = {align = "RIGHT", xOff = -50, yOff = -150},
 		callOut	= {parent = "SpellbookMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spellbook", align = "TOP", xOff = 10, yOff = -50},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -215, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
-	["EliteQuests"] = {
-		tileHeight = 14, 
+	["LeetQuests"] = {
+		tileHeight = 19, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Elite", align = "TOP", xOff = 10, yOff = -50},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Welcome"] = {
-		tileHeight = 16, 
+		tileHeight = 24, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -170, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Logo", align = "TOP", xOff = 10, yOff = -50},
 	},
 	
 	["RaidGroups"] = {
 		tileHeight = 12, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 
 	["TotemBar"] = {
 		tileHeight = 12, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = -150},
 		callOut	= {parent = "MultiCastActionBarFrame", align = "TOPLEFT", xOff = -5, yOff = 4, width = 45, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["CosmeticPets"] = {
 		tileHeight = 11, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Mounts"] = {
 		tileHeight = 13, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["ThreatWarnings"] = {
-		tileHeight = 13, 
+		tileHeight = 16, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -140, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Threat", align = "TOP", xOff = 10, yOff = -50},
 	},
 	
 	["HealthManaBar"] = {
-		tileHeight = 13, 
+		tileHeight = 15, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
 		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 100, yOff = -33, width = 135, height = 40},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -125, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-DudeFull", align = "TOP", xOff = 10, yOff = -35},
 	},
 	
 	["FullBags"] = {
 		tileHeight = 20, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -175, bottomRight_xOff = -29, bottomRight_yOff = 15},
 		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FullBackpack", align = "CENTER", xOff = -70, yOff = 15},
-		mouseData = {image = "RightClick", align = "CENTER", xOff = 110, yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FullBackpack", align = "TOP", xOff = -22, yOff = -65},
     },
 	
     ["EnemyHealth"] = {
-        tileHeight = 7, 
+        tileHeight = 11, 
         anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-        textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
-        callOut  = {parent = "TargetFrame", align = "TOPLEFT", xOff = -5, yOff = -34, width = 140, height = 38},
+        textBox = {topLeft_xOff = 33, topLeft_yOff = -105, bottomRight_xOff = -29, bottomRight_yOff = 15},
+--      callOut  = {parent = "TargetFrame", align = "TOPLEFT", xOff = -5, yOff = -34, width = 140, height = 38},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-EnemyHealth", align = "TOP", xOff = 10, yOff = -35},
     },
 	
 	["FreeingUpBags"] = {
-		tileHeight = 12, 
+		tileHeight = 20, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FullBackpack", align = "TOP", xOff = -70, yOff = -65},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
     },
 	
 	["Bags"] = {
-		tileHeight = 7, 
+		tileHeight = 10,
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 50},
-		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -150, yOff = 5, width = 200, height = 45},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -110, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Bag", align = "TOP", xOff = 10, yOff = -50},
     },
 	
 	["Talents"] = {
-		tileHeight = 12, 
+		tileHeight = 7, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "TalentMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Rep"] = {
-		tileHeight = 7, 
+		tileHeight = 6, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Reply"] = {
-		tileHeight = 7, 
+		tileHeight = 6, 
 		anchorData = {align = "LEFT", xOff = 25, yOff = -50},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Players"] = {
-        tileHeight = 7, 
+        tileHeight = 10, 
         anchorData = {align = "LEFT", xOff = 50, yOff = 150},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
-        callOut  = {parent = "TargetFrame", align = "TOPLEFT", xOff = -5, yOff = -5, width = 210, height = 80},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -115, bottomRight_xOff = -29, bottomRight_yOff = 15},
+--      callOut  = {parent = "TargetFrame", align = "TOPLEFT", xOff = -5, yOff = -5, width = 210, height = 80},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-DudeParty", align = "TOP", xOff = 0, yOff = -40},
     },
 	
 	["QuestLog"] = {
-		tileHeight = 7, 
+		tileHeight = 6, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "QuestLogMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Friends"] = {
 		tileHeight = 7, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "SocialsMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
 	},
 	
 	["Equip"] = {
+		tileHeight = 20, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
+		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-EquipItem", align = "TOP", xOff = 10, yOff = -50},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -29, bottomRight_yOff = 15},
+	},
+	
+	["Battleground1"] = {
+		tileHeight = 7, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
+		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
+	},
+
+	["Battleground2"] = {
+		tileHeight = 7, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
+		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
+	},	
+	
+	["Keyring"] = {
 		tileHeight = 7, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -18, bottomRight_yOff = 35},
+		callOut	= {parent = "KeyRingButton", align = "TOPLEFT", xOff = -8, yOff = 7, width = 35, height = 52},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
+	},
+	
+	["LFG"] = {
+		tileHeight = 7, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
+		callOut	= {parent = "LFDMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 15},
+	},
+	
+	["Food"] = {
+		tileHeight = 9, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -110, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Food01", align = "TOP", xOff = -60, yOff = -50},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Food02", align = "TOP", xOff = 10, yOff = -50},
+		imageData3 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Food03", align = "TOP", xOff = 80, yOff = -50},
+    },
+	
+	["Drink"] = {
+		tileHeight = 9, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -110, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Drink01", align = "TOP", xOff = -60, yOff = -50},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Drink02", align = "TOP", xOff = 10, yOff = -50},
+		imageData3 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Drink03", align = "TOP", xOff = 80, yOff = -50},
+    },
+	
+	["QuestGray"] = {
+		tileHeight = 18, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGray", align = "TOP", xOff = 30, yOff = -50},
+	},
+	
+	["Ranged"] = {
+		tileHeight = 12, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -120, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Shoot01", align = "TOP", xOff = -60, yOff = -50},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Shoot02", align = "TOP", xOff = 10, yOff = -50},
+		imageData3 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Shoot03", align = "TOP", xOff = 80, yOff = -50},
+    },
+	
+	["Trainer"] = {
+		tileHeight = 13, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TrainerCursor", align = "TOP", xOff = 0, yOff = -60},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
+	},
+	
+	["Vendor"] = {
+		tileHeight = 13, 
+		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCursor", align = "TOP", xOff = 0, yOff = -60},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
+	},
+	
+	["Professions"] = {
+		tileHeight = 14, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TrainerCursor", align = "TOP", xOff = 0, yOff = -60},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
+	},
+	
+	["Breath"] = {
+		tileHeight = 7, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -80, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-BreathBar", align = "TOP", xOff = 10, yOff = -40},
+	},
+	
+	["Fat"] = {
+		tileHeight = 7, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -80, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FatigueBar", align = "TOP", xOff = 10, yOff = -40},
+	},
+	
+	["Grouping"] = {
+		tileHeight = 14, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 15},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-DudeParty", align = "TOP", xOff = -50, yOff = -63},
+		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-GloveCursor", layer = "OVERLAY", align = "TOP", xOff = 40, yOff = -90},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
 	},
 };
 
@@ -420,13 +583,7 @@ end
 function TutorialFrame_Update(currentTutorial)
 	FlagTutorial(currentTutorial);
 	TutorialFrame.id = currentTutorial;
-	local title = _G["TUTORIAL_TITLE"..currentTutorial];
-	local text = _G["TUTORIAL"..currentTutorial];
-	if ( title and text) then
-		TutorialFrameTitle:SetText(title);
-		TutorialFrameText:SetText(text);
-	end
-	
+
 	local displayData = DISPLAY_DATA[ TUTORIAL_DATA[currentTutorial] ];
 	if ( not displayData ) then
 		displayData = DISPLAY_DATA["Base"];
@@ -452,13 +609,20 @@ function TutorialFrame_Update(currentTutorial)
 	TutorialFrameBottom:SetPoint("TOPLEFT", anchorParentLeft, "BOTTOMLEFT", 0, 0);
 	TutorialFrameBottom:SetPoint("TOPRIGHT", anchorParentRight, "TOPRIGHT", 0, 0);
 
-	if ( displayData.textBox) then
-		TutorialFrameText:SetPoint("TOPLEFT", TutorialFrame, "TOPLEFT", displayData.textBox.topLeft_xOff, displayData.textBox.topLeft_yOff);
-		TutorialFrameText:SetPoint("BOTTOMRIGHT", TutorialFrame, "BOTTOMRIGHT", displayData.textBox.bottomRight_xOff, displayData.textBox.bottomRight_yOff);
-	end
-	
 	local height = TUTORIALFRAME_TOP_HEIGHT + (displayData.tileHeight * TUTORIALFRAME_MIDDLE_HEIGHT) + TUTORIALFRAME_BOTTOM_HEIGHT;
 	TutorialFrame:SetSize(TUTORIALFRAME_WIDTH, height);
+
+	-- setup the text
+	local title = _G["TUTORIAL_TITLE"..currentTutorial];
+	local text = _G["TUTORIAL"..currentTutorial];
+	if ( title and text) then
+		TutorialFrameTitle:SetText(title);
+		TutorialFrameText:SetText(text);
+	end
+	if ( displayData.textBox) then
+		TutorialFrameTextScrollFrame:SetPoint("TOPLEFT", TutorialFrame, "TOPLEFT", displayData.textBox.topLeft_xOff, displayData.textBox.topLeft_yOff);
+		TutorialFrameTextScrollFrame:SetPoint("BOTTOMRIGHT", TutorialFrame, "BOTTOMRIGHT", displayData.textBox.bottomRight_xOff, displayData.textBox.bottomRight_yOff);
+	end
 
 	-- setup the callout
 	local callOut = displayData.callOut;
@@ -546,10 +710,9 @@ function TutorialFrame_Update(currentTutorial)
 end
 
 function TutorialFrame_ClearTextures()
-	TutorialFrame:Hide();
 	TutorialFrame:ClearAllPoints();
 	TutorialFrameBottom:ClearAllPoints();
-	TutorialFrameText:ClearAllPoints();
+	TutorialFrameTextScrollFrame:ClearAllPoints();
 	
 	TutorialFrameCallOutPulser:Stop();
 	TutorialFrameCallOut:ClearAllPoints();
@@ -613,6 +776,7 @@ function TutorialFrame_NewTutorial(tutorialID)
 		button.tooltip = _G["TUTORIAL_TITLE"..tutorialID];
 		button:Enable();
 	end
+	TutorialFrame_CheckBadge();
 end
 
 function TutorialFrame_AlertButton_OnClick(self)
@@ -632,10 +796,22 @@ function TutorialFrame_AlertButton_OnClick(self)
 			self:Disable();
 		end
 	end
+	TutorialFrame_CheckBadge();
 end
 
 function TutorialFrame_CheckIntro()
 	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
 		TutorialFrame_AlertButton_OnClick( TutorialFrameAlertButton );
+	end
+end
+
+function TutorialFrame_CheckBadge()
+	if( getn(TUTORIALFRAME_QUEUE) > 1 ) then
+		TutorialFrameAlertButtonBadge:Show();
+		TutorialFrameAlertButtonBadgeText:SetText( getn(TUTORIALFRAME_QUEUE) - 1 );
+		TutorialFrameAlertButtonBadgeText:Show();
+	else
+		TutorialFrameAlertButtonBadge:Hide();
+		TutorialFrameAlertButtonBadgeText:Hide();
 	end
 end

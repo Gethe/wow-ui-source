@@ -723,7 +723,7 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		SocialsMicroButton:ClearAllPoints();
 		SocialsMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);
 		
-		UpdateTalentButton();
+		UpdateMicroButtons();
 		
 	elseif ( skinName == "Mechanical" ) then
 	
@@ -736,7 +736,7 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		SocialsMicroButton:ClearAllPoints();
 		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
 		
-		UpdateTalentButton();
+		UpdateMicroButtons();
 	elseif ( skinName == "Natural" ) then
 	
 		for _, frame in pairs(MicroButtons) do
@@ -748,7 +748,7 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		SocialsMicroButton:ClearAllPoints();
 		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
 		
-		UpdateTalentButton();
+		UpdateMicroButtons();
 	end
 end
 

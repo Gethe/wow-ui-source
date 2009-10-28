@@ -327,6 +327,7 @@ function GroupLootFrame_DisableLootButton(button)
 end
 
 function GroupLootFrame_OnShow(self)
+	AlertFrame_FixAnchors();
 	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(self.rollID);
 	
 	if ( bindOnPickUp ) then
@@ -369,7 +370,7 @@ function GroupLootFrame_OnShow(self)
 end
 
 function GroupLootFrame_OnHide (self)
-	AchievementAlertFrame_FixAnchors();
+	AlertFrame_FixAnchors();
 end
 
 function GroupLootFrame_OnEvent(self, event, ...)

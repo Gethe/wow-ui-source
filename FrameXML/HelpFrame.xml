@@ -179,7 +179,7 @@
 					</Anchors>
 					<TexCoords left="0.00" right="1.00000" top="0.0" bottom="0.078125"/>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
+				<Texture file="Interface\HelpFrame\HelpFrame-BotLeftBig">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -191,7 +191,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+				<Texture file="Interface\HelpFrame\HelpFrame-BottomBig">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -203,7 +203,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
+				<Texture file="Interface\HelpFrame\HelpFrame-BotRightBig">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>

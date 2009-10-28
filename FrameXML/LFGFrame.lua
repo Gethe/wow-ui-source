@@ -36,22 +36,72 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	
+	self:RegisterEvent("LFG_OFFER_CONTINUE");
+	
+	--These just update states (roles changeable, buttons clickable, etc.)
+	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
+	self:RegisterEvent("LFG_PROPOSAL_SHOW");
+	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
+	self:RegisterEvent("LFG_ROLE_CHECK_HIDE");
+	self:RegisterEvent("LFG_BOOT_PROPOSAL_UPDATE");
+	self:RegisterEvent("LFG_ROLE_UPDATE");
+	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
+	self:RegisterEvent("LFG_PROPOSAL_FAILED");
 end
 
+LFGQueuedForList = {};
 function LFGEventFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_UPDATE" ) then
-		LFGQueuedForList = GetLFGQueuedList();
-		LFG_UpdateFramesIfShown();
+		LFG_UpdateQueuedList();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		LFGQueuedForList = GetLFGQueuedList();
-		LFG_UpdateFramesIfShown();
+		LFG_UpdateQueuedList();
 		LFG_UpdateRoleCheckboxes();
 	elseif ( event == "LFG_LOCK_INFO_RECEIVED" ) then
 		LFGLockList = GetLFDChoiceLockedState();
 		LFG_UpdateFramesIfShown();
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+		LFG_UpdateQueuedList();
 		LFG_UpdateFramesIfShown();
+	elseif ( event == "LFG_OFFER_CONTINUE" ) then
+		local displayName, lfgID, typeID = ...;
+		local dialog = StaticPopup_Show("LFG_OFFER_CONTINUE", NORMAL_FONT_COLOR_CODE..displayName.."|r");
+		if ( dialog ) then
+			dialog.data = lfgID;
+			dialog.data2 = typeID;
+		end
 	end
+	
+	LFG_UpdateRolesChangeable();
+	LFG_UpdateFindGroupButtons();
+	LFG_UpdateLockedOutPanels();
+end
+
+function LFG_UpdateLockedOutPanels()
+	local mode, submode = GetLFGMode();
+	
+	if ( mode == "listed" ) then
+		LFDQueueFrameNoLFDWhileLFR:Show();
+	else
+		LFDQueueFrameNoLFDWhileLFR:Hide();
+	end
+	
+	if ( mode == "queued" or mode == "proposal" or mode == "rolecheck" ) then
+		LFRQueueFrameNoLFRWhileLFD:Show();
+	else
+		LFRQueueFrameNoLFRWhileLFD:Hide();
+	end
+end
+
+function LFG_UpdateFindGroupButtons()
+	LFDQueueFrameFindGroupButton_Update();
+	LFRQueueFrameFindGroupButton_Update();
+end
+
+function LFG_UpdateQueuedList()
+	GetLFGQueuedList(LFGQueuedForList);
+	LFG_UpdateFramesIfShown();
+	MiniMapLFG_UpdateIsShown();
 end
 
 function LFG_UpdateFramesIfShown()
@@ -160,8 +210,8 @@ function LFG_UpdateRoleCheckboxes()
 end
 
 function LFG_UpdateRolesChangeable()
-	local mode, subMode = GetLFDMode();
-	if ( mode == "queued" or mode == "rolecheck" ) then
+	local mode, subMode = GetLFGMode();
+	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" ) then
 		LFG_DisableRoleButton(LFDQueueFrameRoleButtonTank, true);
 		LFG_DisableRoleButton(LFRQueueFrameRoleButtonTank, true);
 		
@@ -179,11 +229,6 @@ end
 
 --More functions
 
-function LFG_IsEmpowered()
-	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
-		not (IsPartyLeader() or IsRaidLeader() or IsRaidOfficer()) );
-end
-
 function GetTexCoordsForRole(role)
 	local textureHeight, textureWidth = 256, 256;
 	local roleHeight, roleWidth = 67, 67;
@@ -194,7 +239,7 @@ function GetTexCoordsForRole(role)
 		return GetTexCoordsByGrid(1, 2, textureWidth, textureHeight, roleWidth, roleHeight);
 	elseif ( role == "HEALER" ) then
 		return GetTexCoordsByGrid(2, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "DAMAGE" ) then
+	elseif ( role == "DAMAGER" ) then
 		return GetTexCoordsByGrid(2, 2, textureWidth, textureHeight, roleWidth, roleHeight);
 	else
 		error("Unknown role: "..tostring(role));
@@ -209,7 +254,7 @@ function GetBackgroundTexCoordsForRole(role)
 		return GetTexCoordsByGrid(2, 1, textureWidth, textureHeight, roleWidth, roleHeight);
 	elseif ( role == "HEALER" ) then
 		return GetTexCoordsByGrid(1, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "DAMAGE" ) then
+	elseif ( role == "DAMAGER" ) then
 		return GetTexCoordsByGrid(3, 1, textureWidth, textureHeight, roleWidth, roleHeight);
 	else
 		error("Role does not have background: "..tostring(role));
@@ -244,6 +289,7 @@ function LFGDungeonList_Setup()
 		LFGLockList = GetLFDChoiceLockedState(LFGLockList);
 		
 		LFDQueueFrame_Update();
+		LFRQueueFrame_Update();
 		return true;
 	end
 	return false;

@@ -70,10 +70,10 @@ function RaidFrame_Update()
 		else
 			RaidFrameConvertToRaidButton:Disable();
 		end
-		RaidFrameRaidDescription:Show();
+		RaidFrameNotInRaid:Show();
 	else
 		RaidFrameConvertToRaidButton:Hide();
-		RaidFrameRaidDescription:Hide();
+		RaidFrameNotInRaid:Hide();
 	end
 
 	if ( RaidGroupFrame_Update ) then
