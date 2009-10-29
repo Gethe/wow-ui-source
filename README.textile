@@ -6,6 +6,7 @@ The latest patch notes can always be found at http://www.worldofwarcraft.com/pat
 
 h2. General
 
+* Quel'Delar Quest Chain: The Battered Hilt, the item needed to start this quest line, can now be purchased from all glyph vendors on the public test realms.
 * Character Creation: The descriptions for races, classes, and race/class combinations have been improved to provide new players with a better idea of the roles and advantages of each class and race.
 * Dazed: Creatures attacking a player from behind can no longer cause players level 1-5 to be dazed, and have a reduced chance to cause players level 6-10 to be dazed.
 * Knockbacks no longer dismount players. If on a flying mount, you will be knocked back a short distance before being able to resume flying.
@@ -13,7 +14,6 @@ h2. General
 * Many of the tail sweeps with knockback effects will no longer hit players' pets.
 * Level 1 characters no longer start with food or water in their inventory.
 * Attack is now called Auto Attack. The tooltip has been changed to reflect that the player will continue automatically attacking a target.
-* Quel'Delar Quest Chain: The Battered Hilt, the item needed to start this quest line, can now be purchased from all glyph vendors on the public test realms.
 
 h3. Icecrown Citadel
 
@@ -35,12 +35,13 @@ h2. Races: General
 
 * Orc and troll shamans now have their own unique totem art.
 * Racial Attribute Bonuses: These bonuses have been recalibrated to even out the amount of starting health on the various races. All races start with a standardized level of stamina, except for orcs, dwarves, and tauren who now start with 1 extra point of stamina. For each class, bonuses and penalties to all attributes have been adjusted so that each race has an equal attribute total.
+* Will of the Forsaken now shares a 45-second cooldown with similar effects, including the Medallion of the Horde, Titan-Forged runes, Insignia of the Horde, etc.
 
 h2. PvP
 
 h3. Battlegrounds
 
-* Battleground Experience: Battleground experience gained is now based on the level of the player gaining experience, rather than the highest possible player level in that Battleground.The achievements to get exalted with the Warsong Gulch, Arathi Basin, and Alterac Valley factions have been removed from their respective Master of meta-achievements. Special titles will be offered to those who reach exalted with these factions.
+* Battleground Experience: Battleground experience gained is now based on the level of the player gaining experience, rather than the highest possible player level in that Battleground.
 
 h4. Wintergrasp
 
@@ -75,7 +76,7 @@ h4. Balance
 
 h4. Feral Combat
 
-* Predatory Strikes: The Predatory Swiftness buff from this talent now has a 5-second duration.
+* Predatory Strikes: The Predatory Swiftness buff from this talent now has an 8-second duration.
 
 h4. Restoration
 
@@ -138,12 +139,18 @@ h3. Pets
 
 h2. Paladins
 
+* Sacred Shield: The damage absorption effect from this ability now triggers only once every 30 seconds.
+
 h3. Talents
+
+h4. Holy
+
+* Infusion of Light: This talent now also reduces the cooldown on the effect of Sacred Shield by 12/24 seconds.
 
 h4. Protection
 
-* Divine Guardian: This talent no longer increases the amount of damage transferred to the paladin from Divine Sacrifice. Instead it causes all raid and party members to take 10/20% reduced damage while Divine Sacrifice is active.
-* Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, thedamage transferred to the paladin is now reduced by 50% before being applied to the paladin. Finally, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases. Finally, damage which reduces the paladin's health below 20% now cancels the effect early.
+* Divine Guardian: This talent no longer increases the amount of damage transferred to the paladin from Divine Sacrifice. Instead it causes all raid and party members to take 10/20% reduced damage while Divine Sacrifice is active. In addition, the duration has been changed to 6 seconds, however the effect does not terminate when Divine Sacrifice is removed before its full duration.
+* Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases. Finally, damage which reduces the paladin's health below 20% now cancels the effect early.
 
 h2. Priests
 
@@ -165,7 +172,7 @@ h3. Pet
 h2. Rogues
 
 * Dual Wield: Rogues now know this ability upon logging into the game at level 1.
-* Stealth: This ability no longer has multiple ranks. While active, the single rank of this ability (available at level 1) allows rogues to move at 70% movement speed.Vanish: For the first half second after this ability is used, neither Vanish nor Stealth can be broken by taking damage or being the victim of a hostile spell or ability.
+* Stealth: This ability no longer has multiple ranks. While active, the single rank of this ability (available at level 1) allows rogues to move at 70% movement speed.
 
 h2. Shamans
 
@@ -230,14 +237,14 @@ h2. User Interface
 * Many of the default Interface Options settings have been changed for greater ease of use by new players. Existing players who create new characters may want to review the Interface Options in the event that the default settings feel different.
 * Tutorial System: The tutorial pop-ups are now larger, contain images, and better try to direct players to the relevant locations or user interface elements on the screen. In addition, several new tips have been added, while some existing tips will now appear at more appropriate times for new players.
 * Dungeon & Raid Difficult Display: A group's dungeon or raid difficulty setting will now be displayed via an icon off of the mini-map.
-* Group Disenchanting Option: In addition to rolling "Need" or "Greed" on items, players now have the option to elect for an item to be disenchanted. "Disenchant" works exactly like "Greed" except if a player wins the "Greed" roll, they will receive the disenchanted materials instead. Players who choose "Need" will always win the item and will always beat those that choose "Greed" or "Disenchant."
+* Group Disenchanting Option: In addition to rolling Need or Greed on items, players now have the option to elect for an item to be disenchanted. Disenchant works exactly like Greed except if a player wins the Greed roll, they will receive the disenchanted materials instead. Players who choose Need will always win the item and will always beat those that choose Greed or Disenchant.
 * Lag Reports: Players can now report high latency or lag by accessing the Help Request menu.
 * Non spell-based tracking now persists through logout.
 * Any party member may mark targets (this does not apply to raid groups).
-* Users will be warned when their talents are reset due to a new patch.
+* Players will be warned when their talents are reset due to a new patch.
 * "/Settitle" command has been added.
 * Instant quest text is on by default.
-* Tentative" status added for calendar responses.
+* Tentative status added for calendar responses.
 * Players below level 10 may not join raids.
 * Ignore list expanded to 50 to match the friends list.
 * Unit frames added for special encounters.
@@ -250,20 +257,57 @@ h3. Quest Tracking Feature
 
 * This system is currently under development and is not fully functional.
 
-h3. Looking For Group System
+h3. Dungeon System
 
-* This feature is undergoing several improvements and is not available for testing at this time.
+This feature has replaced the Looking For Group tool and provides all-new dungeon party creation functionality.
+
+* Players can join as individuals, as a full group, or a partial group to look for additional party members.
+* Groups using this tool will be able to teleport directly to the selected instance. Upon leaving the instance, players will be returned to their original location. If any party member needs to temporarily leave the instance for reagents or repairs, they will have the option to teleport back to the instance.
+* Players can choose the Random Dungeon option.
+** The Heroic Wrath of the Lich King Daily Random Dungeon option will award two Emblems of Frost no more than once a day.
+** The normal Wrath of the Lich King Daily Random Dungeon option will award two Emblems of Triumph no more than once a day.
+** Continuing to complete Wrath of the Lich King Heroic instances using the Daily Random Dungeon option will award players two additional Emblems of Triumph each time.
+** Daily Heroic and normal dungeon quests have been removed. These quests have been replaced with weekly raid quests (see the "Quests" section for details).
+** Level-appropriate rewards will be offered to players who choose the Random Dungeon option for pre-Wrath of the Lich King dungeons.
+** Players can be placed in a group for a random dungeon no more than once every 15 minutes.
+** Random Dungeon rewards will be placed in each player's inventory automatically upon completion of the dungeon (final boss killed). A pop-up notification will display any rewards earned through the Dungeon System.
+* Instead of choosing a random dungeon, players can also choose specific dungeons appropriate for their level range. Multiple instances can be selected at one time. The feature no longer limits the choice to look for only 3 dungeon groups at one time.
+
+h4. Pick-Up Groups
+
+* Cross-realm instances are now available and use an improved matchmaking system to assist players in looking for additional party members. As with Battlegrounds, the realms in each Battlegroup are connected.
+* As part of the matchmaking system, some of the more difficult dungeons will have a minimum gear requirement. Players also need to meet the requirements for dungeons that require attunement, such as keys or quests. If a player does not meet the requirements for a particular dungeon, a lock icon will be displayed next to that dungeon. Hovering over this icon will display the requirements which have not been met.
+* Only conjured items and loot dropped in a dungeon for which other party members are eligible can be traded between players from different realms.
+* A Vote Kick feature will be available in the event a member of a party is not performing to the expectations of the other members.
+* Players who leave the group prematurely are subject to a Deserter debuff preventing them from using the Dungeon System tool for 15 minutes.
+* If an existing group loses a member, the leader will be asked if he or she wants to continue the dungeon. Choosing to continue will automatically place the group back into the Dungeon System queue.
+* A Player will not be placed in a group with people on his or her Ignore list.
+* Players who take part in groups who have one or more members who have been matched with them randomly from within the Dungeon System will receive extra rewards, up to and including the coveted Perky Pug non-combat pet. The more random players with whom one groups, the faster the pet can be obtained.
+* The Need Before Greed loot system will be the unalterable default looting system for pick-up groups in the Dungeon System and has been updated.
+** Need Before Greed will now recognize gear appropriate for a class in three ways: the class must be able to equip the item, pure melee will be unable to roll on spell power items, and classes are limited to their dominant armor type (ex. paladins for plate). All items will still be available via Greed rolls as well as the new Disenchant option should no member be able to use the item.
+** Players will be able to roll on items with a required minimum level higher than a player's current level.
+
+h3. Looking For Raid
+
+There is a new Looking For Raid option available to players that can be accessed via the Raid Information screen in the interface or by typing "/LFR."
+
+* Players will be able to browse the system manually for any other players looking for a raid dungeon group.
+* While browsing LFR players may sort the list ascending or descending by left-clicking the following headers: Name, Level, Class, Tank Role, Healer Role, and Damage Role. The crown is the Leader Role (representing a raid group with 2 or more people). Players can left-click on this header to sort the list with groups at the top or at the bottom.
+* Hovering over players listed in LFR will display their name, class, level, roles and comments. Hovering over a raid/group will display the leader's name, the raid information (number of people the raid), comments, if there are any bosses dead (and which ones), and if there are any friends from your Friends list or ignored players from your Ignore list in the raid group.
+* The Looking For Group chat channel has returned and can be accessed in all major cities (similar to the Trade chat channel) without the use of the Dungeon system interface.
+* Players may only be queued or listed in one of the following systems at a time: Dungeons, LFR, Battlegrounds, or Arenas.
+* Ignore List: The amount of characters a person can ignore has been increased to 50. In addition, players on other realms can be placed on the Ignore List.
 
 h3. Buffs and Debuffs: This is a new section added to Interface Options.
 
 * New option - Castable Debuffs: Enabling this will cause only debuffs you have cast on an enemy target to appear.
-* New option - Consolidate Buffs: Enabling this adds a buff consolidation box near the mini-map. Very short term buffs (e.g. Replenishment) and very long term buffs (e.g. Prayer of Fortitude) are filtered into the buff box. The icons are stacked here, but they can still be seen by moving the mouse cursor over the buff box. Long term buffs will move out of the box when they are about to expire. Buffs such as important procs (e.g. Art of War, Lightning Overload), cooldowns (e.g. Bloodlust / Heroism, Combustion) or limited in range (e.g. totems and paladin auras) are always displayed.
+* New option - Consolidate Buffs: Enabling this adds a buff consolidation box near the mini-map. Very short term buffs (e.g. Replenishment) and very long term buffs (e.g. Prayer of Fortitude) are filtered into the buff box. The icons are stacked here, but they can still be seen by moving the mouse cursor over the buff box. Long term buffs will move out of the box when they are about to expire. Buffs such as important procs (e.g. Art of War, Maelstrom Weapon), cooldowns (e.g. Bloodlust / Heroism, Combustion) or limited in range (e.g. totems and paladin auras) are always displayed.
 
 h3. Unit Nameplates
 
 * The range at which players can see unit nameplates has been increased by 40 yards.
 * Unit nameplates are now subject to line-of-sightlimitations in certain situations (this does not pertain to objects like Arena pillars or bridges).
-* Players can now adjust select unit nameplate display settings listed below under Interface Options via the "Names" tab.
+* Players can now adjust select unit nameplate display settings listed below under Interface Options via the Names tab.
 ** Friendly/enemy pet nameplates can be toggled.
 ** Enemy totem nameplates can be toggled (friendly totem nameplates are never displayed).
 ** Players can choose whether or not unit nameplates overlap.
@@ -321,6 +365,7 @@ h2. Achievements
 
 h2. Reputation
 
+* Commendation Badges which award reputation with various Wrath of the Lich King factions can be purchased with Emblems of Triumph in Dalaran.
 * Gaining reputation with the Ashen Verdict in Icecrown Citadel will grant players access to upgradeable rings from Ormus the Penitent. Players can switch between the type of ring (melee/caster/tank/healer) at any point in the upgrade path for 200g.
 * The following reputations have been sped up by roughly 30%:
 ** Argent Crusade
@@ -337,8 +382,9 @@ h2. Reputation
 h2. Items
 
 * Arena Set Bonuses: The two-piece set bonus for all Wrath of the Lich King Arena sets now provides 100 resilience and 29 spell power or 50 attack power. The current four-piece bonus will remain, however it also now provides 88 spell power or 150 attack power.
-* Death Knight Tier-9 4-Piece Bonus (Damage-Dealing):: This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
+* Death Knight Tier-9 4-Piece Bonus (Damage-Dealing): This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
 * Hatchlings: Leaping, Darting, Razormaw, and Ravasaur Hatchlings no longer drop from their associated rare creatures. Instead, there are now rare nests that spawn which contain these hatchlings. For example, the Leaping Hatchling can now be found in Takk's Nest rather than as a drop from Takk the Leaper.
+* Sceptor of Celebras: Since this item is no longer needed as a key, Celebras will no longer give one out to a player who loses it. The item can now be sold or disenchanted as normal.
 * Shaman Tier-9 4-Piece Set Bonus (Elemental): This set bonus now places a damage-over-time effect on the target when Lava Burst deals damage instead of increasing the size of the Lava Burst.
 
 h3. Glyphs
