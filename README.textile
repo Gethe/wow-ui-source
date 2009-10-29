@@ -6,7 +6,9 @@ The latest patch notes can always be found at http://www.worldofwarcraft.com/pat
 
 h2. General
 
+* Character Creation: The descriptions for races, classes, and race/class combinations have been improved to provide new players with a better idea of the roles and advantages of each class and race.
 * Dazed: Creatures attacking a player from behind can no longer cause players level 1-5 to be dazed, and have a reduced chance to cause players level 6-10 to be dazed.
+* Knockbacks no longer dismount players. If on a flying mount, you will be knocked back a short distance before being able to resume flying.
 * The existing /welcome emote now greets/welcomes targets (character says "hello"), while the new /yw is for saying "you're welcome."
 * Many of the tail sweeps with knockback effects will no longer hit players' pets.
 * Level 1 characters no longer start with food or water in their inventory.
@@ -38,8 +40,7 @@ h2. PvP
 
 h3. Battlegrounds
 
-* Battleground Experience: Battleground experience gained is now based on the level of the player gaining experience, rather than the highest possible player level in that Battleground.
-* The achievements to get exalted with the Warsong Gulch, Arathi Basin, and Alterac Valley factions have been removed from their respective Master of meta-achievements. Special titles will be offered to those who reach exalted with these factions.
+* Battleground Experience: Battleground experience gained is now based on the level of the player gaining experience, rather than the highest possible player level in that Battleground.The achievements to get exalted with the Warsong Gulch, Arathi Basin, and Alterac Valley factions have been removed from their respective Master of meta-achievements. Special titles will be offered to those who reach exalted with these factions.
 
 h4. Wintergrasp
 
@@ -68,9 +69,17 @@ h2. Druids
 
 h3. Talents
 
+h4. Balance
+
+* Force of Nature: Health on the treants has been increased.
+
+h4. Feral Combat
+
+* Predatory Strikes: The Predatory Swiftness buff from this talent now has a 5-second duration.
+
 h4. Restoration
 
-* Gift of the Earthmother: Redesigned. This talent now increases spell haste by 2/4/6/8/10% instead of its previous effect.
+* Gift of the Earthmother: Redesigned. This talent now increases spell haste and reduces the base global cooldown by 2/4/6/8/10% instead of its previous effect.
 
 h3. Pets
 
@@ -124,6 +133,7 @@ h4. Frost
 h3. Pets
 
 * Avoidance (passive): Now reduces the damage your pets take from area-of-effect damage by 90%, but no longer applies to area-of-effect damage caused by other players.
+* Mirror Image: Health on the mirror images has been increased.
 * Water Elemental: Waterbolt mana cost reduced by 80%.
 
 h2. Paladins
@@ -133,7 +143,7 @@ h3. Talents
 h4. Protection
 
 * Divine Guardian: This talent no longer increases the amount of damage transferred to the paladin from Divine Sacrifice. Instead it causes all raid and party members to take 10/20% reduced damage while Divine Sacrifice is active.
-* Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, the damage transferred to the paladin is now reduced by 50% before being applied to the paladin. Finally, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases.
+* Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, thedamage transferred to the paladin is now reduced by 50% before being applied to the paladin. Finally, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases. Finally, damage which reduces the paladin's health below 20% now cancels the effect early.
 
 h2. Priests
 
@@ -155,8 +165,7 @@ h3. Pet
 h2. Rogues
 
 * Dual Wield: Rogues now know this ability upon logging into the game at level 1.
-* Stealth: This ability no longer has multiple ranks. While active, the single rank of this ability (available at level 1) allows rogues to move at 70% movement speed.
-* Vanish: For the first half second after this ability is used, neither Vanish nor Stealth can be broken by taking damage or being the victim of a hostile spell or ability.
+* Stealth: This ability no longer has multiple ranks. While active, the single rank of this ability (available at level 1) allows rogues to move at 70% movement speed.Vanish: For the first half second after this ability is used, neither Vanish nor Stealth can be broken by taking damage or being the victim of a hostile spell or ability.
 
 h2. Shamans
 
@@ -192,7 +201,7 @@ h4. Demonology
 
 * Decimation: Redesigned. When Shadowbolt, Incinerate or Soul Fire hit a target that is at or below 35% health, the cast time of Soul Fire is reduced by 20/40% for 8 seconds. Soul Fires cast under the effect of Decimation cost no shards.
 * Demonic Pact: This talent now also increases the warlock's spell damage by 1/2/3/4/5%.
-* Molten Core: Redesigned. This talent now increases the duration of Immolate by 3/6/9 seconds and provides a 4/8/12% chance to gain the Molten Core effect when Corruption deals damage. The Molten Core effect empowers the next 3 Incinerate or Soul Fire spells cast within 15 seconds (Incinerate: increases damage done by 6/12/18% and reduces cast time by 10/20/30%; Soul Fire: increases damage done by 6/12/18% and increases critical strike chance by 5/10/15%).
+* Molten Core: Redesigned. This talent now increases the duration of Immolate by 3/6/9 seconds and provides a 4/8/12% chance to gain the Molten Core effect when Corruption deals damage. The Molten Core effect empowers the next 3 Incinerate or Soul Fire spells cast within 15 seconds (Incinerate: increases damage done by 6/12/18% and reduces cast time by 10/20/30%; Soul Fire: increases damage done by 6/12/18% and increases critical strike chance by 5/10/15%). Molten Core now has a new spell effect.
 
 h4. Destruction
 
@@ -218,6 +227,11 @@ h4. Protection
 
 h2. User Interface
 
+* Many of the default Interface Options settings have been changed for greater ease of use by new players. Existing players who create new characters may want to review the Interface Options in the event that the default settings feel different.
+* Tutorial System: The tutorial pop-ups are now larger, contain images, and better try to direct players to the relevant locations or user interface elements on the screen. In addition, several new tips have been added, while some existing tips will now appear at more appropriate times for new players.
+* Dungeon & Raid Difficult Display: A group's dungeon or raid difficulty setting will now be displayed via an icon off of the mini-map.
+* Group Disenchanting Option: In addition to rolling "Need" or "Greed" on items, players now have the option to elect for an item to be disenchanted. "Disenchant" works exactly like "Greed" except if a player wins the "Greed" roll, they will receive the disenchanted materials instead. Players who choose "Need" will always win the item and will always beat those that choose "Greed" or "Disenchant."
+* Lag Reports: Players can now report high latency or lag by accessing the Help Request menu.
 * Non spell-based tracking now persists through logout.
 * Any party member may mark targets (this does not apply to raid groups).
 * Users will be warned when their talents are reset due to a new patch.
@@ -239,6 +253,11 @@ h3. Quest Tracking Feature
 h3. Looking For Group System
 
 * This feature is undergoing several improvements and is not available for testing at this time.
+
+h3. Buffs and Debuffs: This is a new section added to Interface Options.
+
+* New option - Castable Debuffs: Enabling this will cause only debuffs you have cast on an enemy target to appear.
+* New option - Consolidate Buffs: Enabling this adds a buff consolidation box near the mini-map. Very short term buffs (e.g. Replenishment) and very long term buffs (e.g. Prayer of Fortitude) are filtered into the buff box. The icons are stacked here, but they can still be seen by moving the mouse cursor over the buff box. Long term buffs will move out of the box when they are about to expire. Buffs such as important procs (e.g. Art of War, Lightning Overload), cooldowns (e.g. Bloodlust / Heroism, Combustion) or limited in range (e.g. totems and paladin auras) are always displayed.
 
 h3. Unit Nameplates
 
@@ -279,6 +298,10 @@ h3. First Aid
 
 * The training costs for most bandages have been reduced.
 
+h3. Fishing
+
+* The all-new Kalu'ak Fishing Derby, a test of fishing skill with a healthy dash of luck, has come to Northrend! Every Wednesday beginning at 8 PM players can try to catch the elusive Blacktip Shark. Elder Clearwater sits in Dalaran for one hour awaiting the return of the quickest, most experienced fisher to bring him this shark. This champion fisher will be rewarded in-kind for returning with the first catch. Those who aren't able to return with the first catch will still receive just reward for getting the Blacktip Shark to Elder Clearwater before he takes his leave. It is said that these sharks' favorite meal are the bite-sized Pygmy Suckerfish. Perhaps a hook in their waters will do the trick.
+
 h3. Mining
 
 * Enchanted Thorium: This ability now uses the Mining skill and is learned from trainers at a skill level of 250.
@@ -289,6 +312,12 @@ h2. Quests
 * For the various Icecrown Bomber quests at Aldur'thar: The Desolation Gate, players can now choose to eject from their bomber seats mid-run. If you do so, a rescue vehicle will transport your character back to the safety of your infra-green platform.
 * Azure Drakes and Dragons will now attack back when attacked by characters not riding Wyrmrest Defenders.
 * Brittle Revenants, quest creatures fought for the Sons of Hodir daily quest "Hot and Cold," no longer cast Shield Slam.
+
+h2. Achievements
+
+* The Achievements to get exalted with the Warsong Gulch, Arathi Basin, and Alterac Valley factions have been removed from their respective "Master of" Meta-Achievements. Special titles will be offered to those who reach exalted with these factions.
+* "The Party's Over" has been removed from Achievements and is no longer a part of the "Glory of the Hero" Meta-Achievement.
+* "Master Angler of Stranglethorn" has been changed to "Master Angler of Azeroth" and can be achieved by winning either the Kalu'ak Fishing Derby or the Stranglethorn Fishing Extravaganza.
 
 h2. Reputation
 
@@ -307,8 +336,10 @@ h2. Reputation
 
 h2. Items
 
-* Death Knight Tier-9 4-Piece Bonus: This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
+* Arena Set Bonuses: The two-piece set bonus for all Wrath of the Lich King Arena sets now provides 100 resilience and 29 spell power or 50 attack power. The current four-piece bonus will remain, however it also now provides 88 spell power or 150 attack power.
+* Death Knight Tier-9 4-Piece Bonus (Damage-Dealing):: This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
 * Hatchlings: Leaping, Darting, Razormaw, and Ravasaur Hatchlings no longer drop from their associated rare creatures. Instead, there are now rare nests that spawn which contain these hatchlings. For example, the Leaping Hatchling can now be found in Takk's Nest rather than as a drop from Takk the Leaper.
+* Shaman Tier-9 4-Piece Set Bonus (Elemental): This set bonus now places a damage-over-time effect on the target when Lava Burst deals damage instead of increasing the size of the Lava Burst.
 
 h3. Glyphs
 
