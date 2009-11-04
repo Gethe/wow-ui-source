@@ -415,6 +415,18 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
+									<Size>
+										<AbsDimension x="19" y="19"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="7" y="-33"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>

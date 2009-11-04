@@ -2401,6 +2401,16 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 
 		local type, difficulty;
 		self.name, type, difficulty, self.difficultyName = GetInstanceInfo();
+
+		self.extraFrame:SetAllPoints(self.text)
+		self.extraFrame:Show()
+		self.extraFrame:SetScript("OnEnter", InstanceLock_OnEnter)
+		self.extraFrame:SetScript("OnLeave", GameTooltip_Hide)
+		
+	end,
+	OnHide = function(self)
+		self.extraFrame:SetScript("OnEnter", nil)
+		self.extraFrame:SetScript("OnLeave", nil)
 	end,
 	OnUpdate = function(self, elapsed)
 		local lockTimeleft = self.lockTimeleft - elapsed;
@@ -2415,8 +2425,14 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		self.lockTimeleft = lockTimeleft;
 
 		local name = GetDungeonNameWithDifficulty(self.name, self.difficultyName);
+
+		-- Set dialog message using information that describes which bosses are still around
 		local text = _G[self:GetName().."Text"];
-		text:SetFormattedText((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
+		local lockstring = string.format((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
+		local time, extending;
+		time, extending, self.extraFrame.encountersTotal, self.extraFrame.encountersComplete = GetInstanceLockTimeRemaining();
+		local bosses = string.format(BOSSES_KILLED, self.extraFrame.encountersComplete, self.extraFrame.encountersTotal);
+		text:SetFormattedText(INSTANCE_LOCK_SEPARATOR, lockstring, bosses);
 
 		-- make sure the dialog fits the text
 		StaticPopup_Resize(self, "INSTANCE_LOCK");
@@ -3002,11 +3018,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		if ( info.closeButtonIsHide ) then
 			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-HideButton-Up");
 			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-HideButton-Down");
-			closeButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-HideButton-Highlight");
 		else
 			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up");
 			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down");
-			closeButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight");
 		end
 		closeButton:Show();
 	else
@@ -3362,6 +3376,7 @@ function StaticPopup_OnHide(self)
 	if ( OnHide ) then
 		OnHide(self, self.data);
 	end
+	self.extraFrame:Hide();
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", nil);
 	end

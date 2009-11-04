@@ -561,14 +561,29 @@
 					<AbsDimension x="115" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="15"/>
+							<AbsDimension x="-3" y="15"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick function="LFDRoleCheckPopupAccept_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="DECLINE">
+				<Size>
+					<AbsDimension x="115" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFDRoleCheckPopupDecline_OnClick"/>
 				</Scripts>
 			</Button>
 			<Frame name="$parentDescription">

@@ -449,18 +449,51 @@ function MiniMapTrackingShineFadeOut()
 	UIFrameFadeOut(MiniMapTrackingButtonShine, 0.5);
 end
 						
+local selectedRaidDifficulty;
+local allowedRaidDifficulty;
 function MiniMapInstanceDifficulty_OnEvent(self)
-	local _, instanceType, difficulty, _, maxPlayers = GetInstanceInfo();	
-	if ( ( instanceType == "party" or instanceType == "raid" ) and not ( difficulty == 1 and maxPlayers == 5 ) ) then
-		local yAdj = 0;
-		if ( difficulty == 1 ) then
-			yAdj = 0.5;
-		end		
-		MiniMapInstanceDifficultyTexture:SetTexCoord(0.05078125, 0.1953125, 0.0703125 + yAdj, 0.4140625 + yAdj);
+	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
+	if ( ( instanceType == "party" or instanceType == "raid" ) and not ( difficulty == 1 and maxPlayers == 5 ) ) then		
+		local isHeroic = false;
+		if ( instanceType == "party" and difficulty == 2 ) then
+			isHeroic = true;
+		elseif ( instanceType == "raid" ) then
+			if ( isDynamicInstance ) then
+				selectedRaidDifficulty = difficulty;
+				if ( playerDifficulty == 1 ) then
+					selectedRaidDifficulty = selectedRaidDifficulty + 2;
+					isHeroic = true;
+				end
+				-- if modified difficulty is normal then you are allowed to select heroic, and vice-versa
+				if ( selectedRaidDifficulty == 1 ) then
+					allowedRaidDifficulty = 3;
+				elseif ( selectedRaidDifficulty == 2 ) then
+					allowedRaidDifficulty = 4;
+				elseif ( selectedRaidDifficulty == 3 ) then
+					allowedRaidDifficulty = 1;
+				elseif ( selectedRaidDifficulty == 4 ) then
+					allowedRaidDifficulty = 2;
+				end
+				allowedRaidDifficulty = "RAID_DIFFICULTY"..allowedRaidDifficulty;
+			elseif ( difficulty > 2 ) then
+				isHeroic = true;
+			end
+		end
+
 		MiniMapInstanceDifficultyText:SetText(maxPlayers);
-		MiniMapInstanceDifficultyText:SetPoint("CENTER", -1, -7 + yAdj * 24);
+		if ( isHeroic ) then
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0.05078125, 0.1953125, 0.0703125, 0.4140625);
+			MiniMapInstanceDifficultyText:SetPoint("CENTER", -1, -7);			
+		else
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0.05078125, 0.1953125, 0.5703125, 0.9140625);
+			MiniMapInstanceDifficultyText:SetPoint("CENTER", -1, 5);				
+		end
 		self:Show();
 	else
 		self:Hide();
 	end
+end
+
+function _GetPlayerDifficultyMenuOptions()
+	return selectedRaidDifficulty, allowedRaidDifficulty;
 end

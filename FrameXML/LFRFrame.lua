@@ -16,15 +16,40 @@ LFR_BROWSE_AUTO_REFRESH_TIME = 20;
 
 function LFRFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_LFG_LIST");
+	self:RegisterEvent("LFG_UPDATE");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	
 	PanelTemplates_SetNumTabs(self, 2);
 	LFRFrame_SetActiveTab(1);
+	
+	self.lastInGroup = GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
 end
 
 function LFRFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_LFG_LIST" ) then
 		if ( LFRBrowseFrame:IsVisible() ) then
 			LFRBrowseFrameList_Update();
+		end
+	elseif ( event == "LFG_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
+		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
+		local inGroup = GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
+		if ( inGroup ~= self.lastInGroup ) then
+			self.lastInGroup = inGroup;
+			LFRQueueFrameComment:SetText("");
+			LFRQueueFrameCommentExplanation:Show();
+			LFRQueueFrameComment:ClearFocus();
+			SetLFGComment("");
+		end
+		if ( not LFG_IsEmpowered() or (not LFRQueueFrameComment:HasFocus() and LFRQueueFrameComment:GetText() == "") ) then
+			if ( joined ) then
+				LFRQueueFrameComment:SetText(lfgComment);
+				if ( strtrim(lfgComment) == "" ) then
+					LFRQueueFrameCommentExplanation:Show();
+				else
+					LFRQueueFrameCommentExplanation:Hide();
+				end
+			end
+			LFRQueueFrameComment:ClearFocus();
 		end
 	end
 end
@@ -62,6 +87,10 @@ function LFR_CanQueueForLockedInstances()
 	return GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
 end
 
+function LFR_CanQueueForMultiple()
+	return (GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0);
+end
+
 function LFRQueueFrame_SetRoles()
 	local leader, tank, healer, damage = GetLFGRoles();
 	
@@ -82,10 +111,13 @@ function LFRQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
 	
 	if ( LFGIsIDHeader(dungeonID) ) then
 		LFRList_SetHeaderEnabled(dungeonID, isChecked);
-	else
+	elseif ( LFR_CanQueueForMultiple() ) then
 		LFRList_SetRaidEnabled(dungeonID, isChecked);
 		LFGListUpdateHeaderEnabledAndLockedStates(LFRRaidList, LFGEnabledList, LFGLockList, LFRHiddenByCollapseList);
+	else
+		LFRQueueFrame.selectedLFM = dungeonID;
 	end
+	
 	LFRQueueFrameSpecificList_Update();
 end
 
@@ -158,6 +190,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		else
 			button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP");
 		end
+
 	else
 		local name =  info[LFG_RETURN_VALUES.name];
 		local minLevel, maxLevel = info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel];
@@ -190,16 +223,29 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.isCollapsed = false;
 	end
 	
+	--Could probably use being refactored.
 	if ( not LFR_CanQueueForLockedInstances() and LFGLockList[dungeonID] ) then
 		button.enableButton:Hide();
 		button.lockedIndicator:Show();
 	else
-		button.enableButton:Show();
+		if ( LFR_CanQueueForMultiple() ) then
+			button.enableButton:Show();
+			LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, false);
+		else
+			if ( LFGIsIDHeader(dungeonID) ) then
+				button.enableButton:Hide();
+			else
+				button.enableButton:Show();
+				LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, true);
+			end
+		end
 		button.lockedIndicator:Hide();
 	end
 	
 	if ( mode == "queued" or mode == "listed" ) then
 		button.enableButton:SetChecked(LFGQueuedForList[dungeonID]);
+	elseif ( not LFR_CanQueueForMultiple() ) then
+		button.enableButton:SetChecked(dungeonID == LFRQueueFrame.selectedLFM);
 	else
 		button.enableButton:SetChecked(LFGEnabledList[dungeonID]);
 	end
@@ -241,17 +287,6 @@ function LFRQueueFrameSpecificList_Update()
 	end
 end
 
-function LFRQueueFrameComment_OnUpdate(self, elapsed)
-	ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
-	if ( self.setTime ) then
-		self.setTime = self.setTime - elapsed;
-		if ( self.setTime < 0 ) then
-			self.setTime = nil;
-			SetLFGComment(self:GetText());
-		end
-	end
-end
-
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and (LFR_CanQueueForLockedInstances() or not LFGLockList[queueID]) ) then
 		local info = LFGGetDungeonInfoByID(queueID);
@@ -263,13 +298,26 @@ end
 
 function LFRQueueFrame_Join()
 	ClearAllLFGDungeons();
-	for _, queueID in pairs(LFRRaidList) do
-		LFRQueueFrame_QueueForInstanceIfEnabled(queueID);
+	
+	if ( LFR_CanQueueForMultiple() ) then
+		for _, queueID in pairs(LFRRaidList) do
+			LFRQueueFrame_QueueForInstanceIfEnabled(queueID);
+		end
+		for _, queueID in pairs(LFRHiddenByCollapseList) do
+			LFRQueueFrame_QueueForInstanceIfEnabled(queueID);
+		end
+	else
+		if ( LFRQueueFrame.selectedLFM ) then
+			SetLFGDungeon(LFGGetDungeonInfoByID(LFRQueueFrame.selectedLFM)[LFG_RETURN_VALUES.typeID], LFRQueueFrame.selectedLFM);
+		end
 	end
-	for _, queueID in pairs(LFRHiddenByCollapseList) do
-		LFRQueueFrame_QueueForInstanceIfEnabled(queueID);
-	end
+	
 	JoinLFG();
+	if ( LFRQueueFrameComment:HasFocus() ) then
+		LFRQueueFrameComment:ClearFocus();
+	else
+		SetLFGComment(LFRQueueFrameComment:GetText());
+	end
 end
 
 LFRHiddenByCollapseList = {};
@@ -584,6 +632,25 @@ function LFRBrowseButton_OnEnter(self)
 		GameTooltip:AddLine("\n"..ALL_BOSSES_ALIVE);
 	end
 	
+	GameTooltip:Show();
+end
+
+--this is used by the static popup for INSTANCE_LOCK_TIMER
+function InstanceLock_OnEnter(self)
+	GameTooltip:SetOwner(self:GetParent(), "ANCHOR_BOTTOM");
+	if ( self.encountersComplete > 0 ) then
+		GameTooltip:SetText(BOSSES);
+		for i=1, self.encountersTotal do
+			local bossName, texture, isKilled = GetInstanceLockTimeRemainingEncounter(i);
+			if ( isKilled ) then
+				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			else
+				GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+			end
+		end
+	else
+		GameTooltip:SetText(ALL_BOSSES_ALIVE);
+	end
 	GameTooltip:Show();
 end
 

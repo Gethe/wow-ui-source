@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
-	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
+	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" frameStrata="HIGH">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="BlackoutWorld">
@@ -28,7 +28,7 @@
 				</Texture>
 				<Texture name="$parentMiniBorderRight" file="Interface\WorldMap\UI-WorldMapSmall-Right.tga" hidden="true">
 					<Size>
-						<AbsDimension x="512" y="512"/>
+						<AbsDimension x="128" y="512"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentMiniBorderLeft" relativePoint="RIGHT"> 
@@ -588,10 +588,17 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<QuestPOIFrame name="WorldMapBlobFrame" setAllPoints="true" parent="WorldMapDetailFrame">
+			<QuestPOIFrame name="WorldMapBlobFrame">
 				<Size>
 					<AbsDimension x="1002" y="668"/>
 				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>				
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="WorldMapBlobFrameTexture" setAllPoints="true" />
@@ -891,9 +898,9 @@
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Frames>
-							<Frame name="WorldMapQuestSelectedFrame">
+							<Frame name="WorldMapQuestSelectedFrame" hidden="false">
 								<Size>
-									<AbsDimension x="281" y="50"/>
+									<AbsDimension x="301" y="50"/>
 								</Size>
 								<Layers>
 									<Layer level="BACKGROUND">
@@ -904,128 +911,56 @@
 											<Anchors>
 												<Anchor point="TOPLEFT">
 													<Offset>
-														<AbsDimension x="-6" y="9"/>
+														<AbsDimension x="4" y="9"/>
 													</Offset>								
 												</Anchor>
 											</Anchors>
 										</Texture>
-										<Texture name="$parentTexture1" file="Interface\WorldMap\UI-QuestPoi-SelectionBar.tga" alphaMode="ADD" alpha="0.45">
-											<Size>
-												<AbsDimension x="0" y="8"/>
-											</Size>
-											<TexCoords left="0" right="1" top="0" bottom="0.25" />
-											<Anchors>
-												<Anchor point="TOPLEFT" />
-												<Anchor point="TOPRIGHT" />
-											</Anchors>					
-										</Texture>
-										<Texture name="$parentTexture2" file="Interface\WorldMap\UI-QuestPoi-SelectionBar.tga" alphaMode="ADD" alpha="0.45">
-											<Size>
-												<AbsDimension x="0" y="8"/>
-											</Size>
-											<TexCoords left="0" right="1" top="0.75" bottom="1" />
-											<Anchors>
-												<Anchor point="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="0" y="1"/>
-													</Offset>						
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="0" y="1"/>
-													</Offset>						
-												</Anchor>												
-											</Anchors>						
-										</Texture>
-										<Texture name="$parentTexture3" file="Interface\WorldMap\UI-QuestPoi-SelectionBar.tga" alphaMode="ADD" alpha="0.45">
-											<TexCoords left="0" right="1" top="0.25" bottom="0.75" />
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="$parentTexture1" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>						
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexture2" relativePoint="TOPRIGHT">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>						
-												</Anchor>						
-											</Anchors>						
-										</Texture>				
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture name="WorldMapQuestSelectBar" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad>
+										WorldMapQuestSelectBar:SetVertexColor(1, 0.824, 0);
+									</OnLoad>
+								</Scripts>
 							</Frame>							
 							<Frame name="WorldMapQuestHighlightedFrame" hidden="false">
 								<Size>
-									<AbsDimension x="281" y="50"/>
-								</Size>
+									<AbsDimension x="301" y="50"/>
+								</Size>									
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture name="$parentTexture1" file="Interface\WorldMap\UI-QuestPoi-HighlightBar.tga" alphaMode="ADD" alpha="0.90">
-											<Size>
-												<AbsDimension x="0" y="8"/>
-											</Size>
-											<TexCoords left="0" right="1" top="0" bottom="0.25" />
-											<Anchors>
-												<Anchor point="TOPLEFT" />
-												<Anchor point="TOPRIGHT" />
-											</Anchors>						
-										</Texture>
-										<Texture name="$parentTexture2" file="Interface\WorldMap\UI-QuestPoi-HighlightBar.tga" alphaMode="ADD" alpha="0.90">
-											<Size>
-												<AbsDimension x="0" y="8"/>
-											</Size>
-											<TexCoords left="0" right="1" top="0.75" bottom="1" />
-											<Anchors>
-												<Anchor point="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="0" y="1"/>
-													</Offset>						
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="0" y="1"/>
-													</Offset>						
-												</Anchor>												
-											</Anchors>						
-										</Texture>
-										<Texture name="$parentTexture3" file="Interface\WorldMap\UI-QuestPoi-HighlightBar.tga" alphaMode="ADD" alpha="0.90">
-											<TexCoords left="0" right="1" top="0.25" bottom="0.75" />
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="$parentTexture1" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>						
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexture2" relativePoint="TOPRIGHT">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>						
-												</Anchor>						
-											</Anchors>						
-										</Texture>				
+										<Texture name="WorldMapQuestHighlightBar" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
 									</Layer>
 								</Layers>
-							</Frame>						
+								<Scripts>
+									<OnLoad>
+										WorldMapQuestHighlightBar:SetVertexColor(0.243, 0.570, 1);
+									</OnLoad>
+								</Scripts>
+							</Frame>					
 						</Frames>						
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
 			<ScrollFrame name="WorldMapQuestDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="313" y="199"/>
+					<AbsDimension x="300" y="199"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="WorldMapDetailFrame" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="6" y="-208"/>
+							<AbsDimension x="20" y="-208"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<ScrollChild>
 					<Frame name="WorldMapQuestDetailScrollChildFrame">
 						<Size>
-							<AbsDimension x="313" y="199"/>
+							<AbsDimension x="300" y="199"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
@@ -1035,19 +970,19 @@
 			</ScrollFrame>
 			<ScrollFrame name="WorldMapQuestRewardScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="313" y="199"/>
+					<AbsDimension x="321" y="199"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="WorldMapQuestDetailScrollFrame" relativePoint="RIGHT"> 
 						<Offset>
-							<AbsDimension x="35" y="0"/>
+							<AbsDimension x="30" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<ScrollChild>
 					<Frame name="WorldMapQuestRewardScrollChildFrame">
 						<Size>
-							<AbsDimension x="313" y="199"/>
+							<AbsDimension x="321" y="199"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>

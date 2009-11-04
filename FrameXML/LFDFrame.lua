@@ -98,12 +98,19 @@ end
 
 --Role-check popup functions
 function LFDRoleCheckPopupAccept_OnClick()
-	StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 	local oldLeader = GetLFGRoles();
 	SetLFGRoles(oldLeader, 
 		LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
 		LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
 		LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+	if ( CompleteLFGRoleCheck(true) ) then
+		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
+	end
+end
+
+function LFDRoleCheckPopupDecline_OnClick()
+	StaticPopupSpecial_Hide(LFDRoleCheckPopup);
+	CompleteLFGRoleCheck(false);
 end
 
 function LFDRoleCheckPopup_Update()

@@ -784,10 +784,11 @@ ObjectivesPanelOptions = {
 	questFadingDisable = { text = "SHOW_QUEST_FADING_TEXT" },
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
+	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)
-	self.name = OBJECTIVES_TRACKER_LABEL;
+	self.name = OBJECTIVES_LABEL;
 	self.options = ObjectivesPanelOptions;
 	InterfaceOptionsPanel_OnLoad(self);
 	

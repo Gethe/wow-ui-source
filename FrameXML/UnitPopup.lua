@@ -227,6 +227,14 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	local icon;
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		dropdownMenu.which = UIDROPDOWNMENU_MENU_VALUE;
+		-- dynamic instance
+		local canChangeDifficulty;
+		local selectedRaidDifficulty, allowedRaidDifficulty;
+		local _, _, _, _, _, _, isDynamicInstance = GetInstanceInfo();
+		if ( isDynamicInstance ) then
+			canChangeDifficulty = CanChangePlayerDifficulty();
+			selectedRaidDifficulty, allowedRaidDifficulty = _GetPlayerDifficultyMenuOptions();
+		end		
 		-- Set which menu is being opened
 		OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
 		info = UIDropDownMenu_CreateInfo();
@@ -275,9 +283,15 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					info.disabled = 1;	
 				end					
 			elseif ( strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15)) then
-				local dungeonDifficulty = GetRaidDifficulty();
-				if ( dungeonDifficulty == index ) then
-					info.checked = 1;
+				if ( isDynamicInstance ) then
+					if ( selectedRaidDifficulty == index ) then
+						info.checked = 1;
+					end
+				else
+					local dungeonDifficulty = GetRaidDifficulty();
+					if ( dungeonDifficulty == index ) then
+						info.checked = 1;
+					end
 				end
 				local inParty = 0;
 				if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
@@ -289,8 +303,11 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				end
 				local inInstance, instanceType = IsInInstance();
 				if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
-					info.disabled = 1;	
-				end					
+					info.disabled = 1;
+				end
+				if ( canChangeDifficulty and allowedRaidDifficulty == value ) then
+					info.disabled = nil;
+				end
 			elseif ( value == "PVP_ENABLE" ) then
 				if ( GetPVPDesired() == 1 ) then
 					info.checked = 1;
@@ -908,6 +925,14 @@ function UnitPopup_OnUpdate (elapsed)
 	if ( IsRaidOfficer() ) then
 		isAssistant = 1;
 	end
+	-- dynamic difficulty
+	local canChangeDifficulty;
+	local selectedRaidDifficulty;
+	local _, _, _, _, _, _, isDynamicInstance = GetInstanceInfo();
+	if ( isDynamicInstance ) then
+		canChangeDifficulty = CanChangePlayerDifficulty();
+		_, selectedRaidDifficulty = _GetPlayerDifficultyMenuOptions();
+	end
 	-- Loop through all menus and enable/disable their buttons appropriately
 	local count, tempCount;
 	local inInstance, instanceType = IsInInstance();
@@ -990,7 +1015,10 @@ function UnitPopup_OnUpdate (elapsed)
 					elseif ( ( strsub(value, 1, 15) == "RAID_DIFFICULTY" ) and ( strlen(value) > 15 ) ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 							enable = 0;	
-						end			
+						end
+						if ( canChangeDifficulty and selectedRaidDifficulty == value ) then
+							enable = 1;
+						end
 					elseif ( value == "RESET_INSTANCES" ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 							enable = 0;			
@@ -1138,8 +1166,13 @@ function UnitPopup_OnClick (self)
 		local dungeonDifficulty = tonumber( strsub(button,19,19) );
 		SetDungeonDifficulty(dungeonDifficulty);
 	elseif ( strsub(button, 1, 15) == "RAID_DIFFICULTY" and (strlen(button) > 15) ) then
-		local raidDifficulty = tonumber( strsub(button,16,16) );
-		SetRaidDifficulty(raidDifficulty);
+		local _, _, _, _, _, playerDifficulty, isDynamicInstance = GetInstanceInfo();
+		if ( isDynamicInstance ) then
+			ChangePlayerDifficulty(1 - playerDifficulty);
+		else
+			local raidDifficulty = tonumber( strsub(button,16,16) );
+			SetRaidDifficulty(raidDifficulty);
+		end
 	elseif ( button == "LOOT_PROMOTE" ) then
 		SetLootMethod("master", name, 1);
 	elseif ( button == "PVP_ENABLE" ) then

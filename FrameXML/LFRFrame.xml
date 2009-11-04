@@ -321,9 +321,9 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<ScrollFrame name="$parentCommentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+					<EditBox name="$parentComment" multiLine="true" letters="64" autoFocus="false" countInvisibleLetters="true">
 						<Size>
-							<AbsDimension x="290" y="42"/>
+							<AbsDimension x="313" y="41"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
@@ -334,53 +334,48 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString name="$parentExplanation" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" setAllPoints="true" text="TYPE_LFR_COMMENT_HERE"/>
+								<FontString name="$parentExplanation" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" text="TYPE_LFR_COMMENT_HERE">
+									<Size>
+										<AbsDimension x="313" y="42"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
-						<ScrollChild>
-							<EditBox name="LFRQueueFrameComment" multiLine="true" letters="255" autoFocus="false" countInvisibleLetters="true">
-								<Size>
-									<AbsDimension x="290" y="42"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										--self:SetText(TYPE_LFR_COMMENT_HERE);
-									</OnLoad>
-									<OnTextChanged>
-										self.setTime = 10;	--We'll send the change if the player hasn't done anything in 10 secs
-									</OnTextChanged>
-									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-									<OnUpdate function="LFRQueueFrameComment_OnUpdate"/>
-									<OnEditFocusGained>
-										LFRQueueFrameCommentScrollFrameExplanation:Hide();
-									</OnEditFocusGained>
-									<OnEditFocusLost>
-										if ( strtrim(self:GetText()) == "" ) then
-											LFRQueueFrameCommentScrollFrameExplanation:Show();
-										else
-											SetLFGComment(self:GetText());
-										end
-									</OnEditFocusLost>
-									<OnEscapePressed function="EditBox_ClearFocus"/>
-									<OnEnterPressed function="EditBox_ClearFocus"/>
-								</Scripts>
-								<FontString inherits="GameFontHighlight"/>
-							</EditBox>
-						</ScrollChild>
-					</ScrollFrame>
-					<Button name="LFRQueueFrameCommentTextButton">
+						<Scripts>
+							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+							<OnEditFocusGained>
+								if ( LFG_IsEmpowered() ) then
+									LFRQueueFrameCommentExplanation:Hide();
+								else
+									self:ClearFocus();
+								end
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								if ( strtrim(self:GetText()) == "" ) then
+									LFRQueueFrameCommentExplanation:Show();
+								end
+								SetLFGComment(self:GetText());
+							</OnEditFocusLost>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnEnterPressed function="EditBox_ClearFocus"/>
+						</Scripts>
+						<FontString inherits="GameFontHighlight"/>
+					</EditBox>
+					<Button name="$parentCommentTextButton">
 						<Size>
-							<AbsDimension x="290" y="42"/>
+							<AbsDimension x="313" y="42"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCommentScrollFrame" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentComment" relativePoint="TOPLEFT"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								LFRQueueFrameComment:SetFocus();
+								if ( LFG_IsEmpowered() ) then
+									LFRQueueFrameComment:SetFocus();
+								end
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -570,12 +565,12 @@
 					</Frame>
 					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
 						<Size>
-							<AbsDimension x="153" y="22"/>
+							<AbsDimension x="115" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="25" y="10"/>
+									<AbsDimension x="18" y="7"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -592,18 +587,18 @@
 					</Button>
 					<Button name="$parentAcceptCommentButton" inherits="UIPanelButtonTemplate2" text="ACCEPT_COMMENT">
 						<Size>
-							<AbsDimension x="153" y="22"/>
+							<AbsDimension x="112" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-10" y="10"/>
+									<AbsDimension x="-7" y="7"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								EditBox_ClearFocus(LFRQueueFrameComment);
+								LFRQueueFrameComment:ClearFocus();
 							</OnClick>
 						</Scripts>
 					</Button>

@@ -117,10 +117,9 @@
 					</Anchors>
 				</FontString>				
 				<FontString name="$parentText" inherits="WatchFontTemplate" parentKey="text">
+					<Size x="160" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentDash" relativePoint="RIGHT" />
-						<Anchor point="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -142,6 +141,48 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+
+	<Button name="WatchFrameQuestPOITemplate" hidden="true" virtual="true">					
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>						
+		<Layers>
+			<Layer level="BACKGROUND">		
+				<Texture name="$parentIconBackground" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="circle">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>			
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.879" right="1" top="0.379" bottom="0.5" />
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconNumber" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="number">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>			
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>	
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="WatchFrameQuestPOI_OnClick" />
+			<OnEnter function="WatchFrameQuestPOI_OnEnter" />
+			<OnLeave function="WatchFrameQuestPOI_OnLeave" />
+		</Scripts>
+	</Button>
 	
 	<Frame name="WatchFrame" parent="UIParent" clampedToScreen="true" hidden="false" frameStrata="LOW">
 		<Size x="204" y="140"/>
@@ -155,7 +196,7 @@
 				<FontString name="$parentTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="12" y="-8"/>
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
@@ -185,10 +226,10 @@
 			<Frame name="WatchFrameLines" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT">
-						<Offset x="12" y="-30"/>
+						<Offset x="0" y="-30"/>
 					</Anchor>
 					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT">
-						<Offset x="-12" y="12"/>
+						<Offset x="-24" y="12"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>

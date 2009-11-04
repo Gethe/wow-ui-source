@@ -3,12 +3,14 @@
 WATCHFRAME_COLLAPSEDWIDTH = 0;		-- set in WatchFrame_OnLoad
 WATCHFRAME_LASTWIDTH = 0;
 WATCHFRAME_LINEHEIGHT = 16;
-WATCHFRAME_MAXLINEWIDTH = 204;
+WATCHFRAME_MAXLINEWIDTH = 192;
 WATCHFRAME_MULTIPLE_LINEHEIGHT = 29;
+WATCHFRAME_ITEM_WIDTH = 33;
 
 local DASH_NONE = 0;
 local DASH_SHOW = 1;
 local DASH_HIDE = 2;
+local DASH_WIDTH;
 local IS_HEADER = true;
 
 WATCHFRAME_INITIAL_OFFSET = 0;
@@ -24,6 +26,8 @@ WATCHFRAME_CRITERIA_PER_ACHIEVEMENT = 5;
 
 WATCHFRAME_NUM_TIMERS = 0;
 WATCHFRAME_NUM_ITEMS = 0;
+WATCHFRAME_NUM_POI_ACTIVE = 0;
+WATCHFRAME_NUM_POI_COMPLETED = 0;
 
 WATCHFRAME_OBJECTIVEHANDLERS = {};
 WATCHFRAME_TIMEDCRITERIA = {};
@@ -31,7 +35,10 @@ WATCHFRAME_TIMERLINES = {};
 WATCHFRAME_ACHIEVEMENTLINES = {};
 WATCHFRAME_QUESTLINES = {};
 WATCHFRAME_LINKBUTTONS = {};
-local WATCHFRAME_WATCHFRAME_SETLINES = { };	-- buffer to hold lines for a quest/achievement that will be displayed only if there is room
+local WATCHFRAME_SETLINES = { };			-- buffer to hold lines for a quest/achievement that will be displayed only if there is room
+local WATCHFRAME_SETLINES_NUMLINES;		-- the number of visual lines to be rendered for the buffered data - used just for item wrapping right now
+
+CURRENT_MAP_QUESTS = { };
 
 WATCHFRAME_FLAGS = { ["locked"] = 0x01, ["collapsed"] = 0x02 }
 
@@ -192,18 +199,21 @@ local function WatchFrame_ReleaseUnusedQuestLines ()
 end
 
 function WatchFrame_OnLoad (self)
-	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 	self:RegisterEvent("ITEM_PUSH");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("WORLD_MAP_UPDATE");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
 	watchFrameTestLine = self.lineCache:GetFrame();
 	WATCHFRAME_COLLAPSEDWIDTH = WatchFrameTitle:GetWidth() + 50;
-	WatchFrameLines:SetWidth(WATCHFRAME_MAXLINEWIDTH);
 	local _, fontHeight = watchFrameTestLine.text:GetFont();
+	watchFrameTestLine.dash:SetText(QUEST_DASH);
+	DASH_WIDTH = watchFrameTestLine.dash:GetWidth();
 	WATCHFRAMELINES_FONTHEIGHT = fontHeight;
 	WATCHFRAMELINES_FONTSPACING = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTHEIGHT) / 2
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
@@ -212,9 +222,12 @@ function WatchFrame_OnLoad (self)
 end
 
 function WatchFrame_OnEvent (self, event, ...)
-	if ( event == "VARIABLES_LOADED" ) then
-		-- cvar handling to come
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		SetMapToCurrentZone();		-- forces WatchFrame event via the WORLD_MAP_UPDATE event
 	elseif ( event == "QUEST_LOG_UPDATE" and not self.updating ) then -- May as well check here too and save some time
+		if ( WatchFrame.showObjectives ) then
+			WatchFrame_GetCurrentMapQuests();
+		end
 		WatchFrame_Update(self);
 		if ( self.collapsed ) then
 			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
@@ -240,6 +253,14 @@ function WatchFrame_OnEvent (self, event, ...)
 		
 		WatchFrame_Update();
 	elseif ( event == "ITEM_PUSH" ) then
+		WatchFrame_Update();
+	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
+		if ( not WorldMapFrame:IsShown() and WatchFrame.showObjectives ) then
+			WorldMapQuestScrollChildFrame.selected = nil;
+			SetMapToCurrentZone();
+		end
+	elseif ( event == "WORLD_MAP_UPDATE" and WatchFrame.showObjectives ) then
+		WatchFrame_GetCurrentMapQuests();
 		WatchFrame_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		WatchFrame_OnSizeChanged(self);
@@ -512,7 +533,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 	end
 end
 
-function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash)
+function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem)
 	-- anchor
 	if ( anchor ) then
 		line:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, verticalOffset);
@@ -521,23 +542,34 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash)
 	-- text
 	line.text:SetText(text);
 	if ( isHeader ) then
+		WATCHFRAME_SETLINES_NUMLINES = 0;
 		line.text:SetTextColor(0.75, 0.61, 0);
 	else
 		--this should be the default, set in WatchFrameLineTemplate_Reset
 	end
 	-- dash
+	local usedWidth = 0;
 	if ( dash == DASH_SHOW ) then
 		line.dash:SetText(QUEST_DASH);
+		usedWidth = DASH_WIDTH;
 	elseif ( dash == DASH_HIDE ) then
 		line.dash:SetText(QUEST_DASH);
 		line.dash:Hide();
-	end
+		usedWidth = DASH_WIDTH;
+	end	
 	-- multiple lines
-	if ( line.text:GetStringWidth() > WATCHFRAME_MAXLINEWIDTH - line.dash:GetWidth() ) then
-		line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
+	if ( hasItem and WATCHFRAME_SETLINES_NUMLINES < 2 ) then
+		usedWidth = usedWidth + WATCHFRAME_ITEM_WIDTH;
 	end
-	
-	tinsert(WATCHFRAME_SETLINES, line);
+	line.text:SetWidth(WATCHFRAME_MAXLINEWIDTH - usedWidth);
+	if ( line.text:GetHeight() > WATCHFRAME_LINEHEIGHT ) then
+		line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
+		line.text:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
+		WATCHFRAME_SETLINES_NUMLINES = WATCHFRAME_SETLINES_NUMLINES + 2;
+	else
+		WATCHFRAME_SETLINES_NUMLINES = WATCHFRAME_SETLINES_NUMLINES + 1;
+	end
+	tinsert(WATCHFRAME_SETLINES, line);	
 end
 
 function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHeight, frameWidth, ...)
@@ -641,16 +673,18 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 			end
 
 			-- stop processing if there's no room to fit the achievement
+			local numLines = #WATCHFRAME_SETLINES;
 			local previousBottom = previousLine:GetBottom();
 			if ( previousBottom and previousBottom < WatchFrame:GetBottom() ) then				
-				achievementLineIndex = achievementLineIndex - #WATCHFRAME_SETLINES;
+				achievementLineIndex = achievementLineIndex - numLines;
 				table.wipe(WATCHFRAME_SETLINES);
+				break;
 			else
 				-- turn on all lines
 				for _, line in pairs(WATCHFRAME_SETLINES) do
 					line:Show();
 					lineWidth = line.text:GetWidth() + line.dash:GetWidth();
-					maxWidth = max(maxWidth, lineWidth);					
+					maxWidth = max(maxWidth, lineWidth);
 				end
 				-- turn on link button
 				linkButton = WatchFrame_GetLinkButton();
@@ -659,7 +693,9 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 				linkButton:SetWidth(achievementTitle.text:GetStringWidth());
 				linkButton.type = "ACHIEVEMENT";
 				linkButton.index = achievementID;
-				linkButton.lines = WATCHFRAME_SETLINES;				
+				linkButton.lines = WATCHFRAME_ACHIEVEMENTLINES;
+				linkButton.startLine = achievementLineIndex - numLines;
+				linkButton.lastLine = achievementLineIndex - 1;			
 				linkButton:Show();
 				
 				if ( previousBottom ) then
@@ -685,6 +721,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local linkButton;
 	local watchItemIndex = 0;
 	
+	local numActivePOI = 0;
+	local numCompletedPOI = 0;
+	
 	local text, finished;	
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
@@ -694,17 +733,18 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local lineWidth = 0;
 	local heightUsed = 0;	
 	local topEdge = 0;
-	
-	WatchFrame_ResetQuestLines();
 
+	WatchFrame_ResetQuestLines();
+	
 	for i = 1, numQuestWatches do
 		WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
 		questIndex = GetQuestIndexForWatch(i);
-		title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
 		if ( questIndex ) then
+			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
+			local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
 			line = WatchFrame_GetQuestLine();
 			questTitle = line;
-			WatchFrame_SetLine(line, lastLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, title, DASH_NONE);
+			WatchFrame_SetLine(line, lastLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, title, DASH_NONE, item);
 			if ( not lastLine ) then -- First line
 				line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
 				line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
@@ -723,24 +763,24 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 					if ( not finished ) then
 						text = WatchFrame_ReverseQuestObjective(text);
 						line = WatchFrame_GetQuestLine();
-						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW);
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 						lastLine = line;
 					end
 				end
 			end
 
 			-- stop processing if there's no room to fit the quest
+			local numLines = #WATCHFRAME_SETLINES;
 			local lastBottom = lastLine:GetBottom();
 			if ( lastBottom and lastBottom < WatchFrame:GetBottom() ) then
-				questLineIndex = questLineIndex - #WATCHFRAME_SETLINES;
+				questLineIndex = questLineIndex - numLines;
 				table.wipe(WATCHFRAME_SETLINES);
 				break;
 			end
-			
+
 			-- NOTE: we're missing something to display required money for a quest...that should probably be added at some point
 
 			-- turn on quest item
-			local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
 			local itemButton;
 			if ( item ) then
 				watchItemIndex = watchItemIndex + 1;
@@ -757,7 +797,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				itemButton.charges = charges;
 				WatchFrameItem_UpdateCooldown(itemButton);
 				itemButton.rangeTimer = -1;
-				itemButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", -4, -WATCHFRAMELINES_FONTSPACING);
+				itemButton:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 10, -2);
 			end			
 			-- turn on all lines
 			for _, line in pairs(WATCHFRAME_SETLINES) do
@@ -772,9 +812,21 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			linkButton:SetPoint("RIGHT", questTitle.text);
 			linkButton.type = "QUEST"
 			linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
-			linkButton.lines = WATCHFRAME_SETLINES;			
+			linkButton.lines = WATCHFRAME_QUESTLINES;
+			linkButton.startLine = questLineIndex - numLines;
+			linkButton.lastLine = questLineIndex - 1;
 			linkButton:Show();				
-			
+			-- quest POI icon
+			if ( WatchFrame.showObjectives and CURRENT_MAP_QUESTS[questID] ) then
+				if ( isComplete ) then
+					numCompletedPOI = numCompletedPOI + 1;
+				else
+					numActivePOI = numActivePOI + 1;
+				end
+				questPOI = WatchFrame_GetQuestPOI(numActivePOI, CURRENT_MAP_QUESTS[questID], isComplete, numCompletedPOI);						
+				questPOI:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", 0, 5);
+				questPOI:Show();
+			end
 			if ( lastBottom ) then
 				heightUsed = topEdge - lastLine:GetBottom();
 			else
@@ -786,7 +838,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	for i = watchItemIndex + 1, WATCHFRAME_NUM_ITEMS do
 		_G["WatchFrameItem" .. i]:Hide();
 	end
-
+	WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI);	
 	WatchFrame_ReleaseUnusedQuestLines();
 
 	return heightUsed, maxWidth;	
@@ -988,14 +1040,14 @@ end
 
 local function WatchFrameLineTemplate_Reset (self)
 	self:ClearAllPoints();
-	self.text:SetWidth(0);
 	self.text:SetText("");
 	self.text:SetTextColor(0.8, 0.8, 0.8);
 	self.text:Show();
 	self.dash:SetText(nil);
 	self.dash:Show();
 	self:SetHeight(WATCHFRAME_LINEHEIGHT);
-	self.criteriaID = nil;
+	self.text:SetHeight(0);	
+	self.criteriaID = nil;	
 end
 
 function WatchFrameLineTemplate_OnLoad (self)
@@ -1092,22 +1144,89 @@ function WatchFrame_ReverseQuestObjective(text)
 end
 
 function WatchFrameLinkButtonTemplate_Highlight(self, onEnter)
-	for index, line in pairs(self.lines) do
-		if ( index == 1 ) then
-			-- header
-			if ( onEnter ) then
-				line.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	--for index, line in pairs(self.lines) do
+	local line;
+	for index = self.startLine, self.lastLine do
+		line = self.lines[index];
+		if ( line ) then
+			if ( index == self.startLine ) then
+				-- header
+				if ( onEnter ) then
+					line.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				else
+					line.text:SetTextColor(0.75, 0.61, 0);
+				end
 			else
-				line.text:SetTextColor(0.75, 0.61, 0);
-			end
-		else
-			if ( onEnter ) then
-				line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				line.dash:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			else
-				line.text:SetTextColor(0.8, 0.8, 0.8);
-				line.dash:SetTextColor(0.8, 0.8, 0.8);
+				if ( onEnter ) then
+					line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					line.dash:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				else
+					line.text:SetTextColor(0.8, 0.8, 0.8);
+					line.dash:SetTextColor(0.8, 0.8, 0.8);
+				end
 			end
 		end
 	end
+end
+
+function WatchFrame_GetCurrentMapQuests()
+	local numQuests = QuestMapUpdateAllQuests();
+	table.wipe(CURRENT_MAP_QUESTS);	
+	for i = 1, numQuests do
+		local questId = QuestPOIGetQuestIDByVisibleIndex(i);
+		CURRENT_MAP_QUESTS[questId] = i;
+	end
+end
+
+function WatchFrame_GetQuestPOI(buttonIndex, questIndex, isComplete, numComplete)
+	if ( isComplete ) then
+		buttonIndex = numComplete + MAX_QUESTLOG_QUESTS;
+	end
+	local poiButton = _G["WatchFrameQuestPOI"..buttonIndex];
+	if ( not poiButton ) then
+		poiButton = CreateFrame("Button", "WatchFrameQuestPOI"..buttonIndex, WatchFrameLines, "WorldMapQuestPOITemplate");
+		poiButton:SetScript("OnEnter", nil);
+		poiButton:SetScript("OnLeave", nil);
+		poiButton:SetScript("OnClick", WatchFrameQuestPOI_OnClick);
+		poiButton:SetScale(0.9);
+		if ( isComplete ) then
+			poiButton.turnin:Show();
+			poiButton.number:Hide();
+			WATCHFRAME_NUM_POI_COMPLETED = numComplete;
+		else
+			WATCHFRAME_NUM_POI_ACTIVE = buttonIndex;		
+			buttonIndex = buttonIndex - 1;
+			local size = 1 / QUEST_NUMERIC_ICONS_PER_ROW;
+			local yOffset = 0.5 + floor(buttonIndex / QUEST_NUMERIC_ICONS_PER_ROW) * size;
+			local xOffset = mod(buttonIndex, QUEST_NUMERIC_ICONS_PER_ROW) * size;
+			poiButton.number:SetTexCoord(xOffset + 0.004, xOffset + size, yOffset + 0.004, yOffset + size);
+		end
+	end
+	poiButton.isComplete = isComplete;
+	poiButton.quest = questIndex;
+	return poiButton;
+end
+
+function WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI)
+	for i = numActivePOI + 1, WATCHFRAME_NUM_POI_ACTIVE do
+		_G["WatchFrameQuestPOI"..i]:Hide();
+	end
+	for i = numCompletedPOI + 1, WATCHFRAME_NUM_POI_COMPLETED do
+		_G["WatchFrameQuestPOI"..i + MAX_QUESTLOG_QUESTS]:Hide();
+	end
+end
+
+function WatchFrameQuestPOI_OnClick(self)
+	if ( not WorldMapFrame:IsShown() or WorldMapQuestScrollChildFrame.selected.index == self.quest ) then
+		ToggleFrame(WorldMapFrame);
+	else
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	end
+	WorldMapFrame_SelectQuest(_G["WorldMapQuestFrame"..self.quest]);
+end
+
+function WatchFrameQuestPOI_OnEnter(self)
+end
+
+function WatchFrameQuestPOI_OnLeave(self)
 end

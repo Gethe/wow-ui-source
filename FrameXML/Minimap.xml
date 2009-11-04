@@ -721,7 +721,8 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
+						self:RegisterEvent("UPDATE_INSTANCE_INFO");
 					</OnLoad>
 					<OnEvent function="MiniMapInstanceDifficulty_OnEvent" />
 				</Scripts>

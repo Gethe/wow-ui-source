@@ -28,6 +28,10 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	"RAID_LOCKED",
 }
 
+local tankIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:0:19:22:41|t";
+local healerIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:20:39:1:20|t";
+local damageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:20:39:22:41|t";
+
 --Variables to store dungeon info in Lua
 --local LFDDungeonList, LFRRaidList, LFGDungeonInfo, LFGCollapseList, LFGEnabledList, LFDHiddenByCollapseList, LFGLockList;
 
@@ -38,6 +42,7 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	
 	self:RegisterEvent("LFG_OFFER_CONTINUE");
+	self:RegisterEvent("LFG_ROLE_CHECK_ROLE_CHOSEN");
 	
 	--These just update states (roles changeable, buttons clickable, etc.)
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
@@ -70,6 +75,30 @@ function LFGEventFrame_OnEvent(self, event, ...)
 			dialog.data = lfgID;
 			dialog.data2 = typeID;
 		end
+	elseif ( event == "LFG_ROLE_CHECK_ROLE_CHOSEN" ) then
+		local player, isTank, isHealer, isDamage = ...;
+
+		--Yes, consecutive string concatenation == bad for garbage collection. But the alternative is either extremely unslightly or localization unfriendly. (Also, this happens fairly rarely)
+		local roleList;
+		if ( isTank ) then
+			roleList = tankIcon.." "..TANK;
+		end
+		if ( isHealer ) then
+			if ( roleList ) then
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..healerIcon.." "..HEALER;
+			else
+				roleList = healerIcon.." "..HEALER;
+			end
+		end
+		if ( isDamage ) then
+			if ( roleList ) then
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..damageIcon.." "..DAMAGER;
+			else
+				roleList = damageIcon.." "..DAMAGER;
+			end
+		end
+		assert(roleList);
+		ChatFrame_DisplayUsageError(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
 	end
 	
 	LFG_UpdateRolesChangeable();
@@ -225,6 +254,42 @@ function LFG_UpdateRolesChangeable()
 	else
 		LFG_UpdateAvailableRoles();
 	end
+end
+
+function LFGSpecificChoiceEnableButton_SetIsRadio(button, isRadio)
+	if ( isRadio ) then
+		button:SetSize(17, 17)
+		button:SetNormalTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetNormalTexture():SetTexCoord(0, 0.25, 0, 1);
+		
+		button:SetHighlightTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetHighlightTexture():SetTexCoord(0.5, 0.75, 0, 1);
+		
+		button:SetCheckedTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetCheckedTexture():SetTexCoord(0.25, 0.5, 0, 1);
+		
+		button:SetPushedTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetPushedTexture():SetTexCoord(0, 0.25, 0, 1);
+		
+		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetDisabledCheckedTexture():SetTexCoord(0.75, 1, 0, 1);
+	else
+		button:SetSize(20, 20);
+		button:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up");
+		button:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight");
+		button:GetHighlightTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+		button:GetCheckedTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down");
+		button:GetPushedTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+		button:GetDisabledCheckedTexture():SetTexCoord(0, 1, 0, 1);
+	end	
 end
 
 --More functions

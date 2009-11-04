@@ -412,49 +412,6 @@ function ToggleCalendar()
 	end
 end
 
-function ToggleLFGParentFrame(tab)
---	local hideLFGParent;
---	if ( LFGParentFrame:IsShown() and tab == LFGParentFrame.selectedTab and LFGParentFrameTab1:IsShown() ) then
---		hideLFGParent = 1;
---	end
---	if ( LFGParentFrame:IsShown() and not tab ) then
---		hideLFGParent = 1;
---	end
-
---	if ( hideLFGParent ) then
---		HideUIPanel(LFGParentFrame);
---	else
---		ShowUIPanel(LFGParentFrame);
-		-- Decide which subframe to show
---		if ( not LFGParentFrame_UpdateTabs() ) then
---			local lfm, joined, queued = GetLFGInfoServer();
---			local lfgStatus = (not lfm) and joined;
---			local lfmStatus = lfm and joined;
---			if ( lfmStatus or lfgStatus or tab ) then
---				if ( tab ) then
---					if ( tab == 1 ) then
---						LFGParentFrameTab1_OnClick();
---					elseif ( tab == 2 ) then
---						LFGParentFrameTab2_OnClick();
---					end
---				else
---					if ( lfgStatus ) then
---						LFGParentFrameTab1_OnClick();
---					else
---						LFGParentFrameTab2_OnClick();
---					end
---				end
---			else
---				LFGFrame:Hide();
---				LFMFrame:Hide();
---				LFGParentFrameTab1:Hide();
---				LFGParentFrameTab2:Hide();
---			end
---		end
---	end
-	UpdateMicroButtons();
-end
-
 function ToggleLFDParentFrame()
 	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
 		if ( LFDParentFrame:IsShown() ) then
@@ -3571,7 +3528,7 @@ end
 
 function LFG_IsEmpowered()
 	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
-		not (IsPartyLeader() or IsRaidLeader() or IsRaidOfficer()) );
+		not (IsPartyLeader() or IsRaidLeader()) );
 end
 
 function GetLFGMode()

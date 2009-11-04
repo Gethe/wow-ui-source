@@ -1526,7 +1526,7 @@
 				</FontString>
 				<FontString name="OpenMailSender" inherits="GameFontNormal" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="110" y="0"/>
+						<AbsDimension x="225" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="OpenMailSenderLabel" relativePoint="RIGHT">

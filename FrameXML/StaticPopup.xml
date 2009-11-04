@@ -50,7 +50,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlight">
+				<FontString name="$parentText"  parentKey="text" inherits="GameFontHighlight">
 					<Size>
 						<AbsDimension x="290" y="0"/>
 					</Size>
@@ -77,6 +77,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT">

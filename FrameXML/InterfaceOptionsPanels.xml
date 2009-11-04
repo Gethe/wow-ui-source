@@ -898,7 +898,7 @@
 	<Frame name="InterfaceOptionsObjectivesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="OBJECTIVES_TRACKER_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentTitle" text="OBJECTIVES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -976,6 +976,22 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentMapQuestDifficulty" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoQuestProgress" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "mapQuestDifficulty";
+						self.uvar = "MAP_QUEST_DIFFICULTY";
+						self.setFunc = function () WorldMapFrame_ResetQuestColors(); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsObjectivesPanel_OnLoad"/>

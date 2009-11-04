@@ -34,6 +34,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
@@ -136,6 +137,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		self.onHateList = nil;
 		PlayerFrame_Update();
 		PlayerFrame_UpdateStatus();
+		PlayerFrame_UpdateRolesAssigned();
 		PlayerSpeakerFrame:Show();
 		PlayerFrame_UpdateVoiceStatus(UnitIsTalking(UnitName("player")));
 		
@@ -229,6 +231,27 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerPVPTimerText:Hide();
 			PlayerPVPTimerText.timeLeft = nil;
 		end
+	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
+		PlayerFrame_UpdateRolesAssigned();
+	end
+end
+
+function PlayerFrame_UpdateRolesAssigned()
+	local frame = PlayerFrame;
+	local icon = _G[frame:GetName().."RoleIcon"];
+	local isTank, isHealer, isDamage = UnitGroupRolesAssigned("player");
+	
+	if ( isTank ) then
+		icon:SetTexCoord(0, 19/64, 22/64, 41/64);
+		icon:Show();
+	elseif ( isHealer ) then
+		icon:SetTexCoord(20/64, 39/64, 1/64, 20/64);
+		icon:Show();
+	elseif ( isDamage ) then
+		icon:SetTexCoord(20/64, 39/64, 22/64, 41/64);
+		icon:Show();
+	else
+		icon:Hide();
 	end
 end
 

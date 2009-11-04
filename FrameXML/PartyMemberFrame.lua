@@ -206,6 +206,26 @@ function PartyMemberFrame_UpdatePvPStatus (self)
 	end
 end
 
+function PartyMemberFrame_UpdateAssignedRoles (self)
+	local id = self:GetID();
+	local unit = "party"..id;
+	local icon = _G["PartyMemberFrame"..id.."RoleIcon"];
+	local isTank, isHealer, isDamage = UnitGroupRolesAssigned(unit);
+	
+	if ( isTank ) then
+		icon:SetTexCoord(0, 19/64, 22/64, 41/64);
+		icon:Show();
+	elseif ( isHealer ) then
+		icon:SetTexCoord(20/64, 39/64, 1/64, 20/64);
+		icon:Show();
+	elseif ( isDamage ) then
+		icon:SetTexCoord(20/64, 39/64, 22/64, 41/64);
+		icon:Show();
+	else
+		icon:Hide();
+	end
+end
+
 function PartyMemberFrame_UpdateVoiceStatus (self)
 	local id = self:GetID();
 	if ( not UnitName("party"..id) ) then
@@ -287,6 +307,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	if ( event == "PARTY_MEMBERS_CHANGED" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
+		PartyMemberFrame_UpdateAssignedRoles(self);
 		return;
 	end
 	

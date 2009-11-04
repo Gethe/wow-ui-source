@@ -2599,6 +2599,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					end
 					--Add Blizzard Icon, this was sent by a GM
 					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
+				elseif ( arg6 == "DEV" ) then
+					--Add Blizzard Icon, this was sent by a Dev
+					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
 				else
 					pflag = _G["CHAT_FLAG_"..arg6];
 				end

@@ -157,6 +157,13 @@ function MainMenuBarBackpackButton_UpdateFreeSlots()
 			totalFree = totalFree + freeSlots;
 		end
 	end
+	
+	if ( totalFree == 3) then
+		TriggerTutorial(59);
+	end
+	if ( totalFree == 0) then
+		TriggerTutorial(58);
+	end
 
 	MainMenuBarBackpackButton.freeSlots = totalFree;
 	
