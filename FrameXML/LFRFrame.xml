@@ -565,12 +565,12 @@
 					</Frame>
 					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
 						<Size>
-							<AbsDimension x="115" y="22"/>
+							<AbsDimension x="125" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="18" y="7"/>
+									<AbsDimension x="21" y="12"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -587,12 +587,12 @@
 					</Button>
 					<Button name="$parentAcceptCommentButton" inherits="UIPanelButtonTemplate2" text="ACCEPT_COMMENT">
 						<Size>
-							<AbsDimension x="112" y="22"/>
+							<AbsDimension x="115" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-7" y="7"/>
+									<AbsDimension x="-7" y="12"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

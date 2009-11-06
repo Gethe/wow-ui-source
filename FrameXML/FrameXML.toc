@@ -1,6 +1,6 @@
 # Do not delete the following line!
 ## Interface: 30200
-DebugHook.lua
+##DebugHook.lua
 GlobalStrings.lua
 Constants.lua
 Fonts.xml

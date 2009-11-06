@@ -125,6 +125,7 @@
 		</OnDragStart>
 		<OnDragStop>
 			BattlefieldMinimapTab:StopMovingOrSizing();
+			ValidateFramePosition(BattlefieldMinimapTab);
 		</OnDragStop>
 	</Scripts>
 	<ButtonText name="$parentText" text="BATTLEFIELD_MINIMAP">

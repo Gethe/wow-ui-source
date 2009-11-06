@@ -189,7 +189,6 @@
 	</Animations>
 	<Scripts>
 		<OnLoad function="DungeonCompletionAlertFrame_OnLoad"/>
-		<OnHide function="DungeonCompletionAlertFrame_OnHide"/>
 	</Scripts>
 </Frame>
 

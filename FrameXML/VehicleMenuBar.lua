@@ -876,8 +876,9 @@ function VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID)
 	
 	VehicleSeatIndicatorBackgroundTexture:SetTexture(backgroundTexture);
 	
-	local totalHeight = VehicleSeatIndicatorBackgroundTexture:GetFileHeight();
-	local totalWidth = VehicleSeatIndicatorBackgroundTexture:GetFileWidth();
+	--These have been hard-coded in for now. FIXME (need something returned from GetVehicleUIIndicator that gives height/width)
+	local totalHeight = 128; --VehicleSeatIndicatorBackgroundTexture:GetFileHeight();
+	local totalWidth = 128; --VehicleSeatIndicatorBackgroundTexture:GetFileWidth();
 	VehicleSeatIndicator:SetHeight(totalHeight);
 	VehicleSeatIndicator:SetWidth(totalWidth);
 	

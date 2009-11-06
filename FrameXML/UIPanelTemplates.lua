@@ -288,6 +288,9 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 			_G[self:GetName().."ScrollBar"]:Hide();
 			_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
+			if ( self.haveTrack ) then
+				_G[self:GetName().."Track"]:Hide();
+			end
 		else
 			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
@@ -300,6 +303,9 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
 		_G[self:GetName().."ScrollBar"]:Show();
 		_G[scrollbar:GetName().."ThumbTexture"]:Show();
+		if ( self.haveTrack ) then
+			_G[self:GetName().."Track"]:Show();
+		end		
 		-- The 0.005 is to account for precision errors
 		if ( yrange - value > 0.005 ) then
 			_G[scrollbar:GetName().."ScrollDownButton"]:Enable();

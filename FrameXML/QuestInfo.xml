@@ -271,10 +271,11 @@
 						<AbsDimension x="285" y="0"/>
 					</Size>
 				</FontString>
-				<FontString name="QuestInfoObjectivesHeader" inherits="QuestTitleFont" text="QUEST_OBJECTIVES"  justifyH="LEFT" />
+				<FontString name="QuestInfoObjectivesHeader" inherits="QuestTitleFont" text="QUEST_OBJECTIVES"  justifyH="LEFT">
 					<Size>
 						<AbsDimension x="285" y="0"/>
-					</Size>				
+					</Size>
+				</FontString>
 				<FontString name="QuestInfoDescriptionText" inherits="QuestFont" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="285" y="0"/>
@@ -505,5 +506,4 @@
 			</Frame>			
 		</Frames>
 	</Frame>
-	
 </Ui>

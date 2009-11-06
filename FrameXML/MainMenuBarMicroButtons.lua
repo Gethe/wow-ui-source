@@ -172,8 +172,9 @@ end
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
+		local level = ...;
 		UpdateMicroButtons();
-		if ( not CharacterFrame:IsShown() ) then
+		if ( not CharacterFrame:IsShown() and level >= SHOW_TALENT_LEVEL) then
 			SetButtonPulse(self, 60, 1);
 		end
 	elseif ( event == "UNIT_LEVEL" or event == "PLAYER_ENTERING_WORLD" ) then

@@ -108,7 +108,7 @@
 	</Button>
 	<Frame name="LFDDungeonReadyPopup" hidden="true">
 		<Size>
-			<AbsDimension x="306" y="193"/>
+			<AbsDimension x="306" y="223"/>
 		</Size>
 		<Frames>
 			<Frame name="LFDDungeonReadyStatus" toplevel="true" enableMouse="true">
@@ -378,6 +378,42 @@
 							</Layer>
 						</Layers>
 					</Frame>
+					<Frame name="$parentRandomInProgressFrame" parentKey="randomInProgress">
+						<Size>
+							<AbsDimension x="170" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentLabel" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR">
+									<Size>
+										<AbsDimension x="210" y="40"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.6640625" top="0.3125" bottom="0"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentStatusText" inherits="GameFontNormal" justifyH="CENTER" text="THIS_DUNGEON_IN_PROGRESS">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame name="$parentInstanceInfoFrame" parentKey="instanceInfo">
 						<Size>
 							<AbsDimension x="170" y="50"/>
@@ -391,7 +427,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR" setAllPoints="true">
+								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR">
 									<Size>
 										<AbsDimension x="170" y="40"/>
 									</Size>

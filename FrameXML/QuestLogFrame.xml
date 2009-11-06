@@ -621,12 +621,12 @@
 			</Button>
 			<Button name="QuestLogFrameShowMapButton">
 				<Size>
-					<AbsDimension x="48" y="48"/>
+					<AbsDimension x="48" y="32"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-25" y="-30"/>
+							<AbsDimension x="-25" y="-38"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -634,12 +634,12 @@
 					<Layer level="ARTWORK">
 						<Texture name="$parentTexture" file="Interface\QuestFrame\UI-QuestMap_Button" parentKey="texture">
 							<Size>
-								<AbsDimension x="48" y="48"/>
+								<AbsDimension x="48" y="32"/>
 							</Size>
 							<Anchors>
 								<Anchor point="RIGHT"/>
 							</Anchors>
-							<TexCoords left="0.125" right="0.875" top="0.0625" bottom="0.4375"/>
+							<TexCoords left="0.125" right="0.875" top="0.0" bottom="0.5"/>
 						</Texture>
 						<FontString name="$parentText" inherits="GameFontNormal" text="SHOW_MAP" parentKey="text">
 							<Anchors>
@@ -658,14 +658,13 @@
 					</OnLoad>
 					<OnClick>
 						local questID = select(9, GetQuestLogTitle(QuestLogFrame.selectedIndex))
-						--WorldMap_OpenToQuest(questID, self:GetParent());
-						self.texture:SetTexCoord(0.125, 0.875, 0.0625, 0.4375);
+						WorldMap_OpenToQuest(questID, self:GetParent());
 					</OnClick>
 					<OnMouseDown>
-						self.texture:SetTexCoord(0.125, 0.875, 0.5625, 0.9375);
+						self.texture:SetTexCoord(0.125, 0.875, 0.5, 1.0);
 					</OnMouseDown>
 					<OnMouseUp>
-						self.texture:SetTexCoord(0.125, 0.875, 0.0625, 0.4375);
+						self.texture:SetTexCoord(0.125, 0.875, 0.0, 0.5);
 					</OnMouseUp>
 				</Scripts>
 			</Button>

@@ -116,10 +116,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PARTY_INVITE_CANCEL");
 	self:RegisterEvent("GUILD_INVITE_REQUEST");
 	self:RegisterEvent("GUILD_INVITE_CANCEL");
-	self:RegisterEvent("LFG_MATCH_REQUEST");
-	self:RegisterEvent("LFG_MATCH_CANCEL");
-	self:RegisterEvent("LFG_PENDING_REQUEST");
-	self:RegisterEvent("LFG_PENDING_CANCEL");
 	self:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
 	self:RegisterEvent("PLAYER_CAMPING");
 	self:RegisterEvent("PLAYER_QUITING");
@@ -557,22 +553,6 @@ function UIParent_OnEvent(self, event, ...)
 	end
 	if ( event == "GUILD_INVITE_CANCEL" ) then
 		StaticPopup_Hide("GUILD_INVITE");
-		return;
-	end
-	if ( event == "LFG_MATCH_REQUEST" ) then
-		StaticPopup_Show("LFG_MATCH", arg1);
-		return;
-	end
-	if ( event == "LFG_MATCH_CANCEL" ) then
-		StaticPopup_Hide("LFG_MATCH");
-		return;
-	end
-	if ( event == "LFG_PENDING_REQUEST" ) then
-		StaticPopup_Show("LFG_PENDING");
-		return;
-	end
-	if ( event == "LFG_PENDING_CANCEL" ) then
-		StaticPopup_Hide("LFG_PENDING");
 		return;
 	end
 	if ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
@@ -1832,6 +1812,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if ( ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) or
 		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
 		HideMultiCastActionBar();
+	elseif ( HasMultiCastActionBar() ) then
+		ShowMultiCastActionBar();
 	end
 
 	-- If petactionbar is already shown, set its point in addition to changing its y target
@@ -1867,25 +1849,34 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 		
 	end
-
+	
 	-- Boss frames
+	local numBossFrames = 0;
+	local durabilityXOffset = CONTAINER_OFFSET_X;
+	local durabilityYOffset = anchorY;
 	if ( Boss1TargetFrame ) then
-		-- need to multiply because boss frames are scaled down and 1.3 worked the best with 0, 1, or 2 right action bars
-		Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY + 20);
+		for i = 1, MAX_BOSS_FRAMES do
+			if ( _G["Boss"..i.."TargetFrame"]:IsShown() ) then
+				numBossFrames = numBossFrames + 1;
+			else
+				break;
+			end
+		end
+		if ( numBossFrames > 0 ) then
+			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY + 20);
+			anchorY = anchorY - 6 - numBossFrames * 66;
+			durabilityXOffset = durabilityXOffset + 135;
+		end
 	end
 	
 	-- Setup durability offset
 	if ( DurabilityFrame ) then
-		local durabilityOffset = 0;
 		if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
-			durabilityOffset = 20;
+			durabilityXOffset = durabilityXOffset + 20;
 		end
-		if ( Boss1TargetFrame and Boss1TargetFrame:IsShown() ) then
-			durabilityOffset = durabilityOffset + 135;
-		end
-		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X-durabilityOffset, anchorY);
-		if ( DurabilityFrame:IsShown() ) then
-			anchorY = anchorY - DurabilityFrame:GetHeight();
+		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -durabilityXOffset, durabilityYOffset);
+		if ( DurabilityFrame:IsShown() and numBossFrames == 0 ) then
+			anchorY = anchorY - DurabilityFrame:GetHeight() - 10;
 		end
 	end
 	
@@ -1903,8 +1894,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		-- move up if only the minimap cluster is above, move down a little otherwise
 		if ( anchorY == 0 ) then
 			anchorY = 20;
-		else
-			anchorY = anchorY - 10;
 		end
 		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 		-- OnSizeChanged for WatchFrame handles its redraw
@@ -3549,8 +3538,8 @@ function GetLFGMode()
 	else
 		--Check if we are listed
 		if ( LFGQueuedForList ) then
-			for _, queued in pairs(LFGQueuedForList) do
-				if ( queued ) then
+			for dungeonID, queued in pairs(LFGQueuedForList) do
+				if ( queued and dungeonID > 0 ) then
 					return "listed", (LFG_IsEmpowered() and "empowered" or "unempowered");
 				end
 			end

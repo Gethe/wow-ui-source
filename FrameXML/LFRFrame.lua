@@ -14,6 +14,8 @@ NUM_LFR_LIST_BUTTONS = 19;
 
 LFR_BROWSE_AUTO_REFRESH_TIME = 20;
 
+local heroicIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-HEROIC:16:13:-5:-3:32:32:0:16:0:20|t";
+
 function LFRFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_LFG_LIST");
 	self:RegisterEvent("LFG_UPDATE");
@@ -128,7 +130,7 @@ end
 
 function LFRList_SetRaidEnabled(dungeonID, isEnabled)
 	SetLFGDungeonEnabled(dungeonID, isEnabled);
-	LFGEnabledList[dungeonID] = isEnabled;
+	LFGEnabledList[dungeonID] = not not isEnabled;	--Change to true/false
 end
 
 function LFRList_SetHeaderEnabled(headerID, isEnabled)
@@ -142,7 +144,7 @@ function LFRList_SetHeaderEnabled(headerID, isEnabled)
 			LFRList_SetRaidEnabled(dungeonID, isEnabled);
 		end
 	end
-	LFGEnabledList[headerID] = isEnabled;
+	LFGEnabledList[headerID] = not not isEnabled; --Change to true/false
 end
 
 
@@ -195,6 +197,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		local name =  info[LFG_RETURN_VALUES.name];
 		local minLevel, maxLevel = info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel];
 		local minRecLevel, maxRecLevel = info[LFG_RETURN_VALUES.minRecLevel], info[LFG_RETURN_VALUES.maxRecLevel];
+		local recLevel = info[LFG_RETURN_VALUES.recLevel];
 		
 		button.instanceName:SetText(name);
 		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
@@ -208,7 +211,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel));
 		end
 		button.level:Show();
-		local difficultyColor = GetQuestDifficultyColor((minRecLevel + maxRecLevel)/2);
+		local difficultyColor = GetQuestDifficultyColor(recLevel);
 		button.level:SetFontObject(difficultyColor.font);
 		
 		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered()) then
@@ -242,12 +245,26 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.lockedIndicator:Hide();
 	end
 	
+	local enableState;
 	if ( mode == "queued" or mode == "listed" ) then
-		button.enableButton:SetChecked(LFGQueuedForList[dungeonID]);
+		enableState = LFGQueuedForList[dungeonID];
 	elseif ( not LFR_CanQueueForMultiple() ) then
-		button.enableButton:SetChecked(dungeonID == LFRQueueFrame.selectedLFM);
+		enableState = dungeonID == LFRQueueFrame.selectedLFM;
 	else
-		button.enableButton:SetChecked(LFGEnabledList[dungeonID]);
+		enableState = LFGEnabledList[dungeonID];
+	end
+	
+	if ( LFR_CanQueueForMultiple() ) then
+		if ( enableState == 1 ) then	--Some are checked, some aren't.
+			button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Up");
+			button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Disabled");
+		else
+			button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+			button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+		end
+		button.enableButton:SetChecked(enableState and enableState ~= 0);
+	else
+		button.enableButton:SetChecked(enableState);
 	end
 	
 	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered() ) then
@@ -312,19 +329,20 @@ function LFRQueueFrame_Join()
 		end
 	end
 	
-	JoinLFG();
 	if ( LFRQueueFrameComment:HasFocus() ) then
 		LFRQueueFrameComment:ClearFocus();
 	else
 		SetLFGComment(LFRQueueFrameComment:GetText());
 	end
+	JoinLFG();
 end
 
 LFRHiddenByCollapseList = {};
 function LFRQueueFrame_Update()
 	local enableList;
 	
-	if ( LFG_IsEmpowered() and not queued) then
+	local mode, submode = GetLFGMode();
+	if ( LFG_IsEmpowered() and mode ~= "listed") then
 		enableList = LFGEnabledList;
 	else
 		enableList = LFGQueuedForList;
@@ -344,7 +362,7 @@ function LFRList_DefaultFilterFunction(dungeonID)
 	local level = UnitLevel("player");
 	local sufficientLevel = level >= info[LFG_RETURN_VALUES.minLevel] and level <= info[LFG_RETURN_VALUES.maxLevel];
 	return (hasHeader and sufficientExpansion and sufficientLevel) and
-		( level - LFR_MAX_SHOWN_LEVEL_DIFF <= info[LFG_RETURN_VALUES.maxRecLevel] or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
+		( level - LFR_MAX_SHOWN_LEVEL_DIFF <= info[LFG_RETURN_VALUES.recLevel] or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
 end
 
 LFR_CURRENT_FILTER = LFRList_DefaultFilterFunction;
@@ -412,7 +430,10 @@ function LFRBrowseFrameRaidDropDown_Initialize(self, level)
 		end
 	elseif ( level == 2 ) then
 		for _, dungeonID in ipairs(LFR_FULL_RAID_LIST[UIDROPDOWNMENU_MENU_VALUE]) do
-			info.text = LFGGetDungeonInfoByID(dungeonID)[LFG_RETURN_VALUES.name];
+			local info = LFGGetDungeonInfoByID(dungeonID);
+			local difficulty = info[LFG_RETURN_VALUES.difficulty];
+			local showHeroicIcon = (difficulty == 1) or (difficulty == 3); 
+			info.text = (showHeroicIcon and heroicIcon or "")..info[LFG_RETURN_VALUES.name];
 			info.value = dungeonID;
 			info.func = LFRBrowseFrameRaidDropDownButton_OnClick;
 			info.checked = activeSearching == info.value;

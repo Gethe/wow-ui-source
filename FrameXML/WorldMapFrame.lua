@@ -148,6 +148,8 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapPOIFrame.allowBlobTooltip = true;
 	WorldMapQuestDetailScrollFrame.scrollBarHideable = true;
 	WorldMapQuestRewardScrollFrame.scrollBarHideable = true;
+	WorldMapQuestDetailScrollFrame.haveTrack = true;
+	WorldMapQuestRewardScrollFrame.haveTrack = true;	
 end
 
 function WorldMapFrame_OnShow(self)
@@ -1364,7 +1366,8 @@ function WorldMap_ToggleSizeUp()
 	-- tiny adjustments
 	WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 4);
 	WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -16, 4);
-	WorldMapFrameTitle:SetPoint("TOP", 0, -6);
+	WorldMapFrameTitle:ClearAllPoints();
+	WorldMapFrameTitle:SetPoint("CENTER", 0, 372);
 end
 
 function WorldMap_ToggleSizeDown()
@@ -1409,23 +1412,30 @@ function WorldMap_ToggleSizeDown()
 	-- tiny adjustments
 	WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 5);
 	WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -18, 5);
+	WorldMapFrameTitle:ClearAllPoints();
 	WorldMapFrameTitle:SetPoint("TOP", 0, -5);
+	-- select quest in objectives tracker
+	if ( WorldMapQuestScrollChildFrame.selected ) then
+		WatchFrame_SelectQuestPOI(WorldMapQuestScrollChildFrame.selected.questId);
+	end
 end
 
 function WorldMapQuestShowObjectives_Toggle()
 	if ( WorldMapQuestShowObjectives:GetChecked() ) then
 		WatchFrame.showObjectives = true;
 		WorldMapBlobFrame:Show();	
-		WorldMapPOIFrame:Show();		
+		WorldMapPOIFrame:Show();
+		QuestLogFrameShowMapButton:Show();		
 	else
 		WatchFrame.showObjectives = nil;
 		WorldMapBlobFrame:Hide();
 		WorldMapPOIFrame:Hide();
-		WatchFrame_ClearQuestPOIs(0, 0);
+		WatchFrame_Update();
+		QuestLogFrameShowMapButton:Hide();	
 	end
 end
 
-function WorldMapFrame_UpdateQuests()
+function WorldMapFrame_UpdateQuests(selectQuestId)
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily;
 	local questId, questLogIndex;
 	local questFrame;
@@ -1447,6 +1457,9 @@ function WorldMapFrame_UpdateQuests()
 				questFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, 0);
 			else
 				questFrame:SetPoint("TOPLEFT", WorldMapQuestScrollChildFrame, "TOPLEFT", 2, 0);
+			end
+			if ( selectQuestId == questId ) then
+				WorldMapQuestScrollChildFrame.selected = questFrame;
 			end			
 			-- set up indexes
 			questFrame.questId = questId;
@@ -1458,11 +1471,11 @@ function WorldMapFrame_UpdateQuests()
 			WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
 			-- set quest text
 			questFrame.title:SetText(title);
-			if ( isComplete ) then
+			numObjectives = GetNumQuestLeaderBoards(questLogIndex);
+			if ( isComplete or numObjectives == 0 ) then
 				questFrame.objectives:SetText("- "..GetQuestLogCompletionText(questLogIndex));
 			else
 				local questText = "";
-				numObjectives = GetNumQuestLeaderBoards(questLogIndex);
 				for j = 1, numObjectives do
 					text, _, finished = GetQuestLogLeaderBoard(j, questLogIndex);
 					if ( text and not finished ) then
@@ -1482,23 +1495,22 @@ function WorldMapFrame_UpdateQuests()
 			lastFrame = questFrame;
 		end
 	end
-	local currentSelection = WorldMapQuestScrollChildFrame.selected;
+	-- hide frames not being used for this map
 	for i = questCount + 1, MAX_NUM_QUESTS do
 		questFrame = _G["WorldMapQuestFrame"..i];
 		if ( not questFrame ) then
 			break;
 		end
 		questFrame:Hide();
-		if ( questFrame == currentSelection ) then
+		if ( questFrame == WorldMapQuestScrollChildFrame.selected ) then
 			WorldMapQuestScrollChildFrame.selected = nil;
 		end
 		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
 		questFrame.poiIcon:Hide();
 	end
+	-- select a quest
 	if ( questCount > 0 ) then
 		WorldMapFrame_SelectQuest(WorldMapQuestScrollChildFrame.selected);
-	else
-		WorldMapPOIFrameHighlight:Hide();
 	end
 	WorldMapFrame.numQuests = questCount;
 end
@@ -1508,7 +1520,9 @@ function WorldMapFrame_SelectQuest(questFrame)
 	if ( not questFrame ) then
 		questFrame = _G["WorldMapQuestFrame1"];
 	end
-	if ( WorldMapQuestScrollChildFrame.selected ) then
+	-- clear current selection if different
+	if ( WorldMapQuestScrollChildFrame.selected and WorldMapQuestScrollChildFrame.selected ~= questFrame ) then
+		WorldMapQuestScrollChildFrame.selected.poiIcon.selectionGlow:Hide();
 		WorldMapBlobFrame:DrawQuestBlob(WorldMapQuestScrollChildFrame.selected.questId, false);
 		if ( MAP_QUEST_DIFFICULTY == "1" ) then
 			color = GetQuestDifficultyColor(WorldMapQuestScrollChildFrame.selected.level);
@@ -1519,16 +1533,13 @@ function WorldMapFrame_SelectQuest(questFrame)
 	WorldMapQuestSelectedFrame:SetPoint("TOPLEFT", questFrame, "TOPLEFT", -10, 0);
 	WorldMapQuestSelectedFrame:SetHeight(questFrame:GetHeight());
 	WorldMapQuestSelectedFrame:Show();
+	questFrame.poiIcon.selectionGlow:Show();
 	-- colors
 	if ( MAP_QUEST_DIFFICULTY == "1" ) then
 		questFrame.title:SetTextColor(1, 1, 1);
 		color = GetQuestDifficultyColor(questFrame.level);
 		WorldMapQuestSelectBar:SetVertexColor(color.r, color.g, color.b);
 	end
-	-- highlight
-	WorldMapPOIFrameHighlight:SetPoint("CENTER", questFrame.poiIcon);
-	WorldMapPOIFrameHighlight:Show();
-	WorldMapPOIFrameMouseOverHighlight:Hide();
 	-- only display quest info if worldmap frame is embiggened
 	if ( not WorldMapFrame.sizedDown ) then
 		SelectQuestLogEntry(questFrame.questLogIndex);
@@ -1538,6 +1549,8 @@ function WorldMapFrame_SelectQuest(questFrame)
 		QuestInfo_Display(QUEST_TEMPLATE_MAP2, WorldMapQuestRewardScrollChildFrame);
 		WorldMapQuestRewardScrollFrameScrollBar:SetValue(0);
 		ScrollFrame_OnScrollRangeChanged(WorldMapQuestRewardScrollFrame);
+	else
+		WatchFrame_SelectQuestPOI(questFrame.questId);
 	end	
 	if ( questFrame.completed ) then
 		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
@@ -1564,13 +1577,18 @@ function WorldMapFrame_DisplayQuestPOI(questFrame, isComplete)
 	if ( isComplete ) then
 		frame = _G["WorldMapQuestPOICompleted"..index];
 		if ( not frame ) then
-			frame = CreateFrame("Button", "WorldMapQuestPOICompleted"..index, WorldMapPOIFrame, "WorldMapQuestPOICompletedTemplate");
+			frame = CreateFrame("Button", "WorldMapQuestPOICompleted"..index, WorldMapPOIFrame, "WatchFrameQuestPOICompletedTemplate");
+			frame:SetScript("OnEnter", WorldMapQuestPOI_OnEnter);
+			frame:SetScript("OnLeave", WorldMapQuestPOI_OnLeave);
+			frame:SetScript("OnClick", WorldMapQuestPOI_OnClick);			
 		end
 	else
-		
 		frame = _G["WorldMapQuestPOI"..index];
 		if ( not frame ) then
-			frame = CreateFrame("Button", "WorldMapQuestPOI"..index, WorldMapPOIFrame, "WorldMapQuestPOITemplate");
+			frame = CreateFrame("Button", "WorldMapQuestPOI"..index, WorldMapPOIFrame, "WatchFrameQuestPOITemplate");
+			frame:SetScript("OnEnter", WorldMapQuestPOI_OnEnter);
+			frame:SetScript("OnLeave", WorldMapQuestPOI_OnLeave);
+			frame:SetScript("OnClick", WorldMapQuestPOI_OnClick);
 		end
 		index = index - numCompletedQuests - 1;
 		local size = 1 / QUEST_NUMERIC_ICONS_PER_ROW;
@@ -1578,14 +1596,15 @@ function WorldMapFrame_DisplayQuestPOI(questFrame, isComplete)
 		local xOffset = mod(index, QUEST_NUMERIC_ICONS_PER_ROW) * size;
 		frame.number:SetTexCoord(xOffset + 0.004, xOffset + size, yOffset + 0.004, yOffset + size);
 	end
+	questFrame.poiIcon = frame;
 	-- position frame
-	local _, posX, posY = QuestPOIGetIconInfo(questFrame.questId);
+	local _, posX, posY, objective = QuestPOIGetIconInfo(questFrame.questId);
 	if ( posX and posY ) then
 		posX = posX * WorldMapDetailFrame:GetWidth() * WorldMapPOIFrame.ratio;
 		posY = -posY * WorldMapDetailFrame:GetHeight() * WorldMapPOIFrame.ratio;
 		frame:SetPoint("CENTER", "WorldMapBlobFrame", "TOPLEFT", posX, posY);
 	end
-	questFrame.poiIcon = frame;
+	frame.selectionGlow:Hide();
 	frame.quest = questFrame;
 	frame:Show();	
 end
@@ -1636,8 +1655,6 @@ function WorldMapQuestFrame_OnEnter(self)
 	if ( not self.completed ) then
 		WorldMapBlobFrame:DrawQuestBlob(self.questId, true);
 	end
-	WorldMapPOIFrameMouseOverHighlight:SetPoint("CENTER", self.poiIcon);	
-	WorldMapPOIFrameMouseOverHighlight:Show();
 end
 
 function WorldMapQuestFrame_OnLeave(self)
@@ -1652,7 +1669,6 @@ function WorldMapQuestFrame_OnLeave(self)
 	if ( not self.completed ) then
 		WorldMapBlobFrame:DrawQuestBlob(self.questId, false);
 	end
-	WorldMapPOIFrameMouseOverHighlight:Hide();
 end
 
 function WorldMapQuestFrame_OnMouseUp(self)
@@ -1682,23 +1698,33 @@ end
 
 function WorldMapQuestPOI_SetTooltip(questLogIndex, numObjectives)
 	local title, _, _, _, _, _, isComplete = GetQuestLogTitle(questLogIndex);
-	WorldMapTooltip:SetOwner(WorldMapFrame, "ANCHOR_CURSOR");
-	WorldMapTooltip:SetText(title);	
+	WorldMapTooltip:SetOwner(WorldMapFrame, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	WorldMapTooltip:SetText(title);
 	if ( isComplete ) then
 		WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, 1);
 	else
 		local text, finished;
-		local numPOITooltips = WorldMapBlobFrame:GetNumTooltips();
-		numObjectives = numObjectives or GetNumQuestLeaderBoards(questLogIndex);
-		for i = 1, numObjectives do
-			if(numPOITooltips and (numPOITooltips == numObjectives)) then
-				local questPOIIndex = WorldMapBlobFrame:GetTooltipIndex(i);
-				text, _, finished = GetQuestPOILeaderBoard(questPOIIndex, questLogIndex);
-			else
-				text, _, finished = GetQuestLogLeaderBoard(i, questLogIndex);
+		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
+		if(numItemDropTooltips and numItemDropTooltips > 0) then
+			for i = 1, numItemDropTooltips do
+				text, _, finished = GetQuestLogItemDrop(i, questLogIndex);
+				if ( text and not finished ) then
+					WorldMapTooltip:AddLine("- "..WorldMapFrame_ReverseQuestObjective(text), 1, 1, 1, 1);
+				end
 			end
-			if ( text and not finished ) then
-				WorldMapTooltip:AddLine("- "..WorldMapFrame_ReverseQuestObjective(text), 1, 1, 1, 1);
+		else
+			local numPOITooltips = WorldMapBlobFrame:GetNumTooltips();
+			numObjectives = numObjectives or GetNumQuestLeaderBoards(questLogIndex);
+			for i = 1, numObjectives do
+				if(numPOITooltips and (numPOITooltips == numObjectives)) then
+					local questPOIIndex = WorldMapBlobFrame:GetTooltipIndex(i);
+					text, _, finished = GetQuestPOILeaderBoard(questPOIIndex, questLogIndex);
+				else
+					text, _, finished = GetQuestLogLeaderBoard(i, questLogIndex);
+				end
+				if ( text and not finished ) then
+					WorldMapTooltip:AddLine("- "..WorldMapFrame_ReverseQuestObjective(text), 1, 1, 1, 1);
+				end
 			end
 		end
 	end	
@@ -1731,7 +1757,7 @@ function WorldMapBlobFrame_OnUpdate(self)
 end
 
 function WorldMapBlobFrame_CalculateHitTranslations()
-	self = WorldMapBlobFrame;
+	local self = WorldMapBlobFrame;
 	local centerX, centerY = self:GetCenter();
 	local width = self:GetWidth();
 	local height = self:GetHeight();
@@ -1753,5 +1779,15 @@ function WorldMapFrame_ResetQuestColors()
 			end
 			questFrame.title:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		end
+	end
+end
+
+function WorldMap_OpenToQuest(questID, frameToShowOnClose)
+	ShowUIPanel(WorldMapFrame);	
+	local mapID = GetQuestWorldMapAreaID(questID);
+	if ( mapID ~= 0 ) then
+		SetMapByID(mapID);
+		WorldMapFrame_UpdateQuests(questID);
+		WorldMapFrame_AdjustMapAndQuestList();
 	end
 end

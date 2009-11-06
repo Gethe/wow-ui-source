@@ -501,6 +501,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	whileDead = 1,
 	hideOnEscape = 1,
 	noCancelOnEscape = 1,
+	noCancelOnReuse = 1,
 	multiple = 1,
 	closeButton = 1,
 	closeButtonIsHide = 1,
@@ -1446,41 +1447,6 @@ StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = {
 		self:GetParent():Hide();
 	end,
 	timeout = 60,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["LFG_MATCH"] = {
-	text = MATCHMAKING_MATCH_S,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	sound = "igPlayerInvite",
-	OnShow = function(self)
-		StaticPopupDialogs["LFG_MATCH"].inviteAccepted = nil;
-	end,
-	OnAccept = function(self)
-		AcceptLFGMatch();
-		StaticPopupDialogs["LFG_MATCH"].inviteAccepted = 1;
-	end,
-	OnCancel = function(self)
-		DeclineLFGMatch();
-	end,
-	OnHide = function(self)
-		if ( not StaticPopupDialogs["LFG_MATCH"].inviteAccepted ) then
-			DeclineLFGMatch();
-		end
-	end,
-	timeout = 60,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["LFG_PENDING"] = {
-	text = MATCHMAKING_PENDING,
-	button1 = CANCEL,
-	OnAccept = function(self)
-		CancelPendingLFG();
-	end,
-	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1
 };
@@ -2656,47 +2622,6 @@ StaticPopupDialogs["CONFIRM_COMBAT_FILTER_DEFAULTS"] = {
 	timeout = 0,
 	whileDead = 1,
 	exclusive = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["SET_LFGNOTE"] = {
-	text = SET_COMMENT_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 63,
-	hasWideEditBox = 1,
-	OnAccept = function(self)
-		SetLFGComment(self.wideEditBox:GetText());
-	end,
-	OnShow = function(self)
-		--Sets the text to the 7th return from GetGuildRosterInfo(GetGuildRosterSelection());
-
-		local lfm, joined, queued, _, _, lfgComment = GetLFGInfoServer();
-		if (not joined) then
-			_, _, _, lfgComment = GetLFGInfoLocal();
-		end
-
-		self.wideEditBox:SetText(lfgComment);
-		self.wideEditBox:SetFocus();
-	end,
-	OnHide = function(self)
-		if ( ChatFrameEditBox:IsShown() ) then
-			ChatFrameEditBox:SetFocus();
-		end
-		self.wideEditBox:SetText("");
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		SetLFGComment(self:GetText());
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
 	hideOnEscape = 1
 };
 

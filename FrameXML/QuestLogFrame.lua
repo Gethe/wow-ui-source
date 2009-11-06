@@ -315,7 +315,7 @@ function QuestLog_OnUpdate(self, elapsed)
 end
 
 function QuestLog_UpdateMapButton()
-	if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" and GetNumQuestLogEntries() ~= 0 ) then
+	if ( WatchFrame.showObjectives and GetNumQuestLogEntries() ~= 0 ) then
 		QuestLogFrameShowMapButton:Show();
 	else
 		QuestLogFrameShowMapButton:Hide();
@@ -878,6 +878,6 @@ function QuestLogShowMapPOI_UpdatePosition()
 	
 	if ( parent ) then
 		QuestLogFrameShowMapButton:SetParent(parent);
-		QuestLogFrameShowMapButton:SetPoint("TOPRIGHT", -25, -30);
+		QuestLogFrameShowMapButton:SetPoint("TOPRIGHT", -25, -38);
 	end
 end

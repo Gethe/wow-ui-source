@@ -11,12 +11,13 @@ LFG_RETURN_VALUES = {
 	typeID = 2,
 	minLevel = 3,
 	maxLevel = 4,
-	minRecLevel = 5,	--Minimum recommended level
-	maxRecLevel = 6,	--Maximum recommended level
-	expansionLevel = 7,
-	groupID = 8,
-	texture = 9,
-	difficulty = 10,
+	recLevel = 5,	--Recommended level
+	minRecLevel = 6,	--Minimum recommended level
+	maxRecLevel = 7,	--Maximum recommended level
+	expansionLevel = 8,
+	groupID = 9,
+	texture = 10,
+	difficulty = 11,
 }
 
 LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g. attunements)
@@ -28,9 +29,9 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	"RAID_LOCKED",
 }
 
-local tankIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:0:19:22:41|t";
-local healerIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:20:39:1:20|t";
-local damageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:20:39:22:41|t";
+local tankIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:64:64:0:19:22:41|t";
+local healerIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:64:64:20:39:1:20|t";
+local damageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:-1:64:64:20:39:22:41|t";
 
 --Variables to store dungeon info in Lua
 --local LFDDungeonList, LFRRaidList, LFGDungeonInfo, LFGCollapseList, LFGEnabledList, LFDHiddenByCollapseList, LFGLockList;
@@ -410,6 +411,10 @@ function LFGListRemoveHeadersWithoutChildren(list)
 	end
 end
 
+--false = no children so far
+--0 = all children unchecked
+--1 = some children checked, some unchecked
+--2 = all children checked
 function LFGListUpdateHeaderEnabledAndLockedStates(dungeonList, enabledList, lockList, hiddenByCollapseList)
 	for i=1, #dungeonList do
 		local id = dungeonList[i];
@@ -419,8 +424,20 @@ function LFGListUpdateHeaderEnabledAndLockedStates(dungeonList, enabledList, loc
 		elseif ( not lockList[id] ) then
 			local groupID = LFGGetDungeonInfoByID(id)[LFG_RETURN_VALUES.groupID];
 			lockList[groupID] = false;
-			if ( enabledList[id] ) then
-				enabledList[groupID] = true;
+			local idState = enabledList[id];
+			local groupState = enabledList[groupID];
+			if ( idState ) then
+				if ( not groupState or groupState == 2 ) then
+					enabledList[groupID] = 2;
+				elseif ( groupState == 0 or groupState == 1 ) then
+					enabledList[groupID] = 1;
+				end
+			else
+				if ( not groupState or groupState == 0 ) then
+					enabledList[groupID] = 0;
+				elseif ( groupState == 1 or groupState == 2 ) then
+					enabledList[groupID]  = 1;
+				end
 			end
 		end
 	end
@@ -432,8 +449,20 @@ function LFGListUpdateHeaderEnabledAndLockedStates(dungeonList, enabledList, loc
 		elseif ( not lockList[id] ) then
 			local groupID = LFGGetDungeonInfoByID(id)[LFG_RETURN_VALUES.groupID];
 			lockList[groupID] = false;
-			if ( enabledList[id] ) then
-				enabledList[groupID] = true;
+			local idState = enabledList[id];
+			local groupState = enabledList[groupID];
+			if ( idState ) then
+				if ( not groupState or groupState == 2 ) then
+					enabledList[groupID] = 2;
+				elseif ( groupState == 0 or groupState == 1 ) then
+					enabledList[groupID] = 1;
+				end
+			else
+				if ( not groupState or groupState == 0 ) then
+					enabledList[groupID] = 0;
+				elseif ( groupState == 1 or groupState == 2 ) then
+					enabledList[groupID]  = 1;
+				end
 			end
 		end
 	end

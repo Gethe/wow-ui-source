@@ -28,6 +28,7 @@ WATCHFRAME_NUM_TIMERS = 0;
 WATCHFRAME_NUM_ITEMS = 0;
 WATCHFRAME_NUM_POI_ACTIVE = 0;
 WATCHFRAME_NUM_POI_COMPLETED = 0;
+WATCHFRAME_NUM_ICONS_COMPLETED = 0;
 
 WATCHFRAME_OBJECTIVEHANDLERS = {};
 WATCHFRAME_TIMEDCRITERIA = {};
@@ -533,7 +534,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 	end
 end
 
-function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem)
+function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, isComplete)
 	-- anchor
 	if ( anchor ) then
 		line:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, verticalOffset);
@@ -563,8 +564,12 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 	end
 	line.text:SetWidth(WATCHFRAME_MAXLINEWIDTH - usedWidth);
 	if ( line.text:GetHeight() > WATCHFRAME_LINEHEIGHT ) then
-		line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
-		line.text:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
+		if ( isComplete ) then
+			line:SetHeight(line.text:GetHeight());
+		else
+			line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
+			line.text:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
+		end
 		WATCHFRAME_SETLINES_NUMLINES = WATCHFRAME_SETLINES_NUMLINES + 2;
 	else
 		WATCHFRAME_SETLINES_NUMLINES = WATCHFRAME_SETLINES_NUMLINES + 1;
@@ -722,9 +727,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local watchItemIndex = 0;
 	
 	local numActivePOI = 0;
-	local numCompletedPOI = 0;
+	local numCompletedPOI = 0;		-- completed in the current zone if Show Objectives is turned on
+	local numCompletedIcons = 0;	-- completed otherwise
 	
-	local text, finished;	
+	local text, finished;
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID;
@@ -752,12 +758,12 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			end
 			lastLine = line;
 			
-			if ( isComplete ) then
+			numObjectives = GetNumQuestLeaderBoards(questIndex);
+			if ( isComplete or numObjectives == 0 ) then
 				line = WatchFrame_GetQuestLine();
-				WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW);
+				WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
 				lastLine = line;
 			else
-				numObjectives = GetNumQuestLeaderBoards(questIndex);
 				for j = 1, numObjectives do
 					text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
 					if ( not finished ) then
@@ -782,7 +788,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 
 			-- turn on quest item
 			local itemButton;
-			if ( item ) then
+			if ( item and not isComplete ) then
 				watchItemIndex = watchItemIndex + 1;
 				itemButton = _G["WatchFrameItem"..watchItemIndex];
 				if ( not itemButton ) then
@@ -823,9 +829,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				else
 					numActivePOI = numActivePOI + 1;
 				end
-				questPOI = WatchFrame_GetQuestPOI(numActivePOI, CURRENT_MAP_QUESTS[questID], isComplete, numCompletedPOI);						
-				questPOI:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", 0, 5);
-				questPOI:Show();
+				WatchFrame_SetQuestPOI(questTitle, questID, numActivePOI, CURRENT_MAP_QUESTS[questID], isComplete, numCompletedPOI);						
+			elseif ( isComplete ) then
+				numCompletedIcons = numCompletedIcons + 1;
+				WatchFrame_SetCompletedIcon(questTitle, questID, numCompletedIcons);
 			end
 			if ( lastBottom ) then
 				heightUsed = topEdge - lastLine:GetBottom();
@@ -838,7 +845,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	for i = watchItemIndex + 1, WATCHFRAME_NUM_ITEMS do
 		_G["WatchFrameItem" .. i]:Hide();
 	end
-	WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI);	
+	WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI);
+	WatchFrame_ClearCompletedIcons(numCompletedIcons);
 	WatchFrame_ReleaseUnusedQuestLines();
 
 	return heightUsed, maxWidth;	
@@ -991,17 +999,13 @@ function WatchFrameDropDown_Initialize (self)
 			info.checked = false;
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
-		
-		--[[
-		if ( SHOW_QUEST_OBJECTIVES_ON_MAP == "1" ) then
+		if ( WatchFrame.showObjectives ) then
 			info.text = OBJECTIVES_SHOW_QUEST_MAP;
 			info.func = WatchFrame_OpenMapToQuest;
-			test = self
 			info.arg1 = self.index;
 			info.checked = false;
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
-		]]--
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(self.index);
 		local info = UIDropDownMenu_CreateInfo();
@@ -1144,7 +1148,6 @@ function WatchFrame_ReverseQuestObjective(text)
 end
 
 function WatchFrameLinkButtonTemplate_Highlight(self, onEnter)
-	--for index, line in pairs(self.lines) do
 	local line;
 	for index = self.startLine, self.lastLine do
 		line = self.lines[index];
@@ -1178,15 +1181,13 @@ function WatchFrame_GetCurrentMapQuests()
 	end
 end
 
-function WatchFrame_GetQuestPOI(buttonIndex, questIndex, isComplete, numComplete)
+function WatchFrame_SetQuestPOI(anchor, questId, buttonIndex, questIndex, isComplete, numComplete)
 	if ( isComplete ) then
 		buttonIndex = numComplete + MAX_QUESTLOG_QUESTS;
 	end
 	local poiButton = _G["WatchFrameQuestPOI"..buttonIndex];
 	if ( not poiButton ) then
-		poiButton = CreateFrame("Button", "WatchFrameQuestPOI"..buttonIndex, WatchFrameLines, "WorldMapQuestPOITemplate");
-		poiButton:SetScript("OnEnter", nil);
-		poiButton:SetScript("OnLeave", nil);
+		poiButton = CreateFrame("Button", "WatchFrameQuestPOI"..buttonIndex, WatchFrameLines, "WatchFrameQuestPOITemplate");
 		poiButton:SetScript("OnClick", WatchFrameQuestPOI_OnClick);
 		poiButton:SetScale(0.9);
 		if ( isComplete ) then
@@ -1204,7 +1205,23 @@ function WatchFrame_GetQuestPOI(buttonIndex, questIndex, isComplete, numComplete
 	end
 	poiButton.isComplete = isComplete;
 	poiButton.quest = questIndex;
-	return poiButton;
+	poiButton.questId = questId;	-- saving it for selection
+	poiButton:SetPoint("TOPRIGHT", anchor, "TOPLEFT", 0, 5);
+	poiButton.selectionGlow:Hide();
+	poiButton:Show();
+end
+
+function WatchFrame_SetCompletedIcon(anchor, questId, index)
+	local button = _G["WatchFrameCompletedQuest"..index];
+	if ( not button ) then
+		WATCHFRAME_NUM_ICONS_COMPLETED = index;
+		button = CreateFrame("Button", "WatchFrameCompletedQuest"..index, WatchFrameLines, "WatchFrameQuestPOICompletedTemplate");
+		button:SetScript("OnClick", function(self) WorldMap_OpenToQuest(self.questId); end);
+		button:SetScale(0.9);
+	end
+	button.questId = questId;
+	button:SetPoint("TOPRIGHT", anchor, "TOPLEFT", 8, 6);
+	button:Show();
 end
 
 function WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI)
@@ -1213,6 +1230,12 @@ function WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI)
 	end
 	for i = numCompletedPOI + 1, WATCHFRAME_NUM_POI_COMPLETED do
 		_G["WatchFrameQuestPOI"..i + MAX_QUESTLOG_QUESTS]:Hide();
+	end
+end
+
+function WatchFrame_ClearCompletedIcons(numCompletedIcons)
+	for i = numCompletedIcons + 1, WATCHFRAME_NUM_ICONS_COMPLETED do
+		_G["WatchFrameCompletedQuest"..i]:Hide();
 	end
 end
 
@@ -1225,8 +1248,22 @@ function WatchFrameQuestPOI_OnClick(self)
 	WorldMapFrame_SelectQuest(_G["WorldMapQuestFrame"..self.quest]);
 end
 
-function WatchFrameQuestPOI_OnEnter(self)
-end
-
-function WatchFrameQuestPOI_OnLeave(self)
+function WatchFrame_SelectQuestPOI(questId)
+	local poiButton;
+	for i = 1, WATCHFRAME_NUM_POI_ACTIVE do
+		poiButton = _G["WatchFrameQuestPOI"..i];
+		if ( poiButton.questId == questId ) then
+			poiButton.selectionGlow:Show();
+		else
+			poiButton.selectionGlow:Hide();
+		end
+	end
+	for i = 1, WATCHFRAME_NUM_POI_COMPLETED do
+		poiButton = _G["WatchFrameQuestPOI"..i + MAX_QUESTLOG_QUESTS];
+		if ( poiButton.questId == questId ) then
+			poiButton.selectionGlow:Show();
+		else
+			poiButton.selectionGlow:Hide();
+		end
+	end
 end

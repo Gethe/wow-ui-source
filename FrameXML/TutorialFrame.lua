@@ -58,6 +58,7 @@ TUTORIAL_DATA = {
 	[24] = "Equip",
 	[25] = "Death",
 	[27] = "Fat",
+	[28] = "Swim",
 	[29] = "Breath",
 	[30] = "Resting",
 	[31] = "Hearthstones",
@@ -74,6 +75,7 @@ TUTORIAL_DATA = {
 	[42] = "Welcome",
 	[43] = "QuestGray",
 	[44] = "Ranged",
+	[45] = "Ammo",
 	[46] = "RaidGroups",
     [47] = "TotemBar",
 	[48] = "Battleground1",
@@ -109,7 +111,7 @@ DISPLAY_DATA = {
 	-- if you don't assign one it will default to ARTWORK
 	["QuestGiver"] = {
 		tileHeight = 21, 
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
+		anchorData = {align = "RIGHT", xOff = -25, yOff = -100},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "TOP", xOff = 0, yOff = -110},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGiver", align = "TOP", xOff = -40, yOff = -50},
@@ -222,10 +224,10 @@ DISPLAY_DATA = {
 	},	
 	
 	["Death"] = {
-		tileHeight = 21, 
+		tileHeight = 22, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -175, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-SpiritRez", align = "TOP", xOff = 10, yOff = -50},
 	},	
 	
@@ -261,7 +263,7 @@ DISPLAY_DATA = {
 		anchorData = {align = "RIGHT", xOff = -25, yOff = 60},
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "TOP", xOff = 0, yOff = -110},
+		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCompleteCursor", align = "TOP", xOff = 0, yOff = -110},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestComplete", align = "TOP", xOff = -40, yOff = -50},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -60},
 	},
@@ -330,7 +332,7 @@ DISPLAY_DATA = {
 	},
 	
 	["RaidGroups"] = {
-		tileHeight = 12, 
+		tileHeight = 14, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
@@ -560,12 +562,26 @@ DISPLAY_DATA = {
 	},
 	
 	["Grouping"] = {
-		tileHeight = 16, 
+		tileHeight = 20, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -165, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-DudeParty", align = "TOP", xOff = -50, yOff = -63},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-GloveCursor", layer = "OVERLAY", align = "TOP", xOff = 40, yOff = -90},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
+	},
+	
+	["Swim"] = {
+		tileHeight = 14, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 10, yOff = -35},
+	},
+	
+	["Ammo"] = {
+		tileHeight = 14, 
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		mouseData = {image = "RightClick", align = "TOP", xOff = 10, yOff = -35},
 	},
 };
 

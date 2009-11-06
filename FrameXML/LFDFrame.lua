@@ -201,6 +201,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		local name =  info[LFG_RETURN_VALUES.name];
 		local minLevel, maxLevel = info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel];
 		local minRecLevel, maxRecLevel = info[LFG_RETURN_VALUES.minRecLevel], info[LFG_RETURN_VALUES.maxRecLevel];
+		local recLevel = info[LFG_RETURN_VALUES.recLevel];
 		
 		button.instanceName:SetText(name);
 		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
@@ -214,7 +215,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel));
 		end
 		button.level:Show();
-		local difficultyColor = GetQuestDifficultyColor((minRecLevel + maxRecLevel)/2);
+		local difficultyColor = GetQuestDifficultyColor(recLevel);
 		button.level:SetFontObject(difficultyColor.font);
 		
 		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered()) then
@@ -237,11 +238,21 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.lockedIndicator:Hide();
 	end
 	
+	local enableState= LFGEnabledList;
 	if ( mode == "queued" or mode == "listed" ) then
-		button.enableButton:SetChecked(LFGQueuedForList[dungeonID]);
+		enableState = LFGQueuedForList[dungeonID];
 	else
-		button.enableButton:SetChecked(LFGEnabledList[dungeonID]);
+		enableState = LFGEnabledList[dungeonID];
 	end
+	
+	if ( enableState == 1 ) then	--Some are checked, some aren't.
+		button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Up");
+		button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Disabled");
+	else
+		button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+		button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+	end
+	button.enableButton:SetChecked(enableState and enableState ~= 0);
 	
 	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered() ) then
 		button.enableButton:Disable();
@@ -337,7 +348,7 @@ end
 
 function LFDList_SetDungeonEnabled(dungeonID, isEnabled)
 	SetLFGDungeonEnabled(dungeonID, isEnabled);
-	LFGEnabledList[dungeonID] = isEnabled;
+	LFGEnabledList[dungeonID] = not not isEnabled; --Change to true/false.
 end
 
 function LFDList_SetHeaderEnabled(headerID, isEnabled)
@@ -351,7 +362,7 @@ function LFDList_SetHeaderEnabled(headerID, isEnabled)
 			LFDList_SetDungeonEnabled(dungeonID, isEnabled);
 		end
 	end
-	LFGEnabledList[headerID] = isEnabled;
+	LFGEnabledList[headerID] = not not isEnabled; --Change to true/false.
 end
 
 function LFDQueueFrameDungeonLockedIndicator_OnEnter(self)
@@ -431,25 +442,36 @@ function LFDDungeonReadyPopup_Update()
 		LFDDungeonReadyStatus:Hide();
 	
 		local LFDDungeonReadyDialog = LFDDungeonReadyDialog; --Make a local copy.
+		
 		if ( typeID == TYPEID_RANDOM_DUNGEON ) then
-			LFDDungeonReadyPopup:SetHeight(193);
 			LFDDungeonReadyDialog.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-RANDOMDUNGEON");
-			LFDDungeonReadyDialog.background:SetTexCoord(0, 294/512, 0, 118/128);
 			
 			LFDDungeonReadyDialog.label:SetText(RANDOM_DUNGEON_IS_READY);
+			
 			LFDDungeonReadyDialog.instanceInfo:Hide();
+			
+			if ( completedEncounters > 0 ) then
+				LFDDungeonReadyDialog.randomInProgress:Show();
+				LFDDungeonReadyPopup:SetHeight(223);
+				LFDDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
+			else
+				LFDDungeonReadyDialog.randomInProgress:Hide();
+				LFDDungeonReadyPopup:SetHeight(193);
+				LFDDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 118/128);
+			end
 		else
+			LFDDungeonReadyDialog.randomInProgress:Hide();
 			LFDDungeonReadyPopup:SetHeight(223);
+			LFDDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
 			texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..texture;
 			LFDDungeonReadyDialog.background:SetTexture(texture);
 			if ( LFDDungeonReadyDialog.background:GetTexture() ~= texture ) then	--We haven't added this texture yet. Default to the Deadmines.
 				LFDDungeonReadyDialog.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-Deadmines");	--DEBUG FIXME Default probably shouldn't be Deadmines
 			end
-			LFDDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
 			
 			LFDDungeonReadyDialog.label:SetText(SPECIFIC_DUNGEON_IS_READY);
 			LFDDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, totalEncounters);
-			LFDDungeonReadyDialogInstanceInfoFrame:Show();
+			LFDDungeonReadyDialog.instanceInfo:Show();
 		end
 
 		
@@ -599,7 +621,7 @@ function LFDQueueFrameTypeDropDown_SetUp(self)
 end
 
 local function isRandomDungeonDisplayable(id)
-	local name, typeID, minLevel, maxLevel, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local name, typeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
 	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
@@ -702,7 +724,7 @@ function LFDQueueFrameRandom_UpdateFrame()
 		return;
 	end
 	
-	local isHeroic = select(10, GetLFGDungeonInfo(dungeonID)) > 0;
+	local isHeroic = select(11, GetLFGDungeonInfo(dungeonID)) > 0;
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	local numRandoms = 4 - GetNumPartyMembers();
 	local moneyAmount = moneyBase + moneyVar * numRandoms;
@@ -932,7 +954,9 @@ LFDHiddenByCollapseList = {};
 function LFDQueueFrame_Update()
 	local enableList;
 	
-	if ( LFG_IsEmpowered() and not queued) then
+	local mode, submode = GetLFGMode();
+	
+	if ( LFG_IsEmpowered() and mode ~= "queued") then
 		enableList = LFGEnabledList;
 	else
 		enableList = LFGQueuedForList;
@@ -952,7 +976,7 @@ function LFDList_DefaultFilterFunction(dungeonID)
 	local level = UnitLevel("player");
 	local sufficientLevel = level >= info[LFG_RETURN_VALUES.minLevel] and level <= info[LFG_RETURN_VALUES.maxLevel];
 	return (hasHeader and sufficientExpansion and sufficientLevel) and
-		( level - LFD_MAX_SHOWN_LEVEL_DIFF <= info[LFG_RETURN_VALUES.maxRecLevel] or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
+		( level - LFD_MAX_SHOWN_LEVEL_DIFF <= info[LFG_RETURN_VALUES.recLevel] or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
 end
 
 LFD_CURRENT_FILTER = LFDList_DefaultFilterFunction

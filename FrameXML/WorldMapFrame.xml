@@ -184,9 +184,9 @@
 				</Texture>
 				<FontString name="$parentTitle" inherits="GameFontNormal" text="WORLD_MAP">
 					<Anchors>
-						<Anchor point="TOP">
+						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="0" y="-6"/>
+								<AbsDimension x="0" y="372"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -849,34 +849,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentHighlight" file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true">
-							<Size>
-								<AbsDimension x="50" y="50"/>
-							</Size>										
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>								
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentMouseOverHighlight" file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true">
-							<Size>
-								<AbsDimension x="50" y="50"/>
-							</Size>										
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>								
-								</Anchor>
-							</Anchors>
-						</Texture>						
-					</Layer>
-				</Layers>
 			</Frame>
 			<ScrollFrame name="WorldMapQuestScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
@@ -957,6 +929,23 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="WorldMapQuestDetailScrollFrameTrack" hidden="true">
+							<Size>
+								<AbsDimension x="22" y="201"/>
+							</Size>				
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="25" y="1" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.4" />
+						</Texture>
+					</Layer>
+				</Layers>		
 				<ScrollChild>
 					<Frame name="WorldMapQuestDetailScrollChildFrame">
 						<Size>
@@ -970,7 +959,7 @@
 			</ScrollFrame>
 			<ScrollFrame name="WorldMapQuestRewardScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="321" y="199"/>
+					<AbsDimension x="323" y="199"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="WorldMapQuestDetailScrollFrame" relativePoint="RIGHT"> 
@@ -979,10 +968,27 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="WorldMapQuestRewardScrollFrameTrack" hidden="true">
+							<Size>
+								<AbsDimension x="22" y="201"/>
+							</Size>				
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="23" y="1" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.4" />
+						</Texture>
+					</Layer>
+				</Layers>				
 				<ScrollChild>
 					<Frame name="WorldMapQuestRewardScrollChildFrame">
 						<Size>
-							<AbsDimension x="321" y="199"/>
+							<AbsDimension x="323" y="199"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
@@ -990,19 +996,13 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>			
-			<CheckButton name="WorldMapQuestShowObjectives" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="WorldMapQuestShowObjectives" inherits="OptionsCheckButtonTemplate">
 				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapPositioningGuide">
-						<Offset>
-							<AbsDimension x="-150" y="5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:SetScale(0.9);
-						_G[self:GetName().."Text"]:SetText(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT);
+						local text = _G[self:GetName().."Text"];
+						text:SetText(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT);
+						self:SetPoint("BOTTOMRIGHT", WorldMapPositioningGuide, "BOTTOMRIGHT", -30 - text:GetWidth(), 4);
 					</OnLoad>
 					<OnClick>
 						SetCVar("questPOI", self:GetChecked());
