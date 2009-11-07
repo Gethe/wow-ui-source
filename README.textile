@@ -56,6 +56,12 @@ h4. Wintergrasp
 ** Rank 3: Build/pilot Demolishers.
 ** Rank 3: Build/pilot Siege Engines.
 
+h2. Dungeons & Raids
+
+h3. Naxxramas
+
+* Players no longer need to kill the final bosses in all four wings of this dungeon in order to teleport to Sapphiron. Teleportation orbs have been added to allow players access back and forth from Sapphiron's lair.
+
 h2. Death Knights
 
 * Army of the Dead: The cooldown on this ability has been reduced from 20 minutes to 10 minutes. Army Ghoul damage dropped by 50%. Cannot be used in Arenas.
@@ -76,6 +82,7 @@ h2. Druids
 * Prowl: This ability no longer has multiple ranks and penalizes movement speed by 30%.
 * Rebirth: The cooldown on this spell has been lowered from 20 minutes down to 10 minutes. Cannot be used in Arenas.
 * Rejuvenation: The base duration on all ranks of this spell is now 15 seconds.
+* Tranquility: The cooldown on this spell has been reduced to 8 minutes, down from 10 minutes.
 
 h3. Talents
 
@@ -137,7 +144,7 @@ h4. Fire
 
 h4. Frost
 
-* Deep Freeze: This spell now deals a large amount of damage to targets permanently immune to stuns.
+* Deep Freeze: This spell now deals a large amount of damage to targets permanently immune to stuns. In addition, when this ability deals damage it will no longer consume two charges of Fingers of Frost for those mages with the Shatter talent.
 * Fingers of Frost: This talent now triggers immediately on casting a spell rather than being delayed until the spell strikes the target.
 * Frozen Core: This talent now also causes Ice Lance critical strikes to reduce the cast time of the mage's next Frostbolt or Frostfire Bolt by 0.4/0.7/1 seconds.
 
@@ -158,12 +165,17 @@ h3. Talents
 h4. Holy
 
 * Infusion of Light: This talent now causes the paladin's Flash of Light spells to heal the target for 50/100% of the Flash of Light healing amount over 12 seconds.
+* Sanctified Light: This talent now also has a 33/66/100% chance to prevent Lay on Hands from causing Forbearance when Lay on Hands is used on others.
 
 h4. Protection
 
 * Aura Mastery: This effect of this talent has been reduced in duration to 6 seconds.
 * Divine Guardian: This talent no longer increases the amount of damage transferred to the paladin from Divine Sacrifice. Instead it causes all raid and party members to take 10/20% reduced damage while Divine Sacrifice is active. In addition, the duration has been changed to 6 seconds, however the effect does not terminate when Divine Sacrifice is removed before its full duration.
 * Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases. Finally, damage which reduces the paladin's health below 20% now cancels the effect early.
+
+h4. Retribution
+
+* Repentance: This crowd control effect will no longer break early from the damage done by Righteous Vengeance.
 
 h2. Priests
 
@@ -279,7 +291,30 @@ h2. User Interface
 
 h3. Quest Tracking Feature
 
-* This system is currently under development and is not fully functional.
+* Players can now track quest objectives on the map ('M' key).
+
+h4. Quest Log
+
+* A Show Map button has been added to the Quest Log. Selecting a quest and pressing this button will open the map for the zone in which the quest objective is located displaying the associated area of interest. Any other active quests in a player's Quest Log for that zone will also be displayed.
+
+h4. Map
+
+* The map interface has been separated into four separate panes: a map pane (left), a pane listing active quest names for the zone being viewed (right), a pane listing the full quest text for any highlighted quest (bottom left), and a pane listing the quest rewards for any highlighted quest (bottom right).
+* All active quests listed in the right pane for the zone being viewed on the map will be assigned a number. These numbers will be displayed on the map according to the areas of interest for each quest.
+* Highlighting a quest name in the right pane will highlight the corresponding area of interest on the map in the left pane, show its quest text in the lower left pane, and list the quest rewards in the lower right pane.
+* Given that some quest objectives can be achieved in multiple locations within a given zone, highlighting such a quest will highlight an area of interest closest in proximity to the character's current location.
+* This feature can be disabled by un-checking the Show Quest Objectives box in the bottom right corner of the new map interface, restoring the map to its standard full-screen display.
+* Clicking on the arrow in the top right corner of the new map interface will hide all but the map pane, bringing the map out of full-screen mode and allowing players to leave it open while navigating a zone or engaging in combat.
+
+h4. Objectives Tracking
+
+* This frame has been improved to offer new functionality and can be used with the new shrunken map option.
+* The Objectives frame is now docked below the mini-map next to the right 2 action bars and will track up to 12 quests for a zone.
+* Numbers have been added next to each quest name and objective corresponding with those areas of interest displayed on the map.
+* If a quest objective has been completed, the number will be replaced with a yellow question mark symbol.
+* The arrow button in the top right corner of the Objectives frame can be used to toggle between minimizing and maximizing the quest objective display.
+* Quest Difficulty Tracking
+* This feature is off by default and can be enabled in the Objectives window from the Interface Options menu. Turning this feature on will color-code all quest names displayed in the map interface according to difficulty (grey, green, yellow, orange, and red).
 
 h3. Dungeon System
 
