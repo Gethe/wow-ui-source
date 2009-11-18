@@ -81,6 +81,34 @@ function LFDFrame_OnEvent(self, event, ...)
 			LFDQueueFrameRandom_UpdateFrame();
 		end
 	end
+	LFDQueueFrame_UpdatePortrait();
+end
+
+function LFDFrame_OnShow(self)
+	LFDFrame_UpdateBackfill(true);
+end
+
+function LFDQueueFrame_UpdatePortrait()
+	local mode, submode = GetLFGMode();
+	if ( mode == "queued" or mode == "rolecheck" ) then
+		EyeTemplate_StartAnimating(LFDParentFramePortrait);
+	else
+		EyeTemplate_StopAnimating(LFDParentFramePortrait);
+	end
+end
+
+--Backfill option
+function LFDFrame_UpdateBackfill(forceUpdate)
+	if ( CanPartyLFGBackfill() ) then
+		local name, lfgID, typeID = GetPartyLFGBackfillInfo();
+		LFDQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
+		local mode, subMode = GetLFGMode();
+		if ( (forceUpdate or not LFDQueueFrame:IsVisible()) and mode ~= "queued" ) then
+			LFDQueueFramePartyBackfill:Show();
+		end
+	else
+		LFDQueueFramePartyBackfill:Hide();
+	end
 end
 
 --Role-related functions
@@ -98,6 +126,7 @@ end
 
 --Role-check popup functions
 function LFDRoleCheckPopupAccept_OnClick()
+	PlaySound("igCharacterInfoTab");
 	local oldLeader = GetLFGRoles();
 	SetLFGRoles(oldLeader, 
 		LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
@@ -109,6 +138,7 @@ function LFDRoleCheckPopupAccept_OnClick()
 end
 
 function LFDRoleCheckPopupDecline_OnClick()
+	PlaySound("igCharacterInfoTab");
 	StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 	CompleteLFGRoleCheck(false);
 end
@@ -337,6 +367,7 @@ function LFDQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
 	local dungeonID = parent.id;
 	local isChecked = self:GetChecked();
 	
+	PlaySound(isChecked and "igMainMenuOptionCheckBoxOff" or "igMainMenuOptionCheckBoxOff");
 	if ( LFGIsIDHeader(dungeonID) ) then
 		LFDList_SetHeaderEnabled(dungeonID, isChecked);
 	else
@@ -873,14 +904,18 @@ function LFDSearchStatus_UpdateRoles()
 	LFDSearchStatusLookingFor:SetPoint("BOTTOM", -extraWidth/2, 14);
 end
 
+local embeddedTankIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:5:64:64:0:19:22:41|t";
+local embeddedHealerIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:5:64:64:20:39:1:20|t";
+local embeddedDamageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:20:20:0:5:64:64:20:39:22:41|t";
+
 function LFDSearchStatus_Update()
 	local LFDSearchStatus = LFDSearchStatus;
-	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, instanceType, instanceName, averageWait = GetLFGQueueStats();
+	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, instanceType, instanceName, averageWait, tankWait, healerWait, damageWait = GetLFGQueueStats();
 	
 	LFDSearchStatus_UpdateRoles();
 	
 	if ( not hasData ) then
-		LFDSearchStatus:SetHeight(120);
+		LFDSearchStatus:SetHeight(130);
 		LFDSearchStatusPlayer_SetFound(LFDSearchStatusTank1, false)
 		LFDSearchStatusPlayer_SetFound(LFDSearchStatusHealer1, false);
 		for i=1, NUM_DAMAGERS do
@@ -888,13 +923,9 @@ function LFDSearchStatus_Update()
 		end
 		LFDSearchStatus.statistic:Hide();
 		return;
-	else
-		if ( instanceType == TYPEID_RANDOM_DUNGEON ) then
-			LFDSearchStatus:SetHeight(120);
-		else
-			LFDSearchStatus:SetHeight(153);
-		end
 	end
+	
+	LFDSearchStatus:SetHeight(190);
 	
 	if ( instancetype == TYPEID_HEROIC_DIFFICULTY ) then
 		instanceName = format(HEROIC_PREFIX, instanceName);
@@ -907,26 +938,22 @@ function LFDSearchStatus_Update()
 		LFDSearchStatusPlayer_SetFound(_G["LFDSearchStatusDamage"..i], i <= (NUM_DAMAGERS - dpsNeeds));
 	end
 	
-	if ( instanceType == TYPEID_RANDOM_DUNGEON ) then
-		LFDSearchStatus.statistic:Hide();
-	else
-		LFDSearchStatus.statistic:Show();
-		--Display a random statistic if the last displayed time was long enough ago
-		local now = time();
-		if ( not LFDSearchStatus.lastStatisticTime or (LFDSearchStatus.lastStatisticTime + LFD_STATISTIC_CHANGE_TIME < now) ) then
-			LFDSearchStatus.displayedStatistic = math.random(1, NUM_STATISTIC_TYPES);
-			LFDSearchStatus.lastStatisticTime = now;
-		end
-		
-		local statistic = LFDSearchStatus.displayedStatistic;
-		if ( statistic == 1 ) then --If the average wait is 0, we have no data for this instance, so showing it is useless.
-			if ( averageWait ~= 0 ) then
-				LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, instanceName, SecondsToTime(averageWait, false, false, 1));
-			else
-				LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT_UNKNOWN, instanceName);
-			end
-		end
+	LFDSearchStatus.statistic:Show();
+	--[[Display a random statistic if the last displayed time was long enough ago
+	local now = time();
+	if ( not LFDSearchStatus.lastStatisticTime or (LFDSearchStatus.lastStatisticTime + LFD_STATISTIC_CHANGE_TIME < now) ) then
+		LFDSearchStatus.displayedStatistic = math.random(1, NUM_STATISTIC_TYPES);
+		LFDSearchStatus.lastStatisticTime = now;
 	end
+	
+	local statistic = LFDSearchStatus.displayedStatistic;
+	if ( statistic == 1 ) then --If the average wait is 0, we have no data for this instance, so showing it is useless.]]
+		local waitTimes = format("%s%s  %s%s  %s%s",
+			embeddedTankIcon, (tankWait == -1 and TIME_UNKNOWN or SecondsToTime(tankWait, false, false, 1)),
+			embeddedHealerIcon, (healerWait == -1 and TIME_UNKNOWN or SecondsToTime(healerWait, false, false, 1)),
+			embeddedDamageIcon, (damageWait == -1 and TIME_UNKNOWN or SecondsToTime(damageWait, false, false, 1)));
+		LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, instanceName, waitTimes);
+	--end
 end
 
 function LFDQueueFrameFindGroupButton_Update()
@@ -941,12 +968,22 @@ function LFDQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "listed" ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		LFDQueueFrameFindGroupButton:Enable();
+	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  and mode ~= "rolecheck" ) then --During the proposal, they must use the proposal buttons to leave the queue.
+		if ( mode == "queued" or mode =="proposal" or not LFDQueueFramePartyBackfill:IsVisible() ) then
+			LFDQueueFrameFindGroupButton:Enable();
+		else
+			LFDQueueFrameFindGroupButton:Disable();
+		end
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
 	else
 		LFDQueueFrameFindGroupButton:Disable();
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
+	end
+	
+	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "rolecheck" and mode ~= "queued" ) then
+		LFDQueueFramePartyBackfillBackfillButton:Enable();
+	else
+		LFDQueueFramePartyBackfillBackfillButton:Disable();
 	end
 end
 

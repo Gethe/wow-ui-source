@@ -2000,6 +2000,10 @@ SlashCmdList["DUNGEONS"] = function(msg)
 	ToggleLFDParentFrame();
 end
 
+SlashCmdList["RAIDBROWSER"] = function(msg)
+	ToggleLFRParentFrame();
+end
+
 SlashCmdList["BENCHMARK"] = function(msg)
 	SetTaxiBenchmarkMode(msg);
 end

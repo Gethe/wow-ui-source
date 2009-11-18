@@ -405,12 +405,12 @@ function TicketStatusFrame_OnUpdate(self, elapsed)
 end
 
 function TicketStatusFrame_OnShow(self)
-	TemporaryEnchantFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
+	ConsolidatedBuffs:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
 end
 
 function TicketStatusFrame_OnHide(self)
 	if( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
-		TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
+		ConsolidatedBuffs:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
 	end
 end
 

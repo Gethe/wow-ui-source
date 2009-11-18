@@ -204,7 +204,7 @@ function MiniMapLFG_UpdateIsShown()
 	local mode, submode = GetLFGMode();
 	if ( mode ) then
 		MiniMapLFGFrame:Show();
-		if ( mode == "queued" or mode == "listed" ) then
+		if ( mode == "queued" or mode == "listed" or mode == "rolecheck" ) then
 			EyeTemplate_StartAnimating(MiniMapLFGFrame.eye);
 		else
 			EyeTemplate_StopAnimating(MiniMapLFGFrame.eye);
@@ -228,15 +228,20 @@ function MiniMapLFGFrameDropDown_Update()
 	local mode, submode = GetLFGMode();
 
 	--This one can appear in addition to others, so we won't just check the mode.
-	if ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
+	if ( IsPartyLFG() ) then
+		local addButton = false;
 		if ( IsInLFGDungeon() ) then
 			info.text = TELEPORT_OUT_OF_DUNGEON;
 			info.func = MiniMapLFGFrame_TeleportOut;
-		else
+			addButton = true;
+		elseif ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) then
 			info.text = TELEPORT_TO_DUNGEON;
 			info.func = MiniMapLFGFrame_TeleportIn;
+			addButton = true;
 		end
-		UIDropDownMenu_AddButton(info);
+		if ( addButton ) then
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 	
 	if ( mode == "proposal" and submode == "unaccepted" ) then
@@ -266,8 +271,9 @@ end
 
 function MiniMapLFGFrame_OnClick(self, button)
 	local mode, submode = GetLFGMode();
-	if ( button == "RightButton" or mode == "lfgparty" ) then
+	if ( button == "RightButton" or mode == "lfgparty" or mode == "abandonedInDungeon") then
 		--Display dropdown
+		PlaySound("igMainMenuOpen");
 		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", 0, -5);
 	elseif ( mode == "proposal" ) then
 		StaticPopupSpecial_Show(LFDDungeonReadyPopup);

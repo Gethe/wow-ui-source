@@ -280,13 +280,6 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetText(self.tooltip);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 			<OnClick>
 				TutorialFrame_AlertButton_OnClick(self);
 			</OnClick>

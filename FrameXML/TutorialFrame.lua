@@ -1,19 +1,21 @@
-MAX_TUTORIAL_VERTICAL_TILE = 30;
-MAX_TUTORIAL_IMAGES = 3;
-MAX_TUTORIAL_KEYS = 4;
+local MAX_TUTORIAL_VERTICAL_TILE = 30;
+local MAX_TUTORIAL_IMAGES = 3;
+local MAX_TUTORIAL_KEYS = 4;
 
-TUTORIALFRAME_TOP_HEIGHT = 80;
-TUTORIALFRAME_MIDDLE_HEIGHT = 10;
-TUTORIALFRAME_BOTTOM_HEIGHT = 30;
-TUTORIALFRAME_WIDTH = 364;
+local TUTORIALFRAME_TOP_HEIGHT = 80;
+local TUTORIALFRAME_MIDDLE_HEIGHT = 10;
+local TUTORIALFRAME_BOTTOM_HEIGHT = 30;
+local TUTORIALFRAME_WIDTH = 364;
 
-ARROW_TYPES = {
+local TUTORIAL_LAST_ID = nil;
+
+local ARROW_TYPES = {
 	"ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
 	"ArrowCurveUpRight", "ArrowCurveUpLeft", "ArrowCurveDownRight", "ArrowCurveDownLeft",
 	"ArrowCurveRightDown", "ArrowCurveRightUp", "ArrowCurveLeftDown", "ArrowCurveLeftUp",
 }
 
-ARROW_SIZES = {
+local ARROW_SIZES = {
 	["ArrowUp"] = {x = 68, y = 89},
 	["ArrowDown"] = {x = 68, y = 89},
 	["ArrowLeft"] = {x = 89, y = 68},
@@ -28,11 +30,11 @@ ARROW_SIZES = {
 	["ArrowCurveLeftUp"] = {x = 82, y = 66},
 }
 
-MOUSE_SIZE = { x = 76, y = 101}
+local MOUSE_SIZE = { x = 76, y = 101}
 
-TUTORIALFRAME_QUEUE = { };
+local TUTORIALFRAME_QUEUE = { };
 
-TUTORIAL_DATA = {
+local TUTORIAL_DATA = {
 	[1] = "QuestGiver",
 	[2] = "Movement",
 	[3] = "LookAround",
@@ -93,7 +95,7 @@ TUTORIAL_DATA = {
 	[60] = "Hotbar",
 };
 
-DISPLAY_DATA = {
+local DISPLAY_DATA = {
 	-- Do not remove "Base" it is the default
 	["Base"] = {
 		tileHeight = 7, 
@@ -627,9 +629,10 @@ function TutorialFrame_OnHide(self)
 	PlaySound("igMainMenuClose");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	
-	if ( getn(TUTORIALFRAME_QUEUE) <= 0 ) then
+	if ( (getn(TUTORIALFRAME_QUEUE) <= 0) and (UnitLevel("player") > 5) ) then
 		TutorialFrameAlertButton:Hide();
-	elseif ( TutorialFrameCheckButton:GetChecked() and not InCombatLockdown() ) then
+	end
+	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
 		TutorialFrame_AlertButton_OnClick(TutorialFrameAlertButton);
 	end
 end
@@ -824,20 +827,17 @@ function TutorialFrame_ClearTextures()
 end
 
 function TutorialFrame_NewTutorial(tutorialID)
+	TUTORIAL_LAST_ID = tutorialID;
 	local button = TutorialFrameAlertButton;
 	tinsert(TUTORIALFRAME_QUEUE, tutorialID);
 	if ( not button:IsShown() ) then
 		button.id = tutorialID;
-		button.tooltip = _G["TUTORIAL_TITLE"..tutorialID];
-		button:Enable();
 		button:Show();
 		if ( not TutorialFrame:IsShown() and TutorialFrameCheckButton:GetChecked() and not InCombatLockdown() ) then
 			TutorialFrame_AlertButton_OnClick(button);
 		end
 	elseif ( button:IsEnabled() == 0 ) then
 		button.id = tutorialID;
-		button.tooltip = _G["TUTORIAL_TITLE"..tutorialID];
-		button:Enable();
 	end
 	TutorialFrame_CheckBadge();
 	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
@@ -866,20 +866,10 @@ end
 function TutorialFrame_AlertButton_OnClick(self)
 	local tutorialID = TUTORIALFRAME_QUEUE[1];
 	if ( tutorialID ) then
-		-- Remove the tutorial from the queue
 		tremove(TUTORIALFRAME_QUEUE, 1);
 		TutorialFrame_Update(tutorialID);
-		
-		if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
-			-- set the tooltip to the new next tutorial
-			self.id = TUTORIALFRAME_QUEUE[1];
-			self.tooltip = _G["TUTORIAL_TITLE"..TUTORIALFRAME_QUEUE[1]];
-			if ( GameTooltip:GetOwner() == self ) then
-				GameTooltip:SetText(self.tooltip);
-			end
-		else
-			self:Disable();
-		end
+	elseif ( TUTORIAL_LAST_ID ) then
+		TutorialFrame_Update(TUTORIAL_LAST_ID);
 	end
 	TutorialFrame_CheckBadge();
 end
@@ -891,6 +881,9 @@ function TutorialFrame_CheckIntro()
 end
 
 function TutorialFrame_CheckBadge()
+	TutorialFrameAlertButtonBadge:Hide();
+	TutorialFrameAlertButtonBadgeText:Hide();
+--[[ leaving this here in case the badge system make a return
 	if( getn(TUTORIALFRAME_QUEUE) > 1 or (TutorialFrame:IsShown() and getn(TUTORIALFRAME_QUEUE) > 0) ) then
 		TutorialFrameAlertButtonBadge:Show();
 		local count = getn(TUTORIALFRAME_QUEUE);
@@ -903,4 +896,5 @@ function TutorialFrame_CheckBadge()
 		TutorialFrameAlertButtonBadge:Hide();
 		TutorialFrameAlertButtonBadgeText:Hide();
 	end
+--]]
 end

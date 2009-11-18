@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 30200
+## Interface: 30300
 ##DebugHook.lua
 GlobalStrings.lua
 Constants.lua
@@ -83,6 +83,7 @@ SkillFrame.xml
 ReputationFrame.xml
 HonorFrame.xml
 QuestFrame.xml
+QuestPOI.xml
 WatchFrame.xml
 QuestLogFrame.xml
 QuestInfo.xml

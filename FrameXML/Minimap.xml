@@ -6,7 +6,7 @@
 			<AbsDimension x="45" y="45"/>
 		</Size>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="ARTWORK">
 				<Texture name="$parentTexture" setAllPoints="true" file="Interface\LFGFrame\LFG-Eye" parentKey="texture"/>
 			</Layer>
 		</Layers>

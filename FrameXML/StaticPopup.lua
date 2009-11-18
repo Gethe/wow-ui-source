@@ -1686,7 +1686,10 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		PlaySound("igQuestLogAbandonQuest");
+		if ( QuestLogDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogDetailFrame);
+		end
+		PlaySound("igQuestLogAbandonQuest");		
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1699,7 +1702,10 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		PlaySound("igQuestLogAbandonQuest");
+		if ( QuestLogDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogDetailFrame);
+		end
+		PlaySound("igQuestLogAbandonQuest");		
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2192,6 +2198,34 @@ StaticPopupDialogs["XP_LOSS"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["XP_LOSS_NO_DURABILITY"] = {
+	text = CONFIRM_XP_LOSS_NO_DURABILITY,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		if ( data ) then
+			self.text:SetFormattedText(CONFIRM_XP_LOSS_AGAIN_NO_DURABILITY, data);
+			self.data = nil;
+			return 1;
+		else
+			AcceptXPLoss();
+		end
+	end,
+	OnUpdate = function(self, elapsed)
+		if ( not CheckSpiritHealerDist() ) then
+			self:Hide();
+			CloseGossip();
+		end
+	end,
+	OnCancel = function(self)
+		CloseGossip();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 	text = CONFIRM_XP_LOSS_NO_SICKNESS,
 	button1 = ACCEPT,
@@ -2204,6 +2238,28 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 		else
 			AcceptXPLoss();
 		end
+	end,
+	OnUpdate = function(self, dialog)
+		if ( not CheckSpiritHealerDist() ) then
+			self:Hide();
+			CloseGossip();
+		end
+	end,
+	OnCancel = function(self)
+		CloseGossip();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
+	text = CONFIRM_XP_LOSS_NO_SICKNESS_NO_DURABILITY,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		AcceptXPLoss();
 	end,
 	OnUpdate = function(self, dialog)
 		if ( not CheckSpiritHealerDist() ) then
@@ -2719,9 +2775,7 @@ StaticPopupDialogs["LFG_OFFER_CONTINUE"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		ClearAllLFGDungeons();
-		SetLFGDungeon(self.data2, self.data);
-		JoinLFG();
+		PartyLFGStartBackfill();
 	end,
 	noCancelOnReuse = 1,
 	timeout = 0,
@@ -2966,6 +3020,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 			if ( info.maxBytes ) then
 				wideEditBox:SetMaxBytes(info.maxBytes);
 			end
+			wideEditBox:SetText("");
 		else
 			wideEditBox:Hide();
 			editBox:Show();
@@ -2976,6 +3031,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 			if ( info.maxBytes ) then
 				editBox:SetMaxBytes(info.maxBytes);
 			end
+			editBox:SetText("");
 		end
 	else
 		wideEditBox:Hide();

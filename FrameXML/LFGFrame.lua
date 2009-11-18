@@ -105,6 +105,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	LFG_UpdateRolesChangeable();
 	LFG_UpdateFindGroupButtons();
 	LFG_UpdateLockedOutPanels();
+	LFDFrame_UpdateBackfill();
 end
 
 function LFG_UpdateLockedOutPanels()

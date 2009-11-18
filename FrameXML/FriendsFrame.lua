@@ -931,12 +931,7 @@ end
 
 function FriendsFrame_SendMessage()
 	local name = GetFriendInfo(FriendsFrame.selectedFriend);
-	if ( not ChatFrameEditBox:IsShown() ) then
-		ChatFrame_OpenChat("/w "..name.." ");
-	else
-		ChatFrameEditBox:SetText("/w "..name.." ");
-	end
-	ChatEdit_ParseText(ChatFrame1.editBox, 0);
+	ChatFrame_SendTell(name);
 	PlaySound("UChatScrollButton");
 end
 

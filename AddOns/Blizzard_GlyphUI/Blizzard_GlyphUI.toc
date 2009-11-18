@@ -1,4 +1,4 @@
-## Interface: 30200
+## Interface: 30300
 ## Title: Blizzard Glyph UI
 ## Notes:  Get some cool tats and mod your spells.
 ## Secure: 1

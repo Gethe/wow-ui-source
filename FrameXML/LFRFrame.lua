@@ -111,6 +111,7 @@ function LFRQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
 	local dungeonID = parent.id;
 	local isChecked = self:GetChecked();
 	
+	PlaySound(isChecked and "igMainMenuOptionCheckBoxOff" or "igMainMenuOptionCheckBoxOff");
 	if ( LFGIsIDHeader(dungeonID) ) then
 		LFRList_SetHeaderEnabled(dungeonID, isChecked);
 	elseif ( LFR_CanQueueForMultiple() ) then

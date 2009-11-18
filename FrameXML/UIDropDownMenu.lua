@@ -152,6 +152,7 @@ info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
 info.fontObject = [FONT] -- font object replacement for Normal and Highlight
 info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
+info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
 ]]
 
 local UIDropDownMenu_ButtonInfo = {};
@@ -326,7 +327,8 @@ function UIDropDownMenu_AddButton(info, level)
 	button.menuList = info.menuList;
 	button.tooltipWhileDisabled = info.tooltipWhileDisabled;
 	button.tooltipOnButton = info.tooltipOnButton;
-
+	button.noClickSound = info.noClickSound;
+	
 	if ( info.value ) then
 		button.value = info.value;
 	elseif ( info.text ) then
@@ -545,7 +547,7 @@ function UIDropDownMenuButton_OnClick(self)
 	if ( type (checked) == "function" ) then
 		checked = checked();
 	end
-
+	
 	if ( self.keepShownOnClick ) then
 		if ( checked ) then
 			_G[self:GetName().."Check"]:Hide();
@@ -562,6 +564,12 @@ function UIDropDownMenuButton_OnClick(self)
 		self.checked = checked;
 	end
 
+	-- saving this here because func might use a dropdown, changing this self's attributes
+	local playSound = true;
+	if ( self.noClickSound ) then
+		playSound = false;
+	end
+
 	local func = self.func;
 	if ( func ) then
 		func(self, self.arg1, self.arg2, checked);
@@ -569,7 +577,9 @@ function UIDropDownMenuButton_OnClick(self)
 		return;
 	end
 
-	PlaySound("UChatScrollButton");
+	if ( playSound ) then
+		PlaySound("UChatScrollButton");
+	end
 end
 
 function HideDropDownMenu(level)

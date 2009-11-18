@@ -162,19 +162,6 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIconBackground" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="circle">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>			
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="4" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.879" right="1" top="0.879" bottom="1" />
-				</Texture>
 				<Fontstring name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT"  justifyV="TOP" spacing="2" parentKey="title">
 					<Size>
 						<AbsDimension x="240" y="0"/>
@@ -201,34 +188,6 @@
 					</Anchors>
 					<Color r="0.8" g="0.8" b="0.8" />
 				</Fontstring>				
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIconNumber" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="number">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>			
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="4" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.125" top="0" bottom="0.125" />
-				</Texture>
-				<Texture name="$parentIconTurnin" file="Interface\WorldMap\UI-WorldMap-QuestIcon.tga" parentKey="turnin" hidden="true">
-					<Size>
-						<AbsDimension x="24" y="24"/>
-					</Size>
-					<TexCoords left="0.0" right="0.50" top="0.0" bottom="0.50" />
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentIconNumber">
-							<Offset>
-								<AbsDimension x="-1" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
 			</Layer>			
 		</Layers>		
 		<Scripts>

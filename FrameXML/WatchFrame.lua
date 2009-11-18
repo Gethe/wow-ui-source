@@ -26,9 +26,6 @@ WATCHFRAME_CRITERIA_PER_ACHIEVEMENT = 5;
 
 WATCHFRAME_NUM_TIMERS = 0;
 WATCHFRAME_NUM_ITEMS = 0;
-WATCHFRAME_NUM_POI_ACTIVE = 0;
-WATCHFRAME_NUM_POI_COMPLETED = 0;
-WATCHFRAME_NUM_ICONS_COMPLETED = 0;
 
 WATCHFRAME_OBJECTIVEHANDLERS = {};
 WATCHFRAME_TIMEDCRITERIA = {};
@@ -726,9 +723,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local linkButton;
 	local watchItemIndex = 0;
 	
-	local numActivePOI = 0;
-	local numCompletedPOI = 0;		-- completed in the current zone if Show Objectives is turned on
-	local numCompletedIcons = 0;	-- completed otherwise
+	local numPOINumeric = 0;
+	local numPOICompleteIn = 0;
+	local numPOICompleteOut = 0;
 	
 	local text, finished;
 	local numQuestWatches = GetNumQuestWatches();
@@ -759,7 +756,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			lastLine = line;
 			
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
-			if ( isComplete or numObjectives == 0 ) then
+			if ( numObjectives == 0 ) then
+				isComplete = true;
+			end
+			if ( isComplete ) then
 				line = WatchFrame_GetQuestLine();
 				WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
 				lastLine = line;
@@ -823,17 +823,26 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			linkButton.lastLine = questLineIndex - 1;
 			linkButton:Show();				
 			-- quest POI icon
-			if ( WatchFrame.showObjectives and CURRENT_MAP_QUESTS[questID] ) then
-				if ( isComplete ) then
-					numCompletedPOI = numCompletedPOI + 1;
-				else
-					numActivePOI = numActivePOI + 1;
+			if ( WatchFrame.showObjectives ) then
+				local poiButton;
+				if ( CURRENT_MAP_QUESTS[questID] ) then
+					if ( isComplete ) then
+						numPOICompleteIn = numPOICompleteIn + 1;
+						poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_IN, numPOICompleteIn, questID);
+					else
+						numPOINumeric = numPOINumeric + 1;
+						poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_NUMERIC, numPOINumeric, questID);
+					end
+				elseif ( isComplete ) then
+					numPOICompleteOut = numPOICompleteOut + 1;
+					poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_OUT, numPOICompleteOut, questID);
 				end
-				WatchFrame_SetQuestPOI(questTitle, questID, numActivePOI, CURRENT_MAP_QUESTS[questID], isComplete, numCompletedPOI);						
-			elseif ( isComplete ) then
-				numCompletedIcons = numCompletedIcons + 1;
-				WatchFrame_SetCompletedIcon(questTitle, questID, numCompletedIcons);
+				if ( poiButton ) then
+					poiButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", 0, 5);
+					poiButton.questLogIndex = CURRENT_MAP_QUESTS[questID];
+				end				
 			end
+			
 			if ( lastBottom ) then
 				heightUsed = topEdge - lastLine:GetBottom();
 			else
@@ -845,8 +854,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	for i = watchItemIndex + 1, WATCHFRAME_NUM_ITEMS do
 		_G["WatchFrameItem" .. i]:Hide();
 	end
-	WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI);
-	WatchFrame_ClearCompletedIcons(numCompletedIcons);
+	QuestPOI_HideButtons("WatchFrameLines", QUEST_POI_NUMERIC, numPOINumeric + 1);
+	QuestPOI_HideButtons("WatchFrameLines", QUEST_POI_COMPLETE_IN, numPOICompleteIn + 1);
+	QuestPOI_HideButtons("WatchFrameLines", QUEST_POI_COMPLETE_OUT, numPOICompleteOut + 1);
+	
 	WatchFrame_ReleaseUnusedQuestLines();
 
 	return heightUsed, maxWidth;	
@@ -894,7 +905,7 @@ end
 function WatchFrame_OpenQuestLog (button, arg1, arg2, checked)
 	ExpandQuestHeader(GetQuestIndexForWatch(arg1));
 	-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
-	QuestLog_OpenToQuest(GetQuestIndexForWatch(arg1));
+	QuestLog_OpenToQuest(GetQuestIndexForWatch(arg1), arg2);
 end
 
 function WatchFrame_AbandonQuest (button, arg1, arg2, checked)
@@ -983,6 +994,8 @@ function WatchFrameDropDown_Initialize (self)
 		info.text = OBJECTIVES_VIEW_IN_QUESTLOG;
 		info.func = WatchFrame_OpenQuestLog;
 		info.arg1 = self.index;
+		info.arg2 = true;
+		info.noClickSound = 1;		
 		info.checked = false;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		
@@ -1004,6 +1017,7 @@ function WatchFrameDropDown_Initialize (self)
 			info.func = WatchFrame_OpenMapToQuest;
 			info.arg1 = self.index;
 			info.checked = false;
+			info.noClickSound = 1;
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
 	elseif ( self.type == "ACHIEVEMENT" ) then
@@ -1181,89 +1195,18 @@ function WatchFrame_GetCurrentMapQuests()
 	end
 end
 
-function WatchFrame_SetQuestPOI(anchor, questId, buttonIndex, questIndex, isComplete, numComplete)
-	if ( isComplete ) then
-		buttonIndex = numComplete + MAX_QUESTLOG_QUESTS;
-	end
-	local poiButton = _G["WatchFrameQuestPOI"..buttonIndex];
-	if ( not poiButton ) then
-		poiButton = CreateFrame("Button", "WatchFrameQuestPOI"..buttonIndex, WatchFrameLines, "WatchFrameQuestPOITemplate");
-		poiButton:SetScript("OnClick", WatchFrameQuestPOI_OnClick);
-		poiButton:SetScale(0.9);
-		if ( isComplete ) then
-			poiButton.turnin:Show();
-			poiButton.number:Hide();
-			WATCHFRAME_NUM_POI_COMPLETED = numComplete;
-		else
-			WATCHFRAME_NUM_POI_ACTIVE = buttonIndex;		
-			buttonIndex = buttonIndex - 1;
-			local size = 1 / QUEST_NUMERIC_ICONS_PER_ROW;
-			local yOffset = 0.5 + floor(buttonIndex / QUEST_NUMERIC_ICONS_PER_ROW) * size;
-			local xOffset = mod(buttonIndex, QUEST_NUMERIC_ICONS_PER_ROW) * size;
-			poiButton.number:SetTexCoord(xOffset + 0.004, xOffset + size, yOffset + 0.004, yOffset + size);
-		end
-	end
-	poiButton.isComplete = isComplete;
-	poiButton.quest = questIndex;
-	poiButton.questId = questId;	-- saving it for selection
-	poiButton:SetPoint("TOPRIGHT", anchor, "TOPLEFT", 0, 5);
-	poiButton.selectionGlow:Hide();
-	poiButton:Show();
-end
-
-function WatchFrame_SetCompletedIcon(anchor, questId, index)
-	local button = _G["WatchFrameCompletedQuest"..index];
-	if ( not button ) then
-		WATCHFRAME_NUM_ICONS_COMPLETED = index;
-		button = CreateFrame("Button", "WatchFrameCompletedQuest"..index, WatchFrameLines, "WatchFrameQuestPOICompletedTemplate");
-		button:SetScript("OnClick", function(self) WorldMap_OpenToQuest(self.questId); end);
-		button:SetScale(0.9);
-	end
-	button.questId = questId;
-	button:SetPoint("TOPRIGHT", anchor, "TOPLEFT", 8, 6);
-	button:Show();
-end
-
-function WatchFrame_ClearQuestPOIs(numActivePOI, numCompletedPOI)
-	for i = numActivePOI + 1, WATCHFRAME_NUM_POI_ACTIVE do
-		_G["WatchFrameQuestPOI"..i]:Hide();
-	end
-	for i = numCompletedPOI + 1, WATCHFRAME_NUM_POI_COMPLETED do
-		_G["WatchFrameQuestPOI"..i + MAX_QUESTLOG_QUESTS]:Hide();
-	end
-end
-
-function WatchFrame_ClearCompletedIcons(numCompletedIcons)
-	for i = numCompletedIcons + 1, WATCHFRAME_NUM_ICONS_COMPLETED do
-		_G["WatchFrameCompletedQuest"..i]:Hide();
-	end
-end
-
 function WatchFrameQuestPOI_OnClick(self)
-	if ( not WorldMapFrame:IsShown() or WorldMapQuestScrollChildFrame.selected.index == self.quest ) then
-		ToggleFrame(WorldMapFrame);
+	if ( self.questLogIndex ) then
+		if ( not WorldMapFrame:IsShown() ) then
+			ToggleFrame(WorldMapFrame);
+			WorldMapFrame_SelectQuest(_G["WorldMapQuestFrame"..self.questLogIndex]);
+		elseif ( WorldMapQuestScrollChildFrame.selected.index == self.questLogIndex ) then
+			ToggleFrame(WorldMapFrame);
+		else
+			PlaySound("igMainMenuOptionCheckBoxOn");
+			WorldMapFrame_SelectQuest(_G["WorldMapQuestFrame"..self.questLogIndex]);
+		end
 	else
-		PlaySound("igMainMenuOptionCheckBoxOn");
-	end
-	WorldMapFrame_SelectQuest(_G["WorldMapQuestFrame"..self.quest]);
-end
-
-function WatchFrame_SelectQuestPOI(questId)
-	local poiButton;
-	for i = 1, WATCHFRAME_NUM_POI_ACTIVE do
-		poiButton = _G["WatchFrameQuestPOI"..i];
-		if ( poiButton.questId == questId ) then
-			poiButton.selectionGlow:Show();
-		else
-			poiButton.selectionGlow:Hide();
-		end
-	end
-	for i = 1, WATCHFRAME_NUM_POI_COMPLETED do
-		poiButton = _G["WatchFrameQuestPOI"..i + MAX_QUESTLOG_QUESTS];
-		if ( poiButton.questId == questId ) then
-			poiButton.selectionGlow:Show();
-		else
-			poiButton.selectionGlow:Hide();
-		end
+		WorldMap_OpenToQuest(self.questId);
 	end
 end

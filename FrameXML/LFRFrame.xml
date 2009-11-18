@@ -358,6 +358,7 @@
 									LFRQueueFrameCommentExplanation:Show();
 								end
 								SetLFGComment(self:GetText());
+								PlaySound("UChatScrollButton");
 							</OnEditFocusLost>
 							<OnEscapePressed function="EditBox_ClearFocus"/>
 							<OnEnterPressed function="EditBox_ClearFocus"/>
@@ -598,20 +599,21 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								LFRQueueFrameComment:ClearFocus();
+								if ( LFRQueueFrameComment:HasFocus() ) then
+									LFRQueueFrameComment:ClearFocus();
+								else
+									--The comment is already set, so they didn't need to click this... we'll give some feedback anyway.
+									PlaySound("UChatScrollButton");
+								end
 							</OnClick>
 						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>
 					<OnShow>
-						PlaySound("igCharacterInfoOpen");
 						RequestLFDPlayerLockInfo();
 						RequestLFDPartyLockInfo();
 					</OnShow>
-					<OnHide>
-						PlaySound("igCharacterInfoClose");
-					</OnHide>
 				</Scripts>
 			</Frame>
 			<Frame name="LFRBrowseFrame" setAllPoints="true" hidden="true">
@@ -1072,7 +1074,12 @@
 		<Scripts>
 			<OnLoad function="LFRFrame_OnLoad"/>
 			<OnEvent function="LFRFrame_OnEvent"/>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
 		</Scripts>
 	</Frame>
-
 </Ui>

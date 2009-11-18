@@ -737,7 +737,7 @@ function QuestLog_SetNearestValidSelection()
 	QuestLog_SetSelection(0);
 end
 
-function QuestLog_OpenToQuest(questIndex)
+function QuestLog_OpenToQuest(questIndex, keepOpen)
 	local selectedIndex = GetQuestLogSelection();
 --[[
 	if ( selectedIndex ~= 0 and questIndex == selectedIndex and QuestLogFrame:IsShown() and
@@ -757,7 +757,7 @@ function QuestLog_OpenToQuest(questIndex)
 	QuestLog_SetSelection(questIndex);
 --]]
 
-	if ( selectedIndex ~= 0 and questIndex == selectedIndex and QuestLogDetailFrame:IsShown() ) then
+	if ( not keepOpen and selectedIndex ~= 0 and questIndex == selectedIndex and QuestLogDetailFrame:IsShown() ) then
 		-- if the current quest is selected and is visible, then treat this as a toggle
 		HideUIPanel(QuestLogDetailFrame);
 		return;
@@ -786,13 +786,15 @@ end
 --
 
 function QuestLogDetailFrame_OnShow(self)
-	QuestLogControlPanel_UpdatePosition();
+	PlaySound("igQuestLogOpen");
+	QuestLogControlPanel_UpdatePosition();	
 	QuestLogShowMapPOI_UpdatePosition();
 	QuestLog_UpdateQuestDetails();
 end
 
 function QuestLogDetailFrame_OnHide(self)
 	-- this function effectively deselects the selected quest
+	PlaySound("igQuestLogClose");	
 	QuestLogControlPanel_UpdatePosition();
 	QuestLogShowMapPOI_UpdatePosition();
 end

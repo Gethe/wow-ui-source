@@ -65,7 +65,7 @@ function RaidFrame_Update()
 	-- If not in a raid hide all the UI and just display raid explanation text
 	if ( GetNumRaidMembers() == 0 ) then
 		RaidFrameConvertToRaidButton:Show();
-		if ( GetPartyMember(1) and IsPartyLeader() ) then
+		if ( GetPartyMember(1) and IsPartyLeader() and UnitLevel("player") >= 10) then
 			RaidFrameConvertToRaidButton:Enable();
 		else
 			RaidFrameConvertToRaidButton:Disable();

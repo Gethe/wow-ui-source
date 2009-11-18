@@ -51,12 +51,12 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentStatusIcon"  file="Interface\RaidFrame\ReadyCheck-Waiting" parentKey="statusIcon">
 					<Size>
-						<AbsDimension x="35" y="35"/>
+						<AbsDimension x="30" y="30"/>
 					</Size>
 					<Anchors>
-						<Anchor point="CENTER">
+						<Anchor point="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="1" y="2"/>
+								<AbsDimension x="5" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -323,6 +323,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igCharacterInfoTab");
 								StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
 							</OnClick>
 						</Scripts>
@@ -342,7 +343,10 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick function="AcceptProposal"/>
+							<OnClick>
+								PlaySound("igCharacterInfoTab");
+								AcceptProposal();
+							</OnClick>
 						</Scripts>
 					</Button>
 					<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LEAVE_QUEUE">
@@ -357,7 +361,10 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick function="RejectProposal"/>
+							<OnClick>
+								PlaySound("igCharacterInfoTab");
+								RejectProposal();
+							</OnClick>
 						</Scripts>
 					</Button>
 					<!--This is a frame instead of a texture so that we can add a mouseover.-->
@@ -654,7 +661,7 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<Frame name="LFDSearchStatus" hidden="true" parent="MiniMapLFGFrame">
+	<Frame name="LFDSearchStatus" frameStrata="TOOLTIP" hidden="true" parent="MiniMapLFGFrame">
 		<Size>
 			<AbsDimension x="350" y="153"/>
 		</Size>
@@ -687,14 +694,14 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentStatistic" justifyH="CENTER" inherits="GameFontNormal" parentKey="statistic">
+				<FontString name="$parentStatistic" justifyH="CENTER" justifyV="MIDDLE" inherits="GameFontNormal" parentKey="statistic">
 					<Size>
-						<AbsDimension x="330" y="32"/>
+						<AbsDimension x="330" y="65"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-85"/>
+								<AbsDimension x="0" y="-100"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -743,7 +750,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="25" y="-35"/>
+							<AbsDimension x="25" y="-40"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -823,22 +830,6 @@
 	</Frame>
 	<Frame name="LFDParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent">
 		<Size x="355" y="440"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="11" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Button inherits="UIPanelCloseButton" frameStrata="HIGH">
 				<Anchors>
@@ -989,6 +980,85 @@
 						</Layers>
 						<Scripts>
 							<OnShow function="LFDQueueFrameTypeDropDown_SetUp"/>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentPartyBackfill" frameStrata="HIGH" hidden="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="330" y="257"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-7" y="28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="-0" y="-70"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate2" text="YES">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="-5" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										StaticPopup_Hide("LFG_OFFER_CONTINUE");
+										PartyLFGStartBackfill();											
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate2" text="HIDE">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="5" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("UChatScrollButton");
+										self:GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnShow>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnShow>
+							<OnHide>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnHide>
 						</Scripts>
 					</Frame>
 					<Frame name="$parentNoLFDWhileLFR" frameStrata="HIGH" hidden="true" enableMouse="true">
@@ -1512,6 +1582,39 @@
 		<Scripts>
 			<OnLoad function="LFDFrame_OnLoad"/>
 			<OnEvent function="LFDFrame_OnEvent"/>
+			<OnShow function="LFDFrame_OnShow"/>
 		</Scripts>
 	</Frame>
+	<Frame name="LFDParentFramePortrait" inherits="EyeTemplate" hidden="false" parent="LFDParentFrame">
+		<Size>
+			<AbsDimension x="64" y="64"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="9" y="-5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="LowerFrameLevel"/>
+		</Scripts>
+	</Frame>
+
 </Ui>

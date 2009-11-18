@@ -645,6 +645,7 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
+				self:SetHitRectInsets(96, 40, 10, 9);		-- allows mouseover over health and mana bars
 				TargetFrame_OnLoad(self, "target", TargetFrameDropDown_Initialize);
 				TargetFrame_CreateSpellbar(self, "PLAYER_TARGET_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "targettarget");

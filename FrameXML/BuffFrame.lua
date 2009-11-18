@@ -34,8 +34,8 @@ function BuffFrame_OnLoad(self)
 	self.BuffFrameFlashState = 1;
 	self.BuffAlphaValue = 1;
 	self:RegisterEvent("UNIT_AURA");
-	self.hasEnchants = 0;
-	self.hasConsolidation = 0;
+	self.numEnchants = 0;
+	self.numConsolidated = 0;
 end
 
 function BuffFrame_OnEvent(self, event, ...)
@@ -87,11 +87,10 @@ function BuffFrame_Update()
 			BUFF_ACTUAL_DISPLAY = BUFF_ACTUAL_DISPLAY + 1;
 		end
 	end
-	if ( #consolidatedBuffs > 0 ) then
-		BuffFrame.hasConsolidation = 1;
+	BuffFrame.numConsolidated = #consolidatedBuffs;
+	if ( BuffFrame.numConsolidated > 0 ) then
 		ConsolidatedBuffs_Show();
 	else
-		BuffFrame.hasConsolidation = 0;
 		ConsolidatedBuffs:Hide();	
 	end
 	BuffFrame_UpdateAllBuffAnchors();
@@ -272,7 +271,10 @@ end
 function BuffFrame_UpdateAllBuffAnchors()
 	local buff, previousBuff, aboveBuff;
 	local numBuffs = 0;
-	local slack = BuffFrame.hasEnchants + BuffFrame.hasConsolidation;
+	local slack = BuffFrame.numEnchants
+	if ( BuffFrame.numConsolidated > 0 ) then
+		slack = slack + 1;	-- one icon for all consolidated buffs
+	end
 	
 	for i = 1, BUFF_ACTUAL_DISPLAY do
 		buff = _G["BuffButton"..i];
@@ -302,7 +304,7 @@ function BuffFrame_UpdateAllBuffAnchors()
 				buff:SetPoint("TOPRIGHT", BuffFrame, "TOPRIGHT", 0, 0);
 			else
 				if ( numBuffs == 1 ) then
-					if ( BuffFrame.hasEnchants > 0 ) then
+					if ( BuffFrame.numEnchants > 0 ) then
 						buff:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", -5, 0);
 					else
 						buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPLEFT", -5, 0);
@@ -348,7 +350,11 @@ function ConsolidatedBuffs_UpdateAllAnchors()
 end
 
 function DebuffButton_UpdateAnchors(buttonName, index)
-	local rows = ceil(BUFF_ACTUAL_DISPLAY/BUFFS_PER_ROW);
+	local numBuffs = BUFF_ACTUAL_DISPLAY + BuffFrame.numEnchants;
+	if ( BuffFrame.numConsolidated > 0 ) then
+		numBuffs = numBuffs - BuffFrame.numConsolidated + 1;
+	end
+	local rows = ceil(numBuffs/BUFFS_PER_ROW);
 	local buff = _G[buttonName..index];
 	local buffHeight = TempEnchant1:GetHeight();
 
@@ -369,8 +375,8 @@ end
 
 
 function TemporaryEnchantFrame_Hide()
-	if ( BuffFrame.hasEnchants > 0 ) then
-		BuffFrame.hasEnchants = 0;
+	if ( BuffFrame.numEnchants > 0 ) then
+		BuffFrame.numEnchants = 0;
 		BuffFrame_Update();		
 	end
 	TempEnchant1:Hide();
@@ -448,8 +454,8 @@ function TemporaryEnchantFrame_OnUpdate(self, elapsed)
 
 	-- Position buff frame
 	TemporaryEnchantFrame:SetWidth(enchantIndex * 32);
-	if ( BuffFrame.hasEnchants ~= enchantIndex ) then
-		BuffFrame.hasEnchants = enchantIndex;
+	if ( BuffFrame.numEnchants ~= enchantIndex ) then
+		BuffFrame.numEnchants = enchantIndex;
 		BuffFrame_Update();
 	end
 end
@@ -476,12 +482,6 @@ function TempEnchantButton_OnClick(self, button)
 	elseif ( self:GetID() == 17 ) then
 		CancelItemTempEnchantment(2);
 	end
-end
-
-function ConsolidatedBuffs_OnLoad(self)
-	ConsolidatedBuffsIcon:SetTexture("Interface\\Buttons\\BuffConsolidation");
-	ConsolidatedBuffsIcon:SetBlendMode("BLEND");
-	ConsolidatedBuffsIcon:SetTexCoord(0.125, 0.375, 0.25, 0.75);
 end
 
 function ConsolidatedBuffs_OnUpdate(self)
@@ -519,8 +519,7 @@ end
 
 function ConsolidatedBuffs_Show()
 	ConsolidatedBuffs:Show();
-	BuffFrame.hasConsolidation = 1;
-	ConsolidatedBuffsCount:SetText(#consolidatedBuffs);
+	ConsolidatedBuffsCount:SetText(BuffFrame.numConsolidated);
 	TemporaryEnchantFrame:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPLEFT", -6, 0);
 	BuffFrame_UpdateAllBuffAnchors();
 end
@@ -540,9 +539,9 @@ function ConsolidatedBuffs_OnEnter(self)
 end
 
 function ConsolidatedBuffs_OnHide(self)
-	BuffFrame.hasConsolidation = 0;
+	BuffFrame.numConsolidated = 0;
 	self.mousedOver = nil;	
 	ConsolidatedBuffsTooltip:Hide();
-	TemporaryEnchantFrame:SetPoint("TOPRIGHT", -180, -13);
+	TemporaryEnchantFrame:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPRIGHT", 0, 0);
 	BuffFrame_UpdateAllBuffAnchors();
 end

@@ -67,7 +67,7 @@
 				</OnClick>
 				<OnEnter>
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.label);
+					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 				</OnEnter>
 				<OnLeave>
 					GameTooltip:Hide();
@@ -407,7 +407,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.label = NEED;
+						self.tooltipText=NEED;
+						self.newbieText=NEED_NEWBIE;
 					</OnLoad>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
@@ -424,7 +425,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.label = GREED;
+						self.tooltipText=GREED;
+						self.newbieText=GREED_NEWBIE;
 					</OnLoad>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Coin-Up"/>
@@ -441,7 +443,8 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.label = ROLL_DISENCHANT;
+						self.tooltipText=ROLL_DISENCHANT;
+						self.newbieText=ROLL_DISENCHANT_NEWBIE;
 					</OnLoad>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>

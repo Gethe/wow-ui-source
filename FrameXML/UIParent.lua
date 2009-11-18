@@ -157,6 +157,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PLAYER_CONTROL_GAINED");
 	self:RegisterEvent("START_LOOT_ROLL");
 	self:RegisterEvent("CONFIRM_LOOT_ROLL");
+	self:RegisterEvent("CONFIRM_DISENCHANT_ROLL");
 	self:RegisterEvent("INSTANCE_BOOT_START");
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
 	self:RegisterEvent("INSTANCE_LOCK_START");
@@ -699,12 +700,22 @@ function UIParent_OnEvent(self, event, ...)
 	if ( event == "CONFIRM_XP_LOSS" ) then
 		local resSicknessTime = GetResSicknessDuration();
 		if ( resSicknessTime ) then
-			local dialog = StaticPopup_Show("XP_LOSS", resSicknessTime);
+			local dialog = nil;
+			if (UnitLevel("player") <= 10) then
+				dialog = StaticPopup_Show("XP_LOSS_NO_DURABILITY", resSicknessTime);
+			else
+				dialog = StaticPopup_Show("XP_LOSS", resSicknessTime);
+			end
 			if ( dialog ) then
 				dialog.data = resSicknessTime;
 			end
 		else
-			local dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS");
+			local dialog = nil;
+			if (UnitLevel("player") <= 10) then
+				dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS_NO_DURABILITY");
+			else
+				dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS");
+			end
 			if ( dialog ) then
 				dialog.data = 1;
 			end
@@ -831,6 +842,19 @@ function UIParent_OnEvent(self, event, ...)
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
 		if ( dialog ) then
+			dialog.text:SetFormattedText(LOOT_NO_DROP, ITEM_QUALITY_COLORS[quality].hex..name.."|r");
+			StaticPopup_Resize(dialog, "CONFIRM_LOOT_ROLL");
+			dialog.data = arg1;
+			dialog.data2 = arg2;
+		end
+		return;
+	end
+	if ( event == "CONFIRM_DISENCHANT_ROLL" ) then
+		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
+		if ( dialog ) then
+			dialog.text:SetFormattedText(LOOT_NO_DROP_DISENCHANT, ITEM_QUALITY_COLORS[quality].hex..name.."|r");
+			StaticPopup_Resize(dialog, "CONFIRM_LOOT_ROLL");
 			dialog.data = arg1;
 			dialog.data2 = arg2;
 		end
@@ -1756,10 +1780,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 	
-	if ( IsVoiceChatEnabled() and VoiceChatTalkers and not VoiceChatTalkers:IsUserPlaced() and VoiceChatTalkers:IsShown() ) then
-		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].baseX = 75;
+	if ( menuBarTop == 55 ) then
+		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].yOffset = -10;
 	else
-		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].baseX = nil;
+		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].yOffset = -30;
 	end
 	
 	
@@ -1812,7 +1836,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if ( ( ShapeshiftBarFrame and ShapeshiftBarFrame:IsShown() ) or
 		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
 		HideMultiCastActionBar();
-	elseif ( HasMultiCastActionBar() ) then
+	elseif ( HasMultiCastActionBar and HasMultiCastActionBar() ) then
 		ShowMultiCastActionBar();
 	end
 
@@ -3533,16 +3557,11 @@ function GetLFGMode()
 		return "queued", (LFG_IsEmpowered() and "empowered" or "unempowered");
 	elseif ( roleCheckInProgress ) then
 		return "rolecheck";
+	elseif ( IsListedInLFR() ) then
+		return "listed", (LFG_IsEmpowered() and "empowered" or "unempowered");
 	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
 		return "lfgparty";
-	else
-		--Check if we are listed
-		if ( LFGQueuedForList ) then
-			for dungeonID, queued in pairs(LFGQueuedForList) do
-				if ( queued and dungeonID > 0 ) then
-					return "listed", (LFG_IsEmpowered() and "empowered" or "unempowered");
-				end
-			end
-		end
+	elseif ( IsPartyLFG() and IsInLFGDungeon() ) then
+		return "abandonedInDungeon";
 	end
 end

@@ -114,42 +114,6 @@
 			<OnUpdate function="BuffFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
-
-	<Frame name="TemporaryEnchantFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
-		<Size>
-			<AbsDimension x="36" y="36"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="-180" y="-13"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<Button name="TempEnchant1" inherits="TempEnchantButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="TempEnchant2" inherits="TempEnchantButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TempEnchant1" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnUpdate function="TemporaryEnchantFrame_OnUpdate"/>
-		</Scripts>
-	</Frame>
 	
 	<Button name="ConsolidatedBuffs" parent="UIParent" inherits="AuraButtonTemplate" hidden="true">
 		<Anchors>
@@ -160,7 +124,14 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="ConsolidatedBuffs_OnLoad" />
+			<OnLoad>
+				ConsolidatedBuffsIcon:SetTexture("Interface\\Buttons\\BuffConsolidation");
+				ConsolidatedBuffsIcon:SetTexCoord(0, 0.5, 0, 1);
+				ConsolidatedBuffsIcon:ClearAllPoints();
+				ConsolidatedBuffsIcon:SetPoint("CENTER");
+				ConsolidatedBuffsIcon:SetWidth(64);
+				ConsolidatedBuffsIcon:SetHeight(64);
+			</OnLoad>
 			<OnUpdate function="ConsolidatedBuffs_OnUpdate" />
 			<OnEnter function="ConsolidatedBuffs_OnEnter" />
 			<OnHide function="ConsolidatedBuffs_OnHide" />			
@@ -172,7 +143,7 @@
 		</Anchors>	
 		<Size>
 			<AbsDimension x="60" y="60"/>
-		</Size>	
+		</Size>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -218,4 +189,36 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+
+	<Frame name="TemporaryEnchantFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="ConsolidatedBuffs" relativePoint="TOPRIGHT" />
+		</Anchors>
+		<Frames>
+			<Button name="TempEnchant1" inherits="TempEnchantButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="TempEnchant2" inherits="TempEnchantButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="TempEnchant1" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnUpdate function="TemporaryEnchantFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>	
 </Ui>

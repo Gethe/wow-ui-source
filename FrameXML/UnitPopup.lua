@@ -21,6 +21,7 @@ UnitPopupButtons["DUEL"] = { text = DUEL, dist = 3, space = 1 };
 UnitPopupButtons["WHISPER"]	= { text = WHISPER, dist = 0 };
 UnitPopupButtons["INVITE"]	= { text = PARTY_INVITE, dist = 0 };
 UnitPopupButtons["UNINVITE"] = { text = PARTY_UNINVITE, dist = 0 };
+UnitPopupButtons["VOTE_TO_KICK"] = { text = VOTE_TO_KICK, dist = 0 };
 UnitPopupButtons["PROMOTE"] = { text = PARTY_PROMOTE, dist = 0 };
 UnitPopupButtons["GUILD_PROMOTE"] = { text = GUILD_PROMOTE, dist = 0 };
 UnitPopupButtons["GUILD_LEAVE"] = { text = GUILD_LEAVE, dist = 0 };
@@ -121,7 +122,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 UnitPopupMenus = { };
 UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "LEAVE", "CANCEL" };
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "CANCEL" };
-UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "LOOT_PROMOTE", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
+UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
 UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
 UnitPopupMenus["RAID"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "CANCEL" };
@@ -416,13 +417,12 @@ function UnitPopup_HideButtons ()
 	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU;
 	local inInstance, instanceType = IsInInstance();
 	local inParty = 0;
-	local inRaid = 0;
 	if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
 		inParty = 1;
 	end
 
 	local inRaid = 0;
-	if ( (GetNumPartyMembers() > 0) and (GetNumRaidMembers() > 0) ) then
+	if ( (GetNumRaidMembers() > 0) ) then
 		inRaid = 1;
 	end
 
@@ -537,7 +537,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
-			if ( (inParty == 0) or (isLeader == 0 and not IsPartyLFG()) or (instanceType == "pvp") or (instanceType == "arena") ) then
+			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or IsPartyLFG() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "VOTE_TO_KICK" ) then
+			if ( (inParty == 0) or (instanceType == "pvp") or (instanceType == "arena") or (not IsPartyLFG()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
@@ -962,7 +966,11 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "UNINVITE" ) then
-						if ( inParty == 0 or (isLeader == 0 and not IsPartyLFG()) ) then
+						if ( inParty == 0 or (isLeader == 0) or IsPartyLFG() ) then
+							enable = 0;
+						end
+					elseif ( value == "VOTE_TO_KICK" ) then
+						if ( inParty == 0 or not IsPartyLFG() ) then
 							enable = 0;
 						end
 					elseif ( value == "PROMOTE" ) then
@@ -1097,7 +1105,7 @@ function UnitPopup_OnClick (self)
 		StartDuel(unit, 1);
 	elseif ( button == "INVITE" ) then
 		InviteUnit(name);
-	elseif ( button == "UNINVITE" ) then
+	elseif ( button == "UNINVITE" or button == "VOTE_TO_KICK" ) then
 		UninviteUnit(name);
 	elseif ( button == "PROMOTE" ) then
 		PromoteToLeader(unit, 1);
