@@ -18,8 +18,9 @@ h2. General
 
 h3. Icecrown Citadel
 
-* The Forge of Souls and Pit of Saron in the 5-player dungeon are currently available for testing.
-* Additional Icecrown Citadel dungeon and raid content will be made available in future test builds. For more information and testing schedules please visit our Test Realm forum.
+* All three wings of the 5-player dungeon are currently available for testing.
+* Select encounters in the 10- and 25-player raid dungeon are available for limited testing.
+* Additional Icecrown Citadel raid content will be made available in future test builds. For more information and testing schedules please visit our Test Realm forum.
 
 h2. Classes: General
 
@@ -64,6 +65,7 @@ h3. Naxxramas
 
 h3, Oculus
 
+* Azure Ring Guardians agro distance changed from 50 to 40 yards.
 * Many bosses and creatures have had their total health reduced.
 * Several bosses and creatures have had cooldowns on specific abilities increased, effect durations reduced, and damage on some of these abilities reduced.
 * Ring-Lord Conjurers and Sorceresses now hang out in packs of 4 instead of packs of 5.
@@ -103,7 +105,7 @@ h4. Feral Combat
 
 h4. Restoration
 
-* Gift of the Earthmother: Redesigned. This talent now increases spell haste and reduces the base global cooldown by 2/4/6/8/10% instead of its previous effect.
+* Gift of the Earthmother: Redesigned. This talent now increases spell haste by 2/4/6/8/10% and reduces the base global cooldown of Lifebloom by 2/4/6/8/10% instead of its previous effects.
 
 h3. Pets
 
@@ -163,7 +165,7 @@ h3. Pets
 
 h2. Paladins
 
-* Divine Intervention: This ability now also removes Exhaustion and Sated from the target. In addition, the cooldown on this ability has been reduced from 20 minutes to 10 minutes. Cannot be used in Arenas.
+* Divine Intervention: This ability now also removes Exhaustion or Sated from a target if the recipient is out of combat when the effect ends. In addition, the cooldown on this ability has been reduced from 20 minutes to 10 minutes. Cannot be used in Arenas.
 * Flash of Light: This spell no longer causes a heal-over-time effect unless the player has the Infusion of Light talent.
 * Lay on Hands: This ability will place Forbearance on the paladin if used on his or herself. It will not place Forbearance on others.
 
@@ -171,12 +173,11 @@ h3. Talents
 
 h4. Holy
 
+* Aura Mastery: This effect of this talent has been reduced in duration to 6 seconds.
 * Infusion of Light: This talent now causes the paladin's Flash of Light spells to heal the target for 50/100% of the Flash of Light healing amount over 12 seconds.
-* Sanctified Light: This talent now also has a 33/66/100% chance to prevent Lay on Hands from causing Forbearance when Lay on Hands is used on others.
 
 h4. Protection
 
-* Aura Mastery: This effect of this talent has been reduced in duration to 6 seconds.
 * Divine Guardian: This talent no longer increases the amount of damage transferred to the paladin from Divine Sacrifice. Instead it causes all raid and party members to take 10/20% reduced damage while Divine Sacrifice is active. In addition, the duration has been changed to 6 seconds, however the effect does not terminate when Divine Sacrifice is removed before its full duration.
 * Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases. Finally, damage which reduces the paladin's health below 20% now cancels the effect early.
 
@@ -195,7 +196,7 @@ h4. Shadow
 
 * Improved Devouring Plague: This spell now deals 10/20/30% of its total periodic effect instantly, up from 5/10/15%.
 * Mind Flay: The range of this ability has been increased to 30 yards, up from 20.
-* Shadowform: This talent also now causes Devouring Plague, Shadow Word: Pain, and Vampiric Touch to benefit from haste. Both the period length and the duration of these spells will be reduced by haste. In addition, the mana cost has been reduced from 32% to 13% of base mana.
+* Shadowform: This talent also now causes Devouring Plague and Vampiric Touch to benefit from haste. Both the period length and the duration of these spells will be reduced by haste. In addition, the mana cost has been reduced from 32% to 13% of base mana.
 * Vampiric Embrace: This talent now provides a 30-minute buff that cannot be dispelled, instead of a target debuff and only generates healing for single-target shadow damage spells.
 
 h3. Pet
@@ -204,10 +205,16 @@ h3. Pet
 
 h2. Rogues
 
+* Deadly Poison: In addition to its existing effects, when a rogue applies Deadly Poison to a target which has already reached the maximum number of applications, this will also trigger the poison which the rogue is using on his or her other weapon.
 * Dual Wield: Rogues now know this ability upon logging into the game at level 1.
 * Stealth: This ability no longer has multiple ranks. While active, the single rank of this ability (available at level 1) allows rogues to move at 70% movement speed.
 
 h3. Talents
+
+h4. Assassination
+
+* Improved Poisons: Bonus chance to trigger Deadly Poison from this talent increased.
+* Murder: This talent now provides a flat damage increase of 2/4% against all targets, instead of only targets which do not appear in Icecrown.
 
 h4. Subtlety
 
@@ -225,6 +232,7 @@ h3. Talents
 
 h4. Elemental Combat
 
+* Elemental Mastery: This talent now increases spell haste by 15% instead of critical strike chance while active.
 * Improved Fire Nova Totem: Renamed Improved Fire Nova. This talent now provides an additional 10/20% damage to the spell and reduces the cooldown by 2/4 seconds.
 
 h4. Enhancement
@@ -243,6 +251,7 @@ h3. Talents
 
 h4. Affliction
 
+* Improved Drain Soul: This talent now reduces threat by 10%/20%, up from 5%/10%.
 * Improved Felhunter: This talent now also reduces the cooldown on the felhunter's Shadow Bite ability by 2/4 seconds.
 * Shadow Mastery: This talent now also increases the damage done by the felhunter's Shadow Bite ability by 3/6/9/12/15%.
 
@@ -255,6 +264,7 @@ h4. Demonology
 h4. Destruction
 
 * Conflagrate: Redesigned. This talent now consumes an Immolate or Shadowflame effect on the enemy target to instantly deal damage equal to 9 seconds of Immolate or 8 seconds of Shadowflame, and causes additional damage over 3 seconds equal to 3 seconds of Immolate or 2 seconds of Shadowflame. In addition, the periodic damage of Conflagrate is capable of critically striking the afflicted target.
+* Destructive Reach: This talent now reduces threat by 10%/20%, up from 5%/10%.
 * Ruin: This talent now also increases the critical strike damage bonus of the imp's Firebolt spell by 100%.
 
 h3. Pets
@@ -323,7 +333,7 @@ h4. Objectives Tracking
 * Quest Difficulty Tracking
 * This feature is off by default and can be enabled in the Objectives window from the Interface Options menu. Turning this feature on will color-code all quest names displayed in the map interface according to difficulty (grey, green, yellow, orange, and red).
 
-h3. Dungeon System
+h3. Dungeon Finder
 
 This feature has replaced the Looking For Group tool and provides all-new dungeon party creation functionality.
 
@@ -336,7 +346,7 @@ This feature has replaced the Looking For Group tool and provides all-new dungeo
 ** Daily Heroic and normal dungeon quests have been removed. These quests have been replaced with weekly raid quests (see the "Quests" section for details).
 ** Level-appropriate rewards will be offered to players who choose the Random Dungeon option for pre-Wrath of the Lich King dungeons.
 ** Players can be placed in a group for a random dungeon no more than once every 15 minutes.
-** Random Dungeon rewards will be placed in each player's inventory automatically upon completion of the dungeon (final boss killed). A pop-up notification will display any rewards earned through the Dungeon System.
+** Random Dungeon rewards will be placed in each player's inventory automatically upon completion of the dungeon (final boss killed). A pop-up notification will display any rewards earned through the Dungeon Finder.
 * Instead of choosing a random dungeon, players can also choose specific dungeons appropriate for their level range. Multiple instances can be selected at one time. The feature no longer limits the choice to look for only 3 dungeon groups at one time.
 
 h4. Pick-Up Groups
@@ -345,11 +355,11 @@ h4. Pick-Up Groups
 * As part of the matchmaking system, some of the more difficult dungeons will have a minimum gear requirement. Players also need to meet the requirements for dungeons that require attunement, such as keys or quests. If a player does not meet the requirements for a particular dungeon, a lock icon will be displayed next to that dungeon. Hovering over this icon will display the requirements which have not been met.
 * Only conjured items and loot dropped in a dungeon for which other party members are eligible can be traded between players from different realms.
 * A Vote Kick feature will be available in the event a member of a party is not performing to the expectations of the other members.
-* Players who leave the group prematurely are subject to a Deserter debuff preventing them from using the Dungeon System tool for 15 minutes.
-* If an existing group loses a member, the leader will be asked if he or she wants to continue the dungeon. Choosing to continue will automatically place the group back into the Dungeon System queue.
+* Players who leave the group prematurely are subject to a Deserter debuff preventing them from using the Dungeon Finder for 15 minutes.
+* If an existing group loses a member, the leader will be asked if he or she wants to continue the dungeon. Choosing to continue will automatically place the group back into the Dungeon Finder queue.
 * A Player will not be placed in a group with people on his or her Ignore list.
-* Players who take part in groups who have one or more members who have been matched with them randomly from within the Dungeon System will receive extra rewards, up to and including the coveted Perky Pug non-combat pet. The more random players with whom one groups, the faster the pet can be obtained.
-* The Need Before Greed loot system will be the unalterable default looting system for pick-up groups in the Dungeon System and has been updated.
+* Players who take part in groups who have one or more members who have been matched with them randomly from within the Dungeon Finder will receive extra rewards, up to and including the coveted Perky Pug non-combat pet. The more random players with whom one groups, the faster the pet can be obtained.
+* The Need Before Greed loot system will be the unalterable default looting system for pick-up groups in the Dungeon Finder and has been updated.
 ** Need Before Greed will now recognize gear appropriate for a class in three ways: the class must be able to equip the item, pure melee will be unable to roll on spell power items, and classes are limited to their dominant armor type (ex. paladins for plate). All items will still be available via Greed rolls as well as the new Disenchant option should no member be able to use the item.
 ** Players will be able to roll on items with a required minimum level higher than a player's current level.
 
@@ -360,7 +370,7 @@ There is a new Looking For Raid option available to players that can be accessed
 * Players will be able to browse the system manually for any other players looking for a raid dungeon group.
 * While browsing LFR players may sort the list ascending or descending by left-clicking the following headers: Name, Level, Class, Tank Role, Healer Role, and Damage Role. The crown is the Leader Role (representing a raid group with 2 or more people). Players can left-click on this header to sort the list with groups at the top or at the bottom.
 * Hovering over players listed in LFR will display their name, class, level, roles and comments. Hovering over a raid/group will display the leader's name, the raid information (number of people in the raid), comments, if there are any bosses dead (and which ones), and if there are any friends from your Friends list or ignored players from your Ignore list in the raid group.
-* The Looking For Group chat channel has returned and can be accessed in all major cities (similar to the Trade chat channel) without the use of the Dungeon system interface.
+* The Looking For Group chat channel has returned and can be accessed in all major cities (similar to the Trade chat channel) without the use of the Dungeon Finder interface.
 * Players may only be queued or listed in one of the following systems at a time: Dungeons, LFR, Battlegrounds, or Arenas.
 * Ignore List: The amount of characters a person can ignore has been increased to 50. In addition, players on other realms can be placed on the Ignore list.
 
@@ -395,7 +405,7 @@ h3. Addon Author Changes
 
 h2. Graphics
 
-* A new feature has been added to the D3D graphics engine to improve texture management (particularly for Windows XP users). This is currently enabled by default on the public test realms. For more information please visit our Test Realm forum.
+* A new feature has been added to the D3D graphics engine to improve texture management (particularly for Windows XP users). If you are experiencing random crashes related to file read errors or out of memory, this new backend may help. To enable the new backend, add the following line to your Config.WTF file: SET gxApi "d3d9ex". For more information please visit our Test Realm forum.
 
 h2. Professions
 
@@ -443,7 +453,6 @@ h2. Reputation
 ** Wyrmrest Accord
 * Sons of Hodir quests now give more reputation overall.
 * Top-level helm and shoulder faction-related enchants are now available as Bind-on-Account items that do not require any faction to use once purchased (they still require the appropriate faction level to purchase).
-* Reputation commendations can now be purchased for 1 Emblem of Triumph each.
 
 h2. Items
 
@@ -452,7 +461,7 @@ h2. Items
 * Haris Pilton now sells a new 24-slot bag! She has stubbornly decided to remain in Shattrath City, so those interested should seek her out there.
 * Hatchlings: Leaping, Darting, Razormaw, and Ravasaur Hatchlings no longer drop from their associated rare creatures. Instead, there are now rare nests that spawn which contain these hatchlings. For example, the Leaping Hatchling can now be found in Takk's Nest rather than as a drop from Takk the Leaper.
 * Sceptor of Celebras: Since this item is no longer needed as a key, Celebras will no longer give one out to a player who loses it. The item can now be sold or disenchanted as normal.
-* Shaman Tier-9 4-Piece Set Bonus (Elemental): This set bonus now places a damage-over-time effect on the target when Lava Burst deals damage instead of increasing the size of the Lava Burst.
+* Shaman Tier-9 4-Piece Set Bonus (Elemental): This set bonus now does an additional 10% of Lava Burst's initial damage over time instead of increasing the size of the Lava Burst.
 
 h3. Glyphs
 
@@ -486,7 +495,7 @@ h4. Warlocks
 
 h4. Warriors
 
-* Glyph of Victory Rush: This glyph now increases the critical strike chance of Victory Rush by 70%, regardless of the percentage of the target's remaining health.
+* Glyph of Victory Rush: This glyph now increases the critical strike chance of Victory Rush by 30%, regardless of the percentage of the target's remaining health.
 
 h2. Bug Fixes
 
@@ -543,7 +552,7 @@ h3. Items
 
 h3. Racial Abilities
 
-* Arcane Torrent: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
+* Arcane Torrent: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs. In addition, this ability will now be properly noted and displayed as an interrupt in the cast bar UI.
 * Every Man for Himself: Disconnecting while rooted will no longer sometimes trigger this ability.
 
 h3. Classes
@@ -566,6 +575,7 @@ h4. Death Knights
 * Night of the Dead: Tooltip typo corrected.
 * Obliterate: This ability will no longer sometimes fail to do additional damage based on diseases on the target.
 * Raise Ally: While this spell is active on a target, they will not be sent to the graveyard, prematurely ending the spell.
+* ?	Raise Dead: It is no longer possible under some circumstances to use a Risen Ghoul to cause neutral guards to attack opposite faction players.
 * Strangulate: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
 * Taste of Blood: Corrected inaccurate information in combat log tooltip.
 * Unholy Presence: The animation for activating this presence will no longer also have the animation for Blood Presence played at the same time.
@@ -577,6 +587,7 @@ h4. Druids
 * Infected Wounds: This ability is no longer considered to be in the magical defense category; therefore spell hit no longer applies to its activation. Tooltip error corrected.
 * Nature's Grace: The tooltip now correctly indicates that it will not be activated from periodic spell critical strikes.
 * Swipe (Bear): Tooltip corrected to display 8 yard range.
+* Rejuvenation: Druids will no longer get a more powerful spell error message when attempting to overwrite a Rejuvenation they cast.
 
 h4. Hunters
 
@@ -584,7 +595,7 @@ h4. Hunters
 * Explosive Trap: The damage from this trap will now scale properly with the hunter's attack power.
 * Glyph of Immolation Trap: Now properly increases damage by 100%. In addition, this glyph will now modify the tooltip of Immolation Trap correctly.
 * Glyph of Mending: This glyph will now modify the amount healed in the tooltip on Mend Pet.
-* Point of No Escape: This ability no longer stacks and now only functions for the hunter.
+* Point of No Escape: It is no longer possible to gain benefit from this talent multiple times by having a target affected by multiple of the same hunter's traps. In addition, Freezing Arrow will no longer incorrectly provide a critical strike bonus to players beyond the hunter with this talent.
 * Roar of Sacrifice: Corrected tooltip error.
 * Silencing Shot: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
 * Volley: The tooltip for this ability will now update properly from haste.
@@ -596,11 +607,12 @@ h4. Mages
 * Blizzard: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage. Also fixed a bug where some trinkets were not triggered by this spell.
 * Cone of Cold: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
 * Dalaran Intellect: Mages will now be properly blocked from casting this spell when the target has a more powerful version of the buff.
+* Deep Freeze: This spell will no longer consume two charges of Fingers of Frost when it misses its target.
 * Flame Strike: Some ranks of this spell had an incorrect cast time of 3 seconds. All ranks now share a 2-second cast time.
 * Frost Nova: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
 * Frostbolt: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
 * Glyph of Mirror Image: Now updates the tooltip on Mirror Image to show 4 images are summoned.
-* Ignite: Now correctly benefits from the dispel resistance granted by the Arcane Subtlety talent.
+* Ignite: Now correctly benefits from the dispel resistance granted by the Arcane Subtlety talent. In addition, this talent will now properly include in its damage calculation any damage of the initial fire critical strike that was absorbed.
 * Ice Lance: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
 * Improved Scorch: This talent no longer causes a bug that removes all resilience from pets.
 * Mirror Image: The mirror images summoned will no longer sometimes appear as shades before taking on the appearance of the casting mage.
@@ -627,6 +639,7 @@ h4. Paladins
 * Judgements of the Just: The effect of this talent is now always removed when the target no longer has an active Judgement debuff.
 * Judgement of Righteousness: The damage from this ability will no longer sometimes increase when the paladin's agility increases (only occurred with low strength and high agility).
 * Judgement of Wisdom: Corrected incorrect information in the combat log tooltip.
+* Retribution Aura: It is no longer possible under some circumstances for the UI to display buffs from two different ranks of this ability.
 * Seal of Corruption: Tooltip corrected to list the actual amount of damage done instead of a higher number.
 
 h4. Priests
@@ -634,6 +647,7 @@ h4. Priests
 * Glyph of Power Word: Shield: The heal caused by this glyph will now correctly use the casting priest's critical strike chance instead of the target's.
 * Inspiration: The tooltip now correctly indicates that it also functions with Prayer of Mending.
 * Levitate: This spell can now activate trinkets that can trigger from casting a helpful spell.
+* Mass Dispel: Some trinkets which were not triggered properly by this spell will now work correctly when Mass Dispel is cast.
 * Mind Flay: The rank 1 tooltip has been corrected to indicate the accurate damage and snare effect. In addition, this ability will now work correctly with [target=focus] and [target=mouseover] macros.
 * Prayer of Mending: Inspiration and Divine Aegis can no longer be incorrectly triggered by this spell for priests who do not have those talents.
 * Silence: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
@@ -655,11 +669,14 @@ h4. Rogues
 h4. Shamans
 
 * Glyph of Earthliving Weapon: Now updates the tooltip for Earthliving Weapon.
+* Glyph of Lesser Healing Wave: Tooltip and functionality corrected to ensure this glyph will cause extra healing from Lesser Healing Wave regardless of which shaman cast Earth Shield on the target.
+* Hex: Players are no longer able to use Battlemaster trinkets while under the effects of this spell.
 * Mana Tide Totem: The tooltip on this spell will now be modified properly by the Glyph of Mana Tide Totem.
 * Thunderstorm: It is no longer possible to use this ability while under the effects of the Druid spell Cyclone.
 
 h4. Warlocks
 
+* Conflagrate: This spell will no longer benefit inconsistently from the talents Emberstorm and Improved Immolate, as well as the Glyph of Immolate and Tier 9 set bonus. Just as for Immolate, all stacking percentage increases will be applied additively instead of multiplicatively (+10% and +20% make +30% instead of +32%). In addition, Conflagrate used with Shadowflame will now scale properly from spell power.
 * Curse of the Elements: Rank 4 has been increased to 11%, up from 10%.
 * Drain Soul: This spell now deals 4 times the normal damage for all ranks. Previously it was only ranks 6 and above.
 * Glyph of Conflagrate: Now updates the tooltip of Conflagrate to remove reference to Conflagrate removing an Immolate or Shadowflame effect on the target.
@@ -688,3 +705,11 @@ h4. Warriors
 h2. Game Systems
 
 * Target Effects: When this UI feature is activated, Fear, Silence, Frostbolt, and Hamstring will all now display text over the target's head indicating what type of effect has been applied.
+h2. Battlegrounds
+
+h3. Strand of the Ancients
+
+* The "Let the Battle for the Strand of the Ancients" message should no longer appear twice in round 2. It also now appears correctly at the beginning of round 1.
+* Storm the Beach should now be correctly granted to the Horde when they start round 1 on offense.
+* The east Antipersonnel Cannon at the Amethyst gate should no longer be able to shell the graveyard flag.
+* Fixed an order of operations issue where players would sometimes not be resurrected or clear their Inactive debuff at the end of the 1st round.
