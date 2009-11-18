@@ -62,6 +62,13 @@ h3. Naxxramas
 
 * Players no longer need to kill the final bosses in all four wings of this dungeon in order to teleport to Sapphiron. Teleportation orbs have been added to allow players access back and forth from Sapphiron's lair.
 
+h3, Oculus
+
+* Many bosses and creatures have had their total health reduced.
+* Several bosses and creatures have had cooldowns on specific abilities increased, effect durations reduced, and damage on some of these abilities reduced.
+* Ring-Lord Conjurers and Sorceresses now hang out in packs of 4 instead of packs of 5.
+* Vehicle scaling on the drakes based on the rider's item level has been increased to make them more powerful.
+
 h2. Death Knights
 
 * Army of the Dead: The cooldown on this ability has been reduced from 20 minutes to 10 minutes. Army Ghoul damage dropped by 50%. Cannot be used in Arenas.
@@ -156,9 +163,9 @@ h3. Pets
 
 h2. Paladins
 
-* Divine Intervention: Cooldown on this ability has been reduced from 20 minutes to 10 minutes. Cannot be used in Arenas.
+* Divine Intervention: This ability now also removes Exhaustion and Sated from the target. In addition, the cooldown on this ability has been reduced from 20 minutes to 10 minutes. Cannot be used in Arenas.
 * Flash of Light: This spell no longer causes a heal-over-time effect unless the player has the Infusion of Light talent.
-* Lay on Hands: This ability now places Forbearance on the target and cannot be used on a target with Forbearance.
+* Lay on Hands: This ability will place Forbearance on the paladin if used on his or herself. It will not place Forbearance on others.
 
 h3. Talents
 
@@ -309,7 +316,7 @@ h4. Map
 h4. Objectives Tracking
 
 * This frame has been improved to offer new functionality and can be used with the new shrunken map option.
-* The Objectives frame is now docked below the mini-map next to the right 2 action bars and will track up to 12 quests for a zone.
+* The Objectives frame is now docked below the mini-map next to the right 2 action bars and will track up to 10 quests for a zone.
 * Numbers have been added next to each quest name and objective corresponding with those areas of interest displayed on the map.
 * If a quest objective has been completed, the number will be replaced with a yellow question mark symbol.
 * The arrow button in the top right corner of the Objectives frame can be used to toggle between minimizing and maximizing the quest objective display.
@@ -442,6 +449,7 @@ h2. Items
 
 * Arena Set Bonuses: The two-piece set bonus for all Wrath of the Lich King Arena sets now provides 100 resilience and 29 spell power or 50 attack power. The current four-piece bonus will remain, however it also now provides 88 spell power or 150 attack power.
 * Death Knight Tier-9 4-Piece Bonus (Damage-Dealing): This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
+* Haris Pilton now sells a new 24-slot bag! She has stubbornly decided to remain in Shattrath City, so those interested should seek her out there.
 * Hatchlings: Leaping, Darting, Razormaw, and Ravasaur Hatchlings no longer drop from their associated rare creatures. Instead, there are now rare nests that spawn which contain these hatchlings. For example, the Leaping Hatchling can now be found in Takk's Nest rather than as a drop from Takk the Leaper.
 * Sceptor of Celebras: Since this item is no longer needed as a key, Celebras will no longer give one out to a player who loses it. The item can now be sold or disenchanted as normal.
 * Shaman Tier-9 4-Piece Set Bonus (Elemental): This set bonus now places a damage-over-time effect on the target when Lava Burst deals damage instead of increasing the size of the Lava Burst.
@@ -484,31 +492,199 @@ h2. Bug Fixes
 
 h3. Items
 
-* Glyph of Immolation Trap: Now properly increases damage by 100%.
+* Ancient Pickled Egg: This item can no longer be triggered by Life Tap.
+* Brutal Hauberk: The tooltip on this item no longer references granting energy (as energy-based classes cannot equip it).
+* Costumes: Various costumes from holidays, items, and quests that previously were cancelled by getting on a mount will now cause an error message when the player attempts to mount instead of cancelling the costume.
+* Carapace of the Old God: Now tradable using the Bind-on-Pickup trade system.
+* Crystalforged Trinket: Can now be refunded at its vendor.
+* Dragonslayer Set: No longer displays a duration on the Nature's Ally buff.
+* Drums of the Forgotten Kings: The buff from this item will no longer be cancelled when the player who used the item swaps talent specializations.
+* Drums of the Wild: The buff from this item will no longer be cancelled when the player who used the item swaps talent specializations.
+* Eating and Drinking: Eating and drinking are now cancelled and prevented while in a vehicle as a passenger.
+* Figurine: Emerald Owl: Now grants mana properly to druids in Bear Form, Cat Form, and Dire Bear Form.
+* Figurine: Talasite Owl: Now grants mana properly to druids in Bear Form, Cat Form, and Dire Bear Form.
+* Fire Hardened Hauberk: The tooltip on this item no longer references granting energy (as energy-based classes cannot equip it).
+* Giantstalker Set: No longer displays a duration on the Nature's Ally buff.
+* Gul'dan's Regalia Set: Tooltip corrected to indicate increased damage for all pet attacks, not just abilities.
+* Husk of the Old God: Now tradable using the Bind-on-Pickup trade system.
+* Idol of Flaring Growth: Now has a detailed combat log tooltip.
+* Idol of Lunar Fury: Now has a detailed Combat log tooltip.
+* Idol of The Corruptor: Now has a detailed Combat log tooltip.
+* Insignia of the Alliance: Item level changed to 60.
+* Insignia of the Horde: Item level changed to 60.
+* Level 58 PvP Items: A variety of PvP items with a minimum level of 58 were not being translated properly when a player used the Paid Faction Change service. That has been corrected. Paladin- and shaman-specific items still will not be translated, as there is no opposite version to translate them into.
+* Liadrin's Plate Set: No longer incorrectly reduces the cooldown on Divine Shield.
+* Lightning Capacitor: Combat log tooltip for Electrical Charge updated to include more detailed information.
+* Nightsong Regalia Set: The bonus to Rejuvenation from this set will now work properly with the Idol of Rejuvenation equipped. In addition, the instant heal provided now has a correct combat log tooltip.
+* Noggenfogger Elixir: Players shrunk while under the effects of this item will now be able to mount.
+* Quel'dorei Channeling Rod: Spelling error corrected.
+* Quel'dorei Sash: Spelling error corrected.
+* Quel'dorei Guard: Spelling error corrected.
+* Qiraji Bindings of Command: Now tradable using the Bind-on-Pickup trade system.
+* Qiraji Bindings of Dominance: Now tradable using the Bind-on-Pickup trade system.
+* Reclaimed Shadowstrike: No longer has a cooldown to create Reclaimed Thunderstrike.
+* Reinforced Shadowstrike: No longer has a cooldown to create Reinforced Thunderstrike.
+* Reins of the Swift Frostsaber: The mount learned from this item no longer triggers a global cooldown.
+* Runescroll of Fortitude: The buff from this item will no longer be cancelled when the player who used the item swaps talent specializations.
+* Seaspray Albatross: Now grants mana properly to druids in Bear Form, Cat Form, and Dire Bear Form.
+* Sigil of Virulence: Now has a detailed combat log tooltip.
+* Solace of the Defeated: Can no longer be triggered by spells with a base cost of 0.
+* Solace of the Fallen: Can no longer be triggered by spells with a base cost of 0.
+* Spirit of Eskhandar Set: This set no longer requires Eskhandar's Collar to complete (that item can no longer be acquired).
+* Swift Horde Wolf: The mount learned from this item no longer triggers a global cooldown.
+* The Egg of Mortal Essence: This item can no longer be triggered by Life Tap.
+* Tier 2 Helmets: Looting these items from Nefarion in Blackwing Lair will no longer trigger the Onyxia's Lair (level 60) Feat of Strength achievement.
+* Totem of Quaking Earth: This totem will no longer sometimes grant unintended bonus healing.
+* Turalyon's Plate Set: No longer incorrectly reduces the cooldown on Divine Shield.
+* Veklor's Diadem: Now tradable using the Bind-on-Pickup trade system.
+* Warmth of Forgiveness: Now grants mana properly to druids in Bear Form, Cat Form, and Dire Bear Form.
+* Windrunner Set: The set bonus which grants Greatness to the hunter's pet will no longer spuriously show the hunter also gaining that buff.
+* Worldbreaker Garb Set: The Electrified effect caused by this set now has detailed combat log tooltips.
+
+h3. Racial Abilities
+
+* Arcane Torrent: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
+* Every Man for Himself: Disconnecting while rooted will no longer sometimes trigger this ability.
 
 h3. Classes
 
+h4. Death Knights
+
+* Bloody Strikes: Now properly increases the damage displayed in the tooltips of Blood Strike and Heart Strike.
+* Bone Shield: Tooltip corrected to indicate the player has the correct number of bones.
+* Chains of Ice: This ability will no longer appear to land on targets which are immune.
+* Desecration: The debuff from this ability will no longer sometimes appear as if it were cast by someone else. In addition, the visual and snare from this ability will now both dissipate at the same time. Further, this talent will now respect snare immunities, and no longer sometimes snare immune targets.
+* Frost Presence: The animation for activating this presence will no longer also have the animation for Blood Presence played at the same time.
+* Glyph of Bone Shield: Now updates the number of charges in the Bone Shield tooltip.
+* Glyph of Dark Death: Now updates the tooltip on Death Coil. In addition, its own tooltip has been clarified to indicate it also applies to healing from Death Coil.
+* Glyph of Death's Embrace: Now updates the tooltip on Death Coil to indicate runic power is refunded.
+* Glyph of Heart Strike: Now updates the tooltip on Heart Strike to indicate Heart Strike applies a movement snare.
+* Glyph of Icebound Fortitude: Now updates the tooltip on Icebound Fortitude to show increased damage reduction.
+* Glyph of Plague Strike: Now updates the damage shown in Plague Strike's tooltip.
+* Glyph of Unbreakable Armor: Now updates the tooltip on Unbreakable Armor. Tooltip on glyph modified to make its effect more clear as well.
+* Master of Ghouls: Tooltip typo corrected.
+* Night of the Dead: Tooltip typo corrected.
+* Obliterate: This ability will no longer sometimes fail to do additional damage based on diseases on the target.
+* Raise Ally: While this spell is active on a target, they will not be sent to the graveyard, prematurely ending the spell.
+* Strangulate: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
+* Taste of Blood: Corrected inaccurate information in combat log tooltip.
+* Unholy Presence: The animation for activating this presence will no longer also have the animation for Blood Presence played at the same time.
+
 h4. Druids
 
-* Infected Wounds: This ability is no longer considered to be in the magical defense category; therefore spell hit no longer applies to its activation.
+* Glyph of Hurricane: Now modifies the spell tooltip on Hurricane to indicate the spell also applies a movement slowing effect.
+* Hurricane: When cast from Bear Form, Cat Form, or Dire Bear Form, this spell will now channel properly instead of stopping the channel as soon as the shapeshift is cancelled.
+* Infected Wounds: This ability is no longer considered to be in the magical defense category; therefore spell hit no longer applies to its activation. Tooltip error corrected.
 * Nature's Grace: The tooltip now correctly indicates that it will not be activated from periodic spell critical strikes.
+* Swipe (Bear): Tooltip corrected to display 8 yard range.
 
 h4. Hunters
 
 * Concussive Barrage: This ability is no longer subject to spell reflects.
+* Explosive Trap: The damage from this trap will now scale properly with the hunter's attack power.
+* Glyph of Immolation Trap: Now properly increases damage by 100%. In addition, this glyph will now modify the tooltip of Immolation Trap correctly.
+* Glyph of Mending: This glyph will now modify the amount healed in the tooltip on Mend Pet.
 * Point of No Escape: This ability no longer stacks and now only functions for the hunter.
+* Roar of Sacrifice: Corrected tooltip error.
+* Silencing Shot: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
+* Volley: The tooltip for this ability will now update properly from haste.
 
 h4. Mages
 
+* Arcane Concentration: The interaction of this talent with Arcane Missiles has been restructured. Instead of an Arcane Missiles cast triggering the talent, each missile has an independent (but reduced) chance to trigger this talent. In addition, the talent will no longer sometimes be triggered from misses by Arcane Missiles, Arcane Blast, and Blizzard.
+* Blast Wave: Tooltip typo corrected.
+* Blizzard: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage. Also fixed a bug where some trinkets were not triggered by this spell.
+* Cone of Cold: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
+* Dalaran Intellect: Mages will now be properly blocked from casting this spell when the target has a more powerful version of the buff.
 * Flame Strike: Some ranks of this spell had an incorrect cast time of 3 seconds. All ranks now share a 2-second cast time.
+* Frost Nova: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
+* Frostbolt: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
+* Glyph of Mirror Image: Now updates the tooltip on Mirror Image to show 4 images are summoned.
+* Ignite: Now correctly benefits from the dispel resistance granted by the Arcane Subtlety talent.
+* Ice Lance: The tooltip on this ability will now update properly from all talents which increase its damage by a percentage.
+* Improved Scorch: This talent no longer causes a bug that removes all resilience from pets.
+* Mirror Image: The mirror images summoned will no longer sometimes appear as shades before taking on the appearance of the casting mage.
+* Prismatic Cloak: Rank three of this talent will now properly modify the tooltip on Invisibility to indicate the effect is instant.
+* Slow Fall: This spell can now activate trinkets that can trigger from casting a helpful spell.
+* Winter's Chill: This talent no longer causes a bug that removes all resilience from pets.
+
+h4. Paladins
+
+* Aura Mastery: The animation for this ability will no longer be extra bright when used with Concentration Aura active.
+* Beacon of Light: The effect of this ability will no longer sometimes continue past the duration of its buff. In addition, the duration when used with the Glyph of Beacon of light will now correctly be 1.5 minutes. Finally, the tooltip was corrected to indicate benefitting targets must be in the paladin's party or raid.
+* Blessing of Kings: It is no longer possible to have multiple buff icons from this spell.
+* Blessing of Sacrifice: Damage transferred via this ability can now be prevented by damage absorption effects.
+* Blessing of Sanctuary: It is no longer possible to have multiple buff icons from this spell. In addition, the tooltip has been corrected to include 10% increased strength.
+* Devotion Aura: When in a party with another paladin using a different rank of this ability, it is no longer possible to see two different Devotion Aura icons displayed as buffs.
+* Divine Sacrifice: This ability now properly counts all damage transferred against its limit, instead of not counting some damage.
+* Greater Blessing of Kings: It is no longer possible to have multiple buff icons from this spell.
+* Greater Blessing of Sanctuary: It is no longer possible to have multiple buff icons from this spell. In addition, the tooltip has been corrected to include 10% increased strength.
+* Guardian's Favor: Corrected a tooltip error in rank 1 of this ability.
+* Hand of Freedom: It is no longer possible to use this ability while under the effects of the druid spell Cyclone. In addition, disconnecting while rooted will no longer sometimes trigger casting this on oneself.
+* Hand of Reckoning: Tooltip clarified to indicate taunt immune targets will not take damage from this ability.
+* Hand of Sacrifice: Damage transferred via this ability can now be prevented by damage absorption effects.
+* Heart of the Crusader: The effect of this talent is now always removed when the target no longer has an active Judgement debuff.
+* Judgements of the Just: The effect of this talent is now always removed when the target no longer has an active Judgement debuff.
+* Judgement of Righteousness: The damage from this ability will no longer sometimes increase when the paladin's agility increases (only occurred with low strength and high agility).
+* Judgement of Wisdom: Corrected incorrect information in the combat log tooltip.
+* Seal of Corruption: Tooltip corrected to list the actual amount of damage done instead of a higher number.
 
 h4. Priests
 
+* Glyph of Power Word: Shield: The heal caused by this glyph will now correctly use the casting priest's critical strike chance instead of the target's.
 * Inspiration: The tooltip now correctly indicates that it also functions with Prayer of Mending.
-* Mind Flay: The rank 1 tooltip has been corrected to indicate the accurate damage and snare effect.
+* Levitate: This spell can now activate trinkets that can trigger from casting a helpful spell.
+* Mind Flay: The rank 1 tooltip has been corrected to indicate the accurate damage and snare effect. In addition, this ability will now work correctly with [target=focus] and [target=mouseover] macros.
+* Prayer of Mending: Inspiration and Divine Aegis can no longer be incorrectly triggered by this spell for priests who do not have those talents.
+* Silence: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
+* Spirit Tap: This talent can no longer be triggered by the death of the priest's Jewelcrafter Stone Statues.
+
+h4. Rogues
+
+* Ambush: The tooltip on this ability will now update properly from talents which increase its damage by a percentage.
+* Backstab: The tooltip on this ability will now update properly from talents which increase its damage by a percentage.
+* Deadly Poison: Another rogue using a higher rank of this poison will no longer prevent the lower rank Deadly Poison from being applied to the target.
+* Eviscerate: The tooltip on this ability will now update properly from talents which increase its damage by a percentage.
+* Glyph of Rupture: Now updates the duration on Rupture's tooltip.
+* Killing Spree: Entering a vehicle will now cause this ability to halt, and attempting to use it while on a vehicle will result in an error message.
+* Mutilate: The tooltip on this ability will now update properly from talents which increase its damage by a percentage. In addition, the damage from this ability can now be blocked.
+* Sinister Strike: The tooltip on this ability will now update properly from talents which increase its damage by a percentage.
+* Slice and Dice: Improved Slice and Dice and Glyph of Slice and Dice now update the duration of this ability.
+* Throwing Specialization: Deadly Throw will no longer cause multiple spell interruption combat log entries when used with this talent.
+
+h4. Shamans
+
+* Glyph of Earthliving Weapon: Now updates the tooltip for Earthliving Weapon.
+* Mana Tide Totem: The tooltip on this spell will now be modified properly by the Glyph of Mana Tide Totem.
+* Thunderstorm: It is no longer possible to use this ability while under the effects of the Druid spell Cyclone.
 
 h4. Warlocks
 
 * Curse of the Elements: Rank 4 has been increased to 11%, up from 10%.
 * Drain Soul: This spell now deals 4 times the normal damage for all ranks. Previously it was only ranks 6 and above.
+* Glyph of Conflagrate: Now updates the tooltip of Conflagrate to remove reference to Conflagrate removing an Immolate or Shadowflame effect on the target.
+* Glyph of Siphon Life: This glyph will now modify the tooltip on Siphon Life correctly.
+* Glyph of Unending Breath: Now updates the tooltip on Unending Breath to indicate it increases swim speed.
+* Hellfire: Dealing damage to another player with this ability will now put the Warlock in combat.
+* Improved Shadow Bolt: This talent no longer causes a bug that removes all resilience from pets.
+* Soul Link: Damage transferred via this ability can now be prevented by damage absorption effects.
 * Suffering (Voidwalker): Ranks 5-8 had the incorrect taunt radius of 5 yards and have all been adjusted to a 10-yard radius.
+
+h4. Warriors
+
+* Blood Frenzy: This debuff is no longer considered a Bleed effect that can be removed separately from the actual Bleed effect which caused it.
+* Bloodrage: Tooltip now adjusts to show effect of Anger Management on this ability.
+* Glyph of Cleaving: Now updates the tooltip of Cleave to show that more targets are struck by the ability.
+* Glyph of Hamstring: Now updates the tooltip of Hamstring to indicate it has a chance to immobilize.
+* Glyph of Vigilance: Now updates the tooltip on Vigilance to show that more threat is transferred.
+* Mocking Blow: Tooltip clarified to indicate taunt immune targets will not take damage from this ability.
+* Rampage: Rampage now behaves correctly as an Enrage effect when interacting with the Enraged Regeneration ability.
+* Recklessness: Heroic Throw and Shattering Throw will now benefit from this ability and consume charges of this ability. In addition, Recklessness now behaves correctly as an Enrage effect when interacting with the Enraged Regeneration ability.
+* Sudden Death: Corrected inaccurate information in combat log tooltip.
+* Sweeping Strikes: Corrected inaccurate information in combat log tooltip.
+* Vigilance: The threat transfer granted by this ability will now reactivate when Tricks of the Trade or Misdirection cast by the Vigilance target expires.
+* Warbringer: Tooltip typo corrected.
+
+h2. Game Systems
+
+* Target Effects: When this UI feature is activated, Fear, Silence, Frostbolt, and Hamstring will all now display text over the target's head indicating what type of effect has been applied.
