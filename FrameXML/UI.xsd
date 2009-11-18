@@ -255,6 +255,8 @@
 				<xs:element name="OnTooltipSetSpell" type="ScriptType"/>
 				<xs:element name="OnTooltipSetQuest" type="ScriptType"/>
 				<xs:element name="OnTooltipSetAchievement" type="ScriptType"/>
+				<xs:element name="OnEnable" type="ScriptType"/>
+				<xs:element name="OnDisable" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -305,6 +307,8 @@
 									<xs:attribute name="point" type="FRAMEPOINT" use="required"/>
 									<xs:attribute name="relativeTo" type="xs:string"/>
 									<xs:attribute name="relativePoint" type="FRAMEPOINT"/>
+									<xs:attribute name="x" type="xs:int"/>
+									<xs:attribute name="y" type="xs:int"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
@@ -340,6 +344,7 @@
 		<xs:attribute name="bgFile" type="xs:string"/>
 		<xs:attribute name="edgeFile" type="xs:string"/>
 		<xs:attribute name="tile" type="xs:boolean" default="false"/>
+		<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 	</xs:complexType>
 	<xs:complexType name="TextureType">
 		<xs:complexContent>
@@ -360,6 +365,7 @@
 				</xs:sequence>
 				<xs:attribute name="file" type="xs:string"/>
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
+				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
 				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
@@ -481,6 +487,7 @@
 				</xs:sequence>
 				<xs:attribute name="text" type="xs:string"/>
 				<xs:attribute name="registerForClicks" type="xs:string"/>
+				<xs:attribute name="motionScriptsWhileDisabled" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -913,14 +920,10 @@
 	<xs:complexType name="PathType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
-				<xs:sequence>
-					<xs:element name="ControlPoints" minOccurs="0">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element ref="ControlPointType" minOccurs="0" maxOccurs="unbounded"/>
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
+				<xs:sequence minOccurs="0">
+					<xs:choice maxOccurs="unbounded">
+						<xs:element name="ControlPoints" type="ControlPointType"/>
+					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="curve" type="ANIMCURVETYPE" default="NONE"/>
 			</xs:extension>

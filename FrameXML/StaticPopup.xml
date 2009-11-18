@@ -87,9 +87,9 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentButton1" inherits="StaticPopupButtonTemplate" id="1"/>
-			<Button name="$parentButton2" inherits="StaticPopupButtonTemplate" id="2"/>
-			<Button name="$parentButton3" inherits="StaticPopupButtonTemplate" id="3"/>
+			<Button name="$parentButton1" inherits="StaticPopupButtonTemplate" parentKey="button1" id="1"/>
+			<Button name="$parentButton2" inherits="StaticPopupButtonTemplate" parentKey="button2" id="2"/>
+			<Button name="$parentButton3" inherits="StaticPopupButtonTemplate" parentKey="button3" id="3"/>
 			<EditBox name="$parentEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
 				<Size>
 					<AbsDimension x="130" y="32"/>

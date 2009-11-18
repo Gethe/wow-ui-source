@@ -182,11 +182,20 @@ end
 
 function PartyMemberFrame_UpdateLeader (self)
 	local id = self:GetID();
-	local icon = _G["PartyMemberFrame"..id.."LeaderIcon"];
+	local leaderIcon = _G["PartyMemberFrame"..id.."LeaderIcon"];
+	local guideIcon = _G["PartyMemberFrame"..id.."GuideIcon"];
+
 	if( GetPartyLeaderIndex() == id ) then
-		icon:Show();
+		if ( HasLFGRestrictions() ) then
+			guideIcon:Show();
+			leaderIcon:Hide();
+		else
+			leaderIcon:Show();
+			guideIcon:Hide();
+		end
 	else
-		icon:Hide();
+		guideIcon:Hide();
+		leaderIcon:Hide();
 	end
 end
 

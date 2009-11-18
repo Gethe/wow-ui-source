@@ -204,11 +204,12 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
+	self:RegisterEvent("QUEST_POI_UPDATE");	
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
 	watchFrameTestLine = self.lineCache:GetFrame();
-	WATCHFRAME_COLLAPSEDWIDTH = WatchFrameTitle:GetWidth() + 50;
+	WATCHFRAME_COLLAPSEDWIDTH = WatchFrameTitle:GetWidth() + 40;
 	local _, fontHeight = watchFrameTestLine.text:GetFont();
 	watchFrameTestLine.dash:SetText(QUEST_DASH);
 	DASH_WIDTH = watchFrameTestLine.dash:GetWidth();
@@ -257,7 +258,7 @@ function WatchFrame_OnEvent (self, event, ...)
 			WorldMapQuestScrollChildFrame.selected = nil;
 			SetMapToCurrentZone();
 		end
-	elseif ( event == "WORLD_MAP_UPDATE" and WatchFrame.showObjectives ) then
+	elseif ( event == "WORLD_MAP_UPDATE" or event == "QUEST_POI_UPDATE" and WatchFrame.showObjectives ) then
 		WatchFrame_GetCurrentMapQuests();
 		WatchFrame_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
@@ -562,7 +563,7 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 	line.text:SetWidth(WATCHFRAME_MAXLINEWIDTH - usedWidth);
 	if ( line.text:GetHeight() > WATCHFRAME_LINEHEIGHT ) then
 		if ( isComplete ) then
-			line:SetHeight(line.text:GetHeight());
+			line:SetHeight(line.text:GetHeight() + 4);
 		else
 			line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
 			line.text:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
@@ -756,8 +757,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			lastLine = line;
 			
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
-			if ( numObjectives == 0 ) then
-				isComplete = true;
+			if ( isComplete and isComplete < 0 ) then
+				isComplete = false;
+			elseif ( numObjectives == 0 ) then
+				isComplete = true;		
 			end
 			if ( isComplete ) then
 				line = WatchFrame_GetQuestLine();

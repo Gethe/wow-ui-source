@@ -154,7 +154,7 @@
 				<FontString name="$parentTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="0" y="-8"/>
+							<Offset x="0" y="-6"/>
 						</Anchor>
 					</Anchors>
 				</FontString>

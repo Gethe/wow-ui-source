@@ -980,7 +980,7 @@
 					<CheckButton name="AudioOptionsVoicePanelPushToTalkSound" inherits="AudioOptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="0" y="-46"/>
+								<Offset x="0" y="-56"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
@@ -992,7 +992,7 @@
 						</Scripts>
 					</CheckButton>
 					<Frame name="AudioOptionsVoicePanelBindingOutput">
-						<Size x="160" y="50"/>
+						<Size x="160" y="60"/>
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset x="-1" y="-36"/>
@@ -1003,6 +1003,11 @@
 								<FontString name="AudioOptionsVoicePanelBindingOutputText" inherits="GameFontHighlightSmall" justifyH="LEFT">
 									<Anchors>
 										<Anchor point="TOP"/>
+									</Anchors>
+								</FontString>
+								<FontString name="AudioOptionsVoicePanelBindingOutputTextConflict" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
 									</Anchors>
 								</FontString>
 							</Layer>

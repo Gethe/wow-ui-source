@@ -653,7 +653,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate">
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>

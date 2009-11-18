@@ -2,7 +2,7 @@
 MAX_QUESTS = 25;
 MAX_OBJECTIVES = 10;
 MAX_QUESTLOG_QUESTS = 25;
-MAX_WATCHABLE_QUESTS = 10;
+MAX_WATCHABLE_QUESTS = 25;
 MAX_QUEST_WATCH_TIME = 300;
 
 QuestDifficultyColors["impossible"].font = QuestDifficulty_Impossible;
@@ -244,7 +244,8 @@ function QuestLog_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
-
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	
 	QuestLog_SetSelection(0);
 end
 
@@ -275,6 +276,10 @@ function QuestLog_OnEvent(self, event, ...)
 		QuestLog_Update();
 		if ( event == "PARTY_MEMBERS_CHANGED" ) then
 			QuestLogControlPanel_UpdateState();
+		end
+	elseif ( event == "DISPLAY_SIZE_CHANGED" and self:IsShown() ) then
+		for _, questTitleButton in pairs(QuestLogScrollFrame.buttons) do
+			QuestLogTitleButton_Resize(questTitleButton);
 		end
 	end
 end

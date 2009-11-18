@@ -74,6 +74,7 @@ end
 
 DUNGEON_COMPLETION_MAX_REWARDS = 1;
 function DungeonCompletionAlertFrame_ShowAlert()
+	PlaySound("LFG_Rewards");
 	local frame = DungeonCompletionAlertFrame1;
 	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
 	local name, typeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards= GetLFGCompletionReward();

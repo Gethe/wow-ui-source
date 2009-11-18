@@ -156,8 +156,8 @@
 		<Scripts>
 			<OnLoad>
 				self.enableButton:SetScript("OnClick", LFRQueueFrameDungeonChoiceEnableButton_OnClick);
-				self.lockedIndicator:SetScript("OnEnter", LFDQueueFrameDungeonLockedIndicator_OnEnter);
 				self.expandOrCollapseButton:SetScript("OnClick", LFRQueueFrameExpandOrCollapseButton_OnClick);
+				self:SetScript("OnEnter", LFDQueueFrameDungeonListButton_OnEnter);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -180,7 +180,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button inherits="UIPanelCloseButton" frameStrata="HIGH">
+			<Button inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -269,58 +269,6 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Frame name="$parentNoLFRWhileLFD" frameStrata="HIGH" hidden="true" enableMouse="true">
-						<Size>
-							<AbsDimension x="327" y="285"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-7" y="30"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFR_WHILE_LFD" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-0" y="-70"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LEAVE_QUEUE">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-											LeaveLFG();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
 					<EditBox name="$parentComment" multiLine="true" letters="64" autoFocus="false" countInvisibleLetters="true">
 						<Size>
 							<AbsDimension x="313" y="41"/>
@@ -347,7 +295,7 @@
 						<Scripts>
 							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 							<OnEditFocusGained>
-								if ( LFG_IsEmpowered() ) then
+								if ( LFG_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
 									LFRQueueFrameCommentExplanation:Hide();
 								else
 									self:ClearFocus();
@@ -374,13 +322,29 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( LFG_IsEmpowered() ) then
+								if ( LFG_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
 									LFRQueueFrameComment:SetFocus();
 								end
 							</OnClick>
 						</Scripts>
 					</Button>
 					<Frame name="$parentSpecific" setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentNoRaidsAvailable" inherits="GameFontNormal" text="NO_RAIDS_AVAILABLE" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-220"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 						<Frames>
 							<Frame name="$parentListButton1" inherits="LFRFrameDungeonChoiceTemplate" id="1">
 								<Anchors>
@@ -608,6 +572,63 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Frame name="$parentNoLFRWhileLFD" hidden="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="327" y="285"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-7" y="30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFR_WHILE_LFD" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="-0" y="-70"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LEAVE_QUEUE">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+											LeaveLFG();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(10);
+							</OnLoad>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow>
@@ -677,7 +698,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbSDimension x="26" y="-73"/>
+									<AbsDimension x="26" y="-73"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -692,7 +713,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentColumnHeader1" relativePoint="RIGHT">
 								<Offset>
-									<AbSDimension x="-2" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -707,7 +728,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentColumnHeader2" relativePoint="RIGHT">
 								<Offset>
-									<AbSDimension x="-2" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -722,7 +743,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentColumnHeader3" relativePoint="RIGHT">
 								<Offset>
-									<AbSDimension x="-2" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -738,7 +759,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentColumnHeader4" relativePoint="RIGHT">
 								<Offset>
-									<AbSDimension x="-2" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -754,7 +775,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentColumnHeader5" relativePoint="RIGHT">
 								<Offset>
-									<AbSDimension x="-2" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -770,7 +791,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentColumnHeader6" relativePoint="RIGHT">
 								<Offset>
-									<AbSDimension x="-2" y="0"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1029,6 +1050,12 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnLoad function="LFRBrowseFrame_OnLoad"/>
+					<OnShow>
+						RefreshLFGList();
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHOOSE_RAID">
                 <Anchors>
@@ -1076,9 +1103,11 @@
 			<OnEvent function="LFRFrame_OnEvent"/>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
+				LFRBrowseFrame.timeToClear = nil;	--Never clear browsing while shown.
 			</OnShow>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");
+				LFRBrowseFrame.timeToClear = 40;	--Clear all browsing after 40 seconds of being hidden.
 			</OnHide>
 		</Scripts>
 	</Frame>

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
-	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" frameStrata="HIGH">
+	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="BlackoutWorld">
@@ -194,6 +194,31 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="WorldMapTitleDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-80" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>		
+			<Button name="WorldMapTitleButton">
+				<Size>
+					<AbsDimension x="544" y="22" />
+				</Size>				
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMiniBorderLeft">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="WorldMapTitleButton_OnLoad" />
+					<OnClick function="WorldMapTitleButton_OnClick" />
+				</Scripts>
+			</Button>
 			<Frame name="WorldMapPositioningGuide">
 				<Size>
 					<AbsDimension x="1024" y="768" />
@@ -875,20 +900,6 @@
 									<AbsDimension x="301" y="50"/>
 								</Size>
 								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentIconHighlight" file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD">
-											<Size>
-												<AbsDimension x="50" y="50"/>
-											</Size>										
-											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="4" y="9"/>
-													</Offset>								
-												</Anchor>
-											</Anchors>
-										</Texture>
-									</Layer>
 									<Layer level="ARTWORK">
 										<Texture name="WorldMapQuestSelectBar" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
 									</Layer>
@@ -1002,11 +1013,15 @@
 					<OnLoad>
 						local text = _G[self:GetName().."Text"];
 						text:SetText(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT);
-						self:SetPoint("BOTTOMRIGHT", WorldMapPositioningGuide, "BOTTOMRIGHT", -30 - text:GetWidth(), 4);
+						self:SetPoint("BOTTOMRIGHT", WorldMapPositioningGuide, "BOTTOMRIGHT", -15 - text:GetWidth(), 4);
 					</OnLoad>
 					<OnClick>
 						SetCVar("questPOI", self:GetChecked());
 						WorldMapQuestShowObjectives_Toggle();
+						if ( WorldMapFrame.sizedDown ) then
+							WatchFrame_GetCurrentMapQuests();
+							WatchFrame_Update();
+						end
 						WorldMapFrame_UpdateQuests();
 						WorldMapFrame_AdjustMapAndQuestList();
 					</OnClick>
@@ -1041,4 +1056,10 @@
 			</OnLoad>
 		</Scripts>
 	</GameTooltip>
+	<Frame name="WorldMapScreenAnchor" hidden="true" movable="true">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>		
+	</Frame>
 </Ui>

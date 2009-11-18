@@ -28,6 +28,7 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
 	self:RegisterEvent("LFG_PROPOSAL_FAILED");
+	self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
@@ -43,15 +44,15 @@ function LFDFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_PROPOSAL_SHOW" ) then
 		LFDDungeonReadyPopup.closeIn = nil;
 		LFDDungeonReadyPopup:SetScript("OnUpdate", nil);
+		LFDDungeonReadyStatus_ResetReadyStates();
 		StaticPopupSpecial_Show(LFDDungeonReadyPopup);
+		LFDSearchStatus:Hide();
+		PlaySound("ReadyCheck");
 	elseif ( event == "LFG_PROPOSAL_FAILED" ) then
 		LFDDungeonReadyPopup_OnFail();
-	elseif ( event == "LFG_UPDATE" or event == "PLAYER_ENTERING_WORLD") then
-		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
-		
-		if ( not joined ) then
-			StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
-		end
+	elseif ( event == "LFG_PROPOSAL_SUCCEEDED" ) then
+		LFGDebug("Proposal Hidden: Proposal succeeded.");
+		StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
 	elseif ( event == "LFG_ROLE_CHECK_SHOW" ) then
 		StaticPopupSpecial_Show(LFDRoleCheckPopup);
 		LFDQueueFrameSpecificList_Update();
@@ -396,28 +397,30 @@ function LFDList_SetHeaderEnabled(headerID, isEnabled)
 	LFGEnabledList[headerID] = not not isEnabled; --Change to true/false.
 end
 
-function LFDQueueFrameDungeonLockedIndicator_OnEnter(self)
-	local dungeonID = self:GetParent().id;
-	if ( LFGIsIDHeader(dungeonID) ) then
-		--GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		--GameTooltip:AddLine(YOU_MAY_NOT_QUEUE_FOR_CATEGORY, 1.0, 1.0, 1.0);
-		--GameTooltip:Show();
-	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:AddLine(YOU_MAY_NOT_QUEUE_FOR_DUNGEON, 1.0, 1.0, 1.0);
-		for i=1, GetLFDLockPlayerCount() do
-			local playerName, lockedReason = GetLFDLockInfo(dungeonID, i);
-			if ( lockedReason ~= 0 ) then
-				local who;
-				if ( i == 1 ) then
-					who = "SELF_";
-				else
-					who = "OTHER_";
+function LFDQueueFrameDungeonListButton_OnEnter(self)
+	local dungeonID = self.id;
+	if ( self.lockedIndicator:IsShown() ) then
+		if ( LFGIsIDHeader(dungeonID) ) then
+			--GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			--GameTooltip:AddLine(YOU_MAY_NOT_QUEUE_FOR_CATEGORY, 1.0, 1.0, 1.0);
+			--GameTooltip:Show();
+		else
+			GameTooltip:SetOwner(self, "ANCHOR_TOP");
+			GameTooltip:AddLine(YOU_MAY_NOT_QUEUE_FOR_DUNGEON, 1.0, 1.0, 1.0);
+			for i=1, GetLFDLockPlayerCount() do
+				local playerName, lockedReason = GetLFDLockInfo(dungeonID, i);
+				if ( lockedReason ~= 0 ) then
+					local who;
+					if ( i == 1 ) then
+						who = "SELF_";
+					else
+						who = "OTHER_";
+					end
+					GameTooltip:AddLine(format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName));
 				end
-				GameTooltip:AddLine(format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName));
 			end
+			GameTooltip:Show();
 		end
-		GameTooltip:Show();
 	end
 end
 
@@ -429,7 +432,9 @@ end
 --Ready popup functions
 
 function LFDDungeonReadyPopup_OnFail()
+	PlaySound("LFG_Denied");
 	if ( LFDDungeonReadyDialog:IsShown() ) then
+		LFGDebug("Proposal Hidden: Proposal failed.");
 		StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
 	elseif ( LFDDungeonReadyPopup:IsShown() ) then
 		LFDDungeonReadyPopup.closeIn = LFD_PROPOSAL_FAILED_CLOSE_TIME;
@@ -440,14 +445,16 @@ end
 function LFDDungeonReadyPopup_OnUpdate(self, elapsed)
 	self.closeIn = self.closeIn - elapsed;
 	if ( self.closeIn < 0 ) then	--We remove the OnUpdate and closeIn OnHide
+		LFGDebug("Proposal Hidden: Failure close timer expired.");
 		StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
 	end
 end
 
 function LFDDungeonReadyPopup_Update()	
-	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
+	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader = GetLFGProposal();
 
 	if ( not proposalExists ) then
+		LFGDebug("Proposal Hidden: No proposal exists.");
 		StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
 		return;
 	end
@@ -464,7 +471,7 @@ function LFDDungeonReadyPopup_Update()
 		for i=numMembers+1, NUM_LFD_MEMBERS do
 			_G["LFDDungeonReadyStatusPlayer"..i]:Hide();
 		end
-		
+	
 		if ( not LFDDungeonReadyPopup:IsShown() or StaticPopup_IsLastDisplayedFrame(LFDDungeonReadyPopup) ) then
 			LFDDungeonReadyPopup:SetHeight(LFDDungeonReadyStatus:GetHeight());
 		end
@@ -508,6 +515,11 @@ function LFDDungeonReadyPopup_Update()
 		
 		LFDDungeonReadyDialogRoleIconTexture:SetTexCoord(GetTexCoordsForRole(role));
 		LFDDungeonReadyDialogRoleLabel:SetText(_G[role]);
+		if ( isLeader ) then
+			LFDDungeonReadyDialogRoleIconLeaderIcon:Show();
+		else
+			LFDDungeonReadyDialogRoleIconLeaderIcon:Hide();
+		end
 		
 		LFDDungeonReadyDialog_UpdateRewards(id);
 	end
@@ -629,6 +641,13 @@ function LFDDungeonReadyDialogInstanceInfo_OnEnter(self)
 	GameTooltip:Show();
 end
 
+function LFDDungeonReadyStatus_ResetReadyStates()
+	for i=1, NUM_LFD_MEMBERS do
+		local button = _G["LFDDungeonReadyStatusPlayer"..i];
+		button.readyStatus = "unknown";
+	end
+end
+
 function LFDDungeonReadyStatus_UpdateIcon(button)
 	local isLeader, role, level, responded, accepted, name, class = GetLFGProposalMember(button:GetID());
 	
@@ -637,6 +656,10 @@ function LFDDungeonReadyStatus_UpdateIcon(button)
 	if ( not responded ) then
 		button.statusIcon:SetTexture(READY_CHECK_WAITING_TEXTURE);
 	elseif ( accepted ) then
+		if ( button.readyStatus ~= "accepted" ) then
+			button.readyStatus = "accepted";
+			PlaySound("LFG_RoleCheck");
+		end
 		button.statusIcon:SetTexture(READY_CHECK_READY_TEXTURE);
 	else
 		button.statusIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
@@ -910,7 +933,7 @@ local embeddedDamageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp
 
 function LFDSearchStatus_Update()
 	local LFDSearchStatus = LFDSearchStatus;
-	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, instanceType, instanceName, averageWait, tankWait, healerWait, damageWait = GetLFGQueueStats();
+	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, instanceType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait = GetLFGQueueStats();
 	
 	LFDSearchStatus_UpdateRoles();
 	
@@ -925,8 +948,6 @@ function LFDSearchStatus_Update()
 		return;
 	end
 	
-	LFDSearchStatus:SetHeight(190);
-	
 	if ( instancetype == TYPEID_HEROIC_DIFFICULTY ) then
 		instanceName = format(HEROIC_PREFIX, instanceName);
 	end
@@ -938,22 +959,14 @@ function LFDSearchStatus_Update()
 		LFDSearchStatusPlayer_SetFound(_G["LFDSearchStatusDamage"..i], i <= (NUM_DAMAGERS - dpsNeeds));
 	end
 	
-	LFDSearchStatus.statistic:Show();
-	--[[Display a random statistic if the last displayed time was long enough ago
-	local now = time();
-	if ( not LFDSearchStatus.lastStatisticTime or (LFDSearchStatus.lastStatisticTime + LFD_STATISTIC_CHANGE_TIME < now) ) then
-		LFDSearchStatus.displayedStatistic = math.random(1, NUM_STATISTIC_TYPES);
-		LFDSearchStatus.lastStatisticTime = now;
+	if ( myWait == -1 ) then
+		LFDSearchStatus.statistic:Hide();
+		LFDSearchStatus:SetHeight(130);
+	else
+		LFDSearchStatus.statistic:Show();
+		LFDSearchStatus:SetHeight(150);
+		LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, myWait == -1 and TIME_UNKNOWN or SecondsToTime(myWait, false, false, 1));
 	end
-	
-	local statistic = LFDSearchStatus.displayedStatistic;
-	if ( statistic == 1 ) then --If the average wait is 0, we have no data for this instance, so showing it is useless.]]
-		local waitTimes = format("%s%s  %s%s  %s%s",
-			embeddedTankIcon, (tankWait == -1 and TIME_UNKNOWN or SecondsToTime(tankWait, false, false, 1)),
-			embeddedHealerIcon, (healerWait == -1 and TIME_UNKNOWN or SecondsToTime(healerWait, false, false, 1)),
-			embeddedDamageIcon, (damageWait == -1 and TIME_UNKNOWN or SecondsToTime(damageWait, false, false, 1)));
-		LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, instanceName, waitTimes);
-	--end
 end
 
 function LFDQueueFrameFindGroupButton_Update()
@@ -968,8 +981,8 @@ function LFDQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  and mode ~= "rolecheck" ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		if ( mode == "queued" or mode =="proposal" or not LFDQueueFramePartyBackfill:IsVisible() ) then
+	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
+		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or not LFDQueueFramePartyBackfill:IsVisible() ) then
 			LFDQueueFrameFindGroupButton:Enable();
 		else
 			LFDQueueFrameFindGroupButton:Disable();
@@ -980,7 +993,7 @@ function LFDQueueFrameFindGroupButton_Update()
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "rolecheck" and mode ~= "queued" ) then
+	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" ) then
 		LFDQueueFramePartyBackfillBackfillButton:Enable();
 	else
 		LFDQueueFramePartyBackfillBackfillButton:Disable();

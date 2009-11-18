@@ -207,7 +207,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	dropdownMenu.selectedLootThreshold = _G["ITEM_QUALITY"..GetLootThreshold().."_DESC"];
 	UnitPopupButtons["LOOT_THRESHOLD"].text = dropdownMenu.selectedLootThreshold;
 	-- This allows player to view loot settings if he's not the leader
-	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
+	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() and not HasLFGRestrictions()) then
 		-- If this is true then player is the party leader
 		UnitPopupButtons["LOOT_METHOD"].nested = 1;
 		UnitPopupButtons["LOOT_THRESHOLD"].nested = 1;
@@ -537,11 +537,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
-			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or IsPartyLFG() ) then
+			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or HasLFGRestrictions() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "VOTE_TO_KICK" ) then
-			if ( (inParty == 0) or (instanceType == "pvp") or (instanceType == "arena") or (not IsPartyLFG()) ) then
+			if ( (inParty == 0) or (instanceType == "pvp") or (instanceType == "arena") or (not HasLFGRestrictions()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
@@ -569,7 +569,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LOOT_THRESHOLD" ) then
-			if ( inParty == 0 ) then
+			if ( inParty == 0 or HasLFGRestrictions() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then
@@ -929,6 +929,7 @@ function UnitPopup_OnUpdate (elapsed)
 	if ( IsRaidOfficer() ) then
 		isAssistant = 1;
 	end
+	
 	-- dynamic difficulty
 	local canChangeDifficulty;
 	local selectedRaidDifficulty;
@@ -966,11 +967,11 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "UNINVITE" ) then
-						if ( inParty == 0 or (isLeader == 0) or IsPartyLFG() ) then
+						if ( inParty == 0 or (isLeader == 0) or HasLFGRestrictions() ) then
 							enable = 0;
 						end
 					elseif ( value == "VOTE_TO_KICK" ) then
-						if ( inParty == 0 or not IsPartyLFG() ) then
+						if ( inParty == 0 or not HasLFGRestrictions() ) then
 							enable = 0;
 						end
 					elseif ( value == "PROMOTE" ) then
@@ -997,6 +998,10 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
 							enable = 0;
 						end
+					elseif ( value == "LOOT_METHOD" ) then
+						if ( isLeader == 0 or HasLFGRestrictions() ) then
+							enable = 0;
+						end
 					elseif ( value == "LOOT_PROMOTE" ) then
 						local lootMethod;
 						local partyMaster, raidMaster;
@@ -1017,7 +1022,7 @@ function UnitPopup_OnUpdate (elapsed)
 							end
 						end
 					elseif ( ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" ) and ( strlen(value) > 18 ) ) then
-						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or HasLFGRestrictions() ) then
 							enable = 0;	
 						end			
 					elseif ( ( strsub(value, 1, 15) == "RAID_DIFFICULTY" ) and ( strlen(value) > 15 ) ) then
@@ -1028,7 +1033,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 1;
 						end
 					elseif ( value == "RESET_INSTANCES" ) then
-						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or HasLFGRestrictions() ) then
 							enable = 0;			
 						end
 					elseif ( value == "RAF_SUMMON" ) then
@@ -1174,13 +1179,8 @@ function UnitPopup_OnClick (self)
 		local dungeonDifficulty = tonumber( strsub(button,19,19) );
 		SetDungeonDifficulty(dungeonDifficulty);
 	elseif ( strsub(button, 1, 15) == "RAID_DIFFICULTY" and (strlen(button) > 15) ) then
-		local _, _, _, _, _, playerDifficulty, isDynamicInstance = GetInstanceInfo();
-		if ( isDynamicInstance ) then
-			ChangePlayerDifficulty(1 - playerDifficulty);
-		else
-			local raidDifficulty = tonumber( strsub(button,16,16) );
-			SetRaidDifficulty(raidDifficulty);
-		end
+		local raidDifficulty = tonumber( strsub(button,16,16) );
+		SetRaidDifficulty(raidDifficulty);
 	elseif ( button == "LOOT_PROMOTE" ) then
 		SetLootMethod("master", name, 1);
 	elseif ( button == "PVP_ENABLE" ) then

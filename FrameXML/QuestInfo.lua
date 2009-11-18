@@ -66,7 +66,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, cancelButton, ma
 	end
 	
 	for i = 1, #elementsTable, 3 do
-		shownFrame = elementsTable[i]();
+		shownFrame, bottomShownFrame = elementsTable[i]();
 		if ( shownFrame ) then
 			shownFrame:SetParent(parentFrame);
 			if ( lastFrame ) then
@@ -74,7 +74,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, cancelButton, ma
 			else
 				shownFrame:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", elementsTable[i+1], elementsTable[i+2]);			
 			end
-			lastFrame = shownFrame;
+			lastFrame = bottomShownFrame or shownFrame;
 		end
 	end
 end
@@ -131,9 +131,8 @@ function QuestInfo_ShowObjectives()
 		_G["QuestInfoObjective"..i]:Hide();
 	end
 	if ( objective ) then
-		QuestInfoObjectivesFrame:SetHeight(QuestInfoObjectivesFrame:GetTop() - objective:GetTop() + objective:GetHeight());
 		QuestInfoObjectivesFrame:Show();
-		return QuestInfoObjectivesFrame;
+		return QuestInfoObjectivesFrame, objective;
 	else
 		QuestInfoObjectivesFrame:Hide();
 		return nil;
@@ -198,11 +197,9 @@ function QuestInfo_ShowRequiredMoney()
 			QuestInfoRequiredMoneyText:SetTextColor(0.2, 0.2, 0.2);
 			SetMoneyFrameColor("QuestInfoRequiredMoneyDisplay", "white");
 		end
-		--QuestInfoRequiredMoneyText:Show();
 		QuestInfoRequiredMoneyFrame:Show();
 		return QuestInfoRequiredMoneyFrame;
 	else
-		--QuestInfoRequiredMoneyText:Hide();
 		QuestInfoRequiredMoneyFrame:Hide();
 		return nil;
 	end
@@ -295,8 +292,8 @@ function QuestInfo_ShowRewards()
 		xp = GetRewardXP();
 		playerTitle = GetRewardTitle();
 	end
-	local totalRewards = numQuestRewards + numQuestChoices + numQuestSpellRewards;
-	
+
+	local totalRewards = numQuestRewards + numQuestChoices + numQuestSpellRewards;	
 	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and xp == 0 and not playerTitle ) then
 		QuestInfoRewardsFrame:Hide();
 		return nil;
@@ -478,9 +475,8 @@ function QuestInfo_ShowRewards()
 	QuestInfoFrame.itemChoice = 0;
 	QuestInfoItemHighlight:Hide();
 	
-	QuestInfoRewardsFrame:SetHeight(QuestInfoRewardsFrame:GetTop() - lastFrame:GetTop() + lastFrame:GetHeight());
 	QuestInfoRewardsFrame:Show();
-	return QuestInfoRewardsFrame;
+	return QuestInfoRewardsFrame, lastFrame;
 end
 
 function QuestInfo_ShowFadingFrame()

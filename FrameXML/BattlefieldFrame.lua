@@ -286,9 +286,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 				end
 				if ( (i==mapIndex) and (not tooltipOnly) ) then
 					local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
-					if ( dialog ) then
-						dialog.data = i;
-					end
 					PlaySound("PVPTHROUGHQUEUE");
 					MiniMapBattlefieldFrame:Show();
 				end

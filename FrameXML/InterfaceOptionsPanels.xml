@@ -991,6 +991,21 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAdvancedWorldMap" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMapQuestDifficulty" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "advancedWorldMap";
+						self.setFunc = function () WorldMapFrame_ToggleAdvanced(); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
 			</CheckButton>			
 		</Frames>
 		<Scripts>
@@ -3273,8 +3288,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
-				<!-- The Tutorials button LOVES being special -->
+			<CheckButton name="$parentShowTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -3285,16 +3299,14 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.label = "showTutorials";
-						self.setFunc = InterfaceOptionsHelpPanel_SetTutorials;
-						self.GetValue = function () return self.value or ((TutorialsEnabled() and "1") or "0"); end;
+						self.cvar = "showTutorials";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentLoadingScreenTips" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTutorials" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentShowTutorials" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -3359,7 +3371,7 @@
 			</CheckButton>				
 			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">
 				<Size>
-					<AbsDimension x="96" y="22"/>
+					<AbsDimension x="128" y="22"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentSubText" relativePoint="BOTTOMRIGHT">
@@ -3369,15 +3381,26 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						if ( CanResetTutorials() ) then
+							self:Enable();
+						else
+							self:Disable();
+						end
+					</OnShow>
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
 						ResetTutorials();
-						TutorialFrameCheckButton:SetChecked(1);
-						--Check the show tutorials option
-						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "Tutorials"];
+						TutorialFrame_ClearQueue();
+						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "ShowTutorials"];
 						if ( not tutorialsCheckButton:GetChecked() ) then
 							tutorialsCheckButton:Click()
 						end
+						TriggerTutorial(42);
+						TriggerTutorial(2);
+						TriggerTutorial(3);
+						TriggerTutorial(1);
+						self:Disable();
 					</OnClick>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>

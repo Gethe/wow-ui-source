@@ -382,6 +382,10 @@ function SpellButton_OnModifiedClick(self, button)
 		PickupSpell(id, SpellBookFrame.bookType);
 		return;
 	end
+	if ( IsModifiedClick("SELFCAST") ) then
+		CastSpell(id, SpellBookFrame.bookType, true);
+		return;
+	end
 end
 
 function SpellButton_OnDrag(self) 

@@ -74,7 +74,7 @@ function LFRQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "rolecheck") then --During the proposal, they must use the proposal buttons to leave the queue.
+	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "rolecheck" and (not LFRRaidList or LFRRaidList[1])) then --During the proposal, they must use the proposal buttons to leave the queue.
 		LFRQueueFrameFindGroupButton:Enable();
 		LFRQueueFrameAcceptCommentButton:Enable();
 		LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Enable();
@@ -303,6 +303,12 @@ function LFRQueueFrameSpecificList_Update()
 			button:Hide();
 		end
 	end
+	
+	if ( LFRRaidList[1] ) then
+		LFRQueueFrameSpecificNoRaidsAvailable:Hide();
+	else
+		LFRQueueFrameSpecificNoRaidsAvailable:Show();
+	end
 end
 
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
@@ -371,6 +377,24 @@ LFR_CURRENT_FILTER = LFRList_DefaultFilterFunction;
 -----------------------------------------------------------------------
 -----------------------LFR Browsing--------------------------------
 -----------------------------------------------------------------------
+local browseFrameLocal;
+function LFRBrowseFrame_OnLoad(self)
+	browseFrameLocal = self;
+end
+
+function LFRBrowseFrame_OnUpdateAlways(elapsed)	--Actually called in UIParent_OnUpdate so that it can run while LFRBrowseFrame is hidden.
+	local timeToClear = browseFrameLocal.timeToClear;
+	if ( timeToClear ) then
+		if ( timeToClear < 0 ) then
+			SearchLFGLeave();
+			--We don't really have to do any of the other work done by SetSelectedValue, so why do it?
+			LFRBrowseFrameRaidDropDownText:SetText(NONE);
+			browseFrameLocal.timeToClear = nil;
+		else
+			browseFrameLocal.timeToClear = timeToClear - elapsed;
+		end
+	end
+end
 
 --We construct the list. This should only need to be called once (since we don't filter or change it), so we don't much worry about 1 garbage table.
 function GetFullRaidList()

@@ -108,7 +108,7 @@
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="TOPLEFT">
 											<Offset>
-												<AbsDimension x="38" y="-15"/>
+												<AbsDimension x="38" y="-8"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -188,10 +188,23 @@
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="50" y="-10"/>
+												<AbsDimension x="40" y="-12"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
+								</Texture>
+								<Texture name="PlayerGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
+									<Size>
+										<AbsDimension x="19" y="19"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="40" y="-12"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
 								</Texture>
 								<Texture name="PlayerMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
 									<Size>

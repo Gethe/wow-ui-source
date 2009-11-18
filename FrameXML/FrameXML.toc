@@ -52,6 +52,7 @@ ZoneText.xml
 BattlefieldFrame.xml
 MainMenuBar.xml
 MainMenuBarMicroButtons.xml
+TutorialFrame.xml
 Minimap.xml
 GameTime.xml
 Cooldown.xml
@@ -106,7 +107,6 @@ CinematicFrame.xml
 ItemRef.xml
 ComboFrame.xml
 TabardFrame.xml
-TutorialFrame.xml
 GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml

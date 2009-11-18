@@ -280,12 +280,12 @@
 	</Frame>
 	<Frame name="ChatConfigCheckBoxWithSwatchAndClassColorTemplate" inherits="ChatConfigCheckBoxWithSwatchTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="328" y="26"/>
+			<AbsDimension x="328" y="25"/>
 		</Size>
 		<Frames>
 			<CheckButton name="$parentColorClasses" inherits="ChatConfigBaseCheckButtonTemplate">
 				<Size>
-					<AbsDimension x="24" y="24"/>
+					<AbsDimension x="24" y="23"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentColorSwatch" relativePoint="RIGHT">

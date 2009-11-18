@@ -52,6 +52,21 @@
 			</Offset>
 		</Anchor>
 	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
 	<Layers>
 		<Layer level="BACKGROUND">
 			<Texture name="$parentDungeonTexture" parentKey="dungeonTexture">
@@ -113,7 +128,7 @@
 					<AbsDimension x="16" y="20"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeto="$parentInstanceName" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="$parentInstanceName" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-3" y="-3"/>
 						</Offset>
@@ -172,21 +187,6 @@
 			</Scripts>
 		</Frame>
 	</Frames>
-	<Animations>
-		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
-		</AnimationGroup>
-		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
-				<Scripts>
-					<OnFinished>
-						self:GetRegionParent():Hide();
-					</OnFinished>
-				</Scripts>
-			</Alpha>
-		</AnimationGroup>
-	</Animations>
 	<Scripts>
 		<OnLoad function="DungeonCompletionAlertFrame_OnLoad"/>
 	</Scripts>
@@ -203,6 +203,21 @@
 			</Offset>
 		</Anchor>
 	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
 	<Layers>
 		<Layer level="BACKGROUND">
 			<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Alert-Background">
@@ -409,21 +424,6 @@
 			</Scripts>
 		</Frame>
 	</Frames>
-	<Animations>
-		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
-		</AnimationGroup>
-		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
-				<Scripts>
-					<OnFinished>
-						self:GetRegionParent():Hide();
-					</OnFinished>
-				</Scripts>
-			</Alpha>
-		</AnimationGroup>
-	</Animations>
 	<Scripts>
 		<OnLoad>
 			AchievementAlertFrame_OnLoad(self);

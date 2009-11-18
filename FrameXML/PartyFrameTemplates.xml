@@ -379,6 +379,15 @@
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
+									<Size>
+										<AbsDimension x="19" y="19"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
+								</Texture>
 								<Texture name="$parentMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
 									<Size>
 										<AbsDimension x="16" y="16"/>

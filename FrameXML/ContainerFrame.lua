@@ -604,12 +604,12 @@ function ContainerFrameItemButton_OnDrag (self)
 	ContainerFrameItemButton_OnClick(self, "LeftButton");
 end
 
-function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
+function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	quantity = (quantity or 1);
 	local slot = itemButton:GetID();
 	local bag = itemButton:GetParent():GetID();
 
-	local money, honorPoints, arenaPoints, itemCount, refundSec = GetContainerItemPurchaseInfo(bag, slot);
+	local money, honorPoints, arenaPoints, itemCount, refundSec = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
 	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0)) ) then
 		return false;
 	end
@@ -636,7 +636,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 	
 	local maxQuality = 0;
 	for i=1, itemCount, 1 do
-		local itemTexture, itemQuantity, itemLink = GetContainerItemPurchaseItem(bag, slot, i);
+		local itemTexture, itemQuantity, itemLink = GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
 		if ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
@@ -652,8 +652,14 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 	MerchantFrame.refundSlot = slot;
 	MerchantFrame.honorPoints = honorPoints;
 	MerchantFrame.arenaPoints = arenaPoints;
-	
-	local refundItemTexture, _, _, _, _, _, refundItemLink = GetContainerItemInfo(bag, slot);
+
+	local refundItemTexture, refundItemLink;
+	if ( isEquipped ) then
+		refundItemTexture = GetInventoryItemTexture("player", slot);
+		refundItemLink = GetInventoryItemLink("player", slot);
+	else
+		refundItemTexture, _, _, _, _, _, refundItemLink = GetContainerItemInfo(bag, slot);
+	end
 	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
 	local r, g, b = GetItemQualityColor(itemQuality);
 	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, "", {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = index, ["count"] = count * quantity});
@@ -661,7 +667,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, quantity)
 end
 
 function ContainerFrameItemButton_OnClick(self, button)
-	MerchantFrame.refundItem = nil;
+	MerchantFrame_ResetRefundItem();
 
 	if ( button == "LeftButton" ) then
 		local type, money = GetCursorInfo();
@@ -685,7 +691,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 		else
 			PickupContainerItem(self:GetParent():GetID(), self:GetID());
 			if ( CursorHasItem() ) then
-				MerchantFrame.refundItem = self;
+				MerchantFrame_SetRefundItem(self);
 			end
 		end
 		StackSplitFrame:Hide();

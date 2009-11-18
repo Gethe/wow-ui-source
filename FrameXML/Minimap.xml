@@ -564,9 +564,6 @@
 								<Size>
 									<AbsDimension x="32" y="32"/>
 								</Size>
-								<HitRectInsets>
-									<AbsInset left="4" right="4" top="2" bottom="6"/>
-								</HitRectInsets>								
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
@@ -574,6 +571,9 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<HitRectInsets>
+									<AbsInset left="4" right="4" top="2" bottom="6"/>
+								</HitRectInsets>								
 								<Scripts>
 									<OnClick function="Minimap_ZoomInClick"/>
 									<OnEnter>
@@ -593,9 +593,6 @@
 								<Size>
 									<AbsDimension x="32" y="32"/>
 								</Size>
-								<HitRectInsets>
-									<AbsInset left="4" right="4" top="2" bottom="6"/>
-								</HitRectInsets>								
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
@@ -603,6 +600,9 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<HitRectInsets>
+									<AbsInset left="4" right="4" top="2" bottom="6"/>
+								</HitRectInsets>								
 								<Scripts>
 									<OnClick function="Minimap_ZoomOutClick"/>
 									<OnEnter>
@@ -699,16 +699,26 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="22" y="-16"/>
+							<AbsDimension x="22" y="-17"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="$parentTexture" file="Interface\Minimap\UI-DungeonDifficulty-Button">
-							<TexCoords left="0.05078125" right="0.1953125" top="0.0703125" bottom="0.4140625"/>
+							<Size>
+								<AbsDimension x="64" y="46"/>
+							</Size>							
+							<TexCoords left="0.0" right="0.25" top="0.0703125" bottom="0.4140625"/>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>							
 						</Texture>
-						<Fontstring name="$parentText" inherits="GameFontNormalSmall">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
@@ -716,7 +726,7 @@
 									</Offset>
 								</Anchor>
 							</Anchors>						
-						</Fontstring>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

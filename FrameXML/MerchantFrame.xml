@@ -793,7 +793,7 @@
 			</OnUpdate>
 			<OnMouseUp>
 				if ( MerchantFrame.refundItem ) then
-					if ( ContainerFrame_GetExtendedPriceString(MerchantFrame.refundItem)) then
+					if ( ContainerFrame_GetExtendedPriceString(MerchantFrame.refundItem, MerchantFrame.refundItemEquipped)) then
 						-- a confirmation dialog has been shown
 						return;
 					end

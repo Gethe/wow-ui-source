@@ -9,8 +9,8 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground">
 					<Anchors>
-						<Anchor point="TOPLEFT" parent="$parentTop" relativePoint="TOPLEFT" x="13" y="-35"/>
-						<Anchor point="BOTTOMRIGHT" parent="$parentBottom" relativePoint="BOTTOMRIGHT" x="-3" y="5"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="TOPLEFT" x="13" y="-35"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="BOTTOMRIGHT" x="-3" y="5"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>
@@ -111,6 +111,12 @@
 					<Anchor point="TOPLEFT" x="30" y="-100"/>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="40"/>
 				</Anchors>
+			<Scripts>
+				<OnLoad>
+					self.scrollBarHideable = true;
+					ScrollFrame_OnLoad(self);
+				</OnLoad>
+			</Scripts>
 				<ScrollChild>
 					<Frame name="TutorialFrameTextScrollChildFrame">
 						<Size x="1" y="1"/>
@@ -127,12 +133,6 @@
 						</Layers>
 					</Frame>
 				</ScrollChild>
-			<Scripts>
-				<OnLoad>
-					self.scrollBarHideable = true;
-					ScrollFrame_OnLoad(self);
-				</OnLoad>
-			</Scripts>
 			</ScrollFrame>
 			<Frame name="TutorialTextBorder" frameStrata="TOOLTIP" hidden="true">
 				<Anchors>
@@ -148,32 +148,17 @@
 				</Layers>
 			</Frame>
 			<Frame name="$parentCallOut" frameStrata="TOOLTIP" hidden="true">
-				<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-				</Backdrop>
  				<Animations>
 					<AnimationGroup looping="BOUNCE">
 						<Alpha name="$parentPulser" change="-.7" duration=".75"/>
 					</AnimationGroup>
 				</Animations>
+				<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
 			</Frame>
-			<CheckButton name="$parentCheckButton" checked="true" inherits="UICheckButtonTemplate" hidden="true">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="20" y="5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentCheckboxText" inherits="GameFontNormalSmall" text="ENABLE_TUTORIAL_TEXT">
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="2"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</CheckButton>
             <Button inherits="UIPanelCloseButton">
                 <Anchors>
                     <Anchor point="TOPRIGHT" x="4" y="-8"/>
@@ -200,56 +185,56 @@
 				<NormalFont style="GameFontNormal"/>
 				<HighlightFont style="GameFontHighlight"/>
 			</Button>
-		<Button name="$parentPrevButton">
-			<Size x="26" y="26"/>
-			<Anchors>
-				<Anchor point="BOTTOMLEFT" x="30" y="3"/>
-			</Anchors>
-			<Layers>
-				<Layer level="BACKGROUND">
-					<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="PREV">
-						<Size x="60" y="10"/>
-						<Anchors>
-							<Anchor point="LEFT" relativePoint="RIGHT"/>
-						</Anchors>
-					</FontString>
-				</Layer>
-			</Layers>
-			<Scripts>
-				<OnClick>
-					TutorialFramePrevButton_OnClick(self);
-				</OnClick>
-			</Scripts>
-			<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-			<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-			<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-			<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-		</Button>
-		<Button name="$parentNextButton">
-			<Size x="26" y="26"/>
-			<Anchors>
-				<Anchor point="BOTTOMRIGHT" x="-132" y="3"/>
-			</Anchors>
-			<Layers>
-				<Layer level="BACKGROUND">
-					<FontString inherits="GameFontHighlightSmall" justifyH="RIGHT" text="NEXT">
-						<Size x="60" y="10"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativePoint="LEFT"/>
-						</Anchors>
-					</FontString>
-				</Layer>
-			</Layers>
-			<Scripts>
-				<OnClick>
-					TutorialFrameNextButton_OnClick(self);
-				</OnClick>
-			</Scripts>
-			<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-			<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-			<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-			<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-		</Button>
+			<Button name="$parentPrevButton">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="PREV">
+							<Size x="60" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						TutorialFramePrevButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentNextButton">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-132" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontHighlightSmall" justifyH="RIGHT" text="NEXT">
+							<Size x="60" y="10"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						TutorialFrameNextButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnShow>
@@ -305,7 +290,7 @@
 				<Texture file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<TexCoords left="0.6484375" right="0.7500000" top="0.2246094" bottom="0.3242188"/>
 				</Texture>
-				<FontString name="TutorialFrameAlertButtonBadgeText" inherits="GameFontNormal" justifyH="CENTER" justifyV="CENTER" hidden="true">
+				<FontString name="TutorialFrameAlertButtonBadgeText" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="TutorialFrameAlertButtonBadge" x="0" y="1"/>
 					</Anchors>

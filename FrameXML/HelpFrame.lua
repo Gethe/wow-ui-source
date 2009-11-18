@@ -161,6 +161,7 @@ function HelpFrame_OnEvent(self, event, ...)
 		else
 			-- the player does not have a ticket
 			HelpFrameOpenTicketEditBox:SetText("");
+			haveResponse = false;
 			haveTicket = false;
 			HelpFrameOpenTicketSubmit:SetText(SUBMIT);
 			HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_TEXT);

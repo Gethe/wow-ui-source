@@ -6,15 +6,22 @@ function ToggleFramerate(benchmark)
 	if ( FramerateText:IsShown() ) then
 		FramerateLabel:Hide();
 		FramerateText:Hide();
-		MapFramerateLabel:Hide();
-		MapFramerateText:Hide();
 	else
 		FramerateLabel:Show();
 		FramerateText:Show();
-		MapFramerateLabel:Show();
-		MapFramerateText:Show();
 	end
+	ToggleMapFramerate();
 	WorldFrame.fpsTime = 0;
+end
+
+function ToggleMapFramerate()
+	if ( FramerateText:IsShown() and not WorldMapFrame.sizedDown ) then
+		MapFramerateLabel:Show();
+		MapFramerateText:Show();	
+	else
+		MapFramerateLabel:Hide();
+		MapFramerateText:Hide();	
+	end
 end
 
 function WorldFrame_OnLoad(self)

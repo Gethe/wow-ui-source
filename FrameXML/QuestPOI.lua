@@ -183,8 +183,8 @@ end
 
 function QuestPOI_SetTextColor(poiButton, yOffset)
 	local index = poiButton.index - 1
-	yOffset = yOffset + floor(index / QUEST_NUMERIC_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
-	local xOffset = mod(index, QUEST_NUMERIC_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
+	yOffset = yOffset + floor(index / QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
+	local xOffset = mod(index, QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
 	poiButton.number:SetTexCoord(xOffset, xOffset + QUEST_POI_ICON_SIZE, yOffset, yOffset + QUEST_POI_ICON_SIZE);	
 end
 
@@ -221,5 +221,21 @@ function QuestPOI_HideAllButtons(parentName)
 				poiButton:Hide();
 			end
 		end
+	end
+end
+
+function QuestPOIButton_OnMouseDown(self)
+	if ( self.isComplete ) then
+		self.turnin:SetPoint("CENTER", 0, -1);
+	else
+		self.number:SetPoint("CENTER", 1, -1);
+	end
+end
+
+function QuestPOIButton_OnMouseUp(self)
+	if ( self.isComplete ) then
+		self.turnin:SetPoint("CENTER", -1, 0);
+	else
+		self.number:SetPoint("CENTER", 0, 0);
 	end
 end

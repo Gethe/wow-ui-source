@@ -964,7 +964,14 @@ function FocusFrame_OnDragStop(self)
 	if ( not FOCUS_FRAME_LOCKED and FOCUS_FRAME_MOVING ) then
 		self:StopMovingOrSizing();
 		self:SetFrameStrata("BACKGROUND");
-		ValidateFramePosition(self, 25);
+		if ( self:GetBottom() < 15 + MainMenuBar:GetHeight() ) then
+			local anchorX = self:GetLeft();
+			local anchorY = 60;
+			if ( self.smallSize ) then
+				anchorY = 90;	-- empirically determined
+			end
+			self:SetPoint("BOTTOMLEFT", anchorX, anchorY);
+		end
 		FOCUS_FRAME_MOVING = false;
 	end
 end
@@ -972,7 +979,7 @@ end
 function FocusFrame_SetSmallSize(smallSize, onChange)
 	if ( smallSize and not FocusFrame.smallSize ) then
 		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();	
+		local y = FocusFrame:GetTop();
 		FocusFrame.smallSize = true;	
 		FocusFrame.maxBuffs = 0;
 		FocusFrame.maxDebuffs = 8;		

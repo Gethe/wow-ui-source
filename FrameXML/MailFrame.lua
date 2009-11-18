@@ -33,6 +33,8 @@ function MailFrame_OnLoad(self)
 	self:RegisterEvent("MAIL_FAILED");
 	self:RegisterEvent("MAIL_SUCCESS");	
 	self:RegisterEvent("CLOSE_INBOX_ITEM");
+	self:RegisterEvent("MAIL_LOCK_SEND_ITEMS");
+	self:RegisterEvent("MAIL_UNLOCK_SEND_ITEMS");
 	-- Set previous and next fields
 	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
@@ -76,11 +78,22 @@ function MailFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "MAIL_CLOSED" ) then
 		HideUIPanel(MailFrame);
-	elseif ( (event == "CLOSE_INBOX_ITEM") ) then
+		SendMailFrameLockSendMail:Hide();
+		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
+	elseif ( event == "CLOSE_INBOX_ITEM" ) then
 		local arg1 = ...;
 		if ( arg1 == InboxFrame.openMailID ) then
 			HideUIPanel(OpenMailFrame);
 		end
+	elseif ( event == "MAIL_LOCK_SEND_ITEMS" ) then
+		local slotNum, itemLink = ...;
+		SendMailFrameLockSendMail:Show();
+		itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
+		local r, g, b = GetItemQualityColor(itemRarity)
+		StaticPopup_Show("CONFIRM_MAIL_ITEM_UNREFUNDABLE", nil, nil, {["texture"] = itemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["slot"] = slotNum});
+	elseif ( event == "MAIL_UNLOCK_SEND_ITEMS") then
+		SendMailFrameLockSendMail:Hide();
+		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 	end
 end
 

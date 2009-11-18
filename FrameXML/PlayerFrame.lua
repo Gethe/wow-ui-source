@@ -61,10 +61,18 @@ end
 
 function PlayerFrame_UpdatePartyLeader()
 	if ( IsPartyLeader() ) then
-		PlayerLeaderIcon:Show();
+		if ( HasLFGRestrictions() ) then
+			PlayerGuideIcon:Show();
+			PlayerLeaderIcon:Hide();
+		else
+			PlayerLeaderIcon:Show()
+			PlayerGuideIcon:Hide();
+		end
 	else
 		PlayerLeaderIcon:Hide();
+		PlayerGuideIcon:Hide();
 	end
+
 	local lootMethod;
 	local lootMaster;
 	lootMethod, lootMaster = GetLootMethod();
@@ -321,7 +329,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrameVehicleTexture:Show();
 	
 	PlayerName:SetPoint("CENTER",50,23);
-	PlayerLeaderIcon:SetPoint("TOPLEFT",50,0);
+	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
 	PlayerMasterIcon:SetPoint("TOPLEFT",86,0);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -13);
 	
@@ -344,7 +352,7 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrameTexture:Show();
 	PlayerFrameVehicleTexture:Hide();
 	PlayerName:SetPoint("CENTER",50,19);
-	PlayerLeaderIcon:SetPoint("TOPLEFT",50,-10);
+	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
 	PlayerMasterIcon:SetPoint("TOPLEFT",80,-10);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -20);
 	PlayerFrameHealthBar:SetWidth(119);

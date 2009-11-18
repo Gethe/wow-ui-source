@@ -428,6 +428,7 @@ function AudioOptionsVoicePanelKeyBindingButton_OnKeyDown (self, key)
 			return;
 		elseif ( PUSH_TO_TALK_BUTTON ~= "" ) then
 			AudioOptionsVoicePanelBindingOutputText:SetText(ERROR_CANNOT_BIND);
+			AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
 			AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0);
 			AudioOptionsVoicePanelBindingOutput.fade = VOICE_OPTIONS_BINDING_FAIL_FADE;
 			self:UnlockHighlight();
@@ -449,6 +450,7 @@ function AudioOptionsVoicePanelKeyBindingButton_CancelBinding ()
 	self:UnlockHighlight();
 	self.buttonPressed = nil;
 	AudioOptionsVoicePanelBindingOutputText:SetText("");
+	AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
 	self:SetScript("OnKeyDown", nil);
 	self:SetScript("OnKeyUp", nil);
 	AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0)
@@ -475,6 +477,7 @@ function AudioOptionsVoicePanelKeyBindingButton_OnClick (self, button)
 				AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0)
 				AudioOptionsVoicePanelBindingOutput.fade = 0;
 				UIFrameFadeIn(AudioOptionsVoicePanelBindingOutput, 0); 
+				AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
 				PUSH_TO_TALK_BUTTON = "";
 				PUSH_TO_TALK_MODIFIER = "";
 			end
@@ -488,7 +491,7 @@ function AudioOptionsVoicePanelKeyBindingButton_OnClick (self, button)
 			AudioOptionsVoicePanelBindingOutput:SetAlpha(1.0);
 			AudioOptionsVoicePanelBindingOutput.fade = VOICE_OPTIONS_BINDING_FAIL_FADE;
 			AudioOptionsVoicePanelBindingOutputText:SetVertexColor(1, 1, 1);
-			AudioOptionsVoicePanelBindingOutputText:SetText("");
+			AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
 			self:UnlockHighlight();
 			self.buttonPressed = nil;
 			return;
@@ -518,7 +521,10 @@ function AudioOptionsVoicePanelKeyBindingButton_BindButton (self)
 
 		local currentbinding = GetBindingByKey(PUSH_TO_TALK_BUTTON);
 		if ( currentbinding ) then
-			 UIErrorsFrame:AddMessage(format(ALREADY_BOUND, GetBindingText(currentbinding, "BINDING_NAME_")), 1.0, 1.0, 0.0, 1.0);
+			UIErrorsFrame:AddMessage(format(ALREADY_BOUND, GetBindingText(currentbinding, "BINDING_NAME_")), 1.0, 1.0, 0.0, 1.0);
+			AudioOptionsVoicePanelBindingOutputTextConflict:SetText(format(ALREADY_BOUND, GetBindingText(currentbinding, "BINDING_NAME_")));
+		else
+			AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
 		end
 
 		AudioOptionsVoicePanelBindingOutputText:SetText(PTT_BOUND);

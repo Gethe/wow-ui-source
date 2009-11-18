@@ -107,20 +107,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="TOPLEFT">
-					<Offset>
-						<AbsDimension x="-10" y="-2"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT">
-					<Offset>
-						<AbsDimension x="10" y="-2"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightTexture>
 		<Scripts>
 			<OnMouseDown>
 				RaidInfoInstance_OnMouseDown(self);
@@ -138,6 +124,20 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-10" y="-2"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="10" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 	<Frame name="RaidFrame" setAllPoints="true" hidden="true" parent="FriendsFrame">
 		<Frames>
@@ -408,7 +408,7 @@
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>
-					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate2" text="EXTEND_RAID_LOCK" disabled="true">
+					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate2" text="EXTEND_RAID_LOCK">
 						<Size>
 							<AbsDimension x="200" y="20"/>
 						</Size>

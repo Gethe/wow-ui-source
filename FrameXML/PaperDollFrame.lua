@@ -1229,12 +1229,16 @@ function PaperDollItemSlotButton_OnEvent (self, event, ...)
 end
 
 function PaperDollItemSlotButton_OnClick (self, button)
+	MerchantFrame_ResetRefundItem();
 	if ( button == "LeftButton" ) then
 		local type = GetCursorInfo();
 		if ( type == "merchant" and MerchantFrame.extendedCost ) then
 			MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
 		else
 			PickupInventoryItem(self:GetID());
+			if ( CursorHasItem() ) then
+				MerchantFrame_SetRefundItem(self, 1);
+			end
 		end
 	else
 		UseInventoryItem(self:GetID());

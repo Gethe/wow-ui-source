@@ -274,9 +274,23 @@ function MiniMapLFGFrame_OnClick(self, button)
 	if ( button == "RightButton" or mode == "lfgparty" or mode == "abandonedInDungeon") then
 		--Display dropdown
 		PlaySound("igMainMenuOpen");
-		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", 0, -5);
+		--Weird hack so that the popup isn't under the queued status window (bug 184001)
+		local yOffset;
+		if ( mode == "queued" ) then
+			MiniMapLFGFrameDropDown.point = "BOTTOMRIGHT";
+			MiniMapLFGFrameDropDown.relativePoint = "TOPLEFT";
+			yOffset = 0;
+		else
+			MiniMapLFGFrameDropDown.point = nil;
+			MiniMapLFGFrameDropDown.relativePoint = nil;
+			yOffset = -5;
+		end
+		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", 0, yOffset);
 	elseif ( mode == "proposal" ) then
-		StaticPopupSpecial_Show(LFDDungeonReadyPopup);
+		if ( not LFDDungeonReadyPopup:IsShown() ) then
+			PlaySound("igCharacterInfoTab");
+			StaticPopupSpecial_Show(LFDDungeonReadyPopup);
+		end
 	elseif ( mode == "queued" or mode == "rolecheck" ) then
 		ToggleLFDParentFrame();
 	elseif ( mode == "listed" ) then
@@ -467,7 +481,9 @@ function MiniMapInstanceDifficulty_OnEvent(self)
 			if ( isDynamicInstance ) then
 				selectedRaidDifficulty = difficulty;
 				if ( playerDifficulty == 1 ) then
-					selectedRaidDifficulty = selectedRaidDifficulty + 2;
+					if ( selectedRaidDifficulty <= 2 ) then
+						selectedRaidDifficulty = selectedRaidDifficulty + 2;
+					end
 					isHeroic = true;
 				end
 				-- if modified difficulty is normal then you are allowed to select heroic, and vice-versa
@@ -487,12 +503,17 @@ function MiniMapInstanceDifficulty_OnEvent(self)
 		end
 
 		MiniMapInstanceDifficultyText:SetText(maxPlayers);
+		-- the 1 looks a little off when text is centered
+		local xOffset = 0;
+		if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
+			xOffset = -1;
+		end
 		if ( isHeroic ) then
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0.05078125, 0.1953125, 0.0703125, 0.4140625);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", -1, -7);			
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
+			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
 		else
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0.05078125, 0.1953125, 0.5703125, 0.9140625);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", -1, 5);				
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
+			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
 		end
 		self:Show();
 	else

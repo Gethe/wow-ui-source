@@ -104,6 +104,11 @@
 				</Texture>			
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnClick>	
+				PlayerTitleButton_OnClick(self);
+			</OnClick>
+		</Scripts>		
 		<ButtonText name="$parentTitleText" inherits="GameFontHighlightSmallLeft" justifyH="LEFT" parentKey="text">
 					<Anchors>
 			<Anchor point="LEFT" relativeTo="$parentCheck" relativePoint="RIGHT">
@@ -112,11 +117,6 @@
 					</Anchors>
 		</ButtonText>		
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>	
-		<Scripts>
-			<OnClick>	
-				PlayerTitleButton_OnClick(self);
-			</OnClick>
-		</Scripts>		
 	</Button>		
 	<CheckButton name="GearSetButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>

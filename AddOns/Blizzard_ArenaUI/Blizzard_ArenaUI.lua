@@ -233,7 +233,7 @@ function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need
 		showArenaEnemyPets = GetCVarBool("showArenaEnemyPets");
 	end
 	
-	if ( UnitExists(petFrame.unit) and showArenaEnemyPets) then
+	if ( UnitGUID(petFrame.unit) and showArenaEnemyPets) then
 		petFrame:Show();
 	else
 		petFrame:Hide();
@@ -277,8 +277,20 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 				ArenaEnemyFrame_SetMysteryPlayer(ownerFrame);
 				ownerFrame:Show();
 			end
+			if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
+				self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
+				self.healthbar:UnregisterEvent("UNIT_HEALTH");
+			end
+			if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
+				self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
+				UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
+			end
 		elseif ( arg2 == "unseen" ) then
 			ArenaEnemyFrame_Lock(self);
+			self.healthbar:RegisterEvent("UNIT_HEALTH");
+			self.healthbar:SetScript("OnUpdate", nil);
+			UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
+			self.manabar:SetScript("OnUpdate", nil);
 		elseif ( arg2 == "cleared" ) then
 			ArenaEnemyFrame_Unlock(self);
 			self:Hide()

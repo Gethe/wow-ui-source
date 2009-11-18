@@ -58,7 +58,7 @@
 	
 	<Frame name="QuestInfoObjectivesFrame" hidden="true">					
 		<Size>
-			<AbsDimension x="285" y="100"/>
+			<AbsDimension x="285" y="10"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />
@@ -198,10 +198,10 @@
 					<Size>
 						<AbsDimension x="285" y="0"/>
 					</Size>
-					<Color r="0" g="0" b="0" />
 					<Anchors>
 						<Anchor point="TOPLEFT" />
 					</Anchors>							
+					<Color r="0" g="0" b="0" />
 				</FontString>				
 			</Layer>
 		</Layers>
@@ -307,7 +307,7 @@
 									
 	<Frame name="QuestInfoRewardsFrame" hidden="true">
 		<Size>
-			<AbsDimension x="285" y="100" />
+			<AbsDimension x="285" y="10" />
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />

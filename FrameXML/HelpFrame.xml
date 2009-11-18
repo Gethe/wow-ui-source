@@ -486,7 +486,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Button name="$parentOpenTicket" inherits="UIPanelButtonTemplate2" text="HELP_TICKET_OPEN">
+					<Button name="$parentOpenTicket" inherits="UIPanelButtonTemplate2" text="KBASE_REPORTISSUE">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentText2" relativePoint="BOTTOM">
 								<Offset>
@@ -667,8 +667,6 @@
 					</Button>
 					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
-				<Scripts>
-				</Scripts>
 			</Frame>
 			<!-- Stuck Frame -->
 			<Frame name="HelpFrameStuck" setAllPoints="true" hidden="true">

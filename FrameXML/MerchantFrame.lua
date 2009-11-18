@@ -384,7 +384,7 @@ function MerchantItemButton_OnClick(self, button)
 		-- Is merchant frame
 		if ( button == "LeftButton" ) then
 			if ( MerchantFrame.refundItem ) then
-				if ( ContainerFrame_GetExtendedPriceString(MerchantFrame.refundItem)) then
+				if ( ContainerFrame_GetExtendedPriceString(MerchantFrame.refundItem, MerchantFrame.refundItemEquipped)) then
 					-- a confirmation dialog has been shown
 					return;
 				end
@@ -506,6 +506,16 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
 	local r, g, b = GetItemQualityColor(itemQuality);
 	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = count * quantity});
+end
+
+function MerchantFrame_ResetRefundItem()
+	MerchantFrame.refundItem = nil;
+	MerchantFrame.refundItemEquipped = nil;
+end
+
+function MerchantFrame_SetRefundItem(item, isEquipped)
+	MerchantFrame.refundItem = item;
+	MerchantFrame.refundItemEquipped = isEquipped;
 end
 
 function MerchantFrame_ConfirmHighCostItem(itemButton, quantity)

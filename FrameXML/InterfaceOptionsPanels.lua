@@ -785,6 +785,7 @@ ObjectivesPanelOptions = {
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
 	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
+	advancedWorldMap = { text = "ADVANCED_WORLD_MAP_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)
@@ -1343,12 +1344,12 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, .
 		self.value = value;
 		if ( value == "0" ) then
 			--For the purposes of tooltips and dropdown lists, "0" in the CVar cameraSmoothTrackingStyle is "3".
-			self.tooltip = OPTION_TOOLTIP_CLICK_CAMERA3;
+			self.tooltip = OPTION_TOOLTIP_CAMERA3;
 		else
-			self.tooltip = _G["OPTION_TOOLTIP_CLICK_CAMERA"..value];
+			self.tooltip = _G["OPTION_TOOLTIP_CAMERA"..value];
 		end
 
-		UIDropDownMenu_SetWidth(self, 140);
+		UIDropDownMenu_SetWidth(self, 180);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, value);
 
@@ -1359,9 +1360,9 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_OnEvent(self, event, .
 				UIDropDownMenu_SetSelectedValue(self, value);
 				if ( value == "0" ) then
 					--For the purposes of tooltips and dropdown lists, "0" in the CVar cameraSmoothTrackingStyle is "3".
-					self.tooltip = OPTION_TOOLTIP_CLICK_CAMERA3;
+					self.tooltip = OPTION_TOOLTIP_CAMERA3;
 				else
-					self.tooltip = _G["OPTION_TOOLTIP_CLICK_CAMERA"..value];
+					self.tooltip = _G["OPTION_TOOLTIP_CAMERA"..value];
 				end
 			end
 		self.GetValue =
@@ -1395,10 +1396,22 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_SMART;
-	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_SMART;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_SMART;
 	UIDropDownMenu_AddButton(info);
 
-	info.text = CAMERA_LOCKED;
+	info.text = CAMERA_SMARTER;
+	info.func = InterfaceOptionsMousePanelClickMoveStyleDropDown_OnClick;
+	info.value = "4";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CAMERA_SMARTER;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_SMARTER;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CAMERA_ALWAYS;
 	info.func = InterfaceOptionsMousePanelClickMoveStyleDropDown_OnClick;
 	info.value = "2";
 	if ( info.value == selectedValue ) then
@@ -1406,8 +1419,8 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 	else
 		info.checked = nil;
 	end
-	info.tooltipTitle = CAMERA_LOCKED;
-	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_LOCKED;
+	info.tooltipTitle = CAMERA_ALWAYS;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_ALWAYS;
 	UIDropDownMenu_AddButton(info);
 
 	info.text = CAMERA_NEVER;
@@ -1419,7 +1432,7 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 		info.checked = nil;
 	end
 	info.tooltipTitle = CAMERA_NEVER;
-	info.tooltipText = OPTION_TOOLTIP_CLICKCAMERA_NEVER;
+	info.tooltipText = OPTION_TOOLTIP_CAMERA_NEVER;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -1433,20 +1446,12 @@ FeaturesPanelOptions = {
 -- [[ Help Options Panel ]] --
 
 HelpPanelOptions = {
-	showTutorials = { text = "SHOW_TUTORIALS", default = "1", tooltipText = OPTION_TOOLTIP_SHOW_TUTORIALS },
+	showTutorials = { text = "SHOW_TUTORIALS" },
 	showGameTips = { text = "SHOW_TIPOFTHEDAY_TEXT" },
 	UberTooltips = { text = "USE_UBERTOOLTIPS" },
 	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT" },
 	scriptErrors = { text = "SHOW_LUA_ERRORS" },
 }
-
-function InterfaceOptionsHelpPanel_SetTutorials (value)
-	if ( value == "1" and not TutorialsEnabled() ) then
-		ResetTutorials();
-	elseif ( value == "0" and TutorialsEnabled() ) then
-		ClearTutorials();
-	end
-end
 
 -- [[ Languages Options Panel ]] --
 

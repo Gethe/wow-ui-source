@@ -20,6 +20,8 @@ ACHIEVEMENTUI_PROGRESSIVEWIDTH = 42;
 ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS = 4;
 
 ACHIEVEMENTUI_MAXCONTENTWIDTH = 330;
+local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
+local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
 
@@ -755,6 +757,8 @@ function AchievementFrameAchievements_ClearSelection ()
 		if ( not button.tracked:GetChecked() ) then
 			button.tracked:Hide();
 		end
+		button.description:Show();
+		button.hiddenDescription:Hide();
 	end
 	
 	AchievementFrameAchievements.selection = nil;
@@ -905,7 +909,6 @@ end
 
 function AchievementButton_OnLoad (self)
 	local name = self:GetName();
-	
 	self.label = _G[name .. "Label"];
 	self.description = _G[name .. "Description"];
 	self.hiddenDescription = _G[name .. "HiddenDescription"];
@@ -922,6 +925,13 @@ function AchievementButton_OnLoad (self)
 	
 	self.dateCompleted:ClearAllPoints();
 	self.dateCompleted:SetPoint("TOP", self.shield, "BOTTOM", -3, 6);
+	if ( not ACHIEVEMENTUI_FONTHEIGHT ) then
+		local _, fontHeight = self.description:GetFont();
+		ACHIEVEMENTUI_FONTHEIGHT = fontHeight;
+	end
+	self.description:SetHeight(ACHIEVEMENTUI_FONTHEIGHT * ACHIEVEMENTUI_MAX_LINES_COLLAPSED);
+	self.description:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);			
+	self.hiddenDescription:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
 	
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Collapse = AchievementButton_Collapse;
@@ -1026,15 +1036,9 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		else
 			button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 		end
-	
 		button.description:SetText(description);
 		button.hiddenDescription:SetText(description);
-		if ( button.hiddenDescription:GetWidth() > ACHIEVEMENTUI_MAXCONTENTWIDTH ) then
-			button.description:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
-		else
-			button.description:SetWidth(0);
-		end
-	
+		button.numLines = ceil(button.hiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
 		button.icon.texture:SetTexture(icon);
 		if ( completed and not button.completed ) then
 			button.completed = true;
@@ -1099,6 +1103,8 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 			button.highlight:Hide();
 		end
 		button:Collapse();
+		button.description:Show();
+		button.hiddenDescription:Hide();
 	end
 	
 	return id;
@@ -1128,13 +1134,13 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		local ACHIEVEMENTMODE_CRITERIA = 1;
 		if ( objectives.mode == ACHIEVEMENTMODE_CRITERIA ) then
 			if ( objectives:GetHeight() > 0 ) then
-				objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
+				objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
 				objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, 0);
 				objectives:SetPoint("RIGHT", "$parentShield", "LEFT", -10, 0);
 			end
 			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 		else
-			objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
+			objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
 			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 		end
 	elseif ( completed and GetPreviousAchievement(id) ) then
@@ -1144,7 +1150,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetMiniAchievements();
 		AchievementButton_ResetMetas();
 		AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
-		objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
+		objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
 		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	else
 		objectives:SetHeight(0);	
@@ -1154,19 +1160,21 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetMetas();
 		AchievementObjectives_DisplayCriteria(objectives, id);
 		if ( objectives:GetHeight() > 0 ) then
-			objectives:SetPoint("TOP", "$parentDescription", "BOTTOM", 0, -8);
+			objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
 			objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, -25);
 			objectives:SetPoint("RIGHT", "$parentShield", "LEFT", -10, 0);
 		end
 		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	end
 
-	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then		
-		local descriptionHeight = button.description:GetHeight();
+	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT or button.numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED ) then		
+		button.hiddenDescription:Show();
+		button.description:Hide();
+		local descriptionHeight = button.hiddenDescription:GetHeight();
 		height = height + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
 		if ( button.reward:IsShown() ) then
 			height = height + 4;
-		end		
+		end
 	end
 	
 	objectives.id = id;

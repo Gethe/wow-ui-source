@@ -47,9 +47,9 @@ CHAT_CONFIG_CHAT_LEFT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_ACHIEVEMENT"); end;
 	},
 	[7] = {
-	type = "ACHIEVEMENT",
-	checked = function () return IsListeningForMessageType("ACHIEVEMENT"); end;
-	func = function (self, checked) ToggleChatMessageGroup(checked, "ACHIEVEMENT"); end;
+		type = "ACHIEVEMENT",
+		checked = function () return IsListeningForMessageType("ACHIEVEMENT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "ACHIEVEMENT"); end;
 	},
 	[8] = {
 		type = "WHISPER",
@@ -62,26 +62,31 @@ CHAT_CONFIG_CHAT_LEFT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
 	},
 	[10] = {
+		type = "PARTY_LEADER",
+		checked = function () return IsListeningForMessageType("PARTY_LEADER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY_LEADER"); end;
+	},
+	[11] = {
 		type = "RAID",
 		checked = function () return IsListeningForMessageType("RAID"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
 	},
-	[11] = {
+	[12] = {
 		type = "RAID_LEADER",
 		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
 	},
-	[12] = {
+	[13] = {
 		type = "RAID_WARNING",
 		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
 	},
-	[13] = {
+	[14] = {
 		type = "BATTLEGROUND",
 		checked = function () return IsListeningForMessageType("BATTLEGROUND"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND"); end;
 	},
-	[14] = {
+	[15] = {
 		type = "BATTLEGROUND_LEADER",
 		checked = function () return IsListeningForMessageType("BATTLEGROUND_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND_LEADER"); end;

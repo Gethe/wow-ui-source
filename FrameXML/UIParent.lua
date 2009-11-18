@@ -1179,7 +1179,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
-	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
+	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 20, bottomLeft = actionBarOffset-20, justBottomRightAndShapeshift = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 20, bottomRight = actionBarOffset-20, vehicleMenuBar = vehicleMenuBarTop, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
@@ -1210,6 +1210,8 @@ for _, data in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		elseif ( flag == "maxLevel" ) then
 			data[flag] = value * -5;
 		elseif ( flag == "pet" ) then
+			data[flag] = value * 35;
+		elseif ( flag == "tutorialAlert" ) then
 			data[flag] = value * 35;
 		end
 	end
@@ -1322,7 +1324,6 @@ FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAt
 function FramePositionDelegate:ShowUIPanel(frame, force)
 	local frameArea, framePushable;
 	frameArea = GetUIPanelWindowInfo(frame, "area");
-
 	if ( not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full" ) then
 		self:ShowUIPanelFailed(frame);
 		return;
@@ -1348,16 +1349,21 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	local centerFrame = self:GetUIPanel("center");
 	local centerArea, centerPushable;
 	if ( centerFrame ) then
-		centerArea = GetUIPanelWindowInfo(centerFrame, "area");
-		if ( centerArea and (centerArea == "center") and (frameArea ~= "center") and (frameArea ~= "full") ) then
-			if ( force ) then
-				self:SetUIPanel("center", nil, 1);
-			else
-				self:ShowUIPanelFailed(frame);
-				return;
+		if ( GetUIPanelWindowInfo(centerFrame, "allowOtherPanels") ) then
+			HideUIPanel(centerFrame);
+			centerFrame = nil;
+		else	
+			centerArea = GetUIPanelWindowInfo(centerFrame, "area");
+			if ( centerArea and (centerArea == "center") and (frameArea ~= "center") and (frameArea ~= "full") ) then
+				if ( force ) then
+					self:SetUIPanel("center", nil, 1);
+				else
+					self:ShowUIPanelFailed(frame);
+					return;
+				end
 			end
+			centerPushable = GetUIPanelWindowInfo(centerFrame, "pushable") or 0;
 		end
-		centerPushable = GetUIPanelWindowInfo(centerFrame, "pushable") or 0;
 	end
 	
 	-- Full-screen frames just replace each other
@@ -1370,7 +1376,9 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	-- Native "center" frames just replace each other, and they take priority over pushed frames
 	if ( frameArea == "center" ) then
 		securecall("CloseWindows");
-		securecall("CloseAllBags");
+		if ( not GetUIPanelWindowInfo(frame, "allowOtherPanels") ) then
+			securecall("CloseAllBags");
+		end
 		self:SetUIPanel("center", frame, 1);
 		return;
 	end
@@ -1778,6 +1786,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( MainMenuBarMaxLevelBar:IsShown() ) then
 			tinsert(yOffsetFrames, "maxLevel");
 		end
+		if ( TutorialFrameAlertButton:IsShown() ) then
+			tinsert(yOffsetFrames, "tutorialAlert");
+		end
 	end
 	
 	if ( menuBarTop == 55 ) then
@@ -2073,7 +2084,8 @@ function CanOpenPanels()
 	end
 
 	local area = GetUIPanelWindowInfo(centerFrame, "area");
-	if ( area and (area == "center") ) then
+	local allowOtherPanels = GetUIPanelWindowInfo(centerFrame, "allowOtherPanels");
+	if ( area and (area == "center") and not allowOtherPanels ) then
 		return nil;
 	end
 

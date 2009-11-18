@@ -150,7 +150,7 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 		elseif ( overflowArena ) then
 			StaticPopup_Show("CONFIRM_REFUND_MAX_ARENA_POINTS", (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints))
 		else
-			ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+			ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
 		end
 		StackSplitFrame:Hide();
 	end,
@@ -161,7 +161,7 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	
 	end,
 	OnHide = function()
-		MerchantFrame.refundItem = nil;	
+		MerchantFrame_ResetRefundItem();	
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -183,7 +183,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR"] = {
 	
 	end,
 	OnHide = function()
-		MerchantFrame.refundItem = nil;
+		MerchantFrame_ResetRefundItem();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -204,7 +204,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
 	
 	end,
 	OnHide = function()
-		MerchantFrame.refundItem = nil;
+		MerchantFrame_ResetRefundItem();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -225,7 +225,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR_AND_ARENA"] = {
 	
 	end,
 	OnHide = function()
-		MerchantFrame.refundItem = nil;
+		MerchantFrame_ResetRefundItem();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -484,6 +484,14 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	text = CONFIRM_BATTLEFIELD_ENTRY,
 	button1 = ENTER_BATTLE,
 	button2 = LEAVE_QUEUE,
+	OnShow = function(self, data)
+		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(data);
+		if ( teamSize == 0 ) then
+			self.button2:Enable();
+		else
+			self.button2:Disable();
+		end
+	end,
 	OnAccept = function(self, data)
 		if ( not AcceptBattlefieldPort(data, 1) ) then
 			return 1;
@@ -1579,7 +1587,7 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 		end
 	end,
 	OnHide = function()
-		MerchantFrame.refundItem = nil;
+		MerchantFrame_ResetRefundItem();
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1619,7 +1627,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 			ChatFrameEditBox:SetFocus();
 		end
 		self.editBox:SetText("");
-		MerchantFrame.refundItem = nil;
+		MerchantFrame_ResetRefundItem();
 	end,
 	EditBoxOnEnterPressed = function(self)
 		if ( self:GetParent().button1:IsEnabled() == 1 ) then
@@ -2780,6 +2788,21 @@ StaticPopupDialogs["LFG_OFFER_CONTINUE"] = {
 	noCancelOnReuse = 1,
 	timeout = 0,
 }
+
+StaticPopupDialogs["CONFIRM_MAIL_ITEM_UNREFUNDABLE"] = {
+	text = END_REFUND,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		RespondMailLockSendItem(self.data.slot, true);
+	end,
+	OnCancel = function(self)
+		RespondMailLockSendItem(self.data.slot, false);
+	end,
+	timeout = 0,
+	hasItemFrame = 1,
+}
+
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];

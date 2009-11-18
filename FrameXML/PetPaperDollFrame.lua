@@ -575,7 +575,7 @@ function PetPaperDollFrame_SetStats()
 		-- Second tooltip line
 		frame.tooltip2 = _G["DEFAULT_STAT"..i.."_TOOLTIP"];
 		if ( i == 1 ) then
-			local attackPower = 2*effectiveStat-20;
+			local attackPower = effectiveStat-20;
 			frame.tooltip2 = format(frame.tooltip2, attackPower);
 		elseif ( i == 2 ) then
 			local newLineIndex = strfind(frame.tooltip2, "|n")+1;

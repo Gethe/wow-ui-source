@@ -85,6 +85,9 @@
 		<Size>
 			<AbsDimension x="295" y="16"/>
 		</Size>
+		<HitRectInsets>
+			<AbsInset left="25" right="58" top="0" bottom="0"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeroicIcon" file="Interface/LFGFrame/UI-LFG-ICON-HEROIC" parentKey="heroicIcon">
@@ -129,6 +132,19 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentLockedIndicator"  file="Interface/LFGFrame/UI-LFG-ICON-LOCK" parentKey="lockedIndicator">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="25" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
+				</Texture>
 			</Layer>
 		</Layers>					
 		<Frames>
@@ -137,11 +153,7 @@
 					<AbsDimension x="20" y="20"/>
 				</Size>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="20" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativeTo="$parentLockedIndicator" relativePoint="CENTER"/>
 				</Anchors>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -149,24 +161,6 @@
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
 			</CheckButton>
-			<Frame name="$parentLockedIndicator" parentKey="lockedIndicator">
-				<Size>
-					<AbsDimension x="12" y="14"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentEnableButton" relativePoint="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface/LFGFrame/UI-LFG-ICON-LOCK" setAllPoints="true">
-							<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
 			<Button name="$parentExpandOrCollapseButton" parentKey="expandOrCollapseButton">
 				<Size>
 					<AbsDimension x="13" y="13"/>
@@ -207,6 +201,13 @@
 				</HighlightTexture>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLeave>
+				if ( GameTooltip:GetOwner() == self ) then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+		</Scripts>
 	</Frame>
 
 	<Frame name="LFGEventFrame">

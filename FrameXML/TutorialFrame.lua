@@ -189,7 +189,7 @@ local DISPLAY_DATA = {
 		tileHeight = 19, 
 		anchorData = {align = "LEFT", xOff = 15, yOff = -150},
 		callOut	= {parent = "MainMenuBar", align = "TOPLEFT", xOff = -5, yOff = -5, width = 525, height = 50},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -145, bottomRight_xOff = -29, bottomRight_yOff = 18},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -145, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-AttackCursor", align = "TOP", xOff = -60, yOff = -60},
 		mouseData = {image = "LeftClick", align = "TOP", xOff = 50, yOff = -45},
 	},
@@ -411,7 +411,7 @@ local DISPLAY_DATA = {
     },
 	
 	["Talents"] = {
-		tileHeight = 7, 
+		tileHeight = 9, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "TalentMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
@@ -631,6 +631,7 @@ function TutorialFrame_OnHide(self)
 	
 	if ( (getn(TUTORIALFRAME_QUEUE) <= 0) and (UnitLevel("player") > 5) ) then
 		TutorialFrameAlertButton:Hide();
+		UIParent_ManageFramePositions();
 	end
 	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
 		TutorialFrame_AlertButton_OnClick(TutorialFrameAlertButton);
@@ -714,6 +715,10 @@ function TutorialFrame_Update(currentTutorial)
 				imageTexture:SetDrawLayer(imageData.layer);
 			end
 			imageTexture:Show();
+		elseif( imageTexture ) then
+			imageTexture:ClearAllPoints();
+			imageTexture:SetTexture("");
+			imageTexture:Hide();
 		end
 	end
 
@@ -750,6 +755,10 @@ function TutorialFrame_Update(currentTutorial)
 			end
 			keyTexture:Show();
 			keyString:Show();
+		elseif ( keyTexture ) then
+			keyTexture:ClearAllPoints();
+			keyTexture:Hide();
+			keyString:Hide();
 		end
 	end
 
@@ -763,10 +772,13 @@ function TutorialFrame_Update(currentTutorial)
 				arrowTexture:SetDrawLayer(arrowData.layer);
 			end
 			if ( arrowData.scale ) then
-				arrowTexture:SetWidth( arrowTexture:GetWidth() * arrowData.scale );
-				arrowTexture:SetHeight( arrowTexture:GetHeight() * arrowData.scale );
+				arrowTexture:SetWidth( ARROW_SIZES[ARROW_TYPES[i]].x * arrowData.scale );
+				arrowTexture:SetHeight( ARROW_SIZES[ARROW_TYPES[i]].y * arrowData.scale );
 			end
 			arrowTexture:Show();
+		elseif ( arrowTexture ) then
+			arrowTexture:ClearAllPoints();
+			arrowTexture:Hide();
 		end
 	end
 	
@@ -793,15 +805,6 @@ function TutorialFrame_ClearTextures()
 	TutorialFrameMouseBothClick:Hide();
 	TutorialFrameMouseWheel:Hide();
 
-	for i = 1, getn(ARROW_TYPES) do
-		arrowTexture = _G[ "TutorialFrame"..ARROW_TYPES[i] ];
-		if ( arrowTexture ) then
-			arrowTexture:ClearAllPoints();
-			arrowTexture:SetSize(ARROW_SIZES[ARROW_TYPES[i]].x, ARROW_SIZES[ARROW_TYPES[i]].y);
-			arrowTexture:Hide();
-		end
-	end
-
 	-- top & left1 & right1 never have thier anchors changed; or are independantly hidden
 	for i = 2, MAX_TUTORIAL_VERTICAL_TILE do
 		local leftTexture = _G["TutorialFrameLeft"..i];
@@ -811,29 +814,27 @@ function TutorialFrame_ClearTextures()
 		leftTexture:Hide();
 		rightTexture:Hide();
 	end
-	
-	for i = 1, MAX_TUTORIAL_IMAGES do
-		local imageTexture = _G["TutorialFrameImage"..i];
-		imageTexture:ClearAllPoints();
-		imageTexture:Hide();
-	end
-
-	for i = 1, MAX_TUTORIAL_KEYS do
-		local keyTexture = _G["TutorialFrameKey"..i];
-		keyTexture:ClearAllPoints();
-		keyTexture:Hide();
-		_G["TutorialFrameKeyString"..i]:Hide();
-	end
 end
 
 function TutorialFrame_NewTutorial(tutorialID)
+	-- check that we haven't already seen it
+	if ( IsTutorialFlagged(tutorialID) ) then
+		return;
+	end
+	for index, value in pairs(TUTORIALFRAME_QUEUE) do
+		if( (value == tutorialID) ) then
+			return;
+		end
+	end
+
 	TUTORIAL_LAST_ID = tutorialID;
 	local button = TutorialFrameAlertButton;
 	tinsert(TUTORIALFRAME_QUEUE, tutorialID);
-	if ( not button:IsShown() ) then
+	if ( not TutorialFrame:IsShown() ) then
 		button.id = tutorialID;
 		button:Show();
-		if ( not TutorialFrame:IsShown() and TutorialFrameCheckButton:GetChecked() and not InCombatLockdown() ) then
+		UIParent_ManageFramePositions();
+		if ( not TutorialFrame:IsShown() and not InCombatLockdown() ) then
 			TutorialFrame_AlertButton_OnClick(button);
 		end
 	elseif ( button:IsEnabled() == 0 ) then
@@ -897,4 +898,8 @@ function TutorialFrame_CheckBadge()
 		TutorialFrameAlertButtonBadgeText:Hide();
 	end
 --]]
+end
+
+function TutorialFrame_ClearQueue()
+	TUTORIALFRAME_QUEUE = { };
 end

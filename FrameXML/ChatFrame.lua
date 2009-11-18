@@ -83,6 +83,8 @@ ChatTypeInfo["CHANNEL9"]								= { sticky = 0 };
 ChatTypeInfo["CHANNEL10"]								= { sticky = 0 };
 ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0 };
 ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0 };
+ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0 };
+
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
@@ -107,6 +109,9 @@ ChatTypeGroup["WHISPER"] = {
 ChatTypeGroup["PARTY"] = {
 	"CHAT_MSG_PARTY",
 	"CHAT_MSG_MONSTER_PARTY",
+};
+ChatTypeGroup["PARTY_LEADER"] = {
+	"CHAT_MSG_PARTY_LEADER",
 };
 ChatTypeGroup["RAID"] = {
 	"CHAT_MSG_RAID",

@@ -1,12 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFDFrame.lua"/>
-	<Frame name="LFDFrameDungeonChoiceTemplate" inherits="LFGSpecificChoiceTemplate" virtual="true">
+	<Frame name="LFDFrameDungeonChoiceTemplate" enableMouse="true" inherits="LFGSpecificChoiceTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				self.enableButton:SetScript("OnClick", LFDQueueFrameDungeonChoiceEnableButton_OnClick);
-				self.lockedIndicator:SetScript("OnEnter", LFDQueueFrameDungeonLockedIndicator_OnEnter);
 				self.expandOrCollapseButton:SetScript("OnClick", LFDQueueFrameExpandOrCollapseButton_OnClick);
+				self:SetScript("OnEnter", LFDQueueFrameDungeonListButton_OnEnter);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -143,7 +143,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentCloseButton" virtual="true">
+					<Button name="$parentCloseButton">
 						<Size>
 							<AbsDimension x="32" y="32"/>
 						</Size>
@@ -156,6 +156,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								LFGDebug("Proposal Hidden: Ready Status close button pressed.");
 								StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
 							</OnClick>
 						</Scripts>
@@ -310,7 +311,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentCloseButton" virtual="true">
+					<Button name="$parentCloseButton">
 						<Size>
 							<AbsDimension x="32" y="32"/>
 						</Size>
@@ -324,6 +325,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound("igCharacterInfoTab");
+								LFGDebug("Proposal Hidden: Ready Dialog close button pressed.");
 								StaticPopupSpecial_Hide(LFDDungeonReadyPopup);
 							</OnClick>
 						</Scripts>
@@ -382,6 +384,21 @@
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture name="$parentTexture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentLeaderIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+									<Size>
+										<AbsDimension x="19" y="19"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-4"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
+								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -516,6 +533,12 @@
 			<OnHide>
 				self.closeIn = nil;
 				self:SetScript("OnUpdate", nil);
+				
+				--DEBUG FIXME
+				local hidingCaller = string.match(debugstack(3), "([^\n]+)\n");
+				if ( not string.find(hidingCaller, "StaticPopupSpecial_Hide") ) then
+					error("Proposal not hidden through StaticPopupSpecial.");
+				end
 			</OnHide>
 		</Scripts>
 	</Frame>
@@ -696,12 +719,12 @@
 				</FontString>
 				<FontString name="$parentStatistic" justifyH="CENTER" justifyV="MIDDLE" inherits="GameFontNormal" parentKey="statistic">
 					<Size>
-						<AbsDimension x="330" y="65"/>
+						<AbsDimension x="330" y="25"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-100"/>
+								<AbsDimension x="0" y="-90"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -719,7 +742,7 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLookingFor" relativePoint="RIGHT">
 							<Offset>
-								<Absdimension x="2" y="0"/>
+								<AbsDimension x="2" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -728,7 +751,7 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRoleIcon1" relativePoint="RIGHT">
 							<Offset>
-								<Absdimension x="2" y="0"/>
+								<AbsDimension x="2" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -737,7 +760,7 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRoleIcon2" relativePoint="RIGHT">
 							<Offset>
-								<Absdimension x="2" y="0"/>
+								<AbsDimension x="2" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -831,7 +854,7 @@
 	<Frame name="LFDParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent">
 		<Size x="355" y="440"/>
 		<Frames>
-			<Button inherits="UIPanelCloseButton" frameStrata="HIGH">
+			<Button inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -944,12 +967,12 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("LEADER"));
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("GUIDE"));
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(LEADER_TOOLTIP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(GUIDE_TOOLTIP, nil, nil, nil, nil, 1);
 								LFDFrameRoleCheckButton_OnEnter(self);
 							</OnEnter>
 						</Scripts>
@@ -981,137 +1004,6 @@
 						<Scripts>
 							<OnShow function="LFDQueueFrameTypeDropDown_SetUp"/>
 						</Scripts>
-					</Frame>
-					<Frame name="$parentPartyBackfill" frameStrata="HIGH" hidden="true" enableMouse="true">
-						<Size>
-							<AbsDimension x="330" y="257"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-7" y="28"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-0" y="-70"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate2" text="YES">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="-5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										StaticPopup_Hide("LFG_OFFER_CONTINUE");
-										PartyLFGStartBackfill();											
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate2" text="HIDE">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("UChatScrollButton");
-										self:GetParent():Hide();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-						<Scripts>
-							<OnShow>
-								LFDQueueFrameFindGroupButton_Update();
-							</OnShow>
-							<OnHide>
-								LFDQueueFrameFindGroupButton_Update();
-							</OnHide>
-						</Scripts>
-					</Frame>
-					<Frame name="$parentNoLFDWhileLFR" frameStrata="HIGH" hidden="true" enableMouse="true">
-						<Size>
-							<AbsDimension x="330" y="257"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-7" y="28"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFD_WHILE_LFR" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-0" y="-70"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-											LeaveLFG();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
 					</Frame>
 					<Frame name="$parentRandom" setAllPoints="true">
 						<Frames>
@@ -1173,6 +1065,19 @@
 										</Texture>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad>
+										local myName = self:GetName();
+										_G[myName.."ScrollBackground"]:SetParent(_G[myName.."ScrollBar"]);
+										_G[myName.."ScrollBackgroundTopLeft"]:SetParent(_G[myName.."ScrollBar"]);
+										_G[myName.."ScrollBackgroundBottomRight"]:SetParent(_G[myName.."ScrollBar"]);
+										
+										_G[myName.."ScrollBar"]:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 14);
+										
+										self.scrollBarHideable = true;
+										ScrollFrame_OnLoad(self);
+									</OnLoad>
+								</Scripts>
 								<ScrollChild>
 									<Frame name="$parentChildFrame">
 										<Size>
@@ -1316,19 +1221,6 @@
 										</Scripts>
 									</Frame>
 								</ScrollChild>
-								<Scripts>
-									<OnLoad>
-										local myName = self:GetName();
-										_G[myName.."ScrollBackground"]:SetParent(_G[myName.."ScrollBar"]);
-										_G[myName.."ScrollBackgroundTopLeft"]:SetParent(_G[myName.."ScrollBar"]);
-										_G[myName.."ScrollBackgroundBottomRight"]:SetParent(_G[myName.."ScrollBar"]);
-										
-										_G[myName.."ScrollBar"]:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 14);
-										
-										self.scrollBarHideable = true;
-										ScrollFrame_OnLoad(self);
-									</OnLoad>
-								</Scripts>
 							</ScrollFrame>
 						</Frames>
 					</Frame>
@@ -1547,7 +1439,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
 						<Size>
 							<AbsDimension x="112" y="22"/>
 						</Size>
@@ -1564,6 +1456,145 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Frame name="$parentPartyBackfill" hidden="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="330" y="257"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-7" y="28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="-0" y="-70"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate2" text="YES">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="-5" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										StaticPopup_Hide("LFG_OFFER_CONTINUE");
+										PartyLFGStartBackfill();											
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate2" text="HIDE">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="5" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("UChatScrollButton");
+										self:GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnShow>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnShow>
+							<OnHide>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnHide>
+							<OnLoad>
+								self:SetFrameLevel(10);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentNoLFDWhileLFR" hidden="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="330" y="257"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-7" y="28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFD_WHILE_LFR" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="-0" y="-70"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+											LeaveLFG();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(11);
+							</OnLoad>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow>
