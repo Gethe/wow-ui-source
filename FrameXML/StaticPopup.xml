@@ -304,6 +304,7 @@
 			<OnUpdate>
 				StaticPopup_OnUpdate(self, elapsed);
 			</OnUpdate>
+			<OnEvent function="StaticPopup_OnEvent" />
 			<OnShow>
 				StaticPopup_OnShow(self);
 			</OnShow>
@@ -318,6 +319,7 @@
 				self.text = _G[name .. "Text"];
 				self.icon = _G[name .. "AlertIcon"];
 				self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
+				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 			</OnLoad>
 		</Scripts>
 	</Frame>

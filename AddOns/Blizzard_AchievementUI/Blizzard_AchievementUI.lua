@@ -2102,7 +2102,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 		if ( not shown ) then
 			local _, maxVal = AchievementFrameCategoriesContainerScrollBar:GetMinMaxValues();
 			if ( AchievementFrameCategoriesContainerScrollBar:GetValue() == maxVal ) then
-				assert(false)
+				--assert(false)
+				return;
 			else
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
 			end			
@@ -2111,7 +2112,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 		-- Remove me if everything's working fine
 		i = i + 1;
 		if ( i > 100 ) then
-			assert(false);
+			--assert(false);
+			return;
 		end
 	end		
 	
@@ -2140,7 +2142,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 			AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);
 		else
 			if ( AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then
-				assert(false, "Failed to find achievement " .. id .. " while jumping!")
+				--assert(false, "Failed to find achievement " .. id .. " while jumping!")
+				return;
 			else
 				HybridScrollFrame_OnMouseWheel(AchievementFrameAchievementsContainer, -1);
 			end			

@@ -456,9 +456,8 @@ function LFRBrowseFrameRaidDropDown_Initialize(self, level)
 	elseif ( level == 2 ) then
 		for _, dungeonID in ipairs(LFR_FULL_RAID_LIST[UIDROPDOWNMENU_MENU_VALUE]) do
 			local info = LFGGetDungeonInfoByID(dungeonID);
-			local difficulty = info[LFG_RETURN_VALUES.difficulty];
-			local showHeroicIcon = (difficulty == 1) or (difficulty == 3); 
-			info.text = (showHeroicIcon and heroicIcon or "")..info[LFG_RETURN_VALUES.name];
+			local maxPlayers = format(LFD_LEVEL_FORMAT_SINGLE, info[LFG_RETURN_VALUES.maxPlayers]);
+			info.text = maxPlayers.." "..info[LFG_RETURN_VALUES.name];
 			info.value = dungeonID;
 			info.func = LFRBrowseFrameRaidDropDownButton_OnClick;
 			info.checked = activeSearching == info.value;

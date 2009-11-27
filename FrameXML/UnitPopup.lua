@@ -221,21 +221,30 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	else
 		UnitPopupButtons["OPT_OUT_LOOT_TITLE"].text = format(OPT_OUT_LOOT_TITLE, UnitPopupButtons["OPT_OUT_LOOT_DISABLE"].text);
 	end
-
+	-- Disable dungeon and raid difficulty in instances except for for leaders in dynamic instances
+	local selectedRaidDifficulty, allowedRaidDifficultyChange;
+	local _, instanceType, _, _, _, _, isDynamicInstance = GetInstanceInfo();
+	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
+		selectedRaidDifficulty, allowedRaidDifficultyChange = _GetPlayerDifficultyMenuOptions();
+	end	
+	if ( instanceType == "none" ) then
+		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
+		UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;		
+	else
+		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = nil;
+		if ( allowedRaidDifficultyChange ) then
+			UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;
+		else
+			UnitPopupButtons["RAID_DIFFICULTY"].nested = nil;
+		end
+	end
+	
 	-- If level 2 dropdown
 	local info;
 	local color;
 	local icon;
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		dropdownMenu.which = UIDROPDOWNMENU_MENU_VALUE;
-		-- dynamic instance
-		local canChangeDifficulty;
-		local selectedRaidDifficulty, allowedRaidDifficulty;
-		local _, _, _, _, _, _, isDynamicInstance = GetInstanceInfo();
-		if ( isDynamicInstance ) then
-			canChangeDifficulty = CanChangePlayerDifficulty();
-			selectedRaidDifficulty, allowedRaidDifficulty = _GetPlayerDifficultyMenuOptions();
-		end		
 		-- Set which menu is being opened
 		OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
 		info = UIDropDownMenu_CreateInfo();
@@ -282,7 +291,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				local inInstance, instanceType = IsInInstance();
 				if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 					info.disabled = 1;	
-				end					
+				end
 			elseif ( strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15)) then
 				if ( isDynamicInstance ) then
 					if ( selectedRaidDifficulty == index ) then
@@ -306,7 +315,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 					info.disabled = 1;
 				end
-				if ( canChangeDifficulty and allowedRaidDifficulty == value ) then
+				if ( allowedRaidDifficultyChange and allowedRaidDifficultyChange == value ) then
 					info.disabled = nil;
 				end
 			elseif ( value == "PVP_ENABLE" ) then
@@ -931,13 +940,12 @@ function UnitPopup_OnUpdate (elapsed)
 	end
 	
 	-- dynamic difficulty
-	local canChangeDifficulty;
-	local selectedRaidDifficulty;
-	local _, _, _, _, _, _, isDynamicInstance = GetInstanceInfo();
-	if ( isDynamicInstance ) then
-		canChangeDifficulty = CanChangePlayerDifficulty();
-		_, selectedRaidDifficulty = _GetPlayerDifficultyMenuOptions();
+	local allowedRaidDifficultyChange;
+	local _, instanceType, _, _, _, _, isDynamicInstance = GetInstanceInfo();
+	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
+		_, allowedRaidDifficultyChange = _GetPlayerDifficultyMenuOptions();
 	end
+	
 	-- Loop through all menus and enable/disable their buttons appropriately
 	local count, tempCount;
 	local inInstance, instanceType = IsInInstance();
@@ -1021,15 +1029,19 @@ function UnitPopup_OnUpdate (elapsed)
 								enable = 0;
 							end
 						end
+					elseif ( value == "DUNGEON_DIFFICULTY" and inInstance ) then
+						enable = 0;
 					elseif ( ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" ) and ( strlen(value) > 18 ) ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or HasLFGRestrictions() ) then
 							enable = 0;	
-						end			
+						end
+					elseif ( value == "RAID_DIFFICULTY" and inInstance and not allowedRaidDifficultyChange ) then
+						enable = 0;
 					elseif ( ( strsub(value, 1, 15) == "RAID_DIFFICULTY" ) and ( strlen(value) > 15 ) ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 							enable = 0;	
 						end
-						if ( canChangeDifficulty and selectedRaidDifficulty == value ) then
+						if ( allowedRaidDifficultyChange and allowedRaidDifficultyChange == value ) then
 							enable = 1;
 						end
 					elseif ( value == "RESET_INSTANCES" ) then

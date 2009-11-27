@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
-	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
+	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" clampedToScreen="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="BlackoutWorld">
@@ -192,6 +192,81 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTexture13" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexture9">
+							<Offset>
+								<AbsDimension x="4" y="-13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentTexture14" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexture11">
+							<Offset>
+								<AbsDimension x="188" y="-220"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTexture15" hidden="true">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexture12">
+							<Offset>
+								<AbsDimension x="220" y="-201"/>
+							</Offset>
+						</Anchor>
+					</Anchors>						
+				</Texture>
+				<Texture name="$parentTexture16" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexture3">
+							<Offset>
+								<AbsDimension x="187" y="-59"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentTexture17" hidden="true">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexture4">
+							<Offset>
+								<AbsDimension x="220" y="-62"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentTexture18" hidden="true">
+					<Size>
+						<AbsDimension x="690" y="4"/>
+					</Size>
+					<Color r="0" g="0" b="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexture9">
+							<Offset>
+								<AbsDimension x="12" y="-223"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</Texture>				
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="WorldMapTitleDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
@@ -202,23 +277,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Frame>		
-			<Button name="WorldMapTitleButton">
-				<Size>
-					<AbsDimension x="544" y="22" />
-				</Size>				
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMiniBorderLeft">
-						<Offset>
-							<AbsDimension x="0" y="0" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="WorldMapTitleButton_OnLoad" />
-					<OnClick function="WorldMapTitleButton_OnClick" />
-				</Scripts>
-			</Button>
+			</Frame>
 			<Frame name="WorldMapPositioningGuide">
 				<Size>
 					<AbsDimension x="1024" y="768" />
@@ -662,7 +721,7 @@
 								WorldMapUnit_OnEnter(self, motion);
 							</OnEnter>
 							<OnLeave>
-								WorldMapTooltip:Hide();
+								WorldMapUnit_OnLeave(self, motion);
 							</OnLeave>
 							<OnMouseUp>
 								WorldMapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
@@ -1062,4 +1121,22 @@
 			<Anchor point="TOPLEFT"/>
 		</Anchors>		
 	</Frame>
+	<Button name="WorldMapTitleButton" parent="WorldMapFrame">
+		<Size>
+			<AbsDimension x="544" y="22" />
+		</Size>				
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parentMiniBorderLeft">
+				<Offset>
+					<AbsDimension x="0" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="WorldMapTitleButton_OnLoad" />
+			<OnClick function="WorldMapTitleButton_OnClick" />
+			<OnDragStart function="WorldMapTitleButton_OnDragStart" />
+			<OnDragStop function="WorldMapTitleButton_OnDragStop" />
+		</Scripts>
+	</Button>	
 </Ui>

@@ -14,7 +14,7 @@ QUESTFRAME_MINHEIGHT = 34;
 QUESTFRAME_PADDING = 19;
 WORLDMAP_RATIO_MINI = 0.573;
 WORLDMAP_RATIO_SMALL = 0.691;
-WORLDMAP_POI_FRAMELEVEL = 6;
+WORLDMAP_POI_FRAMELEVEL = 100;		-- needs to be one the highest frames in the MEDIUM strata
 WORLDMAP_RATIO_FULL = 1.0;
 
 local WORLDMAP_POI_MIN_X = 12;
@@ -75,9 +75,11 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_POI_UPDATE");
+	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
 	self.areaName = nil;
 	CreateWorldMapArrowFrame(WorldMapFrame);
+	WorldMapFrameTexture18:SetVertexColor(0, 0, 0);		-- this texture just needs to be a black line
 	InitWorldMapPing(WorldMapFrame);
 	WorldMapFrame_Update();
 
@@ -104,12 +106,7 @@ function WorldMapFrame_OnLoad(self)
 	PlayerArrowEffectFrame:SetFrameLevel(9001);	--It's over nine thousand!!!!!
 	PlayerArrowEffectFrame:SetAlpha(0.65);
 
-	-- Ensure proper order
-	WorldMapDetailFrame:SetFrameLevel(1);
-	WorldMapBlobFrame:SetFrameLevel(2);
-	WorldMapButton:SetFrameLevel(3);
-	WorldMapPOIFrame:SetFrameLevel(4);
-	
+	WorldMapFrame_ResetFrameLevels();
 	WorldMapDetailFrame:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapButton:SetScale(WORLDMAP_RATIO_SMALL);
 	WorldMapPOIFrame.ratio = WORLDMAP_RATIO_SMALL;
@@ -168,6 +165,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapContinentsDropDown_Update();
 			WorldMapZoneDropDown_Update();
 			WorldMapLevelDropDown_Update();
+			WorldMapFrame_SetMapName();
 			if ( WatchFrame.showObjectives ) then
 				WorldMapFrame_UpdateQuests();
 			end			
@@ -214,10 +212,13 @@ function WorldMapFrame_AdjustMapAndQuestList()
 			WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
 			WorldMapQuestDetailScrollFrame:Show();
 			WorldMapQuestRewardScrollFrame:Show();
-			WorldMapQuestScrollFrame:Show();				
+			WorldMapQuestScrollFrame:Show();
 		end
 		WorldMapBlobFrame:Show();
-		WorldMapPOIFrame:Show();			
+		WorldMapPOIFrame:Show();
+		for i = NUM_WORLDMAP_DETAIL_TILES + 1, NUM_WORLDMAP_DETAIL_TILES + NUM_WORLDMAP_PATCH_TILES do
+			_G["WorldMapFrameTexture"..i]:Hide();
+		end					
 	else
 		-- big map
 		if ( not WorldMapFrame.bigMap and not WorldMapFrame.sizedDown ) then
@@ -230,9 +231,12 @@ function WorldMapFrame_AdjustMapAndQuestList()
 			WorldMapQuestDetailScrollFrame:Hide();
 			WorldMapQuestRewardScrollFrame:Hide();
 			WorldMapQuestScrollFrame:Hide();
+			for i = NUM_WORLDMAP_DETAIL_TILES + 1, NUM_WORLDMAP_DETAIL_TILES + NUM_WORLDMAP_PATCH_TILES do
+				_G["WorldMapFrameTexture"..i]:Show();
+			end				
 		end
 		WorldMapBlobFrame:Hide();
-		WorldMapPOIFrame:Hide();			
+		WorldMapPOIFrame:Hide();
 	end
 end
 
@@ -290,6 +294,10 @@ function WorldMapFrame_Update()
 		completeMapFileName = mapFileName..dungeonLevel.."_";
 	else
 		completeMapFileName = mapFileName;
+		-- Hack alert! Temporary fix for bug 185222
+		if ( completeMapFileName == "Dalaran" ) then
+			completeMapFileName = "Dalaran1_";
+		end
 	end
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
 		texName = "Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i;
@@ -662,6 +670,7 @@ function WorldMapZoneButton_OnClick(self)
 end
 
 function WorldMapZoomOutButton_OnClick()
+	WorldMapTooltip:Hide();
 	if ( GetCurrentMapZone() ~= WORLDMAP_WORLD_ID ) then
 		SetMapZoom(GetCurrentMapContinent());
 	elseif ( GetCurrentMapContinent() == WORLDMAP_WORLD_ID ) then
@@ -1059,6 +1068,30 @@ local WORLDMAP_TEXTURES_TO_LOAD = {
 		name="WorldMapFrameTexture12", 
 		file="Interface\\WorldMap\\UI-WorldMap-Bottom4",
 	},
+	{	
+		name="WorldMapFrameTexture13", 
+		file="Interface\\WorldMap\\UI-WorldMap-Bottom1-full",
+	},
+	{	
+		name="WorldMapFrameTexture14", 
+		file="Interface\\WorldMap\\UI-WorldMap-Bottom3-full",
+	},
+	{	
+		name="WorldMapFrameTexture15", 
+		file="Interface\\WorldMap\\UI-WorldMap-Bottom4-full",
+	},
+	{	
+		name="WorldMapFrameTexture16", 
+		file="Interface\\WorldMap\\UI-WorldMap-Top3-full",
+	},
+	{	
+		name="WorldMapFrameTexture17", 
+		file="Interface\\WorldMap\\UI-WorldMap-Top4-full",
+	},
+	{	
+		name="WorldMapFrameTexture18", 
+		file="Interface\\WorldMap\\UI-WorldMap-Top3-full",	-- vertex color is set to 0 in WorldMapFrame_OnLoad
+	},	
 }
 
 function WorldMap_LoadTextures()
@@ -1074,6 +1107,9 @@ function WorldMap_ClearTextures()
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
 		_G["WorldMapFrameTexture"..i]:SetTexture(nil);
 		_G["WorldMapDetailTile"..i]:SetTexture(nil);
+	end
+	for i = NUM_WORLDMAP_DETAIL_TILES + 1, NUM_WORLDMAP_DETAIL_TILES + NUM_WORLDMAP_PATCH_TILES do
+		_G["WorldMapFrameTexture"..i]:SetTexture(nil);
 	end
 end
 
@@ -1309,6 +1345,7 @@ function WorldMap_ToggleSizeUp()
 	WorldMapFrame.scale = WORLDMAP_RATIO_SMALL;
 	-- adjust main frame
 	WorldMapFrame:SetParent(nil);
+	WorldMapFrame_ResetFrameLevels();
 	WorldMapFrame:ClearAllPoints();
 	WorldMapFrame:SetAllPoints();
 	WorldMapFrame:SetAttribute("UIPanelLayout-area", "full");
@@ -1360,7 +1397,7 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrame.bigMap = nil;
 	-- adjust main frame
 	WorldMapFrame:SetParent(UIParent);
-	WorldMapFrame:SetFrameStrata("HIGH");
+	WorldMapFrame_ResetFrameLevels();
 	WorldMapFrame:EnableMouse(false);
 	WorldMapFrame:EnableKeyboard(false);
 	-- adjust map frames
@@ -1403,6 +1440,14 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrame_SetOpacity(WORLDMAP_OPTIONS.opacity);
 	WorldMapFrame_SetPOIMaxBounds();
 	WorldMapQuestShowObjectives_AdjustPosition();
+end
+
+function WorldMapFrame_ResetFrameLevels()
+	WorldMapFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 13);
+	WorldMapDetailFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 12);
+	WorldMapBlobFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 11);
+	WorldMapButton:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 10);
+	WorldMapPOIFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
 end
 
 function WorldMapQuestShowObjectives_Toggle()
@@ -1833,6 +1878,22 @@ function WorldMap_OpenToQuest(questID, frameToShowOnClose)
 	end
 end
 
+function WorldMapFrame_SetMapName()
+	local mapName = WORLD_MAP;
+	if ( WorldMapFrame.sizedDown ) then
+		local zoneId = UIDropDownMenu_GetSelectedID(WorldMapZoneDropDown);
+		-- zoneId is nil for instances, Azeroth, or the cosmic view, in which case we'll keep the "World Map" title
+		if ( zoneId ) then
+			if ( zoneId > 0 ) then
+				mapName = UIDropDownMenu_GetText(WorldMapZoneDropDown);
+			elseif ( UIDropDownMenu_GetSelectedID(WorldMapContinentDropDown) > 0 ) then
+				mapName = UIDropDownMenu_GetText(WorldMapContinentDropDown);
+			end
+		end
+	end
+	WorldMapFrameTitle:SetText(mapName);
+end
+
 --- advanced options ---
 function WorldMapFrame_ToggleAdvanced()
 	WORLDMAP_OPTIONS.advanced = GetCVarBool("advancedWorldMap");
@@ -1899,11 +1960,23 @@ function WorldMapTitleButton_OnClick(self, button)
 
 	-- Close all dropdowns
 	CloseDropDownMenus();
+end
 
-	-- If frame is not locked then allow the frame to be dragged or dropped
-	if ( self:GetButtonState() == "PUSHED" and WORLDMAP_OPTIONS.isMoving ) then
-		ValidateFramePosition(WorldMapFrame);
+function WorldMapTitleButton_OnDragStart()
+	if ( WORLDMAP_OPTIONS.advanced and not WORLDMAP_OPTIONS.locked ) then
+		if ( WorldMapQuestScrollChildFrame.selected ) then
+			WorldMapBlobFrame:DrawQuestBlob(WorldMapQuestScrollChildFrame.selected.questId, false);
+		end
+		WorldMapScreenAnchor:ClearAllPoints();
+		WorldMapFrame:ClearAllPoints();
+		WorldMapFrame:StartMoving();	
+	end
+end
+
+function WorldMapTitleButton_OnDragStop()
+	if ( WORLDMAP_OPTIONS.advanced and not WORLDMAP_OPTIONS.locked ) then
 		WorldMapFrame:StopMovingOrSizing();
+		WorldMapBlobFrame_CalculateHitTranslations();
 		if ( WorldMapQuestScrollChildFrame.selected and not WorldMapQuestScrollChildFrame.selected.completed ) then
 			WorldMapBlobFrame:DrawQuestBlob(WorldMapQuestScrollChildFrame.selected.questId, true);
 		end		
@@ -1911,21 +1984,6 @@ function WorldMapTitleButton_OnClick(self, button)
 		WorldMapScreenAnchor:StartMoving();
 		WorldMapScreenAnchor:SetPoint("TOPLEFT", WorldMapFrame);
 		WorldMapScreenAnchor:StopMovingOrSizing();
-		WORLDMAP_OPTIONS.isMoving = false;
-	elseif ( WORLDMAP_OPTIONS.advanced ) then
-		-- If locked don't allow any movement
-		if ( WORLDMAP_OPTIONS.locked ) then
-			return;
-		else
-			-- turn off blobs while moving for reduced hilarity
-			if ( WorldMapQuestScrollChildFrame.selected ) then
-				WorldMapBlobFrame:DrawQuestBlob(WorldMapQuestScrollChildFrame.selected.questId, false);
-			end
-			WorldMapScreenAnchor:ClearAllPoints();
-			WorldMapFrame:ClearAllPoints();
-			WorldMapFrame:StartMoving();
-			WORLDMAP_OPTIONS.isMoving = true;
-		end
 	end
 end
 

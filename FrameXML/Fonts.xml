@@ -164,7 +164,7 @@
 	</Font>
 	<Font name="SystemFont_OutlineThick_WTF" font="Fonts\FRIZQT__.TTF" outline="THICK" virtual="true">
 		<FontHeight>
-			<AbsValue val="102"/>
+			<AbsValue val="62"/>
 		</FontHeight>
 	</Font>
 

@@ -169,6 +169,7 @@ function LFDRoleCheckPopup_Update()
 	LFDRoleCheckPopupDescriptionText:SetFormattedText(QUEUED_FOR, displayName);
 	
 	LFDRoleCheckPopupDescription:SetWidth(LFDRoleCheckPopupDescriptionText:GetWidth()+10);
+	LFDRoleCheckPopupDescription:SetHeight(LFDRoleCheckPopupDescriptionText:GetHeight());
 end
 
 function LFDRoleCheckPopupDescription_OnEnter(self)

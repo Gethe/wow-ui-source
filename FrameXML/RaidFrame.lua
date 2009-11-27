@@ -15,6 +15,7 @@ function RaidFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
+	self:RegisterEvent("PARTY_LFG_RESTRICTED");
 
 	-- Update party frame visibility
 	RaidOptionsFrame_UpdatePartyFrames();
@@ -56,7 +57,8 @@ function RaidFrame_OnEvent(self, event, ...)
 			RaidFrameRaidInfoButton:Disable();
 		end
 		RaidInfoFrame_Update(true);
-	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "VOICE_STATUS_UPDATE" ) then
+	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or
+		event == "VOICE_STATUS_UPDATE" or event == "PARTY_LFG_RESTRICTED" ) then
 		RaidFrame_Update();
 	end
 end
@@ -65,7 +67,7 @@ function RaidFrame_Update()
 	-- If not in a raid hide all the UI and just display raid explanation text
 	if ( GetNumRaidMembers() == 0 ) then
 		RaidFrameConvertToRaidButton:Show();
-		if ( GetPartyMember(1) and IsPartyLeader() and UnitLevel("player") >= 10) then
+		if ( GetPartyMember(1) and IsPartyLeader() and UnitLevel("player") >= 10 and not HasLFGRestrictions() ) then
 			RaidFrameConvertToRaidButton:Enable();
 		else
 			RaidFrameConvertToRaidButton:Disable();

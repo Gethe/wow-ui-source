@@ -123,23 +123,25 @@
 								<Anchor point="BOTTOM" relativePoint="TOP"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="0%">
+						<FontString inherits="GameFontNormalHuge" text="-">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="2" y="3"/>
+										<AbsDimension x="8" y="3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
+							<Color r="1" g="1" b="1" />
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="100%">
+						<FontString inherits="GameFontNormalHuge" text="+">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="3"/>
+										<AbsDimension x="6" y="-3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
+							<Color r="1" g="1" b="1" />							
 						</FontString>
 					</Layer>
 				</Layers>
@@ -276,23 +278,25 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="0%">
+						<FontString inherits="GameFontNormalHuge" text="-">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="2" y="3"/>
+										<AbsDimension x="8" y="3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
+							<Color r="1" g="1" b="1" />
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="100%">
+						<FontString inherits="GameFontNormalHuge" text="+">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="-2" y="3"/>
+										<AbsDimension x="6" y="-3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
+							<Color r="1" g="1" b="1" />
 						</FontString>
 					</Layer>
 				</Layers>

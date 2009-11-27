@@ -9,8 +9,8 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="TOPLEFT" x="13" y="-35"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="BOTTOMRIGHT" x="-3" y="5"/>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="13" y="-35"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-3" y="5"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>

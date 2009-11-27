@@ -447,7 +447,7 @@
 						self.newbieText=ROLL_DISENCHANT_NEWBIE;
 					</OnLoad>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-DE-Up"/>
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-DE-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>
 			</Button>

@@ -544,7 +544,7 @@
 	</Frame>
 	<Frame name="LFDRoleCheckPopup" hidden="true">
 		<Size>
-			<AbsDimension x="306" y="170"/>
+			<AbsDimension x="306" y="180"/>
 		</Size>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
@@ -657,15 +657,18 @@
 					<AbsDimension x="1" y="16"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM">
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="40"/>
+							<AbsDimension x="0" y="57"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" justifyH="CENTER" inherits="GameFontHighlight">
+							<Size>
+								<AbsDimension x="280" y="25"/>
+							</Size>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>

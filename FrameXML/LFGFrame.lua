@@ -24,6 +24,7 @@ LFG_RETURN_VALUES = {
 	groupID = 9,
 	texture = 10,
 	difficulty = 11,
+	maxPlayers = 12,
 }
 
 LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g. attunements)
@@ -80,6 +81,9 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
 		LFG_UpdateQueuedList();
 		LFG_UpdateFramesIfShown();
+		if ( not CanPartyLFGBackfill() ) then
+			StaticPopup_Hide("LFG_OFFER_CONTINUE");
+		end
 	elseif ( event == "LFG_OFFER_CONTINUE" ) then
 		local displayName, lfgID, typeID = ...;
 		local dialog = StaticPopup_Show("LFG_OFFER_CONTINUE", NORMAL_FONT_COLOR_CODE..displayName.."|r");

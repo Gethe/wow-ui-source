@@ -582,6 +582,7 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 		BattlefieldMgrEntryInviteResponse(1,0);
 	end,
 	timeout = 0,
+	timeoutInformationalOnly = 1;
 	whileDead = 1,
 	hideOnEscape = 1,
 	multiple = 1
@@ -3224,12 +3225,14 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 		local which = dialog.which;
 		local timeleft = dialog.timeleft - elapsed;
 		if ( timeleft <= 0 ) then
-			dialog.timeleft = 0;
-			local OnCancel = StaticPopupDialogs[which].OnCancel;
-			if ( OnCancel ) then
-				OnCancel(dialog, dialog.data, "timeout");
+			if ( not StaticPopupDialogs[which].timeoutInformationalOnly ) then
+				dialog.timeleft = 0;
+				local OnCancel = StaticPopupDialogs[which].OnCancel;
+				if ( OnCancel ) then
+					OnCancel(dialog, dialog.data, "timeout");
+				end
+				dialog:Hide();
 			end
-			dialog:Hide();
 			return;
 		end
 		dialog.timeleft = timeleft;
@@ -3520,3 +3523,7 @@ function StaticPopup_IsLastDisplayedFrame(frame)
 	return false;
 end
 
+function StaticPopup_OnEvent(self)
+	self.maxHeightSoFar = 0;
+	StaticPopup_Resize(self, self.which);
+end
