@@ -2770,6 +2770,8 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	end,
 	showAlert = true,
 	noCancelOnReuse = 1,
+	whileDead = 1,
+	interruptCinematic = 1,
 	timeout = 0,
 }
 

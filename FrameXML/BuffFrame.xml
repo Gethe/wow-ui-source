@@ -134,7 +134,8 @@
 			</OnLoad>
 			<OnUpdate function="ConsolidatedBuffs_OnUpdate" />
 			<OnEnter function="ConsolidatedBuffs_OnEnter" />
-			<OnHide function="ConsolidatedBuffs_OnHide" />			
+			<OnShow function="ConsolidatedBuffs_OnShow" />
+			<OnHide function="ConsolidatedBuffs_OnHide" />
 		</Scripts>
 	</Button>
 	<Frame name="ConsolidatedBuffsTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">

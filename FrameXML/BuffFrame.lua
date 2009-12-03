@@ -89,8 +89,9 @@ function BuffFrame_Update()
 	end
 	BuffFrame.numConsolidated = #consolidatedBuffs;
 	if ( BuffFrame.numConsolidated > 0 ) then
-		ConsolidatedBuffs_Show();
+		ConsolidatedBuffs:Show();
 	else
+		BuffFrame.numConsolidated = 0;
 		ConsolidatedBuffs:Hide();	
 	end
 	BuffFrame_UpdateAllBuffAnchors();
@@ -508,6 +509,7 @@ function ConsolidatedBuffs_OnUpdate(self)
 		end
 		if ( needUpdate ) then			
 			if ( #consolidatedBuffs == 0 ) then
+				BuffFrame.numConsolidated = 0;
 				ConsolidatedBuffs:Hide();
 			else
 				BuffFrame_UpdateAllBuffAnchors();
@@ -517,8 +519,7 @@ function ConsolidatedBuffs_OnUpdate(self)
 	end
 end
 
-function ConsolidatedBuffs_Show()
-	ConsolidatedBuffs:Show();
+function ConsolidatedBuffs_OnShow()
 	ConsolidatedBuffsCount:SetText(BuffFrame.numConsolidated);
 	TemporaryEnchantFrame:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPLEFT", -6, 0);
 	BuffFrame_UpdateAllBuffAnchors();
@@ -539,7 +540,6 @@ function ConsolidatedBuffs_OnEnter(self)
 end
 
 function ConsolidatedBuffs_OnHide(self)
-	BuffFrame.numConsolidated = 0;
 	self.mousedOver = nil;	
 	ConsolidatedBuffsTooltip:Hide();
 	TemporaryEnchantFrame:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPRIGHT", 0, 0);

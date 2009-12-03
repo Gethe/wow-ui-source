@@ -1315,10 +1315,12 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 end
 
 function WorldMapFrameSizeDownButton_OnClick()
-	local continentID;
+	local continentID, dungeonLevel;
 	local mapID = GetCurrentMapAreaID() - 1;
 	if ( mapID < 0 ) then
 		continentID = GetCurrentMapContinent();
+	else
+		dungeonLevel = GetCurrentMapDungeonLevel();
 	end
 	-- close the frame first so the UI panel system can do its thing	
 	ToggleFrame(WorldMapFrame);
@@ -1336,8 +1338,10 @@ function WorldMapFrameSizeDownButton_OnClick()
 		SetMapZoom(continentID);
 	else
 		SetMapByID(mapID);
+		if ( dungeonLevel > 0 ) then
+			SetDungeonMapLevel(dungeonLevel);
+		end
 	end
-	WorldMapFrame_UpdateQuests();
 end
 
 function WorldMap_ToggleSizeUp()
@@ -1870,9 +1874,12 @@ end
 
 function WorldMap_OpenToQuest(questID, frameToShowOnClose)
 	ShowUIPanel(WorldMapFrame);	
-	local mapID = GetQuestWorldMapAreaID(questID);
+	local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
 	if ( mapID ~= 0 ) then
 		SetMapByID(mapID);
+		if ( floorNumber ~= 0 ) then
+			SetDungeonMapLevel(floorNumber);
+		end
 		WorldMapFrame_UpdateQuests(questID);
 		WorldMapFrame_AdjustMapAndQuestList();
 	end
