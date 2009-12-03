@@ -421,7 +421,7 @@ function WorldMapFrame_Update()
 					end
 
 					texture:SetVertexColor(r, g, b, a);
-					mnX = minX * mapW;
+					minX = minX * mapW;
 					minY = -minY * mapH;
 					texture:SetPoint("TOPLEFT", "WorldMapDetailFrame", "TOPLEFT", minX, minY);
 					maxX = maxX * mapW;

@@ -89,7 +89,10 @@ function BuffFrame_Update()
 	end
 	BuffFrame.numConsolidated = #consolidatedBuffs;
 	if ( BuffFrame.numConsolidated > 0 ) then
-		ConsolidatedBuffs:Show();
+		ConsolidatedBuffsCount:SetText(BuffFrame.numConsolidated);
+		if ( not ConsolidatedBuffs:IsShown() ) then
+			ConsolidatedBuffs:Show();
+		end
 	else
 		BuffFrame.numConsolidated = 0;
 		ConsolidatedBuffs:Hide();	
