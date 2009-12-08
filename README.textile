@@ -1,12 +1,27 @@
-h1. World of Warcraft PTR Patch 3.3.0
+h1. World of Warcraft Client Patch 3.3.0: Fall of the Lich King
 
 The latest test realm patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
 
 The latest patch notes can always be found at http://www.worldofwarcraft.com/patchnotes/
 
+h2. Icecrown Citadel: The Frozen Halls
+
+Looming over the stark wastes of Northrend, Icecrown Citadel awaits those who would see the Lich King and his Scourge brought low and the threat they pose wiped from the face of Azeroth. The heroes who venture within will face some of the greatest horrors yet seen. But before you burst into the front gate of the citadel, an alternate means of entry beckons. Journey through three separate wings of the new five-player dungeon, Icecrown Citadel: The Frozen Halls, and follow Jaina Proudmoore or Sylvanas Windrunner into the Lich King's domain.
+
+h2. Icecrown Citadel: The Frozen Throne
+
+All across Northrend, many battles have been fought against the vile Scourge. Countless lives have been lost since the Alliance and the Horde first reached these frozen wastes, but the champions of Azeroth continue to march forward -- and Icecrown Citadel, the cornerstone of the Scourge's power and the home base of the Lich King, is their final target. Tirion Fordring and the Argent Crusade have forged an accord with Darion Mograine and the Knights of the Ebon Blade to form the Ashen Verdict. This coalition's strongest combatants, along with the champions of the Alliance and the Horde, will lead the charge against the citadel. In the new Icecrown Citadel raid dungeon, Azeroth's mightiest will face terrifying challenges before ascending to the Frozen Throne, where the Lich King and his runeblade, Frostmourne, await to deliver the heroes to their deaths....
+
+h2. Cross-Realm Dungeon Finder
+
+The Dungeon Finder is now available, providing players with quick and easy access to five-player parties. This feature connects all realms within a battlegroup using an advanced matchmaking system, making it easier for players of all levels to find a dungeon group. In addition, players can reap additional rewards through the Dungeon Finder by choosing the Random option, which is available to both pick-up and pre-formed groups. Check out the User Interface section for more details.
+
+h2. Getting Started and Quest Tracking
+
+A number of changes have been made to World of Warcraft's introductory experience, including updated character and class information at the character-selection screen, more robust tooltips with images, improved health and mana regeneration at lower levels, and adjustments to various classes designed to make it easier for players to get started. In addition, all-new quest-tracking features have been added to assist players in finding objectives, including new interface functionality in the quest log, the map ("M" key), and the Objectives pane.
+
 h2. General
 
-* Quel'Delar Quest Chain: The Battered Hilt, the item needed to start this quest line, can now be purchased from all glyph vendors on the public test realms.
 * Character Creation: The descriptions for races, classes, and race/class combinations have been improved to provide new players with a better idea of the roles and advantages of each class and race.
 * Dazed: Creatures attacking a player from behind can no longer cause players level 1-5 to be dazed, and have a reduced chance to cause players level 6-10 to be dazed.
 * Knockbacks no longer dismount players. If on a flying mount, you will be knocked back a short distance before being able to resume flying.
@@ -18,9 +33,8 @@ h2. General
 
 h3. Icecrown Citadel
 
-* All three wings of the 5-player dungeon are currently available for testing.
-* Select encounters in the 10- and 25-player raid dungeon are available for limited testing.
-* Additional Icecrown Citadel raid content will be made available in future test builds. For more information and testing schedules please visit our Test Realm forum.
+* Three separate 5-player dungeons — The Forge of Souls, Pit of Saron, and Halls of Reflection — containing all new challenges and missions of discovery, await players in normal and Heroic modes.
+* 10- and 25-player challenges await players in Icecrown Citadel. Only when all challenges have been overcome in the raid dungeon can players unlock hard modes for individual bosses. For more information on how the Icecrown Citadel raid content will be made available, please visit our Dungeons & Raids forum: http://forums.worldofwarcraft.com/board.html?forumId=11126&sid=1
 
 h2. Classes: General
 
@@ -97,6 +111,7 @@ h3. Talents
 
 h4. Balance
 
+* Eclipse: This effect will not activate again within 15 seconds of either type of Eclipse effect firing, in addition to the existing 30-second cooldown for each type of Eclipse. In addition, Eclipse now grants a 40% critical strike chance to Starfire and 40% increased damage to Wrath, up from 30%.
 * Force of Nature: Health on the treants has been increased.
 
 h4. Feral Combat
@@ -155,7 +170,6 @@ h4. Frost
 
 * Deep Freeze: This spell now deals a large amount of damage to targets permanently immune to stuns. In addition, when this ability deals damage it will no longer consume two charges of Fingers of Frost for those mages with the Shatter talent.
 * Fingers of Frost: This talent now triggers immediately on casting a spell rather than being delayed until the spell strikes the target.
-* Frozen Core: This talent now also causes Ice Lance critical strikes to reduce the cast time of the mage's next Frostbolt or Frostfire Bolt by 0.4/0.7/1 seconds.
 
 h3. Pets
 
@@ -179,7 +193,7 @@ h4. Holy
 h4. Protection
 
 * Divine Guardian: This talent no longer increases the amount of damage transferred to the paladin from Divine Sacrifice. Instead it causes all raid and party members to take 10/20% reduced damage while Divine Sacrifice is active. In addition, the duration has been changed to 6 seconds, however the effect does not terminate when Divine Sacrifice is removed before its full duration.
-* Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases. Finally, damage which reduces the paladin's health below 20% now cancels the effect early.
+* Divine Sacrifice: Redesigned. The effect of Divine Sacrifice is now party-only and the maximum damage which can be transferred is now limited to 40% of the paladin's health multiplied by the number of party members. In addition, the bug which allowed Divine Sacrifice to sometimes persist despite reaching its maximum damage has been fixed. Divine Sacrifice will now cancel as soon as its maximum damage value is exceeded in all cases. Finally, Damage which reduces the paladin's health below 20% now cancels the effect early.
 
 h4. Retribution
 
@@ -197,7 +211,7 @@ h4. Shadow
 * Improved Devouring Plague: This spell now deals 10/20/30% of its total periodic effect instantly, up from 5/10/15%.
 * Mind Flay: The range of this ability has been increased to 30 yards, up from 20.
 * Shadowform: This talent also now causes Devouring Plague and Vampiric Touch to benefit from haste. Both the period length and the duration of these spells will be reduced by haste. In addition, the mana cost has been reduced from 32% to 13% of base mana.
-* Vampiric Embrace: This talent now provides a 30-minute buff that cannot be dispelled, instead of a target debuff and only generates healing for single-target shadow damage spells.
+* Vampiric Embrace: This ability is now provides a 30-minute buff that cannot be dispelled, instead of a target debuff and only generates healing for single-target shadow damage spells.
 
 h3. Pet
 
@@ -289,7 +303,7 @@ h2. User Interface
 
 * Many of the default Interface Options settings have been changed for greater ease of use by new players. Existing players who create new characters may want to review the Interface Options in the event that the default settings feel different.
 * Tutorial System: The tutorial pop-ups are now larger, contain images, and better try to direct players to the relevant locations or user interface elements on the screen. In addition, several new tips have been added, while some existing tips will now appear at more appropriate times for new players.
-* Dungeon & Raid Difficult Display: A group's dungeon or raid difficulty setting will now be displayed via an icon off of the mini-map.
+* Dungeon & Raid Difficulty Display: A group's dungeon or raid difficulty setting will now be displayed via an icon off of the mini-map.
 * Group Disenchanting Option: In addition to rolling Need or Greed on items, players now have the option to elect for an item to be disenchanted if an enchanter of the appropriate skill level is in the group. Disenchant works exactly like Greed except if a player wins the Greed roll, they will receive the disenchanted materials instead. Players who choose Need will always win the item and will always beat those that choose Greed or Disenchant.
 * Lag Reports: Players can now report high latency or lag by accessing the Help Request menu.
 * Non spell-based tracking now persists through logout.
@@ -304,7 +318,7 @@ h2. User Interface
 * Interface element added next to the mini-map to show what dungeon you are in (ex: 10- and 25-player Heroic dungeons marked with a skull).
 * Experience earned for a quest will display in the Quest Rewards section.
 * Confirmation box added when buying stable slots.
-* For additional notes on Lua and XML changes please visit the "UI & Macros forum":http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114
+* For additional notes on Lua and XML changes please visit the "UI & Macros Forum":http://forums.worldofwarcraft.com/board.html?sid=1&amp;forumId=11114
 
 h3. Quest Tracking Feature
 
@@ -330,7 +344,9 @@ h4. Objectives Tracking
 * Numbers have been added next to each quest name and objective corresponding with those areas of interest displayed on the map.
 * If a quest objective has been completed, the number will be replaced with a yellow question mark symbol.
 * The arrow button in the top right corner of the Objectives frame can be used to toggle between minimizing and maximizing the quest objective display.
-* Quest Difficulty Tracking
+
+h4. Quest Difficulty Tracking
+
 * This feature is off by default and can be enabled in the Objectives window from the Interface Options menu. Turning this feature on will color-code all quest names displayed in the map interface according to difficulty (grey, green, yellow, orange, and red).
 
 h3. Dungeon Finder
@@ -382,7 +398,7 @@ h3. Buffs and Debuffs: This is a new section added to Interface Options.
 h3. Unit Nameplates
 
 * The range at which players can see unit nameplates has been increased by 40 yards.
-* Unit nameplates are now subject to line-of-sightlimitations in certain situations (this does not pertain to objects like Arena pillars or bridges).
+* Unit nameplates are now subject to line-of-sight limitations in certain situations (this does not pertain to objects like Arena pillars or bridges).
 * Players can now adjust select unit nameplate display settings listed below under Interface Options via the Names tab.
 ** Friendly/enemy pet nameplates can be toggled.
 ** Enemy totem nameplates can be toggled (friendly totem nameplates are never displayed).
@@ -391,21 +407,21 @@ h3. Unit Nameplates
 
 h3. Macro Changes
 
-* Symbol "@" added as a synonym for "target=". For example: "/cast [@focus] Flash Heal".
+* Symbol "@" added as a synonym for "target=". For example, "/cast [@focus] Flash Heal".
 * New macro conditionals: "vehicleui" (if the player has a vehicle UI) and "unithasvehicleui" (if the target of the macro has a vehicle UI).
 
 h3. Addon Author Changes
 
 * @registerForClicks@ added to XML buttons.
 * @MouseIsOver@ has been converted to a "C" function for increased efficiency (e.g. @/dump PlayerFrame:IsMouseOver()@ ).
-* When an addon file is loaded, the addon name and an addon table are passed to the file through @...@. The same addon table is passed to every file loaded by a particular TOC file (example at the top of a Lua file: @local addonName, addonTable = ...;@.
+* When an addon file is loaded, the addon name and an addon table are passed to the file through @...@. The same addon table is passed to every file loaded by a particular TOC file (example at the top of a Lua file: @local addonName, addonTable = ...@.
 * @motionScriptsWhileDisabled@ attribute added to buttons. This allows @OnEnter@ and @OnLeave@ to fire while the button is disabled.
 * @GetFileHeight()@ and @GetFileWidth()@ added to Texture objects. 0 is returned if no texture file is associated with the texture.
 * You can now query for a list of completed quests with @QueryQuestsCompleted()@ then wait for the @QUEST_QUERY_COMPLETE@ event, and call @GetQuestsCompleted(<luatable>)@.
 
 h2. Graphics
 
-* A new feature has been added to the D3D graphics engine to improve texture management (particularly for Windows XP users). If you are experiencing random crashes related to file read errors or out of memory, this new backend may help. To enable the new backend, add the following line to your Config.WTF file: SET gxApi "d3d9ex". For more information please visit our Test Realm forum.
+* A new feature has been added to the D3D graphics engine to improve texture management (particularly for Windows XP users). If you are experiencing random crashes related to file read errors or out of memory, this new backend may help. To enable the new backend, add the following line to your Config.WTF file: SET gxApi "d3d9ex". For more information please visit our Technical Support forum: http://forums.worldofwarcraft.com/board.html?forumId=11110&sid=1
 
 h2. Professions
 
@@ -420,7 +436,7 @@ h3. First Aid
 
 h3. Fishing
 
-* The all-new Kalu'ak Fishing Derby, a test of fishing skill with a healthy dash of luck, has come to Northrend! Every Wednesday beginning at 8 PM players can try to catch the elusive Blacktip Shark. Elder Clearwater sits in Dalaran for one hour awaiting the return of the quickest, most experienced fisher to bring him this shark. This champion fisher will be rewarded in-kind for returning with the first catch. Those who aren't able to return with the first catch will still receive just reward for getting the Blacktip Shark to Elder Clearwater before he takes his leave. It is said that these sharks' favorite meal are the bite-sized Pygmy Suckerfish. Perhaps a hook in their waters will do the trick.
+* The all-new Kalu'ak Fishing Derby, a test of fishing skill with a healthy dash of luck, has come to Northrend! Every Saturday beginning at 2 PM players can try to catch the elusive Blacktip Shark. Elder Clearwater sits in Dalaran for one hour awaiting the return of the quickest, most experienced fisher to bring him this shark. This champion fisher will be rewarded in-kind for returning with the first catch. Those who aren't able to return with the first catch will still receive just reward for getting the Blacktip Shark to Elder Clearwater before he takes his leave. It is said that these sharks' favorite meal are the bite-sized Pygmy Suckerfish. Perhaps a hook in their waters will do the trick.
 
 h3. Mining
 
@@ -441,7 +457,7 @@ h2. Achievements
 
 h2. Reputation
 
-* Commendation Badges which award reputation with various Wrath of the Lich King factions can be purchased with Emblems of Triumph in Dalaran.
+* Commendation Badges which award reputation with various Wrath of the Lich King factions can be purchased with Emblems of Triumph in Dalaran. Each badge costs 1 Emblem of Triumph.
 * Gaining reputation with the Ashen Verdict in Icecrown Citadel will grant players access to upgradeable rings from Ormus the Penitent. Players can switch between the type of ring (melee/caster/tank/healer) at any point in the upgrade path for 200g.
 * The following reputations have been sped up by roughly 30%:
 ** Argent Crusade
@@ -457,8 +473,10 @@ h2. Reputation
 h2. Items
 
 * Arena Set Bonuses: The two-piece set bonus for all Wrath of the Lich King Arena sets now provides 100 resilience and 29 spell power or 50 attack power. The current four-piece bonus will remain, however it also now provides 88 spell power or 150 attack power.
+* Bind-on-Account Items: Players can now mail Bind-on-Account items to characters on the same account and realm regardless of faction. Please note this only applies to Bind-on-Account items. Other items or gold cannot be sent via mail to characters on the same realm and account if they are from differing factions.
 * Death Knight Tier-9 4-Piece Bonus (Damage-Dealing): This set bonus no longer grants Frost Fever a chance to be a critical strike. It still grants that possibility to Blood Plague.
 * Haris Pilton now sells a new 24-slot bag! She has stubbornly decided to remain in Shattrath City, so those interested should seek her out there.
+* Icecrown Citadel Items: Normal and Heroic versions of Icecrown Citadel rings and trinkets are considered Unique-Equipped and cannot be used at the same time.
 * Hatchlings: Leaping, Darting, Razormaw, and Ravasaur Hatchlings no longer drop from their associated rare creatures. Instead, there are now rare nests that spawn which contain these hatchlings. For example, the Leaping Hatchling can now be found in Takk's Nest rather than as a drop from Takk the Leaper.
 * Sceptor of Celebras: Since this item is no longer needed as a key, Celebras will no longer give one out to a player who loses it. The item can now be sold or disenchanted as normal.
 * Shaman Tier-9 4-Piece Set Bonus (Elemental): This set bonus now does an additional 10% of Lava Burst's initial damage over time instead of increasing the size of the Lava Burst.
@@ -514,6 +532,7 @@ h3. Items
 * Figurine: Talasite Owl: Now grants mana properly to druids in Bear Form, Cat Form, and Dire Bear Form.
 * Fire Hardened Hauberk: The tooltip on this item no longer references granting energy (as energy-based classes cannot equip it).
 * Giantstalker Set: No longer displays a duration on the Nature's Ally buff.
+* Glyph of Immolation Trap: Now properly increases damage by 100%.
 * Gul'dan's Regalia Set: Tooltip corrected to indicate increased damage for all pet attacks, not just abilities.
 * Husk of the Old God: Now tradable using the Bind-on-Pickup trade system.
 * Idol of Flaring Growth: Now has a detailed combat log tooltip.
@@ -575,7 +594,7 @@ h4. Death Knights
 * Night of the Dead: Tooltip typo corrected.
 * Obliterate: This ability will no longer sometimes fail to do additional damage based on diseases on the target.
 * Raise Ally: While this spell is active on a target, they will not be sent to the graveyard, prematurely ending the spell.
-* ?	Raise Dead: It is no longer possible under some circumstances to use a Risen Ghoul to cause neutral guards to attack opposite faction players.
+* Raise Dead: It is no longer possible under some circumstances to use a Risen Ghoul to cause neutral guards to attack opposite faction players.
 * Strangulate: Updated tooltip to include the functionality that this ability also interrupts spellcasting on NPCs.
 * Taste of Blood: Corrected inaccurate information in combat log tooltip.
 * Unholy Presence: The animation for activating this presence will no longer also have the animation for Blood Presence played at the same time.
@@ -705,6 +724,7 @@ h4. Warriors
 h2. Game Systems
 
 * Target Effects: When this UI feature is activated, Fear, Silence, Frostbolt, and Hamstring will all now display text over the target's head indicating what type of effect has been applied.
+
 h2. Battlegrounds
 
 h3. Strand of the Ancients
@@ -713,3 +733,12 @@ h3. Strand of the Ancients
 * Storm the Beach should now be correctly granted to the Horde when they start round 1 on offense.
 * The east Antipersonnel Cannon at the Amethyst gate should no longer be able to shell the graveyard flag.
 * Fixed an order of operations issue where players would sometimes not be resurrected or clear their Inactive debuff at the end of the 1st round.
+
+h2. Mac Client Changes and Fixes
+
+* Rewrote OpenGL implementation for Intel Macs with Mac OS X 10.5.7 or later.
+* Fixed an issue with TrackPad scrolling on Macbooks/Macbook Pros behaving erratically.
+* Fixed the lightning effect on Thorim's hammer in Ulduar.
+* Fixed a crash that could occur on low-end Macs during the second phase of The Black Knight encounter.
+* Fixed a crash when recording in-game movies on Macs that have Intel GMA x3100 video chipsets.
+* Added support for mapping all 15 buttons on the SteelSeries WoW Mouse via the in-game key bindings.
