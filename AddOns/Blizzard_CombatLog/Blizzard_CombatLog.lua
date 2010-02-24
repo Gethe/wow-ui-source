@@ -3611,7 +3611,14 @@ function Blizzard_CombatLog_Update_QuickButtons()
 	local buttonName, button, textWidth;
 	local buttonIndex = 1;
 	-- subtract the width of the dropdown button
-	local maxWidth = (COMBATLOG:GetRight()-COMBATLOG:GetLeft())-31;	--Hacky hacky because GetWidth goes crazy when it is docked
+	local clogleft, clogright = COMBATLOG:GetRight(), COMBATLOG:GetLeft();
+	local maxWidth;
+	if ( clogleft and clogright ) then
+		maxWidth = (COMBATLOG:GetRight()-COMBATLOG:GetLeft())-31;	--Hacky hacky because GetWidth goes crazy when it is docked
+	else
+		maxWidth = COMBATLOG:GetWidth() - 31;
+	end
+	
 	local totalWidth = 0;
 	local padding = 13;
 	local showMoreQuickButtons = true;

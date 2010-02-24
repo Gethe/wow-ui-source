@@ -176,15 +176,33 @@
 						</Anchor>
 					</Anchors>
 					<Color r="1" g="0.82" b="0" />
-				</FontString>				
-				<FontString name="$parentObjectives" inherits="GameFontNormal" justifyH="LEFT"  justifyV="TOP" spacing="2" parentKey="objectives">
+				</FontString>
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
 					<Size>
-						<AbsDimension x="240" y="0"/>
-					</Size>					
+						<AbsDimension x="16" y="16"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM">
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="TOPRIGHT" />
+					</Anchors> 
+				</Texture>
+				<FontString name="$parentDashes" inherits="GameFontNormal" justifyH="LEFT"  justifyV="BOTTOM" spacing="2" parentKey="dashes">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 							<Offset>
 								<AbsDimension x="0" y="-4"/>
+							</Offset>						
+						</Anchor>
+					</Anchors>
+					<Color r="0.8" g="0.8" b="0.8" />				
+				</FontString>
+				<FontString name="$parentObjectives" inherits="GameFontNormal" justifyH="LEFT"  justifyV="BOTTOM" spacing="2" parentKey="objectives">
+					<Size>
+						<AbsDimension x="232" y="0"/>
+					</Size>					
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="8" y="-4"/>
 							</Offset>						
 						</Anchor>
 					</Anchors>

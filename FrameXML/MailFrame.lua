@@ -208,9 +208,11 @@ function InboxFrame_Update()
 			-- Is a C.O.D. package
 			if ( CODAmount > 0 ) then
 				_G["MailItem"..i.."ButtonCOD"]:Show();
+				_G["MailItem"..i.."ButtonCODBackground"]:Show();
 				button.cod = CODAmount;
 			else
 				_G["MailItem"..i.."ButtonCOD"]:Hide();
+				_G["MailItem"..i.."ButtonCODBackground"]:Hide();
 				button.cod = nil;
 			end
 			-- Contains money

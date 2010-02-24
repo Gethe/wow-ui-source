@@ -234,12 +234,12 @@
 				if ( factionGroup ) then
 					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 				end
-				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
+				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
 				self.minLevel = SHOW_PVP_LEVEL;
 			</OnLoad>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLEPVP");
+				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
 			</OnEvent>
 			<OnMouseDown>

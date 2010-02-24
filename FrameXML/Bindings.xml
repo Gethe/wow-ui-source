@@ -671,6 +671,11 @@
 	<Binding name="TOGGLEWORLDMAP">
 		ToggleFrame(WorldMapFrame);
 	</Binding>
+	<Binding name="TOGGLEWORLDMAPSIZE">
+		if ( WorldMapFrame:IsShown() ) then
+			WorldMapFrame_ToggleWindowSize();
+		end
+	</Binding>	
 	<Binding name="TOGGLESOCIAL">
 		ToggleFriendsFrame();
 	</Binding>

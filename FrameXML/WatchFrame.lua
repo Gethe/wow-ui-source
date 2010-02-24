@@ -1,9 +1,9 @@
 -- Who watches the WatchFrame...?
 
 WATCHFRAME_COLLAPSEDWIDTH = 0;		-- set in WatchFrame_OnLoad
-WATCHFRAME_LASTWIDTH = 0;
+WATCHFRAME_EXPANDEDWIDTH = 204;
 WATCHFRAME_LINEHEIGHT = 16;
-WATCHFRAME_MAXLINEWIDTH = 192;
+WATCHFRAME_MAXLINEWIDTH = 0;		-- set in WatchFrame_SetWidth
 WATCHFRAME_MULTIPLE_LINEHEIGHT = 29;
 WATCHFRAME_ITEM_WIDTH = 33;
 
@@ -37,6 +37,8 @@ local WATCHFRAME_SETLINES = { };			-- buffer to hold lines for a quest/achieveme
 local WATCHFRAME_SETLINES_NUMLINES;		-- the number of visual lines to be rendered for the buffered data - used just for item wrapping right now
 
 CURRENT_MAP_QUESTS = { };
+LOCAL_MAP_QUESTS = { };
+VISIBLE_WATCHES  = { };
 
 WATCHFRAME_FLAGS = { ["locked"] = 0x01, ["collapsed"] = 0x02 }
 
@@ -44,16 +46,17 @@ WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY = 165;
 
 local watchFrameTestLine;
 
-local function WatchFrame_UpdateStateCVar ()	
-	local WatchFrame = WatchFrame;
-	local flag = 0;
-	for value, bitflag in pairs(WATCHFRAME_FLAGS) do
-		if ( WatchFrame[value] == true ) then
-			flag = flag + bitflag;
-		end
-	end
-	SetCVar("watchFrameState", flag);
-end
+WATCHFRAME_SORT_PROXIMITY = 1;
+WATCHFRAME_SORT_DIFFICULTY_HIGH = 2;
+WATCHFRAME_SORT_DIFFICULTY_LOW = 3;
+WATCHFRAME_SORT_MANUAL = 0;
+WATCHFRAME_FILTER_ACHIEVEMENTS = 1;
+WATCHFRAME_FILTER_COMPLETED_QUESTS = 2;
+WATCHFRAME_FILTER_REMOTE_ZONES = 4;
+WATCHFRAME_FILTER_NONE = 0;
+WATCHFRAME_SORT_TYPE = 0;
+WATCHFRAME_FILTER_TYPE = 0;
+WATCHFRAME_UPDATE_RATE = 1;
 
 local watchButtonIndex = 1;
 local function WatchFrame_GetLinkButton ()
@@ -204,12 +207,15 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
-	self:RegisterEvent("QUEST_POI_UPDATE");	
+	self:RegisterEvent("QUEST_POI_UPDATE");
+	self:RegisterEvent("PLAYER_MONEY");
+	self:RegisterEvent("VARIABLES_LOADED");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
 	watchFrameTestLine = self.lineCache:GetFrame();
-	WATCHFRAME_COLLAPSEDWIDTH = WatchFrameTitle:GetWidth() + 40;
+	local titleWidth = WatchFrameTitle:GetWidth();
+	WATCHFRAME_COLLAPSEDWIDTH = WatchFrameTitle:GetWidth() + 70;
 	local _, fontHeight = watchFrameTestLine.text:GetFont();
 	watchFrameTestLine.dash:SetText(QUEST_DASH);
 	DASH_WIDTH = watchFrameTestLine.dash:GetWidth();
@@ -218,10 +224,16 @@ function WatchFrame_OnLoad (self)
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayTrackedAchievements);
 	WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
+	WatchFrame.updateTimer = WATCHFRAME_UPDATE_RATE;
 end
 
 function WatchFrame_OnEvent (self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
+	if ( event == "PLAYER_MONEY" and self.watchMoney ) then
+		WatchFrame_Update(self);
+		if ( self.collapsed ) then
+			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
+		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		SetMapToCurrentZone();		-- forces WatchFrame event via the WORLD_MAP_UPDATE event
 	elseif ( event == "QUEST_LOG_UPDATE" and not self.updating ) then -- May as well check here too and save some time
 		if ( WatchFrame.showObjectives ) then
@@ -255,14 +267,29 @@ function WatchFrame_OnEvent (self, event, ...)
 		WatchFrame_Update();
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		if ( not WorldMapFrame:IsShown() and WatchFrame.showObjectives ) then
-			WorldMapQuestScrollChildFrame.selected = nil;
-			SetMapToCurrentZone();
+			SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
 		end
 	elseif ( event == "WORLD_MAP_UPDATE" or event == "QUEST_POI_UPDATE" and WatchFrame.showObjectives ) then
 		WatchFrame_GetCurrentMapQuests();
 		WatchFrame_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		WatchFrame_OnSizeChanged(self);
+	elseif ( event == "VARIABLES_LOADED" ) then
+		WatchFrame_SetWidth(GetCVar("watchFrameWidth"));
+		WATCHFRAME_SORT_TYPE = tonumber(GetCVar("trackerSorting"));
+		WATCHFRAME_FILTER_TYPE = tonumber(GetCVar("trackerFilter"));
+	end
+end
+
+function WatchFrame_OnUpdate(self, elapsed)
+	if ( WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_PROXIMITY ) then
+		self.updateTimer = self.updateTimer - elapsed;
+		if ( self.updateTimer < 0 ) then
+			if ( SortQuestWatches() ) then
+				WatchFrame_Update();
+			end
+			self.updateTimer = WATCHFRAME_UPDATE_RATE;
+		end
 	end
 end
 
@@ -273,7 +300,6 @@ end
 
 function WatchFrame_Collapse (self)
 	self.collapsed = true;
-	WATCHFRAME_LASTWIDTH = WatchFrame:GetWidth();
 	self:SetWidth(WATCHFRAME_COLLAPSEDWIDTH);
 	WatchFrameLines:Hide();
 	local button = WatchFrameCollapseExpandButton;
@@ -281,13 +307,11 @@ function WatchFrame_Collapse (self)
 	texture:SetTexCoord(0, 0.5, 0, 0.5);
 	texture = button:GetPushedTexture();	
 	texture:SetTexCoord(0.5, 1, 0, 0.5);
-	WatchFrame_UpdateStateCVar();
 end
 
 function WatchFrame_Expand (self)
 	self.collapsed = nil;
-	self:SetWidth(WATCHFRAME_LASTWIDTH);
-	WATCHFRAME_LASTWIDTH = 0;
+	self:SetWidth(WATCHFRAME_EXPANDEDWIDTH);
 	WatchFrameLines:Show();
 	local button = WatchFrameCollapseExpandButton;
 	local texture = button:GetNormalTexture();
@@ -295,7 +319,6 @@ function WatchFrame_Expand (self)
 	texture = button:GetPushedTexture();
 	texture:SetTexCoord(0.5, 1, 0.5, 1);
 	WatchFrame_Update(self);
-	WatchFrame_UpdateStateCVar();
 end
 
 function GetTimerTextColor (duration, elapsed)
@@ -334,6 +357,7 @@ function WatchFrame_Update (self)
 	end
 	
 	self.updating = true;
+	self.watchMoney = false;
 	
 	local pixelsUsed = 0;
 	local totalOffset = WATCHFRAME_INITIAL_OFFSET;
@@ -343,12 +367,15 @@ function WatchFrame_Update (self)
 	local maxFrameWidth = WATCHFRAME_MAXLINEWIDTH;
 	local maxWidth = 0;
 	local maxLineWidth;
+	local numObjectives;
+	local totalObjectives = 0;
 	
 	WatchFrame_ResetLinkButtons();
 	
 	for i = 1, #WATCHFRAME_OBJECTIVEHANDLERS do
-		pixelsUsed, maxLineWidth = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, totalOffset, maxHeight, maxFrameWidth);
+		pixelsUsed, maxLineWidth, numObjectives = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, totalOffset, maxHeight, maxFrameWidth);
 		maxWidth = max(maxLineWidth, maxWidth);
+		totalObjectives = totalObjectives + numObjectives
 		
 		if ( pixelsUsed > 0 ) then
 			totalOffset = totalOffset - WATCHFRAME_TYPE_OFFSET - pixelsUsed;
@@ -357,11 +384,25 @@ function WatchFrame_Update (self)
 	--disabled for now, might make it an option
 	--lineFrame:SetWidth(min(maxWidth, maxFrameWidth));
 	
-	if ( totalOffset < WATCHFRAME_INITIAL_OFFSET ) then
-		WatchFrameTitle:Show();
-		WatchFrameCollapseExpandButton:Show();		
+	if ( totalObjectives > 0 ) then
+		WatchFrameHeader:Show();
+		WatchFrameCollapseExpandButton:Show();
+		WatchFrameTitle:SetText(OBJECTIVES_TRACKER_LABEL.." ("..totalObjectives..")");
+		WatchFrameHeader:SetWidth(WatchFrameTitle:GetWidth() + 4);
+		-- visible objectives?
+		if ( totalOffset < WATCHFRAME_INITIAL_OFFSET ) then
+			if ( self.collapsed and not self.userCollapsed ) then
+				WatchFrame_Expand(self);
+			end
+			WatchFrameCollapseExpandButton:Enable();
+		else
+			if ( not self.collapsed ) then
+				WatchFrame_Collapse(self);
+			end
+			WatchFrameCollapseExpandButton:Disable();		
+		end		
 	else
-		WatchFrameTitle:Hide();
+		WatchFrameHeader:Hide();
 		WatchFrameCollapseExpandButton:Hide();
 	end
 	
@@ -438,7 +479,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, initialOffset, maxHeight, fra
 			WatchFrameLines_RemoveUpdateFunction(WatchFrame_HandleQuestTimerUpdate);
 			WATCHFRAME_NUM_TIMERS = 0;
 		end
-		return 0, 0;
+		return 0, 0, 0;
 	end
 	
 	WatchFrame_ResetTimerLines();
@@ -479,8 +520,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, initialOffset, maxHeight, fra
 	end
 	
 	WatchFrame_ReleaseUnusedTimerLines();
-	
-	return heightUsed, maxWidth;
+	return heightUsed, maxWidth, 0;
 end
 
 function WatchFrame_HandleQuestTimerUpdate ()
@@ -593,126 +633,125 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 	local heightUsed = 0;
 	local topEdge = 0;
 	
-	WatchFrame_ResetAchievementLines();
-	
-	for i = 1, numTrackedAchievements do
-		linesToShow = { };
-		WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
-		achievementID = select(i, ...);
-		achievementCategory = GetAchievementCategory(achievementID);
-		_, achievementName, _, completed, _, _, _, description, _, icon = GetAchievementInfo(achievementID);
-		if ( not completed and (not displayOnlyArena) or achievementCategory == WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY ) then			
-			-- achievement name
-			line = WatchFrame_GetAchievementLine();
-			achievementTitle = line;
-			WatchFrame_SetLine(line, previousLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, achievementName, DASH_NONE);
-			if ( not previousLine ) then
-				line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
-				line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
-				topEdge = line:GetTop();
-			end
-			previousLine = line;
-			-- criteria
-			numCriteria = GetAchievementNumCriteria(achievementID);
-			if ( numCriteria > 0 ) then
-				criteriaDisplayed = 0;
-				for j = 1, numCriteria do
-					local dash = DASH_SHOW;		-- default since most will have this
-					criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
-					if ( criteriaCompleted or ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
-						-- Do not display this one
-						criteriaString = nil;
-						dash = DASH_NONE;
-					elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
-						-- We ran out of space to display incomplete criteria >_<
-						criteriaString = "...";
-						dash = DASH_HIDE;
-					else
-						if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
+	WatchFrame_ResetAchievementLines();	
+	if ( bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_ACHIEVEMENTS) == WATCHFRAME_FILTER_ACHIEVEMENTS ) then
+		for i = 1, numTrackedAchievements do
+			WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
+			achievementID = select(i, ...);
+			achievementCategory = GetAchievementCategory(achievementID);
+			_, achievementName, _, completed, _, _, _, description, _, icon = GetAchievementInfo(achievementID);
+			if ( not completed and (not displayOnlyArena) or achievementCategory == WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY ) then			
+				-- achievement name
+				line = WatchFrame_GetAchievementLine();
+				achievementTitle = line;
+				WatchFrame_SetLine(line, previousLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, achievementName, DASH_NONE);
+				if ( not previousLine ) then
+					line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
+					line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
+					topEdge = line:GetTop();
+				end
+				previousLine = line;
+				-- criteria
+				numCriteria = GetAchievementNumCriteria(achievementID);
+				if ( numCriteria > 0 ) then
+					criteriaDisplayed = 0;
+					for j = 1, numCriteria do
+						local dash = DASH_SHOW;		-- default since most will have this
+						criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
+						if ( criteriaCompleted or ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
+							-- Do not display this one
+							criteriaString = nil;
+							dash = DASH_NONE;
+						elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
+							-- We ran out of space to display incomplete criteria >_<
+							criteriaString = "...";
+							dash = DASH_HIDE;
+						else
+							if ( WATCHFRAME_TIMEDCRITERIA[criteriaID] ) then
+								-- not sure what this is for
+								local timedCriteria = WATCHFRAME_TIMEDCRITERIA[criteriaID]
+								line = WatchFrame_GetAchievementLine();
+								line.criteriaID = criteriaID;
+								line.duration = timedCriteria.duration;
+								line.startTime = timedCriteria.startTime;
+								WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, "<???>", DASH_NONE);
+								previousLine = line;
+								criteriaDisplayed = criteriaDisplayed + 1;
+								WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
+							end
+							if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
+								-- progress bar
+								criteriaString = quantityString;
+							else
+								-- regular criteria
+								-- no need to do anything, criteriaString and dash are already set				
+							end
+						end
+						-- set up the line
+						if ( criteriaString ) then
+							line = WatchFrame_GetAchievementLine();
+							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, dash);
+							previousLine = line;
+							criteriaDisplayed = criteriaDisplayed + 1;
+						end
+					end
+				else
+					-- single criteria type of achievement
+					line = WatchFrame_GetAchievementLine();				
+					WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW);
+					previousLine = line;				
+					for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
+						if ( timedCriteria.achievementID == achievementID ) then
 							-- not sure what this is for
-							local timedCriteria = WATCHFRAME_TIMEDCRITERIA[criteriaID]
 							line = WatchFrame_GetAchievementLine();
 							line.criteriaID = criteriaID;
 							line.duration = timedCriteria.duration;
 							line.startTime = timedCriteria.startTime;
-							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, "<???>", DASH_NONE);
+							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, "<???>", DASH_NONE)
 							previousLine = line;
-							criteriaDisplayed = criteriaDisplayed + 1;
 							WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
 						end
-						if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
-							-- progress bar
-							criteriaString = quantityString;
-						else
-							-- regular criteria
-							-- no need to do anything, criteriaString and dash are already set				
-						end
-					end
-					-- set up the line
-					if ( criteriaString ) then
-						line = WatchFrame_GetAchievementLine();
-						WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, dash);
-						previousLine = line;
-						criteriaDisplayed = criteriaDisplayed + 1;
-					end
+					end				
 				end
-			else
-				-- single criteria type of achievement
-				line = WatchFrame_GetAchievementLine();				
-				WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW);
-				previousLine = line;				
-				for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
-					if ( timedCriteria.achievementID == achievementID ) then
-						-- not sure what this is for
-						line = WatchFrame_GetAchievementLine();
-						line.criteriaID = criteriaID;
-						line.duration = timedCriteria.duration;
-						line.startTime = timedCriteria.startTime;
-						WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, "<???>", DASH_NONE)
-						previousLine = line;
-						WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
-					end
-				end				
-			end
 
-			-- stop processing if there's no room to fit the achievement
-			local numLines = #WATCHFRAME_SETLINES;
-			local previousBottom = previousLine:GetBottom();
-			if ( previousBottom and previousBottom < WatchFrame:GetBottom() ) then				
-				achievementLineIndex = achievementLineIndex - numLines;
-				table.wipe(WATCHFRAME_SETLINES);
-				break;
-			else
-				-- turn on all lines
-				for _, line in pairs(WATCHFRAME_SETLINES) do
-					line:Show();
-					lineWidth = line.text:GetWidth() + line.dash:GetWidth();
-					maxWidth = max(maxWidth, lineWidth);
-				end
-				-- turn on link button
-				linkButton = WatchFrame_GetLinkButton();
-				linkButton:SetPoint("TOPLEFT", achievementTitle.text);
-				linkButton:SetPoint("BOTTOMLEFT", achievementTitle.text);
-				linkButton:SetWidth(achievementTitle.text:GetStringWidth());
-				linkButton.type = "ACHIEVEMENT";
-				linkButton.index = achievementID;
-				linkButton.lines = WATCHFRAME_ACHIEVEMENTLINES;
-				linkButton.startLine = achievementLineIndex - numLines;
-				linkButton.lastLine = achievementLineIndex - 1;			
-				linkButton:Show();
-				
-				if ( previousBottom ) then
-					heightUsed = topEdge - previousBottom;
+				-- stop processing if there's no room to fit the achievement
+				local numLines = #WATCHFRAME_SETLINES;
+				local previousBottom = previousLine:GetBottom();
+				if ( previousBottom and previousBottom < WatchFrame:GetBottom() ) then				
+					achievementLineIndex = achievementLineIndex - numLines;
+					table.wipe(WATCHFRAME_SETLINES);
+					break;
 				else
-					heightUsed = 1;
+					-- turn on all lines
+					for _, line in pairs(WATCHFRAME_SETLINES) do
+						line:Show();
+						lineWidth = line.text:GetWidth() + line.dash:GetWidth();
+						maxWidth = max(maxWidth, lineWidth);
+					end
+					-- turn on link button
+					linkButton = WatchFrame_GetLinkButton();
+					linkButton:SetPoint("TOPLEFT", achievementTitle.text);
+					linkButton:SetPoint("BOTTOMLEFT", achievementTitle.text);
+					linkButton:SetWidth(achievementTitle.text:GetStringWidth());
+					linkButton.type = "ACHIEVEMENT";
+					linkButton.index = achievementID;
+					linkButton.lines = WATCHFRAME_ACHIEVEMENTLINES;
+					linkButton.startLine = achievementLineIndex - numLines;
+					linkButton.lastLine = achievementLineIndex - 1;			
+					linkButton:Show();
+					
+					if ( previousBottom ) then
+						heightUsed = topEdge - previousBottom;
+					else
+						heightUsed = 1;
+					end
 				end
 			end
 		end
 	end
 
 	WatchFrame_ReleaseUnusedAchievementLines();
-
-	return heightUsed, maxWidth;
+	return heightUsed, maxWidth, numTrackedAchievements;
 end
 
 function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, frameWidth)
@@ -723,6 +762,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local lastLine;
 	local linkButton;
 	local watchItemIndex = 0;
+	local numVisible = 0;
 	
 	local numPOINumeric = 0;
 	local numPOICompleteIn = 0;
@@ -738,6 +778,22 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	local heightUsed = 0;	
 	local topEdge = 0;
 
+	local playerMoney = GetMoney();
+	local selectedQuestId;
+	if ( WorldMapFrame and WorldMapFrame:IsShown() ) then
+		selectedQuestId = WORLDMAP_SETTINGS.selectedQuestId;
+	else
+		-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
+		-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
+		-- open to a different zone.
+		table.wipe(LOCAL_MAP_QUESTS);
+		LOCAL_MAP_QUESTS["zone"] = GetCurrentMapZone();
+		for id in pairs(CURRENT_MAP_QUESTS) do
+			LOCAL_MAP_QUESTS[id] = true;
+		end	
+	end
+	
+	table.wipe(VISIBLE_WATCHES);
 	WatchFrame_ResetQuestLines();
 	
 	for i = 1, numQuestWatches do
@@ -745,111 +801,129 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 		questIndex = GetQuestIndexForWatch(i);
 		if ( questIndex ) then
 			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
-			local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
-			line = WatchFrame_GetQuestLine();
-			questTitle = line;
-			WatchFrame_SetLine(line, lastLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, title, DASH_NONE, item);
-			if ( not lastLine ) then -- First line
-				line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
-				line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
-				topEdge = line:GetTop();
-			end
-			lastLine = line;
-			
+			local requiredMoney = GetQuestLogRequiredMoney(questIndex);			
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
 			if ( isComplete and isComplete < 0 ) then
 				isComplete = false;
-			elseif ( numObjectives == 0 ) then
+			elseif ( numObjectives == 0 and playerMoney >= requiredMoney ) then
 				isComplete = true;		
-			end
-			if ( isComplete ) then
-				line = WatchFrame_GetQuestLine();
-				WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
-				lastLine = line;
-			else
-				for j = 1, numObjectives do
-					text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
-					if ( not finished ) then
-						text = WatchFrame_ReverseQuestObjective(text);
+			end			
+			-- check filters
+			local filterOK = true;
+			if ( isComplete and bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) ~= WATCHFRAME_FILTER_COMPLETED_QUESTS ) then
+				filterOK = false;
+			elseif ( bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_REMOTE_ZONES) ~= WATCHFRAME_FILTER_REMOTE_ZONES and not LOCAL_MAP_QUESTS[questID] ) then
+				filterOK = false;
+			end			
+			
+			if ( filterOK ) then
+				local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
+				if ( requiredMoney > 0 ) then
+					WatchFrame.watchMoney = true;	-- for update event			
+				end
+				questTitle = WatchFrame_GetQuestLine();
+				WatchFrame_SetLine(questTitle, lastLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, title, DASH_NONE, item);
+				if ( not lastLine ) then -- First line
+					questTitle:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
+					questTitle:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
+					topEdge = questTitle:GetTop();
+				end
+				lastLine = questTitle;
+				
+				if ( isComplete ) then
+					line = WatchFrame_GetQuestLine();
+					WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
+					lastLine = line;
+				else
+					for j = 1, numObjectives do
+						text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
+						if ( not finished ) then
+							text = WatchFrame_ReverseQuestObjective(text);
+							line = WatchFrame_GetQuestLine();
+							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
+							lastLine = line;
+						end
+					end
+					if ( requiredMoney > playerMoney ) then
+						text = GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney);
 						line = WatchFrame_GetQuestLine();
 						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 						lastLine = line;
 					end
 				end
-			end
 
-			-- stop processing if there's no room to fit the quest
-			local numLines = #WATCHFRAME_SETLINES;
-			local lastBottom = lastLine:GetBottom();
-			if ( lastBottom and lastBottom < WatchFrame:GetBottom() ) then
-				questLineIndex = questLineIndex - numLines;
-				table.wipe(WATCHFRAME_SETLINES);
-				break;
-			end
-
-			-- NOTE: we're missing something to display required money for a quest...that should probably be added at some point
-
-			-- turn on quest item
-			local itemButton;
-			if ( item and not isComplete ) then
-				watchItemIndex = watchItemIndex + 1;
-				itemButton = _G["WatchFrameItem"..watchItemIndex];
-				if ( not itemButton ) then
-					WATCHFRAME_NUM_ITEMS = watchItemIndex;
-					itemButton = CreateFrame("BUTTON", "WatchFrameItem" .. watchItemIndex, lineFrame, "WatchFrameItemButtonTemplate");
+				-- stop processing if there's no room to fit the quest
+				local numLines = #WATCHFRAME_SETLINES;
+				local lastBottom = lastLine:GetBottom();
+				if ( lastBottom and lastBottom < WatchFrame:GetBottom() ) then
+					questLineIndex = questLineIndex - numLines;
+					table.wipe(WATCHFRAME_SETLINES);
+					break;
 				end
-				itemButton:Show();
-				itemButton:ClearAllPoints();
-				itemButton:SetID(questIndex);
-				SetItemButtonTexture(itemButton, item);
-				SetItemButtonCount(itemButton, charges);
-				itemButton.charges = charges;
-				WatchFrameItem_UpdateCooldown(itemButton);
-				itemButton.rangeTimer = -1;
-				itemButton:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 10, -2);
-			end			
-			-- turn on all lines
-			for _, line in pairs(WATCHFRAME_SETLINES) do
-				line:Show();
-				lineWidth = line.text:GetWidth() + line.dash:GetWidth();
-				maxWidth = max(maxWidth, lineWidth);
-			end
-			-- turn on link button
-			linkButton = WatchFrame_GetLinkButton();
-			linkButton:SetPoint("TOPLEFT", questTitle);
-			linkButton:SetPoint("BOTTOMLEFT", questTitle);
-			linkButton:SetPoint("RIGHT", questTitle.text);
-			linkButton.type = "QUEST"
-			linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
-			linkButton.lines = WATCHFRAME_QUESTLINES;
-			linkButton.startLine = questLineIndex - numLines;
-			linkButton.lastLine = questLineIndex - 1;
-			linkButton:Show();				
-			-- quest POI icon
-			if ( WatchFrame.showObjectives ) then
-				local poiButton;
-				if ( CURRENT_MAP_QUESTS[questID] ) then
-					if ( isComplete ) then
-						numPOICompleteIn = numPOICompleteIn + 1;
-						poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_IN, numPOICompleteIn, questID);
-					else
-						numPOINumeric = numPOINumeric + 1;
-						poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_NUMERIC, numPOINumeric, questID);
+
+				numVisible = numVisible + 1;
+				table.insert(VISIBLE_WATCHES, numVisible, questIndex);		-- save the quest log index because watch order can change after dropdown is opened
+				-- turn on quest item
+				local itemButton;
+				if ( item and not isComplete ) then
+					watchItemIndex = watchItemIndex + 1;
+					itemButton = _G["WatchFrameItem"..watchItemIndex];
+					if ( not itemButton ) then
+						WATCHFRAME_NUM_ITEMS = watchItemIndex;
+						itemButton = CreateFrame("BUTTON", "WatchFrameItem" .. watchItemIndex, lineFrame, "WatchFrameItemButtonTemplate");
 					end
-				elseif ( isComplete ) then
-					numPOICompleteOut = numPOICompleteOut + 1;
-					poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_OUT, numPOICompleteOut, questID);
+					itemButton:Show();
+					itemButton:ClearAllPoints();
+					itemButton:SetID(questIndex);
+					SetItemButtonTexture(itemButton, item);
+					SetItemButtonCount(itemButton, charges);
+					itemButton.charges = charges;
+					WatchFrameItem_UpdateCooldown(itemButton);
+					itemButton.rangeTimer = -1;
+					itemButton:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 10, -2);
+				end			
+				-- turn on all lines
+				for _, line in pairs(WATCHFRAME_SETLINES) do
+					line:Show();
+					lineWidth = line.text:GetWidth() + line.dash:GetWidth();
+					maxWidth = max(maxWidth, lineWidth);
 				end
-				if ( poiButton ) then
-					poiButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", 0, 5);
-					poiButton.questLogIndex = CURRENT_MAP_QUESTS[questID];
-				end				
-			end
-			
-			if ( lastBottom ) then
-				heightUsed = topEdge - lastLine:GetBottom();
-			else
-				heightUsed = 1;
+				-- turn on link button
+				linkButton = WatchFrame_GetLinkButton();
+				linkButton:SetPoint("TOPLEFT", questTitle);
+				linkButton:SetPoint("BOTTOMLEFT", questTitle);
+				linkButton:SetPoint("RIGHT", questTitle.text);
+				linkButton.type = "QUEST"
+				linkButton.index = i; -- We want the Watch index, we'll get the quest index later with GetQuestIndexForWatch(i);
+				linkButton.lines = WATCHFRAME_QUESTLINES;
+				linkButton.startLine = questLineIndex - numLines;
+				linkButton.lastLine = questLineIndex - 1;
+				linkButton:Show();				
+				-- quest POI icon
+				if ( WatchFrame.showObjectives ) then
+					local poiButton;
+					if ( CURRENT_MAP_QUESTS[questID] ) then
+						if ( isComplete ) then
+							numPOICompleteIn = numPOICompleteIn + 1;
+							poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_IN, numPOICompleteIn, questID);
+						else
+							numPOINumeric = numPOINumeric + 1;
+							poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_NUMERIC, numPOINumeric, questID);
+						end
+					elseif ( isComplete ) then
+						numPOICompleteOut = numPOICompleteOut + 1;
+						poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_OUT, numPOICompleteOut, questID);
+					end
+					if ( poiButton ) then
+						poiButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", 0, 5);
+					end				
+				end
+				
+				if ( lastBottom ) then
+					heightUsed = topEdge - lastLine:GetBottom();
+				else
+					heightUsed = 1;
+				end
 			end
 		end
 	end
@@ -863,7 +937,11 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	
 	WatchFrame_ReleaseUnusedQuestLines();
 
-	return heightUsed, maxWidth;	
+	if ( selectedQuestId ) then
+		QuestPOI_SelectButtonByQuestId("WatchFrameLines", selectedQuestId, true);	
+	end
+	
+	return heightUsed, maxWidth, numQuestWatches;	
 end
 
 function WatchFrameLines_OnUpdate (self, elapsed)
@@ -973,7 +1051,6 @@ function WatchFrameDropDown_OnHide ()
 	WatchFrame.dropDownOpen = nil; 
 	
 	if ( WatchFrame.lastLinkButton ) then 
-		WatchFrame.lastLinkButton:Enable(); 
 		WatchFrame.lastLinkButton = nil;
 	end 
 end
@@ -986,7 +1063,8 @@ end
 function WatchFrameDropDown_Initialize (self)
 	if ( self.type == "QUEST" ) then
 		local info = UIDropDownMenu_CreateInfo();
-		info.text = GetQuestLogTitle(GetQuestIndexForWatch(self.index))
+		local questLogIndex = GetQuestIndexForWatch(self.index);
+		info.text = GetQuestLogTitle(questLogIndex);
 		info.isTitle = 1;
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
@@ -1023,6 +1101,38 @@ function WatchFrameDropDown_Initialize (self)
 			info.noClickSound = 1;
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
+		local numVisibleWatches = #VISIBLE_WATCHES;
+		if ( numVisibleWatches > 1 ) then
+			local visibleIndex = WatchFrame_GetVisibleIndex(questLogIndex);
+			if ( visibleIndex > 1 ) then
+				info.text = TRACKER_SORT_MANUAL_UP;
+				info.func = WatchFrame_MoveQuest;
+				info.arg1 = questLogIndex;
+				info.arg2 = -1;
+				info.checked = false;
+				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+				info.text = TRACKER_SORT_MANUAL_TOP;
+				info.func = WatchFrame_MoveQuest;			
+				info.arg1 = questLogIndex;
+				info.arg2 = -100;		-- ensure move up to top regardless of reordering after dropdown has been opened
+				info.checked = false;
+				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+			end
+			if ( visibleIndex < numVisibleWatches ) then
+				info.text = TRACKER_SORT_MANUAL_DOWN;
+				info.func = WatchFrame_MoveQuest;
+				info.arg1 = questLogIndex;
+				info.arg2 = 1;
+				info.checked = false;
+				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+				info.text = TRACKER_SORT_MANUAL_BOTTOM;
+				info.func = WatchFrame_MoveQuest;
+				info.arg1 = questLogIndex;
+				info.arg2 = 100;		-- ensure move down to bottom regardless of reordering after dropdown has been opened
+				info.checked = false;
+				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+			end			
+		end
 	elseif ( self.type == "ACHIEVEMENT" ) then
 		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(self.index);
 		local info = UIDropDownMenu_CreateInfo();
@@ -1051,9 +1161,11 @@ end
 function WatchFrame_CollapseExpandButton_OnClick (self)
 	local WatchFrame = WatchFrame;
 	if ( WatchFrame.collapsed ) then
+		WatchFrame.userCollapsed = nil;
 		WatchFrame_Expand(WatchFrame);
 		PlaySound("igMiniMapOpen");
 	else
+		WatchFrame.userCollapsed = true;
 		WatchFrame_Collapse(WatchFrame);
 		PlaySound("igMiniMapClose");
 	end
@@ -1199,17 +1311,160 @@ function WatchFrame_GetCurrentMapQuests()
 end
 
 function WatchFrameQuestPOI_OnClick(self)
-	if ( self.questLogIndex ) then
-		if ( not WorldMapFrame:IsShown() ) then
-			ToggleFrame(WorldMapFrame);
-			WorldMapFrame_SelectQuest(_G["WorldMapQuestFrame"..self.questLogIndex]);
-		elseif ( WorldMapQuestScrollChildFrame.selected.index == self.questLogIndex ) then
-			ToggleFrame(WorldMapFrame);
-		else
-			PlaySound("igMainMenuOptionCheckBoxOn");
-			WorldMapFrame_SelectQuest(_G["WorldMapQuestFrame"..self.questLogIndex]);
+	if ( WorldMapFrame:IsShown() ) then
+		if ( WORLDMAP_SETTINGS.selectedQuestId == self.questId ) then
+			HideUIPanel(WorldMapFrame);
+			return;
 		end
-	else
-		WorldMap_OpenToQuest(self.questId);
+		PlaySound("igMainMenuOptionCheckBoxOn");
 	end
+	WorldMap_OpenToQuest(self.questId);
+end
+
+function WatchFrame_SetWidth(width)
+	if ( width == "0" ) then
+		WATCHFRAME_EXPANDEDWIDTH = 204;
+		WATCHFRAME_MAXLINEWIDTH = 192;
+	else
+		WATCHFRAME_EXPANDEDWIDTH = 306;
+		WATCHFRAME_MAXLINEWIDTH = 294;
+	end
+	if ( WatchFrame:IsShown() and not WatchFrame.collapsed ) then
+		WatchFrame:SetWidth(WATCHFRAME_EXPANDEDWIDTH);
+		WatchFrame_Update();
+	end
+end
+
+-- header dropdown
+function WatchFrameHeader_OnClick(self, button)
+	if ( button == "RightButton" ) then	
+		ToggleDropDownMenu(1, nil, WatchFrameHeaderDropDown, "cursor", 3, -3)
+	end
+end
+
+function WatchFrameHeaderDropDown_OnLoad (self)
+	UIDropDownMenu_Initialize(self, WatchFrameHeaderDropDown_Initialize, "MENU");
+end
+
+function WatchFrameHeaderDropDown_Initialize (self)
+	local info = UIDropDownMenu_CreateInfo();
+	-- sort label
+	info.text = TRACKER_SORT_LABEL;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	-- sort: proximity
+	info = UIDropDownMenu_CreateInfo();
+	info.checked = (WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_PROXIMITY);
+	info.text = TRACKER_SORT_PROXIMITY;
+	info.tooltipTitle = TRACKER_SORT_PROXIMITY;
+	info.tooltipText = TOOLTIP_TRACKER_SORT_PROXIMITY;
+	info.arg1 = WATCHFRAME_SORT_PROXIMITY;
+	info.func = WatchFrame_SetSorting;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	-- sort: difficulty high
+	info = UIDropDownMenu_CreateInfo();
+	info.checked = (WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_DIFFICULTY_HIGH);	
+	info.text = TRACKER_SORT_DIFFICULTY_HIGH;
+	info.tooltipTitle = TRACKER_SORT_DIFFICULTY_HIGH;
+	info.tooltipText = TOOLTIP_TRACKER_SORT_DIFFICULTY_HIGH;
+	info.arg1 = WATCHFRAME_SORT_DIFFICULTY_HIGH;
+	info.func = WatchFrame_SetSorting;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	-- sort: difficulty low
+	info = UIDropDownMenu_CreateInfo();
+	info.checked = (WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_DIFFICULTY_LOW);
+	info.text = TRACKER_SORT_DIFFICULTY_LOW;
+	info.tooltipTitle = TRACKER_SORT_DIFFICULTY_LOW;
+	info.tooltipText = TOOLTIP_TRACKER_SORT_DIFFICULTY_LOW;
+	info.arg1 = WATCHFRAME_SORT_DIFFICULTY_LOW;
+	info.func = WatchFrame_SetSorting;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	-- sort: manual	
+	info = UIDropDownMenu_CreateInfo();
+	info.checked = (WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_MANUAL);
+	info.text = TRACKER_SORT_MANUAL;
+	info.tooltipTitle = TRACKER_SORT_MANUAL;
+	info.tooltipText = TOOLTIP_TRACKER_SORT_MANUAL;	
+	info.arg1 = WATCHFRAME_SORT_MANUAL;
+	info.func = WatchFrame_SetSorting;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	-- filter label
+	info.text = TRACKER_FILTER_LABEL;
+	info.checked = false;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	-- filter: achievements
+	info = UIDropDownMenu_CreateInfo();
+	info.checked = (bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_ACHIEVEMENTS) == WATCHFRAME_FILTER_ACHIEVEMENTS);
+	info.text = TRACKER_FILTER_ACHIEVEMENTS;
+	info.tooltipTitle = TRACKER_FILTER_ACHIEVEMENTS;
+	info.tooltipText = TOOLTIP_TRACKER_FILTER_ACHIEVEMENTS;
+	info.arg1 = WATCHFRAME_FILTER_ACHIEVEMENTS;
+	info.func = WatchFrame_SetFilter;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	-- filter: completed quests
+	info = UIDropDownMenu_CreateInfo();
+	info.checked = (bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) == WATCHFRAME_FILTER_COMPLETED_QUESTS);
+	info.text = TRACKER_FILTER_COMPLETED_QUESTS;
+	info.tooltipTitle = TRACKER_FILTER_COMPLETED_QUESTS;
+	info.tooltipText = TOOLTIP_TRACKER_FILTER_COMPLETED_QUESTS;
+	info.arg1 = WATCHFRAME_FILTER_COMPLETED_QUESTS;
+	info.func = WatchFrame_SetFilter;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
+	-- filter: current zone
+	info = UIDropDownMenu_CreateInfo();
+	info.checked = (bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_REMOTE_ZONES) == WATCHFRAME_FILTER_REMOTE_ZONES);
+	info.text = TRACKER_FILTER_REMOTE_ZONES;
+	info.tooltipTitle = TRACKER_FILTER_REMOTE_ZONES;
+	info.tooltipText = TOOLTIP_TRACKER_FILTER_REMOTE_ZONES;
+	info.arg1 = WATCHFRAME_FILTER_REMOTE_ZONES;
+	info.func = WatchFrame_SetFilter;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
+end
+
+function WatchFrame_SetSorting(button, arg1)
+	WATCHFRAME_SORT_TYPE = arg1;
+	SetCVar("trackerSorting", WATCHFRAME_SORT_TYPE);
+	if ( WATCHFRAME_SORT_TYPE ~= WATCHFRAME_SORT_MANUAL ) then
+		SortQuestWatches();
+		WatchFrame_Update();
+		WatchFrame.updateTimer = WATCHFRAME_UPDATE_RATE;
+	end
+end
+
+function WatchFrame_SetFilter(button, arg1)
+	if ( bit.band(WATCHFRAME_FILTER_TYPE, arg1) == arg1 ) then
+		WATCHFRAME_FILTER_TYPE = WATCHFRAME_FILTER_TYPE - arg1;
+	else
+		WATCHFRAME_FILTER_TYPE = WATCHFRAME_FILTER_TYPE + arg1;
+	end
+	SetCVar("trackerFilter", WATCHFRAME_FILTER_TYPE);
+	WatchFrame_Update();
+end
+
+function WatchFrame_GetVisibleIndex(questLogIndex)
+	for i = 1, #VISIBLE_WATCHES do
+		if ( VISIBLE_WATCHES[i] == questLogIndex ) then
+			return i;
+		end
+	end
+end
+
+function WatchFrame_MoveQuest(button, questLogIndex, numMoves)
+	if ( WATCHFRAME_SORT_TYPE ~= WATCHFRAME_SORT_MANUAL ) then
+		WatchFrame_SetSorting(nil, WATCHFRAME_SORT_MANUAL);
+		UIErrorsFrame:AddMessage(TRACKER_SORT_MANUAL_WARNING, 1.0, 1.0, 0.0, 1.0);
+	end
+	local numVisibleWatches = #VISIBLE_WATCHES;
+	local indexStart = WatchFrame_GetVisibleIndex(questLogIndex);
+	local indexEnd = indexStart + numMoves;
+	if ( indexEnd < 1 ) then
+		indexEnd = 1;
+	elseif ( indexEnd > numVisibleWatches ) then
+		indexEnd = numVisibleWatches;
+	end
+	ShiftQuestWatches(GetQuestWatchIndex(questLogIndex), GetQuestWatchIndex(VISIBLE_WATCHES[indexEnd]));
+	WatchFrame_Update();
 end

@@ -46,9 +46,9 @@
 	<!-- This function can be used to show debugging messages -->
 	<Script>
 		function message(text)
-			if ( not ScriptErrors:IsShown() ) then
-				ScriptErrors_Message:SetText(text);
-				ScriptErrors:Show();
+			if ( not BasicScriptErrors:IsShown() ) then
+				BasicScriptErrorsText:SetText(text);
+				BasicScriptErrors:Show();
 			end
 		end
 	</Script>

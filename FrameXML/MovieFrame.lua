@@ -36,6 +36,7 @@ function MovieFrame_OnHide(self)
 	WorldFrame:Show();
 	if ( self.uiParentShown ) then
 		UIParent:Show();
+		SetUIVisibility(true);
 	end
 end
 

@@ -15,7 +15,7 @@ function ToggleFramerate(benchmark)
 end
 
 function ToggleMapFramerate()
-	if ( FramerateText:IsShown() and not WorldMapFrame.sizedDown ) then
+	if ( FramerateText:IsShown() and WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE ) then
 		MapFramerateLabel:Show();
 		MapFramerateText:Show();	
 	else

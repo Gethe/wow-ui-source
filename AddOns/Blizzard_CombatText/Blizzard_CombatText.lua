@@ -190,7 +190,12 @@ function CombatText_OnEvent(self, event, ...)
 	end
 	-- See if we should display the message or not
 	if ( not info.show ) then
-		return;
+		-- When Resists aren't being shown, partial resists should display as Damage
+		if (info.var == "COMBAT_TEXT_SHOW_RESISTANCES" and arg3) then
+			messageType = "DAMAGE";
+		else
+			return;
+		end
 	end
 
 	local isStaggered = info.isStaggered;
@@ -269,21 +274,21 @@ function CombatText_OnEvent(self, event, ...)
 	elseif ( messageType == "BLOCK" or messageType == "SPELL_BLOCKED" ) then
 		if ( arg3 ) then
 			-- Partial block
-			message = data.." "..format(BLOCK_TRAILER, arg3);
+			message = "-"..data.." "..format(BLOCK_TRAILER, arg3);
 		else
 			message = COMBAT_TEXT_BLOCK;
 		end
 	elseif ( messageType == "ABSORB" or messageType == "SPELL_ABSORBED" ) then
 		if ( arg3 ) then
-			-- Partial block
-			message = data.." "..format(ABSORB_TRAILER, arg3);
+			-- Partial absorb
+			message = "-"..data.." "..format(ABSORB_TRAILER, arg3);
 		else
 			message = COMBAT_TEXT_ABSORB;
 		end
 	elseif ( messageType == "RESIST" or messageType == "SPELL_RESIST" ) then
 		if ( arg3 ) then
 			-- Partial resist
-			message = data.." "..format(RESIST_TRAILER, arg3);
+			message = "-"..data.." "..format(RESIST_TRAILER, arg3);
 		else
 			message = COMBAT_TEXT_RESIST;
 		end

@@ -129,15 +129,30 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentIcon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
 						<FontString name="$parentCOD" inherits="GameFontHighlightSmall" text="CASH_ON_DELIVERY">
 							<Anchors>
-								<Anchor point="BOTTOM">
+								<Anchor point="TOP">
 									<Offset>
-										<AbsDimension x="0" y="2"/>
+										<AbsDimension x="0" y="-2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<Texture name="$parentCODBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Size>
+								<AbsDimension x="34" y="12"/>
+							</Size>
+							<Color r="0" g="0" b="0" a="0.4"/>
+						</Texture>
 						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT">
@@ -480,15 +495,17 @@
 									</Anchors>
 									<Color r="1.0" g="0.1" b="0.1" a="1.0"/>
 								</FontString>									
-								<Texture file="Interface\DialogFrame\DialogAlertIcon">
+								<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
 									<Size>
 										<AbsDimension x="32" y="32"/>
 									</Size>		
 									<Anchors>
 										<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>					
 										</Anchor>
-									</Anchors>									
-									<TexCoords left="0.2" right="0.8" top="0.2" bottom="0.8"/>
+									</Anchors>
 								</Texture>						
 							</Layer>
 						</Layers>

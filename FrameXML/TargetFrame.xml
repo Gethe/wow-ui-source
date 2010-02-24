@@ -552,7 +552,9 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnValueChanged function="TargetofTargetHealthCheck(self:GetParent())"/>
+					<OnValueChanged>
+						TargetofTargetHealthCheck(self:GetParent());
+					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="1.0" b="0"/>

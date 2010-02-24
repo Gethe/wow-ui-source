@@ -786,6 +786,7 @@ ObjectivesPanelOptions = {
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
 	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
 	advancedWorldMap = { text = "ADVANCED_WORLD_MAP_TEXT" },
+	watchFrameWidth = { text = "WATCH_FRAME_WIDTH_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)

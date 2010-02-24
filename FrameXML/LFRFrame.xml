@@ -295,7 +295,7 @@
 						<Scripts>
 							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 							<OnEditFocusGained>
-								if ( LFG_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
+								if ( LFR_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
 									LFRQueueFrameCommentExplanation:Hide();
 								else
 									self:ClearFocus();
@@ -322,7 +322,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( LFG_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
+								if ( LFR_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
 									LFRQueueFrameComment:SetFocus();
 								end
 							</OnClick>
@@ -574,12 +574,12 @@
 					</Button>
 					<Frame name="$parentNoLFRWhileLFD" hidden="true" enableMouse="true">
 						<Size>
-							<AbsDimension x="327" y="285"/>
+							<AbsDimension x="327" y="282"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-7" y="30"/>
+									<AbsDimension x="-7" y="33"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

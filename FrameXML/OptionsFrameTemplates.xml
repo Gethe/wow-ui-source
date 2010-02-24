@@ -311,15 +311,7 @@
 				OptionsListButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
-		<ButtonText name="$parentText" justifyH="LEFT">
-			<Anchors>
-				<Anchor point="RIGHT" relativeTo="$parentToggle" relativePoint="LEFT">
-					<Offset>
-						<AbsDimension x="-2" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</ButtonText>
+		<ButtonText name="$parentText" justifyH="LEFT" />
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">

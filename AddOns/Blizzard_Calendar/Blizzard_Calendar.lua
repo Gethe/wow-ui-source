@@ -942,9 +942,11 @@ local function _CalendarFrame_UpdateClassData()
 
 	for i = 1, CalendarEventGetNumInvites() do
 		local _, _, className, classFilename, inviteStatus = CalendarEventGetInvite(i);
-		CalendarClassData[classFilename].counts[inviteStatus] = CalendarClassData[classFilename].counts[inviteStatus] + 1;
-		-- HACK: doing this because we don't have class names in global strings
-		CalendarClassData[classFilename].name = className;
+		if ( classFilename and classFilename ~= "" ) then
+			CalendarClassData[classFilename].counts[inviteStatus] = CalendarClassData[classFilename].counts[inviteStatus] + 1;
+			-- HACK: doing this because we don't have class names in global strings
+			CalendarClassData[classFilename].name = className;
+		end
 	end
 end
 
@@ -4146,9 +4148,11 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 			end
 
 			-- update class counts
-			CalendarClassData[classFilename].counts[inviteStatus] = CalendarClassData[classFilename].counts[inviteStatus] + 1;
-			-- MFS HACK: doing this because we don't have class names in global strings
-			CalendarClassData[classFilename].name = className;
+			if ( classFilename ~= "" ) then
+				CalendarClassData[classFilename].counts[inviteStatus] = CalendarClassData[classFilename].counts[inviteStatus] + 1;
+				-- MFS HACK: doing this because we don't have class names in global strings
+				CalendarClassData[classFilename].name = className;
+			end
 
 			button:Show();
 		else

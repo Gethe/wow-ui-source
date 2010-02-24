@@ -3,6 +3,7 @@ EXPANSION_LEVEL = GetExpansionLevel(); --This doesn't change while logged in, so
 LFD_MAX_REWARDS = 2;
 
 NUM_LFD_CHOICE_BUTTONS = 15;
+TYPEID_DUNGEON = 1;
 TYPEID_HEROIC_DIFFICULTY = 5;
 TYPEID_RANDOM_DUNGEON = 6;
 
@@ -34,6 +35,7 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
 	self:RegisterEvent("LFG_ROLE_CHECK_HIDE");
 	self:RegisterEvent("LFG_BOOT_PROPOSAL_UPDATE");
+	self:RegisterEvent("VOTE_KICK_REASON_NEEDED");
 	self:RegisterEvent("LFG_ROLE_UPDATE");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 end
@@ -60,12 +62,15 @@ function LFDFrame_OnEvent(self, event, ...)
 		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 		LFDQueueFrameSpecificList_Update();
 	elseif ( event == "LFG_BOOT_PROPOSAL_UPDATE" ) then
-		local voteInProgress, didVote, myVote, targetName, totalVotes, bootVotes, timeLeft = GetLFGBootProposal();
+		local voteInProgress, didVote, myVote, targetName, totalVotes, bootVotes, timeLeft, reason = GetLFGBootProposal();
 		if ( voteInProgress and not didVote and targetName ) then
-			StaticPopup_Show("VOTE_BOOT_PLAYER", targetName);
+			StaticPopup_Show("VOTE_BOOT_PLAYER", targetName, reason);
 		else
 			StaticPopup_Hide("VOTE_BOOT_PLAYER");
 		end
+	elseif ( event == "VOTE_KICK_REASON_NEEDED" ) then
+		local targetName = ...;
+		StaticPopup_Show("VOTE_BOOT_REASON_REQUIRED", targetName, nil, targetName);
 	elseif ( event == "LFG_ROLE_UPDATE" ) then
 		LFG_UpdateRoleCheckboxes();
 	elseif ( event == "LFG_UPDATE_RANDOM_INFO" ) then
@@ -250,7 +255,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		local difficultyColor = GetQuestDifficultyColor(recLevel);
 		button.level:SetFontObject(difficultyColor.font);
 		
-		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered()) then
+		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFD_IsEmpowered()) then
 			button.instanceName:SetFontObject(QuestDifficulty_Header);
 		else
 			button.instanceName:SetFontObject(difficultyColor.font);
@@ -286,7 +291,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 	end
 	button.enableButton:SetChecked(enableState and enableState ~= 0);
 	
-	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered() ) then
+	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFD_IsEmpowered() ) then
 		button.enableButton:Disable();
 	else
 		button.enableButton:Enable();
@@ -341,7 +346,7 @@ end
 function LFDQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and not LFGLockList[queueID] ) then
 		local info = LFGGetDungeonInfoByID(queueID);
-		SetLFGDungeon(info[LFG_RETURN_VALUES.typeID], queueID);
+		SetLFGDungeon(queueID);
 		return true;
 	end
 	return false;
@@ -359,7 +364,7 @@ function LFDQueueFrame_Join()
 		JoinLFG();
 	else
 		ClearAllLFGDungeons();
-		SetLFGDungeon(TYPEID_RANDOM_DUNGEON, LFDQueueFrame.type);
+		SetLFGDungeon(LFDQueueFrame.type);
 		JoinLFG();
 	end
 end
@@ -624,8 +629,9 @@ end
 
 function LFDDungeonReadyDialogInstanceInfo_OnEnter(self)
 	local numBosses = select(8, GetLFGProposal());
+	local isHoliday = select(12, GetLFGProposal());
 	
-	if ( numBosses == 0 ) then
+	if ( numBosses == 0 or isHoliday) then
 		return;
 	end
 	
@@ -768,6 +774,7 @@ function LFDConstructDeclinedMessage(dungeonID)
 	return returnVal;
 end
 
+--Random frame functions
 NUM_LFD_RANDOM_REWARD_FRAMES = 1;
 function LFDQueueFrameRandom_UpdateFrame()
 	local parentName = "LFDQueueFrameRandomScrollFrameChildFrame"
@@ -779,24 +786,44 @@ function LFDQueueFrameRandom_UpdateFrame()
 		return;
 	end
 	
-	local isHeroic = select(11, GetLFGDungeonInfo(dungeonID)) > 0;
+	local holiday;
+	local difficulty;
+	local dungeonDescription;
+	local textureFilename;
+	local dungeonName, _,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, holiday = GetLFGDungeonInfo(dungeonID);
+	local isHeroic = difficulty > 0;
+	local isHoliday = holiday > 0;
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	local numRandoms = 4 - GetNumPartyMembers();
 	local moneyAmount = moneyBase + moneyVar * numRandoms;
 	local experienceGained = experienceBase + experienceVar * numRandoms;
+
 	
-		
 	if ( isHeroic ) then
 		LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC");
-	else
+	elseif ( isHoliday ) then
+		LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..textureFilename);
+	else 
 		LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER");
 	end
 	
 	local lastFrame = parentFrame.rewardsLabel;
-	if ( doneToday ) then
-		parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);
+	if ( isHoliday ) then
+		if ( doneToday ) then
+			parentFrame.rewardsDescription:SetText(LFD_HOLIDAY_REWARD_EXPLANATION2);
+		else
+			parentFrame.rewardsDescription:SetText(LFD_HOLIDAY_REWARD_EXPLANATION1);
+		end
+		parentFrame.title:SetText(dungeonName);
+		parentFrame.description:SetText(dungeonDescription);
 	else
-		parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION1);
+		if ( doneToday ) then
+			parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);
+		else
+			parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION1);
+		end
+		parentFrame.title:SetText(LFG_TYPE_RANDOM_DUNGEON);
+		parentFrame.description:SetText(LFD_RANDOM_EXPLANATION);
 	end
 		
 	for i=1, numRewards do
@@ -878,6 +905,87 @@ function LFDQueueFrameRandom_UpdateFrame()
 	parentFrame.spacer:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -10);
 end
 
+function LFDQueueFrameRandomCooldownFrame_OnLoad(self)
+	self:SetFrameLevel(15);
+	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
+	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+end
+
+function LFDQueueFrameRandomCooldownFrame_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event ~= "UNIT_AURA" or arg1 == "player" or strsub(arg1, 1, 5) == "party" ) then
+		LFDQueueFrameRandomCooldownFrame_Update();
+	end
+end
+
+function LFDQueueFrameRandomCooldownFrame_Update()
+	local cooldownFrame = LFDQueueFrameRandomCooldownFrame;
+	local shouldShow = false;
+	
+	local myExpireTime = GetLFGRandomCooldownExpiration();
+	cooldownFrame.myExpirationTime = myExpireTime;
+	if ( myExpireTime and GetTime() < myExpireTime ) then
+		shouldShow = true;
+		cooldownFrame.description:SetText(LFG_RANDOM_COOLDOWN_YOU);
+		cooldownFrame.time:SetText(SecondsToTime(ceil(myExpireTime - GetTime())));
+		cooldownFrame.time:Show();
+		
+		cooldownFrame:SetScript("OnUpdate", LFDQueueFrameRandomCooldownFrame_OnUpdate);
+	else
+		cooldownFrame.description:SetText(LFG_RANDOM_COOLDOWN_OTHER);
+		cooldownFrame.time:Hide();
+		
+		cooldownFrame:SetScript("OnUpdate", nil);
+	end
+	
+	for i = 1, GetNumPartyMembers() do
+		local nameLabel = _G["LFDQueueFrameRandomCooldownFrameName"..i];
+		local statusLabel = _G["LFDQueueFrameRandomCooldownFrameStatus"..i];
+		nameLabel:Show();
+		statusLabel:Show();
+		
+		local _, classFilename = UnitClass("party"..i);
+		local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
+		nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName("party"..i));
+		
+		if ( UnitHasLFGRandomCooldown("party"..i) ) then
+			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", ON_COOLDOWN);
+			shouldShow = true;
+		else
+			statusLabel:SetFormattedText(GREEN_FONT_COLOR_CODE.."%s|r", READY);
+		end
+	end
+	for i = GetNumPartyMembers() + 1, MAX_PARTY_MEMBERS do
+		local nameLabel = _G["LFDQueueFrameRandomCooldownFrameName"..i];
+		local statusLabel = _G["LFDQueueFrameRandomCooldownFrameStatus"..i];
+		nameLabel:Hide();
+		statusLabel:Hide();
+	end
+	
+	if ( GetNumPartyMembers() == 0 ) then
+		cooldownFrame.description:SetPoint("TOP", 0, -85);
+	else
+		cooldownFrame.description:SetPoint("TOP", 0, -30);
+	end
+	
+	if ( shouldShow ) then
+		cooldownFrame:Show();
+	else
+		cooldownFrame:Hide();
+	end
+end
+
+function LFDQueueFrameRandomCooldownFrame_OnUpdate(self, elapsed)
+	local timeRemaining = self.myExpirationTime - GetTime();
+	if ( timeRemaining > 0 ) then
+		self.time:SetText(SecondsToTime(ceil(timeRemaining)));
+	else
+		LFDQueueFrameRandomCooldownFrame_Update();
+	end
+end
+
 --Queued status functions
 
 local NUM_TANKS = 1;
@@ -934,18 +1042,21 @@ local embeddedDamageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp
 
 function LFDSearchStatus_Update()
 	local LFDSearchStatus = LFDSearchStatus;
-	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, instanceType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait = GetLFGQueueStats();
+	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, instanceType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats();
 	
 	LFDSearchStatus_UpdateRoles();
 	
 	if ( not hasData ) then
-		LFDSearchStatus:SetHeight(130);
+		LFDSearchStatus:SetHeight(145);
 		LFDSearchStatusPlayer_SetFound(LFDSearchStatusTank1, false)
 		LFDSearchStatusPlayer_SetFound(LFDSearchStatusHealer1, false);
 		for i=1, NUM_DAMAGERS do
 			LFDSearchStatusPlayer_SetFound(_G["LFDSearchStatusDamage"..i], false);
 		end
 		LFDSearchStatus.statistic:Hide();
+		LFDSearchStatus.elapsedWait:SetFormattedText(TIME_IN_QUEUE, LESS_THAN_ONE_MINUTE);
+		
+		LFDSearchStatus:SetScript("OnUpdate", nil);
 		return;
 	end
 	
@@ -960,14 +1071,25 @@ function LFDSearchStatus_Update()
 		LFDSearchStatusPlayer_SetFound(_G["LFDSearchStatusDamage"..i], i <= (NUM_DAMAGERS - dpsNeeds));
 	end
 	
+	LFDSearchStatus.queuedTime = queuedTime;
+	local elapsedTime = GetTime() - queuedTime;
+	LFDSearchStatus.elapsedWait:SetFormattedText(TIME_IN_QUEUE, (elapsedTime >= 60) and SecondsToTime(elapsedTime) or LESS_THAN_ONE_MINUTE);
+	LFDSearchStatus.elapsedWait:Show();
+	
 	if ( myWait == -1 ) then
 		LFDSearchStatus.statistic:Hide();
-		LFDSearchStatus:SetHeight(130);
+		LFDSearchStatus:SetHeight(145);
 	else
 		LFDSearchStatus.statistic:Show();
-		LFDSearchStatus:SetHeight(150);
+		LFDSearchStatus:SetHeight(170);
 		LFDSearchStatus.statistic:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, myWait == -1 and TIME_UNKNOWN or SecondsToTime(myWait, false, false, 1));
 	end
+	LFDSearchStatus:SetScript("OnUpdate", LFDSearchStatus_OnUpdate);
+end
+
+function LFDSearchStatus_OnUpdate(self, elapsed)
+	local elapsedTime = GetTime() - self.queuedTime;
+	self.elapsedWait:SetFormattedText(TIME_IN_QUEUE, (elapsedTime >= 60) and SecondsToTime(elapsedTime) or LESS_THAN_ONE_MINUTE);
 end
 
 function LFDQueueFrameFindGroupButton_Update()
@@ -982,7 +1104,7 @@ function LFDQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
 		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or not LFDQueueFramePartyBackfill:IsVisible() ) then
 			LFDQueueFrameFindGroupButton:Enable();
 		else
@@ -994,7 +1116,7 @@ function LFDQueueFrameFindGroupButton_Update()
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" ) then
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" ) then
 		LFDQueueFramePartyBackfillBackfillButton:Enable();
 	else
 		LFDQueueFramePartyBackfillBackfillButton:Disable();
@@ -1007,7 +1129,7 @@ function LFDQueueFrame_Update()
 	
 	local mode, submode = GetLFGMode();
 	
-	if ( LFG_IsEmpowered() and mode ~= "queued") then
+	if ( LFD_IsEmpowered() and mode ~= "queued") then
 		enableList = LFGEnabledList;
 	else
 		enableList = LFGQueuedForList;

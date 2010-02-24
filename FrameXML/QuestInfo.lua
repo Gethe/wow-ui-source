@@ -550,8 +550,10 @@ QUEST_TEMPLATE_REWARD = { questLog = nil, chooseItems = true, tooltip = "GameToo
 QUEST_TEMPLATE_MAP1 = { questLog = true, chooseItems = nil, fadingText = nil, tooltip = nil,
 	elements = {
 		QuestInfo_ShowTitle, 30, -10,
+		QuestInfo_ShowObjectivesText, 0, -5,
+		QuestInfo_ShowDescriptionHeader, 0, -10,
 		QuestInfo_ShowDescriptionText, 0, -5,
-		QuestInfo_ShowSpacer, 0, -5
+		QuestInfo_ShowSpacer, 0, -10
 	}
 }
 

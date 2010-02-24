@@ -3087,15 +3087,16 @@ function ChatEdit_InsertLink(text)
 		if ( strfind(text, "item:", 1, true) ) then
 			item = GetItemInfo(text);
 		end
-		if ( MacroFrameText:GetText() == "" ) then
+		local cursorPosition = MacroFrameText:GetCursorPosition();
+		if (cursorPosition == 0 or strsub(MacroFrameText:GetText(), cursorPosition, cursorPosition) == "\n" ) then
 			if ( item ) then
 				if ( GetItemSpell(text) ) then
-					MacroFrameText:Insert(SLASH_USE1.." "..item);
+					MacroFrameText:Insert(SLASH_USE1.." "..item.."\n");
 				else
-					MacroFrameText:Insert(SLASH_EQUIP1.." "..item);
+					MacroFrameText:Insert(SLASH_EQUIP1.." "..item.."\n");
 				end
 			else
-				MacroFrameText:Insert(SLASH_CAST1.." "..text);
+				MacroFrameText:Insert(SLASH_CAST1.." "..text.."\n");
 			end
 		else
 			MacroFrameText:Insert(item or text);
@@ -3414,7 +3415,10 @@ local function processChatType(editBox, msg, index, send)
 -- this is a special function for "ChatEdit_HandleChatType"
 	if ( ChatTypeInfo[index] ) then
 		if ( index == "WHISPER" ) then
-			ChatEdit_ExtractTellTarget(editBox, msg);
+			local targetFound = ChatEdit_ExtractTellTarget(editBox, msg);
+			if ( send == 1 and not targetFound) then
+				ChatEdit_OnEscapePressed(editBox);
+			end	
 		elseif ( index == "REPLY" ) then
 			local lastTell = ChatEdit_GetLastTellTarget();
 			if ( lastTell ~= "" ) then
@@ -3619,7 +3623,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	-- Grab the first "word" in the string
 	local target = strmatch(msg, "%s*([^%s]+)");
 	if ( not target or (strsub(target, 1, 1) == "|") ) then
-		return;
+		return false;
 	end
 
 	msg = strsub(msg, strlen(target) + 2);
@@ -3628,6 +3632,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	editBox:SetAttribute("chatType", "WHISPER");
 	editBox:SetText(msg);
 	ChatEdit_UpdateHeader(editBox);
+	return true;
 end
 
 function ChatEdit_ExtractChannel(editBox, msg)

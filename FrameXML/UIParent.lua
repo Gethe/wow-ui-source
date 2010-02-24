@@ -181,7 +181,8 @@ function UIParent_OnLoad(self)
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
-
+	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
+	
 	-- Events for trainer UI handling
 	self:RegisterEvent("TRAINER_SHOW");
 	self:RegisterEvent("TRAINER_CLOSED");
@@ -951,6 +952,9 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		return;
 	end
+	if ( event == "AUCTION_HOUSE_DISABLED" ) then
+		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
+	end
 
 	-- Events for trainer UI handling
 	if ( event == "TRAINER_SHOW" ) then
@@ -1185,6 +1189,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
 	
 	-- Vars
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
@@ -1530,6 +1535,7 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 			frame:Show();
 		else
 			UIParent:Show();
+			SetUIVisibility(true);
 		end
 		return;
 	elseif ( key == "doublewide" ) then
@@ -3551,7 +3557,12 @@ function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridW
 	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
 end
 
-function LFG_IsEmpowered()
+function LFD_IsEmpowered()
+	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
+		not (IsPartyLeader() or IsRaidLeader()) ) or HasLFGRestrictions();
+end
+
+function LFR_IsEmpowered()
 	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
 		not (IsPartyLeader() or IsRaidLeader()) );
 end
@@ -3566,11 +3577,11 @@ function GetLFGMode()
 	elseif ( proposalExists ) then
 		return "proposal", "accepted";
 	elseif ( queued ) then
-		return "queued", (LFG_IsEmpowered() and "empowered" or "unempowered");
+		return "queued", (LFD_IsEmpowered() and "empowered" or "unempowered");
 	elseif ( roleCheckInProgress ) then
 		return "rolecheck";
 	elseif ( IsListedInLFR() ) then
-		return "listed", (LFG_IsEmpowered() and "empowered" or "unempowered");
+		return "listed", (LFR_IsEmpowered() and "empowered" or "unempowered");
 	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
 		return "lfgparty";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() ) then

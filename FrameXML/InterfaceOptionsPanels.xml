@@ -813,7 +813,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "colorblindMode";
 						self.uvar = "ENABLE_COLORBLIND_MODE";
-						self.setFunc = function() if ( IsAddOnLoaded("Blizzard_AchievementUI") ) then AchievementFrame_ForceUpdate(); end end;
+						self.setFunc = function() WatchFrame_Update(); if ( IsAddOnLoaded("Blizzard_AchievementUI") ) then AchievementFrame_ForceUpdate(); end end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -1006,7 +1006,23 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
+			<CheckButton name="$parentWatchFrameWidth" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAdvancedWorldMap" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "watchFrameWidth";
+						self.uvar = "WATCH_FRAME_WIDTH";
+						self.setFunc = function () WatchFrame_SetWidth(WATCH_FRAME_WIDTH); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>				
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsObjectivesPanel_OnLoad"/>

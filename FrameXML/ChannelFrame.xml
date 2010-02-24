@@ -875,8 +875,8 @@
 							<Layer level="BACKGROUND">
 								<FontString name="$parentLabel" inherits="GameFontNormal" text="CHANNEL_CHANNEL_NAME">
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="0" y="15"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset x="0" y="5"/>
 										</Anchor>
 									</Anchors>
 								</FontString>
@@ -907,8 +907,8 @@
 							<Layer level="BACKGROUND">
 								<FontString name="$parentLabel" inherits="GameFontNormal" text="PASSWORD">
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="0" y="15"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset x="0" y="5"/>
 										</Anchor>
 									</Anchors>
 								</FontString>

@@ -729,7 +729,7 @@ function UnitPopup_HideButtons ()
 		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
 			-- Task #30755. Let any party member mark targets
 			-- Task 34355 - But only raid leaders can mark targets.
-			if ( (inParty == 0) or ((inRaid == 1) and (isLeader == 0) and (isAssistant == 0)) ) then
+			if ( inRaid == 1 and isLeader == 0 and isAssistant == 0 ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 			if ( not (dropdownMenu.which == "SELF") ) then
@@ -1121,9 +1121,9 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "DUEL" ) then
 		StartDuel(unit, 1);
 	elseif ( button == "INVITE" ) then
-		InviteUnit(name);
+		InviteUnit(fullname);
 	elseif ( button == "UNINVITE" or button == "VOTE_TO_KICK" ) then
-		UninviteUnit(name);
+		UninviteUnit(fullname);
 	elseif ( button == "PROMOTE" ) then
 		PromoteToLeader(unit, 1);
 	elseif ( button == "GUILD_PROMOTE" ) then
@@ -1170,7 +1170,7 @@ function UnitPopup_OnClick (self)
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "MASTER_LOOTER" ) then
-		SetLootMethod("master", name);
+		SetLootMethod("master", fullname);
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "GROUP_LOOT" ) then
@@ -1194,7 +1194,7 @@ function UnitPopup_OnClick (self)
 		local raidDifficulty = tonumber( strsub(button,16,16) );
 		SetRaidDifficulty(raidDifficulty);
 	elseif ( button == "LOOT_PROMOTE" ) then
-		SetLootMethod("master", name, 1);
+		SetLootMethod("master", fullname, 1);
 	elseif ( button == "PVP_ENABLE" ) then
 		SetPVP(1);
 	elseif ( button == "PVP_DISABLE" ) then
@@ -1225,9 +1225,9 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "RAID_MAINASSIST" ) then
 		SetPartyAssignment("MAINASSIST", fullname, 1);
 	elseif ( button == "RAID_REMOVE" ) then
-		UninviteUnit(name);
+		UninviteUnit(fullname);
 	elseif ( button == "PVP_REPORT_AFK" ) then
-		ReportPlayerIsPVPAFK(name);
+		ReportPlayerIsPVPAFK(fullname);
 	elseif ( button == "RAF_SUMMON" ) then
 		SummonFriend(unit)
 	elseif ( button == "RAF_GRANT_LEVEL" ) then

@@ -42,7 +42,7 @@ function LFRFrame_OnEvent(self, event, ...)
 			LFRQueueFrameComment:ClearFocus();
 			SetLFGComment("");
 		end
-		if ( not LFG_IsEmpowered() or (not LFRQueueFrameComment:HasFocus() and LFRQueueFrameComment:GetText() == "") ) then
+		if ( not LFR_IsEmpowered() or (not LFRQueueFrameComment:HasFocus() and LFRQueueFrameComment:GetText() == "") ) then
 			if ( joined ) then
 				LFRQueueFrameComment:SetText(lfgComment);
 				if ( strtrim(lfgComment) == "" ) then
@@ -74,7 +74,7 @@ function LFRQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( LFG_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "rolecheck" and (not LFRRaidList or LFRRaidList[1])) then --During the proposal, they must use the proposal buttons to leave the queue.
+	if ( LFR_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "rolecheck" and (not LFRRaidList or LFRRaidList[1])) then --During the proposal, they must use the proposal buttons to leave the queue.
 		LFRQueueFrameFindGroupButton:Enable();
 		LFRQueueFrameAcceptCommentButton:Enable();
 		LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Enable();
@@ -215,7 +215,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		local difficultyColor = GetQuestDifficultyColor(recLevel);
 		button.level:SetFontObject(difficultyColor.font);
 		
-		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered()) then
+		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFR_IsEmpowered()) then
 			button.instanceName:SetFontObject(QuestDifficulty_Header);
 		else
 			button.instanceName:SetFontObject(difficultyColor.font);
@@ -268,7 +268,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.enableButton:SetChecked(enableState);
 	end
 	
-	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFG_IsEmpowered() ) then
+	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFR_IsEmpowered() ) then
 		button.enableButton:Disable();
 	else
 		button.enableButton:Enable();
@@ -314,7 +314,7 @@ end
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and (LFR_CanQueueForLockedInstances() or not LFGLockList[queueID]) ) then
 		local info = LFGGetDungeonInfoByID(queueID);
-		SetLFGDungeon(info[LFG_RETURN_VALUES.typeID], queueID);
+		SetLFGDungeon(queueID);
 		return true;
 	end
 	return false;
@@ -332,7 +332,7 @@ function LFRQueueFrame_Join()
 		end
 	else
 		if ( LFRQueueFrame.selectedLFM ) then
-			SetLFGDungeon(LFGGetDungeonInfoByID(LFRQueueFrame.selectedLFM)[LFG_RETURN_VALUES.typeID], LFRQueueFrame.selectedLFM);
+			SetLFGDungeon(LFRQueueFrame.selectedLFM);
 		end
 	end
 	
@@ -349,7 +349,7 @@ function LFRQueueFrame_Update()
 	local enableList;
 	
 	local mode, submode = GetLFGMode();
-	if ( LFG_IsEmpowered() and mode ~= "listed") then
+	if ( LFR_IsEmpowered() and mode ~= "listed") then
 		enableList = LFGEnabledList;
 	else
 		enableList = LFGQueuedForList;
@@ -701,10 +701,12 @@ end
 
 function LFRBrowseButton_OnClick(self)
 	if ( LFRBrowseFrame.selectedName == self.unitName ) then
+		PlaySound("igMainMenuOptionCheckBoxOff");
 		LFRBrowseFrame.selectedName = nil;
 		LFRBrowseFrame.selectedType = nil;
 		self:UnlockHighlight();
 	else
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		LFRBrowseFrame.selectedName = self.unitName;
 		LFRBrowseFrame.selectedType = self.type;
 		--Unlock all other highlights

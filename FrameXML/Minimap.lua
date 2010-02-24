@@ -14,6 +14,17 @@ function MinimapPing_OnLoad(self)
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 end
 
+function ToggleMinimap()
+	if(Minimap:IsShown()) then
+		PlaySound("igMiniMapClose");
+		Minimap:Hide();
+	else
+		PlaySound("igMiniMapOpen");
+		Minimap:Show();
+	end
+	UpdateUIPanelPositions();
+end
+
 function Minimap_Update()
 	MinimapZoneText:SetText(GetMinimapZoneText());
 

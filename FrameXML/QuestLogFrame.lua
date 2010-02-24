@@ -253,7 +253,6 @@ function QuestLog_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		QuestLog_Update();
-		WatchFrame_Update();
 		if ( QuestLogDetailScrollFrame:IsVisible() ) then
 			QuestLog_UpdateQuestDetails(false);
 			QuestLog_UpdateMap();
@@ -262,7 +261,6 @@ function QuestLog_OnEvent(self, event, ...)
 		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1);
 			QuestLog_Update();
-			WatchFrame_Update();
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if ( AUTO_QUEST_PROGRESS == "1" and 
@@ -270,7 +268,6 @@ function QuestLog_OnEvent(self, event, ...)
 			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1,MAX_QUEST_WATCH_TIME);
 			QuestLog_Update();
-			WatchFrame_Update();
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
 		QuestLog_Update();
@@ -389,7 +386,7 @@ function QuestLog_Update()
 
 	local numPartyMembers = GetNumPartyMembers();
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questCheck;
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily;
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, displayQuestID;
 	local color;
 	local partyMembersOnQuest, tempWidth, textWidth;
 	for i=1, numButtons do
@@ -401,7 +398,7 @@ function QuestLog_Update()
 		questCheck = questLogTitle.check;
 		questNormalText = questLogTitle.normalText;
 		if ( questIndex <= numEntries ) then
-			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questIndex);
+			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, displayQuestID = GetQuestLogTitle(questIndex);
 
 			if ( isHeader ) then
 				-- set the title
@@ -427,7 +424,11 @@ function QuestLog_Update()
 				if ( ENABLE_COLORBLIND_MODE == "1" ) then
 					title = "["..level.."] " .. title;
 				end
-				questLogTitle:SetText("  "..title);
+				if (questID and displayQuestID) then
+					questLogTitle:SetText("  "..questID.." - "..title);
+				else
+					questLogTitle:SetText("  "..title);
+				end
 
 				-- this isn't a header, hide the header textures
 				questLogTitle:SetNormalTexture("");

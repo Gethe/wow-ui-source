@@ -1,7 +1,8 @@
 StaticPopup_DisplayedFrames = { };
 
 STATICPOPUP_NUMDIALOGS = 4;
-
+STATICPOPUP_TEXTURE_ALERT = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew";
+STATICPOPUP_TEXTURE_ALERTGEAR = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertOther";
 StaticPopupDialogs = { };
 
 StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
@@ -2773,7 +2774,36 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	timeout = 0,
-}
+};
+
+StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
+	text = VOTE_BOOT_REASON_REQUIRED,
+	button1 = OKAY,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 64,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent();
+		UninviteUnit(parent.data, self:GetText());
+		parent:Hide();
+	end,
+	EditBoxOnTextChanged = function(self)
+		if ( strtrim(self:GetText()) == "" ) then
+			self:GetParent().button1:Disable();
+		else
+			self:GetParent().button1:Enable();
+		end
+	end,
+	OnShow = function(self)
+		self.button1:Disable();
+	end,
+	OnAccept = function(self)
+		UninviteUnit(self.data, self.editBox:GetText());
+	end,
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+};
 
 StaticPopupDialogs["LAG_SUCCESS"] = {
 	text = HELPFRAME_REPORTLAG_TEXT1,
@@ -2806,6 +2836,13 @@ StaticPopupDialogs["CONFIRM_MAIL_ITEM_UNREFUNDABLE"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["AUCTION_HOUSE_DISABLED"] = {
+	text = ERR_AUCTION_HOUSE_DISABLED,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
@@ -2835,7 +2872,7 @@ function StaticPopup_Resize(dialog, which)
 	local width = 320;
 	if ( info.button3 ) then
 		width = 440;
-	elseif (info.hasWideEditBox or info.showAlert or info.closeButton) then
+	elseif (info.hasWideEditBox or info.showAlert or info.showAlertGear or info.closeButton) then
 		-- Widen
 		width = 420;
 	elseif ( which == "HELP_TICKET" ) then
@@ -3012,9 +3049,11 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	-- Show or hide the alert icon
 	local alertIcon = _G[dialog:GetName().."AlertIcon"];
 	if ( info.showAlert ) then
-		alertIcon:Show();
-	else
-		alertIcon:Hide();	
+		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERT);
+	elseif ( info.showAlertGear ) then
+		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERTGEAR);
+	else		
+		alertIcon:SetTexture();
 	end
 
 	-- Show or hide the close button

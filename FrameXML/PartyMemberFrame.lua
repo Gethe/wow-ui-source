@@ -19,8 +19,9 @@ function ShowPartyFrame()
 end
 
 function PartyMemberFrame_UpdateArt(self)
-	if ( UnitHasVehicleUI("party"..self:GetID()) ) then
-		local vehicleType = UnitVehicleSkin("party"..self:GetID());
+	local unit = "party"..self:GetID();
+	if ( UnitHasVehicleUI(unit) and UnitIsConnected(unit) ) then
+		local vehicleType = UnitVehicleSkin(unit);
 		PartyMemberFrame_ToVehicleArt(self, vehicleType);
 	else
 		PartyMemberFrame_ToPlayerArt(self);
@@ -370,7 +371,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		if ( arg1 == unit ) then
 			PartyMemberFrame_UpdatePet(self);
 		end
-		if ( UnitHasVehicleUI("party"..selfID) ) then
+		if ( UnitHasVehicleUI("party"..selfID) and UnitIsConnected("party"..selfID)) then
 			PartyMemberFrame_ToVehicleArt(self, UnitVehicleSkin("party"..selfID));
 		end
 		return;
@@ -406,7 +407,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		PartyMemberFrame_UpdateVoiceStatus(self);
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		if ( arg1 == "party"..selfID ) then
-			if ( arg2 ) then
+			if ( arg2 and UnitIsConnected("party"..selfID) ) then
 				PartyMemberFrame_ToVehicleArt(self, arg3);
 			else
 				PartyMemberFrame_ToPlayerArt(self);

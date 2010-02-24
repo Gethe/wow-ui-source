@@ -104,7 +104,7 @@ function GossipFrameActiveQuestsUpdate(...)
 	local titleButton;
 	local titleIndex = 1;
 	local titleButtonIcon;
-	for i=1, select("#", ...), 3 do
+	for i=1, select("#", ...), 4 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
@@ -120,7 +120,11 @@ function GossipFrameActiveQuestsUpdate(...)
 		GossipResize(titleButton);
 		titleButton:SetID(titleIndex);
 		titleButton.type="Active";
-		titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+		if ( select(i+3, ...) ) then
+			titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+		else
+			titleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
+		end		
 		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
 		titleIndex = titleIndex + 1;
 		titleButton:Show();

@@ -149,18 +149,30 @@
 				<Offset x="0" y="0"/>
 			</Anchor>
 		</Anchors>
-		<Layers>		
-			<Layer level="OVERLAY">
-				<FontString name="$parentTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="0" y="-6"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Button name="$parentHeader">
+				<Size>
+					<AbsDimension x="160" y="16"/>
+				</Size>			
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="0" y="-6"/>
+					</Anchor>
+				</Anchors>
+				<Layers>		
+					<Layer level="OVERLAY">
+						<FontString name="WatchFrameTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnLoad> self:RegisterForClicks("RightButtonUp"); </OnLoad>
+					<OnClick function="WatchFrameHeader_OnClick" />
+				</Scripts>
+			</Button>
 			<Button name="$parentCollapseExpandButton">
 				<Size>
 					<AbsDimension x="16" y="16"/>
@@ -180,6 +192,7 @@
 					<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
 				</PushedTexture>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
+				<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
 			</Button>
 			<Frame name="WatchFrameLines" hidden="false">
 				<Anchors>
@@ -197,14 +210,23 @@
 						self.numFunctions = 0;
 					</OnLoad>
 				</Scripts>
-			</Frame>			
+			</Frame>
 		</Frames>		
 		<Scripts>
 			<OnLoad function="WatchFrame_OnLoad"/>
 			<OnEvent function="WatchFrame_OnEvent"/>
+			<OnUpdate function="WatchFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	
+
+	<Frame name="WatchFrameHeaderDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Scripts>
+			<OnLoad function="WatchFrameHeaderDropDown_OnLoad"/>
+		</Scripts>
+	</Frame>	
 	<Frame name="WatchFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 		<Size>
 			<AbsDimension x="10" y="10"/>

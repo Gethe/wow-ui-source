@@ -239,7 +239,7 @@ function LFG_UpdateAvailableRoles()
 		LFG_PermanentlyDisableRoleButton(LFDRoleCheckPopupRoleButtonDPS);
 	end
 	
-	local canChangeLeader = GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0;
+	local canChangeLeader = (GetNumPartyMembers() == 0 or IsPartyLeader()) and (GetNumRaidMembers() == 0 or IsRaidLeader());
 	if ( canChangeLeader ) then
 		LFG_EnableRoleButton(LFDQueueFrameRoleButtonLeader);
 	else

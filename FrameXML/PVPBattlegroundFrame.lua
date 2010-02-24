@@ -1,45 +1,41 @@
 NUM_DISPLAYED_BATTLEGROUNDS = 5;
-NUM_DISPLAYED_BATTLEGROUND_INSTANCES = 5;
 
 function PVPBattleground_UpdateBattlegrounds()
 	local frame;
 	local localizedName, canEnter, isHoliday;
 	local tempString, BGindex, isBig;
-	local currentFrameNum = 1;
 	
 	local offset = FauxScrollFrame_GetOffset(PVPBattlegroundFrameTypeScrollFrame);
+	local currentFrameNum = -offset + 1;
+	local numBGs = 0;
+	
 	for i=1,GetNumBattlegroundTypes() do
 		frame = _G["BattlegroundType"..currentFrameNum];
-		if ( not frame ) then	--We have filled up all of our open spaces.
-			break;
-		end
 		
-		BGindex = i+offset
-		localizedName, canEnter, isHoliday = GetBattlegroundInfo(BGindex);
+		localizedName, canEnter, isHoliday = GetBattlegroundInfo(i);
 		tempString = localizedName;
 		if ( localizedName and canEnter ) then
-			frame.disabled = false;
-			frame.BGindex = BGindex;
-			if ( not PVPBattlegroundFrame.selectedBG ) then
-				PVPBattlegroundFrame.selectedBG = BGindex;
-			end
-			frame:Enable();
-			if ( isHoliday ) then
-				tempString = tempString.." ("..BATTLEGROUND_HOLIDAY..")";
-			end
-		
-			frame.title:SetText(tempString);
-			frame:Show();
+			if ( frame ) then
+				frame.BGindex = i;
+				frame.localizedName = localizedName;
+				if ( not PVPBattlegroundFrame.selectedBG ) then
+					PVPBattlegroundFrame.selectedBG = i;
+				end
+				frame:Enable();
+				if ( isHoliday ) then
+					tempString = tempString.." ("..BATTLEGROUND_HOLIDAY..")";
+				end
 			
+				frame.title:SetText(tempString);
+				frame:Show();
+				if ( i == PVPBattlegroundFrame.selectedBG ) then
+					frame:LockHighlight();
+				else
+					frame:UnlockHighlight();
+				end
+			end
 			currentFrameNum = currentFrameNum + 1;
-			
-			if ( BGindex == PVPBattlegroundFrame.selectedBG ) then
-				frame:LockHighlight();
-			else
-				frame:UnlockHighlight();
-			end
-		else
-			frame:Hide();
+			numBGs = numBGs + 1;
 		end
 	end
 	
@@ -61,107 +57,66 @@ function PVPBattleground_UpdateBattlegrounds()
 		frame:Hide();
 	end
 	
-	local mapName, mapDescription, maxGroup = GetBattlefieldInfo();
-	if ( mapDescription ~= PVPBattlegroundFrameZoneDescriptionText:GetText() ) then
-		PVPBattlegroundFrameZoneDescriptionText:SetText(mapDescription);
-		PVPBattlegroundFrameZoneDescriptionScrollFrame:SetVerticalScroll(0);
-	end
-	if ( maxGroup and maxGroup == 5 ) then
-		PVPBattlegroundFrameGroupJoinButton:SetText(JOIN_AS_PARTY);
-	else
-		PVPBattlegroundFrameGroupJoinButton:SetText(JOIN_AS_GROUP);		
-	end
+	PVPBattleground_UpdateQueueStatus();
 	
 	PVPBattlegroundFrame_UpdateGroupAvailable();
-	FauxScrollFrame_Update(PVPBattlegroundFrameTypeScrollFrame, currentFrameNum, NUM_DISPLAYED_BATTLEGROUNDS, 16);
+	FauxScrollFrame_Update(PVPBattlegroundFrameTypeScrollFrame, numBGs, NUM_DISPLAYED_BATTLEGROUNDS, 16);
 end
 
-function PVPBattleground_UpdateInstances(BGindex)
+function PVPBattleground_UpdateInfo(BGindex)
 	if ( type(BGindex) ~= "number" ) then
 		BGindex = PVPBattlegroundFrame.selectedBG;
 	end
 	
-	local frame, localizedName, InstanceIndex, instanceID, isBig;
-	
-	local BGname = GetBattlegroundInfo(BGindex);
-	local numInstanceChoices = GetNumBattlefields(BGindex) + 1;
-	
-	if ( numInstanceChoices <= NUM_DISPLAYED_BATTLEGROUND_INSTANCES ) then
-		isBig = true;	--Espand the highlight to cover where the scroll bar usually is.
-	end
-	
-	local offset = FauxScrollFrame_GetOffset(PVPBattlegroundFrameInstanceScrollFrame);
-	for i=1,NUM_DISPLAYED_BATTLEGROUND_INSTANCES do
-		frame = _G["BattlegroundInstance"..i];
-		InstanceIndex = i + offset;
-		
-		if ( isBig ) then
-			frame:SetWidth(315);
-		else
-			frame:SetWidth(295);
+	local BGname, canEnter, isHoliday, isRandom = GetBattlegroundInfo(BGindex);
+
+	if ( isRandom or isHoliday ) then
+		PVPBattleground_UpdateRandomInfo();
+		PVPBattlegroundFrameInfoScrollFrameChildFrameRewardsInfo:Show();
+		PVPBattlegroundFrameInfoScrollFrameChildFrameDescription:Hide();
+	else
+		local mapName, mapDescription, maxGroup = GetBattlefieldInfo();
+		if ( mapDescription ~= PVPBattlegroundFrameInfoScrollFrameChildFrameDescription:GetText() ) then
+			PVPBattlegroundFrameInfoScrollFrameChildFrameDescription:SetText(mapDescription);
+			PVPBattlegroundFrameInfoScrollFrame:SetVerticalScroll(0);
 		end
 		
-		if ( InstanceIndex == 1 ) then
-			frame:Show();
-			frame:Enable();
-			frame.title:SetText(FIRST_AVAILABLE);
-			
-			if ( InstanceIndex == PVPBattlegroundFrame.selectedInstance ) then
-				frame:LockHighlight();
-			else
-				frame:UnlockHighlight();
-			end
-			
-			frame.localizedName = BGname;
-		else
-			instanceID = GetBattlefieldInstanceInfo(InstanceIndex - 1)
-			if ( instanceID ) then
-				localizedName = BGname.." "..instanceID;
-				frame:Show();
-				if ( PVPBattlegroundFrame.currentData ) then
-					frame:Enable();
-					frame.title:SetText(localizedName);
-					frame.localizedName = localizedName;
-				else
-					frame:Hide();
-					frame.localizedName = nil;
-				end
-				
-				if ( InstanceIndex == PVPBattlegroundFrame.selectedInstance and PVPBattlegroundFrame.currentData ) then
-					frame:LockHighlight();
-				else
-					frame:UnlockHighlight();
-				end
-			else
-				frame:Hide();
-			end
-		end
+		PVPBattlegroundFrameInfoScrollFrameChildFrameRewardsInfo:Hide();
+		PVPBattlegroundFrameInfoScrollFrameChildFrameDescription:Show();
 	end
-	
-	PVPBattleground_UpdateInstancesStatus();
-	FauxScrollFrame_Update(PVPBattlegroundFrameInstanceScrollFrame, numInstanceChoices, NUM_DISPLAYED_BATTLEGROUND_INSTANCES, 16);
 end
 
-function PVPBattleground_UpdateInstancesStatus()
+function PVPBattleground_GetSelectedBattlegroundInfo()
+	return GetBattlegroundInfo(PVPBattlegroundFrame.selectedBG);
+end
+
+function PVPBattleground_UpdateRandomInfo()
+	PVPQueue_UpdateRandomInfo(PVPBattlegroundFrameInfoScrollFrameChildFrameRewardsInfo, PVPBattleground_GetSelectedBattlegroundInfo);
+end
+
+function PVPBattleground_UpdateQueueStatus()
 	local queueStatus, queueMapName, queueInstanceID, frame;
-	for i=1, NUM_DISPLAYED_BATTLEGROUND_INSTANCES do
-		frame = _G["BattlegroundInstance"..i];
-		frame.status:SetText("");
+	for i=1, NUM_DISPLAYED_BATTLEGROUNDS do
+		frame = _G["BattlegroundType"..i];
+		frame.status:Hide();
 	end
+	local factionTexture = "Interface\\PVPFrame\\PVP-Currency-"..UnitFactionGroup("player");
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
-		for j=1, NUM_DISPLAYED_BATTLEGROUND_INSTANCES do
-			frame = _G["BattlegroundInstance"..j];
-			if ( frame.localizedName == queueMapName and queueInstanceID == 0 ) then
-				if ( queueStatus == "queued" ) then
-					frame.status:SetText(BATTLEFIELD_QUEUE_STATUS);
-				end
-			else
-				if ( queueStatus ~= "none" and queueMapName.." "..queueInstanceID == frame.localizedName ) then
+		if ( queueStatus ~= "none" ) then
+			for j=1, NUM_DISPLAYED_BATTLEGROUNDS do
+				local frame = _G["BattlegroundType"..j];
+				if ( frame.localizedName == queueMapName ) then
 					if ( queueStatus == "queued" ) then
-						frame.status:SetText(BATTLEFIELD_QUEUE_STATUS);
+						frame.status.texture:SetTexture(factionTexture);
+						frame.status.texture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
+						frame.status.tooltip = BATTLEFIELD_QUEUE_STATUS;
+						frame.status:Show();
 					elseif ( queueStatus == "confirm" ) then
-						frame.status:SetText(BATTLEFIELD_CONFIRM_STATUS);
+						frame.status.texture:SetTexture("Interface\\CharacterFrame\\UI-StateIcon");
+						frame.status.texture:SetTexCoord(0.45, 0.95, 0.0, 0.5);
+						frame.status.tooltip = BATTLEFIELD_CONFIRM_STATUS;
+						frame.status:Show();
 					end
 				end
 			end
@@ -169,12 +124,10 @@ function PVPBattleground_UpdateInstancesStatus()
 	end
 end
 
-function PVPBattleground_ResetInstances()
-	FauxScrollFrame_SetOffset(PVPBattlegroundFrameInstanceScrollFrame, 0);
-	FauxScrollFrame_OnVerticalScroll(PVPBattlegroundFrameInstanceScrollFrame, 0, 16, PVPBattleground_UpdateInstances);
-	PVPBattlegroundFrame.selectedInstance = 1;
-	
+function PVPBattleground_ResetInfo()	
 	RequestBattlegroundInstanceInfo(PVPBattlegroundFrame.selectedBG);
+	
+	PVPBattleground_UpdateInfo();
 end
 
 function PVPBattlegroundButton_OnClick(self)
@@ -195,36 +148,18 @@ function PVPBattlegroundButton_OnClick(self)
 	
 	PVPBattlegroundFrame.selectedBG = self.BGindex;
 	
-	PVPBattleground_ResetInstances();
-end
-
-function PVPBattlegroundButton_OnEnter(self)
-	if ( self.disabled ) then
-		self.highlight:Hide();
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-	else
-		self.highlight:Show();
-	end
-end
-
-function PVPBattlegroundInstanceButton_OnEnter(self)
-
-end
-
-function PVPBattlegroundInstanceButton_OnClick(self)
-	local offset = FauxScrollFrame_GetOffset(PVPBattlegroundFrameInstanceScrollFrame)
-	if ( self:GetID() + offset == PVPBattlegroundFrame.selectedInstance ) then
-		return;
-	end
+	PVPBattleground_ResetInfo();
 	
-	PVPBattlegroundFrame.selectedInstance = self:GetID() + offset;
-	for i=1,NUM_DISPLAYED_BATTLEGROUND_INSTANCES do
-		if ( self:GetID() == i ) then
-			_G["BattlegroundInstance"..i]:LockHighlight();
-		else
-			_G["BattlegroundInstance"..i]:UnlockHighlight();
-		end
+	PVPBattleground_UpdateJoinButton();
+end
+
+function PVPBattleground_UpdateJoinButton()
+	local mapName, mapDescription, maxGroup = GetBattlefieldInfo();
+	
+	if ( maxGroup and maxGroup == 5 ) then
+		PVPBattlegroundFrameGroupJoinButton:SetText(JOIN_AS_PARTY);
+	else
+		PVPBattlegroundFrameGroupJoinButton:SetText(JOIN_AS_GROUP);		
 	end
 end
 
@@ -234,7 +169,7 @@ function PVPBattlegroundFrameJoinButton_OnClick(self)
 		joinAsGroup = true;
 	end
 	
-	JoinBattlefield(PVPBattlegroundFrame.selectedInstance - 1, joinAsGroup);
+	JoinBattlefield(0, joinAsGroup);
 end
 
 function PVPBattlegroundFrame_OnLoad(self)
@@ -249,7 +184,6 @@ function PVPBattlegroundFrame_OnLoad(self)
 	PVPBattlegroundFrame_UpdateVisible();
 	
 	BattlegroundType1:Click();
-	BattlegroundInstance1:Click();
 end
 
 function PVPBattlegroundFrame_OnEvent(self, event, ...)
@@ -257,21 +191,22 @@ function PVPBattlegroundFrame_OnEvent(self, event, ...)
 		self.currentData = true;
 		PVPBattleground_UpdateBattlegrounds();
 		if ( self.selectedBG ) then
-			PVPBattleground_UpdateInstances(PVPBattlegroundFrame.selectedBG);
+			PVPBattleground_UpdateInfo();
 		end
 		if ( event == "NPC_PVPQUEUE_ANYWHERE" ) then
 			ShowUIPanel(PVPParentFrame);
 			PVPFrame_SetJustBG(true);
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
-		PVPBattleground_UpdateInstancesStatus();
+		PVPBattleground_UpdateQueueStatus();
 	elseif ( event == "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE" or event == "PLAYER_ENTERING_WORLD" ) then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		
 		FauxScrollFrame_SetOffset(PVPBattlegroundFrameTypeScrollFrame, 0);
 		FauxScrollFrame_OnVerticalScroll(PVPBattlegroundFrameTypeScrollFrame, 0, 16, PVPBattleground_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
 		if ( self.selectedBG ) then
-			PVPBattleground_ResetInstances();
+			PVPBattleground_ResetInfo();
+			PVPBattleground_UpdateJoinButton();
 		end
 		PVPBattlegroundFrame_UpdateVisible();
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then

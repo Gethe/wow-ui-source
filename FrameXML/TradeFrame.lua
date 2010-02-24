@@ -14,7 +14,7 @@ end
 
 function TradeFrame_OnShow(self)
 	self.acceptState = 0;
-	self.enabled = TradeFrameTradeButton:IsEnabled();
+	TradeFrameTradeButton.enabled = TradeFrameTradeButton:IsEnabled();
 	TradeFrame_UpdateMoney();
 end
 
