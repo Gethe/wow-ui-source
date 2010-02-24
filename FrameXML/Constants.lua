@@ -467,3 +467,7 @@ LIGHT_GHOST = 1;
 -- general constant translation table
 STATIC_CONSTANTS = {}
 RegisterStaticConstants(STATIC_CONSTANTS);
+
+-- textures for quest item overlays
+TEXTURE_ITEM_QUEST_BANG = "Interface\\ContainerFrame\\UI-Icon-QuestBang";
+TEXTURE_ITEM_QUEST_BORDER = "Interface\\ContainerFrame\\UI-Icon-QuestBorder";

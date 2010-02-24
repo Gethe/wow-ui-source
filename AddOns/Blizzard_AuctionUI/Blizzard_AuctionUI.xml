@@ -856,7 +856,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaceAuctionBid("list", GetSelectedAuctionItem("list"), MoneyInputFrame_GetCopper(BrowseBidPrice));
+								StaticPopup_Show("BID_AUCTION");
 								self:Disable();
 							</OnClick>
 						</Scripts>
@@ -1517,6 +1517,7 @@
 							</OnEscapePressed>
 							<OnTextChanged>
 								AuctionsFrameAuctions_ValidateAuction();
+								UpdateMaximumButtons();
 								UpdateDeposit();
 							</OnTextChanged>
 							<OnEditFocusLost>
@@ -1601,6 +1602,7 @@
 							</OnEscapePressed>
 							<OnTextChanged>
 								AuctionsFrameAuctions_ValidateAuction();
+								UpdateMaximumButtons();
 								UpdateDeposit();
 							</OnTextChanged>
 							<OnEditFocusLost>
@@ -1619,8 +1621,13 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								local stackSize = AuctionsStackSizeEntry:GetNumber();
+								if ( stackSize == 0 ) then
+									AuctionsStackSizeEntry:SetText(1);
+									stackSize = 1;
+								end
 								if ( AuctionsItemButton.stackCount and AuctionsItemButton.totalCount and AuctionsItemButton.totalCount > 0) then
-									AuctionsNumStacksEntry:SetNumber( floor(AuctionsItemButton.totalCount / AuctionsStackSizeEntry:GetNumber()) );
+									AuctionsNumStacksEntry:SetNumber( floor(AuctionsItemButton.totalCount / stackSize) );
 								end
 							</OnClick>
 						</Scripts>

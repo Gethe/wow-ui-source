@@ -9,6 +9,22 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIconQuestTexture">
+					<Size>
+						<AbsDimension x="37" y="38"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>

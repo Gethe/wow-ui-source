@@ -114,7 +114,14 @@ function TargetFrame_Update (self)
 		end
 		TargetFrame_CheckDead(self);
 		if ( self.showLeader ) then
-			if ( UnitIsPartyLeader(self.unit) ) then
+			if ( UnitIsPartyLeader(self.unit) and (UnitInParty(self.unit) or UnitInRaid(self.unit)) ) then
+				if ( HasLFGRestrictions() ) then
+					self.leaderIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
+					self.leaderIcon:SetTexCoord(0, 0.296875, 0.015625, 0.3125);
+				else
+					self.leaderIcon:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
+					self.leaderIcon:SetTexCoord(0, 1, 0, 1);
+				end
 				self.leaderIcon:Show();
 			else
 				self.leaderIcon:Hide();
@@ -187,10 +194,18 @@ function TargetFrame_OnEvent (self, event, ...)
 			end
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
-		if ( self.totFrame ) then
-			TargetofTarget_Update(self.totFrame);
+		if (self.unit == "focus") then
+			TargetFrame_Update(self);
+			-- If this is the focus frame, clear focus if the unit no longer exists
+			if (not UnitExists(self.unit)) then
+				ClearFocus();
+			end
+		else
+			if ( self.totFrame ) then
+				TargetofTarget_Update(self.totFrame);
+			end
+			TargetFrame_CheckFaction(self);
 		end
-		TargetFrame_CheckFaction(self);
 	elseif ( event == "RAID_TARGET_UPDATE" ) then
 		TargetFrame_UpdateRaidTargetIcon(self);
 	elseif ( event == "PLAYER_FOCUS_CHANGED" ) then

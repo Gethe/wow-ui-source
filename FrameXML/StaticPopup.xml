@@ -245,9 +245,9 @@
 					<AbsDimension x="37" y="37"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM">
+					<Anchor point="BOTTOM" relativeTo="$parentButton1" relativePoint="TOP">
 						<Offset>
-							<AbsDimension x="0" y="-16"/>
+							<AbsDimension x="0" y="8"/>
 						</Offset>
 					</Anchor>
 					<Anchor point="LEFT">

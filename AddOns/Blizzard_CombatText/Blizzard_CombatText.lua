@@ -271,14 +271,14 @@ function CombatText_OnEvent(self, event, ...)
 		message = COMBAT_TEXT_DEFLECT;
 	elseif ( messageType == "SPELL_REFLECT" ) then
 		message = COMBAT_TEXT_REFLECT;
-	elseif ( messageType == "BLOCK" or messageType == "SPELL_BLOCKED" ) then
+	elseif ( messageType == "BLOCK" or messageType == "SPELL_BLOCK" ) then
 		if ( arg3 ) then
 			-- Partial block
 			message = "-"..data.." "..format(BLOCK_TRAILER, arg3);
 		else
 			message = COMBAT_TEXT_BLOCK;
 		end
-	elseif ( messageType == "ABSORB" or messageType == "SPELL_ABSORBED" ) then
+	elseif ( messageType == "ABSORB" or messageType == "SPELL_ABSORB" ) then
 		if ( arg3 ) then
 			-- Partial absorb
 			message = "-"..data.." "..format(ABSORB_TRAILER, arg3);

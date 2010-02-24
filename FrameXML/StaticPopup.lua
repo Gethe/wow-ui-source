@@ -158,8 +158,10 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	OnCancel = function()
 		ClearCursor();
 	end,
-	OnShow = function()
-	
+	OnShow = function(self)
+		if(MerchantFrame.price ~= 0) then
+			MoneyFrame_Update(self.moneyFrame, MerchantFrame.price);
+		end
 	end,
 	OnHide = function()
 		MerchantFrame_ResetRefundItem();	
@@ -2883,21 +2885,21 @@ function StaticPopup_Resize(dialog, which)
 		dialog.maxWidthSoFar = width;
 	end
 	
-	local height = 16 + text:GetHeight() + 8 + button1:GetHeight();
+	local height = 32 + text:GetHeight() + 8 + button1:GetHeight();
 	if ( info.hasEditBox ) then
 		if ( info.hasWideEditBox  ) then
 		
 		end
-		height = height + 8 + editBox:GetHeight() + 16;
+		height = height + 8 + editBox:GetHeight();
 	elseif ( info.hasMoneyFrame ) then
-		height = height + 32;
-	elseif ( info.hasMoneyInputFrame ) then
-		height = height + 38;
-	elseif ( info.hasItemFrame ) then
-		height = height + 80;
-	else
 		height = height + 16;
+	elseif ( info.hasMoneyInputFrame ) then
+		height = height + 22;
 	end
+	if ( info.hasItemFrame ) then
+		height = height + 64;
+	end
+
 	if ( height > maxHeightSoFar ) then
 		dialog:SetHeight(height);
 		dialog.maxHeightSoFar = height;

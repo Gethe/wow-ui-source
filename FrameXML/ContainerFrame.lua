@@ -16,6 +16,8 @@ BACKPACK_HEIGHT = 240;
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
 	self:RegisterEvent("BAG_CLOSED");
+	self:RegisterEvent("QUEST_ACCEPTED");
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	ContainerFrame1.bagsShown = 0;
 	ContainerFrame1.bags = {};
 end
@@ -41,6 +43,11 @@ function ContainerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
 		ContainerFrame_UpdateCooldowns(self);
+	elseif ( event == "QUEST_ACCEPTED" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
+		for i = 1, ContainerFrame1.bagsShown do
+			local bag = _G[ContainerFrame1.bags[i]];
+			ContainerFrame_Update(bag);
+		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		updateContainerFrameAnchors();
 	end
@@ -266,16 +273,29 @@ function ContainerFrame_Update(frame)
 	local name = frame:GetName();
 	local itemButton;
 	local texture, itemCount, locked, quality, readable;
+	local isQuestItem, questId, isActive, questTexture;
 	local tooltipOwner = GameTooltip:GetOwner();
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
 		texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, itemButton:GetID());
+		isQuestItem, questId, isActive = GetContainerItemQuestInfo(id, itemButton:GetID());
 		
 		SetItemButtonTexture(itemButton, texture);
 		SetItemButtonCount(itemButton, itemCount);
 		SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5);
-
+		
+		questTexture = _G[name.."Item"..i.."IconQuestTexture"];
+		if ( questId and not isActive ) then
+			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
+			questTexture:Show();
+		elseif ( questId or isQuestItem ) then
+			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
+			questTexture:Show();		
+		else
+			questTexture:Hide();
+		end
+		
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
 			itemButton.hasItem = 1;
@@ -610,7 +630,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	local bag = itemButton:GetParent():GetID();
 
 	local money, honorPoints, arenaPoints, itemCount, refundSec = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
-	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0)) ) then
+	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) and (money == 0)) ) then
 		return false;
 	end
 	
@@ -647,7 +667,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 			end
 		end
 	end
-	
+	if(itemsString == nil) then
+		itemsString = "";
+	end
+	MerchantFrame.price = money;
 	MerchantFrame.refundBag = bag;
 	MerchantFrame.refundSlot = slot;
 	MerchantFrame.honorPoints = honorPoints;
@@ -662,6 +685,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	end
 	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
 	local r, g, b = GetItemQualityColor(itemQuality);
+	StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"].hasMoneyFrame = (money ~= 0) and 1 or nil;
 	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, "", {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = index, ["count"] = count * quantity});
 	return true;
 end

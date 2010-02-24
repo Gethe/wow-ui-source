@@ -38,6 +38,7 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("VOTE_KICK_REASON_NEEDED");
 	self:RegisterEvent("LFG_ROLE_UPDATE");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
+	self:RegisterEvent("LFG_OPEN_FROM_GOSSIP");
 end
 
 function LFDFrame_OnEvent(self, event, ...)
@@ -86,6 +87,10 @@ function LFDFrame_OnEvent(self, event, ...)
 		elseif ( LFDQueueFrameRandom:IsShown() ) then
 			LFDQueueFrameRandom_UpdateFrame();
 		end
+	elseif ( event == "LFG_OPEN_FROM_GOSSIP" ) then
+		local dungeonID = ...;
+		ShowUIPanel(LFDParentFrame);
+		LFDQueueFrame_SetType(dungeonID);
 	end
 	LFDQueueFrame_UpdatePortrait();
 end
@@ -162,9 +167,9 @@ function LFDRoleCheckPopup_Update()
 		if ( dungeonType == TYPEID_RANDOM_DUNGEON ) then
 			displayName = A_RANDOM_DUNGEON;
 		elseif ( dungeonType == TYPEID_HEROIC_DIFFICULTY ) then
-			displayName = format(HEROIC_PREFIX, LFGGetDungeonInfoByID(dungeonID)[LFG_RETURN_VALUES.name]);
+			displayName = format(HEROIC_PREFIX, select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID)));
 		else
-			displayName = LFGGetDungeonInfoByID(dungeonID)[LFG_RETURN_VALUES.name];
+			displayName = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID));
 		end
 	else
 		displayName = MULTIPLE_DUNGEONS;
@@ -508,8 +513,7 @@ function LFDDungeonReadyPopup_Update()
 			LFDDungeonReadyPopup:SetHeight(223);
 			LFDDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
 			texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..texture;
-			LFDDungeonReadyDialog.background:SetTexture(texture);
-			if ( LFDDungeonReadyDialog.background:GetTexture() ~= texture ) then	--We haven't added this texture yet. Default to the Deadmines.
+			if ( not LFDDungeonReadyDialog.background:SetTexture(texture) ) then	--We haven't added this texture yet. Default to the Deadmines.
 				LFDDungeonReadyDialog.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-Deadmines");	--DEBUG FIXME Default probably shouldn't be Deadmines
 			end
 			
@@ -730,10 +734,14 @@ function LFDQueueFrameTypeDropDown_Initialize()
 end
 
 function LFDQueueFrameTypeDropDownButton_OnClick(self)
-	LFDQueueFrame.type = self.value;
-	UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, self.value);
+	LFDQueueFrame_SetType(self.value);
+end
+
+function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id for a single dungeon
+	LFDQueueFrame.type = value;
+	UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, value);
 	
-	if ( self.value == "specific" ) then
+	if ( value == "specific" ) then
 		LFDQueueFrame_SetTypeSpecificDungeon();
 	else
 		LFDQueueFrame_SetTypeRandomDungeon();
@@ -790,20 +798,24 @@ function LFDQueueFrameRandom_UpdateFrame()
 	local difficulty;
 	local dungeonDescription;
 	local textureFilename;
-	local dungeonName, _,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, holiday = GetLFGDungeonInfo(dungeonID);
+	local dungeonName, _,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday = GetLFGDungeonInfo(dungeonID);
 	local isHeroic = difficulty > 0;
-	local isHoliday = holiday > 0;
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	local numRandoms = 4 - GetNumPartyMembers();
 	local moneyAmount = moneyBase + moneyVar * numRandoms;
 	local experienceGained = experienceBase + experienceVar * numRandoms;
 
 	
+	local backgroundTexture;
 	if ( isHeroic ) then
-		LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC");
+		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC";
 	elseif ( isHoliday ) then
-		LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..textureFilename);
+		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-HOLIDAY-BACKGROUND-"..textureFilename;
 	else 
+		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER";
+	end
+	
+	if ( not LFDQueueFrameBackground:SetTexture(backgroundTexture) ) then
 		LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER");
 	end
 	
@@ -852,9 +864,11 @@ function LFDQueueFrameRandom_UpdateFrame()
 	end
 	
 	if ( numRewards > 0 or ((moneyVar == 0 and experienceVar == 0) and (moneyAmount > 0 or experienceGained > 0)) ) then
+		parentFrame.rewardsLabel:Show();
 		parentFrame.rewardsDescription:Show();
 		lastFrame = parentFrame.rewardsDescription;
 	else
+		parentFrame.rewardsLabel:Hide();
 		parentFrame.rewardsDescription:Hide();
 	end
 	
@@ -906,7 +920,7 @@ function LFDQueueFrameRandom_UpdateFrame()
 end
 
 function LFDQueueFrameRandomCooldownFrame_OnLoad(self)
-	self:SetFrameLevel(15);
+	self:SetFrameLevel(11);
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
 	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff

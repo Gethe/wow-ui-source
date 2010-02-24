@@ -1422,7 +1422,7 @@ function WorldMapFrame_ResetFrameLevels()
 	WorldMapButton:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 10);
 	WorldMapPOIFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
 	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreatePlayerArrowFrame()
-	PlayerArrowEffectFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100);	
+	PlayerArrowEffectFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100);
 end
 
 function WorldMapQuestShowObjectives_Toggle()
@@ -1655,7 +1655,9 @@ function WorldMapFrame_SelectQuestFrame(questFrame)
 		end
 		poiIcon:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
 	end
-	
+	if ( WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE ) then
+		PlayerArrowEffectFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100);
+	end
 	WORLDMAP_SETTINGS.selectedQuest = questFrame;
 	WORLDMAP_SETTINGS.selectedQuestId = questFrame.questId;
 	WorldMapQuestSelectedFrame:SetPoint("TOPLEFT", questFrame, "TOPLEFT", -10, 0);

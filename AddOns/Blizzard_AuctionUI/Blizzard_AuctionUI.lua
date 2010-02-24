@@ -18,6 +18,8 @@ LAST_ITEM_START_BID = 0;
 LAST_ITEM_BUYOUT = 0;
 
 local BROWSE_PARAM_INDEX_PAGE = 7;
+local PRICE_TYPE_UNIT = 1;
+local PRICE_TYPE_STACK = 2;
 
 AuctionSort = { };
 
@@ -196,6 +198,22 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	end,
 	OnShow = function(self)
 		MoneyFrame_Update(self.moneyFrame, AuctionFrame.buyoutPrice);
+	end,
+	hasMoneyFrame = 1,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["BID_AUCTION"] = {
+	text = BID_AUCTION_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		PlaceAuctionBid(AuctionFrame.type, GetSelectedAuctionItem(AuctionFrame.type), MoneyInputFrame_GetCopper(BrowseBidPrice));
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, MoneyInputFrame_GetCopper(BrowseBidPrice));
 	end,
 	hasMoneyFrame = 1,
 	showAlert = 1,
@@ -1356,7 +1374,7 @@ end
 function PriceDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, PriceDropDown_Initialize);
 	if ( not AuctionFrameAuctions.priceType ) then
-		AuctionFrameAuctions.priceType = 2;
+		AuctionFrameAuctions.priceType = PRICE_TYPE_STACK;
 	end
 	UIDropDownMenu_SetSelectedValue(PriceDropDown, AuctionFrameAuctions.priceType);
 	UIDropDownMenu_SetWidth(PriceDropDown, 80);
@@ -1366,13 +1384,13 @@ function PriceDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = AUCTION_PRICE_PER_ITEM;
-	info.value = 1;
+	info.value = PRICE_TYPE_UNIT;
 	info.checked = nil;
 	info.func = PriceDropDown_OnClick;
 	UIDropDownMenu_AddButton(info);
 
 	info.text = AUCTION_PRICE_PER_STACK;
-	info.value = 2;
+	info.value = PRICE_TYPE_STACK;
 	info.checked = nil;
 	info.func = PriceDropDown_OnClick;
 	UIDropDownMenu_AddButton(info);
@@ -1385,7 +1403,7 @@ function PriceDropDown_OnClick(self)
 	local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);	
 	local stackSize = AuctionsStackSizeEntry:GetNumber();	
 	if ( stackSize > 1 ) then
-		if ( self.value == 1 ) then
+		if ( self.value == PRICE_TYPE_UNIT ) then
 			MoneyInputFrame_SetCopper(StartPrice, math.floor(startPrice / stackSize));
 			MoneyInputFrame_SetCopper(BuyoutPrice, math.floor(buyoutPrice / stackSize));
 		else
@@ -1444,6 +1462,8 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 		AuctionsItemButton.totalCount = totalCount;
 		AuctionsItemButton.pricePerUnit = pricePerUnit;
 		AuctionsItemButtonName:SetText(name);
+		local color = ITEM_QUALITY_COLORS[quality];
+		AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
 		if ( totalCount > 1 ) then
 			AuctionsItemButtonCount:SetText(totalCount);
 			AuctionsItemButtonCount:Show();
@@ -1452,6 +1472,7 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			AuctionsNumStacksEntry:Show();
 			AuctionsNumStacksMaxButton:Show();
 			UIDropDownMenu_EnableDropDown(PriceDropDown);
+			UpdateMaximumButtons();
 		else	
 			AuctionsItemButtonCount:Hide();
 			AuctionsStackSizeEntry:Hide();
@@ -1461,11 +1482,14 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			-- checking for count of 1 so when a stack of 2 or more is removed by the user, we don't reset to "per item"
 			-- totalCount will be 0 when the sell item is removed
 			if ( totalCount == 1 ) then
-				UIDropDownMenu_SetSelectedValue(PriceDropDown, 1);
+				AuctionFrameAuctions.priceType = PRICE_TYPE_UNIT;
+				UIDropDownMenu_SetSelectedValue(PriceDropDown, PRICE_TYPE_UNIT);
+				UIDropDownMenu_SetText(PriceDropDown, AUCTION_PRICE_PER_ITEM);
 			end
 			UIDropDownMenu_DisableDropDown(PriceDropDown);
 		end
-		SetMaxStackSize();
+		AuctionsStackSizeEntry:SetNumber(count);
+		AuctionsNumStacksEntry:SetNumber(1);
 		if ( name == LAST_ITEM_AUCTIONED and count == LAST_ITEM_COUNT ) then
 			MoneyInputFrame_SetCopper(StartPrice, LAST_ITEM_START_BID);
 			MoneyInputFrame_SetCopper(BuyoutPrice, LAST_ITEM_BUYOUT);
@@ -1514,7 +1538,7 @@ function AuctionsFrameAuctions_ValidateAuction()
 	-- The stack size is greater than total count
 	local stackCount = AuctionsItemButton.stackCount or 0;
 	local totalCount = AuctionsItemButton.totalCount or 0;
-	if ( AuctionsStackSizeEntry:GetNumber() > stackCount or AuctionsNumStacksEntry:GetNumber() == 0 or (AuctionsStackSizeEntry:GetNumber() * AuctionsNumStacksEntry:GetNumber() > totalCount) ) then
+	if ( AuctionsStackSizeEntry:GetNumber() == 0 or AuctionsStackSizeEntry:GetNumber() > stackCount or AuctionsNumStacksEntry:GetNumber() == 0 or (AuctionsStackSizeEntry:GetNumber() * AuctionsNumStacksEntry:GetNumber() > totalCount) ) then
 		return;
 	end
 	AuctionsCreateAuctionButton:Enable();
@@ -1604,6 +1628,7 @@ end
 -- Function to close popups if another auction item is selected
 function CloseAuctionStaticPopups()
 	StaticPopup_Hide("BUYOUT_AUCTION");
+	StaticPopup_Hide("BID_AUCTION");
 	StaticPopup_Hide("CANCEL_AUCTION");
 end
 
@@ -1612,7 +1637,13 @@ function AuctionsCreateAuctionButton_OnClick()
 	LAST_ITEM_BUYOUT = MoneyInputFrame_GetCopper(BuyoutPrice);
 	DropCursorMoney();
 	PlaySound("LOOTWINDOWCOINSOUND");
-	StartAuction(MoneyInputFrame_GetCopper(StartPrice), MoneyInputFrame_GetCopper(BuyoutPrice), AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
+	local startPrice = MoneyInputFrame_GetCopper(StartPrice);
+	local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);
+	if ( AuctionFrameAuctions.priceType == PRICE_TYPE_UNIT ) then
+		startPrice = startPrice * AuctionsStackSizeEntry:GetNumber();
+		buyoutPrice = buyoutPrice * AuctionsStackSizeEntry:GetNumber();
+	end
+	StartAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
 end
 
 function SetMaxStackSize()
@@ -1629,6 +1660,22 @@ function SetMaxStackSize()
 	else
 		AuctionsStackSizeEntry:SetNumber("");
 		AuctionsNumStacksEntry:SetNumber("");	
+	end
+end
+
+function UpdateMaximumButtons()
+	local stackCount = AuctionsItemButton.stackCount;
+	local totalCount = AuctionsItemButton.totalCount;
+	local stackSize = AuctionsStackSizeEntry:GetNumber();
+	if ( stackSize ~= min(totalCount, stackCount) ) then
+		AuctionsStackSizeMaxButton:Enable();
+	else
+		AuctionsStackSizeMaxButton:Disable();
+	end
+	if ( AuctionsNumStacksEntry:GetNumber() ~= math.floor(totalCount / stackSize) ) then
+		AuctionsNumStacksMaxButton:Enable();
+	else
+		AuctionsNumStacksMaxButton:Disable();
 	end
 end
 
