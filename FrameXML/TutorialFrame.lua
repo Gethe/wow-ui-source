@@ -589,7 +589,6 @@ local DISPLAY_DATA = {
 
 function TutorialFrame_OnLoad(self)
 	self:RegisterEvent("TUTORIAL_TRIGGER");
-	self:RegisterEvent("CINEMATIC_STOP");
 
 	for i = 1, MAX_TUTORIAL_VERTICAL_TILE do
 		local texture = self:CreateTexture("TutorialFrameLeft"..i, "BORDER");
@@ -626,15 +625,11 @@ function TutorialFrame_OnShow(self)
 end
 
 function TutorialFrame_OnHide(self)
-	PlaySound("igMainMenuClose");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	
 	if ( (getn(TUTORIALFRAME_QUEUE) <= 0) and (UnitLevel("player") > 5) ) then
 		TutorialFrameAlertButton:Hide();
 		UIParent_ManageFramePositions();
-	end
-	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
-		TutorialFrame_AlertButton_OnClick(TutorialFrameAlertButton);
 	end
 end
 
@@ -875,7 +870,9 @@ function TutorialFrame_AlertButton_OnClick(self)
 	TutorialFrame_CheckBadge();
 end
 
-function TutorialFrame_CheckIntro()
+function TutorialFrame_Hide()
+	PlaySound("igMainMenuClose");
+	HideUIPanel(TutorialFrame);
 	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
 		TutorialFrame_AlertButton_OnClick( TutorialFrameAlertButton );
 	end

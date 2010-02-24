@@ -138,7 +138,11 @@ function LootFrame_Update()
 		LootFrameUpButton:Show();
 		LootFramePrev:Show();
 	end
-	if ( LootFrame.page == ceil(LootFrame.numLootItems / LOOTFRAME_NUMBUTTONS) or LootFrame.numLootItems == 0 ) then
+	local numItemsPerPage = LOOTFRAME_NUMBUTTONS;
+	if ( LootFrame.numLootItems > LOOTFRAME_NUMBUTTONS ) then
+		numItemsPerPage = numItemsPerPage - 1;
+	end
+	if ( LootFrame.page == ceil(LootFrame.numLootItems / numItemsPerPage) or LootFrame.numLootItems == 0 ) then
 		LootFrameDownButton:Hide();
 		LootFrameNext:Hide();
 	else

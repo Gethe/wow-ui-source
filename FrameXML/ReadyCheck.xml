@@ -100,7 +100,7 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						PlaySound("LFG_DungeonReady");
+						PlaySound("ReadyCheck");
 					</OnShow>
 				</Scripts>
 			</Frame>

@@ -47,6 +47,7 @@ ChatTypeInfo["CHANNEL_LEAVE"]							= { sticky = 0 };
 ChatTypeInfo["CHANNEL_LIST"]							= { sticky = 0 };
 ChatTypeInfo["CHANNEL_NOTICE"]							= { sticky = 0 };
 ChatTypeInfo["CHANNEL_NOTICE_USER"]						= { sticky = 0 };
+ChatTypeInfo["TARGETICONS"]							= { sticky = 0 };
 ChatTypeInfo["AFK"]										= { sticky = 0 };
 ChatTypeInfo["DND"]										= { sticky = 0 };
 ChatTypeInfo["IGNORED"]									= { sticky = 0 };
@@ -217,6 +218,9 @@ ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_NOTICE",
 	"CHAT_MSG_CHANNEL_NOTICE_USER",
 	"CHAT_MSG_CHANNEL_LIST",
+};
+ChatTypeGroup["TARGETICONS"] = {
+	"CHAT_MSG_TARGETICONS"
 };
 
 ChannelMenuChatTypeGroups = {};
@@ -2550,7 +2554,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		end
 
 		if ( type == "SYSTEM" or type == "SKILL" or type == "LOOT" or type == "MONEY" or
-		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" ) then
+		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -2626,6 +2630,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				showLink = nil;
 			else
 				arg1 = gsub(arg1, "%%", "%%%%");
+			end
+			
+			if ((type == "PARTY_LEADER") and (HasLFGRestrictions())) then
+				type = "PARTY_GUIDE";
 			end
 			
 			-- Search for icon links and replace them with texture links.

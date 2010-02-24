@@ -236,6 +236,11 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		checked = function () return IsListeningForMessageType("CHANNEL"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "CHANNEL"); end;
 	},
+	[7] = {
+		type = "TARGETICONS",
+		checked = function () return IsListeningForMessageType("TARGETICONS"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "TARGETICONS"); end;
+	},
 }
 
 CHAT_CONFIG_CHANNEL_LIST = {};

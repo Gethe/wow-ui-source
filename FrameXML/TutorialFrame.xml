@@ -163,6 +163,9 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" x="4" y="-8"/>
                 </Anchors>
+				<Scripts>
+					<OnClick function="TutorialFrame_Hide"/>
+				</Scripts>
             </Button>
 			<Button name="TutorialFrameOkayButton">
 				<Size>
@@ -176,7 +179,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="HideParentPanel"/>
+					<OnClick function="TutorialFrame_Hide"/>
 				</Scripts>
 				<NormalTexture inherits="DialogButtonNormalTexture"/>
 				<PushedTexture inherits="DialogButtonPushedTexture"/>
@@ -248,8 +251,6 @@
 				local arg1 = ...;
 				if ( event == "TUTORIAL_TRIGGER" ) then
 					TutorialFrame_NewTutorial(arg1);
-				elseif ( event == "CINEMATIC_STOP" ) then
-					TutorialFrame_CheckIntro();
 				elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 					TutorialFrame_Update(TutorialFrame.id);
 				end

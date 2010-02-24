@@ -40,6 +40,7 @@ MANA_PER_INTELLECT = 15;
 MANA_REGEN_PER_SPIRIT = 0.2;
 DODGE_PARRY_BLOCK_PERCENT_PER_DEFENSE = 0.04;
 RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER = 2.2;
+RESILIENCE_CRIT_CHANCE_TO_CONSTANT_DAMAGE_REDUCTION_MULTIPLIER = 2.0;
 
 --Pet scaling:
 HUNTER_PET_BONUS = {};
@@ -519,7 +520,7 @@ function PaperDollFrame_SetResilience(statFrame)
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, minResilience);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..minResilience..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, lowestRatingBonus, min(lowestRatingBonus * RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER, maxRatingBonus), lowestRatingBonus);
+	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, lowestRatingBonus, min(lowestRatingBonus * RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER, maxRatingBonus), lowestRatingBonus * RESILIENCE_CRIT_CHANCE_TO_CONSTANT_DAMAGE_REDUCTION_MULTIPLIER);
 	statFrame:Show();
 end
 
