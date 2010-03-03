@@ -1521,14 +1521,16 @@ end
 
 function AuctionsFrameAuctions_ValidateAuction()
 	AuctionsCreateAuctionButton:Disable();
-	AuctionsBuyoutErrorText:Hide();
+	AuctionsBuyoutText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	AuctionsBuyoutError:Hide();
 	-- No item
 	if ( not GetAuctionSellItemInfo() ) then
 		return;
 	end
 	-- Buyout price is less than the start price
 	if ( MoneyInputFrame_GetCopper(BuyoutPrice) > 0 and MoneyInputFrame_GetCopper(StartPrice) > MoneyInputFrame_GetCopper(BuyoutPrice) ) then
-		AuctionsBuyoutErrorText:Show();
+		AuctionsBuyoutText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		AuctionsBuyoutError:Show();
 		return;
 	end
 	-- Start price is 0 or greater than the max allowed

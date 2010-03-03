@@ -261,17 +261,19 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests), 1 do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
-			if ( IsAvailableQuestTrivial(i - numActiveQuests) ) then
-				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
-				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
-			elseif ( IsAvailableQuestDaily(i - numActiveQuests) ) then
-				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
+			local isTrivial, isDaily, isRepeatable = GetAvailableQuestInfo(i - numActiveQuests);
+			if ( isDaily ) then
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
-				questTitleButtonIcon:SetVertexColor(1,1,1);
+			elseif ( isRepeatable ) then
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
+			else
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
+			end
+			if ( isTrivial ) then
+				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
+				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
 				questTitleButtonIcon:SetVertexColor(1,1,1);
 			end
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);

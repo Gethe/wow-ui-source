@@ -39,6 +39,7 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("LFG_ROLE_UPDATE");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 	self:RegisterEvent("LFG_OPEN_FROM_GOSSIP");
+	self:RegisterEvent("GOSSIP_CLOSED");
 end
 
 function LFDFrame_OnEvent(self, event, ...)
@@ -89,14 +90,26 @@ function LFDFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "LFG_OPEN_FROM_GOSSIP" ) then
 		local dungeonID = ...;
+		LFDParentFrame.fromGossip = true;
 		ShowUIPanel(LFDParentFrame);
 		LFDQueueFrame_SetType(dungeonID);
+	elseif ( event == "GOSSIP_CLOSED" ) then
+		if ( LFDParentFrame.fromGossip ) then
+			HideUIPanel(LFDParentFrame);
+		end
 	end
 	LFDQueueFrame_UpdatePortrait();
 end
 
 function LFDFrame_OnShow(self)
 	LFDFrame_UpdateBackfill(true);
+end
+
+function LFDFrame_OnHide(self)
+	if ( self.fromGossip ) then
+		CloseGossip();
+		self.fromGossip = false;
+	end
 end
 
 function LFDQueueFrame_UpdatePortrait()

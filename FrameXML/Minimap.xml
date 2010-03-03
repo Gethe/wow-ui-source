@@ -709,7 +709,6 @@
 							<Size>
 								<AbsDimension x="64" y="46"/>
 							</Size>							
-							<TexCoords left="0.0" right="0.25" top="0.0703125" bottom="0.4140625"/>
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
@@ -717,6 +716,7 @@
 									</Offset>
 								</Anchor>
 							</Anchors>							
+							<TexCoords left="0.0" right="0.25" top="0.0703125" bottom="0.4140625"/>
 						</Texture>
 						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER">
 							<Anchors>

@@ -257,7 +257,6 @@
 					<Size>
 						<AbsDimension x="690" y="4"/>
 					</Size>
-					<Color r="0" g="0" b="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTexture9">
 							<Offset>
@@ -265,6 +264,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>					
+					<Color r="0" g="0" b="0"/>
 				</Texture>				
 			</Layer>
 		</Layers>

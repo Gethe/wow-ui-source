@@ -2853,6 +2853,15 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			formatStringEvent = formatStringEvent.."_NO_DEST";
 		end
 
+				
+		if (event=="DAMAGE_SPLIT" and resultStr) then
+			if (amount == 0) then
+				formatStringEvent = "ACTION_DAMAGE_SPLIT_ABSORBED_FULL_TEXT";			
+			else
+				formatStringEvent = "ACTION_DAMAGE_SPLIT_RESULT_FULL_TEXT";		
+			end
+		end 
+		
 		-- Get the special cased string
 		if ( _G[formatStringEvent] ) then
 			formatString = _G[formatStringEvent];

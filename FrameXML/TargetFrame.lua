@@ -421,7 +421,7 @@ function TargetFrame_UpdateAuras (self)
 				frame.unit = self.unit;
 			end
 		end
-		if ( icon and ( not self.maxDebuffs or i <= self.maxDebuffs ) and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" ) ) then
+		if ( icon and ( not self.maxDebuffs or i <= self.maxDebuffs ) and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" or caster == "vehicle") ) then
 			frame:SetID(i);
 
 			-- set the icon

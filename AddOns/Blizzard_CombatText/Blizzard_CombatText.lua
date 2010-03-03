@@ -205,6 +205,9 @@ function CombatText_OnEvent(self, event, ...)
 		displayType = "crit";
 		message = "-"..data;
 	elseif ( messageType == "DAMAGE" or messageType == "SPELL_DAMAGE" ) then
+		if (data == 0) then
+			return
+		end
 		message = "-"..data;
 	elseif ( messageType == "SPELL_CAST" ) then
 		message = "<"..data..">";
@@ -279,7 +282,7 @@ function CombatText_OnEvent(self, event, ...)
 			message = COMBAT_TEXT_BLOCK;
 		end
 	elseif ( messageType == "ABSORB" or messageType == "SPELL_ABSORB" ) then
-		if ( arg3 ) then
+		if ( arg3 and data > 0 ) then
 			-- Partial absorb
 			message = "-"..data.." "..format(ABSORB_TRAILER, arg3);
 		else

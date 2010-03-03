@@ -27,6 +27,7 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("PET_SPELL_POWER_UPDATE");
 
 	PetPaperDollFrameCompanionFrame.mode = "CRITTER";
 	PetPaperDollFrameCompanionFrame.idMount = GetCompanionInfo("MOUNT", 1);
@@ -180,6 +181,8 @@ function PetPaperDollFrame_OnEvent (self, event, ...)
 		if ( self:IsVisible() ) then
 			PetPaperDollFrame_UpdateCompanionCooldowns();
 		end
+	elseif( event == "PET_SPELL_POWER_UPDATE" ) then
+		PetPaperDollFrame_SetSpellBonusDamage();
 	elseif ( (event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) then
 		PetPaperDollFrame_UpdateCompanions();
 	elseif ( arg1 == "pet" ) then
@@ -605,22 +608,7 @@ function PetPaperDollFrame_SetStats()
 end
 
 function PetPaperDollFrame_SetSpellBonusDamage()
-	local temp, unitClass = UnitClass("player");
-	unitClass = strupper(unitClass);
-	local spellDamageBonus = 0;
-	if( unitClass == "WARLOCK" ) then
-		local bonusFireDamage = GetSpellBonusDamage(3);
-		local bonusShadowDamage = GetSpellBonusDamage(6);
-		if ( bonusShadowDamage > bonusFireDamage ) then
-			spellDamageBonus =  ComputePetBonus("PET_BONUS_SPELLDMG_TO_SPELLDMG", bonusShadowDamage);
-		else
-			spellDamageBonus =  ComputePetBonus("PET_BONUS_SPELLDMG_TO_SPELLDMG", bonusFireDamage);
-		end
-	elseif( unitClass == "HUNTER" ) then
-		local base, posBuff, negBuff = UnitRangedAttackPower("player");
-		local totalAP = base+posBuff+negBuff;
-		spellDamageBonus = ComputePetBonus( "PET_BONUS_RAP_TO_SPELLDMG", totalAP );
-	end
+	local spellDamageBonus = GetPetSpellBonusDamage();
 	local spellDamageBonusText = format("%d",spellDamageBonus);
 
 	PetSpellDamageFrameLabel:SetText(format(STAT_FORMAT, SPELL_BONUS));

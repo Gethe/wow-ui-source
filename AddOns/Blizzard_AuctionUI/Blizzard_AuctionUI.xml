@@ -1678,11 +1678,6 @@
 										<Anchor point="BOTTOMLEFT" relativeTo="BuyoutPrice" relativePoint="TOPLEFT" x="-10" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="AuctionsBuyoutErrorText" inherits="GameFontRedSmall" text="AUCTION_BUYOUT_ERROR">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="AuctionsBuyoutText" relativePoint="TOPLEFT" x="0" y="3"/>
-									</Anchors>
-								</FontString>
 							</Layer>
 						</Layers>
 						<Anchors>
@@ -1693,6 +1688,37 @@
 								MoneyInputFrame_SetOnValueChangedFunc(self, AuctionsFrameAuctions_ValidateAuction);
 							</OnLoad>
 						</Scripts>
+						<Frames>
+							<Frame name="AuctionsBuyoutError" enableMouse="true" hidden="true">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="AuctionsBuyoutText" relativePoint="RIGHT" x="6" y="2" />
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+											<Size>
+												<AbsDimension x="20" y="20"/>
+											</Size>
+											<Anchors>
+												<Anchor point="CENTER" />
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(AUCTION_BUYOUT_ERROR, 1.0, 0.0, 0.0);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Frame>
+						</Frames>
 					</Frame>
 					<Frame name="DurationDropDown" inherits="UIDropDownMenuTemplate" id="1">
 						<Anchors>

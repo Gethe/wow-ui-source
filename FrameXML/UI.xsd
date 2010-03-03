@@ -357,6 +357,14 @@
 								<xs:attribute name="right" type="xs:float" use="required"/>
 								<xs:attribute name="top" type="xs:float" use="required"/>
 								<xs:attribute name="bottom" type="xs:float" use="required"/>
+								<xs:attribute name="ULx" type="xs:float"/>
+								<xs:attribute name="ULy" type="xs:float"/>
+								<xs:attribute name="LLx" type="xs:float"/>
+								<xs:attribute name="LLy" type="xs:float"/>
+								<xs:attribute name="URx" type="xs:float"/>
+								<xs:attribute name="URy" type="xs:float"/>
+								<xs:attribute name="LRx" type="xs:float"/>
+								<xs:attribute name="LRy" type="xs:float"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="Color" type="ColorType"/>
@@ -367,6 +375,8 @@
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
 				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
+				<xs:attribute name="horizTile" type="xs:boolean" default="false"/>
+				<xs:attribute name="vertTile" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
