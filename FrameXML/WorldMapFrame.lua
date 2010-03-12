@@ -258,10 +258,6 @@ function WorldMapFrame_Update()
 		completeMapFileName = mapFileName..dungeonLevel.."_";
 	else
 		completeMapFileName = mapFileName;
-		-- Hack alert! Temporary fix for bug 185222
-		if ( completeMapFileName == "Dalaran" ) then
-			completeMapFileName = "Dalaran1_";
-		end
 	end
 	for i=1, NUM_WORLDMAP_DETAIL_TILES do
 		texName = "Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i;

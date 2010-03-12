@@ -567,7 +567,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="73" y="-17"/>
+											<AbsDimension x="71" y="-20"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -620,12 +620,12 @@
 							</Button>
 							<Button name="MiniMapRecordingButton" hidden="true">
 								<Size>
-									<AbsDimension x="33" y="33"/>
+									<AbsDimension x="27" y="27"/>
 								</Size>
 								<Anchors>
-									<Anchor point="LEFT">
+									<Anchor point="RIGHT">
 										<Offset>
-											<AbsDimension x="14" y="7"/>
+											<AbsDimension x="-1" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -633,7 +633,7 @@
 									<Layer level="BORDER">
 										<Texture name="MiniMapWorldIcon" file="Interface\Minimap\MovieRecordingIcon">
 											<Size>
-												<AbsDimension x="20" y="20"/>
+												<AbsDimension x="15" y="15"/>
 											</Size>
 											<Anchors>
 												<Anchor point="CENTER">
@@ -647,7 +647,7 @@
 									<Layer level="OVERLAY">
 										<Texture name="MiniMapRecordingBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 											<Size>
-												<AbsDimension x="52" y="52"/>
+												<AbsDimension x="41" y="41"/>
 											</Size>
 											<Anchors>
 												<Anchor point="TOPLEFT"/>

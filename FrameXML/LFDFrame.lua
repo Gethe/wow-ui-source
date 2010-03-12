@@ -933,7 +933,7 @@ function LFDQueueFrameRandom_UpdateFrame()
 end
 
 function LFDQueueFrameRandomCooldownFrame_OnLoad(self)
-	self:SetFrameLevel(11);
+	self:SetFrameLevel(11);	--This value also needs to be set when SetParent is called in LFDQueueFrameRandomCooldownFrame_Update.
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
 	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
@@ -948,28 +948,25 @@ function LFDQueueFrameRandomCooldownFrame_OnEvent(self, event, ...)
 end
 
 function LFDQueueFrameRandomCooldownFrame_Update()
-	local cooldownFrame = LFDQueueFrameRandomCooldownFrame;
+	local cooldownFrame = LFDQueueFrameCooldownFrame;
 	local shouldShow = false;
+	local hasDeserter = false; --If we have deserter, we want to show this over the specific frame as well as the random frame.
 	
-	local myExpireTime = GetLFGRandomCooldownExpiration();
-	cooldownFrame.myExpirationTime = myExpireTime;
-	if ( myExpireTime and GetTime() < myExpireTime ) then
-		shouldShow = true;
-		cooldownFrame.description:SetText(LFG_RANDOM_COOLDOWN_YOU);
-		cooldownFrame.time:SetText(SecondsToTime(ceil(myExpireTime - GetTime())));
-		cooldownFrame.time:Show();
-		
-		cooldownFrame:SetScript("OnUpdate", LFDQueueFrameRandomCooldownFrame_OnUpdate);
+	local deserterExpiration = GetLFGDeserterExpiration();
+	
+	local myExpireTime;
+	if ( deserterExpiration ) then
+		myExpireTime = deserterExpiration;
+		hasDeserter = true;
 	else
-		cooldownFrame.description:SetText(LFG_RANDOM_COOLDOWN_OTHER);
-		cooldownFrame.time:Hide();
-		
-		cooldownFrame:SetScript("OnUpdate", nil);
+		myExpireTime = GetLFGRandomCooldownExpiration();
 	end
 	
+	cooldownFrame.myExpirationTime = myExpireTime;
+	
 	for i = 1, GetNumPartyMembers() do
-		local nameLabel = _G["LFDQueueFrameRandomCooldownFrameName"..i];
-		local statusLabel = _G["LFDQueueFrameRandomCooldownFrameStatus"..i];
+		local nameLabel = _G["LFDQueueFrameCooldownFrameName"..i];
+		local statusLabel = _G["LFDQueueFrameCooldownFrameStatus"..i];
 		nameLabel:Show();
 		statusLabel:Show();
 		
@@ -977,7 +974,11 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 		local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
 		nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName("party"..i));
 		
-		if ( UnitHasLFGRandomCooldown("party"..i) ) then
+		if ( UnitHasLFGDeserter("party"..i) ) then
+			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", DESERTER);
+			shouldShow = true;
+			hasDeserter = true;
+		elseif ( UnitHasLFGRandomCooldown("party"..i) ) then
 			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", ON_COOLDOWN);
 			shouldShow = true;
 		else
@@ -985,8 +986,8 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 		end
 	end
 	for i = GetNumPartyMembers() + 1, MAX_PARTY_MEMBERS do
-		local nameLabel = _G["LFDQueueFrameRandomCooldownFrameName"..i];
-		local statusLabel = _G["LFDQueueFrameRandomCooldownFrameStatus"..i];
+		local nameLabel = _G["LFDQueueFrameCooldownFrameName"..i];
+		local statusLabel = _G["LFDQueueFrameCooldownFrameStatus"..i];
 		nameLabel:Hide();
 		statusLabel:Hide();
 	end
@@ -995,6 +996,36 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 		cooldownFrame.description:SetPoint("TOP", 0, -85);
 	else
 		cooldownFrame.description:SetPoint("TOP", 0, -30);
+	end
+	
+	if ( hasDeserter ) then
+		cooldownFrame:SetParent(LFDQueueFrame);
+		cooldownFrame:SetFrameLevel(11);	--Setting a new parent changes the frame level, so we need to move it back to what we set in OnLoad.
+	else
+		cooldownFrame:SetParent(LFDQueueFrameRandom);	--If nobody has deserter, the dungeon cooldown only prevents us from queueing for random.
+		cooldownFrame:SetFrameLevel(11);
+	end
+	
+	if ( myExpireTime and GetTime() < myExpireTime ) then
+		shouldShow = true;
+		if ( deserterExpiration ) then
+			cooldownFrame.description:SetText(LFG_DESERTER_YOU);
+		else
+			cooldownFrame.description:SetText(LFG_RANDOM_COOLDOWN_YOU);
+		end
+		cooldownFrame.time:SetText(SecondsToTime(ceil(myExpireTime - GetTime())));
+		cooldownFrame.time:Show();
+		
+		cooldownFrame:SetScript("OnUpdate", LFDQueueFrameRandomCooldownFrame_OnUpdate);
+	else
+		if ( hasDeserter ) then
+			cooldownFrame.description:SetText(LFG_DESERTER_OTHER);
+		else
+			cooldownFrame.description:SetText(LFG_RANDOM_COOLDOWN_OTHER);
+		end
+		cooldownFrame.time:Hide();
+		
+		cooldownFrame:SetScript("OnUpdate", nil);
 	end
 	
 	if ( shouldShow ) then

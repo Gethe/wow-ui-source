@@ -1797,7 +1797,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	maxLetters = 12,
+	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(self)
 		AddIgnore(self.editBox:GetText());
 	end,

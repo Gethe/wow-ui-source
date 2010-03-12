@@ -172,12 +172,12 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="WIN" justifyH="LEFT">
-											<Size x="55" y="10"/>
+										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="WIN" justifyH="CENTER">
+											<Size x="90" y="10"/>
 											<Anchors>
 												<Anchor point="LEFT">
 													<Offset>
-														<AbsDimension x="30" y="0"/>
+														<AbsDimension x="5" y="0"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -243,12 +243,12 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="LOSS" justifyH="LEFT">
-											<Size x="55" y="10"/>
+										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="LOSS" justifyH="CENTER">
+											<Size x="90" y="10"/>
 											<Anchors>
 												<Anchor point="LEFT">
 													<Offset>
-														<AbsDimension x="30" y="0"/>
+														<AbsDimension x="5" y="0"/>
 													</Offset>
 												</Anchor>
 											</Anchors>

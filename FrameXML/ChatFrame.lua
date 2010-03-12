@@ -2527,7 +2527,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
 			if ( arg1 == "WRONG_PASSWORD" ) then
 				local staticPopup = _G[StaticPopup_Visible("CHAT_CHANNEL_PASSWORD") or ""];
-				if ( staticPopup and staticPopup.data == arg9 ) then
+				if ( staticPopup and strupper(staticPopup.data) == strupper(arg9) ) then
 					-- Don't display invalid password messages if we're going to prompt for a password (bug 102312)
 					return;
 				end
