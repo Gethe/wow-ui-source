@@ -146,7 +146,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\PVPFrame\PvpRandomBg">
+				<Texture name="$parentBGTex" file="Interface\PVPFrame\PvpRandomBg">
 					<Size>
 						<AbsDimension x="333" y="241"/>
 					</Size>

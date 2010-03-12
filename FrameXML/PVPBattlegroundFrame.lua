@@ -1,5 +1,19 @@
 NUM_DISPLAYED_BATTLEGROUNDS = 5;
 
+local PVPBATTLEGROUND_TEXTURELIST = {};
+PVPBATTLEGROUND_TEXTURELIST[1] = "Interface\\PVPFrame\\PvpBg-AlteracValley";
+PVPBATTLEGROUND_TEXTURELIST[2] = "Interface\\PVPFrame\\PvpBg-WarsongGulch";
+PVPBATTLEGROUND_TEXTURELIST[3] = "Interface\\PVPFrame\\PvpBg-ArathiBasin";
+PVPBATTLEGROUND_TEXTURELIST[7] = "Interface\\PVPFrame\\PvpBg-EyeOfTheStorm";
+PVPBATTLEGROUND_TEXTURELIST[9] = "Interface\\PVPFrame\\PvpBg-StrandOfTheAncients";
+PVPBATTLEGROUND_TEXTURELIST[30] = "Interface\\PVPFrame\\PvpBg-IsleOfConquest";
+PVPBATTLEGROUND_TEXTURELIST[32] = "Interface\\PVPFrame\\PvpRandomBg";
+
+
+
+
+
+
 function PVPBattleground_UpdateBattlegrounds()
 	local frame;
 	local localizedName, canEnter, isHoliday;
@@ -68,8 +82,13 @@ function PVPBattleground_UpdateInfo(BGindex)
 		BGindex = PVPBattlegroundFrame.selectedBG;
 	end
 	
-	local BGname, canEnter, isHoliday, isRandom = GetBattlegroundInfo(BGindex);
+	local BGname, canEnter, isHoliday, isRandom, BattleGroundID = GetBattlegroundInfo(BGindex);
 
+	
+	if(PVPBATTLEGROUND_TEXTURELIST[BattleGroundID]) then
+		PVPBattlegroundFrameBGTex:SetTexture(PVPBATTLEGROUND_TEXTURELIST[BattleGroundID]);
+	end
+	
 	if ( isRandom or isHoliday ) then
 		PVPBattleground_UpdateRandomInfo();
 		PVPBattlegroundFrameInfoScrollFrameChildFrameRewardsInfo:Show();
@@ -84,6 +103,7 @@ function PVPBattleground_UpdateInfo(BGindex)
 		PVPBattlegroundFrameInfoScrollFrameChildFrameRewardsInfo:Hide();
 		PVPBattlegroundFrameInfoScrollFrameChildFrameDescription:Show();
 	end
+
 end
 
 function PVPBattleground_GetSelectedBattlegroundInfo()
@@ -220,6 +240,9 @@ function PVPBattlegroundFrame_OnShow(self)
 	else
 		WintergraspTimer:Show();
 	end
+	
+	SortBGList();
+	
 	PVPBattleground_UpdateBattlegrounds();
 	RequestBattlegroundInstanceInfo(self.selectedBG or 1);
 end

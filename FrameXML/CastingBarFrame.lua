@@ -12,7 +12,7 @@ function CastingBarFrame_OnLoad (self, unit, showTradeSkills, showShield)
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
-	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE ");
+	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	self.unit = unit;
