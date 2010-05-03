@@ -13,7 +13,7 @@ General
 PvP
 ---
 
-* The amount of Honor awarded for an Honorable Kill has been increased by 100% for characters of all levels. Given that all avenues in the game which award players with Honor do so with a calculated conversion from a specific amount of Honorable Kills, this change means that all Honor players can obtain through various means will be increased by 100%. To offset against this in two key areas, experience gains in Battlegrounds have been reduced by 50% and Honor awarded for completing each Wintergrasp weekly quest has been reduced by 50%. When pairing the Honor rewarded from Honorable Kills being increased by 100% with the 50% Honor reduction from Wintergrasp weekly quests, and 50% experience-gain reduction from completing objectives in Battlegrounds, players will notice no change in the net amount of Honor or experience awarded in either case.
+* The amount of Honor awarded for an Honorable Kill has been increased by 100% for characters of all levels. This change will effectively double the amount of Honor received from Honorable Kills, or for completing Battleground and Wintergrasp objectives; however, the amount of experience gained from completing Battleground objectives and the amount of Honor rewarded for completing each Wintergrasp quest remain unchanged.
 
 ### Battlegrounds
 
@@ -101,6 +101,10 @@ Druids
 * Starfall: The damage done by this spell has been significantly increased.
 * Typhoon: Mana cost reduced to 25%, down from 32%.
 
+#### Feral Combat
+
+* Mangle: The debuff from this talent now lasts 60 seconds, up from 12 seconds.
+
 Hunters
 -------
 
@@ -126,6 +130,8 @@ Mages
 
 * Burning Soul: Threat reduction is now 10/20%, up from 5/10%.
 * Combustion: The cooldown on this spell is now 2 minutes, down from 3 minutes.
+* Empowered Fire: This talent now also applies to Pyroblast damage.
+* Torment the Weak: This talent now also applies to Pyroblast damage.
 
 #### Frost
 
@@ -152,6 +158,7 @@ Rogues
 * Filthy Tricks: Now Reduces the cooldown by 5/10 seconds and energy cost by 5/10 of Tricks of the Trade, Distract and Shadowstep abilities, and reduces the cooldown of Preparation by 1.5/3 minutes.
 * Ghostly Strike: If the rogue has a dagger equipped, this ability now deals 180% weapon damage instead of 125%.
 * Hemorrhage: If the rogue has a dagger equipped, this ability now deals 160% weapon damage instead of 110%.
+* Serrated Blades: This talent now allows the rogue to ignore up to 3/6/9% of the target's armor, rather than a fixed amount of armor ignored per level of the rogue.
 * Slaughter from the Shadows: Now adds 1/2/3/4/5% damage to all attacks and reduces the energy cost of Backstab and Ambush by 4/8/12/16/20, up from 3/6/9/12/15.
 * Waylay: The debuff from this talent can now be caused by Backstab in addition to Ambush and can be triggered by all hits from these abilities rather than just critical strikes, but the snare component is now 50%, down from 70%.
 
@@ -189,12 +196,17 @@ Warriors
 
 ### Talents
 
+#### Arms
+
+* Trauma: The debuff from this talent now lasts 60 seconds, up from 15 seconds.
+
 #### Fury
 
 * Rampage: This effect is now passive instead of being a proc from critical strikes.
 
 #### Protection
 
+* Improved Revenge: This talent can no longer trigger a stun, and instead causes Revenge to strike an additional target for 50/100% of Revenge's damage.
 * Vitality: Now boosts Stamina by 3/6/9%, up from 2/4/6%. Strength and expertise benefits have not changed.
 
 Items
@@ -202,12 +214,18 @@ Items
 
 * Frozo the Renowned has moved into the Dalaran Magus Commerce Exchange and will be trading your Frozen Orbs for various other trade goods.
 * Mechanostriders: Summoning any of these mounts is now perfectly mechanical-sounding!
+* Priest Tier-10 4-Piece Healing Set Bonus: Redesigned. This bonus now increases the effectiveness of the caster's Power Word: Shield and Renew spells by 5%.
+* Shaman Tier-10 4-Piece Elemental set Bonus: This bonus has been slightly adjusted to account for the fact that haste now modifies Flame Shock's periodic damage ticks. The bonus now makes the shaman's Lava Burst cause Flame Shock to tick at least two additional times before expiring.
 
 ### Glyphs
 
 #### Death Knights
 
 * Glyph of Disease: When this glyph causes Frost Fever to be refreshed, it will now also trigger a refresh of Icy Talons.
+
+#### Druids
+
+* Glyph of Mangle: This glyph now provides 10% increased damage done by Mangle instead of increasing the duration of the debuff.
 
 #### Mages
 
@@ -294,6 +312,11 @@ User Interface
   * Toggle achievement tracking.
   * Toggle completed quest tracking.
   * Toggle tracking quest objectives in other zones.
+
+Technical
+---------
+
+* Frame Rate: A maximum capacity of 200 frames per second has been added.
 
 Bug Fixes
 ---------
