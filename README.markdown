@@ -185,6 +185,10 @@ Warlocks
 
 ### Talents
 
+#### Affliction
+
+* Dark Pact: This ability no longer requires line-of-sight with the summoned demon, and the range has been increased from 30 yards to 100 yards.
+
 #### Demonology
 
 * Demonic Pact: This effect now has a 45-second duration, up from 12 seconds, and a 20-second internal cooldown.
@@ -316,7 +320,7 @@ User Interface
 Technical
 ---------
 
-* Frame Rate: A maximum capacity of 200 frames per second has been added.
+* Frame Rate: A maximum capacity of 200 frames per second has been added. To disable the frame rate limit, the following line should be added to the Config.wtf file: SET maxFPS "0".
 
 Bug Fixes
 ---------
