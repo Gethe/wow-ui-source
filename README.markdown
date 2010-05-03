@@ -48,6 +48,11 @@ Dungeons & Raids
 
 * Players may now skip the initial introduction dialog to this dungeon once they have completed it at least once.
 
+### Icecrown Citadel
+
+* Blood-Queen Lana'thel: Pact of the Darkfallen now applies damage twice as often, but for half the damage. This change will make the removal of the spell a bit more responsive.
+* Hellscream's Warsong and Strength of Wrynn now provide their bonuses to player pet health and damage, as well as the absorption amounts of Power Word: Shield and Sacred Shield.
+
 ### World Event Bosses
 
 Holiday bosses (such as Ahune for the Fire Festival) will now be accessible through the Dungeon Finder.
@@ -79,7 +84,7 @@ Death Knights
 #### Frost
 
 * Endless Winter: No longer causes Frost Fever to be applied by Chains of Ice, but instead grants 2/4% strength.
-* Icy Talons: The personal haste benefit provided by this talent is no longer exclusive with other sources of melee haste. This will allow death knights to always swing 4/6/12/16/20% faster when Frost Fever is applied. Windfury Totem and the party/raid component of Improved Icy Talons still do not stack.
+* Icy Talons: The personal haste benefit provided by this talent is no longer exclusive with other sources of melee haste. This will allow death knights to always swing 4/8/12/16/20% faster when Frost Fever is applied. Windfury Totem and the party/raid component of Improved Icy Talons still do not stack.
 * Improved Icy Talons: This effect is now passive instead of being a proc. The self haste buff remains unchanged.
 * Nerves of Cold Steel: Now increases off-hand damage by 8/16/25%, up from 5/10/15%.
 * Unbreakable Armor: The amount of strength granted is now 20%, up from 10%.
@@ -224,7 +229,7 @@ Items
 
 * Frozo the Renowned has moved into the Dalaran Magus Commerce Exchange and will be trading your Frozen Orbs for various other trade goods.
 * Mechanostriders: Summoning any of these mounts is now perfectly mechanical-sounding!
-* Priest Tier-10 4-Piece Healing Set Bonus: Redesigned. This bonus now increases the effectiveness of the caster's Power Word: Shield and Renew spells by 5%.
+* Priest Tier-10 4-Piece Healing Set Bonus: Redesigned. This bonus now increases the effectiveness of the caster's Power Word: Shield by 5% and Circle of Healing by 10%.
 * Shaman Tier-10 4-Piece Elemental set Bonus: This bonus has been slightly adjusted to account for the fact that haste now modifies Flame Shock's periodic damage ticks. The bonus now makes the shaman's Lava Burst cause Flame Shock to tick at least two additional times before expiring.
 
 ### Glyphs
@@ -232,6 +237,7 @@ Items
 #### Death Knights
 
 * Glyph of Disease: When this glyph causes Frost Fever to be refreshed, it will now also trigger a refresh of Icy Talons.
+* Glyph of Icebound Fortitude: Now always grants at least 40% damage reduction.
 
 #### Druids
 
@@ -241,6 +247,16 @@ Items
 #### Mages
 
 * Glyph of Fireball: No longer increases critical strike chance of Fireball. Instead, it now reduces the cast time of Fireball by 0.15 seconds.
+
+#### Priests
+
+* Glyph of Scourge Imprisonment: Now reduces the cast time of Shackle Undead by 1 second, up from 0.5 seconds.
+
+#### Rogues
+
+* Glyph of Deadly Throw: Now increases the slowing effect on Deadly Throw by 20%, up from 10%.
+* Glyph of Expose Armor: Now increases the duration of Expose Armor by 12 seconds, up from 10 seconds.
+* Glyph of Feint: Now reduces the energy cost of Feint by 20, up from 10.
 
 Professions
 -----------
