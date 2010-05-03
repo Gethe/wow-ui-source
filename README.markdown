@@ -39,7 +39,7 @@ PvP
 
 ### Wintergrasp
 
-* The internal balance system now only changes when a faction achieves 2 consecutive defenses after an initial capture of Wintergrasp, up from 1. More details can be found on our PvP forum.
+* The internal balance system now only changes when a faction achieves 2 consecutive defenses after an initial capture of Wintergrasp, up from 1. More details can be found on our [PvP Discussion](http://forums.worldofwarcraft.com/thread.html?topicId=23329393344) forum.
 
 Dungeons & Raids
 ----------------
@@ -47,6 +47,15 @@ Dungeons & Raids
 ### Culling of Stratholme
 
 * Players may now skip the initial introduction dialog to this dungeon once they have completed it at least once.
+
+### World Event Bosses
+
+Holiday bosses (such as Ahune for the Fire Festival) will now be accessible through the Dungeon Finder.
+
+* Players must use the Dungeon Finder or speak to special holiday NPCs in the world to queue up and access these bosses.
+* Upon accepting a queue for any holiday boss, the party will be ported directly to the necessary area for confronting that boss.
+* The previous summoning criteria for these bosses have been removed. Players can queue up for and fight each World Event boss as many times as they want for any standard loot that they may drop.
+* All rare holiday items (such as The Horseman's Reins) will have a chance of being found in holiday-themed loot troves which will drop once for each player in the party no more than once per day, in the same manner that doing the Random Dungeon daily quest will provide a specific reward the first time it is completed in a day.
 
 Classes: General
 ----------------
@@ -57,6 +66,7 @@ Death Knights
 -------------
 
 * Icy Touch: This ability now causes a very high amount of threat while the death knight is in Frost Presence.
+* Chains of Ice: The ability now innately applies Frost Fever to a target.
 * Rune of Razorice: Now stacks 5 stacks of 2% Frost Vulnerability instead of 10 stacks of 1% Frost Vulnerability. Proc chance changed to 100%.
 
 ### Talents
@@ -68,7 +78,8 @@ Death Knights
 
 #### Frost
 
-* Endless Winter: No longer causes Frost Fever to be applied by Chains of Ice, but instead grants 2/4% strength. The previous functionality of this talent can now be attained via the Glyph of Chains of Ice.
+* Endless Winter: No longer causes Frost Fever to be applied by Chains of Ice, but instead grants 2/4% strength.
+* Icy Talons: The personal haste benefit provided by this talent is no longer exclusive with other sources of melee haste. This will allow death knights to always swing 4/6/12/16/20% faster when Frost Fever is applied. Windfury Totem and the party/raid component of Improved Icy Talons still do not stack.
 * Improved Icy Talons: This effect is now passive instead of being a proc. The self haste buff remains unchanged.
 * Nerves of Cold Steel: Now increases off-hand damage by 8/16/25%, up from 5/10/15%.
 * Unbreakable Armor: The amount of strength granted is now 20%, up from 10%.
@@ -76,6 +87,19 @@ Death Knights
 #### Unholy
 
 * Scourge Strike: Now deals 70% weapon damage, plus 12% of physical damage done as shadow damage for each of the death knight's diseases on the target. The net result should be larger strikes with no diseases present, while maximum damage with all diseases applied to the target should stay the same.
+* Unholy Blight: In addition to its previous effects, this talent now also prevents diseases from being dispelled from victims afflicted by Unholy Blight.
+
+Druids
+------
+
+* Nature's Grasp: Now has 3 charges, up from 1.
+
+### Talents
+
+#### Balance
+
+* Starfall: The damage done by this spell has been significantly increased.
+* Typhoon: Mana cost reduced to 25%, down from 32%.
 
 Hunters
 -------
@@ -84,7 +108,7 @@ Hunters
 
 #### Beast Mastery
 
-* Ferocious Inspiration: This ability is now an aura and provides 1/2/3% damage to all party or raid members within 100 yards.
+* Ferocious Inspiration: This ability is now an aura and provides 1/2/3% damage to all party or raid members within 100 yards and boosts the damage of Steady Shot by 3/6/9%.
 
 Mages
 -----
@@ -101,6 +125,7 @@ Mages
 #### Fire
 
 * Burning Soul: Threat reduction is now 10/20%, up from 5/10%.
+* Combustion: The cooldown on this spell is now 2 minutes, down from 3 minutes.
 
 #### Frost
 
@@ -126,10 +151,9 @@ Rogues
 
 * Filthy Tricks: Now Reduces the cooldown by 5/10 seconds and energy cost by 5/10 of Tricks of the Trade, Distract and Shadowstep abilities, and reduces the cooldown of Preparation by 1.5/3 minutes.
 * Ghostly Strike: If the rogue has a dagger equipped, this ability now deals 180% weapon damage instead of 125%.
-
 * Hemorrhage: If the rogue has a dagger equipped, this ability now deals 160% weapon damage instead of 110%.
-* Slaughter from the Shadows: Now adds 1/2/3/4/5% damage to all attacks in addition to its current effects.
-* Waylay: The debuff from this talent can now be caused by Backstab in addition to Ambush.
+* Slaughter from the Shadows: Now adds 1/2/3/4/5% damage to all attacks and reduces the energy cost of Backstab and Ambush by 4/8/12/16/20, up from 3/6/9/12/15.
+* Waylay: The debuff from this talent can now be caused by Backstab in addition to Ambush and can be triggered by all hits from these abilities rather than just critical strikes, but the snare component is now 50%, down from 70%.
 
 Shaman
 ------
@@ -150,6 +174,7 @@ Warlocks
 --------
 
 * Immolate: The damage-over-time component of this spell can now produce critical strikes.
+* Life Tap: This spell no longer scales with spirit, and instead scales with spell power.
 
 ### Talents
 
@@ -168,6 +193,10 @@ Warriors
 
 * Rampage: This effect is now passive instead of being a proc from critical strikes.
 
+#### Protection
+
+* Vitality: Now boosts Stamina by 3/6/9%, up from 2/4/6%. Strength and expertise benefits have not changed.
+
 Items
 -----
 
@@ -178,7 +207,6 @@ Items
 
 #### Death Knights
 
-* Glyph of Chains of Ice: Now causes Chains of Ice to apply Frost Fever instead of dealing damage.
 * Glyph of Disease: When this glyph causes Frost Fever to be refreshed, it will now also trigger a refresh of Icy Talons.
 
 #### Mages
@@ -189,6 +217,10 @@ Professions
 -----------
 
 * Runed Orbs: Recipes which require this item have had their material requirements significantly reduced.
+
+### Engineering
+
+* The Pet Bombling and Lil' Smoky non-combat pets are no longer Bind-on-Pickup.
 
 ### Fishing
 
@@ -229,7 +261,7 @@ User Interface
   * Number of Stacks: In addition to selecting the size of a stack, players can select how many stacks of an item they wish to sell (i.e. if a player has a total of 43 Saronite Ore in the Auction frame, they can choose to list 2 stacks of 20, 4 stacks of 10, 8 stacks of 5, 43 stacks of 1, etc. If the number and amount of stacks listed results in a remainder, the left-over items will be placed back in the player's bags automatically).
   * Stack Size and Number of Stacks are linked mathematically so that altering the variables of one may automatically calculate the amount of the other (i.e. if a player puts 20 in the Stack Size field and 43 Saronite Ore are in the Auction frame, the Number of Stacks field will change to 2 by default. If a player only wishes to sell one stack of 20 Saronite Ore, the Number of Stacks field can be manually changed to 1).
   * Price: Players can now choose to input the price of an item Per Stack or Per Item by selecting either option from a pull-down. If Per Item is selected and a player is selling a stack of that item, the Auction House will multiply the selected Per Item price by the amount of that item in the stack. If Per Stack is selected, the player can enter the total price he or she wishes to charge for each stack of that item being listed.
-  * Auction Post Completion Bar: If multiple items or stacks of items are being listed at once by a player, a Posting completion bar will appear showing the total progress of each individual auction being listed once the Create Auction button is selected. The greater the number of individual listings being made in a single press of the Create Auction button, the longer this process will take. Players can still browse the Auction House while the Posting completion bar is in progress, but moving around will interrupt the progress, similar to moving while attempting to create multiple bandages with First Aid. Just as with creating bandages, auctions that were completed prior to the character moving or otherwise canceling the actions will successfully be listed.
+  * Auction Post Completion Bar: If multiple items or stacks of items are being listed at once by a player, a Posting completion bar will appear showing the total progress of each individual auction being listed once the Create Auction button is selected. The greater the number of individual listings being made in a single press of the Create Auction button, the longer this process will take. Players can still browse the Auction House while the Posting completion bar is in progress, but moving around will interrupt the progress, similar to moving while attempting to create multiple bandages with First Aid. Just as with creating bandages, auctions that were completed prior to the character moving or otherwise canceling the action will successfully be listed.
 
 ### Dungeon Finder
 
@@ -239,7 +271,6 @@ User Interface
 * Anyone in a dungeon party can now re-queue their group for a dungeon, as players will still be prompted whether or not to accept their chosen role.
 * Players who use the Vote Kick option will now be prompted to provide a reason for kicking a party member. This reason will be presented to everyone in the party except for the person voted to be kicked.
 * When joining as a group, more generous level requirements will be used instead of Random Dungeon level requirements so that players of different levels joining together will be eligible for a greater number of dungeons.
-* World Event bosses (such as Ahune for the Fire Festival) will now be accessible through the Dungeon Finder. Players must use the Dungeon Finder to access these bosses.
 * Parties randomly created via the Dungeon Finder will always be arranged in the party interface from top to bottom in the following order: tank, healer, damage, damage, damage.
 * If a random party is created via the Dungeon Finder and a player cannot roll Need on an item, a reason will now be provided.
 
