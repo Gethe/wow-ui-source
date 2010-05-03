@@ -114,6 +114,10 @@ Hunters
 
 * Ferocious Inspiration: This ability is now an aura and provides 1/2/3% damage to all party or raid members within 100 yards and boosts the damage of Steady Shot by 3/6/9%.
 
+### Pet Talents
+
+* Heart of the Phoenix: Cooldown reduced to 8 minutes, down from 10 minutes.
+
 Mages
 -----
 
@@ -197,11 +201,13 @@ Warriors
 --------
 
 * Revenge: Damage done by this ability (base and scaling) increased by 50%.
+* Thunderclap: This ability now counts as a ranged attack, granting it double damage on critical strikes instead of 150% and ranged miss chance, and still cannot be dodged or parried.
 
 ### Talents
 
 #### Arms
 
+* Bladestorm: Warriors can now be Disarmed while under the effects of this ability.
 * Trauma: The debuff from this talent now lasts 60 seconds, up from 15 seconds.
 
 #### Fury
@@ -229,6 +235,7 @@ Items
 
 #### Druids
 
+* Glyph of Focus: Now increases the damage done by Starfall by 10%, down from 20%.
 * Glyph of Mangle: This glyph now provides 10% increased damage done by Mangle instead of increasing the duration of the debuff.
 
 #### Mages
