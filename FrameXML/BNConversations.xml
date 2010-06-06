@@ -10,6 +10,9 @@
 			<OnLoad>
 				BNConversationButton_OnLoad(self);
 			</OnLoad>
+			<OnEvent>
+				BNConversationButton_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnClick>
 				BNConversationButton_OnClick(self, button);
 			</OnClick>
@@ -22,6 +25,7 @@
 		</Scripts>
 		<NormalTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Down"/>
+		<DisabledTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
 	<Frame name="BNConversationInviteListTemplate" virtual="true">

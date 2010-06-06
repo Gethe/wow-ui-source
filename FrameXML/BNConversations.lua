@@ -1,11 +1,12 @@
 BN_CONVERSATION_INVITE_HEIGHT = 22;
 BN_CONVERSATION_INVITE_NUM_DISPLAYED = 7;
-BN_CONVERSATION_MAX_CHANNEL_MEMBERS = 6;
+BN_CONVERSATION_MAX_CHANNEL_MEMBERS = BNGetMaxPlayersInConversation();
 
 function BNConversationInviteDialog_OnLoad(self)
 	self:RegisterEvent("BN_CHAT_CHANNEL_CREATE_SUCCEEDED");
 	self:RegisterEvent("BN_CHAT_CHANNEL_CREATE_FAILED");
-	
+	self:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE");
+	self:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE");
 	-- special popup dialog settings
 	self.hideOnEscape = true;
 	self.exclusive = true;
@@ -24,6 +25,12 @@ function BNConversationInviteDialog_OnEvent(self, event, ...)
 		end
 	elseif ( event == "BN_CHAT_CHANNEL_CREATE_FAILED" ) then
 		BNConversationInvite_UnlockActions();
+	elseif ( event == "BN_FRIEND_ACCOUNT_ONLINE" and self:IsShown() ) then
+		BNConversationInvite_Update();
+	elseif ( event == "BN_FRIEND_ACCOUNT_OFFLINE" and self:IsShown() ) then
+		local presenceID = ...;
+		BNConversationInvite_Unlock(presenceID);
+		BNConversationInvite_Deselect(presenceID);
 	end
 end
 
@@ -203,14 +210,39 @@ function BNConversationButton_OnLoad(self)
 	
 	BNConversationButton_UpdateAttachmentPoint(self);
 	BNConversationButton_UpdateTarget(self);
+	
+	self:RegisterEvent("BN_CHAT_CHANNEL_LEFT");
+	self:RegisterEvent("BN_CHAT_CHANNEL_JOINED");
 end
 
 function BNConversationButton_OnClick(self, button)
 	if ( self.chatType == "BN_CONVERSATION" ) then
-		BNConversationInvite_SelectPlayers(self.chatTarget);
+		local frame = BNConversationInviteDialog;
+		if ( frame:IsShown() and frame.target == self.chatTarget ) then
+			StaticPopupSpecial_Hide(frame)
+		else
+			BNConversationInvite_SelectPlayers(self.chatTarget);
+		end
 	else
 		BNConversationInvite_NewConversation(BNet_GetPresenceID(self.chatTarget));
 		BNConversationInviteDialog.triggeringChatFrame = self.chatFrame;
+	end
+end
+
+function BNConversationButton_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "BN_CHAT_CHANNEL_LEFT" and arg1 == self.chatTarget ) then
+		BNConversationButton_UpdateEnabledState(self);
+	elseif ( event == "BN_CHAT_CHANNEL_JOINED" and arg1 == self.chatTarget ) then
+		BNConversationButton_UpdateEnabledState(self);
+	end
+end
+
+function BNConversationButton_UpdateEnabledState(self)
+	if ( self.chatType ~= "BN_CONVERSATION" or BNGetConversationInfo(self.chatTarget) ) then
+		self:Enable();
+	else
+		self:Disable();
 	end
 end
 
@@ -218,6 +250,14 @@ function BNConversationButton_OnEnter(self, motion)
 	if ( self.chatType == "BN_CONVERSATION" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		BNConversation_DisplayConversationTooltip(self.chatTarget);
+		
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(CLICK_TO_INVITE_TO_CONVERSATION, nil, nil, nil, true);
+		GameTooltip:Show();
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:AddLine(CLICK_TO_START_CONVERSATION, nil, nil, nil, true);
+		GameTooltip:Show();		
 	end
 end
 	
@@ -255,4 +295,5 @@ function BNConversationButton_UpdateTarget(self)
 	
 	self.chatType = chatFrame.chatType;
 	self.chatTarget = chatTarget;
+	BNConversationButton_UpdateEnabledState(self);
 end

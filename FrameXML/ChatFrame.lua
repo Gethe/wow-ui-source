@@ -8,6 +8,7 @@ NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 10;
 
 CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
+CHAT_SHOW_IME = false;
 
 MAX_CHARACTER_NAME_BYTES = 48;
 
@@ -95,6 +96,7 @@ ChatTypeInfo["BN_WHISPER"]							= { sticky = 1, flashTab = true, flashTabOnGene
 ChatTypeInfo["BN_WHISPER_INFORM"]				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_CONVERSATION"]					= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_CONVERSATION_NOTICE"]					= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["BN_CONVERSATION_LIST"]					= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_ALERT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_BROADCAST"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_BROADCAST_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -123,6 +125,8 @@ ChatTypeGroup["YELL"] = {
 ChatTypeGroup["WHISPER"] = {
 	"CHAT_MSG_WHISPER",
 	"CHAT_MSG_WHISPER_INFORM",
+	"CHAT_MSG_AFK",
+	"CHAT_MSG_DND",
 };
 ChatTypeGroup["PARTY"] = {
 	"CHAT_MSG_PARTY",
@@ -246,6 +250,7 @@ ChatTypeGroup["BN_WHISPER"] = {
 ChatTypeGroup["BN_CONVERSATION"] = {
 	"CHAT_MSG_BN_CONVERSATION",
 	"CHAT_MSG_BN_CONVERSATION_NOTICE",
+	"CHAT_MSG_BN_CONVERSATION_LIST",
 };
 ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 	"CHAT_MSG_BN_INLINE_TOAST_ALERT",
@@ -264,11 +269,11 @@ CHAT_CATEGORY_LIST = {
 	PARTY = { "PARTY_LEADER", "PARTY_GUIDE", "MONSTER_PARTY" },
 	RAID = { "RAID_LEADER", "RAID_WARNING" },
 	GUILD = { "GUILD_ACHIEVEMENT" },
-	WHISPER = { "WHISPER_INFORM", "AFK", "IGNORE" },
+	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
 	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER" },
 	BATTLEGROUND = { "BATTLEGROUND_LEADER" },
 	BN_WHISPER = { "BN_WHISPER_INFORM" },
-	BN_CONVERSATION = { "BN_CONVERSATION_NOTICE" },
+	BN_CONVERSATION = { "BN_CONVERSATION_NOTICE", "BN_CONVERSATION_LIST" },
 };
 
 CHAT_INVERTED_CATEGORY_LIST = {};
@@ -1561,7 +1566,12 @@ end
 SlashCmdList["LIST_CHANNEL"] = function(msg)
 	local name = strmatch(msg, "%s*([^%s]+)");
 	if ( name ) then
-		ListChannelByName(name);
+		local nameNum = tonumber(name);
+		if ( nameNum and nameNum > MAX_WOW_CHAT_CHANNELS ) then
+			BNListConversation(nameNum - MAX_WOW_CHAT_CHANNELS);
+		else
+			ListChannelByName(name);
+		end	
 	else
 		ListChannels();
 	end
@@ -1959,7 +1969,16 @@ end
 
 SlashCmdList["IGNORE"] = function(msg)
 	if ( msg ~= "" or UnitIsPlayer("target") ) then
-		AddOrDelIgnore(msg);
+		local presenceID = BNet_GetPresenceID(msg);
+		if ( presenceID ) then
+			if ( BNIsFriend(presenceID) ) then
+				SendSystemMessage(ERR_CANNOT_IGNORE_BN_FRIEND);
+			else
+				BNSetToonBlocked(presenceID, not BNIsToonBlocked(presenceID));
+			end
+		else
+			AddOrDelIgnore(msg);
+		end
 	else
 		ToggleIgnorePanel();
 	end
@@ -2783,30 +2802,38 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(format(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);
 		elseif ( type == "BN_CONVERSATION_NOTICE" ) then
 			local channelLink = format(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
-			local playerLink = "|HBNplayer:"..arg2..":"..arg11..":"..Chat_GetChatCategory(type)..":"..arg8.."|h".."["..arg2.."]|h";
+			local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), arg8, arg2);
 			local message = format(_G["CHAT_CONVERSATION_"..arg1.."_NOTICE"], channelLink, playerLink)
 			
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8);
+			self:AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
+		elseif ( type == "BN_CONVERSATION_LIST" ) then
+			local channelLink = format(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
+			local message = format(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);
 			self:AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
 			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
 			local message;
 			if ( arg1 == "FRIEND_REQUEST" ) then
 				message = globalstring;
+			elseif ( arg1 == "FRIEND_PENDING" ) then
+				message = format(BN_INLINE_TOAST_FRIEND_PENDING, BNGetNumFriendInvites());
+			elseif ( arg1 == "FRIEND_REMOVED" ) then
+				message = format(globalstring, arg2);
 			else
-				local playerLink = "|HBNplayer:"..arg2..":"..arg11..":"..Chat_GetChatCategory(type)..":0|h".."["..arg2.."]|h";
+				local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
 				message = format(globalstring, playerLink);
 			end
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
-				local playerLink = "|HBNplayer:"..arg2..":"..arg11..":"..Chat_GetChatCategory(type)..":0|h".."["..arg2.."]|h";
+				local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
 				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
 			if ( arg1 ~= "" ) then
-				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST_INFORM, arg1), info.r, info.g, info.b, info.id);
+				self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_CONVERSATION" ) then
 			self:AddMessage(format(BN_INLINE_TOAST_CONVERSATION, arg1), info.r, info.g, info.b, info.id);
@@ -2868,7 +2895,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( type ~= "BN_WHISPER" and type ~= "BN_WHISPER_INFORM" and type ~= "BN_CONVERSATION" ) then
 				playerLink = "|Hplayer:"..arg2..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h";
 			else
-				playerLink = "|HBNplayer:"..arg2..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h";
+				playerLink = "|HBNplayer:"..arg2..":"..arg13..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h";
 			end
 			
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
@@ -3345,6 +3372,11 @@ function ChatEdit_OnEditFocusGained(self)
 	ChatEdit_ActivateChat(self);
 end
 
+function ChatEdit_OnEditFocusLost(self)
+	AutoCompleteEditBox_OnEditFocusLost(self);
+	ChatEdit_DeactivateChat(self);
+end
+
 function ChatEdit_ActivateChat(editBox)
 	if ( ACTIVE_CHAT_EDIT_BOX and ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		ChatEdit_DeactivateChat(ACTIVE_CHAT_EDIT_BOX);
@@ -3366,6 +3398,10 @@ function ChatEdit_ActivateChat(editBox)
 	editBox.focusRight:Show();
 	editBox.focusMid:Show();
 	editBox:SetAlpha(1.0);
+	
+	if ( CHAT_SHOW_IME ) then
+		_G[editBox:GetName().."Language"]:Show();
+	end
 end
 
 local function ChatEdit_SetDeactivated(editBox)
@@ -3384,6 +3420,7 @@ local function ChatEdit_SetDeactivated(editBox)
 		ChatEdit_ResetChatTypeToSticky(editBox);
 		ChatEdit_ResetChatType(editBox);
 	end
+	_G[editBox:GetName().."Language"]:Hide();
 end
 
 function ChatEdit_DeactivateChat(editBox)
@@ -3628,8 +3665,14 @@ function ChatEdit_SendText(editBox, addHistory)
 			SendChatMessage(text, type, editBox.language, target);
 		elseif ( type == "BN_WHISPER" ) then
 			local target = editBox:GetAttribute("tellTarget");
-			ChatEdit_SetLastToldTarget(target);
-			BNSendWhisper(BNet_GetPresenceID(target), text);
+			local presenceID = BNet_GetPresenceID(target);
+			if ( presenceID ) then
+				ChatEdit_SetLastToldTarget(target);
+				BNSendWhisper(presenceID, text);
+			else
+				local info = ChatTypeInfo["SYSTEM"]
+				editBox.chatFrame:AddMessage(format(BN_UNABLE_TO_RESOLVE_NAME, target), info.r, info.g, info.b);
+			end
 		elseif ( type == "BN_CONVERSATION" ) then
 			local target = tonumber(editBox:GetAttribute("channelTarget"));
 			BNSendConversationMessage(target, text);
@@ -3668,13 +3711,11 @@ end
 function ChatEdit_OnEscapePressed(editBox)
 	if ( not AutoCompleteEditBox_OnEscapePressed(editBox) ) then
 		ChatEdit_ResetChatTypeToSticky(editBox);
-		if ( GetCVar("chatStyle") ~= "im" ) then
+		if ( GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox ) then
 			editBox:SetText("");
 			editBox:Hide();
 		else
-			if ( editBox ~= MacroEditBox ) then
-				ChatEdit_DeactivateChat(editBox);
-			end
+			ChatEdit_DeactivateChat(editBox);
 		end
 	end
 end
@@ -3825,6 +3866,10 @@ end
 
 function ChatEdit_OnTextSet(self)
 	ChatEdit_ParseText(self, 0);
+end
+
+function ChatEdit_LanguageShow()
+	CHAT_SHOW_IME = true;
 end
 
 function ChatEdit_OnInputLanguageChanged(self)

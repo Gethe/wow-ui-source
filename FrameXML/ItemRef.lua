@@ -72,7 +72,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 8) == "BNplayer" ) then
 		local namelink = strsub(link, 10);
 		
-		local name, lineid, chatType, chatTarget = strsplit(":", namelink);
+		local name, presenceID, lineid, chatType, chatTarget = strsplit(":", namelink);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
 				local staticPopup;
@@ -124,15 +124,25 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 				
 			elseif ( button == "RightButton" ) then
-				FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetPresenceID(name));
+				if ( not BNIsSelf(presenceID) ) then
+					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetPresenceID(name));
+				end
 			else
-				ChatFrame_SendTell(name, chatFrame);
+				if ( not BNIsSelf(presenceID) ) then
+					ChatFrame_SendTell(name, chatFrame);
+				end
 			end
 		end
 		return;
 	elseif ( strsub(link, 1, 7) == "channel" ) then
 		if ( IsModifiedClick("CHATLINK") ) then
-			ToggleFriendsFrame(4);
+			local chanLink = strsub(link, 9);
+			local chatType, chatTarget = strsplit(":", chanLink);
+			if ( strupper(chatType) == "BN_CONVERSATION" ) then
+				BNListConversation(chatTarget);
+			else
+				ToggleFriendsFrame(4);
+			end
 		elseif ( button == "LeftButton" ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);

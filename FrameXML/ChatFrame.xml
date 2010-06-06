@@ -137,8 +137,11 @@
 				ChatEdit_OnHide(self);
 			</OnHide>
 			<OnEditFocusGained>
-				ChatEdit_OnEditFocusGained(self)
+				ChatEdit_OnEditFocusGained(self);
 			</OnEditFocusGained>
+			<OnEditFocusLost>
+				ChatEdit_OnEditFocusLost(self);
+			</OnEditFocusLost>
 			<OnUpdate>
 				ChatEdit_OnUpdate(self, elapsed);
 			</OnUpdate>

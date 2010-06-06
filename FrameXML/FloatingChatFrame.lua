@@ -21,6 +21,10 @@ CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA = 0.2;
 DEFAULT_CHATFRAME_ALPHA = 0.25;
 DEFAULT_CHATFRAME_COLOR = {r = 0, g = 0, b = 0};
 
+CHAT_FRAME_NORMAL_MIN_HEIGHT = 120;
+CHAT_FRAME_BIGGER_MIN_HEIGHT = 147;
+CHAT_FRAME_MIN_WIDTH = 296;
+
 CURRENT_CHAT_FRAME_ID = nil;
 
 CHAT_FRAME_TEXTURES = {
@@ -106,7 +110,10 @@ function FCF_CopyChatSettings(copyTo, copyFrom)
 	local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(copyFrom:GetID());
 	FCF_SetWindowColor(copyTo, r, g, b, 1);
 	FCF_SetWindowAlpha(copyTo, a, 1);
-	FCF_SetLocked(copyTo, locked);
+	--If we're copying to a docked window, we don't want to copy locked.
+	if ( not copyTo.isDocked ) then
+		FCF_SetLocked(copyTo, locked);
+	end
 	FCF_SetUninteractable(copyTo, uninteractable);
 	FCF_SetChatWindowFontSize(nil, copyTo, fontSize);
 end
@@ -627,6 +634,7 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	-- Set up the colors
 	local info = ChatTypeInfo[chatType];
 	chatTab.selectedColorTable = { r = info.r, g = info.g, b = info.b };
+	FCFTab_UpdateColors(chatTab, not chatFrame.isDocked or chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
 	
 	--If it's a conversation, create the conversation button
 	if ( chatType == "BN_CONVERSATION" or chatType == "BN_WHISPER" ) then
@@ -636,8 +644,15 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		else
 			CreateFrame("Button", chatFrame:GetName().."ConversationButton", chatFrame.buttonFrame, "BNConversationRosterButtonTemplate", chatFrame:GetID());
 		end
-	elseif ( chatFrame.conversationButton ) then
-		chatFrame.conversationButton:Hide();
+		if ( chatFrame:GetHeight() < CHAT_FRAME_BIGGER_MIN_HEIGHT ) then
+			chatFrame:SetHeight(CHAT_FRAME_BIGGER_MIN_HEIGHT);
+		end
+		chatFrame:SetMinResize(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_BIGGER_MIN_HEIGHT);
+	else
+		if ( chatFrame.conversationButton ) then
+			chatFrame.conversationButton:Hide();
+		end
+		chatFrame:SetMinResize(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_NORMAL_MIN_HEIGHT);
 	end
 	
 	--If it's a conversation, get it ready to convert to a whisper if needed.
@@ -645,6 +660,19 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		chatFrame:RegisterEvent("BN_CHAT_CHANNEL_CLOSED");
 	else
 		chatFrame:UnregisterEvent("BN_CHAT_CHANNEL_CLOSED");
+	end
+	
+	--Set the icon
+	local conversationIcon;
+	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
+		conversationIcon = "Interface\\ChatFrame\\UI-ChatWhisperIcon";
+	else
+		conversationIcon = "Interface\\ChatFrame\\UI-ChatConversationIcon";
+	end
+	
+	chatTab.conversationIcon:SetTexture(conversationIcon);
+	if ( chatFrame.minFrame ) then
+		chatFrame.minFrame.conversationIcon:SetTexture(conversationIcon);
 	end
 	
 	--Register this frame
@@ -691,8 +719,6 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 
 		maxTempIndex = maxTempIndex + 1;		
 	end
-	
-	-- initialize the frame
 	
 	--Copy chat settings from the source frame.
 	FCF_CopyChatSettings(chatFrame, sourceChatFrame or DEFAULT_CHAT_FRAME);
@@ -784,6 +810,8 @@ function FCF_SetWindowName(frame, name, doNotSave)
 		else
 			name = format(CHAT_NAME_TEMPLATE, frame:GetID());
 		end
+	else
+		FCFDock_SetDirty(GENERAL_CHAT_DOCK);
 	end
 	frame.name = name;
 	local tab = _G[frame:GetName().."Tab"];
@@ -1280,8 +1308,8 @@ function FCF_SetButtonSide(chatFrame, buttonSide, forceUpdate)
 		chatFrame.buttonFrame:SetPoint("TOPRIGHT", chatFrame, "TOPLEFT", -4, topY);
 		chatFrame.buttonFrame:SetPoint("BOTTOMRIGHT", chatFrame, "BOTTOMLEFT", -4, 0);
 	elseif ( buttonSide == "right" ) then
-		chatFrame.buttonFrame:SetPoint("TOPLEFT", chatFrame, "TOPRIGHT", 0, topY);
-		chatFrame.buttonFrame:SetPoint("BOTTOMLEFT", chatFrame, "BOTTOMRIGHT", 0, 0);
+		chatFrame.buttonFrame:SetPoint("TOPLEFT", chatFrame, "TOPRIGHT", 4, topY);
+		chatFrame.buttonFrame:SetPoint("BOTTOMLEFT", chatFrame, "BOTTOMRIGHT", 4, 0);
 	end
 	chatFrame.buttonSide = buttonSide;
 	
@@ -1598,6 +1626,12 @@ function FCF_Close(frame, fallback)
 	if ( PENDING_BN_WHISPER_TO_CONVERSATION_FRAME == frame ) then
 		PENDING_BN_WHISPER_TO_CONVERSATION_FRAME = nil;
 	end
+	
+	--Reset what this window receives.
+	ChatFrame_RemoveAllMessageGroups(frame);
+	ChatFrame_RemoveAllChannels(frame);
+	ChatFrame_ReceiveAllPrivateMessages(frame);
+	ChatFrame_ReceiveAllBNConversations(frame);
 end
 
 function FCF_RestoreChatsToFrame(targetFrame, sourceFrame)
@@ -1712,18 +1746,24 @@ function FCF_ResetChatWindows()
 	for _, chatFrameName in ipairs(CHAT_FRAMES) do
 		if ( chatFrameName ~= "ChatFrame1" ) then
 			local chatFrame = _G[chatFrameName];
-			chatFrame.isInitialized = 0;
-			FCF_SetTabPosition(chatFrame, 0);
-			FCF_Close(chatFrame);
-			FCF_UnDockFrame(chatFrame);
+			if ( chatFrame.isTemporary and chatFrame.chatType == "BN_CONVERSATION" and
+				BNGetConversationInfo(tonumber(chatFrame.chatTarget)) and GetCVar("conversationMode") == "popout" ) then
+				--We're still in this conversation, so we just want to reset the position, not remove the frame.
+				FCF_DockFrame(chatFrame, 3);	--Put it after General and Combat Log
+			else
+				chatFrame.isInitialized = 0;
+				FCF_SetTabPosition(chatFrame, 0);
+				FCF_Close(chatFrame);
+				FCF_UnDockFrame(chatFrame);
+				FCF_SetWindowName(chatFrame, "");
+				ChatFrame_RemoveAllMessageGroups(chatFrame);
+				ChatFrame_RemoveAllChannels(chatFrame);
+				ChatFrame_ReceiveAllPrivateMessages(chatFrame);
+				ChatFrame_ReceiveAllBNConversations(chatFrame);
+			end
 			FCF_SetChatWindowFontSize(nil, chatFrame, 14);
-			FCF_SetWindowName(chatFrame, "");
 			FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
-			ChatFrame_RemoveAllMessageGroups(chatFrame);
-			ChatFrame_RemoveAllChannels(chatFrame);
-			ChatFrame_ReceiveAllPrivateMessages(chatFrame);
-			ChatFrame_ReceiveAllBNConversations(chatFrame);
 		end
 	end
 	ChatFrame1.init = 0;
@@ -1748,6 +1788,7 @@ function FCFClickAnywhereButton_OnLoad(self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 	FCFClickAnywhereButton_UpdateState(self);
 end
 
@@ -1817,6 +1858,15 @@ function FCF_CreateMinimizedFrame(chatFrame)
 	
 	if ( not chatFrame.isTemporary ) then
 		minFrame.conversationIcon:Hide();
+	else
+		local conversationIcon;
+		if ( chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
+			conversationIcon = "Interface\\ChatFrame\\UI-ChatWhisperIcon";
+		else
+			conversationIcon = "Interface\\ChatFrame\\UI-ChatConversationIcon";
+		end
+		
+		minFrame.conversationIcon:SetTexture(conversationIcon);
 	end
 	
 	if (chatFrame.isTemporary) then
@@ -1898,10 +1948,18 @@ function FCFDock_OnPrimarySizeChanged(dock)
 	dock.isDirty = true;
 	
 	--We have to save off the current leftmost-tab before we resize the tabs.
-	local leftTab = FCFDockScrollFrame_GetLeftmostTab(dock.scrollFrame);
+	dock.leftTab = FCFDockScrollFrame_GetLeftmostTab(dock.scrollFrame);
 	
-	FCFDock_UpdateTabs(dock);
-	FCFDockScrollFrame_JumpToTab(dock.scrollFrame, leftTab);
+	--We have to do it on the next frame to deal with issues caused by resizing the WoW client (frame positions may not be valid)
+	dock:SetScript("OnUpdate", FCFDock_OnUpdate);
+end
+
+function FCFDock_OnUpdate(self)
+	--These may fail if we're resizing the WoW client
+	if ( FCFDock_UpdateTabs(self) and FCFDockScrollFrame_JumpToTab(self.scrollFrame, self.leftTab) ) then
+		self.leftTab = nil;
+		self:SetScript("OnUpdate", nil);
+	end
 end
 
 function FCFDock_ForceReanchoring(dock)
@@ -2077,7 +2135,7 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 	
 	dock.isDirty = false;
 	
-	FCFDock_ScrollToSelectedTab(dock);
+	return FCFDock_ScrollToSelectedTab(dock);
 end
 
 --Returns dynTabSize, hasOverflow
@@ -2111,8 +2169,9 @@ end
 function FCFDock_ScrollToSelectedTab(dock)
 	if ( FCFDockScrollFrame_GetScrollDistanceNeeded(dock.scrollFrame, dock.scrollFrame.selectedDynIndex) ~= 0) then
 		dock.scrollFrame:SetScript("OnUpdate", FCFDockScrollFrame_OnUpdate);
+		return true;
 	else
-		FCFDockScrollFrame_JumpToTab(dock.scrollFrame, FCFDockScrollFrame_GetLeftmostTab(dock.scrollFrame));	--Make sure we're exactly aligned with the tab.
+		return FCFDockScrollFrame_JumpToTab(dock.scrollFrame, FCFDockScrollFrame_GetLeftmostTab(dock.scrollFrame));	--Make sure we're exactly aligned with the tab.
 	end
 end
 
@@ -2204,6 +2263,10 @@ function FCFDock_HideInsertHighlight(dock)
 	dock.insertHighlight:Hide();
 end
 
+function FCFDock_SetDirty(dock)
+	dock.isDirty = true;
+end
+
 function FCFDockScrollFrame_GetScrollDistanceNeeded(scrollFrame, dynFrameIndex)
 	
 	local firstIndex = (scrollFrame:GetHorizontalScroll() / scrollFrame.dynTabSize) + 1;
@@ -2246,16 +2309,30 @@ function FCFDockScrollFrame_JumpToTab(scrollFrame, leftTab)
 	
 	scrollFrame:SetHorizontalScroll(scrollFrame.dynTabSize * (leftTab - 1));
 	
-	FCFDockOverflowButton_UpdatePulseState(scrollFrame:GetParent().overflowButton);
+	return FCFDockOverflowButton_UpdatePulseState(scrollFrame:GetParent().overflowButton);
 end
 
 --Dock list related functions
+function FCFDockOverflow_CloseLists()
+	local list = GENERAL_CHAT_DOCK.overflowButton.list;
+	if ( list:IsShown() ) then
+		list:Hide();
+		return true;
+	else
+		return false;
+	end
+end
+
 function FCFDockOverflowButton_UpdatePulseState(self)
 	local dock = self:GetParent();
 	local shouldPulse = false;
 	for _, chatFrame in pairs(FCFDock_GetChatFrames(dock)) do
 		local chatTab = _G[chatFrame:GetName().."Tab"];
 		if ( not chatFrame.isStaticDocked and chatTab.alerting) then
+			--Make sure the rects are valid. (Not always the case when resizing the WoW client
+			if ( not chatTab:GetRight() or not dock.scrollFrame:GetRight() ) then
+				return false;
+			end
 			--Check if it's off the screen.
 			local DELTA = 3;	--Chosen through experimentation
 			if ( chatTab:GetRight() < (dock.scrollFrame:GetLeft() + DELTA) or chatTab:GetLeft() > (dock.scrollFrame:GetRight() - DELTA) ) then
@@ -2272,15 +2349,18 @@ function FCFDockOverflowButton_UpdatePulseState(self)
 	else
 		UIFrameFlashStop(self:GetHighlightTexture());
 		self:UnlockHighlight();
+		self:GetHighlightTexture():Show();
 		self.alerting = false;
 	end
 	
 	if ( self.list:IsShown() ) then
 		FCFDockOverflowList_Update(self.list, dock);
 	end
+	return true;
 end
 
 function FCFDockOverflowButton_OnClick(self, button)
+	PlaySound("UChatScrollButton");
 	if ( self.list:IsShown() ) then
 		self.list:Hide();
 	else
@@ -2313,6 +2393,7 @@ function FCFDockOverflowList_Update(list, dock)
 			else
 				button:SetPoint("TOPLEFT", list.buttons[i-1], "BOTTOMLEFT", 0, -3);
 			end
+			button:SetWidth(list:GetWidth() - 10);	-- buttons are 5 pixels in on both sides
 		end
 		
 		FCFDockOverflowListButton_SetValue(button, dockedFrames[i]);
@@ -2416,16 +2497,19 @@ function FloatingChatFrameManager_OnLoad(self)
 end
 
 function FloatingChatFrameManager_OnEvent(self, event, ...)
+	local arg1 = ...;
 	if ( strsub(event, 1, 9) == "CHAT_MSG_" ) then
 		local chatType = strsub(event, 10);
 		local chatGroup = Chat_GetChatCategory(chatType);
 		
 		if ( chatGroup == "BN_CONVERSATION" ) then
 			if ( GetCVar("conversationMode") == "popout" ) then
-				local chatTarget = tostring(select(8, ...));
-				if ( FCFManager_GetNumDedicatedFrames(chatGroup, chatTarget) == 0 ) then
-					local chatFrame = FCF_OpenTemporaryWindow(chatGroup, chatTarget);
-					chatFrame:GetScript("OnEvent")(chatFrame, event, ...);	--Re-fire the event for the frame.
+				if( not (event == "CHAT_MSG_BN_CONVERSATION_NOTICE" and arg1 == "YOU_LEFT_CONVERSATION") ) then
+					local chatTarget = tostring(select(8, ...));
+					if ( FCFManager_GetNumDedicatedFrames(chatGroup, chatTarget) == 0 ) then
+						local chatFrame = FCF_OpenTemporaryWindow(chatGroup, chatTarget);
+						chatFrame:GetScript("OnEvent")(chatFrame, event, ...);	--Re-fire the event for the frame.
+					end
 				end
 			end
 		end

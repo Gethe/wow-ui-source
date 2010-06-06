@@ -2834,25 +2834,12 @@ StaticPopupDialogs["AUCTION_HOUSE_DISABLED"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["CONFIRM_BLOCK_COMMUNICATION"] = {
-	text = BLOCK_COMMUNICATION_CONFIRMATION,
+StaticPopupDialogs["CONFIRM_BLOCK_INVITES"] = {
+	text = BLOCK_INVITES_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, inviteID)
 		BNSetBlocked(inviteID, true);
-		BNDeclineFriendInvite(inviteID);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_REPORT_SPAM_INVITE"] = {
-	text = REPORT_SPAM_CONFIRMATION,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, inviteID)
-		BNReportFriendInvite(inviteID);
 		BNDeclineFriendInvite(inviteID);
 	end,
 	timeout = 0,
@@ -2865,6 +2852,31 @@ StaticPopupDialogs["BATTLENET_UNAVAILABLE"] = {
 	button1 = OKAY,
 	timeout = 0,
 	showAlertGear = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_BNET_REPORT"] = {
+	text = "%s",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function (self)
+		BNet_SendReport();
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
+	text = REMOVE_FRIEND_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, presenceID)
+		BNRemoveFriend(presenceID);
+	end,
+	timeout = 0,
+	whileDead = 1,
 	hideOnEscape = 1
 };
 

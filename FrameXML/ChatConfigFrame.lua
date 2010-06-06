@@ -58,6 +58,7 @@ CHAT_CONFIG_CHAT_LEFT = {
 	},
 	[9] = {
 		type = "BN_WHISPER",
+		noClassColor = 1,
 		checked = function () return IsListeningForMessageType("BN_WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_WHISPER"); end;
 	},
@@ -98,6 +99,7 @@ CHAT_CONFIG_CHAT_LEFT = {
 	},
 	[17] = {
 		type = "BN_CONVERSATION",
+		noClassColor = 1,
 		checked = function () return IsListeningForMessageType("BN_CONVERSATION"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_CONVERSATION"); end;
 	},
@@ -227,31 +229,21 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "ERRORS"); end;
 	},
 	[3] = {
-		type = "AFK",
-		checked = function () return IsListeningForMessageType("AFK"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "AFK"); end;
-	},
-	[4] = {
-		type = "DND",
-		checked = function () return IsListeningForMessageType("DND"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "DND"); end;
-	},
-	[5] = {
 		type = "IGNORED",
 		checked = function () return IsListeningForMessageType("IGNORED"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "IGNORED"); end;
 	},
-	[6] = {
+	[4] = {
 		type = "CHANNEL",
 		checked = function () return IsListeningForMessageType("CHANNEL"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "CHANNEL"); end;
 	},
-	[7] = {
+	[5] = {
 		type = "TARGETICONS",
 		checked = function () return IsListeningForMessageType("TARGETICONS"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "TARGETICONS"); end;
 	},
-	[8] = {
+	[6] = {
 		type = "BN_INLINE_TOAST_ALERT",
 		checked = function () return IsListeningForMessageType("BN_INLINE_TOAST_ALERT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_INLINE_TOAST_ALERT"); end;
@@ -751,6 +743,9 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 			text = value.text;
 		else
 			text = _G[value.type];
+		end
+		if ( value.noClassColor ) then
+			_G[checkBoxName.."ColorClasses"]:Hide();
 		end
 		checkBox.type = value.type;
 		checkBoxFontString = _G[checkBoxName.."CheckText"];

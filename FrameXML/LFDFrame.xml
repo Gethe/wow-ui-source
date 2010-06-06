@@ -106,7 +106,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="LFDDungeonReadyPopup" parent="UIParent" hidden="true">
+	<Frame name="LFDDungeonReadyPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
 		<Size>
 			<AbsDimension x="306" y="223"/>
 		</Size>
@@ -540,7 +540,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="LFDRoleCheckPopup" parent="UIParent" hidden="true">
+	<Frame name="LFDRoleCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
 		<Size>
 			<AbsDimension x="306" y="180"/>
 		</Size>

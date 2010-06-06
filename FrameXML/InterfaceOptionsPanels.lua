@@ -804,7 +804,7 @@ end
 -- [[ Social Options Panel ]] --
 
 SocialPanelOptions = {
-	profanityFilter = { text = "PROFANITY_FILTER" },
+	profanityFilter = { text = "PROFANITY_FILTER" },	--The tooltip text is also directly set in InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay
 	chatBubbles = { text="CHAT_BUBBLES_TEXT" },
 	chatBubblesParty = { text="PARTY_CHAT_BUBBLES_TEXT" },
 	spamFilter = { text="DISABLE_SPAM_FILTER" },
@@ -817,7 +817,7 @@ SocialPanelOptions = {
 }
 
 function InterfaceOptionsSocialPanel_OnLoad (self)
-	if ( not IsBNLogin() ) then
+	if ( not BNFeaturesEnabled() ) then
 		local conversationCheckBox = InterfaceOptionsSocialPanelConversationMode;
 		local timestampCheckBox = InterfaceOptionsSocialPanelTimestamps;
 		conversationCheckBox:UnregisterEvent("VARIABLES_LOADED");
@@ -833,6 +833,8 @@ function InterfaceOptionsSocialPanel_OnLoad (self)
 		InterfaceOptionsPanel_Okay(self);
 	end
 
+	self:RegisterEvent("BN_DISCONNECTED");
+	self:RegisterEvent("BN_CONNECTED");
 	self:SetScript("OnEvent", InterfaceOptionsSocialPanel_OnEvent);
 end
 
@@ -844,6 +846,30 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 
 		control = InterfaceOptionsSocialPanelChatHoverDelay;
 		control.setFunc(GetCVar(control.cvar));
+		InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay();
+	elseif ( event == "BN_DISCONNECTED" or event == "BN_CONNECTED" ) then
+		InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay();
+	end
+end
+
+--If the option won't be saved due to Battle.net being down, we want to warn the person.
+function InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay()
+	if ( not BNFeaturesEnabled() or BNConnected() ) then
+		InterfaceOptionsSocialPanelProfanityFilterText:SetFontObject(GameFontHighlight);
+		InterfaceOptionsSocialPanelProfanityFilter.tooltipText = OPTION_TOOLTIP_PROFANITY_FILTER;
+	else
+		InterfaceOptionsSocialPanelProfanityFilterText:SetFontObject(GameFontRed);
+		InterfaceOptionsSocialPanelProfanityFilter.tooltipText = OPTION_TOOLTIP_PROFANITY_FILTER_WITH_WARNING;
+	end
+end
+
+function InterfaceOptionsSocialPanelProfanityFilter_SyncWithBattlenet()
+	local button = InterfaceOptionsSocialPanelProfanityFilter;
+	if ( BNFeaturesEnabledAndConnected() ) then
+		local isEnabled = BNGetMatureLanguageFilter();
+		button:SetChecked(isEnabled);
+		SetCVar(button.cvar, isEnabled and "1" or "0");
+		InterfaceOptionsPanel_CheckButton_Update(button);
 	end
 end
 
@@ -1581,7 +1607,7 @@ BattlenetPanelOptions = {
 }
 
 function InterfaceOptionsBattlenetPanel_OnLoad (self)
-	if ( IsBNLogin() ) then
+	if ( BNFeaturesEnabled() ) then
 		self.name = BATTLENET_OPTIONS_LABEL;
 		self.options = BattlenetPanelOptions;
 		InterfaceOptionsPanel_OnLoad(self);

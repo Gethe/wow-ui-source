@@ -121,6 +121,103 @@
 				</Texture>					
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentSummonButton" inherits="ActionButtonTemplate" hidden="true" parentKey="summonButton">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-4" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentIcon"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
+						<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="32" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
+							<Size>
+								<AbsDimension x="32" y="10"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
+						<Size x="28" y="28"/>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors> 
+					</Cooldown>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Icon"]:SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
+						self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+						local normalTexture = _G[self:GetName().."NormalTexture"];
+						normalTexture:SetWidth(40);
+						normalTexture:SetHeight(40);
+					</OnLoad>
+					<OnEvent>
+						FriendsFrame_SummonButton_OnEvent(self, event, ...);
+					</OnEvent>
+					<OnShow>
+						FriendsFrame_SummonButton_OnShow(self);
+					</OnShow>
+					<OnClick>
+						FriendsFrame_ClickSummonButton(self, button, down);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
+						if ( self.duration ) then
+							GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, 1);
+						end
+						if ( SHOW_NEWBIE_TIPS == "1" ) then
+							GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+						end
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			</Frames>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" parentKey="highlight" />
 		<Scripts>
 			<OnLoad>
@@ -514,8 +611,8 @@
 					<OnEnter>
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(REPORT_SPAM, 1, 1, 1);
-						GameTooltip:AddLine(REPORT_SPAM_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:AddLine(BNET_REPORT_PLAYER, 1, 1, 1);
+						GameTooltip:AddLine(BNET_REPORT_PLAYER_TOOLTIP, nil, nil, nil, 1);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -528,7 +625,7 @@
 					<OnMouseUp>
 						self.texture:SetPoint("TOPLEFT", 0, 1);
 					</OnMouseUp>
-					<OnClick function="PendingListFrame_ReportSpam"/>
+					<OnClick function="PendingListFrame_ReportPlayer"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentBlockButton">
@@ -554,8 +651,8 @@
 					<OnEnter>
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(BLOCK_COMMUNICATION, 1, 1, 1);
-						GameTooltip:AddLine(BLOCK_COMMUNICATION_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:AddLine(BLOCK_INVITES, 1, 1, 1);
+						GameTooltip:AddLine(BLOCK_INVITES_TOOLTIP, nil, nil, nil, 1);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -1327,7 +1424,7 @@
 							<OnShow function="FriendsFrameStatusDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
-					<EditBox name="FriendsFrameBroadcastInput" letters="127" autoFocus="false" hidden="true">
+					<EditBox name="FriendsFrameBroadcastInput" letters="127" countInvisibleLetters="true" autoFocus="false" hidden="true">
 						<Size>
 							<AbsDimension x="190" y="20"/>
 						</Size>
@@ -1409,6 +1506,9 @@
 								self.clear:Hide();
 								self:SetTextInsets(0, 10, 0, 0);
 							</OnEditFocusGained>
+							<OnEditFocusLost>
+								FriendsFrameBroadcastInputTooltipButton:Show();
+							</OnEditFocusLost>
 							<OnTextChanged>
 								if ( self:GetText() ~= "" ) then
 									FriendsFrameBroadcastInputFill:Hide();
@@ -1422,7 +1522,25 @@
 							<Color r="0.345" g="0.667" b="0.867" />
 						</FontString>
 						<Frames>
-							<Button name="FriendsFrameClearButton" parentKey="clear" hidden="true">
+							<Button name="$parentTooltipButton" setAllPoints="true">
+								<Scripts>
+									<OnClick>
+										local editBox = FriendsFrameBroadcastInput;
+										editBox:SetFocus();
+										editBox:SetCursorPosition(editBox:GetNumLetters());
+										editBox:HighlightText(0, -1);  -- highlight all										
+										self:Hide();
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(FriendsFrameBroadcastInput, "ANCHOR_RIGHT");
+										GameTooltip:SetText(BN_BROADCAST_TOOLTIP, nil, nil, nil, nil, 1);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
+							<Button name="$parentClearButton" parentKey="clear" hidden="true">
 								<Size>
 									<AbsDimension x="16" y="16"/>
 								</Size>
@@ -1446,6 +1564,13 @@
 								</Scripts>
 							</Button>
 						</Frames>
+						<Scripts>
+							<OnLoad>
+								frameLevel = self:GetFrameLevel();
+								FriendsFrameBroadcastInputTooltipButton:SetFrameLevel(frameLevel + 1);
+								FriendsFrameBroadcastInputClearButton:SetFrameLevel(frameLevel + 2);
+							</OnLoad>
+						</Scripts>
 					</EditBox>
 					<Button name="FriendsTabHeaderTab1" inherits="TabButtonTemplate" text="FRIENDS" id="1">
 						<Anchors>
@@ -1877,14 +2002,29 @@
 				<Scripts>
 					<OnLoad>
 						FriendsFrameIgnoredHeaderTitle:SetText(IGNORED);
-						FriendsFrameBlockedInviteHeaderTitle:SetText(BLOCKED);
-						FriendsFrameBlockedToonHeaderTitle:SetText("CID Block");
+						FriendsFrameBlockedInviteHeaderTitle:SetText(BLOCKED_INVITES);
+						FriendsFrameBlockedToonHeaderTitle:SetText(BLOCKED_COMMUNICATION);
 						FriendsFrameMutedHeaderTitle:SetText(MUTED);
 					</OnLoad>
 				</Scripts>
 			</Frame>
 			<Frame name="PendingListFrame" hidden="true" setAllPoints="true">
 				<Frames>
+					<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+						<Size>
+							<AbsDimension x="10" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="10" y="-60"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="PendingListFrameDropDown_OnLoad"/>
+						</Scripts>
+					</Frame>
 					<Frame name="PendingListInfoFrame" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="298" y="309"/>
@@ -4744,7 +4884,7 @@
 							</Size>
 							<Anchors>
 								<Anchor point="LEFT" x="30" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToonInfo1" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentToon1Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</FontString>
@@ -5442,10 +5582,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="FriendsFriendsFrameDropDown_OnLoad"/>
-					<OnShow function="FriendsFriendsFrameDropDown_OnShow"/>
-				</Scripts>
 			</Frame>
 			<Frame name="FriendsFriendsList">
 				<Size>

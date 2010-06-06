@@ -1,21 +1,21 @@
 local BNToasts = { };
 local BNToastEvents = {
-	showToastOnline = "BN_FRIEND_ACCOUNT_ONLINE",
-	showToastOffline = "BN_FRIEND_ACCOUNT_OFFLINE",
-	showToastBroadcast = "BN_CUSTOM_MESSAGE_CHANGED",
-	showToastFriendRequest = "BN_FRIEND_INVITE_ADDED",
-	showToastConversation = "BN_CHAT_CHANNEL_JOINED",
+	showToastOnline = { "BN_FRIEND_ACCOUNT_ONLINE" },
+	showToastOffline = { "BN_FRIEND_ACCOUNT_OFFLINE" },
+	showToastBroadcast = { "BN_CUSTOM_MESSAGE_CHANGED" },
+	showToastFriendRequest = { "BN_FRIEND_INVITE_ADDED", "BN_FRIEND_INVITE_LIST_INITIALIZED" },
+	showToastConversation = { "BN_CHAT_CHANNEL_JOINED" },
 };
 local BN_TOAST_TYPE_ONLINE = 1;
 local BN_TOAST_TYPE_OFFLINE = 2;
 local BN_TOAST_TYPE_BROADCAST = 3;
-local BN_TOAST_TYPE_OLD_INVITES = 4;
+local BN_TOAST_TYPE_PENDING_INVITES = 4;
 local BN_TOAST_TYPE_NEW_INVITE = 5;
 local BN_TOAST_TYPE_CONVERSATION = 6;
 BN_TOAST_TOP_OFFSET = 40;
 BN_TOAST_BOTTOM_OFFSET = -12;
-BN_TOAST_RIGHT_OFFSET = 4;
-BN_TOAST_LEFT_OFFSET = -4;
+BN_TOAST_RIGHT_OFFSET = -1;
+BN_TOAST_LEFT_OFFSET = 1;
 BN_TOAST_TOP_BUFFER = 20;	-- the minimum distance in pixels from the toast to the top edge of the screen
 BN_TOAST_MAX_LINE_WIDTH = 196;
 	
@@ -52,14 +52,8 @@ function BNToastFrame_OnEvent(self, event, arg1)
 		BNToastFrame_AddToast(BN_TOAST_TYPE_NEW_INVITE);
 	elseif ( event == "BN_CHAT_CHANNEL_JOINED" ) then
 		BNToastFrame_AddToast(BN_TOAST_TYPE_CONVERSATION, arg1);
-	--[[
-	elseif ( event == "BN_CHAT_CHANNEL_LEFT" ) then
-		local channel = ...;
-		BNToastFrame_RemoveToast(BN_TOAST_TYPE_CONVERSATION, channel);
 	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
-		local count = ...;
-		BNToastFrame_AddToast(presenceID, BN_TOAST_TYPE_OLD_INVITES, count);
-	--]]
+		BNToastFrame_AddToast(BN_TOAST_TYPE_PENDING_INVITES, arg1);
 	elseif( event == "VARIABLES_LOADED" ) then
 		BNet_SetToastDuration(GetCVar("toastDuration"));
 		if ( GetCVarBool("showToastWindow") ) then
@@ -70,9 +64,11 @@ end
 
 function BNet_EnableToasts()
 	local frame = BNToastFrame;
-	for cvar, event in pairs(BNToastEvents) do
+	for cvar, events in pairs(BNToastEvents) do
 		if ( GetCVarBool(cvar) ) then
-			frame:RegisterEvent(event);
+			for _, event in pairs(events) do
+				frame:RegisterEvent(event);
+			end
 		end
 	end
 end
@@ -87,11 +83,15 @@ end
 function BNet_UpdateToastEvent(cvar, value)
 	if ( GetCVarBool("showToastWindow") ) then
 		local frame = BNToastFrame;
-		local event = BNToastEvents[cvar];
+		local events = BNToastEvents[cvar];
 		if ( value == "1" ) then
-			frame:RegisterEvent(event);
+			for _, event in pairs(events) do
+				frame:RegisterEvent(event);
+			end
 		else
-			frame:UnregisterEvent(event);
+			for _, event in pairs(events) do
+				frame:RegisterEvent(event);
+			end
 		end
 	end
 end
@@ -112,12 +112,12 @@ function BNToastFrame_Show()
 		bottomLine:Hide();
 		BNToastFrameDoubleLine:Show();
 		BNToastFrameDoubleLine:SetText(BN_TOAST_NEW_INVITE);
-	elseif ( toastType == BN_TOAST_TYPE_OLD_INVITES ) then
+	elseif ( toastType == BN_TOAST_TYPE_PENDING_INVITES ) then
 		BNToastFrameIconTexture:SetTexCoord(0.75, 1, 0, 0.5);
 		topLine:Hide();
 		bottomLine:Hide();
 		BNToastFrameDoubleLine:Show();
-		BNToastFrameDoubleLine:SetFormattedText(BN_TOAST_OLD_INVITES, toastData);
+		BNToastFrameDoubleLine:SetFormattedText(BN_TOAST_PENDING_INVITES, toastData);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(toastData);
 		-- don't display a toast if we didn't get the data in time
@@ -172,7 +172,7 @@ function BNToastFrame_Show()
 			BNToastFrame.tooltip = messageText;
 		end
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
-		BNToastFrameDoubleLine:Hide();	
+		BNToastFrameDoubleLine:Hide();
 	end
 
 	local frame = BNToastFrame;
@@ -262,7 +262,7 @@ function BNToastFrame_OnClick(self)
 	BNToastFrame_Close();
 	local toastType = BNToastFrame.toastType;
 	local toastData = BNToastFrame.toastData;
-	if ( toastType == BN_TOAST_TYPE_NEW_INVITE or toastType == BN_TOAST_TYPE_OLD_INVITES ) then
+	if ( toastType == BN_TOAST_TYPE_NEW_INVITE or toastType == BN_TOAST_TYPE_PENDING_INVITES ) then
 		if ( not FriendsFrame:IsShown() ) then
 			ToggleFriendsFrame(1);
 		end
@@ -291,7 +291,7 @@ function BNToastFrame_OnClick(self)
 end
 
 function SynchronizeBNetStatus()
-	if ( BNConnected() ) then
+	if ( BNFeaturesEnabledAndConnected() ) then
 		local wowAFK = (UnitIsAFK("player") == 1);
 		local wowDND = (UnitIsDND("player") == 1);
 		local _, _, _, bnetAFK, bnetDND = BNGetInfo();
@@ -302,4 +302,52 @@ function SynchronizeBNetStatus()
 			BNSetDND(wowDND);
 		end
 	end
+end
+
+function BNet_InitiateReport(presenceID, reportType)
+	local reportFrame = BNetReportFrame;
+	if ( reportFrame:IsShown() ) then
+		StaticPopupSpecial_Hide(reportFrame);
+	end
+	CloseDropDownMenus();
+	-- set up
+	local fullName;
+	if ( not presenceID ) then
+		-- invite
+		presenceID, givenName, surname = BNGetFriendInviteInfo(UIDROPDOWNMENU_MENU_VALUE);
+		fullName = string.format(BATTLENET_NAME_FORMAT, givenName, surname);
+	else
+		local _, givenName, surname, toonName = BNGetFriendInfoByID(presenceID);
+		if ( givenName and surname ) then
+			if ( toonName ) then
+				fullName = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." ("..toonName..")";
+			else
+				fullName = string.format(BATTLENET_NAME_FORMAT, givenName, surname);
+			end
+		else
+			local _, toonName = BNGetToonInfo(presenceID);
+			fullName = toonName;
+		end
+	end
+	reportFrame.presenceID = presenceID;
+	reportFrame.type = reportType;
+	reportFrame.name = fullName;
+	BNetReportFrameCommentBox:SetText("");
+	
+	if ( reportType == "SPAM" or reportType == "NAME" ) then
+		StaticPopup_Show("CONFIRM_BNET_REPORT", format(_G["BNET_REPORT_CONFIRM_"..reportType], fullName));
+	elseif ( reportType == "ABUSE" ) then
+		BNetReportFrameName:SetText(fullName);
+		StaticPopupSpecial_Show(reportFrame);
+	end
+end
+
+function BNet_ConfirmReport()
+	StaticPopup_Show("CONFIRM_BNET_REPORT", format(_G["BNET_REPORT_CONFIRM_"..BNetReportFrame.type], BNetReportFrame.name));
+end
+
+function BNet_SendReport()
+	local reportFrame = BNetReportFrame;
+	local comments = BNetReportFrameCommentBox:GetText();
+	BNReportPlayer(reportFrame.presenceID, reportFrame.type, comments);
 end

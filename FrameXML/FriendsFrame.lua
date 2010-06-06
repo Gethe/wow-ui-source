@@ -85,12 +85,24 @@ function FriendsFrame_ShowSubFrame(frameName)
 end
 
 function FriendsFrame_SummonButton_OnEvent (self, event, ...)
-	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
-		FriendsFrame_SummonButton_OnShow(self);
+	if ( event == "SPELL_UPDATE_COOLDOWN" and self:GetParent().id ) then
+		FriendsFrame_SummonButton_Update(self);
 	end
 end
 
 function FriendsFrame_SummonButton_OnShow (self)
+	FriendsFrame_SummonButton_Update(self);
+end
+
+function FriendsFrame_SummonButton_Update (self)
+	local id = self:GetParent().id;
+	if ( not id or (self:GetParent().buttonType ~= FRIENDS_BUTTON_TYPE_WOW) or not IsReferAFriendLinked(GetFriendInfo(id)) ) then
+		self:Hide();
+		return;
+	end
+	
+	self:Show();
+	
 	local start, duration = GetSummonFriendCooldown();
 	
 	if ( duration > 0 ) then
@@ -101,7 +113,7 @@ function FriendsFrame_SummonButton_OnShow (self)
 		self.start = nil;
 	end
 	
-	local enable = CanSummonFriend(GetFriendInfo(self:GetID()));
+	local enable = CanSummonFriend(GetFriendInfo(id));
 	
 	local icon = _G[self:GetName().."Icon"];
 	local normalTexture = _G[self:GetName().."NormalTexture"];
@@ -116,7 +128,7 @@ function FriendsFrame_SummonButton_OnShow (self)
 end
 
 function FriendsFrame_ClickSummonButton (self)
-	local name = GetFriendInfo(self:GetID());
+	local name = GetFriendInfo(self:GetParent().id);
 	if ( CanSummonFriend(name) ) then
 		SummonFriend(name);
 	end
@@ -199,6 +211,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_FRIEND_INVITE_ADDED");
 	self:RegisterEvent("BN_FRIEND_INVITE_REMOVED");
 	self:RegisterEvent("BN_CUSTOM_MESSAGE_CHANGED");
+	self:RegisterEvent("BN_CUSTOM_MESSAGE_LOADED");
 	self:RegisterEvent("BN_SELF_ONLINE");
 	self:RegisterEvent("BN_BLOCK_LIST_UPDATED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -218,8 +231,8 @@ function FriendsFrame_OnLoad(self)
 	-- friends list
 	DynamicScrollFrame_CreateButtons(FriendsFrameFriendsScrollFrame, "FriendsFrameButtonTemplate", FRIENDS_BUTTON_HEADER_HEIGHT, FriendsFrame_SetButton, FriendsFrame_GetTopButton);
 	FriendsFrameOfflineHeader:SetParent(FriendsFrameFriendsScrollFrameScrollChild);
-	FriendsFrameClearButton.icon:SetVertexColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);	
-	if ( not IsBNLogin() ) then
+	FriendsFrameBroadcastInputClearButton.icon:SetVertexColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);	
+	if ( not BNFeaturesEnabled() ) then
 		FriendsTabHeaderTab3:Hide();
 		FriendsFrameBroadcastInput:Hide();
 		FriendsFrameBattlenetStatus:Hide();
@@ -712,7 +725,7 @@ end
 	
 function PendingListFrame_BlockCommunication(self)
 	local inviteID, name, surname, message = BNGetFriendInviteInfo(self:GetParent().index);
-	local dialog = StaticPopup_Show("CONFIRM_BLOCK_COMMUNICATION", string.format(BATTLENET_NAME_FORMAT, name, surname));
+	local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", string.format(BATTLENET_NAME_FORMAT, name, surname));
 	if ( dialog ) then
 		dialog.data = inviteID;
 	end
@@ -724,6 +737,18 @@ function PendingListFrame_ReportSpam(self)
 	if ( dialog ) then
 		dialog.data = inviteID;
 	end
+end
+
+function PendingListFrame_ReportPlayer(self)
+	ToggleDropDownMenu(1, self:GetParent().index, PendingListFrameDropDown, "cursor", 3, -3)
+end
+
+function PendingListFrameDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, PendingListFrameDropDown_Initialize, "MENU");
+end
+
+function PendingListFrameDropDown_Initialize(self)
+	UnitPopup_ShowMenu(self, "BN_REPORT", nil, BNET_REPORT);
 end
 
 function PendingList_UpdateTab()
@@ -1181,6 +1206,8 @@ function FriendsFrame_OnEvent(self, event, ...)
 		else
 			FriendsFrameBroadcastInput_UpdateDisplay();
 		end
+	elseif ( event == "BN_CUSTOM_MESSAGE_LOADED" ) then
+		FriendsFrameBroadcastInput_UpdateDisplay();
 	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then
 		local arg1 = ...;
 		if ( arg1 ) then
@@ -1278,7 +1305,7 @@ function FriendsFrameAddFriendButton_OnClick(self)
 		AddFriend(name);
 		PlaySound("UChatScrollButton");
 	else
-		if ( IsBNLogin() ) then
+		if ( BNFeaturesEnabled() ) then
 			AddFriendEntryFrame_Collapse(true);
 			AddFriendFrame.editFocus = AddFriendNameEditBox;
 			StaticPopupSpecial_Show(AddFriendFrame);
@@ -1996,7 +2023,7 @@ end
 -- Battle.net stuff starts here
 
 function FriendsFrame_CheckBattlenetStatus()
-	if ( IsBNLogin() ) then
+	if ( BNFeaturesEnabled() ) then
 		if ( BNConnected() ) then
 			BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
 			if(not BNetBroadcasts) then
@@ -2127,6 +2154,7 @@ function FriendsFrame_SetButton(button, index, firstButton)
 		end
 		infoText = area;
 		button.gameIcon:Hide();
+		FriendsFrame_SummonButton_Update(button.summonButton);
 	elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfo(FriendButtons[index].id);
 		broadcastText = messageText;
@@ -2176,6 +2204,7 @@ function FriendsFrame_SetButton(button, index, firstButton)
 		else
 			nameText = UNKNOWN;
 		end
+		FriendsFrame_SummonButton_Update(button.summonButton);
 	else	-- header
 		button:Hide();
 		FriendsFrameOfflineHeader:Show();
@@ -2520,7 +2549,7 @@ function AddFriendFrame_ShowEntry()
 	AddFriendFrame:SetHeight(AddFriendEntryFrame:GetHeight());
 	AddFriendInfoFrame:Hide();
 	AddFriendEntryFrame:Show();
-	if ( BNConnected() ) then
+	if ( BNFeaturesEnabledAndConnected() ) then
 		AddFriendFrame.BNconnected = true;
 		AddFriendEntryFrameLeftTitle:SetAlpha(1);
 		AddFriendEntryFrameLeftDescription:SetText(BATTLENET_FRIEND_LABEL);
@@ -2653,6 +2682,10 @@ function FriendsFriendsFrameDropDown_OnClick(self, value)
 end
 
 function FriendsFriendsList_Update()
+	if ( FriendsFriendsWaitFrame:IsShown() ) then
+		return;
+	end
+	
 	local friendsButton, friendsIndex;
 	local showMutual, showPotential;
 	local view = FriendsFriendsFrame.view;

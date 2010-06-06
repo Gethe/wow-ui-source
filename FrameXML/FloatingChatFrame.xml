@@ -107,7 +107,7 @@
 		</Layers>
 	</Frame>
 	<Button name="DockManagerOverflowListButtonTemplate" virtual="true">
-		<Size x="160" y="12"/>
+		<Size x="150" y="12"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" parentKey="highlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
@@ -149,6 +149,11 @@
 				<Anchor point="LEFT">
 					<Offset>
 						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT">
+					<Offset>
+						<AbsDimension x="-20" y="0"/>
 					</Offset>
 				</Anchor>
 			</Anchors>
@@ -222,6 +227,12 @@
 					<OnEvent>
 						FCFDockOverflowButton_OnEvent(self, event, ...);
 					</OnEvent>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, CHAT_OVERFLOW_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHAT_OVERFLOW, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 					<OnClick>
 						FCFDockOverflowButton_OnClick(self, button);
 					</OnClick>
@@ -411,9 +422,11 @@
 				PlaySound("UChatScrollButton");
 			</OnClick>
 			<OnDoubleClick>
-				local chatFrame = _G["ChatFrame"..self:GetID()];
-				if ( not chatFrame.isDocked ) then
-					FCF_MinimizeFrame(chatFrame, chatFrame.buttonSide);
+				if ( button ~= "RightButton" ) then
+					local chatFrame = _G["ChatFrame"..self:GetID()];
+					if ( not chatFrame.isDocked ) then
+						FCF_MinimizeFrame(chatFrame, chatFrame.buttonSide);
+					end
 				end
 			</OnDoubleClick>
 			<OnEnter>
@@ -491,7 +504,7 @@
 	<!-- Floating frame template-->
 	<ScrollingMessageFrame name="FloatingChatFrameTemplate" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate,FloatingBorderedFrame" parent="UIParent" hidden="true" clampedToScreen="true" dontSavePosition="true" virtual="true">
 		<Size>
-			<AbsDimension x="430" y="147"/>
+			<AbsDimension x="430" y="120"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
@@ -503,7 +516,7 @@
 		<TitleRegion setAllPoints="true"/>
 		<ResizeBounds>
 			<minResize>
-				<AbsDimension x="296" y="147"/>
+				<AbsDimension x="296" y="120"/>
 			</minResize>
 			<maxResize>
 				<AbsDimension x="608" y="400"/>
@@ -845,6 +858,10 @@
 			<OnLoad>
 				FCFDock_OnLoad(self);
 				GENERAL_CHAT_DOCK = self;
+				-- resize for locales
+				local list = self.overflowButton.list;
+				list.numTabs:SetFormattedText(CHAT_WINDOWS_COUNT, 10);
+				list:SetWidth(list.numTabs:GetWidth() + 48);	-- 24 pixel margins
 			</OnLoad>
 		</Scripts>
 	</Frame>
