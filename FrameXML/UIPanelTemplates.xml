@@ -1035,4 +1035,25 @@
 			</Button>
 		</Frames>
 	</Frame>
+	<ScrollFrame name="DynamicScrollFrameTemplate" virtual="true">
+		<ScrollChild>
+			<Frame name="$parentScrollChild" parentKey="scrollChild">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnLoad>
+				ScrollFrame_OnLoad(self);
+			</OnLoad>
+			<OnScrollRangeChanged>
+				ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
+			</OnScrollRangeChanged>
+			<OnVerticalScroll function="DynamicScrollFrame_OnVerticalScroll"/>
+			<OnMouseWheel>
+				ScrollFrameTemplate_OnMouseWheel(self, delta);
+			</OnMouseWheel>
+		</Scripts>
+	</ScrollFrame>
 </Ui>

@@ -179,7 +179,7 @@
 					<OnClick>
 						local link=GetTradeSkillListLink();
 						if (not ChatEdit_InsertLink(link) ) then
-							ChatFrameEditBox:Show();
+							ChatEdit_GetLastActiveWindow():Show();
 							ChatEdit_InsertLink(link);
 						end
 					</OnClick>

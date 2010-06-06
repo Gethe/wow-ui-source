@@ -143,7 +143,7 @@ function QuestLogTitleButton_OnClick(self, button)
 			return;
 		end
 		-- Otherwise try to track it or put it into chat
-		if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+		if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 			local questLink = GetQuestLink(questIndex);
 			if ( questLink ) then
 				ChatEdit_InsertLink(questLink);

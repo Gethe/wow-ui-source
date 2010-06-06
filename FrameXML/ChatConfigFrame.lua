@@ -37,9 +37,9 @@ CHAT_CONFIG_CHAT_LEFT = {
 	},
 	[5] = {
 		text = OFFICER_CHAT,
-		type = "GUILD_OFFICER",
-		checked = function () return IsListeningForMessageType("GUILD_OFFICER"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_OFFICER"); end;
+		type = "OFFICER",
+		checked = function () return IsListeningForMessageType("OFFICER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "OFFICER"); end;
 	},
 	[6] = {
 		type = "GUILD_ACHIEVEMENT",
@@ -57,40 +57,50 @@ CHAT_CONFIG_CHAT_LEFT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
 	},
 	[9] = {
+		type = "BN_WHISPER",
+		checked = function () return IsListeningForMessageType("BN_WHISPER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_WHISPER"); end;
+	},
+	[10] = {
 		type = "PARTY",
 		checked = function () return IsListeningForMessageType("PARTY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
 	},
-	[10] = {
+	[11] = {
 		type = "PARTY_LEADER",
 		checked = function () return IsListeningForMessageType("PARTY_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY_LEADER"); end;
 	},
-	[11] = {
+	[12] = {
 		type = "RAID",
 		checked = function () return IsListeningForMessageType("RAID"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
 	},
-	[12] = {
+	[13] = {
 		type = "RAID_LEADER",
 		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
 	},
-	[13] = {
+	[14] = {
 		type = "RAID_WARNING",
 		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
 	},
-	[14] = {
+	[15] = {
 		type = "BATTLEGROUND",
 		checked = function () return IsListeningForMessageType("BATTLEGROUND"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND"); end;
 	},
-	[15] = {
+	[16] = {
 		type = "BATTLEGROUND_LEADER",
 		checked = function () return IsListeningForMessageType("BATTLEGROUND_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND_LEADER"); end;
-	}
+	},
+	[17] = {
+		type = "BN_CONVERSATION",
+		checked = function () return IsListeningForMessageType("BN_CONVERSATION"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_CONVERSATION"); end;
+	},
 };
 
 CHAT_CONFIG_CHAT_CREATURE_LEFT = {
@@ -240,6 +250,11 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		type = "TARGETICONS",
 		checked = function () return IsListeningForMessageType("TARGETICONS"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "TARGETICONS"); end;
+	},
+	[8] = {
+		type = "BN_ALERT",
+		checked = function () return IsListeningForMessageType("BN_ALERT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_ALERT"); end;
 	},
 }
 
@@ -678,11 +693,6 @@ end
 
 function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( COMBATLOG_FILTER_VERSION and COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
-			CombatConfig_SetCombatFiltersToDefault();
-			Blizzard_CombatLog_Filter_Version = COMBATLOG_FILTER_VERSION;
-		end
-		
 		-- Chat Settings
 		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", PLAYER_MESSAGES);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
@@ -698,6 +708,11 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 		ChatConfig_CreateColorSwatches(CombatConfigColorsUnitColors, COMBAT_CONFIG_UNIT_COLORS, "ChatConfigSwatchTemplate", UNIT_COLORS);
 
+		if ( COMBATLOG_FILTER_VERSION and COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
+			CombatConfig_SetCombatFiltersToDefault();
+			Blizzard_CombatLog_Filter_Version = COMBATLOG_FILTER_VERSION;
+		end
+		
 		-- Default selections
 		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
 		ChatConfig_UpdateCombatTabs(1);

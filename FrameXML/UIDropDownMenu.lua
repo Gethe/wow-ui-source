@@ -401,6 +401,16 @@ function UIDropDownMenu_AddButton(info, level)
 	-- Show the check if checked
 	if ( checked ) then
 		button:LockHighlight();
+		local check = _G[listFrameName.."Button"..index.."Check"];
+		if ( info.checkTexture ) then
+			check:SetTexture(info.checkTexture);
+			check:SetWidth(0);
+			check:SetHeight(0);
+		else
+			check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check");
+			check:SetWidth(18);
+			check:SetHeight(18);
+		end
 		_G[listFrameName.."Button"..index.."Check"]:Show();
 	else
 		button:UnlockHighlight();

@@ -948,7 +948,7 @@ end
 
 function AchievementButton_OnClick (self, ignoreModifiers)
 	if(IsModifiedClick() and not ignoreModifiers) then
-		if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+		if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 			local achievementLink = GetAchievementLink(self.id);
 			if ( achievementLink ) then
 				ChatEdit_InsertLink(achievementLink);

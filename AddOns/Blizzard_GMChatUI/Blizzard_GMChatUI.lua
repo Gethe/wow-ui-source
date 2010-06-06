@@ -7,8 +7,18 @@ end
 function GMChatFrame_OnLoad(self)
 	local name = self:GetName();
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
-		_G[name..value]:SetAlpha(0.4);
-		_G[name..value]:SetVertexColor(0,0,0);
+		local object = _G[name..value];
+		local objectType = object:GetObjectType();
+		if ( objectType == "Button" ) then
+			object:GetNormalTexture():SetVertexColor(0, 0, 0);
+			object:GetHighlightTexture():SetVertexColor(0, 0, 0);
+			object:GetPushedTexture():SetVertexColor(0, 0, 0);
+		elseif ( objectType == "Texture" ) then
+			_G[name..value]:SetVertexColor(0,0,0);
+		else
+			--error("Unhandled object type");
+		end
+		object:SetAlpha(0.4);
 	end
 	
 	self:RegisterEvent("CHAT_MSG_WHISPER");
@@ -106,7 +116,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
-		local _, fontSize= GetChatWindowInfo(1);
+		local _, fontSize= FCF_GetChatWindowInfo(1);
 		if ( fontSize > 0 ) then
 			local fontFile, unused, fontFlags = DEFAULT_CHAT_FRAME:GetFont();
 			self:SetFont(fontFile, fontSize, fontFlags);

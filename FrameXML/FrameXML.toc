@@ -65,6 +65,9 @@ CombatFeedback.xml
 CastingBarFrame.xml
 UnitPopup.xml
 UnitFrame.xml
+BNet.xml
+HistoryKeeper.lua
+BNConversations.xml
 ChatFrame.xml
 FloatingChatFrame.xml
 VoiceChat.xml

@@ -814,6 +814,8 @@ SocialPanelOptions = {
 	showChatIcons = { text="SHOW_CHAT_ICONS" },
 	useSimpleChat = { text="SIMPLE_CHAT_TEXT" },
 	chatLocked = { text="CHAT_LOCKED_TEXT" },	
+	wholeChatWindowClickable = { text = "CHAT_WHOLE_WINDOW_CLICKABLE" },
+	battlenetToasts = { text = "SHOW_BATTLENET_TOASTS" },
 }
 
 function InterfaceOptionsSocialPanel_OnLoad (self)
@@ -863,6 +865,167 @@ function InterfaceOptionsSocialPanelSimpleChat_ConfirmCheck()
 	local checkButton = InterfaceOptionsSocialPanelSimpleChat;
 	checkButton:SetChecked(true);
 	InterfaceOptionsPanel_CheckButton_Update(checkButton);
+end
+
+function InterfaceOptionsSocialPanelChatStyle_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "chatStyle";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_CHAT_STYLE_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 90);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelChatStyle_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+		InterfaceOptionsSocialPanelChatStyle_SetChatStyle(value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				InterfaceOptionsSocialPanelChatStyle_SetChatStyle(value);
+				self.tooltip = _G["OPTION_CHAT_STYLE_"..strupper(value)];
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelChatStyle_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsSocialPanelChatStyle_OnClick(self)
+	InterfaceOptionsSocialPanelChatStyle:SetValue(self.value);
+end
+
+function InterfaceOptionsSocialPanelChatStyle_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsSocialPanelChatStyle);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = IM_STYLE;
+	info.func = InterfaceOptionsSocialPanelChatStyle_OnClick;
+	info.value = "im";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = IM_STYLE;
+	info.tooltipText = OPTION_CHAT_STYLE_IM;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CLASSIC_STYLE;
+	info.func = InterfaceOptionsSocialPanelChatStyle_OnClick;
+	info.value = "classic";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CLASSIC_STYLE;
+	info.tooltipText = OPTION_CHAT_STYLE_CLASSIC;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsSocialPanelChatStyle_SetChatStyle(chatStyle)
+	SetCVar("chatStyle", chatStyle, "chatStyle");
+	
+	if ( chatStyle == "classic" ) then
+		DEFAULT_CHAT_FRAME.editBox:SetParent(UIParent);
+		InterfaceOptionsSocialPanelWholeChatWindowClickable:Hide();
+	elseif ( chatStyle == "im" ) then
+		DEFAULT_CHAT_FRAME.editBox:SetParent(DEFAULT_CHAT_FRAME);
+		InterfaceOptionsSocialPanelWholeChatWindowClickable:Show();
+	else
+		error("Unhandled chat style: "..tostring(chatStyle));
+	end
+	
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName];
+		ChatEdit_DeactivateChat(frame.editBox);
+	end
+	ChatEdit_ActivateChat(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox);
+	ChatEdit_DeactivateChat(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox);
+	
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsSocialPanelChatStyle,chatStyle);
+end
+
+function InterfaceOptionsSocialPanelConversationMode_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "conversationMode";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_CONVERSATION_MODE_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 90);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelConversationMode_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				SetCVar(self.cvar, self.value);
+				self.tooltip = _G["OPTION_CONVERSATION_MODE_"..strupper(value)];
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelConversationMode_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsSocialPanelConversationMode_OnClick(self)
+	InterfaceOptionsSocialPanelConversationMode:SetValue(self.value);
+end
+
+function InterfaceOptionsSocialPanelConversationMode_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsSocialPanelConversationMode);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = CONVERSATION_MODE_POPOUT;
+	info.func = InterfaceOptionsSocialPanelConversationMode_OnClick;
+	info.value = "popout";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = CONVERSATION_MODE_POPOUT;
+	info.tooltipText = OPTION_CONVERSATION_MODE_POPOUT;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CONVERSATION_MODE_INLINE;
+	info.func = InterfaceOptionsSocialPanelConversationMode_OnClick;
+	info.value = "inline";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CONVERSATION_MODE_INLINE;
+	info.tooltipText = OPTION_CONVERSATION_MODE_INLINE;
+	UIDropDownMenu_AddButton(info);
 end
 
 -- [[ ActionBars Options Panel ]] --

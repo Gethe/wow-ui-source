@@ -1759,7 +1759,7 @@ function Blizzard_CombatLog_SpellMenuClick(action, spellName, spellId, eventType
 			v.eventList[eventType] = false;
 		end
 	elseif ( action == "LINK" ) then
-		if ( ChatFrameEditBox:IsVisible() ) then
+		if ( ChatEdit_GetActiveWindow() ) then
 			ChatEdit_InsertLink(GetSpellLink(spellId));
 		else
 			ChatFrame_OpenChat(GetSpellLink(spellId));
@@ -3499,6 +3499,8 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 		COMBATLOG:UnregisterEvent("COMBAT_LOG_EVENT");
 		return hide and hide(self)
 	end)	
+	
+	FCF_SetButtonSide(COMBATLOG, COMBATLOG.buttonSide, true);
 end
 
 local oldFCF_DockUpdate = FCF_DockUpdate;
@@ -3559,7 +3561,7 @@ end
 -- Players may also get all sorts of errors on trying to click on these new linktypes before
 -- Blizzard_CombatLog gets loaded.
 local oldSetItemRef = SetItemRef;
-function SetItemRef(link, text, button)
+function SetItemRef(link, text, button, chatFrame)
 
 	if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
@@ -3615,7 +3617,7 @@ function SetItemRef(link, text, button)
 			return;
 		end
 	end
-	oldSetItemRef(link, text, button);
+	oldSetItemRef(link, text, button, chatFrame);
 end
 
 function Blizzard_CombatLog_Update_QuickButtons()

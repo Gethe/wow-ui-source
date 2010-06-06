@@ -235,7 +235,7 @@ function GlyphFrameGlyph_OnClick (self, button)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 
-	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		local link = GetGlyphLink(id, talentGroup);
 		if ( link ) then
 			ChatEdit_InsertLink(link);

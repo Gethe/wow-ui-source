@@ -227,13 +227,6 @@ function VoiceChat_Toggle()
 		GameMenuButtonSoundOptions:SetText(SOUNDOPTIONS_MENU);
 		ChannelFrameAutoJoin:Show();
 		VoiceChatTalkers:Show();
-		--- Friends Frame Enable
-		FriendsFrameToggleTab3:Enable();
-		FriendsFrameToggleTab3:SetDisabledFontObject(GameFontHighlightSmall);
-		FriendsFrameToggleTab3:Show();
-		IgnoreFrameToggleTab3:Enable();
-		IgnoreFrameToggleTab3:SetDisabledFontObject(GameFontHighlightSmall);
-		IgnoreFrameToggleTab3:Show();
 	else
 		if ( IsVoiceChatAllowedByServer() ) then
 			-- Options Frame Enable
@@ -244,13 +237,6 @@ function VoiceChat_Toggle()
 		end
 		ChannelFrameAutoJoin:Hide();
 		VoiceChatTalkers:Hide();
-		--- Friends Frame Disable
-		FriendsFrameToggleTab3:Disable();						
-		FriendsFrameToggleTab3:SetDisabledFontObject(GameFontDisableSmall);
-		FriendsFrameToggleTab3:Hide();
-		IgnoreFrameToggleTab3:Disable();						
-		IgnoreFrameToggleTab3:SetDisabledFontObject(GameFontDisableSmall);
-		IgnoreFrameToggleTab3:Hide();
 	end
 end
 

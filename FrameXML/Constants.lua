@@ -471,3 +471,9 @@ RegisterStaticConstants(STATIC_CONSTANTS);
 -- textures for quest item overlays
 TEXTURE_ITEM_QUEST_BANG = "Interface\\ContainerFrame\\UI-Icon-QuestBang";
 TEXTURE_ITEM_QUEST_BORDER = "Interface\\ContainerFrame\\UI-Icon-QuestBorder";
+
+-- Friends
+SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
+
+-- faction
+PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance" };
