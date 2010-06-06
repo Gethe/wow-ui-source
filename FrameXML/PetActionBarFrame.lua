@@ -207,11 +207,6 @@ function ShowPetActionBar(doNotSlide)
 			PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
 			PetActionBarFrame.mode = "show";
 		end
-		-- Rare case
-		--DEBUG FIXME
-		--[[if ( ChatFrameEditBox:IsShown() ) then
-			ChatFrameEditBox:Raise();
-		end]]
 		UIParent_ManageFramePositions();
 	end
 end

@@ -3432,10 +3432,6 @@ end
 -- BUG: Since we're futzing with the frame height, the combat log tab fades out on hover while other tabs remain faded in. This bug is in the stock version, as well.
 
 local function Blizzard_CombatLog_AdjustCombatLogHeight()
-	if ( SIMPLE_CHAT == "1" ) then
-		return;
-	end
-
 	-- This prevents improper positioning of the frame due to the scale not yet being set.
 	-- This whole method of resizing the frame and extending the background to preserve visual continuity really screws with repositioning after
 	-- a reload. I'm not sure it's going to work well in the long run.

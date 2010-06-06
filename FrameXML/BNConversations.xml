@@ -1,80 +1,24 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="BNConversations.lua"/>
-	<Button name="BNConversationMemberTemplate" virtual="true">
-		<Size x="135" y="12"/>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnClick>
-				BNConversationMember_OnClick(self, button);
-			</OnClick>
-		</Scripts>
-		<NormalFont style="GameFontNormalLeft"/>
-		<HighlightFont style="GameFontHighlightLeft"/>
-		<DisabledFont style="GameFontDisable"/>
-	</Button>
 	<Button name="BNConversationRosterButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="$parentUpButton" relativePoint="TOP"/>
 		</Anchors>
-		<Frames>
-			<Frame name="$parentRoster" hidden="true" inherits="FloatingBorderedFrame" parentKey="roster">
-				<Size x="140" y="200"/>
-				<Frames>
-					<Button name="$parentPlayer1" inherits="BNConversationMemberTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentPlayer2" inherits="BNConversationMemberTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlayer1" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentPlayer3" inherits="BNConversationMemberTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlayer2" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentPlayer4" inherits="BNConversationMemberTemplate" id="4">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlayer3" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentPlayer5" inherits="BNConversationMemberTemplate" id="5">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlayer4" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentPlayer6" inherits="BNConversationMemberTemplate" id="6">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlayer5" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentInviteButton" inherits="UIPanelButtonTemplate2" parentKey="inviteButton" text="INVITE_FRIEND_TO_CONVERSATION">
-						<Size x="130" y="22"/>
-						<Scripts>
-							<OnClick>
-								BNConversationInvite_SelectPlayers(self:GetParent():GetParent().conversationID);
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad>
 				BNConversationButton_OnLoad(self);
 			</OnLoad>
-			<OnEvent>
-				BNConversationButton_OnEvent(self, event, ...);
-			</OnEvent>
 			<OnClick>
 				BNConversationButton_OnClick(self, button);
 			</OnClick>
+			<OnEnter>
+				BNConversationButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				BNConversationButton_OnLeave(self, motion);
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Down"/>
@@ -110,7 +54,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="BNConversationInviteDialog" hidden="true" parent="UIParent">
+	<Frame name="BNConversationInviteDialog" hidden="true" parent="UIParent" frameStrata="DIALOG">
 		<Size x="300" y="300"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -242,6 +186,7 @@
 			<OnShow>
 				BNConversationInvite_Update();
 			</OnShow>
+			<OnEvent function="BNConversationInviteDialog_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

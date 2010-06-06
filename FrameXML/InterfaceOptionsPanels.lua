@@ -811,30 +811,26 @@ SocialPanelOptions = {
 	removeChatDelay = { text="REMOVE_CHAT_DELAY_TEXT" },
 	guildMemberNotify = { text="GUILDMEMBER_ALERT" },
 	guildRecruitmentChannel = { text="AUTO_JOIN_GUILD_CHANNEL" },
-	showChatIcons = { text="SHOW_CHAT_ICONS" },
-	useSimpleChat = { text="SIMPLE_CHAT_TEXT" },
-	chatLocked = { text="CHAT_LOCKED_TEXT" },	
+	showChatIcons = { text="SHOW_CHAT_ICONS" },	
 	wholeChatWindowClickable = { text = "CHAT_WHOLE_WINDOW_CLICKABLE" },
-	battlenetToasts = { text = "SHOW_BATTLENET_TOASTS" },
+	chatMouseScroll = { text = "CHAT_MOUSE_WHEEL_SCROLL" },
 }
 
 function InterfaceOptionsSocialPanel_OnLoad (self)
+	if ( not IsBNLogin() ) then
+		local conversationCheckBox = InterfaceOptionsSocialPanelConversationMode;
+		local timestampCheckBox = InterfaceOptionsSocialPanelTimestamps;
+		conversationCheckBox:UnregisterEvent("VARIABLES_LOADED");
+		conversationCheckBox:Hide();
+		timestampCheckBox:ClearAllPoints();
+		timestampCheckBox:SetPoint("TOPLEFT", conversationCheckBox);
+	end
 	self.name = SOCIAL_LABEL;
 	self.options = SocialPanelOptions;
 	InterfaceOptionsPanel_OnLoad(self);
 
 	self.okay = function (self)
 		InterfaceOptionsPanel_Okay(self);
-
-		-- I guess it's ok if simple chat is the only option that gets applied on okay...it is destructive
-		if ( InterfaceOptionsSocialPanelSimpleChat:GetChecked() ) then
-			SIMPLE_CHAT = "1";
-			FCF_Set_SimpleChat();
-		else
-			SIMPLE_CHAT = "0";
-			FCF_Set_NormalChat();
-			UIParent_ManageFramePositions();
-		end
 	end
 
 	self:SetScript("OnEvent", InterfaceOptionsSocialPanel_OnEvent);
@@ -848,23 +844,23 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 
 		control = InterfaceOptionsSocialPanelChatHoverDelay;
 		control.setFunc(GetCVar(control.cvar));
-
-		-- bug 110191: The combat log overlaps the chat log after relogging with Simple Chat toggled.
-		-- force the floating chat frames to simple chat mode (if it is enabled) to fix position and size issues
-		if ( SIMPLE_CHAT == "1" ) then
-			FCF_Set_SimpleChat();
-		end
 	end
 end
 
-function InterfaceOptionsSocialPanelSimpleChat_CheckInterrupt(self)
-	StaticPopup_Show("SIMPLE_CHAT_OPTION_ENABLE_INTERRUPT");
-end
-
-function InterfaceOptionsSocialPanelSimpleChat_ConfirmCheck()
-	local checkButton = InterfaceOptionsSocialPanelSimpleChat;
-	checkButton:SetChecked(true);
-	InterfaceOptionsPanel_CheckButton_Update(checkButton);
+function InterfaceOptionsSocialPanelChatMouseScroll_SetScrolling(receiveMouseScroll)
+	if ( receiveMouseScroll == "1" ) then
+		for _, frameName in pairs(CHAT_FRAMES) do
+			local frame = _G[frameName];
+			frame:SetScript("OnMouseWheel", FloatingChatFrame_OnMouseScroll);
+			frame:EnableMouseWheel(true);
+		end
+	else
+		for _, frameName in pairs(CHAT_FRAMES) do
+			local frame = _G[frameName];
+			frame:SetScript("OnMouseWheel", nil);
+			frame:EnableMouseWheel(false);
+		end
+	end
 end
 
 function InterfaceOptionsSocialPanelChatStyle_OnEvent (self, event, ...)
@@ -1026,6 +1022,90 @@ function InterfaceOptionsSocialPanelConversationMode_Initialize()
 	info.tooltipTitle = CONVERSATION_MODE_INLINE;
 	info.tooltipText = OPTION_CONVERSATION_MODE_INLINE;
 	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsSocialPanelTimestamps_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "showTimestamps";
+
+		local value = GetCVar(self.cvar);
+		if ( value == "none" ) then
+			CHAT_TIMESTAMP_FORMAT = nil;
+		else
+			CHAT_TIMESTAMP_FORMAT = value;
+		end
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = OPTION_TOOLTIP_TIMESTAMPS;
+
+		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelTimestamps_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				SetCVar(self.cvar, self.value);
+				if ( value == "none" ) then
+					CHAT_TIMESTAMP_FORMAT = nil;
+				else
+					CHAT_TIMESTAMP_FORMAT = value;
+				end
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelTimestamps_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsSocialPanelTimestamps_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsSocialPanelTimestamps);
+	local info = UIDropDownMenu_CreateInfo();
+	
+	info.func = InterfaceOptionsSocialPanelTimestamps_OnClick;
+	info.value = "none";
+	info.text = TIMESTAMP_FORMAT_NONE;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+	
+	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMM, info, selectedValue);
+	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMMSS, info, selectedValue);
+	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMM_AMPM, info, selectedValue);
+	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMMSS_AMPM, info, selectedValue);
+	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMM_24HR, info, selectedValue);
+	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMMSS_24HR, info, selectedValue);
+end
+
+local exampleTime = {
+	year = 2010,
+	month = 12,
+	day = 15,
+	hour = 15,
+	min = 27,
+	sec = 32,
+}
+
+function InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(timestampFormat, infoTable, selectedValue)
+	assert(infoTable);
+	infoTable.func = InterfaceOptionsSocialPanelTimestamps_OnClick;
+	infoTable.value = timestampFormat;
+	infoTable.text = date(timestampFormat, time(exampleTime));
+	infoTable.checked = (selectedValue == timestampFormat);
+	UIDropDownMenu_AddButton(infoTable, UIDROPDOWNMENU_MENU_LEVEL);
+end
+
+function InterfaceOptionsSocialPanelTimestamps_OnClick(self)
+	InterfaceOptionsSocialPanelTimestamps:SetValue(self.value);
 end
 
 -- [[ ActionBars Options Panel ]] --
@@ -1485,6 +1565,26 @@ function InterfaceOptionsBuffsPanel_OnEvent (self, event, ...)
 		local control;
 		control = InterfaceOptionsBuffsPanelBuffDurations;
 		control.setFunc(GetCVar(control.cvar));
+	end
+end
+
+-- [[ Battle.net Options Panel ]] --
+
+BattlenetPanelOptions = {
+	showToastOnline = { text = "SHOW_TOAST_ONLINE_TEXT" },
+	showToastOffline = { text = "SHOW_TOAST_OFFLINE_TEXT" },
+	showToastBroadcast = { text = "SHOW_TOAST_BROADCAST_TEXT" },
+	showToastFriendRequest = { text = "SHOW_TOAST_FRIEND_REQUEST_TEXT" },
+	showToastConversation = { text = "SHOW_TOAST_CONVERSATION_TEXT" },
+	showToastWindow = { text = "SHOW_TOAST_WINDOW_TEXT" },
+	toastDuration = { text = "TOAST_DURATION_TEXT", minValue = 0, maxValue = 10, valueStep = 0.5 },
+}
+
+function InterfaceOptionsBattlenetPanel_OnLoad (self)
+	if ( IsBNLogin() ) then
+		self.name = BATTLENET_OPTIONS_LABEL;
+		self.options = BattlenetPanelOptions;
+		InterfaceOptionsPanel_OnLoad(self);
 	end
 end
 

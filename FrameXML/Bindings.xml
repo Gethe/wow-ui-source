@@ -120,9 +120,6 @@
 	<Binding name="COMBATLOGBOTTOM">
 		ChatFrame2:ScrollToBottom();
 	</Binding>
-	<Binding name="TOGGLECOMBATLOG">
-		ToggleCombatLog();
-	</Binding>
 	<!-- Action bar bindings -->
 	<Binding name="ACTIONBUTTON1" runOnUp="true" header="ACTIONBAR">
 		if ( keystate == "down" ) then

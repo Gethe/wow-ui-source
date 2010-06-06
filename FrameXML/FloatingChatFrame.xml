@@ -417,7 +417,14 @@
 				end
 			</OnDoubleClick>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
+				local chatFrame = _G["ChatFrame"..self:GetID()];
+				
+				if ( chatFrame.isTemporary and chatFrame.chatType == "BN_CONVERSATION" ) then
+					GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+					BNConversation_DisplayConversationTooltip(tonumber(chatFrame.chatTarget));
+				else
+					GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -452,10 +459,6 @@
 					chatFrame:StartMoving();
 					SELECTED_CHAT_FRAME = chatFrame;
 					MOVING_CHATFRAME = chatFrame;
-				end
-				
-				if ( chatFrame.conversationButton ) then
-					BNConversationButton_RemoveSavedChatFramePosition(chatFrame.conversationButton);
 				end
 				
 				self:LockHighlight();
@@ -534,18 +537,15 @@
 						local chatFrame = self:GetParent();
 						self:SetButtonState("PUSHED", true);
 						SetCursor("UI-Cursor-Size");	--Hide the cursor
-						--DEBUG FIXME
+
 						self:GetHighlightTexture():Hide();
 						
-						if ( chatFrame.conversationButton ) then
-							BNConversationButton_RemoveSavedChatFramePosition(chatFrame.conversationButton);
-						end
 						chatFrame:StartSizing("BOTTOMRIGHT");
 					</OnMouseDown>
 					<OnMouseUp>
 						self:SetButtonState("NORMAL", false);
 						SetCursor(nil); --Show the cursor again
-						--DEBUG FIXME
+
 						self:GetHighlightTexture():Show();
 						
 						self:GetParent():StopMovingOrSizing();
@@ -934,6 +934,12 @@
 			<OnClick>
 				ToggleFriendsFrame(1);
 			</OnClick>
+			<OnEnter>
+				GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SOCIAL);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-BattleBro-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-BattleBro-Down"/>

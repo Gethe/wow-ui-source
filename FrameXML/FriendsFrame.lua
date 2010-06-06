@@ -12,7 +12,6 @@ WHOS_TO_DISPLAY = 17;
 FRIENDS_FRAME_WHO_HEIGHT = 16;
 GUILDMEMBERS_TO_DISPLAY = 13;
 FRIENDS_FRAME_GUILD_HEIGHT = 14;
-MAX_IGNORE = 50;
 MAX_WHOS_FROM_SERVER = 50;
 MAX_GUILDCONTROL_OPTIONS = 12;
 CURRENT_GUILD_MOTD = "";
@@ -46,12 +45,10 @@ FRIENDS_BNET_NAME_COLOR_CODE = "|cff82c5ff";
 FRIENDS_BROADCAST_TIME_COLOR_CODE = "|cff4381a8"
 FRIENDS_WOW_NAME_COLOR_CODE = "|cfffde05c";
 FRIENDS_OTHER_NAME_COLOR_CODE = "|cff7b8489";
-FRIENDS_HEADER_TYPE_IGNORE = 1;
-FRIENDS_HEADER_TYPE_BLOCK = 2;
-FRIENDS_HEADER_TYPE_MUTE = 3;
-INVITE_OLD_COLOR = {r=0.263, g=0.506, b=0.659};
-INVITE_RECENT_COLOR = {r=0.118, g=255, b=0};
-INVITE_RECENT_NUM_SEC = 7 * 24 * 60 * 60;	-- 7 days and 7 nights
+SQUELCH_TYPE_IGNORE = 1;
+SQUELCH_TYPE_BLOCK_INVITE = 2;
+SQUELCH_TYPE_MUTE = 3;
+SQUELCH_TYPE_BLOCK_TOON = 4;
 FRIENDS_FRIENDS_POTENTIAL = 1;
 FRIENDS_FRIENDS_MUTUAL = 2;
 FRIENDS_FRIENDS_ALL = 3;
@@ -220,8 +217,14 @@ function FriendsFrame_OnLoad(self)
 	GuildMemberDetailRankText:SetPoint("RIGHT", GuildFramePromoteButton, "LEFT");
 	-- friends list
 	DynamicScrollFrame_CreateButtons(FriendsFrameFriendsScrollFrame, "FriendsFrameButtonTemplate", FRIENDS_BUTTON_HEADER_HEIGHT, FriendsFrame_SetButton, FriendsFrame_GetTopButton);
-	FriendsFrameOfflineHeader:SetParent(FriendsFrameFriendsScrollFrameScrollChild);	
-	FriendsFrameClearButton.icon:SetVertexColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+	FriendsFrameOfflineHeader:SetParent(FriendsFrameFriendsScrollFrameScrollChild);
+	FriendsFrameClearButton.icon:SetVertexColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);	
+	if ( not IsBNLogin() ) then
+		FriendsTabHeaderTab3:Hide();
+		FriendsFrameBroadcastInput:Hide();
+		FriendsFrameBattlenetStatus:Hide();
+		FriendsFrameStatusDropDown:Show();
+	end	
 end
 
 function FriendsFrame_OnShow()
@@ -253,7 +256,6 @@ function FriendsFrame_Update()
 			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-Pending-BotLeft");
 			FriendsFrameTitleText:SetText(PENDING_INVITE_LIST);
 			FriendsFrame_ShowSubFrame("PendingListFrame");
-			PendingList_Scroll();
 		else
 			FriendsFrameTopLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-TopLeft-bnet");
 			FriendsFrameTopRight:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-TopRight-bnet");
@@ -262,13 +264,13 @@ function FriendsFrame_Update()
 				FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrameThree-BotLeft-bnet");
 				FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrameThree-BotRight-bnet");
 				FriendsFrameIgnorePlayerButton:SetWidth(110);
-				FriendsFrameRemovePlayerButton:SetWidth(111);
+				FriendsFrameUnsquelchButton:SetWidth(111);
 			else
 				FriendsFrameMutePlayerButton:Hide();
 				FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrameMute-BotLeft-bnet");
 				FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrameMute-BotRight-bnet");
 				FriendsFrameIgnorePlayerButton:SetWidth(131);
-				FriendsFrameRemovePlayerButton:SetWidth(134);
+				FriendsFrameUnsquelchButton:SetWidth(134);
 			end
 			FriendsFrameTitleText:SetText(IGNORE_LIST);
 			FriendsFrame_ShowSubFrame("IgnoreListFrame");
@@ -435,101 +437,129 @@ function IgnoreList_Update()
 	local button;
 	local numIgnores = GetNumIgnores();
 	local numBlocks = BNGetNumBlocked();
+	local numToonBlocks = BNGetNumBlockedToons();
 	local numMutes = 0;
 	if ( IsVoiceChatEnabled() ) then
 		numMutes = GetNumMutes();
 	end
 	-- Headers stuff
-	local ignoredHeader, blockedHeader, mutedHeader;
+	local ignoredHeader, blockedHeader, mutedHeader, blockedToonHeader;
+	if ( numIgnores > 0 ) then
+		ignoredHeader = 1;
+	else
+		ignoredHeader = 0;
+	end	
 	if ( numBlocks > 0 ) then
 		blockedHeader = 1;
 	else
 		blockedHeader = 0;
 	end
+	if ( numToonBlocks > 0 ) then
+		blockedToonHeader = 1;
+	else
+		blockedToonHeader = 0;
+	end	
 	if ( numMutes > 0 ) then
 		mutedHeader = 1;
 	else
 		mutedHeader = 0;
 	end
-	if ( numIgnores > 0 ) then
-		ignoredHeader = 1;
-	else
-		ignoredHeader = 0;
-	end
-	local ignoredSectionSize = numIgnores + ignoredHeader;
-	local mutedSectionSize = numMutes + mutedHeader;
-	local blockedSectionSize = numBlocks + blockedHeader;
-	local numEntries = ignoredSectionSize + mutedSectionSize + blockedSectionSize;
+	
+	local lastIgnoredIndex = numIgnores + ignoredHeader;
+	local lastBlockedIndex = lastIgnoredIndex + numBlocks + blockedHeader;
+	local lastBlockedToonIndex = lastBlockedIndex + numToonBlocks + blockedToonHeader;
+	local lastMutedIndex = lastBlockedToonIndex + numMutes + mutedHeader;
+	local numEntries = lastMutedIndex;
+
 	FriendsFrameIgnoredHeader:Hide();
+	FriendsFrameBlockedInviteHeader:Hide();
+	FriendsFrameBlockedToonHeader:Hide();
 	FriendsFrameMutedHeader:Hide();
-	FriendsFrameBlockedHeader:Hide();
 	
 	-- selection stuff
-	local selectedIgnoreType = FriendsFrame.selectedIgnoreType;
-	local selectedIgnoreIndex = 0 ;
-	if ( selectedIgnoreType == FRIENDS_HEADER_TYPE_IGNORE ) then
-		selectedIgnoreIndex = GetSelectedIgnore();
-	elseif ( selectedIgnoreType == FRIENDS_HEADER_TYPE_BLOCK ) then
-		selectedIgnoreIndex = BNGetSelectedBlock();
-	elseif ( selectedIgnoreType == FRIENDS_HEADER_TYPE_MUTE ) then
-		selectedIgnoreIndex = GetSelectedMute();
+	local selectedSquelchType = FriendsFrame.selectedSquelchType;
+	local selectedSquelchIndex = 0 ;
+	if ( selectedSquelchType == SQUELCH_TYPE_IGNORE ) then
+		selectedSquelchIndex = GetSelectedIgnore();
+	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
+		selectedSquelchIndex = BNGetSelectedBlock();
+	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_TOON ) then
+		selectedSquelchIndex = BNGetSelectedToonBlock();
+	elseif ( selectedSquelchType == SQUELCH_TYPE_MUTE ) then
+		selectedSquelchIndex = GetSelectedMute();
 	end
-	if ( selectedIgnoreIndex == 0 ) then
+	if ( selectedSquelchIndex == 0 ) then
 		if ( numIgnores > 0 ) then
-			FriendsFrame_SelectIgnore(FRIENDS_HEADER_TYPE_IGNORE, 1);
-			selectedIgnoreType = FRIENDS_HEADER_TYPE_IGNORE;
-			selectedIgnoreIndex = 1;
+			FriendsFrame_SelectSquelched(SQUELCH_TYPE_IGNORE, 1);
+			selectedSquelchType = SQUELCH_TYPE_IGNORE;
+			selectedSquelchIndex = 1;
 		elseif ( numBlocks > 0 ) then
-			FriendsFrame_SelectIgnore(FRIENDS_HEADER_TYPE_BLOCK, 1);
-			selectedIgnoreType = FRIENDS_HEADER_TYPE_BLOCK;
-			selectedIgnoreIndex = 1;
+			FriendsFrame_SelectSquelched(SQUELCH_TYPE_BLOCK_INVITE, 1);
+			selectedSquelchType = SQUELCH_TYPE_BLOCK_INVITE;
+			selectedSquelchIndex = 1;
+		elseif ( numToonBlocks > 0 ) then
+			FriendsFrame_SelectSquelched(SQUELCH_TYPE_BLOCK_TOON, 1);
+			selectedSquelchType = SQUELCH_TYPE_BLOCK_TOON;
+			selectedSquelchIndex = 1;
 		elseif ( numMutes > 0 ) then
-			FriendsFrame_SelectIgnore(FRIENDS_HEADER_TYPE_MUTE, 1);
-			selectedIgnoreType = FRIENDS_HEADER_TYPE_MUTE;
-			selectedIgnoreIndex = 1;
+			FriendsFrame_SelectSquelched(SQUELCH_TYPE_MUTE, 1);
+			selectedSquelchType = SQUELCH_TYPE_MUTE;
+			selectedSquelchIndex = 1;
 		end
 	end
-	if ( selectedIgnoreIndex > 0 ) then
-		FriendsFrameRemovePlayerButton:Enable();
+	if ( selectedSquelchIndex > 0 ) then
+		FriendsFrameUnsquelchButton:Enable();
 	else
-		FriendsFrameRemovePlayerButton:Disable();
+		FriendsFrameUnsquelchButton:Disable();
 	end
 	
-	local ignoreOffset = FauxScrollFrame_GetOffset(FriendsFrameIgnoreScrollFrame);
-	local ignoreIndex;
+	local scrollOffset = FauxScrollFrame_GetOffset(FriendsFrameIgnoreScrollFrame);
+	local squelchedIndex;
 	for i = 1, IGNORES_TO_DISPLAY, 1 do
-		ignoreIndex = i + ignoreOffset;
+		squelchedIndex = i + scrollOffset;
 		button = _G["FriendsFrameIgnoreButton"..i];
 		button.type = nil;
-		if ( ignoreIndex == ignoredHeader ) then
+		if ( squelchedIndex == ignoredHeader ) then
+			-- ignored header
 			IgnoreList_SetHeader(FriendsFrameIgnoredHeader, button);
-		elseif ( ignoreIndex <= ignoredSectionSize ) then
+		elseif ( squelchedIndex <= lastIgnoredIndex ) then
 			-- ignored
-			button.index = ignoreIndex - ignoredHeader;
+			button.index = squelchedIndex - ignoredHeader;
 			button.name:SetText(GetIgnoreName(button.index));
-			button.type = FRIENDS_HEADER_TYPE_IGNORE;
-		elseif ( blockedHeader == 1 and ignoreIndex == ignoredSectionSize + 1 ) then
-			IgnoreList_SetHeader(FriendsFrameBlockedHeader, button);
-		elseif ( ignoreIndex <= ignoredSectionSize + blockedSectionSize ) then
+			button.type = SQUELCH_TYPE_IGNORE;
+		elseif ( blockedHeader == 1 and squelchedIndex == lastIgnoredIndex + 1 ) then
+			-- blocked header
+			IgnoreList_SetHeader(FriendsFrameBlockedInviteHeader, button);
+		elseif ( squelchedIndex <= lastBlockedIndex ) then
 			-- blocked
-			button.index = ignoreIndex - ignoredSectionSize - blockedHeader;
+			button.index = squelchedIndex - lastIgnoredIndex - blockedHeader;
 			local blockID, blockName = BNGetBlockedInfo(button.index);
 			button.name:SetText(blockName);
-			button.type = FRIENDS_HEADER_TYPE_BLOCK;
-		elseif ( mutedHeader == 1 and ignoreIndex == ignoredSectionSize + blockedSectionSize + 1 ) then
+			button.type = SQUELCH_TYPE_BLOCK_INVITE;
+		elseif ( blockedToonHeader == 1 and squelchedIndex == lastBlockedIndex + 1 ) then
+			-- blocked TOON header
+			IgnoreList_SetHeader(FriendsFrameBlockedToonHeader, button);
+		elseif ( squelchedIndex <= lastBlockedToonIndex ) then
+			-- blocked TOON
+			button.index = squelchedIndex - lastBlockedIndex - blockedToonHeader;
+			local blockID, blockName = BNGetBlockedToonInfo(button.index);
+			button.name:SetText(blockName);
+			button.type = SQUELCH_TYPE_BLOCK_TOON;
+		elseif ( mutedHeader == 1 and squelchedIndex == lastBlockedToonIndex + 1 ) then
+			-- muted header
 			IgnoreList_SetHeader(FriendsFrameMutedHeader, button);
-		elseif ( ignoreIndex <= ignoredSectionSize + blockedSectionSize + mutedSectionSize ) then
+		elseif ( squelchedIndex <= lastMutedIndex ) then
 			-- muted
-			button.index = ignoreIndex - ignoredSectionSize - blockedSectionSize - mutedHeader;
+			button.index = squelchedIndex - lastBlockedToonIndex - mutedHeader;
 			button.name:SetText(GetMuteName(button.index));
-			button.type = FRIENDS_HEADER_TYPE_MUTE;
+			button.type = SQUELCH_TYPE_MUTE;
 		end
-		if ( selectedIgnoreType == button.type and selectedIgnoreIndex == button.index ) then
+		if ( selectedSquelchType == button.type and selectedSquelchIndex == button.index ) then
 			button:LockHighlight();
 		else
 			button:UnlockHighlight();
 		end
-		if ( ignoreIndex > numEntries ) then
+		if ( squelchedIndex > numEntries ) then
 			button:Hide();
 		else
 			button:Show();
@@ -546,8 +576,14 @@ function IgnoreList_SetHeader(header, parent)
 	header:Show();
 end
 
+function PendingListFrame_OnShow(self)
+	PendingList_Update();
+end
+
 function PendingList_Update(newInvite)
 	local numPending = BNGetNumFriendInvites();
+
+	PendingList_UpdateTab();
 	if ( numPending > 0 ) then
 		if ( not GetCVarBool("pendingInviteInfoShown") ) then
 			PendingListInfoFrame:SetFrameLevel(FriendsFramePendingButton1:GetFrameLevel() + 1);
@@ -558,10 +594,7 @@ function PendingList_Update(newInvite)
 		local buttonHeight, message, _;
 		local heightLeft = scrollFrame.scrollHeight;
 		local scrollBar = scrollFrame.scrollBar;
-		PanelTemplates_EnableTab(FriendsTabHeader, 3);
-		FriendsTabHeaderTab3:SetText(PENDING_INVITE.." ("..numPending..")");
-		PanelTemplates_TabResize(FriendsTabHeaderTab3, 0);
-		PendingListFrame_AlertCheck();
+
 		FriendsFramePendingButton1.message:SetHeight(0);
 		for i = numPending, 1, -1 do
 			buttonHeight = PENDING_BUTTON_MIN_HEIGHT;
@@ -601,11 +634,6 @@ function PendingList_Update(newInvite)
 		scrollFrame.max = numPending;
 		scrollBar:Hide();
 		scrollBar:SetValue(0);
-	else
-		FriendsTabHeaderTab3:SetText(PENDING_INVITE);
-		PanelTemplates_TabResize(FriendsTabHeaderTab3, 0);
-		FriendsTabHeaderAlert:Hide();
-		table.wipe(PendingInvitesNew);
 	end
 	PendingList_Scroll(0);
 end
@@ -657,11 +685,6 @@ function PendingList_Scroll(offset)
 			end
 			if ( timeSent ) then
 				button.sent:SetFormattedText("Sent %s ago", FriendsFrame_GetLastOnline(timeSent));
-				if ( (time() - timeSent) < INVITE_RECENT_NUM_SEC ) then
-					button.sent:SetTextColor(INVITE_RECENT_COLOR.r, INVITE_RECENT_COLOR.g, INVITE_RECENT_COLOR.b);
-				else
-					button.sent:SetTextColor(INVITE_OLD_COLOR.r, INVITE_OLD_COLOR.g, INVITE_OLD_COLOR.b);
-				end
 			end
 			button:SetHeight(buttonHeight);
 			heightUsed = heightUsed + buttonHeight;
@@ -684,15 +707,7 @@ end
 
 function PendingListFrame_OnHide()
 	table.wipe(PendingInvitesNew);
-end
-
-function PendingListFrame_AlertCheck()
-	-- check if there are any entries in PendingInvitesNew and the tab is not selected
-	if ( next(PendingInvitesNew) and FriendsTabHeader.selectedTab ~= 3 and not FriendsTabHeaderTab3:IsMouseOver() ) then
-		FriendsTabHeaderAlert:Show();
-	else
-		FriendsTabHeaderAlert:Hide();
-	end
+	PendingList_UpdateTab();
 end
 	
 function PendingListFrame_BlockCommunication(self)
@@ -709,6 +724,22 @@ function PendingListFrame_ReportSpam(self)
 	if ( dialog ) then
 		dialog.data = inviteID;
 	end
+end
+
+function PendingList_UpdateTab()
+	local numPending = BNGetNumFriendInvites();
+	if ( numPending > 0 ) then
+		FriendsTabHeaderTab3:SetText(PENDING_INVITE.." ("..numPending..")");
+		if ( next(PendingInvitesNew) and FriendsTabHeader.selectedTab ~= 3 and not FriendsTabHeaderTab3:IsMouseOver() ) then
+			FriendsTabHeaderInviteAlert:Show();
+		else
+			FriendsTabHeaderInviteAlert:Hide();
+		end
+	else
+		FriendsTabHeaderTab3:SetText(PENDING_INVITE);
+		FriendsTabHeaderInviteAlert:Hide();
+	end
+	PanelTemplates_TabResize(FriendsTabHeaderTab3, 0);
 end
 
 function WhoList_Update()
@@ -1134,30 +1165,31 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
 		FriendsList_Update();
 	elseif ( event == "BN_FRIEND_LIST_SIZE_CHANGED" or event == "BN_FRIEND_INFO_CHANGED" ) then
-		BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);		
+		BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
+		if(not BNetBroadcasts) then
+			BNetBroadcasts = { };
+		end
 		FriendsList_Update();
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		local arg1 = ...;
 		if ( arg1 ) then
 			BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
+			if(not BNetBroadcasts) then
+				BNetBroadcasts = { };
+			end
 			FriendsList_Update();
 		else
-			local editBox = FriendsFrameBroadcastInput;
-			if ( editBox:HasFocus() ) then
-				editBox:ClearFocus();
-			end
-			FriendsFrame_UpdateBroadcast();
-			FriendsFrameBroadcastInput_UpdateDisplay(editBox);
+			FriendsFrameBroadcastInput_UpdateDisplay();
 		end
-	elseif ( event == "BN_FRIEND_INVITE_ADDED" or event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
+	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then
 		local arg1 = ...;
 		if ( arg1 ) then
 			PendingInvitesNew[arg1] = true;
 			PendingList_Update(true);
-		else
-			PendingInvitesNew["all"] = true;
-			PendingList_Update();
 		end
+	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
+		PendingInvitesNew["all"] = true;
+		PendingList_Update();
 	elseif ( event == "BN_FRIEND_INVITE_REMOVED" ) then
 		PendingList_Update();
 	elseif ( event == "IGNORELIST_UPDATE" or event == "MUTELIST_UPDATE" or event == "BN_BLOCK_LIST_UPDATED" ) then
@@ -1224,15 +1256,17 @@ function FriendsFrame_SelectFriend(friendType, id)
 	FriendsFrame.selectedFriendType = friendType;
 end
 
-function FriendsFrame_SelectIgnore(ignoreType, index)
-	if ( ignoreType == FRIENDS_HEADER_TYPE_IGNORE ) then
+function FriendsFrame_SelectSquelched(ignoreType, index)
+	if ( ignoreType == SQUELCH_TYPE_IGNORE ) then
 		SetSelectedIgnore(index);
-	elseif ( ignoreType == FRIENDS_HEADER_TYPE_BLOCK ) then
+	elseif ( ignoreType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		BNSetSelectedBlock(index);
-	elseif ( ignoreType == FRIENDS_HEADER_TYPE_MUTE ) then
+	elseif ( ignoreType == SQUELCH_TYPE_BLOCK_TOON ) then
+		BNSetSelectedToonBlock(index);
+	elseif ( ignoreType == SQUELCH_TYPE_MUTE ) then
 		SetSelectedMute(index);
 	end
-	FriendsFrame.selectedIgnoreType = ignoreType;
+	FriendsFrame.selectedSquelchType = ignoreType;
 end
 
 function FriendsFrameAddFriendButton_OnClick(self)
@@ -1244,13 +1278,17 @@ function FriendsFrameAddFriendButton_OnClick(self)
 		AddFriend(name);
 		PlaySound("UChatScrollButton");
 	else
-		AddFriendEntryFrame_Collapse(true);
-		AddFriendFrame.editFocus = AddFriendNameEditBox;
-		StaticPopupSpecial_Show(AddFriendFrame);
-		if ( GetCVarBool("addFriendInfoShown") ) then
-			AddFriendFrame_ShowEntry();
+		if ( IsBNLogin() ) then
+			AddFriendEntryFrame_Collapse(true);
+			AddFriendFrame.editFocus = AddFriendNameEditBox;
+			StaticPopupSpecial_Show(AddFriendFrame);
+			if ( GetCVarBool("addFriendInfoShown") ) then
+				AddFriendFrame_ShowEntry();
+			else
+				AddFriendFrame_ShowInfo();
+			end
 		else
-			AddFriendFrame_ShowInfo();
+			StaticPopup_Show("ADD_FRIEND");
 		end
 	end
 end
@@ -1274,15 +1312,18 @@ function FriendsFrameMuteButton_OnClick(self)
 	MutedList_Update();
 end
 
-function FriendsFrameRemovePlayerButton_OnClick(self)
-	local selectedIgnoreType = FriendsFrame.selectedIgnoreType;
-	if ( selectedIgnoreType == FRIENDS_HEADER_TYPE_IGNORE ) then
+function FriendsFrameUnsquelchButton_OnClick(self)
+	local selectedSquelchType = FriendsFrame.selectedSquelchType;
+	if ( selectedSquelchType == SQUELCH_TYPE_IGNORE ) then
 		local name = GetIgnoreName(GetSelectedIgnore());
 		DelIgnore(name);
-	elseif ( selectedIgnoreType == FRIENDS_HEADER_TYPE_BLOCK ) then
+	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		local blockID = BNGetBlockedInfo(BNGetSelectedBlock());
 		BNSetBlocked(blockID, false);
-	elseif ( selectedIgnoreType == FRIENDS_HEADER_TYPE_MUTE ) then
+	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_TOON ) then
+		local blockID = BNGetBlockedToonInfo(BNGetSelectedToonBlock());
+		BNSetToonBlocked(blockID, false);
+	elseif ( selectedSquelchType == SQUELCH_TYPE_MUTE ) then
 		local name = GetMuteName(GetSelectedMute());
 		DelMute(name);
 	end
@@ -1955,34 +1996,33 @@ end
 -- Battle.net stuff starts here
 
 function FriendsFrame_CheckBattlenetStatus()
-	if ( BNConnected() ) then
-		BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
-		playerRealmName = GetRealmName();
-		playerFactionGroup = UnitFactionGroup("player");
-		FriendsFrameBattlenetStatus:Hide();
-		FriendsFrameStatusDropDown:Show();
-		FriendsFrameBroadcastInput:Show();
-		-- broadcast
-		local editBox = FriendsFrameBroadcastInput;
-		if ( editBox:HasFocus() ) then
-			editBox:ClearFocus();
+	if ( IsBNLogin() ) then
+		if ( BNConnected() ) then
+			BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
+			if(not BNetBroadcasts) then
+				BNetBroadcasts = { };
+			end
+			playerRealmName = GetRealmName();
+			playerFactionGroup = UnitFactionGroup("player");
+			FriendsFrameBattlenetStatus:Hide();
+			FriendsFrameStatusDropDown:Show();
+			FriendsFrameBroadcastInput:Show();
+			FriendsFrameBroadcastInput_UpdateDisplay();
+		else
+			numOnlineBroadcasts = 0;
+			numOfflineBroadcasts = 0;
+			FriendsFrameBattlenetStatus:Show();
+			FriendsFrameStatusDropDown:Hide();
+			FriendsFrameBroadcastInput:Hide();
+			FriendsFrameOfflineHeader:Hide();
 		end
-		FriendsFrame_UpdateBroadcast();
-		FriendsFrameBroadcastInput_UpdateDisplay(editBox);
-	else
-		numOnlineBroadcasts = 0;
-		numOfflineBroadcasts = 0;
-		FriendsFrameBattlenetStatus:Show();
-		FriendsFrameStatusDropDown:Hide();
-		FriendsFrameBroadcastInput:Hide();
-		FriendsFrameOfflineHeader:Hide();
+		if ( FriendsFrame:IsShown() ) then
+			IgnoreList_Update();
+			PendingList_Update();
+		end
+		-- has its own check if it is being shown, after it updates the count on the FriendsMicroButton
+		FriendsList_Update();
 	end
-	if ( FriendsFrame:IsShown() ) then
-		IgnoreList_Update();
-		PendingList_Update();
-	end
-	-- has its own check if it is being shown, after it updates the count on the FriendsMicroButton
-	FriendsList_Update();
 end
 
 function FriendsFrame_GetTopButton(offset)
@@ -2177,17 +2217,17 @@ function FriendsFrameStatusDropDown_OnLoad(self)
 end
 
 function FriendsFrameStatusDropDown_ShowTooltip()
-	local status;
-	local id = UIDropDownMenu_GetSelectedID(FriendsFrameStatusDropDown)
-	if ( id == 2 ) then
-		status = FRIENDS_LIST_AWAY;
-	elseif ( id == 3 ) then
-		status = FRIENDS_LIST_BUSY;
+	local statusText;
+	local status = FriendsFrameStatusDropDown.status;
+	if ( status == 2 ) then
+		statusText = FRIENDS_LIST_AWAY;
+	elseif ( status == 3 ) then
+		statusText = FRIENDS_LIST_BUSY;
 	else
-		status = FRIENDS_LIST_AVAILABLE;
+		statusText = FRIENDS_LIST_AVAILABLE;
 	end
-	GameTooltip:SetOwner(FriendsFrameStatusDropDown, "ANCHOR_RIGHT", -18, 0);	
-	GameTooltip:SetText(format(FRIENDS_LIST_STATUS_TOOLTIP, status));
+	GameTooltip:SetOwner(FriendsFrameStatusDropDown, "ANCHOR_RIGHT", -18, 0);
+	GameTooltip:SetText(format(FRIENDS_LIST_STATUS_TOOLTIP, statusText));
 	GameTooltip:Show();
 end
 
@@ -2198,40 +2238,41 @@ end
 
 function FriendsFrameStatusDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
-	info.checked = true;
+	local optionText = "\124T%s.tga:16:16:0:0\124t %s";
+	info.padding = 8;
+	info.checked = nil;
+	info.notCheckable = 1;
 	info.func = FriendsFrame_SetOnlineStatus;
-	
-	info.text = FRIENDS_LIST_AVAILABLE;	
-	info.checkTexture = FRIENDS_TEXTURE_ONLINE;
+
+	info.text = string.format(optionText, FRIENDS_TEXTURE_ONLINE, FRIENDS_LIST_AVAILABLE);
 	UIDropDownMenu_AddButton(info);
-	
-	info.text = FRIENDS_LIST_AWAY;
-	info.checkTexture = FRIENDS_TEXTURE_AFK;
+
+	info.text = string.format(optionText, FRIENDS_TEXTURE_AFK, FRIENDS_LIST_AWAY);
 	UIDropDownMenu_AddButton(info);
-	
-	
-	info.text = FRIENDS_LIST_BUSY;
-	info.checkTexture = FRIENDS_TEXTURE_DND;
+
+	info.text = string.format(optionText, FRIENDS_TEXTURE_DND, FRIENDS_LIST_BUSY);
 	UIDropDownMenu_AddButton(info);
 end
 
 function FriendsFrameStatusDropDown_Update(self)
+	local status;
 	self = self or FriendsFrameStatusDropDown;
 	if ( UnitIsAFK("player") ) then
-		UIDropDownMenu_SetSelectedID(self, 2);
 		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_AFK);
+		status = 2;
 	elseif ( UnitIsDND("player") ) then
-		UIDropDownMenu_SetSelectedID(self, 3);
 		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_DND);
+		status = 3;
 	else
-		UIDropDownMenu_SetSelectedID(self, 1);
 		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_ONLINE);
+		status = 1;
 	end
+	FriendsFrameStatusDropDown.status = status;
 end
 
 function FriendsFrame_SetOnlineStatus(button, status)
 	status = status or button:GetID();
-	if ( status == UIDropDownMenu_GetSelectedID(FriendsFrameStatusDropDown) ) then
+	if ( status == FriendsFrameStatusDropDown.status ) then
 		return;
 	end
 	if ( status == 1 ) then
@@ -2248,35 +2289,34 @@ function FriendsFrame_SetOnlineStatus(button, status)
 		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_DND);
 		SendChatMessage("", "DND");
 	end
-	UIDropDownMenu_SetSelectedID(FriendsFrameStatusDropDown, status);
+	FriendsFrameStatusDropDown.status = status;
 end
 
 function FriendsFrameBroadcastInput_OnEnterPressed(self)
-	BNSetCustomMessage(self:GetText());	
-	self:ClearFocus();
+	local broadcastText = self:GetText()
+	BNSetCustomMessage(broadcastText);
+	FriendsFrameBroadcastInput_UpdateDisplay(self, broadcastText);
 end
 
 function FriendsFrameBroadcastInput_OnEscapePressed(self)
-	FriendsFrame_UpdateBroadcast();
-	self:ClearFocus();
+	FriendsFrameBroadcastInput_UpdateDisplay(self);
 end
 
 function FriendsFrameBroadcastInput_OnClearPressed(self)
 	BNSetCustomMessage("");
-	local editBox = self:GetParent();
-	editBox:SetText("");
-	FriendsFrameBroadcastInput_UpdateDisplay(editBox);
+	FriendsFrameBroadcastInput_UpdateDisplay(nil, "");
 end
 
-function FriendsFrame_UpdateBroadcast()
-	local _, _, broadcastText = BNGetInfo();
-	if ( broadcastText ) then
-		FriendsFrameBroadcastInput:SetText(broadcastText);
+function FriendsFrameBroadcastInput_UpdateDisplay(self, broadcastText)
+	local _;
+	self = self or FriendsFrameBroadcastInput;
+	if ( not broadcastText ) then
+		_, _, broadcastText = BNGetInfo();
+		broadcastText = broadcastText or "";
 	end
-end
-
-function FriendsFrameBroadcastInput_UpdateDisplay(self)
-	if ( self:GetText() ~= "" ) then
+	self:ClearFocus();
+	self:SetText(broadcastText);
+	if ( broadcastText ~= "" ) then
 		self.icon:SetAlpha(1);
 		self:SetCursorPosition(0);
 		self.clear:Show();
@@ -2300,8 +2340,8 @@ function FriendsFrameTooltip_Show(self)
 	tooltip.maxWidth = 0;
 	
 	if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-		local broadcastTime, nameText;
-		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText = BNGetFriendInfo(self.id);
+		local nameText;
+		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
 		-- account name
 		if ( givenName and surname ) then
 			nameText = format(BATTLENET_NAME_FORMAT, givenName, surname);
@@ -2311,8 +2351,7 @@ function FriendsFrameTooltip_Show(self)
 		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
 		-- toon 1
 		if ( toonID ) then
-			local hasFocus, toonName, realmName, faction, race, class, guild, zoneName, level, gameText;
-			hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level, gameText, broadcastText, broadcastTime = BNGetToonInfo(toonID);
+			local hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(toonID);
 			level = level or "";
 			race = race or "";
 			class = class or "";
@@ -2343,7 +2382,7 @@ function FriendsFrameTooltip_Show(self)
 		-- broadcast
 		if ( broadcastText and broadcastText ~= "" ) then
 			FriendsTooltipBroadcastIcon:Show();
-			broadcastText = broadcastText.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(lastOnline));
+			broadcastText = broadcastText.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(broadcastTime));
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipBroadcastText, anchor, broadcastText, -8);
 		else
 			FriendsTooltipBroadcastIcon:Hide();
@@ -2559,7 +2598,6 @@ function AddFriendFrame_Accept()
 	local name = AddFriendNameEditBox:GetText();
 	if ( AddFriendFrame.BNconnected and string.find(name, "@") ) then
 		BNSendFriendInvite(name, AddFriendNoteEditBox:GetText());
-		UIErrorsFrame:AddMessage(FRIEND_REQUEST_SENT, 1.0, 1.0, 0.0, 1.0);
 	else
 		AddFriend(name);
 	end
@@ -2682,7 +2720,7 @@ function FriendsFriendsButton_OnClick(self)
 end
 
 function FriendsFrameIgnoreButton_OnClick(self)
-	FriendsFrame_SelectIgnore(self.type, self.index);
+	FriendsFrame_SelectSquelched(self.type, self.index);
 	IgnoreList_Update();
 end
 
@@ -2748,24 +2786,4 @@ function CanCooperateWithToon(toonID)
 	else
 		return false;
 	end
-end
-
---================= TEMPORARY FUNCTIONS =============================
-local BNselectedBlock;
-
-function BNSetSelectedBlock(index)
-	local presenceID = BNGetBlockedInfo(index);
-	if ( presenceID ) then
-		BNselectedBlock = presenceID;
-	end
-end
-
-function BNGetSelectedBlock()
-	for i = 1, BNGetNumBlocked() do
-		local presenceID = BNGetBlockedInfo(i);
-		if ( presenceID and presenceID == BNselectedBlock ) then
-			return i;
-		end
-	end
-	return 0;
 end

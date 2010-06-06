@@ -1,14 +1,18 @@
-local presenceIDs = {};
-presenceIDs_debug = presenceIDs;	--Use BNet_GetPresenceID.
-
 local BNToasts = { };
+local BNToastEvents = {
+	showToastOnline = "BN_FRIEND_ACCOUNT_ONLINE",
+	showToastOffline = "BN_FRIEND_ACCOUNT_OFFLINE",
+	showToastBroadcast = "BN_CUSTOM_MESSAGE_CHANGED",
+	showToastFriendRequest = "BN_FRIEND_INVITE_ADDED",
+	showToastConversation = "BN_CHAT_CHANNEL_JOINED",
+};
 local BN_TOAST_TYPE_ONLINE = 1;
 local BN_TOAST_TYPE_OFFLINE = 2;
 local BN_TOAST_TYPE_BROADCAST = 3;
 local BN_TOAST_TYPE_OLD_INVITES = 4;
 local BN_TOAST_TYPE_NEW_INVITE = 5;
 local BN_TOAST_TYPE_CONVERSATION = 6;
-BN_TOAST_TOP_OFFSET = 34;
+BN_TOAST_TOP_OFFSET = 40;
 BN_TOAST_BOTTOM_OFFSET = -12;
 BN_TOAST_RIGHT_OFFSET = 4;
 BN_TOAST_LEFT_OFFSET = -4;
@@ -20,106 +24,80 @@ function BNet_OnLoad(self)
 	self:RegisterEvent("BN_NEW_PRESENCE");
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("BN_DISCONNECTED");
-	-- for toasts cvar
-	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("CVAR_UPDATE");
-	--DEBUG FIXME
-	self:RegisterEvent("BN_FRIEND_INFO_CHANGED");
-	BNet_PopulateAllFriends();
 end
 
 function BNet_OnEvent(self, event, ...)
-	if ( event == "BN_TOON_NAME_UPDATED" ) then
-		local presenceID, name = ...;
-		BNet_AddPresence(presenceID, name);
-	elseif ( event == "BN_NEW_PRESENCE" ) then
-		local presenceID, name = ...;
-		BNet_AddPresence(presenceID, name);
-	elseif ( event == "BN_FRIEND_INFO_CHANGED" ) then --DEBUG FIXME
-		local index = ...;
-		if ( index ) then
-			local presenceID, givenName, surName = BNGetFriendInfo(index);
-			BNet_AddPresence(presenceID, givenName.." "..surName);
-		end
-	elseif ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then	
-		local presenceID = ...;
-		BNToastFrame_AddToast(BN_TOAST_TYPE_ONLINE, presenceID);
-	elseif ( event == "BN_FRIEND_ACCOUNT_OFFLINE" ) then
-		local presenceID = ...;
-		BNToastFrame_AddToast(BN_TOAST_TYPE_OFFLINE, presenceID);
-	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
-		local presenceID = ...;
-		if ( presenceID ) then
-			BNToastFrame_AddToast(BN_TOAST_TYPE_BROADCAST, presenceID);
-		end
-	elseif ( event == "BN_CHAT_CHANNEL_JOINED" ) then
-		local channel = ...;
-		BNToastFrame_AddToast(BN_TOAST_TYPE_CONVERSATION, channel);
-	elseif ( event == "BN_CHAT_CHANNEL_LEFT" ) then
-		local channel = ...;
-		BNToastFrame_RemoveToast(BN_TOAST_TYPE_CONVERSATION, channel);	
-	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then
-		BNToastFrame_AddToast(BN_TOAST_TYPE_NEW_INVITE);
-	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
-		local count = ...;
-		BNToastFrame_AddToast(presenceID, BN_TOAST_TYPE_OLD_INVITES, count);
-	elseif ( event == "BN_CONNECTED" ) then
+	if ( event == "BN_CONNECTED" ) then
 		SynchronizeBNetStatus();
 	elseif ( event == "BN_DISCONNECTED" ) then
 		table.wipe(BNToasts);
-	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVarBool("battlenetToasts") ) then
-			BNet_EnableToasts(self);
-		end
-	elseif (event == "CVAR_UPDATE" ) then
-		local arg1 = ...;
-		if ( arg1 == "SHOW_BATTLENET_TOASTS" ) then
-			if ( GetCVarBool("battlenetToasts") ) then
-				BNet_EnableToasts(self);
-			else
-				BNet_DisableToasts(self);
-			end
-		end
 	end
-end
-
-function BNet_AddPresence(presenceID, name)
-	--print(format("Adding Presence; ID - %d, Name - %s", presenceID, name));
-	presenceIDs[strlower(name)] = presenceID;
 end
 
 function BNet_GetPresenceID(name)
-	return presenceIDs[strlower(name)];
+	return GetAutoCompletePresenceID(name);
 end
 
---DEBUG FIXME
-function BNet_PopulateAllFriends()
-	local numFriends = BNGetNumFriends();
-	for i=1, numFriends do
-		local presenceID, givenName, surName = BNGetFriendInfo(i);
-		if ( givenName and surName ) then
-			BNet_AddPresence(presenceID, givenName.." "..surName);
+-- BNET toast
+function BNToastFrame_OnEvent(self, event, arg1)
+	if ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then	
+		BNToastFrame_AddToast(BN_TOAST_TYPE_ONLINE, arg1);
+	elseif ( event == "BN_FRIEND_ACCOUNT_OFFLINE" ) then
+		BNToastFrame_AddToast(BN_TOAST_TYPE_OFFLINE, arg1);
+	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
+		if ( arg1 ) then
+			BNToastFrame_AddToast(BN_TOAST_TYPE_BROADCAST, arg1);
+		end
+	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then
+		BNToastFrame_AddToast(BN_TOAST_TYPE_NEW_INVITE);
+	elseif ( event == "BN_CHAT_CHANNEL_JOINED" ) then
+		BNToastFrame_AddToast(BN_TOAST_TYPE_CONVERSATION, arg1);
+	--[[
+	elseif ( event == "BN_CHAT_CHANNEL_LEFT" ) then
+		local channel = ...;
+		BNToastFrame_RemoveToast(BN_TOAST_TYPE_CONVERSATION, channel);
+	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
+		local count = ...;
+		BNToastFrame_AddToast(presenceID, BN_TOAST_TYPE_OLD_INVITES, count);
+	--]]
+	elseif( event == "VARIABLES_LOADED" ) then
+		BNet_SetToastDuration(GetCVar("toastDuration"));
+		if ( GetCVarBool("showToastWindow") ) then
+			BNet_EnableToasts();
 		end
 	end
 end
 
--- BNET toast
-function BNet_EnableToasts(self)
-	self:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE");
-	self:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE");
-	self:RegisterEvent("BN_CUSTOM_MESSAGE_CHANGED");
-	self:RegisterEvent("BN_FRIEND_INVITE_ADDED");
-	self:RegisterEvent("BN_FRIEND_INVITE_LIST_INITIALIZED");
+function BNet_EnableToasts()
+	local frame = BNToastFrame;
+	for cvar, event in pairs(BNToastEvents) do
+		if ( GetCVarBool(cvar) ) then
+			frame:RegisterEvent(event);
+		end
+	end
 end
 
-function BNet_DisableToasts(self)
-	self:UnregisterEvent("BN_FRIEND_ACCOUNT_ONLINE");
-	self:UnregisterEvent("BN_FRIEND_ACCOUNT_OFFLINE");
-	self:UnregisterEvent("BN_CUSTOM_MESSAGE_CHANGED");
-	self:UnregisterEvent("BN_FRIEND_INVITE_ADDED");
-	self:UnregisterEvent("BN_FRIEND_INVITE_LIST_INITIALIZED");
+function BNet_DisableToasts()
+	local frame = BNToastFrame;
+	frame:UnregisterAllEvents();
 	table.wipe(BNToasts);
-	BNToastFrame:Hide();
+	frame:Hide();
+end
+
+function BNet_UpdateToastEvent(cvar, value)
+	if ( GetCVarBool("showToastWindow") ) then
+		local frame = BNToastFrame;
+		local event = BNToastEvents[cvar];
+		if ( value == "1" ) then
+			frame:RegisterEvent(event);
+		else
+			frame:UnregisterEvent(event);
+		end
+	end
+end
+
+function BNet_SetToastDuration(duration)
+	BNToastFrame.duration = duration;
 end
 
 function BNToastFrame_Show()
@@ -142,6 +120,10 @@ function BNToastFrame_Show()
 		BNToastFrameDoubleLine:SetFormattedText(BN_TOAST_OLD_INVITES, toastData);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(toastData);
+		-- don't display a toast if we didn't get the data in time
+		if ( not givenName or not surname ) then
+			return;
+		end
 		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
 		topLine:SetFormattedText(BATTLENET_NAME_FORMAT, givenName, surname);
@@ -152,6 +134,10 @@ function BNToastFrame_Show()
 		BNToastFrameDoubleLine:Hide();
 	elseif ( toastType == BN_TOAST_TYPE_OFFLINE ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(toastData);
+		-- don't display a toast if we didn't get the data in time
+		if ( not givenName or not surname ) then
+			return;
+		end
 		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
 		topLine:SetFormattedText(BATTLENET_NAME_FORMAT, givenName, surname);
@@ -192,6 +178,7 @@ function BNToastFrame_Show()
 	local frame = BNToastFrame;
 	BNToastFrame_UpdateAnchor(true);
 	frame:Show();
+	PlaySound(18019);
 	frame.toastType = toastType;
 	frame.toastData = toastData;
 	frame.animIn:Play();
@@ -200,7 +187,7 @@ function BNToastFrame_Show()
 	if ( frame:IsMouseOver() ) then
 		frame.waitAndAnimOut.animOut:SetStartDelay(1);
 	else
-		frame.waitAndAnimOut.animOut:SetStartDelay(4.05);
+		frame.waitAndAnimOut.animOut:SetStartDelay(frame.duration);
 		frame.waitAndAnimOut:Play();
 	end
 end
@@ -258,7 +245,11 @@ function BNToastFrame_UpdateAnchor(forceAnchor)
 		if ( toastFrame.topSide ) then
 			toastFrame:SetPoint("BOTTOM"..toastFrame.buttonSide, chatFrame.buttonFrame, "TOP"..toastFrame.buttonSide, xOffset, BN_TOAST_TOP_OFFSET);
 		else
-			toastFrame:SetPoint("TOP"..toastFrame.buttonSide, chatFrame.buttonFrame, "BOTTOM"..toastFrame.buttonSide, xOffset, BN_TOAST_BOTTOM_OFFSET);
+			local yOffset = BN_TOAST_BOTTOM_OFFSET;
+			if ( GetCVar("chatStyle") == "im" ) then
+				yOffset = yOffset - 20;
+			end
+			toastFrame:SetPoint("TOP"..toastFrame.buttonSide, chatFrame.buttonFrame, "BOTTOM"..toastFrame.buttonSide, xOffset, yOffset);
 		end
 	end
 end
@@ -272,12 +263,27 @@ function BNToastFrame_OnClick(self)
 	local toastType = BNToastFrame.toastType;
 	local toastData = BNToastFrame.toastData;
 	if ( toastType == BN_TOAST_TYPE_NEW_INVITE or toastType == BN_TOAST_TYPE_OLD_INVITES ) then
-		ToggleFriendsFrame(1);
-		if ( BNGetNumFriendInvites() > 0 ) then
-			FriendsTabHeaderTab3:Click();
-		end	
+		if ( not FriendsFrame:IsShown() ) then
+			ToggleFriendsFrame(1);
+		end
+		FriendsTabHeaderTab3:Click();
 	elseif ( toastType == BN_TOAST_TYPE_CONVERSATION ) then
-		ChatFrame_OpenChat("/"..(toastData + MAX_WOW_CHAT_CHANNELS), DEFAULT_CHAT_FRAME);
+		-- clicking the toast should switch to the chat tab for this conversation, or if not found (usually if using in-line option) switch to any tab displaying conversations
+		local chatFrame = DEFAULT_CHAT_FRAME;
+		for _, frameName in pairs(CHAT_FRAMES) do
+			local frame = _G[frameName];
+			local channel = tostring(toastData);
+			if ( frame.chatType == "BN_CONVERSATION" and frame.chatTarget == channel ) then
+				chatFrame = frame;
+				break;
+			else
+				if ( frame:IsEventRegistered("CHAT_MSG_BN_CONVERSATION") ) then
+					chatFrame = frame;
+				end
+			end
+		end
+		_G[chatFrame:GetName().."Tab"]:Click();
+		--ChatFrame_OpenChat("/"..(toastData + MAX_WOW_CHAT_CHANNELS), chatFrame);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(toastData);
 		ChatFrame_SendTell(string.format(BATTLENET_NAME_FORMAT, givenName, surname));

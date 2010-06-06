@@ -17,14 +17,13 @@ UnitPopupButtons["ACHIEVEMENTS"] = { text = COMPARE_ACHIEVEMENTS, dist = 1 };
 UnitPopupButtons["TARGET"] = { text = TARGET, dist = 0 };
 UnitPopupButtons["IGNORE"]	= { text = IGNORE, dist = 0 };
 UnitPopupButtons["REPORT_SPAM"]	= { text = REPORT_SPAM, dist = 0 };
-UnitPopupButtons["POP_OUT_CHAT"] = { text = POP_OUT_CHAT, dist = 0 };
+UnitPopupButtons["POP_OUT_CHAT"] = { text = MOVE_TO_WHISPER_WINDOW, dist = 0 };
 UnitPopupButtons["DUEL"] = { text = DUEL, dist = 3, space = 1 };
 UnitPopupButtons["WHISPER"]	= { text = WHISPER, dist = 0 };
 UnitPopupButtons["INVITE"]	= { text = PARTY_INVITE, dist = 0 };
 UnitPopupButtons["UNINVITE"] = { text = PARTY_UNINVITE, dist = 0 };
 UnitPopupButtons["REMOVE_FRIEND"]	= { text = REMOVE_FRIEND, dist = 0 };
 UnitPopupButtons["SET_NOTE"]	= { text = SET_NOTE, dist = 0 };
-UnitPopupButtons["BN_BLOCK"]	= { text = BLOCK_COMMUNICATION, dist = 0 };
 UnitPopupButtons["BN_REMOVE_FRIEND"]	= { text = REMOVE_FRIEND, dist = 0 };
 UnitPopupButtons["BN_SET_NOTE"]	= { text = SET_NOTE, dist = 0 };
 UnitPopupButtons["BN_VIEW_FRIENDS"]	= { text = VIEW_FRIENDS_OF_FRIENDS, dist = 0 };
@@ -138,8 +137,8 @@ UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE",
 UnitPopupMenus["RAID"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "CANCEL" };
 UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET_NOTE", "IGNORE", "REPORT_SPAM", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
-UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_WITH", "BN_INVITE", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_BLOCK", "BN_REMOVE_FRIEND", "CANCEL" };
-UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_BLOCK", "BN_REMOVE_FRIEND", "CANCEL" };
+UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_WITH", "BN_INVITE", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REMOVE_FRIEND", "CANCEL" };
+UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
@@ -548,7 +547,8 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "POP_OUT_CHAT" ) then
-			if ( (dropdownMenu.chatType ~= "WHISPER" and dropdownMenu.chatType ~= "BN_WHISPER") or dropdownMenu.chatTarget == UnitName("player")) then
+			if ( (dropdownMenu.chatType ~= "WHISPER" and dropdownMenu.chatType ~= "BN_WHISPER") or dropdownMenu.chatTarget == UnitName("player") or
+				FCFManager_GetNumDedicatedFrames(dropdownMenu.chatType, dropdownMenu.chatTarget) > 0 ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TARGET" ) then
@@ -1078,10 +1078,6 @@ function UnitPopup_OnUpdate (elapsed)
 								enable = 0;
 							end
 						end
-					elseif ( value == "POP_OUT_CHAT" ) then
-						if (  FCFManager_GetNumDedicatedFrames(currentDropDown.chatType, currentDropDown.chatTarget) > 0) then
-							enable = 0;
-						end
 					elseif ( value == "DUNGEON_DIFFICULTY" and inInstance ) then
 						enable = 0;
 					elseif ( ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" ) and ( strlen(value) > 18 ) ) then
@@ -1157,9 +1153,9 @@ function UnitPopup_OnClick (self)
 	if ( button == "TRADE" ) then
 		InitiateTrade(unit);
 	elseif ( button == "WHISPER" ) then
-		ChatFrame_SendTell(fullname);
+		ChatFrame_SendTell(fullname, dropdownFrame.chatFrame);
 	elseif ( button == "CREATE_CONVERSATION_WITH" ) then
-		BNConversationInvite_NewConversation(dropdownFrame.presenceID or name)
+		BNConversationInvite_NewConversation(dropdownFrame.presenceID)
 	elseif ( button == "INSPECT" ) then
 		InspectUnit(unit);
 	elseif ( button == "ACHIEVEMENTS" ) then
@@ -1187,8 +1183,6 @@ function UnitPopup_OnClick (self)
 		FriendsFrame.NotesID = name;
 		StaticPopup_Show("SET_FRIENDNOTE", name);
 		PlaySound("igCharacterInfoClose");
-	elseif ( button == "BN_BLOCK" ) then
-		BNSetBlocked(dropdownFrame.presenceID, true);
 	elseif ( button == "BN_REMOVE_FRIEND" ) then
 		BNRemoveFriend(dropdownFrame.presenceID);
 	elseif ( button == "BN_SET_NOTE" ) then

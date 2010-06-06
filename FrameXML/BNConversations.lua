@@ -3,11 +3,28 @@ BN_CONVERSATION_INVITE_NUM_DISPLAYED = 7;
 BN_CONVERSATION_MAX_CHANNEL_MEMBERS = 6;
 
 function BNConversationInviteDialog_OnLoad(self)
+	self:RegisterEvent("BN_CHAT_CHANNEL_CREATE_SUCCEEDED");
+	self:RegisterEvent("BN_CHAT_CHANNEL_CREATE_FAILED");
+	
 	-- special popup dialog settings
 	self.hideOnEscape = true;
 	self.exclusive = true;
 	
 	BNConversationInvite_Reset();
+end
+
+function BNConversationInviteDialog_OnEvent(self, event, ...)
+	if ( event == "BN_CHAT_CHANNEL_CREATE_SUCCEEDED" ) then
+		local conversationID = ...;
+		BNConversationInvite_UnlockActions();
+		if ( PENDING_BN_WHISPER_TO_CONVERSATION_FRAME and
+			PENDING_BN_WHISPER_TO_CONVERSATION_FRAME.inUse ) then
+			FCF_RestoreChatsToFrame(DEFAULT_CHAT_FRAME, PENDING_BN_WHISPER_TO_CONVERSATION_FRAME);
+			FCF_SetTemporaryWindowType(PENDING_BN_WHISPER_TO_CONVERSATION_FRAME, "BN_CONVERSATION", conversationID);
+		end
+	elseif ( event == "BN_CHAT_CHANNEL_CREATE_FAILED" ) then
+		BNConversationInvite_UnlockActions();
+	end
 end
 
 function BNConversationInviteListCheckButton_OnClick(self, button)
@@ -23,6 +40,12 @@ function BNConversationInvite_SelectPlayers(conversationID)
 	BNConversationInvite_SetMode("invite", conversationID);
 	
 	BNConversationInvite_Reset();
+	
+	for i=1, BNGetNumConversationMembers(conversationID) do
+		local accountID, toonID, name = BNGetConversationMemberInfo(conversationID, i);
+		BNConversationInvite_Lock(accountID);
+	end
+	
 	StaticPopupSpecial_Show(BNConversationInviteDialog);
 end
 
@@ -33,9 +56,11 @@ function BNConversationInvite_NewConversation(selected1, selected2)
 	
 	if ( selected1 ) then
 		BNConversationInvite_Select(selected1);
+		BNConversationInvite_Lock(selected1);
 	end
 	if ( selected2 ) then
 		BNConversationInvite_Select(selected2);
+		BNConversationInvite_Lock(selected2);
 	end
 	
 	StaticPopupSpecial_Show(BNConversationInviteDialog);
@@ -43,6 +68,8 @@ end
 
 function BNConversationInvite_Reset()
 	BNConversationInviteDialog.inviteTargets = {};	--Probably better to eat the gc than table.wipe in this case.
+	BNConversationInviteDialog.lockedTargets = {};
+	BNConversationInviteDialog.triggeringChatFrame = nil;
 end
 
 function BNConversationInvite_SetMode(mode, target)
@@ -71,6 +98,8 @@ end
 function BNConversationInviteDialogInviteButton_OnClick(self, button)
 	local inviteTargets = BNConversationInviteDialog.inviteTargets;
 	if ( BNConversationInviteDialog.mode == "create" ) then
+		BNConversationInvite_LockActions();
+		PENDING_BN_WHISPER_TO_CONVERSATION_FRAME = BNConversationInviteDialog.triggeringChatFrame;
 		BNCreateConversation(inviteTargets[1], inviteTargets[2]);
 	elseif ( BNConversationInviteDialog.mode == "invite" ) then
 		for _, player in pairs(inviteTargets) do
@@ -82,11 +111,21 @@ function BNConversationInviteDialogInviteButton_OnClick(self, button)
 	StaticPopupSpecial_Hide(BNConversationInviteDialog);
 end
 
+function BNConversationInvite_LockActions()
+	BNConversationInviteDialog.actionsLocked = true;
+	BNConversationInvite_UpdateInviteButtonState();
+end
+
+function BNConversationInvite_UnlockActions()
+	BNConversationInviteDialog.actionsLocked = false;
+	BNConversationInvite_UpdateInviteButtonState();
+end
+
 function BNConversationInvite_UpdateInviteButtonState()
 	local dialog = BNConversationInviteDialog;
 	local button = BNConversationInviteDialogInviteButton;
 	
-	if ( #dialog.inviteTargets < dialog.minInvites ) then
+	if ( dialog.actionsLocked or #dialog.inviteTargets < dialog.minInvites ) then
 		button:Disable();
 	else
 		button:Enable();
@@ -107,14 +146,18 @@ function BNConversationInvite_Deselect(player)
 	BNConversationInvite_Update();
 end
 
-function BNConversationInvite_IsUnitInConversation(conversationID, player)
-	for i=1, BNGetNumConversationMembers(conversationID) do
-		local accountID, toonID, name = BNGetConversationMemberInfo(conversationID, i);
-		if ( player == accountID or player == toonID ) then	--DEBUG FIXME: Make sure that's the actual player and not just another with the same name?
-			return true;
-		end
+function BNConversationInvite_Lock(player)
+	local lockedTargets = BNConversationInviteDialog.lockedTargets;
+	if ( not tContains(lockedTargets, player) ) then
+		tinsert(lockedTargets, player);
 	end
-	return false;
+	BNConversationInvite_Update();
+end
+
+function BNConversationInvite_Unlock(player)
+	local lockedTargets = BNConversationInviteDialog.lockedTargets;
+	tDeleteItem(lockedTargets, player);
+	BNConversationInvite_Update();
 end
 
 function BNConversationInvite_Update()
@@ -137,9 +180,9 @@ function BNConversationInvite_Update()
 		
 		frame.checkButton:SetChecked(tContains(BNConversationInviteDialog.inviteTargets, frame.id));
 		
-		if ( not frame.checkButton:GetChecked() and (	--Never disable a button that is already checked
-				#BNConversationInviteDialog.inviteTargets >= BNConversationInviteDialog.maxInvites or	--Disable everything if we've checked the max amount
-				(BNConversationInviteDialog.target and BNConversationInvite_IsUnitInConversation(BNConversationInviteDialog.target, frame.id)) ) ) then	--Disable if the person is already in this conversation
+		if ( tContains(BNConversationInviteDialog.lockedTargets, frame.id) or
+				(#BNConversationInviteDialog.inviteTargets >= BNConversationInviteDialog.maxInvites and --Disable everything if we've checked the max amount
+				not frame.checkButton:GetChecked()  ) ) then	--Never disable a button that is already checked) then 
 			frame.checkButton:Disable();
 			frame.name:SetFontObject("GameFontDisable");
 		else
@@ -155,128 +198,61 @@ end
 
 ----Member list functions.
 function BNConversationButton_OnLoad(self)
-	self:RegisterEvent("BN_CHAT_CHANNEL_MEMBER_JOINED");
-	self:RegisterEvent("BN_CHAT_CHANNEL_MEMBER_LEFT");
-	self:RegisterEvent("BN_CHAT_CHANNEL_MEMBER_UPDATED");
-	
 	self.chatFrame = _G["ChatFrame"..self:GetID()];
 	self.chatFrame.conversationButton = self;
 	
-	_G[self.roster:GetName().."Background"]:SetVertexColor(0.0, 0.0, 0.0, 0.4);
-	
 	BNConversationButton_UpdateAttachmentPoint(self);
 	BNConversationButton_UpdateTarget(self);
-	BNConversationButton_Update(self)
-end
-
-function BNConversationButton_OnEvent(self, event, ...)
-	local chanIndex, presenceID = ...;
-	if ( chanIndex == self.conversationID ) then
-		BNConversationButton_Update(self);
-	end
 end
 
 function BNConversationButton_OnClick(self, button)
-	if ( self.roster:IsShown() ) then
-		BNConversationButton_RestoreChatFramePosition(self);
-		self.roster:Hide();
+	if ( self.chatType == "BN_CONVERSATION" ) then
+		BNConversationInvite_SelectPlayers(self.chatTarget);
 	else
-		BNConversationButton_EnsureChatFrameInBounds(self);
-		self.roster:Show();
+		BNConversationInvite_NewConversation(BNet_GetPresenceID(self.chatTarget));
+		BNConversationInviteDialog.triggeringChatFrame = self.chatFrame;
 	end
 end
 
-function BNConversationButton_EnsureChatFrameInBounds(self)
-	local chatFrame = self.chatFrame;
-	local leftOverlap = self.roster:GetLeft();
-	local rightOverlap = GetScreenWidth() - self.roster:GetRight()
-	if ( leftOverlap < 0 ) then
-		self.oldPoint, self.oldRelativeTo, self.oldRelativePoint, self.oldXOffset, self.oldYOffset = chatFrame:GetPoint();
-		chatFrame:SetPoint(self.oldPoint, self.oldRelativeTo, self.oldRelativePoint, self.oldXOffset - leftOverlap, self.oldYOffset);
-	elseif ( rightOverlap < 0 ) then
-		self.oldPoint, self.oldRelativeTo, self.oldRelativePoint, self.oldXOffset, self.oldYOffset = chatFrame:GetPoint();
-		chatFrame:SetPoint(self.oldPoint, self.oldRelativeTo, self.oldRelativePoint, self.oldXOffset + rightOverlap, self.oldYOffset);
-	else
-		BNConversationButton_RemoveSavedChatFramePosition(self);
+function BNConversationButton_OnEnter(self, motion)
+	if ( self.chatType == "BN_CONVERSATION" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		BNConversation_DisplayConversationTooltip(self.chatTarget);
 	end
 end
+	
+function BNConversation_DisplayConversationTooltip(conversationID)
+	local info = ChatTypeInfo["BN_CONVERSATION"];
+	GameTooltip:SetText(format(CONVERSATION_NAME, conversationID + MAX_WOW_CHAT_CHANNELS), info.r, info.g, info.b);
 
-function BNConversationButton_RemoveSavedChatFramePosition(self)
-	self.oldPoint, self.oldRelativeTo, self.oldRelativePoint, self.oldXOffset, self.oldYOffset = nil;
+	for i=1, BNGetNumConversationMembers(conversationID) do
+		local accountID, toonID, name = BNGetConversationMemberInfo(conversationID, i);
+		GameTooltip:AddLine(name, FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+	end
+	
+	GameTooltip:Show();
 end
 
-function BNConversationButton_RestoreChatFramePosition(self)
-	if ( self.oldPoint ) then
-		self.chatFrame:SetPoint(self.oldPoint, self.oldRelativeTo, self.oldRelativePoint, self.oldXOffset, self.oldYOffset);
+function BNConversationButton_OnLeave(self, motion)
+	if ( GameTooltip:GetOwner() == self ) then
+		GameTooltip:Hide();
 	end
 end
 
 function BNConversationButton_UpdateAttachmentPoint(self)
 	local chatFrame = self.chatFrame;
-	local onInside = false;
-	local relativeFrame = chatFrame.buttonFrame;
 	
 	if ( chatFrame.isDocked ) then
-		onInside = true;
-		relativeFrame = chatFrame;
 		self:SetPoint("BOTTOM", chatFrame.buttonFrame.upButton, "TOP", 0, 0);
 	else
 		self:SetPoint("BOTTOM", chatFrame.buttonFrame.minimizeButton, "TOP", 0, 0);
-	end
-	
-	if ( (chatFrame.buttonSide == "left") ~= onInside ) then
-		self.roster:ClearAllPoints();
-		self.roster:SetPoint("TOPRIGHT", relativeFrame, "TOPLEFT", 0, 0);
-		self.roster:SetPoint("BOTTOMRIGHT", relativeFrame, "BOTTOMLEFT", 0, 0);
-	else
-		self.roster:ClearAllPoints();
-		self.roster:SetPoint("TOPLEFT", relativeFrame, "TOPRIGHT", 0, 0);
-		self.roster:SetPoint("BOTTOMLEFT", relativeFrame, "BOTTOMRIGHT", 0, 0);
 	end
 end
 
 function BNConversationButton_UpdateTarget(self)
 	local chatFrame = self.chatFrame;
-	assert(chatFrame.chatType == "BN_CONVERSATION");
-	local chatTarget = tonumber(chatFrame.chatTarget);
+	local chatTarget = tonumber(chatFrame.chatTarget) or chatFrame.chatTarget;
 	
-	self.conversationID = chatTarget;
-end
-
-function BNConversationButton_Update(self)
-	local roster = self.roster;
-	
-	local numMembers = BNGetNumConversationMembers(self.conversationID);
-	for i =1, numMembers do
-		local accountID, toonID, name = BNGetConversationMemberInfo(self.conversationID, i);
-		local button = _G[roster:GetName().."Player"..i];
-		button:SetText(name);
-		button.name = name;
-		if ( accountID ~= 0 ) then
-			button.id = accountID;
-		else
-			button.id = toonID;
-		end
-		button:Show();
-	end
-	
-	for i= numMembers + 1, BN_CONVERSATION_MAX_CHANNEL_MEMBERS do
-		local button = _G[roster:GetName().."Player"..i];
-		button:Hide();
-	end
-	
-	if ( numMembers < BN_CONVERSATION_MAX_CHANNEL_MEMBERS ) then
-		roster.inviteButton:SetPoint("TOP", _G[roster:GetName().."Player"..numMembers], "BOTTOM", 0, -5);
-		roster.inviteButton:Show();
-	else
-		roster.inviteButton:Hide();
-	end
-end
-
-function BNConversationMember_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		ChatFrame_SendTell(self.name);
-	elseif ( button == "RightButton" ) then
-		FriendsFrame_ShowBNDropdown(self.name, 1, nil, nil, nil, nil, self.id);
-	end
+	self.chatType = chatFrame.chatType;
+	self.chatTarget = chatTarget;
 end

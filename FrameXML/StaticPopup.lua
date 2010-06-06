@@ -981,7 +981,8 @@ StaticPopupDialogs["NAME_CHAT"] = {
 		if ( renameID ) then
 			FCF_SetWindowName(_G["ChatFrame"..renameID], name);
 		else
-			FCF_OpenNewWindow(name);
+			local frame = FCF_OpenNewWindow(name);
+			FCF_CopyChatSettings(frame, DEFAULT_CHAT_FRAME);
 		end
 		self.editBox:SetText("");
 		FCF_DockUpdate();
@@ -994,7 +995,8 @@ StaticPopupDialogs["NAME_CHAT"] = {
 		if ( renameID ) then
 			FCF_SetWindowName(_G["ChatFrame"..renameID], name);
 		else
-			FCF_OpenNewWindow(name);
+			local frame = FCF_OpenNewWindow(name);
+			FCF_CopyChatSettings(frame, DEFAULT_CHAT_FRAME);
 		end
 		editBox:SetText("");
 		FCF_DockUpdate();
@@ -1783,7 +1785,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	maxLetters = 255,
+	maxLetters = 127,
 	hasWideEditBox = 1,
 	OnAccept = function(self)
 		BNSetFriendNote(FriendsFrame.NotesID, self.wideEditBox:GetText());
@@ -2688,18 +2690,6 @@ StaticPopupDialogs["CONFIRM_COMBAT_FILTER_DEFAULTS"] = {
 	timeout = 0,
 	whileDead = 1,
 	exclusive = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["SIMPLE_CHAT_OPTION_ENABLE_INTERRUPT"] = {
-	text = SIMPLE_CHAT_OPTION_ENABLE_INTERRUPT,
-	button1 = YES,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		InterfaceOptionsSocialPanelSimpleChat_ConfirmCheck();
-	end,
-	timeout = 0,
-	whileDead = 1,
 	hideOnEscape = 1
 };
 

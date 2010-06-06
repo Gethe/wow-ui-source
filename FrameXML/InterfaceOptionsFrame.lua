@@ -306,8 +306,6 @@ function InterfaceOptionsOptionsFrame_RefreshAddOns ()
 end
 
 uvarInfo = {
-	["SIMPLE_CHAT"] = { default = "0", cvar = "useSimpleChat", event = "SIMPLE_CHAT_TEXT" },
-	["CHAT_LOCKED"] = { default = "0", cvar = "chatLocked", event = "CHAT_LOCKED_TEXT" },
 	["REMOVE_CHAT_DELAY"] = { default = "0", cvar = "removeChatDelay", event = "REMOVE_CHAT_DELAY_TEXT" },
 	["SHOW_NEWBIE_TIPS"] = { default = "1", cvar = "showNewbieTips", event = "SHOW_NEWBIE_TIPS_TEXT" },
 	["LOCK_ACTIONBAR"] = { default = "0", cvar = "lockActionBars", event = "LOCK_ACTIONBAR_TEXT" },

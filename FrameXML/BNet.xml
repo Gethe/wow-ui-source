@@ -154,7 +154,9 @@
 				local frameLevel = BNToastFrameClickFrame:GetFrameLevel();
 				BNToastFrameCloseButton:SetFrameLevel(frameLevel + 1);
 				BNToastFrameGlowFrame:SetFrameLevel(frameLevel + 2);
+				self:RegisterEvent("VARIABLES_LOADED");
 			</OnLoad>
+			<OnEvent function="BNToastFrame_OnEvent"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
 </Ui>

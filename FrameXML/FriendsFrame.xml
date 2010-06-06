@@ -17,7 +17,7 @@
 		</Layers>
 	</Frame>
 	
-	<Button name="FriendsFrameButtonTemplate" virtual="true">
+	<Button name="FriendsFrameButtonTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="298" y="20"/>
 		</Size>
@@ -66,6 +66,9 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
+					<Size>
+						<AbsDimension x="248" y="12"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -97,7 +100,7 @@
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>			
-				<FontString name="$parentBroadcastMessage" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="TOP" parentKey="broadcastMessage" hidden="true">					
+				<FontString name="$parentBroadcastMessage" inherits="FriendsFont_UserText" justifyH="LEFT" justifyV="TOP" parentKey="broadcastMessage" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="20" y="-4"/>
 					</Anchors>
@@ -345,10 +348,13 @@
 		<Layers>
 			<Layer level="BORDER">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size>
+						<AbsDimension x="288" y="12"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
+						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="10" y="-1"/>
+								<AbsDimension x="10" y="1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -394,11 +400,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
+				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name" justifyV="TOP">
+					<Size>
+						<AbsDimension x="235" y="10"/>
+					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="12" y="-8"/>
+								<AbsDimension x="12" y="-7"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -505,7 +514,9 @@
 					<OnEnter>
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(REPORT_SPAM);
+						GameTooltip:AddLine(REPORT_SPAM, 1, 1, 1);
+						GameTooltip:AddLine(REPORT_SPAM_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
 						self.texture:SetAlpha(0.5);
@@ -543,7 +554,9 @@
 					<OnEnter>
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(BLOCK_COMMUNICATION);
+						GameTooltip:AddLine(BLOCK_COMMUNICATION, 1, 1, 1);
+						GameTooltip:AddLine(BLOCK_COMMUNICATION_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
 						self.texture:SetAlpha(0.5);
@@ -573,10 +586,13 @@
 		<Layers>
 			<Layer level="BORDER">
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
+					<Size>
+						<AbsDimension x="240" y="16"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
+						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="6" y="-1"/>
+								<AbsDimension x="6" y="1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1356,7 +1372,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="BORDER">
-								<FontString name="$parentFill" inherits="FriendsFont_Tiny" justifyH="LEFT" justifyV="MIDDLE" text="FRIENDS_LIST_ENTER_TEXT">
+								<FontString name="$parentFill" inherits="FriendsFont_UserText" justifyH="LEFT" justifyV="MIDDLE" text="FRIENDS_LIST_ENTER_TEXT">
 									<Anchors>
 										<Anchor point="LEFT">
 											<Offset>
@@ -1387,8 +1403,7 @@
 							<OnShow>
 							</OnShow>
 							<OnEnterPressed function="FriendsFrameBroadcastInput_OnEnterPressed"/>
-							<OnEscapePressed function="FriendsFrameBroadcastInput_OnEscapePressed"/>
-							<OnEditFocusLost function="FriendsFrameBroadcastInput_UpdateDisplay"/>						
+							<OnEscapePressed function="FriendsFrameBroadcastInput_UpdateDisplay"/>
 							<OnEditFocusGained>
 								self.icon:SetAlpha(1);
 								self.clear:Hide();
@@ -1401,8 +1416,9 @@
 									FriendsFrameBroadcastInputFill:Show();
 								end
 							</OnTextChanged>
+							<OnHide function="FriendsFrameBroadcastInput_UpdateDisplay"/>
 						</Scripts>
-						<FontString inherits="FriendsFont_Tiny">
+						<FontString inherits="FriendsFont_UserText">
 							<Color r="0.345" g="0.667" b="0.867" />
 						</FontString>
 						<Frames>
@@ -1482,12 +1498,12 @@
 								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 							<OnEnter>
-								FriendsTabHeaderAlert:Hide();
+								FriendsTabHeaderInviteAlert:Hide();
 							</OnEnter>
-							<OnLeave function="PendingListFrame_AlertCheck"/>
+							<OnLeave function="PendingList_UpdateTab"/>
 						</Scripts>
 					</Button>
-					<Frame name="FriendsTabHeaderAlert" hidden="true">
+					<Frame name="FriendsTabHeaderInviteAlert" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="FriendsTabHeaderTab3" relativePoint="TOPLEFT" x="0" y="-10"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsTabHeaderTab3" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
@@ -1509,7 +1525,7 @@
 						PanelTemplates_SetNumTabs(self, 3);
 						PanelTemplates_SetTab(self, 1);
 					</OnLoad>
-					<OnShow function="PendingListFrame_AlertCheck"/>
+					<OnShow function="PendingList_UpdateTab"/>
 				</Scripts>
 			</Frame>
 			<Frame name="FriendsListFrame" hidden="true" setAllPoints="true">
@@ -1618,7 +1634,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<Button name="FriendsFrameRemovePlayerButton" inherits="UIPanelButtonTemplate2" text="REMOVE_PLAYER">
+					<Button name="FriendsFrameUnsquelchButton" inherits="UIPanelButtonTemplate2" text="REMOVE_PLAYER">
 						<Size>
 							<AbsDimension x="134" y="21"/>
 						</Size>
@@ -1633,7 +1649,7 @@
 							<OnLoad>
 								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
-							<OnClick function="FriendsFrameRemovePlayerButton_OnClick"/>
+							<OnClick function="FriendsFrameUnsquelchButton_OnClick"/>
 							<OnEnter>
 								GameTooltip_AddNewbieTip(self, REMOVE_PLAYER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_REMOVEPLAYER, 1);
 							</OnEnter>
@@ -1666,7 +1682,8 @@
 						</Scripts>
 					</Button>
 					<Frame name="FriendsFrameIgnoredHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
-					<Frame name="FriendsFrameBlockedHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
+					<Frame name="FriendsFrameBlockedInviteHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
+					<Frame name="FriendsFrameBlockedToonHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Frame name="FriendsFrameMutedHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Button name="FriendsFrameIgnoreButton1" inherits="FriendsFrameIgnoreButtonTemplate">
 						<Anchors>
@@ -1860,7 +1877,8 @@
 				<Scripts>
 					<OnLoad>
 						FriendsFrameIgnoredHeaderTitle:SetText(IGNORED);
-						FriendsFrameBlockedHeaderTitle:SetText(BLOCKED);
+						FriendsFrameBlockedInviteHeaderTitle:SetText(BLOCKED);
+						FriendsFrameBlockedToonHeaderTitle:SetText("CID Block");
 						FriendsFrameMutedHeaderTitle:SetText(MUTED);
 					</OnLoad>
 				</Scripts>
@@ -1911,7 +1929,7 @@
 										<Anchor point="RIGHT"/>
 									</Anchors>
 								</FontString>
-								<FontString inherits="GameFontHighlight" justifyH="LEFT" text="BATTLENET_FRIEND_INFO">
+								<FontString inherits="GameFontHighlight" justifyH="LEFT" text="RID_FRIEND_REQUEST_INFO">
 									<Size>
 										<AbsDimension x="200" y="0"/>
 									</Size>
@@ -2055,7 +2073,7 @@
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
-					<OnShow function="PendingListFrame_AlertCheck"/>
+					<OnShow function="PendingListFrame_OnShow"/>
 					<OnHide function="PendingListFrame_OnHide"/>
 				</Scripts>
 			</Frame>
@@ -4739,7 +4757,7 @@
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</Texture>
-						<FontString name="$parentBroadcastText" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="TOP">
+						<FontString name="$parentBroadcastText" inherits="FriendsFont_UserText" justifyH="LEFT" justifyV="TOP">
 							<Size>
 								<AbsDimension x="158" y="0"/>
 							</Size>
@@ -4897,39 +4915,27 @@
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentLeft" file="Interface\FriendsFrame\PlusManz-BattleNetBG">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-8" y="12" />
-							</Anchors>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\FriendsFrame\PlusManz-CharacterBG">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="8" y="12" />
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="70" y="-54" />
+								<Anchor point="TOPLEFT" x="62" y="-32" />
 							</Anchors>
 						</Texture>
 						<Texture name="$parentFactionIcon" file="Interface\FriendsFrame\PlusManz-Horde" alpha="0.5" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentRight" x="70" y="-54" />
+								<Anchor point="TOPRIGHT" x="-114" y="-32" />
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentLeftFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="50" y="-64" />
+								<Anchor point="TOPLEFT" x="42" y="-42" />
 							</Anchors>
 						</Texture>
 						<Texture name="$parentRightFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentRight" x="50" y="-64" />
+								<Anchor point="TOPRIGHT" x="-134" y="-42" />
 							</Anchors>
 						</Texture>
 						<FontString name="$parentLeftTitle" inherits="GameFontNormal" justifyH="LEFT" text="BATTLENET_FRIEND">

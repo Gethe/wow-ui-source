@@ -65,7 +65,7 @@ function SetItemRef(link, text, button, chatFrame)
 			elseif ( button == "RightButton" and (not isGMLink) ) then
 				FriendsFrame_ShowDropdown(name, 1, lineid, chatType, chatFrame);
 			else
-				ChatFrame_SendTell(name);
+				ChatFrame_SendTell(name, chatFrame);
 			end
 		end
 		return;
@@ -126,7 +126,7 @@ function SetItemRef(link, text, button, chatFrame)
 			elseif ( button == "RightButton" ) then
 				FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetPresenceID(name));
 			else
-				ChatFrame_SendTell(name);
+				ChatFrame_SendTell(name, chatFrame);
 			end
 		end
 		return;
@@ -139,14 +139,14 @@ function SetItemRef(link, text, button, chatFrame)
 			
 			if ( strupper(chatType) == "CHANNEL" ) then
 				if ( GetChannelName(tonumber(chatTarget))~=0 ) then
-					ChatFrame_OpenChat("/"..chatTarget, DEFAULT_CHAT_FRAME);
+					ChatFrame_OpenChat("/"..chatTarget, chatFrame);
 				end
 			elseif ( strupper(chatType) == "BN_CONVERSATION" ) then
 				if ( BNGetConversationInfo(chatTarget) ) then
-					ChatFrame_OpenChat("/"..(chatTarget + MAX_WOW_CHAT_CHANNELS), DEFAULT_CHAT_FRAME);
+					ChatFrame_OpenChat("/"..(chatTarget + MAX_WOW_CHAT_CHANNELS), chatFrame);
 				end
 			else
-				ChatFrame_OpenChat("/"..chatType, DEFAULT_CHAT_FRAME);
+				ChatFrame_OpenChat("/"..chatType, chatFrame);
 			end
 		elseif ( button == "RightButton" ) then
 			local chanLink = strsub(link, 9);

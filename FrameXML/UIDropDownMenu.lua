@@ -153,6 +153,7 @@ info.arg2 = [ANYTHING] -- This is the second argument used by info.func
 info.fontObject = [FONT] -- font object replacement for Normal and Highlight
 info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
 info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
+info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
 ]]
 
 local UIDropDownMenu_ButtonInfo = {};
@@ -291,6 +292,9 @@ function UIDropDownMenu_AddButton(info, level)
 		else
 			icon:Hide();
 		end
+		if ( info.padding ) then
+			width = width + info.padding;
+		end
 		-- Set maximum button width
 		if ( width > listFrame.maxWidth ) then
 			listFrame.maxWidth = width;
@@ -401,16 +405,6 @@ function UIDropDownMenu_AddButton(info, level)
 	-- Show the check if checked
 	if ( checked ) then
 		button:LockHighlight();
-		local check = _G[listFrameName.."Button"..index.."Check"];
-		if ( info.checkTexture ) then
-			check:SetTexture(info.checkTexture);
-			check:SetWidth(0);
-			check:SetHeight(0);
-		else
-			check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check");
-			check:SetWidth(18);
-			check:SetHeight(18);
-		end
 		_G[listFrameName.."Button"..index.."Check"]:Show();
 	else
 		button:UnlockHighlight();

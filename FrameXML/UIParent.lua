@@ -1298,9 +1298,7 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 			_G[index] = yOffset;
 		end
 	else
-		if ((frame == ChatFrame1 or frame == ChatFrame2) and SIMPLE_CHAT == "1") then
-			frame:SetPoint(point, anchorTo, rpoint, xOffset, yOffset);
-		elseif ( frame ~= ChatFrame2 and not(frame:IsObjectType("frame") and frame:IsUserPlaced()) ) then
+		if ( frame ~= ChatFrame2 and not(frame:IsObjectType("frame") and frame:IsUserPlaced()) ) then
 			frame:SetPoint(point, anchorTo, rpoint, xOffset, yOffset);
 		end
 	end
@@ -1940,11 +1938,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		-- OnSizeChanged for WatchFrame handles its redraw
 	end
 	
-	if ( SIMPLE_CHAT == "1" ) then
-		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, ChatFrame2:GetTop());
-	else
-		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
-	end
+	WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();

@@ -7,7 +7,7 @@ DEFAULT_CHAT_FRAME = ChatFrame1;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 10;
 
-CHAT_SHOW_ICONS = "0";
+CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 
 MAX_CHARACTER_NAME_BYTES = 48;
 
@@ -32,10 +32,10 @@ hash_ChatTypeInfoList = {}
 ChatTypeInfo = { };
 ChatTypeInfo["SYSTEM"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["SAY"]										= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PARTY"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["RAID"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["GUILD"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["OFFICER"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["PARTY"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["RAID"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["GUILD"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["OFFICER"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["YELL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["WHISPER"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["WHISPER_INFORM"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -43,7 +43,7 @@ ChatTypeInfo["REPLY"]									= { sticky = 0, flashTab = false, flashTabOnGenera
 ChatTypeInfo["EMOTE"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["TEXT_EMOTE"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["MONSTER_SAY"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["MONSTER_PARTY"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["MONSTER_PARTY"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["MONSTER_YELL"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["MONSTER_WHISPER"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["MONSTER_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -70,34 +70,38 @@ ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0, flashTab = false, flas
 ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_LEADER"]								= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_WARNING"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["RAID_LEADER"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["RAID_WARNING"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["FILTERED"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BATTLEGROUND"]                            = { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["BATTLEGROUND_LEADER"]                     = { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["BATTLEGROUND"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["BATTLEGROUND_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["RESTRICTED"] 			                    = { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL1"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL2"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL3"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL4"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL5"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL6"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL7"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL8"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL9"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL10"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL1"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL2"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL3"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL4"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL5"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL6"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL7"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL8"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL9"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL10"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER"]							= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["BN_WHISPER_INFORM"]				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_CONVERSATION"]					= { sticky = 1, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_CONVERSATION_NOTICE"]					= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["BN_ALERT"]								= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["BN_BROADCAST"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["BN_BROADCAST_INFORM"]						= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["BN_ALERT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["BN_BROADCAST"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["BN_BROADCAST_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["BN_INLINE_TOAST_CONVERSATION"]			= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
@@ -243,10 +247,11 @@ ChatTypeGroup["BN_CONVERSATION"] = {
 	"CHAT_MSG_BN_CONVERSATION",
 	"CHAT_MSG_BN_CONVERSATION_NOTICE",
 };
-ChatTypeGroup["BN_ALERT"] = {
-	"CHAT_MSG_BN_ALERT",
-	"CHAT_MSG_BN_BROADCAST",
-	"CHAT_MSG_BN_BROADCAST_INFORM"
+ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
+	"CHAT_MSG_BN_INLINE_TOAST_ALERT",
+	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
+	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
+	"CHAT_MSG_BN_INLINE_TOAST_CONVERSATION",
 };
 ChatTypeGroupInverted = {};
 for group, values in pairs(ChatTypeGroup) do
@@ -2260,8 +2265,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 	self:RegisterEvent("NEW_TITLE_EARNED");
 	self:RegisterEvent("OLD_TITLE_LOST");
-	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
+	self:RegisterEvent("VARIABLES_LOADED");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2508,13 +2513,6 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 			end
 		end
 		return true;
-	elseif ( event == "CVAR_UPDATE" and arg1 == "SHOW_CHAT_ICONS" ) then
-		if ( tonumber(arg2) == 1 ) then
-			CHAT_SHOW_ICONS = true;
-		else
-			CHAT_SHOW_ICONS = false;
-		end
-		return true;
 	elseif ( event == "UPDATE_CHAT_COLOR_NAME_BY_CLASS" ) then
 		local info = ChatTypeInfo[strupper(arg1)];
 		if ( info ) then
@@ -2526,6 +2524,13 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 				end
 			end
 		end
+		return true;
+	elseif ( event == "VARIABLES_LOADED" ) then
+		if ( GetCVarBool("chatMouseScroll") ) then
+			self:SetScript("OnMouseWheel", FloatingChatFrame_OnMouseScroll);
+			self:EnableMouseWheel(true);
+		end
+		self:UnregisterEvent("VARIABLES_LOADED");
 		return true;
 	end
 end
@@ -2784,8 +2789,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8);
 			self:AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
-		elseif ( type == "BN_ALERT" ) then
-			local globalstring = _G["BN_ALERT_"..arg1];
+		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
+			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
 			local message;
 			if ( arg1 == "FRIEND_REQUEST" ) then
 				message = globalstring;
@@ -2794,15 +2799,17 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				message = format(globalstring, playerLink);
 			end
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
-		elseif ( type == "BN_BROADCAST" ) then
+		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
 				local playerLink = "|HBNplayer:"..arg2..":"..arg11..":"..Chat_GetChatCategory(type)..":0|h".."["..arg2.."]|h";
-				self:AddMessage(format(BN_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end
-		elseif ( type == "BN_BROADCAST_INFORM" ) then
+		elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
 			if ( arg1 ~= "" ) then
-				self:AddMessage(format(BN_BROADCAST_INFORM, arg1), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST_INFORM, arg1), info.r, info.g, info.b, info.id);
 			end
+		elseif ( type == "BN_INLINE_TOAST_CONVERSATION" ) then
+			self:AddMessage(format(BN_INLINE_TOAST_CONVERSATION, arg1), info.r, info.g, info.b, info.id);
 		else
 			local body;
 
@@ -2848,13 +2855,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			
 			-- Search for icon links and replace them with texture links.
-			if ( arg7 < 1 or ( arg7 >= 1 and CHAT_SHOW_ICONS ~= "0" ) ) then
-				local term;
-				for tag in string.gmatch(arg1, "%b{}") do
-					term = strlower(string.gsub(tag, "[{}]", ""));
-					if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-						arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
-					end
+			local term;
+			for tag in string.gmatch(arg1, "%b{}") do
+				term = strlower(string.gsub(tag, "[{}]", ""));
+				if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 				end
 			end
 			
@@ -2896,8 +2901,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			
 			--Add Timestamps
-			if ( CHAT_OPTIONS.TIMESTAMP_FORMAT ) then
-				body = date(CHAT_OPTIONS.TIMESTAMP_FORMAT, time())..body;
+			if ( CHAT_TIMESTAMP_FORMAT ) then
+				body = date(CHAT_TIMESTAMP_FORMAT, time())..body;
 			end
 			
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
@@ -3011,12 +3016,7 @@ function ChatFrame_OnMouseWheel(value)
 end
 
 function ChatFrame_OpenChat(text, chatFrame)
-	local editBox;
-	if ( chatFrame ) then
-		editBox = chatFrame.editBox;
-	else
-		editBox = ChatEdit_ChooseBoxForSend();
-	end
+	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
 	editBox.setText = 1;
@@ -3084,21 +3084,16 @@ function ChatFrameMenu_UpdateAnchorPoint()
 end
 
 function ChatFrame_SendTell(name, chatFrame)
-	local editBox;
-	if ( chatFrame ) then
-		editBox = chatFrame.editBox;
-	else
-		editBox = ChatEdit_ChooseBoxForSend();
-	end
+	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 	
 	--DEBUG FIXME - for now, we're not going to remove spaces from names. We need to make sure X-server still works.
 	-- Remove spaces from the server name for slash command parsing
 	--name = gsub(name, " ", "");
 
 	if ( editBox ~= ChatEdit_GetActiveWindow() ) then
-		ChatFrame_OpenChat("/w "..name.." ", chatFrame);
+		ChatFrame_OpenChat(SLASH_WHISPER1.." "..name.." ", chatFrame);
 	else
-		editBox:SetText("/w "..name.." ");
+		editBox:SetText(SLASH_WHISPER1.." "..name.." ");
 	end
 	ChatEdit_ParseText(editBox, 0);
 --[[
@@ -3112,12 +3107,7 @@ function ChatFrame_SendTell(name, chatFrame)
 end
 
 function ChatFrame_ReplyTell(chatFrame)
-	local editBox;
-	if ( chatFrame ) then
-		editBox = chatFrame.editBox;
-	else
-		editBox = ChatEdit_ChooseBoxForSend();
-	end
+	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	local lastTell = ChatEdit_GetLastTellTarget();
 	if ( lastTell ~= "" ) then
@@ -3134,12 +3124,7 @@ function ChatFrame_ReplyTell(chatFrame)
 end
 
 function ChatFrame_ReplyTell2(chatFrame)
-	local editBox;
-	if ( chatFrame ) then
-		editBox = chatFrame.editBox;
-	else
-		editBox = ChatEdit_ChooseBoxForSend();
-	end
+	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	local lastTold = ChatEdit_GetLastToldTarget();
 	if ( lastTold ~= "" ) then
@@ -3409,9 +3394,11 @@ function ChatEdit_DeactivateChat(editBox)
 	ChatEdit_SetDeactivated(editBox);
 end
 
-function ChatEdit_ChooseBoxForSend()
+function ChatEdit_ChooseBoxForSend(preferredChatFrame)
 	if ( GetCVar("chatStyle") == "classic" ) then
 		return DEFAULT_CHAT_FRAME.editBox;
+	elseif ( preferredChatFrame and preferredChatFrame:IsShown() ) then
+		return preferredChatFrame.editBox;
 	elseif ( ChatEdit_GetLastActiveWindow()  and ChatEdit_GetLastActiveWindow():GetParent():IsShown() ) then
 		return ChatEdit_GetLastActiveWindow();
 	else
@@ -3685,7 +3672,9 @@ function ChatEdit_OnEscapePressed(editBox)
 			editBox:SetText("");
 			editBox:Hide();
 		else
-			ChatEdit_DeactivateChat(editBox);
+			if ( editBox ~= MacroEditBox ) then
+				ChatEdit_DeactivateChat(editBox);
+			end
 		end
 	end
 end
@@ -4078,7 +4067,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	local target = strmatch(msg, "%s*(.*)");
 	
 	--If we haven't even finished one word, we aren't done.
-	if ( not target or not string.find(target, "%s") or (strsub(target, 1, 1) == "|") ) then
+	if ( not target or not strfind(target, "%s") or (strsub(target, 1, 1) == "|") ) then
 		return false;
 	end
 	
@@ -4088,9 +4077,9 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	end
 	
 	--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
-	while ( string.find(target, "%s") ) do
+	while ( strfind(target, "%s") ) do
 		--Pull off everything after the last space.
-		target = string.match(target, "(.+)%s+[^%s]*");
+		target = strmatch(target, "(.+)%s+[^%s]*");
 		if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true)  ) then
 			break;
 		end
@@ -4176,8 +4165,8 @@ function ChatMenu_Yell(self)
 end
 
 function ChatMenu_Whisper(self)
-	local editBox = ChatFrame_OpenChat("/w ", chatFrame);
-	editBox:SetText("/w "..editBox:GetText());
+	local editBox = ChatFrame_OpenChat(SLASH_WHISPER1.." ", chatFrame);
+	editBox:SetText(SLASH_WHISPER1.." "..editBox:GetText());
 end
 
 function ChatMenu_Emote(self)
@@ -4366,21 +4355,23 @@ function ChatChannelDropDown_Initialize()
 	
 	info = UIDropDownMenu_CreateInfo();
 	
-	info.text = POP_OUT_CHAT;
-	info.notCheckable = 1;
-	info.func = ChatChannelDropDown_PopOutChat;
-	info.arg1 = frame.chatType;
-	info.arg2 = frame.chatTarget;
-	
-	if ( frame.chatType == "BN_CONVERSATION" ) then
-		if ( FCFManager_GetNumDedicatedFrames(frame.chatType, frame.chatTarget) > 0 ) then
+	if ( frame.chatType ~= "BN_CONVERSATION" or (FCFManager_GetNumDedicatedFrames(frame.chatType, frame.chatTarget) == 0)) then
+		if ( frame.chatType == "BN_CONVERSATION" ) then
+			info.text = MOVE_TO_CONVERSATION_WINDOW;
+		else
+			info.text = MOVE_TO_NEW_WINDOW;
+		end
+		info.notCheckable = 1;
+		info.func = ChatChannelDropDown_PopOutChat;
+		info.arg1 = frame.chatType;
+		info.arg2 = frame.chatTarget;
+		
+		if ( frame.chatType ~= "BN_CONVERSATION" and FCF_GetNumActiveChatFrames() == NUM_CHAT_WINDOWS ) then
 			info.disabled = 1;
 		end
-	elseif ( FCF_GetNumActiveChatFrames() == NUM_CHAT_WINDOWS ) then	--BN_CONVERSATION is popped out in a temporary window, so we don't need to disable it.
-		info.disabled = 1;
+		
+		UIDropDownMenu_AddButton(info);
 	end
-	
-	UIDropDownMenu_AddButton(info);
 	
 	if ( frame.chatType == "BN_CONVERSATION" ) then
 		info = UIDropDownMenu_CreateInfo();
@@ -4424,6 +4415,7 @@ function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
 			windowName = _G[chatType];
 		end
 		local frame = FCF_OpenNewWindow(windowName);
+		FCF_CopyChatSettings(frame, sourceChatFrame);
 		
 		ChatFrame_RemoveAllMessageGroups(frame);
 		ChatFrame_RemoveAllChannels(frame);

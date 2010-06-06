@@ -252,9 +252,9 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "TARGETICONS"); end;
 	},
 	[8] = {
-		type = "BN_ALERT",
-		checked = function () return IsListeningForMessageType("BN_ALERT"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_ALERT"); end;
+		type = "BN_INLINE_TOAST_ALERT",
+		checked = function () return IsListeningForMessageType("BN_INLINE_TOAST_ALERT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_INLINE_TOAST_ALERT"); end;
 	},
 }
 
