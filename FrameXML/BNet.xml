@@ -304,7 +304,7 @@
 							</OnLoad>
 						</Scripts>
 						<ScrollChild>
-							<EditBox name="BNetReportFrameCommentBox" multiLine="true" letters="127" autoFocus="false">
+							<EditBox name="BNetReportFrameCommentBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
 								<Size x="258" y="1"/>
 								<Layers>
 									<Layer level="BORDER">

@@ -173,7 +173,8 @@ function SetItemRef(link, text, button, chatFrame)
 	end
 	
 	if ( IsModifiedClick() ) then
-		HandleModifiedItemClick(text);
+		local fixedLink = GetFixedLink(text);
+		HandleModifiedItemClick(fixedLink);
 	else
 		ShowUIPanel(ItemRefTooltip);
 		if ( not ItemRefTooltip:IsShown() ) then
@@ -181,4 +182,25 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		ItemRefTooltip:SetHyperlink(link);
 	end
+end
+
+function GetFixedLink(text)
+	local startLink = strfind(text, "|H");
+	if ( not strfind(text, "|c") ) then
+		if ( strsub(text, startLink + 2, startLink + 6) == "quest" ) then
+			--We'll always color it yellow. We really need to fix this for Cata. (It will appear the correct color in the chat log)
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 12) == "achievement" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 7) == "talent" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cff4e96f7%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 6) == "trade" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffd000%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 8) == "enchant" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffd000%1|r", 1));
+		end
+	end
+	
+	--Nothing to change.
+	return text;
 end

@@ -1676,7 +1676,7 @@ SlashCmdList["CHAT_CINVITE"] =
 		end
 		
 		if ( channel and player ) then
-			if ( tonumber(channel) > MAX_WOW_CHAT_CHANNELS ) then
+			if ( tonumber(channel) and tonumber(channel) > MAX_WOW_CHAT_CHANNELS ) then
 				--We have a BNet conversation.
 				channel = tonumber(channel) - MAX_WOW_CHAT_CHANNELS;
 				if ( BNGetConversationInfo(channel) ) then
@@ -3399,6 +3399,8 @@ function ChatEdit_ActivateChat(editBox)
 	editBox.focusMid:Show();
 	editBox:SetAlpha(1.0);
 	
+	ChatEdit_UpdateHeader(editBox);
+	
 	if ( CHAT_SHOW_IME ) then
 		_G[editBox:GetName().."Language"]:Show();
 	end
@@ -3732,9 +3734,11 @@ function ChatEdit_CustomTabPressed(self)
 end
 
 function ChatEdit_SecureTabPressed(self)
-	if ( self:GetAttribute("chatType") == "WHISPER" ) then
+	local chatType = self:GetAttribute("chatType");
+	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
 		local newTarget = ChatEdit_GetNextTellTarget(self:GetAttribute("tellTarget"));
 		if ( newTarget and newTarget ~= "" ) then
+			self:SetAttribute("chatType", "WHISPER");	--UpdateHeader will change it to BN_WHISPER if needed.
 			self:SetAttribute("tellTarget", newTarget);
 			ChatEdit_UpdateHeader(self);
 		end

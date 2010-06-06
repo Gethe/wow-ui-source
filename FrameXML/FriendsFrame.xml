@@ -1527,7 +1527,7 @@
 									<OnClick>
 										local editBox = FriendsFrameBroadcastInput;
 										editBox:SetFocus();
-										editBox:SetCursorPosition(editBox:GetNumLetters());
+										editBox:SetCursorPosition(strlen(editBox:GetText()));
 										editBox:HighlightText(0, -1);  -- highlight all										
 										self:Hide();
 									</OnClick>

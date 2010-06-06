@@ -1,9 +1,9 @@
 World of Warcraft PTR Patch 3.3.5
 =================================
 
-The latest test realm patch notes can always be found at <http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html>
-
 The latest patch notes can always be found at <http://www.worldofwarcraft.com/patchnotes/>
+
+The latest test realm patch notes can always be found at <http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html>
 
 General
 -------
@@ -18,8 +18,8 @@ For additional notes on Lua and XML changes please visit the [UI & Macros Forum]
 ### Chat Frame
 
 * Players can now right-click on any chat type (Whisper, Trade, General, Party, Raid, etc.) and choose the Pop Out Chat option. This will move that chat type to a separate tab in the Chat frame which can be undocked and moved anywhere on the screen.
-* Using the Pop Out Chat option on a Whisper will place the conversation with that player in a separate tab.
-* Any time a conversation with another player is put into its own tab, the tab will glow when a new message is received.
+   * Using the Pop Out Chat option on a Whisper will place the conversation with that player in a separate tab.
+   * Any time a conversation with another player is put into its own tab, the tab will glow when a new message is received.
 * Hovering over the Chat Frame and using the mouse wheel will allow players to scroll through chat text.
 * Players can select Classic Mode under Interface Options to keep the Chat Frame functionality closer to what it was prior to patch 3.3.5.
 * The Simple Chat User Interface option has been removed.

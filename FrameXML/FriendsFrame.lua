@@ -696,8 +696,10 @@ function PendingList_Scroll(offset)
 				button.message:SetText("");
 				button.message:SetHeight(0);
 			end
-			if ( timeSent ) then
-				button.sent:SetFormattedText("Sent %s ago", FriendsFrame_GetLastOnline(timeSent));
+			if ( timeSent and timeSent ~= 0 ) then
+				button.sent:SetFormattedText(BNET_INVITE_SENT_TIME, FriendsFrame_GetLastOnline(timeSent));
+			else
+				button.sent:SetText("");
 			end
 			button:SetHeight(buttonHeight);
 			heightUsed = heightUsed + buttonHeight;
@@ -1197,7 +1199,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		FriendsList_Update();
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		local arg1 = ...;
-		if ( arg1 ) then
+		if ( arg1 ) then	--There is no presenceID given if this is ourself.
 			BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
 			if(not BNetBroadcasts) then
 				BNetBroadcasts = { };
@@ -2186,7 +2188,11 @@ function FriendsFrame_SetButton(button, index, firstButton)
 			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
 			nameColor = FRIENDS_GRAY_COLOR;
 			button.gameIcon:Hide();
-			infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
+			if ( lastOnline == 0 ) then
+				infoText = FRIENDS_LIST_OFFLINE;
+			else
+				infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
+			end
 		end
 		if ( givenName and surname ) then
 			if ( toonName ) then
@@ -2423,7 +2429,11 @@ function FriendsFrameTooltip_Show(self)
 			numToons = BNGetNumFriendToons(self.id);
 		else
 			FriendsTooltipHeader:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
-			text = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
+			if ( lastOnline == 0 ) then
+				text = FRIENDS_LIST_OFFLINE;
+			else
+				text = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
+			end
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipLastOnline, anchor, text, -4);
 		end
 	elseif ( self.buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
