@@ -525,7 +525,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "CREATE_CONVERSATION_WITH" ) then
-			if ( not dropdownMenu.presenceID ) then
+			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected()) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			else
 				local presenceID, givenName, surname, toonName, toonID, client, isOnline = BNGetFriendInfoByID(dropdownMenu.presenceID);
@@ -567,7 +567,7 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "BLOCK_COMMUNICATION" ) then
 			-- only show it for presence IDs that are not friends
-			if ( dropdownMenu.presenceID ) then
+			if ( dropdownMenu.presenceID and BNFeaturesEnabledAndConnected()) then
 				local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend = BNGetFriendInfoByID(dropdownMenu.presenceID);
 				if ( isFriend ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;

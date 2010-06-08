@@ -1150,6 +1150,7 @@ function FCF_StopDragging(chatFrame)
 	
 	if ( GENERAL_CHAT_DOCK:IsMouseOver(10, -10, 0, 10) ) then
 		local mouseX, mouseY = GetCursorPosition();
+		mouseX, mouseY = mouseX / UIParent:GetScale(), mouseY / UIParent:GetScale();
 		FCF_DockFrame(chatFrame, FCFDock_GetInsertIndex(GENERAL_CHAT_DOCK, chatFrame, mouseX, mouseY), true);
 	else
 		FCF_SetTabPosition(chatFrame, 0);
@@ -1162,10 +1163,10 @@ end
 
 function FCFTab_OnUpdate(self, elapsed)
 	local cursorX, cursorY = GetCursorPosition();
+	cursorX, cursorY = cursorX / UIParent:GetScale(), cursorY / UIParent:GetScale();
 	local chatFrame = _G["ChatFrame"..self:GetID()];
 	if ( chatFrame ~= GENERAL_CHAT_DOCK.primary and GENERAL_CHAT_DOCK:IsMouseOver(10, -10, 0, 10) ) then
-		local mouseX, mouseY = GetCursorPosition();
-		FCFDock_PlaceInsertHighlight(GENERAL_CHAT_DOCK, chatFrame, mouseX, mouseY);
+		FCFDock_PlaceInsertHighlight(GENERAL_CHAT_DOCK, chatFrame, cursorX, cursorY);
 	else
 		FCFDock_HideInsertHighlight(GENERAL_CHAT_DOCK);
 	end

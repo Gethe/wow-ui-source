@@ -90,7 +90,7 @@ function BNet_UpdateToastEvent(cvar, value)
 			end
 		else
 			for _, event in pairs(events) do
-				frame:RegisterEvent(event);
+				frame:UnregisterEvent(event);
 			end
 		end
 	end

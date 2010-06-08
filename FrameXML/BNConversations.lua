@@ -37,8 +37,10 @@ end
 function BNConversationInviteListCheckButton_OnClick(self, button)
 	local parent = self:GetParent();
 	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		BNConversationInvite_Select(parent.id);
 	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
 		BNConversationInvite_Deselect(parent.id);
 	end
 end
@@ -105,9 +107,10 @@ end
 function BNConversationInviteDialogInviteButton_OnClick(self, button)
 	local inviteTargets = BNConversationInviteDialog.inviteTargets;
 	if ( BNConversationInviteDialog.mode == "create" ) then
-		BNConversationInvite_LockActions();
-		PENDING_BN_WHISPER_TO_CONVERSATION_FRAME = BNConversationInviteDialog.triggeringChatFrame;
-		BNCreateConversation(inviteTargets[1], inviteTargets[2]);
+		if ( BNCreateConversation(inviteTargets[1], inviteTargets[2]) ) then
+			BNConversationInvite_LockActions();
+			PENDING_BN_WHISPER_TO_CONVERSATION_FRAME = BNConversationInviteDialog.triggeringChatFrame;
+		end
 	elseif ( BNConversationInviteDialog.mode == "invite" ) then
 		for _, player in pairs(inviteTargets) do
 			BNInviteToConversation(BNConversationInviteDialog.target, player);

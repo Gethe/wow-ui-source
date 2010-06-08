@@ -2758,6 +2758,7 @@ function FriendsFriendsList_Update()
 end
 
 function FriendsFriendsButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	FriendsFriendsFrame.selection = self.friendID;
 	FriendsFriendsList_Update();
 end
@@ -2768,6 +2769,7 @@ function FriendsFrameIgnoreButton_OnClick(self)
 end
 
 function FriendsFriendsFrame_SendRequest()
+	PlaySound("igCharacterInfoTab");
 	FriendsFriendsFrame.requested[FriendsFriendsFrame.selection] = true;
 	BNSendFriendInviteByID(FriendsFriendsFrame.selection, FriendsFriendsNoteEditBox:GetText());
 	FriendsFriendsFrame_Reset();

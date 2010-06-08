@@ -188,8 +188,12 @@
 		<Scripts>
 			<OnLoad function="BNConversationInviteDialog_OnLoad"/>
 			<OnShow>
+				PlaySound("igMainMenuOpen");
 				BNConversationInvite_Update();
 			</OnShow>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
 			<OnEvent function="BNConversationInviteDialog_OnEvent"/>
 		</Scripts>
 	</Frame>

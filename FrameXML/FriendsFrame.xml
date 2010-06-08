@@ -5942,6 +5942,12 @@
 				self.exclusive = true;
 				UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 120);
 			</OnLoad>
+			<OnShow>
+				PlaySound("igMainMenuOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
 			<OnEvent function="FriendsFriendsFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

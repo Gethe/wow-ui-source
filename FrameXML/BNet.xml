@@ -308,12 +308,12 @@
 								<Size x="258" y="1"/>
 								<Layers>
 									<Layer level="BORDER">
-										<FontString name="$parentFill" inherits="ChatFontNormal" justifyH="LEFT" justifyV="MIDDLE" text="BNET_REPORT_ABUSE_PROMPT">
+										<FontString name="$parentFill" inherits="ChatFontNormal" justifyH="LEFT" justifyV="TOP" text="BNET_REPORT_ABUSE_PROMPT">
 											<Size x="258" y="0"/>
 											<Anchors>
-												<Anchor point="LEFT">
+												<Anchor point="TOPLEFT">
 													<Offset>
-														<AbsDimension x="3" y="-6"/>
+														<AbsDimension x="3" y="-1"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
