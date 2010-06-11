@@ -2972,6 +2972,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastConversation";
+						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -3012,6 +3013,8 @@
 							SetCVar(self.cvar, value);
 							BNet_SetToastDuration(value);
 						end
+						_G[self:GetName().."Low"]:SetText(AUCTION_TIME_LEFT1);
+						_G[self:GetName().."High"]:SetText(AUCTION_TIME_LEFT3);
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsBattlenetPanelShowToastWindow, self);
 					</OnLoad>

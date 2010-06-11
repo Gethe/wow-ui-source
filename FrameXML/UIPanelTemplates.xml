@@ -1048,7 +1048,11 @@
 				ScrollFrame_OnLoad(self);
 			</OnLoad>
 			<OnScrollRangeChanged>
-				ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
+				if ( self.allowedRange and yrange > self.allowedRange + 1 ) then
+					-- temp fix to jitter scroll (see task 39261)
+				else
+					ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
+				end
 			</OnScrollRangeChanged>
 			<OnVerticalScroll function="DynamicScrollFrame_OnVerticalScroll"/>
 			<OnMouseWheel>

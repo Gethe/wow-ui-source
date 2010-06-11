@@ -1125,7 +1125,7 @@ function InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(timestampForma
 	assert(infoTable);
 	infoTable.func = InterfaceOptionsSocialPanelTimestamps_OnClick;
 	infoTable.value = timestampFormat;
-	infoTable.text = date(timestampFormat, time(exampleTime));
+	infoTable.text = BetterDate(timestampFormat, time(exampleTime));
 	infoTable.checked = (selectedValue == timestampFormat);
 	UIDropDownMenu_AddButton(infoTable, UIDROPDOWNMENU_MENU_LEVEL);
 end

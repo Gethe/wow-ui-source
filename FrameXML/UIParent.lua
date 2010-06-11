@@ -3588,3 +3588,15 @@ function GetLFGMode()
 		return "abandonedInDungeon";
 	end
 end
+
+--Like date(), but localizes AM/PM. In the future, could also localize other stuff.
+function BetterDate(formatString, timeVal)
+	local dateTable = date("*t", timeVal);
+	local amString = (dateTable.hour >= 12) and TIMEMANAGER_PM or TIMEMANAGER_AM;
+	
+	--First, we'll replace %p with the appropriate AM or PM.
+	formatString = gsub(formatString, "^%%p", amString)	--Replaces %p at the beginning of the string with the am/pm token
+	formatString = gsub(formatString, "([^%%])%%p", "%1"..amString); -- Replaces %p anywhere else in the string, but doesn't replace %%p (since the first % escapes the second)
+	
+	return date(formatString, timeVal);
+end

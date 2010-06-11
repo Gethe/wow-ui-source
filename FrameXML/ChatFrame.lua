@@ -2929,7 +2929,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			
 			--Add Timestamps
 			if ( CHAT_TIMESTAMP_FORMAT ) then
-				body = date(CHAT_TIMESTAMP_FORMAT, time())..body;
+				body = BetterDate(CHAT_TIMESTAMP_FORMAT, time())..body;
 			end
 			
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
@@ -3308,6 +3308,8 @@ function ChatEdit_OnLoad(self)
 	self:SetAttribute("stickyType", "SAY");
 	self.chatLanguage = GetDefaultLanguage();
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
+	
+	self.addSpaceToAutoComplete = true;
 	
 	if ( CHAT_OPTIONS.ONE_EDIT_AT_A_TIME == "many" ) then
 		self:Show();

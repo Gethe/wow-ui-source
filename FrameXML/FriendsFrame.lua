@@ -2225,7 +2225,8 @@ function FriendsFrame_SetButton(button, index, firstButton)
 	button.name:SetText(nameText);
 	button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
 	button.info:SetText(infoText);
-	if ( broadcastText and broadcastText ~= "" ) then
+	-- don't display a broadcast if the BNetBroadcasts data is out of sync
+	if ( broadcastText and broadcastText ~= "" and BNetBroadcasts[FriendButtons[index].id] ) then
 		height = FRIENDS_BUTTON_LARGE_HEIGHT;
 		button.broadcastMessage:SetText(broadcastText);
 		button.broadcastMessage:Show();
@@ -2316,15 +2317,11 @@ function FriendsFrame_SetOnlineStatus(button, status)
 		elseif ( UnitIsDND("player") ) then
 			SendChatMessage("", "DND");
 		end
-		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_ONLINE);
 	elseif ( status == 2 ) then
 		SendChatMessage("", "AFK");
-		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_AFK);
 	else
-		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_DND);
 		SendChatMessage("", "DND");
 	end
-	FriendsFrameStatusDropDown.status = status;
 end
 
 function FriendsFrameBroadcastInput_OnEnterPressed(self)

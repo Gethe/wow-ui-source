@@ -276,9 +276,14 @@ function AutoCompleteButton_OnClick(self)
 	
 	--The following is used to replace "/whisper ar message here" with "/whisper Arenai message here"
 	local newText = string.gsub(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX,
-		string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self:GetText().." ",
+		string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self:GetText(),
 			string.match(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX)),
 			1)
+	
+	if ( editBox.addSpaceToAutoComplete ) then
+		newText = newText.." ";
+	end
+	
 	editBox:SetText(newText);
 	--When we change the text, we move to the end, so we'll be consistent and move to the end if we don't change it as well.
 	editBox:SetCursorPosition(strlen(newText));

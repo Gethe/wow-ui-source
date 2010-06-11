@@ -5322,7 +5322,7 @@
 								self.autoCompleteParams = AUTOCOMPLETE_LIST.ADDFRIEND;
 							</OnLoad>
 							<OnEnterPressed>
-								if ( not AutoCompleteEditBox_OnTextChanged() ) then
+								if ( not AutoCompleteEditBox_OnEnterPressed(self) ) then
 									AddFriendFrame_Accept();
 								end
 							</OnEnterPressed>

@@ -562,6 +562,7 @@ function DynamicScrollFrame_Update(self, scrollValue, isScrollUpdate)
 		if ( isScrollUpdate and self.topIndex == topIndex and ( self.nextButtonOffset == 0 or scrollValue < self.nextButtonOffset ) ) then
 			return;
 		end
+		self.allowedRange = totalHeight - self.scrollHeight;		-- temp fix to jitter scroll (see task 39261)
 		self.topIndex = topIndex;
 		local button;
 		local buttonFunc = self.buttonFunc;
