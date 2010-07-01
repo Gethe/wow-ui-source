@@ -33,6 +33,9 @@ function GMChatFrame_OnLoad(self)
 	self:SetClampRectInsets(-35, 0, 30, 0);
 	
 	self:SetFont(DEFAULT_CHAT_FRAME:GetFont());
+	FCF_SetButtonSide(self, "left", true);
+	self.buttonFrame:SetAlpha(1);
+	self.buttonFrame.minimizeButton:Hide();
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
