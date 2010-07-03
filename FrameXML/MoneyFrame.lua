@@ -147,7 +147,14 @@ MoneyTypeInfo["GUILD_REPAIR"] = {
 	showSmallerCoins = "Backpack",
 };
 
-
+MoneyTypeInfo["TOOLTIP"] = {
+	UpdateFunc = function(self)
+		return self.staticMoney;
+	end,
+	showSmallerCoins = "Backpack",
+	collapse = 1,
+	truncateSmallCoins = nil,
+};
 
 function MoneyFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_MONEY");
@@ -205,6 +212,20 @@ function MoneyFrame_OnEvent (self, event, ...)
 	end
 end
 
+function MoneyFrame_OnEnter(moneyFrame)
+	if ( moneyFrame.showTooltip ) then
+		GameTooltip:SetOwner(_G[moneyFrame:GetName().."CopperButton"], "ANCHOR_TOPRIGHT", 20, 2);		
+		SetTooltipMoney(GameTooltip, moneyFrame.staticMoney, "TOOLTIP", "");
+		GameTooltip:Show();
+	end
+end
+
+function MoneyFrame_OnLeave(moneyFrame)
+	if ( moneyFrame.showTooltip ) then
+		GameTooltip:Hide();
+	end
+end
+
 function MoneyFrame_SetType(self, type)
 
 	local info = MoneyTypeInfo[type];
@@ -224,8 +245,10 @@ function MoneyFrame_SetType(self, type)
 		_G[frameName.."SilverButton"]:EnableMouse(false);
 		_G[frameName.."CopperButton"]:EnableMouse(false);
 	end
+end
 
-	MoneyFrame_UpdateMoney(self);
+function MoneyFrame_SetMaxDisplayWidth(moneyFrame, width)
+	moneyFrame.maxDisplayWidth = width;
 end
 
 -- Update the money shown in a money frame
@@ -286,6 +309,8 @@ function MoneyFrame_Update(frameName, money)
 		spacing = MONEY_BUTTON_SPACING_SMALL;
 	end
 
+	local maxDisplayWidth = frame.maxDisplayWidth;
+	
 	-- Set values for each denomination
 	if ( ENABLE_COLORBLIND_MODE == "1" ) then
 		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
@@ -334,9 +359,10 @@ function MoneyFrame_Update(frameName, money)
 		
 	-- Store how much money the frame is displaying
 	frame.staticMoney = money;
-
-	-- If not collapsable don't need to continue
-	if ( not info.collapse ) then
+	frame.showTooltip = nil;
+	
+	-- If not collapsable or not using maxDisplayWidth don't need to continue
+	if ( not info.collapse and not maxDisplayWidth ) then
 		return;
 	end
 
@@ -356,7 +382,9 @@ function MoneyFrame_Update(frameName, money)
 	end
 
 	goldButton:ClearAllPoints();
+	local hideSilver = true;
 	if ( silver > 0 or showLowerDenominations ) then
+		hideSilver = false;
 		-- Exception if showLowerDenominations and fixedWidth
 		if ( showLowerDenominations and info.fixedWidth ) then
 			silverButton:SetWidth(COIN_BUTTON_WIDTH);
@@ -370,14 +398,22 @@ function MoneyFrame_Update(frameName, money)
 		if ( info.showSmallerCoins ) then
 			showLowerDenominations = 1;
 		end
-	else
+		-- hide silver if not enough room
+		if ( maxDisplayWidth and width > maxDisplayWidth ) then
+			hideSilver = true;
+			frame.showTooltip = true;
+		end
+	end
+	if ( hideSilver ) then
 		silverButton:Hide();
 		goldButton:SetPoint("RIGHT", frameName.."SilverButton",	"RIGHT", 0, 0);
 	end
 
 	-- Used if we're not showing lower denominations
 	silverButton:ClearAllPoints();
+	local hideCopper = true;
 	if ( (copper > 0 or showLowerDenominations or info.showSmallerCoins == "Backpack") and not truncateCopper) then
+		hideCopper = false;
 		-- Exception if showLowerDenominations and fixedWidth
 		if ( showLowerDenominations and info.fixedWidth ) then
 			copperButton:SetWidth(COIN_BUTTON_WIDTH);
@@ -388,7 +424,13 @@ function MoneyFrame_Update(frameName, money)
 		if ( silverButton:IsShown() or goldButton:IsShown() ) then
 			width = width - spacing;
 		end
-	else
+		-- hide copper if not enough room
+		if ( maxDisplayWidth and width > maxDisplayWidth ) then
+			hideCopper = true;
+			frame.showTooltip = true;
+		end
+	end
+	if ( hideCopper ) then
 		copperButton:Hide();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "RIGHT", 0, 0);
 	end
@@ -422,6 +464,21 @@ function MoneyFrame_Update(frameName, money)
 	end
 
 	frame:SetWidth(width);
+
+	-- check if we need to toggle mouse events for the currency buttons to present tooltip
+	-- the events are always enabled if info.canPickup is true
+	if ( maxDisplayWidth and not info.canPickup ) then
+		local mouseEnabled = goldButton:IsMouseEnabled();
+		if ( frame.showTooltip and not mouseEnabled ) then
+			goldButton:EnableMouse(true);
+			silverButton:EnableMouse(true);
+			copperButton:EnableMouse(true);
+		elseif ( not frame.showTooltip and mouseEnabled ) then
+			goldButton:EnableMouse(false);
+			silverButton:EnableMouse(false);
+			copperButton:EnableMouse(false);
+		end
+	end
 end
 
 function RefreshMoneyFrame(frameName, money, small, collapse, showSmallerCoins)

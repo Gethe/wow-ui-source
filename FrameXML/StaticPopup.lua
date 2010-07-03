@@ -543,11 +543,11 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE"] = {
 	text = WORLD_PVP_INVITED,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,1);
+	OnAccept = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,1);
 	end,
-	OnCancel = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,0);
+	OnCancel = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,0);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -559,11 +559,11 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE_WARMUP"] = {
 	text = WORLD_PVP_INVITED_WARMUP;
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,1);
+	OnAccept = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,1);
 	end,
-	OnCancel = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,0);
+	OnCancel = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,0);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -578,11 +578,11 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	OnShow = function(self)
 		self.timeleft = select(4, GetWorldPVPQueueStatus(1));
 	end,	
-	OnAccept = function(self, data)
-		BattlefieldMgrEntryInviteResponse(1,1);
+	OnAccept = function(self, battleID)
+		BattlefieldMgrEntryInviteResponse(battleID,1);
 	end,
-	OnCancel = function(self, data)
-		BattlefieldMgrEntryInviteResponse(1,0);
+	OnCancel = function(self, battleID)
+		BattlefieldMgrEntryInviteResponse(battleID,0);
 	end,
 	timeout = 0,
 	timeoutInformationalOnly = 1;
@@ -3299,6 +3299,12 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else
 					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), ceil(timeleft / 60), MINUTES);
+				end
+			elseif ( which == "BFMGR_INVITED_TO_ENTER") then
+				if ( timeleft < 60 ) then
+					text:SetFormattedText(StaticPopupDialogs[which].text, text.text_arg1, timeleft, SECONDS);
+				else
+					text:SetFormattedText(StaticPopupDialogs[which].text, text.text_arg1, ceil(timeleft / 60), MINUTES);
 				end
 			else
 				if ( timeleft < 60 ) then

@@ -23,19 +23,19 @@ function QuestFrame_OnEvent(self, event, ...)
 		return;
 	end
 
-	QuestFrame_SetPortrait();
-	ShowUIPanel(QuestFrame);
-	if ( not QuestFrame:IsShown() ) then
-		CloseQuest();
-		return;
-	end
 	if ( event == "QUEST_GREETING" ) then
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
-		HideUIPanel(QuestLogDetailFrame);
-		QuestFrameDetailPanel:Hide();
-		QuestFrameDetailPanel:Show();
+		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
+			WatchFrameAutoQuest_AddPopUp(GetQuestID());
+			CloseQuest();
+			return;
+		else
+			HideUIPanel(QuestLogDetailFrame);
+			QuestFrameDetailPanel:Hide();
+			QuestFrameDetailPanel:Show();
+		end
 	elseif ( event == "QUEST_PROGRESS" ) then
 		HideUIPanel(QuestLogDetailFrame);
 		QuestFrameProgressPanel:Hide();
@@ -56,6 +56,13 @@ function QuestFrame_OnEvent(self, event, ...)
 			QuestInfo_ShowRewards();		
 			QuestRewardScrollFrameScrollBar:SetValue(0);
 		end
+	end
+	
+	QuestFrame_SetPortrait();
+	ShowUIPanel(QuestFrame);
+	if ( not QuestFrame:IsShown() ) then
+		CloseQuest();
+		return;
 	end
 end
 

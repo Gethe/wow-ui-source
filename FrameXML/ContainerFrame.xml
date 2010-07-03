@@ -162,6 +162,13 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "PLAYER");
+						MoneyFrame_SetMaxDisplayWidth(self, 168);
+					</OnLoad>
+				</Scripts>
 			</Frame>
 			<Button name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
 			<Button name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>

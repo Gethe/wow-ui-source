@@ -473,7 +473,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			checked = button.checked(button);
 		end
 
-		if not button.notCheckable then		
+		if not button.notCheckable and button:IsShown() then	
 			-- If checked show check image
 			checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
 			uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];

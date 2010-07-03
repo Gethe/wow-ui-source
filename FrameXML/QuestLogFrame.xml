@@ -32,6 +32,11 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentQuestionMark" inherits="AutoQuest-QuestLogIcon" parentKey="QuestionMark" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTag" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
 					<Size>
 						<AbsDimension x="16" y="16"/>
@@ -609,7 +614,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-7" y="14"/>
+							<AbsDimension x="-7" y="13"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -617,6 +622,31 @@
 					<OnClick>
 						HideUIPanel(QuestLogFrame);
 					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="QuestLogFrameCompleteButton" inherits="MagicButtonTemplate" text="COMPLETE_QUEST" hidden="true">
+				<Size>
+					<AbsDimension x="160" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="QuestLogFrameCancelButton" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="QuestLogFrameCompleteButtonFlash" inherits="UIPanelButtonHighlightTexture" parentKey="Flash"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						ShowQuestComplete(GetQuestLogSelection());
+						WatchFrameAutoQuest_ClearPopUpByLogIndex(GetQuestLogSelection());
+					</OnClick>
+					<OnShow>
+						UIFrameFlash(self.Flash, 0.75, 0.75, -1, nil);
+					</OnShow>
+					<OnHide>
+						UIFrameFlashRemoveFrame(QuestLogFrameCompleteButton.Flash);
+					</OnHide>
 				</Scripts>
 			</Button>
 			<Button name="QuestLogFrameShowMapButton">

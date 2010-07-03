@@ -2,6 +2,51 @@
 ..\FrameXML\UI.xsd">
 	
 	<Script file="WatchFrame.lua"/>
+	
+	<Texture name="QuestTracker-Shadow" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="262" y="49"/>	
+		<TexCoords left="0.00195313" right="0.51367188" top="0.01562500" bottom="0.78125000"/>	
+	</Texture>
+	<Texture name="QuestIcon-Large" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="60" y="60"/>	
+		<TexCoords left="0.51757813" right="0.63476563" top="0.01562500" bottom="0.95312500"/>	
+	</Texture>
+	<Texture name="QuestIcon-Exclamation" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="19" y="33"/>	
+		<TexCoords left="0.63867188" right="0.67578125" top="0.01562500" bottom="0.53125000"/>	
+	</Texture>
+	<Texture name="TrackerButton-AutoComplete-Down" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="18" y="19"/>	
+		<TexCoords left="0.63867188" right="0.67382813" top="0.56250000" bottom="0.85937500"/>	
+	</Texture>
+	<Texture name="QuestIcon-QuestionMark" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="19" y="33"/>	
+		<TexCoords left="0.67968750" right="0.71679688" top="0.01562500" bottom="0.53125000"/>	
+	</Texture>
+	<Texture name="TrackerButton-AutoComplete-Up" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="18" y="19"/>	
+		<TexCoords left="0.67968750" right="0.71484375" top="0.56250000" bottom="0.85937500"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-TopRight" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.72070313" right="0.75195313" top="0.01562500" bottom="0.26562500"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-TopLeft" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.72070313" right="0.75195313" top="0.29687500" bottom="0.54687500"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-BotRight" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.72070313" right="0.75195313" top="0.57812500" bottom="0.82812500"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-BotLeft" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.75585938" right="0.78710938" top="0.01562500" bottom="0.26562500"/>	
+	</Texture>
+	<Texture name="AutoQuest-QuestLogIcon" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="10" y="13"/>	
+		<TexCoords left="0.75585938" right="0.77539063" top="0.29687500" bottom="0.50000000"/>	
+	</Texture>
 		
 	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="MIDDLE">
 		<Size>
@@ -203,6 +248,15 @@
 						<Offset x="-24" y="12"/>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="WatchFrameLinesAutoQuestShadow" inherits="QuestTracker-Shadow" parentKey="AutoQuestShadow" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-40" y="8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameStrata("LOW");
@@ -216,6 +270,122 @@
 			<OnLoad function="WatchFrame_OnLoad"/>
 			<OnEvent function="WatchFrame_OnEvent"/>
 			<OnUpdate function="WatchFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="WatchFrameAutoQuestPopUpTemplate" enableMouse="true" virtual="true">
+		<Size x="190" y="60"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="-30"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" setAllPoints="true">	
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBorderTopLeft" inherits="AutoQuestToastBorder-TopLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="4" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderTopRight" inherits="AutoQuestToastBorder-TopRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderBotLeft" inherits="AutoQuestToastBorder-BotLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-4" y="-4" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderBotRight" inherits="AutoQuestToastBorder-BotRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderLeft" file="Interface\QuestFrame\AutoQuestToastBorder-LeftRight" vertTile="true">
+					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+					<Size x="8" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBotLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderRight" file="Interface\QuestFrame\AutoQuestToastBorder-LeftRight" vertTile="true">
+					<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+					<Size x="8" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBotRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderTop" file="Interface\QuestFrame\AutoQuestToastBorder-TopBot" horizTile="true">
+					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+					<Size x="16" y="8"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderBottom" file="Interface\QuestFrame\AutoQuestToastBorder-TopBot" horizTile="true">
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+					<Size x="16" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBotLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBotRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentQuestIconBg" inherits="QuestIcon-Large">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentExclamation" inherits="QuestIcon-Exclamation" parentKey="Exclamation" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentQuestIconBg" x="0.5" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentQuestionMark" inherits="QuestIcon-QuestionMark" parentKey="QuestionMark" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentQuestIconBg" x="0.5" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString name="$parentQuestName" inherits="QuestFont_Large" parentKey="QuestName">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentQuestIconBg" relativePoint="RIGHT" x="-6"/>
+						<Anchor point="RIGHT" x="-8"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString name="$parentTopText" inherits="GameFontNormalSmall" parentKey="TopText">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBottomText" inherits="GameFontDisableSmall" parentKey="BottomText">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseUp>
+				if (self.type == "OFFER") then
+					ShowQuestOffer(GetQuestLogIndexByID(self.questId));
+				else
+					ShowQuestComplete(GetQuestLogIndexByID(self.questId));
+				end
+				WatchFrameAutoQuest_ClearPopUp(self.questId);
+			</OnMouseUp>
 		</Scripts>
 	</Frame>
 

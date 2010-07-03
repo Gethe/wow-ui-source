@@ -198,26 +198,20 @@ function QuestLogTitleButton_Resize(questLogTitle)
 	-- The reason why is because SetWidth may be called on the questLogTitle button before we enter this function. The
 	-- results of a SetWidth are not calculated until the next update tick; so in order to get the most up-to-date
 	-- right edge, we call GetLeft() + GetWidth() instead of just GetRight()
-	local rightEdge;
-	if ( questTitleTag:IsShown() ) then
-		-- adjust the normal text to not overrun the title tag
-		if ( questCheck:IsShown() ) then
-			--rightEdge = questTitleTag:GetLeft() - questCheck:GetWidth() - 2;
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questTitleTag:GetWidth() - 4 - questCheck:GetWidth() - 2;
-		else
-			--rightEdge = questTitleTag:GetLeft();
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questTitleTag:GetWidth() - 4;
-		end
-	else
-		-- adjust the normal text to not overrun the button
-		if ( questCheck:IsShown() ) then
-			--rightEdge = questLogTitle:GetRight() - questCheck:GetWidth() - 2;
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questCheck:GetWidth() - 2;
-		else
-			--rightEdge = questLogTitle:GetRight();
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth();
-		end
+	local rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth();
+	-- adjust the normal text to not overrun the button
+	if ( questCheck:IsShown() ) then
+		rightEdge = rightEdge - questCheck:GetWidth() - 2;
 	end
+	-- adjust the normal text to not overrun the title tag
+	if ( questTitleTag:IsShown() ) then
+		rightEdge = rightEdge - questTitleTag:GetWidth() - 4;
+	end
+	
+	if (questLogTitle.QuestionMark:IsShown()) then
+		rightEdge = rightEdge - questLogTitle.QuestionMark:GetWidth();
+	end
+	
 	-- subtract from the text width the number of pixels that overrun the right edge
 	local questNormalTextWidth = questNormalText:GetWidth() - max(questNormalText:GetRight() - rightEdge, 0);
 	questNormalText:SetWidth(questNormalTextWidth);
@@ -419,6 +413,7 @@ function QuestLog_Update()
 				questNumGroupMates:Hide();
 				questTitleTag:Hide();
 				questCheck:Hide();
+				questLogTitle.QuestionMark:Hide();
 			else
 				-- set the title
 				if ( ENABLE_COLORBLIND_MODE == "1" ) then
@@ -473,8 +468,15 @@ function QuestLog_Update()
 				else
 					questCheck:Hide();
 				end
+				
+				-- Show the question mark icon for auto-complete quests
+				if (isComplete and isComplete>0 and GetQuestLogIsAutoComplete(questIndex)) then
+					questLogTitle.QuestionMark:Show();
+				else
+					questLogTitle.QuestionMark:Hide();
+				end
 			end
-
+			
 			-- Save if its a header or not
 			questLogTitle.isHeader = isHeader;
 
@@ -507,6 +509,13 @@ function QuestLog_Update()
 		displayedHeight = displayedHeight + buttonHeight;
 	end
 	HybridScrollFrame_Update(QuestLogScrollFrame, numEntries * buttonHeight, displayedHeight);
+	
+	local selectedIsComplete = select(7, GetQuestLogTitle(questLogSelection));
+	if (selectedIsComplete and GetQuestLogIsAutoComplete()) then
+		QuestLogFrameCompleteButton:Show();
+	else
+		QuestLogFrameCompleteButton:Hide();
+	end
 
 	-- update the control panel
 	QuestLogControlPanel_UpdateState();
@@ -625,10 +634,11 @@ function QuestLog_SetSelection(questIndex)
 		QuestLogFrame.selectedIndex = nil;
 		HideUIPanel(QuestLogDetailFrame);
 		QuestLogDetailScrollFrame:Hide();
+		QuestLogFrameCompleteButton:Hide();
 		return;
 	end
 
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(questIndex);
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questIndex);
 	if ( isHeader ) then
 		if ( isCollapsed ) then
 			ExpandQuestHeader(questIndex);
@@ -636,6 +646,12 @@ function QuestLog_SetSelection(questIndex)
 			CollapseQuestHeader(questIndex);
 		end
 		return;
+	end
+	
+	if (isComplete and GetQuestLogIsAutoComplete(questIndex)) then
+		QuestLogFrameCompleteButton:Show();
+	else
+		QuestLogFrameCompleteButton:Hide();
 	end
 
 	QuestLogFrame.selectedIndex = questIndex;

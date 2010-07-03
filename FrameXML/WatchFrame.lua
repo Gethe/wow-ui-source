@@ -122,7 +122,13 @@ function WatchFrameLinkButtonTemplate_OnLeftClick (self, button)
 		else
 			ExpandQuestHeader( GetQuestSortIndex( GetQuestIndexForWatch(self.index) ) );
 			-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
-			QuestLog_OpenToQuest( GetQuestIndexForWatch(self.index) );
+			local questIndex = GetQuestIndexForWatch(self.index);
+			if (self.isComplete and GetQuestLogIsAutoComplete(questIndex)) then
+				ShowQuestComplete(questIndex);
+				WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex);
+			else
+				QuestLog_OpenToQuest( questIndex );
+			end
 		end
 		return;
 	elseif ( self.type == "ACHIEVEMENT" ) then
@@ -210,6 +216,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("QUEST_POI_UPDATE");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
@@ -221,6 +228,7 @@ function WatchFrame_OnLoad (self)
 	DASH_WIDTH = watchFrameTestLine.dash:GetWidth();
 	WATCHFRAMELINES_FONTHEIGHT = fontHeight;
 	WATCHFRAMELINES_FONTSPACING = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTHEIGHT) / 2
+	WatchFrame_AddObjectiveHandler(WatchFrameAutoQuest_DisplayAutoQuestPopUps);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayTrackedAchievements);
 	WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
@@ -278,6 +286,9 @@ function WatchFrame_OnEvent (self, event, ...)
 		WatchFrame_SetWidth(GetCVar("watchFrameWidth"));
 		WATCHFRAME_SORT_TYPE = tonumber(GetCVar("trackerSorting"));
 		WATCHFRAME_FILTER_TYPE = tonumber(GetCVar("trackerFilter"));
+	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
+		local questId = ...;
+		WatchFrameAutoQuest_AddPopUp(questId);
 	end
 end
 
@@ -409,7 +420,6 @@ function WatchFrame_Update (self)
 	WatchFrame_ReleaseUnusedLinkButtons();
 	
 	self.updating = nil;
-	self.nextOffset = totalOffset;
 end
 
 function WatchFrame_AddObjectiveHandler (func)
@@ -738,7 +748,8 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 					linkButton.index = achievementID;
 					linkButton.lines = WATCHFRAME_ACHIEVEMENTLINES;
 					linkButton.startLine = achievementLineIndex - numLines;
-					linkButton.lastLine = achievementLineIndex - 1;			
+					linkButton.lastLine = achievementLineIndex - 1;
+					linkButton.isComplete = nil;
 					linkButton:Show();
 					
 					if ( previousBottom ) then
@@ -808,7 +819,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				isComplete = false;
 			elseif ( numObjectives == 0 and playerMoney >= requiredMoney ) then
 				isComplete = true;		
-			end			
+			end
 			-- check filters
 			local filterOK = true;
 			if ( isComplete and bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) ~= WATCHFRAME_FILTER_COMPLETED_QUESTS ) then
@@ -832,9 +843,18 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				lastLine = questTitle;
 				
 				if ( isComplete ) then
-					line = WatchFrame_GetQuestLine();
-					WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
-					lastLine = line;
+					if (GetQuestLogIsAutoComplete(questIndex)) then
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_QUEST_COMPLETE, DASH_HIDE, nil, true);
+						lastLine = line;
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_CLICK_TO_COMPLETE, DASH_HIDE, nil, true);
+						lastLine = line;
+					else
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
+						lastLine = line;
+					end
 				else
 					for j = 1, numObjectives do
 						text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
@@ -899,6 +919,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				linkButton.lines = WATCHFRAME_QUESTLINES;
 				linkButton.startLine = questLineIndex - numLines;
 				linkButton.lastLine = questLineIndex - 1;
+				linkButton.isComplete = isComplete;
 				linkButton:Show();				
 				-- quest POI icon
 				if ( WatchFrame.showObjectives ) then
@@ -1468,4 +1489,100 @@ function WatchFrame_MoveQuest(button, questLogIndex, numMoves)
 	end
 	ShiftQuestWatches(GetQuestWatchIndex(questLogIndex), GetQuestWatchIndex(VISIBLE_WATCHES[indexEnd]));
 	WatchFrame_Update();
+end
+
+
+-- AutoQuest pop-ups
+local numPopUpFrames = 0;
+
+function WatchFrameAutoQuest_GetOrCreateFrame(parent, index)
+	if (_G["WatchFrameAutoQuestPopUp"..index]) then
+		return _G["WatchFrameAutoQuestPopUp"..index];
+	end
+	local frame = CreateFrame("FRAME", "WatchFrameAutoQuestPopUp"..index, parent, "WatchFrameAutoQuestPopUpTemplate");	
+	numPopUpFrames = numPopUpFrames+1;
+	return frame;
+end
+
+function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, initialOffset, maxHeight, frameWidth)
+	local numPopUps = 0;
+	local prevFrame = nil;
+	local heightUsed = 0;
+	local maxWidth = 0;
+	local i;
+	local AutoQuestPopUps = GetAutoQuestPopUps();
+	for i=1, #AutoQuestPopUps do
+		local questTitle, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(GetQuestLogIndexByID(AutoQuestPopUps[i]));
+				
+		if ( isComplete and isComplete > 0 ) then
+			isComplete = true;
+		else
+			isComplete = false;
+		end	
+			
+		if (questTitle and questTitle ~= "") then
+			local frame = WatchFrameAutoQuest_GetOrCreateFrame(lineFrame, numPopUps+1);
+			frame:Show();
+			frame:ClearAllPoints();
+			frame:SetParent(lineFrame);
+			
+			if (isComplete) then
+				frame.QuestionMark:Show();
+				frame.Exclamation:Hide();
+				frame.TopText:SetText(QUEST_WATCH_POPUP_QUEST_COMPLETE);
+				frame.BottomText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE);
+				frame.type="COMPLETED";
+			else
+				frame.QuestionMark:Hide();
+				frame.Exclamation:Show();
+				frame.TopText:SetText(QUEST_WATCH_POPUP_QUEST_DISCOVERED);
+				frame.BottomText:SetText(QUEST_WATCH_POPUP_CLICK_TO_VIEW);
+				frame.type="OFFER";
+			end
+			
+			if (prevFrame) then
+				frame:SetPoint("TOPLEFT", prevFrame, "BOTTOMLEFT", 0, -10);
+				heightUsed = heightUsed + 10;
+			else
+				frame:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", -5, initialOffset - 4);
+				heightUsed = heightUsed + 4;
+			end
+			frame.QuestName:SetText(questTitle);
+			frame.questId = AutoQuestPopUps[i];		
+			
+			heightUsed = heightUsed + frame:GetHeight();
+			maxWidth = max(maxWidth, frame:GetWidth());
+			prevFrame = frame;
+			numPopUps = numPopUps+1;
+		end
+	end
+	
+	for i=numPopUps+1, numPopUpFrames do
+		_G["WatchFrameAutoQuestPopUp"..i]:Hide();
+	end
+	
+	if (numPopUps > 0) then
+		lineFrame.AutoQuestShadow:Show();
+		heightUsed = heightUsed + 4;
+	else
+		lineFrame.AutoQuestShadow:Hide();
+	end
+	
+	return heightUsed, maxWidth, 0;
+end
+
+function WatchFrameAutoQuest_AddPopUp(questId)
+	AddAutoQuestPopUp(questId);
+	WatchFrame_Update(WatchFrame);
+	WatchFrame_Expand(WatchFrame);
+end
+
+function WatchFrameAutoQuest_ClearPopUp(questId)
+	RemoveAutoQuestPopUp(questId);
+	WatchFrame_Update(WatchFrame);
+end
+
+function WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex)
+	local questId = select(9, GetQuestLogTitle(questIndex));
+	WatchFrameAutoQuest_ClearPopUp(questId);
 end

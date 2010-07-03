@@ -1,11 +1,21 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Button name="MoneyFrameButtonTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				MoneyFrame_OnEnter(self:GetParent());
+			</OnEnter>
+			<OnLeave>
+				MoneyFrame_OnLeave(self:GetParent());
+			</OnLeave>
+		</Scripts>
+	</Button>
 	<Frame name="MoneyFrameTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="192" y="28"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton">
+			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -46,7 +56,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton">
+			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -87,7 +97,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton">
+			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -152,7 +162,7 @@
 			<AbsDimension x="128" y="13"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton">
+			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -193,7 +203,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton">
+			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -234,7 +244,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton">
+			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
