@@ -8,7 +8,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="20" y="105"/>
+					<AbsDimension x="0" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -97,7 +97,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentDescription" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP" text="BATTLEGROUND_LORETEXT_1">
+						<FontString name="$parentDescription" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP" text="">
 							<Size>
 								<AbsDimension x="275" y="0"/>
 							</Size>

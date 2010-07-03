@@ -470,3 +470,14 @@ RegisterStaticConstants(STATIC_CONSTANTS);
 -- textures for quest item overlays
 TEXTURE_ITEM_QUEST_BANG = "Interface\\ContainerFrame\\UI-Icon-QuestBang";
 TEXTURE_ITEM_QUEST_BORDER = "Interface\\ContainerFrame\\UI-Icon-QuestBorder";
+
+
+
+-- Panel Positions
+PANEL_INSET_LEFT_OFFSET = 4;
+PANEL_INSET_RIGHT_OFFSET = -6;
+PANEL_INSET_BOTTOM_OFFSET = 4;
+PANEL_INSET_BOTTOM_BUTTON_OFFSET = 26;
+PANEL_INSET_TOP_OFFSET = -24;
+PANEL_INSET_ATTIC_BUTTON_OFFSET = -60;
+

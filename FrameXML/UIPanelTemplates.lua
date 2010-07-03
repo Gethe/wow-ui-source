@@ -587,26 +587,42 @@ end
 
 -- ButtonFrameTemplate code
 function ButtonFrameTemplate_HideButtonBar(self)
-	_G[self:GetName() .. "InsetBg"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 4);
+	if self.bottomInset then 
+		self.botomInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
+	else
+		_G[self:GetName() .. "Inset"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
+	end
 	_G[self:GetName() .. "BtnCornerLeft"]:Hide();
 	_G[self:GetName() .. "BtnCornerRight"]:Hide();
 	_G[self:GetName() .. "ButtonBottomBorder"]:Hide();
 end
 
 function ButtonFrameTemplate_ShowButtonBar(self)
-	_G[self:GetName() .. "InsetBg"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 26);
+	if self.topInset then 
+		self.topInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
+	else
+		_G[self:GetName() .. "Inset"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
+	end
 	_G[self:GetName() .. "BtnCornerLeft"]:Show();
 	_G[self:GetName() .. "BtnCornerRight"]:Show();
 	_G[self:GetName() .. "ButtonBottomBorder"]:Show();
 end
 
 function ButtonFrameTemplate_HideAttic(self)
-	self.InsetBg:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -24);
+	if self.topInset then 
+		self.topInset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_TOP_OFFSET);
+	else
+		self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_TOP_OFFSET);
+	end
 	self.TopTileStreaks:Hide();
 end
 
 function ButtonFrameTemplate_ShowAttic(self)
-	self.InsetBg:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -60);
+	if self.topInset then 
+		self.topInset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_BUTTON_OFFSET);
+	else
+		self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_BUTTON_OFFSET);
+	end
 	self.TopTileStreaks:Show();
 end
 

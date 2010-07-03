@@ -4,16 +4,26 @@ ECLIPSE_BAR_POWER_INDEX = 8;
 MOONKIN_FORM = 31
 
 
-
-function EclipseBar_Update(self)
-	local form  = GetShapeshiftFormID();	
-	if form == MOONKIN_FORM then
-		self:Show();
+function EclipseBar_UpdateShown(self)
+	-- Disable rune frame if not a DRUID.
+	local _, class = UnitClass("player");
+	local form  = GetShapeshiftFormID();
+	
+	if  class == "DRUID" and (form == MOONKIN_FORM or not form) then
+		if GetMasteryIndex(GetActiveTalentGroup(false, false)) == 1 then
+			self:Show();
+		else
+			self:Hide();
+		end
 	else
 		self:Hide();
 		return;
 	end
+end
 
+
+
+function EclipseBar_Update(self)
 	local power = UnitPower( self:GetParent().unit, ECLIPSE_BAR_POWER_INDEX );
 	local maxPower = UnitPowerMax( self:GetParent().unit, ECLIPSE_BAR_POWER_INDEX );	
 	
@@ -32,8 +42,7 @@ function EclipseBar_Update(self)
 		end			
 	else
 		self.glow:Hide();
-	end
-	
+	end	
 end
 
 
@@ -46,22 +55,17 @@ function EclipseBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");	
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 end
 
 
 
 function EclipseBar_OnEvent (self, event, arg1)
-	if ( event == "UNIT_DISPLAYPOWER" ) then		
-		EclipseBar_Update (self)
-	elseif ( event=="PLAYER_ENTERING_WORLD" ) then	
-		EclipseBar_Update (self)
-	elseif ( (event == "UNIT_ECLIPSE") and (arg1 == self:GetParent().unit) ) then
-		EclipseBar_Update (self)
-	elseif ( (event == "UNIT_MAXECLIPSE") and (arg1 == self:GetParent().unit) ) then
-		EclipseBar_Update (self)
-	elseif (event == "UPDATE_SHAPESHIFT_FORM")then
-		EclipseBar_Update (self)
+	if ( (event == "UNIT_ECLIPSE") and (arg1 == "player") ) then
+		EclipseBar_UpdateShown(self)
+	elseif ( (event == "UNIT_MAXECLIPSE") and (arg1 == "player") ) then
+		EclipseBar_UpdateShown(self)
 	else
-		print("Unhandled Eclipse Event:",  event);
+		EclipseBar_UpdateShown(self)
 	end
 end

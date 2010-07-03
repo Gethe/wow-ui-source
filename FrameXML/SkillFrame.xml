@@ -715,15 +715,9 @@
 											<AbsInset left="9" right="7" top="-7" bottom="10"/>
 										</HitRectInsets>
 										<Scripts>
-											<OnClick>
-												local dialog = StaticPopup_Show("UNLEARN_SKILL", self.skillName);
-												if ( dialog ) then
-													dialog.data = self:GetParent().skillIndex;
-												end
-											</OnClick>
 											<OnEnter>
 												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-												GameTooltip:SetText(UNLEARN_SKILL_TOOLTIP);
+												GameTooltip:SetText("Obsolete");
 											</OnEnter>
 											<OnLeave function="GameTooltip_Hide"/>
 										</Scripts>

@@ -154,15 +154,25 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTextBackground" inherits="Spellbook-TextBackground">
+				<Texture name="$parentTextBackground" inherits="Spellbook-TextBackground" parentKey="TextBackground">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-4" y="-5"/>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentTrainTextBackground" inherits="Spellbook-TrainTextBackground" parentKey="TrainTextBackground" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="0" y="10"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="BORDER">
+				<Texture name="$parentIconTextureBg" setAllPoints="true" hidden="true" parentKey="IconTextureBg">
+					<Color r="0.40" g="0.20" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
 				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true"/>
-				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT">
+				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT" parentKey="SpellName">
 					<Size>
 						<AbsDimension x="145" y="0"/>
 					</Size>
@@ -174,14 +184,39 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubSpellName" inherits="SubSpellFont" hidden="true" justifyH="LEFT">
+				<FontString name="$parentSubSpellName" inherits="SubSpellFont" hidden="true" justifyH="LEFT" parentKey="SpellSubName">
 					<Size>
-						<AbsDimension x="79" y="18"/>
+						<AbsDimension x="145" y="18"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="4"/>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRequiredLevelString" inherits="GameFontBlackSmall" hidden="true" justifyH="LEFT" parentKey="RequiredLevelString">
+					<Size>
+						<AbsDimension x="145" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.25" g="0.12" b="0"/>
+				</FontString>
+				<FontString name="$parentSeeTrainerString" inherits="GameFontHighlightSmall" hidden="true" justifyH="LEFT" parentKey="SeeTrainerString" text="SPELLBOOK_TRAINABLE">
+					<Size>
+						<AbsDimension x="145" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -202,7 +237,24 @@
 				</Texture>
 				<Texture name="$parentSlotFrame" inherits="Spellbook-SlotFrame">
 					<Anchors>
-						<Anchor point="CENTER" x="1"/>
+						<Anchor point="CENTER" x="0.5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentUnlearnedSlotFrame" inherits="Spellbook-UnlearnedSlot" hidden="true" parentKey="UnlearnedFrame">
+					<Anchors>
+						<Anchor point="CENTER" x="0.5" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTrainedSlotFrame" inherits="Spellbook-TrainSlot" hidden="true" parentKey="TrainFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-24" y="22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="$parentTrainBook" inherits="Spellbook-TrainBook" hidden="true" parentKey="TrainBook">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -628,7 +680,7 @@
 			</Anchor>
 		</Anchors>
 		<Layers>
-			<Layer level="BORDER">
+			<Layer level="BACKGROUND">
 				<Texture name="SpellBookPage1" file="Interface\Spellbook\Spellbook-Page-1">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-25"/>

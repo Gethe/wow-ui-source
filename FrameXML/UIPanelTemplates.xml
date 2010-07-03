@@ -256,9 +256,8 @@
 		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
-		<!--HighlightTexture inherits="UIPanelButtonHighlightTexture"/-->
 		<HighlightTexture file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
-			<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>	
+			<TexCoords left="0" right="1.0" top="0.03" bottom="0.7175"/>	
 		</HighlightTexture>
 	</Button>
 	<Button name="UIPanelButtonGrayTemplate" virtual="true">
@@ -1575,7 +1574,7 @@
 -->
 	<Frame name="PortraitFrameTemplate" virtual="true">
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="-6">
 				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-21"/>
@@ -1670,51 +1669,43 @@
 	
 <!--
 *******************************************************************************
-    ButtonFrameTemplate
-	This is a Portrait Frame that also has space for buttons along the bottom 
-	edge, and includes an inset content area.
-	
-	Show/hide the Button bar using:
-	ButtonFrameTemplate_HideButtonBar(self)
-	ButtonFrameTemplate_ShowButtonBar(self)
+    InsetFrameTemplate
+
+	This is the inner frame used by ButtonFrameTemplate
 *******************************************************************************
 -->
-	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
-		<Size x="384" y="512"/>
-		<Anchors>
-			<Anchor point="CENTER" x="0" y="0"/>
-		</Anchors>
+	<Frame name="InsetFrameTemplate" virtual="true">
+		<Size x="64" y="64"/>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture name="$parentInsetBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" parentKey="InsetBg">
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" parentKey="Bg">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-60" />
-						<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="-1">
+			<Layer level="BORDER" textureSubLevel="-5">
 				<Texture name="$parentInsetTopLeftCorner" inherits="UI-Frame-InnerTopLeft" parentKey="InsetBorderTopLeft">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentInsetBg"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentBg"/>
 					</Anchors>
 				</Texture>
-
 				<Texture name="$parentInsetTopRightCorner" inherits="UI-Frame-InnerTopRight" parentKey="InsetBorderTopRight">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentInsetBg"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBg"/>
 					</Anchors>
 				</Texture>
 				
 				<Texture name="$parentInsetBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentInsetBg" y="-1"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBg" y="-1"/>
 					</Anchors>
 				</Texture>
 				
 				<Texture name="$parentInsetBotRightCorner" inherits="UI-Frame-InnerBotRight" parentKey="InsetBorderBottomRight">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentInsetBg" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBg" y="-1"/>
 					</Anchors>
 				</Texture>
 
@@ -1743,103 +1734,9 @@
 					</Anchors>
 				</Texture>	
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 	</Frame>
 	
-<!--
-*******************************************************************************
-    MagicButtonTemplate
-	This is a template for buttons that can be used with ButtonFrameTemplate.
-	Anchor either bottom corner to a ButtonFrameTemplate, or anchor either top
-	corner to another MagicButton.  The buttons will automatically be positioned
-	correctly and will be given the correct	border art.
-	
-	NOTE: If you override the OnLoad script for a Magic Button, make sure to call
-	"MagicButton_OnLoad" from within your script.
-*******************************************************************************
--->
-	<Button name="MagicButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
-		<Size x="80" y="22"/>
-		<Scripts>
-			<OnLoad function="MagicButton_OnLoad" />
-		</Scripts>
-	</Button>
-	
-<!--
-*******************************************************************************
-    InsetFrameTemplate
-	This can be used to place an inset content area inside of a frame.
-*******************************************************************************
--->
-	<Frame name="InsetFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BORDER">
-				<Texture name="$parentTopLeftCorner" inherits="UI-Frame-InnerTopLeft" parentKey="BorderTopLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopRightCorner" inherits="UI-Frame-InnerTopRight" parentKey="BorderTopRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner" parentKey="BorderBottomLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotRightCorner" inherits="UI-Frame-InnerBotRight" parentKey="BorderBottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopBorder" inherits="_UI-Frame-InnerTopTile" parentKey="BorderTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="TOPRIGHT" x="0" y="0" />
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomBorder" inherits="_UI-Frame-InnerBotTile" parentKey="BorderBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftBorder" inherits="!UI-Frame-InnerLeftTile" parentKey="BorderLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="BOTTOMLEFT" x="0" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightBorder" inherits="!UI-Frame-InnerRightTile" parentKey="BorderRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>	
-			</Layer>
-		</Layers>
-	</Frame>
-
 	<Frame name="InsetFrameTemplate2" virtual="true">
 		<Layers>
 			<Layer level="BORDER">
@@ -1890,6 +1787,77 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	
+<!--
+*******************************************************************************
+    ButtonFrameTemplate
+	This is a Portrait Frame that also has space for buttons along the bottom 
+	edge, and includes an inset content area.
+	
+	Show/hide the Button bar using:
+	ButtonFrameTemplate_HideButtonBar(self)
+	ButtonFrameTemplate_ShowButtonBar(self)
+*******************************************************************************
+-->
+	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
+		<Size x="338" y="424"/>
+		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-119"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+<!--
+*******************************************************************************
+    MagicButtonTemplate
+	This is a template for buttons that can be used with ButtonFrameTemplate.
+	Anchor either bottom corner to a ButtonFrameTemplate, or anchor either top
+	corner to another MagicButton.  The buttons will automatically be positioned
+	correctly and will be given the correct	border art.
+	
+	NOTE: If you override the OnLoad script for a Magic Button, make sure to call
+	"MagicButton_OnLoad" from within your script.
+*******************************************************************************
+-->
+	<Button name="MagicButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
+		<Size x="80" y="22"/>
+		<Scripts>
+			<OnLoad function="MagicButton_OnLoad" />
+		</Scripts>
+	</Button>
+
+	
 <!--
 *******************************************************************************
     Frame Template Examples
@@ -1959,7 +1927,6 @@
 			<OnLoad>
 				ExampleButtonFramePortrait:SetTexture("Interface\\FriendsFrame\\FriendsFrameScrollIcon");
 				ExampleButtonFrameTitleText:SetText("Example Button Frame");
-				--ButtonFrameInsetBg:SetPoint("TOPLEFT", "ButtonFrame", "TOPLEFT", 4, -300);
 			</OnLoad>
 		</Scripts>
 	</Frame>

@@ -61,7 +61,7 @@ function UpdateMicroButtons()
 		MainMenuMicroButton_SetNormal();
 	end
 
-	if ( PVPParentFrame:IsShown() and (not PVPFrame_IsJustBG())) then
+	if ( PVPFrame:IsShown() ) then
 		PVPMicroButton:SetButtonState("PUSHED", 1);
 		PVPMicroButton_SetPushed();
 	else

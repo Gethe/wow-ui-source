@@ -120,8 +120,8 @@ WorldStateFrame.xml
 DressUpFrame.xml
 RaidWarning.xml
 ClassTrainerFrameTemplates.xml
+PVPFrameTemplates.xml
 PVPFrame.xml
-PVPBattlegroundFrame.xml
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
 LFGFrame.xml

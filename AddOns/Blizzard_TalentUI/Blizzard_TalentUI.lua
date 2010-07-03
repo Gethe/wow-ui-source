@@ -441,6 +441,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+	self:RegisterEvent("MASTERY_UPDATE");
 	self.inspect = false;
 	self.pet = false;
 	self.talentGroup = 1;
@@ -530,6 +531,8 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
+	elseif (event == "MASTERY_UPDATE") then
+		PlayerTalentFrame_UpdateMastery(self);
 	end
 end
 
@@ -693,7 +696,6 @@ function PlayerTalentFrame_ShowPetTalentTab()
 	PlayerTalentFramePetModel:Show();
 	PlayerTalentFramePetInfo:Show();
 	PlayerTalentFramePetModelBg:Show();
-	PlayerTalentFramePetModelBg2:Show();
 	PlayerTalentFramePetPanel:Show();
 end
 
@@ -701,7 +703,6 @@ function PlayerTalentFrame_HidePetTalentTab()
 	PlayerTalentFramePetModel:Hide();
 	PlayerTalentFramePetInfo:Hide();
 	PlayerTalentFramePetModelBg:Hide();
-	PlayerTalentFramePetModelBg2:Hide();
 	PlayerTalentFramePetPanel:Hide();
 end
 
@@ -714,7 +715,6 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrameUnspentPoints:Hide();
 		PlayerTalentFrameUnspentPointsLabel:Hide();
 		PlayerTalentFrameUnspentPointsBg:Hide();
-		PlayerTalentFrameInsetBg:Show();
 		PlayerTalentFrame.pet = false;
 	elseif (selectedTab == PET_TALENTS_TAB) then
 		PlayerTalentFrame_HideGlyphFrame();
@@ -724,7 +724,6 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrameUnspentPointsLabel:Show();
 		PlayerTalentFrameUnspentPointsBg:Show();
 		PlayerTalentFrame.pet = true;
-		PlayerTalentFrameInsetBg:Hide();
 	else
 		PlayerTalentFrame_HideGlyphFrame();
 		PlayerTalentFrame_HidePetTalentTab();
@@ -733,7 +732,6 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrameUnspentPointsLabel:Show();
 		PlayerTalentFrameUnspentPointsBg:Show();
 		PlayerTalentFrame.pet = false;
-		PlayerTalentFrameInsetBg:Show();
 	end
 	
 	PlayerTalentFrame_UpdateMastery(PlayerTalentFrame);

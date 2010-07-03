@@ -287,7 +287,7 @@ end
 function PlayerFrame_UpdateArt(self)
 	if ( self.animFinished and self.inSeat and self.inSequence) then
 		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
-		if ( UnitHasVehicleUI("player") ) then
+		if ( UnitHasVehiclePlayerFrameUI("player") ) then
 			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
 		else
 			PlayerFrame_ToPlayerArt(self);
@@ -430,7 +430,7 @@ function PlayerFrame_OnReceiveDrag ()
 end
 
 function PlayerFrame_UpdateStatus()
-	if ( UnitHasVehicleUI("player") ) then
+	if ( UnitHasVehiclePlayerFrameUI("player") ) then
 		PlayerStatusTexture:Hide()
 		PlayerRestIcon:Hide()
 		PlayerAttackIcon:Hide()

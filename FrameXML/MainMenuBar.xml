@@ -361,7 +361,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Button name="ExhaustionTick" parent="MainMenuBar" hidden="false" frameStrata="DIALOG">
+	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="DIALOG">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>

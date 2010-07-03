@@ -467,100 +467,29 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="PVPBannerFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
-		<Anchors>
- 			<Anchor point="TOPLEFT">
- 				<Offset>
- 					<AbsDimension x="0" y="-104"/>
- 				</Offset>
- 			</Anchor>
- 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
-		</HitRectInsets>
+	<Frame name="PVPBannerFrame" inherits="ButtonFrameTemplate" enableMouse="true" hidden="true" toplevel="true" parent="UIParent" frameStrata="HIGH">
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="PVPBannerFramePortrait">
-                    <Size>
-                        <AbsDimension x="60" y="60"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-6"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>		
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture name="PVPBannerFrameBackground" file="Interface\TabardFrame\TabardFrameBackground" hidden="false">
-					<Size>
-						<AbsDimension x="316" y="325"/>
-					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="23" y="-76"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameInsetBg"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="PVPBannerFrameInsetBg"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="BACKGROUND" textureSubLevel="3">
 				<Texture name="PVPBannerFrameOuterFrameTopLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
 					<Size>
 						<AbsDimension x="20" y="39"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="19" y="-73"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameBackground" x="2" y="-2"/>
 					</Anchors>
 					<TexCoords left="0.109375" right="0.1875" top="0" bottom="0.3046875"/>
 				</Texture>
 				<Texture name="PVPBannerFrameOuterFrameTop" file="Interface\TabardFrame\TabardFrameOuterFrame">
 					<Size>
-						<AbsDimension x="280" y="6"/>
+						<AbsDimension x="283" y="6"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameOuterFrameTopLeft" relativePoint="TOPRIGHT"/>
@@ -623,7 +552,7 @@
 				</Texture>
 				<Texture name="PVPBannerFrameOuterFrameBottom" file="Interface\TabardFrame\TabardFrameOuterFrame">
 					<Size>
-						<AbsDimension x="280" y="8"/>
+						<AbsDimension x="283" y="8"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="PVPBannerFrameOuterFrameBottomLeft" relativePoint="BOTTOMRIGHT"/>
@@ -638,7 +567,9 @@
 						<Anchor point="BOTTOMLEFT" relativeTo="PVPBannerFrameOuterFrameBottom" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 					<TexCoords left="0.8828125" right="0.9609375" top="0.3046875" bottom="0.6171875"/>
-				</Texture>
+				</Texture>				
+			</Layer>
+			<Layer level="OVERLAY">
 				<Texture name="PVPBannerFrameEmblemTopRight" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="128" y="128"/>
@@ -695,14 +626,26 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="PVPBannerFrameGreetingText" inherits="GameFontHighlight" text="ARENA_BANNER_VENDOR_GREETING">
+				<FontString name="PVPBannerFrameGreetingText" inherits="GameFontHighlightMedium" text="ARENA_BANNER_VENDOR_GREETING">
 					<Size>
-						<AbsDimension x="250" y="0"/>
+						<AbsDimension x="290" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PVPBannerFrame">
+							<Offset>
+								<AbsDimension x="16" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentEnterNameText" inherits="GameFontHighlightMedium" text="ARENA_ENTER_TEAM_NAME"  justifyH="LEFT" >
+					<Size>
+						<AbsDimension x="105" y="12"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="PVPBannerFrame">
 							<Offset>
-								<AbsDimension x="10" y="-39"/>
+								<AbsDimension x="-55" y="-37"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -710,6 +653,26 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<EditBox name="$parentEditBox" inherits="InputBoxTemplate" letters="24" historyLines="1" autoFocus="false">
+				<Size>
+					<AbsDimension x="140" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentEnterNameText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnterPressed>
+						ChatFrameEditBox:SetFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						ChatFrameEditBox:SetFocus();
+					</OnEscapePressed>
+				</Scripts>
+			</EditBox>					
 			<Frame name="PVPBannerFrameStandard">
 				<Size>
 					<AbsDimension x="128" y="256"/>
@@ -717,13 +680,13 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PVPBannerFrame">
 						<Offset>
-							<AbsDimension x="40" y="0"/>
+							<AbsDimension x="30" y="-60"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentBanner">
+						<Texture name="$parentBanner" file="Interface\PVPFrame\PVP-Banner-2">
 							<Size>
 								<AbsDimension x="128" y="256"/>
 							</Size>
@@ -788,7 +751,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeTo="PVPBannerFrame">
 									<Offset>
-										<AbsDimension x="-9" y="50"/>
+										<AbsDimension x="27" y="-27"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -908,44 +871,27 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Button name="PVPBannerFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+			<Button name="PVPBannerFrameCancelButton" inherits="MagicButtonTemplate" text="CANCEL">
 				<Size>
 					<AbsDimension x="80" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="PVPBannerFrame" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="224" y="-420"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="PVPBannerFrame_SaveBanner"/>
-				</Scripts>
-			</Button>
-			<Button name="PVPBannerFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="PVPBannerFrame" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="305" y="-420"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>	
 				</Scripts>
-			</Button>
-			<Button name="PVPBannerFrameCloseButton" inherits="UIPanelCloseButton">
+			</Button>		
+			<Button name="PVPBannerFrameAcceptButton" inherits="MagicButtonTemplate" text="ACCEPT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="PVPBannerFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-45" y="-24"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT"/>
 				</Anchors>
+				<Scripts>
+					<OnClick function="PVPBannerFrame_SaveBanner"/>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

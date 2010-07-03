@@ -107,8 +107,10 @@ function RuneFrame_OnEvent (self, event, ...)
 		if ( not usable and rune and self.runes[rune] ) then
 			local cooldown = _G[self.runes[rune]:GetName().."Cooldown"];
 			local start, duration, runeReady = GetRuneCooldown(self.runes[rune]:GetID());			
-			local displayCooldown = (runeReady and 0) or 1;					
-			CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
+			local displayCooldown = (runeReady and 0) or 1;			
+			if start then
+				CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
+			end
 		elseif ( usable and rune and self.runes[rune] ) then
 			self.runes[rune].shine:SetVertexColor(1, 1, 1);
 			RuneButton_ShineFadeIn(self.runes[rune].shine)

@@ -130,9 +130,6 @@
 		</Scripts>
 	</Button>
 	<Frame name="TradeSkillFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="338" y="426"/>
-		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
@@ -1126,7 +1123,7 @@
 				self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
 				self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 				self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
-				TradeSkillFrameInsetBg:SetPoint("TOPLEFT", 4, -81);
+				TradeSkillFrameInset:SetPoint("TOPLEFT", 4, -81);
 				self.filterTbl = {hasMaterials = false, hasSkillUp = false, subClassValue = -1, slotValue = -1 };
 				TradeSkillSetFilter(-1, -1);
 			</OnLoad>

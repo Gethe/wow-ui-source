@@ -29,9 +29,9 @@ function PetFrame_OnLoad (self)
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
 	
 	local _, class = UnitClass("player");
-	if ( class == "DEATHKNIGHT"  or class == "DRUID" ) then	--Death Knights need the Pet frame moved down for their Runes and Druids need it moved down for the secondary power bar.
+	if ( class == "DEATHKNIGHT") then	--Death Knights need the Pet frame moved down for their Runes and Druids need it moved down for the secondary power bar.
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
-	elseif ( class == "SHAMAN" ) then
+	elseif ( class == "SHAMAN" or class == "DRUID" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
 	elseif ( class == "WARLOCK" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -80);
@@ -70,8 +70,12 @@ function PetFrame_OnEvent (self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( (event == "UNIT_PET" and arg1 == "player" ) or event == "PET_UI_UPDATE" ) then
 		local unit
-		if ( UnitInVehicle("player") and UnitHasVehicleUI("player") ) then
-			unit = "player";
+		if ( UnitInVehicle("player") ) then
+			if ( UnitHasVehiclePlayerFrameUI("player") ) then
+				unit = "player";
+			else
+				return;
+			end
 		else
 			unit = "pet";
 		end

@@ -778,12 +778,7 @@
 						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_UpdateVideoQuality();
-						end
-					</OnValueChanged>
+					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>
 			<Frame name="$parentShaders" inherits="OptionsBoxTemplate">
@@ -801,7 +796,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>	
-			<CheckButton name="$parentSpecularLighting" inherits="VideoOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentSunshafts" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShaders" relativePoint="TOPLEFT">
 						<Offset x="12" y="-8"/>
@@ -810,7 +805,7 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "specular";
+						self.cvar = "sunshafts";
 						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -818,7 +813,7 @@
 			</CheckButton>	
 			<CheckButton name="$parentFullScreenGlow" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSpecularLighting" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentSunshafts" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-8"/>
 					</Anchor>
 				</Anchors>

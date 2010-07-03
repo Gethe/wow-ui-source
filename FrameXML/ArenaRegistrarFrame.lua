@@ -101,6 +101,7 @@ function PVPBannerFrame_SetBorderColor ()
 end
 
 function PVPBannerFrame_OnShow (self)
+	SetPortraitToTexture(PVPBannerFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	PVPBannerFrameStandardEmblem.id = random(MAX_TEAM_EMBLEMS);
 	PVPBannerFrameStandardBorder.id = random(MAX_TEAM_BORDERS);
 
@@ -118,8 +119,7 @@ function PVPBannerFrame_OnShow (self)
 	end
 
 	PVPBannerFrameStandardEmblemWatermark:SetAlpha(0.4);
-	PVPBannerFrameStandardBanner:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize);
-	PVPBannerFrameStandardBorder:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize.."-Border-"..PVPBannerFrameStandardBorder.id);
+	PVPBannerFrameStandardBorder:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..PVPBannerFrameStandardBorder.id);
 	PVPBannerFrameStandardEmblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..PVPBannerFrameStandardEmblem.id);
 	PVPBannerFrameStandardEmblemWatermark:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..PVPBannerFrameStandardEmblem.id);
 end
@@ -157,7 +157,7 @@ function PVPBannerCustomization_Left (self)
 		else 
 			texture.id = texture.id - 1;
 		end
-		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize.."-Border-"..texture.id);
+		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..texture.id);
 	end
 	PlaySound("gsCharacterCreationLook");
 end
@@ -182,7 +182,7 @@ function PVPBannerCustomization_Right (self)
 		else
 			texture.id = texture.id + 1;
 		end
-		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize.."-Border-"..texture.id);
+		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..texture.id);
 	end
 	PlaySound("gsCharacterCreationLook");
 end

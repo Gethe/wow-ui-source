@@ -1858,8 +1858,8 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 	hasEditBox = 1,
 	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
 	maxLetters = 12,
-	OnAccept = function(self)
-		ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+	OnAccept = function(self, teamIndex)
+		ArenaTeamInviteByName(teamIndex, self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -1870,9 +1870,9 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 		end
 		self.editBox:SetText("");
 	end,
-	EditBoxOnEnterPressed = function(self)
+	EditBoxOnEnterPressed = function(self, teamIndex)
 		local parent = self:GetParent();
-		ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
+		ArenaTeamInviteByName(teamIndex, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2172,6 +2172,7 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, index)
 		AbandonSkill(index);
+		TradeSkillFrame_Hide();
 	end,
 	timeout = 60,
 	exclusive = 1,

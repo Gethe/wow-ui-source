@@ -591,5 +591,8 @@ function MainMenuExpBar_SetWidth(width)
 		xpos = xpos + divWidth;
 	end		
 	MainMenuExpBar:SetWidth(width);
+	if ExhaustionTick then
+		ExhaustionTick_OnEvent(ExhaustionTick, "UPDATE_EXHAUSTION");
+	end
 end
 

@@ -191,7 +191,8 @@ function AuraButton_Update(buttonName, index, filter)
 				buff:SetScript("OnUpdate", AuraButton_OnUpdate);
 			else
 				buff.timeLeft = expirationTime - GetTime();
-			end
+			end			
+			buff.expirationTime = expirationTime;	
 		else
 			buff.duration:Hide();
 			if ( buff.timeLeft ) then
@@ -229,7 +230,7 @@ function AuraButton_Update(buttonName, index, filter)
 	return 1;
 end
 
-function AuraButton_OnUpdate(self, elapsed)
+function AuraButton_OnUpdate(self)
 	local index = self:GetID();
 	if ( self.timeLeft < BUFF_WARNING_TIME ) then
 		self:SetAlpha(BuffFrame.BuffAlphaValue);
@@ -239,7 +240,7 @@ function AuraButton_OnUpdate(self, elapsed)
 
 	-- Update duration
 	securecall("AuraButton_UpdateDuration", self, self.timeLeft); -- Taint issue with SecondsToTimeAbbrev 
-	self.timeLeft = max(self.timeLeft - elapsed, 0);
+	self.timeLeft = max(self.expirationTime - GetTime(), 0);
 
 	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
 		return;

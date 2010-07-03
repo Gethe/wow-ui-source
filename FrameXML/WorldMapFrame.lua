@@ -105,7 +105,7 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapZoneMinimapDropDown_Update();
 	WorldMapLevelDropDown_Update();
 
-	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreatePlayerArrowFrame()
+	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreateArrowFrame()
 	PlayerArrowEffectFrame:SetAlpha(0.65);
 
 	-- font stuff for objectives text
@@ -1461,8 +1461,11 @@ function WorldMapFrame_ResetFrameLevels()
 	WorldMapBlobFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 11);
 	WorldMapButton:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 10);
 	WorldMapPOIFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
-	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreatePlayerArrowFrame()
+	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreateArrowFrame()
 	PlayerArrowEffectFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100);
+    for i=1, MAX_PARTY_MEMBERS do
+        _G["WorldMapParty"..i]:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100 - 1);
+    end
 end
 
 function WorldMapQuestShowObjectives_Toggle()
@@ -1694,9 +1697,6 @@ function WorldMapFrame_SelectQuestFrame(questFrame)
 			currentSelection.title:SetTextColor(color.r, color.g, color.b);
 		end
 		poiIcon:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
-	end
-	if ( WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE ) then
-		PlayerArrowEffectFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100);
 	end
 	WORLDMAP_SETTINGS.selectedQuest = questFrame;
 	WORLDMAP_SETTINGS.selectedQuestId = questFrame.questId;

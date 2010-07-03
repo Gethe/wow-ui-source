@@ -468,7 +468,7 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or UnitIsUnit("player", dropdownMenu.unit) or (server and server ~= "") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == PVPDropDown) and not PVPDropDown.online ) then
+			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( (dropdownMenu == ChannelRosterDropDown) ) then
 				if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
@@ -492,7 +492,7 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or dropdownMenu.name == UnitName("player") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == PVPDropDown) and not PVPDropDown.online ) then
+			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUEL" ) then
@@ -515,7 +515,7 @@ function UnitPopup_HideButtons ()
 			-- We don't want to show a menu option that will end up being blocked
 			if ( InCombatLockdown() or not issecure() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( (dropdownMenu == PVPDropDown) and not PVPDropDown.online ) then
+			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PROMOTE" ) then
@@ -535,19 +535,19 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_PROMOTE" ) then
-			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
+			if ( dropdownMenu.name == UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+			elseif ( PVP_ArenaTeamFrame():IsShown() and not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_KICK" ) then
-			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
+			if ( dropdownMenu.name == UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+			elseif ( PVP_ArenaTeamFrame():IsShown() and not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not PVPTeamDetails:IsShown() ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
@@ -931,7 +931,7 @@ function UnitPopup_OnUpdate (elapsed)
 	end
 
 	local isCaptain
-	if (PVPTeamDetails.team and IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+	if (PVP_GetSelectedArenaTeam() and IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
 		isCaptain = 1;
 	end
 
@@ -1137,21 +1137,21 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "GUILD_LEAVE" ) then
 		StaticPopup_Show("CONFIRM_GUILD_LEAVE", GetGuildInfo("player"));
 	elseif ( button == "TEAM_PROMOTE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, GetArenaTeam(PVPTeamDetails.team));
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, GetArenaTeam(PVP_GetSelectedArenaTeam()));
 		if ( dialog ) then
-			dialog.data = PVPTeamDetails.team;
+			dialog.data = PVP_GetSelectedArenaTeam();
 			dialog.data2 = name;
 		end
 	elseif ( button == "TEAM_KICK" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, GetArenaTeam(PVPTeamDetails.team) );
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, GetArenaTeam(PVP_GetSelectedArenaTeam()) );
 		if ( dialog ) then
-			dialog.data = PVPTeamDetails.team;
+			dialog.data = PVP_GetSelectedArenaTeam();
 			dialog.data2 = name;
 		end
 	elseif ( button == "TEAM_LEAVE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVPTeamDetails.team) );
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVP_GetSelectedArenaTeam()) );
 		if ( dialog ) then
-			dialog.data = PVPTeamDetails.team;
+			dialog.data = PVP_GetSelectedArenaTeam();
 		end
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();

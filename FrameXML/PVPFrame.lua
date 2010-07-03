@@ -1,524 +1,44 @@
+-- PVP Global Lua Constants
+
+
 MAX_ARENA_TEAMS = 3;
 MAX_ARENA_TEAM_MEMBERS = 10;
+MAX_ARENA_TEAM_MEMBERS_SHOWN = 6;
 MAX_ARENA_TEAM_NAME_WIDTH = 310;
 
-function PVPFrame_OnLoad(self)
-	PVPFrameLine1:SetAlpha(0.3);
-	PVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
-	PVPHonorHonorLabel:SetVertexColor(0.6, 0.6, 0.6);
-	PVPHonorTodayLabel:SetVertexColor(0.6, 0.6, 0.6);
-	PVPHonorYesterdayLabel:SetVertexColor(0.6, 0.6, 0.6);
-	PVPHonorLifetimeLabel:SetVertexColor(0.6, 0.6, 0.6);
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("ARENA_TEAM_UPDATE");
-	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
-	self:RegisterEvent("PLAYER_PVP_KILLS_CHANGED");
-	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
-	self:RegisterEvent("HONOR_CURRENCY_UPDATE");
-	--self:RegisterEvent("ARENA_SEASON_WORLD_STATE");
-end
 
-function PVPFrame_OnEvent(self, event, ...)
-	local arg1 = ...;
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		-- PVPFrame.season = GetCurrentArenaSeason();
-		PVPFrame_Update();
-		PVPHonor_Update();
-	elseif ( event == "PLAYER_PVP_KILLS_CHANGED" or event == "PLAYER_PVP_RANK_CHANGED") then
-		PVPHonor_Update();
-	elseif ( event == "ARENA_TEAM_UPDATE" ) then
-		PVPFrame_Update();
-		if ( PVPTeamDetails:IsShown() ) then
-			local team = GetArenaTeam(PVPTeamDetails.team);
-			if ( not team ) then
-				PVPTeamDetails:Hide();
-			end
-		end
-	--[[ elseif ( event == "ARENA_SEASON_WORLD_STATE" ) then
-		 PVPFrame.season = GetCurrentArenaSeason();
-		PVPFrame_Update(); ]]
-	elseif ( event == "HONOR_CURRENCY_UPDATE" ) then
-		PVPHonor_Update();
-	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
-		if ( arg1 ) then
-			if ( PVPTeamDetails:IsShown() ) then
-				ArenaTeamRoster(PVPTeamDetails.team);
-			end
-		elseif ( PVPTeamDetails.team ) then
-			PVPTeamDetails_Update(PVPTeamDetails.team);
-			PVPFrame_Update();
-		end
+MAX_ARENA_TEAM_MEMBER_WIDTH = 320;
+MAX_ARENA_TEAM_MEMBER_SCROLL_WIDTH = 300;
+
+NUM_DISPLAYED_BATTLEGROUNDS = 5;
+
+local PVPHONOR_TEXTURELIST = {};
+PVPHONOR_TEXTURELIST[1] = "Interface\\PVPFrame\\PvpBg-AlteracValley";
+PVPHONOR_TEXTURELIST[2] = "Interface\\PVPFrame\\PvpBg-WarsongGulch";
+PVPHONOR_TEXTURELIST[3] = "Interface\\PVPFrame\\PvpBg-ArathiBasin";
+PVPHONOR_TEXTURELIST[7] = "Interface\\PVPFrame\\PvpBg-EyeOfTheStorm";
+PVPHONOR_TEXTURELIST[9] = "Interface\\PVPFrame\\PvpBg-StrandOfTheAncients";
+PVPHONOR_TEXTURELIST[30] = "Interface\\PVPFrame\\PvpBg-IsleOfConquest";
+PVPHONOR_TEXTURELIST[32] = "Interface\\PVPFrame\\PvpRandomBg";
+
+
+
+
+---- NEW PVP FRAME FUNCTIONS
+---- NEW PVP FRAME FUNCTIONS
+
+
+function PVP_GetSelectedArenaTeam()
+	if PVPFrame:IsVisible() and PVPTeamManagementFrame.selectedTeam then
+		return PVPTeamManagementFrame.selectedTeam:GetID();
 	end
+	return nil;
 end
 
-function PVPFrame_OnShow()
-	PVPFrame_SetFaction();
-	PVPFrame_Update();
-	PVPMicroButton_SetPushed();
-	UpdateMicroButtons();
-	SetPortraitTexture(PVPFramePortrait, "player");
-	PlaySound("igCharacterInfoOpen");
+function PVP_ArenaTeamFrame()
+	return PVPTeamManagementFrame;
 end
 
-function PVPFrame_OnHide()
-	PVPTeamDetails:Hide();
-	PVPFrame_SetJustBG(false);
-	PVPMicroButton_SetNormal();
-	UpdateMicroButtons();
-	PlaySound("igCharacterInfoClose");
-end
-
-function PVPFrame_SetFaction()
-	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup ) then
-		PVPFrameHonorIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-		PVPFrameHonorIcon:Show();
-	end
-end
-
-function PVPFrame_Update()
-	for i=1, MAX_ARENA_TEAMS do
-		GetArenaTeam(i);
-	end	
-	PVPHonor_Update();
-	PVPTeam_Update();
-	
-	if ( GetCurrentArenaSeason() == 0 ) then	--We're in an off-season.
-		PVPFrame_SetToOffSeason();
-	elseif ( PVPFrameOffSeason:IsShown() ) then
-		PVPFrame_SetToInSeason();
-	end
-end
-
-function PVPTeam_Update()
-	-- Display Elements
-	local button, buttonName, highlight, data, standard, emblem, border;
-	-- Data Elements
-	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, playerPlayedPct, teamRank, playerRating;
-	local played, wins, loss;
-	local background = {};
-	local borderColor = {};
-	local emblemColor = {};
-	local ARENA_TEAMS = {};
-	ARENA_TEAMS[1] = {size = 2};
-	ARENA_TEAMS[2] = {size = 3};
-	ARENA_TEAMS[3] = {size = 5};
-
-	-- Sort teams by size
-
-	local count = 0;
-	local buttonIndex = 0;
-	for index, value in pairs(ARENA_TEAMS) do
-		for i=1, MAX_ARENA_TEAMS do
-			teamName, teamSize = GetArenaTeam(i);
-			if ( value.size == teamSize ) then
-				value.index = i;
-			end
-		end
-	end
-
-	-- fill out data
-	for index, value in pairs(ARENA_TEAMS) do
-		buttonIndex = buttonIndex + 1;
-		button = _G["PVPTeam"..buttonIndex];
-		if ( value.index ) then
-			-- Pull Values
-			teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating, background.r, background.g, background.b, emblem, emblemColor.r, emblemColor.g, emblemColor.b, border, borderColor.r, borderColor.g, borderColor.b = GetArenaTeam(value.index);
-
-			-- Set button elements to variables 
-			buttonName = "PVPTeam"..buttonIndex;
-			data = buttonName.."Data";
-			standard = buttonName.."Standard";
-
-			button:SetID(value.index);
-			
-			
-			if ( PVPFrame.seasonStats ) then
-				_G[data.."TypeLabel"]:SetText(ARENA_THIS_SEASON);
-				PVPFrameToggleButton:SetText(ARENA_THIS_WEEK_TOGGLE);
-				played = seasonTeamPlayed;
-				wins = seasonTeamWins;
-				playerPlayed = seasonPlayerPlayed;
-			else
-				_G[data.."TypeLabel"]:SetText(ARENA_THIS_WEEK);
-				PVPFrameToggleButton:SetText(ARENA_THIS_SEASON_TOGGLE);
-				played = teamPlayed;
-				wins = teamWins;
-				playerPlayed = playerPlayed;
-			end
-
-			loss = played - wins;
-			if ( played ~= 0 ) then
-				playerPlayedPct =  floor( ( playerPlayed / played ) * 100 );		
-			else
-				playerPlayedPct =  floor( ( playerPlayed / 1 ) * 100 );
-			end
-
-			-- Populate Data
-			_G[data.."Name"]:SetText(teamName);
-			_G[data.."Rating"]:SetText(teamRating);
-			_G[data.."Games"]:SetText(played);
-			_G[data.."Wins"]:SetText(wins);
-			_G[data.."Loss"]:SetText(loss);
-			
-			if ( PVPFrame.seasonStats ) then
-				_G[data.."Played"]:SetText(playerRating);
-				_G[data.."Played"]:SetVertexColor(1.0, 1.0, 1.0);
-				_G[data.."PlayedLabel"]:SetText(PVP_YOUR_RATING);
-			else
-				-- played %
-				if ( playerPlayedPct < 10 ) then
-					_G[data.."Played"]:SetVertexColor(1.0, 0, 0);
-				else
-					_G[data.."Played"]:SetVertexColor(1.0, 1.0, 1.0);
-				end
-				-- FIXME: Turn this into a localized format string
-				playerPlayedPct = format("%d", playerPlayedPct);
-				_G[data.."Played"]:SetText(playerPlayed.." ("..playerPlayedPct.."%)");
-				_G[data.."PlayedLabel"]:SetText(PLAYED);
-			end
-			
-
-			-- Set TeamSize Banner
-			_G[standard.."Banner"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
-			_G[standard.."Banner"]:SetVertexColor(background.r, background.g, background.b);
-			_G[standard.."Border"]:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
-			_G[standard.."Emblem"]:SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
-			if ( border ~= -1 ) then
-				_G[standard.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize.."-Border-"..border);
-			end
-			if ( emblem ~= -1 ) then
-				_G[standard.."Emblem"]:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
-			end
-
-			-- Set visual elements
-			_G[data]:Show();
-			button:SetAlpha(1);
-			_G[buttonName.."Highlight"]:SetAlpha(1);
-			_G[buttonName.."Highlight"]:SetBackdropBorderColor(1.0, 0.82, 0);
-			_G[standard]:SetAlpha(1);
-			_G[standard.."Border"]:Show();
-			_G[standard.."Emblem"]:Show();
-			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
-			_G[buttonName.."Background"]:SetAlpha(1);
-			_G[buttonName.."TeamType"]:Hide();
-		else
-			-- Set button elements to variables 
-			buttonName = "PVPTeam"..buttonIndex;
-			data = buttonName.."Data";
-			
-			button:SetID(0);
-
-			-- Set standard type
-			local standardBanner = _G[buttonName.."StandardBanner"];
-			standardBanner:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..value.size);
-			standardBanner:SetVertexColor(1, 1, 1);
-
-			-- Hide or Show items
-			button:SetAlpha(0.4);
-			_G[data]:Hide();
-			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
-			_G[buttonName.."Standard"]:SetAlpha(0.1);
-			_G[buttonName.."StandardBorder"]:Hide();
-			_G[buttonName.."StandardEmblem"]:Hide();
-			_G[buttonName.."TeamType"]:SetFormattedText(PVP_TEAMSIZE, value.size, value.size);
-			_G[buttonName.."TeamType"]:Show();		end
-			count = count +1;
-	end
-	if ( count == 3 ) then
-		PVPFrameToggleButton:Hide();
-	else
-		PVPFrameToggleButton:Show();
-	end
-
-end
-
-function PVPTeam_OnEnter(self)
-	if ( GetArenaTeam(self:GetID() ) ) then
-		_G[self:GetName().."Highlight"]:Show();
-		GameTooltip_AddNewbieTip(self, ARENA_TEAM, 1.0, 1.0, 1.0, CLICK_FOR_DETAILS, 1);
-	else
-		GameTooltip_AddNewbieTip(self, ARENA_TEAM, 1.0, 1.0, 1.0, ARENA_TEAM_LEAD_IN, 1);
-	end		
-end
-
-function PVPTeam_OnLeave(self)
-	_G[self:GetName().."Highlight"]:Hide();	
-	GameTooltip:Hide();
-end
-
-function PVPTeamDetails_OnShow()
-	PlaySound("igSpellBookOpen");
-end
-
-function PVPTeamDetails_OnHide()
-	CloseArenaTeamRoster();
-	PlaySound("igSpellBookClose");
-end
-
-function PVPTeamDetails_Update(id)
-	local numMembers = GetNumArenaTeamMembers(id, 1);
-	local name, rank, level, class, online, played, win, loss, seasonPlayed, seasonWin, seasonLoss, rating;
-	local teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, personalRating  = GetArenaTeam(id);		
-	local button;
-	local teamIndex;
-
-	-- Display General Team Stats
-	PVPTeamDetailsName:SetText(teamName);
-	PVPTeamDetailsSize:SetFormattedText(PVP_TEAMSIZE, teamSize, teamSize);
-	PVPTeamDetailsRank:SetText(teamRank);
-	PVPTeamDetailsRating:SetText(teamRating);
-	
-	-- Tidy up team name display if it's too long - mostly for CN
-	PVPTeamDetailsName:SetWidth(0);
-	if ( PVPTeamDetailsName:GetWidth() > MAX_ARENA_TEAM_NAME_WIDTH ) then
-		PVPTeamDetailsName:SetWidth(MAX_ARENA_TEAM_NAME_WIDTH);
-	end
-	
-	-- Display General Team Data
-	if ( PVPTeamDetails.season ) then
-		PVPTeamDetailsFrameColumnHeader3.sortType = "seasonplayed";
-		PVPTeamDetailsFrameColumnHeader4.sortType = "seasonwon";
-		PVPTeamDetailsGames:SetText(seasonTeamPlayed);
-		PVPTeamDetailsWins:SetText(seasonTeamWins);
-		PVPTeamDetailsLoss:SetText(seasonTeamPlayed - seasonTeamWins);
-		PVPTeamDetailsStatsType:SetText(strupper(ARENA_THIS_SEASON));
-		PVPTeamDetailsToggleButton:SetText(ARENA_THIS_WEEK_TOGGLE);
-	else
-		PVPTeamDetailsFrameColumnHeader3.sortType = "played";
-		PVPTeamDetailsFrameColumnHeader4.sortType = "won";
-		PVPTeamDetailsGames:SetText(teamPlayed);
-		PVPTeamDetailsWins:SetText(teamWins);
-		PVPTeamDetailsLoss:SetText(teamPlayed - teamWins);
-		PVPTeamDetailsStatsType:SetText(strupper(ARENA_THIS_WEEK));
-		PVPTeamDetailsToggleButton:SetText(ARENA_THIS_SEASON_TOGGLE);
-	end
-
-	local nameText, classText, playedText, winLossWin, winLossLoss, ratingText;
-	local nameButton, classButton, playedButton, winLossButton;
-	-- Display Team Member Specific Info
-	local playedValue, winValue, lossValue, playedPct;
-	for i=1, MAX_ARENA_TEAM_MEMBERS, 1 do
-		button = _G["PVPTeamDetailsButton"..i];
-		if ( i > numMembers ) then
-			button:Hide();
-		else
-			
-			button.teamIndex = i;
-			-- Get Data
-			name, rank, level, class, online, played, win, seasonPlayed, seasonWin, rating = GetArenaTeamRosterInfo(id, i);
-			loss = played - win;
-			seasonLoss = seasonPlayed - seasonWin;
-			if ( class ) then
-				button.tooltip = LEVEL.." "..level.." "..class;
-			else
-				button.tooltip = LEVEL.." "..level;
-			end
-
-			-- Populate Data into the display, season or this week
-			if ( PVPTeamDetails.season ) then
-				playedValue = seasonPlayed;
-				winValue = seasonWin;
-				lossValue = seasonLoss;
-				teamPlayed = seasonTeamPlayed;
-			else
-				playedValue = played;
-				winValue = win;
-				lossValue = loss;
-				teamPlayed = teamPlayed;
-			end
-
-			if ( teamPlayed ~= 0 ) then
-				playedPct =  floor( ( playedValue / teamPlayed ) * 100 );		
-			else
-				playedPct =  floor( (playedValue / 1 ) * 100 );
-			end
-
-			if ( playedPct < 10 ) then
-				_G["PVPTeamDetailsButton"..i.."PlayedText"]:SetVertexColor(1.0, 0, 0);
-			else
-				_G["PVPTeamDetailsButton"..i.."PlayedText"]:SetVertexColor(1.0, 1.0, 1.0);
-			end
-			
-			playedPct = format("%d", playedPct);
-
-			_G["PVPTeamDetailsButton"..i.."Played"].tooltip = playedPct.."%";
-
-			nameText = _G["PVPTeamDetailsButton"..i.."NameText"];
-			classText = _G["PVPTeamDetailsButton"..i.."ClassText"];
-			playedText = _G["PVPTeamDetailsButton"..i.."PlayedText"]
-			winLossWin = _G["PVPTeamDetailsButton"..i.."WinLossWin"];
-			winLossLoss = _G["PVPTeamDetailsButton"..i.."WinLossLoss"];
-			ratingText = _G["PVPTeamDetailsButton"..i.."RatingText"];
-
-			--- Not needed after Arena Season 3 change.
-			nameButton = _G["PVPTeamDetailsButton"..i.."Name"];
-			classButton = _G["PVPTeamDetailsButton"..i.."Class"];
-			playedButton = _G["PVPTeamDetailsButton"..i.."Played"]
-			winLossButton = _G["PVPTeamDetailsButton"..i.."WinLoss"];
-
-			nameText:SetText(name);
-			classText:SetText(class);
-			playedText:SetText(playedValue);
-			winLossWin:SetText(winValue)
-			winLossLoss:SetText(lossValue);
-			ratingText:SetText(rating);
-		
-			-- Color Entries based on Online status
-			local r, g, b;
-			if ( online ) then
-				if ( rank > 0 ) then
-					r = 1.0;
-					g = 1.0;
-					b = 1.0;
-				else
-					r = 1.0;
-					g = 0.82;
-					b = 0.0;
-				end
-			else
-				r = 0.5;
-				g = 0.5;
-				b = 0.5;
-			end
-
-			nameText:SetTextColor(r, g, b);
-			classText:SetTextColor(r, g, b);
-			playedText:SetTextColor(r, g, b);
-			winLossWin:SetTextColor(r, g, b);
-			_G["PVPTeamDetailsButton"..i.."WinLoss-"]:SetTextColor(r, g, b);
-			winLossLoss:SetTextColor(r, g, b);
-			ratingText:SetTextColor(r, g, b);
-
-			button:Show();
-
-			-- Highlight the correct who
-			if ( GetArenaTeamRosterSelection(id) == i ) then
-				button:LockHighlight();
-			else
-				button:UnlockHighlight();
-			end
-		end
-		
-	end
-
-
-end
-
-function PVPTeamDetailsToggleButton_OnClick()
-	if ( PVPTeamDetails.season ) then
-		PVPTeamDetails.season = nil;
-	else
-		PVPTeamDetails.season = 1;		
-	end
-	PVPTeamDetails_Update(PVPTeamDetails.team);
-end
-
-function PVPFrameToggleButton_OnClick()
-	if ( PVPFrame.seasonStats ) then
-		PVPFrame.seasonStats = nil;
-	else
-		PVPFrame.seasonStats = 1;		
-	end
-	PVPTeam_Update();
-end
-						
-
-function PVPTeamDetailsButton_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		PVPTeamDetails.previousSelectedTeamMember = PVPTeamDetails.selectedTeamMember;
-		PVPTeamDetails.selectedTeamMember = self.teamIndex;
-		SetArenaTeamRosterSelection(PVPTeamDetails.team, PVPTeamDetails.selectedTeamMember);
-		PVPTeamDetails_Update(PVPTeamDetails.team);
-	else
-		local name, rank, level, class, online = GetArenaTeamRosterInfo(PVPTeamDetails.team, self.teamIndex);
-		PVPFrame_ShowDropdown(name, online);
-	end
-end
-
-function PVPDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "TEAM", nil, PVPDropDown.name);
-end
-
-function PVPFrame_ShowDropdown(name, online)
-	HideDropDownMenu(1);
-	
-	if ( not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
-		if ( online ) then
-			PVPDropDown.initialize = PVPDropDown_Initialize;
-			PVPDropDown.displayMode = "MENU";
-			PVPDropDown.name = name;
-			PVPDropDown.online = online;
-			ToggleDropDownMenu(1, nil, PVPDropDown, "cursor");
-		end
-	else
-		PVPDropDown.initialize = PVPDropDown_Initialize;
-		PVPDropDown.displayMode = "MENU";
-		PVPDropDown.name = name;
-		PVPDropDown.online = online;
-		ToggleDropDownMenu(1, nil, PVPDropDown, "cursor");
-	end
-end
-
-function PVPStandard_OnLoad(self)
-	self:SetAlpha(0.1);
-end
-
-function PVPTeam_OnClick(self)
-	local id = self:GetID();
-
-	local teamName, teamSize = GetArenaTeam(id);
-	if ( not teamName ) then
-		return;
-	else
-		if ( PVPTeamDetails:IsShown() and id == PVPTeamDetails.team ) then
-			PVPTeamDetails:Hide();
-		else
-			PVPTeamDetails.team = id;
-			ArenaTeamRoster(id);
-			PVPTeamDetails_Update(id);
-			PVPTeamDetails:Show();
-		end
-	end
-end
-
-function PVPTeam_OnMouseDown(self)
-	if ( GetArenaTeam(self:GetID()) and (not self.isDown) ) then
-		self.isDown = true;
-		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint();
-		self:SetPoint(point, relativeTo, relativePoint, offsetX-2, offsetY-2);
-	end
-end
-function PVPTeam_OnMouseUp(self)
-	--Note that this function is also called OnShow. Make sure it always checks if it was previously down.
-	if ( GetArenaTeam(self:GetID()) and (self.isDown) ) then
-		self.isDown = false;
-		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint();
-		self:SetPoint(point, relativeTo, relativePoint, offsetX+2, offsetY+2);
-	end
-end
-
--- PVP Honor Data
-function PVPHonor_Update()
-	local hk, cp, dk, contribution, rank, highestRank, rankName, rankNumber;
-	
-	-- Yesterday's values
-	hk, contribution = GetPVPYesterdayStats();
-	PVPHonorYesterdayKills:SetText(hk);
-	PVPHonorYesterdayHonor:SetText(contribution);
-
-	-- Lifetime values
-	hk, contribution =  GetPVPLifetimeStats();
-	PVPHonorLifetimeKills:SetText(hk);
-	PVPFrameHonorPoints:SetText(GetHonorCurrency());
-	PVPFrameArenaPoints:SetText(GetArenaCurrency())	
-	
-	-- Today's values
-	hk, cp = GetPVPSessionStats();
-	PVPHonorTodayKills:SetText(hk);
-	PVPHonorTodayHonor:SetText(cp);
-	PVPHonorTodayHonor:SetHeight(14);
-end
 
 function PVPMicroButton_SetPushed()
 	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 5, -31);
@@ -530,66 +50,792 @@ function PVPMicroButton_SetNormal()
 	PVPMicroButtonTexture:SetAlpha(1.0);
 end
 
-function PVPFrame_SetToOffSeason()
-	PVPTeam1:Hide();
-	PVPTeam1Standard:Hide();
-	PVPTeam2:Hide();
-	PVPTeam2Standard:Hide();
-	PVPTeam3:Hide();
-	PVPTeam3Standard:Hide();
-	
-	PVPFrameBlackFilter:Show();
-	
-	PVPFrameOffSeason:Show();
-	
-	local previousArenaSeason = GetPreviousArenaSeason();
-	PVPFrameOffSeasonText:SetText(format(ARENA_OFF_SEASON_TEXT, previousArenaSeason, previousArenaSeason+1));
-end
-
-function PVPFrame_SetToInSeason()
-	PVPTeam1:Show();
-	PVPTeam1Standard:Show();
-	PVPTeam2:Show();
-	PVPTeam2Standard:Show();
-	PVPTeam3:Show();
-	PVPTeam3Standard:Show();
-	
-	PVPFrameBlackFilter:Hide();
-	
-	PVPFrameOffSeason:Hide();
-end
 
 function TogglePVPFrame()
-	if ( PVPFrame_IsJustBG() ) then
-		PVPFrame_SetJustBG(false);
+	if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
+			ToggleFrame(PVPFrame);
+	end
+end
+
+
+function PVPFrame_OnShow(self)
+	PVPMicroButton_SetPushed();
+	UpdateMicroButtons();
+	PlaySound("igCharacterInfoOpen");
+	if (self.lastSelectedTab) then
+		PVPFrame_TabClicked(self.lastSelectedTab);	
+	end
+end
+
+function PVPFrame_OnHide()
+	PVPMicroButton_SetNormal();
+	UpdateMicroButtons();
+	PlaySound("igCharacterInfoClose");
+end
+
+
+
+function PVPFrame_OnLoad(self)
+	PanelTemplates_SetNumTabs(self, 3)
+	PVPFrame_TabClicked(PVPFrameTab1);				
+	SetPortraitToTexture(PVPFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
+	PVPHonorFrameBgButton1:Click();	
+	self:RegisterEvent("HONOR_CURRENCY_UPDATE");	
+end
+
+function PVPFrame_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "HONOR_CURRENCY_UPDATE" ) then
+		PVPFrame_UpdateCurrency(self);
+	end
+end
+
+
+
+function PVPFrame_UpdateCurrency(self, value)
+	local currency = 0;
+	
+	if value then
+		currency = value
 	else
-		if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
-			ToggleFrame(PVPParentFrame);
+		local index = self.lastSelectedTab:GetID()	
+		if index == 1 then -- Honor Page	
+			currency = GetHonorCurrency();
+		elseif index == 2 then -- Conquest 
+			currency = GetArenaCurrency();
+		elseif index == 3 then -- Arena Management
+			currency = GetArenaCurrency();
+		end
+	end
+	-- if currency > 999 then
+		-- PVPFrameTypeValue:SetFormattedText( "%d,%03d", floor(currency/1000),mod(currency, 1000));
+	-- else
+		PVPFrameTypeValue:SetText(currency);
+	-- end
+end
+
+
+
+function PVPFrame_JoinClicked(self, isParty)
+	local tabID =  PVPFrame.lastSelectedTab:GetID();
+	if tabID == 1 then --Honor BGs
+		JoinBattlefield(0, isParty);
+	elseif tabID == 2 then
+		if PVPConquestFrame.mode == "Arena" then
+		--	JoinBattlefield(1, 1, 1);
+		--else -- rated bg
+		end
+	elseif tabID == 3 then	
+		StaticPopup_Show("ADD_TEAMMEMBER", nil, nil, PVPTeamManagementFrame.selectedTeam:GetID());
+	end
+end
+
+function PVPFrame_TabClicked(self)
+	local index = self:GetID()	
+	PanelTemplates_SetTab(self:GetParent(), index);
+	self:GetParent().lastSelectedTab = self;
+	PVPFrameRightButton:Hide();
+	PVPFrame.panel1:Hide();	
+	PVPFrame.panel2:Hide();	
+	PVPFrame.panel3:Hide();	
+	PVPFrameTitleText:SetText(self:GetText());	
+	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_BUTTON_OFFSET);		
+	PVPFrame.topInset:Hide();
+	local currency = 0;
+	
+	if index == 1 then -- Honor Page	
+		PVPFrame.panel1:Show();
+		PVPFrameRightButton:Show();
+		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
+		PVPFrameLeftButton:Enable();
+		local factionGroup = UnitFactionGroup("player");
+		PVPFrameTypeLable:SetText(HONOR);
+		PVPFrameTypeLable:SetPoint("TOPRIGHT", -180, -38);
+		PVPFrameConquestBar:Hide();
+		PVPFrameTypeIcon:SetTexCoord(0.0, 0.58, 0, 0.58);
+		PVPFrameTypeIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+		currency = GetHonorCurrency();
+	elseif index == 2 then -- Conquest 
+		PVPFrame.panel2:Show();	
+		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
+		PVPFrameLeftButton:Enable();
+		PVPFrameTypeLable:SetText(PVP_CONQUEST);
+		PVPFrameTypeLable:SetPoint("TOPRIGHT", -195, -38);
+		PVPFrameConquestBar:Show();
+		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
+		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
+		currency = GetArenaCurrency();
+	elseif index == 3 then -- Arena Management
+		PVPFrameLeftButton:SetText(ADDMEMBER_TEAM);
+		PVPFrameLeftButton:Disable();
+		PVPFrame.panel3:Show();	
+		PVPFrameTypeLable:SetText(PVP_CONQUEST);
+		PVPFrameTypeLable:SetPoint("TOPRIGHT", -195, -38);
+		PVPFrameConquestBar:Show();		
+		PVPFrame.topInset:Show();
+		PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -281);
+		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
+		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
+		currency = GetArenaCurrency();
+	end
+	
+	PVPFrame_UpdateCurrency(self, currency);
+end
+
+
+
+-- Honor Frame functions (the new BG page)
+-- Honor Frame functions (the new BG page)
+
+function PVPHonor_UpdateBattlegrounds()
+	local frame;
+	local localizedName, canEnter, isHoliday;
+	local tempString, BGindex, isBig;
+	
+	local offset = FauxScrollFrame_GetOffset(PVPHonorFrameTypeScrollFrame);
+	local currentFrameNum = -offset + 1;
+	local numBGs = 0;
+	
+	for i=1,GetNumBattlegroundTypes() do
+		frame = _G["PVPHonorFrameBgButton"..currentFrameNum];
+		
+		localizedName, canEnter, isHoliday = GetBattlegroundInfo(i);
+		tempString = localizedName;
+		if ( localizedName and canEnter ) then
+			if ( frame ) then
+				frame.BGindex = i;
+				frame.localizedName = localizedName;
+				if ( not PVPHonorFrame.selectedBG ) then
+					PVPHonorFrame.selectedBG = i;
+				end
+				frame:Enable();
+				if ( isHoliday ) then
+					tempString = tempString.." ("..BATTLEGROUND_HOLIDAY..")";
+				end
+			
+				frame.title:SetText(tempString);
+				frame:Show();
+				if ( i == PVPHonorFrame.selectedBG ) then
+					frame:LockHighlight();
+				else
+					frame:UnlockHighlight();
+				end
+			end
+			currentFrameNum = currentFrameNum + 1;
+			numBGs = numBGs + 1;
+		end
+	end
+	
+	if ( currentFrameNum <= NUM_DISPLAYED_BATTLEGROUNDS ) then
+		isBig = true;	--Espand the highlight to cover where the scroll bar usually is.
+	end
+	
+	for i=1,NUM_DISPLAYED_BATTLEGROUNDS do
+		frame = _G["PVPHonorFrameBgButton"..i];
+		if ( isBig ) then
+			frame:SetWidth(315);
+		else
+			frame:SetWidth(295);
+		end
+	end
+	
+	for i=currentFrameNum,NUM_DISPLAYED_BATTLEGROUNDS do
+		frame = _G["PVPHonorFrameBgButton"..i];
+		frame:Hide();
+	end
+	
+	PVPHonor_UpdateQueueStatus();
+	
+	PVPHonorFrame_UpdateGroupAvailable();
+	FauxScrollFrame_Update(PVPHonorFrameTypeScrollFrame, numBGs, NUM_DISPLAYED_BATTLEGROUNDS, 16);
+end
+
+function PVPHonor_UpdateInfo(BGindex)
+	if ( type(BGindex) ~= "number" ) then
+		BGindex = PVPHonorFrame.selectedBG;
+	end
+	
+	local BGname, canEnter, isHoliday, isRandom, BattleGroundID = GetBattlegroundInfo(BGindex);
+
+	
+	if(PVPHONOR_TEXTURELIST[BattleGroundID]) then
+		PVPHonorFrameBGTex:SetTexture(PVPHONOR_TEXTURELIST[BattleGroundID]);
+	end
+	
+	if ( isRandom or isHoliday ) then
+		PVPHonor_UpdateRandomInfo();
+		PVPHonorFrameInfoScrollFrameChildFrameRewardsInfo:Show();
+		PVPHonorFrameInfoScrollFrameChildFrameDescription:Hide();
+	else
+		local mapName, mapDescription, maxGroup = GetBattlefieldInfo();
+		if ( mapDescription ~= PVPHonorFrameInfoScrollFrameChildFrameDescription:GetText() ) then
+			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText(mapDescription);
+			PVPHonorFrameInfoScrollFrame:SetVerticalScroll(0);
+		end
+		
+		PVPHonorFrameInfoScrollFrameChildFrameRewardsInfo:Hide();
+		PVPHonorFrameInfoScrollFrameChildFrameDescription:Show();
+	end
+
+end
+
+function PVPHonor_GetSelectedBattlegroundInfo()
+	return GetBattlegroundInfo(PVPHonorFrame.selectedBG);
+end
+
+function PVPHonor_UpdateRandomInfo()
+	PVPQueue_UpdateRandomInfo(PVPHonorFrameInfoScrollFrameChildFrameRewardsInfo, PVPHonor_GetSelectedBattlegroundInfo);
+end
+
+function PVPHonor_UpdateQueueStatus()
+	local queueStatus, queueMapName, queueInstanceID, frame;
+	for i=1, NUM_DISPLAYED_BATTLEGROUNDS do
+		frame = _G["PVPHonorFrameBgButton"..i];
+		frame.status:Hide();
+	end
+	local factionTexture = "Interface\\PVPFrame\\PVP-Currency-"..UnitFactionGroup("player");
+	for i=1, MAX_BATTLEFIELD_QUEUES do
+		queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
+		if ( queueStatus ~= "none" ) then
+			for j=1, NUM_DISPLAYED_BATTLEGROUNDS do
+				local frame = _G["PVPHonorFrameBgButton"..j];
+				if ( frame.localizedName == queueMapName ) then
+					if ( queueStatus == "queued" ) then
+						frame.status.texture:SetTexture(factionTexture);
+						frame.status.texture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
+						frame.status.tooltip = BATTLEFIELD_QUEUE_STATUS;
+						frame.status:Show();
+					elseif ( queueStatus == "confirm" ) then
+						frame.status.texture:SetTexture("Interface\\CharacterFrame\\UI-StateIcon");
+						frame.status.texture:SetTexCoord(0.45, 0.95, 0.0, 0.5);
+						frame.status.tooltip = BATTLEFIELD_CONFIRM_STATUS;
+						frame.status:Show();
+					end
+				end
+			end
 		end
 	end
 end
 
-function PVPFrame_IsJustBG()
-	return PVPParentFrame.justBG;
+function PVPHonorFrame_ResetInfo()	
+	RequestBattlegroundInstanceInfo(PVPHonorFrame.selectedBG);
+	
+	PVPHonor_UpdateInfo();
 end
 
-function PVPFrame_SetJustBG(justBG)
-	local pvpParentFrame = PVPParentFrame;
-	if ( justBG ) then
-		pvpParentFrame.justBG = true;
-		pvpParentFrame.savedSelectedTab = PanelTemplates_GetSelectedTab(pvpParentFrame);
-		PVPParentFrameTab2:Click();
-		PVPParentFrameTab1:Hide();
-		PVPParentFrameTab2:Hide();
-		UpdateMicroButtons();
-	else
-		pvpParentFrame.justBG = false;
-		if ( pvpParentFrame.savedSelectedTab ) then
-			_G["PVPParentFrameTab"..pvpParentFrame.savedSelectedTab]:Click();
-			pvpParentFrame.savedSelectedTab = nil;
+function PVPHonorButton_OnClick(self)
+	local offset = FauxScrollFrame_GetOffset(PVPHonorFrameTypeScrollFrame);
+	local id = self:GetID() + offset;
+
+	for i=1,NUM_DISPLAYED_BATTLEGROUNDS do
+		if ( id == i + offset ) then
+			_G["PVPHonorFrameBgButton"..i]:LockHighlight();
+		else
+			_G["PVPHonorFrameBgButton"..i]:UnlockHighlight();
 		end
-		CloseBattlefield();
-		PVPBattlegroundFrame_UpdateVisible();
-		UpdateMicroButtons();
+	end
+	
+	if ( self.BGindex == PVPHonorFrame.selectedBG ) then
+		return;
+	end
+	
+	PVPHonorFrame.selectedBG = self.BGindex;
+	
+	PVPHonorFrame_ResetInfo();
+	
+	PVPHonorFrame_UpdateJoinButton();
+end
+
+function PVPHonorFrame_UpdateJoinButton()
+	local mapName, mapDescription, maxGroup = GetBattlefieldInfo();	
+	if ( maxGroup and maxGroup == 5 ) then
+		PVPFrameRightButton:SetText(JOIN_AS_PARTY);
+	else
+		PVPFrameRightButton:SetText(JOIN_AS_GROUP);		
 	end
 end
+
+function PVPHonorFrameJoinButton_OnClick(self)
+	local joinAsGroup;
+	if ( self == PVPHonorFrameGroupJoinButton ) then
+		joinAsGroup = true;
+	end
+	
+	JoinBattlefield(0, joinAsGroup);
+end
+
+function PVPHonorFrame_OnLoad(self)
+	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
+	self:RegisterEvent("NPC_PVPQUEUE_ANYWHERE");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	
+	PVPHonorFrame_UpdateVisible();	
+	PVPHonorFrameBgButton1:Click();
+end
+
+function PVPHonorFrame_OnEvent(self, event, ...)
+	if ( event == "PVPQUEUE_ANYWHERE_SHOW" or event == "NPC_PVPQUEUE_ANYWHERE") then
+		self.currentData = true;
+		PVPHonor_UpdateBattlegrounds();
+		if ( self.selectedBG ) then
+			PVPHonor_UpdateInfo();
+		end
+		if ( event == "NPC_PVPQUEUE_ANYWHERE" ) then
+			--ShowUIPanel(PVPParentFrame);
+			--PVPFrame_SetJustBG(true);
+		end
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+		PVPHonor_UpdateQueueStatus();
+	elseif ( event == "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE" or event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		
+		FauxScrollFrame_SetOffset(PVPHonorFrameTypeScrollFrame, 0);
+		FauxScrollFrame_OnVerticalScroll(PVPHonorFrameTypeScrollFrame, 0, 16, PVPHonor_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
+		if ( self.selectedBG ) then
+			PVPHonorFrame_ResetInfo();
+			PVPHonorFrame_UpdateJoinButton();
+		end
+		PVPHonorFrame_UpdateVisible();
+	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+		PVPHonorFrame_UpdateGroupAvailable();
+	end
+end
+
+function PVPHonorFrame_OnShow(self)	
+	SortBGList();
+	PVPHonor_UpdateBattlegrounds();
+	RequestBattlegroundInstanceInfo(self.selectedBG or 1);
+end
+
+function PVPHonorFrame_OnHide(self)
+	CloseBattlefield();
+end
+
+function PVPHonorFrame_UpdateVisible()
+	-- for i=1, GetNumBattlegroundTypes() do
+		-- local _, canEnter = GetBattlegroundInfo(i);
+		-- if ( canEnter ) then
+			-- if ( not PVPFrame_IsJustBG() ) then
+				-- PVPParentFrameTab1:Show();
+				-- PVPParentFrameTab2:Show();
+			-- end
+			-- return;
+		-- end
+	-- end
+	-- PVPParentFrameTab1:Click();
+	-- PVPParentFrameTab1:Hide();
+	-- PVPParentFrameTab2:Hide();
+end
+
+function PVPHonorFrame_UpdateGroupAvailable()
+	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
+		-- If this is true then can join as a group
+		PVPFrameRightButton:Enable();
+	else
+		PVPFrameRightButton:Disable();
+	end
+end
+
+
+
+-----------------------------------
+---- PVPConquestFrame fUNCTIONS ---
+-----------------------------------
+
+function PVPConquestFrame_OnLoad(self)
+	
+	self.arenaButton.title:SetText(ARENA);
+	self.ratedbgButton.title:SetText(PVP_RATED_BATTLEGROUND);		
+	self.arenaButton:SetWidth(321);
+	self.ratedbgButton:SetWidth(321);
+	
+	
+	local factionGroup = UnitFactionGroup("player");
+	self.infoButton.factionIcon = _G["PVPConquestFrameInfoButtonInfoIcon"..factionGroup];
+	self.infoButton.factionIcon:Show();
+end
+
+
+
+function PVPConquestFrame_OnShow(self)
+	if not self.clickedButton then
+		self.clickedButton = self.arenaButton;
+	end
+	self.clickedButton:Click();
+end
+
+function PVPConquestFrame_ButtonClicked(button)
+	if button:GetID() == 1 then --Arena
+		PVPConquestFrame.mode = "Arena";
+		button:LockHighlight();
+		PVPConquestFrame.ratedbgButton:UnlockHighlight();
+	else -- Rated BG	
+		PVPConquestFrame.mode = "Arena";
+		button:LockHighlight();
+		PVPConquestFrame.arenaButton:UnlockHighlight();
+	end
+end
+
+
+--  PVPTeamManagementFrame
+--  PVPTeamManagementFrame
+
+function PVPTeamManagementFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("ARENA_TEAM_UPDATE");
+	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
+	
+		for i=1, MAX_ARENA_TEAM_MEMBERS_SHOWN do
+			button = _G["PVPTeamManagementFrameTeamMemberButton"..i];
+			if mod(i, 2) == 0 then 
+				button.BG:Show();
+			else		
+				button.BG:Hide();
+			end
+		end
+end
+
+
+
+function PVPTeamManagementFrame_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "ARENA_TEAM_UPDATE"  or  event == "PLAYER_ENTERING_WORLD" ) then
+		PVPTeamManagementFrame_UpdateTeams(self)
+	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
+		PVPTeamManagementFrame_UpdateTeamInfo(self, self.selectedTeam);
+	end
+end
+
+
+
+function PVPTeamManagementFrame_ToggleSeasonal(self)
+	local parent  = self:GetParent();
+	parent.seasonStats = not parent.seasonStats;	
+	PVPTeamManagementFrame_UpdateTeamInfo(parent, parent.selectedTeam);
+end
+
+function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
+	if not  flagbutton  then 
+		if self.selectedTeam then
+			flagbutton = self.selectedTeam;
+		else 
+			self.invalidTeam:Hide();
+			return;
+		end
+	end
+	flagbutton.Glow:Show();	
+	flagbutton.GlowHeader:Show();
+	flagbutton.NormalHeader:Hide();
+	flagbutton.title:SetFontObject("GameFontNormalSmall");
+	
+	self.selectedTeam = flagbutton;
+	local teamIndex = flagbutton:GetID()
+	ArenaTeamRoster(teamIndex);
+	
+	if  IsArenaTeamCaptain(teamIndex) then	
+		PVPFrameLeftButton:Enable();
+	else	
+		PVPFrameLeftButton:Disable();
+	end
+	
+	-- Pull Values
+	teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, 
+	seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating = GetArenaTeam(teamIndex);
+
+	self.TeamData:Show()
+	local TeamDataName = self.TeamData:GetName();
+
+	if ( self.seasonStats ) then
+		_G[TeamDataName.."TypeLabel"]:SetText(ARENA_THIS_SEASON);
+		played = seasonTeamPlayed;
+		wins = seasonTeamWins;
+		playerPlayed = seasonPlayerPlayed;
+		PvP_WeeklyText:SetText(ARENA_SEASON_STATS);
+	else
+		_G[TeamDataName.."TypeLabel"]:SetText(ARENA_THIS_WEEK);
+		played = teamPlayed;
+		wins = teamWins;
+		playerPlayed = playerPlayed;
+		PvP_WeeklyText:SetText(ARENA_WEEKLY_STATS);
+	end
+
+	loss = played - wins;
+	-- Populate Data
+	_G[TeamDataName.."Name"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."  "..teamName);
+	_G[TeamDataName.."Rating"]:SetText(teamRating);
+	_G[TeamDataName.."Games"]:SetText(played);
+	_G[TeamDataName.."Wins"]:SetText(wins);
+	_G[TeamDataName.."Loss"]:SetText(loss);	
+	 _G[TeamDataName.."Played"]:SetText(playerPlayed);
+	 
+	 
+	--Show teammates at teamIndex
+	local numMembers = GetNumArenaTeamMembers(teamIndex, 1);
+	local scrollTeammates =  numMembers > MAX_ARENA_TEAM_MEMBERS_SHOWN;
+	local TeammateButtonName = self:GetName().."TeamMemberButton";
+	local scrollOffset =  FauxScrollFrame_GetOffset(self.teamMemberScrollFrame);
+	
+	
+	
+	if ( teamSize > numMembers ) then
+		self.invalidTeam:Show();
+		if IsArenaTeamCaptain(teamIndex) then
+			self.invalidTeam.text:SetText(ARENA_CAPTAIN_INVALID_TEAM);
+		else
+			self.invalidTeam.text:SetText(ARENA_NOT_CAPTAIN_INVALID_TEAM);
+		end		
+	else
+		self.invalidTeam:Hide();
+	end
+	
+	local nameText, classText, playedText, winLossWin, winLossLoss, ratingText;
+	-- Display Team Member Specific Info
+	local playedValue, winValue, lossValue;
+	for i=1, MAX_ARENA_TEAM_MEMBERS_SHOWN, 1 do
+		button = _G[TeammateButtonName..i];		
+		if  scrollTeammates then
+			button:SetWidth(MAX_ARENA_TEAM_MEMBER_SCROLL_WIDTH);
+		else
+			button:SetWidth(MAX_ARENA_TEAM_MEMBER_WIDTH);		
+		end	
+		
+		
+		if ( i > numMembers ) then
+			--button:Hide();
+			button:Disable();
+			_G[TeammateButtonName..i.."NameText"]:SetText("");
+			--classText = _G[TeammateButtonName..i.."ClassText"];  ADD class color and Icon
+			_G[TeammateButtonName..i.."PlayedText"]:SetText("");
+			_G[TeammateButtonName..i.."WinLossText"]:SetText("");
+			_G[TeammateButtonName..i.."RatingText"]:SetText("");
+			_G[TeammateButtonName..i.."ClassIcon"]:Hide();
+			_G[TeammateButtonName..i.."CaptainIcon"]:Hide();
+		else
+			button:Enable();
+			button.playerIndex = i+scrollOffset;
+			-- Get Data
+			name, rank, level, class, online, played, win, seasonPlayed, seasonWin, rating = GetArenaTeamRosterInfo(teamIndex, i+scrollOffset);
+			loss = played - win;
+			seasonLoss = seasonPlayed - seasonWin;
+
+			-- Populate Data into the display, season or this week
+			if ( self.seasonStats ) then
+				playedValue = seasonPlayed;
+				winValue = seasonWin;
+				lossValue = seasonLoss;
+				teamPlayed = seasonTeamPlayed;
+			else
+				playedValue = played;
+				winValue = win;
+				lossValue = loss;
+				teamPlayed = teamPlayed;
+			end			
+			
+			nameText = _G[TeammateButtonName..i.."NameText"];
+			--classText = _G[TeammateButtonName..i.."ClassText"];  ADD class color and Icon
+			playedText = _G[TeammateButtonName..i.."PlayedText"]
+			winLossText = _G[TeammateButtonName..i.."WinLossText"];
+			ratingText = _G[TeammateButtonName..i.."RatingText"];			
+			if class then
+				_G[TeammateButtonName..i.."ClassIcon"]:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
+				_G[TeammateButtonName..i.."ClassIcon"]:Show();
+			else
+				_G[TeammateButtonName..i.."ClassIcon"]:Hide();
+			end
+			if  rank > 0 then
+				_G[TeammateButtonName..i.."CaptainIcon"]:Hide();
+			else
+				_G[TeammateButtonName..i.."CaptainIcon"]:Show();
+			end
+			
+			nameText:SetText(name);
+			--classText:SetText(class);
+			playedText:SetText(playedValue);
+			winLossText:SetText(winValue.."-"..lossValue);
+			ratingText:SetText(rating);
+		
+			-- Color Entries based on Online status
+			local r, g, b;
+			if ( online ) then
+				if ( rank > 0 ) then
+					r = 1.0;	g = 1.0;	b = 1.0;
+				else
+					r = 1.0;	g = 0.82;	b = 0.0;
+				end
+			else
+				r = 0.5;	g = 0.5;	b = 0.5;
+			end
+
+			nameText:SetTextColor(r, g, b);
+			playedText:SetTextColor(r, g, b);
+			winLossText:SetTextColor(r, g, b);
+			ratingText:SetTextColor(r, g, b);
+
+			button:Show();
+
+			-- Highlight the correct who
+			if ( GetArenaTeamRosterSelection(teamIndex) == i ) then
+				button:LockHighlight();
+			else
+				button:UnlockHighlight();
+			end
+		end		
+	end	 
+	
+	FauxScrollFrame_Update(self.teamMemberScrollFrame, numMembers, MAX_ARENA_TEAM_MEMBERS_SHOWN, 18);
+end
+
+
+function PVPTeamManagementFrame_TeamInfo_OnScroll()
+	PVPTeamManagementFrame_UpdateTeamInfo(PVPTeamManagementFrame, PVPTeamManagementFrame.selectedTeam);
+end
+
+
+function PVPTeamManagementFrame_FlagClicked(self)
+	local index = self:GetID();
+	if index < 0 then   -- Player clicked a flag that is not associated with a current team
+		-- Try to make a new Arena Team.
+			local teamSize = abs(index);
+			PVPBannerFrame.teamSize = teamSize;
+			ShowUIPanel(PVPBannerFrame);
+			PVPBannerFrameTitleText:SetText(_G["ARENA_"..teamSize.."V"..teamSize]);
+	else
+		if  self:GetParent().selectedTeam then
+			self:GetParent().selectedTeam.Glow:Hide();		
+			self:GetParent().selectedTeam.GlowHeader:Hide();
+			self:GetParent().selectedTeam.NormalHeader:Show();			
+			self:GetParent().selectedTeam.title:SetFontObject("GameFontHighlightSmall");	
+			HideUIPanel(PVPBannerFrame);
+		end
+		PVPTeamManagementFrame_UpdateTeamInfo(self:GetParent(), self);	
+		FauxScrollFrame_SetOffset(self:GetParent().teamMemberScrollFrame, 0);
+	end
+end
+
+
+function PVPTeamManagementFrame_UpdateTeams(self)
+		
+		self.defaultTeam = nil;
+		local bannerName = "";
+		local flagsList = {};
+		flagsList[2] = false;
+		flagsList[3] = false;
+		flagsList[5] = false;	
+		
+		local teamName, teamSize, teamRating, emblem, border;
+		local background = {}; 
+		local emblemColor = {} ;
+		local borderColor = {}; 		
+
+		for i=1, MAX_ARENA_TEAMS do
+			--the ammount of parameter this returns is absurd
+			teamName, teamSize, teamRating, _,  _,  _, _, _, _, _, _, 
+			background.r, background.g, background.b, 
+			emblem, emblemColor.r, emblemColor.g, emblemColor.b, 
+			border, borderColor.r, borderColor.g, borderColor.b 												= GetArenaTeam(i);			
+
+			if teamName then
+				flagsList[teamSize] = true;			
+				bannerName = self["flag"..teamSize]:GetName();
+				_G[bannerName]:Enable();
+				_G[bannerName]:SetID(i);
+				_G[bannerName.."Banner"]:SetVertexColor(background.r, background.g, background.b);
+				_G[bannerName.."Emblem"]:Show();
+				_G[bannerName.."Emblem"]:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
+				_G[bannerName.."Emblem"]:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
+				_G[bannerName.."Border"]:Show();
+				_G[bannerName.."Border"]:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );				
+				_G[bannerName.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
+				_G[bannerName.."Title"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."\n"..RATING..":  "..teamRating);
+				_G[bannerName.."Title"]:SetFontObject("GameFontHighlightSmall");
+				
+				if not self.defaultTeam then
+					self.defaultTeam =  _G[bannerName];	
+				end
+			end
+		end	
+	
+		for size, value in pairs(flagsList) do 
+			if  not value then 
+				local bannerName = self["flag"..size]:GetName();
+				_G[bannerName]:SetID(-size);
+				_G[bannerName.."Banner"]:SetVertexColor(1, 1, 1);
+				_G[bannerName.."Emblem"]:Hide();
+				_G[bannerName.."Border"]:Hide();
+				_G[bannerName.."Title"]:SetText(_G["ARENA_"..size.."V"..size]);
+				_G[bannerName.."Title"]:SetFontObject("GameFontHighlight");
+				_G[bannerName.."HeaderSelected"]:Hide();
+				_G[bannerName.."Header"]:Show();
+				_G[bannerName.."GlowBG"]:Hide();
+				if  self.selectedTeam == self["flag"..size] then
+					self.selectedTeam = nil;
+				end
+			end
+		end
+
+		self.noTeams:Hide();
+		if  self.selectedTeam then 
+			PVPTeamManagementFrame_UpdateTeamInfo(self, self.selectedTeam)
+		elseif  self.defaultTeam then 
+			PVPTeamManagementFrame_UpdateTeamInfo(self, self.defaultTeam)
+		else
+			--We have not arena teams
+			self.noTeams:Show();
+			self.noTeams:SetFrameLevel(self:GetFrameLevel() +3);			
+			FauxScrollFrame_Update(self.teamMemberScrollFrame, 0, MAX_ARENA_TEAM_MEMBERS_SHOWN, 18);
+		end	
+end
+
+
+function PVPTeamManagementFrame_OnShow(self)
+	PVPTeamManagementFrame_UpdateTeams(self)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function PVPTeamManagementFrame_DropDown_Initialize()
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "TEAM", nil, PVPTeamManagementFrameTeamDropDown.name);
+end
+
+function PVPTeamManagementFrame_ShowDropdown(name, online)
+	HideDropDownMenu(1);
+	
+	if ( not IsArenaTeamCaptain(PVPTeamManagementFrame.selectedTeam:GetID()) ) then
+		if ( online ) then
+			PVPTeamManagementFrameTeamDropDown.initialize = PVPTeamManagementFrame_DropDown_Initialize;
+			PVPTeamManagementFrameTeamDropDown.displayMode = "MENU";
+			PVPTeamManagementFrameTeamDropDown.name = name;
+			PVPTeamManagementFrameTeamDropDown.online = online;
+			ToggleDropDownMenu(1, nil, PVPTeamManagementFrameTeamDropDown, "cursor");
+		end
+	else
+		PVPTeamManagementFrameTeamDropDown.initialize = PVPTeamManagementFrame_DropDown_Initialize;
+		PVPTeamManagementFrameTeamDropDown.displayMode = "MENU";
+		PVPTeamManagementFrameTeamDropDown.name = name;
+		PVPTeamManagementFrameTeamDropDown.online = online;
+		ToggleDropDownMenu(1, nil, PVPTeamManagementFrameTeamDropDown, "cursor");
+	end
+end
+
+

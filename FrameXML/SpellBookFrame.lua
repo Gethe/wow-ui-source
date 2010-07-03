@@ -375,8 +375,8 @@ function SpellButton_OnEnter(self)
 end
 
 function SpellButton_OnClick(self, button) 
-	local id = SpellBook_GetSpellID(self);
-	if ( id > MAX_SPELLS ) then
+	local id, displayId, future = SpellBook_GetSpellID(self);
+	if ( id > MAX_SPELLS or future) then
 		return;
 	end
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
@@ -424,8 +424,8 @@ function SpellButton_OnModifiedClick(self, button)
 end
 
 function SpellButton_OnDrag(self) 
-	local id = SpellBook_GetSpellID(self);
-	if ( id > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() ) then
+	local id, displayID, future = SpellBook_GetSpellID(self);
+	if (not id or id > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or future) then
 		return;
 	end
 	self:SetChecked(0);
@@ -433,7 +433,7 @@ function SpellButton_OnDrag(self)
 end
 
 function SpellButton_UpdateSelection(self)
-	local temp, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	local temp, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
 	
 	local id, displayID = SpellBook_GetSpellID(self);
 	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (not displayID or displayID > (offset + numSpells)) ) then
@@ -458,10 +458,17 @@ function SpellButton_UpdateButton(self)
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 1;
 	end
-	local temp, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	local temp, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	SpellBookFrame.selectedSkillLineNumSpells = numSpells;
 	SpellBookFrame.selectedSkillLineOffset = offset;
+	SpellBookFrame.selectedSkillLineNumFutureSpells = numFutureSpells;
+	SpellBookFrame.selectedSkillLineFutureSpellsOffset = futureSpellsOffset;
+	
+	if (not self.SpellName.shadowX) then
+		self.SpellName.shadowX, self.SpellName.shadowY = self.SpellName:GetShadowOffset();
+	end
 
-	local id, displayID = SpellBook_GetSpellID(self);
+	local id, displayID, future = SpellBook_GetSpellID(self);
 	local name = self:GetName();
 	local iconTexture = _G[name.."IconTexture"];
 	local spellString = _G[name.."SpellName"];
@@ -470,7 +477,7 @@ function SpellButton_UpdateButton(self)
 	local autoCastableTexture = _G[name.."AutoCastable"];
 	local slotFrame = _G[name.."SlotFrame"];
 
-	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (not displayID or displayID > (offset + numSpells)) ) then
+	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and not displayID) then
 		self:Disable();
 		iconTexture:Hide();
 		spellString:Hide();
@@ -481,6 +488,13 @@ function SpellButton_UpdateButton(self)
 		self.shine = nil;
 		self:SetChecked(0);
 		slotFrame:Hide();
+		self.IconTextureBg:Hide();
+		self.SeeTrainerString:Hide();
+		self.RequiredLevelString:Hide();
+		self.UnlearnedFrame:Hide();
+		self.TrainFrame:Hide();
+		self.TrainTextBackground:Hide();
+		self.TrainBook:Hide();
 		return;
 	else
 		self:Enable();
@@ -500,16 +514,18 @@ function SpellButton_UpdateButton(self)
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 		self:SetChecked(0);
 		slotFrame:Hide();
+		self.IconTextureBg:Hide();
+		self.SeeTrainerString:Hide();
+		self.RequiredLevelString:Hide();
+		self.UnlearnedFrame:Hide();
+		self.TrainFrame:Hide();
+		self.TrainTextBackground:Hide();
+		self.TrainBook:Hide();
 		return;
 	end
 
 	local start, duration, enable = GetSpellCooldown(id, SpellBookFrame.bookType);
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
-	if ( enable == 1 ) then
-		iconTexture:SetVertexColor(1.0, 1.0, 1.0);
-	else
-		iconTexture:SetVertexColor(0.4, 0.4, 0.4);
-	end
 
 	local autoCastAllowed, autoCastEnabled = GetSpellAutocast(id, SpellBookFrame.bookType);
 	if ( autoCastAllowed ) then
@@ -546,14 +562,62 @@ function SpellButton_UpdateButton(self)
 	iconTexture:SetTexture(texture);
 	spellString:SetText(spellName);
 	subSpellString:SetText(subSpellName);
-	if ( subSpellName ~= "" ) then
-		spellString:SetPoint("LEFT", self, "RIGHT", 8, 4);
-	else
-		spellString:SetPoint("LEFT", self, "RIGHT", 8, 2);
+	local spellNameY = 4;
+	if ( subSpellName == "" ) then
+		spellNameY = 2;
 	end
 
 	iconTexture:Show();
-	slotFrame:Show();
+	if (not future) then
+		slotFrame:Show();
+		self.UnlearnedFrame:Hide();
+		self.TrainFrame:Hide();
+		self.IconTextureBg:Hide();
+		iconTexture:SetAlpha(1);
+		iconTexture:SetDesaturated(0);
+		self.RequiredLevelString:Hide();
+		self.SeeTrainerString:Hide();
+		self.TrainTextBackground:Hide();
+		self.TrainBook:Hide();
+		self.SpellName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
+		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, spellNameY);
+		
+		-- For spells that are on cooldown.  This must be done here because otherwise "SetDesaturated(0)" above will override this on low-end video cards.
+		if ( enable == 1 ) then
+			iconTexture:SetVertexColor(1.0, 1.0, 1.0);
+		else
+			iconTexture:SetVertexColor(0.4, 0.4, 0.4);
+		end
+	else
+		local level = GetSpellAvailableLevel(id, SpellBookFrame.bookType);
+		slotFrame:Hide();
+		self.IconTextureBg:Show();
+		iconTexture:SetAlpha(0.5);
+		iconTexture:SetDesaturated(1);
+		if (level and level > UnitLevel("player")) then
+			self.SeeTrainerString:Hide();
+			self.RequiredLevelString:Show();
+			self.RequiredLevelString:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
+			self.UnlearnedFrame:Show();
+			self.TrainFrame:Hide();
+			self.TrainTextBackground:Hide();
+			self.TrainBook:Hide();
+			self.SpellName:SetTextColor(0.25, 0.12, 0);
+			self.SpellName:SetShadowOffset(0, 0);
+			self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, spellNameY);
+		else
+			self.SeeTrainerString:Show();
+			self.RequiredLevelString:Hide();
+			self.TrainFrame:Show();
+			self.UnlearnedFrame:Hide();
+			self.TrainTextBackground:Show();
+			self.TrainBook:Show();
+			self.SpellName:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
+			self.SpellName:SetPoint("LEFT", self, "RIGHT", 24, spellNameY);
+		end
+	end
 	spellString:Show();
 	subSpellString:Show();
 	SpellButton_UpdateSelection(self);
@@ -603,9 +667,11 @@ function SpellBookSkillLineTab_OnClick(self, id)
 		PlaySound("igAbiliityPageTurn");
 	end
 	SpellBookFrame.selectedSkillLine = id;
-	local name, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	local name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineOffset = offset;
 	SpellBookFrame.selectedSkillLineNumSpells = numSpells;
+	SpellBookFrame.selectedSkillLineFutureSpellsOffset = futureSpellsOffset;
+	SpellBookFrame.selectedSkillLineNumFutureSpells = numFutureSpells;
 	SpellBook_UpdatePageArrows();
 	SpellBookFrame_Update();
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, SpellBook_GetCurrentPage());
@@ -637,11 +703,22 @@ function SpellBook_GetSpellID(spellButton)
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		return id + (SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] - 1));
 	else
-		local slot = id + SpellBookFrame.selectedSkillLineOffset + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
-		if ( not GetCVarBool("ShowAllSpellRanks") ) then
-			return GetKnownSlotFromHighestRankSlot(slot), slot;
+		local relativeSlot = id + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
+		local slot;
+		local future = false;
+		if (relativeSlot <= SpellBookFrame.selectedSkillLineNumSpells) then
+			slot = SpellBookFrame.selectedSkillLineOffset + relativeSlot;
+		elseif (relativeSlot <= SpellBookFrame.selectedSkillLineNumSpells + SpellBookFrame.selectedSkillLineNumFutureSpells) then
+			slot = SpellBookFrame.selectedSkillLineFutureSpellsOffset + relativeSlot - SpellBookFrame.selectedSkillLineNumSpells;
+			future = true;
+		else
+			return nil, nil, nil;
 		end
-		return slot, slot;
+		
+		if ( not GetCVarBool("ShowAllSpellRanks") and not future) then
+			return GetKnownSlotFromHighestRankSlot(slot), slot, future;
+		end
+		return slot, slot, future;
 	end
 end
 
@@ -667,8 +744,8 @@ function SpellBook_GetCurrentPage()
 		maxPages = ceil(numPetSpells/SPELLS_PER_PAGE);
 	else
 		currentPage = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
-		local name, texture, offset, numSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
-		maxPages = ceil(numSpells/SPELLS_PER_PAGE);
+		local name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+		maxPages = ceil((numSpells+numFutureSpells)/SPELLS_PER_PAGE);
 	end
 	return currentPage, maxPages;
 end
@@ -699,12 +776,12 @@ function SpellBook_ReleaseAutoCastShine (shine)
 end
 
 function SpellBook_GetTabInfo(skillLine)
-	local name, texture, offset, numSpells, highestRankOffset, highestRankNumSpells = GetSpellTabInfo(skillLine);
+	local name, texture, offset, numSpells, highestRankOffset, highestRankNumSpells, futureSpellsOffset, numFutureSpells = GetSpellTabInfo(skillLine);
 	if ( not GetCVarBool("ShowAllSpellRanks")) then
 		offset = highestRankOffset;
 		numSpells = highestRankNumSpells;
 	end
-	return name, texture, offset, numSpells;
+	return name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells;
 end
 
 

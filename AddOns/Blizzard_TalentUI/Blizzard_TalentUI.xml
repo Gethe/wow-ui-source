@@ -456,7 +456,7 @@
 					<Size x="74" y="86"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
+			<Layer level="BACKGROUND">
 				<Texture name="PlayerTalentFrameTitleGlowLeft" inherits="Talent-TitleGlow-Left" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="56" y="-2"/>
@@ -476,12 +476,6 @@
 				<Texture name="PlayerTalentFramePetModelBg" file="Interface\TalentFrame\PetTalent-PetBG">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PlayerTalentFramePetModelBg2" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="298" />
-						<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFrameInsetBg" />
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -32,7 +32,7 @@ UIPanelWindows["FriendsFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 }
 UIPanelWindows["WorldMapFrame"] =		{ area = "full",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CinematicFrame"] =		{ area = "full",	pushable = 0 };
 UIPanelWindows["TabardFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 0 };
+UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 1 };
 UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["ArenaRegistrarFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
@@ -49,7 +49,8 @@ UIPanelWindows["LFDParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1
 UIPanelWindows["LFRParentFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["PVPParentFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["PVPFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1, xoffset = 16};
+UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 1, xoffset = 16};
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -75,7 +76,6 @@ UIChildWindows = {
 	"GuildMemberDetailFrame",
 	"TokenFramePopup",
 	"GuildInfoFrame",
-	"PVPTeamDetails",
 	"GuildBankPopupFrame",
 	"GearManagerDialog",
 };
