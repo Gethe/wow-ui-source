@@ -208,7 +208,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 					SetButtonPulse(CharacterMicroButton, 60, 1);
 				end
 				if ( not TokenFrame:IsVisible() ) then
-					SetButtonPulse(CharacterFrameTab5, 60, 1);
+					SetButtonPulse(CharacterFrameTab4, 60, 1);
 				end
 			end
 			if ( (not showTokenFrameHonor) and (hasPVPTokens) ) then
@@ -217,7 +217,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 					SetButtonPulse(CharacterMicroButton, 60, 1);
 				end
 				if ( not TokenFrame:IsVisible() ) then
-					SetButtonPulse(CharacterFrameTab5, 60, 1);
+					SetButtonPulse(CharacterFrameTab4, 60, 1);
 				end
 			end
 			if ( hasNormalTokens or hasPVPTokens or showTokenFrame or showTokenFrameHonor ) then
@@ -225,7 +225,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 				TokenFrame_Update();
 				BackpackTokenFrame_Update();
 			else
-				CharacterFrameTab5:Hide();
+				CharacterFrameTab4:Hide();
 			end
 		else
 			TokenFrame_LoadUI();

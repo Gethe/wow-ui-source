@@ -46,6 +46,10 @@ ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
 local FEAT_OF_STRENGTH_ID = 81;
 
+
+local displayStatCategories = {};
+
+
 local trackedAchievements = {};
 local function updateTrackedAchievements (...) 
 	local count = select("#", ...);
@@ -1633,7 +1637,6 @@ function AchievementFrameStats_OnLoad (self)
 	HybridScrollFrame_CreateButtons(AchievementFrameStatsContainer, "StatTemplate");
 end
 
-local displayStatCategories = {};
 
 function AchievementFrameStats_Update ()
 	local category = achievementFunctions.selectedCategory;
@@ -2509,7 +2512,6 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 	end
 end
 
-local displayStatCategories = {};
 function AchievementFrameComparison_UpdateStats ()
 	local category = achievementFunctions.selectedCategory;
 	local scrollFrame = AchievementFrameComparisonStatsContainer;

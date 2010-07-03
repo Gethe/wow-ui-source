@@ -226,61 +226,17 @@
 			</OnLeave>
 		</Scripts>
     </Frame>
-    <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" id="1">
+    <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
         <HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="45"/>
 		</HitRectInsets>
 		<Layers>
-            <Layer level="BACKGROUND">
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
-                    <Size>
-                        <AbsDimension x="256" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT"/>
-                    </Anchors>
-                </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-R1">
-                    <Size>
-                        <AbsDimension x="128" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="256" y="0"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomLeft">
-                    <Size>
-                        <AbsDimension x="256" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="0" y="-256"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomRight">
-                    <Size>
-                        <AbsDimension x="128" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="256" y="-256"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
+            <Layer level="ARTWORK">
                 <FontString name="CharacterLevelText" inherits="GameFontNormalSmall" text="Level level race class">
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="CharacterNameText" relativePoint="BOTTOM">
+                        <Anchor point="TOP">
                             <Offset>
-                                <AbsDimension x="0" y="-6"/>
+                                <AbsDimension x="0" y="-28"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -457,17 +413,19 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>			
-			<PlayerModel name="CharacterModelFrame">
+			<PlayerModel name="CharacterModelFrame" useParentLevel="true">
                 <Size>
-                    <AbsDimension x="233" y="215"/>
+					<!-- Should be: <AbsDimension x="252" y="325"/> -->
+					<AbsDimension x="252" y="205"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT">
                         <Offset>
-                            <AbsDimension x="65" y="-78"/>
+                            <AbsDimension x="43" y="-68"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
+				
                 <Scripts>
                     <OnLoad>
                         Model_OnLoad(self);
@@ -486,7 +444,7 @@
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPLEFT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -528,7 +486,7 @@
                 <Anchors>
                     <Anchor point="TOPLEFT">
                         <Offset>
-                            <AbsDimension x="67" y="-291"/>
+                            <AbsDimension x="54" y="-284"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -758,7 +716,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="PaperDollFrame" relativePoint="TOPLEFT">
                         <Offset>
-                            <AbsDimension x="297" y="-77"/>
+                            <AbsDimension x="284" y="-77"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -874,7 +832,7 @@
                 <Anchors>
                     <Anchor point="TOPLEFT">
                         <Offset>
-                            <AbsDimension x="21" y="-74"/>
+                            <AbsDimension x="12" y="-66"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -944,9 +902,9 @@
             </Button>
             <Button name="CharacterHandsSlot" inherits="PaperDollItemSlotButtonTemplate">
                 <Anchors>
-                    <Anchor point="TOPLEFT">
+                    <Anchor point="TOPRIGHT">
                         <Offset>
-                            <AbsDimension x="305" y="-74"/>
+                            <AbsDimension x="-12" y="-66"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1016,9 +974,9 @@
             </Button>
             <Button name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonTemplate">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+                    <Anchor point="BOTTOMLEFT">
                         <Offset>
-                            <AbsDimension x="122" y="127"/>
+                            <AbsDimension x="110" y="16"/>
                         </Offset>
                     </Anchor>
                 </Anchors>

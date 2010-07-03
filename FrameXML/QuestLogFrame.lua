@@ -516,7 +516,7 @@ function QuestLog_Update()
 	else
 		QuestLogFrameCompleteButton:Hide();
 	end
-
+	
 	-- update the control panel
 	QuestLogControlPanel_UpdateState();
 end
@@ -652,6 +652,17 @@ function QuestLog_SetSelection(questIndex)
 		QuestLogFrameCompleteButton:Show();
 	else
 		QuestLogFrameCompleteButton:Hide();
+	end
+	
+	local questPortrait, questPortraitText = GetQuestLogPortraitGiver();
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
+		if (QuestLogDetailFrame.attached) then
+			QuestFrame_ShowQuestPortrait(QuestLogFrame, questPortrait, questPortraitText, -3, -34);
+		else
+			QuestFrame_ShowQuestPortrait(QuestLogDetailFrame, questPortrait, questPortraitText, -1, -34);
+		end
+	else
+		QuestFrame_HideQuestPortrait();
 	end
 
 	QuestLogFrame.selectedIndex = questIndex;
@@ -827,6 +838,12 @@ function QuestLogDetailFrame_OnHide(self)
 end
 
 function QuestLogDetailFrame_AttachToQuestLog()
+	QuestLogDetailFrame.attached = true;
+	if (QuestNPCModel:GetParent() == QuestLogDetailFrame) then
+		QuestNPCModel:SetParent(QuestLogFrame);
+		QuestNPCModel:ClearAllPoints();
+		QuestNPCModel:SetPoint("TOPLEFT", QuestLogFrame, "TOPRIGHT", -3, -34);
+	end
 	QuestLogDetailScrollFrame:SetParent(QuestLogFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -32, -77);
@@ -837,6 +854,12 @@ function QuestLogDetailFrame_AttachToQuestLog()
 end
 
 function QuestLogDetailFrame_DetachFromQuestLog()
+	QuestLogDetailFrame.attached = false;
+	if (QuestNPCModel:GetParent() == QuestLogFrame) then
+		QuestNPCModel:SetParent(QuestLogDetailFrame);
+		QuestNPCModel:ClearAllPoints();
+		QuestNPCModel:SetPoint("TOPLEFT", QuestLogDetailFrame, "TOPRIGHT", -1, -34);
+	end
 	QuestLogDetailScrollFrame:SetParent(QuestLogDetailFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPLEFT", QuestLogDetailFrame, "TOPLEFT", 19, -76);

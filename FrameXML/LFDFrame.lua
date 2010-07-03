@@ -71,8 +71,8 @@ function LFDFrame_OnEvent(self, event, ...)
 			StaticPopup_Hide("VOTE_BOOT_PLAYER");
 		end
 	elseif ( event == "VOTE_KICK_REASON_NEEDED" ) then
-		local targetName = ...;
-		StaticPopup_Show("VOTE_BOOT_REASON_REQUIRED", targetName, nil, targetName);
+		local targetName, targetGUID = ...;
+		StaticPopup_Show("VOTE_BOOT_REASON_REQUIRED", targetName, nil, targetGUID);
 	elseif ( event == "LFG_ROLE_UPDATE" ) then
 		LFG_UpdateRoleCheckboxes();
 	elseif ( event == "LFG_UPDATE_RANDOM_INFO" ) then

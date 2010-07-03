@@ -1,25 +1,62 @@
 ﻿--------------------------------------------------------------------------------
 - Cataclysm Beta Patch Notes
 --------------------------------------------------------------------------------
+World of Warcraft: Cataclysm Beta Patch Notes – Updated 6.3.2010
 
-World of Warcraft: Cataclysm Beta Patch 1
+Welcome to the World of Warcraft: Cataclysm beta test! Patch notes
+listed here are not comprehensive and will be changed throughout the
+testing process. We will attempt to highlight changes to the notes with
+“New” and “Updated” tags next to each respective line or section.
+
+To leave your feedback about the World of Warcraft: Cataclysm test
+process, please visit our Beta General Discussion forum. You may need
+to clear your browser cookies and cache and log into or out of our live
+forums in order to view the beta forums:
+http://forums.worldofwarcraft.com/index.html?sid=2000
 
 General
 
--  Arathi Highlands, Blasted Lands, Dun Morogh, Elwynn Forest, Loch
-   Modan, Northshire, and Westfall are ready for testing.
--  Several zones have had quest maps integrated.
+-  The Alliance starting experience for worgen is available. Venture
+   through the cursed lands of Gilneas to discover your true path!
+   Currently the female worgen character is not available for testing.
+-  The Horde starting experience for goblins is available. Beginning on
+   the Isle of Kezan in a goblin paradise, players will face a
+   treacherous road ahead!
+-  The level cap for all characters is 82.
+-  Players may use our Character Copy feature for copying existing
+   characters to beta realms, or may choose from high-level pre-made
+   template characters.
+
+Zones
+
+-  Mount Hyjal and Vashj'ir, two new level 78-82 zones, are available
+   for testing. Players may find their way to these zones by speaking
+   with temporary teleportation NPCs located in any major city.
 -  The level ranges of Gilneas and the Lost Isles are in the process of
    being adjusted slightly. Creature, quest, and quest reward levels
    are all being altered so that players finish questing in these zones
    roughly by level 12. Further fine tuning will continue in future
    patches.
+-  Several zones have had quest maps integrated.
+-  *Updated* - Eastern Kingdoms
+   Arathi Highlands, Blasted Lands, Dun Morogh, Elwynn Forest, Loch
+   Modan, Northshire, Westfall, Hinterlands and Redridge Mountains are
+   ready for testing.
+   Stranglethorn Vale (currently Horde only) is available for testing.
+-  Kalimdor
+   Most zones in Kalimdor are available for testing, though work
+   continues on polishing the quest experience and flow, as well as
+   zone aesthetics.
 
-Dungeons
+Dungeons & Raids
 
--  Blackrock Caverns: Teleportation NPCs in Stormwind, Orgrimmar, and
-   Dalaran can now transport players to this dungeon, including players
+-  Teleportation NPCs in Stormwind, Orgrimmar, and Dalaran can
+   transport players to any available new dungeons, including players
    who are ghosts.
+-  Blackrock Caverns, a new level 79-81 five-player dungeon, is
+   available for testing.
+-  *New* - Throne of the Tides, a new level 79-81 five-player dungeon,
+   is partially available for testing.
 
 Classes
 
@@ -29,6 +66,21 @@ User Interface
 
 -  The ability to use third-party addons has been temporarily disabled
    for the test environment.
+
+*New* - Graphics
+
+-  Experimental support for DX11 (can be enabled by passing ‘-d3d11’ on
+   the command line or adding SET gxApi "d3d11" to the Config.WTF file).
+-  OpenGL Hardware Cursor support (can be enabled on the Video
+   Resolution Panel).
+-  Improved water and lava rendering system (enabled by the Liquid
+   Detail slider on the Video Effects Panel)
+   0 = Classic Water
+   1 = New Water (fake reflections)
+   2 = New Water (ocean has real reflection for terrain)
+   These values are likely to change during Beta.
+-  Dynamic Sunshafts effect (enabled by the Sunshafts option on the
+   Video Effects Panel).
 
 Bug Fixes
 

@@ -659,9 +659,6 @@
 	<Binding name="TOGGLECHARACTER2">
 		ToggleCharacter("ReputationFrame");
 	</Binding>
-	<Binding name="TOGGLECHARACTER1">
-		ToggleCharacter("SkillFrame");
-	</Binding>
 	<Binding name="TOGGLEQUESTLOG">
 		ToggleFrame(QuestLogFrame);
 	</Binding>
@@ -689,7 +686,7 @@
 		ToggleFriendsFrame(2);
 	</Binding>
 	<Binding name="TOGGLEGUILDTAB">
-		ToggleFriendsFrame(3);
+		ToggleGuildFrame();
 	</Binding>
 	<Binding name="TOGGLECHATTAB">
 		ToggleFriendsFrame(4);

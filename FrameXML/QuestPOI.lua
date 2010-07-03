@@ -32,6 +32,7 @@ function QuestPOI_DisplayButton(parentName, buttonType, buttonIndex, questId)
 		-- frame-specific stuff
 		if ( parentName == "WatchFrameLines" ) then
 			poiButton:SetScale(0.9);
+			poiButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			poiButton:SetScript("OnClick", WatchFrameQuestPOI_OnClick);
 		elseif ( parentName == "WorldMapPOIFrame" ) then
 			poiButton:SetScript("OnEnter", WorldMapQuestPOI_OnEnter);
@@ -149,6 +150,9 @@ function QuestPOI_SelectButton(poiButton)
 			swapButton.quest = poiButton.quest;
 			swapButton:Show();
 			poiButton:Hide();
+		end
+		if ( not WorldMapFrame:IsShown() ) then
+			poiButton.selectionGlow:Hide();
 		end
 	end
 end

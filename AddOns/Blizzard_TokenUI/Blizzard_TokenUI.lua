@@ -22,7 +22,7 @@ end
 function TokenFrame_OnLoad()
 	TokenFrameContainerScrollBar.Show = 
 		function (self)
-			TokenFrameContainer:SetWidth(299);
+			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -23, 4);
 			for _, button in next, _G["TokenFrameContainer"].buttons do
 				button:SetWidth(295);
 			end
@@ -31,7 +31,7 @@ function TokenFrame_OnLoad()
 		
 	TokenFrameContainerScrollBar.Hide = 
 		function (self)
-			TokenFrameContainer:SetWidth(313);
+			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -4, 4);
 			for _, button in next, TokenFrameContainer.buttons do
 				button:SetWidth(313);
 			end
@@ -49,7 +49,8 @@ function TokenFrame_OnLoad()
 end
 
 function TokenFrame_OnShow(self)
-	SetButtonPulse(CharacterFrameTab5, 0, 1);	--Stop the button pulse
+	SetButtonPulse(CharacterFrameTab4, 0, 1);	--Stop the button pulse
+	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	TokenFrame_Update();
 end
 
@@ -153,9 +154,9 @@ function TokenFrame_Update()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 	
 	if ( numTokenTypes == 0 ) then
-		CharacterFrameTab5:Hide();
+		CharacterFrameTab4:Hide();
 	else
-		CharacterFrameTab5:Show();
+		CharacterFrameTab4:Show();
 	end
 end
 

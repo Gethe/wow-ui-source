@@ -17,7 +17,7 @@ UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 
 UIPanelWindows["VideoOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["InterfaceOptionsFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1 };
+UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1, xoffset = 16, yoffset = -12  };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1, xoffset = 16, width = 605, height = 545 };
 UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
@@ -223,6 +223,11 @@ function UIParent_OnLoad(self)
 	
 	-- Events for talent wipes
 	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
+	
+	
+	-- Events for reforging
+	self:RegisterEvent("FORGE_MASTER_OPENED");
+	self:RegisterEvent("FORGE_MASTER_CLOSED");
 end
 
 
@@ -321,7 +326,11 @@ function Calendar_LoadUI()
 end
 
 function Reforging_LoadUI()
-	UIParentLoadAddOn("Blizzard_Reforging");
+	UIParentLoadAddOn("Blizzard_ReforgingUI");
+end
+
+function ArchaeologyFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ArchaeologyUI");
 end
 
 function GMChatFrame_LoadUI(...)
@@ -337,6 +346,10 @@ end
 
 function Arena_LoadUI()
 	UIParentLoadAddOn("Blizzard_ArenaUI");
+end
+
+function GuildFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_GuildUI");
 end
 
 function ShowMacroFrame()
@@ -410,6 +423,15 @@ function ToggleCalendar()
 	Calendar_LoadUI();
 	if ( Calendar_Toggle ) then
 		Calendar_Toggle();
+	end
+end
+
+function ToggleGuildFrame()
+	if ( IsInGuild() ) then
+		GuildFrame_LoadUI();
+		if ( GuildFrame_Toggle ) then
+			GuildFrame_Toggle();
+		end
 	end
 end
 
@@ -1137,11 +1159,32 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	end
 	
-	-- Events for trainer UI handling
-	if ( event == "REFORGING_SHOW" ) then
+	-- Events for Reforging UI handling
+	if ( event == "FORGE_MASTER_OPENED" ) then
 		Reforging_LoadUI();
 		if ( ReforgingFrame_Show ) then
 			ReforgingFrame_Show();
+		end
+		return;
+	end
+	if ( event == "FORGE_MASTER_CLOSED" ) then
+		if ( ReforgingFrame_Hide ) then
+			ReforgingFrame_Hide();
+		end
+		return;
+	end
+	
+		-- Events for Archaeology
+	if ( event == "ARCHAEOLOGY_OPENED" ) then
+		ArchaeologyFrame_LoadUI();
+		if ( ArchaeologyFrame_Show ) then			
+			ArchaeologyFrame_Show();
+		end
+		return;
+	end
+	if ( event == "ARCHAEOLOGY_CLOSED" ) then
+		if ( ArchaeologyFrame_Hide ) then
+			ArchaeologyFrame_Hide();
 		end
 		return;
 	end

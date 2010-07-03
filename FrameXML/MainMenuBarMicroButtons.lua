@@ -74,7 +74,7 @@ function UpdateMicroButtons()
 		end
 	end
 	
-	if ( FriendsFrame:IsShown() ) then
+	if ( GuildFrame and GuildFrame:IsShown() ) then
 		SocialsMicroButton:SetButtonState("PUSHED", 1);
 	else
 		SocialsMicroButton:SetButtonState("NORMAL");

@@ -34,6 +34,9 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	"GEAR_TOO_LOW",
 	"GEAR_TOO_HIGH",
 	"RAID_LOCKED",
+	nil,	--Target level too high
+	nil,	--Target level too low
+	"AREA_NOT_EXPLORED",
 	[1001] = "LEVEL_TOO_LOW",
 	[1002] = "LEVEL_TOO_HIGH",
 	[1022] = "QUEST_NOT_COMPLETED",

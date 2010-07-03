@@ -1,5 +1,5 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "SkillFrame", "ReputationFrame", "TokenFrame" };
-local NUM_CHARACTERFRAME_TABS = 5;
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "TokenFrame" };
+local NUM_CHARACTERFRAME_TABS = 4;
 function ToggleCharacter (tab)
 	local subFrame = _G[tab];
 	if ( subFrame ) then
@@ -40,8 +40,6 @@ function CharacterFrameTab_OnClick (self, button)
 	elseif ( name == "CharacterFrameTab3" ) then
 		ToggleCharacter("ReputationFrame");	
 	elseif ( name == "CharacterFrameTab4" ) then
-		ToggleCharacter("SkillFrame");	
-	elseif ( name == "CharacterFrameTab5" ) then
 		ToggleCharacter("TokenFrame");	
 	end
 	PlaySound("igCharacterInfoTab");
@@ -51,13 +49,14 @@ function CharacterFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
+	ButtonFrameTemplate_HideButtonBar(self);
 
 	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
 	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
 	SetTextStatusBarTextPrefix(MainMenuExpBar, XP);
 	TextStatusBar_UpdateTextString(MainMenuExpBar);
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(self, 5);
+	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);
 end
 
@@ -73,19 +72,20 @@ function CharacterFrame_OnEvent (self, event, ...)
 		end
 		return;
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
-		if ( arg1 == "player" ) then
-			CharacterNameText:SetText(UnitPVPName(arg1));
+		if ( arg1 == "player" and not PetPaperDollFrame:IsShown()) then
+			CharacterFrameTitleText:SetText(UnitPVPName("player"));
 		end
 		return;
 	elseif ( event == "PLAYER_PVP_RANK_CHANGED" ) then
-		CharacterNameText:SetText(UnitPVPName("player"));
+		if (not PetPaperDollFrame:IsShown()) then
+			CharacterFrameTitleText:SetText(UnitPVPName("player"));
+		end
 	end
 end
 
 function CharacterFrame_OnShow (self)
 	PlaySound("igCharacterInfoOpen");
 	SetPortraitTexture(CharacterFramePortrait, "player");
-	CharacterNameText:SetText(UnitPVPName("player"));
 	UpdateMicroButtons();
 	PlayerFrameHealthBar.showNumeric = true;
 	PlayerFrameManaBar.showNumeric = true;
@@ -140,7 +140,7 @@ function CharacterFrame_TabBoundsCheck(self)
 	
 	local diff = totalSize - 465
 	
-	if ( diff > 0 and CharacterFrameTab5:IsShown() and CharacterFrameTab2:IsShown()) then
+	if ( diff > 0 and CharacterFrameTab4:IsShown() and CharacterFrameTab2:IsShown()) then
 		--Find the biggest tab
 		for i=1, NUM_CHARACTERFRAME_TABS do
 			CharTabtable[i]=_G["CharacterFrameTab"..i];

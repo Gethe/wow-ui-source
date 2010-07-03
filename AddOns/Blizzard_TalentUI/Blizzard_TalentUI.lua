@@ -69,17 +69,14 @@ local masteryInfo = {
 	["DEATHKNIGHT"] = {
 		[1] = {
 			-- Blood
-			spellId = 77513,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[2] = {
 			-- Frost
-			spellId = 77514,
 			color = {r=0.3, g=0.5, b=1.0},
 		},
 		[3] = {
 			-- Unholy
-			spellId = 77515,
 			color = {r=0.8, g=0.0, b=1.0},
 		}
 	},
@@ -87,18 +84,14 @@ local masteryInfo = {
 	["DRUID"] = {
 		[1] = {
 			-- Balance
-			spellId = 77492;
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Feral
-			spellId = 77493, -- Cat
-			spellId2 = 77494, -- Bear
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Restoration
-			spellId = 77495,
 			color = {r=0.3, g=0.5, b=1.0},
 		}	
 	},
@@ -106,17 +99,14 @@ local masteryInfo = {
 	["HUNTER"] = {
 		[1] = {
 			-- Beast Mastery
-			spellId = 76657,
 			color = {r=0.3, g=0.0, b=1.0},
 		},
 		[2] = {
 			-- Marksmanship
-			spellId = 76659,
 			color = {r=0.8, g=0.2, b=0.8},
 		},
 		[3] = {
 			-- Survival
-			spellId = 76658,
 			color = {r=0.0, g=1.0, b=0.6},
 		}
 	},
@@ -124,17 +114,14 @@ local masteryInfo = {
 	["MAGE"] = {
 		[1] = {
 			-- Arcane
-			spellId = 76547,
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Fire
-			spellId = 76595,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Frost
-			spellId = 76613,
 			color = {r=0.3, g=0.5, b=1.0},
 		}
 	},
@@ -142,17 +129,14 @@ local masteryInfo = {
 	["PALADIN"] = {
 		[1] = {
 			-- Holy
-			spellId = 76669,
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Protection
-			spellId = 76671,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Retribution
-			spellId = 76672,
 			color = {r=0.3, g=0.5, b=1.0},
 		}
 	},
@@ -160,17 +144,14 @@ local masteryInfo = {
 	["PRIEST"] = {
 		[1] = {
 			-- Discipline
-			spellId = 77484,
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Holy
-			spellId = 77485,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Shadow
-			spellId = 77486,
 			color = {r=0.3, g=0.5, b=1.0},
 		}
 	},
@@ -178,17 +159,14 @@ local masteryInfo = {
 	["ROGUE"] = {
 		[1] = {
 			-- Assassination
-			spellId = 76803,
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Combat
-			spellId = 76806,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Subtlety
-			spellId = 76808,
 			color = {r=0.3, g=0.5, b=1.0},
 		}
 	},
@@ -196,17 +174,14 @@ local masteryInfo = {
 	["SHAMAN"] = {
 		[1] = {
 			-- Elemental
-			spellId = 77222,
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Enhancement
-			spellId = 77223,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Restoration
-			spellId = 77226,
 			color = {r=0.3, g=0.5, b=1.0},
 		}
 	},
@@ -214,17 +189,14 @@ local masteryInfo = {
 	["WARLOCK"] = {
 		[1] = {
 			-- Affliction
-			spellId = 77215,
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Demonology
-			spellId = 77219,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Destruction
-			spellId = 77220,
 			color = {r=0.3, g=0.5, b=1.0},
 		}
 	},
@@ -232,17 +204,14 @@ local masteryInfo = {
 	["WARRIOR"] = {
 		[1] = {
 			-- Arms
-			spellId = 76838,
 			color = {r=1.0, g=0.72, b=0.1},
 		},
 		[2] = {
 			-- Fury
-			spellId = 76856,
 			color = {r=1.0, g=0.0, b=0.0},
 		},
 		[3] = {
 			-- Protection
-			spellId = 76857,
 			color = {r=0.3, g=0.5, b=1.0},
 		}
 	},
@@ -536,36 +505,10 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 	end
 end
 
-function PlayerTalentFrame_CalculateMasteryTree(self)
-	local id1, name1, icon1, pointsSpent1, background1, previewPointsSpent1 = GetTalentTabInfo(1, self.inspect, self.pet, self.talentGroup);
-	local id2, name2, icon2, pointsSpent2, background2, previewPointsSpent2 = GetTalentTabInfo(2, self.inspect, self.pet, self.talentGroup);
-	local id3, name3, icon3, pointsSpent3, background3, previewPointsSpent3 = GetTalentTabInfo(3, self.inspect, self.pet, self.talentGroup);
-	
-	local masteryTree = 1;
-	local pointsSpent = pointsSpent1 + previewPointsSpent1;
-	if (pointsSpent2+previewPointsSpent2 > pointsSpent) then
-		pointsSpent = pointsSpent2+previewPointsSpent2;
-		masteryTree = 2;
-	end
-	
-	if (pointsSpent3+previewPointsSpent3 > pointsSpent) then
-		pointsSpent = pointsSpent3+previewPointsSpent3;
-		masteryTree = 3;
-	end
-	
-	if (pointsSpent > 0) then
-		return masteryTree;	
-	end
-end
-
-function PlayerTalentFrame_CalculateMasteryBonuses(spellId, pointsSpent)
+function PlayerTalentFrame_CalculateMasteryBonuses(specIndex, treeIndex, index)
+	local spellId = GetMasterySpell(treeIndex, index);
 	if (spellId) then
-		local MAX_TALENT_POINTS_TOWARDS_MASTERY = 51;
 		local spellAuraDesc = GetSpellAuraDescription(spellId);
-		local pointsPerLevel1, pointsPerLevel2, pointsPerLevel3 = GetSpellEffectPointsPerLevel(spellId);
-		local pointsPerMastery1, pointsPerMastery2, pointsPerMastery3 = GetSpellEffectBonusCoefficient(spellId);
-		local masteryStat = GetMastery();
-		pointsSpent = min(pointsSpent, MAX_TALENT_POINTS_TOWARDS_MASTERY);
 
 		-- Parse out the mastery names
 		local masteryName1, space, masteryName2, space2, masteryName3;		
@@ -574,16 +517,7 @@ function PlayerTalentFrame_CalculateMasteryBonuses(spellId, pointsSpent)
 		end
 		
 		-- Calculate the final value for each mastery
-		local value1, value2, value3;
-		if (pointsPerLevel1) then
-			value1 = pointsSpent * pointsPerLevel1 + masteryStat * pointsPerMastery1;
-		end
-		if (pointsPerLevel2) then
-			value2 = pointsSpent * pointsPerLevel2 + masteryStat * pointsPerMastery2;
-		end
-		if (pointsPerLevel3) then
-			value3 = pointsSpent * pointsPerLevel3 + masteryStat * pointsPerMastery3;
-		end
+		local value1, value2, value3 = GetMasterySpellPoints(specIndex, treeIndex, index);
 		
 		return masteryName1, value1, masteryName2, value2, masteryName3, value3;
 	end
@@ -591,7 +525,7 @@ end
 
 function PlayerTalentFrame_UpdateMastery(self)
 	local classDisplayName, class = UnitClass("player");
-	local masteryTree = PlayerTalentFrame_CalculateMasteryTree(self);
+	local masteryTree = GetMasteryIndex(self.talentGroup);
 	local mastery;
 	
 	if (not self.pet) then
@@ -602,11 +536,12 @@ function PlayerTalentFrame_UpdateMastery(self)
 		local id, name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(masteryTree, self.inspect, self.pet, self.talentGroup);
 		local masteryName = {};
 		local masteryValue = {};
+		local numMasterySpells = GetNumMasterySpells(masteryTree);
 		
 		-- Calculate all mastery names/values
-		masteryName[1], masteryValue[1], masteryName[2], masteryValue[2], masteryName[3], masteryValue[3] = PlayerTalentFrame_CalculateMasteryBonuses(mastery[masteryTree].spellId, pointsSpent+previewPointsSpent);
-		if (mastery[masteryTree].spellId2) then
-			masteryName[4], masteryValue[4], masteryName[5], masteryValue[5], masteryName[6], masteryValue[6] = PlayerTalentFrame_CalculateMasteryBonuses(mastery[masteryTree].spellId2, pointsSpent+previewPointsSpent);
+		masteryName[1], masteryValue[1], masteryName[2], masteryValue[2], masteryName[3], masteryValue[3] = PlayerTalentFrame_CalculateMasteryBonuses(self.talentGroup, masteryTree, 1);
+		if (numMasterySpells > 1 ) then
+			masteryName[4], masteryValue[4], masteryName[5], masteryValue[5], masteryName[6], masteryValue[6] = PlayerTalentFrame_CalculateMasteryBonuses(self.talentGroup, masteryTree, 2);
 		end
 		
 		-- Show the mastery icon
@@ -634,9 +569,9 @@ function PlayerTalentFrame_UpdateMastery(self)
 			
 			-- Make the mastery text show the correct tooltip
 			if (i <= 3) then
-				masteryText.spellId = mastery[masteryTree].spellId;
+				masteryText.spellId = GetMasterySpell(masteryTree, 1);
 			else
-				masteryText.spellId = mastery[masteryTree].spellId2;
+				masteryText.spellId = GetMasterySpell(masteryTree, 2);
 			end
 			
 			-- If this is part of the second row of mastery bonuses (e.g. Feral druids), shift the first row up

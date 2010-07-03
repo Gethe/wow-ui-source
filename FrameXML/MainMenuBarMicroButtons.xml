@@ -195,7 +195,7 @@
 				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
 			</OnEvent>
 			<OnClick>
-				ToggleFriendsFrame();
+				ToggleGuildFrame();
 			</OnClick>
 		</Scripts>
 	</Button>

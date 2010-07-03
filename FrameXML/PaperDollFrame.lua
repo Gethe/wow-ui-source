@@ -1079,6 +1079,7 @@ end
 
 function PaperDollFrame_OnShow (self)
 	--PaperDollFrame_SetGuild();
+	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_SetResistances();
 	PaperDollFrame_UpdateStats();

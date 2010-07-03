@@ -90,7 +90,7 @@ function QuestFrameRewardPanel_OnShow()
 	end
 	local questPortrait, questPortraitText = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(questPortrait, questPortraitText);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, -31, -40);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -334,24 +334,27 @@ function QuestTitleButton_OnClick(self)
 	PlaySound("igQuestListSelect");
 end
 
-function QuestFrame_ShowQuestPortrait(portrait, text)
-	QuestFrameNPCModel:Show();
+function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, x, y)
+	QuestNPCModel:SetParent(parentFrame);
+	QuestNPCModel:ClearAllPoints();
+	QuestNPCModel:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
+	QuestNPCModel:Show();
 	if (text and text ~= "") then
-		QuestFrameNPCModelTextFrame:Show();
-		QuestFrameNPCModelText:SetText(text);
+		QuestNPCModelTextFrame:Show();
+		QuestNPCModelText:SetText(text);
 	else
-		QuestFrameNPCModelTextFrame:Hide();
+		QuestNPCModelTextFrame:Hide();
 	end
 
 	if (portrait == -1) then
-		QuestFrameNPCModel:SetUnit("player");
+		QuestNPCModel:SetUnit("player");
 	else
-		QuestFrameNPCModel:SetDisplayInfo(portrait);
+		QuestNPCModel:SetDisplayInfo(portrait);
 	end
 end
 
 function QuestFrame_HideQuestPortrait()
-	QuestFrameNPCModel:Hide();
+	QuestNPCModel:Hide();
 end
 
 function QuestFrameDetailPanel_OnShow()
@@ -370,7 +373,7 @@ function QuestFrameDetailPanel_OnShow()
 	QuestDetailScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(questPortrait, questPortraitText);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, -31, -40);
 	else
 		QuestFrame_HideQuestPortrait();
 	end

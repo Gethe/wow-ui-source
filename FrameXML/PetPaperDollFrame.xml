@@ -56,83 +56,16 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<Frame name="PetPaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" id="2" hidden="true">
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="75"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="PetNameText" inherits="GameFontHighlight" hidden="true">
-					<Size>
-						<AbsDimension x="109" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="6" y="232"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PetPaperDollFrame\UI-PetPaperDollFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="2" y="-257"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PetPaperDollFrame\UI-PetPaperDollFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="258" y="-257"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Frame name="PetPaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="2" hidden="true">
 		<Frames>
 			<Frame name="PetPaperDollFramePetFrame" setAllPoints="true" enableMouse="true" hidden="false" id="1">
 				<Layers>
-					<Layer level="BACKGROUND">
+					<Layer level="OVERLAY">
 						<FontString name="PetLevelText" inherits="GameFontNormalSmall" text="Level level race class">
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="CENTER">
+								<Anchor point="BOTTOM">
 									<Offset>
-										<AbsDimension x="0" y="-55"/>
+										<AbsDimension x="0" y="108"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -147,7 +80,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="23" y="103"/>
+									<AbsDimension x="8" y="8"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -206,15 +139,9 @@
 						<BarColor r="0.58" g="0.0" b="0.55"/>
 					</StatusBar>
 					<PlayerModel name="PetModelFrame">
-						<Size>
-							<AbsDimension x="318" y="224"/>
-						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="25" y="-78"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="8" y="-68"/>
+							<Anchor point="BOTTOMRIGHT" x="-8" y="120"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -232,11 +159,7 @@
 									<AbsDimension x="35" y="35"/>
 								</Size>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="PetPaperDollFrame">
-										<Offset>
-											<AbsDimension x="23" y="-76"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -276,11 +199,7 @@
 							<AbsDimension x="24" y="23"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PetModelFrameRotateLeftButton">
-								<Offset>
-									<AbsDimension x="7" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PetModelFrameRotateLeftButton" x="7" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -300,33 +219,12 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
-					<Button name="PetPaperDollCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
-						<Size>
-							<AbsDimension x="80" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="CENTER" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="305" y="-422"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HideUIPanel(CharacterFrame);
-							</OnClick>
-						</Scripts>
-					</Button>
 					<Frame name="PetAttributesFrame">
 						<Size>
 							<AbsDimension x="230" y="78"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="67" y="-320"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="56" y="-320"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -501,11 +399,7 @@
 							<AbsDimension x="32" y="160"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="PetPaperDollFrame" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="347" y="-77"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" relativeTo="PetPaperDollFrame" x="-12" y="-66"/>
 						</Anchors>
 						<Frames>
 							<Frame name="PetMagicResFrame1" inherits="MagicResistanceFrameTemplate" id="6">
@@ -617,75 +511,49 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame name="PetPaperDollFrameCompanionFrame" setAllPoints="true" enableMouse="true" id="2" hidden="true">
-				<HitRectInsets>
-					<AbsInset left="0" right="30" top="0" bottom="75"/>
-				</HitRectInsets>
+			<Frame name="PetPaperDollFrameCompanionFrame" setAllPoints="true" enableMouse="true" id="2" hidden="true" >
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots">
+						<Texture name="PetPaperDollFrameCompanionBgBottom" file="Interface\PetPaperDollFrame\UI-PetFrame-Slots">
 							<Size>
-								<AbsDimension x="338" y="128"/>
+								<AbsDimension x="335" y="128"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="13" y="79"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 							<TexCoords left="0.009765625" right="0.66015625" top="0.0" bottom="1.0"/>
 						</Texture>
-						<Texture file="Interface\PetPaperDollFrame\UI-PetFrame-Frame">
+						<Texture name="PetPaperDollFrameCompanionBgTop" file="Interface\PetPaperDollFrame\UI-PetFrame-Frame">
 							<Size>
-								<AbsDimension x="320" y="235"/>
+								<AbsDimension x="322" y="236"/>
 							</Size>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-8" y="64"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-5"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.6171875" top="0.0" bottom="0.890625"/>
 						</Texture>
 						<FontString name="CompanionPageNumber" inherits="GameFontHighlightSmallOutline">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-13" y="-155"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOM" x="0" y="12"/>
 							</Anchors>
 						</FontString>
-						
 					</Layer>
-					<Layer level="ARTWORK">
+					<Layer level="OVERLAY">
 						<FontString name="CompanionSelectedName" inherits="DialogButtonNormalText">
 							<Size>
 								<AbsDimension x="290" y="13"/>
 							</Size>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-13" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="PetPaperDollFrameCompanionBgTop" x="0" y="48"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<DressUpModel name="CompanionModelFrame">
-						<Size>
-							<AbsDimension x="288" y="160"/>
-						</Size>
+					<DressUpModel name="CompanionModelFrame" useParentLevel="true">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="39" y="-90"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PetPaperDollFrameCompanionBgTop" x="44" y="-28"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="PetPaperDollFrameCompanionBgTop" x="-46" y="46"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -747,11 +615,7 @@
 							<AbsDimension x="150" y="25"/>
 						</Size>
 						<Anchors>
-							<Anchor point="CENTER">
-								<Offset>
-									<AbsDimension x="-13" y="-25"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOM" x="0" y="20" relativeTo="PetPaperDollFrameCompanionBgTop" />
 						</Anchors>
 						<Scripts>
 							<OnClick function="CompanionSummonButton_OnClick"/>
@@ -759,11 +623,7 @@
 					</Button>
 					<CheckButton name="CompanionButton1" inherits="CompanionButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="60" y="-316"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" x="46" y="79"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="CompanionButton2" inherits="CompanionButtonTemplate" id="2">
@@ -872,7 +732,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="110" y="83"/>
+									<AbsDimension x="100" y="5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -914,11 +774,7 @@
 			</Frame>
 			<Button name="PetPaperDollFrameTab1" inherits="TabButtonTemplate" text="PET" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="70" y="-39"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="CharacterFrameInset" relativePoint="TOPLEFT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -936,11 +792,7 @@
 			</Button>
 			<Button name="PetPaperDollFrameTab2" inherits="TabButtonTemplate" text="COMPANIONS" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetPaperDollFrameTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PetPaperDollFrameTab1" relativePoint="RIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -958,11 +810,7 @@
 			</Button>
 			<Button name="PetPaperDollFrameTab3" inherits="TabButtonTemplate" text="MOUNTS" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PetPaperDollFrameTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PetPaperDollFrameTab2" relativePoint="RIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

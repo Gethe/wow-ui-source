@@ -127,6 +127,8 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapQuestRewardScrollFrame.scrollBarHideable = true;
 	WorldMapQuestDetailScrollFrame.haveTrack = true;
 	WorldMapQuestRewardScrollFrame.haveTrack = true;
+	WORLDMAP_SETTINGS.selectedQuestId = QuestPOIGetQuestIDByVisibleIndex(1);
+	SetSuperTrackedQuestID(WORLDMAP_SETTINGS.selectedQuestId);
 end
 
 function WorldMapFrame_OnShow(self)
@@ -1700,6 +1702,7 @@ function WorldMapFrame_SelectQuestFrame(questFrame)
 	end
 	WORLDMAP_SETTINGS.selectedQuest = questFrame;
 	WORLDMAP_SETTINGS.selectedQuestId = questFrame.questId;
+	SetSuperTrackedQuestID(WORLDMAP_SETTINGS.selectedQuestId);
 	WorldMapQuestSelectedFrame:SetPoint("TOPLEFT", questFrame, "TOPLEFT", -10, 0);
 	WorldMapQuestSelectedFrame:SetHeight(questFrame:GetHeight());
 	WorldMapQuestSelectedFrame:Show();

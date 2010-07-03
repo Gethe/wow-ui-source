@@ -43,7 +43,7 @@ function PetPaperDollFrame_OnLoad (self)
 end
 
 local tabPoints={
-	[1]={ point="TOPLEFT", relativeTo="PetPaperDollFrameCompanionFrame", relativePoint="TOPLEFT", xoffset=70, yoffset=-39},
+	[1]={ point="BOTTOMLEFT", relativeTo="CharacterFrameInset", relativePoint="TOPLEFT", xoffset=70, yoffset=0},
 	[2]={ point="LEFT", relativePoint="RIGHT", xoffset=0, yoffset=0},
 	[3]={ point="LEFT", relativePoint="RIGHT", xoffset=0, yoffset=0},
 }
@@ -195,7 +195,7 @@ function PetPaperDollFrame_SetTab(id)
 		PetPaperDollFrame.selectedTab=1;
 		PetPaperDollFramePetFrame:Show();
 		PetPaperDollFrameCompanionFrame:Hide();
-		PetNameText:SetText(UnitName("pet"));
+		CharacterFrameTitleText:SetText(UnitName("pet"));
 	elseif ( (id == 2) and (GetNumCompanions("CRITTER") > 0) ) then	--Critter Tab
 		PetPaperDollFrame.selectedTab=2;
 		PetPaperDollFrameCompanionFrame.mode="CRITTER";
@@ -207,7 +207,7 @@ function PetPaperDollFrame_SetTab(id)
 		end
 		PetPaperDollFrame_UpdateCompanions();
 		PetPaperDollFrame_UpdateCompanionPreview();
-		PetNameText:SetText(COMPANIONS);
+		CharacterFrameTitleText:SetText(COMPANIONS);
 	elseif ( (id == 3) and (GetNumCompanions("MOUNT") > 0) ) then	--Mount Tab
 		PetPaperDollFrame.selectedTab=3;
 		PetPaperDollFrameCompanionFrame.mode="MOUNT";
@@ -219,7 +219,7 @@ function PetPaperDollFrame_SetTab(id)
 		end
 		PetPaperDollFrame_UpdateCompanions();
 		PetPaperDollFrame_UpdateCompanionPreview();
-		PetNameText:SetText(MOUNTS);
+		CharacterFrameTitleText:SetText(MOUNTS);
 	end
 	
 	for i=1,3 do
@@ -452,15 +452,11 @@ function PetPaperDollFrame_OnShow(self)
 		PetPaperDollFrame_BeenViewed = true;
 	end
 	SetButtonPulse(CharacterFrameTab2, 0, 1);	--Stop the button pulse
-	CharacterNameText:Hide();
-	PetNameText:Show();
 	PetPaperDollFrame_Update();
 	PetPaperDollFrame_UpdateTabs();
 end
 
 function PetPaperDollFrame_OnHide()
-	CharacterNameText:Show();
-	PetNameText:Hide();
 end
 
 function PetPaperDollFrame_Update()
@@ -473,7 +469,7 @@ function PetPaperDollFrame_Update()
 		PetLevelText:SetFormattedText(UNIT_TYPE_LEVEL_TEMPLATE,UnitLevel("pet"),UnitCreatureFamily("pet"));
 	end
 	if ( PetPaperDollFramePetFrame:IsShown() ) then
-		PetNameText:SetText(UnitName("pet"));
+		CharacterFrameTitleText:SetText(UnitName("pet"));
 	end
 	PetExpBar_Update();
 	PetPaperDollFrame_SetResistances();

@@ -79,7 +79,6 @@ CharacterFrame.xml
 EquipmentManager.lua
 PaperDollFrame.xml
 PetPaperDollFrame.xml
-SkillFrame.xml
 ReputationFrame.xml
 HonorFrame.xml
 QuestFrame.xml

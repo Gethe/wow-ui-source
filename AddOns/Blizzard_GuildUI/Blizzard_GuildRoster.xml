@@ -1,0 +1,257 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GuildRoster.lua"/>
+	<Button name="GuildRosterButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="297" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentStripe" setAllPoints="true" parentKey="stripe">
+					<Color a=".08" r="1" g="1" b="1"/>
+				</Texture>				
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBarTexture" hidden="true" parentKey="barTexture">
+					<Size>
+						<AbsDimension x="10" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="60" y="0"/>
+					</Anchors>				
+					<Color r="0" g="0.8" b="0" a="0.2"/>
+				</Texture>			
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes" parentKey="icon">
+					<Anchors>
+						<Anchor point="LEFT" x="36" y="0"/>
+					</Anchors>				
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+				</Texture>
+				<FontString name="$parentString1" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string1">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentString2" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string2">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentString3" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string3">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentString4" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string4">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBarLabel" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" hidden="true" parentKey="barLabel">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="146" y="0"/>
+					</Anchors>
+				</FontString>				
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="297" y="20"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>		
+	</Button>
+	<Button name="GuildRosterColumnButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="10" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="5" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="53" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="4" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				if ( self.sortType ) then
+					--SortGuildRoster(self.sortType);
+					_SortFakeGuild(self.sortType);
+					GuildRoster_Update();
+				end				
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
+					<Offset>
+						<AbsDimension x="-2" y="5"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight">
+					<Offset>
+						<AbsDimension x="2" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Frame name="GuildRosterFrame" parent="GuildFrame" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture setAllPoints="true" hidden="true">
+					<Color r="0" g="1" b="0" a="0.05"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="GuildRosterViewDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="80" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="GuildRosterViewDropdown_OnLoad"/>
+				</Scripts>
+			</Frame>				
+			<Button name="GuildRosterColumnButton1" inherits="GuildRosterColumnButtonTemplate" text="?s">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="7" y="-68"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GuildRosterColumnButton2" inherits="GuildRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>	
+			</Button>							
+			<Button name="GuildRosterColumnButton3" inherits="GuildRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>								
+			</Button>
+			<Button name="GuildRosterColumnButton4" inherits="GuildRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GuildRosterColumnButton5" inherits="GuildRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="GuildRosterContainer" inherits="HybridScrollFrameTemplate" hidden="false">
+				<Size x="302" y="302"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-27" y="-95"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="11"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>				
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildRosterFrame_OnLoad"/>
+		</Scripts>
+	</Frame>	
+</Ui>

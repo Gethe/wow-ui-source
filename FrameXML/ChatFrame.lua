@@ -1837,9 +1837,11 @@ end
 
 SlashCmdList["GUILD_ROSTER"] = function(msg)
 	if ( IsInGuild() ) then
-		PanelTemplates_SetTab(FriendsFrame, 3);
-		FriendsFrame_ShowSubFrame("GuildFrame");
-		ShowUIPanel(FriendsFrame);
+		GuildFrame_LoadUI();
+		if ( GuildFrame ) then
+			GuildFrameTab2:Click();
+			ShowUIPanel(GuildFrame);
+		end
 	end
 end
 

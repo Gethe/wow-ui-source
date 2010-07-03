@@ -58,7 +58,7 @@
 				</Texture>
 				<FontString name="HonorLevelText" inherits="GameFontNormalSmall" text="Level level race class">
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="CharacterNameText" relativePoint="BOTTOM">
+                        <Anchor point="TOP" relativeTo="CharacterFrameTitleText" relativePoint="BOTTOM">
                             <Offset>
                                 <AbsDimension x="0" y="-6"/>
                             </Offset>

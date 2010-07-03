@@ -30,7 +30,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentNumSkillUps" inherits="GameFontNormal" text="Chaz">
+				<FontString name="$parentNumSkillUps" inherits="GameFontNormal">
 					<Size x="0" y="13"/>
 					<Anchors>
 						<Anchor point="RIGHT">

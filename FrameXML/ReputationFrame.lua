@@ -31,6 +31,7 @@ function ReputationFrame_OnLoad(self)
 end
 
 function ReputationFrame_OnShow()
+	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	ReputationFrame_Update();
 end
 
@@ -55,7 +56,7 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 	factionRightTexture:SetWidth(42);
 	factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 0, 0);
 	if ( rowType == 0 ) then --Not header, not child
-		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 44, 0);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 34, 0);
 		factionButton:Hide();
 		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
 		factionTitle:SetFontObject(GameFontHighlightSmall);
@@ -67,7 +68,7 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionRightTexture:SetTexCoord(0.0, 0.1640625, 0.34375, 0.671875);
 		factionBar:SetWidth(101)
 	elseif ( rowType == 1 ) then --Child, not header
-		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 62, 0);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 52, 0);
 		factionButton:Hide()
 		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
 		factionTitle:SetFontObject(GameFontHighlightSmall);
@@ -79,7 +80,7 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionRightTexture:SetTexCoord(0.0, 0.1640625, 0.34375, 0.671875);
 		factionBar:SetWidth(101)
 	elseif ( rowType == 2 ) then	--Header, not child
-		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 20, 0);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 10, 0);
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
 		factionButton:Show();
 		factionTitle:SetPoint("LEFT",factionButton,"RIGHT",10,0);
@@ -94,7 +95,7 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 		factionRightTexture:SetTexCoord(0.0, 0.15234375, 0.390625, 0.625);
 		factionBar:SetWidth(99);
 	elseif ( rowType == 3 ) then --Header and child
-		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 39, 0);
+		factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 29, 0);
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
 		factionButton:Show();
 		factionTitle:SetPoint("LEFT" ,factionButton, "RIGHT", 10, 0);
