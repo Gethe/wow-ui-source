@@ -49,7 +49,7 @@ UIPanelWindows["LFDParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1
 UIPanelWindows["LFRParentFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["PVPFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1, xoffset = 16};
+UIPanelWindows["PVPFrame"] =			{ area = "left",	pushable = 1,	whileDead = 1, xoffset = 16};
 UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 1, xoffset = 16};
 
 local function GetUIPanelWindowInfo(frame, name)
@@ -318,6 +318,10 @@ end
 
 function Calendar_LoadUI()
 	UIParentLoadAddOn("Blizzard_Calendar");
+end
+
+function Reforging_LoadUI()
+	UIParentLoadAddOn("Blizzard_Reforging");
 end
 
 function GMChatFrame_LoadUI(...)
@@ -1131,6 +1135,15 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
 		end
+	end
+	
+	-- Events for trainer UI handling
+	if ( event == "REFORGING_SHOW" ) then
+		Reforging_LoadUI();
+		if ( ReforgingFrame_Show ) then
+			ReforgingFrame_Show();
+		end
+		return;
 	end
 end
 

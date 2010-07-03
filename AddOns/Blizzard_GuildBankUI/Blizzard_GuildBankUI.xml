@@ -1198,7 +1198,7 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<ScrollFrame name="GuildBankPopupScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+			<ScrollFrame name="GuildBankPopupScrollFrame" inherits="ListScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="296" y="195"/>
 				</Size>

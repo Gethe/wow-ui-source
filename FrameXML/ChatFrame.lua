@@ -2395,45 +2395,8 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
-		-- Level up
-		local info = ChatTypeInfo["SYSTEM"];
-
-		local string = format(LEVEL_UP, arg1);
-		self:AddMessage(string, info.r, info.g, info.b, info.id);
-
-		if ( arg3 > 0 ) then
-			string = format(LEVEL_UP_HEALTH_MANA, arg2, arg3);
-		else
-			string = format(LEVEL_UP_HEALTH, arg2);
-		end
-		self:AddMessage(string, info.r, info.g, info.b, info.id);
-
-		if ( arg4 > 0 ) then
-			string = format(LEVEL_UP_CHAR_POINTS, arg4);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-
-		if ( arg5 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT1_NAME, arg5);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg6 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT2_NAME, arg6);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg7 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT3_NAME, arg7);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg8 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT4_NAME, arg8);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg9 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT5_NAME, arg9);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
+		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
+		LevelUpDisplay_ChatPrint(self, level)
 		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1, arg2 = ...;

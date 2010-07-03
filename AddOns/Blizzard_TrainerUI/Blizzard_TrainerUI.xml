@@ -1,189 +1,130 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TrainerUI.lua"/>
-	<Frame name="ClassTrainerFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="34" top="0" bottom="75"/>
-		</HitRectInsets>
+	
+	
+	
+	
+	
+	
+	<!--	size=512,512
+	<Texture name="Trainer-FrameBg.png" >
+		<Size x="299" y="334"/>	
+		<TexCoords left="0.00195313" right="0.58593750" top="0.00195313" bottom="0.65429688"/>	
+	</Texture>
+	<Texture name="Trainer-ItemBg.png" >
+		<Size x="293" y="47"/>	
+		<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>	
+	</Texture>
+	<Texture name="Trainer-Item-Highlight.png" >
+		<Size x="293" y="47"/>	
+		<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>	
+	</Texture>
+	<Texture name="Trainer-Item-Selected.png" >
+		<Size x="293" y="47"/>	
+		<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>	
+	</Texture-->
+	
+	
+	
+	<Button name="ClassTrainerSkillButtonTemplate" virtual="true">
+		<Size x="293" y="47"/>
 		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" parentKey="icon" file="Interface\Icons\Ability_Marksmanship">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" x="6" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="200" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeTo="$parentIcon" relativePoint="TOPRIGHT" x="6" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" parentKey="subText">
+					<Size x="240" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
+					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="ClassTrainerFramePortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="ClassTrainerFrameBottomLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="ClassTrainerFrameBottomRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-				<FontString name="ClassTrainerNameText" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="ClassTrainerFrame" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-17"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="ClassTrainerGreetingText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension x="260" y="30"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="76" y="-38"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="ClassTrainerHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-					<Size>
-						<AbsDimension x="256" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-275"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
-				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-					<Size>
-						<AbsDimension x="75" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="ClassTrainerHorizontalBarLeft" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				<Texture parentKey="disabledBG" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+					<Color r="0.0" g="0.0" b="0.0" a="0.7"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="ClassTrainerExpandButtonFrame">
-				<Size>
-					<AbsDimension x="54" y="32"/>
-				</Size>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" parentKey="money">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="15" y="-70"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="5" y="-12"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="ClassTrainerExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
-							<Size>
-								<AbsDimension x="8" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture name="ClassTrainerExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
-							<Size>
-								<AbsDimension x="38" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ClassTrainerExpandTabLeft" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="6"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
-							<Size>
-								<AbsDimension x="8" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ClassTrainerExpandTabMiddle" relativePoint="RIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="ClassTrainerCollapseAllButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate" text="ALL">
-						<Size>
-							<AbsDimension x="40" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="ClassTrainerExpandTabLeft" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="0" y="3"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								ClassTrainerExpandTabMiddle:SetWidth(self:GetTextWidth() + 24);
-							</OnLoad>
-							<OnClick function="ClassTrainerCollapseAllButton_OnClick"/>
-						</Scripts>
-					</Button>
-				</Frames>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
 			</Frame>
+		</Frames>
+		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				self.showingTooltip = true;
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 35);
+				GameTooltip:SetTrainerService(self:GetID());
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip_Hide();
+				self.showingTooltip = false;
+			</OnLeave>
+			<OnClick> 
+				ClassTrainerSkillButton_OnClick(self, button);	
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	
+	
+	<Frame name="ClassTrainerFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentMoneyBg" file="Interface\MoneyFrame\UI-MoneyFrame-Border">
+					<Size x="148" y="34"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"  x="5" y="-9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" parentKey="BG" file="Interface\ClassTrainerFrame\TrainerTextures">
+					<TexCoords left="0.00195313" right="0.58593750" top="0.00195313" bottom="0.65429688"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
 			<Frame name="ClassTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
+					<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-26" y="-64"/>
+							<AbsDimension x="6" y="-30"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -192,326 +133,78 @@
 					<OnShow function="ClassTrainerFrameFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Frame name="ClassTrainerSkillHighlightFrame" hidden="true">
-				<Size>
-					<AbsDimension x="293" y="16"/>
-				</Size>
+			<Button name="ClassTrainerTrainButton" inherits="MagicButtonTemplate" text="TRAIN">
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="ClassTrainerSkillHighlight" file="Interface\Buttons\UI-Listbox-Highlight2"/>
-					</Layer>
-				</Layers>
+				<Scripts>
+					<OnClick function="ClassTrainerTrainButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentMoneyBg" x="8" y="6"/>
+				</Anchors>
 			</Frame>
-			<!-- The width of the Text element on these buttons is changed in ClassTrainerFrame_Update() -->
 			<Button name="ClassTrainerSkill1" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerFrame">
-						<Offset>
-							<AbsDimension x="22" y="-100"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="6" y="-5"/>
 				</Anchors>
 			</Button>
 			<Button name="ClassTrainerSkill2" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill1" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</Button>
 			<Button name="ClassTrainerSkill3" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill2" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</Button>
 			<Button name="ClassTrainerSkill4" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill3" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</Button>
 			<Button name="ClassTrainerSkill5" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill4" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill4" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</Button>
 			<Button name="ClassTrainerSkill6" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill5" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill5" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</Button>
 			<Button name="ClassTrainerSkill7" inherits="ClassTrainerSkillButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill6" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill6" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill8" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill7" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill9" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill8" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill10" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill9" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill11" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill10" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<ScrollFrame name="ClassTrainerListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+			</Button>			
+			<ScrollFrame name="ClassTrainerListScrollFrame" inherits="ListScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="296" y="184"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="ClassTrainerFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-67" y="-96"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="ClassTrainerSkill1" relativePoint="TOPRIGHT" y="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ClassTrainerSkill7" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(self, offset, CLASS_TRAINER_SKILL_HEIGHT, ClassTrainerFrame_Update)
 					</OnVerticalScroll>
 				</Scripts>
-			</ScrollFrame>
-			<Frame name="ClassTrainerMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			</ScrollFrame>	
+			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="bottomInset" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="ClassTrainerFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="180" y="86"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+						<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="BOTTOMLEFT" x="0" y="-3" />
+					</Anchors>
 			</Frame>
-			<ScrollFrame name="ClassTrainerDetailScrollFrame" inherits="ClassTrainerDetailScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="296" y="135"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerListScrollFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<ScrollChild>
-					<Frame name="ClassTrainerDetailScrollChildFrame">
-						<Size>
-							<AbsDimension x="296" y="50"/>
-						</Size>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="ClassTrainerSkillName" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="244" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="46" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="ClassTrainerSubSkillName" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="0" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="ClassTrainerSkillName" relativePoint="RIGHT">
-											<Offset>
-												<AbsDimension x="5" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="ClassTrainerSkillRequirements" inherits="GameFontHighlightSmall" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="244" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkillName" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="ClassTrainerCostLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COSTS_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="5" y="-50"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="ClassTrainerSkillDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="290" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="ClassTrainerCostLabel" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="ClassTrainerSkillIcon">
-								<Size>
-									<AbsDimension x="37" y="37"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="5" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture file="Interface\Buttons\UI-EmptySlot">
-											<Size>
-												<AbsDimension x="64" y="64"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="-13" y="13"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetTrainerService(ClassTrainerFrame.selectedService);
-										GameTooltip:Show();
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
-									<OnClick>
-										HandleModifiedItemClick(GetTrainerServiceItemLink(ClassTrainerFrame.selectedService));
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame name="ClassTrainerDetailMoneyFrame" inherits="SmallMoneyFrameTemplate">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="ClassTrainerCostLabel" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="5" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										SmallMoneyFrame_OnLoad(self);
-										MoneyFrame_SetType(self, "STATIC");
-									</OnLoad>
-								</Scripts>
-							</Frame>
-						</Frames>
-					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
-			<Button name="ClassTrainerTrainButton" inherits="UIPanelButtonTemplate" text="TRAIN">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="ClassTrainerFrame" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="224" y="-420"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="ClassTrainerTrainButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button name="ClassTrainerCancelButton" inherits="UIPanelButtonTemplate" text="EXIT">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="ClassTrainerFrame" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="305" y="-420"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-			</Button>
-			<Button name="ClassTrainerFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="ClassTrainerFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-29" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-		</Frames>
+		</Frames>	
 		<Scripts>
 			<OnLoad function="ClassTrainerFrame_OnLoad"/>
-			<OnShow>
-				PlaySound("igCharacterInfoOpen");
-			</OnShow>
+			<OnShow function="ClassTrainerFrame_OnShow"/>
 			<OnHide>
 				CloseTrainer();
 				UpdateMicroButtons();

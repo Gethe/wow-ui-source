@@ -1,6 +1,5 @@
 # Do not delete the following line!
 ## Interface: 40000
-DebugHook.lua
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
@@ -140,6 +139,7 @@ ChatConfigFrame.xml
 MovieFrame.xml
 VehicleMenuBar.xml
 AlternatePowerBar.xml
+LevelUpDisplay.xml
 AnimationSystem.lua
 EquipmentManager.lua
 

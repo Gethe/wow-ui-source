@@ -139,7 +139,7 @@ function PVPFrame_TabClicked(self)
 	PVPFrame.panel2:Hide();	
 	PVPFrame.panel3:Hide();	
 	PVPFrameTitleText:SetText(self:GetText());	
-	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_BUTTON_OFFSET);		
+	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
 	PVPFrame.topInset:Hide();
 	local currency = 0;
 	

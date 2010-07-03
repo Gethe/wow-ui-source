@@ -444,7 +444,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="TradeSkillCollapseAllButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate">
+					<Button name="TradeSkillCollapseAllButton">
 						<Size>
 							<AbsDimension x="40" y="22"/>
 						</Size>
@@ -455,11 +455,71 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentSubText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+							</Layer>
+						</Layers>
+						<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="3" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</NormalTexture>
+						<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="3" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</HighlightTexture>
+						<DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="3" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</DisabledTexture>
+						<ButtonText name="$parentText">
+							<Size x="270" y="13"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</ButtonText>
+						<NormalFont style="GameFontNormalLeft"/>
+						<HighlightFont style="GameFontHighlightLeft"/>
+						<DisabledFont style="GameFontDisableLeft"/>
 						<Scripts>
 							<OnLoad>
 								_G[self:GetName()]:SetText(ALL);
 							</OnLoad>
 							<OnClick function="TradeSkillCollapseAllButton_OnClick"/>
+							<OnEnter>
+								_G[self:GetName().."SubText"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							</OnEnter>
+							<OnLeave>
+								_G[self:GetName().."SubText"]:SetTextColor(self.r, self.g, self.b);
+							</OnLeave>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -621,7 +681,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<ScrollFrame name="TradeSkillListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+			<ScrollFrame name="TradeSkillListScrollFrame" inherits="ListScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="296" y="130"/>
 				</Size>
@@ -638,7 +698,7 @@
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
-			<ScrollFrame name="TradeSkillDetailScrollFrame" inherits="ClassTrainerDetailScrollFrameTemplate">
+			<ScrollFrame name="TradeSkillDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="297" y="177"/>
 				</Size>
@@ -649,6 +709,42 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTop" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="123"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.46875" top="0" bottom="0.9609375"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+							<Size>
+								<AbsDimension x="30" y="123"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						ScrollFrame_OnLoad(self);
+						self.scrollBarHideable = 1;
+					</OnLoad>
+				</Scripts>
 				<ScrollChild>
 					<Frame name="TradeSkillDetailScrollChildFrame">
 						<Size>

@@ -598,7 +598,7 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<ScrollFrame name="MacroPopupScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+			<ScrollFrame name="MacroPopupScrollFrame" inherits="ListScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="296" y="195"/>
 				</Size>

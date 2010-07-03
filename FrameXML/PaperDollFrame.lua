@@ -35,7 +35,6 @@ CR_ARMOR_PENETRATION = 25;
 ATTACK_POWER_MAGIC_NUMBER = 14;
 BLOCK_PER_STRENGTH = 0.5;
 HEALTH_PER_STAMINA = 10;
-ARMOR_PER_AGILITY = 2;
 MANA_PER_INTELLECT = 15;
 MANA_REGEN_PER_SPIRIT = 0.2;
 DODGE_PARRY_BLOCK_PERCENT_PER_DEFENSE = 0.04;
@@ -283,9 +282,9 @@ function PaperDollFrame_SetStat(statFrame, statIndex)
 	elseif ( statIndex == 2 ) then
 		local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
 		if ( attackPower > 0 ) then
-			statFrame.tooltip2 = format(STAT_ATTACK_POWER, attackPower) .. format(statFrame.tooltip2, GetCritChanceFromAgility("player"), effectiveStat*ARMOR_PER_AGILITY);
+			statFrame.tooltip2 = format(STAT_ATTACK_POWER, attackPower) .. format(statFrame.tooltip2, GetCritChanceFromAgility("player"));
 		else
-			statFrame.tooltip2 = format(statFrame.tooltip2, GetCritChanceFromAgility("player"), effectiveStat*ARMOR_PER_AGILITY);
+			statFrame.tooltip2 = format(statFrame.tooltip2, GetCritChanceFromAgility("player"));
 		end
 	elseif ( statIndex == 4 ) then
 		local baseInt = min(20, effectiveStat);

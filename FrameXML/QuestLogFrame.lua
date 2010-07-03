@@ -513,7 +513,12 @@ function QuestLog_Update()
 end
 
 function QuestLog_UpdateQuestCount(numQuests)
-	QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS);
+	if (numQuests > MAX_QUESTLOG_QUESTS) then
+		QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, RED_FONT_COLOR_CODE, numQuests, MAX_QUESTLOG_QUESTS);
+	else
+		QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, "|cffffffff", numQuests, MAX_QUESTLOG_QUESTS);
+	end
+	
 	local textHeight = 12;
 	local hPadding = 15;
 	local vPadding = 8;

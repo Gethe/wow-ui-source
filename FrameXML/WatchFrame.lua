@@ -512,6 +512,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, initialOffset, maxHeight, fra
 		line:SetScript("OnEnter", function (self) GameTooltip:SetOwner(self); GameTooltip:SetHyperlink(GetQuestLink(GetQuestIndexForTimer(i))); GameTooltip:Show(); end);
 		line:SetScript("OnLeave", GameTooltip_Hide);
 		line:EnableMouse(true);
+		lastLine = line;
 	end
 	
 	if ( WATCHFRAME_NUM_TIMERS ~= numTimers ) then

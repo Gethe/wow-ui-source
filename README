@@ -1,0 +1,36 @@
+﻿--------------------------------------------------------------------------------
+- Cataclysm Beta Patch Notes
+--------------------------------------------------------------------------------
+
+World of Warcraft: Cataclysm Beta Patch 1
+
+General
+
+-  Arathi Highlands, Blasted Lands, Dun Morogh, Elwynn Forest, Loch
+   Modan, Northshire, and Westfall are ready for testing.
+-  Several zones have had quest maps integrated.
+-  The level ranges of Gilneas and the Lost Isles are in the process of
+   being adjusted slightly. Creature, quest, and quest reward levels
+   are all being altered so that players finish questing in these zones
+   roughly by level 12. Further fine tuning will continue in future
+   patches.
+
+Dungeons
+
+-  Blackrock Caverns: Teleportation NPCs in Stormwind, Orgrimmar, and
+   Dalaran can now transport players to this dungeon, including players
+   who are ghosts.
+
+Classes
+
+-  Hunters should now start with a pet at level 1.
+
+User Interface
+
+-  The ability to use third-party addons has been temporarily disabled
+   for the test environment.
+
+Bug Fixes
+
+-  Fixed a bug with goblins and worgen that was causing certain NPCs to
+   appear neutral to these races.

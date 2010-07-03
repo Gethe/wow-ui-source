@@ -631,6 +631,102 @@
 					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
 				</Scripts>
  			</Frame>
+			<PlayerModel name="QuestFrameNPCModel" enableMouse="true" hidden="true">
+				<Size x="200" y="240"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-31" y="-40"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="QuestFrameNPCModelBg" file="Interface\TalentFrame\PetTalent-PetBG" setAllPoints="true">
+							<TexCoords left="0.025390625" right="0.556640625" top="0.107421875" bottom="0.892578125"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture name="QuestFrameNPCModelShadowOverlay" file="Interface\TalentFrame\PetTalent-ShadowOverlay" setAllPoints="true">
+							<TexCoords left="0.00000000" right="0.537109375" top="0" bottom="0.791015625"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="QuestFrameNPCModelTopLeftCorner" inherits="Talent-Inner-TopLeft" parentKey="BorderTopLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestFrameNPCModelTopRightCorner" inherits="Talent-Inner-TopRight" parentKey="BorderTopRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestFrameNPCModelBotLeftCorner" inherits="Talent-Inner-BotLeft" parentKey="BorderBottomLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestFrameNPCModelBotRightCorner" inherits="Talent-Inner-BotRight" parentKey="BorderBottomRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestFrameNPCModelTopBorder" inherits="_Talent-Inner-TopTile" parentKey="BorderTop">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="QuestFrameNPCModelTopLeftCorner" relativePoint="TOPRIGHT" x="0" y="0" />
+								<Anchor point="TOPRIGHT" relativeTo="QuestFrameNPCModelTopRightCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestFrameNPCModelBottomBorder" inherits="_Talent-Inner-BotTile" parentKey="BorderBottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="QuestFrameNPCModelBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameNPCModelBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestFrameNPCModelLeftBorder" inherits="!Talent-Inner-LeftTile" parentKey="BorderLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="QuestFrameNPCModelTopLeftCorner" relativePoint="BOTTOMLEFT" x="0" y="0" />
+								<Anchor point="BOTTOMLEFT" relativeTo="QuestFrameNPCModelBotLeftCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestFrameNPCModelRightBorder" inherits="!Talent-Inner-RightTile" parentKey="BorderRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="QuestFrameNPCModelTopRightCorner" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameNPCModelBotRightCorner" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>	
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="QuestFrameNPCModelTextFrame" inherits="InsetFrameTemplate2" hidden="true">
+						<Size x="200" y="60"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="QuestFrameNPCModelTextFrameBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="QuestFrameNPCModelText" inherits="GameFontHighlight" justifyH="MIDDLE" justifyV="MIDDLE">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="10" y="-10"/>
+										<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						Model_OnLoad(self);
+						self:SetPortraitZoom(0.6);
+						self:SetRotation(0);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+					</OnLoad>
+					<OnEvent>
+						self:RefreshUnit();
+					</OnEvent>
+				</Scripts>
+			</PlayerModel>
  		</Frames>
 		<Scripts>
 			<OnLoad function="QuestFrame_OnLoad"/>

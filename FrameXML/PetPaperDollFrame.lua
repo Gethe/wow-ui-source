@@ -581,8 +581,6 @@ function PetPaperDollFrame_SetStats()
 			local attackPower = effectiveStat-20;
 			frame.tooltip2 = format(frame.tooltip2, attackPower);
 		elseif ( i == 2 ) then
-			local newLineIndex = strfind(frame.tooltip2, "|n")+1;
-			frame.tooltip2 = strsub(frame.tooltip2, 1, newLineIndex);
 			frame.tooltip2 = format(frame.tooltip2, GetCritChanceFromAgility("pet"));
 		elseif ( i == 3 ) then
 			local expectedHealthGain = (((stat - posBuff - negBuff)-20)*10+20)*GetUnitHealthModifier("pet");
