@@ -556,7 +556,7 @@
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton2, "BOTTOMLEFT", 0, -1);
 							ChatConfigCategoryFrameButton3:SetPoint("TOPRIGHT", ChatConfigCategoryFrameButton2, "BOTTOMRIGHT", 0, -1);
 							ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
-							ChatConfigFrame:SetHeight(595);
+							ChatConfigFrame:SetHeight(575);
 						else
 							ChatConfigCategoryFrameButton2:Hide();
 							ChatConfigCategoryFrameButton3:SetPoint("TOPLEFT", ChatConfigCategoryFrameButton1, "BOTTOMLEFT", 0, -1);

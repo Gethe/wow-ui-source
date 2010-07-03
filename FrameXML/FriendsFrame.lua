@@ -561,7 +561,7 @@ function GuildStatus_Update()
 			GuildFrameDemoteButton:Disable();
 		end
 		-- Hide promote/demote buttons if both disabled
-		if ( GuildFrameDemoteButton:IsEnabled() == 0 and GuildFramePromoteButton:IsEnabled() == 0 ) then
+		if ( not GuildFrameDemoteButton:IsEnabled() and not GuildFramePromoteButton:IsEnabled() ) then
 			GuildFramePromoteButton:Hide();
 			GuildFrameDemoteButton:Hide();
 		else

@@ -1217,8 +1217,7 @@ StaticPopupDialogs["RESURRECT"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
-	noCancelOnReuse = 1
+	hideOnEscape = 1
 };
 StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -1243,8 +1242,7 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
-	noCancelOnReuse = 1
+	hideOnEscape = 1
 };
 StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	text = RESURRECT_REQUEST_NO_SICKNESS,
@@ -1267,8 +1265,7 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
-	noCancelOnReuse = 1
+	hideOnEscape = 1
 };
 StaticPopupDialogs["SKINNED"] = {
 	text = DEATH_CORPSE_SKINNED,
@@ -1634,7 +1631,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		MerchantFrame_ResetRefundItem();
 	end,
 	EditBoxOnEnterPressed = function(self)
-		if ( self:GetParent().button1:IsEnabled() == 1 ) then
+		if ( self:GetParent().button1:IsEnabled() ) then
 			DeleteCursorItem();
 			self:GetParent():Hide();
 		end
@@ -2379,18 +2376,6 @@ StaticPopupDialogs["TRADE_POTENTIAL_BIND_ENCHANT"] = {
 	hideOnEscape = 1,
 	noCancelOnReuse = 1
 };
-StaticPopupDialogs["END_REFUND"] = {
-	text = END_REFUND,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		EndRefund(self.data);
-	end,
-	timeout = 0,
-	exclusive = 1,
-	showAlert = 1,
-	hideOnEscape = 1,
-};
 StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
 	text = END_BOUND_TRADEABLE,
 	button1 = OKAY,
@@ -3052,10 +3037,13 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local alertIcon = _G[dialog:GetName().."AlertIcon"];
 	if ( info.showAlert ) then
 		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERT);
+		alertIcon:Show();
 	elseif ( info.showAlertGear ) then
 		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERTGEAR);
+		alertIcon:Show();
 	else		
 		alertIcon:SetTexture();
+		alertIcon:Hide();
 	end
 
 	-- Show or hide the close button

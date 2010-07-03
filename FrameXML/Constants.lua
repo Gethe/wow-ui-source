@@ -133,7 +133,6 @@ SHOW_LFD_LEVEL = 15;
 TALENT_SORT_ORDER = {
 	"spec1",
 	"spec2",
-	"petspec1",
 };
 
 TALENT_ACTIVATION_SPELLS = {

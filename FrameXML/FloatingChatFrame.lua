@@ -463,6 +463,7 @@ function FCF_OpenNewWindow(name)
 			ChatFrame_AddMessageGroup(chatFrame, "GUILD");
 			ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
 			ChatFrame_AddMessageGroup(chatFrame, "PARTY");
+			ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
 			ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
 
 			-- Show the frame and tab

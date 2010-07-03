@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="EclipseBarFrame.lua"/>
+
+
+	<!--size=128,128
+	<Texture name="UI-DruidEclipse-Moon.png" >
+		<Size x="31" y="30"/>	
+		<TexCoords left="0.00781250" right="0.25000000" top="0.00781250" bottom="0.24218750"/>	
+	</Texture>
+	<Texture name="UI-DruidEclipse-Sun.png" >
+		<Size x="31" y="30"/>	
+		<TexCoords left="0.26562500" right="0.50781250" top="0.00781250" bottom="0.24218750"/>	
+	</Texture>
+	<Texture name="UI-DruidEclipse-Slider.png" >
+		<Size x="32" y="32"/>	
+		<TexCoords left="0.00781250" right="0.25781250" top="0.25781250" bottom="0.50781250"/>	
+	</Texture>
+	<Texture name="UI-DruidEclipse-IconGlow.png" >
+		<Size x="36" y="36"/>	
+		<TexCoords left="0.27343750" right="0.55468750" top="0.25781250" bottom="0.53906250"/>	
+	</Texture>
+	<Texture name="UI-DruidEclipse-Bar.png" >
+		<Size x="86" y="16"/>	
+		<TexCoords left="0.27343750" right="0.94531250" top="0.55468750" bottom="0.67968750"/>	
+	</Texture-->
+  
+
+	<Frame name="EclipseBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="true">
+		<Size>
+		  <AbsDimension x="86" y="16"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
+			<Offset>
+			  <AbsDimension x="50" y="25"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBar" file="Interface\PlayerFrame\UI-DruidEclipse">				
+					<Size x="86" y="16"/>	
+					<TexCoords left="0.27343750" right="0.94531250" top="0.55468750" bottom="0.67968750"/>	
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentSun" file="Interface\PlayerFrame\UI-DruidEclipse">				
+					<Size x="31" y="30"/>	
+					<TexCoords left="0.26562500" right="0.50781250" top="0.00781250" bottom="0.24218750"/>	
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBar" relativePoint="RIGHT" x="12"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMoon" file="Interface\PlayerFrame\UI-DruidEclipse">				
+					<Size x="31" y="30"/>	
+					<TexCoords left="0.00781250" right="0.25000000" top="0.00781250" bottom="0.24218750"/>	
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBar" relativePoint="LEFT" x="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentMarker" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="marker" alphaMode="ADD">				
+					<Size x="32" y="32"/>	
+					<TexCoords left="0.00781250" right="0.25781250" top="0.25781250" bottom="0.50781250"/>	
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>				
+				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="glow" alphaMode="ADD" hidden="true">				
+					<Size x="36" y="36"/>	
+					<TexCoords left="0.27343750" right="0.55468750" top="0.25781250" bottom="0.53906250"/>
+				</Texture>		
+			</Layer>								
+		</Layers>		
+		<Scripts>
+		  <OnLoad function="EclipseBar_OnLoad"/>
+		  <OnEvent function="EclipseBar_OnEvent"/>
+		  <OnUpdate function="EclipseBar_Update"/>
+		</Scripts>
+	</Frame>
+</Ui>

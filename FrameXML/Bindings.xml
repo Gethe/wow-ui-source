@@ -638,6 +638,9 @@
 	<Binding name="TOGGLESPELLBOOK">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
+	<Binding name="TOGGLEPROFESSIONBOOK">
+		ToggleSpellBook(BOOKTYPE_PROFESSION);
+	</Binding>
 	<Binding name="TOGGLEPETBOOK">
 		ToggleSpellBook(BOOKTYPE_PET);
 	</Binding>
@@ -763,7 +766,6 @@
 			securecall("CloseAllWindows");
 			UIParent:Hide();
 			SetUIVisibility(false);
-			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"), "KEY_")))
 		else
 			UIParent:Show();
 			SetUIVisibility(true);
@@ -806,6 +808,9 @@
 	</Binding>
 	<Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true">
 		ResetPerformanceValues();
+	</Binding>
+	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true">
+		ToggleAnimKitDisplay();
 	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true">

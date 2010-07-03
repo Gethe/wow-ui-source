@@ -36,7 +36,7 @@ function VideoOptionsFrame_OnHide (self)
 	end
 end
 
-function VideoOptionsFrameOkay_OnClick (self, button, apply)
+function VideoOptionsFrameOkay_OnClick (self, button, down, apply)
 	OptionsFrameOkay_OnClick(VideoOptionsFrame, apply);
 
 	if ( VideoOptionsFrame.gxRestart ) then

@@ -23,7 +23,7 @@
 					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						VideoOptionsFrameOkay_OnClick(self, button, true);
+						VideoOptionsFrameOkay_OnClick(self, button, down, true);
 						self:Disable();
 					</OnClick>
 				</Scripts>

@@ -41,9 +41,9 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	
 }
 
-local tankIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:%d:64:64:0:19:22:41|t";
-local healerIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:%d:64:64:20:39:1:20|t";
-local damageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:%d:64:64:20:39:22:41|t";
+local tankIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:0:19:22:41|t";
+local healerIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:20:39:1:20|t";
+local damageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:20:39:22:41|t";
 
 --Variables to store dungeon info in Lua
 --local LFDDungeonList, LFRRaidList, LFGDungeonInfo, LFGCollapseList, LFGEnabledList, LFDHiddenByCollapseList, LFGLockList;
@@ -96,15 +96,6 @@ function LFGEventFrame_OnEvent(self, event, ...)
 
 		--Yes, consecutive string concatenation == bad for garbage collection. But the alternative is either extremely unslightly or localization unfriendly. (Also, this happens fairly rarely)
 		local roleList;
-		
-		--Horrible hack to deal with a bug in embedded font strings. FIXME
-		--The more icons with absolute sizes in a certain fontstring, the higher up the text goes. This offsets it to make the icons be in line with the text.
-		local numRoles = (isTank and 1 or 0) + (isHealer and 1 or 0) + (isDamage and 1 or 0);
-		local yOffset = 2*(numRoles-1)-2;	--Formula derived through testing.
-		
-		local tankIcon = format(tankIcon, yOffset);
-		local healerIcon = format(healerIcon, yOffset);
-		local damageIcon = format(damageIcon, yOffset);
 		
 		if ( isTank ) then
 			roleList = tankIcon.." "..TANK;

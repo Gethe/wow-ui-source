@@ -33,6 +33,8 @@ function PetFrame_OnLoad (self)
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
 	elseif ( class == "SHAMAN" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
+	elseif ( class == "WARLOCK" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -80);
 	end
 end
 

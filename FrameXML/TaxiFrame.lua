@@ -1,6 +1,6 @@
 
-TAXI_MAP_WIDTH = 316;
-TAXI_MAP_HEIGHT = 352;
+TAXI_MAP_WIDTH = 580;
+TAXI_MAP_HEIGHT = 580;
 NUM_TAXI_BUTTONS = 0;
 NUM_TAXI_ROUTES = 0;
 
@@ -15,24 +15,22 @@ TaxiButtonTypes["DISTANT"] = {
 	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Yellow"
 }
 
-TAXI_BUTTON_HALF_WIDTH = 8;
-TAXI_BUTTON_HALF_HEIGHT = 8;
-
+TAXI_BUTTON_MIN_DIST = 18;
 
 function TaxiFrame_OnLoad(self)
 	self:RegisterEvent("TAXIMAP_OPENED");
 	self:RegisterEvent("TAXIMAP_CLOSED");
+	self.InsetBg:SetHorizTile(false);
+	self.InsetBg:SetVertTile(false);
 end
 
 function TaxiFrame_OnEvent(self, event, ...)
 	if ( event == "TAXIMAP_OPENED" ) then
-		-- Show the merchant we're dealing with
-		TaxiMerchant:SetText(UnitName("npc"));
-		SetPortraitTexture(TaxiPortrait, "npc");
+		TaxiFrameTitleText:SetText(FLIGHT_MAP);
 
 		-- Set the texture coords on the map
-		TaxiMap:SetTexCoord(0,1,0,1);
-		SetTaxiMap(TaxiMap);
+		TaxiFrameInsetBg:SetTexCoord(0,1,0,1);
+		SetTaxiMap(TaxiFrameInsetBg);
 
 		-- Show the taxi node map and buttons
 		local num_nodes = NumTaxiNodes();
@@ -64,20 +62,20 @@ function TaxiFrame_OnEvent(self, event, ...)
 						local checkX = taxiNodePositions[checkNode].x;
 						local checkY = taxiNodePositions[checkNode].y;
 						if ( taxiNodePositions[checkNode].x ) then
-							if ( (currX > checkX - TAXI_BUTTON_HALF_WIDTH) and (currX < checkX + TAXI_BUTTON_HALF_WIDTH) ) then
-								if ( (currY > checkY - TAXI_BUTTON_HALF_HEIGHT) and (currY < checkY + TAXI_BUTTON_HALF_HEIGHT) ) then
-									taxiNodePositions[index].x = currX + (currX - checkX) * 0.5;
-									taxiNodePositions[index].y = currY + (currY - checkY) * 0.5;
-									taxiNodePositions[checkNode].x = checkX + (checkX - currX) * 0.5;
-									taxiNodePositions[checkNode].y = checkY + (checkY - currY) * 0.5;
-								end
+							local distX = taxiNodePositions[index].x - checkX;
+							local distY = taxiNodePositions[index].y - checkY;
+							local distSq = distX*distX + distY*distY;
+							if ( distSq < TAXI_BUTTON_MIN_DIST * TAXI_BUTTON_MIN_DIST ) then
+								local scale = TAXI_BUTTON_MIN_DIST / sqrt(distSq);
+								taxiNodePositions[index].x = checkX + distX*scale;
+								taxiNodePositions[index].y = checkY + distY*scale;
 							end
 						end
 					end
 				end
 				-- set the button position
 				button:ClearAllPoints();
-				button:SetPoint("CENTER", "TaxiMap", "BOTTOMLEFT", taxiNodePositions[index].x, taxiNodePositions[index].y);
+				button:SetPoint("CENTER", "TaxiFrameInsetBg", "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
 				button:SetNormalTexture(TaxiButtonTypes[type].file);
 				button:Show();
 			else
@@ -117,8 +115,8 @@ function TaxiNodeOnButtonEnter(button)
 	local numRoutes = GetNumRoutes(index);
 	local line;
 	local sX, sY, dX, dY;
-	local w = TaxiRouteMap:GetWidth();
-	local h = TaxiRouteMap:GetHeight();
+	local w = TAXI_MAP_WIDTH;
+	local h = TAXI_MAP_HEIGHT;
 	
 	local type = TaxiNodeGetType(index);
 	if ( type == "REACHABLE" ) then
@@ -158,8 +156,8 @@ end
 function DrawOneHopLines()
 	local line;
 	local sX, sY, dX, dY;
-	local w = TaxiRouteMap:GetWidth();
-	local h = TaxiRouteMap:GetHeight();
+	local w = TAXI_MAP_WIDTH;
+	local h = TAXI_MAP_HEIGHT;
 	local numNodes = NumTaxiNodes();
 	local numLines = 0;
 	local numSingleHops = 0;

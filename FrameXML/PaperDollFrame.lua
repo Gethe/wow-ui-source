@@ -20,8 +20,8 @@ CR_CRIT_SPELL = 11;
 CR_HIT_TAKEN_MELEE = 12;
 CR_HIT_TAKEN_RANGED = 13;
 CR_HIT_TAKEN_SPELL = 14;
-CR_CRIT_TAKEN_MELEE = 15;
-CR_CRIT_TAKEN_RANGED = 16;
+COMBAT_RATING_RESILIENCE_CRIT_TAKEN = 15;
+COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN = 16;
 CR_CRIT_TAKEN_SPELL = 17;
 CR_HASTE_MELEE = 18;
 CR_HASTE_RANGED = 19;
@@ -39,8 +39,6 @@ ARMOR_PER_AGILITY = 2;
 MANA_PER_INTELLECT = 15;
 MANA_REGEN_PER_SPIRIT = 0.2;
 DODGE_PARRY_BLOCK_PERCENT_PER_DEFENSE = 0.04;
-RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER = 2.2;
-RESILIENCE_CRIT_CHANCE_TO_CONSTANT_DAMAGE_REDUCTION_MULTIPLIER = 2.0;
 
 --Pet scaling:
 HUNTER_PET_BONUS = {};
@@ -499,28 +497,22 @@ function GetDodgeBlockParryChanceFromDefense()
 end
 
 function PaperDollFrame_SetResilience(statFrame)
-	local melee = GetCombatRating(CR_CRIT_TAKEN_MELEE);
-	local ranged = GetCombatRating(CR_CRIT_TAKEN_RANGED);
-	local spell = GetCombatRating(CR_CRIT_TAKEN_SPELL);
 
-	local minResilience = min(melee, ranged);
-	minResilience = min(minResilience, spell);
+	--local critResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
+	local damageResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
 	
-	local lowestRating = CR_CRIT_TAKEN_MELEE;
-	if ( melee == minResilience ) then
-		lowestRating = CR_CRIT_TAKEN_MELEE;
-	elseif ( ranged == minResilience ) then
-		lowestRating = CR_CRIT_TAKEN_RANGED;
-	else
-		lowestRating = CR_CRIT_TAKEN_SPELL;
-	end
-
-	local maxRatingBonus = GetMaxCombatRatingBonus(lowestRating);
-	local lowestRatingBonus = GetCombatRatingBonus(lowestRating);
-
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, minResilience);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..minResilience..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, lowestRatingBonus, min(lowestRatingBonus * RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER, maxRatingBonus), lowestRatingBonus * RESILIENCE_CRIT_CHANCE_TO_CONSTANT_DAMAGE_REDUCTION_MULTIPLIER);
+	local critMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
+	local critRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
+	
+	--local damageMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
+	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
+	
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageResilience);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..damageResilience..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, 
+								min(critRatingBonus, critMaxRatingBonus), 
+								damageRatingBonus 
+								);
 	statFrame:Show();
 end
 
@@ -1091,11 +1083,6 @@ function PaperDollFrame_OnShow (self)
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_SetResistances();
 	PaperDollFrame_UpdateStats();
-	if ( UnitHasRelicSlot("player") ) then
-		CharacterAmmoSlot:Hide();
-	else
-		CharacterAmmoSlot:Show();
-	end
 	if ( not PlayerTitlePickerScrollFrame.titles ) then
 		PlayerTitleFrame_UpdateTitles();	
 	end
@@ -1308,7 +1295,7 @@ end
 function PaperDollItemSlotButton_UpdateLock (self)
 	if ( IsInventoryItemLocked(self:GetID()) ) then
 		--this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
-		SetItemButtonDesaturated(self, 1, 0.5, 0.5, 0.5);
+		SetItemButtonDesaturated(self, 1);
 	else 
 		--this:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
 		SetItemButtonDesaturated(self, nil);
@@ -1496,7 +1483,9 @@ end
 
 function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
 	local levelModifier = attackerLevel;
-	if ( levelModifier > 59 ) then
+	if ( levelModifier > 80 ) then
+		levelModifier = levelModifier + (4.5 * (levelModifier-59)) + (20 * (levelModifier - 80));
+	elseif ( levelModifier > 59 ) then
 		levelModifier = levelModifier + (4.5 * (levelModifier-59));
 	end
 	local temp = 0.1*armor/(8.5*levelModifier + 40);
@@ -2596,6 +2585,8 @@ function PlayerTitleFrame_UpdateTitles()
 	local fontstringText = buttons[1].text;
 	local fontstringWidth;			
 	local maxWidth = 0;
+	local playerTitle = false;
+	local tempName = 0;
 	PlayerTitleFrame.selected = -1;
 	playerTitles[1] = { };
 	-- reserving space for None so it doesn't get sorted out of the top position
@@ -2603,17 +2594,20 @@ function PlayerTitleFrame_UpdateTitles()
 	playerTitles[1].id = -1;		
 	for i = 1, GetNumTitles() do
 		if ( IsTitleKnown(i) ~= 0 ) then		
-			titleCount = titleCount + 1;
-			playerTitles[titleCount] = playerTitles[titleCount] or { };
-			playerTitles[titleCount].name = strtrim(GetTitleName(i));
-			playerTitles[titleCount].id = i;
-			if ( i == currentTitle ) then
-				PlayerTitleFrame.selected = i;
-			end					
-			fontstringText:SetText(playerTitles[titleCount].name);
-			fontstringWidth = fontstringText:GetWidth();
-			if ( fontstringWidth > maxWidth ) then
-				maxWidth = fontstringWidth;
+			tempName, playerTitle = GetTitleName(i);
+			if ( tempName and playerTitle ) then
+				titleCount = titleCount + 1;
+				playerTitles[titleCount] = playerTitles[titleCount] or { };
+				playerTitles[titleCount].name = strtrim(tempName);
+				playerTitles[titleCount].id = i;
+				if ( i == currentTitle ) then
+					PlayerTitleFrame.selected = i;
+				end					
+				fontstringText:SetText(playerTitles[titleCount].name);
+				fontstringWidth = fontstringText:GetWidth();
+				if ( fontstringWidth > maxWidth ) then
+					maxWidth = fontstringWidth;
+				end
 			end
 		end
 	end

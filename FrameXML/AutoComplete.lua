@@ -218,9 +218,12 @@ function AutoCompleteEditBox_OnEnterPressed(self)
 end
 
 function AutoCompleteEditBox_OnTextChanged(self, userInput)
-	if ( userInput ) then
-		AutoComplete_Update(self, self:GetText(), self:GetUTF8CursorPosition());
-	end
+    if ( userInput ) then
+        AutoComplete_Update(self, self:GetText(), self:GetUTF8CursorPosition());
+    end
+    if(self:GetText() == "") then
+        AutoComplete_HideIfAttachedTo(self);
+    end
 end
 
 function AutoCompleteEditBox_AddHighlightedText(editBox, text)

@@ -326,7 +326,7 @@ function GlyphFrame_OnEvent (self, event, ...)
 		if ( name == "Blizzard_GlyphUI" and IsAddOnLoaded("Blizzard_TalentUI") or name == "Blizzard_TalentUI" ) then
 			self:ClearAllPoints();
 			self:SetParent(PlayerTalentFrame);
-			self:SetAllPoints();
+			self:SetPoint("TOPLEFT", 105, -65);
 			-- make sure this shows up above the talent UI
 			local frameLevel = self:GetParent():GetFrameLevel() + 4;
 			self:SetFrameLevel(frameLevel);

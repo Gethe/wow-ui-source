@@ -759,6 +759,33 @@
 					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
 				</Scripts>
 			</Slider>	
+			<Slider name="$parentLiquidDetail" inherits="OptionsSliderTemplate">
+				<Size x="112" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentClutterRadius" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-24"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "waterDetail";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.newValue = value;
+						if ( self:GetParent():IsShown() ) then
+							VideoOptionsEffectsPanel_UpdateVideoQuality();
+						end
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
 			<Frame name="$parentShaders" inherits="OptionsBoxTemplate">
 				<Size x="380" y="76"/>
 				<Anchors>
@@ -907,12 +934,12 @@
 			</CheckButton>
 			<Slider name="$parentConvergence" inherits="OptionsSliderTemplate">
 				<Size x="270" y="17"/>
-				<Anchors>
-					<Anchor point="TOP" relativePoint="TOP">
-						<Offset x="0" y="-150"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
+        <Anchors>
+          <Anchor point="TOP" relativePoint="TOP">
+            <Offset x="0" y="-150"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
 					<OnLoad>
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;

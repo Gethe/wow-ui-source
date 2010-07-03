@@ -173,7 +173,6 @@ function MainMenuBar_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
-	self:RegisterEvent("KNOWN_CURRENCY_TYPES_UPDATE");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
@@ -190,7 +189,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarPageNumber:SetText(GetActionBarPage());
-	elseif ( event == "KNOWN_CURRENCY_TYPES_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" ) then
+	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
 		local showTokenFrame, showTokenFrameHonor = GetCVarBool("showTokenFrame"), GetCVarBool("showTokenFrameHonor");
 		if ( not showTokenFrame or not showTokenFrameHonor ) then
 			local name, isHeader, isExpanded, isUnused, isWatched, count, icon, extraCurrencyType;
@@ -571,3 +570,26 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 
 	GameTooltip:Show();
 end
+
+
+
+function MainMenuExpBar_SetWidth(width)
+	MainMenuXPBarTextureMid:SetWidth(width-28);
+	
+	local divWidth = width/20;
+	local xpos = divWidth - 4.5;	
+	for i=1,19 do
+		local texture = _G["MainMenuXPBarDiv"..i];
+		if not texture then
+			texture = MainMenuExpBar:CreateTexture("MainMenuXPBarDiv"..i, "OVERLAY");
+			texture:SetTexture("Interface\\MainMenuBar\\UI-XP-Bar");
+			texture:SetSize(9,9);
+			texture:SetTexCoord( 0.01562500, 0.15625000, 0.01562500, 0.17187500);
+		end
+		local xalign = floor(xpos);
+		texture:SetPoint("LEFT", xalign, 3);
+		xpos = xpos + divWidth;
+	end		
+	MainMenuExpBar:SetWidth(width);
+end
+

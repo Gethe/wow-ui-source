@@ -58,7 +58,7 @@ function SetItemButtonTextureVertexColor(button, r, g, b)
 	_G[button:GetName().."IconTexture"]:SetVertexColor(r, g, b);
 end
 
-function SetItemButtonDesaturated(button, desaturated, r, g, b)
+function SetItemButtonDesaturated(button, desaturated)
 	if ( not button ) then
 		return;
 	end
@@ -66,19 +66,8 @@ function SetItemButtonDesaturated(button, desaturated, r, g, b)
 	if ( not icon ) then
 		return;
 	end
-	local shaderSupported = icon:SetDesaturated(desaturated);
-
-	if ( not desaturated ) then
-		r = 1.0;
-		g = 1.0;
-		b = 1.0;
-	elseif ( not r or not shaderSupported ) then
-		r = 0.5;
-		g = 0.5;
-		b = 0.5;
-	end
 	
-	icon:SetVertexColor(r, g, b);
+	icon:SetDesaturated(desaturated);
 end
 
 function SetItemButtonNormalTextureVertexColor(button, r, g, b)

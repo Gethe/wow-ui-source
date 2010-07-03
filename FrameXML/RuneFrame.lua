@@ -40,32 +40,6 @@ function RuneButton_OnLoad (self)
 	RuneButton_Update(self);
 end
 
-function RuneButton_OnUpdate (self, elapsed)
-	-- Constants that aren't used elsewhere and are actually constant are happiest inside their functions ;)
-	--local RUNE_HEIGHT = 18;
-	--local MIN_RUNE_ALPHA = .4
-	
-	local cooldown = _G[self:GetName().."Cooldown"];
-	local start, duration, runeReady = GetRuneCooldown(self:GetID());
-	
-	local displayCooldown = (runeReady and 0) or 1;
-	
-	CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
-	
-	-- if ( not enable ) then
-		-- self.fill:SetHeight(RUNE_HEIGHT * ((GetTime() - start)/duration));
-		-- self.fill:SetTexCoord(0, 1, (1 - ((GetTime() - start)/duration)), 1);
-		-- self.fill:SetAlpha(math.max(MIN_RUNE_ALPHA, (GetTime() - start)/duration));
-	-- else
-	
-	if ( runeReady ) then
-		-- self.fill:SetHeight(RUNE_HEIGHT);
-		-- self.fill:SetTexCoord(0, 1, 0, 1);
-		-- self.fill:SetAlpha(1);
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
 function RuneButton_Update (self, rune, dontFlash)
 	rune = rune or self:GetID();
 	local runeType = GetRuneType(rune);
@@ -131,7 +105,10 @@ function RuneFrame_OnEvent (self, event, ...)
 	elseif ( event == "RUNE_POWER_UPDATE" ) then
 		local rune, usable = ...;
 		if ( not usable and rune and self.runes[rune] ) then
-			self.runes[rune]:SetScript("OnUpdate", RuneButton_OnUpdate);
+			local cooldown = _G[self.runes[rune]:GetName().."Cooldown"];
+			local start, duration, runeReady = GetRuneCooldown(self.runes[rune]:GetID());			
+			local displayCooldown = (runeReady and 0) or 1;					
+			CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
 		elseif ( usable and rune and self.runes[rune] ) then
 			self.runes[rune].shine:SetVertexColor(1, 1, 1);
 			RuneButton_ShineFadeIn(self.runes[rune].shine)

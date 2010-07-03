@@ -32,8 +32,6 @@ function PVPFrame_OnEvent(self, event, ...)
 			local team = GetArenaTeam(PVPTeamDetails.team);
 			if ( not team ) then
 				PVPTeamDetails:Hide();
-			else
-				PVPTeamDetails_Update(PVPTeamDetails.team); -- team games played/won are shown in the detail frame
 			end
 		end
 	--[[ elseif ( event == "ARENA_SEASON_WORLD_STATE" ) then

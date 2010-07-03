@@ -117,20 +117,13 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame">
+				<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame" hidden="true">
 					<Size x="352" y="441"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.6875" top="0" bottom="0.861328125"/>
 				</Texture>
-				<FontString name="$parentTitleText" inherits="GameFontNormal" text="GLYPHS">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="-18"/>
-						</Anchor>
-					</Anchors>
-				</FontString>	
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentGlow" parentKey="glow" file="Interface\Spellbook\UI-GlyphFrame-Glow" hidden="true">

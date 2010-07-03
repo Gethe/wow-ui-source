@@ -443,7 +443,20 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.label:SetText(tostring(ceil(value * 100)).."%");
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>	
 			</Slider>	
 			<Slider name="$parentSoundVolume" inherits="OptionsSliderTemplate">
@@ -483,7 +496,23 @@
 						self.cvar = "Sound_SFXVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						PlaySound("igMainMenuOptionCheckBoxOn", "SFX");
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>	
 			</Slider>				
 			<Slider name="$parentMusicVolume" inherits="OptionsSliderTemplate">
@@ -519,7 +548,23 @@
 						self.cvar = "Sound_MusicVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						PlaySound("igMainMenuOptionCheckBoxOn", "Music");
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelMusic:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>	
 			</Slider>
 			<Slider name="$parentAmbienceVolume" inherits="OptionsSliderTemplate">
@@ -555,7 +600,23 @@
 						self.cvar = "Sound_AmbienceVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						PlaySound("igMainMenuOptionCheckBoxOn", "Ambience");
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>
 			</Slider>
 		</Frames>

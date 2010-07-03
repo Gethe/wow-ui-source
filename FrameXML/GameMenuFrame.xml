@@ -53,6 +53,13 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						if (tonumber(GetCVar("blizzcon")) == 1) then
+							self:Disable();
+						else
+							self:Enable();
+						end
+					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						ShowUIPanel(VideoOptionsFrame);
@@ -69,6 +76,13 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						if (tonumber(GetCVar("blizzcon")) == 1) then
+							self:Disable();
+						else
+							self:Enable();
+						end
+					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						ShowUIPanel(AudioOptionsFrame);

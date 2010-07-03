@@ -401,12 +401,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-            if( ItemSocketingFrame.itemIsRefundable) then
-                local dialog = StaticPopup_Show("END_REFUND");
-                if(dialog) then
-                  dialog.data = 2;
-                 end
-            elseif ( ItemSocketingFrame.itemIsBoundTradeable ) then
+			if ( ItemSocketingFrame.itemIsBoundTradeable ) then
                 local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, "gem");
             elseif ( ItemSocketingFrame.destroyingGem ) then
                 StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");

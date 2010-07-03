@@ -1,0 +1,3 @@
+<Bindings>
+	<ModifiedClick action="GENERATEFEEDBACK" default="ALT-BUTTON1"/>
+</Bindings>

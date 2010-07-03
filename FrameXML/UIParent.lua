@@ -19,9 +19,9 @@ UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDea
 UIPanelWindows["InterfaceOptionsFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1 };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
+UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1, xoffset = 16, width = 605, height = 545 };
 UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
-UIPanelWindows["TaxiFrame"] =			{ area = "left",	pushable = 0 };
+UIPanelWindows["TaxiFrame"] =			{ area = "left",	pushable = 0, xoffset = 16, width = 605, height = 580 };
 UIPanelWindows["QuestFrame"] =			{ area = "left",	pushable = 0 };
 UIPanelWindows["QuestLogFrame"] =		{ area = "doublewide",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["QuestLogDetailFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
@@ -146,7 +146,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("BIND_ENCHANT");
 	self:RegisterEvent("REPLACE_ENCHANT");
 	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
-	self:RegisterEvent("END_REFUND");
 	self:RegisterEvent("END_BOUND_TRADEABLE");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("MACRO_ACTION_BLOCKED");
@@ -759,13 +758,6 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("TRADE_REPLACE_ENCHANT", arg1, arg2);
 		return;
 	end
-	if ( event == "END_REFUND" ) then
-		local dialog = StaticPopup_Show("END_REFUND");
-		if(dialog) then
-			dialog.data = arg1;
-		end
-		return;
-	end
 	if ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 		return;
@@ -774,7 +766,6 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("BIND_ENCHANT");
 		StaticPopup_Hide("REPLACE_ENCHANT");
 		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
-		StaticPopup_Hide("END_REFUND");
 		StaticPopup_Hide("END_BOUND_TRADEABLE");
 		return;
 	end
@@ -885,7 +876,7 @@ function UIParent_OnEvent(self, event, ...)
 			-- exactly which talent spec he is wiping
 			TalentFrame_LoadUI();
 			if ( PlayerTalentFrame_Open ) then
-				PlayerTalentFrame_Open(false, GetActiveTalentGroup());
+				PlayerTalentFrame_Open(GetActiveTalentGroup());
 			end
 		end
 		return;
@@ -1575,7 +1566,7 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 	end
 	
 	if ( not skipSetPoint ) then
-		securecall("UpdateUIPanelPositions");
+		securecall("UpdateUIPanelPositions", frame);
 	end
 	
 	if ( frame ) then
@@ -1669,8 +1660,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	if ( frame ) then
 		local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 		local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+		local yPos = ClampUIPanelY(frame, yOff + topOffset);
 		frame:ClearAllPoints();
-		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, topOffset + yOff);
+		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 		centerOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
 		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
 		frame:Raise();
@@ -1679,8 +1671,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		if ( frame ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+			local yPos = ClampUIPanelY(frame, yOff + topOffset);
 			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, topOffset + yOff);
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 			rightOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
 			UIParent:SetAttribute("RIGHT_OFFSET", rightOffset);
 			frame:Raise();
@@ -1693,9 +1686,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local area = GetUIPanelWindowInfo(frame, "area");
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+			local yPos = ClampUIPanelY(frame, yOff + topOffset);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
-				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", centerOffset + xOff, topOffset + yOff);
+				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", centerOffset + xOff, yPos);
 			end
 			rightOffset = centerOffset + GetUIPanelWidth(frame) + xOff;
 		else
@@ -1726,8 +1720,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		if ( CanShowRightUIPanel(frame) ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+			local yPos = ClampUIPanelY(frame, yOff + topOffset);
 			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, topOffset + yOff);
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
 		else
 			if ( frame == currentFrame ) then
 				frame = GetUIPanel("center") or GetUIPanel("left") or GetUIPanel("doublewide");
@@ -2008,6 +2003,10 @@ function GetUIPanelWidth(frame)
 	return GetUIPanelWindowInfo(frame, "width") or frame:GetWidth();
 end
 
+function GetUIPanelHeight(frame)
+	return GetUIPanelWindowInfo(frame, "height") or frame:GetHeight();
+end
+
 function GetMaxUIPanelsWidth()
 	local bufferBoundry = UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
 	if ( Minimap:IsShown() and not MinimapCluster:IsUserPlaced() ) then
@@ -2017,6 +2016,17 @@ function GetMaxUIPanelsWidth()
 		-- If the minimap has been moved, make sure not to overlap the right side bars
 		return bufferBoundry;
 	end
+end
+
+function ClampUIPanelY(frame, yOffset)
+	local bottomPos = UIParent:GetTop() + yOffset - GetUIPanelHeight(frame);
+	if (bottomPos < 140) then
+		yOffset = yOffset + (140 - bottomPos);
+	end	
+	if (yOffset > -10) then
+		yOffset = -10;
+	end
+	return yOffset;
 end
 
 function CanShowRightUIPanel(frame)
@@ -2798,14 +2808,7 @@ end
 
 -- Wrapper for the desaturation function
 function SetDesaturation(texture, desaturation)
-	local shaderSupported = texture:SetDesaturated(desaturation);
-	if ( not shaderSupported ) then
-		if ( desaturation ) then
-			texture:SetVertexColor(0.5, 0.5, 0.5);
-		else
-			texture:SetVertexColor(1.0, 1.0, 1.0);
-		end
-	end
+	texture:SetDesaturated(desaturation);
 end
 
 function GetMaterialTextColors(material)

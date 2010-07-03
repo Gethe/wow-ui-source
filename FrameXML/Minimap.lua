@@ -1,12 +1,12 @@
 MINIMAPPING_TIMER = 5.5;
 MINIMAPPING_FADE_TIMER = 0.5;
 
+
 MINIMAP_RECORDING_INDICATOR_ON = false;
 
 MINIMAP_EXPANDER_MAXSIZE = 28;
 
-function MinimapPing_OnLoad(self)
-	-- self:SetFrameLevel(self:GetFrameLevel() + 1);
+function Minimap_OnLoad(self)
 	self.fadeOut = nil;
 	Minimap:SetPlayerTextureHeight(40);
 	Minimap:SetPlayerTextureWidth(40);
@@ -80,11 +80,10 @@ function Minimap_SetTooltip( pvpType, factionName )
 	end
 end
 
-function MinimapPing_OnEvent(self, event, ...)
+function Minimap_OnEvent(self, event, ...)
 	if ( event == "MINIMAP_PING" ) then
 		local arg1, arg2, arg3 = ...;
 		Minimap_SetPing(arg2, arg3, 1);
-		self.timer = MINIMAPPING_TIMER;
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then
 		MinimapZoomIn:Enable();
 		MinimapZoomOut:Enable();
@@ -97,48 +96,9 @@ function MinimapPing_OnEvent(self, event, ...)
 	end
 end
 
-function MinimapPing_OnUpdate(self, elapsed)
-	local timer = self.timer or 0;
-	if ( timer > 0 ) then
-		timer = timer - elapsed;
-		if ( not self.fadeOut and timer <= MINIMAPPING_FADE_TIMER ) then
-			MinimapPing_FadeOut();
-		end
-		local percentage = timer - floor(timer)
-		MinimapPingSpinner:SetRotation(percentage * math.pi/2);
-		-- We want about 7 expansions per ping to match the old animation. 
-		percentage = mod(timer, MINIMAPPING_TIMER/7);
-		MinimapPingExpander:SetHeight(MINIMAP_EXPANDER_MAXSIZE * (1 - percentage));
-		MinimapPingExpander:SetWidth(MINIMAP_EXPANDER_MAXSIZE * (1 - percentage));
-
-		self.timer = timer;
-	end
-	if ( self.fadeOut ) then
-		local fadeOutTimer = self.fadeOutTimer - elapsed;
-
-		if ( fadeOutTimer > 0 ) then
-			MinimapPing:SetAlpha(fadeOutTimer/MINIMAPPING_FADE_TIMER);
-		else
-			MinimapPing.fadeOut = nil;
-			MinimapPing:Hide();
-		end
-		self.fadeOutTimer = fadeOutTimer;
-	end
-end
-
 function Minimap_SetPing(x, y, playSound)
-	x = x * Minimap:GetWidth();
-	y = y * Minimap:GetHeight();
-	
-	if ( sqrt(x * x + y * y) < (Minimap:GetWidth() / 2) ) then
-		MinimapPing:SetPoint("CENTER", "Minimap", "CENTER", x, y);
-		MinimapPing:SetAlpha(1);
-		MinimapPing:Show();
-		if ( playSound ) then
-			PlaySound("MapPing");
-		end
-	else
-		MinimapPing:Hide();
+	if ( playSound ) then
+		PlaySound("MapPing");
 	end
 end
 
@@ -149,11 +109,6 @@ function MiniMapBattlefieldFrame_OnUpdate (self, elapsed)
 			GameTooltip:SetText(self.tooltip);
 		end
 	end
-end
-
-function MinimapPing_FadeOut()
-	MinimapPing.fadeOut = 1;
-	MinimapPing.fadeOutTimer = MINIMAPPING_FADE_TIMER;
 end
 
 function Minimap_ZoomInClick()

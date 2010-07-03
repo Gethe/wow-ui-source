@@ -631,14 +631,14 @@ end
 
 function WorldMapZoomOutButton_OnClick()
 	WorldMapTooltip:Hide();
-	if ( GetCurrentMapZone() ~= WORLDMAP_WORLD_ID ) then
+	
+	-- check if code needs to zoom out before going to the continent map
+	if ( ZoomOut() ~= nil ) then
+		return;
+	elseif ( GetCurrentMapZone() ~= WORLDMAP_WORLD_ID ) then
 		SetMapZoom(GetCurrentMapContinent());
 	elseif ( GetCurrentMapContinent() == WORLDMAP_WORLD_ID ) then
 		SetMapZoom(WORLDMAP_COSMIC_ID);
-	elseif ( GetCurrentMapDungeonLevel() > 0 ) then
-		ZoomOut();
-	elseif ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
-		ZoomOut();
 	elseif ( GetCurrentMapContinent() == WORLDMAP_OUTLAND_ID ) then
 		SetMapZoom(WORLDMAP_COSMIC_ID);
 	else
@@ -739,6 +739,21 @@ function WorldMapButton_OnClick(button, mouseButton)
 	end
 end
 
+local BLIP_TEX_COORDS = {
+["WARRIOR"] = { 0, 0.125, 0, 0.25 },
+["PALADIN"] = { 0.125, 0.25, 0, 0.25 },
+["HUNTER"] = { 0.25, 0.375, 0, 0.25 },
+["ROGUE"] = { 0.375, 0.5, 0, 0.25 },
+["PRIEST"] = { 0.5, 0.625, 0, 0.25 },
+["DEATHKNIGHT"] = { 0.625, 0.75, 0, 0.25 },
+["SHAMAN"] = { 0.75, 0.875, 0, 0.25 },
+["MAGE"] = { 0.875, 1, 0, 0.25 },
+["WARLOCK"] = { 0, 0.125, 0.25, 0.5 },
+["DRUID"] = { 0.125, 0.25, 0.25, 0.5 }
+}
+
+local BLIP_RAID_Y_OFFSET = 0.5;
+
 function WorldMapButton_OnUpdate(self, elapsed)
 	local x, y = GetCursorPosition();
 	x = x / self:GetEffectiveScale();
@@ -833,6 +848,24 @@ function WorldMapButton_OnUpdate(self, elapsed)
 				partyX = partyX * WorldMapDetailFrame:GetWidth();
 				partyY = -partyY * WorldMapDetailFrame:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				local class = select(2, UnitClass(unit));
+				if ( class ) then
+					if ( UnitInParty(unit) ) then
+						partyMemberFrame.icon:SetTexCoord(
+							BLIP_TEX_COORDS[class][1],
+							BLIP_TEX_COORDS[class][2],
+							BLIP_TEX_COORDS[class][3],
+							BLIP_TEX_COORDS[class][4]
+						);
+					else
+						partyMemberFrame.icon:SetTexCoord(
+							BLIP_TEX_COORDS[class][1],
+							BLIP_TEX_COORDS[class][2],
+							BLIP_TEX_COORDS[class][3] + BLIP_RAID_Y_OFFSET,
+							BLIP_TEX_COORDS[class][4] + BLIP_RAID_Y_OFFSET
+						);
+					end
+				end
 				partyMemberFrame.name = nil;
 				partyMemberFrame.unit = unit;
 				partyMemberFrame:Show();
@@ -841,7 +874,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		end
 	else
 		for i=1, MAX_PARTY_MEMBERS do
-			local partyX, partyY = GetPlayerMapPosition("party"..i);
+			local unit = "party"..i;
+			local partyX, partyY = GetPlayerMapPosition(unit);
 			local partyMemberFrame = _G["WorldMapParty"..i];
 			if ( partyX == 0 and partyY == 0 ) then
 				partyMemberFrame:Hide();
@@ -849,6 +883,15 @@ function WorldMapButton_OnUpdate(self, elapsed)
 				partyX = partyX * WorldMapDetailFrame:GetWidth();
 				partyY = -partyY * WorldMapDetailFrame:GetHeight();
 				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				local class = select(2, UnitClass(unit));
+				if ( class ) then
+					partyMemberFrame.icon:SetTexCoord(
+						BLIP_TEX_COORDS[class][1],
+						BLIP_TEX_COORDS[class][2],
+						BLIP_TEX_COORDS[class][3],
+						BLIP_TEX_COORDS[class][4]
+					);
+				end
 				partyMemberFrame:Show();
 			end
 		end
@@ -1344,8 +1387,8 @@ function WorldMap_ToggleSizeUp()
 	WorldMapFrameSizeUpButton:Hide();
 	ToggleMapFramerate();
 	-- floor dropdown
-	WorldMapLevelDropDown:SetPoint("TOPRIGHT", WorldMapPositioningGuide, "TOPRIGHT", -50, -35);
-	WorldMapLevelDropDown.header:Show();
+    WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPLEFT", 780, 34);
+    WorldMapLevelDropDown.header:Show();
 	-- tiny adjustments	
 	WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, 4, 4);
 	WorldMapFrameSizeDownButton:SetPoint("TOPRIGHT", WorldMapPositioningGuide, -16, 4);
@@ -1393,7 +1436,8 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrameMiniBorderRight:Show();		
 	WorldMapFrameSizeUpButton:Show();
 	-- floor dropdown
-	WorldMapLevelDropDown:SetPoint("TOPRIGHT", WorldMapPositioningGuide, "TOPRIGHT", -441, -35);
+    WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPLEFT", -19, 3);
+
 	WorldMapLevelDropDown:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 2);
 	WorldMapLevelDropDown.header:Hide();
 	-- tiny adjustments

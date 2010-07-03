@@ -13,7 +13,9 @@
 			<OnLoad>
 				self:SetFrameLevel(self:GetFrameLevel() + 1);
 			</OnLoad>
-			<OnClick function="ClassTrainerSkillButton_OnClick"/>
+			<OnClick> 
+				ClassTrainerSkillButton_OnClick(self, button);			
+			</OnClick>
 			<OnEnter>
 				_G[self:GetName().."SubText"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			</OnEnter>

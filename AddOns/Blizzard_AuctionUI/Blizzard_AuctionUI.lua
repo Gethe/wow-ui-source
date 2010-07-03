@@ -326,7 +326,7 @@ function AuctionFrame_OnShow (self)
 	PlaySound("AuctionWindowOpen");
 end
 
-function AuctionFrameTab_OnClick(self, index)
+function AuctionFrameTab_OnClick(self, button, down, index)
 	local index = self:GetID();
 	PanelTemplates_SetTab(AuctionFrame, index);
 	AuctionFrameAuctions:Hide();

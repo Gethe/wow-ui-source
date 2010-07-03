@@ -255,7 +255,7 @@
 				</Anchors>	
 				<Scripts>
 					<OnEnterPressed>
-						if ( KnowledgeBaseFrameSearchButton:IsEnabled() == 1 ) then
+						if ( KnowledgeBaseFrameSearchButton:IsEnabled() ) then
 							KnowledgeBaseFrame_Search(1);
 						end
 					</OnEnterPressed>

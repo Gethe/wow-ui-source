@@ -3,6 +3,7 @@ TRADE_SKILLS_DISPLAYED = 8;
 MAX_TRADE_SKILL_REAGENTS = 8;
 TRADE_SKILL_HEIGHT = 16;
 TRADE_SKILL_TEXT_WIDTH = 275;
+TRADE_SKILL_LINKED_NAME_WIDTH = 120;
 
 TradeSkillTypePrefix = {
 ["optimal"] = " [+++] ",
@@ -19,27 +20,33 @@ TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25,	font = GameFontNo
 TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50,	font = GameFontNormalLeftGrey };
 TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,		font = GameFontNormalLeft };
 
-UIPanelWindows["TradeSkillFrame"] =	{ area = "left", pushable = 3, showFailedFunc = "TradeSkillFrame_ShowFailed" };
+UIPanelWindows["TradeSkillFrame"] = {xoffset = 16, area = "left", pushable = 3, showFailedFunc = "TradeSkillFrame_ShowFailed" };
 
 CURRENT_TRADESKILL = "";
+
 
 
 function TradeSkillFrame_Show()
 	ShowUIPanel(TradeSkillFrame);
 	TradeSkillCreateButton:Disable();
 	TradeSkillCreateAllButton:Disable();
+	local tsIndex = 0;
 	if ( GetTradeSkillSelectionIndex() == 0 ) then
-		TradeSkillFrame_SetSelection(GetFirstTradeSkill());
+		tsIndex = GetFirstTradeSkill();
 	else
-		TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
-	end
+		tsIndex = GetTradeSkillSelectionIndex();
+	end	
+	TradeSkillFrame_SetSelection(tsIndex);
+	
 	FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
 	TradeSkillListScrollFrameScrollBar:SetMinMaxValues(0, 0); 
 	TradeSkillListScrollFrameScrollBar:SetValue(0);
-	SetPortraitTexture(TradeSkillFramePortrait, "player");
-	TradeSkillOnlyShowMakeable(TradeSkillFrameAvailableFilterCheckButton:GetChecked());
+	SetPortraitToTexture(TradeSkillFramePortrait, GetTradeSkillTexture() );
+	TradeSkillOnlyShowMakeable(TradeSkillFrame.filterTbl.hasMaterials);
+	TradeSkillOnlyShowSkillUps(TradeSkillFrame.filterTbl.hasSkillUp);
 	TradeSkillFrame_Update();
 
+	TradeSkillSetFilter(-1, -1);		
 	-- Moved to the bottom to prevent addons which hook it from blocking tradeskills
 	CloseDropDownMenus();
 end
@@ -52,12 +59,6 @@ function TradeSkillFrame_ShowFailed(self)
 	CloseTradeSkill();
 end
 
-function TradeSkillFrame_OnLoad(self)
-	self:RegisterEvent("TRADE_SKILL_UPDATE");
-	self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
-end
 
 function TradeSkillFrame_OnEvent(self, event, ...)
 	if ( not TradeSkillFrame:IsShown() ) then
@@ -93,11 +94,13 @@ function TradeSkillFrame_Update()
 		StopTradeSkillRepeat();
 		if ( CURRENT_TRADESKILL ~= "" ) then
 			-- To fix problem with switching between two tradeskills
-			UIDropDownMenu_Initialize(TradeSkillInvSlotDropDown, TradeSkillInvSlotDropDown_Initialize);
-			UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, 1);
+			UIDropDownMenu_Initialize(TradeSkillFilterDropDown, TradeSkillFilterDropDown_Initialize);
+			--TradeSkillSetFilter(-1, -1);
+			
+			--UIDropDownMenu_SetSelectedID(TradeSkillFilterDropDown, 1);
 
-			UIDropDownMenu_Initialize(TradeSkillSubClassDropDown, TradeSkillSubClassDropDown_Initialize);
-			UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, 1);
+			--UIDropDownMenu_Initialize(TradeSkillSubClassDropDown, TradeSkillSubClassDropDown_Initialize);
+			--UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, 1);
 		end
 		CURRENT_TRADESKILL = name;
 	end
@@ -106,7 +109,6 @@ function TradeSkillFrame_Update()
 	if ( numTradeSkills == 0 ) then
 		TradeSkillFrameTitleText:SetFormattedText(TRADE_SKILL_TITLE, GetTradeSkillLine());
 		TradeSkillSkillName:Hide();
---		TradeSkillSkillLineName:Hide();
 		TradeSkillSkillIcon:Hide();
 		TradeSkillRequirementLabel:Hide();
 		TradeSkillRequirementText:SetText("");
@@ -116,19 +118,24 @@ function TradeSkillFrame_Update()
 		end
 	else
 		TradeSkillSkillName:Show();
---		TradeSkillSkillLineName:Show();
 		TradeSkillSkillIcon:Show();
 		TradeSkillCollapseAllButton:Enable();
 	end
 
 	if ( rank < 75 ) and ( not IsTradeSkillLinked() ) then
-		TradeSkillFrameEditBox:Hide();
+		TradeSkillFrameSearchBox:Hide();
 		SetTradeSkillItemNameFilter("");	--In case they are switching from an inspect WITH a filter directly to their own without.
 	else
-		TradeSkillFrameEditBox:Show();
+		TradeSkillFrameSearchBox:Show();
 	end
 	-- ScrollFrame update
 	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
+	-- Fixing up the search exit bar not handled in FauxScrollFrame_Update
+	if TradeSkillListScrollFrame:IsShown() then
+		TradeSkillFilterBar:SetWidth(293);
+	else
+		TradeSkillFilterBar:SetWidth(316);
+	end
 	
 	TradeSkillHighlightFrame:Hide();
 	local skillName, skillType, numAvailable, isExpanded, altVerb;
@@ -136,13 +143,42 @@ function TradeSkillFrame_Update()
 	local nameWidth, countWidth;
 	
 	local skillNamePrefix = " ";
-	for i=1, TRADE_SKILLS_DISPLAYED, 1 do
+	local diplayedSkills = TRADE_SKILLS_DISPLAYED;
+	local hasFilterBar = TradeSkillFilterBar:IsShown();
+	if  hasFilterBar then
+		diplayedSkills = TRADE_SKILLS_DISPLAYED - 1;
+	end	
+	local buttonIndex = 0;
+	
+	for i=1, diplayedSkills, 1 do
+		
 		skillIndex = i + skillOffset;
-		skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(skillIndex);
-		skillButton = _G["TradeSkillSkill"..i];
-		skillButtonText = _G["TradeSkillSkill"..i.."Text"];
-		skillButtonCount = _G["TradeSkillSkill"..i.."Count"];
+		skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps = GetTradeSkillInfo(skillIndex);
+		if hasFilterBar then
+			buttonIndex = i+1;
+		else
+			buttonIndex = i;
+		end
+		
+		skillButton = _G["TradeSkillSkill"..buttonIndex];
+		skillButtonText = _G["TradeSkillSkill"..buttonIndex.."Text"];
+		skillButtonCount = _G["TradeSkillSkill"..buttonIndex.."Count"];
+		skillButtonNumSkillUps = _G["TradeSkillSkill"..buttonIndex.."NumSkillUps"];
+		skillButtonNumSkillUpsIcon = _G["TradeSkillSkill"..buttonIndex.."NumSkillUpsIcon"];
 		if ( skillIndex <= numTradeSkills ) then	
+		
+			--turn on the multiskill icon
+			if numSkillUps > 1 and skillType=="optimal" then
+				skillButtonNumSkillUps:Show();
+				skillButtonNumSkillUpsIcon:Show();
+				skillButtonNumSkillUps:SetText(numSkillUps);
+			else 
+				skillButtonNumSkillUps:Hide();
+				skillButtonNumSkillUpsIcon:Hide();			
+			end
+		
+		
+		
 			-- Set button widths if scrollbar is shown or hidden
 			if ( TradeSkillListScrollFrame:IsShown() ) then
 				skillButton:SetWidth(293);
@@ -155,7 +191,9 @@ function TradeSkillFrame_Update()
 				skillButtonCount:SetVertexColor(color.r, color.g, color.b);
 				skillButton.r = color.r;
 				skillButton.g = color.g;
-				skillButton.b = color.b;
+				skillButton.b = color.b;			
+				skillButtonNumSkillUps:SetVertexColor(color.r, color.g, color.b);
+				skillButtonNumSkillUpsIcon:SetVertexColor(color.r, color.g, color.b);
 			end
 			
 			if ( ENABLE_COLORBLIND_MODE == "1" ) then
@@ -174,14 +212,14 @@ function TradeSkillFrame_Update()
 				else
 					skillButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 				end
-				_G["TradeSkillSkill"..i.."Highlight"]:SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
-				_G["TradeSkillSkill"..i]:UnlockHighlight();
+				_G["TradeSkillSkill"..buttonIndex.."Highlight"]:SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+				_G["TradeSkillSkill"..buttonIndex]:UnlockHighlight();
 			else
 				if ( not skillName ) then
 					return;
 				end
 				skillButton:SetNormalTexture("");
-				_G["TradeSkillSkill"..i.."Highlight"]:SetTexture("");
+				_G["TradeSkillSkill"..buttonIndex.."Highlight"]:SetTexture("");
 				if ( numAvailable <= 0 ) then
 					skillButton:SetText(skillNamePrefix..skillName);
 					skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH);
@@ -202,9 +240,12 @@ function TradeSkillFrame_Update()
 				
 				-- Place the highlight and lock the highlight state
 				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
-					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..i, "TOPLEFT", 0, 0);
+					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..buttonIndex, "TOPLEFT", 0, 0);
 					TradeSkillHighlightFrame:Show();
 					skillButtonCount:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					
+					skillButtonNumSkillUps:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					skillButtonNumSkillUpsIcon:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					skillButton:LockHighlight();
 					skillButton.isHighlighted = true;
 				else
@@ -217,6 +258,7 @@ function TradeSkillFrame_Update()
 			skillButton:Hide();
 		end
 	end
+	
 	
 	-- Set the expand/collapse all button texture
 	local numHeaders = 0;
@@ -372,17 +414,33 @@ function TradeSkillFrame_SetSelection(id)
 	-- Reset the number of items to be created
 	TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
 	
-	--Hide inapplicable buttons if we are inspecting. Otherwise show them
-	if ( IsTradeSkillLinked() ) then
+	--Hide inapplicable buttons if we are inspecting. Otherwise show them`
+	local linked, linkedName = IsTradeSkillLinked()
+	if ( linked ) then
 		TradeSkillCreateButton:Hide();
 		TradeSkillCreateAllButton:Hide();
 		TradeSkillDecrementButton:Hide();
 		TradeSkillInputBox:Hide();
 		TradeSkillIncrementButton:Hide();
 		TradeSkillLinkButton:Hide();
-		TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\PaperDollInfoFrame\SkillFrame-BotLeft]]);
-		TradeSkillFrameBottomRightTexture:SetTexture([[Interface\PaperDollInfoFrame\SkillFrame-BotRight]]);
+		TradeSkillLinkNameButton:Show();
+		local linkedText = "["..linkedName.."]";
+		TradeSkillFrameDummyString:Show();
+		TradeSkillFrameDummyString:Hide();
+		TradeSkillFrameDummyString:SetText(linkedText);
+		local linkedNameWidth = TradeSkillFrameDummyString:GetWidth();
+		if linkedNameWidth > TRADE_SKILL_LINKED_NAME_WIDTH then
+			linkedNameWidth = TRADE_SKILL_LINKED_NAME_WIDTH
+		end
+		TradeSkillLinkNameButton:SetWidth(linkedNameWidth);
+		TradeSkillLinkNameButtonTitleText:SetWidth(linkedNameWidth);
+		TradeSkillLinkNameButtonTitleText:SetText(linkedText);
+		TradeSkillLinkNameButton.linkedName = linkedName;
+		TradeSkillFrameTitleText:SetPoint("TOP", -linkedNameWidth/2,  -4);
 	else
+	
+		TradeSkillLinkNameButton:Hide();
+		TradeSkillFrameTitleText:SetPoint("TOP", 0,  -4);
 		--Change button names and show/hide them depending on if this tradeskill creates an item or casts something
 		if ( not altVerb ) then
 			--Its an item with 'Create'
@@ -390,9 +448,6 @@ function TradeSkillFrame_SetSelection(id)
 			TradeSkillDecrementButton:Show();
 			TradeSkillInputBox:Show();
 			TradeSkillIncrementButton:Show();
-			
-			TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\TradeSkillFrame\UI-TradeSkill-BotLeft]]);
-			TradeSkillFrameBottomRightTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight]])
 		else
 			--Its something else
 			TradeSkillCreateAllButton:Hide();
@@ -400,8 +455,8 @@ function TradeSkillFrame_SetSelection(id)
 			TradeSkillInputBox:Hide();
 			TradeSkillIncrementButton:Hide();
 			
-			TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft]]);
-			TradeSkillFrameBottomRightTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight]]);
+			--TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft]]);
+			--TradeSkillFrameBottomRightTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight]]);
 		end
 		if ( GetTradeSkillListLink() ) then
 			TradeSkillLinkButton:Show();
@@ -420,7 +475,7 @@ function TradeSkillSkillButton_OnClick(self, button)
 	end
 end
 
-function TradeSkillFilter_OnTextChanged(self)
+function TradeSkillSearch_OnTextChanged(self)
 	local text = self:GetText();
 
 	if ( text == SEARCH ) then
@@ -459,121 +514,238 @@ function TradeSkillCollapseAllButton_OnClick(self)
 	end
 end
 
-function TradeSkillSubClassDropDown_OnLoad(self)
-	SetTradeSkillSubClassFilter(0, 1, 1);
-	UIDropDownMenu_Initialize(self, TradeSkillSubClassDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 120);
-	UIDropDownMenu_SetSelectedID(self, 1);
+
+-- DROP DOWN MENU MAGIC
+
+
+-- function TradeSkillSubClassDropDown_OnLoad(self)
+	-- SetTradeSkillSubClassFilter(0, 1, 1);
+	-- UIDropDownMenu_Initialize(self, TradeSkillSubClassDropDown_Initialize);
+	-- UIDropDownMenu_SetWidth(self, 120);
+	-- UIDropDownMenu_SetSelectedID(self, 1);
+-- end
+
+-- function TradeSkillSubClassDropDown_Initialize()
+	-- TradeSkillFilterFrame_LoadSubClasses(GetTradeSkillSubClasses());
+-- end
+
+-- function TradeSkillFilterFrame_LoadSubClasses(...)
+	-- local selectedID = UIDropDownMenu_GetSelectedID(TradeSkillSubClassDropDown);
+	-- local numSubClasses = select("#", ...);
+	-- local allChecked = GetTradeSkillSubClassFilter(0);
+
+	-- -- the first button in the list is going to be an "all subclasses" button
+	-- local info = UIDropDownMenu_CreateInfo();
+	-- info.text = ALL_SUBCLASSES;
+	-- info.func = TradeSkillSubClassDropDownButton_OnClick;
+	-- -- select this button if nothing else was selected
+	-- info.checked = allChecked and (selectedID == nil or selectedID == 1);
+	-- UIDropDownMenu_AddButton(info);
+	-- if ( info.checked ) then
+		-- UIDropDownMenu_SetText(TradeSkillSubClassDropDown, ALL_SUBCLASSES);
+	-- end
+
+	-- local checked;
+	-- for i=1, select("#", ...), 1 do
+		-- -- if there are no filters then don't check any individual subclasses
+		-- if ( allChecked ) then
+			-- checked = nil;
+		-- else
+			-- checked = GetTradeSkillSubClassFilter(i);
+			-- if ( checked ) then
+				-- UIDropDownMenu_SetText(TradeSkillSubClassDropDown, select(i, ...));
+			-- end
+		-- end
+		-- info.text = select(i, ...);
+		-- info.func = TradeSkillSubClassDropDownButton_OnClick;
+		-- info.checked = checked;
+		-- UIDropDownMenu_AddButton(info);
+	-- end
+-- end
+
+function TradeSkillFilterDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, TradeSkillFilterDropDown_Initialize, "MENU");
+	TradeSkillFilterDropDownText:SetJustifyH("CENTER");
+	TradeSkillFilterDropDownButton:Show();
 end
 
-function TradeSkillSubClassDropDown_Initialize()
-	TradeSkillFilterFrame_LoadSubClasses(GetTradeSkillSubClasses());
-end
 
-function TradeSkillFilterFrame_LoadSubClasses(...)
-	local selectedID = UIDropDownMenu_GetSelectedID(TradeSkillSubClassDropDown);
-	local numSubClasses = select("#", ...);
-	local allChecked = GetTradeSkillSubClassFilter(0);
+function TradeSkillUpdateFilterBar(subName, slotName)
 
-	-- the first button in the list is going to be an "all subclasses" button
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = ALL_SUBCLASSES;
-	info.func = TradeSkillSubClassDropDownButton_OnClick;
-	-- select this button if nothing else was selected
-	info.checked = allChecked and (selectedID == nil or selectedID == 1);
-	UIDropDownMenu_AddButton(info);
-	if ( info.checked ) then
-		UIDropDownMenu_SetText(TradeSkillSubClassDropDown, ALL_SUBCLASSES);
+	local filterText = "";
+	if TradeSkillFrame.filterTbl.hasMaterials then 
+		filterText = filterText..CRAFT_IS_MAKEABLE;
+	end
+	
+	if TradeSkillFrame.filterTbl.hasSkillUp then 
+		if filterText ~= "" then filterText = filterText..", "; end
+		filterText = filterText..TRADESKILL_FILTER_HAS_SKILL_UP;
 	end
 
-	local checked;
-	for i=1, select("#", ...), 1 do
-		-- if there are no filters then don't check any individual subclasses
-		if ( allChecked ) then
-			checked = nil;
-		else
-			checked = GetTradeSkillSubClassFilter(i);
-			if ( checked ) then
-				UIDropDownMenu_SetText(TradeSkillSubClassDropDown, select(i, ...));
-			end
+	if TradeSkillFrame.filterTbl.subClassValue > 0 then 	
+		if filterText ~= "" then filterText = filterText..", "; end 
+		if not subName then
+			subName = TradeSkillFrame.filterTbl.subClassText;
 		end
-		info.text = select(i, ...);
-		info.func = TradeSkillSubClassDropDownButton_OnClick;
-		info.checked = checked;
-		UIDropDownMenu_AddButton(info);
+		filterText = filterText..subName;
+		TradeSkillFrame.filterTbl.subClassText = subName;
 	end
-end
-
-function TradeSkillInvSlotDropDown_OnLoad(self)
-	SetTradeSkillInvSlotFilter(0, 1, 1);
-	UIDropDownMenu_Initialize(self, TradeSkillInvSlotDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 120);
-	UIDropDownMenu_SetSelectedID(self, 1);
-end
-
-function TradeSkillInvSlotDropDown_Initialize()
-	TradeSkillFilterFrame_LoadInvSlots(GetTradeSkillInvSlots());
-end
-
-function TradeSkillFilterFrame_LoadInvSlots(...)
-	UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, nil);
-	local allChecked = GetTradeSkillInvSlotFilter(0);
-	local info = UIDropDownMenu_CreateInfo();
-	local filterCount = select("#", ...);
-	info.text = ALL_INVENTORY_SLOTS;
-	info.func = TradeSkillInvSlotDropDownButton_OnClick;
-	info.checked = allChecked;
-	UIDropDownMenu_AddButton(info);
-	local checked;
-	for i=1, filterCount, 1 do
-		if ( allChecked and filterCount > 1 ) then
-			checked = nil;
-			UIDropDownMenu_SetText(TradeSkillInvSlotDropDown, ALL_INVENTORY_SLOTS);
-		else
-			checked = GetTradeSkillInvSlotFilter(i);
-			if ( checked ) then
-				UIDropDownMenu_SetText(TradeSkillInvSlotDropDown, select(i, ...));
-			end
+	
+	if TradeSkillFrame.filterTbl.slotValue > 0 then 
+		if filterText ~= "" then filterText = filterText..", "; end
+		if not slotName then
+			slotName = TradeSkillFrame.filterTbl.slotText;
 		end
-		info.text = select(i, ...);
-		info.func = TradeSkillInvSlotDropDownButton_OnClick;
-		info.checked = checked;
+		filterText = filterText..slotName;
+		TradeSkillFrame.filterTbl.slotText = slotName;
+	end
+
+	 if filterText == "" then
+		TradeSkillFilterBar:Hide();
+		TradeSkillSkill1:Show();
 		
-		UIDropDownMenu_AddButton(info);
+	else
+		TradeSkillFilterBar:Show();	
+		TradeSkillSkill1:Hide();
+		TradeSkillFilterBarText:SetText(FILTER..": "..filterText);
 	end
-end
 
-function TradeSkillFilterFrame_InvSlotName(...)
-	for i=1, select("#", ...), 1 do
-		if ( GetTradeSkillInvSlotFilter(i) ) then
-			return select(i, ...);
-		end
-	end
-end
-
-function TradeSkillSubClassDropDownButton_OnClick(self)
-	UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, self:GetID());
-	SetTradeSkillSubClassFilter(self:GetID() - 1, 1, 1);
-	if ( self:GetID() ~= 1 ) then
-		if ( TradeSkillFilterFrame_InvSlotName(GetTradeSkillInvSlots()) ~= TradeSkillInvSlotDropDown.selected ) then
-			SetTradeSkillInvSlotFilter(0, 1, 1);
-			UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, 1);
-			UIDropDownMenu_SetText(TradeSkillInvSlotDropDown, ALL_INVENTORY_SLOTS);
-		end
-	end
 	TradeSkillListScrollFrameScrollBar:SetValue(0);
 	FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
 	TradeSkillFrame_Update();
 end
 
-function TradeSkillInvSlotDropDownButton_OnClick(self)
-	UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, self:GetID());
-	SetTradeSkillInvSlotFilter(self:GetID() - 1, 1, 1);
-	TradeSkillInvSlotDropDown.selected = TradeSkillFilterFrame_InvSlotName(GetTradeSkillInvSlots());
-	TradeSkillListScrollFrameScrollBar:SetValue(0);
-	FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
-	TradeSkillFrame_Update();
+function TradeSkillSetFilter(subclass, slot, subName, slotName)
+
+	TradeSkillFrame.filterTbl.subClassValue = subclass;
+	TradeSkillFrame.filterTbl.slotValue = slot;
+
+	SetTradeSkillSubClassFilter(subclass, 1, 1);
+	SetTradeSkillInvSlotFilter(slot, 1, 1);
+
+	
+	TradeSkillUpdateFilterBar(subName, slotName);
+	CloseDropDownMenus();
 end
+
+
+function TradeSkillFilterDropDown_Initialize(self, level)
+	
+	local info = UIDropDownMenu_CreateInfo();
+	
+	if level == 1 then
+	
+		info.text = CRAFT_IS_MAKEABLE
+		info.func = 	function() 
+							TradeSkillFrame.filterTbl.hasMaterials  = not TradeSkillFrame.filterTbl.hasMaterials;
+							TradeSkillOnlyShowMakeable(TradeSkillFrame.filterTbl.hasMaterials);  
+							TradeSkillUpdateFilterBar();
+						end 
+		info.keepShownOnClick = true;
+		info.checked = 	TradeSkillFrame.filterTbl.hasMaterials
+		info.isNotRadial = true;
+		UIDropDownMenu_AddButton(info, level)
+		
+		
+		info.text = TRADESKILL_FILTER_HAS_SKILL_UP
+		info.func = 	function() 
+							TradeSkillFrame.filterTbl.hasSkillUp  = not TradeSkillFrame.filterTbl.hasSkillUp;
+							TradeSkillOnlyShowSkillUps(TradeSkillFrame.filterTbl.hasSkillUp);
+							TradeSkillUpdateFilterBar();
+						end 
+		info.keepShownOnClick = true;
+		info.checked = 	TradeSkillFrame.filterTbl.hasSkillUp
+		info.isNotRadial = true;
+		UIDropDownMenu_AddButton(info, level)
+		
+		info.checked = 	nil;
+		info.isNotRadial = nil;
+				
+		info.text = TRADESKILL_FILTER_SLOTS
+		info.func =  nil;
+		info.notCheckable = true;
+		info.keepShownOnClick = false;
+		info.hasArrow = true;	
+		info.value = 1;
+		UIDropDownMenu_AddButton(info, level)
+				
+		info.text = TRADESKILL_FILTER_SUBCLASS
+		info.func =  nil;
+		info.notCheckable = true;
+		info.keepShownOnClick = false;
+		info.hasArrow = true;
+		info.value = 2;
+		UIDropDownMenu_AddButton(info, level)
+	
+	elseif level == 2 then
+		if UIDROPDOWNMENU_MENU_VALUE == 1 then
+			local slots = { GetTradeSkillSubClassFilteredSlots(0) };
+			local subslots = {};
+			for i,slot in pairs(slots) do
+				info.text = slot;
+				info.func =  function() TradeSkillSetFilter(0, i, "", slots[i]); end;
+				info.notCheckable = true;
+				info.hasArrow = false;	
+				UIDropDownMenu_AddButton(info, level);
+			end
+		elseif UIDROPDOWNMENU_MENU_VALUE == 2 then
+			local subClasses = { GetTradeSkillSubClasses() };
+			local subslots = {};
+			for i,subClass in pairs(subClasses) do
+				info.text = subClass;
+				info.func =  function() TradeSkillSetFilter(i, 0, subClasses[i], ""); end
+				info.notCheckable = true;
+				subslots  = { GetTradeSkillSubClassFilteredSlots(i) };
+				info.hasArrow = #subslots > 1;
+				info.value = i;
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+	elseif level == 3 then	
+		local subClasses = { GetTradeSkillSubClasses() };
+		local subslots  = { GetTradeSkillSubClassFilteredSlots(UIDROPDOWNMENU_MENU_VALUE) };
+		for i,slot in pairs(subslots) do
+			info.text = slot;
+			info.func =  function() TradeSkillSetFilter(UIDROPDOWNMENU_MENU_VALUE, i, subClasses[UIDROPDOWNMENU_MENU_VALUE], subslots[i]); end
+			info.notCheckable = true;
+			info.value = {UIDROPDOWNMENU_MENU_VALUE, i};
+			UIDropDownMenu_AddButton(info, level);
+		end
+	end
+
+end
+
+-- function TradeSkillFilterFrame_InvSlotName(...)
+	-- for i=1, select("#", ...), 1 do
+		-- if ( GetTradeSkillInvSlotFilter(i) ) then
+			-- return select(i, ...);
+		-- end
+	-- end
+-- end
+
+-- function TradeSkillSubClassDropDownButton_OnClick(self)
+	-- UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, self:GetID());
+	-- SetTradeSkillSubClassFilter(self:GetID() - 1, 1, 1);
+	-- if ( self:GetID() ~= 1 ) then
+		-- if ( TradeSkillFilterFrame_InvSlotName(GetTradeSkillInvSlots()) ~= TradeSkillFilterDropDown.selected ) then
+			-- SetTradeSkillInvSlotFilter(0, 1, 1);
+			-- UIDropDownMenu_SetSelectedID(TradeSkillFilterDropDown, 1);
+			-- UIDropDownMenu_SetText(TradeSkillFilterDropDown, FILTER);
+		-- end
+	-- end
+	-- TradeSkillListScrollFrameScrollBar:SetValue(0);
+	-- FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
+	-- TradeSkillFrame_Update();
+-- end
+
+-- function TradeSkillFilterDropDownButton_OnClick(self)
+	-- UIDropDownMenu_SetSelectedID(TradeSkillFilterDropDown, self:GetID());
+	-- SetTradeSkillInvSlotFilter(self:GetID() - 1, 1, 1);
+	-- --TradeSkillFilterDropDown.selected = TradeSkillFilterFrame_InvSlotName(GetTradeSkillInvSlots());
+	-- TradeSkillListScrollFrameScrollBar:SetValue(0);
+	-- FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
+	-- TradeSkillFrame_Update();
+-- end
 
 function TradeSkillFrameIncrement_OnClick()
 	if ( TradeSkillInputBox:GetNumber() < 100 ) then
@@ -633,3 +805,71 @@ function TradeSkillFrame_PlaytimeUpdate()
 		end
 	end
 end
+
+function TradeSkillLinkDropDown_LinkPost(self, chan)
+	local link = GetTradeSkillListLink();
+	if link then 
+		ChatFrame_OpenChat(chan.." "..link, DEFAULT_CHAT_FRAME);
+	end
+end
+
+
+function TradeSkillLinkDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, TradeSkillLinkDropDown_Init, "MENU");
+end
+
+function TradeSkillLinkDropDown_Init(self, level)
+
+	local info = UIDropDownMenu_CreateInfo();	
+	info.notCheckable = true;	
+	info.text = TRADESKILL_POST;
+	info.isTitle = 1;
+	UIDropDownMenu_AddButton(info);
+	info.isTitle = nil;
+	
+	info = UIDropDownMenu_CreateInfo();	
+	info.notCheckable = true;
+	info.func = TradeSkillLinkDropDown_LinkPost
+	
+	info.text = GUILD;
+	info.arg1 = SLASH_GUILD1;
+	info.disabled = not IsInGuild();
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = PARTY;
+	info.arg1 = SLASH_PARTY1;
+	info.disabled = GetNumPartyMembers() == 0;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = RAID;
+	info.disabled = GetNumRaidMembers() == 0;
+	info.arg1 = SLASH_RAID1;
+	UIDropDownMenu_AddButton(info);
+	-- info.text = SAY;
+	-- info.arg1 = SLASH_SAY1;
+	-- UIDropDownMenu_AddButton(info);
+	
+	info.disabled = false
+	local name;
+	local chanels = {GetChannelList()};
+	local channelCount = #chanels/2;
+	for i=1, MAX_CHANNEL_BUTTONS, 1 do
+		if ( i <= channelCount) then
+			info.text = chanels[i*2];
+			info.arg1 = "/"..chanels[(i-1)*2 + 1];
+			UIDropDownMenu_AddButton(info);
+		end
+	end	
+
+	
+	
+	-- local link=GetTradeSkillListLink();
+	-- if (not ChatEdit_InsertLink(link) ) then
+		-- ChatFrameEditBox:Show();
+		-- ChatEdit_InsertLink(link);
+	-- end
+end
+
+
+
+

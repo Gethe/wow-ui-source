@@ -255,7 +255,7 @@ function ChannelList_Update()
 
 	-- Scroll Bar Handling --
 	ChannelListScrollChildFrame:SetHeight(frameHeight);
-	if ((ChannelListScrollFrameScrollBarScrollUpButton:IsEnabled() == 0) and (ChannelListScrollFrameScrollBarScrollDownButton:IsEnabled() == 0) ) then
+	if ((not ChannelListScrollFrameScrollBarScrollUpButton:IsEnabled()) and (not ChannelListScrollFrameScrollBarScrollDownButton:IsEnabled()) ) then
 		ChannelListScrollFrame.scrolling = nil;
 	else
 		ChannelListScrollFrame.scrolling = 1;
@@ -323,12 +323,12 @@ function ChannelList_UpdateVoice(id, enabled, active)
 		button.voiceEnabled = true;
 		if ( active ) then
 			button.voiceActive = true;
-			ChannelFrame_Desaturate(speakerIcon, nil, 1, 1, 1, 0.75);
-			ChannelFrame_Desaturate(speakerFlash, nil, 1, 1, 1, 0.75);
+			ChannelFrame_Desaturate(speakerIcon, nil, 0.75);
+			ChannelFrame_Desaturate(speakerFlash, nil, 0.75);
 		else
 			button.voiceActive = nil;
-			ChannelFrame_Desaturate(speakerIcon, 1, nil, nil, nil, 0.5);
-			ChannelFrame_Desaturate(speakerFlash, 1, nil, nil, nil, 0.5);
+			ChannelFrame_Desaturate(speakerIcon, 1, 0.5);
+			ChannelFrame_Desaturate(speakerFlash, 1, 0.5);
 		end
 		speaker:Show()
 		speaker:SetFrameLevel(speaker:GetFrameLevel()+5);
@@ -665,11 +665,11 @@ function ChannelRoster_UpdateVoice(id, enabled, active, muted)
 
 	if ( enabled ) then
 		if ( active ) then
-			ChannelFrame_Desaturate(speakerIcon, nil, 1, 1, 1, 0.75);
-			ChannelFrame_Desaturate(speakerFlash, nil, 1, 1, 1, 0.75);
+			ChannelFrame_Desaturate(speakerIcon, nil, 0.75);
+			ChannelFrame_Desaturate(speakerFlash, nil, 0.75);
 		else
-			ChannelFrame_Desaturate(speakerIcon, 1, nil, nil, nil, 0.25);
-			ChannelFrame_Desaturate(speakerFlash, 1, nil, nil, nil, 0.25);
+			ChannelFrame_Desaturate(speakerIcon, 1, 0.25);
+			ChannelFrame_Desaturate(speakerFlash, 1, 0.25);
 		end
 		if ( muted ) then
 			speakerMuted:Show();
@@ -712,18 +712,8 @@ function ChannelRosterFrame_ShowDropdown(id)
 end
 
 --[ Utility Functions ]--
-function ChannelFrame_Desaturate(texture, desaturate, r, g, b, a)
-	local shaderSupported = texture:SetDesaturated(desaturate);
-	if ( not desaturate ) then
-		r = 1.0;
-		g = 1.0;
-		b = 1.0;
-	elseif ( not r and not shaderSupported ) then
-		r = 0.5;
-		g = 0.5;
-		b = 0.5;
-	end
-	texture:SetVertexColor(r, g, b);
+function ChannelFrame_Desaturate(texture, desaturate, a)
+	texture:SetDesaturated(desaturate);
 	if ( a ) then
 		texture:SetAlpha(a);
 	end
@@ -1179,12 +1169,12 @@ function ChannelPulloutRoster_DrawButton (button, data)
 	end
 	
 	if ( data[sessionActive] ) then			
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], nil, 1, 1, 1, 0.75);
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], nil, 1, 1, 1, 0.75);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], nil, 0.75);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], nil, 0.75);
 		_G[button.speaker:GetName().."Muted"]:SetVertexColor(1, 1, 1, 1);
 	else
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], 1, nil, nil, nil, 0.25);
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], 1, nil, nil, nil, 0.25);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], 1, 0.25);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], 1, 0.25);
 		_G[button.speaker:GetName().."Muted"]:SetVertexColor(1, 1, 1, .35);
 	end
 	
@@ -1254,7 +1244,7 @@ function ChannelPulloutRoster_UpdateScrollControls (roster)
 		rosterFrame.downBtn:Enable();
 	end
 	
-	if ( not ( rosterFrame.downBtn:IsEnabled() == 1 or rosterFrame.upBtn:IsEnabled() == 1 ) ) then
+	if ( not ( rosterFrame.downBtn:IsEnabled() or rosterFrame.upBtn:IsEnabled() ) ) then
 		rosterFrame.scroll:Hide();
 	else
 		rosterFrame.scroll:Show();

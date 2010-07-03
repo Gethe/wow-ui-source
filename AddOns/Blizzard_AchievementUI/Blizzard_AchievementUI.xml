@@ -128,9 +128,6 @@
 			<OnShow>
 				AchievementFrameSummaryCategory_OnShow(self);
 			</OnShow>
-			<OnHide>
-				AchievementFrameSummaryCategory_OnHide(self);
-			</OnHide>
 			<OnEvent>
 				AchievementFrameSummaryCategory_OnEvent(self, event, ...);
 			</OnEvent>

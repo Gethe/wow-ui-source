@@ -283,7 +283,7 @@ function ContainerFrame_Update(frame)
 		
 		SetItemButtonTexture(itemButton, texture);
 		SetItemButtonCount(itemButton, itemCount);
-		SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5);
+		SetItemButtonDesaturated(itemButton, locked);
 		
 		questTexture = _G[name.."Item"..i.."IconQuestTexture"];
 		if ( questId and not isActive ) then
@@ -321,7 +321,7 @@ function ContainerFrame_UpdateLocked(frame)
 		
 		texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, itemButton:GetID());
 
-		SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5);
+		SetItemButtonDesaturated(itemButton, locked);
 	end
 end
 
@@ -330,7 +330,7 @@ function ContainerFrame_UpdateLockedItem(frame, slot)
 	local itemButton = _G[frame:GetName().."Item"..index];
 	local texture, itemCount, locked, quality, readable = GetContainerItemInfo(frame:GetID(), itemButton:GetID());
 
-	SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5);
+	SetItemButtonDesaturated(itemButton, locked);
 end
 
 function ContainerFrame_UpdateCooldowns(frame)
@@ -629,8 +629,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	local slot = itemButton:GetID();
 	local bag = itemButton:GetParent():GetID();
 
-	local money, honorPoints, arenaPoints, itemCount, refundSec = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
-	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) and (money == 0)) ) then
+	local money, honorPoints, arenaPoints, itemCount, refundSec, currencyCount, hasEnchants = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
+	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) and (money == 0) and (currencyCount == 0)) ) then
 		return false;
 	end
 	
@@ -667,6 +667,18 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 			end
 		end
 	end
+	
+	for i=1, currencyCount, 1 do
+		local currencyTexture, currencyQuantity, currencyName = GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
+		if ( currencyName ) then
+			if ( itemsString ) then
+				itemsString = itemsString .. ", " .. format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+			else
+				itemsString = format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+			end
+		end
+	end
+	
 	if(itemsString == nil) then
 		itemsString = "";
 	end
@@ -685,8 +697,12 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	end
 	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
 	local r, g, b = GetItemQualityColor(itemQuality);
+	local textLine2 = "";
+	if (hasEnchants) then
+		textLine2 = "\n\n"..CONFIRM_REFUND_ITEM_ENHANCEMENTS_LOST;
+	end
 	StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"].hasMoneyFrame = (money ~= 0) and 1 or nil;
-	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, "", {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = index, ["count"] = count * quantity});
+	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, textLine2, {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = index, ["count"] = count * quantity});
 	return true;
 end
 

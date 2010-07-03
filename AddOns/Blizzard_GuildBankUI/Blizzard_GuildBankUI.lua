@@ -232,7 +232,7 @@ function GuildBankFrame_Update()
 			texture, itemCount, locked = GetGuildBankItemInfo(tab, i);
 			SetItemButtonTexture(button, texture);
 			SetItemButtonCount(button, itemCount);
-			SetItemButtonDesaturated(button, locked, 0.5, 0.5, 0.5);
+			SetItemButtonDesaturated(button, locked);
 		end
 		MoneyFrame_Update("GuildBankMoneyFrame", GetGuildBankMoney());
 		if ( CanWithdrawGuildBankMoney() ) then

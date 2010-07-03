@@ -1,6 +1,6 @@
 # Do not delete the following line!
-## Interface: 30300
-##DebugHook.lua
+## Interface: 40000
+DebugHook.lua
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
@@ -133,12 +133,15 @@ RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
 RuneFrame.xml
+ShardBar.xml
+EclipseBarFrame.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 VehicleMenuBar.xml
 AlternatePowerBar.xml
 AnimationSystem.lua
+EquipmentManager.lua
 
 ## add new modules above here
 LocalizationPost.xml

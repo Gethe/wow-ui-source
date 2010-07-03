@@ -126,6 +126,7 @@ info.text = [STRING]  --  The text of the button
 info.value = [ANYTHING]  --  The value that UIDROPDOWNMENU_MENU_VALUE is set to when the button is clicked
 info.func = [function()]  --  The function that is called when you click the button
 info.checked = [nil, true, function]  --  Check the button if true or function returns true
+info.isNotRadial = [nil, true]  --  Check the button uses radial image if false check box image if true
 info.isTitle = [nil, true]  --  If it's a title the button is disabled and the font color is set to yellow
 info.disabled = [nil, true]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
 info.tooltipWhileDisabled = [nil, 1] -- Show the tooltip, even when the button is disabled.
@@ -391,21 +392,37 @@ function UIDropDownMenu_AddButton(info, level)
 			end
 		end
 	end
-	
-	-- Checked can be a function now
-	local checked = info.checked;
-	if ( type(checked) == "function" ) then
-		checked = checked();
-	end
 
-	-- Show the check if checked
-	if ( checked ) then
-		button:LockHighlight();
-		_G[listFrameName.."Button"..index.."Check"]:Show();
+
+	if not info.notCheckable then 
+		if info.isNotRadial then
+			_G[listFrameName.."Button"..index.."Check"]:SetTexCoord(0.0, 0.5, 0.0, 0.5);
+			_G[listFrameName.."Button"..index.."UnCheck"]:SetTexCoord(0.5, 1.0, 0.0, 0.5);
+		else
+			_G[listFrameName.."Button"..index.."Check"]:SetTexCoord(0.0, 0.5, 0.5, 1.0);
+			_G[listFrameName.."Button"..index.."UnCheck"]:SetTexCoord(0.5, 1.0, 0.5, 1.0);
+		end
+		
+		-- Checked can be a function now
+		local checked = info.checked;
+		if ( type(checked) == "function" ) then
+			checked = checked();
+		end
+
+		-- Show the check if checked
+		if ( checked ) then
+			button:LockHighlight();
+			_G[listFrameName.."Button"..index.."Check"]:Show();
+			_G[listFrameName.."Button"..index.."UnCheck"]:Hide();
+		else
+			button:UnlockHighlight();
+			_G[listFrameName.."Button"..index.."Check"]:Hide();
+			_G[listFrameName.."Button"..index.."UnCheck"]:Show();
+		end
 	else
-		button:UnlockHighlight();
 		_G[listFrameName.."Button"..index.."Check"]:Hide();
-	end
+		_G[listFrameName.."Button"..index.."UnCheck"]:Hide();
+	end	
 	button.checked = info.checked;
 
 	-- If has a colorswatch, show it and vertex color it
@@ -452,19 +469,24 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			end
 		end
 
-		-- If checked show check image
-		checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
-		if ( checked ) then
-			if ( useValue ) then
-				UIDropDownMenu_SetText(frame, button.value);
+		if not button.notCheckable then		
+			-- If checked show check image
+			checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
+			uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
+			if ( checked ) then
+				if ( useValue ) then
+					UIDropDownMenu_SetText(frame, button.value);
+				else
+					UIDropDownMenu_SetText(frame, button:GetText());
+				end
+				button:LockHighlight();
+				checkImage:Show();
+				uncheckImage:Hide();
 			else
-				UIDropDownMenu_SetText(frame, button:GetText());
+				button:UnlockHighlight();
+				checkImage:Hide();
+				uncheckImage:Show();
 			end
-			button:LockHighlight();
-			checkImage:Show();
-		else
-			button:UnlockHighlight();
-			checkImage:Hide();
 		end
 
 		if ( button:IsShown() ) then
@@ -548,13 +570,18 @@ function UIDropDownMenuButton_OnClick(self)
 		checked = checked();
 	end
 	
+
 	if ( self.keepShownOnClick ) then
-		if ( checked ) then
-			_G[self:GetName().."Check"]:Hide();
-			checked = false;
-		else
-			_G[self:GetName().."Check"]:Show();
-			checked = true;
+		if not self.notCheckable then
+			if ( checked ) then
+				_G[self:GetName().."Check"]:Hide();
+				_G[self:GetName().."UnCheck"]:Show();
+				checked = false;
+			else
+				_G[self:GetName().."Check"]:Show();
+				_G[self:GetName().."UnCheck"]:Hide();
+				checked = true;
+			end
 		end
 	else
 		self:GetParent():Hide();
@@ -873,6 +900,8 @@ function UIDropDownMenu_ClearAll(frame)
 
 		checkImage = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check"];
 		checkImage:Hide();
+		uncheckImage = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."UnCheck"];
+		uncheckImage:Hide();
 	end
 end
 

@@ -17,10 +17,29 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 				<Layers>
+					
+					<!-- Patchwerk INFO
+					<Texture name="UI-VehicleXP-Divider.png" >
+						<Size x="9" y="10"/>	
+						<TexCoords left="0.01562500" right="0.15625000" top="0.01562500" bottom="0.17187500"/>	
+					</Texture>
+					<Texture name="UI-VehicleXP-Left.png" >
+						<Size x="16" y="16"/>	
+						<TexCoords left="0.18750000" right="0.43750000" top="0.01562500" bottom="0.26562500"/>	
+					</Texture>
+					<Texture name="UI-VehicleXP-Mid.png" >
+						<Size x="16" y="16"/>	
+						<TexCoords left="0.46875000" right="0.71875000" top="0.01562500" bottom="0.26562500"/>	
+					</Texture>
+					<Texture name="UI-VehicleXP-Right.png" >
+						<Size x="16" y="16"/>	
+						<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>	
+					</Texture-->
+
 					<Layer level="BORDER">
 						<Texture name="ExhaustionLevelFillBar">
 							<Size>
-								<AbsDimension x="0" y="13"/>
+								<AbsDimension x="0" y="12"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="MainMenuExpBar">
@@ -32,58 +51,33 @@
 							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="MainMenuXPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture name="MainMenuXPBarTextureLeftCap" file="Interface\MainMenuBar\UI-XP-Bar">
 							<Size>
-								<AbsDimension x="256" y="10"/>
+								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="-384" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT"  relativePoint="LEFT" x="-3" y="2"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
+							<TexCoords left="0.18750000" right="0.43750000" top="0.01562500" bottom="0.26562500"/>	
 						</Texture>
-						<Texture name="MainMenuXPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="MainMenuXPBarTextureRightCap" file="Interface\MainMenuBar\UI-XP-Bar">
 							<Size>
-								<AbsDimension x="256" y="10"/>
+								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="-128" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="3" y="2"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
-						</Texture>
-						<Texture name="MainMenuXPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>
+						</Texture>					
+						<Texture name="MainMenuXPBarTextureMid" file="Interface\MainMenuBar\UI-XP-Mid" horizTile="true">
 							<Size>
-								<AbsDimension x="256" y="10"/>
+								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="128" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
-						</Texture>
-						<Texture name="MainMenuXPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size>
-								<AbsDimension x="256" y="10"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="384" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
+								<Anchor point="LEFT" relativeTo="MainMenuXPBarTextureLeftCap" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="MainMenuXPBarTextureRightCap" relativePoint="LEFT"/>
+							</Anchors>							
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
@@ -129,6 +123,7 @@
 						self.cvar = "xpBarText";
 						self.cvarLabel = "XP_BAR_TEXT";
 						self.alwaysPrefix = true;
+						MainMenuExpBar_SetWidth(1024);
 					</OnLoad>
 					<OnEvent>
 						if ( event == "CVAR_UPDATE" ) then

@@ -1871,7 +1871,7 @@ end
 SlashCmdList["FRIENDS"] = function(msg)
 	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 	if ( player ~= "" or UnitIsPlayer("target") ) then
-		AddOrRemoveFriend(player, note);
+		AddFriend(player, note);
 	else
 		ToggleFriendsPanel();
 	end
@@ -2169,6 +2169,10 @@ end
 
 SlashCmdList["RELOAD"] = function(msg)
 	ConsoleExec("reloadui");
+end
+
+SlashCmdList["TRANSFORM"] = function(msg)
+	Transform();
 end
 
 -- ChatFrame functions

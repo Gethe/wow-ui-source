@@ -1190,7 +1190,7 @@
 				<Scripts>
 					<OnEscapePressed function="GuildBankPopupFrame_CancelEdit"/>
 					<OnEnterPressed>
-						if ( GuildBankPopupOkayButton:IsEnabled() ~= 0 ) then
+						if ( GuildBankPopupOkayButton:IsEnabled() ) then
 							GuildBankPopupOkayButton_OnClick(self);
 						end
 						GuildBankPopupEditBox:ClearFocus();

@@ -7,13 +7,23 @@
 				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
-					<Size x="18" y="18"/>
+				<Texture name="$parentCheck" file="Interface\Common\UI-DropDownRadioChecks">
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentUnCheck" file="Interface\Common\UI-DropDownRadioChecks">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentIcon" hidden="true">
 					<Size>
@@ -136,8 +146,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:SetFrameLevel(2);
+			<OnLoad>				
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 			</OnLoad>
 			<OnClick>
 				UIDropDownMenuButton_OnClick(self, button, down);

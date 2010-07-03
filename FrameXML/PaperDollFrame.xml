@@ -1041,124 +1041,6 @@
                     </Anchor>
                 </Anchors>
             </Button>
-            <Button name="CharacterAmmoSlot">
-				<Size>
-					<AbsDimension x="27" y="27"/>
-				</Size>
-				<Anchors>
-                    <Anchor point="LEFT" relativeTo="CharacterRangedSlot" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="15" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\PaperdollInfoFrame\UI-Character-AmmoSlot">
-							<Size>
-								<AbsDimension x="41" y="41"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.640625" top="0" bottom="0.640625"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture name="$parentIconTexture"/>
-						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-1" y="2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\PaperdollInfoFrame\UI-Character-AmmoSlot">
-							<Size>
-								<AbsDimension x="23" y="41"/>
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-22" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.640625" right="1.0" top="0" bottom="0.640625"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.maxDisplayCount = 999;
-						PaperDollItemSlotButton_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						if ( event == "MERCHANT_UPDATE" ) then
-							-- update ammo amount shown in frame after selling ammo to a vendor
-							PaperDollItemSlotButton_Update(self);
-						elseif ( event == "PLAYERBANKSLOTS_CHANGED" ) then
-							-- update ammo amount shown in frame after moving ammo to the bank
-							PaperDollItemSlotButton_Update(self);
-						else
-							PaperDollItemSlotButton_OnEvent(self, event, ...);
-						end
-					</OnEvent>
-					<OnShow>
-						PaperDollItemSlotButton_OnShow(self);
-						self:RegisterEvent("MERCHANT_UPDATE");
-						self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
-					</OnShow>
-					<OnHide>
-						PaperDollItemSlotButton_OnHide(self);
-						self:UnregisterEvent("MERCHANT_UPDATE");
-						self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
-					</OnHide>
-					<OnClick function="PaperDollItemSlotButton_OnClick"/>
-					<OnDragStart>
-						PaperDollItemSlotButton_OnClick(self, "LeftButton", 1);
-					</OnDragStart>
-					<OnReceiveDrag>
-						PaperDollItemSlotButton_OnClick(self, "LeftButton", 1);
-					</OnReceiveDrag>
-					<OnEnter function="PaperDollItemSlotButton_OnEnter"/>
-					<OnLeave function="GameTooltip_HideResetCursor"/>
-				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
-					<Size>
-						<AbsDimension x="47" y="47"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</NormalTexture>
-				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-			</Button>
 			<Button name="GearManagerToggleButton" hidden="true">
 				<Size x="32" y="32"/>
 				<Anchors>
@@ -1437,7 +1319,7 @@
 							</OnTextChanged>
 							<OnEscapePressed function="GearManagerDialogPopupCancel_OnClick"/>
 							<OnEnterPressed>
-								if ( GearManagerDialogPopupOkay:IsEnabled() ~= 0 ) then
+								if ( GearManagerDialogPopupOkay:IsEnabled() ) then
 									GearManagerDialogPopupOkay:Click();
 								end
 							</OnEnterPressed>

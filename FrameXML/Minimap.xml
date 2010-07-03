@@ -270,39 +270,6 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="MinimapPing" hidden="true">
-						<Size>
-							<AbsDimension x="50" y="50"/>
-						</Size>
-						<Anchors>
-							<Anchor point="CENTER" relativeTo="Minimap"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentCenter" file="Interface\Minimap\UI-Minimap-Ping-Center">
-									<Size x="15" y="15"/>
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentExpander" file="Interface\Minimap\UI-Minimap-Ping-Expand">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentSpinner" file="Interface\Minimap\UI-Minimap-Ping-Rotate">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad function="MinimapPing_OnLoad"/>
-							<OnEvent function="MinimapPing_OnEvent"/>
-							<OnUpdate function="MinimapPing_OnUpdate"/>
-						</Scripts>
-					</Frame>
 					<Frame name="MinimapBackdrop">
 						<Size>
 							<AbsDimension x="192" y="192"/>
@@ -690,6 +657,8 @@
 				</Frames>
 				<Scripts>
 					<OnMouseUp function="Minimap_OnClick"/>
+					<OnLoad function="Minimap_OnLoad"/>
+					<OnEvent function="Minimap_OnEvent"/>
 				</Scripts>
 			</Minimap>
 			<Frame name="MiniMapInstanceDifficulty" hidden="true">

@@ -9,7 +9,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" file="Interface\WorldMap\WorldMapPartyIcon" setAllPoints="true" parentKey="icon"/>
+				<Texture name="$parentIcon" file="Interface\Minimap\PartyRaidBlips" setAllPoints="true" parentKey="icon"/>
 			</Layer>
 		</Layers>
 		<Scripts>
