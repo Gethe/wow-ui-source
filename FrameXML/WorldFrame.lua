@@ -73,36 +73,46 @@ function WorldFrame_OnUpdate(self, elapsed)
 	end
 end
 
-SCREENSHOT_STATUS_FADETIME = 1.5;
+ACTION_STATUS_FADETIME = 2.0;
 
 function TakeScreenshot()
-	if ( ScreenshotStatus:IsShown() ) then
-		ScreenshotStatus:Hide();
+	if ( ActionStatus:IsShown() ) then
+		ActionStatus:Hide();
 	end
 	Screenshot();
 end
 
-function ScreenshotStatus_OnLoad(self)
+function ActionStatus_OnLoad(self)
 	self:RegisterEvent("SCREENSHOT_SUCCEEDED");
 	self:RegisterEvent("SCREENSHOT_FAILED");
 end
 
-function ScreenshotStatus_OnEvent(self, event, ...)
+function ActionStatus_OnEvent(self, event, ...)
 	self.startTime = GetTime();
 	self:SetAlpha(1.0);
 	if ( event == "SCREENSHOT_SUCCEEDED" ) then
-		ScreenshotStatusText:SetText(SCREENSHOT_SUCCESS);
+		ActionStatus_DisplayMessage(SCREENSHOT_SUCCESS, true);
 	end
 	if ( event == "SCREENSHOT_FAILED" ) then
-		ScreenshotStatusText:SetText(SCREENSHOT_FAILURE);
+		ActionStatus_DisplayMessage(SCREENSHOT_FAILURE, true);
 	end
 	self:Show();
 end
 
-function ScreenshotStatus_OnUpdate(self, elapsed)
+function ActionStatus_DisplayMessage(text, ignoreNewbieTooltipSetting)
+	if ( ignoreNewbieTooltipSetting or SHOW_NEWBIE_TIPS == "1" ) then
+		local self = ActionStatus;
+		self.startTime = GetTime();
+		self:SetAlpha(1.0);
+		ActionStatusText:SetText(text);
+		self:Show();
+	end
+end
+
+function ActionStatus_OnUpdate(self, elapsed)
 	elapsed = GetTime() - self.startTime;
-	if ( elapsed < SCREENSHOT_STATUS_FADETIME ) then
-		local alpha = 1.0 - (elapsed / SCREENSHOT_STATUS_FADETIME);
+	if ( elapsed < ACTION_STATUS_FADETIME ) then
+		local alpha = 1.0 - (elapsed / ACTION_STATUS_FADETIME);
 		self:SetAlpha(alpha);
 		return;
 	end

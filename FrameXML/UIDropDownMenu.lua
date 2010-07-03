@@ -406,7 +406,7 @@ function UIDropDownMenu_AddButton(info, level)
 		-- Checked can be a function now
 		local checked = info.checked;
 		if ( type(checked) == "function" ) then
-			checked = checked();
+			checked = checked(button);
 		end
 
 		-- Show the check if checked
@@ -468,6 +468,10 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 				checked = 1;
 			end
 		end
+		
+		if (button.checked and type(button.checked) == "function") then
+			checked = button.checked(button);
+		end
 
 		if not button.notCheckable then		
 			-- If checked show check image
@@ -505,11 +509,14 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			end
 		end
 	end
-	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		button = _G["DropDownList"..dropdownLevel.."Button"..i];
-		button:SetWidth(maxWidth);
+
+	if (not frame.noResize) then
+		for i=1, UIDROPDOWNMENU_MAXBUTTONS do
+			button = _G["DropDownList"..dropdownLevel.."Button"..i];
+			button:SetWidth(maxWidth);
+		end
+		_G["DropDownList"..dropdownLevel]:SetWidth(maxWidth+15);
 	end
-	_G["DropDownList"..dropdownLevel]:SetWidth(maxWidth+15);
 end
 
 function UIDropDownMenu_SetSelectedName(frame, name, useValue)
@@ -567,7 +574,7 @@ end
 function UIDropDownMenuButton_OnClick(self)
 	local checked = self.checked;
 	if ( type (checked) == "function" ) then
-		checked = checked();
+		checked = checked(self);
 	end
 	
 

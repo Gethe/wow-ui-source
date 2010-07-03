@@ -40,6 +40,10 @@ ACHIEVEMENTBUTTON_LABELWIDTH = 320;
 ACHIEVEMENT_COMPARISON_SUMMARY_ID = -1
 ACHIEVEMENT_COMPARISON_STATS_SUMMARY_ID = -2
 
+ACHIEVEMENT_FILTER_ALL = 1;
+ACHIEVEMENT_FILTER_COMPLETE = 2;
+ACHIEVEMENT_FILTER_INCOMPLETE = 3;
+
 local FEAT_OF_STRENGTH_ID = 81;
 
 local trackedAchievements = {};
@@ -123,6 +127,7 @@ function AchievementFrameBaseTab_OnClick (id)
 	local isSummary = false
 	if ( id == 1 ) then
 		achievementFunctions = ACHIEVEMENT_FUNCTIONS;
+		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES); -- This needs to happen before AchievementFrame_ShowSubFrame (fix for bug 157885)
 		if ( achievementFunctions.selectedCategory == "summary" ) then
 			isSummary = true;
 			AchievementFrame_ShowSubFrame(AchievementFrameSummary);
@@ -132,6 +137,7 @@ function AchievementFrameBaseTab_OnClick (id)
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-AchievementWatermark");
 	else
 		achievementFunctions = STAT_FUNCTIONS;
+		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES); -- This needs to happen before AchievementFrame_ShowSubFrame (fix for bug 157885)
 		if ( achievementFunctions.selectedCategory == "summary" ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
 			achievementFunctions.selectedCategory = ACHIEVEMENT_COMPARISON_STATS_SUMMARY_ID;
@@ -142,7 +148,6 @@ function AchievementFrameBaseTab_OnClick (id)
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-StatWatermark");
 	end
 	
-	AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 	AchievementFrameCategories_Update();
 	
 	if ( not isSummary ) then
@@ -401,12 +406,14 @@ function AchievementFrameCategories_DisplayButton (button, element)
 		-- This is the feat of strength category since it's sorted to the end of the list
 		button.text = FEAT_OF_STRENGTH_DESCRIPTION;
 		button.showTooltipFunc = AchievementFrameCategory_FeatOfStrengthTooltip;
-	else -- if ( AchievementFrame.selectedTab == 1 or button.name == ACHIEVEMENT_SUMMARY_CATEGORY ) then
+	elseif ( AchievementFrame.selectedTab == 1 ) then
 		button.text = nil;
 		button.numAchievements = numAchievements;
 		button.numCompleted = numCompleted;
 		button.numCompletedText = numCompleted.."/"..numAchievements;
 		button.showTooltipFunc = AchievementFrameCategory_StatusBarTooltip;
+	else
+		button.showTooltipFunc = nil;
 	end
 end
 
@@ -471,6 +478,12 @@ function AchievementFrameCategories_SelectButton (button)
 	end
 	
 	button.isSelected = true;
+	
+	if ( id == achievementFunctions.selectedCategory ) then
+		-- If this category was selected already, bail after changing collapsed states
+		return
+	end
+	
 	--Intercept "summary" category
 	if ( id == "summary" ) then
 		if ( achievementFunctions == ACHIEVEMENT_FUNCTIONS ) then
@@ -520,8 +533,6 @@ function AchievementFrameCategories_SelectButton (button)
 		achievementFunctions.clearFunc();
 	end
 	achievementFunctions.updateFunc();
-	
-	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 end
 
 function AchievementFrameAchievements_OnShow()
@@ -808,7 +819,14 @@ function AchievementButton_UpdatePlusMinusTexture (button)
 		return; -- This happens when we create buttons
 	end
 
-	if ( GetPreviousAchievement(id) or (GetAchievementNumCriteria(id) ~= 0) ) then
+	local display = false;
+	if ( GetAchievementNumCriteria(id) ~= 0 ) then
+		display = true;
+	elseif ( GetPreviousAchievement(id) and button.completed ) then
+		display = true;
+	end
+	
+	if ( display ) then
 		button.plusMinus:Show();			
 		if ( button.collapsed and button.saturated ) then
 			button.plusMinus:SetTexCoord(0, .5, 0, .5);
@@ -1384,10 +1402,14 @@ function AchievementFrameFilterDropDown_Initialize (self)
 end
 
 function AchievementFrameFilterDropDownButton_OnClick (self)
-	local func = AchievementFrameFilters[self.value].func;
+	AchievementFrame_SetFilter(self.value);
+end
+
+function AchievementFrame_SetFilter(value)
+	local func = AchievementFrameFilters[value].func;
 	if ( func ~= ACHIEVEMENTUI_SELECTEDFILTER ) then
 		ACHIEVEMENTUI_SELECTEDFILTER = func;
-		UIDropDownMenu_SetText(AchievementFrameFilterDropDown, AchievementFrameFilters[self.value].text)
+		UIDropDownMenu_SetText(AchievementFrameFilterDropDown, AchievementFrameFilters[value].text)
 		AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 		AchievementFrameAchievements_ForceUpdate();
 	end
@@ -1953,7 +1975,6 @@ function AchievementFrameSummaryCategoryButton_OnClick (self)
 end
 
 function AchievementFrameSummaryCategory_OnLoad (self)
-	-- self:SetStatusBarColor(0, .6, 0, 1);
 	self:SetMinMaxValues(0, 100);
 	self:SetValue(0);
 	local name = self:GetName();
@@ -1981,12 +2002,21 @@ function AchievementFrame_GetCategoryTotalNumAchievements (id, showAll)
 	return totalAchievements, totalCompleted;
 end
 
+function AchievementFrameSummaryCategory_OnEvent (self, event, ...)
+	AchievementFrameSummaryCategory_OnShow(self);
+end
+
 function AchievementFrameSummaryCategory_OnShow (self)
 	local totalAchievements, totalCompleted = AchievementFrame_GetCategoryTotalNumAchievements(self:GetID(), true);
 	
 	self.text:SetText(string.format("%d/%d", totalCompleted, totalAchievements));
 	self:SetMinMaxValues(0, totalAchievements);
 	self:SetValue(totalCompleted);
+	self:RegisterEvent("ACHIEVEMENT_EARNED");
+end
+
+function AchievementFrameSummaryCategory_OnHide (self)
+	self:UnregisterEvent("ACHIEVEMENT_EARNED");
 end
 
 function AchievementFrame_SelectAchievement(id, forceSelect)
@@ -1994,6 +2024,13 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 		return;
 	end
 	
+	local _, _, _, achCompleted = GetAchievementInfo(id);
+	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
+		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
+	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
+		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
+	end
+		
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	AchievementFrameTab_OnClick(1);
 	AchievementFrameSummary:Hide();
@@ -2048,8 +2085,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	end
 		
 	achievementFunctions.selectedCategory = category;
-	AchievementFrameCategories_Update();
 	AchievementFrameCategoriesContainerScrollBar:SetValue(0);
+	AchievementFrameCategories_Update();
 	
 	local shown, i = false, 1;
 	while ( not shown ) do
@@ -2078,8 +2115,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	end		
 	
 	AchievementFrameAchievements_ClearSelection();	
-	AchievementFrameAchievements_Update();
 	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
+	AchievementFrameAchievements_Update();
 
 	local shown = false;
 	while ( not shown ) do

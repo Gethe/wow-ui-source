@@ -39,10 +39,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="ScreenshotStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
+			<Frame name="ActionStatus" setAllPoints="true" frameStrata="TOOLTIP" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="ScreenshotStatusText" inherits="GameFontNormalLarge">
+						<FontString name="ActionStatusText" inherits="GameFontNormalLarge">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
@@ -54,9 +54,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="ScreenshotStatus_OnLoad"/>
-					<OnEvent function="ScreenshotStatus_OnEvent"/>
-					<OnUpdate function="ScreenshotStatus_OnUpdate"/>
+					<OnLoad function="ActionStatus_OnLoad"/>
+					<OnEvent function="ActionStatus_OnEvent"/>
+					<OnUpdate function="ActionStatus_OnUpdate"/>
 				</Scripts>
 			</Frame>
 		</Frames>

@@ -121,6 +121,7 @@ end
 function HybridScrollFrame_ExpandButton (self, offset, height)
 	self.largeButtonTop = round(offset);
 	self.largeButtonHeight = round(height)
+	HybridScrollFrame_SetOffset(self, self.scrollBar:GetValue());
 end
 
 function HybridScrollFrame_CollapseButton (self)

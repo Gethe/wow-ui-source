@@ -390,7 +390,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<Texture name="$parentIcon">
+										<Texture name="$parentIcon" file="Interface\Minimap\Tracking\None">
 											<Size x="20" y="20"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
@@ -459,11 +459,6 @@
 												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
 												MiniMapTrackingIconOverlay:Hide();
 											</OnMouseUp>
-											<OnEnter>
-												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-												GameTooltip:SetTracking();
-											</OnEnter>
-											<OnLeave function="GameTooltip_Hide"/>
 										</Scripts>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 									</Button>

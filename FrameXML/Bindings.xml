@@ -766,6 +766,7 @@
 			securecall("CloseAllWindows");
 			UIParent:Hide();
 			SetUIVisibility(false);
+			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"), "KEY_")))
 		else
 			UIParent:Show();
 			SetUIVisibility(true);

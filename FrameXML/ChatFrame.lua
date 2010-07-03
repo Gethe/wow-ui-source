@@ -1871,7 +1871,7 @@ end
 SlashCmdList["FRIENDS"] = function(msg)
 	local player, note = strmatch(msg, "%s*([^%s]+)%s*(.*)");
 	if ( player ~= "" or UnitIsPlayer("target") ) then
-		AddFriend(player, note);
+		AddOrRemoveFriend(player, note);
 	else
 		ToggleFriendsPanel();
 	end

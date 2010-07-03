@@ -553,7 +553,6 @@ function SpellButton_UpdateButton(self)
 	local isPassive = IsPassiveSpell(id, SpellBookFrame.bookType);
 	if ( isPassive ) then
 		highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
-		--subSpellName = PASSIVE_PARENS;
 		spellString:SetTextColor(PASSIVE_SPELL_FONT_COLOR.r, PASSIVE_SPELL_FONT_COLOR.g, PASSIVE_SPELL_FONT_COLOR.b);
 	else
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
@@ -562,9 +561,12 @@ function SpellButton_UpdateButton(self)
 	iconTexture:SetTexture(texture);
 	spellString:SetText(spellName);
 	subSpellString:SetText(subSpellName);
-	local spellNameY = 4;
+
+	-- If there is no spell sub-name, move the bottom row of text up
 	if ( subSpellName == "" ) then
-		spellNameY = 2;
+		self.SpellSubName:SetHeight(6);
+	else
+		self.SpellSubName:SetHeight(18);
 	end
 
 	iconTexture:Show();
@@ -581,7 +583,7 @@ function SpellButton_UpdateButton(self)
 		self.TrainBook:Hide();
 		self.SpellName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
-		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, spellNameY);
+		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 4);
 		
 		-- For spells that are on cooldown.  This must be done here because otherwise "SetDesaturated(0)" above will override this on low-end video cards.
 		if ( enable == 1 ) then
@@ -605,7 +607,7 @@ function SpellButton_UpdateButton(self)
 			self.TrainBook:Hide();
 			self.SpellName:SetTextColor(0.25, 0.12, 0);
 			self.SpellName:SetShadowOffset(0, 0);
-			self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, spellNameY);
+			self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 6);
 		else
 			self.SeeTrainerString:Show();
 			self.RequiredLevelString:Hide();
@@ -615,7 +617,7 @@ function SpellButton_UpdateButton(self)
 			self.TrainBook:Show();
 			self.SpellName:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
-			self.SpellName:SetPoint("LEFT", self, "RIGHT", 24, spellNameY);
+			self.SpellName:SetPoint("LEFT", self, "RIGHT", 24, 8);
 		end
 	end
 	spellString:Show();
@@ -715,9 +717,6 @@ function SpellBook_GetSpellID(spellButton)
 			return nil, nil, nil;
 		end
 		
-		if ( not GetCVarBool("ShowAllSpellRanks") and not future) then
-			return GetKnownSlotFromHighestRankSlot(slot), slot, future;
-		end
 		return slot, slot, future;
 	end
 end
@@ -776,11 +775,7 @@ function SpellBook_ReleaseAutoCastShine (shine)
 end
 
 function SpellBook_GetTabInfo(skillLine)
-	local name, texture, offset, numSpells, highestRankOffset, highestRankNumSpells, futureSpellsOffset, numFutureSpells = GetSpellTabInfo(skillLine);
-	if ( not GetCVarBool("ShowAllSpellRanks")) then
-		offset = highestRankOffset;
-		numSpells = highestRankNumSpells;
-	end
+	local name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = GetSpellTabInfo(skillLine);
 	return name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells;
 end
 
@@ -889,10 +884,10 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 		
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillInfoIndex = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine = GetProfessionInfo(index);
 		frame.skillName = name;
 		frame.spellOffset = spelloffset;
-		frame.skillInfoIndex = skillInfoIndex;
+		frame.skillLine = skillLine;
 		
 		frame.statusBar:SetMinMaxValues(1,maxRank);
 		frame.statusBar:SetValue(rank);

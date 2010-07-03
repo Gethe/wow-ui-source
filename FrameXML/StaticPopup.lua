@@ -1217,7 +1217,8 @@ StaticPopupDialogs["RESURRECT"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	noCancelOnReuse = 1
 };
 StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -1242,7 +1243,8 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	noCancelOnReuse = 1
 };
 StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	text = RESURRECT_REQUEST_NO_SICKNESS,
@@ -1265,7 +1267,8 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	noCancelOnReuse = 1
 };
 StaticPopupDialogs["SKINNED"] = {
 	text = DEATH_CORPSE_SKINNED,
@@ -2172,7 +2175,9 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, index)
 		AbandonSkill(index);
-		TradeSkillFrame_Hide();
+		if ( TradeSkillFrame_Hide ) then
+			TradeSkillFrame_Hide();
+		end
 	end,
 	timeout = 60,
 	exclusive = 1,

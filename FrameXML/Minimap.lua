@@ -361,24 +361,26 @@ function MinimapMailFrameUpdate()
 end
 
 function MiniMapTracking_Update()
-	local texture = GetTrackingTexture();
-	if ( MiniMapTrackingIcon:GetTexture() ~= texture ) then
-		MiniMapTrackingIcon:SetTexture(texture);
-		MiniMapTrackingShineFadeIn();
-	end
+	UIDropDownMenu_Refresh(MiniMapTrackingDropDown);
 end
 
 function MiniMapTrackingDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, MiniMapTrackingDropDown_Initialize, "MENU");
+	self.noResize = true;
 end
 
-function MiniMapTracking_SetTracking (self, id)
-	SetTracking(id);
+function MiniMapTracking_SetTracking (self, id, unused, on)
+	SetTracking(id, on);
+	UIDropDownMenu_Refresh(MiniMapTrackingDropDown);
+end
+
+function MiniMapTrackingDropDownButton_IsActive(button)
+	local name, texture, active, category = GetTrackingInfo(button.arg1);
+	return active;
 end
 
 function MiniMapTrackingDropDown_Initialize()
 	local name, texture, active, category;
-	local anyActive, checked;
 	local count = GetNumTrackingTypes();
 	local info;
 	for id=1, count do
@@ -386,10 +388,12 @@ function MiniMapTrackingDropDown_Initialize()
 
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
-		info.checked = active;
+		info.checked = MiniMapTrackingDropDownButton_IsActive;
 		info.func = MiniMapTracking_SetTracking;
 		info.icon = texture;
 		info.arg1 = id;
+		info.isNotRadial = true;
+		info.keepShownOnClick = true;
 		if ( category == "spell" ) then
 			info.tCoordLeft = 0.0625;
 			info.tCoordRight = 0.9;
@@ -402,24 +406,7 @@ function MiniMapTrackingDropDown_Initialize()
 			info.tCoordBottom = 1;
 		end
 		UIDropDownMenu_AddButton(info);
-		if ( active ) then
-			anyActive = active;
-		end
 	end
-	
-	if ( anyActive ) then
-		checked = nil;
-	else
-		checked = 1;
-	end
-
-	info = UIDropDownMenu_CreateInfo();
-	info.text = NONE;
-	info.checked = checked;
-	info.func = MiniMapTracking_SetTracking;
-	info.arg1 = nil;
-	UIDropDownMenu_AddButton(info);
-
 end
 
 function MiniMapTrackingShineFadeIn()
