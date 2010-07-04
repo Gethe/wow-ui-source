@@ -41,7 +41,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="RatingMenuAge" file="Interface\Glues\Login\Glues-KoreanRating-Age.tga">
+				<Texture name="RatingMenuAge">
 					<Size>
 						<AbsDimension x="80" y="80"/>
 					</Size>
@@ -61,23 +61,33 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="RatingMenuDrugs" file="Interface\Glues\Login\Glues-KoreanRating-Drugs.tga">
+				<Texture name="RatingMenuDrugs">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
 					<Anchors>
-						<Anchor point="BOTTOM">
-							<Offset x="32" y="40"/>
+						<Anchor point="TOP" relativeTo="RatingMenuAge" relativePoint="BOTTOM">
+							<Offset x="4" y="-5"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="RatingMenuViolence" file="Interface\Glues\Login\Glues-KoreanRating-Violence.tga">
+				<Texture name="RatingMenuViolence">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="RatingMenuDrugs" relativePoint="LEFT">
-							<Offset x="0" y="0"/>
+							<Offset x="-5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="RatingMenuCrime">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="RatingMenuViolence" relativePoint="LEFT">
+							<Offset x="-5" y="0"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -104,9 +114,19 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnShow>
+				RatingMenuAge:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-1");
+				RatingMenuViolence:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-2");
+				RatingMenuDrugs:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-3");
+				RatingMenuCrime:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-4");
+			</OnShow>
 			<OnHide>
 				ShowUIPanel(GameMenuFrame);
 				UpdateMicroButtons();
+				RatingMenuAge:SetTexture(nil);
+				RatingMenuViolence:SetTexture(nil);
+				RatingMenuDrugs:SetTexture(nil);
+				RatingMenuCrime:SetTexture(nil);
 			</OnHide>
 			<OnKeyDown>
 				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then

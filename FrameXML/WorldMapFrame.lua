@@ -127,8 +127,6 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapQuestRewardScrollFrame.scrollBarHideable = true;
 	WorldMapQuestDetailScrollFrame.haveTrack = true;
 	WorldMapQuestRewardScrollFrame.haveTrack = true;
-	WORLDMAP_SETTINGS.selectedQuestId = QuestPOIGetQuestIDByVisibleIndex(1);
-	SetSuperTrackedQuestID(WORLDMAP_SETTINGS.selectedQuestId);
 end
 
 function WorldMapFrame_OnShow(self)
@@ -1578,13 +1576,14 @@ function WorldMapFrame_UpdateQuests()
 	local lastFrame;
 	local refFrame = WorldMapQuestFrame0;
 	local questCount = 0;
-	local numObjectives;
+	local numObjectives, requiredMoney;
+	local text, _, finished;
 	local playerMoney = GetMoney();
 	
 	local numPOINumeric = 0;
 	local numPOICompleteSwap = 0;
 	
-	numEntries = QuestMapUpdateAllQuests();
+	local numEntries = QuestMapUpdateAllQuests();
 	WorldMapFrame_ClearQuestPOIs();
 	QuestPOIUpdateIcons();
 	if ( WorldMapQuestScrollFrame.highlightedFrame ) then

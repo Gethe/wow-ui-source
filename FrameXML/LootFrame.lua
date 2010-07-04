@@ -93,7 +93,7 @@ function LootFrame_UpdateButton(index)
 	local button = _G["LootButton"..index];
 		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 		if ( slot <= numLootItems ) then	
-			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot)) and index <= numLootToShow ) then
+			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot) or LootSlotIsCurrency(slot)) and index <= numLootToShow ) then
 				local texture, item, quantity, quality, locked = GetLootSlotInfo(slot);
 				local color = ITEM_QUALITY_COLORS[quality];
 				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
@@ -226,6 +226,11 @@ function LootItem_OnEnter(self)
 	if ( LootSlotIsItem(slot) ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetLootItem(slot);
+		CursorUpdate(self);
+	end
+	if ( LootSlotIsCurrency(slot) ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetLootCurrency(slot);
 		CursorUpdate(self);
 	end
 end

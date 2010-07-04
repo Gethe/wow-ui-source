@@ -2234,6 +2234,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	local environmentalType; -- Used for environmental damage
 	local message; -- Used for server spell messages
 	local originalEvent = event; -- Used for spell links
+	local remainingPoints;	--Used for absorbs with the correct flag set (like Power Word: Shield)
 
 	-- Generic disabling stuff
 	if ( not sourceName or CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) ) then
@@ -2658,7 +2659,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			resultEnabled = false;
 		elseif ( event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" or event == "SPELL_AURA_REFRESH") then		-- Aura Events
 			-- Aura standard
-			auraType = select(4, ...);
+			auraType, remainingPoints = select(4, ...);
 
 			-- Abort if buff/debuff is not set to true
 			if ( hideBuffs and auraType == AURA_TYPE_BUFF ) then
@@ -2671,6 +2672,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 			-- Event Type
 			event = format("%s_%s", event, auraType);
+			
+			if ( remainingPoints and settings.fullText ) then
+				event = event.."_WITH_POINTS"
+			end
 
 			resultEnabled = false;
 			valueEnabled = false;
@@ -3240,6 +3245,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	local destString = "";
 	local valueString = "";
 	local resultString = "";
+	local remainingPointsString = "";
 
 	if ( sourceEnabled and sourceName and falseSource ) then
 		sourceString = sourceName;
@@ -3308,7 +3314,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		destString = UNKNOWN;
 	end
 	
-	local finalString = format(formatString, sourceString, spellString, actionString, destString, valueString, resultString, schoolString, powerTypeString, amount, extraAmount);
+	if ( remainingPoints ) then
+		remainingPointsString = format(TEXT_MODE_A_STRING_REMAINING_POINTS, remainingPoints);
+	end
+	
+	local finalString = format(formatString, sourceString, spellString, actionString, destString, valueString, resultString, schoolString, powerTypeString, amount, extraAmount, remainingPointsString);
 	
 	finalString = gsub(finalString, " [ ]+", " " ); -- extra white spaces
 	finalString = gsub(finalString, " ([.,])", "%1" ); -- spaces before periods or comma
