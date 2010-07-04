@@ -17,7 +17,7 @@ UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 
 UIPanelWindows["VideoOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
 UIPanelWindows["InterfaceOptionsFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1, xoffset = 16, yoffset = -12  };
+UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1, xoffset = 16, yoffset = -12, extraWidth = 30  };
 UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
 UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1, xoffset = 16, width = 605, height = 545 };
 UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
@@ -72,10 +72,9 @@ end
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
 	"OpenMailFrame",
-	"GuildControlPopupFrame",
+	"GuildControlUI",
 	"GuildMemberDetailFrame",
 	"TokenFramePopup",
-	"GuildInfoFrame",
 	"GuildBankPopupFrame",
 	"GearManagerDialog",
 };
@@ -427,7 +426,7 @@ function ToggleCalendar()
 end
 
 function ToggleGuildFrame()
-	if ( IsInGuild() ) then
+	if ( IsInGuild() and GuildUIEnabled() ) then
 		GuildFrame_LoadUI();
 		if ( GuildFrame_Toggle ) then
 			GuildFrame_Toggle();
@@ -2056,18 +2055,21 @@ function GetUIPanel(key)
 end
 
 function GetUIPanelWidth(frame)
-	return GetUIPanelWindowInfo(frame, "width") or frame:GetWidth();
+	return GetUIPanelWindowInfo(frame, "width") or frame:GetWidth() + (GetUIPanelWindowInfo(frame, "extraWidth") or 0);
 end
 
 function GetUIPanelHeight(frame)
-	return GetUIPanelWindowInfo(frame, "height") or frame:GetHeight();
+	return GetUIPanelWindowInfo(frame, "height") or frame:GetHeight() + (GetUIPanelWindowInfo(frame, "extraHeight") or 0);
 end
+
+--Allow a bit of overlap because there are built-in transparencies and buffers already
+local MINIMAP_OVERLAP_ALLOWED = 60;
 
 function GetMaxUIPanelsWidth()
 	local bufferBoundry = UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
 	if ( Minimap:IsShown() and not MinimapCluster:IsUserPlaced() ) then
 		-- If the Minimap is in the default place, make sure you wont overlap it either
-		return min(MinimapCluster:GetLeft(), bufferBoundry);
+		return min(MinimapCluster:GetLeft()+MINIMAP_OVERLAP_ALLOWED, bufferBoundry);
 	else
 		-- If the minimap has been moved, make sure not to overlap the right side bars
 		return bufferBoundry;
@@ -2862,6 +2864,15 @@ function MouseIsOver(region, topOffset, bottomOffset, leftOffset, rightOffset)
 	return region:IsMouseOver(topOffset, bottomOffset, leftOffset, rightOffset);
 end
 
+-- replace the C functions with local lua versions
+function getglobal(varr)
+	return _G[varr];
+end
+
+function setglobal(varr,value)
+	_G[varr] = value;
+end
+
 -- Wrapper for the desaturation function
 function SetDesaturation(texture, desaturation)
 	texture:SetDesaturated(desaturation);
@@ -2949,6 +2960,7 @@ function ToggleGameMenu()
 		MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 	elseif ( securecall("CloseMenus") ) then
 	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
+	elseif ( CloseGuildMenus and securecall("CloseGuildMenus") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then

@@ -162,11 +162,11 @@ function LootFrame_PageUp()
 end
 
 function LootFrame_Show(self)
-	ShowUIPanel(self);
 	self.numLootItems = GetNumLootItems();
 	
 	if ( GetCVar("lootUnderMouse") == "1" ) then
-		-- position loot window under mouse cursor		
+		self:Show();
+		-- position loot window under mouse cursor
 		local x, y = GetCursorPosition();
 		x = x / self:GetEffectiveScale();
 		y = y / self:GetEffectiveScale();
@@ -188,6 +188,8 @@ function LootFrame_Show(self)
 		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY);
 		self:GetCenter();
 		self:Raise();
+	else
+		ShowUIPanel(self);
 	end
 	
 	LootFrame_Update();

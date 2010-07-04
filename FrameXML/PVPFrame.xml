@@ -96,7 +96,7 @@
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(HONOR, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnClick>
 						PVPFrame_TabClicked(self);
@@ -113,7 +113,7 @@
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(BATTLEFIELDS, 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(PVP_CONQUEST, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnClick>
 						PVPFrame_TabClicked(self);
@@ -122,7 +122,7 @@
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
-            </Button>			
+            </Button>
             <Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="ARENA_TEAMS">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-15" y="0"/>
@@ -130,7 +130,7 @@
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(BATTLEFIELDS, 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(ARENA_TEAMS, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnClick>
 						PVPFrame_TabClicked(self);
@@ -436,14 +436,14 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="0" y="-42"/>
+										<AbsDimension x="0" y="-32"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentRewardDescription" inherits="GameFontHighlight" justifyH="LEFT" parentKey="description" text="RANDOM_BATTLEGROUND_EXPLANATION">
 							<Size>
-								<AbsDimension x="280" y="12"/>
+								<AbsDimension x="280" y="24"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT">
@@ -926,14 +926,14 @@
 								FauxScrollFrame_OnVerticalScroll(self, offset, 18, PVPTeamManagementFrame_TeamInfo_OnScroll)
 							</OnVerticalScroll>
 						</Scripts>
-					</ScrollFrame>		
+					</ScrollFrame>
 					<Frame name="$parentTeamDropDown" inherits="UIDropDownMenuTemplate"/>
 					<Frame name="$parentTeamData" inherits="PVPTeamDataTemplate" parentKey="TeamData" hidden="true">
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="$parentInfoBG"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentNoTeamsFrame" parentKey="noTeams" hidden="true">
+					<Frame name="$parentNoTeamsFrame" parentKey="noTeams" hidden="true" enableMouse="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-3" y="-112"/>
 							<Anchor point="BOTTOMRIGHT" x="5" y="2"/>

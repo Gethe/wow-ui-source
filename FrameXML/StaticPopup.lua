@@ -1965,49 +1965,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["ADD_GUILDRANK"] = {
-	text = ADD_GUILDRANK_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 15,
-	OnAccept = function(self)
-		GuildControlAddRank(self.editBox:GetText());
-		UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
-		CloseDropDownMenus();
-	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self)
-		if ( ChatFrameEditBox:IsShown() ) then
-			ChatFrameEditBox:SetFocus();
-		end
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		GuildControlAddRank(parent.editBox:GetText());
-		UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
-		CloseDropDownMenus();
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-};
+
 StaticPopupDialogs["SET_GUILDMOTD"] = {
 	text = SET_GUILDMOTD_LABEL,
 	button1 = ACCEPT,

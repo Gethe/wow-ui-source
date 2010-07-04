@@ -1,4 +1,6 @@
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "TokenFrame" };
+CHARACTERFRAME_EXPANDED_WIDTH = 540;
+
 local NUM_CHARACTERFRAME_TABS = 4;
 function ToggleCharacter (tab)
 	local subFrame = _G[tab];
@@ -47,9 +49,13 @@ end
 
 function CharacterFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_NAME_UPDATE");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
+	self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");
+	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	ButtonFrameTemplate_HideButtonBar(self);
+	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", PANEL_DEFAULT_WIDTH + PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
+	self.TitleText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 
 	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
 	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
@@ -60,18 +66,27 @@ function CharacterFrame_OnLoad (self)
 	PanelTemplates_SetTab(self, 1);
 end
 
+function CharacterFrame_UpdatePortrait()
+	local currentSpec = GetActiveTalentGroup(false, false);
+	local masteryIndex = GetMasteryIndex(currentSpec);
+	if (masteryIndex == nil) then
+		local _, class = UnitClass("player");
+		CharacterFramePortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
+		CharacterFramePortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
+	else
+		local _, _, icon = GetTalentTabInfo(masteryIndex);
+		CharacterFramePortrait:SetTexCoord(0, 1, 0, 1);
+		SetPortraitToTexture(CharacterFramePortrait, icon);	
+	end
+end
+
 function CharacterFrame_OnEvent (self, event, ...)
 	if ( not self:IsShown() ) then
 		return;
 	end
 	
 	local arg1 = ...;
-	if ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		if ( arg1 == "player" ) then
-			SetPortraitTexture(CharacterFramePortrait, arg1);
-		end
-		return;
-	elseif ( event == "UNIT_NAME_UPDATE" ) then
+	if ( event == "UNIT_NAME_UPDATE" ) then
 		if ( arg1 == "player" and not PetPaperDollFrame:IsShown()) then
 			CharacterFrameTitleText:SetText(UnitPVPName("player"));
 		end
@@ -80,12 +95,16 @@ function CharacterFrame_OnEvent (self, event, ...)
 		if (not PetPaperDollFrame:IsShown()) then
 			CharacterFrameTitleText:SetText(UnitPVPName("player"));
 		end
+	elseif (	event == "PREVIEW_TALENT_POINTS_CHANGED"
+				or event == "PLAYER_TALENT_UPDATE"
+				or event == "ACTIVE_TALENT_GROUP_CHANGED") then
+		CharacterFrame_UpdatePortrait();
 	end
 end
 
 function CharacterFrame_OnShow (self)
 	PlaySound("igCharacterInfoOpen");
-	SetPortraitTexture(CharacterFramePortrait, "player");
+	CharacterFrame_UpdatePortrait();
 	UpdateMicroButtons();
 	PlayerFrameHealthBar.showNumeric = true;
 	PlayerFrameManaBar.showNumeric = true;
@@ -120,6 +139,28 @@ function CharacterFrame_OnHide (self)
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
 	HideWatchedReputationBarText();
+end
+
+function CharacterFrame_Collapse()
+	CharacterFrame:SetWidth(PANEL_DEFAULT_WIDTH);
+	CharacterFrame.Expanded = false;
+	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
+	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down");
+	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled");
+	CharacterStatsPane:Hide();
+	CharacterFrameInsetRight:Hide();
+	UpdateUIPanelPositions(CharacterFrame);
+end
+
+function CharacterFrame_Expand()
+	CharacterFrame:SetWidth(CHARACTERFRAME_EXPANDED_WIDTH);
+	CharacterFrame.Expanded = true;
+	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
+	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
+	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled");
+	CharacterStatsPane:Show();
+	CharacterFrameInsetRight:Show();
+	UpdateUIPanelPositions(CharacterFrame);
 end
 
 local function CompareFrameSize(frame1, frame2)

@@ -11,6 +11,14 @@ function EclipseBar_UpdateShown(self)
 	
 	if  class == "DRUID" and (form == MOONKIN_FORM or not form) then
 		if GetMasteryIndex(GetActiveTalentGroup(false, false)) == 1 then
+			self.showPercent = GetCVarBool("statusTextPercentage");	
+			if GetCVarBool("playerStatusText") then
+				self.powerText:Show();
+				self.lockShow = true;
+			else
+				self.powerText:Hide();
+				self.lockShow = false;
+			end
 			self:Show();
 		else
 			self:Hide();
@@ -25,12 +33,16 @@ end
 
 function EclipseBar_Update(self)
 	local power = UnitPower( self:GetParent().unit, ECLIPSE_BAR_POWER_INDEX );
-	local maxPower = UnitPowerMax( self:GetParent().unit, ECLIPSE_BAR_POWER_INDEX );	
+	local maxPower = UnitPowerMax( self:GetParent().unit, ECLIPSE_BAR_POWER_INDEX );
+	if self.showPercent then 
+		self.powerText:SetText(abs(power/maxPower*100).."%");
+	else
+		self.powerText:SetText(abs(power));
+	end
 	
 	local barWidth = (self:GetWidth() - 10) / 2.0;
 	local xpos =  barWidth*(power/maxPower)
 	self.marker:SetPoint("CENTER", xpos, 0);
-	--print("Eclipse bar: "..power..", "..maxPower..", "..xpos);
 	
 	if( abs(power) == maxPower ) then
 		self.glow:Show();
@@ -49,23 +61,16 @@ end
 
 
 
-function EclipseBar_OnLoad (self)	
-	self:RegisterEvent("UNIT_ECLIPSE");
-	self:RegisterEvent("UNIT_MAXECLIPSE");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("UNIT_DISPLAYPOWER");
+function EclipseBar_OnLoad (self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");	
-	self:RegisterEvent("PLAYER_TALENT_UPDATE");
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");	
+	self:RegisterEvent("MASTERY_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
+	self.lockShow = false;
 end
 
 
 
-function EclipseBar_OnEvent (self, event, arg1)
-	if ( (event == "UNIT_ECLIPSE") and (arg1 == "player") ) then
-		EclipseBar_UpdateShown(self)
-	elseif ( (event == "UNIT_MAXECLIPSE") and (arg1 == "player") ) then
-		EclipseBar_UpdateShown(self)
-	else
-		EclipseBar_UpdateShown(self)
-	end
+function EclipseBar_OnEvent (self, event, ...)
+	EclipseBar_UpdateShown(self);
 end

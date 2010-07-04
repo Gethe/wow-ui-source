@@ -727,7 +727,6 @@ end
 function InterfaceOptionsDisplayPanelAggroWarningDisplay_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelAggroWarningDisplay);
 	local info = UIDropDownMenu_CreateInfo();
-	info.tooltipOnButton = 1;
 
 	info.text = ALWAYS;
 	info.func = InterfaceOptionsDisplayPanelAggroWarningDisplay_OnClick;
@@ -1246,7 +1245,6 @@ end
 function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
-	info.tooltipOnButton = 1;
 
 	info.text = CAMERA_SMART;
 	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;

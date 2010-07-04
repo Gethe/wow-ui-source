@@ -74,12 +74,16 @@ function UpdateMicroButtons()
 		end
 	end
 	
-	if ( GuildFrame and GuildFrame:IsShown() ) then
-		SocialsMicroButton:SetButtonState("PUSHED", 1);
+	if ( GuildUIEnabled() ) then
+		if ( GuildFrame and GuildFrame:IsShown() ) then
+			SocialsMicroButton:SetButtonState("PUSHED", 1);
+		else
+			SocialsMicroButton:SetButtonState("NORMAL");
+		end
 	else
-		SocialsMicroButton:SetButtonState("NORMAL");
+		SocialsMicroButton:Disable();
 	end
-
+	
 	if ( LFDParentFrame:IsShown() ) then
 		LFDMicroButton:SetButtonState("PUSHED", 1);
 	else

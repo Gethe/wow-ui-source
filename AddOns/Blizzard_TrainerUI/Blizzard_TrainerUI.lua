@@ -206,7 +206,7 @@ function ClassTrainerFrame_Update()
 				skillButton.subText:Hide();
 			end
 			
-			local moneyCost, cpCost1, cpCost2 = GetTrainerServiceCost(skillIndex);
+			local moneyCost, _, skillPointCost = GetTrainerServiceCost(skillIndex);
 			if ( moneyCost and moneyCost > 0 ) then
 				MoneyFrame_Update(skillButton.money:GetName(), moneyCost);
 				if ( playerMoney >= moneyCost ) then
@@ -218,12 +218,16 @@ function ClassTrainerFrame_Update()
 			end
 			
 			-- Place the highlight and lock the highlight state
-			if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then			
-				if cpCost1 > 0 or cpCost2 > 0 then
+			if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
+				local _, availibleSkillPoints = UnitCharacterPoints("player");
+				ClassTrainerFrame.showDialog = nil;
+				if ( skillPointCost > 0 ) then
 					ClassTrainerFrame.showDialog = 1;
-				else
-					ClassTrainerFrame.showDialog = nil;
-				end
+					if ( availibleSkillPoints < skillPointCost and serviceType ~= "used" ) then
+						unavailable = true;
+					end
+				end			
+				
 				skillButton.selectedTex:Show();
 				if ( serviceType == "available" and not unavailable) then
 					ClassTrainerTrainButton:Enable();

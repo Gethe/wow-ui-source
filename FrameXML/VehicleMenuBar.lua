@@ -730,6 +730,8 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		MainMenuExpBar:SetPoint("TOP");		
 		if MainMenuExpBar.storedWidth then
 			MainMenuExpBar_SetWidth(MainMenuExpBar.storedWidth);
+		else			
+			MainMenuExpBar.storedWidth = MainMenuExpBar:GetWidth();	
 		end
 	elseif ( skinName == "Mechanical" ) then
 	
@@ -744,8 +746,7 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		UpdateMicroButtons();
 		
 		
-		MainMenuExpBar:ClearAllPoints();		
-		MainMenuExpBar.storedWidth = MainMenuExpBar:GetWidth();		
+		MainMenuExpBar:ClearAllPoints();			
 		MainMenuExpBar:SetParent(VehicleMenuBar);
 		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 148, 50);
 		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -150, 50);
@@ -763,8 +764,7 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
 		UpdateMicroButtons();
 		
-		MainMenuExpBar:ClearAllPoints();		
-		MainMenuExpBar.storedWidth = MainMenuExpBar:GetWidth();		
+		MainMenuExpBar:ClearAllPoints();			
 		MainMenuExpBar:SetParent(VehicleMenuBar);
 		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 166, 53);
 		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -166, 53);

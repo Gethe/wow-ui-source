@@ -158,13 +158,6 @@
 		</HighlightTexture>
 	</Button>
 	<Frame name="GuildRosterFrame" parent="GuildFrame" setAllPoints="true" hidden="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture setAllPoints="true" hidden="true">
-					<Color r="0" g="1" b="0" a="0.05"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame name="GuildRosterViewDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
@@ -223,7 +216,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<ScrollFrame name="GuildRosterContainer" inherits="HybridScrollFrameTemplate" hidden="false">
+			<ScrollFrame name="GuildRosterContainer" inherits="HybridScrollFrameTemplate">
 				<Size x="302" y="302"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT">

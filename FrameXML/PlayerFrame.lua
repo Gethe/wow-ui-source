@@ -13,7 +13,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_COMBAT");
 	self:RegisterEvent("UNIT_FACTION");
-	self:RegisterEvent("UNIT_MAXMANA");
+	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_ENTER_COMBAT");
 	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
@@ -203,8 +203,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateReadyCheck();
 	elseif ( event == "READY_CHECK_FINISHED" ) then
 		ReadyCheck_Finish(PlayerFrameReadyCheck);
-	elseif ( event == "UNIT_RUNIC_POWER" and arg1 == "player" ) then
-		PlayerFrame_SetRunicPower(UnitPower("player"));
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			if ( arg2 ) then
@@ -519,69 +517,6 @@ end
 
 function PlayerFrame_SetupDeathKnniggetLayout ()
 	PlayerFrame:SetHitRectInsets(0,0,0,35);
-	
-	--[[ PlayerFrame:SetPoint("TOPLEFT", -11, -8);
-	PlayerFrame:RegisterEvent("UNIT_RUNIC_POWER");
-	PlayerPortrait:SetDrawLayer("BACKGROUND");
-	PlayerFrameTexture:ClearAllPoints();
-	PlayerFrameTexture:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight");
-	PlayerFrameTexture:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameTexture:SetTexCoord(0, 1, 0, 1)
-	PlayerFrameTexture:SetHeight(128);
-	PlayerFrameTexture:SetWidth(256)
-
-	PlayerFrame:CreateTexture("PlayerFrameBackgroundTexture", "BACKGROUND");
-	PlayerFrameBackgroundTexture:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Background");
-	PlayerFrameBackgroundTexture:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameBackgroundTexture:SetWidth(256);
-	PlayerFrameBackgroundTexture:SetHeight(128);
-	PlayerFrameBackgroundTexture:SetDrawLayer("BORDER");
-	PlayerFrameBackground:SetDrawLayer("ARTWORK");
-	PlayerFrameBackground:SetHeight(4);
-	PlayerFrameBackground:SetWidth(4);
-	PlayerFrameBackground:SetPoint("TOPLEFT", 108, -24);
-	
-	PlayerName:SetPoint("CENTER", 50, 18);
-	PlayerFrameHealthBar:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 113, -41);
-	PlayerFrameHealthBar:SetWidth(112);
-	PlayerFrameHealthBarText:SetPoint("CENTER", 53, 3);
-	
-	-- Death Knight Specific Border Frame
-	PlayerFrame:CreateTexture("PlayerFrameRunicPowerOverlay", "OVERLAY");
-	PlayerFrameRunicPowerOverlay:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameRunicPowerOverlay:SetWidth(256);
-	PlayerFrameRunicPowerOverlay:SetHeight(128);
-	PlayerFrameRunicPowerOverlay:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-GoldBorder");
-
-	-- Death Knight Runic Power Glow
-	local frame = CreateFrame("Frame");
-	frame:SetPoint("TOPLEFT", PlayerFrame);
-	frame:SetPoint("BOTTOMRIGHT", PlayerFrame);
-
-	frame:CreateTexture("PlayerFrameRunicPowerGlow", "BORDER");
-	PlayerFrameRunicPowerGlow:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameRunicPowerGlow:SetPoint("BOTTOMRIGHT", PlayerFrameBackgroundTexture);
-	PlayerFrameRunicPowerGlow:SetAlpha(0.050);
-	PlayerFrameRunicPowerGlow:SetWidth(256);
-	PlayerFrameRunicPowerGlow:SetHeight(128);
-	PlayerFrameRunicPowerGlow:Hide();
-	PlayerFrameRunicPowerGlow:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Sword-Glow");
-
-	--Hoorah for hacks!
-	PlayerFrameManaBar:UnregisterAllEvents();
-	PlayerFrameManaBar:Hide();
-	PlayerFrameManaBar:ClearAllPoints();
-	PlayerFrameManaBar:SetPoint("TOPLEFT", UIParent, "BOTTOMRIGHT");
-	PlayerFrameManaBarText:SetParent(PlayerFrameManaBar);
-	
-	local runicPowerBar = PlayerFrame:CreateTexture("$parentRunicPowerBar", "ARTWORK");
-	-- Mmmm, runic Power Bars, my favorite kind. Tastes like Death Knnigget.
-	runicPowerBar:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-RunicPower");
-	runicPowerBar:SetPoint("BOTTOMLEFT", "$parent", "BOTTOMLEFT", 70, 24);
-	runicPowerBar:SetWidth(64);
-	runicPowerBar:SetHeight(63);
-	
-	PlayerFrame_SetRunicPower(UnitPower("player"));--]]
 end
 
 CustomClassLayouts = {

@@ -443,7 +443,9 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.label:SetText(tostring(ceil(value * 100)).."%");
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						end
 					</OnValueChanged>
 					<OnEnter>
 						if ( self:IsEnabled() ) then
@@ -499,7 +501,9 @@
 					<OnValueChanged>
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						PlaySound("igMainMenuOptionCheckBoxOn", "SFX");
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "SFX");
+						end
 					</OnValueChanged>
 					<OnEnter>
 						if ( self:IsEnabled() ) then
@@ -551,7 +555,9 @@
 					<OnValueChanged>
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						PlaySound("igMainMenuOptionCheckBoxOn", "Music");
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "Music");
+						end
 					</OnValueChanged>
 					<OnEnter>
 						if ( self:IsEnabled() ) then
@@ -603,7 +609,9 @@
 					<OnValueChanged>
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						PlaySound("igMainMenuOptionCheckBoxOn", "Ambience");
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "Ambience");
+						end
 					</OnValueChanged>
 					<OnEnter>
 						if ( self:IsEnabled() ) then

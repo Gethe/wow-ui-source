@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GuildNews.lua"/>
+	<Frame name="GuildNewsFrame" parent="GuildFrame" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\GuildFrame\GuildFrame">
+					<Size x="302" y="312"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-27" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.00195313" bottom="0.59765625"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture setAllPoints="true" hidden="true">
+					<Color r="0" g="1" b="0" a="0.05"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollingMessageFrame name="GuildNewsMessageFrame" maxLines="1000" fade="false">
+				<Size x="298" y="312"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-31" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\GuildFrame\GuildFrame" hidden="true">
+							<TexCoords left="0.31640625" right="0.62988281" top="0.00195313" bottom="0.59765625"/>
+						</Texture>
+						<Texture setAllPoints="true" hidden="true">
+							<Color r="0" g="0.5" b="0" a="0.2"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal" justifyH="LEFT"/>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="4" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="4" y="11"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								--self:GetParent().scrollBar = self;
+							</OnLoad>
+							<OnValueChanged> 
+								GuildNewsScrollBar_OnValueChanged(self:GetParent(), value);
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnHyperlinkClick>
+						SetItemRef(link, text, button);
+					</OnHyperlinkClick>
+				</Scripts>
+			</ScrollingMessageFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildNewsFrame_OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

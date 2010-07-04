@@ -613,15 +613,19 @@ local function CreateCanonicalActions(entry, ...)
 	entry.spells = {};
 	entry.spellNames = {};
 	entry.items = {};
+	local count = 0;
 	for i=1, select("#", ...) do
 		local action = strlower(strtrim((select(i, ...))));
-		if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
-			entry.items[i] = action;
-			entry.spells[i] = strlower(GetItemSpell(action) or "");
-			entry.spellNames[i] = entry.spells[i];
-		else
-			entry.spells[i] = action;
-			entry.spellNames[i] = gsub(action, "!*(.*)", "%1");
+		if ( action and action ~="" ) then
+			count = count + 1;
+			if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
+				entry.items[count] = action;
+				entry.spells[count] = strlower(GetItemSpell(action) or "");
+				entry.spellNames[count] = entry.spells[count];
+			else
+				entry.spells[count] = action;
+				entry.spellNames[count] = gsub(action, "!*(.*)", "%1");
+			end
 		end
 	end
 end
@@ -1836,7 +1840,7 @@ SlashCmdList["GUILD_INFO"] = function(msg)
 end
 
 SlashCmdList["GUILD_ROSTER"] = function(msg)
-	if ( IsInGuild() ) then
+	if ( IsInGuild() and GuildUIEnabled() ) then
 		GuildFrame_LoadUI();
 		if ( GuildFrame ) then
 			GuildFrameTab2:Click();

@@ -48,7 +48,7 @@ function ShardBar_OnLoad (self)
 		self:Hide();
 	end
 	
-	self:RegisterEvent("UNIT_SOUL_SHARDS");
+	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self.shard1.shardSmoke1:SetAlpha(0.0);
@@ -61,12 +61,14 @@ end
 
 
 
-function ShardBar_OnEvent (self, event, arg1)
+function ShardBar_OnEvent (self, event, arg1, arg2)
 	if ( event == "UNIT_DISPLAYPOWER" ) then		
 		ShardBar_Update();	
 	elseif ( event=="PLAYER_ENTERING_WORLD" ) then	
 		ShardBar_Update();	
-	elseif ( (event == "UNIT_SOUL_SHARDS") and (arg1 == self:GetParent().unit) ) then
-		ShardBar_Update();
+	elseif ( (event == "UNIT_POWER") and (arg1 == self:GetParent().unit) ) then
+		if ( arg2 == "SOUL_SHARDS" ) then
+			ShardBar_Update();
+		end
 	end
 end

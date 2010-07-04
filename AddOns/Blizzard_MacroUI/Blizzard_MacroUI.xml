@@ -383,6 +383,11 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(string.format(CHARACTER_SPECIFIC_MACROS, UnitName("player")), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
 						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);

@@ -1,8 +1,7 @@
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
-	[10] = {"TalentsUnlocked"},
-	[11] = {"BGsUnlocked"},
+	[10] = {"TalentsUnlocked", "BGsUnlocked"},
 	[15] = {"LFDUnlocked", "GlyphMajor"},
 	[20] = {"Riding75"},
 	[30] = {"GlyphMajor"},

@@ -136,7 +136,7 @@ function CombatText_OnEvent(self, event, ...)
 		if ( not messageType ) then
 			return;
 		end
-	elseif ( event == "UNIT_MANA" ) then
+	elseif ( event == "UNIT_POWER" ) then
 		if ( arg1 == self.unit ) then
 			local powerType, powerToken = UnitPowerType(self.unit);
 			if ( powerToken == "MANA" and (UnitPower(self.unit) / UnitPowerMax(self.unit)) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
@@ -518,7 +518,7 @@ function CombatText_UpdateDisplayedMessages()
 	if ( SHOW_COMBAT_TEXT == "0" ) then
 		CombatText:UnregisterEvent("COMBAT_TEXT_UPDATE");
 		CombatText:UnregisterEvent("UNIT_HEALTH");
-		CombatText:UnregisterEvent("UNIT_MANA");
+		CombatText:UnregisterEvent("UNIT_POWER");
 		CombatText:UnregisterEvent("PLAYER_REGEN_DISABLED");
 		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
 		CombatText:UnregisterEvent("UNIT_COMBO_POINTS");
@@ -539,7 +539,7 @@ function CombatText_UpdateDisplayedMessages()
 	-- register events
 	CombatText:RegisterEvent("COMBAT_TEXT_UPDATE");
 	CombatText:RegisterEvent("UNIT_HEALTH");
-	CombatText:RegisterEvent("UNIT_MANA");
+	CombatText:RegisterEvent("UNIT_POWER");
 	CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
 	CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
 	CombatText:RegisterEvent("UNIT_COMBO_POINTS");

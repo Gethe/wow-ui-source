@@ -39,48 +39,61 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBar" file="Interface\PlayerFrame\UI-DruidEclipse">				
-					<Size x="86" y="16"/>	
-					<TexCoords left="0.27343750" right="0.94531250" top="0.55468750" bottom="0.67968750"/>	
+				<Texture name="$parentBar" file="Interface\PlayerFrame\UI-DruidEclipse">
+					<Size x="86" y="16"/>
+					<TexCoords left="0.27343750" right="0.94531250" top="0.55468750" bottom="0.67968750"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentSun" file="Interface\PlayerFrame\UI-DruidEclipse">				
-					<Size x="31" y="30"/>	
-					<TexCoords left="0.26562500" right="0.50781250" top="0.00781250" bottom="0.24218750"/>	
+				<Texture name="$parentSun" file="Interface\PlayerFrame\UI-DruidEclipse">
+					<Size x="31" y="30"/>
+					<TexCoords left="0.26562500" right="0.50781250" top="0.00781250" bottom="0.24218750"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentBar" relativePoint="RIGHT" x="12"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentMoon" file="Interface\PlayerFrame\UI-DruidEclipse">				
-					<Size x="31" y="30"/>	
-					<TexCoords left="0.00781250" right="0.25000000" top="0.00781250" bottom="0.24218750"/>	
+				<Texture name="$parentMoon" file="Interface\PlayerFrame\UI-DruidEclipse">
+					<Size x="31" y="30"/>
+					<TexCoords left="0.00781250" right="0.25000000" top="0.00781250" bottom="0.24218750"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentBar" relativePoint="LEFT" x="-8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentMarker" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="marker" alphaMode="ADD">				
-					<Size x="32" y="32"/>	
-					<TexCoords left="0.00781250" right="0.25781250" top="0.25781250" bottom="0.50781250"/>	
+				<Texture name="$parentMarker" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="marker" alphaMode="ADD">
+					<Size x="32" y="32"/>
+					<TexCoords left="0.00781250" right="0.25781250" top="0.25781250" bottom="0.50781250"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>				
-				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="glow" alphaMode="ADD" hidden="true">				
-					<Size x="36" y="36"/>	
+				</Texture>
+				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="glow" alphaMode="ADD" hidden="true">
+					<Size x="36" y="36"/>
 					<TexCoords left="0.27343750" right="0.55468750" top="0.25781250" bottom="0.53906250"/>
-				</Texture>		
-			</Layer>								
-		</Layers>		
+				</Texture>
+				<FontString name="$parentPowertext" inherits="TextStatusBarText" text="Chaz" parentKey="powerText" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
-		  <OnLoad function="EclipseBar_OnLoad"/>
-		  <OnEvent function="EclipseBar_OnEvent"/>
-		  <OnUpdate function="EclipseBar_Update"/>
+			<OnEnter>
+				self.powerText:Show();
+			</OnEnter>
+			<OnLeave>
+				if not self.lockShow then
+					self.powerText:Hide();
+				end
+			</OnLeave>
+			<OnLoad function="EclipseBar_OnLoad"/>
+			<OnEvent function="EclipseBar_OnEvent"/>
+			<OnUpdate function="EclipseBar_Update"/>
 		</Scripts>
 	</Frame>
 </Ui>
