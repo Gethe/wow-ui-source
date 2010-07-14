@@ -1,6 +1,6 @@
 local GUILD_ROSTER_MAX_COLUMNS = 5;
 local GUILD_ROSTER_MAX_STRINGS = 4;
-local GUILD_ROSTER_BAR_MAX = 237;
+local GUILD_ROSTER_BAR_MAX = 239;
 local GUILD_ROSTER_BUTTON_OFFSET = 2;
 local GUILD_ROSTER_BUTTON_HEIGHT = 20;
 local currentGuildView;
@@ -12,6 +12,7 @@ local GUILD_ROSTER_COLUMNS = {
 	pve = { "level", "class", "name", "valor", "hero" },
 	pvp = { "level", "class", "name", "honor", "conquest" },
 	achievement = { "level", "class", "wideName", "achievement" },
+	tradeskill = { "wideName", "zone", "skill" },
 };
 
 local GUILD_ROSTER_COLUMN_DATA = {
@@ -21,25 +22,64 @@ local GUILD_ROSTER_COLUMN_DATA = {
 	wideName = { width = 101, text = "Name", sortType = "name", stringJustify="LEFT" },
 	rank = { width = 76, text = "Rank", stringJustify="LEFT" },
 	note = { width = 76, text = "Note", stringJustify="LEFT" },
-	online = { width = 74, text = "Last Online", stringJustify="LEFT" },
-	valor = { width = 82, text = "Valor", stringJustify="RIGHT" },
-	hero = { width = 82, text = "Hero", stringJustify="RIGHT" },
-	honor = { width = 82, text = "Honor", stringJustify="RIGHT" },
-	conquest = { width = 82, text = "Conquest", stringJustify="RIGHT" },
-	contribution = { width = 142, text = "Contribution", stringJustify="RIGHT", hasBar = true },
-	zone = { width = 142, text = "Zone", stringJustify="LEFT" },
-	achievement = { width = 142, text = "Achievement", stringJustify="RIGHT" },
+	online = { width = 76, text = "Last Online", stringJustify="LEFT" },
+	valor = { width = 83, text = "Valor", stringJustify="RIGHT" },
+	hero = { width = 83, text = "Hero", stringJustify="RIGHT" },
+	honor = { width = 83, text = "Honor", stringJustify="RIGHT" },
+	conquest = { width = 83, text = "Conquest", stringJustify="RIGHT" },
+	contribution = { width = 144, text = "Contribution", stringJustify="RIGHT", hasBar = true },
+	zone = { width = 144, text = "Zone", stringJustify="LEFT" },
+	achievement = { width = 144, text = "Achievement", stringJustify="RIGHT" },
+	skill = { width = 63, text = "Skill", stringJustify="LEFT" },
 };
 
-function GuildRosterFrame_OnLoad()
+function GuildRosterFrame_OnLoad(self)
 	GuildFrame_RegisterPanel("GuildRosterFrame");
 	GuildRosterContainer.update = GuildRoster_Update;
 	HybridScrollFrame_CreateButtons(GuildRosterContainer, "GuildRosterButtonTemplate", 0, 0, "TOPLEFT", "TOPLEFT", 0, -GUILD_ROSTER_BUTTON_OFFSET, "TOP", "BOTTOM");
-	
+	GuildRosterContainerScrollBar.doNotHide = true;
+	GuildRosterShowOfflineButton:SetChecked(GetGuildRosterShowOffline());
+	self:RegisterEvent("GUILD_TRADESKILL_UPDATE");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("GUILD_RECIPE_KNOWN_BY_MEMBERS");
 	_SetupFakeGuild(26);
 	GuildRoster_SetView("playerStatus");
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
+	self.doRecipeQuery = true;
+end
+
+function GuildRosterFrame_OnEvent(self, event, ...)
+	if ( not self:IsShown() ) then
+		return;
+	end
+	if ( event == "GUILD_TRADESKILL_UPDATE" ) then
+		if ( currentGuildView == "tradeskill" ) then
+			QueryGuildRecipes();
+			GuildRoster_Update();
+		else
+			GuildRosterFrame.doRecipeQuery = true;
+		end
+	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		if ( currentGuildView ~= "tradeskill" ) then
+			local arg1 = ...;
+			if ( arg1 ) then
+				GuildRoster();
+			end		
+			GuildRoster_Update();
+		end
+	end
+end
+
+function GuildRosterFrame_OnShow(self)
+	GuildRoster_RecipeQueryCheck();
 	GuildRoster_Update();
+end
+
+function GuildRoster_RecipeQueryCheck()
+	if ( GuildRosterFrame.doRecipeQuery ) then
+		QueryGuildRecipes();
+		GuildRosterFrame.doRecipeQuery = nil;
+	end
 end
 
 function GuildRoster_Update()
@@ -49,63 +89,152 @@ function GuildRoster_Update()
 	local numButtons = #buttons;
 	local button, index, class;
 	local topContribution = _GuildGetHighestContribution();
+	local totalMembers, onlineMembers = GetNumGuildMembers();
+	
+	if ( currentGuildView == "tradeskill" ) then
+		GuildRoster_UpdateProfessions();
+		return;
+	end
 
+	-- placeholders
+	local contribution = 0;
+	local contributionRank = 0;
+	local honor = 0;
+	local conquest = 0;
+	local valor = 0;
+	local hero = 0;
+	local achievement = 0;
+	
+	local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName;
+	-- numVisible
+	local visibleMembers = onlineMembers;
+	if ( GetGuildRosterShowOffline() ) then
+		visibleMembers = totalMembers;
+	end
 	for i = 1, numButtons do
 		button = buttons[i];		
-		index = offset + i;
-		if ( _GuildMembers[index] ) then
-			class = _GuildMembers[index].class;
+		index = offset + i;		
+		if ( index <= visibleMembers ) then
+			name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName = GetGuildRosterInfo(index);
 			if ( currentGuildView == "playerStatus" ) then
-				GuildRosterButton_SetStringText(button.string1, _GuildMembers[index].level, _GuildMembers[index].online)
-				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
-				GuildRosterButton_SetStringText(button.string2, _GuildMembers[index].name, _GuildMembers[index].online, class)
-				GuildRosterButton_SetStringText(button.string3, _GuildMembers[index].zone, _GuildMembers[index].online)
+				GuildRosterButton_SetStringText(button.string1, level, online)
+				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
+				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
+				GuildRosterButton_SetStringText(button.string3, zone, online)
 			elseif ( currentGuildView == "guildStatus" ) then
-				GuildRosterButton_SetStringText(button.string1, _GuildMembers[index].name, _GuildMembers[index].online, class)
-				GuildRosterButton_SetStringText(button.string2, _GuildMembers[index].rankName, _GuildMembers[index].online)
-				GuildRosterButton_SetStringText(button.string3, _GuildMembers[index].note, _GuildMembers[index].online)
-				GuildRosterButton_SetStringText(button.string4, "[PH]", _GuildMembers[index].online)
+				GuildRosterButton_SetStringText(button.string1, name, online, classFileName)
+				GuildRosterButton_SetStringText(button.string2, rank, online)
+				GuildRosterButton_SetStringText(button.string3, note, online)
+				GuildRosterButton_SetStringText(button.string4, GuildFrame_GetLastOnline(index), online)
 			elseif ( currentGuildView == "contribution" ) then
-				GuildRosterButton_SetStringText(button.string1, _GuildMembers[index].level, _GuildMembers[index].online)
-				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
-				GuildRosterButton_SetStringText(button.string2, _GuildMembers[index].name, _GuildMembers[index].online, class)
-				GuildRosterButton_SetStringText(button.string3, _GuildMembers[index].contribution, _GuildMembers[index].online)
-				if ( _GuildMembers[index].contribution == 0 ) then
+				GuildRosterButton_SetStringText(button.string1, level, online)
+				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
+				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
+				GuildRosterButton_SetStringText(button.string3, contribution, online)
+				if ( contribution == 0 ) then
 					button.barTexture:Hide();				
 				else
 					button.barTexture:SetWidth(_GuildMembers[index].contribution / topContribution * GUILD_ROSTER_BAR_MAX);
 					button.barTexture:Show();
 				end
-				GuildRosterButton_SetStringText(button.barLabel, "#".._GuildMembers[index].contributionRank, _GuildMembers[index].online)
+				GuildRosterButton_SetStringText(button.barLabel, "#"..contributionRank, online)
 			elseif ( currentGuildView == "pve" ) then
-				GuildRosterButton_SetStringText(button.string1, _GuildMembers[index].level, _GuildMembers[index].online)
-				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
-				GuildRosterButton_SetStringText(button.string2, _GuildMembers[index].name, _GuildMembers[index].online, class)
-				GuildRosterButton_SetStringText(button.string3, _GuildMembers[index].valor, _GuildMembers[index].online)			
-				GuildRosterButton_SetStringText(button.string4, _GuildMembers[index].hero, _GuildMembers[index].online)
+				GuildRosterButton_SetStringText(button.string1, level, online)
+				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
+				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
+				GuildRosterButton_SetStringText(button.string3, valor, online)			
+				GuildRosterButton_SetStringText(button.string4, hero, online)
 			elseif ( currentGuildView == "pvp" ) then
-				GuildRosterButton_SetStringText(button.string1, _GuildMembers[index].level, _GuildMembers[index].online)
-				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
-				GuildRosterButton_SetStringText(button.string2, _GuildMembers[index].name, _GuildMembers[index].online, class)
-				GuildRosterButton_SetStringText(button.string3, _GuildMembers[index].honor, _GuildMembers[index].online)
-				GuildRosterButton_SetStringText(button.string4, _GuildMembers[index].conquest, _GuildMembers[index].online)	
+				GuildRosterButton_SetStringText(button.string1, level, online)
+				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
+				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
+				GuildRosterButton_SetStringText(button.string3, honor, online)
+				GuildRosterButton_SetStringText(button.string4, conquest, online)	
 			elseif ( currentGuildView == "achievement" ) then
-				GuildRosterButton_SetStringText(button.string1, _GuildMembers[index].level, _GuildMembers[index].online)
-				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
-				GuildRosterButton_SetStringText(button.string2, _GuildMembers[index].name, _GuildMembers[index].online, class)
-				GuildRosterButton_SetStringText(button.string3, _GuildMembers[index].achievement, _GuildMembers[index].online)
+				GuildRosterButton_SetStringText(button.string1, level, online)
+				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
+				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
+				GuildRosterButton_SetStringText(button.string3, achievement, online)
 			end
 			button:Show();
 			if ( mod(index, 2) == 0 ) then
-				button.stripe:Hide();
+				button.stripe:SetTexCoord(0.36230469, 0.38183594, 0.95898438, 0.99804688);
 			else
-				button.stripe:Show();
-			end			
+				button.stripe:SetTexCoord(0.51660156, 0.53613281, 0.88281250, 0.92187500);
+			end
 		else
 			button:Hide();
 		end
 	end
-	local totalHeight = #_GuildMembers * (GUILD_ROSTER_BUTTON_HEIGHT + GUILD_ROSTER_BUTTON_OFFSET);
+	local totalHeight = visibleMembers * (GUILD_ROSTER_BUTTON_HEIGHT + GUILD_ROSTER_BUTTON_OFFSET);
+	local displayedHeight = numButtons * (GUILD_ROSTER_BUTTON_HEIGHT + GUILD_ROSTER_BUTTON_OFFSET);
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+end
+
+function GuildRoster_UpdateProfessions()
+	local scrollFrame = GuildRosterContainer;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local button, index, class;
+	local numTradeSkill = GetNumGuildTradeSkill();
+	
+	for i = 1, numButtons do
+		button = buttons[i];
+		index = offset + i;
+		if ( index <= numTradeSkill ) then
+			local skillID, isCollapsed, iconTexture, headerName, numOnline, numPlayers, playerName, class, isOnline, zone, skill = GetGuildTradeSkillInfo(index);
+			if ( skillID ) then
+				GuildRosterButton_SetStringText(button.string1, headerName, 1);
+				GuildRosterButton_SetStringText(button.string2, "", 1);
+				GuildRosterButton_SetStringText(button.string3, numOnline, 1);
+				button.header:Show();
+				button.header.icon:SetTexture(iconTexture);
+				button.header.name:SetText(headerName);
+				button.header.collapsed = isCollapsed;
+				if ( numPlayers == 0 ) then
+					button.header.collapsedIcon:Hide();
+					button.header.expandedIcon:Hide();
+					button.header.allRecipes:Hide();
+					button.header:Disable();
+					button.header.name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					button.header.leftEdge:SetVertexColor(0.75, 0.75, 0.75);
+					button.header.rightEdge:SetVertexColor(0.75, 0.75, 0.75);
+					button.header.middle:SetVertexColor(0.75, 0.75, 0.75);
+				else
+					button.header:Enable();
+					button.header.allRecipes:Show();
+					button.header.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					button.header.leftEdge:SetVertexColor(1, 1, 1);
+					button.header.rightEdge:SetVertexColor(1, 1, 1);
+					button.header.middle:SetVertexColor(1, 1, 1);
+					if ( isCollapsed ) then
+						button.header.collapsedIcon:Show();
+						button.header.expandedIcon:Hide();
+					else
+						button.header.expandedIcon:Show();
+						button.header.collapsedIcon:Hide();
+					end
+				end
+				button.header.skillID = skillID;
+			else
+				GuildRosterButton_SetStringText(button.string1, playerName, isOnline, string.upper(class));
+				GuildRosterButton_SetStringText(button.string2, zone, isOnline);
+				GuildRosterButton_SetStringText(button.string3, "["..skill.."]", isOnline);
+				button.header:Hide();
+			end
+			button:Show();
+			if ( mod(index, 2) == 0 ) then
+				button.stripe:SetTexCoord(0.36230469, 0.38183594, 0.95898438, 0.99804688);
+			else
+				button.stripe:SetTexCoord(0.51660156, 0.53613281, 0.88281250, 0.92187500);
+			end
+		else
+			button:Hide();
+		end
+	end
+	
+	local totalHeight = numTradeSkill * (GUILD_ROSTER_BUTTON_HEIGHT + GUILD_ROSTER_BUTTON_OFFSET);
 	local displayedHeight = numButtons * (GUILD_ROSTER_BUTTON_HEIGHT + GUILD_ROSTER_BUTTON_OFFSET);
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
@@ -135,7 +264,7 @@ function GuildRoster_SetView(view)
 		local columnButton = _G["GuildRosterColumnButton"..columnIndex];
 		local columnType = GUILD_ROSTER_COLUMNS[view][columnIndex];
 		if ( columnType ) then
-			local columnData = GUILD_ROSTER_COLUMN_DATA[columnType];			
+			local columnData = GUILD_ROSTER_COLUMN_DATA[columnType];
 			columnButton:SetText(columnData.text);
 			WhoFrameColumn_SetWidth(columnButton, columnData.width);
 			columnButton:Show();
@@ -160,7 +289,7 @@ function GuildRoster_SetView(view)
 	end	
 	
 	-- process the button strings
-	local buttons = GuildRosterContainer.buttons;	
+	local buttons = GuildRosterContainer.buttons;
 	local button, fontString;
 	for buttonIndex = 1, #buttons do
 		button = buttons[buttonIndex];
@@ -171,8 +300,8 @@ function GuildRoster_SetView(view)
 				-- want strings a little inside the columns, 6 pixels from the left and 8 from the right
 				fontString:SetPoint("LEFT", stringData.stringOffset + 6, 0);
 				fontString:SetWidth(stringData.width - 14);
-				fontString:SetJustifyH(stringData.stringJustify);				
-				fontString:Show();				
+				fontString:SetJustifyH(stringData.stringJustify);
+				fontString:Show();
 			else
 				fontString:Hide();
 			end
@@ -187,10 +316,14 @@ function GuildRoster_SetView(view)
 			-- button.barTexture:Show(); -- shown status determined in GuildRoster_Update 
 		else
 			button.barLabel:Hide();
-			button.barTexture:Hide();		
+			button.barTexture:Hide();
 		end
+		button.header:Hide();
 	end
 	
+	if ( view == "tradeskill" ) then
+		GuildRoster_RecipeQueryCheck();
+	end
 	currentGuildView = view;
 end
 
@@ -221,14 +354,37 @@ function GuildRosterViewDropdown_Initialize()
 	info.text = "Achievements";
 	info.value = "achievement";
 	UIDropDownMenu_AddButton(info);	
+	info.text = "Professions";
+	info.value = "tradeskill";
+	UIDropDownMenu_AddButton(info);	
 	
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
 end
 
 function GuildRosterViewDropdown_OnClick(self)
 	GuildRoster_SetView(self.value);
+	GuildRoster();
 	GuildRoster_Update();
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
+end
+
+function GuildRosterTradeSkillHeader_OnClick(self)
+	if ( self.collapsed ) then
+		ExpandGuildTradeSkillHeader(self.skillID);
+	else
+		CollapseGuildTradeSkillHeader(self.skillID);
+	end
+end
+
+function GuildRoster_SortByColumn(column)
+	if ( column.sortType ) then
+		if ( currentGuildView == "tradeskill" ) then
+			SortGuildTradeSkill(column.sortType);
+		else
+			SortGuildRoster(column.sortType);
+		end
+	end		
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 --================================================================================================

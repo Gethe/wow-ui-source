@@ -26,6 +26,7 @@ function TokenFrame_OnLoad()
 			for _, button in next, _G["TokenFrameContainer"].buttons do
 				button:SetWidth(295);
 			end
+			TokenFrameContainer.scrollChild:SetWidth(295);
 			getmetatable(self).__index.Show(self);
 		end
 		
@@ -35,33 +36,49 @@ function TokenFrame_OnLoad()
 			for _, button in next, TokenFrameContainer.buttons do
 				button:SetWidth(313);
 			end
+			TokenFrameContainer.scrollChild:SetWidth(313);
 			getmetatable(self).__index.Hide(self);
 		end
 	TokenFrameContainer.update = TokenFrame_Update;
-	HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 0, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
-	local buttons = TokenFrameContainer.buttons;
-	local numButtons = #buttons;
-	for i=1, numButtons do
-		if ( mod(i, 2) == 1 ) then
-			buttons[i].stripe:Hide();
-		end
-	end
 end
 
 function TokenFrame_OnShow(self)
+
+	-- Create buttons if not created yet
+	if (not TokenFrameContainer.buttons) then
+		HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 0, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
+		local buttons = TokenFrameContainer.buttons;
+		local numButtons = #buttons;
+		for i=1, numButtons do
+			if ( mod(i, 2) == 1 ) then
+				buttons[i].stripe:Hide();
+			end
+		end
+	end
+
 	SetButtonPulse(CharacterFrameTab4, 0, 1);	--Stop the button pulse
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	TokenFrame_Update();
 end
 
 function TokenFrame_Update()
+	local numTokenTypes = GetCurrencyListSize();
+	
+	if ( numTokenTypes == 0 ) then
+		CharacterFrameTab4:Hide();
+	else
+		CharacterFrameTab4:Show();
+	end
+
+	if (not TokenFrameContainer.buttons) then
+		return;
+	end
 
 	-- Setup the buttons
 	local scrollFrame = TokenFrameContainer;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
-	local numTokenTypes = GetCurrencyListSize();
 	local name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon, itemID;
 	local button, index;
 	for i=1, numButtons do
@@ -152,12 +169,6 @@ function TokenFrame_Update()
 	local displayedHeight = #buttons * (button:GetHeight()+TOKEN_BUTTON_OFFSET);
 
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-	
-	if ( numTokenTypes == 0 ) then
-		CharacterFrameTab4:Hide();
-	else
-		CharacterFrameTab4:Show();
-	end
 end
 
 function TokenFramePopup_CloseIfHidden()

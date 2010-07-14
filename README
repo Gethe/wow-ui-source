@@ -1,18 +1,19 @@
 ﻿--------------------------------------------------------------------------------
-- Cataclysm Beta Patch Notes
+- World of Warcraft: Cataclysm beta Patch Notes
 --------------------------------------------------------------------------------
-World of Warcraft: Cataclysm Beta Patch Notes – Updated 6.3.2010
 
 Welcome to the World of Warcraft: Cataclysm beta test! Patch notes
 listed here are not comprehensive and will be changed throughout the
-testing process. We will attempt to highlight changes to the notes with
-“New” and “Updated” tags next to each respective line or section.
+testing process.
 
-To leave your feedback about the World of Warcraft: Cataclysm test
-process, please visit our Beta General Discussion forum. You may need
-to clear your browser cookies and cache and log into or out of our live
-forums in order to view the beta forums:
+To leave feedback about your test experience, please visit our
+Cataclysm Beta forums:
 http://forums.worldofwarcraft.com/index.html?sid=2000
+
+You may need to clear your browser cookies and cache and log out of our
+live forums
+(http://forums.worldofwarcraft.com/board.html?forumId=10001&sid=1) in
+order to view the beta forums.
 
 General
 
@@ -36,15 +37,15 @@ Zones
    being adjusted slightly. Creature, quest, and quest reward levels
    are all being altered so that players finish questing in these zones
    roughly by level 12. Further fine tuning will continue in future
-   patches.
+   content updates.
 -  Several zones have had quest maps integrated.
--  *Updated* - Eastern Kingdoms
-   Arathi Highlands, Blasted Lands, Dun Morogh, Elwynn Forest, Loch
-   Modan, Northshire, Westfall, Hinterlands and Redridge Mountains are
-   ready for testing.
-   Stranglethorn Vale (currently Horde only) is available for testing.
+-  Eastern Kingdoms
+   Arathi Highlands, Blasted Lands, The Cape of Stranglethorn, Dun
+   Morogh, Duskwood, Elwynn Forest, Hinterlands, Loch Modan, Northern
+   Stranglethorn, Northshire, Tirisfal Glades, Westfall and Redridge
+   Mountains are ready for testing.
 -  Kalimdor
-   Most zones in Kalimdor are available for testing, though work
+-  Most zones in Kalimdor are available for testing, though work
    continues on polishing the quest experience and flow, as well as
    zone aesthetics.
 
@@ -55,19 +56,81 @@ Dungeons & Raids
    who are ghosts.
 -  Blackrock Caverns, a new level 79-81 five-player dungeon, is
    available for testing.
--  *New* - Throne of the Tides, a new level 79-81 five-player dungeon,
-   is partially available for testing.
+-  Throne of the Tides, a new level 79-81 five-player dungeon, is
+   partially available for testing.
 
-Classes
+Classes: General
 
--  Hunters should now start with a pet at level 1.
+-  Ammo has been removed from the game.
+-  The character levels at which classes gain new spells and abilities
+   have changed.
+-  The glyph system is in the process of being altered. Existing glyphs
+   may not be fully supported or functional.
+-  Many item and class stats have been changed or removed.
+-  Rage has been normalized.
+-  Spells and abilities no longer have multiple ranks and now scale
+   with character level.
+-  Talents trees have changed and are still in the process of being
+   reworked.
+
+Death Knights
+
+-  A dedicated tanking tree has been implemented.
+-  The way in which runes recharge has changed.
+
+Druids
+
+-  A new Eclipse mechanic has been added for druids. The feature is
+   functional, but the interface art is still a work in-progress.
+
+Hunters
+
+-  Five pets can now be stored with the hunter at all times. Any one of
+   these five pets can be summoned via the Call Pet ability.
+-  Focus has replaced mana as a new resource.
+-  Hunters now start with a pet at level 1.
+-  The Stable will now store 20 pets. If a pet is moved into the
+   Stable, its talents are wiped.
+
+Warlocks
+
+-  Soul Shards have been removed from the game as items. Instead, they
+   now exist as a resource system necessary for using, or altering the
+   mechanics of certain spells.
 
 User Interface
 
 -  The ability to use third-party addons has been temporarily disabled
    for the test environment.
+-  The Arena Teams pane has been improved.
+-  Auto-quests have been added to the game. Players will automatically
+   be given an auto-quest by entering specific areas in the game world.
+   This alert will appear distinctly in the Objectives pane via the
+   Advanced Quest Tracking feature. These quests will still be given to
+   players with full Quest Logs, but will count toward the 25 total]
+   allotted quests if the log is not full.
+-  The Character pane has been redesigned. Character stats can now be
+   shown or hidden via the Show All Details/Hide All Details button on
+   the bottom left. When shown, all character stats will be visible in
+   a window to the right of the pane. Stat sections can be reorganized
+   by clicking and dragging them up or down the pane.
+-  The Professions panes now have more filtering and search
+   functionality, as well as buttons to easily link recipes in the chat
+   frame.
+-  A Professions screen has been added to the Spellbook to better
+   display the details of a character’s primary and secondary
+   professions.
+-  Many of the yellow System Messages that would display in the chat
+   frame when leveling up have been removed.
+-  New text animations now alert players as they level up, also
+   providing information on when new talents, spells and abilities are
+   available.
+-  Professions and Class Trainers windows have been altered to more
+   clearly display available and upcoming purchases.
+-  The Spellbook interface has been improved for greater ease-of-use
+   and visual appeal.
 
-*New* - Graphics
+Graphics
 
 -  Experimental support for DX11 (can be enabled by passing ‘-d3d11’ on
    the command line or adding SET gxApi "d3d11" to the Config.WTF file).
@@ -82,7 +145,10 @@ User Interface
 -  Dynamic Sunshafts effect (enabled by the Sunshafts option on the
    Video Effects Panel).
 
-Bug Fixes
+Known Issues
 
--  Fixed a bug with goblins and worgen that was causing certain NPCs to
-   appear neutral to these races.
+-  Selecting high Liquid Detail when using Geforce 6 & 7 series video
+   cards will currently prevent lava and water from rendering properly.
+   You can temporarily restore liquid to the world by reducing the
+   Liquid Detail setting via the Video Effects Panel, or by typing
+   “waterDetail 0” in your Config.WTF file.

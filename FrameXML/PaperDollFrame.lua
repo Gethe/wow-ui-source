@@ -1631,6 +1631,9 @@ function PaperDollFrame_OnHide (self)
 	PlayerTitlePickerFrame:Hide();
 	GearManagerDialog:Hide();
 	CharacterFrame_Collapse();
+	if (MOVING_STAT_CATEGORY) then
+		PaperDollStatCategory_OnDragStop(MOVING_STAT_CATEGORY);
+	end
 end
 
 function PaperDollFrame_ClearIgnoredSlots ()

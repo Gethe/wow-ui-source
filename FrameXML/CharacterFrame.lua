@@ -74,7 +74,7 @@ function CharacterFrame_UpdatePortrait()
 		CharacterFramePortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 		CharacterFramePortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	else
-		local _, _, icon = GetTalentTabInfo(masteryIndex);
+		local _, _, _, icon = GetTalentTabInfo(masteryIndex);
 		CharacterFramePortrait:SetTexCoord(0, 1, 0, 1);
 		SetPortraitToTexture(CharacterFramePortrait, icon);	
 	end

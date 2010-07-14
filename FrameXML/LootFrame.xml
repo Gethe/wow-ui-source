@@ -3,6 +3,20 @@
 	<Script file="LootFrame.lua"/>
 	<Button name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIconQuestTexture">
+					<Size>
+						<AbsDimension x="37" y="38"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size>

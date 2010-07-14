@@ -1,4 +1,4 @@
-UIPanelWindows["GuildFrame"] = { area = "left", pushable = 1, xoffset = 16};
+UIPanelWindows["GuildFrame"] = { area = "left", pushable = 1};
 
 GUILDMEMBERS_TO_DISPLAY = 13;
 FRIENDS_FRAME_GUILD_HEIGHT = 14;
@@ -7,6 +7,9 @@ GUILD_DETAIL_NORM_HEIGHT = 195
 GUILD_DETAIL_OFFICER_HEIGHT = 255
 GUILDEVENT_TRANSACTION_HEIGHT = 13;
 MAX_EVENTS_SHOWN = 25;
+
+GUILD_LEVEL_FACTION_FORMAT = "Level %1$s %2$s Guild";
+GUILD_NEXT_PERK_LEVEL = "Next Perk: |cffff2020Level %s";
 
 function GuildFrame_OnLoad(self)
 	-- events
@@ -17,6 +20,9 @@ function GuildFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 6)
 	GuildFrame_TabClicked(GuildFrameTab1);
 	PVPFrame_TabClicked(GuildFrameTab1);	
+	-- setup
+	QueryGuildXP();
+	GuildFrame_UpdateLevelAndPerks();
 	
 	GuildFrame.notesToggle = 1;
 	GuildFrame.selectedGuildMember = 0;
@@ -35,7 +41,7 @@ function GuildFrame_OnHide(self)
 	UpdateMicroButtons();
 	SetGuildRosterSelection(0);
 	GuildFrame.selectedGuildMember = 0;
-	GuildFramePopup_HideAll();
+	CloseGuildMenus();
 end
 
 function GuildFrame_Toggle()
@@ -62,10 +68,10 @@ function GuildFrame_ShowPanel(frameName)
 end
 
 function GuildFrame_TabClicked(self)
+	local updateRosterCount = false;
 	local tabIndex = self:GetID()	
 	PanelTemplates_SetTab(self:GetParent(), tabIndex);
 	self:GetParent().lastSelectedTab = self;
-		
 	if ( tabIndex == 1 ) then -- Guild
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildPanelGuild");
@@ -77,6 +83,8 @@ function GuildFrame_TabClicked(self)
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
+		updateRosterCount = true;
+		GuildFrameMembersCountLabel:Hide();
 	elseif ( tabIndex == 2 ) then -- Roster 
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildRosterFrame");
@@ -88,6 +96,8 @@ function GuildFrame_TabClicked(self)
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
+		updateRosterCount = true;
+		GuildFrameMembersCountLabel:Show();
 	elseif ( tabIndex == 3 ) then -- News
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildNewsFrame");
@@ -99,6 +109,8 @@ function GuildFrame_TabClicked(self)
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
+		updateRosterCount = true;
+		GuildFrameMembersCountLabel:Show();
 	elseif ( tabIndex == 4 ) then -- Rewards
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildRewardsFrame");
@@ -110,6 +122,7 @@ function GuildFrame_TabClicked(self)
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
+		GuildFrameMembersCountLabel:Hide();
 	elseif ( tabIndex == 5 ) then -- Info
 		ButtonFrameTemplate_ShowButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildInfoFrame");
@@ -121,6 +134,7 @@ function GuildFrame_TabClicked(self)
 		GuildAddMemberButton:Show();
 		GuildControlButton:Show();
 		GuildViewLogButton:Show();
+		GuildFrameMembersCountLabel:Hide();
 	elseif ( tabIndex == 6 ) then -- old stuff
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
@@ -130,21 +144,23 @@ function GuildFrame_TabClicked(self)
 		GuildPlayerXPBar:Hide();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
-		GuildViewLogButton:Hide();	
+		GuildViewLogButton:Hide();
+		GuildFrameMembersCountLabel:Hide();
 		GuildFrame_ShowPanel("GuildDisplayFrame");
+	end
+	if ( updateRosterCount ) then
+		GuildRoster();
+		GuildFrameMembersCount:Show();
+	else
+		GuildFrameMembersCount:Hide();
 	end
 end
 
 function GuildFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
-		GuildInfoFrame.cachedText = nil;
-		if ( GuildFrame:IsShown() ) then
-			local arg1 = ...;
-			if ( arg1 ) then
-				GuildRoster();
-			end
-			GuildStatus_Update();			
-		end
+		--GuildInfoFrame.cachedText = nil;
+		local totalMembers, onlineMembers = GetNumGuildMembers();
+		GuildFrameMembersCount:SetText(onlineMembers.."/"..totalMembers);		
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		if ( GuildFrame:IsVisible() ) then
 			InGuildCheck();
@@ -168,9 +184,9 @@ end
 
 function GuildStatus_Update()
 	if ( IsGuildLeader() ) then
-		GuildFrameControlButton:Enable();
+		GuildControlButton:Enable();
 	else
-		GuildFrameControlButton:Disable();
+		GuildControlButton:Disable();
 	end
 
 	-- Number of players in the lowest rank
@@ -302,9 +318,9 @@ function GuildStatus_Update()
 	GuildFrameOnlineTotals:SetFormattedText(GUILD_TOTALONLINE, onlinecount);
 
 	if ( CanGuildInvite() ) then
-		GuildFrameAddMemberButton:Enable();
+		GuildAddMemberButton:Enable();
 	else
-		GuildFrameAddMemberButton:Disable();
+		GuildAddMemberButton:Disable();
 	end
 
 	if ( FriendsFrame.playerStatusFrame ) then
@@ -550,51 +566,10 @@ function ToggleGuildEventLog()
 	end
 end
 
-function GuildEventLog_Update()
-	local numEvents = GetNumGuildEvents();
-	local type, player1, player2, rank, year, month, day, hour;
-	local msg;
-	local buffer = "";
-	local max = GuildEventMessage:GetFieldSize()
-	local length = 0;
-	for i=numEvents, 1, -1 do
-		type, player1, player2, rank, year, month, day, hour = GetGuildEventInfo(i);
-		if ( not player1 ) then
-			player1 = UNKNOWN;
-		end
-		if ( not player2 ) then
-			player2 = UNKNOWN;
-		end
-		if ( type == "invite" ) then
-			msg = format(GUILDEVENT_TYPE_INVITE, player1, player2);
-		elseif ( type == "join" ) then
-			msg = format(GUILDEVENT_TYPE_JOIN, player1);
-		elseif ( type == "promote" ) then
-			msg = format(GUILDEVENT_TYPE_PROMOTE, player1, player2, rank);
-		elseif ( type == "demote" ) then
-			msg = format(GUILDEVENT_TYPE_DEMOTE, player1, player2, rank);
-		elseif ( type == "remove" ) then
-			msg = format(GUILDEVENT_TYPE_REMOVE, player1, player2);
-		elseif ( type == "quit" ) then
-			msg = format(GUILDEVENT_TYPE_QUIT, player1);
-		end
-		if ( msg ) then
-			msg = msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
-			length = length + msg:len();
-			if(length>max) then
-				i=0
-			else
-				buffer = buffer..msg
-			end
-		end
-	end
-	GuildEventMessage:SetText(buffer);
-end
-
 GUILDFRAME_POPUPS = {
-	"GuildEventLogFrame",
 	"GuildTextEditFrame",
 	"GuildMemberDetailFrame",
+	"GuildLogFrame",
 };
 
 function GuildFramePopup_Show(frame)
@@ -607,9 +582,21 @@ function GuildFramePopup_Show(frame)
 	frame:Show();
 end
 
-function GuildFramePopup_HideAll()
+function GuildFramePopup_Toggle(frame)
+	if ( frame:IsShown() ) then
+		frame:Hide();
+	else
+		GuildFramePopup_Show(frame);
+	end
+end
+
+function CloseGuildMenus()
 	for index, value in ipairs(GUILDFRAME_POPUPS) do
-		_G[value]:Hide();
+		local frame = _G[value];
+		if ( frame:IsShown() ) then
+			frame:Hide();
+			return true;
+		end
 	end
 end
 
@@ -631,6 +618,9 @@ function GuildXPBar_SetProgress(currentValue, maxValue, capValue)
 		GuildXPBarCap:Hide();
 		GuildXPBarCapMarker:Hide();
 	end
+	currentValue = TextStatusBar_CapDisplayOfNumericValue(currentValue);
+	maxValue = TextStatusBar_CapDisplayOfNumericValue(maxValue);
+	GuildXPBarText:SetText(currentValue.."/"..maxValue);
 end
 
 function GuildXPBar_OnLoad()
@@ -663,25 +653,59 @@ function GuildFrame_UpdateTabard()
 	GuildFrameEmblemBR:SetTexture(tabardEmblemLower);
 end
 
-function GuildMainFrame_OnLoad()
-	GuildUpdatesDivider:ClearAllPoints();	-- doing it once here so I don't have to do it on every update
+function GuildMainFrame_OnLoad(self)
 	GuildPerksContainer.update = GuildPerks_Update;
-	HybridScrollFrame_CreateButtons(GuildPerksContainer, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
-
-	GuildPerksContainerScrollBar:SetFrameLevel(100);
-	GuildPerksContainerScrollBarTop:Hide();
-	GuildPerksContainerScrollBarMiddle:Hide();
-	GuildPerksContainerScrollBarBottom:Hide();
-	
+	HybridScrollFrame_CreateButtons(GuildPerksContainer, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");	
+	self:RegisterEvent("GUILD_XP_UPDATE");
+	self:RegisterEvent("GUILD_PERK_UPDATE");
 	-- fake stuff
-	_SetupFakePerks();
-	GuildPerks_Update();
 	GuildMainFrame_SetUpdates(10, 10);
-	GuildLatestPerkButtonIconTexture:SetTexture("Interface\\Icons\\Ability_CheapShot");
-	GuildLatestPerkButtonName:SetText("The Quick and the Dead");
-	GuildNextPerkButtonIconTexture:SetTexture("Interface\\Icons\\Ability_ThunderBolt");
-	GuildNextPerkButtonIconTexture:SetDesaturated(1);
-	GuildNextPerkButtonName:SetText("The Quick and the Dead 2");
+end
+
+function GuildMainFrame_OnEvent(self, event, ...)
+	if ( event == "GUILD_XP_UPDATE" ) then
+		local currentXP, nextLevelXP, dailyXP, maxDailyXP = UnitGetGuildXP("player");
+		GuildXPBar_SetProgress(currentXP, nextLevelXP, maxDailyXP - dailyXP);
+	elseif ( event == "GUILD_PERK_UPDATE" ) then
+		GuildFrame_UpdateLevelAndPerks();
+	end
+end
+
+function GuildFrame_UpdateLevelAndPerks()
+	local guildLevel = GetGuildLevel();
+	GuildLevelFrameText:SetText(guildLevel);
+	if ( GetGuildFactionGroup() == 0 ) then
+		-- horde
+		GuildXPBarLevelText:SetFormattedText(GUILD_LEVEL_FACTION_FORMAT, guildLevel, FACTION_HORDE);
+		GuildNewPerksFrameFaction:SetTexCoord(0.42871094, 0.53808594, 0.60156250, 0.87890625);
+	else
+		-- alliance
+		GuildXPBarLevelText:SetFormattedText(GUILD_LEVEL_FACTION_FORMAT, guildLevel, FACTION_ALLIANCE);
+		GuildNewPerksFrameFaction:SetTexCoord(0.31640625, 0.42675781, 0.60156250, 0.88281250);
+	end
+	
+	local maxLevels = GetNumGuildPerks();
+	if ( guildLevel == 0 ) then
+		GuildLatestPerkButton:Hide();
+	else
+		GuildLatestPerkButton:Show();
+		local name, spellID, iconTexture = GetGuildPerkInfo(guildLevel);
+		GuildLatestPerkButtonIconTexture:SetTexture(iconTexture);
+		GuildLatestPerkButtonName:SetText(name);
+		GuildLatestPerkButton.spellID = spellID;
+	end
+	if ( guildLevel == maxLevels ) then
+		GuildNextPerkButton:Hide();
+	else
+		local nextGuildLevel = guildLevel + 1;
+		local name, spellID, iconTexture = GetGuildPerkInfo(nextGuildLevel);
+		GuildNextPerkButtonIconTexture:SetTexture(iconTexture);
+		GuildNextPerkButtonIconTexture:SetDesaturated(1);
+		GuildNextPerkButtonName:SetText(name);
+		GuildNextPerkButtonLabel:SetFormattedText(GUILD_NEXT_PERK_LEVEL, nextGuildLevel);
+		GuildNextPerkButton.spellID = spellID;
+	end
+	GuildPerks_Update();
 end
 
 function GuildMainFrame_SetUpdates(numNews, numEvents)
@@ -755,16 +779,20 @@ function GuildPerks_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local button, index;
+	local numPerks = GetNumGuildPerks();
+	local guildLevel = GetGuildLevel();
 	
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
-		if ( _GuildPerks[index] ) then
-			button.name:SetText(_GuildPerks[index].name);
-			button.level:SetText("Level ".._GuildPerks[index].level);
-			button.icon:SetTexture(_GuildPerks[index].icon);
+		if ( index <= numPerks ) then
+			local name, spellID, iconTexture, level = GetGuildPerkInfo(index);
+			button.name:SetText(name);
+			button.level:SetText("Level "..level);
+			button.icon:SetTexture(iconTexture);
+			button.spellID = spellID;
 			button:Show();
-			if ( _GuildPerks[index].locked ) then
+			if ( level > guildLevel ) then
 				button:EnableDrawLayer("BORDER");
 				button:DisableDrawLayer("BACKGROUND");
 				button.icon:SetDesaturated(1);
@@ -783,7 +811,7 @@ function GuildPerks_Update()
 			button:Hide();
 		end
 	end
-	local totalHeight = #_GuildPerks * scrollFrame.buttonHeight;
+	local totalHeight = numPerks * scrollFrame.buttonHeight;
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
@@ -815,8 +843,6 @@ end
 function GuildTextEditFrame_OnLoad()
 	GuildTextEditBox:SetTextInsets(4, 0, 4, 4);
 	GuildTextEditBox:SetSpacing(2);
-	GuildTextEditScrollFrameScrollBarScrollDownButton:SetPoint("TOP", GuildTextEditScrollFrameScrollBar, "BOTTOM", 0, 4);
-	GuildTextEditScrollFrameScrollBarScrollUpButton:SetPoint("BOTTOM", GuildTextEditScrollFrameScrollBar, "TOP", 0, -4);
 end
 
 function GuildTextEditFrame_Show(editType)
@@ -834,8 +860,8 @@ function GuildTextEditFrame_Show(editType)
 		GuildTextEditBox:SetScript("OnEnterPressed", nil);
 	end
 	GuildTextEditFrame.type = editType;
+	GuildFramePopup_Show(GuildTextEditFrame);
 	GuildTextEditBox:SetCursorPosition(0);
-	GuildTextEditFrame:Show();
 	GuildTextEditBox:SetFocus();
 end
 
@@ -849,26 +875,41 @@ function GuildTextEditFrame_OnAccept()
 	GuildTextEditFrame:Hide();
 end
 
-function CloseGuildMenus()
-	if ( GuildTextEditFrame:IsShown() ) then
-		GuildTextEditFrame:Hide();
-		return true;
-	end
+function GuildLogFrame_OnLoad(self)
+	GuildLogHTMLFrame:SetSpacing(2);
+	ScrollBar_AdjustAnchors(GuildLogScrollFrameScrollBar, 0, -2);
+	self:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
 end
 
---==================================================================================================================
-local _GuildNames = { "Alpha", "Bravo", "Charlie", "The Quick and the Dead", "An Even Longer Guild Perk Name", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo", "Sierra", "Tango", "Uniform", "Victor", "Whisky", "Xray", "Yankee", "Zulu" }
-_GuildPerks = { };
-
-function _SetupFakePerks()	
-	for i = 1, #_GuildNames do
-		local guildMember = { };
-		guildMember["name"] = _GuildNames[i];
-		guildMember["level"] = i;		
-		guildMember["icon"] = GetMacroIconInfo(i);
-		if ( i > 10 ) then
-			guildMember["locked"] = true;
-		end		
-		table.insert(_GuildPerks, guildMember);
+function GuildLogFrame_Update()
+	local numEvents = GetNumGuildEvents();
+	local type, player1, player2, rank, year, month, day, hour;
+	local msg;
+	local buffer = "";
+	for i = numEvents, 1, -1 do
+		type, player1, player2, rank, year, month, day, hour = GetGuildEventInfo(i);
+		if ( not player1 ) then
+			player1 = UNKNOWN;
+		end
+		if ( not player2 ) then
+			player2 = UNKNOWN;
+		end
+		if ( type == "invite" ) then
+			msg = format(GUILDEVENT_TYPE_INVITE, player1, player2);
+		elseif ( type == "join" ) then
+			msg = format(GUILDEVENT_TYPE_JOIN, player1);
+		elseif ( type == "promote" ) then
+			msg = format(GUILDEVENT_TYPE_PROMOTE, player1, player2, rank);
+		elseif ( type == "demote" ) then
+			msg = format(GUILDEVENT_TYPE_DEMOTE, player1, player2, rank);
+		elseif ( type == "remove" ) then
+			msg = format(GUILDEVENT_TYPE_REMOVE, player1, player2);
+		elseif ( type == "quit" ) then
+			msg = format(GUILDEVENT_TYPE_QUIT, player1);
+		end
+		if ( msg ) then
+			buffer = buffer..msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
+		end
 	end
+	GuildLogHTMLFrame:SetText(buffer);
 end

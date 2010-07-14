@@ -1,7 +1,7 @@
 
 REFORGE_MAX_STATS_SHOWN = 8;
 
-UIPanelWindows["ReforgingFrame"] = { area = "left", pushable = 0,  xoffset = 16 };
+UIPanelWindows["ReforgingFrame"] = { area = "left", pushable = 0};
 
 
 

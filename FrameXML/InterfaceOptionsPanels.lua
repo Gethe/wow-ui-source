@@ -1531,3 +1531,13 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 		end
 	end
 end
+
+-- [[ Development Options Panel ]] --
+
+DevelopmentPanelOptions = {
+	useCompactPartyFrames = { text = "Use Compact Party Frames" },
+}
+
+function InterfaceOptionsDevelopmentPanel_OnLoad (panel)
+	InterfaceOptionsPanel_OnLoad(panel);
+end

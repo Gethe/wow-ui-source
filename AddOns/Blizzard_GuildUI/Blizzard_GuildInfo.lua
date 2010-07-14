@@ -14,12 +14,14 @@ function GuildInfoFrame_OnLoad(self)
 	fontString = GuildInfoEditDetailsButton:GetFontString();
 	GuildInfoEditDetailsButton:SetHeight(fontString:GetHeight() + 4);
 	GuildInfoEditDetailsButton:SetWidth(fontString:GetWidth() + 4);	
-	
-	GuildInfoEventsContainerScrollBar:SetFrameLevel(100);
-	GuildInfoEventsContainerScrollBarTop:Hide();
-	GuildInfoEventsContainerScrollBarMiddle:Hide();
-	GuildInfoEventsContainerScrollBarBottom:Hide();
+	fontString = GuildInfoEditEventButton:GetFontString();
+	GuildInfoEditEventButton:SetHeight(fontString:GetHeight() + 4);
+	GuildInfoEditEventButton:SetWidth(fontString:GetWidth() + 4);
 
+	-- moving the events scrollbar onto the scrollframe to obscure button highlights because I'm not resizing the buttons when hiding the scrollbar
+	GuildInfoEventsContainerScrollBar:SetFrameLevel(100);
+	ScrollBar_AdjustAnchors(GuildInfoEventsContainerScrollBar, 1, -1, -22);
+	
 	-- temp setup
 	GuildInfoMOTD:SetText("This is a lot of text for the guild message of the day, also known as MOTD or GMOTD. It has a limit of 127 characters. It can go for as long as three lines before it will get cut off with ellipses.")
 	GuildInfoDetails:SetText("This is guild information line 1\nThis is guild information line 2\nThis is guild information line 3\nThis is guild information line 4\nThis is guild information line 5\nThis is guild information line 6\nThis is guild information line 7\nThis is guild information line 8\nThis is guild information line 9\nThis is guild information line 10");
@@ -31,6 +33,21 @@ function GuildInfoFrame_OnEvent(self, event, arg1)
 	if ( event == "GUILD_MOTD" ) then
 		GuildInfoMOTD:SetText(arg1);
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		if ( CanEditMOTD() ) then
+			GuildInfoEditMOTDButton:Show();
+		else
+			GuildInfoEditMOTDButton:Hide();
+		end
+		if ( CanEditGuildInfo() ) then
+			GuildInfoEditDetailsButton:Show();
+		else
+			GuildInfoEditDetailsButton:Hide();
+		end
+		if ( CanEditGuildEvent() ) then
+			GuildInfoEditEventButton:Show();
+		else
+			GuildInfoEditEventButton:Hide();
+		end
 		GuildInfoFrame_UpdateText();
 	end
 end

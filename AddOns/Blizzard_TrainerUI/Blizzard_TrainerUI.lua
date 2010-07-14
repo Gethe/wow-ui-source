@@ -14,7 +14,7 @@ TRAINER_FILTER_USED = 0;
 TRADESKILL_SERVICE_STEP_LUA = 1;
 
 
-UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0,  xoffset = 16 };
+UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0};
 
 StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
@@ -206,7 +206,7 @@ function ClassTrainerFrame_Update()
 				skillButton.subText:Hide();
 			end
 			
-			local moneyCost, _, skillPointCost = GetTrainerServiceCost(skillIndex);
+			local moneyCost = GetTrainerServiceCost(skillIndex);
 			if ( moneyCost and moneyCost > 0 ) then
 				MoneyFrame_Update(skillButton.money:GetName(), moneyCost);
 				if ( playerMoney >= moneyCost ) then
@@ -221,12 +221,6 @@ function ClassTrainerFrame_Update()
 			if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
 				local _, availibleSkillPoints = UnitCharacterPoints("player");
 				ClassTrainerFrame.showDialog = nil;
-				if ( skillPointCost > 0 ) then
-					ClassTrainerFrame.showDialog = 1;
-					if ( availibleSkillPoints < skillPointCost and serviceType ~= "used" ) then
-						unavailable = true;
-					end
-				end			
 				
 				skillButton.selectedTex:Show();
 				if ( serviceType == "available" and not unavailable) then

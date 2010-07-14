@@ -2488,7 +2488,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "hidePartyInRaid";
 						self.uvar = "HIDE_PARTY_INTERFACE";
-						self.setFunc = function (value) RaidOptionsFrame_UpdatePartyFrames(); end;
+						self.setFunc = function (value) RaidOptionsFrame_UpdatePartyFrames(); CompactPartyFrame_UpdateShown(CompactPartyFrame); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -3527,6 +3527,79 @@
 				self.name = LANGUAGES_LABEL;
 				self.options = LanguagesPanelOptions;
 				InterfaceOptionsLanguagesPanel_OnLoad(self);			
+			</OnLoad>
+		</Scripts>		
+	</Frame>
+	
+	<!-- Development Options -->
+
+	<Frame name="InterfaceOptionsDevelopmentPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="Development" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="Temporary Development options to allow for better iteration." inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension y="32" x="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentCompactPartyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useCompactPartyFrames";
+						self.setFunc = function (value) RaidOptionsFrame_UpdatePartyFrames(); CompactPartyFrame_UpdateShown(CompactPartyFrame); end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentResetCompactPartyPosition" inherits="UIPanelButtonTemplate" text="Reset Position">
+				<Size x="160" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentCompactPartyFrames" relativePoint="RIGHT" x="200" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CompactPartyFrame_ResetPosition(CompactPartyFrame);
+						CompactPartyFrame:SetUserPlaced(false);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = "Development";
+				self.options = DevelopmentPanelOptions;
+				InterfaceOptionsDevelopmentPanel_OnLoad(self);			
 			</OnLoad>
 		</Scripts>		
 	</Frame>

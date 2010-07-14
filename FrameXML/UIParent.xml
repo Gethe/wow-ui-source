@@ -4,11 +4,12 @@
 	<Frame name="UIParent" setAllPoints="true" protected="true" frameStrata="MEDIUM">
 		<Attributes>
 			<Attribute name="DEFAULT_FRAME_WIDTH" type="number" value="384"/>
-			<Attribute name="TOP_OFFSET" type="number" value="-104"/>
-			<Attribute name="LEFT_OFFSET" type="number" value="0"/>
+			<Attribute name="TOP_OFFSET" type="number" value="-116"/>
+			<Attribute name="LEFT_OFFSET" type="number" value="16"/>
 			<Attribute name="CENTER_OFFSET" type="number" value="384"/>	<!-- Do not modify, updated by UpdateUIPanelPositions() -->
 			<Attribute name="RIGHT_OFFSET" type="number" value="768"/>	<!-- Do not modify, updated by UpdateUIPanelPositions() -->
 			<Attribute name="RIGHT_OFFSET_BUFFER" type="number" value="80"/>
+			<Attribute name="PANEl_SPACING_X" type="number" value="32"/>
 		</Attributes>
 		<Scripts>
 			<!-- Register here for any events you want to monitor globally -->

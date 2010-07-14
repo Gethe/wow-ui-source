@@ -62,6 +62,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, cancelButton, ma
 		QuestInfoHonorFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoArenaPointsFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoTalentFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		QuestInfoSkillPointFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoXPFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 	end
 	
@@ -263,6 +264,8 @@ function QuestInfo_ShowRewards()
 	local honor;
 	local arenaPoints;
 	local talents;
+	local skillName;
+	local skillPoints;
 	local xp;
 	local playerTitle;
 
@@ -276,6 +279,7 @@ function QuestInfo_ShowRewards()
 		honor = GetQuestLogRewardHonor();
 		arenaPoints = GetQuestLogRewardArenaPoints();
 		talents = GetQuestLogRewardTalents();
+		skillName, skillPoints = GetQuestLogRewardSkillPoints();
 		xp = GetQuestLogRewardXP();
 		playerTitle = GetQuestLogRewardTitle();
 		ProcessQuestLogRewardFactions();
@@ -289,6 +293,7 @@ function QuestInfo_ShowRewards()
 		honor = GetRewardHonor();
 		arenaPoints = GetRewardArenaPoints();
 		talents = GetRewardTalents();
+		skillName, skillPoints = GetRewardSkillPoints();
 		xp = GetRewardXP();
 		playerTitle = GetRewardTitle();
 	end
@@ -308,6 +313,7 @@ function QuestInfo_ShowRewards()
 	QuestInfoHonorFrame:Hide();
 	QuestInfoArenaPointsFrame:Hide();	
 	QuestInfoTalentFrame:Hide();
+	QuestInfoSkillPointFrame:Hide();
 	QuestInfoXPFrame:Hide();
 	QuestInfoPlayerTitleFrame:Hide();	
 	
@@ -424,6 +430,11 @@ function QuestInfo_ShowRewards()
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoArenaPointsFrame", arenaPoints, "Points", lastFrame);		
 		-- Talent rewards
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoTalentFrame", talents, "Points", lastFrame);
+		-- Skill Point rewards
+		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoSkillPointFrame", skillPoints, "Points", lastFrame);
+		if (skillName) then
+			QuestInfoSkillPointFrameReceiveText:SetFormattedText(BONUS_SKILLPOINTS, skillName);
+		end
 		-- Title reward
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoPlayerTitleFrame", playerTitle, "Title", lastFrame);
 		-- Item rewards

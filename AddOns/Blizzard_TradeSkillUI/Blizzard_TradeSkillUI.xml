@@ -129,6 +129,24 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<Button name="TradeSkillMemberButtonTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="293" y="16"/>
+		</Size>
+		<ButtonText name="$parentText">
+			<Size x="270" y="13"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="2" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontDisableLeft"/>
+	</Button>	
 	<Frame name="TradeSkillFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -399,7 +417,16 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-		
+			<Button name="TradeSkillViewGuildMembersButton" inherits="MagicButtonTemplate" text="View Crafters" hidden="true">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnClick function="TradeSkillViewGuildMembersButton_OnClick"/>
+				</Scripts>
+			</Button>
+			
 			<Frame name="TradeSkillExpandButtonFrame">
 				<Size>
 					<AbsDimension x="54" y="32"/>
@@ -839,6 +866,15 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
+								<FontString name="TradeSkillGuildMembersLabel" inherits="GameFontNormalSmall" text="Crafters:">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillDescription" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -959,7 +995,68 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-
+			<ScrollFrame name="TradeSkillGuildMembersScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="112"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="TradeSkillListScrollFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="1" a="0.35"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="TradeSkillMember1" inherits="TradeSkillMemberButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="TradeSkillMember2" inherits="TradeSkillMemberButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TradeSkillMember1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="TradeSkillMember3" inherits="TradeSkillMemberButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TradeSkillMember2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="TradeSkillMember4" inherits="TradeSkillMemberButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TradeSkillMember3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="TradeSkillMember5" inherits="TradeSkillMemberButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TradeSkillMember4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="TradeSkillMember6" inherits="TradeSkillMemberButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TradeSkillMember5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="TradeSkillMember7" inherits="TradeSkillMemberButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="TradeSkillMember6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, TradeSkillFrame_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			
 			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
 				<Size>
 					<AbsDimension x="236" y="14"/>
@@ -1219,6 +1316,7 @@
 				self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
 				self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 				self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
+				self:RegisterEvent("GUILD_RECIPE_KNOWN_BY_MEMBERS");
 				TradeSkillFrameInset:SetPoint("TOPLEFT", 4, -81);
 				self.filterTbl = {hasMaterials = false, hasSkillUp = false, subClassValue = -1, slotValue = -1 };
 				TradeSkillSetFilter(-1, -1);

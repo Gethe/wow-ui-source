@@ -33,7 +33,7 @@ function InspectTalentFrame_UpdateTabs()
 		if ( tab ) then
 			talentSpecInfoCache[i] = talentSpecInfoCache[i] or { };
 			if ( i <= numTabs ) then
-				local id, name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+				local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 				if ( i == selectedTab ) then
 					-- If tab is the selected tab set the points spent info
 					local displayPointsSpent = pointsSpent + previewPointsSpent;

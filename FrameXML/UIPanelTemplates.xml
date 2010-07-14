@@ -418,23 +418,62 @@
 			<TexCoords left="0.25" right="0.75" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
-	<ScrollFrame name="UIPanelScrollFrameTemplate" virtual="true">
+	<Slider name="MinimalScrollBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="22" y="0"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTrack">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="17"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-17"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="6" y="-16"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="6" y="16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="15"/>
 				</Anchors>
-			</Slider>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() - scrollStep);
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() + scrollStep);
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				self:GetParent():SetVerticalScroll(value);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size>
+				<AbsDimension x="18" y="24"/>
+			</Size>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+	<ScrollFrame name="UIPanelScrollFrameCodeTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				ScrollFrame_OnLoad(self);
@@ -465,6 +504,24 @@
 			</OnMouseWheel>
 		</Scripts>
 	</ScrollFrame>
+	<ScrollFrame name="UIPanelScrollFrameTemplate" virtual="true" inherits="UIPanelScrollFrameCodeTemplate">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="-16"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+		</Frames>
+	</ScrollFrame>
 	<ScrollFrame name="UIPanelScrollFrameTemplate2" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -493,6 +550,17 @@
 				ScrollFrame_OnLoad(self);
 			</OnLoad>
 		</Scripts>
+	</ScrollFrame>
+	<!-- This is a scrollframe with no border and a black texture for a track -->
+	<ScrollFrame name="MinimalScrollFrameTemplate" inherits="UIPanelScrollFrameCodeTemplate" virtual="true">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="17"/>
+				</Anchors>
+			</Slider>
+		</Frames>
 	</ScrollFrame>
 	<ScrollFrame name="FauxScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Scripts>
@@ -1292,7 +1360,7 @@
 		<Size x="26" y="26"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentIcon" file="Interface\Buttons\SquareButtonTextrues" parentKey="icon">
+				<Texture name="$parentIcon" file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
 					<Size x="12" y="12"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -1319,10 +1387,10 @@
 				self.icon:SetAlpha(1.0);
 			</OnEnable>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\SquareButtonTextrues">
+		<NormalTexture file="Interface\Buttons\SquareButtonTextures">
 			<TexCoords left="0.01562500" right="0.42187500" top="0.23437500" bottom="0.64062500"/>
 		</NormalTexture>
-		<PushedTexture file="Interface\Buttons\SquareButtonTextrues">
+		<PushedTexture file="Interface\Buttons\SquareButtonTextures">
 			<TexCoords left="0.45312500" right="0.85937500" top="0.23437500" bottom="0.64062500"/>
 		</PushedTexture>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -1402,7 +1470,7 @@
 	</Texture>
 	
 	<Texture name="Talent-RingGlow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="170" y="193"/>	
+		<Size x="150" y="173"/>	
 		<TexCoords left="0.00195313" right="0.33398438" top="0.00390625" bottom="0.75781250"/>	
 	</Texture>
 	<Texture name="Talent-TreeTitle-BigBg" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
@@ -1768,6 +1836,7 @@
 *******************************************************************************
 -->
 	<Frame name="PortraitFrameTemplate" virtual="true">
+		<Size x="338" y="424"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
 				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
@@ -1995,14 +2064,6 @@
 *******************************************************************************
 -->
 	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
-		<Size x="338" y="424"/>
-		<Anchors>
- 			<Anchor point="TOPLEFT">
- 				<Offset>
- 					<AbsDimension x="0" y="-119"/>
- 				</Offset>
- 			</Anchor>
- 		</Anchors>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="1">
 				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft">
@@ -2161,6 +2222,63 @@
 		</Layers>
 	</Frame>
 	
+	<Frame name="ShadowOverlayTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTopLeft" file="Interface\Common\ShadowOverlay-Corner" parentKey="TopLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRight" file="Interface\Common\ShadowOverlay-Corner" parentKey="TopRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomLeft" file="Interface\Common\ShadowOverlay-Corner" parentKey="BottomLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomRight" file="Interface\Common\ShadowOverlay-Corner" parentKey="BottomRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTop" file="Interface\Common\ShadowOverlay-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\Common\ShadowOverlay-Bottom">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentLeft" file="Interface\Common\ShadowOverlay-Left">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\ShadowOverlay-Right">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.TopRight:SetTexCoord(0, 1, 1, 1, 0, 0, 1, 0);
+				self.BottomRight:SetTexCoord(1, 1, 1, 0, 0, 1, 0, 0);
+				self.BottomLeft:SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 	
 	
 <!--

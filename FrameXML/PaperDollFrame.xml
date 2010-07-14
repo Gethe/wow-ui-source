@@ -410,7 +410,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentArrow" file="StatSortArrows" parentKey="Arrow" alpha="0.4" setAllPoints="true">	
+								<Texture name="$parentArrow" file="Interface\PaperDollInfoFrame\StatSortArrows" parentKey="Arrow" alpha="0.4" setAllPoints="true">	
 									<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 								</Texture>
 							</Layer>
@@ -440,7 +440,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentArrow" file="StatSortArrows" parentKey="Arrow" alpha="0.4" setAllPoints="true">
+								<Texture name="$parentArrow" file="Interface\PaperDollInfoFrame\StatSortArrows" parentKey="Arrow" alpha="0.4" setAllPoints="true">
 									<TexCoords left="0" right="1" top="0.5" bottom="1"/>
 								</Texture>
 							</Layer>

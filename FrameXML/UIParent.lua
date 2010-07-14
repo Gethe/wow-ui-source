@@ -13,44 +13,50 @@ SHINES_TO_ANIMATE = {};
 
 -- Per panel settings
 UIPanelWindows = {};
-UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["VideoOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["InterfaceOptionsFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1, xoffset = 16, yoffset = -12, extraWidth = 30  };
-UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1, xoffset = 16, width = 605, height = 545 };
-UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
-UIPanelWindows["TaxiFrame"] =			{ area = "left",	pushable = 0, xoffset = 16, width = 605, height = 580 };
-UIPanelWindows["QuestFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["QuestLogFrame"] =		{ area = "doublewide",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["QuestLogDetailFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
-UIPanelWindows["MerchantFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["TradeFrame"] =			{ area = "left",	pushable = 1 };
-UIPanelWindows["BankFrame"] =			{ area = "left",	pushable = 6,	width = 425 };
-UIPanelWindows["FriendsFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["WorldMapFrame"] =		{ area = "full",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["CinematicFrame"] =		{ area = "full",	pushable = 0 };
-UIPanelWindows["TabardFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 1 };
-UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["ArenaRegistrarFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
-UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["LFDParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["LFRParentFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
-UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["PVPFrame"] =			{ area = "left",	pushable = 1,	whileDead = 1, xoffset = 16};
-UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 1, xoffset = 16};
+
+--Center Menu Frames
+UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["VideoOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["AudioOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["HelpFrame"] =						{ area = "center",		pushable = 0,	whileDead = 1 };
+
+-- Frames using the new Templates
+UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
+UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1, width = 575, height = 545 };
+UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, width = 605, height = 580 };
+UIPanelWindows["PVPFrame"] =					{ area = "left",			pushable = 1,	whileDead = 1};
+UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
+UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0 };
+
+-- Frames NOT using the new Templates
+UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 7, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["QuestLogFrame"] =				{ area = "doublewide",	pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["QuestLogDetailFrame"] =			{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6, 		xoffset = -16, 		yoffset = 12,	width = 425 };
+UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["WorldMapFrame"] =				{ area = "full",				pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["CinematicFrame"] =				{ area = "full",				pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["ArenaRegistrarFrame"] =			{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["MinigameFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["LFGParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["LFRParentFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["ArenaFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["ChatConfigFrame"] =				{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -227,6 +233,9 @@ function UIParent_OnLoad(self)
 	-- Events for reforging
 	self:RegisterEvent("FORGE_MASTER_OPENED");
 	self:RegisterEvent("FORGE_MASTER_CLOSED");
+	
+	-- Events for Archaeology
+	self:RegisterEvent("ARCHAEOLOGY_OPENED");
 end
 
 
@@ -999,6 +1008,9 @@ function UIParent_OnEvent(self, event, ...)
 		if ( TradeSkillFrame_Hide ) then
 			TradeSkillFrame_Hide();
 		end
+		if ( ArchaeologyFrame_Hide ) then
+			ArchaeologyFrame_Hide();
+		end
 		return;
 	end
 
@@ -1176,7 +1188,7 @@ function UIParent_OnEvent(self, event, ...)
 		-- Events for Archaeology
 	if ( event == "ARCHAEOLOGY_OPENED" ) then
 		ArchaeologyFrame_LoadUI();
-		if ( ArchaeologyFrame_Show ) then			
+		if ( ArchaeologyFrame_Show ) then
 			ArchaeologyFrame_Show();
 		end
 		return;
@@ -1709,6 +1721,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	local leftOffset = UIParent:GetAttribute("LEFT_OFFSET");
 	local centerOffset = UIParent:GetAttribute("CENTER_OFFSET");
 	local rightOffset = UIParent:GetAttribute("RIGHT_OFFSET");
+	local xSpacing = UIParent:GetAttribute("PANEl_SPACING_X");
 
 	local info;
 	local frame = self:GetUIPanel("left");
@@ -1744,6 +1757,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local yPos = ClampUIPanelY(frame, yOff + topOffset);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
+				xOff = xOff + xSpacing; -- add sperating space
 				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", centerOffset + xOff, yPos);
 			end
 			rightOffset = centerOffset + GetUIPanelWidth(frame) + xOff;
@@ -1776,6 +1790,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
 			local yPos = ClampUIPanelY(frame, yOff + topOffset);
+			xOff = xOff + xSpacing; -- add sperating space
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
 		else
@@ -2289,6 +2304,10 @@ end
 
 function RaiseFrameLevel(frame)
 	frame:SetFrameLevel(frame:GetFrameLevel()+1);
+end
+
+function PassClickToParent(self, ...)
+	self:GetParent():Click(...);
 end
 
 -- Function to reposition frames if they get dragged off screen
@@ -3657,5 +3676,11 @@ function GetLFGMode()
 		return "lfgparty";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() ) then
 		return "abandonedInDungeon";
+	end
+end
+
+function GMError(...)
+	if ( IsGMClient() ) then
+		error(...);
 	end
 end

@@ -487,15 +487,15 @@ function PVPTeamManagementFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
-	
-		for i=1, MAX_ARENA_TEAM_MEMBERS_SHOWN do
-			button = _G["PVPTeamManagementFrameTeamMemberButton"..i];
-			if mod(i, 2) == 0 then 
-				button.BG:Show();
-			else		
-				button.BG:Hide();
-			end
+	local button;
+	for i=1, MAX_ARENA_TEAM_MEMBERS_SHOWN do
+		button = _G["PVPTeamManagementFrameTeamMemberButton"..i];
+		if mod(i, 2) == 0 then 
+			button.BG:Show();
+		else		
+			button.BG:Hide();
 		end
+	end
 end
 
 

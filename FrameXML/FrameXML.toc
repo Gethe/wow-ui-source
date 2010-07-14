@@ -5,6 +5,10 @@ Constants.lua
 Fonts.xml
 FontStyles.xml
 Localization.xml
+
+## add snippets independent of modules here
+FlowContainer.lua
+
 ## add new modules below here
 
 BasicControls.xml
@@ -117,7 +121,6 @@ DurabilityFrame.xml
 WorldStateFrame.xml
 DressUpFrame.xml
 RaidWarning.xml
-ClassTrainerFrameTemplates.xml
 PVPFrameTemplates.xml
 PVPFrame.xml
 ArenaFrame.xml
@@ -141,6 +144,9 @@ AlternatePowerBar.xml
 LevelUpDisplay.xml
 AnimationSystem.lua
 EquipmentManager.lua
+CompactUnitFrame.xml
+CompactRaidGroup.xml
+CompactPartyFrame.xml
 
 ## add new modules above here
 LocalizationPost.xml

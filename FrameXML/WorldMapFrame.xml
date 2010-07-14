@@ -988,34 +988,17 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<ScrollFrame name="WorldMapQuestDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame name="WorldMapQuestDetailScrollFrame" inherits="MinimalScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="300" y="199"/>
+					<AbsDimension x="302" y="199"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="WorldMapDetailFrame" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-208"/>
+							<AbsDimension x="20" y="-207"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="WorldMapQuestDetailScrollFrameTrack" hidden="true">
-							<Size>
-								<AbsDimension x="22" y="201"/>
-							</Size>				
-							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="25" y="1" />
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="0.4" />
-						</Texture>
-					</Layer>
-				</Layers>		
 				<ScrollChild>
 					<Frame name="WorldMapQuestDetailScrollChildFrame">
 						<Size>
@@ -1027,34 +1010,17 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<ScrollFrame name="WorldMapQuestRewardScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame name="WorldMapQuestRewardScrollFrame" inherits="MinimalScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="323" y="199"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="WorldMapQuestDetailScrollFrame" relativePoint="RIGHT"> 
 						<Offset>
-							<AbsDimension x="30" y="0"/>
+							<AbsDimension x="28" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="WorldMapQuestRewardScrollFrameTrack" hidden="true">
-							<Size>
-								<AbsDimension x="22" y="201"/>
-							</Size>				
-							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="23" y="1" />
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="0.4" />
-						</Texture>
-					</Layer>
-				</Layers>				
 				<ScrollChild>
 					<Frame name="WorldMapQuestRewardScrollChildFrame">
 						<Size>

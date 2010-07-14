@@ -678,13 +678,6 @@
 		<Size>
 			<AbsDimension x="550" y="525"/>
 		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="SpellBookPage1" file="Interface\Spellbook\Spellbook-Page-1">

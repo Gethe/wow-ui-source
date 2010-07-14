@@ -737,7 +737,7 @@ end
 
 function SpellBook_GetCurrentPage()
 	local currentPage, maxPages;
-	local numPetSpells = HasPetSpells();
+	local numPetSpells = HasPetSpells() or 0;
 	if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		currentPage = SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET];
 		maxPages = ceil(numPetSpells/SPELLS_PER_PAGE);

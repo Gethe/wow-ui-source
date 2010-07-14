@@ -104,9 +104,61 @@ LEVEL_UP_TYPES = {
 										text=LEVEL_UP_DUALSPEC,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_DUAL_SPEC_LINK
-									}
+									},
+
+
+------ HACKS BELOW		
+ ------ HACKS BELOW		
+ ------ HACKS BELOW
+ 
+ 	["Teleports"] 			= {	icon="Interface\\Icons\\INV_Misc_Coin_01",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=LEVEL_UP_DUALSPEC,
+										subText=LEVEL_UP_FEATURE,
+										link=LEVEL_UP_FEATURE2..LEVEL_UP_DUAL_SPEC_LINK
+									},
+									
+ 	["LockMount1"] 			= {	spellID=5784	},
+ 	["LockMount2"] 			= {	spellID=23161	},
+ 	["PaliMount1"] 			= {	spellID=34768	},
+ 	["PaliMount2"] 			= {	spellID=34767	},
+ 	["PaliMountTauren1"] 			= {	spellID=69820	},
+ 	["PaliMountTauren2"] 			= {	spellID=69826	},
+ 	["PaliMountDraenei1"] 			= {	spellID=73629	},
+ 	["PaliMountDraenei2"] 			= {	spellID=73630	},
+ 
+
+ ------ END HACKS
 }
 
+
+
+
+LEVEL_UP_CLASS_HACKS = {
+	["WARLOCK"] 		= {
+							--  Level  = {unlock}
+								[20] = {"LockMount1"},
+								[40] = {"LockMount2"},
+							},
+							
+	["PALADIN"] 		= {
+							--  Level  = {unlock}
+								[20] = {"PaliMount1"},
+								[40] = {"PaliMount2"},
+							},
+							
+	["PALADINTauren"] 		= {
+							--  Level  = {unlock}
+								[20] = {"PaliMountTauren1"},
+								[40] = {"PaliMountTauren2"},
+							},
+							
+	["PALADINDraenei"] 		= {
+							--  Level  = {unlock}
+								[20] = {"PaliMountDraenei1"},
+								[40] = {"PaliMountDraenei2"},
+							},
+}
 
 
 function LevelUpDisplay_Onload(self)	
@@ -125,14 +177,33 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 end
 
 function LevelUpDisplay_BuildList(self)
+	local name, icon = "","";
 	self.unlockList = {}
 	if  self.player_level > 10 then	
 		self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["TalentPoint"]
 	end
 	
+	
+	-- This loop is LEVEL_UP_CLASS_HACKS
+	local race, file = UnitRace("player");
+	local _, class = UnitClass("player");
+	local hackTable = LEVEL_UP_CLASS_HACKS[class..race] or LEVEL_UP_CLASS_HACKS[class];
+	if  hackTable and hackTable[self.player_level] then
+		hackTable = hackTable[self.player_level];
+		for _,spelltype in pairs(hackTable) do
+			if LEVEL_UP_TYPES[spelltype] and LEVEL_UP_TYPES[spelltype].spellID then 
+				name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
+				self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
+																		link=LEVEL_UP_ABILITY2.." "..GetSpellLink(LEVEL_UP_TYPES[spelltype].spellID)
+																	};
+			end
+		end	
+	end
+	
+	
 	local spells = {GetCurrentLevelSpells(self.player_level)};
 	for _,spell in pairs(spells) do		
-		local name, _, icon = GetSpellInfo(spell);
+		name, _, icon = GetSpellInfo(spell);
 		self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
 																link=LEVEL_UP_ABILITY2.." "..GetSpellLink(spell)
 															};

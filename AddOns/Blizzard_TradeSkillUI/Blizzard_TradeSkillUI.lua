@@ -1,5 +1,6 @@
 
 TRADE_SKILLS_DISPLAYED = 8;
+TRADE_SKILL_GUILD_MEMBERS_DISPLAYED = 7;
 MAX_TRADE_SKILL_REAGENTS = 8;
 TRADE_SKILL_HEIGHT = 16;
 TRADE_SKILL_TEXT_WIDTH = 275;
@@ -20,11 +21,11 @@ TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25,	font = GameFontNo
 TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50,	font = GameFontNormalLeftGrey };
 TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,		font = GameFontNormalLeft };
 
-UIPanelWindows["TradeSkillFrame"] = {xoffset = 16, area = "left", pushable = 3, showFailedFunc = "TradeSkillFrame_ShowFailed" };
+UIPanelWindows["TradeSkillFrame"] = {area = "left", pushable = 3, showFailedFunc = "TradeSkillFrame_ShowFailed" };
 
 CURRENT_TRADESKILL = "";
 
-
+GUILD_TRADE_SKILL_TITLE = "Guild %s";
 
 function TradeSkillFrame_Show()
 	ShowUIPanel(TradeSkillFrame);
@@ -82,6 +83,10 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UPDATE_TRADESKILL_RECAST" ) then
 		TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
+	elseif ( event == "GUILD_RECIPE_KNOWN_BY_MEMBERS" ) then
+		if ( TradeSkillFrame.queriedSkill == TradeSkillFrame.selectedSkill ) then
+			TradeSkillGuildMembersFrame_Show();
+		end
 	end
 end
 
@@ -89,7 +94,8 @@ function TradeSkillFrame_Update()
 	local numTradeSkills = GetNumTradeSkills();
 	local skillOffset = FauxScrollFrame_GetOffset(TradeSkillListScrollFrame);
 	local name, rank, maxRank = GetTradeSkillLine();
-        
+    local isTradeSkillGuild = IsTradeSkillGuild();
+	
 	if ( CURRENT_TRADESKILL ~= name ) then
 		StopTradeSkillRepeat();
 		if ( CURRENT_TRADESKILL ~= "" ) then
@@ -122,7 +128,7 @@ function TradeSkillFrame_Update()
 		TradeSkillCollapseAllButton:Enable();
 	end
 
-	if ( rank < 75 ) and ( not IsTradeSkillLinked() ) then
+	if ( rank < 75 ) and ( not IsTradeSkillLinked() ) and ( not isTradeSkillGuild ) then
 		TradeSkillFrameSearchBox:Hide();
 		SetTradeSkillItemNameFilter("");	--In case they are switching from an inspect WITH a filter directly to their own without.
 	else
@@ -185,7 +191,13 @@ function TradeSkillFrame_Update()
 			else
 				skillButton:SetWidth(323);
 			end
-			local color = TradeSkillTypeColor[skillType];
+			local color;
+			-- override colors for guild
+			if ( isTradeSkillGuild and skillType ~= "header" ) then
+				color = TradeSkillTypeColor["easy"];
+			else
+				color = TradeSkillTypeColor[skillType];
+			end
 			if ( color ) then
 				skillButton:SetNormalFontObject(color.font);
 				skillButtonCount:SetVertexColor(color.r, color.g, color.b);
@@ -293,6 +305,8 @@ function TradeSkillFrame_SetSelection(id)
 		creatable = nil;
 	end
 	TradeSkillHighlightFrame:Show();
+	TradeSkillFrame.queriedSkill = nil;		-- always cancel any pending queries
+	TradeSkillGuildMembersFrame_Hide();
 	if ( skillType == "header" ) then
 		TradeSkillHighlightFrame:Hide();
 		if ( isExpanded ) then
@@ -307,21 +321,7 @@ function TradeSkillFrame_SetSelection(id)
 	if ( GetTradeSkillSelectionIndex() > GetNumTradeSkills() ) then
 		return;
 	end
-	local color = TradeSkillTypeColor[skillType];
-	if ( color ) then
-		TradeSkillHighlight:SetVertexColor(color.r, color.g, color.b);
-	end
-
-	-- General Info
-	local skillLineName, skillLineRank, skillLineMaxRank = GetTradeSkillLine();
-	TradeSkillFrameTitleText:SetFormattedText(TRADE_SKILL_TITLE, skillLineName);
-	-- Set statusbar info
-	TradeSkillRankFrame:SetStatusBarColor(0.0, 0.0, 1.0, 0.5);
-	TradeSkillRankFrameBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
-	TradeSkillRankFrame:SetMinMaxValues(0, skillLineMaxRank);
-	TradeSkillRankFrame:SetValue(skillLineRank);
-	TradeSkillRankFrameSkillRank:SetText(skillLineRank.."/"..skillLineMaxRank);
-
+	
 	TradeSkillSkillName:SetText(skillName);
 	if ( GetTradeSkillCooldown(id) ) then
 		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(GetTradeSkillCooldown(id)));
@@ -342,9 +342,8 @@ function TradeSkillFrame_SetSelection(id)
 	else
 		TradeSkillSkillIconCount:SetText("");
 	end
-	
+
 	-- Reagents
-	
 	local numReagents = GetTradeSkillNumReagents(id);
 	if(numReagents > 0) then
 		TradeSkillReagentLabel:Show();
@@ -413,59 +412,102 @@ function TradeSkillFrame_SetSelection(id)
 	end
 	-- Reset the number of items to be created
 	TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
+
+
+	local skillLineName, skillLineRank, skillLineMaxRank = GetTradeSkillLine();
+	local color;
 	
-	--Hide inapplicable buttons if we are inspecting. Otherwise show them`
-	local linked, linkedName = IsTradeSkillLinked()
-	if ( linked ) then
+	--Hide inapplicable buttons if we are inspecting. Otherwise show them
+	if ( IsTradeSkillGuild() ) then
+		-- highlight color
+		color = TradeSkillTypeColor["easy"];
+		-- title
+		TradeSkillFrameTitleText:SetFormattedText(GUILD_TRADE_SKILL_TITLE, skillLineName);
+		TradeSkillFrameTitleText:SetPoint("TOP", 0,  -4);
+		TradeSkillLinkNameButton:Hide();
+		-- bottom bar
 		TradeSkillCreateButton:Hide();
 		TradeSkillCreateAllButton:Hide();
 		TradeSkillDecrementButton:Hide();
 		TradeSkillInputBox:Hide();
 		TradeSkillIncrementButton:Hide();
 		TradeSkillLinkButton:Hide();
-		TradeSkillLinkNameButton:Show();
-		local linkedText = "["..linkedName.."]";
-		TradeSkillFrameDummyString:Show();
-		TradeSkillFrameDummyString:Hide();
-		TradeSkillFrameDummyString:SetText(linkedText);
-		local linkedNameWidth = TradeSkillFrameDummyString:GetWidth();
-		if linkedNameWidth > TRADE_SKILL_LINKED_NAME_WIDTH then
-			linkedNameWidth = TRADE_SKILL_LINKED_NAME_WIDTH
-		end
-		TradeSkillLinkNameButton:SetWidth(linkedNameWidth);
-		TradeSkillLinkNameButtonTitleText:SetWidth(linkedNameWidth);
-		TradeSkillLinkNameButtonTitleText:SetText(linkedText);
-		TradeSkillLinkNameButton.linkedName = linkedName;
-		TradeSkillFrameTitleText:SetPoint("TOP", -linkedNameWidth/2,  -4);
-	else
-	
-		TradeSkillLinkNameButton:Hide();
-		TradeSkillFrameTitleText:SetPoint("TOP", 0,  -4);
-		--Change button names and show/hide them depending on if this tradeskill creates an item or casts something
-		if ( not altVerb ) then
-			--Its an item with 'Create'
-			TradeSkillCreateAllButton:Show();
-			TradeSkillDecrementButton:Show();
-			TradeSkillInputBox:Show();
-			TradeSkillIncrementButton:Show();
+		TradeSkillViewGuildMembersButton:Show();
+		if ( GetTradeSkillSelectionIndex() > 0 ) then
+			TradeSkillViewGuildMembersButton:Enable();
 		else
-			--Its something else
+			TradeSkillViewGuildMembersButton:Disable();
+		end
+		-- status bar
+		TradeSkillRankFrame:Hide();	
+	else
+		-- highlight color
+		color = TradeSkillTypeColor[skillType];
+		-- title
+		TradeSkillFrameTitleText:SetFormattedText(TRADE_SKILL_TITLE, skillLineName);
+		-- bottom bar
+		TradeSkillViewGuildMembersButton:Hide();
+		-- status bar
+		TradeSkillRankFrame:SetStatusBarColor(0.0, 0.0, 1.0, 0.5);
+		TradeSkillRankFrameBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
+		TradeSkillRankFrame:SetMinMaxValues(0, skillLineMaxRank);
+		TradeSkillRankFrame:SetValue(skillLineRank);
+		TradeSkillRankFrameSkillRank:SetText(skillLineRank.."/"..skillLineMaxRank);
+		TradeSkillRankFrame:Show();
+		
+		local linked, linkedName = IsTradeSkillLinked();
+		if ( linked ) then
+			TradeSkillCreateButton:Hide();
 			TradeSkillCreateAllButton:Hide();
 			TradeSkillDecrementButton:Hide();
 			TradeSkillInputBox:Hide();
 			TradeSkillIncrementButton:Hide();
-			
-			--TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft]]);
-			--TradeSkillFrameBottomRightTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight]]);
-		end
-		if ( GetTradeSkillListLink() ) then
-			TradeSkillLinkButton:Show();
-		else
 			TradeSkillLinkButton:Hide();
+			TradeSkillLinkNameButton:Show();
+			local linkedText = "["..linkedName.."]";
+			TradeSkillFrameDummyString:Show();
+			TradeSkillFrameDummyString:Hide();
+			TradeSkillFrameDummyString:SetText(linkedText);
+			local linkedNameWidth = TradeSkillFrameDummyString:GetWidth();
+			if linkedNameWidth > TRADE_SKILL_LINKED_NAME_WIDTH then
+				linkedNameWidth = TRADE_SKILL_LINKED_NAME_WIDTH
+			end
+			TradeSkillLinkNameButton:SetWidth(linkedNameWidth);
+			TradeSkillLinkNameButtonTitleText:SetWidth(linkedNameWidth);
+			TradeSkillLinkNameButtonTitleText:SetText(linkedText);
+			TradeSkillLinkNameButton.linkedName = linkedName;
+			TradeSkillFrameTitleText:SetPoint("TOP", -linkedNameWidth/2,  -4);
+		else		
+			TradeSkillLinkNameButton:Hide();
+			TradeSkillFrameTitleText:SetPoint("TOP", 0,  -4);
+			--Change button names and show/hide them depending on if this tradeskill creates an item or casts something
+			if ( not altVerb ) then
+				--Its an item with 'Create'
+				TradeSkillCreateAllButton:Show();
+				TradeSkillDecrementButton:Show();
+				TradeSkillInputBox:Show();
+				TradeSkillIncrementButton:Show();
+			else
+				--Its something else
+				TradeSkillCreateAllButton:Hide();
+				TradeSkillDecrementButton:Hide();
+				TradeSkillInputBox:Hide();
+				TradeSkillIncrementButton:Hide();				
+				--TradeSkillFrameBottomLeftTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft]]);
+				--TradeSkillFrameBottomRightTexture:SetTexture([[Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight]]);
+			end
+			if ( GetTradeSkillListLink() ) then
+				TradeSkillLinkButton:Show();
+			else
+				TradeSkillLinkButton:Hide();
+			end
+			TradeSkillCreateButton:SetText(altVerb or CREATE);
+			TradeSkillCreateButton:Show();
 		end
-		TradeSkillCreateButton:SetText(altVerb or CREATE);
-		TradeSkillCreateButton:Show();
-    end	
+	end
+	if ( color ) then
+		TradeSkillHighlight:SetVertexColor(color.r, color.g, color.b);
+	end	
 end
 
 function TradeSkillSkillButton_OnClick(self, button)
@@ -646,17 +688,18 @@ function TradeSkillFilterDropDown_Initialize(self, level)
 		info.isNotRadial = true;
 		UIDropDownMenu_AddButton(info, level)
 		
-		
-		info.text = TRADESKILL_FILTER_HAS_SKILL_UP
-		info.func = 	function() 
-							TradeSkillFrame.filterTbl.hasSkillUp  = not TradeSkillFrame.filterTbl.hasSkillUp;
-							TradeSkillOnlyShowSkillUps(TradeSkillFrame.filterTbl.hasSkillUp);
-							TradeSkillUpdateFilterBar();
-						end 
-		info.keepShownOnClick = true;
-		info.checked = 	TradeSkillFrame.filterTbl.hasSkillUp
-		info.isNotRadial = true;
-		UIDropDownMenu_AddButton(info, level)
+		if ( not IsTradeSkillGuild() ) then
+			info.text = TRADESKILL_FILTER_HAS_SKILL_UP;
+			info.func = 	function() 
+								TradeSkillFrame.filterTbl.hasSkillUp  = not TradeSkillFrame.filterTbl.hasSkillUp;
+								TradeSkillOnlyShowSkillUps(TradeSkillFrame.filterTbl.hasSkillUp);
+								TradeSkillUpdateFilterBar();
+							end 
+			info.keepShownOnClick = true;
+			info.checked = 	TradeSkillFrame.filterTbl.hasSkillUp;
+			info.isNotRadial = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
 		
 		info.checked = 	nil;
 		info.isNotRadial = nil;
@@ -870,6 +913,40 @@ function TradeSkillLinkDropDown_Init(self, level)
 	-- end
 end
 
+function TradeSkillViewGuildMembersButton_OnClick()
+	TradeSkillFrame.queriedSkill = TradeSkillFrame.selectedSkill;
+	QueryGuildMembersForRecipe();
+end
 
+function TradeSkillGuildMembersFrame_Show()
+	TradeSkillReagentLabel:Hide();
+	TradeSkillGuildMembersLabel:Show();
+	TradeSkillGuildMembersScrollFrame:Show();
+	for i = 1, MAX_TRADE_SKILL_REAGENTS, 1 do
+		_G["TradeSkillReagent"..i]:Hide();
+	end
+	TradeSkillGuildMembersFrame_Update();
+end
 
+function TradeSkillGuildMembersFrame_Hide()
+	TradeSkillGuildMembersLabel:Hide();
+	TradeSkillGuildMembersScrollFrame:Hide();
+end
 
+function TradeSkillGuildMembersFrame_Update()
+	local skillLineID, recipeID, numMembers = GetGuildRecipeInfoPostQuery();
+	local memberOffset = FauxScrollFrame_GetOffset(TradeSkillGuildMembersScrollFrame);
+	local memberIndex, memberButton, name, online;
+	
+	for i = 1, TRADE_SKILL_GUILD_MEMBERS_DISPLAYED, 1 do
+		memberIndex = i + memberOffset;
+		memberButton = _G["TradeSkillMember"..memberIndex];
+		if ( memberIndex > numMembers ) then
+			memberButton:Hide();
+		else
+			name, online = GetGuildRecipeMember(memberIndex);
+			memberButton:SetText(name);			
+			memberButton:Show();
+		end
+	end
+end

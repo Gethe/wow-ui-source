@@ -288,9 +288,6 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 			_G[self:GetName().."ScrollBar"]:Hide();
 			_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
-			if ( self.haveTrack ) then
-				_G[self:GetName().."Track"]:Hide();
-			end
 		else
 			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
@@ -303,9 +300,6 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
 		_G[self:GetName().."ScrollBar"]:Show();
 		_G[scrollbar:GetName().."ThumbTexture"]:Show();
-		if ( self.haveTrack ) then
-			_G[self:GetName().."Track"]:Show();
-		end		
 		-- The 0.005 is to account for precision errors
 		if ( yrange - value > 0.005 ) then
 			_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
@@ -334,6 +328,26 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 			middle:Show();
 		end
 	end
+end
+
+function ScrollBar_AdjustAnchors(scrollBar, topAdj, bottomAdj, xAdj)
+	-- assumes default anchoring of topleft-topright, bottomleft-bottomright
+	local topY = 0;
+	local bottomY = 0;
+	local point, parent, refPoint, x, y;
+	for i = 1, 2 do
+		point, parent, refPoint, x, y = scrollBar:GetPoint(i);
+		if ( point == "TOPLEFT" ) then
+			topY = y;
+		elseif ( point == "BOTTOMLEFT" ) then
+			bottomY = y;
+		end
+	end
+	xAdj = xAdj or 0;
+	topAdj = topAdj or 0;
+	bottomAdj = bottomAdj or 0;
+	scrollBar:SetPoint("TOPLEFT", parent, "TOPRIGHT", x + xAdj, topY + topAdj);
+	scrollBar:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", x + xAdj, bottomY + bottomAdj);
 end
 
 function ScrollingEdit_OnTextChanged(self, scrollFrame)
@@ -626,3 +640,18 @@ function ButtonFrameTemplate_ShowAttic(self)
 	self.TopTileStreaks:Show();
 end
 
+-- SquareButton template code
+SQUARE_BUTTON_TEXCOORDS = {
+	["UP"] = {     0.45312500,    0.64062500,     0.01562500,     0.20312500};
+	["DOWN"] = {   0.45312500,    0.64062500,     0.20312500,     0.01562500};
+	["LEFT"] = {   0.23437500,    0.42187500,     0.01562500,     0.20312500};
+	["RIGHT"] = {  0.42187500,    0.23437500,     0.01562500,     0.20312500};
+	["DELETE"] = { 0.01562500,    0.20312500,     0.01562500,     0.20312500};
+};
+
+function SquareButton_SetIcon(self, name)
+	local coords = SQUARE_BUTTON_TEXCOORDS[strupper(name)];
+	if (coords) then
+		self.icon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	end
+end

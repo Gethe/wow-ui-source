@@ -1,6 +1,6 @@
 MAX_TALENT_GROUPS = 2;
 MAX_TALENT_TABS = 3;
-MAX_NUM_TALENT_TIERS = 15;
+MAX_NUM_TALENT_TIERS = 7;
 NUM_TALENT_COLUMNS = 4;
 MAX_NUM_TALENTS = 40;
 PLAYER_TALENTS_PER_TIER = 5;
@@ -116,7 +116,7 @@ function TalentFrame_Update(TalentFrame)
 	end
 	-- Setup Frame
 	local base;
-	local id, name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 	if ( name ) then
 		base = "Interface\\TalentFrame\\"..background.."-";
 	else
@@ -163,7 +163,7 @@ function TalentFrame_Update(TalentFrame)
 			-- Set the button info
 			local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq, previewRank, meetsPreviewPrereq =
 				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-			if ( name ) then
+			if ( name and tier <= MAX_NUM_TALENT_TIERS) then
 				local displayRank;
 				if ( preview ) then
 					displayRank = previewRank;
@@ -183,7 +183,7 @@ function TalentFrame_Update(TalentFrame)
 				end
 
 				-- is this talent's tier unlocked?
-				if ( ((tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
+				if ( isUnlocked and ((tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
 					tierUnlocked = 1;
 				else
 					tierUnlocked = nil;
@@ -547,7 +547,7 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	for i = 1, MAX_TALENT_TABS do
 		cache[i] = cache[i] or { };
 		if ( i <= numTabs ) then
-			local id, name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, inspect, pet, talentGroup);
+			local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(i, inspect, pet, talentGroup);
 
 			local displayPointsSpent = pointsSpent + previewPointsSpent;
 

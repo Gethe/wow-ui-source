@@ -655,16 +655,14 @@
 			</Frame>
 		</Frames>  
 		<Scripts>
-			<OnUpdate>
-			</OnUpdate>
 			<OnEvent function="GuildControlUI_OnEvent"/>
 			<OnShow>
+				GuildControlButton:LockHighlight();
 			</OnShow>
 			<OnHide>
+				GuildControlButton:UnlockHighlight();
 			</OnHide>
-			<OnLoad>
-				GuildControlUI_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="GuildControlUI_OnLoad"/>
 		</Scripts>
 	</Frame>
 	

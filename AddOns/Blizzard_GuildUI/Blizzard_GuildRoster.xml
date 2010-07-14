@@ -3,30 +3,30 @@
 	<Script file="Blizzard_GuildRoster.lua"/>
 	<Button name="GuildRosterButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="297" y="20"/>
+			<AbsDimension x="299" y="20"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentStripe" setAllPoints="true" parentKey="stripe">
-					<Color a=".08" r="1" g="1" b="1"/>
-				</Texture>				
+				<Texture name="$parentStripe" setAllPoints="true" file="Interface\GuildFrame\GuildFrame" parentKey="stripe">
+					<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
+				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentBarTexture" hidden="true" parentKey="barTexture">
+				<Texture name="$parentBarTexture" hidden="true" file="Interface\TargetingFrame\UI-StatusBar" parentKey="barTexture">
 					<Size>
 						<AbsDimension x="10" y="20"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" x="60" y="0"/>
-					</Anchors>				
-					<Color r="0" g="0.8" b="0" a="0.2"/>
-				</Texture>			
+					</Anchors>
+					<Color r="0" g="1" b="0" a="0.1"/>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes" parentKey="icon">
 					<Anchors>
 						<Anchor point="LEFT" x="36" y="0"/>
-					</Anchors>				
+					</Anchors>
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -71,21 +71,107 @@
 					<Anchors>
 						<Anchor point="LEFT" x="146" y="0"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 			</Layer>
 		</Layers>
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
-			<Size>
-				<AbsDimension x="297" y="20"/>
-			</Size>
-			<Anchors>
-				<Anchor point="TOP">
-					<Offset>
-						<AbsDimension x="0" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightTexture>		
+		<Frames>
+			<Button name="$parentHeaderButton" setAllPoints="true" parentKey="header" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentLeft" file="Interface\Buttons\CollapsibleHeader" parentKey="leftEdge">
+							<Size x="76" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>	
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Buttons\CollapsibleHeader" parentKey="rightEdge">
+							<Size x="76" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="147" y="0"/>
+							</Anchors>
+							<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>	
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\CollapsibleHeader" parentKey="middle">
+							<Size x="0" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="-20" y="0"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" x="20" y="0"/>
+							</Anchors>
+							<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>	
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentExpandedIcon" parentKey="expandedIcon" inherits="Char-Stat-Minus">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentCollapsedIcon" parentKey="collapsedIcon" inherits="Char-Stat-Plus">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentIcon" parentKey="icon">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" x="26" y="0"/>
+							</Anchors>
+							<TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>							
+						</Texture>
+						<FontString name="$parentName" inherits="GameFontNormalSmall" parentKey="name">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" x="46" y="1"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentViewAll" inherits="GameFontNormalSmall" text="[View All]" hidden="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentRight" x="-12" y="1"/>
+							</Anchors>
+							<Color r="0.973" g="0.937" b="0.580"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button text="[View All]" parentKey="allRecipes">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentRight" x="-10" y="1"/>
+						</Anchors>
+						<ButtonText>
+							<Anchors>
+								<Anchor point="RIGHT" x="-2" y="0"/>
+							</Anchors>
+							<Color r="0.973" g="0.937" b="0.580"/>
+						</ButtonText>
+						<NormalFont style="GameFontNormalSmall"/>
+						<Scripts>
+							<OnLoad>
+								local fontString = self:GetFontString();
+								self:SetHeight(fontString:GetHeight() + 4);
+								self:SetWidth(fontString:GetWidth() + 4);
+							</OnLoad>
+							<OnClick>
+								ViewGuildRecipes(self:GetParent().skillID);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnClick function="GuildRosterTradeSkillHeader_OnClick"/>
+					<OnMouseDown>
+						if ( self:IsEnabled() ) then
+							self.leftEdge:SetPoint("LEFT", 1, -1);
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self.leftEdge:SetPoint("LEFT", 0, 0);
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+		</Frames>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
 	</Button>
 	<Button name="GuildRosterColumnButtonTemplate" virtual="true">
 		<Size>
@@ -123,14 +209,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				if ( self.sortType ) then
-					--SortGuildRoster(self.sortType);
-					_SortFakeGuild(self.sortType);
-					GuildRoster_Update();
-				end				
-				PlaySound("igMainMenuOptionCheckBoxOn");
-			</OnClick>
+			<OnClick function="GuildRoster_SortByColumn"/>
 		</Scripts>
 		<ButtonText>
 			<Anchors>
@@ -170,7 +249,7 @@
 				<Scripts>
 					<OnLoad function="GuildRosterViewDropdown_OnLoad"/>
 				</Scripts>
-			</Frame>				
+			</Frame>
 			<Button name="GuildRosterColumnButton1" inherits="GuildRosterColumnButtonTemplate" text="?s">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -187,8 +266,8 @@
 							<AbsDimension x="-2" y="0"/>
 						</Offset>
 					</Anchor>
-				</Anchors>	
-			</Button>							
+				</Anchors>
+			</Button>
 			<Button name="GuildRosterColumnButton3" inherits="GuildRosterColumnButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton2" relativePoint="RIGHT">
@@ -196,7 +275,7 @@
 							<AbsDimension x="-2" y="0"/>
 						</Offset>
 					</Anchor>
-				</Anchors>								
+				</Anchors>
 			</Button>
 			<Button name="GuildRosterColumnButton4" inherits="GuildRosterColumnButtonTemplate">
 				<Anchors>
@@ -217,7 +296,7 @@
 				</Anchors>
 			</Button>
 			<ScrollFrame name="GuildRosterContainer" inherits="HybridScrollFrameTemplate">
-				<Size x="302" y="302"/>
+				<Size x="302" y="300"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -235,16 +314,60 @@
 							</Anchor>
 							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="0" y="11"/>
+									<AbsDimension x="0" y="12"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 					</Slider>
 				</Frames>
-			</ScrollFrame>				
+			</ScrollFrame>
+			<CheckButton name="GuildRosterShowOfflineButton">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlightSmall" text="SHOW_OFFLINE_MEMBERS">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						SetGuildRosterSelection(0);
+						if ( self:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						end
+						SetGuildRosterShowOffline(self:GetChecked());
+						GuildRoster_Update();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="GuildRosterFrame_OnLoad"/>
+			<OnEvent function="GuildRosterFrame_OnEvent"/>
+			<OnShow function="GuildRosterFrame_OnShow"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
 </Ui>

@@ -98,6 +98,7 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("UNIT_HEALTH");
+	self:RegisterEvent("UNIT_CONNECTION");
 
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
@@ -108,7 +109,7 @@ function PartyMemberFrame_OnLoad (self)
 end
 
 function PartyMemberFrame_UpdateMember (self)
-	if ( HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0 ) then
+	if ( GetCVarBool("useCompactPartyFrames") or (HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0) ) then
 		self:Hide();
 		return;
 	end
@@ -417,7 +418,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		if ( arg1 == "party"..selfID ) then
 			PartyMemberFrame_ToPlayerArt(self);
 		end
-	elseif ( event == "UNIT_HEALTH" ) and ( arg1 == "party"..selfID ) then
+	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
 		PartyMemberFrame_UpdateOnlineStatus(self);
 	end
 end
@@ -546,7 +547,7 @@ function UpdatePartyMemberBackground ()
 	if ( not PartyMemberBackground ) then
 		return;
 	end
-	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and not(HIDE_PARTY_INTERFACE == "1" and (GetNumRaidMembers() > 0)) ) then
+	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and not(GetCVarBool("useCompactPartyFrames") or (HIDE_PARTY_INTERFACE == "1" and (GetNumRaidMembers() > 0))) ) then
 		if ( _G["PartyMemberFrame"..GetNumPartyMembers().."PetFrame"]:IsShown() ) then
 			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -21);
 		else

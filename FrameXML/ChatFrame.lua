@@ -1904,7 +1904,7 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	RunScript(msg);
+--	RunScript(msg);
 end
 
 SlashCmdList["LOOT_FFA"] = function(msg)
@@ -2169,8 +2169,8 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
-	DevTools_DumpCommand(msg);
+--	UIParentLoadAddOn("Blizzard_DebugTools");
+--	DevTools_DumpCommand(msg);
 end
 
 SlashCmdList["RELOAD"] = function(msg)
@@ -2405,15 +2405,8 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		LevelUpDisplay_ChatPrint(self, level)
 		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
-		local arg1, arg2 = ...;
+		local arg1 = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		if ( arg2 > 0 ) then
-			local cp1, cp2 = UnitCharacterPoints("player");
-			if ( cp2 ) then
-				local string = format(LEVEL_UP_SKILL_POINTS, cp2);
-				self:AddMessage(string, info.r, info.g, info.b, info.id);
-			end
-		end
 		return true;
 	elseif ( event == "GUILD_MOTD" ) then
 		local arg1 = ...;

@@ -123,10 +123,13 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapFrame.numQuests = 0;
 	WatchFrame.showObjectives = WorldMapQuestShowObjectives:GetChecked();
 	WorldMapPOIFrame.allowBlobTooltip = true;
+	-- scrollframes
 	WorldMapQuestDetailScrollFrame.scrollBarHideable = true;
 	WorldMapQuestRewardScrollFrame.scrollBarHideable = true;
-	WorldMapQuestDetailScrollFrame.haveTrack = true;
-	WorldMapQuestRewardScrollFrame.haveTrack = true;
+	ScrollBar_AdjustAnchors(WorldMapQuestDetailScrollFrameScrollBar, 1, -2);
+	WorldMapQuestDetailScrollFrameScrollBarTrack:SetAlpha(0.4);
+	ScrollBar_AdjustAnchors(WorldMapQuestRewardScrollFrameScrollBar, 1, -2);
+	WorldMapQuestRewardScrollFrameScrollBarTrack:SetAlpha(0.4);
 end
 
 function WorldMapFrame_OnShow(self)
@@ -1319,7 +1322,7 @@ end
 
 function WorldMapFrame_ToggleWindowSize()
 	local continentID, dungeonLevel;
-	local mapID = GetCurrentMapAreaID() - 1;
+	local mapID = GetCurrentMapAreaID();
 	if ( mapID < 0 ) then
 		continentID = GetCurrentMapContinent();
 	else
