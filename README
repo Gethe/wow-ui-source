@@ -23,7 +23,7 @@ General
 -  The Horde starting experience for goblins is available. Beginning on
    the Isle of Kezan in a goblin paradise, players will face a
    treacherous road ahead!
--  The level cap for all characters is 82.
+-  The level cap for all characters is 83.
 -  Players may use our Character Copy feature for copying existing
    characters to beta realms, or may choose from high-level pre-made
    template characters.
@@ -31,8 +31,9 @@ General
 Zones
 
 -  Mount Hyjal and Vashj'ir, two new level 78-82 zones, are available
-   for testing. Players may find their way to these zones by speaking
-   with temporary teleportation NPCs located in any major city.
+   for testing. Deepholm, a new level 82-83 zone is available for
+   testing. Players may find their way to these zones by speaking with
+   temporary teleportation NPCs located in any major city.
 -  The level ranges of Gilneas and the Lost Isles are in the process of
    being adjusted slightly. Creature, quest, and quest reward levels
    are all being altered so that players finish questing in these zones
@@ -42,8 +43,8 @@ Zones
 -  Eastern Kingdoms
    Arathi Highlands, Blasted Lands, The Cape of Stranglethorn, Dun
    Morogh, Duskwood, Elwynn Forest, Hinterlands, Loch Modan, Northern
-   Stranglethorn, Northshire, Tirisfal Glades, Westfall and Redridge
-   Mountains are ready for testing.
+   Stranglethorn, Northshire, Redridge Mountains, Tirisfal Glades,
+   Western Plaguelands and Westfall are available for testing.
 -  Kalimdor
 -  Most zones in Kalimdor are available for testing, though work
    continues on polishing the quest experience and flow, as well as
@@ -70,8 +71,20 @@ Classes: General
 -  Rage has been normalized.
 -  Spells and abilities no longer have multiple ranks and now scale
    with character level.
--  Talents trees have changed and are still in the process of being
-   reworked.
+-  A first pass on new talent trees has been implemented.
+   o	Each specialization has been reduced to a 31-point talent tree.
+   Players will now get a total of 41 talent points to spend.
+   31 points must be spent in the primary specialization tree before
+   any points can be placed in additional trees.
+   Players will be asked to choose a specialization at level 10. Doing
+   so will result in the unlocking of a spell or ability unique to that
+   specialization, as well as one or more passive bonuses.
+   While this is a first pass on all of the talent trees, death knight,
+   druid, paladin, warlock, Arcane mage, and Assassination rogue trees
+   are not as far along as other specializations.
+   More information regarding our plans for talent trees can be found
+   on our Cataclysm forum:
+http://forums.worldofwarcraft.com/thread.html?topicId=25626290449&sid=1
 
 Death Knights
 
@@ -91,6 +104,11 @@ Hunters
 -  Hunters now start with a pet at level 1.
 -  The Stable will now store 20 pets. If a pet is moved into the
    Stable, its talents are wiped.
+
+Paladins
+
+-  We are in the process of overhauling many paladin talents, spells
+   and abilities. Expect updates in upcoming patches.
 
 Warlocks
 
