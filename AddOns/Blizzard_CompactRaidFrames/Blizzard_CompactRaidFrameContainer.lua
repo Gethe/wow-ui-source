@@ -12,9 +12,10 @@ function CompactRaidFrameContainer_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	
 	self.unusedUnitFrames = {};
+	self.reservedUnitFrames = {};
 	self.unitFrameUnusedFunc = function(frame) --Have to make a wrapper to access self
 													CompactUnitFrame_SetUnit(frame, nil);
-													tinsert(self.unusedUnitFrames, frame)
+													frame.inUse = false;
 												end;
 												
 	CompactRaidFrameContainer_SetFlowFilterFunction(self, function(token) return UnitExists(token) end)
@@ -83,6 +84,8 @@ function CompactRaidFrameContainer_LayoutFrames(self)
 	if ( self.displayPets ) then
 		CompactRaidFrameContainer_AddPets(self);
 	end
+	
+	CompactRaidFrameContainer_ReleaseAllReservedFrames(self);
 end
 
 do
@@ -120,7 +123,7 @@ function CompactRaidFrameContainer_AddPlayers(self)
 	for i=1, #self.units do
 		local unit = self.units[i];
 		if ( self.flowFilterFunc(unit) ) then
-			local frame = CompactRaidFrameContainer_GetUnusedUnitFrame(self);
+			local frame = CompactRaidFrameContainer_GetUnusedUnitFrameForUnit(self, unit);
 			CompactUnitFrame_SetUnit(frame, unit);
 			FlowContainer_AddObject(self, frame);
 		end
@@ -135,19 +138,44 @@ function CompactRaidFrameContainer_AddPets(self)
 end
 
 --Utility Functions
-function CompactRaidFrameContainer_GetUnusedUnitFrame(self)
-	if ( #self.unusedUnitFrames > 0 ) then
-		return tremove(self.unusedUnitFrames, #self.unusedUnitFrames);
-	else
-		return CompactRaidFrameContainer_CreateUnitFrame(self);
+function CompactRaidFrameContainer_GetUnusedUnitFrameForUnit(self, unit)
+	local frame = CompactRaidFrameContainer_GetReservedFrame(self, unit);
+	if ( not frame ) then
+		if ( #self.unusedUnitFrames > 0 ) then
+			frame = tremove(self.unusedUnitFrames, #self.unusedUnitFrames);
+		else
+			frame = CompactRaidFrameContainer_CreateUnitFrame(self);
+		end
+		CompactRaidFrameContainer_ReserveFrame(self, frame, unit);
 	end
+	frame.inUse = true;
+	return frame;
 end
 
+local unitFramesCreated = 0;
 function CompactRaidFrameContainer_CreateUnitFrame(self)
-	local frame = CreateFrame("Button", nil, self, "CompactUnitFrameTemplate");
+	unitFramesCreated = unitFramesCreated + 1;
+	local frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
 	CompactUnitFrame_SetUpFrame(frame, DefaultCompactUnitFrameSetup);
 	frame.unusedFunc = self.unitFrameUnusedFunc;
 	return frame;
+end
+
+function CompactRaidFrameContainer_ReserveFrame(self, frame, unit)
+	self.reservedUnitFrames[UnitGUID(unit)] = frame;
+end
+
+function CompactRaidFrameContainer_GetReservedFrame(self, unit)
+	return self.reservedUnitFrames[UnitGUID(unit)];
+end
+
+function CompactRaidFrameContainer_ReleaseAllReservedFrames(self)
+	for reservation, frame in pairs(self.reservedUnitFrames) do
+		if ( frame and not frame.inUse ) then
+			self.reservedUnitFrames[reservation] = false;
+			tinsert(self.unusedUnitFrames, frame);
+		end
+	end
 end
 
 function RaidUtil_GetUsedGroups(tab)	--Fills out the table with which groups have people.

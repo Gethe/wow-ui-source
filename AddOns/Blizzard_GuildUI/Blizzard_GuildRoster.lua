@@ -1,3 +1,5 @@
+GUILD_DETAIL_NORM_HEIGHT = 195
+GUILD_DETAIL_OFFICER_HEIGHT = 255
 local GUILD_ROSTER_MAX_COLUMNS = 5;
 local GUILD_ROSTER_MAX_STRINGS = 4;
 local GUILD_ROSTER_BAR_MAX = 239;
@@ -17,24 +19,24 @@ local GUILD_ROSTER_COLUMNS = {
 
 local GUILD_ROSTER_COLUMN_DATA = {
 	level = { width = 32, text = LEVEL_ABBR, stringJustify="CENTER" },
-	class = { width = 32, text = "Cls", hasIcon = true },
-	name = { width = 81, text = "Name", stringJustify="LEFT" },
-	wideName = { width = 101, text = "Name", sortType = "name", stringJustify="LEFT" },
-	rank = { width = 76, text = "Rank", stringJustify="LEFT" },
-	note = { width = 76, text = "Note", stringJustify="LEFT" },
-	online = { width = 76, text = "Last Online", stringJustify="LEFT" },
+	class = { width = 32, text = CLASS_ABBR, hasIcon = true },
+	name = { width = 81, text = NAME, stringJustify="LEFT" },
+	wideName = { width = 101, text = NAME, sortType = "name", stringJustify="LEFT" },
+	rank = { width = 76, text = RANK, stringJustify="LEFT" },
+	note = { width = 76, text = LABEL_NOTE, stringJustify="LEFT" },
+	online = { width = 76, text = LASTONLINE, stringJustify="LEFT" },
+	zone = { width = 144, text = ZONE, stringJustify="LEFT" },	
 	valor = { width = 83, text = "Valor", stringJustify="RIGHT" },
 	hero = { width = 83, text = "Hero", stringJustify="RIGHT" },
 	honor = { width = 83, text = "Honor", stringJustify="RIGHT" },
 	conquest = { width = 83, text = "Conquest", stringJustify="RIGHT" },
 	contribution = { width = 144, text = "Contribution", stringJustify="RIGHT", hasBar = true },
-	zone = { width = 144, text = "Zone", stringJustify="LEFT" },
 	achievement = { width = 144, text = "Achievement", stringJustify="RIGHT" },
 	skill = { width = 63, text = "Skill", stringJustify="LEFT" },
 };
 
 function GuildRosterFrame_OnLoad(self)
-	GuildFrame_RegisterPanel("GuildRosterFrame");
+	GuildFrame_RegisterPanel(self);
 	GuildRosterContainer.update = GuildRoster_Update;
 	HybridScrollFrame_CreateButtons(GuildRosterContainer, "GuildRosterButtonTemplate", 0, 0, "TOPLEFT", "TOPLEFT", 0, -GUILD_ROSTER_BUTTON_OFFSET, "TOP", "BOTTOM");
 	GuildRosterContainerScrollBar.doNotHide = true;
@@ -42,8 +44,10 @@ function GuildRosterFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_TRADESKILL_UPDATE");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GUILD_RECIPE_KNOWN_BY_MEMBERS");
-	_SetupFakeGuild(26);
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	GuildRoster_SetView("playerStatus");
+	SetGuildRosterSelection(0);
+	--GuildMemberDetailRankText:SetPoint("RIGHT", GuildFramePromoteButton, "LEFT");	
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
 	self.doRecipeQuery = true;
 end
@@ -67,6 +71,8 @@ function GuildRosterFrame_OnEvent(self, event, ...)
 			end		
 			GuildRoster_Update();
 		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.doRecipeQuery = true;
 	end
 end
 
@@ -82,23 +88,141 @@ function GuildRoster_RecipeQueryCheck()
 	end
 end
 
+function GuildRoster_GetLastOnline(guildIndex)
+	return RecentTimeDate( GetGuildRosterLastOnline(guildIndex) );
+end
+
+function GuildRoster_SortByColumn(column)
+	if ( column.sortType ) then
+		if ( currentGuildView == "tradeskill" ) then
+			SortGuildTradeSkill(column.sortType);
+		else
+			SortGuildRoster(column.sortType);
+		end
+	end
+	PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+--****** Guild members **********************************************************
+
+function GuildRosterButton_SetStringText(buttonString, text, isOnline, class)
+	buttonString:SetText(text);
+	if ( isOnline ) then
+		if ( class ) then
+			local classColor = RAID_CLASS_COLORS[class];
+			buttonString:SetTextColor(classColor.r, classColor.g, classColor.b);
+		else
+			buttonString:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		end
+	else
+		buttonString:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	end
+end
+
 function GuildRoster_Update()
 	local scrollFrame = GuildRosterContainer;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local button, index, class;
-	local topContribution = _GuildGetHighestContribution();
 	local totalMembers, onlineMembers = GetNumGuildMembers();
+	local selectedGuildMember = GetGuildRosterSelection();
 	
 	if ( currentGuildView == "tradeskill" ) then
-		GuildRoster_UpdateProfessions();
+		GuildRoster_UpdateTradeSkills();
 		return;
 	end
 
+	local guildName, guildRankName, guildRankIndex = GetGuildInfo("player");
+	local maxRankIndex = GuildControlGetNumRanks() - 1;	
+	-- Get selected guild member info
+	name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(selectedGuildMember);
+	GuildFrame.selectedName = name;
+	-- If there's a selected guildmember
+	if ( selectedGuildMember > 0 ) then
+		-- Update the guild member details frame
+		GuildMemberDetailName:SetText(GuildFrame.selectedName);
+		GuildMemberDetailLevel:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
+		GuildMemberDetailZoneText:SetText(zone);
+		GuildMemberDetailRankText:SetText(rank);
+		if ( online ) then
+			GuildMemberDetailOnlineText:SetText(GUILD_ONLINE_LABEL);
+		else
+			GuildMemberDetailOnlineText:SetText(GuildRoster_GetLastOnline(selectedGuildMember));
+		end
+		-- Update public note
+		if ( CanEditPublicNote() ) then
+			PersonalNoteText:SetTextColor(1.0, 1.0, 1.0);
+			if ( (not note) or (note == "") ) then
+				note = GUILD_NOTE_EDITLABEL;
+			end
+		else
+			PersonalNoteText:SetTextColor(0.65, 0.65, 0.65);
+		end
+		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
+		PersonalNoteText:SetText(note);
+		-- Update officer note
+		if ( CanViewOfficerNote() ) then
+			if ( CanEditOfficerNote() ) then
+				if ( (not officernote) or (officernote == "") ) then
+					officernote = GUILD_OFFICERNOTE_EDITLABEL;
+				end
+				OfficerNoteText:SetTextColor(1.0, 1.0, 1.0);
+			else
+				OfficerNoteText:SetTextColor(0.65, 0.65, 0.65);
+			end
+			GuildMemberOfficerNoteBackground:EnableMouse(CanEditOfficerNote());
+			OfficerNoteText:SetText(officernote);
+
+			-- Resize detail frame
+			GuildMemberDetailOfficerNoteLabel:Show();
+			GuildMemberOfficerNoteBackground:Show();
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT);
+		else
+			GuildMemberDetailOfficerNoteLabel:Hide();
+			GuildMemberOfficerNoteBackground:Hide();
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT);
+		end
+
+		-- Manage guild member related buttons
+		if ( CanGuildPromote() and ( rankIndex > 1 ) and ( rankIndex > (guildRankIndex + 1) ) ) then
+			GuildFramePromoteButton:Enable();
+		else 
+			GuildFramePromoteButton:Disable();
+		end
+		if ( CanGuildDemote() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) and ( rankIndex ~= maxRankIndex ) ) then
+			GuildFrameDemoteButton:Enable();
+		else
+			GuildFrameDemoteButton:Disable();
+		end
+		-- Hide promote/demote buttons if both disabled
+		if ( not GuildFrameDemoteButton:IsEnabled() and not GuildFramePromoteButton:IsEnabled() ) then
+			GuildFramePromoteButton:Hide();
+			GuildFrameDemoteButton:Hide();
+		else
+			GuildFramePromoteButton:Show();
+			GuildFrameDemoteButton:Show();
+		end
+		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then
+			GuildMemberRemoveButton:Enable();
+		else
+			GuildMemberRemoveButton:Disable();
+		end
+		if ( (UnitName("player") == name) or (not online) ) then
+			GuildMemberGroupInviteButton:Disable();
+		else
+			GuildMemberGroupInviteButton:Enable();
+		end
+
+		GuildFrame.selectedName = GetGuildRosterInfo(GetGuildRosterSelection()); 
+	else
+		GuildMemberDetailFrame:Hide();
+	end
+	
 	-- placeholders
 	local contribution = 0;
 	local contributionRank = 0;
+	local topContribution = 0;
 	local honor = 0;
 	local conquest = 0;
 	local valor = 0;
@@ -115,6 +239,7 @@ function GuildRoster_Update()
 		button = buttons[i];		
 		index = offset + i;		
 		if ( index <= visibleMembers ) then
+			button.guildIndex = index;
 			name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName = GetGuildRosterInfo(index);
 			if ( currentGuildView == "playerStatus" ) then
 				GuildRosterButton_SetStringText(button.string1, level, online)
@@ -125,14 +250,14 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string1, name, online, classFileName)
 				GuildRosterButton_SetStringText(button.string2, rank, online)
 				GuildRosterButton_SetStringText(button.string3, note, online)
-				GuildRosterButton_SetStringText(button.string4, GuildFrame_GetLastOnline(index), online)
+				GuildRosterButton_SetStringText(button.string4, GuildRoster_GetLastOnline(index), online)
 			elseif ( currentGuildView == "contribution" ) then
 				GuildRosterButton_SetStringText(button.string1, level, online)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
 				GuildRosterButton_SetStringText(button.string3, contribution, online)
 				if ( contribution == 0 ) then
-					button.barTexture:Hide();				
+					button.barTexture:Hide();
 				else
 					button.barTexture:SetWidth(_GuildMembers[index].contribution / topContribution * GUILD_ROSTER_BAR_MAX);
 					button.barTexture:Show();
@@ -142,14 +267,14 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string1, level, online)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
-				GuildRosterButton_SetStringText(button.string3, valor, online)			
+				GuildRosterButton_SetStringText(button.string3, valor, online)
 				GuildRosterButton_SetStringText(button.string4, hero, online)
 			elseif ( currentGuildView == "pvp" ) then
 				GuildRosterButton_SetStringText(button.string1, level, online)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, name, online, classFileName)
 				GuildRosterButton_SetStringText(button.string3, honor, online)
-				GuildRosterButton_SetStringText(button.string4, conquest, online)	
+				GuildRosterButton_SetStringText(button.string4, conquest, online)
 			elseif ( currentGuildView == "achievement" ) then
 				GuildRosterButton_SetStringText(button.string1, level, online)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
@@ -162,6 +287,11 @@ function GuildRoster_Update()
 			else
 				button.stripe:SetTexCoord(0.51660156, 0.53613281, 0.88281250, 0.92187500);
 			end
+			if ( selectedGuildMember == index ) then
+				button:LockHighlight();
+			else
+				button:UnlockHighlight();
+			end
 		else
 			button:Hide();
 		end
@@ -171,7 +301,28 @@ function GuildRoster_Update()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
-function GuildRoster_UpdateProfessions()
+function GuildRosterButton_OnClick(self, button)
+	if ( currentGuildView == "tradeskill" ) then
+		return;
+	end
+	if ( button == "LeftButton" ) then
+		if ( GuildMemberDetailFrame:IsShown() and self.guildIndex == GuildFrame.selectedGuildMember ) then
+			SetGuildRosterSelection(0);
+			GuildFrame.selectedGuildMember = 0;
+			GuildMemberDetailFrame:Hide();
+		else
+			SetGuildRosterSelection(self.guildIndex);
+			GuildFrame.selectedGuildMember = self.guildIndex;
+			GuildFramePopup_Show(GuildMemberDetailFrame);
+		end
+		GuildRoster_Update();
+	else
+		local name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(self.guildIndex);
+		FriendsFrame_ShowDropdown(name, online);
+	end
+end
+
+function GuildRoster_UpdateTradeSkills()
 	local scrollFrame = GuildRosterContainer;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
@@ -189,6 +340,7 @@ function GuildRoster_UpdateProfessions()
 				GuildRosterButton_SetStringText(button.string2, "", 1);
 				GuildRosterButton_SetStringText(button.string3, numOnline, 1);
 				button.header:Show();
+				button:UnlockHighlight();
 				button.header.icon:SetTexture(iconTexture);
 				button.header.name:SetText(headerName);
 				button.header.collapsed = isCollapsed;
@@ -239,19 +391,15 @@ function GuildRoster_UpdateProfessions()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
-function GuildRosterButton_SetStringText(buttonString, text, isOnline, class)
-	buttonString:SetText(text);
-	if ( isOnline ) then
-		if ( class ) then
-			local classColor = RAID_CLASS_COLORS[class];
-			buttonString:SetTextColor(classColor.r, classColor.g, classColor.b);
-		else
-			buttonString:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		end
+function GuildRosterTradeSkillHeader_OnClick(self)
+	if ( self.collapsed ) then
+		ExpandGuildTradeSkillHeader(self.skillID);
 	else
-		buttonString:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		CollapseGuildTradeSkillHeader(self.skillID);
 	end
 end
+
+--****** Dropdown ***************************************************************
 
 function GuildRoster_SetView(view)
 	local numColumns = #GUILD_ROSTER_COLUMNS[view];
@@ -366,103 +514,4 @@ function GuildRosterViewDropdown_OnClick(self)
 	GuildRoster();
 	GuildRoster_Update();
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
-end
-
-function GuildRosterTradeSkillHeader_OnClick(self)
-	if ( self.collapsed ) then
-		ExpandGuildTradeSkillHeader(self.skillID);
-	else
-		CollapseGuildTradeSkillHeader(self.skillID);
-	end
-end
-
-function GuildRoster_SortByColumn(column)
-	if ( column.sortType ) then
-		if ( currentGuildView == "tradeskill" ) then
-			SortGuildTradeSkill(column.sortType);
-		else
-			SortGuildRoster(column.sortType);
-		end
-	end		
-	PlaySound("igMainMenuOptionCheckBoxOn");
-end
-
---================================================================================================
-local _GuildClass = { "WARRIOR", "SHAMAN", "PALADIN", "ROGUE", "DEATHKNIGHT", "PRIEST", "WARLOCK", "DRUID", "HUNTER", "MAGE" }
-local _GuildNote = { "A random note", "Something", "Nothing", "" }
-local _GuildRank = { "Initiate", "Member", "Veteran", "Officer", "Grand Poobah" }
-local _GuildNames = { "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo", "Sierra", "Tango", "Uniform", "Victor", "Whisky", "Xray", "Yankee", "Zulu" }
-local _GuildZones = { "Ashenvale", "Durotar", "Feralas", "Loch Modan", "Winterspring" }
-_GuildMembers = { };
-local _highestContribution = 0;
-
-local _GuildSortType;
-local _GuildSortAsc;
-function _SortFakeGuild(sortType)
-	local targetIndex;
-	if ( sortType == _GuildSortType ) then
-		_GuildSortAsc = not _GuildSortAsc;
-	end
-	for i = 1, #_GuildMembers - 1 do
-		targetIndex = i;
-		for j = i + 1, #_GuildMembers do
-			if ( _GuildSortAsc ) then
-				if ( _GuildMembers[targetIndex][sortType] > _GuildMembers[j][sortType] ) then
-					targetIndex = j;
-				end
-			else
-				if ( _GuildMembers[targetIndex][sortType] < _GuildMembers[j][sortType] ) then
-					targetIndex = j;
-				end				
-			end
-		end
-		if ( targetIndex ~= i ) then
-			_GuildMembers[i], _GuildMembers[targetIndex] = _GuildMembers[targetIndex], _GuildMembers[i];
-		end
-	end
-	_GuildSortType = sortType;
-end
-
-function _SetupFakeGuild(numMembers)	
-	local rank;
-	local haveGM;
-	for i = 1, numMembers do
-		local guildMember = { };
-		guildMember["name"] = _GuildNames[i];
-		rank = math.random(5);
-		if ( rank == 5 ) then
-			if ( haveGM ) then
-				rank = math.random(4);
-			else
-				haveGM = true;
-			end
-		end
-		guildMember["rank"] = rank;
-		guildMember["rankName"] = _GuildRank[rank];
-		guildMember["note"] = _GuildNote[math.random(#_GuildNote)];
-		guildMember["class"] = _GuildClass[math.random(#_GuildClass)];
-		guildMember["level"] = math.random(80);		
-		guildMember["honor"] = math.random(10000);
-		guildMember["conquest"] = math.random(10000);
-		guildMember["achievement"] = math.random(10000);
-		guildMember["valor"] = math.random(10000);
-		guildMember["hero"] = math.random(10000);
-		guildMember["contribution"] = math.random(10000);
-		guildMember["zone"] = _GuildZones[math.random(#_GuildZones)];
-		if ( math.random(2) == 2 ) then
-			guildMember["online"] = true;
-		end
-		table.insert(_GuildMembers, guildMember);
-	end
-	-- rank contributions
-	_GuildMembers[2]["contribution"] = 0;
-	_SortFakeGuild("contribution");
-	_highestContribution = _GuildMembers[1]["contribution"];
-	for i = 1, numMembers do
-		_GuildMembers[i]["contributionRank"] = i;
-	end
-end
-
-function _GuildGetHighestContribution()
-	return _highestContribution;
 end

@@ -219,6 +219,13 @@
 						<Anchor point="TOPLEFT" x="0" y="-4"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIconBorder" inherits="TalentCover-SmallIconBorder" parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 				<FontString name="$parentLabel" inherits="GameFontNormalSmall" parentKey="Label" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="24" y="0"/>
@@ -251,9 +258,16 @@
 						<Anchor point="TOPLEFT" x="0" y="-4"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIconBorder" inherits="Talent-GoldMedal-Border" parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
 				<FontString name="$parentLabel" inherits="GameFontNormal" parentKey="Label" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="40" y="0"/>
+						<Anchor point="TOPLEFT" x="46" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
@@ -280,29 +294,62 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackgroundTopLeft" parentKey="BgTopLeft">
-					<Size>
-						<AbsDimension x="95" y="268"/>
-					</Size>
+					<Size x="198" y="256"/>
+					<TexCoords left="0.19921875" right="0.97265625" top="0" bottom="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="-46"/>
-						<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+						<Anchor point="TOPLEFT" x="5" y="-40"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentBackgroundTopRight" parentKey="BgTopRight" hidden="true" />
-				<Texture name="$parentBackgroundBottomLeft" parentKey="BgBottomLeft" hidden="true" />
+				<Texture name="$parentBackgroundBottomLeft" parentKey="BgBottomLeft" >
+					<Size x="198" y="75"/>
+					<TexCoords left="0.19921875" right="0.97265625" top="0" bottom="0.4140625"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentBackgroundBottomRight" parentKey="BgBottomRight" hidden="true" />
 				
-				<Texture name="$parentHeaderBackground" inherits="Talent-TreeTitle-SmallBg" parentKey="HeaderBackground">
-					<Size x="198" y="39"/>
+				<Texture name="$parentHeaderBackground" inherits="TalentHeader-ParchmentBG" parentKey="HeaderBackground">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentHeaderBorder" inherits="Talent-TreeBorderSmall" parentKey="HeaderBorder" hidden="true">
+				<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphamode="ADD" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentHeaderBackground" x="1"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBackgroundBottomLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphamode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackgroundBottomLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphamode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphamode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphamode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeaderBorder" inherits="TalentHeader-GoldBorder" parentKey="HeaderBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground"/>
 					</Anchors>
 				</Texture>
 
@@ -348,37 +395,25 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="$parentPointsSpent" inherits="GameFontHighlightLarge" justifyH="CENTER" parentKey="PointsSpent">
-					<Size x="0" y="22"/>
+				<Texture name="$parentRoleIcon" parentKey="RoleIcon" hidden="true">
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeaderBackground" relativePoint="TOPLEFT">
-							<Offset x="24" y="-10"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderBackground" x="-6" y="-9"/>
 					</Anchors>
-				</FontString>
-				<FontString name="$parentName" inherits="GameFontNormal" parentKey="Name">
+				</Texture>
+				<Texture name="$parentRoleIcon2" parentKey="RoleIcon2" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentRoleIcon" relativePoint="LEFT" x="-1" />
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalLeft" parentKey="Name">
 					<Size x="0" y="15"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground">
-							<Offset x="54" y="-14"/>
+							<Offset x="47" y="-9"/>
 						</Anchor>
-						<Anchor point="RIGHT" x="-54"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentPointsSpentLarge" inherits="GameFontHighlightLarge" justifyH="CENTER" parentKey="PointsSpentLarge" hidden="true">
-					<Size x="0" y="22"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeaderBackground" relativePoint="TOPLEFT">
-							<Offset x="24" y="-5"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentNameLarge" inherits="GameFontNormal" justifyH="LEFT" parentKey="NameLarge" hidden="true">
-					<Size x="0" y="15"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground">
-							<Offset x="54" y="-8"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-45"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -462,6 +497,68 @@
 				</Layers>
 			</Frame>
 			
+			<Frame name="$parentHeaderIcon" parentKey="HeaderIcon">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentIcon" parentKey="Icon">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentPrimaryBorder" inherits="TalentHeader-PrimaryIconBorder" parentKey="PrimaryBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeto="$parentIcon" x="-6" y="6"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentSecondaryBorder" inherits="TalentHeader-SecondaryIconBorder" parentKey="SecondaryBorder" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeto="$parentIcon" x="-6" y="6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentPointsSpentBgGold" inherits="TalentHeader-PointCircle-Gold" parentKey="PointsSpentBgGold">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentPointsSpentBgSilver" inherits="TalentHeader-PointCircle-Silver" parentKey="PointsSpentBgSilver" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentPointsSpentBgGold"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLockIcon" inherits="GoldLockIcon" parentKey="LockIcon" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentPointsSpentBgGold"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentPointsSpent" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="PointsSpent">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentPointsSpentBgGold"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if (self.LockIcon:IsShown()) then
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 10, -10);
+							GameTooltip:SetText(TALENT_TREE_LOCKED);
+							GameTooltip:AddLine(TALENT_TREE_LOCKED_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			
 			<Frame name="$parentSummary" parentKey="Summary" hidden="true" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-5"/>
@@ -484,9 +581,9 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentIcon" parentKey="Icon">
-							<Size x="51" y="51"/>
+							<Size x="55" y="55"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="73" y="-50"/>
+								<Anchor point="TOPLEFT" x="71" y="-48"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentIconGlow" inherits="Talent-RingGlow" parentKey="IconGlow" alphaMode="ADD">
@@ -494,11 +591,56 @@
 								<Anchor point="CENTER" relativeTo="$parentIcon"/>
 							</Anchors>
 						</Texture>
+
+						<Texture name="$parentGlowTopLeft" inherits="Talent-PrimaryHighlight-TopLeft" parentKey="GlowTopLeft" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentGlowTopRight" inherits="Talent-PrimaryHighlight-TopRight" parentKey="GlowTopRight" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentGlowTop" inherits="_Talent-PrimaryHighlight-Top" parentKey="GlowTop" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphamode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentIconBorder" inherits="Talent-Ring" parentKey="IconBorder">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="6"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-6" y="4"/>
 							</Anchors>
 						</Texture>
 						<FontString name="$parentTitleText" inherits="GameFontHighlightLarge" parentKey="TitleText">
@@ -506,6 +648,20 @@
 								<Anchor point="TOP" x="0" y="-12"/>
 							</Anchors>
 						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="RoleIcon" hidden="false">
+							<Size x="19" y="19"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconBorder"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRoleIcon2" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="RoleIcon2" hidden="true">
+							<Size x="19" y="19"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="TOPRIGHT" x="-3" y="-7"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -569,24 +725,57 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Frame name="$parentInactiveShadow" parentKey="InactiveShadow" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" x="0" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentCover" parentKey="Cover">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+						<Texture name="$parentGradient" inherits="Talent-TreeLockoutGradient" parentKey="Gradient">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="-71"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 					</OnLoad>
 				</Scripts>
 			</Frame>
 			
 			<Button name="$parentSelectTreeButton" inherits="UIPanelButtonTemplate2" parentKey="SelectTreeButton" hidden="true">
-				<Size x="0" y="26"/>
+				<Size x="0" y="24"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="10" y="-10"/>
-					<Anchor point="RIGHT" x="-10"/>
+					<Anchor point="TOPLEFT" x="9" y="-9"/>
+					<Anchor point="RIGHT" x="-9"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
 					</OnLoad>
 					<OnClick>
 						PlayerTalentFrameTalents.summariesShownWhenPrimary = false;
-						SetPrimaryTalentTree(self:GetParent().talentTree);
+						if ( GetCVarBool("previewTalents") ) then
+							SetPreviewPrimaryTalentTree(self:GetParent().talentTree, self:GetParent().talentGroup);
+						else
+							SetPrimaryTalentTree(self:GetParent().talentTree);
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -799,7 +988,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if (GetPrimaryTalentTree(PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup)) then
+						if (PlayerTalentFrame.primaryTree or GetNumTalentPoints() == 0) then
 							PlayerTalentFrameTalents.summariesShownWhenPrimary = (not PlayerTalentFrameTalents.summariesShownWhenPrimary);
 						else
 							PlayerTalentFrameTalents.summariesShownWhenNoPrimary = (not PlayerTalentFrameTalents.summariesShownWhenNoPrimary);

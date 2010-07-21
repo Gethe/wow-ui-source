@@ -4,6 +4,7 @@ AUTOCOMPLETE_FLAG_NONE =			0x00000000;
 AUTOCOMPLETE_FLAG_IN_GROUP = 		0x00000001;
 AUTOCOMPLETE_FLAG_IN_GUILD = 		0x00000002;
 AUTOCOMPLETE_FLAG_FRIEND =			0x00000004;
+AUTOCOMPLETE_FLAG_BNET =				0x00000008;
 AUTOCOMPLETE_FLAG_INTERACTED_WITH = 0x00000010;
 AUTOCOMPLETE_FLAG_ONLINE = 			0x00000020;
 AUTOCOMPLETE_FLAG_ALL =				0xffffffff;
@@ -13,41 +14,45 @@ AUTOCOMPLETE_LIST_TEMPLATES = {
 		include = AUTOCOMPLETE_FLAG_ALL,
 		exclude = AUTOCOMPLETE_FLAG_NONE,
 	},
+	ALL_CHARS = {
+		include = AUTOCOMPLETE_FLAG_ALL,
+		exclude = AUTOCOMPLETE_FLAG_BNET,
+	},
 	ONLINE = {
 		include = AUTOCOMPLETE_FLAG_ONLINE,
 		exclude = AUTOCOMPLETE_FLAG_NONE,
 	},
 	ONLINE_NOT_IN_GROUP = {
 		include = AUTOCOMPLETE_FLAG_ONLINE,
-		exclude = AUTOCOMPLETE_FLAG_IN_GROUP,
+		exclude = bit.bor(AUTOCOMPLETE_FLAG_IN_GROUP,AUTOCOMPLETE_FLAG_BNET),
 	},
 	ONLINE_NOT_IN_GUILD = {
 		include = AUTOCOMPLETE_FLAG_ONLINE,
-		exclude = AUTOCOMPLETE_FLAG_IN_GUILD,
+		exclude = bit.bor(AUTOCOMPLETE_FLAG_IN_GUILD,AUTOCOMPLETE_FLAG_BNET),
 	},
 	NOT_FRIEND = {
 		include = AUTOCOMPLETE_FLAG_ALL,
-		exclude = AUTOCOMPLETE_FLAG_FRIEND,
+		exclude = bit.bor(AUTOCOMPLETE_FLAG_FRIEND,AUTOCOMPLETE_FLAG_BNET);
 	},
 	IN_GROUP = {
 		include = AUTOCOMPLETE_FLAG_IN_GROUP,
-		exclude = AUTOCOMPLETE_FLAG_NONE,
+		exclude = AUTOCOMPLETE_FLAG_BNET,
 	},
 	IN_GUILD = {
 		include = AUTOCOMPLETE_FLAG_IN_GUILD,
-		exclude = AUTOCOMPLETE_FLAG_NONE,
+		exclude = AUTOCOMPLETE_FLAG_BNET,
 	},
 	FRIEND = {
 		include = AUTOCOMPLETE_FLAG_FRIEND,
-		exclude = AUTOCOMPLETE_FLAG_NONE,
+		exclude = AUTOCOMPLETE_FLAG_BNET,
 	},
 	FRIEND_NOT_GUILD = {
 		include = AUTOCOMPLETE_FLAG_FRIEND,
-		exclude = AUTOCOMPLETE_FLAG_IN_GUILD,
+		exclude = bit.bor(AUTOCOMPLETE_FLAG_IN_GUILD,AUTOCOMPLETE_FLAG_BNET),
 	},
 	FRIEND_AND_GUILD = {
 		include = bit.bor(AUTOCOMPLETE_FLAG_FRIEND, AUTOCOMPLETE_FLAG_IN_GUILD),
-		exclude = AUTOCOMPLETE_FLAG_NONE,
+		exclude = AUTOCOMPLETE_FLAG_BNET,
 	},
 }
 		
@@ -67,7 +72,7 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	AUTOCOMPLETE_LIST.ADDFRIEND			= AUTOCOMPLETE_LIST_TEMPLATES.NOT_FRIEND;
 	AUTOCOMPLETE_LIST.REMOVEFRIEND		= AUTOCOMPLETE_LIST_TEMPLATES.FRIEND;
 	AUTOCOMPLETE_LIST.CHANINVITE		= AUTOCOMPLETE_LIST_TEMPLATES.ONLINE;
-	AUTOCOMPLETE_LIST.MAIL				= AUTOCOMPLETE_LIST_TEMPLATES.ALL;
+	AUTOCOMPLETE_LIST.MAIL				= AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS;
 	AUTOCOMPLETE_LIST.CALENDARGUILDEVENT= AUTOCOMPLETE_LIST_TEMPLATES.FRIEND_NOT_GUILD;
 	AUTOCOMPLETE_LIST.CALENDAREVENT		= AUTOCOMPLETE_LIST_TEMPLATES.FRIEND_AND_GUILD;
 
@@ -238,7 +243,8 @@ function AutoCompleteEditBox_AddHighlightedText(editBox, text)
 		AutoComplete_Update(editBox, editBoxText, utf8Position);
 		
 		local newText = string.gsub(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX,
-			string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, gsub(nameToShow, " ", ""),
+			--DEBUG FIXME - This likely won't work with X-server whispers.
+			string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, nameToShow,
 				string.match(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX)),
 				1)
 		editBox:SetText(newText);
@@ -273,9 +279,14 @@ function AutoCompleteButton_OnClick(self)
 	
 	--The following is used to replace "/whisper ar message here" with "/whisper Arenai message here"
 	local newText = string.gsub(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX,
-		string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, gsub(self:GetText(), " ", ""),
+		string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self:GetText(),
 			string.match(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX)),
 			1)
+	
+	if ( editBox.addSpaceToAutoComplete ) then
+		newText = newText.." ";
+	end
+	
 	editBox:SetText(newText);
 	--When we change the text, we move to the end, so we'll be consistent and move to the end if we don't change it as well.
 	editBox:SetCursorPosition(strlen(newText));

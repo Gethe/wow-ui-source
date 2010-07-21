@@ -77,14 +77,14 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentSortModeByRole" inherits="UIPanelButtonTemplate" text="Alphabetical">
+					<Button name="$parentSortModeByRole" inherits="UIPanelButtonTemplate" text="Role">
 						<Size x="80" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentSortModeByGroup" relativePoint="RIGHT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CompactRaidFrameManager_SetSetting("SortMode", "alphabetical");
+								CompactRaidFrameManager_SetSetting("SortMode", "role");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -107,6 +107,17 @@
 						<Scripts>
 							<OnClick>
 								CompactRaidFrameManager_SetSetting("GroupMode", "flush");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentInitiateRolePoll" inherits="UIPanelButtonTemplate" text="Role Poll">
+						<Size x="80" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								InitiateRolePoll();
 							</OnClick>
 						</Scripts>
 					</Button>

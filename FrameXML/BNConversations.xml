@@ -1,0 +1,200 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="BNConversations.lua"/>
+	<Button name="BNConversationRosterButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="$parentUpButton" relativePoint="TOP"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				BNConversationButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				BNConversationButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick>
+				BNConversationButton_OnClick(self, button);
+			</OnClick>
+			<OnEnter>
+				BNConversationButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				BNConversationButton_OnLeave(self, motion);
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Up"/>
+		<PushedTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Down"/>
+		<DisabledTexture file="Interface\ChatFrame\UI-ChatRosterIcon-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+	<Frame name="BNConversationInviteListTemplate" virtual="true">
+		<Size x="180" y="18"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlight" parentKey="name" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton inherits="UICheckButtonTemplate" parentKey="checkButton">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BNConversationInviteListCheckButton_OnClick(self, button);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name:SetPoint("LEFT", self.checkButton, "RIGHT", 3, 2);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="BNConversationInviteDialog" hidden="true" parent="UIParent" frameStrata="DIALOG">
+		<Size x="300" y="300"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="356" y="64"/>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="12"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="INVITE_TO_CONVERSATION">
+					<Size x="185" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset x="0" y="-14"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentInstructionText" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" parentKey="instructionText">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-25"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-15" y="-75"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentList">
+				<Size x="240" y="150"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" x="-28" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, BN_CONVERSATION_INVITE_HEIGHT, BNConversationInvite_Update)
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<Frame name="$parentFriend1" inherits="BNConversationInviteListTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="15" y="-15"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentFriend2" inherits="BNConversationInviteListTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriend1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentFriend3" inherits="BNConversationInviteListTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriend2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentFriend4" inherits="BNConversationInviteListTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriend3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentFriend5" inherits="BNConversationInviteListTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriend4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentFriend6" inherits="BNConversationInviteListTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriend5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentFriend7" inherits="BNConversationInviteListTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriend6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button name="$parentInviteButton" inherits="UIPanelButtonTemplate" text="INVITE">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="BNConversationInviteDialogInviteButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(BNConversationInviteDialog);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BNConversationInviteDialog_OnLoad"/>
+			<OnShow>
+				PlaySound("igMainMenuOpen");
+				BNConversationInvite_Update();
+			</OnShow>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
+			<OnEvent function="BNConversationInviteDialog_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

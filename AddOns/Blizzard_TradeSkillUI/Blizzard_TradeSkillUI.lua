@@ -25,8 +25,6 @@ UIPanelWindows["TradeSkillFrame"] = {area = "left", pushable = 3, showFailedFunc
 
 CURRENT_TRADESKILL = "";
 
-GUILD_TRADE_SKILL_TITLE = "Guild %s";
-
 function TradeSkillFrame_Show()
 	ShowUIPanel(TradeSkillFrame);
 	TradeSkillCreateButton:Disable();

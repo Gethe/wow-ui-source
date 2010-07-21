@@ -1,6 +1,6 @@
 
-function GuildNewsFrame_OnLoad()
-	GuildFrame_RegisterPanel("GuildNewsFrame");
+function GuildNewsFrame_OnLoad(self)
+	GuildFrame_RegisterPanel(self);
 	GuildNewsMessageFrame:SetInsertMode("top");
 	GuildNewsMessageFrame:SetSpacing(3);
 	

@@ -1,0 +1,393 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="BNet.lua"/>
+	<Frame name="BNetEventFrame">
+		<Scripts>
+			<OnLoad function="BNet_OnLoad"/>
+			<OnEvent function="BNet_OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="250" y="50"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="50"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\FriendsFrame\UI-Toast-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="12"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="12"/>
+			</EdgeSize>
+		</Backdrop>
+		<Animations>
+			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+				<Alpha change="-1" duration="0" order="1"/>
+				<Alpha change="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							BNToastFrame_Close();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture" file="Interface\FriendsFrame\UI-Toast-ToastIcons">
+					<Size>
+						<AbsDimension x="40" y="40"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.5"/>
+				</Texture>
+				<FontString name="$parentTopLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="44" y="-10"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+					<Color r="0.510" g="0.773" b="1"/>
+				</FontString>
+				<FontString name="$parentBottomLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLine" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.486" g="0.518" b="0.541" />
+				</FontString>
+				<FontString name="$parentDoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">			
+					<Anchors>
+						<Anchor point="TOPLEFT" x="44" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
+					</Anchors>
+					<Color r="0.486" g="0.518" b="0.541" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentClickFrame" setAllPoints="true">
+				<Scripts>
+					<OnEnter>
+						AlertFrame_StopOutAnimation(BNToastFrame);
+						if ( BNToastFrame.tooltip ) then
+							GameTooltip:SetOwner(BNToastFrame, "ANCHOR_RIGHT");
+							GameTooltip:SetText(BNToastFrame.tooltip, FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b, 1, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						AlertFrame_ResumeOutAnimation(BNToastFrame);
+						if ( BNToastFrame.tooltip ) then
+							GameTooltip:Hide();
+						end
+					</OnLeave>
+					<OnClick function="BNToastFrame_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentGlowFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY`">
+						<Texture name="$parentGlow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" alpha="0" parentKey="glow">
+							<Size>
+								<AbsDimension x="252" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-1" y="3"/>
+								</Anchor>
+							</Anchors>
+							<Animations>
+								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+									<Alpha change="1" duration="0.2" order="1"/>
+									<Alpha change="-1" duration="0.5" order="2"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentCloseButton">
+				<Size>
+					<AbsDimension x="18" y="18"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-3"/>
+				</Anchors>
+				<NormalTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Up"/>
+				<PushedTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Down"/>
+				<HighlightTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Highlight" alphaMode="ADD"/>
+				<Scripts>
+					<OnEnter>
+						AlertFrame_StopOutAnimation(BNToastFrame);
+					</OnEnter>
+					<OnLeave>
+						AlertFrame_ResumeOutAnimation(BNToastFrame);
+					</OnLeave>
+					<OnClick function="BNToastFrame_Close"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				BNToastFrameDoubleLine:SetSpacing(3);
+				local frameLevel = BNToastFrameClickFrame:GetFrameLevel();
+				BNToastFrameCloseButton:SetFrameLevel(frameLevel + 1);
+				BNToastFrameGlowFrame:SetFrameLevel(frameLevel + 2);
+				self:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnEvent function="BNToastFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="BNetReportFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="344" y="224"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormalMed3" text="BNET_REPORT_ABUSE_LABEL" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-24"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName" inherits="FriendsFont_Large" text="ADD_FRIEND" justifyH="LEFT" justifyV="TOP">
+					<Size x="286" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentComment">
+				<Size x="286" y="80"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="30" y="-75"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
+						</Anchors>
+						<Frames>
+							<Button name="$parentFocusButton" setAllPoints="true">
+								<Scripts>
+									<OnClick>
+										BNetReportFrameCommentBox:SetFocus();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								local scrollBar = _G[self:GetName().."ScrollBar"];
+								scrollBar:SetFrameLevel(_G[self:GetName().."FocusButton"]:GetFrameLevel() + 2);
+								scrollBar:ClearAllPoints();
+								scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -18, -10);
+								scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -18, 8);
+								-- reposition the up and down buttons
+								_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
+								_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);
+								-- make the scroll bar hideable and force it to start off hidden so positioning calculations can be done
+								-- as soon as it needs to be shown
+								self.scrollBarHideable = 1;
+								scrollBar:Hide();
+							</OnLoad>
+						</Scripts>
+						<ScrollChild>
+							<EditBox name="BNetReportFrameCommentBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
+								<Size x="258" y="1"/>
+								<Layers>
+									<Layer level="BORDER">
+										<FontString name="$parentFill" inherits="ChatFontNormal" justifyH="LEFT" justifyV="TOP" text="BNET_REPORT_ABUSE_PROMPT">
+											<Size x="258" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="3" y="-1"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<Color r="0.35" g="0.35" b="0.35"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+										if ( self:GetText() ~= "" ) then
+											BNetReportFrameCommentBoxFill:Hide();
+										else
+											BNetReportFrameCommentBoxFill:Show();
+										end
+									</OnTextChanged>
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+									<OnEscapePressed>
+										self:ClearFocus();
+									</OnEscapePressed>
+								</Scripts>
+								<FontString inherits="ChatFontNormal"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="BNET_REPORT_ABUSE_BUTTON">
+				<Size>
+					<AbsDimension x="128" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="30" y="24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="BNet_ConfirmReport"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+				<Size>
+					<AbsDimension x="128" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(BNetReportFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = true;
+				self.hideOnEscape = true;
+			</OnLoad>
+			<OnShow>
+				PlaySound("igMainMenuOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -2,13 +2,12 @@ GUILD_REWARDS_BUTTON_OFFSET = 0;
 GUILD_REWARDS_BUTTON_HEIGHT = 47;
 local currentRewardsView = "";
 
-function GuildRewardsFrame_OnLoad()
-	GuildFrame_RegisterPanel("GuildRewardsFrame");
+function GuildRewardsFrame_OnLoad(self)
+	GuildFrame_RegisterPanel(self);
 	GuildRewardsContainer.update = GuildRewards_Update;
 	HybridScrollFrame_CreateButtons(GuildRewardsContainer, "GuildRewardsButtonTemplate", 1, 0, "TOPLEFT", "TOPLEFT", 0, -GUILD_REWARDS_BUTTON_OFFSET, "TOP", "BOTTOM");
-	
-	_SetupFakeRewards();
-	GuildRewards_Update();
+
+	--GuildRewards_Update();
 end
 
 function GuildRewards_Update()
@@ -67,7 +66,7 @@ end
 
 function GuildRewardsViewDropdown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, GuildRewardsViewDropdown_Initialize);
-	UIDropDownMenu_SetWidth(GuildRewardsViewDropdown, 150);
+	UIDropDownMenu_SetWidth(GuildRewardsViewDropdown, 120);
 end
 
 function GuildRewardsViewDropdown_Initialize()
@@ -91,22 +90,4 @@ function GuildRewardsViewDropdown_OnClick(self)
 	--GuildRewards_Update();
 	currentRewardsView = self.value;
 	UIDropDownMenu_SetSelectedValue(GuildRewardsViewDropdown, currentRewardsView);
-end
-
---================================================================================================
-local _GuildNames = { "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo", "Sierra", "Tango", "Uniform", "Victor", "Whisky", "Xray", "Yankee", "Zulu" }
-_GuildRewards = { };
-
-function _SetupFakeRewards()	
-	for i = 1, #_GuildNames do
-		local guildMember = { };
-		guildMember["name"] = _GuildNames[i];
-		guildMember["cost"] = math.random(10000);		
-		guildMember["icon"] = GetMacroIconInfo(i);
-		guildMember["rep"] = math.random(4);
-		if ( math.random(3) == 3 ) then
-			guildMember["locked"] = true;
-		end		
-		table.insert(_GuildRewards, guildMember);
-	end
 end

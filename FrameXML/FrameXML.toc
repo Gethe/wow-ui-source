@@ -68,6 +68,9 @@ CombatFeedback.xml
 CastingBarFrame.xml
 UnitPopup.xml
 UnitFrame.xml
+BNet.xml
+HistoryKeeper.lua
+BNConversations.xml
 ChatFrame.xml
 FloatingChatFrame.xml
 VoiceChat.xml
@@ -147,6 +150,7 @@ EquipmentManager.lua
 CompactUnitFrame.xml
 CompactRaidGroup.xml
 CompactPartyFrame.xml
+RolePoll.xml
 
 ## add new modules above here
 LocalizationPost.xml

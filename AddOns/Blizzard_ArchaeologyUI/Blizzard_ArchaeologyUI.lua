@@ -3,7 +3,7 @@
 
 UIPanelWindows["ArchaeologyFrame"] = {area = "left", pushable = 3, showFailedFunc = "ArchaeologyFrame_ShowFailed" };
 
-ARCHAEOLOGY_BUTTON_HIEGHT = 59;
+ARCHAEOLOGY_BUTTON_HEIGHT = 59;
 ARCHAEOLOGY_MID_TITLE_YOFFSET = -110;
 
 
@@ -50,6 +50,7 @@ end
 function ArchaeologyFrame_Hide()
 	HideUIPanel(ArchaeologyFrame);
 end
+
 function ArchaeologyFrame_ShowFailed(self)
 	--CloseTradeSkill();
 end
@@ -115,7 +116,7 @@ end
 
 
 function ArchaeologyFrame_OnHide(self)
-	CloseTradeSkill();
+	--CloseTradeSkill();
 end
 
 
@@ -186,7 +187,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	self.icon:SetTexture(icon);	
 	self.historyText:SetText(description);
 	self.historyTitle:ClearAllPoints();
-	local runeStoneIconPath = GetItemIcon(RaceitemID);
+	local runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = GetItemInfo(RaceitemID);
 	
 	for i=1,ARCHAEOLOGY_MAX_STONES do
 		if i > numSockets then
@@ -195,11 +196,12 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 			self.solveFrame["keystone"..i].icon:SetTexture(runeStoneIconPath);
 			if ItemAddedToArtifact(i) then
 				self.solveFrame["keystone"..i].icon:Show();
+				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_ADD_TOOLTIP, runeName);
 			else
 				self.solveFrame["keystone"..i].icon:Hide();
+				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_REMOVE_TOOLTIP, runeName);
 			end
 			self.solveFrame["keystone"..i]:Show();
-			self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_ADD_TOOLTIP, RaceName, RaceName);
 		end
 	end
 	
@@ -259,7 +261,6 @@ function ArchaeologyFrame_UpdateComplete(self)
 				local failed = false;
 				local rareStatus = self.currData.onRare;
 				name, _, rarity, icon, _, _, firstComletionTime, completionCount = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
-				raceName = GetArchaelogyRaceInfo(self.currData.raceIndex);
 				if not name then
 					if self.raceFilter ~= 0 then
 						outOfArtifacts = true;
@@ -297,12 +298,13 @@ function ArchaeologyFrame_UpdateComplete(self)
 				end
 				
 				if rareStatus ~= self.currData.onRare and i > 1 then -- we have switched to common
-					local yoffset =  ARCHAEOLOGY_MID_TITLE_YOFFSET - floor(i/2)*ARCHAEOLOGY_BUTTON_HIEGHT;
+					local yoffset =  ARCHAEOLOGY_MID_TITLE_YOFFSET - floor(i/2)*ARCHAEOLOGY_BUTTON_HEIGHT;
 					self.titleMid:SetPoint("TOP", 0 , yoffset);
 					buttonSkip = 2 + mod(i+1,2);
 				end
 				
 				if not failed  and  i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN then
+					raceName = GetArchaelogyRaceInfo(self.currData.raceIndex);
 					local projectButton = self["artifact"..i];
 					projectButton:Show();
 					projectButton.icon:SetTexture(icon);

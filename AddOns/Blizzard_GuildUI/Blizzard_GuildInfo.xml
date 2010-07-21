@@ -1,6 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="Blizzard_GuildInfo.lua"/>	
+	<Script file="Blizzard_GuildInfo.lua"/>
+<!--
+*******************************************************************************
+	Info panel
+*******************************************************************************
+-->	
 	<Frame name="GuildInfoFrame" hidden="true" parent="GuildFrame">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="GuildFrameInset" relativePoint="TOPLEFT"/>
@@ -82,7 +87,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString	inherits="GameFontNormal" text="Events">
+				<FontString	inherits="GameFontNormal" text="GUILD_EVENTS">
 					<Size>
 						<AbsDimension x="0" y="0"/>
 					</Size>
@@ -90,7 +95,7 @@
 						<Anchor point="LEFT" relativeTo="$parentHeader1" x="10" y="0"/>
 					</Anchors>
 				</FontString>	
-				<FontString	inherits="GameFontNormal" text="Message of the Day">
+				<FontString	inherits="GameFontNormal" text="GUILD_MOTD_LABEL">
 					<Size>
 						<AbsDimension x="0" y="0"/>
 					</Size>
@@ -107,7 +112,7 @@
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
-				<FontString	inherits="GameFontNormal" text="Information">
+				<FontString	inherits="GameFontNormal" text="GUILD_INFORMATION">
 					<Size>
 						<AbsDimension x="0" y="0"/>
 					</Size>
@@ -118,7 +123,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="GuildInfoEditEventButton" text="[Click to create guild event]" hidden="true">
+			<Button name="GuildInfoEditEventButton" text="GUILD_CREATE_EVENT_LINK" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader1" x="-8" y="0"/>
 				</Anchors>
@@ -138,7 +143,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GuildInfoEditMOTDButton" text="[Click to edit]" hidden="true">
+			<Button name="GuildInfoEditMOTDButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader2" x="-8" y="0"/>
 				</Anchors>
@@ -155,7 +160,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GuildInfoEditDetailsButton" text="[Click to edit]" hidden="true">
+			<Button name="GuildInfoEditDetailsButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader3" x="-8" y="0"/>
 				</Anchors>
@@ -181,6 +186,15 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString	name="GuildInfoNoEvents" inherits="GameFontDisable" text="GUILD_NO_GUILD_EVENTS">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</ScrollFrame>
 			<ScrollFrame name="GuildInfoDetailsFrame" inherits="MinimalScrollFrameTemplate">
 				<Size>
@@ -223,6 +237,218 @@
 		<Scripts>
 			<OnLoad function="GuildInfoFrame_OnLoad"/>
 			<OnEvent function="GuildInfoFrame_OnEvent"/>
+		</Scripts>
+	</Frame>	
+<!--
+*******************************************************************************
+	Popups
+*******************************************************************************
+-->
+	<Frame name="GuildTextEditFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="GuildFrame" inherits="TranslucentFrameTemplate">
+		<Size>
+			<AbsDimension x="295" y="312"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="8" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="GuildTextEditContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-36"/>
+					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
+					<Anchor point="BOTTOM" x="0" y="42"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="12"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="1" right="1" top="1" bottom="1"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Frames>
+					<ScrollFrame name="GuildTextEditScrollFrame" inherits="MinimalScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="4" y="-4"/>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset x="-26" y="4"/>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<EditBox name="GuildTextEditBox" multiLine="true" letters="500" autoFocus="false">
+								<Size x="218" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+									</OnTextChanged> 
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnEditFocusLost>
+										self:HighlightText(0, 0);
+									</OnEditFocusLost>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="24" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GuildTextEditFrame_OnAccept"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildTextEditFrame_OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Frame name="GuildLogFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="GuildFrame" inherits="TranslucentFrameTemplate">
+		<Size>
+			<AbsDimension x="384" y="0"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="8" y="0"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="GuildFrame" relativePoint="BOTTOMRIGHT" x="8" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="GUILD_EVENT_LOG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="GuildLogContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-36"/>
+					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
+					<Anchor point="BOTTOM" x="0" y="42"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="12"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="1" right="1" top="1" bottom="1"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Frames>
+					<ScrollFrame name="GuildLogScrollFrame" inherits="MinimalScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="8" y="-4"/>
+							<Anchor point="TOPRIGHT" x="-25" y="-4"/>
+							<Anchor point="BOTTOM" x="0" y="5"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame>
+								<Size x="10" y="10"/>
+								<Frames>
+									<SimpleHTML name="GuildLogHTMLFrame">
+										<Size x="304" y="10"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="-4"/>
+										</Anchors>
+										<FontString inherits="GameFontHighlight" justifyH="LEFT"/>
+									</SimpleHTML>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildLogFrame_OnLoad"/>
+			<OnEvent function="GuildLogFrame_Update"/>
+			<OnShow>
+				GuildViewLogButton:LockHighlight();
+				QueryGuildEventLog();
+			</OnShow>
+			<OnHide>
+				GuildViewLogButton:UnlockHighlight();
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

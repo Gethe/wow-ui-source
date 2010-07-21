@@ -7,8 +7,18 @@ end
 function GMChatFrame_OnLoad(self)
 	local name = self:GetName();
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
-		_G[name..value]:SetAlpha(0.4);
-		_G[name..value]:SetVertexColor(0,0,0);
+		local object = _G[name..value];
+		local objectType = object:GetObjectType();
+		if ( objectType == "Button" ) then
+			object:GetNormalTexture():SetVertexColor(0, 0, 0);
+			object:GetHighlightTexture():SetVertexColor(0, 0, 0);
+			object:GetPushedTexture():SetVertexColor(0, 0, 0);
+		elseif ( objectType == "Texture" ) then
+			_G[name..value]:SetVertexColor(0,0,0);
+		else
+			--error("Unhandled object type");
+		end
+		object:SetAlpha(0.4);
 	end
 	
 	self:RegisterEvent("CHAT_MSG_WHISPER");
@@ -23,6 +33,9 @@ function GMChatFrame_OnLoad(self)
 	self:SetClampRectInsets(-35, 0, 30, 0);
 	
 	self:SetFont(DEFAULT_CHAT_FRAME:GetFont());
+	FCF_SetButtonSide(self, "left", true);
+	self.buttonFrame:SetAlpha(1);
+	self.buttonFrame.minimizeButton:Hide();
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
@@ -33,13 +46,11 @@ function GMChatFrame_OnEvent(self, event, ...)
 		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
 		
 		-- Search for icon links and replace them with texture links.
-		if ( arg7 < 1 or ( arg7 >= 1 and CHAT_SHOW_ICONS ~= "0" ) ) then
-			local term;
-			for tag in string.gmatch(arg1, "%b{}") do
-				term = strlower(string.gsub(tag, "[{}]", ""));
-				if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
-				end
+		local term;
+		for tag in string.gmatch(arg1, "%b{}") do
+			term = strlower(string.gsub(tag, "[{}]", ""));
+			if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+				arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 			end
 		end
 		
@@ -73,13 +84,11 @@ function GMChatFrame_OnEvent(self, event, ...)
 		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
 		
 		-- Search for icon links and replace them with texture links.
-		if ( arg7 < 1 or ( arg7 >= 1 and CHAT_SHOW_ICONS ~= "0" ) ) then
-			local term;
-			for tag in string.gmatch(arg1, "%b{}") do
-				term = strlower(string.gsub(tag, "[{}]", ""));
-				if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
-				end
+		local term;
+		for tag in string.gmatch(arg1, "%b{}") do
+			term = strlower(string.gsub(tag, "[{}]", ""));
+			if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+				arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 			end
 		end
 		
@@ -106,7 +115,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
-		local _, fontSize= GetChatWindowInfo(1);
+		local _, fontSize= FCF_GetChatWindowInfo(1);
 		if ( fontSize > 0 ) then
 			local fontFile, unused, fontFlags = DEFAULT_CHAT_FRAME:GetFont();
 			self:SetFont(fontFile, fontSize, fontFlags);

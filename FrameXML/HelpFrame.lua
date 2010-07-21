@@ -53,8 +53,6 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_TICKET");
 	self:RegisterEvent("GMSURVEY_DISPLAY");
 	self:RegisterEvent("GMRESPONSE_RECEIVED");
-
-	self.GMChatFrame = _G["ChatFrame"..NUM_CHAT_WINDOWS];
 end
 
 function HelpFrame_OnShow(self)

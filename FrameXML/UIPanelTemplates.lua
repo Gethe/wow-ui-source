@@ -500,6 +500,125 @@ function UIFrameCache:ReleaseFrame (frame)
 	end	
 end
 
+-- positionFunc = Callback to determine the visible buttons.
+--		arguments: scroll value
+--		must return: index of the topmost visible button (or nil if there are no buttons)
+--					 the total height used by all buttons prior to topmost
+--					 the total height of all the buttons
+-- buttonFunc = Callback to configure each button
+--		arguments: button, button index, first button
+--			NOTE: first button is true if this is the first button in a rendering pass. For scrolling optimization, positionFunc may be called without subsequent calls to buttonFunc.
+--		must return: height of button
+function DynamicScrollFrame_CreateButtons(self, buttonTemplate, minButtonHeight, buttonFunc, positionFunc)
+	if ( self.buttons ) then
+		return;
+	end
+
+	local scrollChild = self.scrollChild;
+	local scrollHeight = self:GetHeight();
+	local buttonName = self:GetName().."Button";
+	local buttons = { };
+	local numButtons;
+	
+	local button = CreateFrame("BUTTON", buttonName.."1", scrollChild, buttonTemplate);
+	button:SetPoint("TOPLEFT", 0, 0);
+	tinsert(buttons, button);
+	numButtons = math.ceil(scrollHeight / minButtonHeight) + 3;
+	for i = 2, numButtons do
+		button = CreateFrame("BUTTON", buttonName..i, scrollChild, buttonTemplate);
+		button:SetPoint("TOPLEFT", buttons[i-1], "BOTTOMLEFT", 0, 0);
+		tinsert(buttons, button);
+	end
+	self.buttons = buttons;
+	self.numButtons = numButtons;
+	self.usedButtons = 0;
+	self.buttonFunc = buttonFunc;
+	self.positionFunc = positionFunc;
+	self.scrollHeight = scrollHeight;
+	-- optimization vars
+	self.lastOffset = -1;
+	self.topIndex = -1;
+	self.nextButtonOffset = -1;
+end
+
+function DynamicScrollFrame_OnVerticalScroll(self, offset)
+	offset = math.floor(offset + 0.5);
+	if ( offset ~= self.lastOffset ) then
+		local scrollBar = self.scrollBar;
+		local min, max = scrollBar:GetMinMaxValues();
+		scrollBar:SetValue(offset);
+		if ( offset == 0 ) then
+			_G[scrollBar:GetName().."ScrollUpButton"]:Disable();
+		else
+			_G[scrollBar:GetName().."ScrollUpButton"]:Enable();
+		end
+		if ( offset == math.floor(max + 0.5) ) then
+			_G[scrollBar:GetName().."ScrollDownButton"]:Disable();
+		else
+			_G[scrollBar:GetName().."ScrollDownButton"]:Enable();
+		end
+		self.lastOffset = offset;
+		DynamicScrollFrame_Update(self, offset, true);
+	end
+end
+
+function DynamicScrollFrame_Update(self, scrollValue, isScrollUpdate)
+	if ( not self.positionFunc ) then
+		return;
+	end
+	if ( not scrollValue ) then
+		scrollValue = floor(self.scrollBar:GetValue() + 0.5);
+	end
+	local buttonIndex = 0;
+	local buttons = self.buttons;
+	local topIndex, heightUsed, totalHeight = self.positionFunc(scrollValue);
+	if ( topIndex ) then
+		if ( isScrollUpdate and self.topIndex == topIndex and ( self.nextButtonOffset == 0 or scrollValue < self.nextButtonOffset ) ) then
+			return;
+		end
+		self.allowedRange = totalHeight - self.scrollHeight;		-- temp fix to jitter scroll (see task 39261)
+		self.topIndex = topIndex;
+		local button;
+		local buttonFunc = self.buttonFunc;
+		local buttonHeight;
+		local visibleRange = scrollValue + self.scrollHeight;
+		if ( topIndex > 1 ) then
+			buttons[1]:SetHeight(heightUsed);
+			buttons[1]:Show();
+			buttonIndex = 1;
+		end
+		for dataIndex = topIndex, topIndex + self.numButtons - 1 do
+			buttonIndex = buttonIndex + 1;
+			button = buttons[buttonIndex];
+			buttonHeight = buttonFunc(button, dataIndex, (dataIndex == topIndex));
+			button:SetHeight(buttonHeight);
+			heightUsed = heightUsed + buttonHeight;
+			if ( heightUsed >= totalHeight ) then
+				self.nextButtonOffset = 0;
+				break;
+			elseif ( heightUsed >= visibleRange ) then
+				buttonIndex = buttonIndex + 1;
+				button = buttons[buttonIndex];
+				button:SetHeight(totalHeight - heightUsed);
+				button:Show();
+				self.nextButtonOffset = floor(scrollValue + heightUsed - visibleRange);
+				break;
+			end
+		end
+	end
+	for i = buttonIndex + 1, self.numButtons do
+		buttons[i]:Hide();
+	end
+	self.usedButtons = buttonIndex;
+end
+
+function DynamicScrollFrame_UnlockAllHighlights(self)
+	local buttons = self.buttons;
+	for i = 1, self.usedButtons do
+		buttons[i]:UnlockHighlight();
+	end
+end
+
 -- Magic Button code
 function MagicButton_OnLoad(self)
 	local leftHandled = false;

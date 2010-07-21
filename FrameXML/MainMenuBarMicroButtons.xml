@@ -123,8 +123,7 @@
 				self.minLevel = SHOW_TALENT_LEVEL;
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterEvent("UNIT_LEVEL");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("PLAYER_TALENT_UPDATE");
 			</OnLoad>
 			<OnClick function="ToggleTalentFrame"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
@@ -141,7 +140,6 @@
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Achievement");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("RECEIVED_ACHIEVEMENT_LIST");
 				self:RegisterEvent("ACHIEVEMENT_EARNED");
 				self:RegisterEvent("UPDATE_BINDINGS");
@@ -188,12 +186,12 @@
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Socials");
-				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLEGUILDTAB");
 				self.newbieText = NEWBIE_TOOLTIP_SOCIAL;
+				self:RegisterEvent("UPDATE_BINDINGS");
+				self:RegisterEvent("PLAYER_GUILD_UPDATE");
 			</OnLoad>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
-			</OnEvent>
+			<OnEvent function="SocialsMicroButton_OnEvent"/>
 			<OnClick>
 				ToggleGuildFrame();
 			</OnClick>

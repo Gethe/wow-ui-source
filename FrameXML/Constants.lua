@@ -469,7 +469,11 @@ RegisterStaticConstants(STATIC_CONSTANTS);
 TEXTURE_ITEM_QUEST_BANG = "Interface\\ContainerFrame\\UI-Icon-QuestBang";
 TEXTURE_ITEM_QUEST_BORDER = "Interface\\ContainerFrame\\UI-Icon-QuestBorder";
 
+-- Friends
+SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
 
+-- faction
+PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance" };
 
 -- Panel Positions
 PANEL_INSET_LEFT_OFFSET = 4;
@@ -482,3 +486,8 @@ PANEL_INSET_ATTIC_OFFSET = -60;
 -- Panel default size
 PANEL_DEFAULT_WIDTH = 338;
 PANEL_DEFAULT_HEIGHT = 424;
+
+--Inline role icons
+INLINE_TANK_ICON = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:0:19:22:41|t";
+INLINE_HEALER_ICON = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:20:39:1:20|t";
+INLINE_DAMAGER_ICON = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:20:39:22:41|t"

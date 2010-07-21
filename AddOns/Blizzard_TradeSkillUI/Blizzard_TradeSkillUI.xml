@@ -417,7 +417,7 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button name="TradeSkillViewGuildMembersButton" inherits="MagicButtonTemplate" text="View Crafters" hidden="true">
+			<Button name="TradeSkillViewGuildMembersButton" inherits="MagicButtonTemplate" text="GUILD_TRADE_SKILL_VIEW_CRAFTERS" hidden="true">
 				<Size x="140" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" />
@@ -866,7 +866,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="TradeSkillGuildMembersLabel" inherits="GameFontNormalSmall" text="Crafters:">
+								<FontString name="TradeSkillGuildMembersLabel" inherits="GameFontNormalSmall" text="GUILD_TRADE_SKILL_CRAFTERS_COLON">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="TradeSkillDescription" relativePoint="TOPLEFT">
 											<Offset>

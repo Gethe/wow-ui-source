@@ -221,16 +221,10 @@ function PartyMemberFrame_UpdateAssignedRoles (self)
 	local id = self:GetID();
 	local unit = "party"..id;
 	local icon = _G["PartyMemberFrame"..id.."RoleIcon"];
-	local isTank, isHealer, isDamage = UnitGroupRolesAssigned(unit);
+	local role = UnitGroupRolesAssigned(unit);
 	
-	if ( isTank ) then
-		icon:SetTexCoord(0, 19/64, 22/64, 41/64);
-		icon:Show();
-	elseif ( isHealer ) then
-		icon:SetTexCoord(20/64, 39/64, 1/64, 20/64);
-		icon:Show();
-	elseif ( isDamage ) then
-		icon:SetTexCoord(20/64, 39/64, 22/64, 41/64);
+	if ( role == "TANK" or role == "HEALER" or role == "DAMAGER") then
+		icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
 		icon:Show();
 	else
 		icon:Hide();

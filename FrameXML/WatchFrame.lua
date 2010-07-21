@@ -87,7 +87,7 @@ local function WatchFrame_ReleaseUnusedLinkButtons ()
 end
 
 function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
-	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		if ( self.type == "QUEST" ) then
 			local questLink = GetQuestLink(GetQuestIndexForWatch(self.index));
 			if ( questLink ) then
@@ -1284,7 +1284,7 @@ end
 		
 function WatchFrameItem_OnClick (self, button, down)
 	local questIndex = self:GetID();
-	if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
 		if ( link ) then
 			ChatEdit_InsertLink(link);

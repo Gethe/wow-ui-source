@@ -1,7 +1,7 @@
 local GUILD_INFO_BUTTON_HEIGHT = 18;
 
 function GuildInfoFrame_OnLoad(self)
-	GuildFrame_RegisterPanel("GuildInfoFrame");
+	GuildFrame_RegisterPanel(self);
 	GuildInfoEventsContainer.update = GuildInfoEvents_Update;
 	HybridScrollFrame_CreateButtons(GuildInfoEventsContainer, "GuildInfoButtonTemplate", 0, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 	self:RegisterEvent("GUILD_MOTD");
@@ -22,10 +22,6 @@ function GuildInfoFrame_OnLoad(self)
 	GuildInfoEventsContainerScrollBar:SetFrameLevel(100);
 	ScrollBar_AdjustAnchors(GuildInfoEventsContainerScrollBar, 1, -1, -22);
 	
-	-- temp setup
-	GuildInfoMOTD:SetText("This is a lot of text for the guild message of the day, also known as MOTD or GMOTD. It has a limit of 127 characters. It can go for as long as three lines before it will get cut off with ellipses.")
-	GuildInfoDetails:SetText("This is guild information line 1\nThis is guild information line 2\nThis is guild information line 3\nThis is guild information line 4\nThis is guild information line 5\nThis is guild information line 6\nThis is guild information line 7\nThis is guild information line 8\nThis is guild information line 9\nThis is guild information line 10");
-	ScrollFrame_OnScrollRangeChanged(GuildInfoDetailsFrame);
 	GuildInfoEvents_Update();
 end
 
@@ -52,26 +48,14 @@ function GuildInfoFrame_OnEvent(self, event, arg1)
 	end
 end
 
-function GuildInfoEventsFrameScrollBar_OnValueChanged(self, value)
-	GuildInfoEventsFrame:SetScrollOffset(value);
-	if ( value == 0 ) then
-		GuildInfoEventsFrameScrollBarScrollUpButton:Disable();
-		GuildInfoEventsFrameScrollBarScrollDownButton:Enable();
-	elseif ( value == eventsOffset ) then
-		GuildInfoEventsFrameScrollBarScrollUpButton:Enable();
-		GuildInfoEventsFrameScrollBarScrollDownButton:Disable();
-	else
-		GuildInfoEventsFrameScrollBarScrollUpButton:Enable();
-		GuildInfoEventsFrameScrollBarScrollDownButton:Enable();	
-	end
-end
-
 function GuildInfoFrame_UpdateText()
 	GuildInfoMOTD:SetText(GetGuildRosterMOTD());
 	GuildInfoDetails:SetText(GetGuildInfoText());
 	GuildInfoDetailsFrame:SetVerticalScroll(0);
 	GuildInfoDetailsFrameScrollBarScrollUpButton:Disable();
 end
+
+--****** Events *****************************************************************
 
 function GuildInfoEvents_Update()
 	local scrollFrame = GuildInfoEventsContainer;
@@ -83,20 +67,14 @@ function GuildInfoEvents_Update()
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
-		if ( _GuildEvents[index] ) then
-			button.text:SetText(_GuildEvents[index].text);
-			button.icon:SetTexture(_GuildEvents[index].icon);
-			if ( _GuildEvents[index].new ) then
-				button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			else
-				button.text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			end
-			button:Show();
-		else
-			button:Hide();
-		end
+		button:Hide();
+		-- waiting on API
+		--button.text:SetText();
+		--button.icon:SetTexture();
+		--button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		--button.text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
-	local totalHeight = #_GuildEvents * GUILD_INFO_BUTTON_HEIGHT;
+	local totalHeight = 0 * GUILD_INFO_BUTTON_HEIGHT;
 	local displayedHeight = numButtons * GUILD_INFO_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
@@ -115,17 +93,80 @@ function GuildInfoFrame_AddEvent(event)
 	end
 end
 
---====================================================================================================
-_GuildEvents = {
-	[1] = { text = NORMAL_FONT_COLOR_CODE.."TODAY|r 7:00 pm: ICC 25 Raid", icon = "Interface\\LFGFrame\\LFGIcon-NAXXRAMAS", new = 1 },
-	[2] = { text = "Friday 9:30 pm: ICC 25 Raid", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB", new = 1 },
-	[3] = { text = "Tuesday 5/15 7:00 pm: ICC 10 Raid", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB" },
-	[4] = { text = "Friday 5/17 9:30 pm: ICC 10 Raid", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB" },
-	[5] = { text = "Monday 5/21 10:00 pm: Lvl 1 Hogger Raid!!!", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB" },
-	[6] = { text = "Tuesday 5/22 8:15 pm: random raid", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB" },
-	[7] = { text = "Wednesday 5/23 8:15 pm: random raid", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB" },
-	[8] = { text = "Thursday 5/24 8:15 pm: random raid with a lot of text", icon = "Interface\\LFGFrame\\LFGIcon-MoltenCore" },
-	[9] = { text = "Friday 5/25 8:15 pm: random raid", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB" },
-	[10] = { text = "Saturday 5/26 8:15 pm: random raid", icon = "Interface\\LFGFrame\\LFGIcon-AZJOLNERUB" }
- };
+--****** Popups *****************************************************************
 
+function GuildTextEditFrame_OnLoad(self)
+	GuildFrame_RegisterPopup(self);
+	GuildTextEditBox:SetTextInsets(4, 0, 4, 4);
+	GuildTextEditBox:SetSpacing(2);
+end
+
+function GuildTextEditFrame_Show(editType)
+	if ( editType == "motd" ) then
+		GuildTextEditFrame:SetHeight(162);
+		GuildTextEditBox:SetMaxLetters(128);
+		GuildTextEditBox:SetText(GetGuildRosterMOTD());
+		GuildTextEditFrameTitle:SetText(GUILD_MOTD_EDITLABEL);
+		GuildTextEditBox:SetScript("OnEnterPressed", GuildTextEditFrame_OnAccept);
+	elseif ( editType == "info" ) then
+		GuildTextEditFrame:SetHeight(295);
+		GuildTextEditBox:SetMaxLetters(500);
+		GuildTextEditBox:SetText(GetGuildInfoText());
+		GuildTextEditFrameTitle:SetText(GUILD_INFO_EDITLABEL);
+		GuildTextEditBox:SetScript("OnEnterPressed", nil);
+	end
+	GuildTextEditFrame.type = editType;
+	GuildFramePopup_Show(GuildTextEditFrame);
+	GuildTextEditBox:SetCursorPosition(0);
+	GuildTextEditBox:SetFocus();
+end
+
+function GuildTextEditFrame_OnAccept()
+	if ( GuildTextEditFrame.type == "motd" ) then
+		GuildSetMOTD(GuildTextEditBox:GetText());
+	elseif ( GuildTextEditFrame.type == "info" ) then
+		SetGuildInfoText(GuildTextEditBox:GetText());
+		GuildRoster();
+	end
+	GuildTextEditFrame:Hide();
+end
+
+function GuildLogFrame_OnLoad(self)
+	GuildFrame_RegisterPopup(self);
+	GuildLogHTMLFrame:SetSpacing(2);
+	ScrollBar_AdjustAnchors(GuildLogScrollFrameScrollBar, 0, -2);
+	self:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
+end
+
+function GuildLogFrame_Update()
+	local numEvents = GetNumGuildEvents();
+	local type, player1, player2, rank, year, month, day, hour;
+	local msg;
+	local buffer = "";
+	for i = numEvents, 1, -1 do
+		type, player1, player2, rank, year, month, day, hour = GetGuildEventInfo(i);
+		if ( not player1 ) then
+			player1 = UNKNOWN;
+		end
+		if ( not player2 ) then
+			player2 = UNKNOWN;
+		end
+		if ( type == "invite" ) then
+			msg = format(GUILDEVENT_TYPE_INVITE, player1, player2);
+		elseif ( type == "join" ) then
+			msg = format(GUILDEVENT_TYPE_JOIN, player1);
+		elseif ( type == "promote" ) then
+			msg = format(GUILDEVENT_TYPE_PROMOTE, player1, player2, rank);
+		elseif ( type == "demote" ) then
+			msg = format(GUILDEVENT_TYPE_DEMOTE, player1, player2, rank);
+		elseif ( type == "remove" ) then
+			msg = format(GUILDEVENT_TYPE_REMOVE, player1, player2);
+		elseif ( type == "quit" ) then
+			msg = format(GUILDEVENT_TYPE_QUIT, player1);
+		end
+		if ( msg ) then
+			buffer = buffer..msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
+		end
+	end
+	GuildLogHTMLFrame:SetText(buffer);
+end

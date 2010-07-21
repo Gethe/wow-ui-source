@@ -1638,18 +1638,20 @@ function WorldMapFrame_UpdateQuests()
 				numPOINumeric = numPOINumeric + 1;
 				local questText = "";
 				local dashText = "";
+				local reversedText;
 				local numLines;
 				for j = 1, numObjectives do
 					text, _, finished = GetQuestLogLeaderBoard(j, questLogIndex);
 					if ( text and not finished ) then
-						questText = questText..WorldMapFrame_ReverseQuestObjective(text).."|n";
+						reversedText = WorldMapFrame_ReverseQuestObjective(text);
+						questText = questText..reversedText.."|n";
+						refFrame.objectives:SetText(reversedText);
+						-- need to add 1 spacing's worth to height because for n number of lines there are n-1 spacings
+						numLines = (refFrame.objectives:GetHeight() + refFrame.lineSpacing) / refFrame.lineHeight;
+						-- round numLines to the closest integer
+						numLines = floor(numLines + 0.5);
+						dashText = dashText..QUEST_DASH..string.rep("|n", numLines);
 					end
-					refFrame.objectives:SetText(text);
-					-- need to add 1 spacing's worth to height because for n number of lines there are n-1 spacings
-					numLines = (refFrame.objectives:GetHeight() + refFrame.lineSpacing) / refFrame.lineHeight;
-					-- round numLines to the closest integer
-					numLines = floor(numLines + 0.5);
-					dashText = dashText..QUEST_DASH..string.rep("|n", numLines);
 				end
 				if ( requiredMoney > playerMoney ) then
 					questText = questText.."- "..GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney);
@@ -2042,12 +2044,15 @@ end
 
 --- advanced options ---
 function WorldMapFrame_ToggleAdvanced()
-	WORLDMAP_SETTINGS.advanced = GetCVarBool("advancedWorldMap");
-	WorldMapScreenAnchor:StartMoving();
-	WorldMapScreenAnchor:SetPoint("TOPLEFT", 10, -118);
-	WorldMapScreenAnchor:StopMovingOrSizing();	
-	if ( WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE ) then
-		WorldMapFrame_SetMiniMode();
+	local newState = GetCVarBool("advancedWorldMap");
+	if ( WORLDMAP_SETTINGS.advanced ~= newState ) then
+		WORLDMAP_SETTINGS.advanced = newState;
+		WorldMapScreenAnchor:StartMoving();
+		WorldMapScreenAnchor:SetPoint("TOPLEFT", 10, -118);
+		WorldMapScreenAnchor:StopMovingOrSizing();
+		if ( WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE ) then
+			WorldMapFrame_SetMiniMode();
+		end
 	end
 end
 

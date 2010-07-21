@@ -1,5 +1,10 @@
 --Widget Handlers
 function CompactUnitFrame_OnLoad(self)
+	if ( not self:GetName() ) then
+		self:Hide();
+		error("CompactUnitFrames must have a name");	--Sorry! Don't feel like re-writing unit popups.
+	end
+	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
 	self:RegisterEvent("UNIT_MAXHEALTH");
@@ -19,6 +24,8 @@ function CompactUnitFrame_OnLoad(self)
 	self.maxDebuffs = 0;
 	self.maxDispelDebuffs = 0;
 	CompactUnitFrame_SetUpClicks(self);
+	
+	tinsert(UnitPopupFrames, self.dropDown:GetName());
 end
 
 function CompactUnitFrame_OnEvent(self, event, arg1, arg2, arg3, arg4)
@@ -30,6 +37,8 @@ function CompactUnitFrame_OnEvent(self, event, arg1, arg2, arg3, arg4)
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
 		CompactUnitFrame_UpdateAuras(self);	--We filter differently based on whether the player is in Combat, so we need to update when that changes.
+	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
+		CompactUnitFrame_UpdateRoleIcon(self);
 	elseif ( arg1 == self.unit ) then
 		if ( event == "UNIT_MAXHEALTH" ) then
 			CompactUnitFrame_UpdateMaxHealth(self);
@@ -159,6 +168,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateInRange(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
 		CompactUnitFrame_UpdateHealPrediction(frame);
+		CompactUnitFrame_UpdateRoleIcon(frame);
 	end
 end
 
@@ -307,6 +317,19 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 	frame.otherHealPredictionBar:SetValue(allIncomingHeal);
 end
 
+function CompactUnitFrame_UpdateRoleIcon(frame)
+	local role = UnitGroupRolesAssigned(frame.unit);
+	local size = frame.roleIcon:GetHeight();	--We keep the height so that it carries from the set up, but we decrease the width to 0 to allow room for things anchored to the role (e.g. name).
+	if ( role == "TANK" or role == "HEALER" or role == "DAMAGER") then
+		frame.roleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
+		frame.roleIcon:Show();
+		frame.roleIcon:SetSize(size, size);
+	else
+		frame.roleIcon:Hide();
+		frame.roleIcon:SetSize(1, size);
+	end
+end
+
 --Other internal functions
 function CompactUnitFrame_UpdateBuffs(frame)
 	local index = 1;
@@ -408,7 +431,7 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
 		buffFrame.count:Hide();
 	end
 	buffFrame:SetID(index);
-	if ( expirationTime ) then
+	if ( expirationTime and expirationTime ~= 0 ) then
 		local startTime = expirationTime - duration;
 		buffFrame.cooldown:SetCooldown(startTime, duration);
 		buffFrame.cooldown:Show();
@@ -437,7 +460,7 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter)
 		debuffFrame.count:Hide();
 	end
 	debuffFrame:SetID(index);
-	if ( expirationTime ) then
+	if ( expirationTime and expirationTime ~= 0 ) then
 		local startTime = expirationTime - duration;
 		debuffFrame.cooldown:SetCooldown(startTime, duration);
 		debuffFrame.cooldown:Show();
@@ -461,7 +484,7 @@ end
 function CompactUnitFrameDropDown_Initialize(self)
 	local unit = self:GetParent().unit;
 	if ( not unit ) then
-		unit = "target";
+		return;
 	end
 	local menu;
 	local name;
@@ -525,8 +548,12 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.otherHealPredictionBar:GetStatusBarTexture():SetTexture(1, 1, 1);
 	frame.otherHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 3/255, 72/255, 5/255, 2/255, 101/255, 18/255);
 	
-	frame.name:SetPoint("TOPLEFT", 3, -3);
-	frame.name:SetSize(66, 12);	--Total width (72) - 2 * the inset.
+	frame.roleIcon:ClearAllPoints();
+	frame.roleIcon:SetPoint("TOPLEFT", 3, -2);
+	frame.roleIcon:SetSize(12, 12);
+	
+	frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
+	frame.name:SetPoint("TOPRIGHT", -3, -3);
 	frame.name:SetJustifyH("LEFT");
 	
 	frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, 10);

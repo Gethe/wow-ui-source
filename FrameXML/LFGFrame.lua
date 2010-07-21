@@ -44,10 +44,6 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	
 }
 
-local tankIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:0:19:22:41|t";
-local healerIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:20:39:1:20|t";
-local damageIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES.blp:16:16:0:0:64:64:20:39:22:41|t";
-
 --Variables to store dungeon info in Lua
 --local LFDDungeonList, LFRRaidList, LFGDungeonInfo, LFGCollapseList, LFGEnabledList, LFDHiddenByCollapseList, LFGLockList;
 
@@ -101,24 +97,24 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		local roleList;
 		
 		if ( isTank ) then
-			roleList = tankIcon.." "..TANK;
+			roleList = INLINE_TANK_ICON.." "..TANK;
 		end
 		if ( isHealer ) then
 			if ( roleList ) then
-				roleList = roleList..PLAYER_LIST_DELIMITER.." "..healerIcon.." "..HEALER;
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_HEALER_ICON.." "..HEALER;
 			else
-				roleList = healerIcon.." "..HEALER;
+				roleList = INLINE_HEALER_ICON.." "..HEALER;
 			end
 		end
 		if ( isDamage ) then
 			if ( roleList ) then
-				roleList = roleList..PLAYER_LIST_DELIMITER.." "..damageIcon.." "..DAMAGER;
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_DAMAGER_ICON.." "..DAMAGER;
 			else
-				roleList = damageIcon.." "..DAMAGER;
+				roleList = INLINE_DAMAGER_ICON.." "..DAMAGER;
 			end
 		end
 		assert(roleList);
-		ChatFrame_DisplayUsageError(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
+		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
 	end
 	
 	LFG_UpdateRolesChangeable();
@@ -201,7 +197,7 @@ function LFG_EnableRoleButton(button)
 end
 
 function LFG_UpdateAvailableRoles()
-	local canBeTank, canBeHealer, canBeDPS = GetAvailableRoles();
+	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");
 	
 	if ( canBeTank ) then
 		LFG_EnableRoleButton(LFDQueueFrameRoleButtonTank);
@@ -344,6 +340,30 @@ function GetBackgroundTexCoordsForRole(role)
 		return GetTexCoordsByGrid(3, 1, textureWidth, textureHeight, roleWidth, roleHeight);
 	else
 		error("Role does not have background: "..tostring(role));
+	end
+end
+
+function GetTexCoordsForRoleSmallCircle(role)
+	if ( role == "TANK" ) then
+		return 0, 19/64, 22/64, 41/64;
+	elseif ( role == "HEALER" ) then
+		return 20/64, 39/64, 1/64, 20/64;
+	elseif ( role == "DAMAGER" ) then
+		return 20/64, 39/64, 22/64, 41/64;
+	else
+		error("Unknown role: "..tostring(role));
+	end
+end
+
+function GetTexCoordsForRoleSmall(role)
+	if ( role == "TANK" ) then
+		return 0.5, 0.75, 0, 1;
+	elseif ( role == "HEALER" ) then
+		return 0.75, 1, 0, 1;
+	elseif ( role == "DAMAGER" ) then
+		return 0.25, 0.5, 0, 1;
+	else
+		error("Unknown role: "..tostring(role));
 	end
 end
 

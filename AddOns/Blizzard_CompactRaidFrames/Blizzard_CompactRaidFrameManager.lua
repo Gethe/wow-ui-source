@@ -91,15 +91,13 @@ function CompactRaidFrameManager_SetSortMode(value)
 		CompactRaidFrameContainer_SetFlowSortFunction(manager.container, CRFSort_Group);
 		CompactRaidFrameManagerOptionsFrameSortModeByGroup:LockHighlight();
 		CompactRaidFrameManagerOptionsFrameSortModeByRole:UnlockHighlight();
-	--elseif ( value == "role" ) then
-		--Do some awesome sorting?
-	elseif ( value == "alphabetical" ) then
-		CompactRaidFrameContainer_SetFlowSortFunction(manager.container, CRFSort_Alphabetical);
+	elseif ( value == "role" ) then
+		CompactRaidFrameContainer_SetFlowSortFunction(manager.container, CRFSort_Role);
 		CompactRaidFrameManagerOptionsFrameSortModeByGroup:UnlockHighlight();
 		CompactRaidFrameManagerOptionsFrameSortModeByRole:LockHighlight();
 	else
-		GMError("Unknown sort mode: "..tostring(value));
 		CompactRaidFrameManager_SetSetting("SortMode", CompactRaidFrameManager_GetSettingDefault("SortMode"));
+		GMError("Unknown sort mode: "..tostring(value));
 	end
 end
 
@@ -109,15 +107,16 @@ function CompactRaidFrameManager_SetGroupMode(value)
 	if ( value == "discrete" ) then
 		CompactRaidFrameManagerOptionsFrameGroupModeDiscrete:LockHighlight();
 		CompactRaidFrameManagerOptionsFrameGroupModeFlush:UnlockHighlight();
-		CompactRaidFrameManager_SetSetting("SortMode", "group");
+		CompactRaidFrameManagerOptionsFrameSortModeByGroup:Disable();
 		CompactRaidFrameManagerOptionsFrameSortModeByRole:Disable();
 	elseif ( value == "flush" ) then
 		CompactRaidFrameManagerOptionsFrameGroupModeDiscrete:UnlockHighlight();
 		CompactRaidFrameManagerOptionsFrameGroupModeFlush:LockHighlight();
+		CompactRaidFrameManagerOptionsFrameSortModeByGroup:Enable();
 		CompactRaidFrameManagerOptionsFrameSortModeByRole:Enable();
 	else
-		GMError("Unknown group mode: "..tostring(value));
 		CompactRaidFrameManager_SetSetting("GroupMode", CompactRaidFrameManager_GetSettingDefault("GroupMode"));
+		GMError("Unknown group mode: "..tostring(value));
 	end
 end
 
@@ -145,7 +144,20 @@ function CRFSort_Group(token1, token2)
 		return subgroup1 < subgroup2;
 	end
 	
+	--Fallthrough: Sort by order in Raid window.
 	return id1 < id2;
+end
+
+local roleValues = { TANK = 1, HEALER = 2, DAMAGER = 3, NONE = 4 };
+function CRFSort_Role(token1, token2)
+	local role1, role2 = UnitGroupRolesAssigned(token1), UnitGroupRolesAssigned(token2);
+	local value1, value2 = roleValues[role1], roleValues[role2];
+	if ( value1 ~= value2 ) then
+		return value1 < value2;
+	end
+	
+	--Fallthrough: Sort alphabetically.
+	return CRFSort_Alphabetical(token1, token2);
 end
 
 function CRFSort_Alphabetical(token1, token2)
@@ -154,7 +166,8 @@ function CRFSort_Alphabetical(token1, token2)
 		return name1 < name2;
 	elseif ( name1 or name2 ) then
 		return name1;
-	else
-		return token1 < token2;
 	end
+	
+	--Fallthrough: Alphabetic order of tokens (just here to make comparisons well-ordered)
+	return token1 < token2;
 end

@@ -1397,18 +1397,20 @@ function PriceDropDown_Initialize()
 end
 
 function PriceDropDown_OnClick(self)
-	AuctionFrameAuctions.priceType = self.value;
-	UIDropDownMenu_SetSelectedValue(PriceDropDown, self.value);
-	local startPrice = MoneyInputFrame_GetCopper(StartPrice);
-	local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);	
-	local stackSize = AuctionsStackSizeEntry:GetNumber();	
-	if ( stackSize > 1 ) then
-		if ( self.value == PRICE_TYPE_UNIT ) then
-			MoneyInputFrame_SetCopper(StartPrice, math.floor(startPrice / stackSize));
-			MoneyInputFrame_SetCopper(BuyoutPrice, math.floor(buyoutPrice / stackSize));
-		else
-			MoneyInputFrame_SetCopper(StartPrice, startPrice * stackSize);
-			MoneyInputFrame_SetCopper(BuyoutPrice, buyoutPrice * stackSize);
+	if ( AuctionFrameAuctions.priceType ~= self.value ) then
+		AuctionFrameAuctions.priceType = self.value;
+		UIDropDownMenu_SetSelectedValue(PriceDropDown, self.value);
+		local startPrice = MoneyInputFrame_GetCopper(StartPrice);
+		local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);	
+		local stackSize = AuctionsStackSizeEntry:GetNumber();	
+		if ( stackSize > 1 ) then
+			if ( self.value == PRICE_TYPE_UNIT ) then
+				MoneyInputFrame_SetCopper(StartPrice, math.floor(startPrice / stackSize));
+				MoneyInputFrame_SetCopper(BuyoutPrice, math.floor(buyoutPrice / stackSize));
+			else
+				MoneyInputFrame_SetCopper(StartPrice, startPrice * stackSize);
+				MoneyInputFrame_SetCopper(BuyoutPrice, buyoutPrice * stackSize);
+			end
 		end
 	end
 end

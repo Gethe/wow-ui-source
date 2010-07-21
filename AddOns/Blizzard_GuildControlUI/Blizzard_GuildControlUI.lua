@@ -7,11 +7,11 @@ MAX_BANK_TABS = 6;
 
 
 function GuildControlUI_OnLoad(self)
+	GuildFrame_RegisterPopup(self);
 	UIDropDownMenu_SetWidth(self.dropdown, 120);
 	UIDropDownMenu_SetButtonWidth(self.dropdown, 54);
 	UIDropDownMenu_JustifyText(self.dropdown, "LEFT");
 	UIDropDownMenu_Initialize(self.dropdown, GuildControlUINavigationDropDown_Initialize);
-	tinsert(GUILDFRAME_POPUPS, "GuildControlUI");
 	
 	local buttonText;
 	for i=1, 18 do	

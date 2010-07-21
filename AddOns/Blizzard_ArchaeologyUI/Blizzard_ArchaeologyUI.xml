@@ -155,7 +155,7 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIcon" parentKey="icon" mask="Interface\Archaeology\Arch-Keystone-Mask">
-					<Size x="32" y="32"/>
+					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -243,9 +243,9 @@
 								<AbsDimension x="0" y="9"/>
 							</Size>
 							<Anchors>
-								<Anchor point="CENTER" relativeTo="TradeSkillRankFrame">
+								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="0" y="2"/>
+										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

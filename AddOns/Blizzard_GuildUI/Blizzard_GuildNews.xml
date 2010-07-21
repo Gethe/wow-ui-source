@@ -16,11 +16,6 @@
 					<TexCoords left="0.00097656" right="0.31445313" top="0.00195313" bottom="0.59765625"/>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture setAllPoints="true" hidden="true">
-					<Color r="0" g="1" b="0" a="0.05"/>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
 			<ScrollingMessageFrame name="GuildNewsMessageFrame" maxLines="1000" fade="false">
@@ -36,9 +31,6 @@
 					<Layer level="ARTWORK">
 						<Texture file="Interface\GuildFrame\GuildFrame" hidden="true">
 							<TexCoords left="0.31640625" right="0.62988281" top="0.00195313" bottom="0.59765625"/>
-						</Texture>
-						<Texture setAllPoints="true" hidden="true">
-							<Color r="0" g="0.5" b="0" a="0.2"/>
 						</Texture>
 					</Layer>
 				</Layers>

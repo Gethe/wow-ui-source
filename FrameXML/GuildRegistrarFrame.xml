@@ -262,7 +262,7 @@
 							<OnClick>
 								BuyGuildCharter(GuildRegistrarFrameEditBox:GetText());
 								HideUIPanel(GuildRegistrarFrame);
-								ChatFrameEditBox:SetFocus();
+								ChatEdit_FocusActiveWindow();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -311,10 +311,10 @@
 							<OnEnterPressed>
 								BuyGuildCharter(self:GetText());
 								HideUIPanel(GuildRegistrarFrame);
-								ChatFrameEditBox:SetFocus();
+								ChatEdit_FocusActiveWindow();
 							</OnEnterPressed>
 							<OnEscapePressed>
-								ChatFrameEditBox:SetFocus();
+								ChatEdit_FocusActiveWindow();
 							</OnEscapePressed>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
