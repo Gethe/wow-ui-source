@@ -250,7 +250,11 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string1, name, online, classFileName)
 				GuildRosterButton_SetStringText(button.string2, rank, online)
 				GuildRosterButton_SetStringText(button.string3, note, online)
-				GuildRosterButton_SetStringText(button.string4, GuildRoster_GetLastOnline(index), online)
+				if ( online ) then
+					GuildRosterButton_SetStringText(button.string4, GUILD_ONLINE_LABEL, online);					
+				else
+					GuildRosterButton_SetStringText(button.string4, GuildRoster_GetLastOnline(index), online);
+				end
 			elseif ( currentGuildView == "contribution" ) then
 				GuildRosterButton_SetStringText(button.string1, level, online)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
@@ -489,18 +493,6 @@ function GuildRosterViewDropdown_Initialize()
 	UIDropDownMenu_AddButton(info);
 	info.text = "Guild Status";
 	info.value = "guildStatus";
-	UIDropDownMenu_AddButton(info);	
-	info.text = "Contribution (Lifetime)";
-	info.value = "contribution";
-	UIDropDownMenu_AddButton(info);
-	info.text = "PvE Points (Lifetime)";
-	info.value = "pve";
-	UIDropDownMenu_AddButton(info);
-	info.text = "PvP Points (Lifetime)";
-	info.value = "pvp";
-	UIDropDownMenu_AddButton(info);
-	info.text = "Achievements";
-	info.value = "achievement";
 	UIDropDownMenu_AddButton(info);	
 	info.text = "Professions";
 	info.value = "tradeskill";

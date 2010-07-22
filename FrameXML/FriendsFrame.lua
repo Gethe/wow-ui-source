@@ -11,6 +11,7 @@ MAX_INVITE_MESSAGE_HEIGHT = 0;		-- automatically set in FriendsFramePendingScrol
 WHOS_TO_DISPLAY = 17;
 FRIENDS_FRAME_WHO_HEIGHT = 16;
 MAX_WHOS_FROM_SERVER = 50;
+FRIENDS_SCROLLFRAME_HEIGHT = 307;
 FRIENDS_BUTTON_HEADER_HEIGHT = 16;
 FRIENDS_BUTTON_NORMAL_HEIGHT = 34;
 FRIENDS_BUTTON_LARGE_HEIGHT = 48;
@@ -46,7 +47,7 @@ FRIENDS_TOOLTIP_MAX_TOONS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 
-local FriendButtons = { };
+local FriendButtons = { count = 0 };
 local BNetBroadcasts = { };
 local totalScrollHeight = 0;
 local numOnlineBroadcasts = 0;
@@ -207,7 +208,13 @@ function FriendsFrame_OnLoad(self)
 	self.selectedFriend = 1;
 	self.selectedIgnore = 1;
 	-- friends list
-	DynamicScrollFrame_CreateButtons(FriendsFrameFriendsScrollFrame, "FriendsFrameButtonTemplate", FRIENDS_BUTTON_HEADER_HEIGHT, FriendsFrame_SetButton, FriendsFrame_GetTopButton);
+	local scrollFrame = FriendsFrameFriendsScrollFrame;
+	scrollFrame.update = FriendsFrame_UpdateFriends;
+	scrollFrame.dynamic = FriendsFrame_GetTopButton;
+	FriendsFrameFriendsScrollFrameScrollBarTrack:Hide();
+	FriendsFrameFriendsScrollFrameScrollBar.doNotHide = true;
+	HybridScrollFrame_CreateButtons(scrollFrame, "FriendsFrameButtonTemplate");
+
 	FriendsFrameOfflineHeader:SetParent(FriendsFrameFriendsScrollFrameScrollChild);
 	FriendsFrameBroadcastInputClearButton.icon:SetVertexColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);	
 	if ( not BNFeaturesEnabled() ) then
@@ -364,6 +371,7 @@ function FriendsList_Update()
 		FriendButtons[index].buttonType = FRIENDS_BUTTON_TYPE_WOW;
 		FriendButtons[index].id = i + numWoWOnline;		
 	end
+	FriendButtons.count = index;
 
 	-- selection
 	local selectedFriend = 0;
@@ -401,8 +409,7 @@ function FriendsList_Update()
 		FriendsFrameSendMessageButton:Disable();
 	end
 	FriendsFrame.selectedFriend = selectedFriend;
-		
-	DynamicScrollFrame_Update(FriendsFrameFriendsScrollFrame);
+	FriendsFrame_UpdateFriends();
 end
 
 function IgnoreList_Update()
@@ -1192,7 +1199,7 @@ function FriendsFrame_GetTopButton(offset)
 					buttonHeight = FRIENDS_BUTTON_NORMAL_HEIGHT;
 				end
 				if ( (heightLeft - buttonHeight) < 1 ) then
-					return i + buttonIndex, offset - heightLeft, totalScrollHeight;
+					return i + buttonIndex - 1, heightLeft;
 				else
 					heightLeft = heightLeft - buttonHeight;
 				end
@@ -1201,8 +1208,8 @@ function FriendsFrame_GetTopButton(offset)
 		heightLeft = heightLeft - totalBNOnlineHeight;
 		buttonIndex = buttonIndex + numBNetOnline;
 		if ( heightLeft < numWoWOnline * FRIENDS_BUTTON_NORMAL_HEIGHT ) then
-			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT) + 1;
-			return buttonIndex + index, offset - heightLeft + (index - 1) * FRIENDS_BUTTON_NORMAL_HEIGHT, totalScrollHeight;
+			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT);
+			return buttonIndex + index, heightLeft - (index * FRIENDS_BUTTON_NORMAL_HEIGHT);
 		end
 		heightLeft = heightLeft - numWoWOnline * FRIENDS_BUTTON_NORMAL_HEIGHT;
 		buttonIndex = buttonIndex + numWoWOnline;
@@ -1211,12 +1218,12 @@ function FriendsFrame_GetTopButton(offset)
 	if (  numBNetOffline + numWoWOffline > 0  ) then
 		-- check header first
 		if ( numBNetOnline + numWoWOnline > 0 ) then
-			buttonIndex = buttonIndex + 1;
 			if ( heightLeft < FRIENDS_BUTTON_HEADER_HEIGHT ) then
-				return buttonIndex, offset - heightLeft, totalScrollHeight;
+				return buttonIndex, heightLeft;
 			else
 				heightLeft = heightLeft - FRIENDS_BUTTON_HEADER_HEIGHT;
 			end
+			buttonIndex = buttonIndex + 1;
 		end
 		local totalBNOfflineHeight = numBNetOffline * FRIENDS_BUTTON_NORMAL_HEIGHT + numOfflineBroadcasts * (FRIENDS_BUTTON_LARGE_HEIGHT - FRIENDS_BUTTON_NORMAL_HEIGHT);
 		if ( heightLeft < totalBNOfflineHeight ) then
@@ -1227,7 +1234,7 @@ function FriendsFrame_GetTopButton(offset)
 					buttonHeight = FRIENDS_BUTTON_NORMAL_HEIGHT;
 				end
 				if ( (heightLeft - buttonHeight) < 1 ) then
-					return i + buttonIndex, offset - heightLeft, totalScrollHeight;
+					return i + buttonIndex - 1, heightLeft;
 				else
 					heightLeft = heightLeft - buttonHeight;
 				end
@@ -1236,129 +1243,156 @@ function FriendsFrame_GetTopButton(offset)
 		heightLeft = heightLeft - totalBNOfflineHeight;
 		buttonIndex = buttonIndex + numBNetOffline;
 		if ( heightLeft < numWoWOffline * FRIENDS_BUTTON_NORMAL_HEIGHT ) then
-			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT) + 1;
-			return buttonIndex + index, offset - heightLeft + (index - 1) * FRIENDS_BUTTON_NORMAL_HEIGHT, totalScrollHeight;
+			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT);
+			return buttonIndex + index, heightLeft - (index * FRIENDS_BUTTON_NORMAL_HEIGHT);
 		end
 	end
 end
 
-function FriendsFrame_SetButton(button, index, firstButton)
+function FriendsFrame_UpdateFriends()
+	local scrollFrame = FriendsFrameFriendsScrollFrame;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local numFriendButtons = FriendButtons.count;
+	
+	local nameText, nameColor, infoText, broadcastText;	
+
 	local height;
-	local nameText, nameColor, infoText, broadcastText;
-		
-	if ( firstButton ) then
-		FriendsFrameOfflineHeader:Hide();
-		DynamicScrollFrame_UnlockAllHighlights(FriendsFrameFriendsScrollFrame);	
-	end
-	button.buttonType = FriendButtons[index].buttonType;
-	button.id = FriendButtons[index].id;
-	if ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
-		local name, level, class, area, connected, status, note = GetFriendInfo(FriendButtons[index].id);
-		if ( connected ) then
-			button.background:SetTexture(FRIENDS_WOW_BACKGROUND_COLOR.r, FRIENDS_WOW_BACKGROUND_COLOR.g, FRIENDS_WOW_BACKGROUND_COLOR.b, FRIENDS_WOW_BACKGROUND_COLOR.a);
-			if ( status == "" ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
-			elseif ( status == CHAT_FLAG_AFK ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
-			elseif ( status == CHAT_FLAG_DND ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_DND);
-			end
-			nameText = name..", "..format(FRIENDS_LEVEL_TEMPLATE, level, class);
-			nameColor = FRIENDS_WOW_NAME_COLOR;
-		else
-			button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
-			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
-			nameText = name;
-			nameColor = FRIENDS_GRAY_COLOR;
-		end
-		infoText = area;
-		button.gameIcon:Hide();
-		FriendsFrame_SummonButton_Update(button.summonButton);
-	elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfo(FriendButtons[index].id);
-		broadcastText = messageText;
-		if ( isOnline ) then
-			local _, _, _, _, _, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
-			button.background:SetTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
-			if ( isAFK ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
-			elseif ( isDND ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_DND);
-			else
-				button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
-			end
-			if ( client == BNET_CLIENT_WOW ) then
-				if ( not zoneName or zoneName == "" ) then
-					infoText = UNKNOWN;
-				else
-					infoText = zoneName;
-				end
-				button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-WoWicon");
-			elseif ( client == BNET_CLIENT_SC2 ) then
-				button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Sc2icon");
-				infoText = gameText;
-			end
-			nameColor = FRIENDS_BNET_NAME_COLOR;
-			button.gameIcon:Show();
-		else
-			button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
-			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
-			nameColor = FRIENDS_GRAY_COLOR;
-			button.gameIcon:Hide();
-			if ( lastOnline == 0 ) then
-				infoText = FRIENDS_LIST_OFFLINE;
-			else
-				infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
-			end
-		end
-		if ( givenName and surname ) then
-			if ( toonName ) then
-				if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID) ) then
-					nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..toonName..")";
-				else
-					if ( ENABLE_COLORBLIND_MODE == "1" ) then
-						toonName = toonName..CANNOT_COOPERATE_LABEL;
+	local usedHeight = 0;
+
+	FriendsFrameOfflineHeader:Hide();
+	for i = 1, numButtons do
+		button = buttons[i];
+		index = offset + i;
+		if ( index <= numFriendButtons and usedHeight < FRIENDS_SCROLLFRAME_HEIGHT ) then
+			button.buttonType = FriendButtons[index].buttonType;
+			button.id = FriendButtons[index].id;
+			if ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
+				local name, level, class, area, connected, status, note = GetFriendInfo(FriendButtons[index].id);
+				if ( connected ) then
+					button.background:SetTexture(FRIENDS_WOW_BACKGROUND_COLOR.r, FRIENDS_WOW_BACKGROUND_COLOR.g, FRIENDS_WOW_BACKGROUND_COLOR.b, FRIENDS_WOW_BACKGROUND_COLOR.a);
+					if ( status == "" ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
+					elseif ( status == CHAT_FLAG_AFK ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
+					elseif ( status == CHAT_FLAG_DND ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_DND);
 					end
-					nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..toonName..")";
+					nameText = name..", "..format(FRIENDS_LEVEL_TEMPLATE, level, class);
+					nameColor = FRIENDS_WOW_NAME_COLOR;
+				else
+					button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
+					button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
+					nameText = name;
+					nameColor = FRIENDS_GRAY_COLOR;
 				end
+				infoText = area;
+				button.gameIcon:Hide();
+				FriendsFrame_SummonButton_Update(button.summonButton);
+			elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+				local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfo(FriendButtons[index].id);
+				broadcastText = messageText;
+				if ( isOnline ) then
+					local _, _, _, _, _, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
+					button.background:SetTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
+					if ( isAFK ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
+					elseif ( isDND ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_DND);
+					else
+						button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
+					end
+					if ( client == BNET_CLIENT_WOW ) then
+						if ( not zoneName or zoneName == "" ) then
+							infoText = UNKNOWN;
+						else
+							infoText = zoneName;
+						end
+						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-WoWicon");
+					elseif ( client == BNET_CLIENT_SC2 ) then
+						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Sc2icon");
+						infoText = gameText;
+					end
+					nameColor = FRIENDS_BNET_NAME_COLOR;
+					button.gameIcon:Show();
+				else
+					button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
+					button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
+					nameColor = FRIENDS_GRAY_COLOR;
+					button.gameIcon:Hide();
+					if ( lastOnline == 0 ) then
+						infoText = FRIENDS_LIST_OFFLINE;
+					else
+						infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
+					end
+				end
+				if ( givenName and surname ) then
+					if ( toonName ) then
+						if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID) ) then
+							nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..toonName..")";
+						else
+							if ( ENABLE_COLORBLIND_MODE == "1" ) then
+								toonName = toonName..CANNOT_COOPERATE_LABEL;
+							end
+							nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..toonName..")";
+						end
+					else
+						nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname);
+					end
+				else
+					nameText = UNKNOWN;
+				end
+				FriendsFrame_SummonButton_Update(button.summonButton);
+			else	-- header
+				FriendsFrameOfflineHeader:Show();
+				FriendsFrameOfflineHeader:SetAllPoints(button);
+				height = FRIENDS_BUTTON_HEADER_HEIGHT;
+				nameText = nil;
+			end
+			-- selection
+			if ( FriendsFrame.selectedFriendType == FriendButtons[index].buttonType and FriendsFrame.selectedFriend == FriendButtons[index].id ) then
+				button:LockHighlight();
 			else
-				nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname);
+				button:UnlockHighlight();
+			end
+			-- finish setting up button if it's not a header
+			if ( nameText ) then
+				button.name:SetText(nameText);
+				button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
+				button.info:SetText(infoText);
+				-- don't display a broadcast if the BNetBroadcasts data is out of sync
+				if ( broadcastText and broadcastText ~= "" and BNetBroadcasts[FriendButtons[index].id] ) then
+					height = FRIENDS_BUTTON_LARGE_HEIGHT;
+					button.broadcastMessage:SetText(broadcastText);
+					button.broadcastMessage:Show();
+					button.broadcastIcon:Show();
+				else
+					height = FRIENDS_BUTTON_NORMAL_HEIGHT;
+					button.broadcastMessage:Hide();
+					button.broadcastIcon:Hide();
+				end
+				button:Show();
+			else
+				button:Hide();
+			end
+			-- update the tooltip if hovering over a button
+			if ( FriendsTooltip.button == button ) then
+				FriendsFrameTooltip_Show(button);
+			end
+			-- set heights
+			button:SetHeight(height);
+			-- Calculate the used height without using the first button. When scrolling down,
+			--  we're not going to get an update until the first button scrolls off,
+			-- and so the buttons coming into view at the bottom have to be set up.
+			if ( i > 1 ) then
+				usedHeight = usedHeight + height;
 			end
 		else
-			nameText = UNKNOWN;
+			button:Hide();
 		end
-		FriendsFrame_SummonButton_Update(button.summonButton);
-	else	-- header
-		button:Hide();
-		FriendsFrameOfflineHeader:Show();
-		FriendsFrameOfflineHeader:SetAllPoints(button);
-		return FRIENDS_BUTTON_HEADER_HEIGHT;
 	end
-	
-	if ( FriendsFrame.selectedFriendType == FriendButtons[index].buttonType and FriendsFrame.selectedFriend == FriendButtons[index].id ) then
-		button:LockHighlight();
-	end
-	
-	button.name:SetText(nameText);
-	button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
-	button.info:SetText(infoText);
-	-- don't display a broadcast if the BNetBroadcasts data is out of sync
-	if ( broadcastText and broadcastText ~= "" and BNetBroadcasts[FriendButtons[index].id] ) then
-		height = FRIENDS_BUTTON_LARGE_HEIGHT;
-		button.broadcastMessage:SetText(broadcastText);
-		button.broadcastMessage:Show();
-		button.broadcastIcon:Show();
-	else
-		height = FRIENDS_BUTTON_NORMAL_HEIGHT;
-		button.broadcastMessage:Hide();
-		button.broadcastIcon:Hide();
-	end
-	-- update the tooltip if hovering over a button
-	if ( FriendsTooltip.button == button ) then
-		FriendsFrameTooltip_Show(button);
-	end
-	button:Show();
-	return height;
+	HybridScrollFrame_Update(scrollFrame, totalScrollHeight, min(FRIENDS_SCROLLFRAME_HEIGHT, numButtons * scrollFrame.buttonHeight));	
 end
 
 function FriendsFrameStatusDropDown_OnLoad(self)

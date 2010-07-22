@@ -347,9 +347,15 @@ function TargetFrame_UpdateAuras (self)
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
 	local selfName = self:GetName();
-
+	local canAssist = UnitCanAssist("player", self.unit);
+	
+	local filter;
+	if ( SHOW_CASTABLE_BUFFS == "1" and canAssist ) then
+		filter = "RAID";
+	end
+		
 	for i = 1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff(self.unit, i);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff(self.unit, i, filter);
 		frameName = selfName.."Buff"..i;
 		frame = _G[frameName];
 		if ( not frame ) then
@@ -409,8 +415,14 @@ function TargetFrame_UpdateAuras (self)
 	local frameBorder;
 	local numDebuffs = 0;
 	local isEnemy = UnitCanAttack("player", self.unit);
+	
+	if ( SHOW_DISPELLABLE_DEBUFFS == "1" and canAssist ) then
+		filter = "RAID";
+	else
+		filter = nil;
+	end
 	for i = 1, MAX_TARGET_DEBUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, i);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, i, filter);
 		frameName = selfName.."Debuff"..i;
 		frame = _G[frameName];
 		if ( not frame ) then
@@ -659,7 +671,7 @@ function TargetFrameDropDown_Initialize (self)
 		id = UnitInRaid("target");
 		if ( id ) then
 			menu = "RAID_PLAYER";
-			name = GetRaidRosterInfo(id +1);
+			name = GetRaidRosterInfo(id);
 		elseif ( UnitInParty("target") ) then
 			menu = "PARTY";
 		else
@@ -748,7 +760,7 @@ function TargetofTarget_Update(self, elapsed)
 		UnitFrame_Update(self);
 		TargetofTarget_CheckDead(self);
 		TargetofTargetHealthCheck(self);
-		RefreshDebuffs(self, self.unit);
+		RefreshDebuffs(self, self.unit, nil, nil, true);
 	else
 		if ( self:IsShown() ) then
 			self:Hide();

@@ -410,7 +410,6 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-	self:RegisterEvent("MASTERY_UPDATE");
 	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
 	self.inspect = false;
 	self.pet = false;
@@ -449,6 +448,9 @@ function PlayerTalentFrame_OnShow(self)
 	PlaySound("TalentScreenOpen");
 	UpdateMicroButtons();
 	PlayerTalentFramePetModel:SetUnit("pet");
+	
+	PlayerTalentFrameTalents.summariesShownWhenNoPrimary = true;
+	PlayerTalentFrameLearnButtonTutorial.hasBeenClosed = false;
 
 	if ( not selectedSpec ) then
 		-- if no spec was selected, try to select the active one
@@ -461,8 +463,6 @@ function PlayerTalentFrame_OnShow(self)
 	if ( not GetCVarBool("talentFrameShown") ) then
 		SetCVar("talentFrameShown", 1);
 	end
-	
-	PlayerTalentFrameTalents.summariesShownWhenNoPrimary = true;
 end
 
 function PlayerTalentFrame_OnHide()
@@ -510,122 +510,8 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
-	elseif (event == "MASTERY_UPDATE") then
-		--PlayerTalentFrame_UpdateMastery(self);
 	end
 end
-
--- function PlayerTalentFrame_CalculateMasteryBonuses(specIndex, treeIndex, index)
-	-- local spellId = GetMasterySpell(treeIndex, index);
-	-- if (spellId) then
-		-- local spellAuraDesc = GetSpellAuraDescription(spellId);
-
-		-- -- Parse out the mastery names
-		-- local masteryName1, space, masteryName2, space2, masteryName3;		
-		-- if (spellAuraDesc) then
-			-- masteryName1, space, masteryName2, space2, masteryName3 = strsplit("\r\n", spellAuraDesc);
-		-- end
-		
-		-- -- Calculate the final value for each mastery
-		-- local value1, value2, value3 = GetMasterySpellPoints(specIndex, treeIndex, index);
-		
-		-- return masteryName1, value1, masteryName2, value2, masteryName3, value3;
-	-- end
--- end
-
--- function PlayerTalentFrame_UpdateMastery(self)
-	-- local classDisplayName, class = UnitClass("player");
-	-- --local masteryTree = GetMasteryIndex(self.talentGroup);
-	
-	-- -- HACK - For now, use your "Primary Tree" as your Mastery tree
-	-- local masteryTree = PlayerTalentFrame.primaryTree;
-	
-	-- local talentInfo;
-	
-	-- if (not self.pet) then
-		-- talentInfo = TALENT_INFO[class] or TALENT_INFO["default"];
-	-- end
-	
---	if (mastery and masteryTree and mastery[masteryTree]) then
-		--local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(masteryTree, self.inspect, self.pet, self.talentGroup);
-		--local masteryName = {};
-		--local masteryValue = {};
-		--local numMasterySpells = GetNumMasterySpells(masteryTree);
-		
-		-- -- Calculate all mastery names/values
-		-- masteryName[1], masteryValue[1], masteryName[2], masteryValue[2], masteryName[3], masteryValue[3] = PlayerTalentFrame_CalculateMasteryBonuses(self.talentGroup, masteryTree, 1);
-		-- if (numMasterySpells > 1 ) then
-			-- masteryName[4], masteryValue[4], masteryName[5], masteryValue[5], masteryName[6], masteryValue[6] = PlayerTalentFrame_CalculateMasteryBonuses(self.talentGroup, masteryTree, 2);
-		-- end
-		
-		-- -- Show the mastery icon
-		-- if (icon) then
-			-- PlayerTalentFrameMasteryIcon:Show();
-			-- PlayerTalentFrameMasteryIcon:SetTexture(icon);
-		-- else
-			-- PlayerTalentFrameMasteryIcon:Hide();
-		-- end
-		
-		-- -- Show Mastery backgrounds
-		-- PlayerTalentFrameMastery1Bg:Show();
-		-- PlayerTalentFrameMastery2Bg:Show();
-		-- PlayerTalentFrameMastery3Bg:Show();
-		
-		-- -- Show all Mastery text
-		-- for i=1,6 do
-			-- local masteryText = _G["PlayerTalentFrameMastery"..i];
-			-- if (masteryName[i] and masteryValue[i]) then
-				-- masteryText:Show();
-				-- masteryText.Text:SetFormattedText("%s\: %s%.2f%s", masteryName[i], HIGHLIGHT_FONT_COLOR_CODE, masteryValue[i], FONT_COLOR_CODE_CLOSE);
-			-- else
-				-- masteryText:Hide();
-			-- end
-			
-			-- -- Make the mastery text show the correct tooltip
-			-- if (i <= 3) then
-				-- masteryText.spellId = GetMasterySpell(masteryTree, 1);
-			-- else
-				-- masteryText.spellId = GetMasterySpell(masteryTree, 2);
-			-- end
-			
-			-- -- If this is part of the second row of mastery bonuses (e.g. Feral druids), shift the first row up
-			-- if (i > 3) then
-				-- if (masteryName[i] and masteryValue[i]) then
-					-- _G["PlayerTalentFrameMastery"..(i-3)]:SetPoint("TOPLEFT", "PlayerTalentFrameMastery"..(i-3).."Bg", "TOPLEFT", 4, -3);
-				-- else
-					-- _G["PlayerTalentFrameMastery"..(i-3)]:SetPoint("TOPLEFT", "PlayerTalentFrameMastery"..(i-3).."Bg", "TOPLEFT", 4, -9);
-				-- end
-			-- end
-		-- end
-		
-		-- -- Set the background color	
-		-- if (talentInfo and talentInfo[masteryTree] and talentInfo[masteryTree].color) then
-			-- PlayerTalentFrameMasteryPaneBackground:SetVertexColor(talentInfo[masteryTree].color.r, talentInfo[masteryTree].color.g, talentInfo[masteryTree].color.b);
-		-- else
-			-- PlayerTalentFrameMasteryPaneBackground:SetVertexColor(1, 1, 1);
-		-- end
-		
-		-- -- Change the appearance to link the borders with the tree that has mastery
-		-- _G["PlayerTalentFramePanel"..masteryTree]:LinkWithMasteryPane();
-
-	-- else
-		-- -- No mastery
-		-- PlayerTalentFrameMastery1:Hide();
-		-- PlayerTalentFrameMastery2:Hide();
-		-- PlayerTalentFrameMastery3:Hide();
-		-- PlayerTalentFrameMastery4:Hide();
-		-- PlayerTalentFrameMastery5:Hide();
-		-- PlayerTalentFrameMastery6:Hide();
-		-- PlayerTalentFrameMastery1Bg:Hide();
-		-- PlayerTalentFrameMastery2Bg:Hide();
-		-- PlayerTalentFrameMastery3Bg:Hide();
-		-- PlayerTalentFrameMasteryIcon:Hide();
-		-- PlayerTalentFramePanel1:UnlinkWithMasteryPane();
-		-- PlayerTalentFramePanel2:UnlinkWithMasteryPane();
-		-- PlayerTalentFramePanel3:UnlinkWithMasteryPane();
-		-- PlayerTalentFrameMasteryPaneBackground:SetVertexColor(0, 0, 0);
-	-- end
--- end
 
 function PlayerTalentFrame_ShowTalentTab()
 	PlayerTalentFrameTalents:Show();
@@ -662,13 +548,7 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrame.pet = false;
 	end
 	
-	--PlayerTalentFrame_UpdateMastery(PlayerTalentFrame);
 	PlayerTalentFrame_Update();
-	
-	--local talentPoints = GetUnspentTalentPoints(false, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
-	--local unspentPoints = talentPoints - GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
-	--PlayerTalentFrameUnspentPointsLabel:SetText(PLAYER_UNSPENT_TALENT_POINTS);
-	--PlayerTalentFrameUnspentPoints:SetText(unspentPoints);
 	
 	if (PlayerTalentFramePanel1:IsVisible()) then
 		PlayerTalentFramePanel_Update(PlayerTalentFramePanel1);
@@ -1287,12 +1167,19 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 		PlayerTalentFrameResetButton:Show();
 		
 		-- enable accept/cancel buttons if preview talent points were spent
-		if ( GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, spec.talentGroup) > 0 or previewPrimaryTree) then
+		local previewPointsSpent = GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, spec.talentGroup);
+		if (previewPointsSpent > 0 or previewPrimaryTree) then
 			PlayerTalentFrameLearnButton:Enable();
 			PlayerTalentFrameResetButton:Enable();
+			if (previewPointsSpent > 0 and not PlayerTalentFrameLearnButtonTutorial.hasBeenClosed and not GetCVarBool("talentPointsSpent")) then
+				PlayerTalentFrameLearnButtonTutorial:Show();
+			else
+				PlayerTalentFrameLearnButtonTutorial:Hide();
+			end
 		else
 			PlayerTalentFrameLearnButton:Disable();
 			PlayerTalentFrameResetButton:Disable();
+			PlayerTalentFrameLearnButtonTutorial:Hide();
 		end
 		-- squish all frames to make room for this bar
 		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
@@ -1300,6 +1187,7 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 		--ButtonFrameTemplate_HideButtonBar(PlayerTalentFrame);
 		PlayerTalentFrameLearnButton:Hide();
 		PlayerTalentFrameResetButton:Hide();
+		PlayerTalentFrameLearnButtonTutorial:Hide();
 		-- unsquish frames since the bar is now hidden
 		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
 	end
@@ -1407,6 +1295,7 @@ end
 function PlayerTalentFrameResetButton_OnClick(self)
 	PlayerTalentFrameTalents.summariesShownWhenNoPrimary = true;
 	PlayerTalentFrameTalents.summariesShownWhenPrimary = false;
+	PlayerTalentFrameLearnButtonTutorial.hasBeenClosed = false;
 	ResetGroupPreviewTalentPoints(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 end
 

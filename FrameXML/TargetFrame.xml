@@ -44,11 +44,12 @@
 				else
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				end
+				local unit = self:GetParent().unit;
 				local filter;
-				if ( GetCVarBool("showDispelDebuffs") ) then
+				if ( SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
 					filter = "RAID";
 				end
-				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), filter);
+				GameTooltip:SetUnitDebuff(unit, self:GetID(), filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

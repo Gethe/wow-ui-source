@@ -727,12 +727,10 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		
 		MainMenuExpBar:SetParent(MainMenuBar);
 		MainMenuExpBar:ClearAllPoints();
-		MainMenuExpBar:SetPoint("TOP");		
-		if MainMenuExpBar.storedWidth then
-			MainMenuExpBar_SetWidth(MainMenuExpBar.storedWidth);
-		else			
-			MainMenuExpBar.storedWidth = MainMenuExpBar:GetWidth();	
-		end
+		MainMenuExpBar:SetPoint("TOP");
+		MainMenuExpBar_SetWidth(EXP_DEFAULT_WIDTH);
+		
+		
 	elseif ( skinName == "Mechanical" ) then
 	
 		for _, frame in pairs(MicroButtons) do

@@ -286,7 +286,9 @@ function BNToastFrame_OnClick(self)
 		--ChatFrame_OpenChat("/"..(toastData + MAX_WOW_CHAT_CHANNELS), chatFrame);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(toastData);
-		ChatFrame_SendTell(string.format(BATTLENET_NAME_FORMAT, givenName, surname));
+		if ( givenName ) then	--This player may have been removed from our friends list, so we may not have a name.
+			ChatFrame_SendTell(string.format(BATTLENET_NAME_FORMAT, givenName, surname));
+		end
 	end
 end
 

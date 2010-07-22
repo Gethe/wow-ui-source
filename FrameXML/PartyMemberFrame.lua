@@ -133,7 +133,7 @@ function PartyMemberFrame_UpdateMember (self)
 	end
 	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdatePvPStatus(self);
-	RefreshDebuffs(self, "party"..id);
+	RefreshDebuffs(self, "party"..id, nil, nil, true);
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
 	PartyMemberFrame_UpdateOnlineStatus(self);
@@ -349,7 +349,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 
 	if ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
-			RefreshDebuffs(self, unit);
+			RefreshDebuffs(self, unit, nil, nil, true);
 			if ( PartyMemberBuffTooltip:IsShown() and
 				selfID == PartyMemberBuffTooltip:GetID() ) then
 				PartyMemberBuffTooltip_Update(self);
@@ -437,7 +437,7 @@ function PartyMemberFrame_RefreshPetDebuffs (self, id)
 	if ( not id ) then
 		id = self:GetID();
 	end
-	RefreshDebuffs(_G["PartyMemberFrame"..id.."PetFrame"], "partypet"..id)
+	RefreshDebuffs(_G["PartyMemberFrame"..id.."PetFrame"], "partypet"..id, nil, nil, true);
 end
 
 function PartyMemberBuffTooltip_Update (self)
@@ -445,11 +445,17 @@ function PartyMemberBuffTooltip_Update (self)
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
+	local filter;
 	
 	PartyMemberBuffTooltip:SetID(self:GetID());
-	
+
+	if ( SHOW_CASTABLE_BUFFS == "1" ) then
+		filter = "RAID";
+	else
+		filter = nil;
+	end
 	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
-		name, rank, icon = UnitBuff(self.unit, i);
+		name, rank, icon = UnitBuff(self.unit, i, filter);
 		if ( icon ) then
 			_G["PartyMemberBuffTooltipBuff"..index.."Icon"]:SetTexture(icon);
 			_G["PartyMemberBuffTooltipBuff"..index]:Show();
@@ -472,10 +478,15 @@ function PartyMemberBuffTooltip_Update (self)
 	index = 1;
 
 	local debuffButton, debuffStack, debuffType, color, countdown;
+	if ( SHOW_DISPELLABLE_DEBUFFS == "1" ) then
+		filter = "RAID";
+	else
+		filter = nil;
+	end
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
 		local debuffBorder = _G["PartyMemberBuffTooltipDebuff"..index.."Border"]
 		local partyDebuff = _G["PartyMemberBuffTooltipDebuff"..index.."Icon"];
-		name, rank, icon, debuffStack, debuffType = UnitDebuff(self.unit, i);		
+		name, rank, icon, debuffStack, debuffType = UnitDebuff(self.unit, i, filter);
 		if ( icon ) then
 			partyDebuff:SetTexture(icon);
 			if ( debuffType ) then

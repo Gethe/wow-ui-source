@@ -89,10 +89,22 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentGlowBorder" inherits="Talent-SingleBorder-Glow" alphaMode="ADD" alpha="0.75">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentRankBorder" inherits="Talent-PointBg">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-4" y="4" />
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRankBorderGreen" inherits="Talent-PointBg-Green" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 				</Texture>
 				<FontString name="$parentRank" inherits="GameFontNormalSmall">
@@ -317,29 +329,29 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphamode="ADD" hidden="true">
+				<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBackgroundBottomLeft"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphamode="ADD" hidden="true">
+				<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackgroundBottomLeft"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphamode="ADD" hidden="true">
+				<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphamode="ADD" hidden="true">
+				<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
 						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphamode="ADD" hidden="true">
+				<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
 						<Anchor point="TOPRIGHT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPRIGHT"/>
@@ -997,6 +1009,49 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame name="PlayerTalentFrameLearnButtonTutorial" inherits="GlowBoxTemplate" enableMouse="true" hidden="true">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="PlayerTalentFrameLearnButton" relativePoint="TOP" x="0" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="PlayerTalentFrameLearnButtonTutorialText" inherits="GameFontHighlightLeft" justifyV="TOP" text="TALENT_TREE_PREVIEW_TUTORIAL" >
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="PlayerTalentFrameLearnButtonTutorialCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlayerTalentFrameLearnButtonTutorial.hasBeenClosed = true;
+								PlayerTalentFrameLearnButtonTutorial:Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="PlayerTalentFrameLearnButtonTutorialArrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+8);
+						PlayerTalentFrameLearnButtonTutorialText:SetSpacing(4);
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(PlayerTalentFrameLearnButtonTutorialText:GetHeight()+42);
+					</OnShow>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 	

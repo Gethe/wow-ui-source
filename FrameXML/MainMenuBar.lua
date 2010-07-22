@@ -587,7 +587,7 @@ function MainMenuExpBar_SetWidth(width)
 			texture:SetTexCoord( 0.01562500, 0.15625000, 0.01562500, 0.17187500);
 		end
 		local xalign = floor(xpos);
-		texture:SetPoint("LEFT", xalign, 3);
+		texture:SetPoint("LEFT", xalign, 1);
 		xpos = xpos + divWidth;
 	end		
 	MainMenuExpBar:SetWidth(width);

@@ -163,6 +163,7 @@ LEVEL_UP_CLASS_HACKS = {
 
 function LevelUpDisplay_Onload(self)	
 	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self.currSpell = 0;
 end
 
 
@@ -221,14 +222,17 @@ end
 
 
 function LevelUpDisplay_OnShow(self)
-	LevelUpDisplay_BuildList(self);
-	self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.player_level);
-	self.levelFrame.levelUp:Play();
+	if  self.currSpell == 0 then
+		LevelUpDisplay_BuildList(self);
+		self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.player_level);
+		self.levelFrame.levelUp:Play();
+	end
 end
 
 
 function LevelUpDisplay_AnimStep(self)
 	if self.currSpell > #self.unlockList then
+		self.currSpell = 0;
 		self.hideAnim:Play();
 	else
 		local spellInfo = self.unlockList[self.currSpell];

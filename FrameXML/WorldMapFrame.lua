@@ -8,7 +8,7 @@ NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
-WORLDMAP_WINTERGRASP_ID = 502;
+WORLDMAP_WINTERGRASP_ID = 501;
 
 QUESTFRAME_MINHEIGHT = 34;
 QUESTFRAME_PADDING = 19;
@@ -241,7 +241,7 @@ function WorldMapFrame_Update()
 			OutlandButton:Show();
 			AzerothButton:Show();
 		else
-			-- Temporary Hack (Temporary meaning 2 yrs, haha)
+			-- Temporary Hack (Temporary meaning 6 yrs, haha)
 			mapFileName = "World";
 			OutlandButton:Hide();
 			AzerothButton:Hide();

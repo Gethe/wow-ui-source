@@ -197,26 +197,58 @@ function TalentFrame_Update(TalentFrame)
 					GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
 				if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
 					SetItemButtonDesaturated(button, nil);
+					
+					_G[buttonName.."RankBorder"]:Show();
+					_G[buttonName.."RankBorder"]:SetVertexColor(1, 1, 1);
+					_G[buttonName.."Rank"]:Show();
+					_G[buttonName.."Slot"]:Show();
 
 					if ( displayRank < maxRank ) then
 						-- Rank is green if not maxed out
-						_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
 						_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+						
+						if (_G[buttonName.."RankBorderGreen"]) then
+							_G[buttonName.."RankBorder"]:Hide();
+							_G[buttonName.."RankBorderGreen"]:Show();
+							_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
+						else
+							_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
+						end
+						
+						if (_G[buttonName.."GlowBorder"]) then
+							if (unspentPoints > 0) then
+								_G[buttonName.."Slot"]:Hide();
+								_G[buttonName.."GlowBorder"]:Show();
+							else
+								_G[buttonName.."GlowBorder"]:Hide();
+							end
+						end
 					else
 						_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
 						_G[buttonName.."Rank"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						if (_G[buttonName.."GlowBorder"]) then
+							_G[buttonName.."GlowBorder"]:Hide();
+						end
+						if (_G[buttonName.."RankBorderGreen"]) then
+							_G[buttonName.."RankBorderGreen"]:Hide();
+						end
 					end
-					_G[buttonName.."RankBorder"]:Show();
-					_G[buttonName.."Rank"]:Show();
 				else
 					SetItemButtonDesaturated(button, 1);
 					_G[buttonName.."Slot"]:SetVertexColor(0.5, 0.5, 0.5);
+					_G[buttonName.."Slot"]:Show();
 					if ( rank == 0 ) then
 						_G[buttonName.."RankBorder"]:Hide();
 						_G[buttonName.."Rank"]:Hide();
 					else
 						_G[buttonName.."RankBorder"]:SetVertexColor(0.5, 0.5, 0.5);
 						_G[buttonName.."Rank"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					end
+					if (_G[buttonName.."GlowBorder"]) then
+						_G[buttonName.."GlowBorder"]:Hide();
+					end
+					if (_G[buttonName.."RankBorderGreen"]) then
+						_G[buttonName.."RankBorderGreen"]:Hide();
 					end
 				end
 				button:Show();

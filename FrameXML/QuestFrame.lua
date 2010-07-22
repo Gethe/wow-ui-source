@@ -28,7 +28,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
-			WatchFrameAutoQuest_AddPopUp(GetQuestID());
+			WatchFrameAutoQuest_AddPopUp(GetQuestID(), "OFFER");
 			CloseQuest();
 			return;
 		else
@@ -139,6 +139,7 @@ function QuestFrameProgressPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
+	QuestFrame_HideQuestPortrait();
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	QuestProgressTitleText:SetText(GetTitleText());
@@ -214,6 +215,7 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
+	QuestFrame_HideQuestPortrait();
 	if ( QUEST_FADING_DISABLE == "0" ) then
 		QuestGreetingScrollChildFrame:SetAlpha(0);
 		UIFrameFadeIn(QuestGreetingScrollChildFrame, QUESTINFO_FADE_IN);
@@ -312,6 +314,7 @@ function QuestFrame_OnHide()
 	QuestFrameDetailPanel:Hide();
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
+	QuestFrame_HideQuestPortrait();
 	if ( QuestFrame.dialog ) then
 		QuestFrame.dialog:Hide();
 		QuestFrame.dialog = nil;

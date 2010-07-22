@@ -28,10 +28,10 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 		ClassTrainerFrame_Update();
 	end,
 	OnShow = function(self)
-		local cp1, cp2 = UnitCharacterPoints("player");
-		if ( cp2 < MAX_LEARNABLE_PROFESSIONS ) then
+		local prof1, prof2 = GetProfessions();
+		if ( prof1 and not prof2 ) then
 			self.text:SetFormattedText(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
-		else
+		elseif ( not prof1 ) then
 			self.text:SetFormattedText(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
 		end
 	end,
@@ -219,11 +219,11 @@ function ClassTrainerFrame_Update()
 			
 			-- Place the highlight and lock the highlight state
 			if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
-				local _, availibleSkillPoints = UnitCharacterPoints("player");
+				local prof1, prof2 = GetProfessions();
 				ClassTrainerFrame.showDialog = nil;
 				
 				skillButton.selectedTex:Show();
-				if ( serviceType == "available" and not unavailable) then
+				if ( serviceType == "available" and not unavailable and not prof2) then
 					ClassTrainerTrainButton:Enable();
 				else
 					ClassTrainerTrainButton:Disable();

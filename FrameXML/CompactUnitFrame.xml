@@ -136,7 +136,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name"/>
 				<FontString name="$parentStatusText" inherits="GameFontDisable" parentKey="statusText"/>
-				<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true" parentKey="roleIcon"/>
+				<Texture name="$parentRoleIcon" hidden="true" parentKey="roleIcon"/>
 				<Texture name="$parentAggroHighlight" parentKey="aggroHighlight"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">

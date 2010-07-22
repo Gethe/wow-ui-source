@@ -744,7 +744,9 @@ function Blizzard_CombatLog_RefilterUpdate()
 		-- Log to the window
 		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
 		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
-		COMBATLOG:AddMessage( text, r, g, b, nil, true );
+		if ( text ) then
+			COMBATLOG:AddMessage( text, r, g, b, nil, true );
+		end
 
 		-- count can be 
 		--  positive to advance from oldest to newest

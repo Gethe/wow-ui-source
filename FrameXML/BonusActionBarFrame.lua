@@ -1,10 +1,64 @@
-BONUSACTIONBAR_SLIDETIME = 0.15;
-BONUSACTIONBAR_YPOS = 43;
-BONUSACTIONBAR_XPOS = 4;
+
 NUM_BONUS_ACTION_SLOTS = 12;
 NUM_SHAPESHIFT_SLOTS = 10;
 NUM_POSSESS_SLOTS = 2;
 POSSESS_CANCEL_SLOT = 2;
+
+BONUSACTIONBAR_NUM_TEXTURES = 3;
+
+BonusActionBarTypes =  {
+
+	["default"] = 	{
+								showDefaultBar = true,
+								width = 505, height = 43,
+								buttonX = 5, buttonY = 3, 
+								buttonSize = 36,
+								numButtons = 12,
+								anchorPoint = "BOTTOMLEFT", anchorX = 4, anchorY = 0,
+								Texture1 = 	{ 
+														width = 253, height = 43, 
+														file ="Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf",
+														texLeft=0.015625, texRight=1.0, texTop=0.83203125, texBottom=1.0,
+													},
+								Texture2 = 	{ 
+														width = 253, height = 43, 
+														file ="Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf",
+														texLeft=0.015625, texRight=1.0, texTop=0.83203125, texBottom=1.0,
+													},
+							},
+							
+							
+	["PlayerActionBarAlt"] = 	{
+								width = 686, height = 93,
+								xpWidth = 620,
+								microBarX = 380, microBarY = 12,
+								buttonX = 59, buttonY = 15, 
+								buttonSize = 44,
+								numButtons = 6,
+								anchorPoint = "BOTTOM", anchorX = 0, anchorY = 0,
+								Texture1 = 	{ 
+														width = 220, height = 83, 
+														file ="Interface\\PlayerActionBarAlt\\PlayerActionBarAlt_LEFT",
+														texLeft=0.1015625, texRight=1.0, texTop=0.3515625, texBottom=1.0,
+													},
+								Texture2 = 	{ 
+														width = 236, height = 83,
+														file ="Interface\\PlayerActionBarAlt\\PlayerActionBarAlt_MID",
+														texLeft=0.0, texRight=1.0, texTop=0.3515625, texBottom=1.0,
+													},
+								Texture3 = 	{ 
+														width = 230, height = 83, 
+														file ="Interface\\PlayerActionBarAlt\\PlayerActionBarAlt_RIGHT",
+														texLeft=0.0, texRight=0.8984375, texTop=0.3515625, texBottom=1.0,
+													},
+							}
+}
+
+
+
+
+
+
 
 function BonusActionBar_OnLoad (self)
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
@@ -28,66 +82,157 @@ function BonusActionBar_OnEvent (self, event, ...)
 	end
 end
 
-function BonusActionBar_OnUpdate(self, elapsed)
-	local yPos;
-	if ( self.slideTimer and (self.slideTimer < self.timeToSlide) ) then
-		-- Animating
-		self.completed = nil;
-		if ( self.mode == "show" ) then
-			yPos = (self.slideTimer/self.timeToSlide) * BONUSACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
-			self.state = "showing";
-			self:Show();
-		elseif ( self.mode == "hide" ) then
-			yPos = (1 - (self.slideTimer/self.timeToSlide)) * BONUSACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, yPos);
-			self.state = "hiding";
-		end
-		self.slideTimer = self.slideTimer + elapsed;
-	else
-		-- Animation complete
-		if ( self.completed == 1 ) then
-			return;
+function SetupBonusActionBar()
+	local barType = GetBonusBarOverrideBarType() or "default";
+	local barInfo = BonusActionBarTypes[barType];
+
+	local texture, textureInfo;
+	for i=1,BONUSACTIONBAR_NUM_TEXTURES do
+		texture = _G["BonusActionBarFrameTexture"..i];
+		textureInfo = barInfo["Texture"..i];
+		if textureInfo then
+			texture:SetTexture(textureInfo.file);
+			texture:SetSize(textureInfo.width, textureInfo.height);
+			texture:SetTexCoord(textureInfo.texLeft, textureInfo.texRight, textureInfo.texTop, textureInfo.texBottom);
+			texture:Show();
 		else
-			self.completed = 1;
+			texture:Hide();
 		end
-		if ( self.mode == "show" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, BONUSACTIONBAR_YPOS);
-			self.state = "top";
-			PlaySound("igBonusBarOpen");
-		elseif ( self.mode == "hide" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", BONUSACTIONBAR_XPOS, 0);
-			self.state = "bottom";
-			self:Hide();
+	end
+	
+	for i=1,NUM_BONUS_ACTION_SLOTS do
+		if  i > barInfo.numButtons then
+			_G["BonusActionButton"..i]:SetAttribute("statehidden", true);
+		else
+			_G["BonusActionButton"..i]:SetAttribute("statehidden", false);
+			_G["BonusActionButton"..i]:SetSize(barInfo.buttonSize, barInfo.buttonSize);
 		end
-		self.mode = "none";
+	end
+			
+	if not barInfo.showDefaultBar then
+		BonusActionBarFrame:SetParent("UIParent");
+	else
+		BonusActionBarFrame:SetParent("MainMenuBar");
+	end
+	
+	BonusActionBarFrame:SetSize(barInfo.width, barInfo.height);
+	BonusActionBarFrame:ClearAllPoints();
+	BonusActionBarFrame:SetPoint(barInfo.anchorPoint, barInfo.anchorX, barInfo.anchorY);
+	BonusActionButton1:SetPoint("BOTTOMLEFT",  barInfo.buttonX, barInfo.buttonY);
+	BonusActionBarFrame.currentType = barType;
+end
+
+
+function ShowBonusActionBar (force)
+	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+
+		local barType = GetBonusBarOverrideBarType() or "default";
+		local barInfo = BonusActionBarTypes[barType];
+	
+		local shownFrame = MainMenuBar;
+		if not BonusActionBarFrame:IsShown() then
+			SetupBonusActionBar();
+		elseif not MainMenuBar:IsShown() then
+			shownFrame = BonusActionBarFrame;
+		end
+		
+		if not barInfo.showDefaultBar then
+			shownFrame.nextAnimBar = BonusActionBarFrame;
+			shownFrame.barToShow = BonusActionBarFrame;
+			shownFrame.animOut = true;
+			BonusActionBarFrame.xpWidth = barInfo.xpWidth;
+			BonusActionBarFrame.microBarParent = BonusActionBarFrame;
+			BonusActionBarFrame.microBarX = barInfo.microBarX;
+			BonusActionBarFrame.microBarY = barInfo.microBarY;
+			shownFrame.slideout:Play(); -- Slide bar out
+		else
+			if shownFrame == MainMenuBar then --Bar only
+				BonusActionBarFrame.nextAnimBar = nil;
+				BonusActionBarFrame.animOut = false;
+				shownFrame.barToShow = nil;
+				BonusActionBarFrame.slideout:Play(true); -- Slide bar in
+			else
+				shownFrame.nextAnimBar = MainMenuBar;
+				shownFrame.barToShow = BonusActionBarFrame;
+				shownFrame.animOut = true;
+				MainMenuBar.xpWidth = EXP_DEFAULT_WIDTH;
+				MainMenuBar.microBarParent = MainMenuBarArtFrame;
+				MainMenuBar.microBarX = 552;
+				MainMenuBar.microBarY = 2;
+				shownFrame.slideout:Play(); -- Slide bar out
+			end
+		end		
 	end
 end
 
-function ShowBonusActionBar (override)
-	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
-		if ( (BonusActionBarFrame.mode ~= "show" and BonusActionBarFrame.state ~= "top") or (not UIParent:IsShown())) then
-			BonusActionBarFrame:Show();
-			if ( BonusActionBarFrame.completed ) then
-				BonusActionBarFrame.slideTimer = 0;
-			end
-			BonusActionBarFrame.timeToSlide = BONUSACTIONBAR_SLIDETIME;
-			BonusActionBarFrame.mode = "show";
+function HideBonusActionBar (force)
+	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+		
+		local oldbarInfo = BonusActionBarTypes[BonusActionBarFrame.currentType];
+		
+		if not oldbarInfo.showDefaultBar then
+			BonusActionBarFrame.nextAnimBar = MainMenuBar;
+			BonusActionBarFrame.barToShow = MainMenuBar;
+			BonusActionBarFrame.animOut = true;
+			
+			MainMenuBar.xpWidth = EXP_DEFAULT_WIDTH;
+			MainMenuBar.microBarParent = MainMenuBarArtFrame;
+			MainMenuBar.microBarX = 552;
+			MainMenuBar.microBarY = 2;
+			
+			BonusActionBarFrame.slideout:Play(); -- Slide main bar out
+		else
+			--Bar only
+			BonusActionBarFrame.nextAnimBar = nil;
+			BonusActionBarFrame.barToShow = nil;
+			BonusActionBarFrame.animOut = true;
+			BonusActionBarFrame.slideout:Play(); -- Slide main bar out
 		end
 	end
 end
 
-function HideBonusActionBar (override)
-	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or override) then	--Don't change while we're animating out MainMenuBar for vehicle UI
-		if ( (BonusActionBarFrame:IsShown()) or (not UIParent:IsShown())) then
-			if ( BonusActionBarFrame.completed ) then
-				BonusActionBarFrame.slideTimer = 0;
+
+
+function ActionBar_AnimTransitionFinished(self)
+	if  MainMenuBar.busy or UnitHasVehicleUI("player") then
+		BonusActionBarFrame:Hide();
+		return;
+	end
+
+	if self.animOut then
+		self:Hide();
+		if self.nextAnimBar then
+			self.nextAnimBar.animOut = false;
+
+			if self ~= self.nextAnimBar then
+				if self.nextAnimBar.xpWidth then
+					MainMenuExpBar:SetParent(self.nextAnimBar);
+					MainMenuExpBar_SetWidth(self.nextAnimBar.xpWidth);
+					MainMenuExpBar:SetPoint("TOP", self.nextAnimBar, 0, 0);
+				end
+				if self.nextAnimBar.microBarX then
+					CharacterMicroButton:ClearAllPoints();
+					UpdateMicroButtonsParent(self.nextAnimBar.microBarParent);
+					CharacterMicroButton:SetPoint("BOTTOMLEFT", self.nextAnimBar.microBarX, self.nextAnimBar.microBarY);
+					UpdateMicroButtons();
+				end
 			end
-			BonusActionBarFrame.timeToSlide = BONUSACTIONBAR_SLIDETIME;
-			BonusActionBarFrame.mode = "hide";
+			
+			local barType = GetBonusBarOverrideBarType() or "default";
+			if BonusActionBarFrame.currentType ~= barType then
+				SetupBonusActionBar();
+			end;
+			self.nextAnimBar.slideout:Play(true); -- Slide bar in
+			if self.barToShow then
+				self.barToShow:Show();
+			end
 		end
+	else
+		self.xpWidth = nil;
+		PlaySound("igBonusBarOpen");
 	end
 end
+
 
 function BonusActionButtonUp (id)
 	PetActionButtonUp(id);
@@ -96,6 +241,16 @@ end
 function BonusActionButtonDown (id)
 	PetActionButtonDown(id);
 end
+
+
+
+
+---------------------------------------------------------------------
+----- ShapeshiftBar (StanceBar) Code ----------------------
+----- ShapeshiftBar (StanceBar) Code ----------------------
+---------------------------------------------------------------------
+
+
 
 function ShapeshiftBar_OnLoad (self)
 	ShapeshiftBar_Update();

@@ -54,6 +54,8 @@ function RolePollPopupRoleButton_Enable(button)
 	button.cover:SetAlpha(1);
 	button.checkButton:Enable();
 	button.checkButton:Show();
+	
+	button.permDisabled = false;
 end
 
 function RolePollPopupRoleButton_Disable(button)
@@ -63,6 +65,8 @@ function RolePollPopupRoleButton_Disable(button)
 	button.cover:SetAlpha(0.5);
 	button.checkButton:Disable();
 	button.checkButton:Hide();
+	
+	button.permDisabled = true;
 end
 
 function RolePollPopupRoleButtonCheckButton_OnClick(self, button)

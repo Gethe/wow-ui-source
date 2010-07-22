@@ -8,6 +8,7 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	
 	self.container:SetWidth(1000);
+	self.dynamicContainerPosition = true;
 	CompactRaidFrameManager_UpdateContainerBounds(self);
 	
 	CompactRaidFrameManager_Collapse(self);
@@ -81,8 +82,19 @@ function CompactRaidFrameManager_SetManaged(value)
 end
 
 function CompactRaidFrameManager_SetLocked(value)
-	local container = CompactRaidFrameManager.container;
-
+	local manager = CompactRaidFrameManager;
+	if ( value == "lock" ) then
+		CompactRaidFrameManager_LockContainer(manager);
+		CompactRaidFrameManagerOptionsFrameLockedModeLock:LockHighlight();
+		CompactRaidFrameManagerOptionsFrameLockedModeUnlock:UnlockHighlight();
+	elseif ( value == "unlock" ) then
+		CompactRaidFrameManager_UnlockContainer(manager);
+		CompactRaidFrameManagerOptionsFrameLockedModeLock:UnlockHighlight();
+		CompactRaidFrameManagerOptionsFrameLockedModeUnlock:LockHighlight();
+	else
+		CompactRaidFrameManager_SetSetting("Locked", CompactRaidFrameManager_GetSettingDefault("Locked"));
+		GMError("Unknown lock value: "..tostring(value));
+	end
 end
 
 function CompactRaidFrameManager_SetSortMode(value)
@@ -107,13 +119,19 @@ function CompactRaidFrameManager_SetGroupMode(value)
 	if ( value == "discrete" ) then
 		CompactRaidFrameManagerOptionsFrameGroupModeDiscrete:LockHighlight();
 		CompactRaidFrameManagerOptionsFrameGroupModeFlush:UnlockHighlight();
-		CompactRaidFrameManagerOptionsFrameSortModeByGroup:Disable();
-		CompactRaidFrameManagerOptionsFrameSortModeByRole:Disable();
+		
+		CompactRaidFrameManagerOptionsFrameSortModeByGroup:Hide();
+		CompactRaidFrameManagerOptionsFrameSortModeByRole:Hide();
+		CompactRaidFrameManagerOptionsFrameManagedModeManaged:Show();
+		CompactRaidFrameManagerOptionsFrameManagedModeFree:Show();
 	elseif ( value == "flush" ) then
 		CompactRaidFrameManagerOptionsFrameGroupModeDiscrete:UnlockHighlight();
 		CompactRaidFrameManagerOptionsFrameGroupModeFlush:LockHighlight();
-		CompactRaidFrameManagerOptionsFrameSortModeByGroup:Enable();
-		CompactRaidFrameManagerOptionsFrameSortModeByRole:Enable();
+		
+		CompactRaidFrameManagerOptionsFrameSortModeByGroup:Show();
+		CompactRaidFrameManagerOptionsFrameSortModeByRole:Show();
+		CompactRaidFrameManagerOptionsFrameManagedModeManaged:Hide();
+		CompactRaidFrameManagerOptionsFrameManagedModeFree:Hide();
 	else
 		CompactRaidFrameManager_SetSetting("GroupMode", CompactRaidFrameManager_GetSettingDefault("GroupMode"));
 		GMError("Unknown group mode: "..tostring(value));
@@ -122,14 +140,94 @@ end
 
 
 function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" instead of "SizeAndPosition". WHO NEEDS A THESAURUS NOW?!
-	--Should be below the TargetFrameSpellBar at its lowest height..
-	local top = GetScreenHeight() - 135;
-	--Should be just above the FriendsFrameMicroButton.
-	local bottom = 300;
+	if ( self.dynamicContainerPosition ) then
+		--Should be below the TargetFrameSpellBar at its lowest height..
+		local top = GetScreenHeight() - 135;
+		--Should be just above the FriendsFrameMicroButton.
+		local bottom = 300;
+		
+		local containerCenter = (top + bottom) / 2;
+		local managerCenter = (self:GetTop() + self:GetBottom()) / 2;
+		
+		self.container:ClearAllPoints();
+		self.container:SetPoint("LEFT", self, "RIGHT", 0, containerCenter - managerCenter);
+		self.container:SetHeight(top - bottom);
+	end
+end
+
+function CompactRaidFrameManager_LockContainer(self)
+	self.containerResizeFrame:Hide();
+end
+
+function CompactRaidFrameManager_UnlockContainer(self)
+	--Anchor the resizer to the current position.
+	CompactRaidFrameManager_ResizeFrame_Reanchor(self);
 	
-	self.container:ClearAllPoints();
-	self.container:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, top - self:GetTop());
-	self.container:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 0, bottom - self:GetBottom());
+	self.containerResizeFrame:Show();
+end
+
+local RESIZE_OUTSETS = 5;
+--ResizeFrame related functions
+function CompactRaidFrameManager_ResizeFrame_Reanchor(manager)
+	manager.containerResizeFrame:ClearAllPoints();
+	manager.containerResizeFrame:SetPoint("TOPLEFT", manager.container, "TOPLEFT", -RESIZE_OUTSETS, RESIZE_OUTSETS);
+	manager.containerResizeFrame:SetPoint("BOTTOMLEFT", manager.container, "BOTTOMLEFT", -RESIZE_OUTSETS, -RESIZE_OUTSETS);
+end
+
+function CompactRaidFrameManager_ResizeFrame_OnDragStart(manager)
+	manager.dynamicContainerPosition = false;
+	
+	manager.container:StartMoving();
+end
+
+function CompactRaidFrameManager_ResizeFrame_OnDragStop(manager)
+	manager.container:StopMovingOrSizing();
+	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
+end
+
+function CompactRaidFrameManager_ResizeFrame_OnResizeStart(manager)
+	manager.dynamicContainerPosition = false;
+	
+	manager.containerResizeFrame:StartSizing("BOTTOMRIGHT")
+	manager.containerResizeFrame:SetScript("OnUpdate", CompactRaidFrameManager_ResizeFrame_OnUpdate);
+end
+
+function CompactRaidFrameManager_ResizeFrame_OnResizeStop(manager)
+	manager.containerResizeFrame:StopMovingOrSizing();
+	manager.containerResizeFrame:SetScript("OnUpdate", nil);
+	CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager);
+end
+
+local RESIZE_UPDATE_INTERVAL = 0.5;
+function CompactRaidFrameManager_ResizeFrame_OnUpdate(self, elapsed)
+	self.timeSinceUpdate = (self.timeSinceUpdate or 0) + elapsed;
+	if ( self.timeSinceUpdate >= RESIZE_UPDATE_INTERVAL ) then
+		CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(self:GetParent());
+	end
+end
+
+function CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager)
+	--Re-anchor the frame by the topleft
+	local top, left = manager.container:GetTop(), manager.container:GetLeft();
+	manager.container:ClearAllPoints();
+	manager.container:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top);
+	
+	manager.container:SetHeight(manager.containerResizeFrame:GetHeight() - RESIZE_OUTSETS * 2);
+	CompactRaidFrameManager_ResizeFrame_Reanchor(manager);
+	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
+end
+
+local MAGNETIC_FIELD_RANGE = 10;
+function CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager)
+	if ( abs(manager.container:GetLeft() - manager:GetRight()) < MAGNETIC_FIELD_RANGE and
+		manager.container:GetTop() > manager:GetBottom() and manager.container:GetBottom() < manager:GetTop() ) then
+		--Figure out the anchor point;
+		--We anchor by the LEFT.
+		local managerCenter = (manager:GetTop() + manager:GetBottom()) / 2;
+		local containerCenter = (manager.container:GetTop() + manager.container:GetBottom()) / 2;
+		manager.container:ClearAllPoints();
+		manager.container:SetPoint("LEFT", manager, "RIGHT", 0, containerCenter - managerCenter);
+	end
 end
 
 --Functions used for sorting and such
@@ -148,9 +246,20 @@ function CRFSort_Group(token1, token2)
 	return id1 < id2;
 end
 
-local roleValues = { TANK = 1, HEALER = 2, DAMAGER = 3, NONE = 4 };
+local roleValues = { MAINTANK = 1, MAINASSIST = 2, TANK = 3, HEALER = 4, DAMAGER = 5, NONE = 6 };
 function CRFSort_Role(token1, token2)
-	local role1, role2 = UnitGroupRolesAssigned(token1), UnitGroupRolesAssigned(token2);
+	local id1, id2 = UnitInRaid(token1), UnitInRaid(token2);
+	local role1, role2;
+	if ( id1 ) then
+		role1 = select(10, GetRaidRosterInfo(id1));
+	end
+	if ( id2 ) then
+		role2 = select(10, GetRaidRosterInfo(id2));
+	end
+	
+	role1 = role1 or UnitGroupRolesAssigned(token1);
+	role2 = role2 or UnitGroupRolesAssigned(token2);
+	
 	local value1, value2 = roleValues[role1], roleValues[role2];
 	if ( value1 ~= value2 ) then
 		return value1 < value2;

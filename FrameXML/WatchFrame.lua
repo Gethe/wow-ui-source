@@ -288,7 +288,7 @@ function WatchFrame_OnEvent (self, event, ...)
 		WATCHFRAME_FILTER_TYPE = tonumber(GetCVar("trackerFilter"));
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
 		local questId = ...;
-		WatchFrameAutoQuest_AddPopUp(questId);
+		WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE");
 		PlaySound("ReadyCheck");
 	end
 end
@@ -1465,6 +1465,9 @@ function WatchFrame_SetSorting(button, arg1)
 		SortQuestWatches();
 		WatchFrame_Update();
 		WatchFrame.updateTimer = WATCHFRAME_UPDATE_RATE;
+		if ( WorldMapFrame:IsShown() ) then
+			WorldMapFrame_UpdateMap();
+		end
 	end
 end
 
@@ -1501,6 +1504,9 @@ function WatchFrame_MoveQuest(button, questLogIndex, numMoves)
 	end
 	ShiftQuestWatches(GetQuestWatchIndex(questLogIndex), GetQuestWatchIndex(VISIBLE_WATCHES[indexEnd]));
 	WatchFrame_Update();
+	if ( WorldMapFrame:IsShown() ) then
+		WorldMapFrame_UpdateMap();
+	end
 end
 
 
@@ -1521,9 +1527,10 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 	local numPopUps = 0;
 	local maxWidth = 0;
 	local i;
-	local AutoQuestPopUps = GetAutoQuestPopUps();
-	for i=1, #AutoQuestPopUps do
-		local questTitle, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(GetQuestLogIndexByID(AutoQuestPopUps[i]));
+	local numAutoQuestPopUps = GetNumAutoQuestPopUps();
+	for i=1, numAutoQuestPopUps do
+		local questID, popUpType = GetAutoQuestPopUp(i);
+		local questTitle, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID));
 				
 		if ( isComplete and isComplete > 0 ) then
 			isComplete = true;
@@ -1543,7 +1550,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 				WatchFrameAutoQuest_SlideIn(frame, 0.4);
 			end
 			
-			if (isComplete) then
+			if (isComplete and popUpType == "COMPLETE") then
 				frame.ScrollChild.QuestionMark:Show();
 				frame.ScrollChild.Exclamation:Hide();
 				frame.ScrollChild.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE);
@@ -1554,7 +1561,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 					frame.ScrollChild.Flash:Show();
 				end
 				frame.type="COMPLETED";
-			else
+			elseif (popUpType == "OFFER") then
 				frame.ScrollChild.QuestionMark:Hide();
 				frame.ScrollChild.Exclamation:Show();
 				frame.ScrollChild.TopText:SetText(QUEST_WATCH_POPUP_QUEST_DISCOVERED);
@@ -1581,7 +1588,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 			frame:SetPoint("LEFT", lineFrame, "LEFT", -30, 0);
 
 			frame.ScrollChild.QuestName:SetText(questTitle);
-			frame.questId = AutoQuestPopUps[i];		
+			frame.questId = questID;
 			
 			maxWidth = max(maxWidth, frame:GetWidth());
 			nextAnchor = frame;
@@ -1653,8 +1660,8 @@ function WatchFrameAutoQuest_SlideIn(frame, slideInTime)
 	frame:SetScript("OnUpdate", WatchFrameAutoQuest_OnUpdate);
 end
 
-function WatchFrameAutoQuest_AddPopUp(questId)
-	AddAutoQuestPopUp(questId);
+function WatchFrameAutoQuest_AddPopUp(questId, type)
+	AddAutoQuestPopUp(questId, type);
 	WatchFrame_Update(WatchFrame);
 	WatchFrame_Expand(WatchFrame);
 end

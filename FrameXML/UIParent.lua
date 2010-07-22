@@ -435,7 +435,7 @@ function ToggleCalendar()
 end
 
 function ToggleGuildFrame()
-	if ( IsInGuild() and GuildUIEnabled() ) then
+	if ( IsInGuild() ) then
 		GuildFrame_LoadUI();
 		if ( GuildFrame_Toggle ) then
 			GuildFrame_Toggle();
@@ -483,7 +483,6 @@ end
 
 
 -- UIParent_OnEvent --
-
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "VARIABLES_LOADED" ) then
@@ -3162,11 +3161,13 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 	local unitStatus, statusColor;
 	local debuffTotal = 0;
 	local name, rank, icon, count, debuffType, duration, expirationTime;
+	
+	local filter;
+	if ( checkCVar and SHOW_CASTABLE_BUFFS == "1" and UnitCanAssist("player", unit) ) then
+		filter = "RAID";
+	end
+	
 	for i=1, numBuffs do
-		local filter;
-		if ( checkCVar and GetCVarBool("showCastableBuffs") ) then
-			filter = "RAID";
-		end
 		name, rank, icon, count, debuffType, duration, expirationTime = UnitBuff(unit, i, filter);
 
 		local buffName = frameName..suffix..i;
@@ -3204,15 +3205,17 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	local debuffTotal = 0;
 	local name, rank, icon, count, debuffType, duration, expirationTime, caster;
 	local isEnemy = UnitCanAttack("player", unit);	
+	
+	local filter;
+	if ( checkCVar and SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
+		filter = "RAID";
+	end
+		
 	for i=1, numDebuffs do
 		if ( unit == "party"..i ) then
 			unitStatus = _G[frameName.."Status"];
 		end
 
-		local filter;
-		if ( checkCVar and GetCVarBool("showDispelDebuffs") ) then
-			filter = "RAID";
-		end
 		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i, filter);
 
 		local debuffName = frameName..suffix..i;

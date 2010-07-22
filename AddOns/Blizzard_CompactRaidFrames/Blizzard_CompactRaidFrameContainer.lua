@@ -10,20 +10,35 @@ function CompactRaidFrameContainer_OnLoad(self)
 	end
 	
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("UNIT_PET");
 	
-	self.unusedUnitFrames = {};
-	self.reservedUnitFrames = {};
-	self.unitFrameUnusedFunc = function(frame) --Have to make a wrapper to access self
+	self.frameReservations = {
+		raid		= CompactRaidFrameReservation_NewManager();
+		pet		= CompactRaidFrameReservation_NewManager();
+		flagged	= CompactRaidFrameReservation_NewManager();	--For Main Tank/Assist units
+		target	= CompactRaidFrameReservation_NewManager();	--Target of target for Main Tank/Main Assist
+	}
+
+	self.unitFrameUnusedFunc = function(frame)
 													CompactUnitFrame_SetUnit(frame, nil);
 													frame.inUse = false;
 												end;
 												
 	CompactRaidFrameContainer_SetFlowFilterFunction(self, function(token) return UnitExists(token) end)
+	self.displayPets = true;
+	self.displayFlaggedMembers = true;
 end
 
 function CompactRaidFrameContainer_OnEvent(self, event, ...)
 	if ( event == "RAID_ROSTER_UPDATE" ) then
 		CompactRaidFrameContainer_TryUpdate(self);
+	elseif ( event == "UNIT_PET" ) then
+		if ( self.displayPets ) then
+			local unit = ...;
+			if ( strfind(unit, "raid%d+$") ) then
+				CompactRaidFrameContainer_TryUpdate(self);
+			end
+		end
 	end
 end
 
@@ -70,9 +85,19 @@ end
 function CompactRaidFrameContainer_LayoutFrames(self)
 	--First, hide everything we currently use.
 	for i=1, #self.flowFrames do
-		self.flowFrames[i]:unusedFunc();
+		if ( type(self.flowFrames[i]) == "table" and self.flowFrames[i].unusedFunc ) then
+			self.flowFrames[i]:unusedFunc();
+		end
 	end
 	FlowContainer_RemoveAllObjects(self);
+	
+	FlowContainer_PauseUpdates(self);	--We don't want to update it every time we add an item.
+	
+	
+	if ( self.displayFlaggedMembers ) then
+		CompactRaidFrameContainer_AddFlaggedUnits(self);
+		FlowContainer_AddLineBreak(self);
+	end
 	
 	if ( self.groupMode == "discrete" ) then
 		CompactRaidFrameContainer_AddGroups(self);
@@ -81,9 +106,12 @@ function CompactRaidFrameContainer_LayoutFrames(self)
 	else
 		error("Unknown group mode");
 	end
+	
 	if ( self.displayPets ) then
 		CompactRaidFrameContainer_AddPets(self);
 	end
+	
+	FlowContainer_ResumeUpdates(self);
 	
 	CompactRaidFrameContainer_ReleaseAllReservedFrames(self);
 end
@@ -92,8 +120,6 @@ do
 	local usedGroups = {}; --Enclosure to make sure usedGroups isn't used anywhere else.
 	function CompactRaidFrameContainer_AddGroups(self)
 		RaidUtil_GetUsedGroups(usedGroups);
-		
-		FlowContainer_PauseUpdates(self);	--We don't want to update it every time we add an item.
 		
 		local numGroups = 0;
 		for groupNum, isUsed in ipairs(usedGroups) do
@@ -106,7 +132,6 @@ do
 			end
 		end
 		FlowContainer_SetOrientation(self, "vertical")
-		FlowContainer_ResumeUpdates(self);
 	end
 end
 
@@ -118,63 +143,99 @@ function CompactRaidFrameContainer_AddPlayers(self)
 	
 	table.sort(self.units, self.flowSortFunc);
 	
-	FlowContainer_PauseUpdates(self);	--We don't want to update it every time we add an item.
-	
 	for i=1, #self.units do
 		local unit = self.units[i];
 		if ( self.flowFilterFunc(unit) ) then
-			local frame = CompactRaidFrameContainer_GetUnusedUnitFrameForUnit(self, unit);
-			CompactUnitFrame_SetUnit(frame, unit);
-			FlowContainer_AddObject(self, frame);
+			CompactRaidFrameContainer_AddUnitFrame(self, unit, "raid");
 		end
 	end
 	
 	FlowContainer_SetOrientation(self, "vertical")
-	FlowContainer_ResumeUpdates(self);
 end
 
 function CompactRaidFrameContainer_AddPets(self)
-	--TODO
+	for i=1, MAX_RAID_MEMBERS do
+		local unit = "raidpet"..i;
+		if ( UnitExists(unit) ) then
+			CompactRaidFrameContainer_AddUnitFrame(self, unit, "pet");
+		end
+	end
+end
+
+local flaggedRoles = { "MAINTANK", "MAINASSIST" };
+function CompactRaidFrameContainer_AddFlaggedUnits(self)
+	for roleIndex = 1, #flaggedRoles do
+		local desiredRole = flaggedRoles[roleIndex]
+		for i=1, MAX_RAID_MEMBERS do
+			local unit = "raid"..i;
+			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
+			if ( role == desiredRole ) then
+				FlowContainer_BeginAtomicAdd(self);	--We want each unit to be right next to its target and target of target.
+				
+				CompactRaidFrameContainer_AddUnitFrame(self, unit, "flagged");
+				
+				--If we want to display the tank/assist target...
+				local targetFrame = CompactRaidFrameContainer_AddUnitFrame(self, unit.."target", "target");
+				CompactUnitFrame_SetUpdateAllOnUpdate(targetFrame, true);
+				
+				--Target of target?
+				local targetOfTargetFrame = CompactRaidFrameContainer_AddUnitFrame(self, unit.."targettarget", "target");
+				CompactUnitFrame_SetUpdateAllOnUpdate(targetOfTargetFrame, true);
+				
+				--Add some space before the next one.
+				FlowContainer_AddSpacer(self, 36);
+				
+				FlowContainer_EndAtomicAdd(self);
+			end
+		end
+	end		
 end
 
 --Utility Functions
-function CompactRaidFrameContainer_GetUnusedUnitFrameForUnit(self, unit)
-	local frame = CompactRaidFrameContainer_GetReservedFrame(self, unit);
+function CompactRaidFrameContainer_AddUnitFrame(self, unit, frameType)
+	local frame =CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType);
+	CompactUnitFrame_SetUnit(frame, unit);
+	FlowContainer_AddObject(self, frame);
+	
+	return frame;
+end
+
+local frameCreationSpecifiers = {
+	raid = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup },
+	pet =  { setUpFunc = DefaultCompactMiniFrameSetup },
+	flagged = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup },
+	target = { setUpFunc = DefaultCompactMiniFrameSetup },
+}
+
+local unitFramesCreated = 0;
+function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
+	local info = frameCreationSpecifiers[frameType];
+	assert(info);
+	assert(info.setUpFunc);
+	
+	--Get the mapping for re-using frames
+	local mapping;
+	if ( info.mapping ) then
+		mapping = info.mapping(unit);
+	else
+		mapping = unit;
+	end
+	
+	local frame = CompactRaidFrameReservation_GetFrame(self.frameReservations[frameType], mapping);
 	if ( not frame ) then
-		if ( #self.unusedUnitFrames > 0 ) then
-			frame = tremove(self.unusedUnitFrames, #self.unusedUnitFrames);
-		else
-			frame = CompactRaidFrameContainer_CreateUnitFrame(self);
-		end
-		CompactRaidFrameContainer_ReserveFrame(self, frame, unit);
+		unitFramesCreated = unitFramesCreated + 1;
+		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
+		CompactUnitFrame_SetUpFrame(frame, info.setUpFunc);
+		frame.unusedFunc = self.unitFrameUnusedFunc;
+		CompactRaidFrameReservation_RegisterReservation(self.frameReservations[frameType], frame, mapping);
 	end
 	frame.inUse = true;
 	return frame;
 end
 
-local unitFramesCreated = 0;
-function CompactRaidFrameContainer_CreateUnitFrame(self)
-	unitFramesCreated = unitFramesCreated + 1;
-	local frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
-	CompactUnitFrame_SetUpFrame(frame, DefaultCompactUnitFrameSetup);
-	frame.unusedFunc = self.unitFrameUnusedFunc;
-	return frame;
-end
-
-function CompactRaidFrameContainer_ReserveFrame(self, frame, unit)
-	self.reservedUnitFrames[UnitGUID(unit)] = frame;
-end
-
-function CompactRaidFrameContainer_GetReservedFrame(self, unit)
-	return self.reservedUnitFrames[UnitGUID(unit)];
-end
-
 function CompactRaidFrameContainer_ReleaseAllReservedFrames(self)
-	for reservation, frame in pairs(self.reservedUnitFrames) do
-		if ( frame and not frame.inUse ) then
-			self.reservedUnitFrames[reservation] = false;
-			tinsert(self.unusedUnitFrames, frame);
-		end
+	for key, reservations in pairs(self.frameReservations) do
+		CompactRaidFrameReservation_ReleaseUnusedReservations(reservations);
 	end
 end
 

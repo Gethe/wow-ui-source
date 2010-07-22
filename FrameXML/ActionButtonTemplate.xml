@@ -72,15 +72,9 @@
 			</Cooldown>
 		</Frames>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
-			<Size>
-				<AbsDimension x="66" y="66"/>
-			</Size>
 			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="-1"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" x="-15" y="15"/>
+				<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
 			</Anchors>
 		</NormalTexture>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>

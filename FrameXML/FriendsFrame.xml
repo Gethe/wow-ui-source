@@ -1358,7 +1358,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<ScrollFrame name="FriendsFrameFriendsScrollFrame" inherits="DynamicScrollFrameTemplate">
+					<ScrollFrame name="FriendsFrameFriendsScrollFrame" inherits="HybridScrollFrameTemplate">
 						<Size>
 							<AbsDimension x="302" y="307"/>
 						</Size>
@@ -1375,16 +1375,16 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="scrollBar">
+							<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate">
 								<Anchors>
 									<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT">
 										<Offset>
-											<AbsDimension x="-47" y="-115"/>
+											<AbsDimension x="-47" y="-114"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="6" y="15"/>
+											<AbsDimension x="6" y="14"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3012,7 +3012,7 @@
 									</OnLoad>
 								</Scripts>
 								<ScrollChild>
-									<EditBox name="AddFriendNoteEditBox" multiLine="true" letters="127" autoFocus="false">
+									<EditBox name="AddFriendNoteEditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
 										<Size x="258" y="1"/>
 										<Layers>
 											<Layer level="BORDER">
@@ -3421,7 +3421,7 @@
 							</OnLoad>
 						</Scripts>
 						<ScrollChild>
-							<EditBox name="FriendsFriendsNoteEditBox" multiLine="true" letters="127" autoFocus="false">
+							<EditBox name="FriendsFriendsNoteEditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
 								<Size x="234" y="1"/>
 								<Layers>
 									<Layer level="BORDER">

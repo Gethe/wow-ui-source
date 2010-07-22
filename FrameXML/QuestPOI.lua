@@ -205,6 +205,7 @@ function QuestPOI_HideButtons(parentName, buttonType, buttonIndex)
 				QuestPOI_DeselectButton(poiButton);
 			end
 			poiButton:Hide();
+			poiButton.questId = nil;
 		end
 	end
 end
@@ -223,6 +224,7 @@ function QuestPOI_HideAllButtons(parentName)
 					QuestPOI_DeselectButton(poiButton);
 				end
 				poiButton:Hide();
+				poiButton.questId = nil;
 			end
 		end
 	end

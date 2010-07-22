@@ -17,6 +17,21 @@ function MicroButtonTooltipText(text, action)
 	
 end
 
+
+
+function UpdateMicroButtonsParent(parent)
+	CharacterMicroButton:SetParent(parent);
+	SpellbookMicroButton:SetParent(parent);
+	TalentMicroButton:SetParent(parent);
+	QuestLogMicroButton:SetParent(parent);
+	MainMenuMicroButton:SetParent(parent);
+	PVPMicroButton:SetParent(parent);
+	SocialsMicroButton:SetParent(parent);
+	LFDMicroButton:SetParent(parent);
+	HelpMicroButton:SetParent(parent);
+	AchievementMicroButton:SetParent(parent);
+end
+
 function UpdateMicroButtons()
 	local playerLevel = UnitLevel("player");
 	if ( CharacterFrame:IsShown() ) then
@@ -77,7 +92,7 @@ function UpdateMicroButtons()
 	if ( GuildFrame and GuildFrame:IsShown() ) then
 		SocialsMicroButton:SetButtonState("PUSHED", 1);
 	else
-		if ( GuildUIEnabled() and IsInGuild() ) then
+		if ( IsInGuild() ) then
 			SocialsMicroButton:Enable();
 			SocialsMicroButton:SetButtonState("NORMAL");
 		else

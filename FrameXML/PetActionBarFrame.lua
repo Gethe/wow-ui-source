@@ -300,7 +300,7 @@ function PetActionButton_OnModifiedClick (self, button)
 end
 
 function PetActionButton_OnDragStart (self)
-	if ( LOCK_ACTIONBAR ~= "1" ) then
+	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
 		self:SetChecked(0);
 		PickupPetAction(self:GetID());
 		PetActionBar_Update();
@@ -308,11 +308,9 @@ function PetActionButton_OnDragStart (self)
 end
 
 function PetActionButton_OnReceiveDrag (self)
-	if ( LOCK_ACTIONBAR ~= "1" ) then
-		self:SetChecked(0);
-		PickupPetAction(self:GetID());
-		PetActionBar_Update();
-	end
+	self:SetChecked(0);
+	PickupPetAction(self:GetID());
+	PetActionBar_Update();
 end
 
 function PetActionButton_OnEnter (self)

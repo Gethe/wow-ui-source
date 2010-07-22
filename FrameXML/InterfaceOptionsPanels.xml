@@ -1593,38 +1593,43 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
-			<CheckButton name="$parentNPCNames" inherits="InterfaceOptionsCheckButtonTemplate">
+			<Frame name="$parentNPCNamesDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-2"/>
+							<AbsDimension x="-10" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="SHOW_NPC_NAMES">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "UnitNameNPC";
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsNPCNamesDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-			</CheckButton>				
-			<CheckButton name="$parentNonCombatCreature" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentNPCNames" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-2"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "UnitNameNonCombatCreatureName";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>		
+			</Frame>
 			<CheckButton name="$parentGuilds" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="TOPLEFT">
@@ -1657,14 +1662,30 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>		
+			<CheckButton name="$parentNonCombatCreature" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitles" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "UnitNameNonCombatCreatureName";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>		
 			<Frame name="$parentFriendly">
 				<Size>
 					<AbsDimension x="135" y="110"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentNonCombatCreature" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentNPCNamesDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-5"/>
+							<AbsDimension x="10" y="-10"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2831,7 +2852,11 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showDispelDebuffs";
-						self.setFunc = BlizzardOptionsPanel_UpdateRaidPullouts;
+						self.uvar = "SHOW_DISPELLABLE_DEBUFFS";
+						self.setFunc = function()
+							BlizzardOptionsPanel_UpdateRaidPullouts();
+							BlizzardOptionsPanel_UpdateDebuffFrames();
+						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2848,7 +2873,11 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showCastableBuffs";
-						self.setFunc = BlizzardOptionsPanel_UpdateRaidPullouts;
+						self.uvar = "SHOW_CASTABLE_BUFFS";
+						self.setFunc = function()
+							BlizzardOptionsPanel_UpdateRaidPullouts();
+							TargetFrame_UpdateAuras(TargetFrame);
+						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

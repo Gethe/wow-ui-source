@@ -155,7 +155,7 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 			if ( not chatFrame.minimized ) then
 				chatTab:Show();
 			end
-		else
+		elseif ( not chatFrame.isTemporary ) then
 			FCF_Close(chatFrame);
 		end
 	end

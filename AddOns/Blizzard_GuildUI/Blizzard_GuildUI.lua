@@ -6,6 +6,8 @@ function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("GUILD_XP_UPDATE");
+	self:RegisterEvent("GUILD_PERK_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	PanelTemplates_SetNumTabs(self, 5);
 	PanelTemplates_DisableTab(self, 3);		-- no news for now
 	PanelTemplates_DisableTab(self, 4);		-- no rewards for now
@@ -46,6 +48,10 @@ function GuildFrame_OnEvent(self, event, ...)
 		if ( not IsInGuild() and self:IsShown() ) then
 			HideUIPanel(self);
 		end
+	elseif ( event == "GUILD_PERK_UPDATE" ) then
+		GuildFrame_UpdateLevel();
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		QueryGuildXP();
 	end
 end
 
@@ -103,7 +109,7 @@ function GuildFrame_ShowPanel(frameName)
 end
 
 function GuildFrame_RegisterPopup(frame)
-	tinsert(GUILDFRAME_PANELS, frame:GetName());
+	tinsert(GUILDFRAME_POPUPS, frame:GetName());
 end
 
 function GuildFramePopup_Show(frame)

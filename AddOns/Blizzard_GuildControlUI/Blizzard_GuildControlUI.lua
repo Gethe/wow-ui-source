@@ -3,7 +3,6 @@ BANK_TAB_OFFSET = 4;
 BANK_TAB_HEIGHT = BANK_TAB_OFFSET + 73;
 NUM_RANK_FLAGS = 18;
 MAX_GUILDRANKS = 10;
-MAX_BANK_TABS = 6;
 
 
 function GuildControlUI_OnLoad(self)
@@ -68,7 +67,7 @@ function GuildControlUI_BankTabPermissions_Update(self)
 	local canBuyTab = false;
 	local hasScrollBar = true;
 	
-	if numTabs < MAX_BANK_TABS then
+	if numTabs < MAX_GUILDBANK_TABS then
 		scrollHeight = scrollHeight + BANK_TAB_HEIGHT;
 		canBuyTab = true;
 		hasScrollBar =  numTabs > 3;		
@@ -133,7 +132,7 @@ function GuildControlUI_RankPermissions_Update(self)
 			checkbox:SetChecked(flags[i]);
 		end
 	end		
-	self.goldBox:SetText(GetGuildBankWithdrawLimit());
+	self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
 end
 
 

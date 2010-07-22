@@ -742,7 +742,7 @@
 									<Anchor point="LEFT" relativeTo="$parentKeystone4" relativePoint="RIGHT" x="10"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentSolveButton" inherits="UIPanelButtonTemplate2" text="ARCHAEOLOGY_SOLVE" parentKey="solveButton">
+							<Button name="$parentSolveButton" inherits="UIPanelButtonTemplate2" text="SOLVE" parentKey="solveButton">
 								<Size x="90" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-10" y="20"/>

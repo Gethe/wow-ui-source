@@ -18,6 +18,66 @@
 			</BackgroundInsets>
 		</Backdrop>
 		<Frames>
+			<Frame name="$parentContainerResizeFrame" resizable="true" dontSavePosition="true" parentKey="containerResizeFrame">
+				<Size x="400" y="200"/>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<Button name="$parentMover" parentKey="mover" text="DRAG_ME_TO_MOVE">
+						<Size x="0" y="16"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForDrag("LeftButton");
+							</OnLoad>
+							<OnDragStart>
+								CompactRaidFrameManager_ResizeFrame_OnDragStart(self:GetParent():GetParent());
+							</OnDragStart>
+							<OnDragStop>
+								CompactRaidFrameManager_ResizeFrame_OnDragStop(self:GetParent():GetParent());
+							</OnDragStop>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+					</Button>
+					<Button name="$parentResizer" parentKey="resizer">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseDown>
+								self:SetButtonState("PUSHED", true);
+								SetCursor("UI-Cursor-Size");	--Hide the cursor
+
+								self:GetHighlightTexture():Hide();
+								
+								CompactRaidFrameManager_ResizeFrame_OnResizeStart(self:GetParent():GetParent());
+							</OnMouseDown>
+							<OnMouseUp>
+								self:SetButtonState("NORMAL", false);
+								SetCursor(nil); --Show the cursor again
+
+								self:GetHighlightTexture():Show();
+								
+								CompactRaidFrameManager_ResizeFrame_OnResizeStop(self:GetParent():GetParent());
+							</OnMouseUp>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
+						<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
+					</Button>
+				</Frames>
+			</Frame>
 			<Button name="$parentToggleButton" parentKey="toggleButton" text="&lt;">
 				<Size x="15" y="15"/>
 				<Anchors>
@@ -32,33 +92,60 @@
 			</Button>
 			<Frame name="$parentOptionsFrame" parentKey="optionsFrame" setAllPoints="true">
 				<Frames>
-					<Button name="$parentManagedModeManaged" inherits="UIPanelButtonTemplate" text="Managed">
+					<Button name="$parentGroupModeDiscrete" inherits="UIPanelButtonTemplate" text="Discrete">
 						<Size x="80" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="20" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CompactRaidFrameManager_SetSetting("GroupMode", "discrete");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentGroupModeFlush" inherits="UIPanelButtonTemplate" text="Flush">
+						<Size x="80" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentGroupModeDiscrete" relativePoint="RIGHT" x="10" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CompactRaidFrameManager_SetSetting("GroupMode", "flush");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentLockedModeLock" inherits="UIPanelButtonTemplate" text="Lock">
+						<Size x="80" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentGroupModeDiscrete" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CompactRaidFrameManager_SetSetting("Locked", "lock");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentLockedModeUnlock" inherits="UIPanelButtonTemplate" text="Unlock">
+						<Size x="80" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentLockedModeLock" relativePoint="RIGHT" x="10" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CompactRaidFrameManager_SetSetting("Locked", "unlock");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentManagedModeManaged" inherits="UIPanelButtonTemplate" text="Managed">
+						<Size x="80" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentLockedModeLock" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentManagedModeFree" inherits="UIPanelButtonTemplate" text="Free">
 						<Size x="80" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentManagedModeManaged" relativePoint="RIGHT" x="10" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:Disable();
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentLockedModeLock" inherits="UIPanelButtonTemplate" text="Lock">
-						<Size x="80" y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentManagedModeManaged" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentLockedModeUnlock" inherits="UIPanelButtonTemplate" text="Unlock">
-						<Size x="80" y="20"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentLockedModeLock" relativePoint="RIGHT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -88,36 +175,27 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentGroupModeDiscrete" inherits="UIPanelButtonTemplate" text="Discrete">
-						<Size x="80" y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSortModeByGroup" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CompactRaidFrameManager_SetSetting("GroupMode", "discrete");
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentGroupModeFlush" inherits="UIPanelButtonTemplate" text="Flush">
-						<Size x="80" y="20"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentGroupModeDiscrete" relativePoint="RIGHT" x="10" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CompactRaidFrameManager_SetSetting("GroupMode", "flush");
-							</OnClick>
-						</Scripts>
-					</Button>
 					<Button name="$parentInitiateRolePoll" inherits="UIPanelButtonTemplate" text="Role Poll">
-						<Size x="80" y="20"/>
+						<Size x="120" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
 								InitiateRolePoll();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentResetPosition" inherits="UIPanelButtonTemplate" text="Reset Position">
+						<Size x="120" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parentInitiateRolePoll" relativePoint="TOP" x="0" y="10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								local manager = self:GetParent():GetParent();
+								manager.dynamicContainerPosition = true;
+								CompactRaidFrameManager_UpdateContainerBounds(manager);
 							</OnClick>
 						</Scripts>
 					</Button>

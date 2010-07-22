@@ -993,6 +993,7 @@
 			<OnLoad>
 				ChatFrame_OnLoad(self);
 				FloatingChatFrame_OnLoad(self);
+				self:SetClampRectInsets(-35, 35, 52, -50);
 				self.isStaticDocked = true;
 			</OnLoad>
 		</Scripts>

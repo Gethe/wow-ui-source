@@ -57,31 +57,38 @@
 		<Size>
 			<AbsDimension x="505" y="43"/>
 		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="40" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="BonusActionBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-					<Size x="252" y="43"/>
+				<Texture name="$parentTexture1">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="0.015625" right="1.0" top="0.83203125" bottom="1.0"/>
 				</Texture>
-				<Texture name="BonusActionBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-					<Size x="253" y="43"/>
+				<Texture name="$parentTexture2">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="BonusActionBarTexture0" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeTo="$parentTexture1" relativePoint="RIGHT"/>
 					</Anchors>
-					<TexCoords left="0" right="0.98828125" top="0.58203125" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentTexture3">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentTexture2" relativePoint="RIGHT"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="slideout">
+				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
+				<Scripts>
+					<OnPlay>
+						BonusActionBarFrame:Show();
+					</OnPlay>
+					<OnFinished>
+						ActionBar_AnimTransitionFinished(BonusActionBarFrame);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Frames>
 			<CheckButton name="BonusActionButton1" inherits="BonusActionButtonTemplate" id="1">
 				<Anchors>
@@ -195,7 +202,6 @@
 		<Scripts>
 			<OnLoad function="BonusActionBar_OnLoad"/>
 			<OnEvent function="BonusActionBar_OnEvent"/>
-			<OnUpdate function="BonusActionBar_OnUpdate"/>
 		</Scripts>
 	</Frame>
 	<Frame name="ShapeshiftBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">

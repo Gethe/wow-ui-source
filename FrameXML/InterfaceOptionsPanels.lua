@@ -1224,6 +1224,98 @@ NamePanelOptions = {
 	nameplateAllowOverlap = { text = "UNIT_NAMEPLATES_ALLOW_OVERLAP" },
 }
 
+function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local value = "2";
+		if ( GetCVar("UnitNameNPC") == "1" ) then
+			value = "2";
+		elseif ( GetCVar("UnitNameFriendlySpecialNPCName") == "1" ) then
+			value = "1";
+		else
+			value = "3";
+		end
+		self.defaultValue = "2";
+		self.oldValue = value;
+		self.value = value;
+		self.tooltip = OPTION_TOOLTIP_UNIT_NAME_NPC;
+
+		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsNPCNamesDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				UIDropDownMenu_SetSelectedValue(self, value);
+				if ( value == "1" ) then
+					SetCVar("UnitNameFriendlySpecialNPCName", "1");
+					SetCVar("UnitNameNPC", "0");
+				elseif ( value == "2" ) then
+					SetCVar("UnitNameFriendlySpecialNPCName", "0");
+					SetCVar("UnitNameNPC", "1");
+				else
+					SetCVar("UnitNameFriendlySpecialNPCName", "0");
+					SetCVar("UnitNameNPC", "0");
+				end					
+			end;	
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsNPCNamesDropDown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsNPCNamesDropDown_OnClick(self)
+	InterfaceOptionsNamesPanelNPCNamesDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsNPCNamesDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = NPC_NAMES_DROPDOWN_TRACKED;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "1";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_TRACKED;
+	info.tooltipText = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NPC_NAMES_DROPDOWN_ALL;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_ALL;
+	info.tooltipText = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NPC_NAMES_DROPDOWN_NONE;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "3";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_NONE;
+	info.tooltipText = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+end
+
+
 -- [[ Combat Text Options Panel ]] --
 
 FCTPanelOptions = {
@@ -1426,6 +1518,28 @@ function BlizzardOptionsPanel_UpdateRaidPullouts ()
 			RaidPullout_Update(frame);
 		end
 	end
+end
+
+function BlizzardOptionsPanel_UpdateDebuffFrames()
+	local frame;
+	-- Target frame and its target-of-target
+	frame = TargetFrame;
+	TargetFrame_UpdateAuras(frame);
+	TargetofTarget_Update(frame.totFrame);
+	-- Focus frame and its target-of-target
+	frame = FocusFrame;
+	TargetFrame_UpdateAuras(frame);
+	TargetofTarget_Update(frame.totFrame);
+	-- Party frames and their pets
+	for i = 1, MAX_PARTY_MEMBERS do
+		if ( GetPartyMember(i) ) then
+			frame = _G["PartyMemberFrame"..i];
+			PartyMemberFrame_UpdateMember(frame);
+			PartyMemberFrame_UpdatePet(frame);
+		end
+	end
+	-- own pet
+	PetFrame_Update(PetFrame);
 end
 
 -- [[ Camera Options Panel ]] --
