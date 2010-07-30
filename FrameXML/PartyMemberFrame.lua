@@ -109,7 +109,7 @@ function PartyMemberFrame_OnLoad (self)
 end
 
 function PartyMemberFrame_UpdateMember (self)
-	if ( GetCVarBool("useCompactPartyFrames") or (HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0) ) then
+	if ( GetCVarBool("useCompactPartyFrames") or (GetNumRaidMembers() > 0) ) then
 		self:Hide();
 		return;
 	end
@@ -552,7 +552,7 @@ function UpdatePartyMemberBackground ()
 	if ( not PartyMemberBackground ) then
 		return;
 	end
-	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and not(GetCVarBool("useCompactPartyFrames") or (HIDE_PARTY_INTERFACE == "1" and (GetNumRaidMembers() > 0))) ) then
+	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and not(GetCVarBool("useCompactPartyFrames") or (GetNumRaidMembers() > 0)) ) then
 		if ( _G["PartyMemberFrame"..GetNumPartyMembers().."PetFrame"]:IsShown() ) then
 			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -21);
 		else

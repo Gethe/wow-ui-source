@@ -260,9 +260,6 @@ function MoneyFrame_UpdateMoney(moneyFrame)
 		if ( money ) then
 			MoneyFrame_Update(moneyFrame:GetName(), money);
 		end
-		if ( moneyFrame.hasPickup == 1 ) then
-			UpdateCoinPickupFrame(money);
-		end
 	else
 		message("Error moneyType not set");
 	end

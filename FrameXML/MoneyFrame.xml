@@ -28,9 +28,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(1, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
@@ -69,9 +67,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_SILVER, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
@@ -110,9 +106,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_GOLD, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
@@ -151,7 +145,7 @@
 			</OnShow>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
-					CoinPickupFrame:Hide();
+					MoneyInputFrame_ClosePopup();
 					self.hasPickup = 0;
 				end
 			</OnHide>
@@ -175,9 +169,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(1, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
@@ -216,9 +208,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_SILVER, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
@@ -257,9 +247,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_GOLD, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
@@ -298,7 +286,7 @@
 			</OnShow>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
-					CoinPickupFrame:Hide();
+					MoneyInputFrame_ClosePopup();
 					self.hasPickup = 0;
 				end
 			</OnHide>

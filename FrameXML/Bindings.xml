@@ -686,10 +686,10 @@
 		ToggleGuildFrame();
 	</Binding>
 	<Binding name="TOGGLECHATTAB">
-		ToggleFriendsFrame(4);
+		ToggleFriendsFrame(3);
 	</Binding>
 	<Binding name="TOGGLERAIDTAB">
-		ToggleFriendsFrame(5);
+		ToggleFriendsFrame(4);
 	</Binding>
 	<Binding name="TOGGLELFGPARENT"> <!--Keeping the name as the old LFG so that people's bindings aren't reset -->
 		ToggleLFDParentFrame();

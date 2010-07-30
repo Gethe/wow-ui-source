@@ -314,7 +314,6 @@ uvarInfo = {
 	["SHOW_PARTY_PETS"] = { default = "1", cvar = "showPartyPets", event = "SHOW_PARTY_PETS_TEXT" },
 	["QUEST_FADING_DISABLE"] = { default = "0", cvar = "questFadingDisable", event = "SHOW_QUEST_FADING_TEXT" },
 	["SHOW_PARTY_BACKGROUND"] = { default = "0", cvar = "showPartyBackground", event = "SHOW_PARTY_BACKGROUND_TEXT" },
-	["HIDE_PARTY_INTERFACE"] = { default = "0", cvar = "hidePartyInRaid", event = "HIDE_PARTY_INTERFACE_TEXT" },
 	["SHOW_TARGET_OF_TARGET"] = { default = "0", cvar = "showTargetOfTarget", event = "SHOW_TARGET_OF_TARGET_TEXT" },
 	["SHOW_TARGET_OF_TARGET_STATE"] = { default = "5", cvar = "targetOfTargetMode", event = "SHOW_TARGET_OF_TARGET_STATE" },
 	["WORLD_PVP_OBJECTIVES_DISPLAY"] = { default = "2", cvar = "displayWorldPVPObjectives", event = "WORLD_PVP_OBJECTIVES_DISPLAY" },

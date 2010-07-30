@@ -7,17 +7,17 @@ end
 
 function MovieFrame_OnEvent(self, event, ...)
 	if ( event == "PLAY_MOVIE" ) then
-		local name, volume = ...;
+		local movieID = ...;
 		if ( name ) then
-			MovieFrame_PlayMovie(self, name, volume);
+			MovieFrame_PlayMovie(self, movieID);
 		end
 	end
 end
 
-function MovieFrame_PlayMovie(self, name, volume)
+function MovieFrame_PlayMovie(self, movieID)
 	volume = volume or 150;
 	self:Show();
-	if (not self:StartMovie(name, volume) ) then
+	if (not self:StartMovie(movieID) ) then
 		self:Hide();
 		GameMovieFinished();
 	end

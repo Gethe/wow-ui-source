@@ -10,6 +10,7 @@ PET_ATTACK_TEXTURE = "Interface\\Icons\\Ability_GhoulFrenzy";
 PET_FOLLOW_TEXTURE = "Interface\\Icons\\Ability_Tracking";
 PET_WAIT_TEXTURE = "Interface\\Icons\\Spell_Nature_TimeStop";
 PET_DISMISS_TEXTURE = "Interface\\Icons\\Spell_Shadow_Teleport";
+PET_MOVE_TO_TEXTURE = "Interface\\Icons\\Spell_Holy_Stoicism";
 
 function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_CONTROL_LOST");
@@ -318,13 +319,14 @@ function PetActionButton_OnEnter (self)
 		return;
 	end
 	local uber = GetCVar("UberTooltips");
-	if ( self.isToken or (uber == "0") ) then
-		if ( uber == "0" ) then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( uber == "0" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local bindingText = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), "KEY_");
+		if (bindingText and bindingText ~= "") then
+			GameTooltip:SetText(self.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..bindingText..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
 		else
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip:SetText(self.tooltipName, 1.0, 1.0, 1.0);
 		end
-		GameTooltip:SetText(self.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), "KEY_")..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
 		if ( self.tooltipSubtext ) then
 			GameTooltip:AddLine(self.tooltipSubtext, "", 0.5, 0.5, 0.5);
 		end

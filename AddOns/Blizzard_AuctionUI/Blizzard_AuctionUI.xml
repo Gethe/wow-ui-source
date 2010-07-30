@@ -927,15 +927,6 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="BidBidText" inherits="GameFontHighlightSmall" text="BID">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="-115" y="21"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
 						<FontString name="BidSearchCountText" inherits="GameFontHighlightSmall">
 							<Anchors>
 								<Anchor point="BOTTOM">
@@ -967,7 +958,7 @@
 					</Button>
 					<Button name="BidLevelSort" inherits="AuctionSortButtonTemplate" text="LEVEL_ABBR">
 						<Size>
-							<AbsDimension x="65" y="19"/>
+							<AbsDimension x="61" y="19"/>
 						</Size>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="BidQualitySort" relativePoint="RIGHT">
@@ -1001,7 +992,7 @@
 					</Button>
 					<Button name="BidBuyoutSort" inherits="AuctionSortButtonTemplate" text="BUYOUT_PRICE">
 						<Size>
-							<AbsDimension x="162" y="19"/>
+							<AbsDimension x="166" y="19"/>
 						</Size>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="BidDurationSort" relativePoint="RIGHT">
@@ -1182,10 +1173,23 @@
 						<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-15" y="18"/>
+									<AbsDimension x="25" y="18"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="BidBidText" inherits="GameFontHighlightSmall" text="BID" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="-10" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 					</Frame>
 					<Button name="BidCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
@@ -1666,7 +1670,6 @@
 						<Scripts>
 							<OnLoad>
 								MoneyInputFrame_SetOnValueChangedFunc(self, AuctionsFrameAuctions_ValidateAuction);
-								StartPriceGold:SetMaxLetters(6);
 							</OnLoad>
 						</Scripts>
 					</Frame>

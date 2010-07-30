@@ -1497,7 +1497,6 @@ StatusTextPanelOptions = {
 
 UnitFramePanelOptions = {
 	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
-	hidePartyInRaid = { text = "HIDE_PARTY_INTERFACE_TEXT" },
 	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
 	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
@@ -1540,6 +1539,109 @@ function BlizzardOptionsPanel_UpdateDebuffFrames()
 	end
 	-- own pet
 	PetFrame_Update(PetFrame);
+end
+
+-- [[ RaidFrame Options Panel ]] --
+RaidFramePanelOptions = {
+	raidOptionKeepGroupsTogether = { text = "KEEP_GROUPS_TOGETHER" },
+	raidOptionDisplayPets = { text = "DISPLAY_RAID_PETS" },
+	raidOptionDisplayMainTankAndAssist = { text = "DISPLAY_MT_AND_MA" },
+	raidFramesDisplayIncomingHeals = { text = "DISPLAY_INCOMING_HEALS" },
+	raidFramesDisplayAggroHighlight = { text = "DISPLAY_RAID_AGGRO_HIGHLIGHT" },
+	raidFramesDisplayOnlyDispellableDebuffs = { text = "DISPLAY_ONLY_DISPELLABLE_DEBUFFS" },
+}
+
+function InterfaceOptionsRaidFramePanelSortBy_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "raidOptionSortMode";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_RAID_SORT_BY_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 90);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelSortBy_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+		CompactRaidFrameManager_SetSetting("SortMode", value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				CompactRaidFrameManager_SetSetting("SortMode", value);
+				self.tooltip = _G["OPTION_RAID_SORT_BY_"..strupper(value)];
+				UIDropDownMenu_SetSelectedValue( InterfaceOptionsRaidFramePanelSortBy, value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelSortBy_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsRaidFramePanelSortBy_OnClick(self)
+	InterfaceOptionsRaidFramePanelSortBy:SetValue(self.value);
+end
+
+function InterfaceOptionsRaidFramePanelSortBy_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsRaidFramePanelSortBy);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = RAID_SORT_ROLE;
+	info.func = InterfaceOptionsRaidFramePanelSortBy_OnClick;
+	info.value = "role";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_SORT_ROLE;
+	info.tooltipText = OPTION_RAID_SORT_BY_ROLE;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = RAID_SORT_GROUP;
+	info.func = InterfaceOptionsRaidFramePanelSortBy_OnClick;
+	info.value = "group";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = RAID_SORT_GROUP;
+	info.tooltipText = OPTION_RAID_SORT_BY_GROUP;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = RAID_SORT_ALPHABETICAL;
+	info.func = InterfaceOptionsRaidFramePanelSortBy_OnClick;
+	info.value = "alphabetical";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = RAID_SORT_ALPHABETICAL;
+	info.tooltipText = OPTION_RAID_SORT_BY_ALPHABETICAL;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName)
+	return function(value)
+		local enabled;
+		if(value and value ~= "0") then
+			enabled = true;
+		end
+		DefaultCompactUnitFrameOptions[optionName] = enabled;
+		CompactRaidFrameContainer_ApplyToAllUnitFrames(CompactRaidFrameContainer, CompactUnitFrame_UpdateAll);
+	end
 end
 
 -- [[ Camera Options Panel ]] --

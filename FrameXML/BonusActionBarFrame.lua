@@ -166,9 +166,10 @@ function ShowBonusActionBar (force)
 end
 
 function HideBonusActionBar (force)
-	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+	if ( BonusActionBarFrame:IsShown() and (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		
 		local oldbarInfo = BonusActionBarTypes[BonusActionBarFrame.currentType];
+		if not oldbarInfo then return end
 		
 		if not oldbarInfo.showDefaultBar then
 			BonusActionBarFrame.nextAnimBar = MainMenuBar;

@@ -1,0 +1,75 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="PaladinPowerBar.lua"/>
+
+  
+  
+  <Frame name="HolyBallTemplate" virtual="true">
+	<Size x="30" y="30"/>
+    <Layers>
+		<Layer level="OVERLAY">
+			<Texture>
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+				<Size x="30" y="5"/>
+				<Color r="1" g="1" b="1"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Animations>
+		<AnimationGroup parentKey="activate">
+			<Rotation radians="1000" duration="100" order="1" looping="REPEAT"/>
+			<Scripts>
+				<OnPlay>
+					self:GetParent():Show();
+				</OnPlay>
+				<OnFinished>
+				</OnFinished>
+			</Scripts>
+		</AnimationGroup>
+		<AnimationGroup parentKey="deactivate">
+			<Rotation radians="1.0" duration="0.3" order="1" looping="REPEAT"/>
+			<Scripts>
+				<OnPlay>
+					self:GetParent():Show();
+				</OnPlay>
+				<OnFinished>
+				</OnFinished>
+			</Scripts>
+		</AnimationGroup>
+	</Animations>
+  </Frame>
+
+  <Frame name="HolyBallBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true">
+    <Size>
+      <AbsDimension x="110" y="25"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
+    </Anchors>
+	<Frames>
+		<Frame name="$parentHolyBall1" inherits="HolyBallTemplate" parentKey="holyBall1">
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</Frame>
+		<Frame name="$parentHolyBall2" inherits="HolyBallTemplate" parentKey="holyBall2">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentHolyBall1" relativePoint="TOPRIGHT" x="10"/>
+			</Anchors>
+		</Frame>
+		<Frame name="$parentHolyBall3" inherits="HolyBallTemplate" parentKey="holyBall3">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentHolyBall2" relativePoint="TOPRIGHT" x="10"/>
+			</Anchors>
+		</Frame>
+	</Frames>
+    <Scripts>
+      <OnLoad function="HolyBallBar_OnLoad"/>
+      <OnEvent function="HolyBallBar_OnEvent"/>
+    </Scripts>
+  </Frame>
+</Ui>
+
+

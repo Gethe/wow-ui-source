@@ -551,7 +551,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="183" y="86"/>
+							<AbsDimension x="187" y="86"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

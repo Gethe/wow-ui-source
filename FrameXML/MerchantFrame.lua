@@ -13,6 +13,8 @@ function MerchantFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
+	
+	MoneyFrame_SetMaxDisplayWidth(MerchantMoneyFrame, 160);
 end
 
 function MerchantFrame_OnEvent(self, event, ...)

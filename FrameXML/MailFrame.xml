@@ -1157,7 +1157,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="183" y="84"/>
+									<AbsDimension x="187" y="84"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1770,18 +1770,14 @@
 										</FontString>
 										<FontString name="OpenMailInvoiceSalePrice" inherits="InvoiceTextFontNormal" text="SALE_PRICE_COLON">
 											<Anchors>
-												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="125" y="-26"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPRIGHT" x="-27" y="-77"/>
 											</Anchors>
 										</FontString>
 										<FontString name="OpenMailInvoiceDeposit" inherits="InvoiceTextFontNormal" text="DEPOSIT_COLON">
 											<Anchors>
 												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="-13"/>
+														<AbsDimension x="0" y="-22"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -1790,16 +1786,7 @@
 											<Anchors>
 												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="-13"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="OpenMailInvoiceAmountReceived" inherits="InvoiceTextFontNormal" text="AMOUNT_RECEIVED_COLON">
-											<Anchors>
-												<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="0" y="-13"/>
+														<AbsDimension x="0" y="-22"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -1811,11 +1798,20 @@
 											<Anchors>
 												<Anchor point="TOP" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="9"/>
+														<AbsDimension x="0" y="-22"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
-										</Texture>
+										</Texture>										
+										<FontString name="OpenMailInvoiceAmountReceived" inherits="InvoiceTextFontNormal" text="AMOUNT_RECEIVED_COLON">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativeTo="OpenMailArithmeticLine" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="-14" y="10"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
 										<FontString name="OpenMailInvoiceNotYetSent" inherits="InvoiceTextFontNormal" text="AUCTION_INVOICE_FUNDS_NOT_YET_SENT">
 											<Anchors>
 												<Anchor point="CENTER" relativeTo="OpenMailInvoicePurchaser" relativePoint="BOTTOMLEFT">
@@ -1839,11 +1835,7 @@
 								<Frames>
 									<Frame name="OpenMailTransactionAmountMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceAmountReceived" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="130" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceAmountReceived" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -1854,11 +1846,7 @@
 									</Frame>
 									<Frame name="OpenMailDepositMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="130" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceDeposit" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
@@ -1882,11 +1870,7 @@
 									</Frame>
 									<Frame name="OpenMailHouseCutMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="130" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceHouseCut" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
@@ -1910,11 +1894,7 @@
 									</Frame>
 									<Frame name="OpenMailSalePriceMoneyFrame" inherits="SmallMoneyFrameTemplate">
 										<Anchors>
-											<Anchor point="RIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="130" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPRIGHT" relativeTo="OpenMailInvoiceSalePrice" relativePoint="BOTTOMRIGHT" x="16" y="-4"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>

@@ -208,7 +208,7 @@ local function PickupAny(kind, target, detail, ...)
     elseif kind == 'money' then
         PickupPlayerMoney(target)
     elseif kind == 'spell' then
-        PickupSpell(target, detail)
+        PickupSpellBookItem(target, detail)
     elseif kind == 'companion' then
         PickupCompanion(target, detail)
         elseif kind == 'equipmentset' then

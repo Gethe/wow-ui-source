@@ -549,13 +549,13 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="26" y="-73"/>
+							<AbsDimension x="24" y="-73"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MoneyInputFrame_SetMode(self, "compact");
+						MoneyInputFrame_SetCompact(self, 62, 7);
 						MoneyInputFrame_SetOnValueChangedFunc(self, TradeFrame_UpdateMoney);
 						self:RegisterEvent("PLAYER_TRADE_MONEY");
 					</OnLoad>
@@ -568,7 +568,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-40" y="-78"/>
+							<AbsDimension x="-30" y="-78"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -576,6 +576,7 @@
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
 						MoneyFrame_SetType(self, "TARGET_TRADE");
+						MoneyFrame_SetMaxDisplayWidth(self, 160);
 					</OnLoad>
 				</Scripts>
 			</Frame>

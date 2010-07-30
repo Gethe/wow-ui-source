@@ -2830,6 +2830,25 @@ StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["PICKUP_MONEY"] = {
+	text = AMOUNT_TO_PICKUP,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		MoneyInputFrame_PickupPlayerMoney(self.moneyInputFrame);
+	end,
+	OnHide = function(self)
+		MoneyInputFrame_ResetMoney(self.moneyInputFrame);
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent():GetParent();
+		MoneyInputFrame_PickupPlayerMoney(parent.moneyInputFrame);
+		parent:Hide();
+	end,
+	hasMoneyInputFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
@@ -3088,17 +3107,18 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		_G[dialog:GetName().."MoneyFrame"]:Show();
 		_G[dialog:GetName().."MoneyInputFrame"]:Hide();
 	elseif ( info.hasMoneyInputFrame ) then
-		_G[dialog:GetName().."MoneyInputFrame"]:Show();
+		moneyInputFrame = _G[dialog:GetName().."MoneyInputFrame"];
+		moneyInputFrame:Show();
 		_G[dialog:GetName().."MoneyFrame"]:Hide();
 		-- Set OnEnterPress for money input frames
 		if ( info.EditBoxOnEnterPressed ) then
-			_G[dialog:GetName().."MoneyInputFrameGold"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
-			_G[dialog:GetName().."MoneyInputFrameSilver"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
-			_G[dialog:GetName().."MoneyInputFrameCopper"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
+			moneyInputFrame.gold:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
+			moneyInputFrame.silver:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
+			moneyInputFrame.copper:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
 		else
-			_G[dialog:GetName().."MoneyInputFrameGold"]:SetScript("OnEnterPressed", nil);
-			_G[dialog:GetName().."MoneyInputFrameSilver"]:SetScript("OnEnterPressed", nil);
-			_G[dialog:GetName().."MoneyInputFrameCopper"]:SetScript("OnEnterPressed", nil);
+			moneyInputFrame.gold:SetScript("OnEnterPressed", nil);
+			moneyInputFrame.silver:SetScript("OnEnterPressed", nil);
+			moneyInputFrame.copper:SetScript("OnEnterPressed", nil);
 		end
 	else
 		_G[dialog:GetName().."MoneyFrame"]:Hide();

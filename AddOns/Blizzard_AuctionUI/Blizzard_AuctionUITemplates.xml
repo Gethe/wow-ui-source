@@ -337,6 +337,7 @@
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
 						MoneyFrame_SetType(self, "AUCTION");
+						MoneyFrame_SetMaxDisplayWidth(self, 146);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -378,6 +379,7 @@
 								SmallMoneyFrame_OnLoad(self);
 								MoneyFrame_SetType(self, "AUCTION");
 								SetMoneyFrameColor(self:GetName(), "yellow")
+								MoneyFrame_SetMaxDisplayWidth(self, 146);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -447,7 +449,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="250" y="0"/>
+								<AbsDimension x="246" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -595,7 +597,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="295" y="0"/>
+							<AbsDimension x="291" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -632,7 +634,7 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="535" y="0"/>
+							<AbsDimension x="543" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -647,7 +649,7 @@
 				<Anchors>
 					<Anchor point="RIGHT">
 						<Offset>
-							<AbsDimension x="2" y="0"/>
+							<AbsDimension x="6" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -923,6 +925,7 @@
 							<OnLoad>
 								SmallMoneyFrame_OnLoad(self);
 								MoneyFrame_SetType(self, "AUCTION");
+								MoneyFrame_SetMaxDisplayWidth(self, 146);
 							</OnLoad>
 						</Scripts>
 					</Frame>

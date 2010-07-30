@@ -33,6 +33,7 @@ function ReforgingFrame_OnLoad(self)
 	
 	UIDropDownMenu_Initialize(ReforgingFrameFilterOldStat, ReforgeFrame_FilterOldStat_Initialize);
 	UIDropDownMenu_Initialize(ReforgingFrameFilterNewStat, ReforgeFrame_FilterNewStat_Initialize);
+	MoneyFrame_SetMaxDisplayWidth(ReforgingFrameMoneyFrame, 168);
 end
 
 

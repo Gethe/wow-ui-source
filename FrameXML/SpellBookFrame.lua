@@ -365,9 +365,9 @@ function SpellButton_OnHide(self)
 end
  
 function SpellButton_OnEnter(self)
-	local id = SpellBook_GetSpellID(self);
+	local slot = SpellBook_GetSpellBookSlot(self);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( GameTooltip:SetSpell(id, SpellBookFrame.bookType) ) then
+	if ( GameTooltip:SetSpellBookItem(slot, SpellBookFrame.bookType) ) then
 		self.UpdateTooltip = SpellButton_OnEnter;
 	else
 		self.UpdateTooltip = nil;
@@ -375,27 +375,27 @@ function SpellButton_OnEnter(self)
 end
 
 function SpellButton_OnClick(self, button) 
-	local id, displayId, future = SpellBook_GetSpellID(self);
-	if ( id > MAX_SPELLS or future) then
+	local slot, future = SpellBook_GetSpellBookSlot(self);
+	if ( slot > MAX_SPELLS or future) then
 		return;
 	end
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
-		ToggleSpellAutocast(id, SpellBookFrame.bookType);
+		ToggleSpellAutocast(slot, SpellBookFrame.bookType);
 	else
-		CastSpell(id, SpellBookFrame.bookType);
+		CastSpell(slot, SpellBookFrame.bookType);
 		SpellButton_UpdateSelection(self);
 	end
 end
 
 function SpellButton_OnModifiedClick(self, button) 
-	local id = SpellBook_GetSpellID(self);
-	if ( id > MAX_SPELLS ) then
+	local slot = SpellBook_GetSpellBookSlot(self);
+	if ( slot > MAX_SPELLS ) then
 		return;
 	end
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrame and MacroFrame:IsShown() ) then
-			local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
-			if ( spellName and not IsPassiveSpell(id, SpellBookFrame.bookType) ) then
+			local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
+			if ( spellName and not IsPassiveSpell(slot, SpellBookFrame.bookType) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
 					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
 				else
@@ -404,7 +404,7 @@ function SpellButton_OnModifiedClick(self, button)
 			end
 			return;
 		else
-			local spellLink, tradeSkillLink = GetSpellLink(id, SpellBookFrame.bookType);
+			local spellLink, tradeSkillLink = GetSpellLink(slot, SpellBookFrame.bookType);
 			if ( tradeSkillLink ) then
 				ChatEdit_InsertLink(tradeSkillLink);
 			elseif ( spellLink ) then
@@ -414,34 +414,28 @@ function SpellButton_OnModifiedClick(self, button)
 		end
 	end
 	if ( IsModifiedClick("PICKUPACTION") ) then
-		PickupSpell(id, SpellBookFrame.bookType);
+		PickupSpellBookItem(slot, SpellBookFrame.bookType);
 		return;
 	end
 	if ( IsModifiedClick("SELFCAST") ) then
-		CastSpell(id, SpellBookFrame.bookType, true);
+		CastSpell(slot, SpellBookFrame.bookType, true);
+		SpellButton_UpdateSelection(self);
 		return;
 	end
 end
 
 function SpellButton_OnDrag(self) 
-	local id, displayID, future = SpellBook_GetSpellID(self);
-	if (not id or id > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or future) then
+	local slot, future = SpellBook_GetSpellBookSlot(self);
+	if (not slot or slot > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or future) then
 		return;
 	end
 	self:SetChecked(0);
-	PickupSpell(id, SpellBookFrame.bookType);
+	PickupSpellBookItem(slot, SpellBookFrame.bookType);
 end
 
 function SpellButton_UpdateSelection(self)
-	local temp, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
-	
-	local id, displayID = SpellBook_GetSpellID(self);
-	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and (not displayID or displayID > (offset + numSpells)) ) then
-		self:SetChecked("false");
-		return;
-	end
-
-	if ( IsSelectedSpell(id, SpellBookFrame.bookType) ) then
+	local slot = SpellBook_GetSpellBookSlot(self);
+	if ( slot and IsSelectedSpellBookItem(slot, SpellBookFrame.bookType) ) then
 		self:SetChecked("true");
 	else
 		self:SetChecked("false");
@@ -458,17 +452,15 @@ function SpellButton_UpdateButton(self)
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 1;
 	end
-	local temp, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
-	SpellBookFrame.selectedSkillLineNumSpells = numSpells;
+	local temp, texture, offset, numSlots = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
 	SpellBookFrame.selectedSkillLineOffset = offset;
-	SpellBookFrame.selectedSkillLineNumFutureSpells = numFutureSpells;
-	SpellBookFrame.selectedSkillLineFutureSpellsOffset = futureSpellsOffset;
 	
 	if (not self.SpellName.shadowX) then
 		self.SpellName.shadowX, self.SpellName.shadowY = self.SpellName:GetShadowOffset();
 	end
 
-	local id, displayID, future = SpellBook_GetSpellID(self);
+	local slot, future = SpellBook_GetSpellBookSlot(self);
 	local name = self:GetName();
 	local iconTexture = _G[name.."IconTexture"];
 	local spellString = _G[name.."SpellName"];
@@ -477,7 +469,7 @@ function SpellButton_UpdateButton(self)
 	local autoCastableTexture = _G[name.."AutoCastable"];
 	local slotFrame = _G[name.."SlotFrame"];
 
-	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and not displayID) then
+	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and not slot) then
 		self:Disable();
 		iconTexture:Hide();
 		spellString:Hide();
@@ -500,7 +492,7 @@ function SpellButton_UpdateButton(self)
 		self:Enable();
 	end
 
-	local texture = GetSpellTexture(id, SpellBookFrame.bookType);
+	local texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
 	local highlightTexture = _G[name.."Highlight"];
 	-- If no spell, hide everything and return
 	if ( not texture or (strlen(texture) == 0) ) then
@@ -521,13 +513,16 @@ function SpellButton_UpdateButton(self)
 		self.TrainFrame:Hide();
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
+		self:Disable();
 		return;
+	else
+		self:Enable();
 	end
 
-	local start, duration, enable = GetSpellCooldown(id, SpellBookFrame.bookType);
+	local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 
-	local autoCastAllowed, autoCastEnabled = GetSpellAutocast(id, SpellBookFrame.bookType);
+	local autoCastAllowed, autoCastEnabled = GetSpellAutocast(slot, SpellBookFrame.bookType);
 	if ( autoCastAllowed ) then
 		autoCastableTexture:Show();
 	else
@@ -549,8 +544,8 @@ function SpellButton_UpdateButton(self)
 		self.shine = nil;
 	end
 
-	local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
-	local isPassive = IsPassiveSpell(id, SpellBookFrame.bookType);
+	local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
+	local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType);
 	if ( isPassive ) then
 		highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
 		spellString:SetTextColor(PASSIVE_SPELL_FONT_COLOR.r, PASSIVE_SPELL_FONT_COLOR.g, PASSIVE_SPELL_FONT_COLOR.b);
@@ -592,7 +587,7 @@ function SpellButton_UpdateButton(self)
 			iconTexture:SetVertexColor(0.4, 0.4, 0.4);
 		end
 	else
-		local level = GetSpellAvailableLevel(id, SpellBookFrame.bookType);
+		local level = GetSpellAvailableLevel(slot, SpellBookFrame.bookType);
 		slotFrame:Hide();
 		self.IconTextureBg:Show();
 		iconTexture:SetAlpha(0.5);
@@ -669,11 +664,9 @@ function SpellBookSkillLineTab_OnClick(self, id)
 		PlaySound("igAbiliityPageTurn");
 	end
 	SpellBookFrame.selectedSkillLine = id;
-	local name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	local name, texture, offset, numSlots = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineOffset = offset;
-	SpellBookFrame.selectedSkillLineNumSpells = numSpells;
-	SpellBookFrame.selectedSkillLineFutureSpellsOffset = futureSpellsOffset;
-	SpellBookFrame.selectedSkillLineNumFutureSpells = numFutureSpells;
+	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
 	SpellBook_UpdatePageArrows();
 	SpellBookFrame_Update();
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, SpellBook_GetCurrentPage());
@@ -698,7 +691,7 @@ function SpellBookFrameTabButton_OnClick(self)
 	ToggleSpellBook(self.bookType);
 end
 
-function SpellBook_GetSpellID(spellButton)
+function SpellBook_GetSpellBookSlot(spellButton)
 	local id = spellButton:GetID()
 	if ( SpellBookFrame.bookType == BOOKTYPE_PROFESSION) then
 		return id + spellButton:GetParent().spellOffset;
@@ -706,18 +699,13 @@ function SpellBook_GetSpellID(spellButton)
 		return id + (SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] - 1));
 	else
 		local relativeSlot = id + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
-		local slot;
-		local future = false;
-		if (relativeSlot <= SpellBookFrame.selectedSkillLineNumSpells) then
-			slot = SpellBookFrame.selectedSkillLineOffset + relativeSlot;
-		elseif (relativeSlot <= SpellBookFrame.selectedSkillLineNumSpells + SpellBookFrame.selectedSkillLineNumFutureSpells) then
-			slot = SpellBookFrame.selectedSkillLineFutureSpellsOffset + relativeSlot - SpellBookFrame.selectedSkillLineNumSpells;
-			future = true;
+		if (relativeSlot <= SpellBookFrame.selectedSkillLineNumSlots) then
+			local slot = SpellBookFrame.selectedSkillLineOffset + relativeSlot;
+			local future = (GetSpellBookItemType(slot, SpellBookFrame.bookType) == "FUTURESPELL");
+			return slot, future;
 		else
-			return nil, nil, nil;
+			return nil, nil;
 		end
-		
-		return slot, slot, future;
 	end
 end
 
@@ -743,8 +731,8 @@ function SpellBook_GetCurrentPage()
 		maxPages = ceil(numPetSpells/SPELLS_PER_PAGE);
 	else
 		currentPage = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
-		local name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
-		maxPages = ceil((numSpells+numFutureSpells)/SPELLS_PER_PAGE);
+		local name, texture, offset, numSlots = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+		maxPages = ceil(numSlots/SPELLS_PER_PAGE);
 	end
 	return currentPage, maxPages;
 end
@@ -775,8 +763,7 @@ function SpellBook_ReleaseAutoCastShine (shine)
 end
 
 function SpellBook_GetTabInfo(skillLine)
-	local name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells = GetSpellTabInfo(skillLine);
-	return name, texture, offset, numSpells, futureSpellsOffset, numFutureSpells;
+	return GetSpellTabInfo(skillLine);
 end
 
 
@@ -793,12 +780,10 @@ function SpellBook_UpdatePlayerTab(showing)
 	end
 
 	local numSkillLineTabs = GetNumSpellTabs();
-	local name, texture, offset, numSpells;
-	local skillLineTab;
 	for i=1, MAX_SKILLLINE_TABS do
-		skillLineTab = _G["SpellBookSkillLineTab"..i];
+		local skillLineTab = _G["SpellBookSkillLineTab"..i];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			name, texture = GetSpellTabInfo(i);
+			local name, texture = GetSpellTabInfo(i);
 			skillLineTab:SetNormalTexture(texture);
 			skillLineTab.tooltip = name;
 			skillLineTab:Show();
@@ -815,14 +800,6 @@ function SpellBook_UpdatePlayerTab(showing)
 			skillLineTab:Hide();
 		end
 	end
-		-- --SpellBookFrame_SetTabType(SpellBookFrameTabButton1, BOOKTYPE_SPELL);
-
-		-- if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
-			-- -- if has no pet spells but trying to show the pet spellbook close the window;
-			-- HideUIPanel(SpellBookFrame);
-			-- SpellBookFrame.bookType = BOOKTYPE_SPELL;
-		-- end
-	-- end
 
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
 		SpellBookFrameTitleText:SetText(SPELLBOOK);
@@ -852,8 +829,8 @@ end
 
 function UpdateProfessionButton(self)
 	local spellIndex = self:GetID() + self:GetParent().spellOffset;
-	local texture = GetSpellTexture(spellIndex, SpellBookFrame.bookType);
-	local spellName, subSpellName = GetSpellName(spellIndex, SpellBookFrame.bookType);
+	local texture = GetSpellBookItemTexture(spellIndex, SpellBookFrame.bookType);
+	local spellName, subSpellName = GetSpellBookItemName(spellIndex, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(spellIndex, SpellBookFrame.bookType);
 	if ( isPassive ) then
 		self.highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");

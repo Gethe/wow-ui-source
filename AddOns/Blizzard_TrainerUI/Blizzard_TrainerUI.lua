@@ -68,7 +68,7 @@ function ClassTrainerFrame_OnLoad(self)
 	
 	self.BG:SetPoint("TOPLEFT", ClassTrainerSkill1, "TOPLEFT", 0, 0);
 	self.BG:SetPoint("BOTTOMRIGHT", ClassTrainerSkill7, "BOTTOMRIGHT", 0, 0);
-	
+	MoneyFrame_SetMaxDisplayWidth(ClassTrainerFrameMoneyFrame, 152);
 end
 
 

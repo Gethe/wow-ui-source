@@ -2,6 +2,11 @@ function CompactPartyFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE")
 	
+	local unitFrame = _G[self:GetName().."MemberSelf"];
+	CompactUnitFrame_SetUnit(unitFrame, "player");
+	CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
+	CompactUnitFrame_SetUpdateAllEvent(unitFrame, "PARTY_MEMBERS_CHANGED");
+	
 	for i=1, MEMBERS_PER_RAID_GROUP - 1 do
 		local unitFrame = _G[self:GetName().."Member"..i];
 		CompactUnitFrame_SetUnit(unitFrame, "party"..i);
@@ -20,7 +25,7 @@ function CompactPartyFrame_OnEvent(self, event, ...)
 end
 
 function CompactPartyFrame_UpdateShown(self)
-	if ( GetCVarBool("useCompactPartyFrames") and GetNumPartyMembers() > 0 and (GetNumRaidMembers() == 0 or not GetCVarBool("hidePartyInRaid")) ) then
+	if ( GetCVarBool("useCompactPartyFrames") and GetNumPartyMembers() > 0 and GetNumRaidMembers() == 0 ) then
 		self:Show();
 	else
 		self:Hide();

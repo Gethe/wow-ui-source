@@ -24,7 +24,6 @@ function CompactRaidFrameContainer_OnLoad(self)
 													frame.inUse = false;
 												end;
 												
-	CompactRaidFrameContainer_SetFlowFilterFunction(self, function(token) return UnitExists(token) end)
 	self.displayPets = true;
 	self.displayFlaggedMembers = true;
 end
@@ -58,11 +57,39 @@ function CompactRaidFrameContainer_SetFlowFilterFunction(self, flowFilterFunc)
 	CompactRaidFrameContainer_TryUpdate(self);
 end
 
+function CompactRaidFrameContainer_SetGroupFilterFunction(self, groupFilterFunc)
+	--Usage: groupFilterFunc is called as groupFilterFunc(groupNum) and should return whether this group should be displayed or not.
+	self.groupFilterFunc = groupFilterFunc;
+	CompactRaidFrameContainer_TryUpdate(self);
+end
+
 function CompactRaidFrameContainer_SetFlowSortFunction(self, flowSortFunc)
 	--Usage: Takes two tokens, should work as a Lua sort function.
 	--The ordering must be well-defined, even across units that will be filtered out
 	self.flowSortFunc = flowSortFunc;
 	CompactRaidFrameContainer_TryUpdate(self);
+end
+
+function CompactRaidFrameContainer_SetDisplayPets(self, displayPets)
+	if ( self.displayPets ~= displayPets ) then
+		self.displayPets = displayPets;
+		CompactRaidFrameContainer_TryUpdate(self);
+	end
+end
+
+function CompactRaidFrameContainer_SetDisplayMainTankAndAssist(self, displayFlaggedMembers)
+	if ( self.displayFlaggedMembers ~= displayFlaggedMembers ) then
+		self.displayFlaggedMembers = displayFlaggedMembers;
+		CompactRaidFrameContainer_TryUpdate(self);
+	end
+end
+
+function CompactRaidFrameContainer_ApplyToAllUnitFrames(self, func, ...)
+	for i=1, #self.flowFrames do
+		if ( type(self.flowFrames[i]) == "table" and self.flowFrames[i].applyFunc ) then
+			self.flowFrames[i]:applyFunc(func, ...);
+		end
+	end
 end
 
 --Internally used functions
@@ -79,6 +106,10 @@ function CompactRaidFrameContainer_ReadyToUpdate(self)
 	if ( self.groupMode == "flush" and not (self.flowFilterFunc and self.flowSortFunc) ) then
 		return false;
 	end
+	if ( self.groupMode == "discrete" and not self.groupFilterFunc ) then
+		return false;
+	end
+	
 	return true;
 end
 
@@ -123,9 +154,10 @@ do
 		
 		local numGroups = 0;
 		for groupNum, isUsed in ipairs(usedGroups) do
-			if ( isUsed ) then
+			if ( isUsed and self.groupFilterFunc(groupNum) ) then
 				numGroups = numGroups + 1;
 				local groupFrame = CompactRaidGroup_GenerateForGroup(groupNum);
+				groupFrame:SetParent(self);
 				groupFrame.unusedFunc = groupFrame.Hide;
 				FlowContainer_AddObject(self, groupFrame);
 				groupFrame:Show();
@@ -183,7 +215,7 @@ function CompactRaidFrameContainer_AddFlaggedUnits(self)
 				CompactUnitFrame_SetUpdateAllOnUpdate(targetOfTargetFrame, true);
 				
 				--Add some space before the next one.
-				FlowContainer_AddSpacer(self, 36);
+				--FlowContainer_AddSpacer(self, 36);
 				
 				FlowContainer_EndAtomicAdd(self);
 			end
@@ -207,6 +239,10 @@ local frameCreationSpecifiers = {
 	target = { setUpFunc = DefaultCompactMiniFrameSetup },
 }
 
+local function applyFunc(unitFrame, func, ...)
+	func(unitFrame, ...);
+end
+
 local unitFramesCreated = 0;
 function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
 	local info = frameCreationSpecifiers[frameType];
@@ -225,6 +261,7 @@ function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
 	if ( not frame ) then
 		unitFramesCreated = unitFramesCreated + 1;
 		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
+		frame.applyFunc = applyFunc;
 		CompactUnitFrame_SetUpFrame(frame, info.setUpFunc);
 		frame.unusedFunc = self.unitFrameUnusedFunc;
 		CompactRaidFrameReservation_RegisterReservation(self.frameReservations[frameType], frame, mapping);

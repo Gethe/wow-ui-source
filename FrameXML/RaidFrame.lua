@@ -85,7 +85,7 @@ end
 
 -- Function for raid options
 function RaidOptionsFrame_UpdatePartyFrames()
-	if ( GetCVarBool("useCompactPartyFrames") or (HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0)) then
+	if ( GetCVarBool("useCompactPartyFrames") or GetNumRaidMembers() > 0) then
 		HidePartyFrame();
 	else
 		HidePartyFrame();

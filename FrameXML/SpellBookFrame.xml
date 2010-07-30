@@ -403,7 +403,7 @@
 	</CheckButton>	
 	<StatusBar name="ProfessionStatusBarTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="95" y="12"/>
+			<AbsDimension x="95" y="16"/>
 		</Size>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -411,7 +411,7 @@
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="0" y="1"/>
+								<AbsDimension x="0" y="2"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -419,14 +419,14 @@
 				<Texture name="$parentLeft" file="Interface\Spellbook\ProfessionsBook">
 					<Size x="12" y="12"/>	
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT"  x="0" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT"  x="0" y="2"/>
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.05078125" top="0.87500000" bottom="0.96875000"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\Spellbook\ProfessionsBook" hidden="true" parentKey="capRight">
 					<Size x="12" y="12"/>	
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT"  x="0" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT"  x="0" y="2"/>
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.05078125" top="0.76562500" bottom="0.85937500"/>
 				</Texture>
@@ -434,14 +434,14 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBGLeft" file="Interface\Spellbook\ProfessionsBook">
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativePoint="LEFT" y="2"/>
 					</Anchors>
 					<Size x="16" y="16"/>	
 					<TexCoords left="0.00390625" right="0.06640625" top="0.48437500" bottom="0.60937500"/>
 				</Texture>
 				<Texture name="$parentBGRight" file="Interface\Spellbook\ProfessionsBook">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" y="2"/>
 					</Anchors>
 					<Size x="16" y="16"/>	
 					<TexCoords left="0.00390625" right="0.06640625" top="0.62500000" bottom="0.75000000"/>
@@ -549,7 +549,7 @@
 			</CheckButton>
 			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-3"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
 			</StatusBar>	
 			<Button name="$parentUnlearnButton" parentKey="unlearn">
@@ -668,7 +668,7 @@
 			</CheckButton>
 			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-3"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
 			</StatusBar>	
 		</Frames>			
