@@ -337,7 +337,6 @@
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
 						MoneyFrame_SetType(self, "AUCTION");
-						MoneyFrame_SetMaxDisplayWidth(self, 146);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -379,7 +378,6 @@
 								SmallMoneyFrame_OnLoad(self);
 								MoneyFrame_SetType(self, "AUCTION");
 								SetMoneyFrameColor(self:GetName(), "yellow")
-								MoneyFrame_SetMaxDisplayWidth(self, 146);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -925,7 +923,6 @@
 							<OnLoad>
 								SmallMoneyFrame_OnLoad(self);
 								MoneyFrame_SetType(self, "AUCTION");
-								MoneyFrame_SetMaxDisplayWidth(self, 146);
 							</OnLoad>
 						</Scripts>
 					</Frame>

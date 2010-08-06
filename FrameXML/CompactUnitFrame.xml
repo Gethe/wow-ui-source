@@ -63,12 +63,12 @@
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), self.filter);
+					GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID());
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), self.filter);
+				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

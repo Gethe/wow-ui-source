@@ -341,127 +341,17 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentLeaderOptions" parentKey="leaderOptions" hidden="true">
-						<Size x="0" y="40"/>
+					<Button name="$parentInitiateRolePoll" inherits="UIPanelButtonTemplate" hidden="true" text="Role Poll">
+						<Size x="120" y="20"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="$parentLockedModeToggle" relativePoint="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parentHiddenModeToggle" relativePoint="TOPRIGHT"/>
+							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="10"/>
 						</Anchors>
-						<Frames>
-							<Button name="$parentRaidWorldMarkerButton" inherits="UIPanelButtonTemplate2">
-								<Size x="40" y="20"/>
-								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-								</Anchors>
-								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown">
-										<Scripts>
-											<OnLoad>
-												UIDropDownMenu_Initialize(self, CRFManager_RaidWorldMarkerDropDown_Update, "MENU");
-											</OnLoad>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnMouseDown>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", -1, -2);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-										end
-									</OnMouseDown>
-									<OnMouseUp>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-										end
-									</OnMouseUp>
-									<OnClick>
-										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\RaidFrame\Raid-WorldPing">
-									<Size x="14" y ="14"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="-1"/>
-									</Anchors>
-								</NormalTexture>
-							</Button>
-							<Button name="$parentInitiateRolePoll" inherits="UIPanelButtonTemplate2" text="ROLE_POLL">
-								<Size x="0" y="20"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-									<Anchor point="RIGHT" relativeTo="$parentRaidWorldMarkerButton" relativePoint="LEFT" x="-2" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										InitiateRolePoll();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentRaidIconButton" inherits="UIPanelButtonTemplate2">
-								<Size x="40" y="20"/>
-								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parentRaidWorldMarkerButton" relativePoint="TOPRIGHT" x="0" y="0"/>
-								</Anchors>
-								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown">
-										<Scripts>
-											<OnLoad>
-												UIDropDownMenu_Initialize(self, CRFManager_RaidIconDropDown_Update, "MENU");
-											</OnLoad>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnMouseDown>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", -1, -1);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-										end
-									</OnMouseDown>
-									<OnMouseUp>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, 0);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-										end
-									</OnMouseUp>
-									<OnClick>
-										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\RaidFrame\Raid-MarkerIcon">
-									<Size x="14" y ="14"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="0"/>
-									</Anchors>
-								</NormalTexture>
-							</Button>
-							<Button name="$parentInitiateReadyCheck" inherits="UIPanelButtonTemplate2" text="READY_CHECK">
-								<Size x="0" y="20"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeTo="$parentInitiateRolePoll" relativePoint="TOPLEFT" x="0" y="0"/>
-									<Anchor point="RIGHT" relativeTo="$parentRaidIconButton" relativePoint="LEFT" x="-2" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										DoReadyCheck();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
+						<Scripts>
+							<OnClick>
+								InitiateRolePoll();
+							</OnClick>
+						</Scripts>
+					</Button>
 				</Frames>
 			</Frame>
 		</Frames>

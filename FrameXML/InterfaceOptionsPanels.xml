@@ -2890,49 +2890,10 @@
 					<OnEvent function="InterfaceOptionsRaidFramePanelSortBy_OnEvent"/>
 				</Scripts>
 			</Frame>
-			<CheckButton name="$parentDisplayIncomingHeals" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "raidFramesDisplayIncomingHeals";
-						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayHealPrediction");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentDisplayAggroHighlight" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDisplayIncomingHeals" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "raidFramesDisplayAggroHighlight";
-						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayAggroHighlight");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentDisplayOnlyDispellableDebuffs" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDisplayAggroHighlight" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "raidFramesDisplayOnlyDispellableDebuffs";
-						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayOnlyDispellableDebuffs");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 			<Button name="$parentResetPosition" inherits="UIPanelButtonTemplate2" text="RESET_POSITION">
 				<Size x="140" y="22"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDisplayOnlyDispellableDebuffs" relativePoint="BOTTOMLEFT" x="5" y="-8"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="5" y="-50"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

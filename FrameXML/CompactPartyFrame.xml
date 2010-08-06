@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="CompactPartyFrame.lua"/>
 	<Frame name="CompactPartyFrame" clampedToScreen="true" parent="UIParent" movable="true">
-		<Size x="72" y="110"/>
+		<Size x="72" y="172"/>
 		<Frames>
 			<Button name="$parentTitle" text="PARTY" parentKey="title">
 				<Size x="72" y="20"/>
@@ -29,16 +29,9 @@
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 			</Button>
-			<Button name="$parentMemberSelf" inherits="CompactUnitFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM"/>
-				</Anchors>
-			</Button>
 			<Button name="$parentMember1" inherits="CompactUnitFrameTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentMemberSelf" relativePoint="BOTTOM">
-						<Offset x="0" y="-2"/>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentMember2" inherits="CompactUnitFrameTemplate">

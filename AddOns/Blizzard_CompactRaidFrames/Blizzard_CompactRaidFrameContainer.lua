@@ -84,14 +84,6 @@ function CompactRaidFrameContainer_SetDisplayMainTankAndAssist(self, displayFlag
 	end
 end
 
-function CompactRaidFrameContainer_ApplyToAllUnitFrames(self, func, ...)
-	for i=1, #self.flowFrames do
-		if ( type(self.flowFrames[i]) == "table" and self.flowFrames[i].applyFunc ) then
-			self.flowFrames[i]:applyFunc(func, ...);
-		end
-	end
-end
-
 --Internally used functions
 function CompactRaidFrameContainer_TryUpdate(self)
 	if ( CompactRaidFrameContainer_ReadyToUpdate(self) ) then
@@ -239,10 +231,6 @@ local frameCreationSpecifiers = {
 	target = { setUpFunc = DefaultCompactMiniFrameSetup },
 }
 
-local function applyFunc(unitFrame, func, ...)
-	func(unitFrame, ...);
-end
-
 local unitFramesCreated = 0;
 function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
 	local info = frameCreationSpecifiers[frameType];
@@ -261,7 +249,6 @@ function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
 	if ( not frame ) then
 		unitFramesCreated = unitFramesCreated + 1;
 		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
-		frame.applyFunc = applyFunc;
 		CompactUnitFrame_SetUpFrame(frame, info.setUpFunc);
 		frame.unusedFunc = self.unitFrameUnusedFunc;
 		CompactRaidFrameReservation_RegisterReservation(self.frameReservations[frameType], frame, mapping);

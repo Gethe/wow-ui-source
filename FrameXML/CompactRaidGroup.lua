@@ -1,18 +1,10 @@
 function CompactRaidGroup_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
-	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
 end
 
 function CompactRaidGroup_OnEvent(self, event, ...)
 	if ( event == "RAID_ROSTER_UPDATE" ) then
 		CompactRaidGroup_UpdateUnits(self);
-	end
-end
-
-function CompactRaidGroup_ApplyFunctionToAllFrames(frame, func, ...)
-	for i=1, MEMBERS_PER_RAID_GROUP do
-		local unitFrame = _G[frame:GetName().."Member"..i];
-		func(unitFrame, ...);
 	end
 end
 

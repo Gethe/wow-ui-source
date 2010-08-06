@@ -1,6 +1,3 @@
-NUM_WORLD_RAID_MARKERS = 5;
-NUM_RAID_ICONS = 8;
-
 function CompactRaidFrameManager_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	self.container = CompactRaidFrameContainer;
@@ -11,7 +8,6 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	
 	self.container:SetWidth(1000);
 	self.dynamicContainerPosition = true;
@@ -42,9 +38,6 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
-		CompactRaidFrameManager_UpdateLeaderButtonsShown(self);
-	elseif ( event == "PARTY_LEADER_CHANGED" ) then
-		CompactRaidFrameManager_UpdateLeaderButtonsShown(self);
 	end
 end
 
@@ -68,76 +61,6 @@ function CompactRaidFrameManager_Collapse(self)
 	self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -182, -140);
 	self.displayFrame:Hide();
 	self.toggleButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 1);
-end
-
-function CompactRaidFrameManager_UpdateLeaderButtonsShown(self)
-	if ( IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
-		if ( not self.hasLeader ) then
-			self.hasLeader = true
-			self:SetHeight(180);
-			self.displayFrame.leaderOptions:Show();
-		end
-	else
-		if ( self.hasLeader ) then
-			self.hasLeader = false;
-			self:SetHeight(140);
-			self.displayFrame.leaderOptions:Hide();
-		end
-	end
-end
-
-local function RaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	PlaceRaidMarker(arg1, arg2);
-end
-
-local function ClearRaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	ClearRaidMarker(arg1);
-end
-
-function CRFManager_RaidWorldMarkerDropDown_Update()
-	local info = UIDropDownMenu_CreateInfo();
-	
-	for i=1, NUM_WORLD_RAID_MARKERS do
-		info.text = format(WORLD_MARKER, i);
-		info.func = RaidWorldMarker_OnClick;
-		info.arg1 = i;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info.text = REMOVE_WORLD_MARKERS;
-	info.func = ClearRaidWorldMarker_OnClick;
-	info.arg1 = nil;	--Remove everything
-	UIDropDownMenu_AddButton(info);
-end
-
-local function RaidTargetIcon_OnClick(self, arg1, arg2, checked)
-	SetRaidTarget(arg1, arg2);
-end
-
-function CRFManager_RaidIconDropDown_Update()
-	local targetUnit = "target";
-	local info = UIDropDownMenu_CreateInfo();
-	
-	info.icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons";
-	for i=1, NUM_RAID_ICONS do
-		info.text = _G["RAID_TARGET_"..i];
-		info.tCoordLeft = mod((i-1)/4, 1);
-		info.tCoordRight = info.tCoordLeft + 0.25;
-		info.tCoordTop = floor((i-1)/4) * 0.25;
-		info.tCoordBottom = info.tCoordTop + 0.25;
-		info.checked = (GetRaidTargetIndex(targetUnit) == i);
-		info.func = RaidTargetIcon_OnClick;
-		info.arg1 = targetUnit;
-		info.arg2 = i;
-		UIDropDownMenu_AddButton(info);
-	end
-		
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = RAID_TARGET_NONE;
-	info.func = RaidTargetIcon_OnClick;
-	info.arg1 = targetUnit;
-	info.arg2 = 0;
-	UIDropDownMenu_AddButton(info);
 end
 
 function CompactRaidFrameManager_UpdateDisplayCounts(self)
@@ -349,10 +272,11 @@ function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" ins
 		--Should be just above the FriendsFrameMicroButton.
 		local bottom = 330;
 		
-		local managerTop = self:GetTop();
+		local containerCenter = (top + bottom) / 2;
+		local managerCenter = (self:GetTop() + self:GetBottom()) / 2;
 		
 		self.container:ClearAllPoints();
-		self.container:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, top - managerTop);
+		self.container:SetPoint("LEFT", self, "RIGHT", 0, containerCenter - managerCenter);
 		self.container:SetHeight(top - bottom);
 	end
 end
@@ -423,8 +347,12 @@ local MAGNETIC_FIELD_RANGE = 10;
 function CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager)
 	if ( abs(manager.container:GetLeft() - manager:GetRight()) < MAGNETIC_FIELD_RANGE and
 		manager.container:GetTop() > manager:GetBottom() and manager.container:GetBottom() < manager:GetTop() ) then
+		--Figure out the anchor point;
+		--We anchor by the LEFT.
+		local managerCenter = (manager:GetTop() + manager:GetBottom()) / 2;
+		local containerCenter = (manager.container:GetTop() + manager.container:GetBottom()) / 2;
 		manager.container:ClearAllPoints();
-		manager.container:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, manager.container:GetTop() - manager:GetTop());
+		manager.container:SetPoint("LEFT", manager, "RIGHT", 0, containerCenter - managerCenter);
 	end
 end
 

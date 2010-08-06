@@ -1546,9 +1546,6 @@ RaidFramePanelOptions = {
 	raidOptionKeepGroupsTogether = { text = "KEEP_GROUPS_TOGETHER" },
 	raidOptionDisplayPets = { text = "DISPLAY_RAID_PETS" },
 	raidOptionDisplayMainTankAndAssist = { text = "DISPLAY_MT_AND_MA" },
-	raidFramesDisplayIncomingHeals = { text = "DISPLAY_INCOMING_HEALS" },
-	raidFramesDisplayAggroHighlight = { text = "DISPLAY_RAID_AGGRO_HIGHLIGHT" },
-	raidFramesDisplayOnlyDispellableDebuffs = { text = "DISPLAY_ONLY_DISPELLABLE_DEBUFFS" },
 }
 
 function InterfaceOptionsRaidFramePanelSortBy_OnEvent (self, event, ...)
@@ -1631,17 +1628,6 @@ function InterfaceOptionsRaidFramePanelSortBy_Initialize()
 	info.tooltipTitle = RAID_SORT_ALPHABETICAL;
 	info.tooltipText = OPTION_RAID_SORT_BY_ALPHABETICAL;
 	UIDropDownMenu_AddButton(info);
-end
-
-function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName)
-	return function(value)
-		local enabled;
-		if(value and value ~= "0") then
-			enabled = true;
-		end
-		DefaultCompactUnitFrameOptions[optionName] = enabled;
-		CompactRaidFrameContainer_ApplyToAllUnitFrames(CompactRaidFrameContainer, CompactUnitFrame_UpdateAll);
-	end
 end
 
 -- [[ Camera Options Panel ]] --
