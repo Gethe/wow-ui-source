@@ -599,10 +599,12 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		line.text:SetTextColor(0.75, 0.61, 0);
 	else
 		--this should be the default, set in WatchFrameLineTemplate_Reset
-		if ( eligible ~= nil ) then
+		if ( eligible ~= nil and eligible == false) then
 			line.text.eligible = eligible;
+			line.text:SetTextColor(DIM_RED_FONT_COLOR.r, DIM_RED_FONT_COLOR.g, DIM_RED_FONT_COLOR.b);
 		else
 			line.text.eligible = true;
+			line.text:SetTextColor(0.8, 0.8, 0.8);
 		end
 	end
 	-- dash
@@ -721,8 +723,9 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 					end
 				else
 					-- single criteria type of achievement
-					line = WatchFrame_GetAchievementLine();				
-					WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW);
+					eligible = IsAchievementEligible(achievementID);
+					line = WatchFrame_GetAchievementLine();
+					WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW, nil, nil, eligible);
 					previousLine = line;				
 					for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
 						if ( timedCriteria.achievementID == achievementID ) then

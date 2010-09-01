@@ -57,6 +57,46 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="MacOptionsFrameText1" inherits="GameFontNormal" text="MOVIE_RECORDING_TIME">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="18" y="32"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="MacOptionsFrameText2" inherits="GameFontWhite" text="00:00:00">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MacOptionsFrameText1" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="MacOptionsFrameText3" inherits="GameFontNormal" text="MOVIE_RECORDING_DATA_RATE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameText1" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-9"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="MacOptionsFrameText4" inherits="GameFontWhite">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MacOptionsFrameText3" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="2" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame name="MacOptionsFrameResolutionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 						<Anchors>
@@ -352,46 +392,6 @@
 						</Scripts>
 					</Frame>
 				</Frames>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="MacOptionsFrameText1" inherits="GameFontNormal" text="MOVIE_RECORDING_TIME">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="18" y="32"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="MacOptionsFrameText2" inherits="GameFontWhite" text="00:00:00">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="MacOptionsFrameText1" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="2" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="MacOptionsFrameText3" inherits="GameFontNormal" text="MOVIE_RECORDING_DATA_RATE">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameText1" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-9"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="MacOptionsFrameText4" inherits="GameFontWhite">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="MacOptionsFrameText3" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="2" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
 						self:SetBackdropBorderColor(0.4, 0.4, 0.4);

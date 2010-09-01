@@ -12,7 +12,7 @@ end
 
 function DressUpTexturePath()
 	-- HACK
-	local fileName = UnitRace("player");
+	local displayRace, fileName = UnitRace("player");
 	if ( not fileName ) then
 		fileName = "Orc";
 	end

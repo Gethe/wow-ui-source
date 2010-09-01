@@ -2,6 +2,40 @@
 ..\FrameXML\UI.xsd">
 	<Script file="QuestFrame.lua"/>
 	<Include file="QuestFrameTemplates.xml"/>
+
+	<Texture name="QuestPortrait-MrBrownstone" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="197" y="230"/>	
+		<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.45117188"/>	
+	</Texture>
+	<Texture name="QuestPortrait-Corner_UL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>	
+		<TexCoords left="0.78125000" right="0.92578125" top="0.00195313" bottom="0.07421875"/>	
+	</Texture>
+	<Texture name="QuestPortrait-Corner_UR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>	
+		<TexCoords left="0.78125000" right="0.92578125" top="0.07812500" bottom="0.15039063"/>	
+	</Texture>
+	<Texture name="QuestPortrait-Corner_BL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>	
+		<TexCoords left="0.78125000" right="0.92578125" top="0.15429688" bottom="0.22656250"/>	
+	</Texture>
+	<Texture name="QuestPortrait-Corner_BR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>	
+		<TexCoords left="0.78125000" right="0.92578125" top="0.23046875" bottom="0.30273438"/>	
+	</Texture>
+	<Texture name="QuestPortrait-Nameplate" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="199" y="44"/>	
+		<TexCoords left="0.00390625" right="0.78125000" top="0.45507813" bottom="0.54101563"/>	
+	</Texture>
+	<Texture name="QuestPortrait-Divider_noname" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="199" y="44"/>	
+		<TexCoords left="0.00390625" right="0.78125000" top="0.54492188" bottom="0.63085938"/>	
+	</Texture>
+	<Texture name="QuestPortrait-StoneSwirls-Top" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="195" y="18"/>	
+		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>	
+	</Texture>
+
 	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
  		<Size>
  			<AbsDimension x="384" y="512"/>
@@ -641,84 +675,191 @@
  	</Frame>
 	
 	<PlayerModel name="QuestNPCModel" enableMouse="true" hidden="true">
-		<Size x="200" y="240"/>
+		<Size x="198" y="230"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="QuestNPCModelBg" file="Interface\TalentFrame\PetTalent-PetBG" setAllPoints="true">
-					<TexCoords left="0.025390625" right="0.556640625" top="0.107421875" bottom="0.892578125"/>
+				<Texture name="QuestNPCModelBg" inherits="QuestPortrait-MrBrownstone">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="QuestNPCModelShadowOverlay" file="Interface\TalentFrame\PetTalent-ShadowOverlay" setAllPoints="true">
 					<TexCoords left="0.00000000" right="0.537109375" top="0" bottom="0.791015625"/>
 				</Texture>
+				<Texture name="QuestNPCModelTopBg" inherits="QuestPortrait-StoneSwirls-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="16"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="QuestNPCModelTopLeftCorner" inherits="Talent-Inner-TopLeft" parentKey="BorderTopLeft">
+				<Texture name="QuestNPCModelBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="BorderBottomLeft">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
 					</Anchors>
 				</Texture>
-				<Texture name="QuestNPCModelTopRightCorner" inherits="Talent-Inner-TopRight" parentKey="BorderTopRight">
+				<Texture name="QuestNPCModelBotRightCorner" inherits="UI-Frame-BotCornerRight" parentKey="BorderBottomRight">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
 					</Anchors>
 				</Texture>
-				<Texture name="QuestNPCModelBotLeftCorner" inherits="Talent-Inner-BotLeft" parentKey="BorderBottomLeft">
+				<Texture name="QuestNPCModelTopBorder" inherits="_UI-Frame-TitleTile" parentKey="BorderTop">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="-1" y="20"/>
+						<Anchor point="TOPRIGHT" x="1" y="20"/>
 					</Anchors>
 				</Texture>
-				<Texture name="QuestNPCModelBotRightCorner" inherits="Talent-Inner-BotRight" parentKey="BorderBottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelTopBorder" inherits="_Talent-Inner-TopTile" parentKey="BorderTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestNPCModelTopLeftCorner" relativePoint="TOPRIGHT" x="0" y="0" />
-						<Anchor point="TOPRIGHT" relativeTo="QuestNPCModelTopRightCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelBottomBorder" inherits="_Talent-Inner-BotTile" parentKey="BorderBottom">
+				<Texture name="QuestNPCModelBottomBorder" inherits="_UI-Frame-Bot" parentKey="BorderBottom">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="QuestNPCModelLeftBorder" inherits="!Talent-Inner-LeftTile" parentKey="BorderLeft">
+				<Texture name="QuestNPCModelLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="BorderLeft">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestNPCModelTopLeftCorner" relativePoint="BOTTOMLEFT" x="0" y="0" />
+						<Anchor point="TOPLEFT" x="-5"/>
 						<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelBotLeftCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="QuestNPCModelRightBorder" inherits="!Talent-Inner-RightTile" parentKey="BorderRight">
+				<Texture name="QuestNPCModelRightBorder" inherits="!UI-Frame-RightTile" parentKey="BorderRight">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="QuestNPCModelTopRightCorner" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
 					</Anchors>
 				</Texture>	
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="QuestNPCModelNameplate" inherits="QuestPortrait-Nameplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="12"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCModelBlankNameplate" inherits="QuestPortrait-Divider_noname">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="12"/>
+					</Anchors>
+				</Texture>
+				<FontString name="QuestNPCModelNameText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameplate" x="22" y="-12"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelNameplate" x="-22" y="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="QuestNPCCornerTopLeft" inherits="QuestPortrait-Corner_UL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="24"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCCornerTopRight" inherits="QuestPortrait-Corner_UR">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7" y="24"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCCornerBottomLeft" inherits="QuestPortrait-Corner_BL">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-26"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCCornerBottomRight" inherits="QuestPortrait-Corner_BR">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-26"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="QuestNPCModelTextFrame" inherits="InsetFrameTemplate2" hidden="true">
-				<Size x="200" y="60"/>
+			<Frame name="QuestNPCModelTextFrame" hidden="true" useParentLevel="true">
+				<Size x="198" y="64"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameplate" relativePoint="BOTTOMLEFT" y="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="QuestNPCModelTextFrameBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" setAllPoints="true"/>
+						<Texture name="QuestNPCModelTextFrameBg" inherits="QuestPortrait-MrBrownstone">
+							<Size x="197" y="64"/>	
+							<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.126953125"/>	
+						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
-						<FontString name="QuestNPCModelText" inherits="GameFontHighlight" justifyH="MIDDLE" justifyV="MIDDLE">
+
+					<Layer level="OVERLAY">
+						<Texture name="QuestNPCModelTextBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="BorderBottomLeft">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="10" y="-10"/>
-								<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+								<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
 							</Anchors>
-						</FontString>
+						</Texture>
+						<Texture name="QuestNPCModelTextBotRightCorner" inherits="UI-Frame-BotCornerRight" parentKey="BorderBottomRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestNPCModelTextBottomBorder" inherits="_UI-Frame-Bot" parentKey="BorderBottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelTextBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelTextBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestNPCModelTextLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="BorderLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelTextBotLeftCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestNPCModelTextRightBorder" inherits="!UI-Frame-RightTile" parentKey="BorderRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="3"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelTextBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
+							</Anchors>
+						</Texture>	
 					</Layer>
 				</Layers>
+				<Frames>
+					<ScrollFrame name="QuestNPCModelTextScrollFrame" inherits="UIPanelScrollFrameTemplate" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="QuestNPCModelTextScrollChildFrame">
+								<Size x="178" y="0"/>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="QuestNPCModelText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+											<Size x="178" y="0"/>
+											<Color r="0.96875" g="0.8984375" b="0.578125"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad>
+								self.scrollBarHideable = 1;
+								ScrollFrame_OnLoad(self);
+								self.ScrollBar:SetThumbTexture("");
+								ScrollFrame_OnScrollRangeChanged(self);
+								self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -12, -16);
+								self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -12, 16);
+							</OnLoad>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", self, -6, -6);
+						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", self, 7, -6);
+					</OnShow>
+					<OnHide>
+						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestNPCModel, -6, -29);
+						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestNPCModel, 7, -29);
+					</OnHide>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

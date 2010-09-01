@@ -298,6 +298,16 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame name="$parentPowerBarAlt" inherits="UnitPowerBarAltTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="13" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UnitPowerBarAlt_Initialize(self, "party"..self:GetParent():GetID(), 0.5, "PARTY_MEMBERS_CHANGED");
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">

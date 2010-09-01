@@ -477,7 +477,7 @@ function PVPHonorFrame_ResetInfo(button)
 	end
 		
 	 if not selectedButton.isWorldPVP then
-		RequestBattlegroundInstanceInfo(PVPHonorFrame.selectedHonorButton);
+		RequestBattlegroundInstanceInfo(selectedButton.pvpID);
 	end
 	PVPHonor_UpdateInfo(selectedButton);
 end
@@ -606,7 +606,6 @@ end
 function PVPHonorFrame_OnShow(self)	
 	SortBGList();
 	PVPHonor_UpdateBattlegrounds();
-	RequestBattlegroundInstanceInfo(self.selectedHonorButton or 1);
 end
 
 function PVPHonorFrame_UpdateVisible()

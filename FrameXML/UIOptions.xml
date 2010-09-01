@@ -6,5 +6,6 @@
 	<Font name="OptionsFontHighlightSmall" inherits="GameFontHighlightSmall" virtual="true"/>
 	<Font name="OptionsFontHighlight" inherits="GameFontHighlight" virtual="true"/>
 	<Font name="OptionsFontLarge" inherits="GameFontNormalLarge" virtual="true"/>
+	<Font name="OptionsFontLeft" inherits="GameFontNormal" virtual="true"/>
 </Ui>
 

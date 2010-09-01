@@ -24,10 +24,13 @@ end
 
 function CharacterFrame_ShowSubFrame (frameName)
 	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
+		if ( value ~= frameName ) then
+			_G[value]:Hide();	
+		end	
+	end 
+	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			_G[value]:Show()
-		else
-			_G[value]:Hide();	
 		end	
 	end 
 end

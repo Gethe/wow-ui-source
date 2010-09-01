@@ -313,7 +313,7 @@ function QuestLog_OnHide(self)
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
 			TriggerTutorial(2);
-			TriggerTutorial(3);
+--			TriggerTutorial(3);
 		else
 			TriggerTutorial(10);
 		end
@@ -645,6 +645,19 @@ function QuestLog_UpdatePartyInfoTooltip(questLogTitle)
 	end
 end
 
+function QuestLog_UpdatePortrait()
+	local questPortrait, questPortraitText, questPortraitName = GetQuestLogPortraitGiver();
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
+		if (QuestLogDetailFrame.attached) then
+			QuestFrame_ShowQuestPortrait(QuestLogFrame, questPortrait, questPortraitText, questPortraitName, -5, -62);
+		else
+			QuestFrame_ShowQuestPortrait(QuestLogDetailFrame, questPortrait, questPortraitText, questPortraitName, -3, -62);
+		end
+	else
+		QuestFrame_HideQuestPortrait();
+	end
+end
+
 function QuestLog_SetSelection(questIndex)
 	SelectQuestLogEntry(questIndex);
 	StaticPopup_Hide("ABANDON_QUEST");
@@ -658,6 +671,7 @@ function QuestLog_SetSelection(questIndex)
 		HideUIPanel(QuestLogDetailFrame);
 		QuestLogDetailScrollFrame:Hide();
 		QuestLogFrameCompleteButton:Hide();
+		QuestFrame_HideQuestPortrait();
 		return;
 	end
 
@@ -677,16 +691,7 @@ function QuestLog_SetSelection(questIndex)
 		QuestLogFrameCompleteButton:Hide();
 	end
 	
-	local questPortrait, questPortraitText = GetQuestLogPortraitGiver();
-	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
-		if (QuestLogDetailFrame.attached) then
-			QuestFrame_ShowQuestPortrait(QuestLogFrame, questPortrait, questPortraitText, -3, -34);
-		else
-			QuestFrame_ShowQuestPortrait(QuestLogDetailFrame, questPortrait, questPortraitText, -1, -34);
-		end
-	else
-		QuestFrame_HideQuestPortrait();
-	end
+	QuestLog_UpdatePortrait();
 
 	QuestLogFrame.selectedIndex = questIndex;
 
@@ -874,6 +879,7 @@ function QuestLogDetailFrame_AttachToQuestLog()
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -13);
 	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Hide();
 	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Hide();
+	QuestLog_UpdatePortrait();
 end
 
 function QuestLogDetailFrame_DetachFromQuestLog()
@@ -890,6 +896,7 @@ function QuestLogDetailFrame_DetachFromQuestLog()
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -16);
 	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Show();
 	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Show();
+	QuestLog_UpdatePortrait();
 end
 
 function QuestLogDetailFrame_OnLoad(self)

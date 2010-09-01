@@ -488,6 +488,11 @@ function SpellButton_UpdateButton(self)
 	local autoCastableTexture = _G[name.."AutoCastable"];
 	local slotFrame = _G[name.."SlotFrame"];
 
+	-- Hide flyout if it's currently open
+	if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == self)  then
+		SpellFlyout:Hide();
+	end
+
 	if ( (SpellBookFrame.bookType ~= BOOKTYPE_PET) and not slot) then
 		self:Disable();
 		iconTexture:Hide();

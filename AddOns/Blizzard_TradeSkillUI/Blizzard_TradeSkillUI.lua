@@ -678,7 +678,7 @@ function TradeSkillFilterDropDown_Initialize(self, level)
 						end 
 		info.keepShownOnClick = true;
 		info.checked = 	TradeSkillFrame.filterTbl.hasMaterials
-		info.isNotRadial = true;
+		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 		
 		if ( not IsTradeSkillGuild() ) then
@@ -690,12 +690,12 @@ function TradeSkillFilterDropDown_Initialize(self, level)
 							end 
 			info.keepShownOnClick = true;
 			info.checked = 	TradeSkillFrame.filterTbl.hasSkillUp;
-			info.isNotRadial = true;
+			info.isNotRadio = true;
 			UIDropDownMenu_AddButton(info, level);
 		end
 		
 		info.checked = 	nil;
-		info.isNotRadial = nil;
+		info.isNotRadio = nil;
 				
 		info.text = TRADESKILL_FILTER_SLOTS
 		info.func =  nil;

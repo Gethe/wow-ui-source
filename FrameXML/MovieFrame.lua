@@ -8,7 +8,7 @@ end
 function MovieFrame_OnEvent(self, event, ...)
 	if ( event == "PLAY_MOVIE" ) then
 		local movieID = ...;
-		if ( name ) then
+		if ( movieID ) then
 			MovieFrame_PlayMovie(self, movieID);
 		end
 	end

@@ -80,7 +80,8 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
-				</Scripts>
+          <OnClick function="GuildControlUI_ShiftRankDownButton_OnClick"/>
+        </Scripts>
 			</Button>
 			<Button name="$parentShiftUpButton" inherits="UIPanelSquareButton" parentKey="upButton">
 				<Anchors>
@@ -97,7 +98,8 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
-				</Scripts>
+          <OnClick function="GuildControlUI_ShiftRankUpButton_OnClick"/>
+        </Scripts>
 			</Button>
 		</Frames>
 	</Frame>

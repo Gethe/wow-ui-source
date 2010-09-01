@@ -132,7 +132,7 @@ info.text = [STRING]  --  The text of the button
 info.value = [ANYTHING]  --  The value that UIDROPDOWNMENU_MENU_VALUE is set to when the button is clicked
 info.func = [function()]  --  The function that is called when you click the button
 info.checked = [nil, true, function]  --  Check the button if true or function returns true
-info.isNotRadial = [nil, true]  --  Check the button uses radial image if false check box image if true
+info.isNotRadio = [nil, true]  --  Check the button uses radial image if false check box image if true
 info.isTitle = [nil, true]  --  If it's a title the button is disabled and the font color is set to yellow
 info.disabled = [nil, true]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
 info.tooltipWhileDisabled = [nil, 1] -- Show the tooltip, even when the button is disabled.
@@ -406,7 +406,7 @@ function UIDropDownMenu_AddButton(info, level)
 
 
 	if not info.notCheckable then 
-		if info.isNotRadial then
+		if info.isNotRadio then
 			_G[listFrameName.."Button"..index.."Check"]:SetTexCoord(0.0, 0.5, 0.0, 0.5);
 			_G[listFrameName.."Button"..index.."UnCheck"]:SetTexCoord(0.5, 1.0, 0.0, 0.5);
 		else

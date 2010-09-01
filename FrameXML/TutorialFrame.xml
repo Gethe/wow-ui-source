@@ -111,12 +111,12 @@
 					<Anchor point="TOPLEFT" x="30" y="-100"/>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="40"/>
 				</Anchors>
-			<Scripts>
-				<OnLoad>
-					self.scrollBarHideable = true;
-					ScrollFrame_OnLoad(self);
-				</OnLoad>
-			</Scripts>
+				<Scripts>
+					<OnLoad>
+						self.scrollBarHideable = true;
+						ScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
 				<ScrollChild>
 					<Frame name="TutorialFrameTextScrollChildFrame">
 						<Size x="1" y="1"/>
@@ -238,6 +238,22 @@
 				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
+			<PlayerModel name="TutorialNPCModel" hidden="true">
+				<Size x="200" y="240"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetPortraitZoom(0.6);
+						self:SetRotation(0);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+					</OnLoad>
+					<OnEvent>
+						self:RefreshUnit();
+					</OnEvent>
+				</Scripts>
+			</PlayerModel>
 		</Frames>
 		<Scripts>
 			<OnLoad function="TutorialFrame_OnLoad"/>
@@ -245,7 +261,7 @@
 			<OnShow function="TutorialFrame_OnShow"/>
 			<OnHide function="TutorialFrame_OnHide"/>
 			<OnKeyDown function="TutorialFrame_OnKeyDown"/>
-			<OnDragStart function="TutorialFrame_OnDragStart"/>
+			<OnMouseDown function="TutorialFrame_OnMouseDown"/>
 		</Scripts>
 	</Frame>
 	<Button name="TutorialFrameAlertButton" parent="UIParent" frameStrata="DIALOG" hidden="true" >

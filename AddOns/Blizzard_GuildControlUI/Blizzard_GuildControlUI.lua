@@ -7,6 +7,8 @@ MAX_GUILDRANKS = 10;
 
 function GuildControlUI_OnLoad(self)
 	GuildFrame_RegisterPopup(self);
+	self:RegisterEvent("GUILD_RANKS_UPDATE");
+
 	UIDropDownMenu_SetWidth(self.dropdown, 120);
 	UIDropDownMenu_SetButtonWidth(self.dropdown, 54);
 	UIDropDownMenu_JustifyText(self.dropdown, "LEFT");
@@ -234,7 +236,7 @@ end
 
 function GuildControlUI_RemoveRankButton_OnClick(self)
 	local index = self:GetParent():GetID();
-	GuildControlDelRank(GuildControlGetRankName(index));
+	GuildControlDelRank(index);
 end
 
 
@@ -244,7 +246,16 @@ function GuildControlUI_AddRankButton_OnClick()
 end
 
 
+function GuildControlUI_ShiftRankDownButton_OnClick(self)
+	local index = self:GetParent():GetID();
+	GuildControlShiftRankDown(index);
+end
 
+
+function GuildControlUI_ShiftRankUpButton_OnClick(self)
+	local index = self:GetParent():GetID();
+	GuildControlShiftRankUp(index);
+end
 
 
 

@@ -9,7 +9,7 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha change="1" duration="0.2" order="2"/>
+				<Alpha change="1" duration="0.2"/>
 				<Scripts>
 					<OnPlay function="SpellActivationOverlayTexture_OnFadeInPlay"/>
 					<OnFinished function="SpellActivationOverlayTexture_OnFadeInFinished"/>
@@ -21,6 +21,10 @@
 						<OnFinished function="SpellActivationOverlayTexture_OnFadeOutFinished"/>
 					</Scripts>
 				</Alpha>
+			</AnimationGroup>
+			<AnimationGroup name="$parentPulse" looping="repeat" parentKey="pulse">
+				<Scale scaleX="1.08" scaleY="1.08" duration="0.5" smoothing="IN_OUT" order="1"/>
+				<Scale scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

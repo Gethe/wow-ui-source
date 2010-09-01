@@ -43,7 +43,7 @@ OptionsFrameTemplates.xml
 OptionsPanelTemplates.xml
 UIOptions.xml
 VideoOptionsFrame.xml
-..\GlueXML\VideoOptionsPanels.xml
+VideoOptionsPanels.xml
 AudioOptionsFrame.xml
 AudioOptionsPanels.xml
 InterfaceOptionsFrame.xml
@@ -66,6 +66,7 @@ MultiActionBars.xml
 ##ActionWindow.xml
 BuffFrame.xml
 CombatFeedback.xml
+UnitPowerBarAlt.xml
 CastingBarFrame.xml
 UnitPopup.xml
 UnitFrame.xml

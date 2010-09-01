@@ -66,7 +66,7 @@ function PetStable_UpdateSlot(button, petSlot)
 	button.petSlot = petSlot;
 	SetItemButtonTexture(button, icon);
 
-	if ( icon ) then
+	if ( icon and level and family and talent) then
 		button.tooltip = name;
 		button.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, level, family, talent);
 	else

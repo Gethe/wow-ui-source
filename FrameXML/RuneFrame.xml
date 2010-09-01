@@ -97,8 +97,9 @@
       <OnLoad function="RuneFrame_OnLoad"/>
     </Scripts>
   </Frame>
-
-  <Button name="RuneButtonIndividual1" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="1">
+  
+  <!-- Rune order is 1,2,5,6,3,4  which coresponds to Blood, Blood, Frost, Frost, Unholy, Unholy -->
+  <Button name="RuneButtonIndividual1" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneFrame" relativePoint="LEFT">
         <Offset>
@@ -108,7 +109,7 @@
     </Anchors>
   </Button>
 
-  <Button name="RuneButtonIndividual2" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="2">
+  <Button name="RuneButtonIndividual2" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual1" relativePoint="RIGHT">
         <Offset>
@@ -118,7 +119,7 @@
     </Anchors>
   </Button>
 
-  <Button name="RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="5">
+  <Button name="RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual2" relativePoint="RIGHT">
         <Offset>
@@ -128,29 +129,29 @@
     </Anchors>
   </Button>
 
-  <Button name="RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="6">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneButtonIndividual3" relativePoint="RIGHT">
-        <Offset>
-          <AbsDimension x="3" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
-
-  <Button name="RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="3">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneButtonIndividual4" relativePoint="RIGHT">
-        <Offset>
-          <AbsDimension x="3" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
-
-  <Button name="RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="4">
+  <Button name="RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
     <Anchors>
       <Anchor point="LEFT" relativeTo="RuneButtonIndividual5" relativePoint="RIGHT">
+        <Offset>
+          <AbsDimension x="3" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+  <Button name="RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="RuneButtonIndividual6" relativePoint="RIGHT">
+        <Offset>
+          <AbsDimension x="3" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+  <Button name="RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="RuneButtonIndividual3" relativePoint="RIGHT">
         <Offset>
           <AbsDimension x="3" y="0"/>
         </Offset>

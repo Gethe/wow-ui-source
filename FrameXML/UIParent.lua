@@ -1014,6 +1014,7 @@ end
 -- UIPARENT_MANAGED_FRAME_POSITIONS stores all the frames that have positioning dependencies based on other frames.  
 
 -- UIPARENT_MANAGED_FRAME_POSITIONS["FRAME"] = {
+	--Note: this is out of date and there are several more options now.
 	-- none = This value is used if no dependent frames are shown
 	-- reputation = This is the offset used if the reputation watch bar is shown
 	-- anchorTo = This is the object that the stored frame is anchored to
@@ -1049,7 +1050,8 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
-	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
+	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1};
+	["PlayerPowerBarAlt"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndShapeshift = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, vehicleMenuBar = vehicleMenuBarTop, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
@@ -1667,6 +1669,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( TutorialFrameAlertButton:IsShown() ) then
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
+		if ( PlayerPowerBarAlt:IsShown() ) then
+			tinsert(yOffsetFrames, "playerPowerBarAlt");
+		end
 	end
 	
 	if ( menuBarTop == 55 ) then
@@ -1678,6 +1683,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	-- Iterate through frames and set anchors according to the flags set
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
+		if ( value.playerPowerBarAlt ) then
+			value.playerPowerBarAlt = PlayerPowerBarAlt:GetHeight() + 10;
+		end
 		securecall("UIParent_ManageFramePosition", index, value, yOffsetFrames, xOffsetFrames, hasBottomLeft, hasBottomRight, hasPetBar);
 	end
 	
@@ -1765,12 +1773,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	-- Boss frames
 	local durabilityXOffset = CONTAINER_OFFSET_X;
-	local durabilityYOffset = anchorY;
 
 	if ( StreamingIcon and StreamingIcon:IsShown() ) then
 		StreamingIcon:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY + 20);
 		anchorY = anchorY - StreamingIcon:GetHeight();
-		durabilityYOffset = anchorY;
 	end
 
 	local numBossFrames = 0;
@@ -1785,7 +1791,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( numBossFrames > 0 ) then
 			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY);
 			anchorY = anchorY - 6 - numBossFrames * 66;
-			durabilityXOffset = durabilityXOffset + 135;
 		end
 	end
 	
@@ -1794,8 +1799,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
 			durabilityXOffset = durabilityXOffset + 20;
 		end
-		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -durabilityXOffset, durabilityYOffset);
-		if ( DurabilityFrame:IsShown() and numBossFrames == 0 ) then
+		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -durabilityXOffset, anchorY);
+		if ( DurabilityFrame:IsShown() ) then
 			anchorY = anchorY - DurabilityFrame:GetHeight() - 10;
 		end
 	end

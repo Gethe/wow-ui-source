@@ -88,7 +88,7 @@
             </AnimationGroup>
         </Animations>
 		<Scripts>
-			<OnEvent function="$parent_OnEvent"/>
+			<OnEvent function="StreamingDialog_OnEvent"/>
             <OnLoad>
                 self:RegisterEvent("STREAMING_IDLE");
                 self:RegisterEvent("STREAMING_ADDL_FILES");
@@ -97,11 +97,7 @@
             </OnLoad>
 		</Scripts>
 	</Frame>
-    <Frame name="StreamingDialog" inherits="StreamingMessageTemplate">
-		<Scripts>
-			<OnEvent function="StreamingDialog_OnEvent"/>
-		</Scripts>
-	</Frame>
+    <Frame name="StreamingDialog" inherits="StreamingMessageTemplate"/>
 	<Frame name="StreamingIcon" toplevel="true" parent="UIParent" hidden="true" >
 		<Size x="64" y="64"/>
 		<Frames>

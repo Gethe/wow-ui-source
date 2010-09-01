@@ -1,70 +1,9 @@
 -------------------------------------------------------------------------------------------------------
-VideoStereoPanelOptions = {
-	gxStereoEnabled = { text = "ENABLE_STEREO_VIDEO" },
-	gxStereoConvergence = { text = "DEPTH_CONVERGENCE", minValue = 0.2, maxValue = 50, valueStep = 0.1, tooltip = OPTION_STEREO_CONVERGENCE},
-	gxStereoSeparation = { text = "EYE_SEPARATION", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_SEPARATION},
-	gxCursor = { text = "STEREO_HARDWARE_CURSOR" },
-}
-------------------------------------------------------------------------------------------------------
-VideoData["VideoOptionsEffectsPanelBufferingDropDown"]={
-	data = {
-		[1] = {
-			text = TEXT_DISABLED,
-			cvars =	{
-				gxTripleBuffer = 0,
-			},
-		},
-		[2] = {
-			text = TEXT_ENABLED,
-			cvars =	{
-				gxTripleBuffer = 1,
-			},
-		},
-	},
-	restart = true;
-	description =  OPTION_TOOLTIP_TRIPLE_BUFFER,
-}
+-- Overall Quality
 -------------------------------------------------------------------------------------------------------
-VideoData["VideoOptionsEffectsPanelLagDropDown"]={
-	data = {
-		[1] = {
-			text = TEXT_DISABLED,
-			cvars =	{
-				gxFixLag = 0,
-			},
-		},
-		[2] = {
-			text = TEXT_ENABLED,
-			cvars =	{
-				gxFixLag = 1,
-			},
-		},
-	},
-	restart = true,
-	description =  OPTION_TOOLTIP_FIX_LAG,
-}
--------------------------------------------------------------------------------------------------------
-VideoData["VideoOptionsEffectsPanelHardwareCursorDropDown"]={
-	data = {
-		[1] = {
-			text = TEXT_DISABLED,
-			cvars =	{
-				gxCursor = 0,
-			},
-		},
-		[2] = {
-			text = TEXT_ENABLED,
-			cvars =	{
-				gxCursor = 1,
-			},
-		},
-	},
-	description =  OPTION_TOOLTIP_HARDWARE_CURSOR,
-	restart = true,
-}
 
--------------------------------------------------------------------------------------------------------
 VideoData["Graphics_QualityDropDown"]={
+	key = "Graphics_QualityDropDown",
     data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -100,11 +39,11 @@ VideoData["Graphics_QualityDropDown"]={
 				Graphics_ShadowsDropDown = TEXT_FAIR,
 				Graphics_TextureResolutionDropDown = TEXT_LOW,
 				Graphics_FilteringDropDown = TEXT_FAIR,
-				Graphics_WeatherIntensityDropDown = TEXT_FAIR,
-				Graphics_PlayerDropDown = TEXT_FAIR,
+				Graphics_WeatherIntensityDropDown = TEXT_MEDIUM,
+				Graphics_PlayerDropDown = TEXT_LOW,
 				Graphics_LiquidDetailDropDown = TEXT_FAIR,
 				Graphics_SunshaftsDropDown = TEXT_DISABLED,
-				Graphics_FullScreenGlowDropDown = TEXT_DISABLED,
+				Graphics_FullScreenGlowDropDown = TEXT_ENABLED,
 				Graphics_ProjectedTexturesDropDown = TEXT_DISABLED,
             },
         },
@@ -122,10 +61,10 @@ VideoData["Graphics_QualityDropDown"]={
 				Graphics_TextureResolutionDropDown = TEXT_HIGH,
 				Graphics_FilteringDropDown = TEXT_MEDIUM,
 				Graphics_WeatherIntensityDropDown = TEXT_MEDIUM,
-				Graphics_PlayerDropDown = TEXT_LOW,
+				Graphics_PlayerDropDown = TEXT_HIGH,
 				Graphics_LiquidDetailDropDown = TEXT_MEDIUM,
-				Graphics_SunshaftsDropDown = TEXT_DISABLED,
-				Graphics_FullScreenGlowDropDown = TEXT_DISABLED,
+				Graphics_SunshaftsDropDown = TEXT_ENABLED,
+				Graphics_FullScreenGlowDropDown = TEXT_ENABLED,
 				Graphics_ProjectedTexturesDropDown = TEXT_DISABLED,
             },
         },
@@ -143,10 +82,10 @@ VideoData["Graphics_QualityDropDown"]={
 				Graphics_TextureResolutionDropDown = TEXT_HIGH,
 				Graphics_FilteringDropDown = TEXT_HIGH,
 				Graphics_WeatherIntensityDropDown = TEXT_HIGH,
-				Graphics_PlayerDropDown = TEXT_LOW,
-				Graphics_LiquidDetailDropDown = TEXT_HIGH,
-				Graphics_SunshaftsDropDown = TEXT_DISABLED,
-				Graphics_FullScreenGlowDropDown = TEXT_DISABLED,
+				Graphics_PlayerDropDown = TEXT_HIGH,
+				Graphics_LiquidDetailDropDown = TEXT_MEDIUM,
+				Graphics_SunshaftsDropDown = TEXT_ENABLED,
+				Graphics_FullScreenGlowDropDown = TEXT_ENABLED,
 				Graphics_ProjectedTexturesDropDown = TEXT_DISABLED,
             },
         },
@@ -156,7 +95,7 @@ VideoData["Graphics_QualityDropDown"]={
             notify = {
 				Graphics_ViewDistanceDropDown = TEXT_ULTRA,
 				Graphics_BlendingDropDown = TEXT_HIGH,
-				Graphics_TextureResolutionDropDown = TEXT_ENABLED,
+				Graphics_TextureResolutionDropDown = TEXT_HIGH,
 				Graphics_ParticleDensityDropDown = TEXT_ULTRA,
 				Graphics_EnvironmentalDetailDropDown = TEXT_ULTRA,
 				Graphics_GroundClutterRadiusDropDown = TEXT_ULTRA,
@@ -173,27 +112,19 @@ VideoData["Graphics_QualityDropDown"]={
             },
         },
     },
-    restart = true,
-	clickhelper = 
-		function(self, value)
-			for key, notify_value in pairs(self.data[value].notify) do
-				_G[key].notify(_G[key], notify_value);
-			end
-		end,
-	onclickfunction=
-        function(self)	-- this self is the button dropdown
-			local us = self:GetParent().dropdown;
-			us.clickhelper(us, self:GetID());
-            VideoOptionsDropDown_OnClick(self);
-        end,
     description =  "Video Quality:",
+	dependtarget = Graphics_TableRefreshValue,	-- recalculate based on the cvars
 }
 
-
 -------------------------------------------------------------------------------------------------------
+-- Display
+-------------------------------------------------------------------------------------------------------
+
 VideoData["Graphics_DisplayModeDropDown"]={
+	key = "Graphics_DisplayModeDropDown",
 	name = "Display Mode",
 	description = "Allows you to change the primary display mode of the game to Fullscreen, Windowed, or Windowed (Fullscreen).  Windowed modes may cause a drop in performance.",
+	
 	data = {
 		[1] = {
 			text = "Windowed",
@@ -201,6 +132,7 @@ VideoData["Graphics_DisplayModeDropDown"]={
 				gxWindow = 1,
 				gxMaximize = 0,
 			},
+			windowed = true;
 		},
 		[2] = {
 			text = "Windowed (Fullscreen)",
@@ -208,6 +140,7 @@ VideoData["Graphics_DisplayModeDropDown"]={
 				gxWindow = 1,
 				gxMaximize = 1,
 			},
+			windowed = true;
 		},
 		[3] = {
 			text = "Fullscreen",
@@ -215,16 +148,61 @@ VideoData["Graphics_DisplayModeDropDown"]={
 				gxWindow = 0,
 				gxMaximize = 0,
 			},
+			windowed = false;
 		},
+	},
+	dependent = {
+		"Graphics_RefreshDropDown",
+		"Graphics_GammaSlider",
+		"Graphics_ResizeDropDown",
+	},
+	restart = true,
+	windowedmode =
+		function(self)
+			return self.data[self.selectedID or self.value].windowed;
+		end,
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["Graphics_PrimaryMonitorDropDown"]={
+	key = "Graphics_PrimaryMonitorDropDown",
+	name = "Primary Monitor",
+	description = "Allows you to change the primary monitor used by the display.",
+	
+	table = {},
+	tablefunction = 
+		function(self)
+			self.table[1]="Default";
+			local count = GetMonitorCount();
+			for i=1, count do
+				self.table[i+1] = GetMonitorName(i);
+			end
+		end,
+	SetValue = 
+		function (self, value)
+			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value-1);
+		end,
+	GetValue = 
+		function (self)
+			return 1+BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		end,
+	cvar = "gxMonitor",
+	dependent = {
+		"Graphics_ResolutionDropDown",	--resolutions may disappear when we change the monitor
 	},
 	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ResolutionDropDown"]={
+	key = "Graphics_ResolutionDropDown",
 	name = "Resolution",
 	description = "Higher resolution will result in increased clarity, but this greatly affects performance.  Choose a resolution that matches the aspect ratio of your monitor.",	
-	tablefunction = GetScreenResolutions,
+	
+	tablefunction = 
+		function(self)
+			return GetScreenResolutions(Graphics_PrimaryMonitorDropDown:GetValue());
+		end,
 	readfilter =
 		function(self, value)
 			local xIndex = strfind(value, "x");
@@ -239,39 +217,49 @@ VideoData["Graphics_ResolutionDropDown"]={
 		function (self, value)
 			SetScreenResolution(value);
 		end,
-	GetValue = GetCurrentResolution,
-	onclickfunction=
-		function(self)	-- this self is the button dropdown
-			Graphics_RefreshDropDown.updaterefresh(Graphics_RefreshDropDown);
-			VideoOptionsDropDown_OnClick(self);
+	GetValue = 
+		function(self)
+			return self.selectedID or GetCurrentResolution();
 		end,
+	dependent = {
+		"Graphics_RefreshDropDown"
+	},
 	restart = true,
 }
+
+-------------------------------------------------------------------------------------------------------
+VideoData["Graphics_MultiSampleDropDown"]={
+	key = "Graphics_MultiSampleDropDown",
+	name = "Multisampling",
+	description = OPTION_TOOLTIP_MULTISAMPLING;
+	
+	table = {},
+	tablefunction = GetMultisampleFormats;
+	tablenext = 3;
+	readfilter =
+		function(self, colorBits, depthBits, multiSample)
+			return format(MULTISAMPLING_FORMAT_STRING, colorBits, depthBits, multiSample);
+		end,
+	SetValue = 
+		function (self, value)
+			SetMultisampleFormat(value);
+		end,
+	GetValue = GetCurrentMultisampleFormat;
+	restart = true,
+}
+
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_RefreshDropDown"]={
+	key = "Graphics_RefreshDropDown",
 	name = "Refresh Rate",
 	description = "Refers to the number of times the image is drawn to the monitor.  Some players may see a flicker if the refresh rate is too low.",
 	
 	cvar = "gxRefresh";
-	restart = true,
-	useValue = true,	-- we don't return an ID (index), we return a string that must be compared.
-	updaterefresh =
-		function(self)
-			self.tablerefresh = true;						--our table is out of date. Does our value still exist?
-			local value = tonumber(self.newValue);			--
-			local values = {self.tablefunction()};			--
-			for i, val in ipairs(values) do
-				if(val == value) then
-					return;
-				end
-			end
-			self.notify(self, self.readfilter(self, values[#values]));	--update
-		end,
+	-- code run for dependent target
 	tablefunction = 
 		function()
 			-- get refresh rates for the currently selected resolution
-			local id = VideoOptionsDropDownMenu_GetSelectedID(Graphics_ResolutionDropDown) or GetCurrentResolution();
-			return GetRefreshRates(id);
+			return GetRefreshRates(Graphics_ResolutionDropDown:GetValue(), Graphics_PrimaryMonitorDropDown:GetValue());
 		end,
 	readfilter =
 		function(self, value)
@@ -279,17 +267,73 @@ VideoData["Graphics_RefreshDropDown"]={
 		end,
 	SetValue =
 		function(self, value)
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, tonumber(value));
+			local str = self.table[value];
+			if(str ~= nil) then
+				local val = string.match(self.table[value], "(%d+)");
+				BlizzardOptionsPanel_SetCVarSafe(self.cvar, val);
+			end
 		end,
 	GetValue = 
 		function(self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar) .. HERTZ;
+			return self:lookup(self.table[self.selectedID] or BlizzardOptionsPanel_GetCVarSafe(self.cvar) .. HERTZ);
+		end,
+	lookup = Graphics_TableLookupValidate,
+	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable,
+	onrefresh =
+		function(self)
+			if(Graphics_DisplayModeDropDown:windowedmode()) then
+				VideoOptions_Disable(self);
+			else
+				VideoOptions_Enable(self);
+			end
 		end,
 	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
+VideoData["Graphics_VerticalSyncDropDown"]={
+	key = "Graphics_VerticalSyncDropDown",
+	name = "Vertical Sync",
+	description = "Synchronizes your frame rate to some fraction of your monitor's refresh rate.",
+	
+	data = {
+		[1] = {
+			text = "Disabled",
+			cvars =	{
+				gxVSync = 0,
+			},
+		},
+		[2] = {
+			text = "Enabled",
+			cvars =	{
+				gxVSync = 1,
+			},
+		},
+	},
+	restart = true,
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["Graphics_GammaSlider"]={
+	key = "Graphics_GammaSlider",
+	name = "Gamma",
+	description = OPTION_TOOLTIP_GAMMA,
+	
+	type = CONTROLTYPE_SLIDER,
+	restart = true,
+	onrefresh =
+		function(self)
+			if(Graphics_DisplayModeDropDown:windowedmode()) then
+				VideoOptions_Enable(self);
+			else
+				VideoOptions_Disable(self);
+			end
+		end,
+}
+
+-------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ResizeDropDown"]={
+	key = "Graphics_ResizeDropDown",
 	name = "Resize Window",
 	description = "Determines whether you can resize the window.",
 	
@@ -314,86 +358,24 @@ VideoData["Graphics_ResizeDropDown"]={
 				self:Hide();
 			end
 		end,
-}
-
--------------------------------------------------------------------------------------------------------
-VideoData["Graphics_PrimaryMonitorDropDown"]={
-	name = "Primary Monitor",
-	description = "Allows you to change the primary monitor used by the display.",
-	
-	data = {
-		[1] = {
-			text = "Default",
-			cvars =	{
-			},
-		},
-		[2] = {
-			text = "Monitor 1",
-			cvars =	{
-			},
-		},
-		[3] = {
-			text = "Monitor 2",
-			cvars =	{
-			},
-		},
-	},
-	restart = true,
-}
--------------------------------------------------------------------------------------------------------
-VideoData["Graphics_MultiSampleDropDown"]={
-	name = "Multisampling",
-	description = OPTION_TOOLTIP_MULTISAMPLING;
-	
-	restart=true,
-	table = {},
-	tabledata = {},
-	tablefunction = GetMultisampleFormats;
-	tablenext = 3;
-	readfilter =
-		function(self, colorBits, depthBits, multiSample)
-			return format(MULTISAMPLING_FORMAT_STRING, colorBits, depthBits, multiSample);
+	onrefresh =
+		function(self)
+			if(Graphics_DisplayModeDropDown:windowedmode()) then
+				VideoOptions_Enable(self);
+			else
+				VideoOptions_Disable(self);
+			end
 		end,
-	SetValue = 
-		function (self, value)
-			SetMultisampleFormat(value);
-		end,
-	GetValue = GetCurrentMultisampleFormat;
-	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_VerticalSyncDropDown"]={
-	name = "Vertical Sync",
-	description = "Synchronizes your frame rate to some fraction of your monitor's refresh rate.",
-	
-	data = {
-		[1] = {
-			text = "Disabled",
-			cvars =	{
-				gxVSync = 0,
-			},
-		},
-		[2] = {
-			text = "Enabled",
-			cvars =	{
-				gxVSync = 1,
-			},
-		},
-	},
-	restart = true,
-}
+-- Graphics
+-------------------------------------------------------------------------------------------------------
 
---"Determines the overall brightness of the game.  Use this if your monitor causes the game to be too bright or too dark.",
--------------------------------------------------------------------------------------------------------
-VideoData["Graphics_GammaSlider"]={
-	name = "Gamma",
-	description = OPTION_TOOLTIP_GAMMA,
-	type = CONTROLTYPE_SLIDER,
-	restart = true,
-}
--------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ViewDistanceDropDown"]={
+	key = "Graphics_ViewDistanceDropDown",
+	description = "These are the view distances:",
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -426,11 +408,16 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 			},
 		},
 	},
-	description = "These are the view distances:",
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_GroundClutterRadiusDropDown"]={
+	key = "Graphics_GroundClutterRadiusDropDown",
+	description = OPTION_TOOLTIP_GROUND_RADIUS,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -463,11 +450,16 @@ VideoData["Graphics_GroundClutterRadiusDropDown"]={
 			},
 		},
 	},
-	description = OPTION_TOOLTIP_GROUND_RADIUS,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_GroundClutterDensityDropDown"]={
+	key = "Graphics_GroundClutterDensityDropDown",
+	description = OPTION_TOOLTIP_GROUND_DENSITY,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -500,11 +492,16 @@ VideoData["Graphics_GroundClutterDensityDropDown"]={
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_GROUND_DENSITY,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_EnvironmentalDetailDropDown"]={
+	key = "Graphics_EnvironmentalDetailDropDown",
+	description = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -537,11 +534,16 @@ VideoData["Graphics_EnvironmentalDetailDropDown"]={
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ParticleDensityDropDown"]={
+	key = "Graphics_ParticleDensityDropDown",
+	description =  OPTION_TOOLTIP_PARTICLE_DENSITY,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -574,11 +576,16 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_PARTICLE_DENSITY,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_FullScreenGlowDropDown"]={
+	key = "Graphics_FullScreenGlowDropDown",
+	description = OPTION_TOOLTIP_FULL_SCREEN_GLOW,
+
 	data = {
 		[1] = {
 			text = TEXT_DISABLED,
@@ -593,10 +600,15 @@ VideoData["Graphics_FullScreenGlowDropDown"]={
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_FULL_SCREEN_GLOW,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ShadowsDropDown"]={
+	key = "Graphics_ShadowsDropDown",
+	description = OPTION_TOOLTIP_CHARACTER_SHADOWS,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -607,13 +619,13 @@ VideoData["Graphics_ShadowsDropDown"]={
 		[2] = {
 			text = TEXT_FAIR,
 			cvars =	{
-				extShadowQuality = 0,
+				extShadowQuality = 1,
 			},
 		},
 		[3] = {
 			text = TEXT_MEDIUM,
 			cvars =	{
-				extShadowQuality = 1,
+				extShadowQuality = 2,
 			},
 		},
 		[4] = {
@@ -629,11 +641,16 @@ VideoData["Graphics_ShadowsDropDown"]={
 			},
 		},
 	},
-	description = OPTION_TOOLTIP_CHARACTER_SHADOWS,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_WeatherIntensityDropDown"]={
+	key = "Graphics_WeatherIntensityDropDown",
+	description = OPTION_TOOLTIP_WEATHER_DETAIL,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -642,54 +659,58 @@ VideoData["Graphics_WeatherIntensityDropDown"]={
 			},
 		},
 		[2] = {
-			text = TEXT_FAIR,
-			cvars =	{
-				weatherDensity = 0,
-			},
-		},
-		[3] = {
 			text = TEXT_MEDIUM,
 			cvars =	{
 				weatherDensity = 1,
 			},
 		},
-		[4] = {
+		[3] = {
 			text = TEXT_HIGH,
 			cvars =	{
 				weatherDensity = 2,
 			},
 		},
-		[5] = {
+		[4] = {
 			text = TEXT_ULTRA,
 			cvars =	{
 				weatherDensity = 3,
 			},
 		},
 	},
-	description = OPTION_TOOLTIP_WEATHER_DETAIL,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_TextureResolutionDropDown"]={
+	key = "Graphics_TextureResolutionDropDown",
+	description = OPTION_TOOLTIP_TEXTURE_DETAIL,
+
 	data = {
 		[1] = {
-			text = TEXT_DISABLED,
+			text = TEXT_LOW,
 			cvars =	{
 				BaseMip = 0,
 			},
 		},
 		[2] = {
-			text = TEXT_ENABLED,
+			text = TEXT_HIGH,
 			cvars =	{
 				BaseMip = 1,
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_TEXTURE_DETAIL,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ProjectedTexturesDropDown"]={
+	key = "Graphics_ProjectedTexturesDropDown",
+	description = OPTION_TOOLTIP_PROJECTED_TEXTURES,
+
 	data = {
 		[1] = {
 			text = TEXT_DISABLED,
@@ -704,11 +725,16 @@ VideoData["Graphics_ProjectedTexturesDropDown"]={
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_PROJECTED_TEXTURES,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_FilteringDropDown"]={
+	key = "Graphics_FilteringDropDown",
+	description = OPTION_TOOLTIP_TRILINEAR,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -741,11 +767,16 @@ VideoData["Graphics_FilteringDropDown"]={
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_TRILINEAR,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_LiquidDetailDropDown"]={
+	key = "Graphics_LiquidDetailDropDown",
+	description = OPTION_TOOLTIP_LIQUID_DETAIL,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -766,23 +797,22 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 			},
 		},
 		[4] = {
-			text = TEXT_HIGH,
-			cvars =	{
-				waterDetail = 2,
-			},
-		},
-		[5] = {
 			text = TEXT_ULTRA,
 			cvars =	{
 				waterDetail = 3,
 			},
 		},
 	},
-	description =  OPTION_TOOLTIP_LIQUID_DETAIL,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_SunshaftsDropDown"]={
+	key = "Graphics_SunshaftsDropDown",
+	description = "Sunshafts:",
+
 	data = {
 		[1] = {
 			text = TEXT_DISABLED,
@@ -797,11 +827,16 @@ VideoData["Graphics_SunshaftsDropDown"]={
 			},
 		},
 	},
-	description =  "Sunshafts:",
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_PlayerDropDown"]={
+	key = "Graphics_PlayerDropDown",
+	description = OPTION_TOOLTIP_PLAYER_DETAIL,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -816,12 +851,16 @@ VideoData["Graphics_PlayerDropDown"]={
 			},
 		},
 	},
-	restart=true,
-	description =  OPTION_TOOLTIP_PLAYER_DETAIL,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_BlendingDropDown"]={
+	key = "Graphics_BlendingDropDown",
+	description =  OPTION_TOOLTIP_TERRAIN_TEXTURE,
+
 	data = {
 		[1] = {
 			text = TEXT_LOW,
@@ -836,13 +875,94 @@ VideoData["Graphics_BlendingDropDown"]={
 			},
 		},
 	},
-	restart=true,
-	description =  OPTION_TOOLTIP_TERRAIN_TEXTURE,
+	dependent = {
+		"Graphics_QualityDropDown",
+	},
 }
+
+-------------------------------------------------------------------------------------------------------
+-- Stereo
 -------------------------------------------------------------------------------------------------------
 
+VideoStereoPanelOptions = {
+	gxStereoEnabled = { text = "ENABLE_STEREO_VIDEO" },
+	gxStereoConvergence = { text = "DEPTH_CONVERGENCE", minValue = 0.2, maxValue = 50, valueStep = 0.1, tooltip = OPTION_STEREO_CONVERGENCE},
+	gxStereoSeparation = { text = "EYE_SEPARATION", minValue = 0, maxValue = 100, valueStep = 1, tooltip = OPTION_STEREO_SEPARATION},
+	gxCursor = { text = "STEREO_HARDWARE_CURSOR" },
+}
+
+-------------------------------------------------------------------------------------------------------
+-- Advanced
+-------------------------------------------------------------------------------------------------------
+
+VideoData["VideoOptionsEffectsPanelBufferingDropDown"]={
+	key = "VideoOptionsEffectsPanelBufferingDropDown",
+	data = {
+		[1] = {
+			text = TEXT_DISABLED,
+			cvars =	{
+				gxTripleBuffer = 0,
+			},
+		},
+		[2] = {
+			text = TEXT_ENABLED,
+			cvars =	{
+				gxTripleBuffer = 1,
+			},
+		},
+	},
+	restart = true;
+	description =  OPTION_TOOLTIP_TRIPLE_BUFFER,
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["VideoOptionsEffectsPanelLagDropDown"]={
+	key = "VideoOptionsEffectsPanelLagDropDown",
+	data = {
+		[1] = {
+			text = TEXT_DISABLED,
+			cvars =	{
+				gxFixLag = 0,
+			},
+		},
+		[2] = {
+			text = TEXT_ENABLED,
+			cvars =	{
+				gxFixLag = 1,
+			},
+		},
+	},
+	restart = true,
+	description =  OPTION_TOOLTIP_FIX_LAG,
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["VideoOptionsEffectsPanelHardwareCursorDropDown"]={
+	key = "VideoOptionsEffectsPanelHardwareCursorDropDown",
+	data = {
+		[1] = {
+			text = TEXT_DISABLED,
+			cvars =	{
+				gxCursor = 0,
+			},
+		},
+		[2] = {
+			text = TEXT_ENABLED,
+			cvars =	{
+				gxCursor = 1,
+			},
+		},
+	},
+	description =  OPTION_TOOLTIP_HARDWARE_CURSOR,
+	restart = true,
+}
+
+-------------------------------------------------------------------------------------------------------
+-- Unused
+-------------------------------------------------------------------------------------------------------
 
 VideoData["VideoOptionsEffectsPanelUiScaleDropDown"]={
+	key = "VideoOptionsEffectsPanelUiScaleDropDown",
 	data = {
 		[1] = {
 			text = TEXT_MEDIUM,

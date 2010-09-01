@@ -335,7 +335,7 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	info.value = "available";
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
 	info.checked = GetTrainerServiceTypeFilter("available");
-	info.isNotRadial = true;
+	info.isNotRadio = true;
 	info.keepShownOnClick = 1;
 	UIDropDownMenu_AddButton(info);
 
@@ -344,7 +344,7 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	info.value = "unavailable";
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
 	info.checked = GetTrainerServiceTypeFilter("unavailable");
-	info.isNotRadial = true;
+	info.isNotRadio = true;
 	info.keepShownOnClick = 1;
 	UIDropDownMenu_AddButton(info);
 
@@ -353,7 +353,7 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	info.value = "used";
 	info.func = ClassTrainerFrameFilterDropDown_OnClick;
 	info.checked = GetTrainerServiceTypeFilter("used");
-	info.isNotRadial = true;
+	info.isNotRadio = true;
 	info.keepShownOnClick = 1;
 	UIDropDownMenu_AddButton(info);
 end

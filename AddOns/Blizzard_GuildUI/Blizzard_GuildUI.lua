@@ -5,6 +5,7 @@ local NO_TABARD_COLORS = { r=0.4745, g=0.4588, b=0.5294 };
 
 function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("GUILD_RANKS_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("GUILD_XP_UPDATE");
 	self:RegisterEvent("GUILD_PERK_UPDATE");
@@ -46,6 +47,9 @@ function GuildFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
 		local totalMembers, onlineMembers = GetNumGuildMembers();
 		GuildFrameMembersCount:SetText(onlineMembers.." / "..totalMembers);
+		GuildFrame_CheckPermissions();
+	elseif ( event == "GUILD_RANKS_UPDATE" ) then
+		GuildFrame_CheckPermissions();
 	elseif ( event == "GUILD_XP_UPDATE" ) then
 		GuildFrame_UpdateXP();
 	elseif ( event == "UPDATE_FACTION" ) then
@@ -109,7 +113,7 @@ function GuildFrame_UpdateFaction()
 end
 
 function GuildFrame_UpdateTabard()
-	local bkgR, bkgG, bkgB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
+	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
 	if ( emblemFilename ) then
 		local iconR = emblemR / 255;
 		local iconG = emblemG / 255;

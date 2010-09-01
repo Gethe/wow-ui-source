@@ -392,7 +392,7 @@ function MiniMapTrackingDropDown_Initialize()
 		info.func = MiniMapTracking_SetTracking;
 		info.icon = texture;
 		info.arg1 = id;
-		info.isNotRadial = true;
+		info.isNotRadio = true;
 		info.keepShownOnClick = true;
 		if ( category == "spell" ) then
 			info.tCoordLeft = 0.0625;
