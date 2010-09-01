@@ -6,32 +6,6 @@
 	Templates
 *******************************************************************************
 -->
-	<Button name="GuildInfoButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="306" y="18"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" parentKey="icon">
-					<Anchors>
-						<Anchor point="LEFT" x="4" y="0"/>
-					</Anchors>
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="CENTER" wordwrap="false" parentKey="text">
-					<Size>
-						<AbsDimension x="268" y="14"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" x="20" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" setAllPoints="true" alphaMode="ADD"/>
-	</Button>
 	<Button name="GuildPerksButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="284" y="44"/>
@@ -266,26 +240,26 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentHeader" file="Interface\GuildFrame\GuildFrame" parentKey="header" setAllPoints="true">
+				<Texture name="$parentHeader" file="Interface\GuildFrame\GuildFrame" parentKey="header" setAllPoints="true" hidden="true">
 					<TexCoords left="0.63183594" right="0.94531250" top="0.57617188" bottom="0.61523438"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentDash" inherits="GameFontHighlightSmall" text="QUEST_DASH" hidden="true" parentKey="dash">
-					<Anchors>
-						<Anchor point="LEFT" x="14" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="CENTER" wordwrap="false" parentKey="text">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentDash" relativePoint="RIGHT" x="0" y="0"/>
+						<Anchor point="LEFT" x="24" y="0"/>
 						<Anchor point="RIGHT" x="-8" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentIcon" file="Interface\GuildFrame\GuildFrame" hidden="true" parentKey="icon">
+				<FontString name="$parentDash" inherits="GameFontHighlightSmall" text="QUEST_DASH" justifyH="RIGHT" hidden="true" parentKey="dash">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIcon" file="Interface\GuildFrame\GuildFrame" parentKey="icon">
 					<Size x="13" y="11"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentDash" x="-4" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="-4" y="0"/>
 					</Anchors>
 					<TexCoords left="0.41406250" right="0.42675781" top="0.96875000" bottom="0.99023438"/>
 				</Texture>
@@ -294,17 +268,24 @@
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter>
-				GuildNewsButton_OnEnter(self);
+				if ( not self.isEvent ) then
+					GuildNewsButton_OnEnter(self);
+				end
 			</OnEnter>
 			<OnClick>
-				GuildNewsButton_OnClick(self, button);
+				if ( self.isEvent ) then
+					GuildInfoEventButton_OnClick(self, button);
+				else
+					GuildNewsButton_OnClick(self, button);
+				end
 			</OnClick>
 			<OnLeave>
-				GuildNewsFrame.activeButton = nil;
-				GameTooltip:Hide();
+				if ( not self.isEvent ) then
+					GuildNewsButton_OnLeave(self);
+				end
 			</OnLeave>
 		</Scripts>
 	</Button>
@@ -319,7 +300,7 @@
 				<Texture name="$parentTabardBackground" file="Interface\GuildFrame\GuildFrame">
 					<Size x="62" y="62"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="TOPLEFT" x="-7" y="8"/>
 					</Anchors>
 					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
 				</Texture>
@@ -340,12 +321,22 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-16" y="15"/>
 					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentTabardRightIcon" mask="Interface\GuildFrame\GuildLogoMask_R">
 					<Size x="40" y="80"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentTabardLeftIcon" relativePoint="RIGHT"/>
 					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture name="$parentTabardBorder" file="Interface\GuildFrame\GuildFrame">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="8"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -628,7 +619,7 @@
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
 									</Anchors>
-									<Color r="0" g="0.745" b="0.094"/>
+									<Color r="0" g="0.245" b="0.094"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
@@ -1122,5 +1113,119 @@
 			<OnShow function="GuildMainFrame_OnShow"/>
 			<OnEvent function="GuildMainFrame_OnEvent"/>
 		</Scripts>
+	</Frame>
+	
+	<Frame name="GuildInviteFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size>
+			<AbsDimension x="310" y="188"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>	
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\GuildFrame\GuildExtra">
+					<Size x="287" y="116"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-12"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.56250000" top="0.00781250" bottom="0.91406250"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentLevelRingBackground" file="Interface\Minimap\UI-Minimap-Background">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="61" y="-82"/>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.6"/>
+				</Texture>
+				<Texture name="$parentTabardBackground" file="Interface\GuildFrame\GuildFrame">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentBackground" x="-1" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>	
+				</Texture>				
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentLevelRing" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="65" y="65"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="54" y="-76"/>
+					</Anchors>									
+				</Texture>
+				<Texture name="$parentTabardBorder" file="Interface\GuildFrame\GuildFrame">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTabardBackground" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>	
+				</Texture>			
+				<FontString	name="$parentLevelText" inherits="GameFontHighlightSmall" text="Level">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentLevelRing" relativePoint="TOP" x="-14" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString	name="$parentInviteText" inherits="GameFontHighlightSmall" text="You have been invited to join the guild">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-28"/>
+					</Anchors>
+				</FontString>				
+				<FontString	name="$parentGuildText" inherits="GameFontNormal" text="We Fight Bobcats">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-46"/>
+					</Anchors>
+				</FontString>
+				<FontString	name="$parentWarningText" inherits="GameFontHighlight" text="You will lose your guild reputation with We Pet Bobcats">
+					<Size x="0" y="50"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="BOTTOMLEFT" x="12" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBackground" relativePoint="BOTTOMRIGHT" x="-12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTabardRing" file="Interface\GuildFrame\GuildExtra">
+					<Size x="118" y="76"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentBackground" x="0" y="-12"/>
+					</Anchors>					
+					<TexCoords left="0.56640625" right="0.79687500" top="0.00781250" bottom="0.60156250"/>	
+				</Texture>			
+				<FontString	name="$parentLevelNumber" inherits="GameFontHighlight" text="24">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentLevelRing" x="-13" y="14"/>
+					</Anchors>
+				</FontString>			
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentJoinButton" inherits="UIPanelButtonTemplate2" text="Join Guild">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="24" y="24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>				
+			</Button>		
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="Decline Invitation">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>					
+		</Frames>
 	</Frame>
 </Ui>

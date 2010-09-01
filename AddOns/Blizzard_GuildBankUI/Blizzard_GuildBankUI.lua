@@ -307,7 +307,7 @@ end
 function GuildBankFrame_UpdateTabBuyingInfo()
 	local tabCost = GetGuildBankTabCost();
 	local numTabs = GetNumGuildBankTabs();
-	GuildBankFrameBuyInfoNumTabsPurchasedText:SetText(format(NUM_GUILDBANK_TABS_PURCHASED, numTabs, MAX_GUILDBANK_TABS));
+	GuildBankFrameBuyInfoNumTabsPurchasedText:SetText(format(NUM_GUILDBANK_TABS_PURCHASED, numTabs, MAX_BUY_GUILDBANK_TABS));
 	if ( not tabCost ) then
 		--You've bought all the tabs
 		GuildBankTab_OnClick(GuildBankTab1, "LeftButton", 1);
@@ -329,12 +329,16 @@ function GuildBankFrame_UpdateTabs()
 	local name, icon, isViewable, canDeposit, numWithdrawals, remainingWithdrawals;
 	local numTabs = GetNumGuildBankTabs();
 	local currentTab = GetCurrentGuildBankTab();
-	local tabToBuyIndex = numTabs+1;
 	local unviewableCount = 0;
 	local disableAll = nil;
 	local updateAgain = nil;
 	local isLocked, titleText;
 	local withdrawalText, withdrawalStackCount;
+	-- Set buyable tab
+	local tabToBuyIndex;
+	if ( numTabs < MAX_BUY_GUILDBANK_TABS ) then
+		tabToBuyIndex = numTabs + 1;
+	end
 	-- Disable and gray out all tabs if in the moneyLog since the tab is irrelevant
 	if ( GuildBankFrame.mode == "moneylog" ) then
 		disableAll = 1;
@@ -373,7 +377,7 @@ function GuildBankFrame_UpdateTabs()
 					SetDesaturation(iconTexture, nil);
 				end
 			end
-		elseif ( i >= tabToBuyIndex ) then
+		elseif ( i > numTabs ) then
 			tab:Hide();
 		else
 			iconTexture:SetTexture(icon);

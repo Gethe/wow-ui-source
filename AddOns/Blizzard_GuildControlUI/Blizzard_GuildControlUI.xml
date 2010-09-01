@@ -168,7 +168,7 @@
 					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 				<Frames>
-					<CheckButton name="$parentViewCheck" inherits="GuildPermissionCheckBoxTemplate" id="4" parentKey="viewCB">
+					<CheckButton name="$parentViewCheck" inherits="GuildPermissionCheckBoxTemplate" id="1" parentKey="viewCB">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-95" y="-3"/>
 						</Anchors>
@@ -181,7 +181,7 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentDepositCheck" inherits="GuildPermissionCheckBoxTemplate" id="3" parentKey="depositCB">
+					<CheckButton name="$parentDepositCheck" inherits="GuildPermissionCheckBoxTemplate" id="2" parentKey="depositCB">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentViewCheck" relativePoint="BOTTOM" x="0" y="-3"/>
 						</Anchors>
@@ -194,7 +194,7 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentUpdateInfoCheck" inherits="GuildPermissionCheckBoxTemplate" id="1" parentKey="infoCB">
+					<CheckButton name="$parentUpdateInfoCheck" inherits="GuildPermissionCheckBoxTemplate" id="3" parentKey="infoCB">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentDepositCheck" relativePoint="BOTTOM" x="0" y="-3"/>
 						</Anchors>
@@ -228,11 +228,11 @@
 						</Frames>
 						<Scripts>
 							<OnTextChanged>
-								GuildControlUI_SetBankTabChange(self)
 							</OnTextChanged>
 							<OnEnterPressed>
-								self:ClearFocus();
-							</OnEnterPressed>
+                GuildControlUI_SetBankTabWithdrawChange(self)
+                self:ClearFocus();
+              </OnEnterPressed>
 							<OnEscapePressed function="EditBox_ClearFocus"/>
 						</Scripts>
 					</EditBox>

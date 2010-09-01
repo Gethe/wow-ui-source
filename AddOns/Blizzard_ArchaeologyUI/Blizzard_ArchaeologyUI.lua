@@ -60,14 +60,13 @@ end
 function ArchaeologyFrame_OnLoad(self)
 	ButtonFrameTemplate_HideButtonBar(ArchaeologyFrame);
 	ButtonFrameTemplate_HideAttic(ArchaeologyFrame);
-	self.tab1:Disable();
 	
 	self.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
 	self.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);	
 	self:RegisterEvent("ARTIFACT_UPDATE");
 	self:RegisterEvent("ARTIFACT_HISTORY_READY");
 	self:RegisterEvent("ARTIFACT_COMPLETE");
-	self:RegisterEvent("ARTIFACT_DIG_SITE_UPDATED");	
+	self:RegisterEvent("ARTIFACT_DIG_SITE_UPDATED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	
 	
@@ -100,38 +99,40 @@ function ArchaeologyFrame_OnLoad(self)
 	UIDropDownMenu_JustifyText(self.raceFilterDropDown, "LEFT");
 	UIDropDownMenu_Initialize(self.raceFilterDropDown, ArchaeologyFrame_InitRaceFilter);
 	self.currentFrame:UpdateFrame();
-	
-
 end
 
 
 function ArchaeologyFrame_OnShow(self)
 	local _, _, arch = GetProfessions();
-	local name, texture, rank, maxRank = GetProfessionInfo(arch);
-	SetPortraitToTexture(ArchaeologyFramePortrait, texture);
-	self.rankBar:SetMinMaxValues(0, maxRank);
-	self.rankBar:SetValue(rank);
-	self.rankBar.text:SetText(rank.."/"..maxRank);
+	if arch then
+		local name, texture, rank, maxRank = GetProfessionInfo(arch);
+		SetPortraitToTexture(ArchaeologyFramePortrait, texture);
+		self.rankBar:SetMinMaxValues(0, maxRank);
+		self.rankBar:SetValue(rank);
+		self.rankBar.text:SetText(rank.."/"..maxRank);
+	end
+	self.tab1:Click();
 end
 
 
 function ArchaeologyFrame_OnHide(self)
-	--CloseTradeSkill();
 end
 
 
 function ArchaeologyFrame_OnEvent(self, event, ...)
 	if event == "ARTIFACT_COMPLETE" then
-		ArchaeologyFrame_OnTabClick(ArchaeologyFrame.tab1);
+		--ArchaeologyFrame_OnTabClick(ArchaeologyFrame.tab1);
 	else
 		self.currentFrame:UpdateFrame();
 	end
 	local _, _, arch = GetProfessions();
-	local name, texture, rank, maxRank = GetProfessionInfo(arch);
-	SetPortraitToTexture(ArchaeologyFramePortrait, texture);
-	self.rankBar:SetMinMaxValues(0, maxRank);
-	self.rankBar:SetValue(rank);
-	self.rankBar.text:SetText(rank.."/"..maxRank);
+	if arch then
+		local name, texture, rank, maxRank = GetProfessionInfo(arch);
+		SetPortraitToTexture(ArchaeologyFramePortrait, texture);
+		self.rankBar:SetMinMaxValues(0, maxRank);
+		self.rankBar:SetValue(rank);
+		self.rankBar.text:SetText(rank.."/"..maxRank);
+	end
 end
 
 
@@ -163,8 +164,7 @@ end
 
 function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	local RaceName, RaceCurrency, RaceTexture, RaceitemID	= GetArchaelogyRaceInfo(self.raceID);
-	local name, description, rarity, icon, numSockets, bgTexture =  GetSelectedArtifactInfo();
-	
+	local name, description, rarity, icon, spellDescription, numSockets, bgTexture =  GetSelectedArtifactInfo();
 	
 	if 	self.solveFrame:IsShown() then
 		local base, adjust, totalCost = GetArtifactProgress();
@@ -260,7 +260,7 @@ function ArchaeologyFrame_UpdateComplete(self)
 			else
 				local failed = false;
 				local rareStatus = self.currData.onRare;
-				name, _, rarity, icon, _, _, firstComletionTime, completionCount = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
+				name, _, rarity, icon, spellDescription,  _, _, firstComletionTime, completionCount = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
 				if not name then
 					if self.raceFilter ~= 0 then
 						outOfArtifacts = true;
@@ -311,6 +311,7 @@ function ArchaeologyFrame_UpdateComplete(self)
 					projectButton.artifactName:SetText(name);
 					projectButton.raceIndex =  self.currData.raceIndex;
 					projectButton.projectIndex =  self.currData.projectIndex;
+					projectButton.spellDescription =  spellDescription;
 					if rarity == 0 then
 						numCommon = numCommon +1;
 						projectButton.artifactSubText:SetText(raceName.." - "..ITEM_QUALITY1_DESC);
@@ -425,7 +426,7 @@ end
 
 
 function ArchaeologyFrame_OnTabClick(self)	
-	local archFrame = self:GetParent();	
+	local archFrame = self:GetParent();
 	archFrame.selectedTab = self:GetID()
 	
 	CloseDropDownMenus();
@@ -433,23 +434,43 @@ function ArchaeologyFrame_OnTabClick(self)
 	archFrame.completedPage:Hide();
 	archFrame.artifactPage:Hide();
 	UIDropDownMenu_SetText(archFrame.raceFilterDropDown, ALL);
-	
-	if archFrame.selectedTab ==  ARCHAEOLOGY_SUMMARY_TAB then	
-		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:Disable();
-		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:Enable();
+
+
+
+	if archFrame.selectedTab ==  ARCHAEOLOGY_SUMMARY_TAB then
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetTexCoord(0.85546875, 0.97851563, 0.00390625, 0.22656250);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetTexCoord(0.85546875, 0.97851563, 0.00390625, 0.22656250);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB].factionIcon:SetPoint("CENTER", -6, 0);
+		
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetTexCoord(0.31250000, 0.40625000, 0.56250000, 0.78515625);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetTexCoord(0.31250000, 0.40625000, 0.56250000, 0.78515625);
+		
 		archFrame.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
-		archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);			
+		archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);	
 		archFrame.summaryPage:Show();
 		archFrame.currentFrame = archFrame.summaryPage;
-		archFrame.currentFrame.raceFilter = 0;		
+		archFrame.currentFrame.raceFilter = 0;
 		ArchaeologyFrame.raceFilterDropDown:Hide();
 		ArchaeologyFrame.factionIcon:Show();
 		archFrame.currentFrame:UpdateFrame();
-	elseif archFrame.selectedTab ==  ARCHAEOLOGY_COMPLETED_TAB then	
-		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:Disable();
-		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:Enable();
+	elseif archFrame.selectedTab ==  ARCHAEOLOGY_COMPLETED_TAB then
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetTexCoord(0.21484375, 0.30859375, 0.56250000, 0.78515625);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetTexCoord(0.21484375, 0.30859375, 0.56250000, 0.78515625);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB].factionIcon:SetPoint("CENTER", -13, 0);
+		
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetTexCoord(0.72851563, 0.85156250, 0.00390625, 0.22656250);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetTexCoord(0.72851563, 0.85156250, 0.00390625, 0.22656250);
+		
 		archFrame.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_COMPLETED_PAGE].bgFileL);
-		archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_COMPLETED_PAGE].bgFileR);			
+		archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_COMPLETED_PAGE].bgFileR);	
 		archFrame.completedPage:Show();
 		archFrame.completedPage.currentPage = 1;
 		archFrame.completedPage.currData.raceIndex = 1;
@@ -531,57 +552,9 @@ function ArchaeologyFrame_InitRaceFilter()
 			info.checked = ArchaeologyFrame.currentFrame.raceFilter == i;
 			UIDropDownMenu_AddButton(info);
 		end
-	end	
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---- TEMP DATA SIM
-local sillytable = {
-	
-	[1] = {rare = 1, common = 7},
-	[2] = {rare = 0, common = 0},
-	[3] = {rare = 0, common = 2},
-	[4] = {rare = 4, common = 3},
-	[5] = {rare = 0, common = 11},
-	[6] = {rare = 0, common = 3},
-	[7] = {rare = 0, common = 6},
-	[8] = {rare = 0, common = 2},
-
-}
-
-
-function GetNumArtifactsByRace2(race)
-	if sillytable[race] then
-		return sillytable[race].rare + sillytable[race].common;
-	end
-	return 0;
-end
-
-function GetArtifactInfoByRace2(race, index)
-	if sillytable[race] then
-		if sillytable[race].rare >= index then
-			return "Rare"..index, nil, 1, "Interface\\Icons\\Ability_ThunderClap", nil , nil, 0, 1; 
-		elseif sillytable[race].rare + sillytable[race].common >= index then
-			if index-sillytable[race].rare == 2 then
-				return "Common"..(index-sillytable[race].rare), _, 0, "Interface\\Icons\\Ability_ThunderClap", _, _, 0, 0; 
-			else
-				return "Common"..(index-sillytable[race].rare), _, 0, "Interface\\Icons\\Ability_ThunderClap", _, _, 0, 1; 
-			end
-		end
 	end
 end
+
+
 
 

@@ -121,8 +121,8 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			SpellBookFrame_Update();
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
-		local arg1 = ...;
-		local flashFrame = _G["SpellBookSkillLineTab"..arg1.."Flash"];
+		local spellID, tabNum = ...;
+		local flashFrame = _G["SpellBookSkillLineTab"..tabNum.."Flash"];
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			return;
 		else

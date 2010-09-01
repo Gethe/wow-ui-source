@@ -8,8 +8,8 @@
 -->	
 	<Frame name="GuildInfoFrame" hidden="true" parent="GuildFrame">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="GuildFrameInset" relativePoint="TOPLEFT"/>
-			<Anchor point="BOTTOMRIGHT" relativeTo="GuildFrameInset" relativePoint="BOTTOMRIGHT"/>
+			<Anchor point="TOPLEFT" relativeTo="$parent" x="4" y="-65"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-7" y="26"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -178,11 +178,11 @@
 				</Scripts>
 			</Button>
 			<ScrollFrame name="GuildInfoEventsContainer" inherits="MinimalHybridScrollFrameTemplate">
-				<Size x="312" y="107"/>
+				<Size x="298" y="108"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
+					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="-3" y="-25"/>
+							<AbsDimension x="4" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -238,8 +238,9 @@
 		<Scripts>
 			<OnLoad function="GuildInfoFrame_OnLoad"/>
 			<OnEvent function="GuildInfoFrame_OnEvent"/>
+			<OnShow function="GuildInfoFrame_OnShow"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
 <!--
 *******************************************************************************
 	Popups

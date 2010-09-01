@@ -642,15 +642,15 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		local factionGroup = UnitFactionGroup("player");
 		if ( factionGroup ) then	
 			local pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
-			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  honorPoints .. " " .. HONOR_POINTS;
+			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  format(MERCHANT_HONOR_POINTS, honorPoints);
 		end
 	end
 	if ( arenaPoints and arenaPoints ~= 0 ) then
 		if ( itemsString ) then
 			-- adding an extra space here because it looks nicer
-			itemsString = itemsString .. "  |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+			itemsString = itemsString .. "  |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. format(MERCHANT_ARENA_POINTS, arenaPoints);
 		else
-			itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. arenaPoints .. " " .. ARENA_POINTS;
+			itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. format(MERCHANT_ARENA_POINTS, arenaPoints);
 		end
 	end
 	

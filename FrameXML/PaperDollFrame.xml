@@ -388,50 +388,44 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>			
-			<PlayerModel name="CharacterModelFrame" useParentLevel="true">
-                <Size>
-					<AbsDimension x="231" y="320"/>
-                </Size>
+			<PlayerModel name="CharacterModelFrame">
+                <Size x="231" y="320"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset>
-                            <AbsDimension x="52" y="-68"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="TOPLEFT" x="52" y="-66"/>
                 </Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="CharacterModelFrameBackgroundTopLeft">
+						<Texture name="CharacterModelFrameBackgroundTopLeft" parentKey="BackgroundTopLeft">
 							<Size  x="212" y="245"/>
 							<TexCoords left="0.171875" right="1" top="0.0392156862745098" bottom="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="2"/>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture name="CharacterModelFrameBackgroundTopRight">
+						<Texture name="CharacterModelFrameBackgroundTopRight" parentKey="BackgroundTopRight">
 							<Size x="19" y="245"/>
-							<TexCoords left="0" right="0.83203125" top="0.0392156862745098" bottom="1"/>
+							<TexCoords left="0" right="0.296875" top="0.0392156862745098" bottom="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameBackgroundTopLeft" relativePoint="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="CharacterModelFrameBackgroundBotLeft">
+						<Texture name="CharacterModelFrameBackgroundBotLeft" parentKey="BackgroundBotLeft">
 							<Size x="212" y="128"/>
 							<TexCoords left="0.171875" right="1" top="0" bottom="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="CharacterModelFrameBackgroundBotRight">
+						<Texture name="CharacterModelFrameBackgroundBotRight" parentKey="BackgroundBotRight">
 							<Size x="19" y="128"/>
-							<TexCoords left="0" right="0.83203125" top="0" bottom="1"/>
+							<TexCoords left="0" right="0.296875" top="0" bottom="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture name="CharacterModelFrameBackgroundOverlay">
+						<Texture name="CharacterModelFrameBackgroundOverlay" parentKey="BackgroundOverlay">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameBackgroundTopLeft"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="CharacterModelFrameBackgroundBotRight" x="0" y="52"/>
@@ -439,30 +433,70 @@
 							<Color r="0" g="0" b="0"/>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="PaperDollInnerBorderTopLeft" inherits="Char-Corner-UpperLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="46" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderTopRight" inherits="Char-Corner-UpperRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-47" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderBottomLeft" inherits="Char-Corner-LowerLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="CharacterFrameInset" x="46" y="31"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderBottomRight" inherits="Char-Corner-LowerRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-47" y="31"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderLeft" inherits="Char-Inner-Left">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeto="PaperDollInnerBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1"/>
+								<Anchor point="BOTTOMLEFT" relativeto="PaperDollInnerBorderBottomLeft" relativePoint="TOPLEFT" x="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderRight" inherits="Char-Inner-Right">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeto="PaperDollInnerBorderTopRight" relativePoint="BOTTOMRIGHT" x="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeto="PaperDollInnerBorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderTop" inherits="Char-Inner-Top">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeto="PaperDollInnerBorderTopLeft" relativePoint="TOPRIGHT" y="1"/>
+								<Anchor point="TOPRIGHT" relativeto="PaperDollInnerBorderTopRight" relativePoint="TOPLEFT" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderBottom" inherits="Char-Inner-Bottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeto="PaperDollInnerBorderBottomLeft" relativePoint="BOTTOMRIGHT" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" relativeto="PaperDollInnerBorderBottomRight" relativePoint="BOTTOMLEFT" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PaperDollInnerBorderBottom2" inherits="Char-Inner-Bottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeto="CharacterFrameInset" y="27"/>
+								<Anchor point="BOTTOMRIGHT" relativeto="CharacterFrameInset" y="27"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
                 <Scripts>
-                    <OnLoad>
-                        Model_OnLoad(self);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-                    </OnLoad>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
+                    <OnLoad function="Model_OnLoad"/>
+					<OnEvent function="Model_OnEvent"/>
                     <OnUpdate function="Model_OnUpdate"/>
 					<OnMouseUp function="CharacterModelFrame_OnMouseUp"/>
-					<OnReceiveDrag function="CharacterModelFrame_OnMouseUp"/>
+					<OnMouseDown function="Model_OnMouseDown"/>
+					<OnReceiveDrag>
+						AutoEquipCursorItem();
+					</OnReceiveDrag>
 					<OnMouseWheel>
-						if (not self.zoomLevel) then
-							self.zoomLevel = 0;
-						end
-						self.zoomLevel = self.zoomLevel + delta*0.15;
-						if (self.zoomLevel > 0.8) then
-							self.zoomLevel = 0.8;
-						end
-						if (0 > self.zoomLevel) then
-							self.zoomLevel = 0;
-						end
-						self:SetPortraitZoom(self.zoomLevel);
+						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PLAYER_ZOOM);
 					</OnMouseWheel>
                 </Scripts>
 				<Frames>
@@ -471,7 +505,7 @@
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="0"/>
+							<Anchor point="TOPLEFT" x="4" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -506,119 +540,123 @@
 					</Button>
 				</Frames>
             </PlayerModel>
-            <Button name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-2"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterNeckSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterHeadSlot" relativePoint="BOTTOMLEFT"  x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterShoulderSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterNeckSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterBackSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterShoulderSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterChestSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterBackSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterShirtSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterChestSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterTabardSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterShirtSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterWristSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterTabardSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterHandsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-4" y="-2"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterWaistSlot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterHandsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterLegsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterWaistSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterFeetSlot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterLegsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterFinger0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterFeetSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterFinger1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterFinger0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterTrinket0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterFinger1Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterTrinket1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterTrinket0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT" x="106" y="16"/>
-                </Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture inherits="Char-Slot-Bottom-Left">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="$parentFrame" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-            </Button>
-            <Button name="CharacterSecondaryHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
-                </Anchors>
-            </Button>
-            <Button name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="CharacterSecondaryHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
-                </Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture inherits="Char-Slot-Bottom-Right">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-            </Button>
+			<Frame name="PaperDollItemsFrame" setAllPoints="true">
+				<Frames>
+					<Button name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterNeckSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterHeadSlot" relativePoint="BOTTOMLEFT"  x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterShoulderSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterNeckSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterBackSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterShoulderSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterChestSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterBackSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterShirtSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterChestSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterTabardSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterShirtSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterWristSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterTabardSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterHandsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-4" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterWaistSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterHandsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterLegsSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterWaistSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterFeetSlot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterLegsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterFinger0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFeetSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterFinger1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFinger0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterTrinket0Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFinger1Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterTrinket1Slot" inherits="PaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterTrinket0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="106" y="16"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture inherits="Char-Slot-Bottom-Left">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="$parentFrame" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Button>
+					<Button name="CharacterSecondaryHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSecondaryHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture inherits="Char-Slot-Bottom-Right">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Button>
+				</Frames>
+			</Frame>
 			<Button name="GearManagerToggleButton" hidden="true">
 				<Size x="32" y="32"/>
 				<Anchors>
@@ -649,60 +687,6 @@
 				</HighlightTexture>
 			</Button>
 		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="PaperDollInnerBorderTopLeft" inherits="Char-Corner-UpperLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="46" y="-4"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderTopRight" inherits="Char-Corner-UpperRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-47" y="-4"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderBottomLeft" inherits="Char-Corner-LowerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="CharacterFrameInset" x="46" y="31"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderBottomRight" inherits="Char-Corner-LowerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-47" y="31"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderLeft" inherits="Char-Inner-Left">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeto="PaperDollInnerBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1"/>
-						<Anchor point="BOTTOMLEFT" relativeto="PaperDollInnerBorderBottomLeft" relativePoint="TOPLEFT" x="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderRight" inherits="Char-Inner-Right">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeto="PaperDollInnerBorderTopRight" relativePoint="BOTTOMRIGHT" x="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeto="PaperDollInnerBorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderTop" inherits="Char-Inner-Top">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeto="PaperDollInnerBorderTopLeft" relativePoint="TOPRIGHT" y="1"/>
-						<Anchor point="TOPRIGHT" relativeto="PaperDollInnerBorderTopRight" relativePoint="TOPLEFT" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderBottom" inherits="Char-Inner-Bottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeto="PaperDollInnerBorderBottomLeft" relativePoint="BOTTOMRIGHT" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" relativeto="PaperDollInnerBorderBottomRight" relativePoint="BOTTOMLEFT" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="PaperDollInnerBorderBottom2" inherits="Char-Inner-Bottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeto="CharacterFrameInset" y="27"/>
-						<Anchor point="BOTTOMRIGHT" relativeto="CharacterFrameInset" y="27"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
         <Scripts>
             <OnLoad function="PaperDollFrame_OnLoad"/>
             <OnEvent function="PaperDollFrame_OnEvent"/>

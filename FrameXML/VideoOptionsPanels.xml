@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<!-- if you change something here you probably want to change the frame version too -->
-
+	<!-- this code is shared between the Frame and Glue -->
 	<Script file="OptionsPanelTemplates.lua"/>
 	<Script file="..\FrameXML\VideoOptionsPanels.lua"/>
 	<Script file="..\FrameXML\GraphicsQualityLevels.lua"/>
@@ -9,12 +8,19 @@
 	<Frame name="VideoOptionsDropDownMenuTemplate" inherits="DropDownMenuTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
+				-- also called by $childButton
 				if(self.tooltip ~= nil) then
 					VideoOptionsTooltip:SetOwner(self);
-					VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					if(self.name == nil) then
+						self.name = " ";
+					end
+					VideoOptionsTooltip:SetText(self.name .. ":", nil, nil, nil, nil, 1);
+					VideoOptionsTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
+					VideoOptionsTooltip:Show();
 				end
 			</OnEnter>
 			<OnLeave>
+				-- also called by $childButton
 				VideoOptionsTooltip:Hide();
 			</OnLeave>
 			<OnLoad>
@@ -37,13 +43,13 @@
 		</Scripts>
 	</CheckButton>
 	
-	<Texture name="videoUnderline" virtual="true">
+	<Texture name="videoUnderline" virtual="true" >
 		<Size x="580" y="1"/>
-		<Color r="1" g="1" b="1" a="1"/>
+		<Color r="0.5" g="0.5" b="0.5" a="1"/>
 	</Texture>
 	<Texture name="videoSubUnderline" virtual="true">
 		<Size x="560" y="1"/>
-		<Color r="1" g="1" b="1" a="1"/>
+		<Color r="0.5" g="0.5" b="0.5" a="1"/>
 	</Texture>
 
 	<!-- Graphics Panel. Delta_y is n*30 + 16 -->
@@ -299,7 +305,7 @@
 						_G[self:GetName().."Text"]:SetFontObject("OptionsFontSmall");
 						_G[self:GetName().."Low"]:SetText("-");
 						_G[self:GetName().."High"]:SetText("+");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						VideoOptionsSlider_OnLoad(self);
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;

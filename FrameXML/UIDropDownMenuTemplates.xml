@@ -331,6 +331,20 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						local parent = self:GetParent();
+						local myscript = parent:GetScript("OnEnter");
+						if(myscript ~= nil) then
+							myscript(parent);
+						end
+					</OnEnter>
+					<OnLeave>
+						local parent = self:GetParent();
+						local myscript = parent:GetScript("OnLeave");
+						if(myscript ~= nil) then
+							myscript(parent);
+						end
+					</OnLeave>
 					<OnClick>
 						ToggleDropDownMenu(nil, nil, self:GetParent());
 						PlaySound("igMainMenuOptionCheckBoxOn");

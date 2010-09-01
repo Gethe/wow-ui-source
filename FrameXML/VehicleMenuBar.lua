@@ -811,9 +811,9 @@ end
 
 function VehicleActionButton_OnClick(self, button, down)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local spellType, id, subType, spellID = GetActionInfo(self.action);
+		local spellType, id, subType = GetActionInfo(self.action);
 		if ( spellType == "spell" ) then
-			if ( HandleModifiedItemClick(GetSpellLink(spellID)) ) then
+			if ( HandleModifiedItemClick(GetSpellLink(id)) ) then
 				return;
 			end
 		end

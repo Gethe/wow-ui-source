@@ -13,7 +13,7 @@ StaticPopupDialogs["CONFIRM_LEARN_PREVIEW_TALENTS"] = {
 	exclusive = 1,
 }
 
-UIPanelWindows["PlayerTalentFrame"] = { area = "left", pushable = 6, whileDead = 1, width = 666, height = 488 };
+UIPanelWindows["PlayerTalentFrame"] = { area = "doublewide", pushable = 6, whileDead = 1, width = 666, height = 488 };
 
 
 -- global constants

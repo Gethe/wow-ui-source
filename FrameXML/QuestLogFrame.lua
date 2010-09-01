@@ -302,6 +302,9 @@ function QuestLog_OnShow(self)
 	QuestLog_Update();
 	
 	QuestLogDetailFrame_AttachToQuestLog();
+	if (TutorialFrame.id == 1 or TutorialFrame.id == 57) then
+		TutorialFrame_Hide();
+	end
 end
 
 function QuestLog_OnHide(self)

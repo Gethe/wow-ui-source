@@ -114,17 +114,18 @@ function InspectTalentFrame_OnLoad(self)
 end
 
 function InspectTalentFrame_OnShow()
-	InspectTalentFrame:RegisterEvent("INSPECT_TALENT_READY");
+	InspectTalentFrame:RegisterEvent("INSPECT_READY");
+	ButtonFrameTemplate_ShowButtonBar(InspectFrame);
 	InspectTalentFrame_Update();
 end
 
 function InspectTalentFrame_OnHide()
-	InspectTalentFrame:UnregisterEvent("INSPECT_TALENT_READY");
+	InspectTalentFrame:UnregisterEvent("INSPECT_READY");
 	wipe(talentSpecInfoCache);
 end
 
 function InspectTalentFrame_OnEvent(self, event, ...)
-	if ( event == "INSPECT_TALENT_READY" ) then
+	if ( event == "INSPECT_READY" ) then
 		InspectTalentFrame_Update();
 	end
 end

@@ -199,23 +199,99 @@ end
 
 function AchievementAlertFrame_ShowAlert (achievementID)
 	local frame = AchievementAlertFrame_GetAlertFrame();
-	local _, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
 	if ( not frame ) then
 		-- We ran out of frames! Bail!
 		return;
 	end
-
-	_G[frame:GetName() .. "Name"]:SetText(name);
 	
-	local shield = _G[frame:GetName() .. "Shield"];
-	AchievementShield_SetPoints(points, shield.points, GameFontNormal, GameFontNormalSmall);
-	if ( points == 0 ) then
-		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch = GetAchievementInfo(achievementID);
+	
+	local frameName = frame:GetName();
+	local displayName = _G[frameName.."Name"];
+	local shieldPoints = _G[frameName.."ShieldPoints"];
+	local shieldIcon = _G[frameName.."ShieldIcon"];
+	
+	displayName:SetText(name);
+	AchievementShield_SetPoints(points, shieldPoints, GameFontNormal, GameFontNormalSmall);
+	
+	if ( isGuildAch ) then
+		local guildName = _G[frameName.."GuildName"];
+		local guildBorder = _G[frameName.."GuildBorder"];
+		local guildBanner = _G[frameName.."GuildBanner"];
+		if ( not frame.guildDisplay ) then
+			frame.guildDisplay = true;
+			frame:SetHeight(104);
+			local background = _G[frameName.."Background"];
+			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+			background:SetTexCoord(0.00195313, 0.62890625, 0.00195313, 0.19140625);
+			background:SetPoint("TOPLEFT", -2, 2);
+			background:SetPoint("BOTTOMRIGHT", 8, 8);
+			local iconBorder = _G[frameName.."IconOverlay"];
+			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+			iconBorder:SetTexCoord(0.25976563,0.40820313,0.50000000,0.64453125);
+			iconBorder:SetPoint("CENTER", 0, 1);
+			_G[frameName.."Icon"]:SetPoint("TOPLEFT", -26, 2);
+			displayName:SetPoint("BOTTOMLEFT", 79, 37);
+			displayName:SetPoint("BOTTOMRIGHT", -79, 37);
+			_G[frameName.."Shield"]:SetPoint("TOPRIGHT", -15, -28);
+			shieldPoints:SetPoint("CENTER", 7, 5);
+			shieldPoints:SetVertexColor(0, 1, 0);
+			shieldIcon:SetTexCoord(0, 0.5, 0.5, 1);
+			local unlocked = _G[frameName.."Unlocked"];
+			unlocked:SetPoint("TOP", -1, -36);
+			unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
+			guildName:Show();
+			guildBanner:Show();
+			guildBorder:Show();
+			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+			frame.glow:SetTexCoord(0.00195313, 0.74804688, 0.19531250, 0.49609375);
+			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+			frame.shine:SetTexCoord(0.75195313, 0.91601563, 0.19531250, 0.35937500);
+			frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
+		end
+		guildName:SetText(GetGuildInfo("player"));
+		SetGuildTabardTextures(nil, nil, guildBanner, guildBorder);
 	else
-		shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+		if ( frame.guildDisplay ) then
+			frame.guildDisplay = nil;
+			frame:SetHeight(88);
+			local background = _G[frameName.."Background"];
+			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Background");
+			background:SetTexCoord(0, 0.605, 0, 0.703);
+			background:SetPoint("TOPLEFT", 0, 0);
+			background:SetPoint("BOTTOMRIGHT", 0, 0);
+			local iconBorder = _G[frameName.."IconOverlay"];
+			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
+			iconBorder:SetTexCoord(0, 0.5625, 0, 0.5625);
+			iconBorder:SetPoint("CENTER", -1, 2);
+			_G[frameName.."Icon"]:SetPoint("TOPLEFT", -26, 16);
+			displayName:SetPoint("BOTTOMLEFT", 72, 36);
+			displayName:SetPoint("BOTTOMRIGHT", -60, 36);
+			_G[frameName.."Shield"]:SetPoint("TOPRIGHT", -10, -13);
+			shieldPoints:SetPoint("CENTER", 7, 2);
+			shieldPoints:SetVertexColor(1, 1, 1);
+			shieldIcon:SetTexCoord(0, 0.5, 0, 0.45);
+			local unlocked = _G[frameName.."Unlocked"];
+			unlocked:SetPoint("TOP", 7, -23);
+			unlocked:SetText(ACHIEVEMENT_UNLOCKED);
+			_G[frameName.."GuildName"]:Hide();
+			_G[frameName.."GuildBorder"]:Hide();
+			_G[frameName.."GuildBanner"]:Hide();
+			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
+			frame.glow:SetTexCoord(0, 0.78125, 0, 0.66796875);
+			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
+			frame.shine:SetTexCoord(0.78125, 0.912109375, 0, 0.28125);
+			frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
+		end
 	end
 	
-	_G[frame:GetName() .. "IconTexture"]:SetTexture(icon);
+	if ( points == 0 ) then
+		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+	else
+		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+	end
+	
+	_G[frameName.."IconTexture"]:SetTexture(icon);
 	
 	frame.id = achievementID;
 	

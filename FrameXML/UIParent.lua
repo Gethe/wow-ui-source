@@ -163,6 +163,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
 	self:RegisterEvent("INSTANCE_LOCK_START");
 	self:RegisterEvent("INSTANCE_LOCK_STOP");
+	self:RegisterEvent("INSTANCE_LOCK_WARNING");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
@@ -213,9 +214,6 @@ function UIParent_OnLoad(self)
 
 	-- Events for Achievements!
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
-
-	-- Events for Glyphs!
-	self:RegisterEvent("USE_GLYPH");
 
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
@@ -785,6 +783,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("INSTANCE_LOCK");
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
+	elseif ( event == "INSTANCE_LOCK_WARNING" ) then
+		StaticPopup_Show("INSTANCE_LOCK_WARNING");
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
@@ -913,10 +913,6 @@ function UIParent_OnEvent(self, event, ...)
 			-- AchievementAlertFrame_ShowAlert(...);
 		-- end
 		-- self:UnregisterEvent(event);
-	
-	-- Events for Glyphs
-	elseif ( event == "USE_GLYPH" ) then
-		OpenGlyphFrame();
 
 	-- Display instance reset info
 	elseif ( event == "RAID_INSTANCE_WELCOME" ) then
@@ -2730,10 +2726,20 @@ end
 
 -- Model --
 
+MODELFRAME_DRAG_ROTATION_CONSTANT = 0.010;
+MODELFRAME_MAX_PLAYER_ZOOM = 0.8;
+MODELFRAME_MAX_PET_ZOOM = 0.7;
+
 -- Generic model rotation functions
 function Model_OnLoad (self)
 	self.rotation = 0.61;
 	self:SetRotation(self.rotation);
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function Model_OnEvent(self, event, ...)
+	self:RefreshUnit();
 end
 
 function Model_RotateLeft(model, rotationIncrement)
@@ -2754,10 +2760,59 @@ function Model_RotateRight(model, rotationIncrement)
 	PlaySound("igInventoryRotateCharacter");
 end
 
+function Model_OnMouseDown(model, button)
+	if ( button == "LeftButton" ) then
+		model.mouseDown = true;
+		model.rotationCursorStart = GetCursorPosition();
+	end
+end
+
+function Model_OnMouseUp(model, button)
+	if ( button == "LeftButton" ) then
+		model.mouseDown = false;
+	end
+end
+
+function Model_OnMouseWheel(self, delta, maxZoom)
+	if (not maxZoom) then
+		maxZoom = MODELFRAME_MAX_PET_ZOOM;
+	end
+	if (not self.zoomLevel) then
+		self.zoomLevel = 0;
+	end
+	self.zoomLevel = self.zoomLevel + delta*0.15;
+	if (self.zoomLevel > maxZoom) then
+		self.zoomLevel = maxZoom;
+	end
+	if (0 > self.zoomLevel) then
+		self.zoomLevel = 0;
+	end
+	self:SetPortraitZoom(self.zoomLevel);
+end
+
 function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 	if ( not rotationsPerSecond ) then
 		rotationsPerSecond = ROTATIONS_PER_SECOND;
 	end
+	
+	-- Mouse drag rotation
+	if (self.mouseDown) then
+		if ( self.rotationCursorStart ) then
+			local x = GetCursorPosition();
+			local diff = (x - self.rotationCursorStart) * MODELFRAME_DRAG_ROTATION_CONSTANT;
+			self.rotationCursorStart = GetCursorPosition();
+			self.rotation = self.rotation + diff;
+			if ( self.rotation < 0 ) then
+				self.rotation = self.rotation + (2 * PI);
+			end
+			if ( self.rotation > (2 * PI) ) then
+				self.rotation = self.rotation - (2 * PI);
+			end
+			self:SetRotation(self.rotation, false);
+		end
+	end
+	
+	-- Rotate buttons
 	if ( _G[self:GetName().."RotateLeftButton"]:GetButtonState() == "PUSHED" ) then
 		self.rotation = self.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
 		if ( self.rotation < 0 ) then
@@ -2846,28 +2901,31 @@ function CursorOnUpdate(self)
 	end
 end
 
-function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed)
+function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed, throttle)
 	if ( not texture.frame ) then
 		-- initialize everything
 		texture.frame = 1;
-		texture.numColumns = textureWidth/frameWidth;
-		texture.numRows = textureHeight/frameHeight;
+		texture.throttle = throttle;
+		texture.numColumns = floor(textureWidth/frameWidth);
+		texture.numRows = floor(textureHeight/frameHeight);
 		texture.columnWidth = frameWidth/textureWidth;
 		texture.rowHeight = frameHeight/textureHeight;
 	end
 	local frame = texture.frame;
-	if ( not texture.throttle or texture.throttle > 0.1 ) then
-		texture.throttle = 0;
-		if ( frame > numFrames ) then
-			frame = 1;
+	if ( not texture.throttle or texture.throttle > throttle ) then
+		local framesToAdvance = floor(texture.throttle / throttle);
+		while ( frame + framesToAdvance > numFrames ) do
+			frame = frame - numFrames;
 		end
+		frame = frame + framesToAdvance;
+		texture.throttle = 0;
 		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
 		local right = left + texture.columnWidth;
 		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
 		local top = bottom - texture.rowHeight;
 		texture:SetTexCoord(left, right, top, bottom);
 
-		texture.frame = frame + 1;
+		texture.frame = frame;
 	else
 		texture.throttle = texture.throttle + elapsed;
 	end
@@ -3521,5 +3579,48 @@ end
 function GMError(...)
 	if ( IsGMClient() ) then
 		error(...);
+	end
+end
+
+function SetGuildTabardTextures(leftEmblem, rightEmblem, background, border, hasMask)
+	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
+	if ( emblemFilename ) then
+		if ( background ) then
+			background:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
+		end
+		if ( border ) then
+			border:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
+		end
+		if ( leftEmblem and rightEmblem ) then
+			local iconR = emblemR / 255;
+			local iconG = emblemG / 255;
+			local iconB = emblemB / 255;
+			rightEmblem:SetTexture(emblemFilename);
+			rightEmblem:SetVertexColor(iconR, iconG, iconB);
+			if ( hasMask ) then
+				-- temporary hack - the guild emblem texture is the right half of the icon and we are flipping that texture to get the left half. But
+				-- the mask is applied when the texture is set, without considering texture coordinates, so we need to treat the left side as if it
+				-- was a duplicate of the right side until after the texture is set. This includes using the same mask instead of a mirror-image one.
+				local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = leftEmblem:GetTexCoord();
+				leftEmblem:SetTexCoord(URx,URy,LRx,LRy,ULx,ULy,LLx,LLy);
+				leftEmblem:SetTexture(emblemFilename);
+				leftEmblem:SetVertexColor(iconR, iconG, iconB);
+				leftEmblem:SetTexCoord(ULx,ULy,LLx,LLy,URx,URy,LRx,LRy);
+			else
+				leftEmblem:SetTexture(emblemFilename);
+				leftEmblem:SetVertexColor(iconR, iconG, iconB);
+			end
+		end
+	else
+		if ( background ) then
+			background:SetVertexColor(0.4745, 0.4588, 0.5294);
+		end
+		if ( border ) then
+			border:SetVertexColor(0.2, 0.2, 0.2);
+		end
+		if ( leftEmblem and rightEmblem ) then
+			leftEmblem:SetTexture("");
+			rightEmblem:SetTexture("");
+		end
 	end
 end

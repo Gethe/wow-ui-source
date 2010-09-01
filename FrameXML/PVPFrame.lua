@@ -26,6 +26,10 @@ MAX_ARENA_TEAM_MEMBER_SCROLL_WIDTH = 300;
 NUM_DISPLAYED_BATTLEGROUNDS = 5;
 
 
+
+BG_BUTTON_WIDTH = 320;
+BG_BUTTON_SCROLL_WIDTH = 298;
+
 local BATTLEFIELD_FRAME_FADE_TIME = 0.15
 
 
@@ -39,7 +43,6 @@ PVPHONOR_TEXTURELIST[30] = "Interface\\PVPFrame\\PvpBg-IsleOfConquest";
 PVPHONOR_TEXTURELIST[32] = "Interface\\PVPFrame\\PvpRandomBg";
 PVPHONOR_TEXTURELIST[108] = "Interface\\PVPFrame\\PvpBg-TwinPeaks";
 PVPHONOR_TEXTURELIST[120] = "Interface\\PVPFrame\\PvpBg-Gilneas";
-
 --Temp
 PVPHONOR_TEXTURELIST[108] = "Interface\\PVPFrame\\PvpRandomBg";
 PVPHONOR_TEXTURELIST[120] = "Interface\\PVPFrame\\PvpRandomBg";
@@ -49,10 +52,9 @@ PVPHONOR_TEXTURELIST[120] = "Interface\\PVPFrame\\PvpRandomBg";
 local PVPWORLD_TEXTURELIST = {};
 PVPWORLD_TEXTURELIST[1] = "Interface\\PVPFrame\\PvpBg-Wintergrasp";
 PVPWORLD_TEXTURELIST[21] = "Interface\\PVPFrame\\PvpBg-TolBarad";
-
-
 --Temp
 PVPWORLD_TEXTURELIST[21] = "Interface\\PVPFrame\\PvpRandomBg";
+
 
 
 
@@ -97,6 +99,7 @@ function PVPFrame_OnShow(self)
 	if (self.lastSelectedTab) then
 		PVPFrame_TabClicked(self.lastSelectedTab);	
 	end
+	RequestRatedBattlegroundInfo();
 end
 
 function PVPFrame_OnHide()
@@ -128,6 +131,7 @@ function PVPFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
 	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
 	self:RegisterEvent("WARGAME_REQUESTED");
+	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	
 	PVPFrame.timerDelay = 0;
 end
@@ -143,7 +147,6 @@ function PVPFrame_OnEvent(self, event, ...)
 	if  event == "PLAYER_ENTERING_WORLD" then
 		FauxScrollFrame_SetOffset(PVPHonorFrameTypeScrollFrame, 0);
 		FauxScrollFrame_OnVerticalScroll(PVPHonorFrameTypeScrollFrame, 0, 16, PVPHonor_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
-		PVPHonorFrame_UpdateVisible();
 		MiniMapBattlefieldDropDown_OnLoad();
 		PVP_UpdateStatus(false, nil);
 	elseif event == "HONOR_CURRENCY_UPDATE" then
@@ -219,9 +222,12 @@ function PVPFrame_OnEvent(self, event, ...)
 		PVPFramePopup_SetupPopUp(event, challengerName, bgName);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		--PVPFrame_Update();
+	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
+		local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
+		PVPFrameConquestBar:SetMinMaxValues(0, maxPointsThisWeek);
+		PVPFrameConquestBar:SetValue(pointsThisWeek);
+		PVPFrameConquestBar.pointText:SetText(pointsThisWeek.."/"..maxPointsThisWeek);
 	end
-	
-	
 end
 
 
@@ -234,14 +240,18 @@ function PVPFrame_UpdateCurrency(self, value)
 	else
 		local index = self.lastSelectedTab:GetID()	
 		if index == 1 then -- Honor Page	
-			currency = GetHonorCurrency();
+			_, currency = GetCurrencyInfo(392);
 		elseif index == 2 then -- Conquest 
-			currency = GetArenaCurrency();
+			_, currency = GetCurrencyInfo(390);
 		elseif index == 3 then -- Arena Management
-			currency = GetArenaCurrency();
+			_, currency = GetCurrencyInfo(390);
 		end
 	end
 	
+	local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
+	PVPFrameConquestBar:SetMinMaxValues(0, maxPointsThisWeek);
+	PVPFrameConquestBar:SetValue(pointsThisWeek);
+	PVPFrameConquestBar.pointText:SetText(pointsThisWeek.."/"..maxPointsThisWeek);
 	PVPFrameTypeValue:SetText(currency);
 end
 
@@ -253,16 +263,16 @@ function PVPFrame_JoinClicked(self, isParty, wargame)
 		if wargame then
 			StartWarGame();
 		else
-			local frame = _G["PVPHonorFrameBgButton"..PVPHonorFrame.selectedHonorButton];
-			if frame and frame.isWorldPVP then
-				BattlefieldMgrQueueRequest(frame.pvpID); 
+			if PVPHonorFrame.selectedIsWorldPvp then
+				local pvpID = GetWorldPVPAreaInfo(PVPHonorFrame.selectedPvpID);
+				BattlefieldMgrQueueRequest(pvpID); 
 			else 
-				JoinBattlefield(0, isParty);
+				JoinBattlefield(1, isParty);
 			end
 		end
 	elseif tabID == 2 then
 		if PVPConquestFrame.mode == "Arena" then
-			JoinArena(PVPConquestFrame.teamIndex);
+			JoinArena();
 		else -- rated bg
 			JoinRatedBattlefield();
 		end
@@ -295,7 +305,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameConquestBar:Hide();
 		PVPFrameTypeIcon:SetTexCoord(0.0, 0.58, 0, 0.58);
 		PVPFrameTypeIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-		currency = GetHonorCurrency();
+		_, currency = GetCurrencyInfo(392);
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
@@ -304,7 +314,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameConquestBar:Show();
 		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-		currency = GetArenaCurrency();
+		_, currency = GetCurrencyInfo(390);
 	elseif index == 3 then -- Arena Management
 		PVPFrameLeftButton:SetText(ADDMEMBER_TEAM);
 		PVPFrameLeftButton:Disable();
@@ -316,7 +326,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -281);
 		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-		currency = GetArenaCurrency();
+		_, currency = GetCurrencyInfo(390);
 	end
 	
 	PVPFrame_UpdateCurrency(self, currency);
@@ -355,18 +365,20 @@ function PVPHonor_UpdateBattlegrounds()
 	local tempString, isBig, isWorldPVP;
 	
 	local offset = FauxScrollFrame_GetOffset(PVPHonorFrameTypeScrollFrame);
-	local currentFrameNum = -offset + 1;
-	local numBGs = 0;
+	local currentFrameNum = 1;
+	local availableBGs = 0;
 	
 	local numWorldPvP = GetNumWorldPVPAreas();
 	local numBgs = GetNumBattlegroundTypes();
 	local numTypes = numWorldPvP + numBgs ;
+	
 	for i=1,numTypes do
 		frame = _G["PVPHonorFrameBgButton"..currentFrameNum];
 		
 		if  i <=  numWorldPvP then
 			isHoliday = false;
-			pvpID, localizedName, isActive, canQueue, startTime, canEnter = GetWorldPVPAreaInfo(i);
+			_, localizedName, isActive, canQueue, startTime, canEnter = GetWorldPVPAreaInfo(i);
+			pvpID = i;
 			isWorldPVP = true;
 		else
 			pvpID = i-numWorldPvP;
@@ -378,13 +390,16 @@ function PVPHonor_UpdateBattlegrounds()
 		end
 		
 		if ( localizedName and canEnter ) then
-			if ( frame ) then
+			if offset > 0 then
+				offset = offset -1;
+			elseif ( frame ) then
 				frame.pvpID = pvpID;
 				frame.localizedName = localizedName;
+				frame.isWorldPVP = isWorldPVP;
 				
 				if canQueue then
 					frame:Enable();
-					if ( not PVPHonorFrame.selectedHonorButton ) then
+					if ( not PVPHonorFrame.selectedButtonIndex ) then
 						frame:Click();
 					end
 				else
@@ -392,7 +407,6 @@ function PVPHonor_UpdateBattlegrounds()
 					localizedName = GRAY_FONT_COLOR_CODE..localizedName;
 				end
 				tempString = localizedName;
-				frame.isWorldPVP = isWorldPVP;
 				
 				if isWorldPVP then
 					frame:SetScript("OnUpdate", PVPHonor_UpdateWorldPVPTimer);
@@ -412,12 +426,17 @@ function PVPHonor_UpdateBattlegrounds()
 					tempString = tempString.." ("..SecondsToTime(startTime)..")";
 				end
 				
-			
+				if PVPHonorFrame.selectedPvpID ==  frame.pvpID and PVPHonorFrame.selectedIsWorldPvp == isWorldPVP then
+					frame:LockHighlight();
+				else
+					frame:UnlockHighlight();
+				end
+					
 				frame.title:SetText(tempString);
 				frame:Show();
+				currentFrameNum = currentFrameNum + 1;
 			end
-			currentFrameNum = currentFrameNum + 1;
-			numBGs = numBGs + 1;
+			availableBGs = availableBGs + 1;
 		end
 	end
 	
@@ -428,9 +447,9 @@ function PVPHonor_UpdateBattlegrounds()
 	for i=1,NUM_DISPLAYED_BATTLEGROUNDS do
 		frame = _G["PVPHonorFrameBgButton"..i];
 		if ( isBig ) then
-			frame:SetWidth(315);
+			frame:SetWidth(BG_BUTTON_WIDTH);
 		else
-			frame:SetWidth(295);
+			frame:SetWidth(BG_BUTTON_SCROLL_WIDTH);
 		end
 	end
 	
@@ -442,7 +461,7 @@ function PVPHonor_UpdateBattlegrounds()
 	PVPHonor_UpdateQueueStatus();
 	
 	PVPHonorFrame_UpdateGroupAvailable();
-	FauxScrollFrame_Update(PVPHonorFrameTypeScrollFrame, numBGs, NUM_DISPLAYED_BATTLEGROUNDS, 16);
+	FauxScrollFrame_Update(PVPHonorFrameTypeScrollFrame, availableBGs, NUM_DISPLAYED_BATTLEGROUNDS, 16);
 end
 
 
@@ -458,52 +477,40 @@ function PVPHonor_ButtonClicked(self)
 			_G[name..i]:UnlockHighlight();
 		end
 	end
-	local index = id + FauxScrollFrame_GetOffset(self:GetParent().bgTypeScrollFrame);
-	if ( index == self:GetParent().selectedHonorButton ) then
-		return;
-	end
 	
-	self:GetParent().selectedHonorButton = index;
-	PVPHonorFrame_ResetInfo(self);
+	self:GetParent().selectedButtonIndex = id;
+	self:GetParent().selectedIsWorldPvp = self.isWorldPVP;
+	self:GetParent().selectedPvpID = self.pvpID;
+	PVPHonorFrame_ResetInfo();
+	PVPHonorFrame_UpdateGroupAvailable();
 end
 
 
 
-function PVPHonorFrame_ResetInfo(button)
-	local selectedButton = button
-	if not selectedButton then
-		local offset = FauxScrollFrame_GetOffset(PVPHonorFrame.bgTypeScrollFrame);
-		selectedButton = _G["PVPHonorFrameBgButton"..(PVPHonorFrame.selectedHonorButton-offset)];
+function PVPHonorFrame_ResetInfo()
+	if not PVPHonorFrame.selectedIsWorldPvp then
+		RequestBattlegroundInstanceInfo(PVPHonorFrame.selectedPvpID);
 	end
-		
-	 if not selectedButton.isWorldPVP then
-		RequestBattlegroundInstanceInfo(selectedButton.pvpID);
-	end
-	PVPHonor_UpdateInfo(selectedButton);
+	PVPHonor_UpdateInfo();
 end
 
 
-function PVPHonor_UpdateInfo(button)
-	local selectedButton = button
-	if not selectedButton then
-		local offset = FauxScrollFrame_GetOffset(PVPHonorFrame.bgTypeScrollFrame);
-		selectedButton = _G["PVPHonorFrameBgButton"..(PVPHonorFrame.selectedHonorButton-offset)];
-		if not selectedButton then
-			return;
+function PVPHonor_UpdateInfo()
+	if PVPHonorFrame.selectedIsWorldPvp then
+		pvpID, _, _, _, _, _, mapDescription = GetWorldPVPAreaInfo(PVPHonorFrame.selectedPvpID);
+		if not mapDescription or mapDescription == "" then
+			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText("Missing Map Description");
+		else
+			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText(mapDescription);
 		end
-	end
-	
-	if selectedButton.isWorldPVP then
-	
-		--_, _, _, _, _, _, mapDescription = GetWorldPVPAreaInfo(i);
-		PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText("Missing Description");
-		if(PVPWORLD_TEXTURELIST[selectedButton.pvpID]) then
-			PVPHonorFrameBGTex:SetTexture(PVPWORLD_TEXTURELIST[selectedButton.pvpID]);
+
+		if(PVPWORLD_TEXTURELIST[PVPHonorFrame.selectedPvpID]) then
+			PVPHonorFrameBGTex:SetTexture(PVPWORLD_TEXTURELIST[pvpID]);
 		end
 		PVPHonorFrameInfoScrollFrameChildFrameRewardsInfo:Hide();
 		PVPHonorFrameInfoScrollFrameChildFrameDescription:Show();
-	elseif selectedButton.pvpID then
-		local _, canEnter, isHoliday, isRandom, BattleGroundID, mapDescription = GetBattlegroundInfo(selectedButton.pvpID);
+	elseif PVPHonorFrame.selectedPvpID then
+		local _, canEnter, isHoliday, isRandom, BattleGroundID, mapDescription = GetBattlegroundInfo(PVPHonorFrame.selectedPvpID);
 		
 		if(PVPHONOR_TEXTURELIST[BattleGroundID]) then
 			PVPHonorFrameBGTex:SetTexture(PVPHONOR_TEXTURELIST[BattleGroundID]);
@@ -525,12 +532,12 @@ function PVPHonor_UpdateInfo(button)
 	end
 end
 
-function PVPHonor_GetSelectedBattlegroundInfo()
-	return GetBattlegroundInfo(PVPHonorFrame.selectedHonorButton);
+function PVPHonor_GetRandomBattlegroundInfo()
+	return GetBattlegroundInfo(1);
 end
 
 function PVPHonor_UpdateRandomInfo()
-	PVPQueue_UpdateRandomInfo(PVPHonorFrameInfoScrollFrameChildFrameRewardsInfo, PVPHonor_GetSelectedBattlegroundInfo);
+	PVPQueue_UpdateRandomInfo(PVPHonorFrameInfoScrollFrameChildFrameRewardsInfo, PVPHonor_GetRandomBattlegroundInfo);
 end
 
 function PVPHonor_UpdateQueueStatus()
@@ -570,34 +577,23 @@ function PVPHonorFrame_OnLoad(self)
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
-	
-	PVPHonorFrame_UpdateVisible();
 end
 
 function PVPHonorFrame_OnEvent(self, event, ...)
-	if not self:IsShown() then
-		return;
-	end
-	
 	if ( event == "PVPQUEUE_ANYWHERE_SHOW" or event == "NPC_PVPQUEUE_ANYWHERE") then
 		self.currentData = true;
 		PVPHonor_UpdateBattlegrounds();
-		if ( self.selectedHonorButton ) then
+		if ( self.selectedButtonIndex ) then
 			PVPHonor_UpdateInfo();
-		end
-		if ( event == "NPC_PVPQUEUE_ANYWHERE" ) then
-			--ShowUIPanel(PVPParentFrame);
-			--PVPFrame_SetJustBG(true);
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		PVPHonor_UpdateQueueStatus();
 	elseif ( event == "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE") then
 		FauxScrollFrame_SetOffset(PVPHonorFrameTypeScrollFrame, 0);
 		FauxScrollFrame_OnVerticalScroll(PVPHonorFrameTypeScrollFrame, 0, 16, PVPHonor_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
-		if ( self.selectedHonorButton ) then
+		if ( self.selectedButtonIndex ) then
 			PVPHonorFrame_ResetInfo();
 		end
-		PVPHonorFrame_UpdateVisible();
 	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
 		PVPHonorFrame_UpdateGroupAvailable();
 	end
@@ -606,29 +602,18 @@ end
 function PVPHonorFrame_OnShow(self)	
 	SortBGList();
 	PVPHonor_UpdateBattlegrounds();
-end
-
-function PVPHonorFrame_UpdateVisible()
-	-- for i=1, GetNumBattlegroundTypes() do
-		-- local _, canEnter = GetBattlegroundInfo(i);
-		-- if ( canEnter ) then
-			-- if ( not PVPFrame_IsJustBG() ) then
-				-- PVPParentFrameTab1:Show();
-				-- PVPParentFrameTab2:Show();
-			-- end
-			-- return;
-		-- end
-	-- end
-	-- PVPParentFrameTab1:Click();
-	-- PVPParentFrameTab1:Hide();
-	-- PVPParentFrameTab2:Hide();
+	PVPHonorFrame_ResetInfo();
 end
 
 function PVPHonorFrame_UpdateGroupAvailable()
 	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
 		-- If this is true then can join as a group
 		PVPFrameRightButton:Enable();
-		PVPHonorFrameWarGameButton:Enable();
+		if not PVPHonorFrame.selectedIsWorldPvp then
+			PVPHonorFrameWarGameButton:Enable();
+		else
+			PVPHonorFrameWarGameButton:Disable();
+		end
 	else
 		PVPFrameRightButton:Disable();
 		PVPHonorFrameWarGameButton:Disable();
@@ -653,6 +638,9 @@ function PVPConquestFrame_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
+	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
+	
+	
 	
 	local factionGroup = UnitFactionGroup("player");
 	self.infoButton.factionIcon = _G["PVPConquestFrameInfoButtonInfoIcon"..factionGroup];
@@ -670,12 +658,12 @@ end
 
 
 function PVPConquestFrame_Update(self)
-
 	local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
 	local validGroup = false;
-	
-	
+		
 	if self.mode == "Arena" then
+		self.winReward.winAmount:SetText(0);
+	
 		local teamName, teamSize, teamRating, teamPlayed, teamWins;
 		for i=1,MAX_ARENA_TEAMS do
 			teamName, teamSize, teamRating, teamPlayed, teamWins = GetArenaTeam(i);
@@ -716,6 +704,16 @@ function PVPConquestFrame_Update(self)
 			self.infoButton.bottomLeftText:Hide();
 			self.teamIndex = nil;
 		else
+			local ArenaSizesToIndex = {}
+			ArenaSizesToIndex[2] = 1;
+			ArenaSizesToIndex[3] = 2;
+			ArenaSizesToIndex[5] = 3;
+			_, ratedArenaReward = GetPersonalRatedArenaInfo(ArenaSizesToIndex[teamSize]);
+			self.winReward.winAmount:SetText(ratedArenaReward)
+			if ratedArenaReward == 0 then
+				RequestRatedArenaInfo(ArenaSizesToIndex[teamSize]);
+			end
+		
 			self.infoButton.title:SetText(teamName);
 			self.infoButton.winsValue:SetText(teamWins);
 			self.infoButton.lossesValue:SetText(teamPlayed-teamWins);
@@ -731,6 +729,11 @@ function PVPConquestFrame_Update(self)
 			self.infoButton.bottomLeftText:Show();
 		end
 	else -- Rated BG
+		local personalBGRating, ratedBGreward = GetPersonalRatedBGInfo();
+		self.topRatingText:SetText(RATING..": "..personalBGRating);
+		self.winReward.winAmount:SetText(ratedBGreward);
+		
+		
 		local name, size = GetRatedBattleGroundInfo();
 		
 		validGroup = groupSize==size;

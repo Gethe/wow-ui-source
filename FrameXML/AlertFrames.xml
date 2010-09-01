@@ -246,6 +246,35 @@
 				</Anchors>
 				<Size x="240" y="16"/>
 			</FontString>
+			<FontString name="$parentGuildName" inherits="GameFontNormal" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="50" y="-10"/>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-50" y="-10"/>
+					</Anchor>
+				</Anchors>
+				<Size x="0" y="16"/>
+			</FontString>
+		</Layer>
+		<Layer level="BACKGROUND" textureSubLevel="1">
+			<Texture name="$parentGuildBanner" file="Interface\AchievementFrame\UI-Achievement-Guild" hidden="true">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-13" y="-29"/>
+				</Anchors>
+				<TexCoords left="0.76171875" right="0.88671875" top="0.00195313" bottom="0.12695313"/>	
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture name="$parentGuildBorder" file="Interface\AchievementFrame\UI-Achievement-Guild" hidden="true">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-13" y="-29"/>
+				</Anchors>
+				<TexCoords left="0.63281250" right="0.75781250" top="0.00195313" bottom="0.12695313"/>
+			</Texture>
 		</Layer>
 		<Layer level="OVERLAY">
 			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="glow">
@@ -286,7 +315,7 @@
 		</Layer>		
 	</Layers>
 	<Frames>
-		<Frame name="$parentIcon" inherits="AchievementIconFrameTemplate">
+		<Frame name="$parentIcon">
 			<Size>
 				<AbsDimension x="124" y="124"/>
 			</Size>
@@ -297,17 +326,7 @@
 					</Offset>
 				</Anchor>
 			</Anchors>		
-			<Layers>			
-				<Layer level="BACKGROUND">
-					<Texture name="$parentBackfill" file="Interface\AchievementFrame\UI-Achievement-IconFrame-Backfill" hidden="true">
-						<Anchors>
-							<Anchor point="CENTER"/>
-						</Anchors>
-						<Size>
-							<AbsDimension x="64" y="64"/>
-						</Size>
-					</Texture>
-				</Layer>
+			<Layers>
 				<Layer level="BORDER">
 					<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true">
 						<Anchors>
@@ -352,28 +371,6 @@
 					</Texture>
 				</Layer>
 			</Layers>
-			<Scripts>
-				<OnLoad>
-					local name = self:GetName();
-					self.bling = _G[name .. "Bling"];
-					self.texture = _G[name .. "Texture"];
-					self.frame = _G[name .. "Overlay"];
-					
-					self.Desaturate = 
-						function (self) 
-							self.bling:SetVertexColor(.6, .6, .6, 1);
-							self.frame:SetVertexColor(.75, .75, .75, 1);
-							self.texture:SetVertexColor(.55, .55, .55, 1);
-						end
-						
-					self.Saturate = 
-						function (self)
-							self.bling:SetVertexColor(1, 1, 1, 1);
-							self.frame:SetVertexColor(1, 1, 1, 1);
-							self.texture:SetVertexColor(1, 1, 1, 1);						
-						end
-				</OnLoad>
-			</Scripts>			
 		</Frame>
 		<Frame name="$parentShield">
 			<Size>
@@ -399,7 +396,7 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<TexCoords left="0" right=".5" top="0" bottom=".9"/>
+						<TexCoords left="0" right=".5" top="0" bottom=".45"/>
 					</Texture>
 				</Layer>
 				<Layer level="OVERLAY">

@@ -1058,11 +1058,13 @@
 					<OnLoad>
 						Model_OnLoad(self);
 						self:SetCamDistanceScale(1.3);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 					</OnLoad>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
+					<OnEvent function="Model_OnEvent"/>
+					<OnMouseUp function="Model_OnMouseUp"/>
+					<OnMouseDown function="Model_OnMouseDown"/>
+					<OnMouseWheel>
+						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
+					</OnMouseWheel>
 					<OnUpdate function="Model_OnUpdate"/>
 				</Scripts>
 				<Frames>

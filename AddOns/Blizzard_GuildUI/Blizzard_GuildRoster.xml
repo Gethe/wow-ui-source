@@ -177,7 +177,9 @@
 			</OnLoad>
 			<OnClick function="GuildRosterButton_OnClick"/>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(self, GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
+				if ( self.online ) then
+					GameTooltip_AddNewbieTip(self, GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

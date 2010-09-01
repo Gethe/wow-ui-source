@@ -70,7 +70,13 @@
 			</Anchors>
                 <Scripts>
                 <OnLoad function="Model_OnLoad"/>
+				<OnEvent function="Model_OnEvent"/>
+				<OnMouseUp function="Model_OnMouseUp"/>
+				<OnMouseDown function="Model_OnMouseDown"/>
                 <OnUpdate function="Model_OnUpdate"/>
+				<OnMouseWheel>
+					Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PLAYER_ZOOM);
+				</OnMouseWheel>
             </Scripts>
 			<Frames>
 				<Button name="AuctionDressUpModelRotateLeftButton">

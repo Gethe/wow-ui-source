@@ -171,8 +171,8 @@ function SetItemRef(link, text, button, chatFrame)
 		GMChatStatusFrame_OnClick();
 		return;
 	elseif ( strsub(link, 1, 7) == "levelup" ) then
-		local _, level = strsplit(":", link);
-		LevelUpDisplay_ShowSideDisplay(tonumber(level));
+		local _, level, levelUpType = strsplit(":", link);
+		LevelUpDisplay_ShowSideDisplay(tonumber(level), _G[levelUpType]);
 		return;
 	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
 		TogglePVPFrame();

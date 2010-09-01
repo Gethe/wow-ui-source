@@ -44,6 +44,8 @@ end
 
 function GuildControlUI_SetBankTabChange(self)
 
+	SetGuildBankTabPermissions(self:GetParent():GetParent().tabIndex, self:GetID(), self:GetChecked());
+
 	-- for index, value in pairs(PENDING_GUILDBANK_PERMISSIONS) do
 		-- for i=1, 3 do
 			-- if ( value[i] ) then
@@ -56,6 +58,11 @@ function GuildControlUI_SetBankTabChange(self)
 	-- end
 	
 	--SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
+end
+
+function GuildControlUI_SetBankTabWithdrawChange(self)
+	local withdrawals = self:GetText();
+	SetGuildBankTabItemWithdraw(self:GetParent():GetParent().tabIndex, withdrawals);
 end
 
 function GuildControlUI_BankTabPermissions_Update(self)
@@ -90,13 +97,15 @@ function GuildControlUI_BankTabPermissions_Update(self)
 		else
 			buyindex = i+1;
 			buttons[i].tabIndex = i+offset;
-			local name, icon, isViewable, canDeposit, numWithdrawals, remainingWithdrawals = GetGuildBankTabInfo(i+offset);
+			local name, icon = GetGuildBankTabInfo(i+offset);												-- returns info and permissions for player's rank
+			local isViewable, canDeposit, editText, numWithdrawals = GetGuildBankTabPermissions(i+offset);	-- returns permissions for the selected rank
 			buttons[i]:Show();
 			buttons[i].owned.tabName:SetText(name);	
 			buttons[i].owned.tabIcon:SetTexture(icon);
 			buttons[i].owned.viewCB:SetChecked(isViewable);
 			buttons[i].owned.infoCB:SetChecked(false);
 			buttons[i].owned.depositCB:SetChecked(canDeposit);
+			buttons[i].owned.editBox:SetText(numWithdrawals);
 			buttons[i].owned:Show();		
 			buttons[i].buy:Hide();
 		end

@@ -1,7 +1,8 @@
-UIPanelWindows["GuildFrame"] = { area = "left", pushable = 1};
+UIPanelWindows["GuildFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 local GUILDFRAME_PANELS = { };
 local GUILDFRAME_POPUPS = { };
-local NO_TABARD_COLORS = { r=0.4745, g=0.4588, b=0.5294 };
+local BUTTON_WIDTH_WITH_SCROLLBAR = 298;
+local BUTTON_WIDTH_NO_SCROLLBAR = 320;
 
 function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
@@ -18,6 +19,7 @@ function GuildFrame_OnLoad(self)
 	QueryGuildXP();
 	QueryGuildNews();
 	GuildRoster();
+	OpenCalendar();		-- to get event data
 	GuildFrame_UpdateTabard();
 	GuildFrame_UpdateLevel();
 	GuildFrame_UpdateXP();
@@ -113,26 +115,7 @@ function GuildFrame_UpdateFaction()
 end
 
 function GuildFrame_UpdateTabard()
-	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
-	if ( emblemFilename ) then
-		local iconR = emblemR / 255;
-		local iconG = emblemG / 255;
-		local iconB = emblemB / 255;
-		GuildFrameTabardBackground:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
-		GuildFrameTabardRightIcon:SetTexture(emblemFilename);
-		GuildFrameTabardRightIcon:SetVertexColor(iconR, iconG, iconB);
-		-- temporary hack - the guild emblem texture is the right half of the icon and we are flipping that texture to get the left half. But		
-		-- the mask is applied when the texture is set, without considering texture coordinates, so we need to treat the left side as if it 
-		-- was a duplicate of the right side until after the texture is set. This includes using the same mask instead of a mirror-image one.
-		GuildFrameTabardLeftIcon:SetTexCoord(0, 1, 0, 1);
-		GuildFrameTabardLeftIcon:SetTexture(emblemFilename);
-		GuildFrameTabardLeftIcon:SetVertexColor(iconR, iconG, iconB);
-		GuildFrameTabardLeftIcon:SetTexCoord(1, 0, 0, 1);
-	else
-		GuildFrameTabardBackground:SetVertexColor(NO_TABARD_COLORS.r, NO_TABARD_COLORS.g, NO_TABARD_COLORS.b);
-		GuildFrameTabardLeftIcon:SetTexture("");
-		GuildFrameTabardRightIcon:SetTexture("");
-	end
+	SetGuildTabardTextures(GuildFrameTabardLeftIcon, GuildFrameTabardRightIcon, GuildFrameTabardBackground, GuildFrameTabardBorder, true);
 end
 
 function GuildFrame_CheckPermissions()
@@ -171,6 +154,29 @@ function GuildFrame_LinkItem(button, itemID, itemLink)
 			ChatFrame_OpenChat(itemLink);
 		end
 	end
+end
+
+function GuildFrame_UpdateScrollFrameWidth(scrollFrame)
+	local newButtonWidth;
+	local buttons = scrollFrame.buttons;
+
+	if ( scrollFrame.scrollBar:IsShown() ) then
+		if ( scrollFrame.wideButtons ) then
+			newButtonWidth = BUTTON_WIDTH_WITH_SCROLLBAR;
+		end
+	else
+		if ( not scrollFrame.wideButtons ) then
+			newButtonWidth = BUTTON_WIDTH_NO_SCROLLBAR;
+		end
+	end
+	if ( newButtonWidth ) then
+		for i = 1, #buttons do
+			buttons[i]:SetWidth(newButtonWidth);
+		end
+		scrollFrame.wideButtons = not scrollFrame.wideButtons;
+		scrollFrame:SetWidth(newButtonWidth);
+		scrollFrame.scrollChild:SetWidth(newButtonWidth);
+	end	
 end
 
 --****** Panels/Popups **********************************************************
@@ -368,10 +374,8 @@ function GuildMainFrame_OnLoad(self)
 	-- faction icon
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
 		GuildNewPerksFrameFaction:SetTexCoord(0.42871094, 0.53808594, 0.60156250, 0.87890625);
-		--SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPThrallmarFavor");
 	else  -- alliance
 		GuildNewPerksFrameFaction:SetTexCoord(0.31640625, 0.42675781, 0.60156250, 0.88281250);
-		--SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPHonorHoldFavor");
 	end
 	-- select its tab
 	GuildFrame_TabClicked(GuildFrameTab1);
@@ -415,7 +419,7 @@ function GuildMainFrame_UpdateNewsEvents()
 	if ( GetGuildRosterMOTD() ~= "" ) then
 		numNews = numNews + 1;
 	end
-	local numEvents = 0;
+	local numEvents = CalendarGetNumGuildEvents();
 
 	-- figure out a place to divide news from events
 	local divider;
@@ -447,6 +451,7 @@ function GuildMainFrame_UpdateNewsEvents()
 	end
 	for i = 1, divider - 1 do
 		buttons[i]:SetHeight(18);
+		buttons[i].isEvent = nil;
 	end
 	GuildNews_Update(true, divider - 1);
 	
@@ -464,14 +469,18 @@ function GuildMainFrame_UpdateNewsEvents()
 		GuildUpdatesNoEvents:Hide();
 	end
 	for i = 1, 9 - divider do
-		button = _G["GuildUpdatesButton"..(divider + i)];
-		button:SetHeight(18);
+		button = buttons[divider + i];
 		if ( i > numEvents ) then
 			button:Hide();
 		else
-			button.text:SetText("Placeholder guild event #"..i);
-			button.icon:SetTexture("Interface\\LFGFrame\\LFGIcon-NAXXRAMAS");
-			button.icon:Show();
+			button:SetHeight(18);
+			-- check if this button used to show news
+			if ( not button.isEvent ) then
+				button.isEvent = true;
+				button.icon:Show();
+				button.dash:Hide();
+			end
+			GuildInfoEvents_SetButton(button, i);
 			button:Show();
 		end
 	end

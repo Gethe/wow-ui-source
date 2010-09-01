@@ -375,9 +375,9 @@
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						if (CharacterFrame.Expanded) then
-							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..STATS_COLLAPSE_TOOLTIP..FONT_COLOR_CODE_CLOSE);
+							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..self.collapseTooltip..FONT_COLOR_CODE_CLOSE);
 						else
-							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..STATS_EXPAND_TOOLTIP..FONT_COLOR_CODE_CLOSE);
+							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..self.expandTooltip..FONT_COLOR_CODE_CLOSE);
 						end
 					</OnEnter>
 					<OnLeave>

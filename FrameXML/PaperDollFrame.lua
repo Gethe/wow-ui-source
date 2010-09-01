@@ -276,7 +276,6 @@ PAPERDOLL_STATCATEGORIES = {
 				"HEALTH",
 				"DRUIDMANA",  -- Only appears for Druids when in bear/cat form
 				"POWER",
-				"MASTERY"
 			}
 	},
 						
@@ -302,6 +301,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"HITCHANCE", 
 				"CRITCHANCE", 
 				"EXPERTISE", 
+				"MASTERY",
 			}
 	},
 				
@@ -315,6 +315,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"RANGED_HASTE",
 				"RANGED_HITCHANCE",
 				"RANGED_CRITCHANCE", 
+				"MASTERY",
 			}
 	},
 				
@@ -328,6 +329,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"MANAREGEN",
 				"COMBATMANAREGEN",
 				"SPELLCRIT",
+				"MASTERY",
 			}
 	},
 			
@@ -415,6 +417,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("KNOWN_TITLES_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -431,6 +434,7 @@ function CharacterModelFrame_OnMouseUp (self, button)
 	if ( button == "LeftButton" ) then
 		AutoEquipCursorItem();
 	end
+	Model_OnMouseUp(self, button);
 end
 
 -- This makes sure the update only happens once at the end of the frame
@@ -470,13 +474,31 @@ function PaperDollFrame_OnEvent (self, event, ...)
 			CharacterFrame_Expand();
 		end
 		PaperDoll_InitStatCategories(PAPERDOLL_STATCATEGORY_DEFAULTORDER, "statCategoryOrder", "statCategoriesCollapsed", "player");
+	elseif (event == "PLAYER_TALENT_UPDATE") then
+		PaperDollFrame_SetLevel();
+		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	end
 end
 
 function PaperDollFrame_SetLevel()
-	CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), UnitClass("player"));
+	local primaryTalentTree = GetPrimaryTalentTree();
+	local classDisplayName, class = UnitClass("player"); 
+	local classColor = RAID_CLASS_COLORS[class];
+	local specName;
+	
+	if (primaryTalentTree) then
+		_, specName = GetTalentTabInfo(primaryTalentTree);
+	end
+	
+	if (specName and specName ~= "") then
+		classDisplayName = format("|cff%.2x%.2x%.2x%s %s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, specName, classDisplayName);
+	else
+		classDisplayName = format("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, classDisplayName);
+	end
+	
+	CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), classDisplayName);
 	-- Set it for the honor frame while we at it
-	HonorLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), UnitClass("player"));
+	HonorLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), classDisplayName);
 end
 
 function PaperDollFrame_SetGuild()
@@ -851,19 +873,12 @@ function PaperDollFrame_SetResilience(statFrame, unit)
 		return;
 	end
 
-	--local critResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
 	local damageResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	
-	local critMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
-	local critRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
-	
-	--local damageMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
 	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageResilience);
+	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..damageResilience..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, 
-								min(critRatingBonus, critMaxRatingBonus), 
 								damageRatingBonus 
 								);
 	statFrame:Show();
@@ -1881,8 +1896,10 @@ function PaperDollFrame_OnShow (self)
 		CharacterFrame_Expand();
 	end
 	CharacterFrameExpandButton:Show();
+	CharacterFrameExpandButton.collapseTooltip = STATS_COLLAPSE_TOOLTIP;
+	CharacterFrameExpandButton.expandTooltip = STATS_EXPAND_TOOLTIP;
 	
-	SetPaperDollBackground();
+	SetPaperDollBackground(CharacterModelFrame, "player");
 	PaperDollBgDesaturate(1);
 end
  
@@ -3735,25 +3752,25 @@ function SetTitleByName(name)
 	return false;
 end
 
-function SetPaperDollBackground()
-	local texture = DressUpTexturePath();
-	CharacterModelFrameBackgroundTopLeft:SetTexture(texture..1);
-	CharacterModelFrameBackgroundTopRight:SetTexture(texture..2);
-	CharacterModelFrameBackgroundBotLeft:SetTexture(texture..3);
-	CharacterModelFrameBackgroundBotRight:SetTexture(texture..4);
+function SetPaperDollBackground(model, unit)
+	local race, fileName = UnitRace(unit);
+	local texture = DressUpTexturePath(fileName);
+	model.BackgroundTopLeft:SetTexture(texture..1);
+	model.BackgroundTopRight:SetTexture(texture..2);
+	model.BackgroundBotLeft:SetTexture(texture..3);
+	model.BackgroundBotRight:SetTexture(texture..4);
 	
 	-- HACK - Adjust background brightness for different races
-	local race, fileName = UnitRace("player");
 	if ( strupper(fileName) == "BLOODELF") then
-		CharacterModelFrameBackgroundOverlay:SetAlpha(0.8);
+		model.BackgroundOverlay:SetAlpha(0.8);
 	elseif (strupper(fileName) == "NIGHTELF") then
-		CharacterModelFrameBackgroundOverlay:SetAlpha(0.6);
+		model.BackgroundOverlay:SetAlpha(0.6);
 	elseif ( strupper(fileName) == "SCOURGE") then
-		CharacterModelFrameBackgroundOverlay:SetAlpha(0.3);
+		model.BackgroundOverlay:SetAlpha(0.3);
 	elseif ( strupper(fileName) == "TROLL" or strupper(fileName) == "ORC") then
-		CharacterModelFrameBackgroundOverlay:SetAlpha(0.6);
+		model.BackgroundOverlay:SetAlpha(0.6);
 	else
-		CharacterModelFrameBackgroundOverlay:SetAlpha(0.7);
+		model.BackgroundOverlay:SetAlpha(0.7);
 	end
 end
 

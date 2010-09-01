@@ -25,16 +25,39 @@ Players should once again be able to buy and register guild charters, which
 now only require five signatures. See the Known Issues section for issues
 associated with this new system.
 
+    * The amount of experience required to reach new guild levels has been
+substantially reduced.
+
+  * Creature damage output has been increased from roughly level 65 and up.
+These increases scale upward with level. Creatures in exterior zones at level
+80 now have 2.5 times the damage output they did previously in beta, 3.2 times
+at level 81, and 4 times at level 82 and up. To leave feedback about how this
+change feels with regard to creature spawns in level 80-85 exterior zones,
+visit our forums [here][3].
+
   * Cataclysm Launcher Update
 
     * The new Cataclysm Launcher allows you to stream game data while you
 play. This will reduce the time you spend downloading, installing, and
 patching World of Warcraft. We'd like to get your feedback on the toolset and
-gameplay experience. Please head to the forums [here][3] for additional
+gameplay experience. Please head to the forums [here][4] for additional
 information.
 
   * Players may use our Character Copy feature for copying existing characters
 to beta realms, or may choose from high-level pre-made template characters.
+
+**PvP**
+
+  * Tol Barad is now available for testing. Players can reach the zone by
+speaking to NPCs in the capital cities.
+
+  * Battlegrounds
+
+    * Battleground queues should once again be functional.
+
+    * [Twin Peaks][5] is now available for testing.
+
+    * The Battle for Gilneas is now available for testing.
 
 **Zones**
 
@@ -52,10 +75,11 @@ Further fine tuning will continue in future content updates.
 
   * Eastern Kingdoms
 
-    * Arathi Highlands, Blasted Lands, The Cape of Stranglethorn, Dun Morogh,
-Duskwood, Eastern Plaguelands, Elwynn Forest, Hinterlands, Loch Modan,
-Northern Stranglethorn, Northshire, Redridge Mountains, Silverpine Forest,
-Tirisfal Glades, Western Plaguelands and Westfall are ready for testing.
+    * Arathi Highlands, Badlands, Blasted Lands, The Cape of Stranglethorn,
+Dun Morogh, Duskwood, Eastern Plaguelands, Elwynn Forest, Hinterlands, Loch
+Modan, Northern Stranglethorn, Northshire, Redridge Mountains, Searing Gorge,
+Silverpine Forest, Swamp of Sorrows, Tirisfal Glades, Western Plaguelands and
+Westfall are ready for testing.
 
   * Kalimdor
 
@@ -74,6 +98,11 @@ testing.
 for testing.
 
 **Classes: General**
+
+  * All spell and ability tooltips will now display damage averages rather
+than minimum and maximum damage potential. This feature is on by default but
+can be changed via the Display settings under User Interface options. Note:
+this change has not yet been implemented for the mage class.
 
   * All hunter and warlock pets have been deleted to address a data corruption
 issue. Hunters will need to tame new pets, while warlocks will notice the
@@ -108,7 +137,7 @@ will result in the unlocking of a spell or ability unique to that
 specialization, as well as one or more passive bonuses.
 
     * More information regarding our plans for talent trees can be found
-[here][4].
+[here][6].
 
 **Death Knights**
 
@@ -133,23 +162,51 @@ five pets can be summoned via the Call Pet ability.
   * The Stable will now store 20 pets. If a pet is moved into the Stable, its
 talents are wiped.
 
+**Mages**
+
+  * There is now a new spell fly-out UI feature for mage portals. Clicking on
+the Teleport or Portal buttons will expand the list of choices available.
+
 **Paladins**
+
+  * Paladins now have a new resource bar.
 
   * We are in the process of overhauling many paladin talents, spells and
 abilities. Expect updates in upcoming patches.
 
 **Warlocks**
 
+  * There is now a new spell fly-out UI feature for warlock pets. Clicking on
+this single button will open up the list of available pets to summon.
+
   * Soul Shards have been removed from the game as items. Instead, they now
 exist as a resource system necessary for using, or altering the mechanics of
 certain spells.
 
+**Items**
+
+  * Resilience no longer reduces the chance a player will be critically hit by
+an opponent.
+
+  * Durability: cloth, leather, and mail now have as many points of durability
+as plate, making the repair cost on death much closer to equal for all
+classes.
+
 **Professions**
 
-  * The Reforging interface has been implemented, however it may not currently
-be hooked up correctly to the corresponding NPCs.
+  * The updated glyph system is now functional, though several classes still
+need passes on their glyph choices.
+
+  * The Reforging interface has been implemented and the NPCs should now be
+functional for testing this feature.
 
 **User Interface**
+
+  * Leave feedback about the latest user interface changes [ here][7].
+
+  * Spell Alerts have been added to notify players when procs on select spells
+and abilities occur. A visual notification will display around the character
+and the activated ability will be highlighted on the action bar.
 
   * The ability to use third-party addons has been temporarily disabled for
 the test environment.
@@ -213,7 +270,30 @@ Effects Panel).
 
 **Known Issues**
 
-  * Sudden Death procs do not reset the cooldown of Colossus Smash.
+  * The Swift Spectral Gryphon does not increase movement speed.
+
+  * Floating Combat Text is not functioning.
+
+  * The Abyssal Seahorse requires Artisan Riding to use, but the Subdued
+Abyssal Seahorse only requires Expert Riding to learn.
+
+  * The portal from the Deepholm Temple of Earth to Orgrimmar currently spawns
+players underneath the world.
+
+  * Worgen are playing their idle sound effect every time they stop moving.
+
+  * All Heirloom items now have durability.
+
+  * Robes do not have durability.
+
+  * The bones for the quest "Spirits of Stonemaul Hold" cannot be interacted
+with.
+
+  * There is a large section of terrain that is blocking the entrance to Night
+Web's Hollow.
+
+  * Characters cannot interact with Egg of Onyxia for the quest "The Brood of
+Onyxia."
 
   * Several cloaks are displayed incorrectly on draenei females.
 
@@ -228,8 +308,6 @@ event and the quest cannot be completed.
   * Sound is cutting in and out during two segments of Mor'norokk's voiceover
 during the quest, "Some Spraining to Do".
 
-  * Characters with two professions learned cannot train new spells.
-
   * The spell effect visuals for Healing Rain and Earthquake look awkward when
 cast on a staircase or a steep incline.
 
@@ -241,12 +319,6 @@ demoted to the lowest guild rank when logging out.
   * Battleground queues are undergoing significant changes and are not
 currently operational.
 
-  * Gnome and troll characters have a broken background displayed as well as a
-LUA error at the character selection and creation screens. Having either a
-gnome or troll character can cause newly created characters to not display on
-the character list until it is refreshed by logging out and back in, switching
-realms and then switch back, or logging into and back out of the realm.
-
   * Players are currently unable to create new worgen characters.
 
   * Selecting high Liquid Detail when using Geforce 6 & 7 series video cards
@@ -256,6 +328,24 @@ via the Video Effects Panel, or by typing "waterDetail 0" in your Config.WTF
 file.
 
 **Bug Fixes**
+
+  * Players should no longer get stuck at the loading screen when teleporting
+to Moonglade en route to Hyjal.
+
+  * Characters with two professions learned should again be able to train new
+spells.
+
+  * There is no longer a section of geometry missing from where the floor and
+wall meet in Fireland Hatchery.
+
+  * Gnome and troll character no longer have a broken background displayed as
+well as a LUA error at the character selection and creation screens.
+
+  * Sudden Death procs should now reset the cooldown of Colossus Smash.
+
+  * Hairstyles should no longer cause the male worgen face to disappear.
+
+  * Shadow Protection is now functioning correctly.
 
   * Entering a phase with phased terrain (i.e. Rim of the World) no longer
 boots players from flying mounts.
@@ -293,6 +383,13 @@ slots above the selected one.
 
    [2]: http://forums.worldofwarcraft.com/board.html?forumId=10001
 
-   [3]: http://forums.worldofwarcraft.com/thread.html?topicId=26262801168&sid=2000
+   [3]: http://forums.worldofwarcraft.com/thread.html?topicId=26435496423&sid=2000
 
-   [4]: http://www.worldofwarcraft.com/info/underdev/4p0/classandmastery.xml
+   [4]: http://forums.worldofwarcraft.com/thread.html?topicId=26262801168&sid=2000
+
+   [5]: http://www.worldofwarcraft.com/cataclysm/features/twinpeaks.html
+
+   [6]: http://www.worldofwarcraft.com/info/underdev/4p0/classandmastery.xml
+
+   [7]: http://forums.worldofwarcraft.com/thread.html?topicId=26560766722&sid=2000&pageNo=1
+

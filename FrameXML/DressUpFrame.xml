@@ -195,7 +195,13 @@
 			</Anchors>
 			<Scripts>
                 <OnLoad function="Model_OnLoad"/>
+				<OnEvent function="Model_OnEvent"/>
                 <OnUpdate function="Model_OnUpdate"/>
+				<OnMouseUp function="Model_OnMouseUp"/>
+				<OnMouseDown function="Model_OnMouseDown"/>
+				<OnMouseWheel>
+					Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PLAYER_ZOOM);
+				</OnMouseWheel>
             </Scripts>
 			<Frames>
 				<Button name="DressUpModelRotateLeftButton">

@@ -17,7 +17,8 @@ end
 function MovieFrame_PlayMovie(self, movieID)
 	volume = volume or 150;
 	self:Show();
-	if (not self:StartMovie(movieID) ) then
+	local playSuccess, errorCode = self:StartMovie(movieID);
+	if ( not playSuccess ) then
 		self:Hide();
 		GameMovieFinished();
 	end

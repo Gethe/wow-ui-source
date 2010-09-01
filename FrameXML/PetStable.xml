@@ -168,13 +168,15 @@
                 <Scripts>
 					<OnLoad>
 						Model_OnLoad(self);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 						self:SetCamDistanceScale(1.3);
 					</OnLoad>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
+					<OnEvent function="Model_OnEvent"/>
                     <OnUpdate function="Model_OnUpdate"/>
+					<OnMouseUp function="Model_OnMouseUp"/>
+					<OnMouseDown function="Model_OnMouseDown"/>
+					<OnMouseWheel>
+						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
+					</OnMouseWheel>
                 </Scripts>
 				<Frames>
 					<Button name="PetStableModelRotateLeftButton">

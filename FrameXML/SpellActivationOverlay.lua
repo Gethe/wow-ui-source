@@ -14,52 +14,90 @@ end
 
 function SpellActivationOverlay_OnEvent(self, event, ...)
 	if ( event == "SPELL_ACTIVATION_OVERLAY_SHOW" ) then
-		local spellID, texture, position, scale, r, g, b = ...;
-		SpellActivationOverlay_ShowOverlay(self, spellID, texture, position, scale, r, g, b)
+		local spellID, texture, positions, scale, r, g, b = ...;
+		if ( GetCVarBool("displaySpellActivationOverlays") ) then 
+			SpellActivationOverlay_ShowAllOverlays(self, spellID, texture, positions, scale, r, g, b)
+		end
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_HIDE" ) then
 		local spellID = ...;
 		SpellActivationOverlay_HideOverlays(self, spellID);
 	end
 end
 
-function SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, position, scale, r, g, b)
-	if ( position == "Sides" ) then
-		SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, "Left", scale, r, g, b);
-		SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, "Right-Flipped", scale, r, g, b)
-		return;
+local complexLocationTable = {
+	["RIGHT (FLIPPED)"] = {
+		RIGHT = {	hFlip = true },
+	},
+	["BOTTOM (FLIPPED)"] = {
+		BOTTOM = { vFlip = true },
+	},
+	["LEFT + RIGHT (FLIPPED)"] = {
+		LEFT = {},
+		RIGHT = { hFlip = true },
+	},
+	["TOP + BOTTOM (FLIPPED)"] = {
+		TOP = {},
+		BOTTOM = { vFlip = true },
+	},
+}
+
+function SpellActivationOverlay_ShowAllOverlays(self, spellID, texturePath, positions, scale, r, g, b)
+	positions = strupper(positions);
+	if ( complexLocationTable[positions] ) then
+		for location, info in pairs(complexLocationTable[positions]) do
+			SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, location, scale, r, g, b, info.vFlip, info.hFlip);
+		end
+	else
+		SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, positions, scale, r, g, b, false, false);
 	end
-	
+end
+
+function SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, position, scale, r, g, b, vFlip, hFlip)
 	local overlay = SpellActivationOverlay_GetOverlay(self, spellID, position);
 	overlay.spellID = spellID;
 	overlay.position = position;
 	
 	overlay:ClearAllPoints();
-	overlay.texture:SetTexCoord(0, 1, 0, 1);
+	
+	local texLeft, texRight, texTop, texBottom = 0, 1, 0, 1;
+	if ( vFlip ) then
+		texTop, texBottom = 1, 0;
+	end
+	if ( hFlip ) then
+		texLeft, texRight = 1, 0;
+	end
+	overlay.texture:SetTexCoord(texLeft, texRight, texTop, texBottom);
 	
 	local width, height;
-	if ( position == "Centered" ) then
+	if ( position == "CENTER" ) then
 		width, height = longSide, longSide;
 		overlay:SetPoint("CENTER", self, "CENTER", 0, 0);
-	elseif ( position == "Left" ) then
+	elseif ( position == "LEFT" ) then
 		width, height = shortSide, longSide;
 		overlay:SetPoint("RIGHT", self, "LEFT", 0, 0);
-	elseif ( position == "Top" ) then
-		width, height = longSide, shortSide;
-		overlay:SetPoint("BOTTOM", self, "TOP");
-	elseif ( position == "Top-Right" ) then
-		width, height = shortSide, shortSide;
-		overlay:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
-	elseif ( position == "Top-Left" ) then
-		width, height = shortSide, shortSide;
-		overlay:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
-	elseif ( strsub(position, 1, 5) == "Right" ) then
-		if ( strsub(position, 6) == "-Flipped" ) then
-			overlay.texture:SetTexCoord(1, 0, 0, 1);
-		end
+	elseif ( position == "RIGHT" ) then
 		width, height = shortSide, longSide;
 		overlay:SetPoint("LEFT", self, "RIGHT", 0, 0);
+	elseif ( position == "TOP" ) then
+		width, height = longSide, shortSide;
+		overlay:SetPoint("BOTTOM", self, "TOP");
+	elseif ( position == "BOTTOM" ) then
+		width, height = longSide, shortSide;
+		overlay:SetPoint("TOP", self, "BOTTOM");
+	elseif ( position == "TOPRIGHT" ) then
+		width, height = shortSide, shortSide;
+		overlay:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
+	elseif ( position == "TOPLEFT" ) then
+		width, height = shortSide, shortSide;
+		overlay:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
+	elseif ( position == "BOTTOMRIGHT" ) then
+		width, height = shortSide, shortSide;
+		overlay:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", 0, 0);
+	elseif ( position == "BOTTOMLEFT" ) then
+		width, height = shortSide, shortSide;
+		overlay:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", 0, 0);
 	else
-		GMError("Unknown SpellActivationOverlay position: "..tostring(position));
+		--GMError("Unknown SpellActivationOverlay position: "..tostring(position));
 		return;
 	end
 	
@@ -69,7 +107,6 @@ function SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, position
 	overlay.texture:SetVertexColor(r / 255, g / 255, b / 255);
 	
 	overlay.animOut:Stop();	--In case we're in the process of animating this out.
-	overlay.pulse:Play();
 	overlay:Show();
 end
 
@@ -101,6 +138,7 @@ function SpellActivationOverlay_HideOverlays(self, spellID)
 	if ( overlayList ) then
 		for i=1, #overlayList do
 			local overlay = overlayList[i];
+			overlay.pulse:Pause();
 			overlay.animOut:Play();
 		end
 	end
@@ -127,7 +165,9 @@ function SpellActivationOverlayTexture_OnFadeInPlay(animGroup)
 end
 
 function SpellActivationOverlayTexture_OnFadeInFinished(animGroup)
-	animGroup:GetParent():SetAlpha(1);
+	local overlay = animGroup:GetParent();
+	overlay:SetAlpha(1);
+	overlay.pulse:Play();
 end
 
 function SpellActivationOverlayTexture_OnFadeOutFinished(anim)

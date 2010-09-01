@@ -319,7 +319,18 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontHighlightSmall"/>
     </Button>
-	<Frame name="AchievementFrameAchievementsObjectives"/>
+	<Frame name="AchievementFrameAchievementsObjectives">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentReputationCriteria" inherits="GameFontNormalSmall" parentKey="repCriteria">
+					<Anchors>
+						<Anchor point="TOP" x="8" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 	<Frame name="MiniAchievementTemplate" virtual="true" parent="AchievementFrame">
 		<Size>
 			<AbsDimension x="42" y="42"/>

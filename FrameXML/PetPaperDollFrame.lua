@@ -107,6 +107,8 @@ function PetPaperDollFrame_OnShow(self)
 		CharacterFrame_Expand();
 	end
 	CharacterFrameExpandButton:Show();
+	CharacterFrameExpandButton.collapseTooltip = PET_STATS_COLLAPSE_TOOLTIP;
+	CharacterFrameExpandButton.expandTooltip = PET_STATS_EXPAND_TOOLTIP;
 	
 	PaperDoll_InitStatCategories(PETPAPERDOLL_STATCATEGORY_DEFAULTORDER, "petStatCategoryOrder", "petStatCategoriesCollapsed", "pet");
 	
@@ -140,6 +142,12 @@ function PetPaperDollFrame_Update()
 	elseif (playerClass == "WARLOCK") then
 		PetPaperDollPetModelBg:Show();
 		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-Warlock");
+	elseif (playerClass == "MAGE") then
+		PetPaperDollPetModelBg:Show();
+		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-Mage");
+	elseif (playerClass == "DEATHKNIGHT") then
+		PetPaperDollPetModelBg:Show();
+		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-DeathKnight");
 	else
 		PetPaperDollPetModelBg:Hide();
 	end

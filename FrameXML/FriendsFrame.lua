@@ -1270,6 +1270,7 @@ function FriendsFrame_UpdateFriends()
 			button.id = FriendButtons[index].id;
 			if ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
 				local name, level, class, area, connected, status, note = GetFriendInfo(FriendButtons[index].id);
+				broadcastText = nil;
 				if ( connected ) then
 					button.background:SetTexture(FRIENDS_WOW_BACKGROUND_COLOR.r, FRIENDS_WOW_BACKGROUND_COLOR.g, FRIENDS_WOW_BACKGROUND_COLOR.b, FRIENDS_WOW_BACKGROUND_COLOR.a);
 					if ( status == "" ) then

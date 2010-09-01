@@ -245,7 +245,7 @@ function ENV.UnitWatchRegistered(frameHandle, ...)
     return UnitWatchRegistered(GetFrameHandleFrame(frameHandle), ...);
 end
 
-local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true}
+local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
 local function scrubActionInfo(actionType, ...)
 	if ( safeActionTypes[actionType]) then
 		return actionType, ...

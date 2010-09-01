@@ -60,7 +60,7 @@ local DISPLAY_DATA = {
 
 	[1] = { --TUTORIAL_QUESTGIVERS
 		tileHeight = 21, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 0},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "TOP", xOff = 0, yOff = -110},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGiver", align = "TOP", xOff = -40, yOff = -50},
@@ -68,17 +68,18 @@ local DISPLAY_DATA = {
 	},
 	
 	[2] = {	--TUTORIAL_MOVEMENT
-		tileHeight = 0, 
-		anchorData = {align = "BOTTOM", xOff = 0, yOff = 100},
-		textBox = {topLeft_xOff = 400, topLeft_yOff = -300, bottomRight_xOff = 250, bottomRight_yOff = -600},
-		keyData1 = {command = "TURNLEFT", layer = "OVERLAY", align = "BOTTOM", xOff = -55, yOff = 150, linkedTexture = "TutorialFrameArrowLeft"},
-		keyData2 = {command = "MOVEBACKWARD", layer = "OVERLAY", align = "BOTTOM", xOff = 0, yOff = 150, linkedTexture = "TutorialFrameArrowDown"},
-		keyData3 = {command = "TURNRIGHT", layer = "OVERLAY", align = "BOTTOM", xOff = 55, yOff = 150, linkedTexture = "TutorialFrameArrowRight"},
-		keyData4 = {command = "MOVEFORWARD", align = "BOTTOM", xOff = 0, yOff = 190, linkedTexture = "TutorialFrameArrowUp"},
-		ArrowUp = {layer = "BORDER", align = "BOTTOM", xOff = 0, yOff = 240, scale = 0.5},
-		ArrowDown = {layer = "ARTWORK", align = "BOTTOM", xOff = 0, yOff = 120, scale = 0.5},
-		ArrowRight = {layer = "ARTWORK", align = "BOTTOM", xOff = 100, yOff = 170, scale = 0.5},
-		ArrowLeft = {layer = "ARTWORK", align = "BOTTOM", xOff = -100, yOff = 170, scale = 0.5},
+		tileHeight = 0,
+		background = {width = 350, height = 300, alpha = 0.4},
+		anchorData = {align = "BOTTOM", xOff = -200, yOff = 200},
+		textBox = {font = GameFontNormalLarge, topLeft_xOff = 20, topLeft_yOff = -230, bottomRight_xOff = 0, bottomRight_yOff = 0},
+		keyData1 = {command = "TURNLEFT", layer = "OVERLAY", align = "BOTTOM", xOff = -55, yOff = 110, linkedTexture = "TutorialFrameArrowLeft"},
+		keyData2 = {command = "MOVEBACKWARD", layer = "OVERLAY", align = "BOTTOM", xOff = 0, yOff = 110, linkedTexture = "TutorialFrameArrowDown"},
+		keyData3 = {command = "TURNRIGHT", layer = "OVERLAY", align = "BOTTOM", xOff = 55, yOff = 110, linkedTexture = "TutorialFrameArrowRight"},
+		keyData4 = {command = "MOVEFORWARD", align = "BOTTOM", xOff = 0, yOff = 150, linkedTexture = "TutorialFrameArrowUp"},
+		ArrowUp = {layer = "BORDER", align = "BOTTOM", xOff = 0, yOff = 205, scale = 0.5},
+		ArrowDown = {layer = "ARTWORK", align = "BOTTOM", xOff = 0, yOff = 80, scale = 0.5},
+		ArrowRight = {layer = "ARTWORK", align = "BOTTOM", xOff = 100, yOff = 130, scale = 0.5},
+		ArrowLeft = {layer = "ARTWORK", align = "BOTTOM", xOff = -100, yOff = 130, scale = 0.5},
 	},
 	
 	[3] = {	--TUTORIAL_CAMERA
@@ -92,13 +93,13 @@ local DISPLAY_DATA = {
 	
 	[4] = {	--TUTORIAL_NEAR_QUEST_KILL
 		tileHeight = 8, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 0},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	
 	[5] = {	--TUTORIAL_TARGETING_ENEMY
 		tileHeight = 19, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 0},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
 		callOut	= {parent = "MainMenuBar", align = "TOPLEFT", xOff = -5, yOff = -5, width = 525, height = 50},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -145, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-AttackCursor", align = "TOP", xOff = -60, yOff = -60},
@@ -107,7 +108,7 @@ local DISPLAY_DATA = {
 
 	[6] = {	--TUTORIAL_COMBAT
 		tileHeight = 15, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = -200},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = -200},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -120, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell01", align = "TOP", xOff = -60, yOff = -50},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell02", align = "TOP", xOff = 10, yOff = -50},
@@ -371,7 +372,7 @@ local DISPLAY_DATA = {
 	
 	[43] = { --TUTORIAL_FUTURE_QUEST
 		tileHeight = 18, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGray", align = "TOP", xOff = 30, yOff = -50},
 	},
@@ -463,7 +464,7 @@ local DISPLAY_DATA = {
 	
     [57] = { --TUTORIAL_FIRST_QUEST_NOT_COMPLETE
  		tileHeight = 24, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -260, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		displayNPC = true,
    },
@@ -494,11 +495,43 @@ local DISPLAY_DATA = {
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell02", align = "TOP", xOff = 10, yOff = -50},
 		imageData3 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell03", align = "TOP", xOff = 80, yOff = -50},
 	},
+	
+	[61] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[62] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[63] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[64] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[65] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
 };
 
 function TutorialFrame_OnLoad(self)
 	self:RegisterEvent("TUTORIAL_TRIGGER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");	
 
 	for i = 1, MAX_TUTORIAL_VERTICAL_TILE do
 		local texture = self:CreateTexture("TutorialFrameLeft"..i, "BORDER");
@@ -531,14 +564,27 @@ end
 
 function TutorialFrame_OnEvent(self, event, ...)
 	if ( event == "TUTORIAL_TRIGGER" ) then
-		local tutorialID, alwaysShow = ...;
-		TutorialFrame_NewTutorial(tutorialID, alwaysShow);
+		local tutorialID, forceShow = ...;
+		TutorialFrame_NewTutorial(tutorialID, forceShow);
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		TutorialFrame_Update(TutorialFrame.id);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		local _, raceName  = UnitRace("player");
 		raceName = strupper(raceName);
 		TUTORIAL_QUEST_TO_WATCH = TUTORIAL_QUEST_ARRAY[raceName].questID;
+	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+		local spellID = ...;
+		for index, value in pairs(DISPLAY_DATA) do
+			if (value.spellTutorial) then
+				local spellID = ...;
+				local _, className = UnitClass("player");
+				className = strupper(className);
+				local tutorialSpellID = tonumber(_G["TUTORIAL"..index.."_SPELLID_"..className]);
+				if (tutorialSpellID == spellID) then
+					TutorialFrame_NewTutorial(index, true);
+				end
+			end
+		end
 	end
 end
 
@@ -565,7 +611,8 @@ function TutorialFrame_OnKeyDown(self, key)
 			local keyString = _G["TutorialFrameKeyString"..i];
 			local keyData = displayData["keyData"..i];
 			if(keyTexture and keyString and keyData) then
-				if (key == GetBindingKey(keyData.command)) then
+				local key1, key2 = GetBindingKey(keyData.command);
+				if (key == key1 or key == key2) then
 					if (keyData.linkedTexture) then
 						_G[keyData.linkedTexture]:Hide();
 					end
@@ -630,15 +677,15 @@ end
 
 function TutorialFrame_Update(currentTutorial)
 	FlagTutorial(currentTutorial);
+	TutorialFrame_ClearTextures();
 	TutorialFrame.id = currentTutorial;
 
 	local displayData = DISPLAY_DATA[ currentTutorial ];
 	if ( not displayData ) then
-		displayData = DISPLAY_DATA["Base"];
+		return;
 	end
 	
 	-- setup the frame
-	TutorialFrame_ClearTextures();
 	if (displayData.anchorData) then
 		local anchorData = displayData.anchorData;
 		TutorialFrame:SetPoint( anchorData.align, UIParent, anchorData.align, anchorData.xOff, anchorData.yOff );
@@ -654,7 +701,14 @@ function TutorialFrame_Update(currentTutorial)
 		TutorialFrameOkayButton:Hide();
 		TutorialFramePrevButton:Hide();
 		TutorialFrameNextButton:Hide();
-		TutorialFrame:SetSize(1024, 768);
+		if (displayData.background) then
+			local background = displayData.background;
+			TutorialFrame:SetSize(background.width,background.height);
+			TutorialFrameBackground:SetAlpha(background.alpha);
+			TutorialFrameBackground:Show();
+		else
+			TutorialFrame:SetSize(1024, 768);
+		end
 	else
 		TutorialFrameTop:Show();
 		TutorialFrameLeft1:Show();
@@ -689,20 +743,13 @@ function TutorialFrame_Update(currentTutorial)
 	className = strupper(className);
 	raceName = strupper(raceName);
 	
-	if (displayData.displayNPC) then
+	if (displayData.displayNPC and TUTORIAL_QUEST_ARRAY[raceName].displayNPC) then
 		TutorialNPCModel:SetCreature(TUTORIAL_QUEST_ARRAY[raceName].displayNPC);
 		TutorialNPCModel:Show();
 	end
 
 	-- setup the text
 	-- check for class specific first, then race specific, then normal
-	local title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..className];
-	if ( not title ) then
-		title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName];
-		if ( not title ) then
-			title = _G["TUTORIAL_TITLE"..currentTutorial];
-		end
-	end
 	local text = _G["TUTORIAL"..currentTutorial.."_"..className];
 	if ( not text ) then
 		text = _G["TUTORIAL"..currentTutorial.."_"..raceName];
@@ -710,17 +757,34 @@ function TutorialFrame_Update(currentTutorial)
 			text = _G["TUTORIAL"..currentTutorial];
 		end
 	end
-	
 	if (displayData.raidwarning) then
-		RaidNotice_AddMessage(RaidWarningFrame, text, ChatTypeInfo["RAID_WARNING"]);
+		RaidNotice_AddMessage(RaidWarningFrame, text, HIGHLIGHT_FONT_COLOR);
 		return;
 	end
+	
+	-- setup the title
+	-- check for class specific first, then race specific, then normal
+	if (displayData.tileHeight > 0) then
+		local title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..className];
+		if ( not title ) then
+			title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName];
+			if ( not title ) then
+				title = _G["TUTORIAL_TITLE"..currentTutorial];
+			end
+		end
+	end
 
-	if ( title and text) then
-		TutorialFrameTitle:SetText(title);
+	if (text) then
 		TutorialFrameText:SetText(text);
 	end
-	if ( displayData.textBox) then
+	
+	if (title) then
+		TutorialFrameTitle:SetText(title);
+	end
+	if (displayData.textBox) then
+		if(displayData.textBox.font) then
+			TutorialFrameText:SetFontObject(displayData.textBox.font);
+		end
 		TutorialFrameTextScrollFrame:SetPoint("TOPLEFT", TutorialFrame, "TOPLEFT", displayData.textBox.topLeft_xOff, displayData.textBox.topLeft_yOff);
 		TutorialFrameTextScrollFrame:SetPoint("BOTTOMRIGHT", TutorialFrame, "BOTTOMRIGHT", displayData.textBox.bottomRight_xOff, displayData.textBox.bottomRight_yOff);
 	end
@@ -823,7 +887,9 @@ function TutorialFrame_ClearTextures()
 	TutorialFrame:ClearAllPoints();
 	TutorialFrameBottom:ClearAllPoints();
 	TutorialFrameTextScrollFrame:ClearAllPoints();
-	
+	TutorialFrameText:SetFontObject(GameFontNormal);
+	TutorialFrameBackground:SetAlpha(1.0);
+
 	TutorialNPCModel:Hide();
 
 	TutorialFrameCallOutPulser:Stop();
@@ -864,11 +930,9 @@ function TutorialFrame_ClearTextures()
 	end
 end
 
-function TutorialFrame_NewTutorial(tutorialID, alwaysShow)
-	if(alwaysShow) then
-		if (not TutorialFrame:IsShown()) then
-			TutorialFrame_Update(tutorialID);
-		end
+function TutorialFrame_NewTutorial(tutorialID, forceShow)
+	if(forceShow) then
+		TutorialFrame_Update(tutorialID);
 		return;
 	end
 	

@@ -315,6 +315,7 @@ end
 function QuestInfo_ShowRewards()
 	local numQuestRewards;
 	local numQuestChoices;
+	local numQuestCurrencies;
 	local numQuestSpellRewards = 0;
 	local money;
 	local honor;
@@ -329,6 +330,7 @@ function QuestInfo_ShowRewards()
 	if ( QuestInfoFrame.questLog ) then
 		numQuestRewards = GetNumQuestLogRewards();
 		numQuestChoices = GetNumQuestLogChoices();
+		numQuestCurrencies = GetNumQuestLogRewardCurrencies();
 		if ( GetQuestLogRewardSpell() ) then
 			numQuestSpellRewards = 1;
 		end
@@ -343,6 +345,7 @@ function QuestInfo_ShowRewards()
 	else
 		numQuestRewards = GetNumQuestRewards();
 		numQuestChoices = GetNumQuestChoices();
+		numQuestCurrencies = GetNumRewardCurrencies();
 		if ( GetRewardSpell() ) then
 			numQuestSpellRewards = 1;
 		end
@@ -355,7 +358,7 @@ function QuestInfo_ShowRewards()
 		playerTitle = GetRewardTitle();
 	end
 
-	local totalRewards = numQuestRewards + numQuestChoices;
+	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
 	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 ) then
 		QuestInfoRewardsFrame:Hide();
 		return nil;
@@ -392,6 +395,7 @@ function QuestInfo_ShowRewards()
 			index = i + baseIndex;
 			questItem = _G["QuestInfoItem"..index];
 			questItem.type = "choice";
+			questItem.objectType = "item";
 			numItems = 1;
 			if ( QuestInfoFrame.questLog ) then
 				name, texture, numItems, quality, isUsable = GetQuestLogChoiceInfo(i);
@@ -467,7 +471,7 @@ function QuestInfo_ShowRewards()
 	end
 	
 	-- Setup mandatory rewards
-	if ( numQuestRewards > 0 or money > 0 or honor > 0 or arenaPoints > 0 or talents > 0 or xp > 0 or playerTitle ) then
+	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or honor > 0 or arenaPoints > 0 or talents > 0 or xp > 0 or playerTitle ) then
 		questItemReceiveText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 3, -5);
 		questItemReceiveText:Show();		
 		lastFrame = questItemReceiveText;
@@ -512,7 +516,7 @@ function QuestInfo_ShowRewards()
 			index = i + baseIndex;
 			questItem = _G["QuestInfoItem"..index];
 			questItem.type = "reward";
-			numItems = 1;
+			questItem.objectType = "item";
 			if ( QuestInfoFrame.questLog ) then
 				name, texture, numItems, quality, isUsable = GetQuestLogRewardInfo(i);
 			else
@@ -531,6 +535,41 @@ function QuestInfo_ShowRewards()
 				SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
 				SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
 			end
+			
+			if ( i > 1 ) then
+				if ( mod(i,2) == 1 ) then
+					questItem:SetPoint("TOPLEFT", "QuestInfoItem"..(index - 2), "BOTTOMLEFT", 0, -2);
+					lastFrame = questItem;
+				else
+					questItem:SetPoint("TOPLEFT", "QuestInfoItem"..(index - 1), "TOPRIGHT", 1, 0);
+				end
+			else
+				questItem:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", -3, -5);
+				lastFrame = questItem;
+			end
+			rewardsCount = rewardsCount + 1;
+		end
+		
+		-- currency
+		baseIndex = rewardsCount;
+		for i = 1, numQuestCurrencies, 1 do
+			index = i + baseIndex;
+			questItem = _G["QuestInfoItem"..index];
+			questItem.type = "reward";
+			questItem.objectType = "currency";
+			if ( QuestInfoFrame.questLog ) then
+				name, texture, numItems = GetQuestLogRewardCurrencyInfo(i);
+			else
+				name, texture, numItems = GetQuestCurrencyInfo(questItem.type, i);
+			end
+			questItem:SetID(i)
+			questItem:Show();
+			-- For the tooltip
+			_G["QuestInfoItem"..index.."Name"]:SetText(name);
+			SetItemButtonCount(questItem, numItems);
+			SetItemButtonTexture(questItem, texture);
+			SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+			SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
 			
 			if ( i > 1 ) then
 				if ( mod(i,2) == 1 ) then

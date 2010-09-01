@@ -39,58 +39,47 @@
 			</Anchors>
 		</NormalTexture>
     </Button>
-    <Frame name="InspectPaperDollFrame" setAllPoints="true" parent="InspectFrame" id="1">
+	<Button name="InspectPaperDollItemSlotButtonLeftTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentFrame" inherits="Char-LeftSlot">	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="InspectPaperDollItemSlotButtonRightTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentFrame" inherits="Char-RightSlot">	
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="InspectPaperDollItemSlotButtonBottomTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentFrame" inherits="Char-BottomSlot">	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+    <Frame name="InspectPaperDollFrame" setAllPoints="true" useParentLevel="true" parent="InspectFrame" id="1">
         <Layers>
-            <Layer level="BACKGROUND">
-                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
-                    <Size>
-                        <AbsDimension x="256" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT"/>
-                    </Anchors>
-                </Texture>
-                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-R1">
-                    <Size>
-                        <AbsDimension x="128" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="256" y="0"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomLeft">
-                    <Size>
-                        <AbsDimension x="256" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="0" y="-256"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomRight">
-                    <Size>
-                        <AbsDimension x="128" y="256"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="256" y="-256"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
+            <Layer level="OVERLAY">
                 <FontString name="InspectLevelText" inherits="GameFontNormalSmall" text="Level level race class">
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="InspectNameText" relativePoint="BOTTOM">
+                        <Anchor point="TOP">
                             <Offset>
-                                <AbsDimension x="0" y="-6"/>
+                                <AbsDimension x="0" y="-27"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -117,53 +106,147 @@
         </Layers>
         <Frames>
             <PlayerModel name="InspectModelFrame">
-                <Size>
-                    <AbsDimension x="233" y="300"/>
-                </Size>
+				<Size x="231" y="320"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset>
-                            <AbsDimension x="65" y="-78"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="TOPLEFT" x="52" y="-66"/>
                 </Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="InspectModelFrameBackgroundTopLeft" parentKey="BackgroundTopLeft">
+							<Size  x="212" y="245"/>
+							<TexCoords left="0.171875" right="1" top="0.0392156862745098" bottom="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBackgroundTopRight" parentKey="BackgroundTopRight">
+							<Size x="19" y="245"/>
+							<TexCoords left="0" right="0.296875" top="0.0392156862745098" bottom="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="InspectModelFrameBackgroundTopLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBackgroundBotLeft" parentKey="BackgroundBotLeft">
+							<Size x="212" y="128"/>
+							<TexCoords left="0.171875" right="1" top="0" bottom="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="InspectModelFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBackgroundBotRight" parentKey="BackgroundBotRight">
+							<Size x="19" y="128"/>
+							<TexCoords left="0" right="0.296875" top="0" bottom="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="InspectModelFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="InspectModelFrameBackgroundOverlay" parentKey="BackgroundOverlay">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="InspectModelFrameBackgroundTopLeft"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="InspectModelFrameBackgroundBotRight" x="0" y="52"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="InspectModelFrameBorderTopLeft" inherits="Char-Corner-UpperLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="46" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderTopRight" inherits="Char-Corner-UpperRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="InspectFrameInset" x="-47" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderBottomLeft" inherits="Char-Corner-LowerLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="InspectFrameInset" x="46" y="31"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderBottomRight" inherits="Char-Corner-LowerRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="InspectFrameInset" x="-47" y="31"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderLeft" inherits="Char-Inner-Left">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeto="InspectModelFrameBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1"/>
+								<Anchor point="BOTTOMLEFT" relativeto="InspectModelFrameBorderBottomLeft" relativePoint="TOPLEFT" x="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderRight" inherits="Char-Inner-Right">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeto="InspectModelFrameBorderTopRight" relativePoint="BOTTOMRIGHT" x="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeto="InspectModelFrameBorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderTop" inherits="Char-Inner-Top">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeto="InspectModelFrameBorderTopLeft" relativePoint="TOPRIGHT" y="1"/>
+								<Anchor point="TOPRIGHT" relativeto="InspectModelFrameBorderTopRight" relativePoint="TOPLEFT" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderBottom" inherits="Char-Inner-Bottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeto="InspectModelFrameBorderBottomLeft" relativePoint="BOTTOMRIGHT" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" relativeto="InspectModelFrameBorderBottomRight" relativePoint="BOTTOMLEFT" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="InspectModelFrameBorderBottom2" inherits="Char-Inner-Bottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeto="InspectFrameInset" y="27"/>
+								<Anchor point="BOTTOMRIGHT" relativeto="InspectFrameInset" y="27"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
                 <Scripts>
-                    <OnLoad function="InspectModelFrame_OnLoad"/>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
-                    <OnUpdate function="InspectModelFrame_OnUpdate"/>
+                    <OnLoad function="Model_OnLoad"/>
+					<OnEvent function="Model_OnEvent"/>
+					<OnMouseUp function="Model_OnMouseUp"/>
+					<OnMouseDown function="Model_OnMouseDown"/>
+					<OnUpdate function="Model_OnUpdate"/>
+					<OnMouseWheel>
+						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PLAYER_ZOOM);
+					</OnMouseWheel>
                 </Scripts>
 				<Frames>
-					<Button name="InspectModelRotateLeftButton">
+					<Button name="InspectModelFrameRotateLeftButton">
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="InspectModelFrame" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPLEFT" x="4" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
-							<OnClick function="InspectModelRotateLeftButton_OnClick"/>
+							<OnClick>
+								Model_RotateLeft(self:GetParent());
+							</OnClick>
 						</Scripts>
 						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<Button name="InspectModelRotateRightButton">
+					<Button name="InspectModelFrameRotateRightButton">
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="InspectModelRotateLeftButton" relativePoint="TOPRIGHT"/>
+							<Anchor point="TOPLEFT" relativeTo="InspectModelFrameRotateLeftButton" relativePoint="TOPRIGHT"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
-							<OnClick function="InspectModelRotateRightButton_OnClick"/>
+							<OnClick>
+								Model_RotateRight(self:GetParent());
+							</OnClick>
 						</Scripts>
 						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
@@ -171,178 +254,192 @@
 					</Button>
 				</Frames>
             </PlayerModel>
-            <Button name="InspectHeadSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset>
-                            <AbsDimension x="21" y="-74"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectNeckSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectHeadSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectShoulderSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectNeckSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectBackSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectShoulderSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectChestSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectBackSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectShirtSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectChestSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectTabardSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectShirtSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectWristSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectTabardSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectHandsSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset>
-                            <AbsDimension x="305" y="-74"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectWaistSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectHandsSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectLegsSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectWaistSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectFeetSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectLegsSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectFinger0Slot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectFeetSlot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectFinger1Slot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectFinger0Slot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectTrinket0Slot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectFinger1Slot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectTrinket1Slot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectTrinket0Slot" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="-4"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectMainHandSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="122" y="127"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectSecondaryHandSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectMainHandSlot" relativePoint="TOPRIGHT">
-                        <Offset>
-                            <AbsDimension x="5" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-            <Button name="InspectRangedSlot" inherits="InspectPaperDollItemSlotButtonTemplate">
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="InspectSecondaryHandSlot" relativePoint="TOPRIGHT">
-                        <Offset>
-                            <AbsDimension x="5" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
-        </Frames>
+			<Frame name="InspectPaperDollItemsFrame" setAllPoints="true">
+				<Frames>
+					<Button name="InspectHeadSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="4" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button name="InspectNeckSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectHeadSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectShoulderSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectNeckSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectBackSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectShoulderSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectChestSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectBackSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectShirtSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectChestSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectTabardSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectShirtSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectWristSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectTabardSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectHandsSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="InspectFrameInset" x="-4" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button name="InspectWaistSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectHandsSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectLegsSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectWaistSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectFeetSlot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectLegsSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectFinger0Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectFeetSlot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectFinger1Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectFinger0Slot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectTrinket0Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectFinger1Slot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectTrinket1Slot" inherits="InspectPaperDollItemSlotButtonRightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectTrinket0Slot" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectMainHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="106" y="16"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture inherits="Char-Slot-Bottom-Left">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="$parentFrame" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Button>
+					<Button name="InspectSecondaryHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectMainHandSlot" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="InspectRangedSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="InspectSecondaryHandSlot" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture inherits="Char-Slot-Bottom-Right">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
         <Scripts>
             <OnLoad function="InspectPaperDollFrame_OnLoad"/>
             <OnEvent function="InspectPaperDollFrame_OnEvent"/>

@@ -105,6 +105,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 						TextStatusBar_Initialize(self);
 						SetTextStatusBarText(self, PetPaperDollFrameExpBarText);
 					</OnLoad>
@@ -118,7 +119,7 @@
 				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>
 			</StatusBar>
-			<PlayerModel name="PetModelFrame" useParentLevel="true">
+			<PlayerModel name="PetModelFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-4"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-4" y="4"/>
@@ -127,12 +128,14 @@
 					<OnLoad>
 						Model_OnLoad(self);
 						self:SetCamDistanceScale(1.3);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 					</OnLoad>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
+					<OnEvent function="Model_OnEvent"/>
 					<OnUpdate function="Model_OnUpdate"/>
+					<OnMouseDown function="Model_OnMouseDown"/>
+					<OnMouseUp function="Model_OnMouseUp"/>
+					<OnMouseWheel>
+						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
+					</OnMouseWheel>
 				</Scripts>
 				<Frames>
 					<Button name="PetModelFrameRotateLeftButton">
@@ -173,57 +176,57 @@
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
+					<Frame name="PetPaperDollPetHappiness" enableMouse="true" hidden="false">
+						<Size x="24" y="23"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-8" y="-8"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="PetPaperDollPetHappinessTexture" file="Interface\PetPaperDollFrame\UI-PetHappiness" setAllPoints="true" parentKey="Texture">
+									<Size x="24" y="23"/>
+									<TexCoords left="0" right="0.1875" top="0" bottom="0.359375"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								if ( self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltip);
+									if ( self.tooltipDamage ) then
+										GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1);
+									end
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Frame name="PetPaperDollPetInfo" enableMouse="true" hidden="false">
+						<Size x="24" y="23"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="PetPaperDollPetHappiness" x="-4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PetPaperDollFrame\PetStable-DietIcon">
+									<Size x="24" y="23"/>
+									<TexCoords left="0" right="0.75" top="0" bottom="0.71875"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(format(PET_DIET_TEMPLATE, BuildListString(GetPetFoodTypes())));
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
 					<Frame name="PetModelFrameShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
 				</Frames>
 			</PlayerModel>
-			<Frame name="PetPaperDollPetHappiness" enableMouse="true" hidden="false">
-				<Size x="24" y="23"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-8" y="-8"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="PetPaperDollPetHappinessTexture" file="Interface\PetPaperDollFrame\UI-PetHappiness" setAllPoints="true" parentKey="Texture">
-							<Size x="24" y="23"/>
-							<TexCoords left="0" right="0.1875" top="0" bottom="0.359375"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.tooltip ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltip);
-							if ( self.tooltipDamage ) then
-								GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1);
-							end
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<Frame name="PetPaperDollPetInfo" enableMouse="true" hidden="false">
-				<Size x="24" y="23"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="PetPaperDollPetHappiness" x="-4" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\PetPaperDollFrame\PetStable-DietIcon">
-							<Size x="24" y="23"/>
-							<TexCoords left="0" right="0.75" top="0" bottom="0.71875"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(format(PET_DIET_TEMPLATE, BuildListString(GetPetFoodTypes())));
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="PetPaperDollFrame_OnLoad"/>

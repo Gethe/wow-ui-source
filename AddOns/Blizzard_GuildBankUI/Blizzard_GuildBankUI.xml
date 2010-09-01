@@ -822,6 +822,20 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Frame name="GuildBankTab7" inherits="GuildBankTabTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab6" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankTab8" inherits="GuildBankTabTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab7" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
 			<Frame name="GuildBankFrameBuyInfo"  hidden="true">
 				<Size>
 					<AbsDimension x="20" y="20"/>

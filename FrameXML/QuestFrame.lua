@@ -164,8 +164,10 @@ end
 
 function QuestFrameProgressItems_Update()
 	local numRequiredItems = GetNumQuestItems();
+	local numRequiredCurrencies = GetNumQuestCurrencies();
 	local questItemName = "QuestProgressItem";
-	if ( numRequiredItems > 0 or GetQuestMoneyToGet() > 0 ) then
+	local buttonIndex = 1;
+	if ( numRequiredItems > 0 or GetQuestMoneyToGet() > 0 or numRequiredCurrencies > 0) then
 		QuestProgressRequiredItemsText:Show();
 		
 		-- If there's money required then anchor and display it
@@ -192,24 +194,38 @@ function QuestFrameProgressItems_Update()
 			_G[questItemName..1]:SetPoint("TOPLEFT", "QuestProgressRequiredItemsText", "BOTTOMLEFT", -3, -5);
 		end
 
-
-		
-		for i=1, numRequiredItems, 1 do	
-			local requiredItem = _G[questItemName..i];
+		for i=1, numRequiredItems do	
+			local requiredItem = _G[questItemName..buttonIndex];
 			requiredItem.type = "required";
+			requiredItem.rewardType = "item";
+			requiredItem:SetID(i);
 			local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
 			SetItemButtonCount(requiredItem, numItems);
 			SetItemButtonTexture(requiredItem, texture);
 			requiredItem:Show();
-			_G[questItemName..i.."Name"]:SetText(name);
-			
+			_G[questItemName..buttonIndex.."Name"]:SetText(name);
+			buttonIndex = buttonIndex+1;
 		end
+		
+		for i=1, numRequiredCurrencies do	
+			local requiredItem = _G[questItemName..buttonIndex];
+			requiredItem.type = "required";
+			requiredItem.rewardType = "currency";
+			requiredItem:SetID(i);
+			local name, texture, numItems = GetQuestCurrencyInfo(requiredItem.type, i);
+			SetItemButtonCount(requiredItem, numItems);
+			SetItemButtonTexture(requiredItem, texture);
+			requiredItem:Show();
+			_G[questItemName..buttonIndex.."Name"]:SetText(name);
+			buttonIndex = buttonIndex+1;
+		end
+		
 	else
 		QuestProgressRequiredMoneyText:Hide();
 		QuestProgressRequiredMoneyFrame:Hide();
 		QuestProgressRequiredItemsText:Hide();
 	end
-	for i=numRequiredItems + 1, MAX_REQUIRED_ITEMS, 1 do
+	for i=buttonIndex, MAX_REQUIRED_ITEMS do
 		_G[questItemName..i]:Hide();
 	end
 	QuestProgressScrollFrameScrollBar:SetValue(0);
@@ -311,6 +327,9 @@ end
 
 function QuestFrame_OnShow()
 	PlaySound("igQuestListOpen");
+	if (TutorialFrame.id == 1 or TutorialFrame.id == 57) then
+		TutorialFrame_Hide();
+	end
 end
 
 function QuestFrame_OnHide()
@@ -326,6 +345,7 @@ function QuestFrame_OnHide()
 	if ( QuestFrame.autoQuest ) then
 		QuestFrameDetailPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight");
 		QuestFrameDeclineButton:Show();
+		QuestFrameCloseButton:Enable();
 		QuestFrame.autoQuest = nil;
 	end
 	CloseQuest();
@@ -402,6 +422,7 @@ function QuestFrameDetailPanel_OnShow()
 	if ( QuestGetAutoAccept() ) then
 		QuestFrameDetailPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight-blank");
 		QuestFrameDeclineButton:Hide();
+		QuestFrameCloseButton:Disable();
 		QuestFrame.autoQuest = true;
 	end		
 	local material = QuestFrame_GetMaterial();

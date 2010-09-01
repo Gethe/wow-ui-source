@@ -1,3 +1,5 @@
+LEVEL_UP_TYPE_CHARACTER = "character";	--Name used in globalstring LEVEL_UP
+LEVEL_UP_TYPE_GUILD = "guild";	--Name used in globalstring GUILD_LEVEL_UP
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
@@ -15,6 +17,19 @@ LEVEL_UP_EVENTS = {
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
 SUBICON_TEXCOOR_LOCK		= {0.64257813, 0.70117188, 0.11523438, 0.18359375};
 SUBICON_TEXCOOR_ARROW 	= {0.72460938, 0.78320313, 0.03710938, 0.10351563};
+
+local levelUpTexCoords = {
+	[LEVEL_UP_TYPE_CHARACTER] = {
+		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
+		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+	},
+	[LEVEL_UP_TYPE_GUILD] = {
+		dot = { 0.64257813, 0.68359375, 0.77734375, 0.8203125 },
+		goldBG = { 0.56054688, 0.99609375, 0.486328125, 0.7109375 },
+		gLine = { 0.00195313, 0.81835938, 0.96484375, 0.97851563 },
+	},
+}
 
 LEVEL_UP_TYPES = {
 	["TalentPoint"] 		= {	icon="Interface\\Icons\\Ability_Marksmanship",
@@ -163,6 +178,7 @@ LEVEL_UP_CLASS_HACKS = {
 
 function LevelUpDisplay_Onload(self)	
 	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self.currSpell = 0;
 end
 
@@ -171,16 +187,25 @@ end
 function LevelUpDisplay_OnEvent(self, event, ...)
 	if event ==  "PLAYER_LEVEL_UP" then
 		local level = ...
-		self.player_level = level;
+		self.level = level;
+		self.type = LEVEL_UP_TYPE_CHARACTER;
 		self:Show();
 		LevelUpDisplaySide:Hide();
+	elseif event == "UNIT_GUILD_LEVEL" then
+		local unit, level = ...;
+		if ( unit == "player" ) then
+			self.level = level;
+			self.type = LEVEL_UP_TYPE_GUILD;
+			self:Show();
+			LevelUpDisplaySide:Hide();
+		end
 	end
 end
 
-function LevelUpDisplay_BuildList(self)
+function LevelUpDisplay_BuildCharacterList(self)
 	local name, icon = "","";
-	self.unlockList = {}
-	if  self.player_level > 10 then	
+	self.unlockList = {};
+	if  self.level > 10 then
 		self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["TalentPoint"]
 	end
 	
@@ -189,8 +214,8 @@ function LevelUpDisplay_BuildList(self)
 	local race, file = UnitRace("player");
 	local _, class = UnitClass("player");
 	local hackTable = LEVEL_UP_CLASS_HACKS[class..race] or LEVEL_UP_CLASS_HACKS[class];
-	if  hackTable and hackTable[self.player_level] then
-		hackTable = hackTable[self.player_level];
+	if  hackTable and hackTable[self.level] then
+		hackTable = hackTable[self.level];
 		for _,spelltype in pairs(hackTable) do
 			if LEVEL_UP_TYPES[spelltype] and LEVEL_UP_TYPES[spelltype].spellID then 
 				name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
@@ -202,7 +227,7 @@ function LevelUpDisplay_BuildList(self)
 	end
 	
 	
-	local spells = {GetCurrentLevelSpells(self.player_level)};
+	local spells = {GetCurrentLevelSpells(self.level)};
 	for _,spell in pairs(spells) do		
 		name, _, icon = GetSpellInfo(spell);
 		self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
@@ -211,9 +236,25 @@ function LevelUpDisplay_BuildList(self)
 	end	
 	
 	
-	if LEVEL_UP_EVENTS[self.player_level] then
-		for _, unlockType in pairs(LEVEL_UP_EVENTS[self.player_level]) do
+	if LEVEL_UP_EVENTS[self.level] then
+		for _, unlockType in pairs(LEVEL_UP_EVENTS[self.level]) do
 			self.unlockList[#self.unlockList +1] = LEVEL_UP_TYPES[unlockType];
+		end
+	end
+	
+	self.currSpell = 1;
+end
+
+function LevelUpDisplay_BuildGuildList(self)
+	local name, icon = "", "";
+	self.unlockList = {};
+	
+	for i=1, GetNumGuildPerks() do
+		local name, spellID, iconTexture, level = GetGuildPerkInfo(i);
+		if ( level == self.level ) then
+			tinsert(self.unlockList, { text = name, subText = GUILD_LEVEL_UP_PERK, icon = iconTexture, subIcon = SUBICON_TEXCOOR_LOCK,
+												link = GUILD_LEVEL_UP_PERK2.." "..GetSpellLink(spellID)
+											});
 		end
 	end
 	
@@ -223,8 +264,18 @@ end
 
 function LevelUpDisplay_OnShow(self)
 	if  self.currSpell == 0 then
-		LevelUpDisplay_BuildList(self);
-		self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.player_level);
+		if ( self.type == LEVEL_UP_TYPE_CHARACTER ) then
+			LevelUpDisplay_BuildCharacterList(self);
+			self.levelFrame.reachedText:SetText(LEVEL_UP_YOU_REACHED)
+			self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+		elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
+			LevelUpDisplay_BuildGuildList(self);
+			local guildName = GetGuildInfo("player");
+			self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
+			self.levelFrame.levelText:SetFormattedText(GUILD_LEVEL_GAINED,self.level);
+		end
+		self.gLine:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
+		self.gLine2:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
 		self.levelFrame.levelUp:Play();
 	end
 end
@@ -248,15 +299,16 @@ end
 
 --Side display Functions
 
-function LevelUpDisplay_ShowSideDisplay(level)
-	if LevelUpDisplaySide.player_level and LevelUpDisplaySide.player_level == level then
+function LevelUpDisplay_ShowSideDisplay(level, levelUpType)
+	if LevelUpDisplaySide.level and LevelUpDisplaySide.level == level and LevelUpDisplaySide.type == levelUpType then
 		if LevelUpDisplaySide:IsVisible() then		
 			LevelUpDisplaySide:Hide();	
 		else	
 			LevelUpDisplaySide:Show();
 		end
 	else
-		LevelUpDisplaySide.player_level = level;	
+		LevelUpDisplaySide.level = level;
+		LevelUpDisplaySide.type = levelUpType;
 		LevelUpDisplaySide:Hide();
 		LevelUpDisplaySide:Show();
 	end
@@ -264,8 +316,18 @@ end
 
 
 function LevelUpDisplaySide_OnShow(self)
-	LevelUpDisplay_BuildList(self);
-	self.levelText:SetFormattedText(LEVEL_GAINED,self.player_level);
+	if ( self.type == LEVEL_UP_TYPE_CHARACTER ) then
+		LevelUpDisplay_BuildCharacterList(self);
+		self.reachedText:SetText(LEVEL_UP_YOU_REACHED);
+		self.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+	elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
+		LevelUpDisplay_BuildGuildList(self);
+		local guildName = GetGuildInfo("player");
+		self.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
+		self.levelText:SetFormattedText(GUILD_LEVEL_GAINED,self.level);
+	end
+	self.goldBG:SetTexCoord(unpack(levelUpTexCoords[self.type].goldBG));
+	self.dot:SetTexCoord(unpack(levelUpTexCoords[self.type].dot));
 	local i = 1;
 	local displayFrame = _G["LevelUpDisplaySideUnlockFrame1"];
 	while i <=  #self.unlockList do	
@@ -320,17 +382,26 @@ end
 
 
 -- Chat print function 
-function LevelUpDisplay_ChatPrint(self, level)
-	local info = ChatTypeInfo["SYSTEM"];
-	local levelstring = format(LEVEL_UP, level, level);
-	local chatLevelUP = {player_level = level};
-	LevelUpDisplay_BuildList(chatLevelUP)
+function LevelUpDisplay_ChatPrint(self, level, levelUpType)
+	local info;
+	local chatLevelUP = {level = level, type = levelUpType};
+	local levelstring;
+	if ( levelUpType == LEVEL_UP_TYPE_CHARACTER ) then
+		LevelUpDisplay_BuildCharacterList(chatLevelUP);
+		levelstring = format(LEVEL_UP, level, level);
+		info = ChatTypeInfo["SYSTEM"];
+	elseif ( levelUpType == LEVEL_UP_TYPE_GUILD ) then
+		LevelUpDisplay_BuildGuildList(chatLevelUP);
+		local guildName = GetGuildInfo("player");
+		levelstring = format(GUILD_LEVEL_UP, guildName, level, level);
+		info = ChatTypeInfo["GUILD"];
+	end
 	self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 	for _,skill in pairs(chatLevelUP.unlockList) do
 		self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
 	end
 	
-	if level == 15 then
+	if levelUpType == LEVEL_UP_TYPE_CHARACTER and level == 15 then
 		self:AddMessage(LEVEL_UP_GLYPH2_LINK, info.r, info.g, info.b, info.id);
 	end
 end

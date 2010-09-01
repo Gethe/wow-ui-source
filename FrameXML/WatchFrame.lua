@@ -876,7 +876,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 				else
 					for j = 1, numObjectives do
 						text, objectiveType, finished = GetQuestLogLeaderBoard(j, questIndex);
-						if ( not finished ) then
+						if ( not finished and text ) then
 							if (objectiveType ~= "spell") then
 								text = WatchFrame_ReverseQuestObjective(text);
 							end

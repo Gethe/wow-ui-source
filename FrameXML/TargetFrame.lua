@@ -35,6 +35,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.pvpIcon = _G[thisName.."TextureFramePVPIcon"];
 	self.leaderIcon = _G[thisName.."TextureFrameLeaderIcon"];
 	self.raidTargetIcon = _G[thisName.."TextureFrameRaidTargetIcon"];
+	self.questIcon = _G[thisName.."TextureFrameQuestIcon"];
 	self.levelText = _G[thisName.."TextureFrameLevelText"];
 	self.deadText = _G[thisName.."TextureFrameDeadText"];
 	self.TOT_AURA_ROW_WIDTH = TOT_AURA_ROW_WIDTH;
@@ -98,7 +99,7 @@ function TargetFrame_Update (self)
 		self:Hide();
 	else
 		self:Show();
-
+		
 		-- Moved here to avoid taint from functions below
 		if ( self.totFrame ) then
 			TargetofTarget_Update(self.totFrame);
@@ -162,6 +163,11 @@ function TargetFrame_OnEvent (self, event, ...)
 		end
 		CloseDropDownMenus();
 		UIParent_ManageFramePositions();
+	elseif ( event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
+		TargetFrame_Update(self);
+		TargetFrame_UpdateRaidTargetIcon(self);
+		CloseDropDownMenus();
+		UIParent_ManageFramePositions();	
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == self.unit ) then
 			TargetFrame_CheckDead(self);
@@ -313,6 +319,14 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 			self.threatIndicator:SetHeight(93);
 			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
 		end	
+	end
+	
+	if (self.questIcon) then
+		if (UnitIsQuestBoss(self.unit)) then
+			self.questIcon:Show();
+		else
+			self.questIcon:Hide();
+		end
 	end
 end
 
@@ -942,7 +956,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT");
+	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
 	self.levelText:SetPoint("CENTER", 12, -16);
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);

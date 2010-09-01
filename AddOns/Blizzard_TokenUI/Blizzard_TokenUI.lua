@@ -13,8 +13,6 @@ function TokenButton_OnLoad(self)
 	self.icon = _G[name.."Icon"];
 	self.check = _G[name.."Check"];
 	self.expandIcon = _G[name.."ExpandIcon"];
-	self.categoryLeft = _G[name.."CategoryLeft"];
-	self.categoryRight = _G[name.."CategoryRight"];
 	self.highlight = _G[name.."Highlight"];
 	self.stripe = _G[name.."Stripe"];
 end
@@ -34,9 +32,9 @@ function TokenFrame_OnLoad()
 		function (self)
 			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -4, 4);
 			for _, button in next, TokenFrameContainer.buttons do
-				button:SetWidth(313);
+				button:SetWidth(317);
 			end
-			TokenFrameContainer.scrollChild:SetWidth(313);
+			TokenFrameContainer.scrollChild:SetWidth(317);
 			getmetatable(self).__index.Hide(self);
 		end
 	TokenFrameContainer.update = TokenFrame_Update;
@@ -46,7 +44,7 @@ function TokenFrame_OnShow(self)
 
 	-- Create buttons if not created yet
 	if (not TokenFrameContainer.buttons) then
-		HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 0, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
+		HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 1, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
 		local buttons = TokenFrameContainer.buttons;
 		local numButtons = #buttons;
 		for i=1, numButtons do
@@ -93,6 +91,7 @@ function TokenFrame_Update()
 			if ( isHeader ) then
 				button.categoryLeft:Show();
 				button.categoryRight:Show();
+				button.categoryMiddle:Show();
 				button.expandIcon:Show();
 				button.count:SetText("");
 				button.icon:SetTexture("");
@@ -104,13 +103,15 @@ function TokenFrame_Update()
 				button.highlight:SetTexture("Interface\\TokenFrame\\UI-TokenFrame-CategoryButton");
 				button.highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 3, -2);
 				button.highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 2);
-				button:SetText(name);
-				button.name:SetText("");
+				button.name:SetText(name);
+				button.name:SetFontObject("GameFontNormal");
+				button.name:SetPoint("LEFT", 22, 0);
 				button.itemID = nil;
 				button.LinkButton:Hide();
 			else
 				button.categoryLeft:Hide();
 				button.categoryRight:Hide();
+				button.categoryMiddle:Hide();
 				button.expandIcon:Hide();
 				button.count:SetText(count);
 				button.extraCurrencyType = extraCurrencyType;
@@ -144,8 +145,8 @@ function TokenFrame_Update()
 					button.count:SetFontObject("GameFontHighlight");
 					button.name:SetFontObject("GameFontHighlight");
 				end
-				button:SetText("");
 				button.name:SetText(name);
+				button.name:SetPoint("LEFT", 11, 0);
 				button.itemID = itemID;
 				button.LinkButton:Show();
 			end

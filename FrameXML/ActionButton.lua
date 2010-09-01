@@ -188,6 +188,8 @@ function ActionButton_Update (self)
 			self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 			self:RegisterEvent("PET_STABLE_UPDATE");
 			self:RegisterEvent("PET_STABLE_SHOW");
+			self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
+			self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 			self.eventsRegistered = true;
 		end
 
@@ -197,6 +199,7 @@ function ActionButton_Update (self)
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateUsable(self);
 		ActionButton_UpdateCooldown(self);
+		ActionButton_UpdateOverlayGlow(self);
 		ActionButton_UpdateFlash(self);
 	else
 		if ( self.eventsRegistered ) then
@@ -218,6 +221,8 @@ function ActionButton_Update (self)
 			self:UnregisterEvent("LEARNED_SPELL_IN_TAB");
 			self:UnregisterEvent("PET_STABLE_UPDATE");
 			self:UnregisterEvent("PET_STABLE_SHOW");
+			self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
+			self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 			self.eventsRegistered = nil;
 		end
 
@@ -355,6 +360,61 @@ function ActionButton_UpdateCooldown (self)
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 end
 
+--Overlay stuff
+local unusedOverlayGlows = {};
+local numOverlays = 0;
+function ActionButton_GetOverlayGlow()
+	local overlay = tremove(unusedOverlayGlows);
+	if ( not overlay ) then
+		numOverlays = numOverlays + 1;
+		overlay = CreateFrame("Frame", "ActionButtonOverlay"..numOverlays, UIParent, "ActionBarButtonSpellActivationAlert");
+	end
+	return overlay;
+end
+
+function ActionButton_UpdateOverlayGlow(self)
+	local spellType, id, subType  = GetActionInfo(self.action);
+	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
+		ActionButton_ShowOverlayGlow(self);
+	else
+		ActionButton_HideOverlayGlow(self);
+	end
+end
+
+function ActionButton_ShowOverlayGlow(self)
+	if ( self.overlay ) then
+		if ( self.overlay.animOut:IsPlaying() ) then
+			self.overlay.animOut:Stop();
+			self.overlay.animIn:Play();
+		end
+	else
+		self.overlay = ActionButton_GetOverlayGlow();
+		local frameWidth, frameHeight = self:GetSize();
+		self.overlay:SetParent(self);
+		self.overlay:ClearAllPoints();
+		self.overlay:SetPoint("TOPLEFT", self, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2);
+		self.overlay:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2);
+		self.overlay.animIn:Play();
+	end
+end
+
+function ActionButton_HideOverlayGlow(self)
+	if ( self.overlay ) then
+		if ( self.overlay.animIn:IsPlaying() ) then
+			self.overlay.animIn:Stop();
+		end
+		self.overlay.animOut:Play();
+	end
+end
+
+function ActionButton_OverlayGlowAnimOutFinished(animGroup)
+	local overlay = animGroup:GetParent();
+	local actionButton = overlay:GetParent();
+	overlay:Hide();
+	tinsert(unusedOverlayGlows, overlay);
+	actionButton.overlay = nil;
+end
+
 function ActionButton_OnEvent (self, event, ...)
 	local arg1 = ...;
 	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB") then
@@ -423,6 +483,16 @@ function ActionButton_OnEvent (self, event, ...)
 	elseif ( event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
 		-- Has to update everything for now, but this event should happen infrequently
 		ActionButton_Update(self);
+	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" ) then
+		local actionType, id, subType = GetActionInfo(self.action);
+		if ( actionType == "spell" and id == arg1 ) then
+			ActionButton_ShowOverlayGlow(self);
+		end
+	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" ) then
+		local actionType, id, subType = GetActionInfo(self.action);
+		if ( actionType == "spell" and id == arg1 ) then
+			ActionButton_HideOverlayGlow(self);
+		end
 	end
 end
 

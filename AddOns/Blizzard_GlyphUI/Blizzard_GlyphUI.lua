@@ -1,33 +1,50 @@
-GLYPHTYPE_MAJOR = 1;
-GLYPHTYPE_MINOR = 2;
+GLYPH_TYPE_MAJOR = 1;
+GLYPH_TYPE_MINOR = 2;
+GLYPH_TYPE_PRIME = 3;
 
-GLYPH_MINOR = { r = 0, g = 0.25, b = 1};
-GLYPH_MAJOR = { r = 1, g = 0.25, b = 0};
+GLYPH_STRING 				= { PRIME_GLYPH,   MAJOR_GLYPH,   MINOR_GLYPH}
+GLYPH_STRING_PLURAL 	= { PRIME_GLYPHS,	MAJOR_GLYPHS, MINOR_GLYPHS}
 
-GLYPH_SLOTS = {};
--- Empty Texture
-GLYPH_SLOTS[0] = { left = 0.78125, right = 0.91015625, top = 0.69921875, bottom = 0.828125 };
--- Major Glyphs
-GLYPH_SLOTS[3] = { left = 0.392578125, right = 0.521484375, top = 0.87109375, bottom = 1 };
-GLYPH_SLOTS[1] = { left = 0, right = 0.12890625, top = 0.87109375, bottom = 1 };
-GLYPH_SLOTS[5] = { left = 0.26171875, right = 0.390625, top = 0.87109375, bottom = 1 };
--- Minor Glyphs
-GLYPH_SLOTS[2] = { left = 0.130859375, right = 0.259765625, top = 0.87109375, bottom = 1 };
-GLYPH_SLOTS[6] = { left = 0.654296875, right = 0.783203125, top = 0.87109375, bottom = 1 };
-GLYPH_SLOTS[4] = { left = 0.5234375, right = 0.65234375, top = 0.87109375, bottom = 1 };
+GLYPH_HEADER_BUTTON_HEIGHT = 23;
+GLYPH_BUTTON_HEIGHT = 40;
+GLYPH_BUTTON_OFFSET = 1;
 
-NUM_GLYPH_SLOTS = 6;
+GLYPH_FILTER_KNOWN = 8;
+GLYPH_FILTER_UNKNOWN = 16;
+
+
+GLYPH_TYPE_INFO = {};
+GLYPH_TYPE_INFO[GLYPH_TYPE_PRIME] =  {
+																ring 			= { size = 82, left = 0.85839844, right = 0.93847656, top = 0.22265625, bottom = 0.30273438 };
+																highlight 	= { size = 96, left = 0.85839844, right = 0.95214844, top = 0.30468750, bottom = 0.39843750 };
+															}
+GLYPH_TYPE_INFO[GLYPH_TYPE_MAJOR] =  {
+																ring 			= { size = 66, left = 0.85839844, right = 0.92285156, top = 0.00097656, bottom = 0.06542969 };
+																highlight 	= { size = 80, left = 0.85839844, right = 0.93652344, top = 0.06738281, bottom = 0.14550781 };
+															}
+GLYPH_TYPE_INFO[GLYPH_TYPE_MINOR] =  {
+																ring 			= { size = 61, left = 0.92480469, right = 0.98437500, top = 0.00097656, bottom = 0.06054688 };
+																highlight 	= { size = 75, left = 0.85839844, right = 0.93164063, top = 0.14746094, bottom = 0.22070313 };
+															}
+
+
+NUM_GLYPH_SLOTS = 9;
 
 local slotAnimations = {};
-local TOPLEFT, TOP, TOPRIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT = 3, 1, 5, 4, 2, 6;
-slotAnimations[TOPLEFT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -85, ["yStart"] = 17, ["yStop"] = 60};
-slotAnimations[TOP] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -13, ["yStart"] = 17, ["yStop"] = 100};
-slotAnimations[TOPRIGHT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = 59, ["yStart"] = 17, ["yStop"] = 60};
-slotAnimations[BOTTOM] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -13, ["yStart"] = 17, ["yStop"] = -64};
-slotAnimations[BOTTOMLEFT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = -87, ["yStart"] = 18, ["yStop"] = -27};
-slotAnimations[BOTTOMRIGHT] = {["point"] = "CENTER", ["xStart"] = -13, ["xStop"] = 61, ["yStart"] = 18, ["yStop"] = -27};
+---local TOPLEFT, TOP, TOPRIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT = 3, 1, 5, 4, 2, 6;
+slotAnimations[1] = {  ["xStart"] = 0, ["xStop"] = -85, ["yStart"] = -12, ["yStop"] =   60};
+slotAnimations[2] = {  ["xStart"] = 0, ["xStop"] = -13, ["yStart"] = -12, ["yStop"] = 100};
+slotAnimations[3] = {  ["xStart"] = 0, ["xStop"] =  59, ["yStart"] = -12, ["yStop"] =   60};
+slotAnimations[4] = {  ["xStart"] = 0, ["xStop"] = -13, ["yStart"] = -12, ["yStop"] =  -124};
+slotAnimations[5] = {  ["xStart"] = 0, ["xStop"] = -87, ["yStart"] = -12, ["yStop"] =  -27};
+slotAnimations[6] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] =  -27};
+slotAnimations[7] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] = -27};
+slotAnimations[8] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] = -27};
+slotAnimations[9] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -6, ["yStop"] = -27};
 
-local HIGHLIGHT_BASEALPHA = .4;
+
+local GLYPH_SPARKLE_SIZES = 3;
+local GLYPH_DURATION_MODIFIERS = { 1.25, 1.5, 1.8 };
 
 
 function GlyphFrame_Toggle ()
@@ -44,192 +61,421 @@ function GlyphFrame_Open ()
 	end
 end
 
+function GlyphFrame_OnLoad (self)
+	local name = self:GetName();
+	self.sparkleFrame = SparkleFrame:New(self);
+	self:RegisterEvent("ADDON_LOADED");
+	self:RegisterEvent("GLYPH_ADDED");
+	self:RegisterEvent("GLYPH_REMOVED");
+	self:RegisterEvent("GLYPH_UPDATED");
+	self:RegisterEvent("USE_GLYPH");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
+	
+	self.scrollFrame.update = GlyphFrame_UpdateGlyphList;
+	self.scrollFrame.stepSize = 12;
+	self.scrollFrame.scrollBar.doNotHide = true;
+	self.scrollFrame.dynamic = GlyphFrame_CalculateScroll;
+	HybridScrollFrame_CreateButtons(self.scrollFrame, "GlyphSpellButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -GLYPH_BUTTON_OFFSET, "TOP", "BOTTOM");
+	
+
+end
+
+
+function GlyphFrame_OnShow (self)
+	GlyphFrame_Update();
+	ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
+	PlayerTalentFrameInset:SetPoint("BOTTOMRIGHT",  -197,  PANEL_INSET_BOTTOM_OFFSET);
+	PlayerTalentFrameActivateButton:SetPoint( "TOpRIGHT", -205, -35);
+	SetGlyphNameFilter("");
+	GlyphFrame_UpdateGlyphList ();
+end
+
+function GlyphFrame_OnHide (self)
+	ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
+	ButtonFrameTemplate_ShowButtonBar(PlayerTalentFrame);
+	PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
+end
+
+function GlyphFrame_OnEnter (self)
+	-- if ( SpellIsTargeting() ) then
+		-- SetCursor("CAST_ERROR_CURSOR");
+	-- end
+end
+
+function GlyphFrame_OnLeave (self)
+
+end
+
+function GlyphFrame_OnEvent (self, event, ...)
+	if ( event == "ADDON_LOADED" ) then
+		local name = ...;
+		if ( name == "Blizzard_GlyphUI" and IsAddOnLoaded("Blizzard_TalentUI") or name == "Blizzard_TalentUI" ) then
+			self:ClearAllPoints();
+			self:SetParent(PlayerTalentFrameInset);
+			self:SetPoint("TOPLEFT", "PlayerTalentFrameInset", 3, -3);
+			self:SetPoint("BOTTOMRIGHT", "PlayerTalentFrameInset", -3, 3);
+		end
+	elseif ( event == "USE_GLYPH") then
+		GlyphFrame_UpdateGlyphList();
+	elseif ( event == "PLAYER_LEVEL_UP" ) then
+		GlyphFrame_Update();
+	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
+		local index = ...;
+		local glyph = _G["GlyphFrameGlyph" .. index];
+		if ( glyph and self:IsVisible() ) then
+			-- update the glyph
+			GlyphFrameGlyph_UpdateSlot(glyph);
+			-- play effects based on the event and glyph type
+			GlyphFrame_PulseGlow();
+			local glyphType = glyph.glyphType;
+			if ( event == "GLYPH_ADDED" or event == "GLYPH_UPDATED" ) then
+				if ( glyphType == GLYPH_TYPE_MINOR ) then
+					PlaySound("Glyph_MinorCreate");
+				elseif ( glyphType == GLYPH_TYPE_MAJOR ) then
+					PlaySound("Glyph_MajorCreate");
+				end
+			elseif ( event == "GLYPH_REMOVED" ) then
+				GlyphFrame_StopSlotAnimation(index);
+				if ( glyphType == GLYPH_TYPE_MINOR ) then
+					PlaySound("Glyph_MinorDestroy");
+				elseif ( glyphType == GLYPH_TYPE_MAJOR ) then
+					PlaySound("Glyph_MajorDestroy");
+				end
+			end
+		end
+
+		--Refresh tooltip!
+		if ( GameTooltip:IsOwned(glyph) ) then
+			GlyphFrameGlyph_OnEnter(glyph);
+		end
+	end
+end
+
+
+function GlyphFrame_OnUpdate (self, elapsed)
+	-- for i = 1, #slotAnimations do
+		-- local animation = slotAnimations[i];
+		-- if ( animation.glyph and not (animation.sparkle and animation.sparkle.animGroup:IsPlaying()) ) then
+			-- local sparkleSize = math.random(GLYPH_SPARKLE_SIZES);
+			-- GlyphFrame_StartSlotAnimation(i, sparkleSize * GLYPH_DURATION_MODIFIERS[sparkleSize], sparkleSize);
+		-- end
+	-- end
+end
+
+function GlyphFrame_PulseGlow ()
+	GlyphFrame.glow.pulse:Play();
+end
+
+function GlyphFrame_Update ()
+	local isActiveTalentGroup =
+		PlayerTalentFrame and not PlayerTalentFrame.pet and
+		PlayerTalentFrame.talentGroup == GetActiveTalentGroup(PlayerTalentFrame.pet);
+	
+	SetDesaturation(GlyphFrame.background, not isActiveTalentGroup);
+
+	for i = 1, NUM_GLYPH_SLOTS do
+		local glyph = _G["GlyphFrameGlyph"..i];
+		GlyphFrameGlyph_UpdateSlot(glyph);
+		SetDesaturation(glyph.ring, not isActiveTalentGroup);
+		SetDesaturation(glyph.glyph, not isActiveTalentGroup);
+		if isActiveTalentGroup then
+			glyph.highlight:Show();
+		else
+			glyph.highlight:Hide();
+		end
+	end
+end
+
+
+function GlyphFrame_UpdateGlyphList ()
+	local scrollFrame = GlyphFrame.scrollFrame;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local numGlyphs = GetNumGlyphs();
+	
+	local currentHeader = 1;	
+	local header = _G["GlyphFrameHeader"..currentHeader];
+	while header do
+		header:Hide();
+		currentHeader = currentHeader + 1;
+		header = _G["GlyphFrameHeader"..currentHeader];
+	end
+	currentHeader = 1;	
+	
+	
+	for i = 1, numButtons do
+		local button = buttons[i];
+		local index = offset + i;
+		if index <= numGlyphs  then
+			local name, glyphType, isKnown, icon, castSpell = GetGlyphInfo(index);
+			if name == "header" then
+				button:Hide();
+				header = _G["GlyphFrameHeader"..currentHeader];
+				if header then
+					local filter = isKnown;
+					header:SetPoint("BOTTOM", button, 0 , 0);
+					header:Show();
+					header:SetParent(button:GetParent());
+					currentHeader = currentHeader + 1;
+					
+					header.filter = filter;
+					header.gType = glyphType;
+					header.name:SetText(GLYPH_STRING_PLURAL[glyphType]);
+					
+					if  IsGlyphFlagSet(filter) then
+						header.expandedIcon:Show();
+						header.collapsedIcon:Hide();
+					else
+						header.expandedIcon:Hide();
+						header.collapsedIcon:Show();
+					end
+					button:SetHeight(GLYPH_HEADER_BUTTON_HEIGHT);
+				end
+			else
+				button:SetHeight(GLYPH_BUTTON_HEIGHT);
+				button.glyphIndex = index;
+				button.icon:SetTexture(icon);
+				button.tooltipName = name;
+				button.castSpellID = castSpell;
+				if isKnown then
+					button.cursor = icon;
+					button.icon:SetDesaturated(0);
+					button.name:SetText(name);
+					button.typeName:SetText(GLYPH_STRING[glyphType]);
+					button.disabledBG:Hide();
+					if GlyphFrame.selectedIndex == index then
+						button.selectedTex:Show();
+						if GlyphFrame.selectedButton then
+							GlyphFrame.selectedButton.selectedTex:Hide();
+						end
+						GlyphFrame.selectedButton = button;
+					else
+						button.selectedTex:Hide();
+					end
+				else
+					button.selectedTex:Hide();
+					button.icon:SetDesaturated(1);
+					button.name:SetText(GRAY_FONT_COLOR_CODE..name);
+					button.typeName:SetText(GRAY_FONT_COLOR_CODE..GLYPH_STRING[glyphType]);
+					button.disabledBG:Show();
+				end
+				button:Show();
+			end
+		else
+			button:Hide();
+		end
+	end
+	
+	local totalHeight = (numGlyphs-3) * (GLYPH_BUTTON_HEIGHT + 0);
+	totalHeight = totalHeight + (3 * (GLYPH_HEADER_BUTTON_HEIGHT + 0));
+	HybridScrollFrame_Update(scrollFrame, totalHeight+5, 370);
+	
+	local known =  IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
+	local unknown =  IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
+	if known and unknown then
+		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, ALL_GLYPHS);
+	elseif known then
+		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, USED);
+	elseif unknown then
+		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, UNAVAILABLE);
+	else
+		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, NONE);
+	end
+end
+
+
+function GlyphFrame_CalculateScroll(offset)
+	local heightLeft = offset;
+	local buttonHeight;
+	local numGlyphs = GetNumGlyphs();
+
+	for i = 1, numGlyphs do
+		local name, glyphType, isKnown, icon, castSpell = GetGlyphInfo(i);
+		if name == "header" then
+			buttonHeight = GLYPH_HEADER_BUTTON_HEIGHT;
+		else
+			buttonHeight = GLYPH_BUTTON_HEIGHT;
+		end
+		
+		if ( heightLeft - buttonHeight <= 0 ) then
+			return i - 1, heightLeft;
+		else
+			heightLeft = heightLeft - buttonHeight;
+		end
+	end
+end
+
+
+function GlyphFrame_StartSlotAnimation (slotID, duration, size)
+	local animation = slotAnimations[slotID];
+	-- init texture to animate
+	local sparkleName = "GlyphFrameSparkle"..slotID;
+	local sparkle = _G[sparkleName];
+	if ( not sparkle ) then
+		sparkle = GlyphFrame:CreateTexture(sparkleName, "OVERLAY", "GlyphSparkleTexture");
+		sparkle.slotID = slotID;
+	end
+	
+	local template;
+	if ( size == 1 ) then
+		template = "SparkleTextureSmall";
+	elseif ( size == 2 ) then
+		template = "SparkleTextureKindaSmall";
+	else
+		template = "SparkleTextureNormal";
+	end
+	local sparkleDim = SparkleDimensions[template];
+	sparkle:SetHeight(sparkleDim.height);
+	sparkle:SetWidth(sparkleDim.width);
+	sparkle:SetPoint("CENTER", GlyphFrame.background, "CENTER", animation.xStart, animation.yStart);
+	sparkle:Show();
+
+	-- init animation
+	local offsetX, offsetY = animation.xStop - animation.xStart, animation.yStop - animation.yStart;
+	local animGroupAnim = sparkle.animGroup;
+	animGroupAnim.translate:SetOffset(offsetX, offsetY);
+	animGroupAnim.translate:SetDuration(duration);
+	animGroupAnim:Play();
+
+	animation.sparkle = sparkle;
+end
+
+
+function GlyphFrame_StopSlotAnimation (slotID)
+	local animation = slotAnimations[slotID];
+	if ( animation.sparkle ) then
+		animation.sparkle.animGroup:Stop();
+		animation.sparkle:Hide();
+		animation.sparkle = nil;
+	end
+end
+
+
+function GlyphFrame_OnTextChanged(self)
+	local text = self:GetText();
+	
+	if ( text == SEARCH ) then
+		SetGlyphNameFilter("");
+		return;
+	end
+	
+	SetGlyphNameFilter(text);
+	GlyphFrame_UpdateGlyphList();
+end
+
+
+function GlyphFrameFilter_Modify(self, arg1)
+	ToggleGlyphFilter(arg1);
+	GlyphFrame_UpdateGlyphList ();
+end 
+
+
+function GlyphFrameFilter_Initialize()
+	local info = UIDropDownMenu_CreateInfo();
+	info.isNotRadio = true;
+	info.func = GlyphFrameFilter_Modify;
+	
+	
+	info.text = USED;
+	info.checked = IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
+	info.arg1 = GLYPH_FILTER_KNOWN
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = UNAVAILABLE;
+	info.checked = IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
+	info.arg1 = GLYPH_FILTER_UNKNOWN
+	UIDropDownMenu_AddButton(info);
+end 
+
+
+--------------------------------------------------------------------------------
+------------------  Glyph Button Functions     ---------------------------
+--------------------------------------------------------------------------------
 
 function GlyphFrameGlyph_OnLoad (self)
-	local name = self:GetName();
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self.glyph = _G[name .. "Glyph"];
-	self.setting = _G[name .. "Setting"];
-	self.highlight = _G[name .. "Highlight"];
-	self.background = _G[name .. "Background"];
-	self.ring = _G[name .. "Ring"];
-	self.shine = _G[name .. "Shine"];
 	self.elapsed = 0;
 	self.tintElapsed = 0;
 	self.glyphType = nil;
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
+
 
 function GlyphFrameGlyph_UpdateSlot (self)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 	local enabled, glyphType, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup);
 
-	local isMinor = glyphType == 2;
-	if ( isMinor ) then
-		GlyphFrameGlyph_SetGlyphType(self, GLYPHTYPE_MINOR);
-	else
-		GlyphFrameGlyph_SetGlyphType(self, GLYPHTYPE_MAJOR);
-	end
+	GlyphFrameGlyph_SetGlyphType(self, glyphType);
 
 	self.elapsed = 0;
 	self.tintElapsed = 0;
 
 	local slotAnimation = slotAnimations[id];
+	local _, _, _, offsetX, offsetY = self:GetPoint();
+	slotAnimation.xStop = offsetX;-- (self:GetWidth()/2.0);
+	slotAnimation.yStop = offsetY;-- (self:GetHeight()/2.0);
+	
+	
 	if ( not enabled ) then
 		slotAnimation.glyph = nil;
 		if ( slotAnimation.sparkle ) then
 			slotAnimation.sparkle:StopAnimating();
 			slotAnimation.sparkle:Hide();
 		end
-		self.shine:Hide();
-		self.background:Hide();
-		self.glyph:Hide();
-		self.ring:Hide();
-		self.setting:SetTexture("Interface\\Spellbook\\UI-GlyphFrame-Locked");
-		self.setting:SetTexCoord(.1, .9, .1, .9);
+		self:Hide();
 	elseif ( not glyphSpell ) then
-		slotAnimation.glyph = nil;	
+		slotAnimation.glyph = nil;
 		if ( slotAnimation.sparkle ) then
 			slotAnimation.sparkle:StopAnimating();
 			slotAnimation.sparkle:Hide();
 		end
 		self.spell = nil;
-		self.shine:Show();
-		self.background:Show();
-		self.background:SetTexCoord(GLYPH_SLOTS[0].left, GLYPH_SLOTS[0].right, GLYPH_SLOTS[0].top, GLYPH_SLOTS[0].bottom);
-		if ( not GlyphMatchesSocket(id) ) then
-			self.background:SetAlpha(1);
-		end
-		self.glyph:Hide();
-		self.ring:Show();
+
+		self:Show();
 	else
 		slotAnimation.glyph = true;
 		self.spell = glyphSpell;
-		self.shine:Show();
-		self.background:Show();
-		self.background:SetAlpha(1);
-		self.background:SetTexCoord(GLYPH_SLOTS[id].left, GLYPH_SLOTS[id].right, GLYPH_SLOTS[id].top, GLYPH_SLOTS[id].bottom);
 		self.glyph:Show();
 		if ( iconFilename ) then
-			self.glyph:SetTexture(iconFilename);
+			SetPortraitToTexture(self.glyph, iconFilename);
 		else
 			self.glyph:SetTexture("Interface\\Spellbook\\UI-Glyph-Rune1");
 		end
-		self.ring:Show();
+		self:Show();
 	end
 end
+
 
 function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
+	local info = GLYPH_TYPE_INFO[glyphType];
 	glyph.glyphType = glyphType;
 	
-	glyph.setting:SetTexture("Interface\\Spellbook\\UI-GlyphFrame");
-	if ( glyphType == GLYPHTYPE_MAJOR ) then
-		glyph.glyph:SetVertexColor(GLYPH_MAJOR.r, GLYPH_MAJOR.g, GLYPH_MAJOR.b);
-		glyph.setting:SetWidth(108);
-		glyph.setting:SetHeight(108);
-		glyph.setting:SetTexCoord(0.740234375, 0.953125, 0.484375, 0.697265625);
-		glyph.highlight:SetWidth(108);
-		glyph.highlight:SetHeight(108);
-		glyph.highlight:SetTexCoord(0.740234375, 0.953125, 0.484375, 0.697265625);
-		glyph.ring:SetWidth(82);
-		glyph.ring:SetHeight(82);
-		glyph.ring:SetPoint("CENTER", glyph, "CENTER", 0, -1);
-		glyph.ring:SetTexCoord(0.767578125, 0.92578125, 0.32421875, 0.482421875);
-		glyph.shine:SetTexCoord(0.9609375, 1, 0.9609375, 1);
-		glyph.background:SetWidth(70);
-		glyph.background:SetHeight(70);
-	else
-		glyph.glyph:SetVertexColor(GLYPH_MINOR.r, GLYPH_MINOR.g, GLYPH_MINOR.b);
-		glyph.setting:SetWidth(86);
-		glyph.setting:SetHeight(86);
-		glyph.setting:SetTexCoord(0.765625, 0.927734375, 0.15625, 0.31640625);
-		glyph.highlight:SetWidth(86);
-		glyph.highlight:SetHeight(86);
-		glyph.highlight:SetTexCoord(0.765625, 0.927734375, 0.15625, 0.31640625);
-		glyph.ring:SetWidth(62);
-		glyph.ring:SetHeight(62);
-		glyph.ring:SetPoint("CENTER", glyph, "CENTER", 0, 1);
-		glyph.ring:SetTexCoord(0.787109375, 0.908203125, 0.033203125, 0.154296875);
-		glyph.shine:SetTexCoord(0.9609375, 1, 0.921875, 0.9609375);
-		glyph.background:SetWidth(64);
-		glyph.background:SetHeight(64);
-	end
+	glyph.ring:SetWidth(info.ring.size);
+	glyph.ring:SetHeight(info.ring.size);
+	glyph.ring:SetTexCoord(info.ring.left, info.ring.right, info.ring.top, info.ring.bottom);
+	
+	glyph.highlight:SetWidth(info.highlight.size);
+	glyph.highlight:SetHeight(info.highlight.size);
+	glyph.highlight:SetTexCoord(info.highlight.left, info.highlight.right, info.highlight.top, info.highlight.bottom);
+	
+	glyph.glyph:SetWidth(info.ring.size - 4);
+	glyph.glyph:SetHeight(info.ring.size - 4);
+	glyph.glyph:SetAlpha(0.75);
 end
+
 
 function GlyphFrameGlyph_OnUpdate (self, elapsed)
-	local GLYPHFRAMEGLYPH_FINISHED = 6;
-	local GLYPHFRAMEGLYPH_START = 2;
-	local GLYPHFRAMEGLYPH_HOLD = 4;
-
-	local hasGlyph = self.glyph:IsShown();
-	
-	if ( hasGlyph or self.elapsed > 0 ) then
-		self.elapsed = self.elapsed + elapsed;
-		
-		elapsed = self.elapsed;
-		if ( elapsed >= GLYPHFRAMEGLYPH_FINISHED ) then
-			self.setting:SetAlpha(.6);
-			self.elapsed = 0;
-		elseif ( elapsed <= GLYPHFRAMEGLYPH_START ) then
-			self.setting:SetAlpha(.6 + (.4 * elapsed/GLYPHFRAMEGLYPH_START));
-		elseif ( elapsed >= GLYPHFRAMEGLYPH_HOLD ) then
-			self.setting:SetAlpha(1 - (.4 * (elapsed - GLYPHFRAMEGLYPH_HOLD) / (GLYPHFRAMEGLYPH_FINISHED - GLYPHFRAMEGLYPH_HOLD) ) );
-		end
-	elseif ( self.background:IsShown() ) then
-		self.setting:SetAlpha(.6);
-	else
-		self.setting:SetAlpha(.6);
-	end
-	
-	
-	local TINT_START, TINT_HOLD, TINT_FINISHED = .6, .8, 1.6;
-	
-	
 	local id = self:GetID();
-	if ( not hasGlyph and self.background:IsShown() and GlyphMatchesSocket(id) ) then
-		self.tintElapsed = self.tintElapsed + elapsed;
-		
-		self.background:SetTexCoord(GLYPH_SLOTS[id].left, GLYPH_SLOTS[id].right, GLYPH_SLOTS[id].top, GLYPH_SLOTS[id].bottom);
-		
-		local highlight = false;
-		if ( not self:IsMouseOver() ) then
-			self.highlight:Show();
-			highlight = true;
-		end
-		
-		local alpha;
-		elapsed = self.tintElapsed;
-		if ( elapsed >= TINT_FINISHED ) then
-			alpha = 1;
-			
-			self.tintElapsed = 0;
-		elseif ( elapsed <= TINT_START ) then
-			alpha = 1 - (.6 * elapsed/TINT_START);
-		elseif ( elapsed >= TINT_HOLD ) then
-			alpha = .4 + (.6 * (elapsed - TINT_HOLD) / (TINT_FINISHED - TINT_HOLD));
-		end
-		
-		if ( alpha ) then
-			self.background:SetAlpha(alpha);
-			if ( highlight ) then
-				self.highlight:SetAlpha(HIGHLIGHT_BASEALPHA * alpha);
-			else
-				self.highlight:SetAlpha(HIGHLIGHT_BASEALPHA);
-			end
-		end
-	elseif ( not hasGlyph ) then
-		self.background:SetTexCoord(GLYPH_SLOTS[0].left, GLYPH_SLOTS[0].right, GLYPH_SLOTS[0].top, GLYPH_SLOTS[0].bottom);
-		self.background:SetAlpha(1);
-	end
-	
-	if ( self.hasCursor and SpellIsTargeting() ) then
-		if ( GlyphMatchesSocket(self:GetID()) and self.background:IsShown() ) then
-			SetCursor("CAST_CURSOR");
-		else
-			SetCursor("CAST_ERROR_CURSOR");
-		end
+	if GlyphMatchesSocket(id) then
+		self.highlight:SetAlpha(0.5);
+		self.glow:Play();
+	else
+		self.highlight:SetAlpha(0.0);
+		self.glow:Stop();
 	end
 end
+
 
 function GlyphFrameGlyph_OnClick (self, button)
 	local id = self:GetID();
@@ -260,162 +506,46 @@ function GlyphFrameGlyph_OnClick (self, button)
 	end
 end
 
+
 function GlyphFrameGlyph_OnEnter (self)
 	self.hasCursor = true;
-	if ( self.background:IsShown() ) then
-		self.highlight:Show();
-	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetGlyph(self:GetID(), PlayerTalentFrame and PlayerTalentFrame.talentGroup);
 	GameTooltip:Show();
 end
 
+
 function GlyphFrameGlyph_OnLeave (self)
 	self.hasCursor = nil;
-	self.highlight:Hide();
 	GameTooltip:Hide();
 end
 
-local GLYPH_SPARKLE_SIZES = 3;
-local GLYPH_DURATION_MODIFIERS = { 1.25, 1.5, 1.8 };
 
-function GlyphFrame_OnUpdate (self, elapsed)
-	for i = 1, #slotAnimations do
-		local animation = slotAnimations[i];
-		if ( animation.glyph and not (animation.sparkle and animation.sparkle.animGroup:IsPlaying()) ) then
-			local sparkleSize = math.random(GLYPH_SPARKLE_SIZES);
-			GlyphFrame_StartSlotAnimation(i, sparkleSize * GLYPH_DURATION_MODIFIERS[sparkleSize], sparkleSize);
-		end
+function GlyphFrameHeader_OnClick (self, button)
+	ToggleGlyphFilter(self.filter);
+	GlyphFrame_UpdateGlyphList ();
+end
+
+
+function GlyphFrameSpell_OnClick (self, button)
+	if self.disabledBG:IsShown() then
+		return;
 	end
-end
-
-function GlyphFrame_PulseGlow ()
-	GlyphFrame.glow:Show();
-	GlyphFrame.glow.pulse:Play();
-end
-
-function GlyphFrame_OnShow (self)
-	GlyphFrame_Update();
-end
-
-function GlyphFrame_OnLoad (self)
-	local name = self:GetName();
-	self.background = _G[name .. "Background"];
-	self.sparkleFrame = SparkleFrame:New(self);
-	self:RegisterEvent("ADDON_LOADED");
-	self:RegisterEvent("GLYPH_ADDED");
-	self:RegisterEvent("GLYPH_REMOVED");
-	self:RegisterEvent("GLYPH_UPDATED");
-	self:RegisterEvent("USE_GLYPH");
-	self:RegisterEvent("PLAYER_LEVEL_UP");
-end
-
-function GlyphFrame_OnEnter (self)
-	if ( SpellIsTargeting() ) then
-		SetCursor("CAST_ERROR_CURSOR");
+	
+	CastGlyph(self.glyphIndex);
+	
+	if GlyphFrame.selectedButton then
+		GlyphFrame.selectedButton.selectedTex:Hide();
 	end
+	
+	SetCursor(self.cursor);
+	GlyphFrame.selectedIndex = self.glyphIndex;
+	GlyphFrame.selectedButton = self;
+	GlyphFrame.selectedButton.selectedTex:Show();
 end
 
-function GlyphFrame_OnLeave (self)
 
-end
 
-function GlyphFrame_OnEvent (self, event, ...)
-	if ( event == "ADDON_LOADED" ) then
-		local name = ...;
-		if ( name == "Blizzard_GlyphUI" and IsAddOnLoaded("Blizzard_TalentUI") or name == "Blizzard_TalentUI" ) then
-			self:ClearAllPoints();
-			self:SetParent(PlayerTalentFrame);
-			self:SetPoint("CENTER", "PlayerTalentFrameInsetBg", 0, -20);
-			-- make sure this shows up above the talent UI
-			local frameLevel = self:GetParent():GetFrameLevel() + 4;
-			self:SetFrameLevel(frameLevel);
-			PlayerTalentFrameCloseButton:SetFrameLevel(frameLevel + 1);
-		end
-	elseif ( event == "USE_GLYPH" or event == "PLAYER_LEVEL_UP" ) then
-		GlyphFrame_Update();
-	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
-		local index = ...;
-		local glyph = _G["GlyphFrameGlyph" .. index];
-		if ( glyph and self:IsVisible() ) then
-			-- update the glyph
-			GlyphFrameGlyph_UpdateSlot(glyph);
-			-- play effects based on the event and glyph type
-			GlyphFrame_PulseGlow();
-			local glyphType = glyph.glyphType;
-			if ( event == "GLYPH_ADDED" or event == "GLYPH_UPDATED" ) then
-				if ( glyphType == GLYPHTYPE_MINOR ) then
-					PlaySound("Glyph_MinorCreate");
-				elseif ( glyphType == GLYPHTYPE_MAJOR ) then
-					PlaySound("Glyph_MajorCreate");
-				end
-			elseif ( event == "GLYPH_REMOVED" ) then
-				GlyphFrame_StopSlotAnimation(index);
-				if ( glyphType == GLYPHTYPE_MINOR ) then
-					PlaySound("Glyph_MinorDestroy");
-				elseif ( glyphType == GLYPHTYPE_MAJOR ) then
-					PlaySound("Glyph_MajorDestroy");
-				end
-			end
-		end
 
-		--Refresh tooltip!
-		if ( GameTooltip:IsOwned(glyph) ) then
-			GlyphFrameGlyph_OnEnter(glyph);
-		end
-	end
-end
 
-function GlyphFrame_Update ()
-	local isActiveTalentGroup =
-		PlayerTalentFrame and not PlayerTalentFrame.pet and
-		PlayerTalentFrame.talentGroup == GetActiveTalentGroup(PlayerTalentFrame.pet);
-	SetDesaturation(GlyphFrame.background, not isActiveTalentGroup);
 
-	for i = 1, NUM_GLYPH_SLOTS do
-		GlyphFrameGlyph_UpdateSlot(_G["GlyphFrameGlyph"..i]);
-	end
-end
-
-function GlyphFrame_StartSlotAnimation (slotID, duration, size)
-	local animation = slotAnimations[slotID];
-
-	-- init texture to animate
-	local sparkleName = "GlyphFrameSparkle"..slotID;
-	local sparkle = _G[sparkleName];
-	if ( not sparkle ) then
-		sparkle = GlyphFrame:CreateTexture(sparkleName, "OVERLAY", "GlyphSparkleTexture");
-		sparkle.slotID = slotID;
-	end
-	local template;
-	if ( size == 1 ) then
-		template = "SparkleTextureSmall";
-	elseif ( size == 2 ) then
-		template = "SparkleTextureKindaSmall";
-	else
-		template = "SparkleTextureNormal";
-	end
-	local sparkleDim = SparkleDimensions[template];
-	sparkle:SetHeight(sparkleDim.height);
-	sparkle:SetWidth(sparkleDim.width);
-	sparkle:SetPoint("CENTER", GlyphFrame, animation.point, animation.xStart, animation.yStart);
-	sparkle:Show();
-
-	-- init animation
-	local offsetX, offsetY = animation.xStop - animation.xStart, animation.yStop - animation.yStart;
-	local animGroupAnim = sparkle.animGroup.translate;
-	animGroupAnim:SetOffset(offsetX, offsetY);
-	animGroupAnim:SetDuration(duration);
-	animGroupAnim:Play();
-
-	animation.sparkle = sparkle;
-end
-
-function GlyphFrame_StopSlotAnimation (slotID)
-	local animation = slotAnimations[slotID];
-	if ( animation.sparkle ) then
-		animation.sparkle.animGroup:Stop();
-		animation.sparkle:Hide();
-		animation.sparkle = nil;
-	end
-end

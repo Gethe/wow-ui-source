@@ -2,41 +2,7 @@
 function InspectPaperDollFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
-end
-
-function InspectModelFrame_OnUpdate(self, elapsedTime)
-	if ( InspectModelRotateLeftButton:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation + (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( self.rotation < 0 ) then
-			self.rotation = self.rotation + (2 * PI);
-		end
-		InspectModelFrame:SetRotation(self.rotation);
-	end
-	if ( InspectModelRotateRightButton:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation - (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( self.rotation > (2 * PI) ) then
-			self.rotation = self.rotation - (2 * PI);
-		end
-		InspectModelFrame:SetRotation(self.rotation);
-	end
-end
-
-function InspectModelFrame_OnLoad(self)
-	self.rotation = 0.61;
-	InspectModelFrame:SetRotation(self.rotation);
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-end
-
-function InspectModelRotateLeftButton_OnClick()
-	InspectModelFrame.rotation = InspectModelFrame.rotation - 0.03;
-	InspectModelFrame:SetRotation(InspectModelFrame.rotation);
-	PlaySound("igInventoryRotateCharacter");
-end
-
-function InspectModelRotateRightButton_OnClick()
-	InspectModelFrame.rotation = InspectModelFrame.rotation + 0.03;
-	InspectModelFrame:SetRotation(InspectModelFrame.rotation);
-	PlaySound("igInventoryRotateCharacter");
+	self:RegisterEvent("INSPECT_READY");
 end
 
 function InspectPaperDollFrame_OnEvent(self, event, unit)
@@ -48,19 +14,38 @@ function InspectPaperDollFrame_OnEvent(self, event, unit)
 		end
 		return;
 	end
+	if (event == "INSPECT_READY") then
+		InspectPaperDollFrame_SetLevel();
+	end
 end
 
 function InspectPaperDollFrame_SetLevel()
 	local unit, level = InspectFrame.unit, UnitLevel(InspectFrame.unit);
+	local primaryTalentTree = GetPrimaryTalentTree(true);
+	
+	local classDisplayName, class = UnitClass(InspectFrame.unit); 
+	local classColor = RAID_CLASS_COLORS[class];
+	local specName;
+	
+	if (primaryTalentTree) then
+		_, specName = GetTalentTabInfo(primaryTalentTree, true);
+	end
+	
+	if (specName and specName ~= "") then
+		classDisplayName = format("|cff%.2x%.2x%.2x%s %s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, specName, classDisplayName);
+	else
+		classDisplayName = format("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, classDisplayName);
+	end
 	
 	if ( level == -1 ) then
 		level = "??";
 	end
 		
-	InspectLevelText:SetFormattedText(PLAYER_LEVEL,level, UnitRace(unit), UnitClass(unit));
+	InspectLevelText:SetFormattedText(PLAYER_LEVEL,level, UnitRace(unit), classDisplayName);
 end
 
 function InspectPaperDollFrame_OnShow()
+	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 	InspectModelFrame:SetUnit(InspectFrame.unit);
 	InspectPaperDollFrame_SetLevel();
 	InspectPaperDollItemSlotButton_Update(InspectHeadSlot);
@@ -82,6 +67,12 @@ function InspectPaperDollFrame_OnShow()
 	InspectPaperDollItemSlotButton_Update(InspectMainHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectSecondaryHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
+	
+	SetPaperDollBackground(InspectModelFrame, InspectFrame.unit);
+	InspectModelFrameBackgroundTopLeft:SetDesaturated(1);
+	InspectModelFrameBackgroundTopRight:SetDesaturated(1);
+	InspectModelFrameBackgroundBotLeft:SetDesaturated(1);
+	InspectModelFrameBackgroundBotRight:SetDesaturated(1);
 end
 
 function InspectPaperDollItemSlotButton_OnLoad(self)

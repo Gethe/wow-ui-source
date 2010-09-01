@@ -17,7 +17,8 @@ function DressUpItemLink(link)
 end
 
 function SetAuctionDressUpBackground()
-	local texture = DressUpTexturePath();
+	local race, raceFileName = UnitRace("player");
+	local texture = DressUpTexturePath(raceFileName);
 	AuctionDressUpBackgroundTop:SetTexture(texture..1);
 	AuctionDressUpBackgroundBot:SetTexture(texture..3);
 end

@@ -444,12 +444,21 @@
             </Button>
 			<StatusBar name="$parentConquestBar" drawLayer="BACKGROUND">
 				<Size>
-					<AbsDimension x="70" y="12"/>
+					<AbsDimension x="90" y="12"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTypeValue" relativePoint="RIGHT" x="14" y="0"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="06"/>
+						</Texture>
+					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Anchors>
@@ -733,9 +742,9 @@
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentBG1" relativePoint="TOPLEFT" x="10" y="-35"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentTopRatingText" inherits="GameFontHighlightLarge" justifyH="RIGHT" parentKey="topRatingText" text="RATING">
+						<FontString name="$parentTopRatingText" inherits="GameFontHighlight" justifyH="RIGHT" parentKey="topRatingText" text="RATING">
 							<Size>
-								<AbsDimension x="60" y="0"/>
+								<AbsDimension x="120" y="0"/>
 							</Size>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBG1" relativePoint="TOPRIGHT" x="-10" y="-35"/>
@@ -821,7 +830,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentArenaAmount" inherits="GameFontHighlightMedium" justifyH="RIGHT" parentKey="arenaAmount" text="200">
+								<FontString name="$parentArenaAmount" inherits="GameFontHighlightMedium" justifyH="RIGHT" parentKey="winAmount" text="200">
 									<Size x="45" y="12"/>
 									<Anchors>
 										<Anchor point="RIGHT"  x="-25" y="0"/>

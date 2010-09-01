@@ -90,55 +90,28 @@
 					<Anchor point="RIGHT" relativeTo="$parentMoneyBg" x="8" y="6"/>
 				</Anchors>
 			</Frame>
-			<Button name="ClassTrainerSkill1" inherits="ClassTrainerSkillButtonTemplate">
+			<Button name="$parentSkillStepButton" inherits="ClassTrainerSkillButtonTemplate" parentKey="skillStepButton" hidden="true">
+				<Size x="316" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="6" y="-5"/>
 				</Anchors>
 			</Button>
-			<Button name="ClassTrainerSkill2" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill1" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill3" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill2" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill4" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill3" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill5" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill4" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill6" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill5" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="ClassTrainerSkill7" inherits="ClassTrainerSkillButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ClassTrainerSkill6" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>			
-			<ScrollFrame name="ClassTrainerListScrollFrame" inherits="ListScrollFrameTemplate">
+			<ScrollFrame name="ClassTrainerScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
 				<Size>
-					<AbsDimension x="296" y="184"/>
+					<AbsDimension x="302" y="330"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="ClassTrainerSkill1" relativePoint="TOPRIGHT" y="2"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="ClassTrainerSkill7" relativePoint="BOTTOMRIGHT"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentInset" x="-5" y="5"/>
 				</Anchors>
-				<Scripts>
-					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, CLASS_TRAINER_SKILL_HEIGHT, ClassTrainerFrame_Update)
-					</OnVerticalScroll>
-				</Scripts>
-			</ScrollFrame>	
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="13"/>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
 			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="bottomInset" hidden="true">
 				<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
