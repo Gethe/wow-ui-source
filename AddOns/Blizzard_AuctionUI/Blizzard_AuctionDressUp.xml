@@ -92,7 +92,7 @@
 							Model_RotateLeft(self:GetParent());
 						</OnClick>
 					</Scripts>
-					<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+					<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 					<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 					<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 				</Button>
@@ -111,7 +111,7 @@
 							Model_RotateRight(self:GetParent());
 						</OnClick>
 					</Scripts>
-					<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+					<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 					<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 					<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 				</Button>

@@ -35,7 +35,71 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+	<Frame name="PVPTeamStandardTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="64" y="64"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBar" file="Interface\PVPFrame\UI-Character-PVP-Elements">
+					<Size>
+						<AbsDimension x="50" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-8" y="6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.099609375" top="0.91015625" bottom="0.935546875"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBanner">
+					<Size>
+						<AbsDimension x="45" y="90"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBar" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="5" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBorder">
+					<Size>
+						<AbsDimension x="45" y="90"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBanner" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentEmblem">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBorder" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="-5" y="17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetAlpha(0.1);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 	<Button name="PVPTeamBorderTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="300" y="78"/>
@@ -134,24 +198,6 @@
 			<OnLoad>
 				self:SetAlpha(0.4);
 			</OnLoad>
-			<OnEnter>
-				PVPTeam_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				PVPTeam_OnLeave(self, motion);
-			</OnLeave>
-			<OnClick>
-				PVPTeam_OnClick(self, button, down);
-			</OnClick>
-			<OnMouseDown>
-				PVPTeam_OnMouseDown(self, button);
-			</OnMouseDown>
-			<OnMouseUp>
-				PVPTeam_OnMouseUp(self, button);
-			</OnMouseUp>
-			<OnShow>
-				PVPTeam_OnMouseUp(self, nil);
-			</OnShow>
 		</Scripts>
 	</Button>
 	<Frame name="PVPTeamDataTemplate" virtual="true">
@@ -198,7 +244,7 @@
 				</FontString>
 				<Texture file="Interface\PVPFrame\UI-Character-PVP-Elements">
 					<Size>
-						<AbsDimension x="280" y="2"/>
+						<AbsDimension x="0" y="2"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
@@ -206,6 +252,7 @@
 								<AbsDimension x="2" y="-5"/>
 							</Offset>
 						</Anchor>
+						<Anchor point="RIGHT" x="-14" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.4140625" top="0.76171875" bottom="0.765625"/>
 				</Texture>
@@ -226,9 +273,9 @@
 						<AbsDimension x="55" y="12"/>
 					</Size>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentTypeLabel" relativePoint="BOTTOMRIGHT">
+						<Anchor point="BOTTOMRIGHT">
 							<Offset>
-								<AbsDimension x="35" y="16"/>
+								<AbsDimension x="-142" y="21"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -311,7 +358,7 @@
 		</Size>
 		<Layers> 		
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" hidden="true" parentKey="BG">
+				<Texture urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" hidden="true" parentKey="BG">
 					<Color r="1" g="1" b="1" a="0.08"/>
 				</Texture>
 			</Layer>
@@ -392,7 +439,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="19"/>
 					</Size>
@@ -401,7 +448,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="53" y="19"/>
 					</Size>
@@ -410,7 +457,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="19"/>
 					</Size>
@@ -514,7 +561,7 @@
 				_G[self:GetParent():GetName().."_UpdateJoinButton"]();
 			</OnClick>
 		</Scripts>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" parentKey="highlight">
+		<HighlightTexture name="$parentHighlight" urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" parentKey="highlight">
 			<Color r="1.0" g="0.82" />
 		</HighlightTexture>
 		<ButtonText name="$parentText" parentKey="title">

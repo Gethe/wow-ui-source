@@ -51,14 +51,11 @@ function RuneButton_Update (self, rune, dontFlash)
 	
 	if (runeType) then
 		self.rune:SetTexture(iconTextures[runeType]);
-		-- self.fill:SetTexture(iconTextures[runeType]);
 		self.rune:Show();
-		-- self.fill:Show();
 		self.rune.runeType = runeType;
 		self.tooltipText = _G["COMBAT_TEXT_RUNE_"..runeMapping[runeType]];
 	else
 		self.rune:Hide();
-		-- self.fill:Hide();
 		self.tooltipText = nil;
 	end
 
@@ -104,16 +101,19 @@ function RuneFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "RUNE_POWER_UPDATE" ) then
 		local rune, usable = ...;
-		if ( not usable and rune and self.runes[rune] ) then
+		if rune and self.runes[rune] then 
 			local cooldown = _G[self.runes[rune]:GetName().."Cooldown"];
-			local start, duration, runeReady = GetRuneCooldown(self.runes[rune]:GetID());			
-			local displayCooldown = (runeReady and 0) or 1;			
-			if start then
-				CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
+			if not usable then
+				local start, duration, runeReady = GetRuneCooldown(self.runes[rune]:GetID());			
+				local displayCooldown = (runeReady and 0) or 1;			
+				if start then
+					CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
+				end
+			else
+				cooldown:Hide();
+				self.runes[rune].shine:SetVertexColor(1, 1, 1);
+				RuneButton_ShineFadeIn(self.runes[rune].shine)
 			end
-		elseif ( usable and rune and self.runes[rune] ) then
-			self.runes[rune].shine:SetVertexColor(1, 1, 1);
-			RuneButton_ShineFadeIn(self.runes[rune].shine)
 		end
 	elseif ( event == "RUNE_TYPE_UPDATE" ) then
 		local rune = ...;

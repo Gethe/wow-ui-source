@@ -29,6 +29,7 @@ function BattlefieldFrame_OnLoad (self)
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
 	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
+	self:RegisterEvent("WARGAME_REQUESTED");
 		
 	BattlefieldFrame.timerDelay = 0;
 end
@@ -119,6 +120,9 @@ function BattlefieldFrame_OnEvent (self, event, ...)
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
 		BattlefieldFrame_UpdateStatus(false);
 		BattlefieldFrame_Update();
+	elseif ( event == "WARGAME_REQUESTED" ) then
+		local challengerName, bgName = ...;
+		PVPFramePopup_SetupPopUp(event, challengerName, bgName);
 	end
 	
 	if ( event == "PARTY_LEADER_CHANGED" ) then

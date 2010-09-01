@@ -585,7 +585,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 	end
 end
 
-function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, isComplete)
+function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, isComplete, eligible)
 	-- anchor
 	if ( anchor ) then
 		line:SetPoint("RIGHT", anchor, "RIGHT", 0, 0);
@@ -599,6 +599,9 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		line.text:SetTextColor(0.75, 0.61, 0);
 	else
 		--this should be the default, set in WatchFrameLineTemplate_Reset
+		if ( eligible ~= nil ) then
+			line.text.eligible = eligible;
+		end
 	end
 	-- dash
 	local usedWidth = 0;
@@ -639,7 +642,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 	
 	local numCriteria, criteriaDisplayed;
 	local achievementID, achievementName, completed, description, icon;
-	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, achievementCategory;
+	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, eligible, achievementCategory;
 	local displayOnlyArena = ArenaEnemyFrames and ArenaEnemyFrames:IsShown();
 
 	local lineWidth = 0;
@@ -676,7 +679,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 					criteriaDisplayed = 0;
 					for j = 1, numCriteria do
 						local dash = DASH_SHOW;		-- default since most will have this
-						criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
+						criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, eligible = GetAchievementCriteriaInfo(achievementID, j);
 						if ( criteriaCompleted or ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
 							-- Do not display this one
 							criteriaString = nil;
@@ -709,7 +712,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 						-- set up the line
 						if ( criteriaString ) then
 							line = WatchFrame_GetAchievementLine();
-							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, dash);
+							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, dash, nil, nil, eligible);
 							previousLine = line;
 							criteriaDisplayed = criteriaDisplayed + 1;
 						end
@@ -1317,10 +1320,18 @@ function WatchFrameLinkButtonTemplate_Highlight(self, onEnter)
 				end
 			else
 				if ( onEnter ) then
-					line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					if (line.text.eligible) then
+						line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					else
+						line.text:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+					end
 					line.dash:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				else
-					line.text:SetTextColor(0.8, 0.8, 0.8);
+					if (line.text.eligible) then
+						line.text:SetTextColor(0.8, 0.8, 0.8);
+					else
+						line.text:SetTextColor(DIM_RED_FONT_COLOR.r, DIM_RED_FONT_COLOR.g, DIM_RED_FONT_COLOR.b);
+					end
 					line.dash:SetTextColor(0.8, 0.8, 0.8);
 				end
 			end

@@ -54,7 +54,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentChecked" parentKey="Checked" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" hidden="true">
+				<Texture name="$parentChecked" parentKey="Checked" urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" hidden="true">
 					<Anchor point="CENTER"/>
 				</Texture>
 			</Layer>
@@ -192,7 +192,7 @@
 								Model_RotateLeft(PetStableModel);
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -211,7 +211,7 @@
 								Model_RotateRight(PetStableModel);
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>

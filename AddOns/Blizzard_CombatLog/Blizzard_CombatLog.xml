@@ -60,7 +60,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.0" g="1.0" b="0.3"/>
 			</StatusBar>
 			<Button name="$parentAdditionalFilterButton">
@@ -91,7 +91,7 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+				<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
 				<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
 				<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
 				<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>

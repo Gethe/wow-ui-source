@@ -7,7 +7,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="95" y="64"/>
 					</Size>
@@ -20,7 +20,7 @@
 					</Anchors>
 					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentLeft" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
@@ -29,7 +29,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentRight" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
@@ -69,9 +69,9 @@
 						TabardCustomization_Left(self:GetParent():GetID());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentRightButton">
@@ -90,9 +90,9 @@
 						TabardCustomization_Right(self:GetParent():GetID());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
@@ -127,7 +127,7 @@
                 </Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -135,7 +135,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>		
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -143,7 +143,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -151,7 +151,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -369,7 +369,7 @@
 							</OnLoad>
 							<OnClick function="TabardCharacterModelRotateLeftButton_OnClick"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -390,7 +390,7 @@
 							</OnLoad>
 							<OnClick function="TabardCharacterModelRotateRightButton_OnClick"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>

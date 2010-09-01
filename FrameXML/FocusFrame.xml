@@ -61,7 +61,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="FocusFrameNameBackground" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground">
+				<Texture name="FocusFrameNameBackground" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground">
 					<Size>
 						<AbsDimension x="88" y="19"/>
 					</Size>
@@ -195,7 +195,7 @@
 						FocusHealthCheck(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="FocusFrameManaBar" inherits="TextStatusBar">
 				<Size>
@@ -216,7 +216,7 @@
 						self.cvarLabel = "STATUS_TEXT_TARGET";
 					</OnLoad>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<StatusBar name="FocusFrameSpellBar" inherits="CastingBarFrameTemplate" hidden="true">
@@ -326,7 +326,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentBG" file="Interface\TargetingFrame\UI-StatusBar">
+						<Texture name="$parentBG" urgency="5" file="Interface\TargetingFrame\UI-StatusBar">
 							<Size>
 								<AbsDimension x="37" y="14"/>
 							</Size>
@@ -464,7 +464,7 @@
 				<Scripts>
 					<OnValueChanged function="TargetofFocusHealthCheck"/>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="1.0" b="0"/>
 			</StatusBar>
 			<StatusBar name="TargetofFocusManaBar" inherits="TextStatusBar">
@@ -478,7 +478,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Frame name="$parentDebuff1" inherits="TargetofTargetDebuffFrameTemplate" id="1">

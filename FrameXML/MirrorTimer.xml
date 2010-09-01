@@ -62,7 +62,7 @@
 						LowerFrameLevel(self);
 					</OnLoad>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 		</Frames>
 		<Scripts>

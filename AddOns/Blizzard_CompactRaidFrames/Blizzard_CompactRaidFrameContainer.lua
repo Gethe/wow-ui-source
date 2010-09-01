@@ -1,8 +1,18 @@
 MAX_RAID_GROUPS = 8;
 
+
+local frameCreationSpecifiers = {
+	raid = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup, updateList = "normal"},
+	pet =  { setUpFunc = DefaultCompactMiniFrameSetup, updateList = "mini" },
+	flagged = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup, updateList = "normal"	},
+	target = { setUpFunc = DefaultCompactMiniFrameSetup, updateList = "mini" },
+}
+
 --Widget Handlers
 function CompactRaidFrameContainer_OnLoad(self)
 	FlowContainer_Initialize(self);	--Congrats! We are now a certified FlowContainer.
+	
+	self:SetClampRectInsets(0, 200 - self:GetWidth(), 10, 0);
 	
 	self.units = {--[["raid1", "raid2", "raid3", ..., "raid40"]]};
 	for i=1, MAX_RAID_MEMBERS do
@@ -17,6 +27,11 @@ function CompactRaidFrameContainer_OnLoad(self)
 		pet		= CompactRaidFrameReservation_NewManager();
 		flagged	= CompactRaidFrameReservation_NewManager();	--For Main Tank/Assist units
 		target	= CompactRaidFrameReservation_NewManager();	--Target of target for Main Tank/Main Assist
+	}
+	
+	self.frameUpdateList = {
+		normal = {},	--Groups are also in this normal list.
+		mini = {},
 	}
 
 	self.unitFrameUnusedFunc = function(frame)
@@ -84,6 +99,16 @@ function CompactRaidFrameContainer_SetDisplayMainTankAndAssist(self, displayFlag
 	end
 end
 
+function CompactRaidFrameContainer_ApplyToUnitFrames(self, updateSpecifier, func, ...)
+	for specifier, list in pairs(self.frameUpdateList) do
+		if ( updateSpecifier == "all" or specifier == updateSpecifier ) then
+			for i=1, #list do
+				list[i]:applyFunc(func, ...);
+			end
+		end
+	end
+end
+
 --Internally used functions
 function CompactRaidFrameContainer_TryUpdate(self)
 	if ( CompactRaidFrameContainer_ReadyToUpdate(self) ) then
@@ -148,9 +173,12 @@ do
 		for groupNum, isUsed in ipairs(usedGroups) do
 			if ( isUsed and self.groupFilterFunc(groupNum) ) then
 				numGroups = numGroups + 1;
-				local groupFrame = CompactRaidGroup_GenerateForGroup(groupNum);
+				local groupFrame, didCreation = CompactRaidGroup_GenerateForGroup(groupNum);
 				groupFrame:SetParent(self);
 				groupFrame.unusedFunc = groupFrame.Hide;
+				if ( didCreation ) then
+					tinsert(self.frameUpdateList.normal, groupFrame);
+				end
 				FlowContainer_AddObject(self, groupFrame);
 				groupFrame:Show();
 			end
@@ -224,12 +252,9 @@ function CompactRaidFrameContainer_AddUnitFrame(self, unit, frameType)
 	return frame;
 end
 
-local frameCreationSpecifiers = {
-	raid = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup },
-	pet =  { setUpFunc = DefaultCompactMiniFrameSetup },
-	flagged = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup },
-	target = { setUpFunc = DefaultCompactMiniFrameSetup },
-}
+local function applyFunc(unitFrame, func, ...)
+	func(unitFrame, ...);
+end
 
 local unitFramesCreated = 0;
 function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
@@ -249,8 +274,10 @@ function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
 	if ( not frame ) then
 		unitFramesCreated = unitFramesCreated + 1;
 		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
+		frame.applyFunc = applyFunc;
 		CompactUnitFrame_SetUpFrame(frame, info.setUpFunc);
 		frame.unusedFunc = self.unitFrameUnusedFunc;
+		tinsert(self.frameUpdateList[info.updateList], frame);
 		CompactRaidFrameReservation_RegisterReservation(self.frameReservations[frameType], frame, mapping);
 	end
 	frame.inUse = true;

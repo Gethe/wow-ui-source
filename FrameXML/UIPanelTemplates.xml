@@ -1,12 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Texture name="UIPanelButtonUpTexture" file="Interface\Buttons\UI-Panel-Button-Up" virtual="true">
+	<Texture name="UIPanelButtonUpTexture" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Texture name="UIPanelButtonDownTexture" file="Interface\Buttons\UI-Panel-Button-Down" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Texture name="UIPanelButtonDisabledTexture" file="Interface\Buttons\UI-Panel-Button-Disabled" virtual="true">
+	<Texture name="UIPanelButtonDisabledTexture" urgency="5" file="Interface\Buttons\UI-Panel-Button-Disabled" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Texture name="UIPanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
@@ -31,7 +31,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\Buttons\UI-Panel-Button-Up">
+				<Texture name="$parentLeft" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up">
 					<Size>
 						<AbsDimension x="12" y="22"/>
 					</Size>
@@ -41,7 +41,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\Buttons\UI-Panel-Button-Up">
+				<Texture name="$parentRight" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up">
 					<Size>
 						<AbsDimension x="12" y="22"/>
 					</Size>
@@ -51,7 +51,7 @@
 					</Anchors>
 					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Buttons\UI-Panel-Button-Up">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up">
 					<Size>
 						<AbsDimension x="12" y="22"/>
 					</Size>
@@ -278,9 +278,9 @@
 				HideParentPanel(self);
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+		<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+		<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Texture name="UIPanelScrollBarButton" virtual="true">
 		<TexCoords left="0.20" right="0.80" top="0.25" bottom="0.75"/>
@@ -291,16 +291,16 @@
 		</Size>
 		<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
 		<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
-		<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+		<DisabledTexture inherits="UIPanelScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
 		<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="UIPanelScrollDownButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="18" y="16"/>
 		</Size>
-		<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
+		<NormalTexture inherits="UIPanelScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
 		<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
-		<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+		<DisabledTexture inherits="UIPanelScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
 		<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Slider name="UIPanelScrollBarTemplate" virtual="true">
@@ -340,7 +340,7 @@
 				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size>
 				<AbsDimension x="18" y="24"/>
 			</Size>
@@ -411,7 +411,7 @@
 				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size>
 				<AbsDimension x="16" y="24"/>
 			</Size>
@@ -466,7 +466,7 @@
 				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size>
 				<AbsDimension x="18" y="24"/>
 			</Size>
@@ -628,7 +628,7 @@
 	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 					<Size>
 						<AbsDimension x="30" y="120"/>
 					</Size>
@@ -641,7 +641,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 					<Size>
 						<AbsDimension x="30" y="123"/>
 					</Size>
@@ -660,7 +660,7 @@
 	<EditBox name="InputBoxTemplate" enableMouse="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+				<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 					<Size>
 						<AbsDimension x="8" y="20"/>
 					</Size>
@@ -673,7 +673,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+				<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 					<Size>
 						<AbsDimension x="8" y="20"/>
 					</Size>
@@ -686,7 +686,7 @@
 					</Anchors>
 					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 					<Size>
 						<AbsDimension x="10" y="20"/>
 					</Size>
@@ -728,11 +728,11 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<Button name="TabButtonTemplate" virtual="true">
 		<Size>
@@ -740,7 +740,7 @@
         </Size>
         <Layers>
         	<Layer level="BACKGROUND">
-        		<Texture name="$parentLeftDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        		<Texture name="$parentLeftDisabled" urgency="5" file="Interface\HelpFrame\HelpFrameTab-Active">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
@@ -753,7 +753,7 @@
         			</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentMiddleDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+				<Texture name="$parentMiddleDisabled" urgency="5" file="Interface\HelpFrame\HelpFrameTab-Active">
         			<Size>
         				<AbsDimension x="32" y="32"/>
         			</Size>
@@ -762,7 +762,7 @@
         			</Anchors>
 					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentRightDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+				<Texture name="$parentRightDisabled" urgency="5" file="Interface\HelpFrame\HelpFrameTab-Active">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
@@ -771,7 +771,7 @@
         			</Anchors>
 					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentLeft" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+				<Texture name="$parentLeft" urgency="5" file="Interface\HelpFrame\HelpFrameTab-Inactive">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
@@ -780,7 +780,7 @@
         			</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentMiddle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\HelpFrame\HelpFrameTab-Inactive">
         			<Size>
         				<AbsDimension x="32" y="32"/>
         			</Size>
@@ -789,7 +789,7 @@
         			</Anchors>
 					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentRight" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+				<Texture name="$parentRight" urgency="5" file="Interface\HelpFrame\HelpFrameTab-Inactive">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
@@ -1234,7 +1234,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentDialogBG" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
+				<Texture name="$parentDialogBG" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="8" y="-24"/>

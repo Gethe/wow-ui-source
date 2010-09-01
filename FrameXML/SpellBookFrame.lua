@@ -375,14 +375,20 @@ function SpellButton_OnEnter(self)
 end
 
 function SpellButton_OnClick(self, button) 
-	local slot, future = SpellBook_GetSpellBookSlot(self);
-	if ( slot > MAX_SPELLS or future) then
+	local slot, slotType = SpellBook_GetSpellBookSlot(self);
+	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
 		return;
 	end
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		ToggleSpellAutocast(slot, SpellBookFrame.bookType);
 	else
-		CastSpell(slot, SpellBookFrame.bookType);
+		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+		if (slotType == "FLYOUT") then
+			SpellFlyout:Toggle(id, self, "RIGHT", 1);
+			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
+		else
+			CastSpell(slot, SpellBookFrame.bookType);
+		end
 		SpellButton_UpdateSelection(self);
 	end
 end
@@ -425,8 +431,8 @@ function SpellButton_OnModifiedClick(self, button)
 end
 
 function SpellButton_OnDrag(self) 
-	local slot, future = SpellBook_GetSpellBookSlot(self);
-	if (not slot or slot > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or future) then
+	local slot, slotType = SpellBook_GetSpellBookSlot(self);
+	if (not slot or slot > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or (slotType == "FUTURESPELL")) then
 		return;
 	end
 	self:SetChecked(0);
@@ -460,7 +466,7 @@ function SpellButton_UpdateButton(self)
 		self.SpellName.shadowX, self.SpellName.shadowY = self.SpellName:GetShadowOffset();
 	end
 
-	local slot, future = SpellBook_GetSpellBookSlot(self);
+	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	local name = self:GetName();
 	local iconTexture = _G[name.."IconTexture"];
 	local spellString = _G[name.."SpellName"];
@@ -487,6 +493,7 @@ function SpellButton_UpdateButton(self)
 		self.TrainFrame:Hide();
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
+		self.FlyoutArrow:Hide();
 		return;
 	else
 		self:Enable();
@@ -513,6 +520,7 @@ function SpellButton_UpdateButton(self)
 		self.TrainFrame:Hide();
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
+		self.FlyoutArrow:Hide();
 		self:Disable();
 		return;
 	else
@@ -565,7 +573,7 @@ function SpellButton_UpdateButton(self)
 	end
 
 	iconTexture:Show();
-	if (not future) then
+	if (not (slotType == "FUTURESPELL")) then
 		slotFrame:Show();
 		self.UnlearnedFrame:Hide();
 		self.TrainFrame:Hide();
@@ -615,6 +623,14 @@ function SpellButton_UpdateButton(self)
 			self.SpellName:SetPoint("LEFT", self, "RIGHT", 24, 8);
 		end
 	end
+	
+	if (slotType == "FLYOUT") then
+		SetClampedTextureRotation(self.FlyoutArrow, 90);
+		self.FlyoutArrow:Show();
+	else
+		self.FlyoutArrow:Hide();
+	end
+	
 	spellString:Show();
 	subSpellString:Show();
 	SpellButton_UpdateSelection(self);
@@ -701,8 +717,8 @@ function SpellBook_GetSpellBookSlot(spellButton)
 		local relativeSlot = id + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
 		if (relativeSlot <= SpellBookFrame.selectedSkillLineNumSlots) then
 			local slot = SpellBookFrame.selectedSkillLineOffset + relativeSlot;
-			local future = (GetSpellBookItemType(slot, SpellBookFrame.bookType) == "FUTURESPELL");
-			return slot, future;
+			local slotType = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+			return slot, slotType;
 		else
 			return nil, nil;
 		end

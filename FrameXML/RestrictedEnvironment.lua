@@ -217,8 +217,32 @@ function ENV.UnitHasVehicleUI(unit)
 		(UnitCanAssist("player", unit) and false);
 end
 
+function ENV.RegisterAttributeDriver(frameHandle, ...)
+	return RegisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+end
+
+function ENV.UnregisterAttributeDriver(frameHandle, ...)
+	return UnregisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+end
+
 function ENV.RegisterStateDriver(frameHandle, ...)
-	return RegisterStateDriver(GetFrameHandleFrame(frameHandle), ...)
+	return RegisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+end
+
+function ENV.UnregisterStateDriver(frameHandle, ...)
+	return UnregisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+end
+
+function ENV.RegisterUnitWatch(frameHandle, ...)
+    return RegisterUnitWatch(GetFrameHandleFrame(frameHandle), ...);
+end
+
+function ENV.UnregisterUnitWatch(frameHandle, ...)
+    return UnregisterUnitWatch(GetFrameHandleFrame(frameHandle), ...);
+end
+
+function ENV.UnitWatchRegistered(frameHandle, ...)
+    return UnitWatchRegistered(GetFrameHandleFrame(frameHandle), ...);
 end
 
 local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true}

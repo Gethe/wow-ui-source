@@ -1,12 +1,5 @@
 
 function InspectPVPFrame_OnLoad(self)
-	InspectPVPFrameLine1:SetAlpha(0.3);
-	InspectPVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorHonorLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorTodayLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorYesterdayLabel:SetVertexColor(0.6, 0.6, 0.6);
-	InspectPVPHonorLifetimeLabel:SetVertexColor(0.6, 0.6, 0.6);
-
 	self:RegisterEvent("INSPECT_HONOR_UPDATE");
 end
 
@@ -26,10 +19,11 @@ function InspectPVPFrame_OnShow()
 end
 
 function InspectPVPFrame_SetFaction()
-	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup ) then
-		InspectPVPFrameHonorIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-		InspectPVPFrameHonorIcon:Show();
+	local factionGroup = UnitFactionGroup("target");
+	if ( factionGroup == "Alliance" ) then
+		InspectPVPFrameFaction:SetTexCoord(0.69433594, 0.74804688, 0.60351563, 0.72851563);
+	else
+		InspectPVPFrameFaction:SetTexCoord(0.63867188, 0.69238281, 0.60351563, 0.73242188);
 	end
 end
 
@@ -38,7 +32,6 @@ function InspectPVPFrame_Update()
 		GetInspectArenaTeamData(i);
 	end	
 	InspectPVPFrame_SetFaction();
-	InspectPVPHonor_Update();
 	InspectPVPTeam_Update();
 end
 
@@ -123,7 +116,6 @@ function InspectPVPTeam_Update()
 			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
 			_G[buttonName.."Background"]:SetAlpha(1);
 			_G[buttonName.."TeamType"]:Hide();
-			
 		end
 	end
 
@@ -144,33 +136,11 @@ function InspectPVPTeam_Update()
 			_G[data]:Hide();
 			_G[buttonName.."Background"]:SetVertexColor(0, 0, 0);
 			_G[buttonName.."Standard"]:SetAlpha(0.1);
+			_G[buttonName.."StandardBanner"]:SetVertexColor(1, 1, 1);
 			_G[buttonName.."StandardBorder"]:Hide();
 			_G[buttonName.."StandardEmblem"]:Hide();
 			_G[buttonName.."TeamType"]:SetFormattedText(PVP_TEAMSIZE, value.size, value.size);
 			_G[buttonName.."TeamType"]:Show();
 		end
 	end
-end
-
--- PVP Honor Data
-function InspectPVPHonor_Update()
-	local todayHK, todayHonor, yesterdayHK, yesterdayHonor, lifetimeHK, lifetimeRank = GetInspectHonorData();
-	
-	-- Yesterday's values
-	InspectPVPHonorYesterdayKills:SetText(yesterdayHK);
-	InspectPVPHonorYesterdayHonor:SetText(yesterdayHonor);
-	
-	-- Lifetime values
-	InspectPVPHonorLifetimeKills:SetText(lifetimeHK);
-	InspectPVPFrameHonorPoints:SetText("");
-	InspectPVPFrameArenaPoints:SetText("");
-
-	-- Hide Point Values
-	InspectPVPFrameHonorPoints:Hide();	
-	InspectPVPFrameArenaPoints:Hide();
-	
-	-- This session's values
-	InspectPVPHonorTodayKills:SetText(todayHK);
-	InspectPVPHonorTodayHonor:SetText(todayHonor);
-	InspectPVPHonorTodayHonor:SetHeight(14);
 end

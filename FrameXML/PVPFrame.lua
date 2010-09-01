@@ -80,10 +80,14 @@ function PVPFrame_OnLoad(self)
 	PVPFrame_TabClicked(PVPFrameTab1);				
 	SetPortraitToTexture(PVPFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	PVPHonorFrameBgButton1:Click();	
-	self:RegisterEvent("HONOR_CURRENCY_UPDATE");	
+	self:RegisterEvent("HONOR_CURRENCY_UPDATE");
 end
 
 function PVPFrame_OnEvent(self, event, ...)
+	if not self:IsShown() then
+		return;
+	end
+	
 	local arg1 = ...;
 	if ( event == "HONOR_CURRENCY_UPDATE" ) then
 		PVPFrame_UpdateCurrency(self);
@@ -116,14 +120,19 @@ end
 
 
 
-function PVPFrame_JoinClicked(self, isParty)
+function PVPFrame_JoinClicked(self, isParty, wargame)
 	local tabID =  PVPFrame.lastSelectedTab:GetID();
 	if tabID == 1 then --Honor BGs
-		JoinBattlefield(0, isParty);
+		if wargame then
+			StartWarGame();
+		else
+			JoinBattlefield(0, isParty);
+		end
 	elseif tabID == 2 then
 		if PVPConquestFrame.mode == "Arena" then
-		--	JoinBattlefield(1, 1, 1);
-		--else -- rated bg
+			JoinArena(PVPConquestFrame.teamIndex);
+		else -- rated bg
+			JoinRatedBattlefield();
 		end
 	elseif tabID == 3 then	
 		StaticPopup_Show("ADD_TEAMMEMBER", nil, nil, PVPTeamManagementFrame.selectedTeam:GetID());
@@ -158,7 +167,6 @@ function PVPFrame_TabClicked(self)
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
-		PVPFrameLeftButton:Enable();
 		PVPFrameTypeLable:SetText(PVP_CONQUEST);
 		PVPFrameTypeLable:SetPoint("TOPRIGHT", -195, -38);
 		PVPFrameConquestBar:Show();
@@ -371,12 +379,17 @@ function PVPHonorFrame_OnLoad(self)
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	
 	PVPHonorFrame_UpdateVisible();	
 	PVPHonorFrameBgButton1:Click();
 end
 
 function PVPHonorFrame_OnEvent(self, event, ...)
+	if not self:IsShown() then
+		return;
+	end
+	
 	if ( event == "PVPQUEUE_ANYWHERE_SHOW" or event == "NPC_PVPQUEUE_ANYWHERE") then
 		self.currentData = true;
 		PVPHonor_UpdateBattlegrounds();
@@ -399,7 +412,7 @@ function PVPHonorFrame_OnEvent(self, event, ...)
 			PVPHonorFrame_UpdateJoinButton();
 		end
 		PVPHonorFrame_UpdateVisible();
-	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
 		PVPHonorFrame_UpdateGroupAvailable();
 	end
 end
@@ -434,8 +447,10 @@ function PVPHonorFrame_UpdateGroupAvailable()
 	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
 		-- If this is true then can join as a group
 		PVPFrameRightButton:Enable();
+		PVPHonorFrameWarGameButton:Enable();
 	else
 		PVPFrameRightButton:Disable();
+		PVPHonorFrameWarGameButton:Disable();
 	end
 end
 
@@ -453,11 +468,145 @@ function PVPConquestFrame_OnLoad(self)
 	self.ratedbgButton:SetWidth(321);
 	
 	
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("ARENA_TEAM_UPDATE");
+	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
+	
 	local factionGroup = UnitFactionGroup("player");
 	self.infoButton.factionIcon = _G["PVPConquestFrameInfoButtonInfoIcon"..factionGroup];
 	self.infoButton.factionIcon:Show();
 end
 
+
+function PVPConquestFrame_OnEvent(self, event, ...)
+	if not self:IsShown() then
+		return;
+	end
+	
+	PVPConquestFrame_Update(PVPConquestFrame);
+end
+
+
+function PVPConquestFrame_Update(self)
+
+	local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
+	local validGroup = false;
+	
+	
+	if self.mode == "Arena" then
+		local teamName, teamSize, teamRating, teamPlayed, teamWins;
+		for i=1,MAX_ARENA_TEAMS do
+			teamName, teamSize, teamRating, teamPlayed, teamWins = GetArenaTeam(i);
+			if not teamName then
+				break;
+			elseif teamSize == groupSize then
+				validGroup = true;
+				self.teamIndex = i;
+				ArenaTeamRoster(i);
+				
+				for j=1,groupSize-1 do
+					local name = UnitName("party"..j)
+					local found = false;
+					for k=1,groupSize*2 do
+						if name == GetArenaTeamRosterInfo(i, k) then
+							found = true;
+							break;
+						end
+					end
+					
+					if not found or not UnitIsConnected("party"..j) then
+						validGroup = false;
+						break;
+					end
+				end
+				break;
+			end
+		end
+
+		if not validGroup then
+			self.infoButton.title:SetText("|cff808080"..ARENA_BATTLES);
+			self.infoButton.arenaError:Show();
+			self.infoButton.wins:Hide();
+			self.infoButton.winsValue:Hide();
+			self.infoButton.losses:Hide();
+			self.infoButton.lossesValue:Hide();
+			self.infoButton.topLeftText:Hide();
+			self.infoButton.bottomLeftText:Hide();
+			self.teamIndex = nil;
+		else
+			self.infoButton.title:SetText(teamName);
+			self.infoButton.winsValue:SetText(teamWins);
+			self.infoButton.lossesValue:SetText(teamPlayed-teamWins);
+			self.infoButton.topLeftText:SetText(PVP_RATING.." "..teamRating);
+			self.infoButton.bottomLeftText:SetText(_G["ARENA_"..groupSize.."V"..groupSize]);
+			
+			self.infoButton.arenaError:Hide();
+			self.infoButton.wins:Show();
+			self.infoButton.winsValue:Show();
+			self.infoButton.losses:Show();
+			self.infoButton.lossesValue:Show();
+			self.infoButton.topLeftText:Show();
+			self.infoButton.bottomLeftText:Show();
+		end
+	else -- Rated BG
+		local name, size = GetRatedBattleGroundInfo();
+		
+		validGroup = groupSize==size;
+		local prefixColorCode = "|cff808080";
+		if validGroup then
+			prefixColorCode = "";
+		end
+		
+		
+		if name then
+			self.infoButton.title:SetText(prefixColorCode..name);
+			self.infoButton.bottomLeftText:SetFormattedText(PVP_TEAMTYPE, size, size);
+		end
+		
+		
+		self.infoButton.winsValue:SetText(prefixColorCode.."0");
+		self.infoButton.lossesValue:SetText(prefixColorCode.."0");
+		self.infoButton.topLeftText:SetText(prefixColorCode..ARENA_THIS_WEEK);
+		
+		self.infoButton.arenaError:Hide();
+		self.infoButton.wins:Show();
+		self.infoButton.winsValue:Show();
+		self.infoButton.losses:Show();
+		self.infoButton.lossesValue:Show();
+		self.infoButton.topLeftText:Show();
+		self.infoButton.bottomLeftText:Show();
+		self.infoButton.bgNorm:Show();
+		self.infoButton.bgOff:Hide();
+	end
+	
+	
+	if validGroup then
+		self.partyStatusBG:SetVertexColor(0,1,0);
+		self.partyNum:SetFormattedText(GREEN_FONT_COLOR_CODE..PVP_PARTY_SIZE, groupSize);
+		self.infoButton.bgNorm:Show();
+		self.infoButton.bgOff:Hide();
+		SetDesaturation(self.infoButton.factionIcon, false);
+		
+		self.infoButton.wins:SetText(WINS);
+		self.infoButton.losses:SetText(LOSSES);
+		if IsPartyLeader() then
+			PVPFrameLeftButton:Enable();
+		end
+	else
+		self.partyStatusBG:SetVertexColor(1,0,0);
+		self.partyNum:SetFormattedText(RED_FONT_COLOR_CODE..PVP_PARTY_SIZE, groupSize);
+		self.infoButton.bgNorm:Hide();
+		self.infoButton.bgOff:Show();
+		SetDesaturation(self.infoButton.factionIcon, true);
+		
+		self.infoButton.wins:SetText("|cff808080"..WINS);
+		self.infoButton.losses:SetText("|cff808080"..LOSSES);
+		PVPFrameLeftButton:Disable();
+	end
+
+	self.validGroup = validGroup;
+end
 
 
 function PVPConquestFrame_OnShow(self)
@@ -465,18 +614,31 @@ function PVPConquestFrame_OnShow(self)
 		self.clickedButton = self.arenaButton;
 	end
 	self.clickedButton:Click();
+	PVPConquestFrame_Update(self);
 end
+
 
 function PVPConquestFrame_ButtonClicked(button)
 	if button:GetID() == 1 then --Arena
 		PVPConquestFrame.mode = "Arena";
+		PVPConquestFrame.BG:SetTexCoord(0.00097656, 0.31445313, 0.33789063, 0.88476563);
+		PVPConquestFrame.description:SetText(PVP_ARENA_EXPLANATION);
+		PVPConquestFrame.title:SetText(ARENA_BATTLES);
 		button:LockHighlight();
 		PVPConquestFrame.ratedbgButton:UnlockHighlight();
+		PVPConquestFrame.topRatingText:Hide();
 	else -- Rated BG	
-		PVPConquestFrame.mode = "Arena";
+		PVPConquestFrame.mode = "RatedBg";
+		PVPConquestFrame.BG:SetTexCoord(0.32324219, 0.63671875, 0.00195313, 0.54882813);
+		PVPConquestFrame.description:SetText(PVP_RATED_BATTLEGROUND_EXPLANATION);
+		PVPConquestFrame.title:SetText(PVP_RATED_BATTLEGROUNDS);
 		button:LockHighlight();
 		PVPConquestFrame.arenaButton:UnlockHighlight();
+		PVPConquestFrameInfoButton.title:SetText(PVP_RATED_BATTLEGROUND);
+		PVPConquestFrameInfoButton.topLeftText:SetText(ARENA_THIS_WEEK);
+		PVPConquestFrame.topRatingText:Show();
 	end
+	PVPConquestFrame_Update(PVPConquestFrame);
 end
 
 
@@ -501,6 +663,10 @@ end
 
 
 function PVPTeamManagementFrame_OnEvent(self, event, ...)
+	if not self:IsShown() then
+		return;
+	end
+	
 	local arg1 = ...;
 	if ( event == "ARENA_TEAM_UPDATE"  or  event == "PLAYER_ENTERING_WORLD" ) then
 		PVPTeamManagementFrame_UpdateTeams(self)
@@ -522,7 +688,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 		if self.selectedTeam then
 			flagbutton = self.selectedTeam;
 		else 
-			self.invalidTeam:Hide();
+			self.invalidTeam:Show();
 			return;
 		end
 	end
@@ -532,7 +698,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 	flagbutton.title:SetFontObject("GameFontNormalSmall");
 	
 	self.selectedTeam = flagbutton;
-	local teamIndex = flagbutton:GetID()
+	local teamIndex = flagbutton:GetID();
 	ArenaTeamRoster(teamIndex);
 	
 	if  IsArenaTeamCaptain(teamIndex) then	
@@ -542,7 +708,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 	end
 	
 	-- Pull Values
-	teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, 
+	local teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, 
 	seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating = GetArenaTeam(teamIndex);
 
 	self.TeamData:Show()
@@ -617,7 +783,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 			button:Enable();
 			button.playerIndex = i+scrollOffset;
 			-- Get Data
-			name, rank, level, class, online, played, win, seasonPlayed, seasonWin, rating = GetArenaTeamRosterInfo(teamIndex, i+scrollOffset);
+			local name, rank, level, class, online, played, win, seasonPlayed, seasonWin, rating = GetArenaTeamRosterInfo(teamIndex, i+scrollOffset);
 			loss = played - win;
 			seasonLoss = seasonPlayed - seasonWin;
 
@@ -795,25 +961,6 @@ function PVPTeamManagementFrame_OnShow(self)
 end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function PVPTeamManagementFrame_DropDown_Initialize()
 	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "TEAM", nil, PVPTeamManagementFrameTeamDropDown.name);
 end
@@ -839,3 +986,42 @@ function PVPTeamManagementFrame_ShowDropdown(name, online)
 end
 
 
+---- PVP PopUp Functions
+
+
+function PVPFramePopup_OnLoad(self)
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+end
+
+
+function PVPFramePopup_OnEvent(self, event, ...)
+	if event == "UPDATE_BATTLEFIELD_STATUS" then
+		local index = ...;
+		if self.type == "WARGAME_REQUESTED" then
+			-- update joined.
+		end
+	end
+end
+
+
+
+
+function PVPFramePopup_SetupPopUp(event, challengerName, bgName)
+	PVPFramePopup.title:SetFormattedText(WARGAME_CHALLENGED, challengerName, bgName);
+	PVPFramePopup.type = event;
+	
+	PVPFramePopup.minimizeButton:Disable();
+	SetPortraitToTexture(PVPFramePopup.ringIcon,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
+	StaticPopupSpecial_Show(PVPFramePopup);
+	PlaySound("ReadyCheck");
+end
+
+
+
+function PVPFramePopup_OnResponse(accepted)
+	if PVPFramePopup.type == "WARGAME_REQUESTED" then
+		WarGameRespond(accepted)
+	end
+	
+	StaticPopupSpecial_Hide(PVPFramePopup);
+end

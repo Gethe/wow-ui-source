@@ -315,7 +315,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
+				<Texture name="MainMenuBarPerformanceBar" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
 					<Size>
 						<AbsDimension x="14" y="7"/>
 					</Size>

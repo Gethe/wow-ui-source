@@ -26,7 +26,7 @@
 				ResetCursor();
 			</OnLeave>
         </Scripts>
-		<NormalTexture file="Interface\Buttons\UI-Quickslot2">
+		<NormalTexture urgency="5" file="Interface\Buttons\UI-Quickslot2">
 			<Size>
 				<AbsDimension x="64" y="64"/>
 			</Size>
@@ -42,7 +42,7 @@
     <Frame name="InspectPaperDollFrame" setAllPoints="true" parent="InspectFrame" id="1">
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
+                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
                     <Size>
                         <AbsDimension x="256" y="256"/>
                     </Size>
@@ -50,7 +50,7 @@
                         <Anchor point="TOPLEFT"/>
                     </Anchors>
                 </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-R1">
+                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-R1">
                     <Size>
                         <AbsDimension x="128" y="256"/>
                     </Size>
@@ -62,7 +62,7 @@
                         </Anchor>
                     </Anchors>
                 </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomLeft">
+                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomLeft">
                     <Size>
                         <AbsDimension x="256" y="256"/>
                     </Size>
@@ -74,7 +74,7 @@
                         </Anchor>
                     </Anchors>
                 </Texture>
-                <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomRight">
+                <Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomRight">
                     <Size>
                         <AbsDimension x="128" y="256"/>
                     </Size>
@@ -148,7 +148,7 @@
 							</OnLoad>
 							<OnClick function="InspectModelRotateLeftButton_OnClick"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -165,7 +165,7 @@
 							</OnLoad>
 							<OnClick function="InspectModelRotateRightButton_OnClick"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>

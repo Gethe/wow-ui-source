@@ -4,7 +4,7 @@
 	<Frame name="FloatingBorderedFrame" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\ChatFrame\ChatFrameBackground">
+				<Texture name="$parentBackground" urgency="5" file="Interface\ChatFrame\ChatFrameBackground">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -594,7 +594,7 @@
 								self:GetParent():GetParent():ScrollToBottom();
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
+						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
 						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -626,9 +626,9 @@
 								PlaySound("igChatScrollDown");
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+						<DisabledTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="$parentUpButton" parentKey="upButton">
@@ -654,7 +654,7 @@
 								PlaySound("igChatScrollUp");
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
 						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -919,7 +919,7 @@
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
+		<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>

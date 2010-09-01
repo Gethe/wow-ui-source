@@ -1,5 +1,6 @@
 --Widget Handlers
 local OPTION_TABLE_NONE = {};
+BOSS_DEBUFF_SCALE = 1.8;
 
 function CompactUnitFrame_OnLoad(self)
 	if ( not self:GetName() ) then
@@ -328,7 +329,7 @@ function CompactUnitFrame_UpdateInRange(frame)
 	
 	local inRange, checkedRange = UnitInRange(frame.unit);
 	if ( checkedRange and not inRange ) then	--If we weren't able to check the range for some reason, we'll just treat them as in-range (for example, enemy units)
-		frame:SetAlpha(0.4);
+		frame:SetAlpha(0.55);
 	else
 		frame:SetAlpha(1);
 	end
@@ -447,12 +448,38 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 	local index = 1;
 	local frameNum = 1;
 	local filter = nil;
-	while ( frameNum <= frame.maxDebuffs ) do
+	local maxDebuffs = frame.maxDebuffs;
+	--First, we go through displaying boss debuffs.
+	while ( frameNum <= maxDebuffs ) do
 		local debuffName = UnitDebuff(frame.unit, index, filter);
 		if ( debuffName ) then
-			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.unit, index, filter) ) then
+			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.unit, index, filter) and CompactUnitFrame_UtilIsBossDebuff(frame.unit, index, filter) ) then
 				local debuffFrame = frame.debuffFrames[frameNum];
 				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.unit, index, filter);
+				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, true);
+				frameNum = frameNum + 1;
+				--Boss debuffs are about twice as big as normal debuffs, so display one less.
+				maxDebuffs = maxDebuffs - (BOSS_DEBUFF_SCALE - 1);
+			end
+		else
+			break;
+		end
+		index = index + 1;
+	end
+	
+	if ( frame.optionTable.displayOnlyDispellableDebuffs ) then
+		filter = "RAID";
+	end
+	
+	index = 1;
+	--Now, we display all normal debuffs.
+	while ( frameNum <= maxDebuffs ) do
+		local debuffName = UnitDebuff(frame.unit, index, filter);
+		if ( debuffName ) then
+			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.unit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.unit, index, filter)) then
+				local debuffFrame = frame.debuffFrames[frameNum];
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.unit, index, filter);
+				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
 				frameNum = frameNum + 1;
 			end
 		else
@@ -460,6 +487,7 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 		end
 		index = index + 1;
 	end
+	
 	for i=frameNum, frame.maxDebuffs do
 		local debuffFrame = frame.debuffFrames[i];
 		debuffFrame:Hide();
@@ -546,14 +574,28 @@ function CompactUnitFrame_UtilShouldDisplayDebuff(unit, index, filter)
 	return true;
 end
 
+function CompactUnitFrame_UtilIsBossDebuff(unit, index, filter)
+	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId, canApplyAura, isBossDebuff = UnitDebuff(unit, index, filter);
+	return isBossDebuff;
+end
+
 function CompactUnitFrame_HideAllDebuffs(frame)
 	for i=1, #frame.debuffFrames do
 		frame.debuffFrames[i]:Hide();
 	end
 end
 
+function CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, isBossDebuff)
+	if ( isBossDebuff ) then
+		debuffFrame:SetSize(debuffFrame.baseSize * BOSS_DEBUFF_SCALE, debuffFrame.baseSize * BOSS_DEBUFF_SCALE);
+	else
+		debuffFrame:SetSize(debuffFrame.baseSize, debuffFrame.baseSize);
+	end
+end
+
 function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter)
 	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId = UnitDebuff(unit, index, filter);
+	debuffFrame.filter = filter;
 	debuffFrame.icon:SetTexture(icon);
 	if ( count > 1 ) then
 		local countText = count;
@@ -634,11 +676,10 @@ local texCoords = {
 	["Raid-TargetFrame"] = { 0.00781250, 0.55468750, 0.28906250, 0.55468750 },
 }
 
-local DefaultCompactUnitFrameOptions = {
+DefaultCompactUnitFrameOptions = {
 	useClassColors = true,
 	displaySelectionHighlight = true,
 	displayAggroHighlight = true,
-	displayPowerBar = true,
 	displayName = true,
 	fadeOutOfRange = true,
 	displayStatusText = true,
@@ -647,21 +688,38 @@ local DefaultCompactUnitFrameOptions = {
 	displayRaidRoleIcon = true,
 	displayDispelDebuffs = true,
 	displayBuffs = true,
-	displayDebuffs = true
+	displayDebuffs = true,
+	displayOnlyDispellableDebuffs = false,
 }
 	
+DefaultCompactUnitFrameSetupOptions = {
+	displayPowerBar = true,
+}
 
 function DefaultCompactUnitFrameSetup(frame)
+	local options = DefaultCompactUnitFrameSetupOptions;
 	frame:SetSize(72, 36)
 	frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg");
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
-	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 9);
+	
+	if ( options.displayPowerBar ) then
+		frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 9);
+	else
+		frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
+	end
+	
 	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill", "BORDER");
-	frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, 0);
-	frame.powerBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
-	frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill", "BORDER");
-	frame.powerBar.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Background");
+	
+	if ( options.displayPowerBar ) then
+		frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, 0);
+		frame.powerBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
+		frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill", "BORDER");
+		frame.powerBar.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Background");
+		frame.powerBar:Show();
+	else
+		frame.powerBar:Hide();
+	end
 	
 	frame.myHealPredictionBar:SetPoint("TOPLEFT", frame.healthBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0);
 	frame.myHealPredictionBar:SetPoint("BOTTOMLEFT", frame.healthBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0);
@@ -701,12 +759,13 @@ function DefaultCompactUnitFrameSetup(frame)
 		frame.buffFrames[i]:SetSize(11, 11);
 	end
 	
-	frame.debuffFrames[1]:SetPoint("BOTTOMLEFT", 3, 10);
+	frame.debuffFrames[1]:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 3, 21);
 	for i=1, #frame.debuffFrames do
 		if ( i > 1 ) then
-			frame.debuffFrames[i]:SetPoint("LEFT", frame.debuffFrames[i - 1], "RIGHT", 0, 0);
+			frame.debuffFrames[i]:SetPoint("TOPLEFT", frame.debuffFrames[i - 1], "TOPRIGHT", 0, 0);
 		end
-		frame.debuffFrames[i]:SetSize(11, 11);
+		frame.debuffFrames[i].baseSize = 11;
+		--frame.debuffFrames[i]:SetSize(11, 11);
 	end
 	
 	frame.dispelDebuffFrames[1]:SetPoint("TOPRIGHT", -3, -2);

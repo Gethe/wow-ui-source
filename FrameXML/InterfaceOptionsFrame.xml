@@ -36,7 +36,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="300" y="68"/>
 					</Size>

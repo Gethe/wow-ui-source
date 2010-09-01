@@ -519,7 +519,7 @@ function WorldMapContinentsDropDown_Update()
 	UIDropDownMenu_Initialize(WorldMapContinentDropDown, WorldMapContinentsDropDown_Initialize);
 	UIDropDownMenu_SetWidth(WorldMapContinentDropDown, 130);
 
-	if ( (GetCurrentMapContinent() == 0) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
+	if ( (GetCurrentMapContinent() == WORLDMAP_WORLD_ID) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
 		UIDropDownMenu_ClearAll(WorldMapContinentDropDown);
 	else
 		UIDropDownMenu_SetSelectedID(WorldMapContinentDropDown,GetCurrentMapContinent());
@@ -544,7 +544,7 @@ function WorldMapZoneDropDown_Update()
 	UIDropDownMenu_Initialize(WorldMapZoneDropDown, WorldMapZoneDropDown_Initialize);
 	UIDropDownMenu_SetWidth(WorldMapZoneDropDown, 130);
 
-	if ( (GetCurrentMapContinent() == 0) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
+	if ( (GetCurrentMapContinent() == WORLDMAP_WORLD_ID) or (GetCurrentMapContinent() == WORLDMAP_COSMIC_ID) ) then
 		UIDropDownMenu_ClearAll(WorldMapZoneDropDown);
 	else
 		UIDropDownMenu_SetSelectedID(WorldMapZoneDropDown, GetCurrentMapZone());

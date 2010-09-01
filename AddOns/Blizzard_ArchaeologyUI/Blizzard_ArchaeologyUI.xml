@@ -81,10 +81,10 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\Archaeology\Arch-TempLogo">
+		<NormalTexture file="Interface\Archeology\Arch-TempLogo">
 			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
 		</NormalTexture>
-		<HighlightTexture file="Interface\Archaeology\Arch-TempLogo" alphaMode="ADD">
+		<HighlightTexture file="Interface\Archeology\Arch-TempLogo" alphaMode="ADD">
 			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
 			<Color r="0.5" g="0.5" b="1" a="0.3"/>
 		</HighlightTexture>
@@ -107,7 +107,7 @@
 		<Size x="200" y="44"/>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentBorder" file="Interface\Archaeology\ArchaeologyParts" parentKey="border">
+				<Texture name="$parentBorder" file="Interface\Archeology\ArchaeologyParts" parentKey="border">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
@@ -154,7 +154,7 @@
 		<Size x="51" y="56"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentIcon" parentKey="icon" mask="Interface\Archaeology\Arch-Keystone-Mask">
+				<Texture name="$parentIcon" parentKey="icon" mask="Interface\Archeology\Arch-Keystone-Mask">
 					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -162,11 +162,11 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\Archaeology\ArchaeologyParts">
+		<NormalTexture file="Interface\Archeology\ArchaeologyParts">
 			<Size x="51" y="56"/>	
 			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
 		</NormalTexture>
-		<HighlightTexture file="Interface\Archaeology\ArchaeologyParts" alphaMode="ADD">
+		<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
 			<Size x="51" y="56"/>	
 			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
 			<Color r="0.8" g="0.8" b="0.8" a="0.4"/>
@@ -193,7 +193,7 @@
 		<Size x="550" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentFactionIcon" file="Interface\Archaeology\ArchaeologyParts" parentKey="factionIcon">
+				<Texture name="$parentFactionIcon" file="Interface\Archeology\ArchaeologyParts" parentKey="factionIcon">
 					<Size x="27" y="33"/>
 					<Anchors>
 						<Anchor point="LEFT" x="41" y="-10"/>
@@ -201,12 +201,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBgLeft" file="Interface\Archaeology\Arch-BookSummaryLeft" parentKey="bgLeft">
+				<Texture name="$parentBgLeft" file="Interface\Archeology\Arch-BookSummaryLeft" parentKey="bgLeft">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2" relativeTo="$parentInset" />
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBgRight" file="Interface\Archaeology\Arch-BookSummaryRight" parentKey="bgRight">
+				<Texture name="$parentBgRight" file="Interface\Archeology\Arch-BookSummaryRight" parentKey="bgRight">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBgLeft" relativePoint="TOPRIGHT" />
 					</Anchors>
@@ -250,7 +250,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size>
 								<AbsDimension x="255" y="29"/>
 							</Size>
@@ -269,14 +269,14 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 				<BarColor r="0.25" g="0.25" b="0.75" />
 			</StatusBar>
 			<Button name="$parentSummarytButton" parentKey="tab1" id="1">
 				<Size x="63" y="57"/>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="$parentFactionIcon" file="Interface\Archaeology\ArchaeologyParts" parentKey="factionIcon">
+						<Texture name="$parentFactionIcon" file="Interface\Archeology\ArchaeologyParts" parentKey="factionIcon">
 							<Size x="30" y="37"/>
 							<Anchors>
 								<Anchor point="CENTER" x="-6" y="0"/>
@@ -287,14 +287,14 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-22" y="-50" relativePoint="TOPRIGHT"/>
 				</Anchors>
-				<NormalTexture file="Interface\Archaeology\ArchaeologyParts">
+				<NormalTexture file="Interface\Archeology\ArchaeologyParts">
 					<Size x="48" y="57"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.21484375" right="0.30859375" top="0.56250000" bottom="0.78515625"/>
 				</NormalTexture>
-				<HighlightTexture file="Interface\Archaeology\ArchaeologyParts" alphaMode="ADD">
+				<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
 					<Size x="48" y="57"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -302,7 +302,7 @@
 					<TexCoords left="0.21484375" right="0.30859375" top="0.56250000" bottom="0.78515625"/>
 					<Color r="1" g="1" b="1" a="0.3"/>
 				</HighlightTexture>
-				<DisabledTexture file="Interface\Archaeology\ArchaeologyParts">
+				<DisabledTexture file="Interface\Archeology\ArchaeologyParts">
 					<Size x="63" y="57"/>
 					<TexCoords left="0.85546875" right="0.97851563" top="0.00390625" bottom="0.22656250"/>
 				</DisabledTexture>
@@ -323,14 +323,14 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-22" y="-120" relativePoint="TOPRIGHT"/>
 				</Anchors>
-				<NormalTexture file="Interface\Archaeology\ArchaeologyParts">
+				<NormalTexture file="Interface\Archeology\ArchaeologyParts">
 					<Size x="48" y="57"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.31250000" right="0.40625000" top="0.56250000" bottom="0.78515625"/>
 				</NormalTexture>
-				<HighlightTexture file="Interface\Archaeology\ArchaeologyParts" alphaMode="ADD">
+				<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
 					<Size x="48" y="57"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -338,7 +338,7 @@
 					<TexCoords left="0.31250000" right="0.40625000" top="0.56250000" bottom="0.78515625"/>
 					<Color r="1" g="1" b="1" a="0.3"/>
 				</HighlightTexture>
-				<DisabledTexture file="Interface\Archaeology\ArchaeologyParts">
+				<DisabledTexture file="Interface\Archeology\ArchaeologyParts">
 					<Size x="63" y="57"/>
 					<TexCoords left="0.72851563" right="0.85156250" top="0.00390625" bottom="0.22656250"/>
 				</DisabledTexture>
@@ -361,14 +361,14 @@
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archaeology\ArchaeologyParts">
+						<Texture file="Interface\Archeology\ArchaeologyParts">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentTitle" relativePoint="LEFT" x="-10"/>
 							</Anchors>
 							<Size x="42" y="27"/>
 							<TexCoords left="0.11132813" right="0.19335938" top="0.78906250" bottom="0.89453125"/>
 						</Texture>
-						<Texture file="Interface\Archaeology\ArchaeologyParts">
+						<Texture file="Interface\Archeology\ArchaeologyParts">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="10"/>
 							</Anchors>
@@ -461,14 +461,14 @@
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archaeology\ArchaeologyParts" parentkey="titleBigLeft">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleBigLeft">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentTitle" relativePoint="LEFT" x="-10"/>
 							</Anchors>
 							<Size x="54" y="34"/>
 							<TexCoords left="0.00195313" right="0.10742188" top="0.70312500" bottom="0.83593750"/>
 						</Texture>
-						<Texture file="Interface\Archaeology\ArchaeologyParts" parentkey="titleBigRight">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleBigRight">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="10"/>
 							</Anchors>
@@ -482,14 +482,14 @@
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archaeology\ArchaeologyParts" parentkey="titleTopLeft">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleTopLeft">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentTitleTop" relativePoint="LEFT" x="-8"/>
 							</Anchors>
 							<Size x="42" y="27"/>
 							<TexCoords left="0.11132813" right="0.19335938" top="0.78906250" bottom="0.89453125"/>
 						</Texture>
-						<Texture file="Interface\Archaeology\ArchaeologyParts" parentkey="titleTopRight">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleTopRight">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentTitleTop" relativePoint="RIGHT" x="8"/>
 							</Anchors>
@@ -503,14 +503,14 @@
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archaeology\ArchaeologyParts" parentkey="titleMidLeft">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleMidLeft">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentTitleMid" relativePoint="LEFT" x="-8"/>
 							</Anchors>
 							<Size x="42" y="27"/>
 							<TexCoords left="0.11132813" right="0.19335938" top="0.78906250" bottom="0.89453125"/>
 						</Texture>
-						<Texture file="Interface\Archaeology\ArchaeologyParts" parentkey="titleMidRight">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleMidRight">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentTitleMid" relativePoint="RIGHT" x="8"/>
 							</Anchors>
@@ -636,14 +636,14 @@
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archaeology\ArchaeologyParts">
+						<Texture file="Interface\Archeology\ArchaeologyParts">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentHistoryTitle" relativePoint="LEFT" x="-10"/>
 							</Anchors>
 							<Size x="54" y="34"/>
 							<TexCoords left="0.00195313" right="0.10742188" top="0.70312500" bottom="0.83593750"/>
 						</Texture>
-						<Texture file="Interface\Archaeology\ArchaeologyParts">
+						<Texture file="Interface\Archeology\ArchaeologyParts">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentHistoryTitle" relativePoint="RIGHT" x="10"/>
 							</Anchors>
@@ -671,7 +671,7 @@
 						</FontString>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture name="$parentIconBG" file="Interface\Archaeology\ArchaeologyParts">
+						<Texture name="$parentIconBG" file="Interface\Archeology\ArchaeologyParts">
 							<Size x="370" y="79"/>
 							<TexCoords left="0.00195313" right="0.72460938" top="0.00390625" bottom="0.31250000"/>
 							<Anchors>
@@ -760,7 +760,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="$parentBarBG" file="Interface\Archaeology\Arch-Progress-Bg">
+										<Texture name="$parentBarBG" file="Interface\Archeology\Arch-Progress-Bg">
 											<Size x="436" y="46"/>
 											<TexCoords left="0" right="0.84765625" top="0" bottom="0.65625"/>
 											<Anchors>
@@ -780,7 +780,7 @@
 										</FontString>
 									</Layer>
 								</Layers>
-								<BarTexture file="Interface\Archaeology\Arch-Progress-Fill">
+								<BarTexture file="Interface\Archeology\Arch-Progress-Fill">
 									<TexCoords left="0" right="0.810546875" top="0" bottom="0.78125"/>
 								</BarTexture>
 							</StatusBar>

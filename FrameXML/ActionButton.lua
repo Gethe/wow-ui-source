@@ -260,6 +260,9 @@ function ActionButton_Update (self)
 		end
 	end
 	ActionButton_UpdateCount(self);	
+	
+	-- Update flyout appearance
+	ActionButton_UpdateFlyout(self);
 
 	-- Update tooltip
 	if ( GameTooltip:GetOwner() == self ) then
@@ -520,4 +523,36 @@ function ActionButton_IsFlashing (self)
 	end
 	
 	return nil;
+end
+
+function ActionButton_UpdateFlyout(self)
+	local actionType = GetActionInfo(self.action);
+	if (actionType == "flyout") then
+		-- Update border and determine arrow position
+		local arrowDistance;
+		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
+			self.FlyoutBorder:Show();
+			self.FlyoutBorderShadow:Show();
+			arrowDistance = 5;
+		else
+			self.FlyoutBorder:Hide();
+			self.FlyoutBorderShadow:Hide();
+			arrowDistance = 2;
+		end
+		
+		-- Update arrow
+		self.FlyoutArrow:Show();
+		self.FlyoutArrow:ClearAllPoints();
+		if (self:GetParent() == MultiBarRight or self:GetParent() == MultiBarLeft) then
+			self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
+			SetClampedTextureRotation(self.FlyoutArrow, 270);
+		else
+			self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, arrowDistance);
+			SetClampedTextureRotation(self.FlyoutArrow, 0);
+		end
+	else
+		self.FlyoutBorder:Hide();
+		self.FlyoutBorderShadow:Hide();
+		self.FlyoutArrow:Hide();
+	end
 end

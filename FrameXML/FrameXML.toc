@@ -7,6 +7,7 @@ FontStyles.xml
 Localization.xml
 
 ## add snippets independent of modules here
+Util.lua
 FlowContainer.lua
 
 ## add new modules below here
@@ -151,6 +152,7 @@ CompactUnitFrame.xml
 CompactRaidGroup.xml
 CompactPartyFrame.xml
 RolePoll.xml
+SpellFlyout.xml
 
 ## add new modules above here
 LocalizationPost.xml

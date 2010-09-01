@@ -29,7 +29,7 @@
 						end
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-MinusButton-UP">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -67,7 +67,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="$parentAtWarHighlight2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
+						<Texture name="$parentAtWarHighlight2" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
 							<Size>
 								<AbsDimension x="103" y="17"/>
 							</Size>
@@ -78,7 +78,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.40234375" top="0.734375" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentAtWarHighlight1" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
+						<Texture name="$parentAtWarHighlight1" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar" alphaMode="ADD" hidden="true">
 							<Size>
 								<AbsDimension x="0" y="17"/>
 							</Size>
@@ -91,7 +91,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="$parentLeftTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+						<Texture name="$parentLeftTexture" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 							<Size>
 								<AbsDimension x="62" y="21"/>
 							</Size>
@@ -104,7 +104,7 @@
 							</Anchors>
 							<TexCoords left="0.691" right="1.0" top="0.047" bottom="0.281"/>
 						</Texture>
-						<Texture name="$parentRightTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+						<Texture name="$parentRightTexture" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 							<Size>
 								<AbsDimension x="42" y="21"/>
 							</Size>
@@ -150,13 +150,13 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarTexture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 				<BarColor r=".25" g=".25" b=".75"/>
 			</StatusBar>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBackground" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+				<Texture name="$parentBackground" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
 					<Size>
 						<AbsDimension x="0" y="21"/>
 					</Size>
@@ -169,7 +169,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentLeftLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+				<Texture name="$parentLeftLine" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
 					<Size>
 						<AbsDimension x="0" y="2"/>
 					</Size>
@@ -180,7 +180,7 @@
 					</Anchors>
 					<TexCoords left="0" right="2" top="0" bottom="2"/>
 				</Texture>
-				<Texture name="$parentBottomLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+				<Texture name="$parentBottomLine" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
 					<Size>
 						<AbsDimension x="2" y="0"/>
 					</Size>
@@ -247,7 +247,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="ReputationFrameTopTreeTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+				<Texture name="ReputationFrameTopTreeTexture" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
 					<Size>
 						<AbsDimension x="2" y="4"/>
 					</Size>
@@ -258,7 +258,7 @@
 					</Anchors>
 					<TexCoords left="0" right="2" top="0" bottom="2"/>
 				</Texture>
-				<Texture name="ReputationFrameTopTreeTexture2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+				<Texture name="ReputationFrameTopTreeTexture2" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
 					<Size>
 						<AbsDimension x="2" y="4"/>
 					</Size>
@@ -621,9 +621,9 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 						<CheckedTexture file="Interface\Buttons\UI-CheckBox-SwordCheck">
 							<Size>
 								<AbsDimension x="32" y="32"/>
@@ -636,7 +636,7 @@
 								</Anchor>
 							</Anchors>
 						</CheckedTexture>
-						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+						<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
 					<CheckButton name="ReputationDetailInactiveCheckBox" inherits="OptionsSmallCheckButtonTemplate">
 						<Size>
@@ -778,7 +778,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.515625" bottom="0.6875"/>
 						</Texture>
-						<Texture name="ReputationXPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="ReputationXPBarTexture0" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="10"/>
 							</Size>
@@ -791,7 +791,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
 						</Texture>
-						<Texture name="ReputationXPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="ReputationXPBarTexture1" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="10"/>
 							</Size>
@@ -800,7 +800,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
 						</Texture>
-						<Texture name="ReputationXPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="ReputationXPBarTexture2" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="10"/>
 							</Size>
@@ -809,7 +809,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
 						</Texture>
-						<Texture name="ReputationXPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="ReputationXPBarTexture3" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="10"/>
 							</Size>
@@ -825,7 +825,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>
 			</StatusBar>
 			<Frame name="ReputationWatchBarOverlayFrame" frameStrata="DIALOG" setAllPoints="true">

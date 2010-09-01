@@ -27,7 +27,7 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
+		<HighlightTexture name="$parentHighlight" urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 	</Button>
 	<Button name="ConfigFilterButtonTemplate" inherits="ConfigCategoryButtonTemplate" virtual="true">
 		<Scripts>
@@ -161,11 +161,11 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<CheckButton name="ChatConfigCheckButtonTemplate" inherits="ChatConfigBaseCheckButtonTemplate" virtual="true">
 		<Size>
@@ -466,7 +466,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="ChatConfigFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="ChatConfigFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size x="256" y="64"/>
 					<Anchors>
 						<Anchor point="TOP">
@@ -857,7 +857,7 @@
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
-								<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
+								<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
 								<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
 								<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
@@ -887,7 +887,7 @@
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
-								<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+								<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
 								<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
 								<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>

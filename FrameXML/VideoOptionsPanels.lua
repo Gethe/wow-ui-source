@@ -271,7 +271,7 @@ function VideoOptionsResolutionPanelRefreshDropDown_OnLoad(self)
 end
 
 function VideoOptionsResolutionPanelRefreshDropDown_Initialize()
-	VideoOptionsResolutionPanel_GetRefreshRates(GetRefreshRates());
+	VideoOptionsResolutionPanel_GetRefreshRates(GetRefreshRates(UIDropDownMenu_GetSelectedID(VideoOptionsResolutionPanelResolutionDropDown)));
 end
 
 function VideoOptionsResolutionPanel_GetRefreshRates(...)

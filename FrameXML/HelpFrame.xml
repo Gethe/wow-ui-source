@@ -61,7 +61,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\HelpFrame\HelpFrameDivider">
+				<Texture name="$parentLeft" urgency="5" file="Interface\HelpFrame\HelpFrameDivider">
 					<Size>
 						<AbsDimension x="256" y="20"/>
 					</Size>
@@ -70,7 +70,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.3125"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\HelpFrame\HelpFrameDivider">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\HelpFrame\HelpFrameDivider">
 					<Size>
 						<AbsDimension x="256" y="20"/>
 					</Size>
@@ -83,7 +83,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0.3125" bottom="0.625"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\HelpFrame\HelpFrameDivider">
+				<Texture name="$parentRight" urgency="5" file="Interface\HelpFrame\HelpFrameDivider">
 					<Size>
 						<AbsDimension x="65" y="20"/>
 					</Size>
@@ -112,7 +112,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -120,7 +120,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-Top">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Top">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -132,7 +132,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-TopRight">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -140,7 +140,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="20"/>
 					</Size>
@@ -153,7 +153,7 @@
 					</Anchors>
 					<TexCoords left="0.00" right="1.00000" top="0.0" bottom="0.078125"/>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
 					<Size>
 						<AbsDimension x="256" y="20"/>
 					</Size>
@@ -166,7 +166,7 @@
 					</Anchors>
 					<TexCoords left="0.00" right="1.00000" top="0.0" bottom="0.078125"/>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotRight">
 					<Size>
 						<AbsDimension x="128" y="20"/>
 					</Size>
@@ -179,7 +179,7 @@
 					</Anchors>
 					<TexCoords left="0.00" right="1.00000" top="0.0" bottom="0.078125"/>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotLeftBig">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotLeftBig">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -191,7 +191,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BottomBig">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BottomBig">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -203,7 +203,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotRightBig">
+				<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotRightBig">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -213,7 +213,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="HelpFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="HelpFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="336" y="64"/>
 					</Size>

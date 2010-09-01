@@ -61,8 +61,6 @@ function QuestInfo_Display(template, parentFrame, acceptButton, cancelButton, ma
 		QuestInfoSpellLearnText:SetTextColor(textColor[1], textColor[2], textColor[3]);		
 		QuestInfoHonorFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoArenaPointsFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-		QuestInfoTalentFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-		QuestInfoSkillPointFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoXPFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 	end
 	
@@ -266,6 +264,7 @@ function QuestInfo_ShowRewards()
 	local talents;
 	local skillName;
 	local skillPoints;
+	local skillIcon;
 	local xp;
 	local playerTitle;
 
@@ -279,7 +278,7 @@ function QuestInfo_ShowRewards()
 		honor = GetQuestLogRewardHonor();
 		arenaPoints = GetQuestLogRewardArenaPoints();
 		talents = GetQuestLogRewardTalents();
-		skillName, skillPoints = GetQuestLogRewardSkillPoints();
+		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
 		xp = GetQuestLogRewardXP();
 		playerTitle = GetQuestLogRewardTitle();
 		ProcessQuestLogRewardFactions();
@@ -293,7 +292,7 @@ function QuestInfo_ShowRewards()
 		honor = GetRewardHonor();
 		arenaPoints = GetRewardArenaPoints();
 		talents = GetRewardTalents();
-		skillName, skillPoints = GetRewardSkillPoints();
+		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
 		xp = GetRewardXP();
 		playerTitle = GetRewardTitle();
 	end
@@ -430,10 +429,24 @@ function QuestInfo_ShowRewards()
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoArenaPointsFrame", arenaPoints, "Points", lastFrame);		
 		-- Talent rewards
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoTalentFrame", talents, "Points", lastFrame);
+		if (QuestInfoTalentFrame:IsShown()) then
+			QuestInfoTalentFrameIconTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
+			local _, class = UnitClass("player");
+			QuestInfoTalentFrameIconTexture:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
+			QuestInfoTalentFrameName:SetText(BONUS_TALENTS);
+			QuestInfoTalentFrame.tooltip = format(BONUS_TALENTS_TOOLTIP, talents);
+		end
 		-- Skill Point rewards
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoSkillPointFrame", skillPoints, "Points", lastFrame);
-		if (skillName) then
-			QuestInfoSkillPointFrameReceiveText:SetFormattedText(BONUS_SKILLPOINTS, skillName);
+		if (QuestInfoSkillPointFrame:IsShown()) then
+			QuestInfoSkillPointFrameIconTexture:SetTexture(skillIcon);
+			if (skillName) then
+				QuestInfoSkillPointFrameName:SetFormattedText(BONUS_SKILLPOINTS, skillName);
+				QuestInfoSkillPointFrame.tooltip = format(BONUS_SKILLPOINTS_TOOLTIP, skillPoints, skillName);
+			else
+				QuestInfoSkillPointFrame.tooltip = nil;
+				QuestInfoSkillPointFrameName:SetText("");
+			end
 		end
 		-- Title reward
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoPlayerTitleFrame", playerTitle, "Title", lastFrame);

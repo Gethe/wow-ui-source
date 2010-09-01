@@ -1546,6 +1546,10 @@ RaidFramePanelOptions = {
 	raidOptionKeepGroupsTogether = { text = "KEEP_GROUPS_TOGETHER" },
 	raidOptionDisplayPets = { text = "DISPLAY_RAID_PETS" },
 	raidOptionDisplayMainTankAndAssist = { text = "DISPLAY_MT_AND_MA" },
+	raidFramesDisplayIncomingHeals = { text = "DISPLAY_INCOMING_HEALS" },
+	raidFramesDisplayAggroHighlight = { text = "DISPLAY_RAID_AGGRO_HIGHLIGHT" },
+	raidFramesDisplayOnlyDispellableDebuffs = { text = "DISPLAY_ONLY_DISPELLABLE_DEBUFFS" },
+	raidFramesDisplayPowerBars = { text = "DISPLAY_POWER_BARS" },
 }
 
 function InterfaceOptionsRaidFramePanelSortBy_OnEvent (self, event, ...)
@@ -1628,6 +1632,29 @@ function InterfaceOptionsRaidFramePanelSortBy_Initialize()
 	info.tooltipTitle = RAID_SORT_ALPHABETICAL;
 	info.tooltipText = OPTION_RAID_SORT_BY_ALPHABETICAL;
 	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName)
+	return function(value)
+		local enabled;
+		if(value and value ~= "0") then
+			enabled = true;
+		end
+		DefaultCompactUnitFrameOptions[optionName] = enabled;
+		CompactRaidFrameContainer_ApplyToUnitFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+	end
+end
+
+function InterfaceOptionsRaidFramePanel_GenerateRaidSetUpOptionToggle(optionName)
+	return function(value)
+		local enabled;
+		if(value and value ~= "0") then
+			enabled = true;
+		end
+		DefaultCompactUnitFrameSetupOptions[optionName] = enabled;
+		CompactRaidFrameContainer_ApplyToUnitFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+		CompactRaidFrameContainer_ApplyToUnitFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+	end
 end
 
 -- [[ Camera Options Panel ]] --
@@ -1950,12 +1977,15 @@ LanguagesPanelOptions = {
 }
 
 function InterfaceOptionsLanguagesPanel_OnLoad (panel)
-	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
+-- turn off language changing in Beta until fixed
+return;
+
+	--[[-- Check and see if we have more than one locale. If we don't, then don't register this panel.
 	if ( #({GetExistingLocales()}) <= 1 ) then
 		return;
 	end
 
-	InterfaceOptionsPanel_OnLoad(panel);
+	InterfaceOptionsPanel_OnLoad(panel);]]
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent (self, event, ...)

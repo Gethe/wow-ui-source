@@ -108,9 +108,9 @@
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentRoleButtonTank" inherits="RolePollRoleButtonTemplate" id="2">
 				<Size>

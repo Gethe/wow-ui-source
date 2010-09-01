@@ -2302,6 +2302,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("OLD_TITLE_LOST");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CHAT_SERVER_DISCONNECTED");
+	self:RegisterEvent("CHAT_SERVER_RECONNECTED");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2615,6 +2617,15 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(format(OLD_TITLE_LOST, arg1), info.r, info.g, info.b, info.id);
 		return true;
+	elseif ( event == "CHAT_SERVER_DISCONNECTED" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		local isInitialMessage = ...;
+		self:AddMessage(CHAT_SERVER_DISCONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
+		return true;
+	elseif ( event == "CHAT_SERVER_RECONNECTED" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
+		return true;
 	end
 end
 
@@ -2641,6 +2652,10 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	end
 	
 	return arg2;
+end
+
+function RemoveExtraSpaces(str)
+	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
 end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
@@ -2800,11 +2815,13 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
+				arg1 = RemoveExtraSpaces(arg1);
 				local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
 				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
 			if ( arg1 ~= "" ) then
+				arg1 = RemoveExtraSpaces(arg1);
 				self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_CONVERSATION" ) then
@@ -2861,6 +2878,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 				end
 			end
+			
+			--Remove groups of many spaces
+			arg1 = RemoveExtraSpaces(arg1);
 			
 			local playerLink;
 

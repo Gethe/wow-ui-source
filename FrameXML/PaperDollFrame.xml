@@ -202,7 +202,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" parentKey="check" hidden="true">
+				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check" parentKey="check" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -224,7 +224,7 @@
 			</Anchor>
 					</Anchors>
 		</ButtonText>		
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>	
+		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>	
 	</Button>		
 	<CheckButton name="GearSetButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
 		<Scripts>
@@ -272,7 +272,7 @@
 			</Anchors>
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>	
 	
     <Frame name="StatFrameTemplate" virtual="true">
@@ -540,7 +540,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+						<Texture name="$parentLeft" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 							<Size>
 								<AbsDimension x="25" y="50"/>
 							</Size>
@@ -553,7 +553,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+						<Texture name="$parentMiddle" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 							<Size>
 								<AbsDimension x="160" y="50"/>
 							</Size>
@@ -562,7 +562,7 @@
 							</Anchors>
 							<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+						<Texture name="$parentRight" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 							<Size>
 								<AbsDimension x="25" y="50"/>
 							</Size>
@@ -602,7 +602,7 @@
 								PlayerTitlePickerFrame_Toggle();								
 							</OnClick>
 						</Scripts>
-						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+						<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size>
 								<AbsDimension x="24" y="24"/>
 							</Size>
@@ -771,7 +771,7 @@
 								Model_RotateLeft(self:GetParent());
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -790,7 +790,7 @@
 								Model_RotateRight(self:GetParent());
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -943,9 +943,9 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-2" y="-1"/>
 				</Anchors>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
@@ -1173,14 +1173,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+						<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopLeft">
 							<Size x="256" y="212"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="1" top="0" bottom="0.828125"/>
 						</Texture>
-						<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+						<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopRight">
 							<Size x="64" y="212"/>
 							<Anchors>
 								<Anchor point="TOPLEFT">
@@ -1189,7 +1189,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1" top="0" bottom="0.828125"/>
 						</Texture>
-						<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+						<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotLeft">
 							<Size x="256" y="64"/>
 							<Anchors>
 								<Anchor point="TOPLEFT">
@@ -1197,7 +1197,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+						<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotRight">
 							<Size x="64" y="64"/>
 							<Anchors>
 								<Anchor point="TOPLEFT">
@@ -1237,7 +1237,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+								<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 									<Size x="30" y="120"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
@@ -1246,7 +1246,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 								</Texture>
-								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+								<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 									<Size x="30" y="79"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
@@ -1272,7 +1272,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+								<Texture name="$parentLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 									<Size x="12" y="29"/>
 									<Anchors>
 										<Anchor point="TOPLEFT">
@@ -1281,14 +1281,14 @@
 									</Anchors>
 									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
 								</Texture>
-								<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+								<Texture name="$parentMiddle" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 									<Size x="175" y="29"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 									</Anchors>
 									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
 								</Texture>
-								<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+								<Texture name="$parentRight" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 									<Size x="12" y="29"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>

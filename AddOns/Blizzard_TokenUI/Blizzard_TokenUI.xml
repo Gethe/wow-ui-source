@@ -38,7 +38,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
+				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -378,7 +378,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
+				<Texture urgency="5" file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
 					<Size>
 						<AbsDimension x="256" y="32"/>
 					</Size>

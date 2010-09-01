@@ -34,7 +34,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
 					<Size>
 						<AbsDimension x="30" y="128"/>
 					</Size>
@@ -47,7 +47,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
 					<Size>
 						<AbsDimension x="30" y="128"/>
 					</Size>
@@ -354,7 +354,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
+		<HighlightTexture name="$parentHighlight" urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">
 			<Size>
 				<AbsDimension x="0" y="0"/>

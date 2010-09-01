@@ -31,7 +31,7 @@
 						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="19" y="19"/>
 					</Size>
@@ -70,7 +70,7 @@
 						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="19" y="19"/>
 					</Size>
@@ -109,7 +109,7 @@
 						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="19" y="19"/>
 					</Size>
@@ -172,7 +172,7 @@
 						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
@@ -211,7 +211,7 @@
 						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
@@ -250,7 +250,7 @@
 						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>

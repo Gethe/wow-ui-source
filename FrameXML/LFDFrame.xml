@@ -162,7 +162,7 @@
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+						<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
 					<Frame name="$parentPlayer1" inherits="LFDDungeonReadyStatusPlayerTemplate" id="1">
 						<Anchors>
@@ -331,7 +331,7 @@
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+						<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
 					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate2" text="ENTER_DUNGEON">
 						<Size>

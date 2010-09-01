@@ -29,7 +29,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
+		<HighlightTexture name="$parentHighlight" urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 		<ButtonText name="$parentText">
 			<Size>
 				<AbsDimension x="0" y="0"/>

@@ -432,7 +432,7 @@ function LFDQueueFrameDungeonListButton_OnEnter(self)
 			GameTooltip:SetOwner(self, "ANCHOR_TOP");
 			GameTooltip:AddLine(YOU_MAY_NOT_QUEUE_FOR_DUNGEON, 1.0, 1.0, 1.0);
 			for i=1, GetLFDLockPlayerCount() do
-				local playerName, lockedReason = GetLFDLockInfo(dungeonID, i);
+				local playerName, lockedReason, subReason1, subReason2 = GetLFDLockInfo(dungeonID, i);
 				if ( lockedReason ~= 0 ) then
 					local who;
 					if ( i == 1 ) then
@@ -440,7 +440,7 @@ function LFDQueueFrameDungeonListButton_OnEnter(self)
 					else
 						who = "OTHER_";
 					end
-					GameTooltip:AddLine(format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName));
+					GameTooltip:AddLine(format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName, subReason1, subReason2));
 				end
 			end
 			GameTooltip:Show();
@@ -777,7 +777,7 @@ end
 function LFDConstructDeclinedMessage(dungeonID)
 	local returnVal;
 	for i=1, GetLFDLockPlayerCount() do
-		local playerName, lockedReason = GetLFDLockInfo(dungeonID, i);
+		local playerName, lockedReason, subReason1, subReason2 = GetLFDLockInfo(dungeonID, i);
 		if ( lockedReason ~= 0 ) then
 			local who;
 			if ( i == 1 ) then
@@ -786,9 +786,9 @@ function LFDConstructDeclinedMessage(dungeonID)
 				who = "OTHER_";
 			end
 			if ( returnVal ) then
-				returnVal = returnVal.."\n"..format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName);
+				returnVal = returnVal.."\n"..format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName, subReason1, subReason2);
 			else
-				returnVal = format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName);
+				returnVal = format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName, subReason1, subReason2);
 			end
 		end
 	end

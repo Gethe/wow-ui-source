@@ -1,25 +1,34 @@
 --
 -- SecureStateDriverManager
 -- Automatically sets states based on macro options for state driver frames
--- Also handled showing/hiding frames based on unit existence (code by Tem)
+-- Also handled showing/hiding frames based on unit existence (code originally by Tem)
 --
 
--- Register a frame with the state driver manager, and set a managed state
-function RegisterStateDriver(frame, state, values)
-    if ( state and values ) then
+-- Register a frame attribute to be set automatically with changes in game state
+function RegisterAttributeDriver(frame, attribute, values)
+    if ( attribute and values and attribute:sub(1, 1) ~= "_" ) then
         SecureStateDriverManager:SetAttribute("setframe", frame);
-        SecureStateDriverManager:SetAttribute("setstate", state.." "..values);
+        SecureStateDriverManager:SetAttribute("setstate", attribute.." "..values);
     end
 end
 
 -- Unregister a frame from the state driver manager.
-function UnregisterStateDriver(frame, state)
-    if ( state ) then
+function UnregisterAttributeDriver(frame, attribute)
+    if ( attribute ) then
         SecureStateDriverManager:SetAttribute("setframe", frame);
-        SecureStateDriverManager:SetAttribute("setstate", state.." ".."");
+        SecureStateDriverManager:SetAttribute("setstate", attribute);
     else
         SecureStateDriverManager:SetAttribute("delframe", frame);
     end
+end
+
+-- Bridge functions for compatibility
+function RegisterStateDriver(frame, state, values)
+    return RegisterAttributeDriver(frame, "state-"..state, values);
+end
+
+function UnregisterStateDriver(frame, state)
+    return UnregisterAttributeDriver(frame, "state-"..state);
 end
 
 -- Register a frame to be notified when a unit's existence changes, the
@@ -42,7 +51,7 @@ end
 --
 -- Private implementation
 --
-local secureStateDrivers = {};
+local secureAttributeDrivers = {};
 local unitExistsWatchers = {};
 local unitExistsCache = setmetatable({},
                                      { __index = function(t,k)
@@ -53,6 +62,8 @@ local unitExistsCache = setmetatable({},
                                      });
 local STATE_DRIVER_UPDATE_THROTTLE = 0.2;
 local timer = 0;
+
+local wipe = table.wipe;
 
 -- Check to see if a frame is registered
 function UnitWatchRegistered(frame)
@@ -70,8 +81,10 @@ local function SecureStateDriverManager_UpdateUnitWatch(frame, doState)
     else
         if ( exists ) then
             frame:Show();
+            frame:SetAttribute("statehidden", nil);
         else
             frame:Hide();
+            frame:SetAttribute("statehidden", true);
         end
     end
 end
@@ -84,26 +97,34 @@ local function SecureStateDriverManager_OnUpdate(self,elapsed)
         timer = STATE_DRIVER_UPDATE_THROTTLE;
 
         -- Handle state driver updates
-        for frame,states in pairs(secureStateDrivers) do
-            for state,values in pairs(states) do
+        for frame,drivers in pairs(secureAttributeDrivers) do
+            for attribute,values in pairs(drivers) do
                 local newValue = SecureCmdOptionParse(values);
 
-                if ( state == "state-visibility" ) then
+                if ( attribute == "state-visibility" ) then
                     if ( newValue == "show" ) then
                         frame:Show();
+                        frame:SetAttribute("statehidden", nil);
                     elseif ( newValue == "hide" ) then
                         frame:Hide();
+                        frame:SetAttribute("statehidden", true);
                     end
-                else
-                    local oldValue = frame:GetAttribute(state);
-                    if ( newValue and newValue ~= oldValue ) then
-                        frame:SetAttribute(state, newValue);
+                elseif ( newValue ) then
+                    if ( newValue == 'nil' ) then
+                        newValue = nil;
+                    else
+                        newValue = tonumber(newValue) or newValue;
+                    end
+                    local oldValue = frame:GetAttribute(attribute);
+                    if ( newValue ~= oldValue ) then
+                        frame:SetAttribute(attribute, newValue);
                     end
                 end
             end
         end
 
         -- Handle unit existence changes
+        wipe(unitExistsCache);
         for k in pairs(unitExistsCache) do
             unitExistsCache[k] = nil;
         end
@@ -122,32 +143,36 @@ local function SecureStateDriverManager_OnAttributeChanged(self, name, value)
         return;
     end
     if ( name == "setframe" ) then
-        if ( not secureStateDrivers[value] ) then
-            secureStateDrivers[value] = {};
+        if ( not secureAttributeDrivers[value] ) then
+            secureAttributeDrivers[value] = {};
         end
         SecureStateDriverManager:Show();
     elseif ( name == "delframe" ) then
-        secureStateDrivers[value] = nil;
+        secureAttributeDrivers[value] = nil;
     elseif ( name == "setstate" ) then
         local frame = self:GetAttribute("setframe");
-        local state, values = strmatch(value, "^(%S+)%s+(.*)$");
-        state = "state-"..state;
+        local attribute, values = strmatch(value, "^(%S+)%s*(.*)$");
         if ( values == "" ) then
-            secureStateDrivers[frame][state] = nil;
+            secureAttributeDrivers[frame][attribute] = nil;
         else
-            secureStateDrivers[frame][state] = values;
+            secureAttributeDrivers[frame][attribute] = values;
             local newValue = SecureCmdOptionParse(values);
 
-            if ( state == "state-visibility" ) then
+            if ( attribute == "state-visibility" ) then
                 if ( newValue == "show" ) then
                     frame:Show();
                 elseif ( newValue == "hide" ) then
                     frame:Hide();
                 end
-            else
-                local oldValue = frame:GetAttribute(state);
-                if ( newValue and newValue ~= oldValue ) then
-                    frame:SetAttribute(state, newValue);
+            elseif ( newValue ) then
+                if ( newValue == 'nil' ) then
+                    newValue = nil;
+                else
+                    newValue = tonumber(newValue) or newValue;
+                end
+                local oldValue = frame:GetAttribute(attribute);
+                if ( newValue ~= oldValue ) then
+                    frame:SetAttribute(attribute, newValue);
                 end
             end
         end

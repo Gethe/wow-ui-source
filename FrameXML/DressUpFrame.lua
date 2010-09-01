@@ -12,12 +12,7 @@ end
 
 function DressUpTexturePath()
 	-- HACK
-	local race, fileName = UnitRace("player");
-	if ( strupper(fileName) == "GNOME" ) then
-		fileName = "Dwarf";
-	elseif ( strupper(fileName) == "TROLL" ) then
-		fileName = "Orc";
-	end
+	local fileName = UnitRace("player");
 	if ( not fileName ) then
 		fileName = "Orc";
 	end

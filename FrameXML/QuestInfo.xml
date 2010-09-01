@@ -366,8 +366,8 @@
 			</Frame>
 			<Frame name="QuestInfoHonorFrame" inherits="QuestHonorFrameTemplate" />
 			<Frame name="QuestInfoArenaPointsFrame" inherits="QuestArenaPointsFrameTemplate" />
-			<Frame name="QuestInfoTalentFrame" inherits="QuestTalentFrameTemplate" />
-			<Frame name="QuestInfoSkillPointFrame" inherits="QuestSkillPointFrameTemplate" />
+			<Button name="QuestInfoTalentFrame" inherits="QuestTalentFrameTemplate" />
+			<Button name="QuestInfoSkillPointFrame" inherits="QuestSkillPointFrameTemplate" />
 			<Frame name="QuestInfoXPFrame" inherits="QuestXPFrameTemplate" />
 			<Frame name="QuestInfoPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate" />
 			<Frame name="QuestInfoItemHighlight" hidden="true">

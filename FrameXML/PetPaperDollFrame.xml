@@ -7,7 +7,7 @@
 		</Size>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentActiveTexture" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+				<Texture name="$parentActiveTexture" urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -86,7 +86,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture name="PetPaperDollXPBar1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+								<Texture name="PetPaperDollXPBar1" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 									<Size>
 										<AbsDimension x="160" y="13"/>
 									</Size>
@@ -99,7 +99,7 @@
 									</Anchors>
 									<TexCoords left="0.203125" right="0.8046875" top="0.2890625" bottom="0.33984375"/>
 								</Texture>
-								<Texture file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+								<Texture urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 									<Size>
 										<AbsDimension x="159" y="13"/>
 									</Size>
@@ -135,7 +135,7 @@
 							<OnMinMaxChanged function="TextStatusBar_OnValueChanged"/>
 							<OnLeave function="HideTextStatusBarText"/>
 						</Scripts>
-						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 						<BarColor r="0.58" g="0.0" b="0.55"/>
 					</StatusBar>
 					<PlayerModel name="PetModelFrame">
@@ -169,7 +169,7 @@
 										Model_RotateLeft(PetModelFrame);
 									</OnClick>
 								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+								<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
@@ -188,7 +188,7 @@
 										Model_RotateRight(PetModelFrame);
 									</OnClick>
 								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+								<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
@@ -228,7 +228,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+								<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 									<Size>
 										<AbsDimension x="114" y="78"/>
 									</Size>
@@ -241,7 +241,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.89" top="0" bottom="0.61"/>
 								</Texture>
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+								<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
 									<Size>
 										<AbsDimension x="114" y="78"/>
 									</Size>
@@ -408,7 +408,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+										<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
 											<TexCoords left="0" right="1.0" top="0.2265625" bottom="0.33984375"/>
 										</Texture>
 										<FontString name="PetMagicResText1" inherits="GameFontHighlightSmall" text="X">
@@ -429,7 +429,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+										<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
 											<TexCoords left="0" right="1.0" top="0" bottom="0.11328125"/>
 										</Texture>
 										<FontString name="PetMagicResText2" inherits="GameFontHighlightSmall" text="X">
@@ -450,7 +450,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+										<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
 											<TexCoords left="0" right="1.0" top="0.11328125" bottom="0.2265625"/>
 										</Texture>
 										<FontString name="PetMagicResText3" inherits="GameFontHighlightSmall" text="X">
@@ -471,7 +471,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+										<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
 											<TexCoords left="0" right="1.0" top="0.33984375" bottom="0.453125"/>
 										</Texture>
 										<FontString name="PetMagicResText4" inherits="GameFontHighlightSmall" text="X">
@@ -492,7 +492,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+										<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
 											<TexCoords left="0" right="1.0" top="0.453125" bottom="0.56640625"/>
 										</Texture>
 										<FontString name="PetMagicResText5" inherits="GameFontHighlightSmall" text="X">
@@ -585,7 +585,7 @@
 										Model_RotateLeft(CompanionModelFrame);
 									</OnClick>
 								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+								<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
@@ -604,7 +604,7 @@
 										Model_RotateRight(CompanionModelFrame);
 									</OnClick>
 								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+								<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
@@ -741,9 +741,9 @@
 								PetPaperDollFrame_SetCompanionPage((PetPaperDollFrameCompanionFrame.mode=="MOUNT" and PetPaperDollFrameCompanionFrame.pageMount or PetPaperDollFrameCompanionFrame.pageCritter) - 1);
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="CompanionNextPageButton">
@@ -762,9 +762,9 @@
 								PetPaperDollFrame_SetCompanionPage(((PetPaperDollFrameCompanionFrame.mode=="MOUNT" and PetPaperDollFrameCompanionFrame.pageMount or PetPaperDollFrameCompanionFrame.pageCritter) or 0)+ 1);
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 				</Frames>

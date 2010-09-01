@@ -17,6 +17,7 @@
 			</PostClick>
 			<OnDragStart>
 				if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") ) then
+					SpellFlyout:Hide();
 					PickupAction(self.action);
 					ActionButton_UpdateState(self);
 					ActionButton_UpdateFlash(self);
@@ -29,9 +30,11 @@
 			</OnReceiveDrag>
 			<OnEnter>
 				ActionButton_SetTooltip(self);
+				ActionButton_UpdateFlyout(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+				ActionButton_UpdateFlyout(self);
 			</OnLeave>
 			<OnUpdate>
 				ActionButton_OnUpdate(self, elapsed);
@@ -166,9 +169,9 @@
 				PlaySound("UChatScrollButton");
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
+		<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
 		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
-		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+		<DisabledTexture urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
 	</Button>
 	<Button name="ActionBarDownButton" parent="MainMenuBarArtFrame">
@@ -191,9 +194,9 @@
 				PlaySound("UChatScrollButton");
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+		<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
 		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
-		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+		<DisabledTexture urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
 	</Button>
 </Ui>

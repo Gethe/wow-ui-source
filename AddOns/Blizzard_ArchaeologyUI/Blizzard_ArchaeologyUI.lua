@@ -24,18 +24,18 @@ ARCHAEOLOGY_CURRENT_PAGE = 3;
 local ArcheologyLayoutInfo = {
 	[ARCHAEOLOGY_SUMMARY_PAGE] 	= 		{ 	
 																		--updateFunc = "SpellBook_UpdateProfTab",
-																		bgFileL="Interface\\Archaeology\\Arch-BookItemLeft",
-																		bgFileR="Interface\\Archaeology\\Arch-BookItemRight"
+																		bgFileL="Interface\\Archeology\\Arch-BookItemLeft",
+																		bgFileR="Interface\\Archeology\\Arch-BookItemRight"
 																	};
 	[ARCHAEOLOGY_COMPLETED_PAGE] 	= 		{ 	
 																		--updateFunc = "SpellBook_UpdateProfTab",
-																		bgFileL="Interface\\Archaeology\\Arch-BookCompletedLeft",
-																		bgFileR="Interface\\Archaeology\\Arch-BookCompletedRight"
+																		bgFileL="Interface\\Archeology\\Arch-BookCompletedLeft",
+																		bgFileR="Interface\\Archeology\\Arch-BookCompletedRight"
 																	};
 	[ARCHAEOLOGY_CURRENT_PAGE] 	= 		{ 	
 																		--updateFunc = "SpellBook_UpdateProfTab",
-																		bgFileL="Interface\\Archaeology\\Arch-BookItemLeft",
-																		bgFileR="Interface\\Archaeology\\Arch-BookItemRight"
+																		bgFileL="Interface\\Archeology\\Arch-BookItemLeft",
+																		bgFileR="Interface\\Archeology\\Arch-BookItemRight"
 																	};
 
 
@@ -181,7 +181,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 		else 
 			self.solveFrame.solveButton:Disable();
 		end
-	end		
+	end
 		
 	self.artifactName:SetText(name);
 	self.icon:SetTexture(icon);	
@@ -190,7 +190,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	local runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = GetItemInfo(RaceitemID);
 	
 	for i=1,ARCHAEOLOGY_MAX_STONES do
-		if i > numSockets then
+		if i > numSockets or not runeName then
 			self.solveFrame["keystone"..i]:Hide();
 		else
 			self.solveFrame["keystone"..i].icon:SetTexture(runeStoneIconPath);
@@ -213,7 +213,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 		if RaceTexture and RaceTexture ~= "" then
 			self.raceBG:SetTexture(RaceTexture.."BIG");
 		else
-			self.raceBG:SetTexture("Interface\\Archaeology\\Arch-TempLogo".."BIG");
+			self.raceBG:SetTexture("Interface\\Archeology\\Arch-TempLogo".."BIG");
 		end
 	else
 		self.historyTitle:SetPoint("CENTER", 0, -45);
@@ -223,7 +223,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 		if bgTexture and bgTexture ~= "" then
 			self.artifactBG:SetTexture(bgTexture);
 		else
-			self.artifactBG:SetTexture("Interface\\Archaeology\\Arch-TempRareSketch");
+			self.artifactBG:SetTexture("Interface\\Archeology\\Arch-TempRareSketch");
 		end
 	end		
 end

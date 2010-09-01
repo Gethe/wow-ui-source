@@ -20,7 +20,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="GameMenuFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>

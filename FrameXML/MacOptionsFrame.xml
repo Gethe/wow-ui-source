@@ -21,7 +21,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="MacOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="MacOptionsFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="296" y="64"/>
 					</Size>
@@ -567,7 +567,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="MacOptionsCompressFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="MacOptionsCompressFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="296" y="64"/>
 					</Size>
@@ -697,7 +697,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="MacOptionsCancelFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="MacOptionsCancelFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="296" y="70"/>
 					</Size>
@@ -807,7 +807,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="FolderPickerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="FolderPickerHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="296" y="70"/>
 					</Size>

@@ -2787,6 +2787,8 @@ function ToggleGameMenu()
 		TimeManagerCloseButton:Click();
 	elseif ( MultiCastFlyoutFrame:IsShown() ) then
 		MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
+	elseif (SpellFlyout:IsShown() ) then
+		SpellFlyout:Hide();
 	elseif ( securecall("FCFDockOverflow_CloseLists") ) then
 	elseif ( securecall("CloseMenus") ) then
 	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then

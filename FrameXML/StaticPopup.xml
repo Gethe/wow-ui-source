@@ -258,7 +258,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+						<Texture name="$parentNameFrame" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 							<Size>
 								<AbsDimension x="140" y="62"/>
 							</Size>

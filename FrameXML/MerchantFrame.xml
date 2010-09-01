@@ -7,7 +7,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+				<Texture name="$parentSlotTexture" urgency="5" file="Interface\Buttons\UI-EmptySlot">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -19,7 +19,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+				<Texture name="$parentNameFrame" urgency="5" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
 					<Size>
 						<AbsDimension x="128" y="78"/>
 					</Size>
@@ -135,7 +135,7 @@
                 </Texture>
             </Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\MerchantFrame\UI-Merchant-TopLeft">
+				<Texture urgency="5" file="Interface\MerchantFrame\UI-Merchant-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -143,7 +143,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>		
-				<Texture file="Interface\MerchantFrame\UI-Merchant-TopRight">
+				<Texture urgency="5" file="Interface\MerchantFrame\UI-Merchant-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -151,7 +151,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\MerchantFrame\UI-Merchant-BotLeft">
+				<Texture urgency="5" file="Interface\MerchantFrame\UI-Merchant-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -159,7 +159,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\MerchantFrame\UI-Merchant-BotRight">
+				<Texture urgency="5" file="Interface\MerchantFrame\UI-Merchant-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -237,7 +237,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="MerchantFrameBottomLeftBorder" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
+				<Texture name="MerchantFrameBottomLeftBorder" urgency="5" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
 					<Size>
 						<AbsDimension x="256" y="61"/>
 					</Size>
@@ -250,7 +250,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.4765625"/>
 				</Texture>
-				<Texture name="MerchantFrameBottomRightBorder" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
+				<Texture name="MerchantFrameBottomRightBorder" urgency="5" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
 					<Size>
 						<AbsDimension x="76" y="61"/>
 					</Size>
@@ -546,7 +546,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+						<Texture name="$parentSlotTexture" urgency="5" file="Interface\Buttons\UI-EmptySlot">
 							<Size>
 								<AbsDimension x="64" y="64"/>
 							</Size>
@@ -558,7 +558,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+						<Texture name="$parentNameFrame" urgency="5" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
 							<Size>
 								<AbsDimension x="128" y="64"/>
 							</Size>
@@ -671,9 +671,9 @@
 				<Scripts>
 					<OnClick function="MerchantPrevPageButton_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="MerchantNextPageButton">
@@ -715,9 +715,9 @@
 				<Scripts>
 					<OnClick function="MerchantNextPageButton_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="MerchantFrameCloseButton" inherits="UIPanelCloseButton">

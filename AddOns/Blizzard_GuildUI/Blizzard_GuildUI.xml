@@ -30,7 +30,7 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" setAllPoints="true" alphaMode="ADD"/>
+		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" setAllPoints="true" alphaMode="ADD"/>
 	</Button>
 	<Button name="GuildPerksButtonTemplate" virtual="true">
 		<Size>
@@ -199,7 +199,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="24"/>
 					</Size>
@@ -208,7 +208,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="53" y="24"/>
 					</Size>
@@ -217,7 +217,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="24"/>
 					</Size>
@@ -521,7 +521,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture name="$parentProgress" file="Interface\TargetingFrame\UI-StatusBar">
+						<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar">
 							<Size x="1" y="14"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
@@ -535,7 +535,7 @@
 							</Anchors>
 							<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
 						</Texture>
-						<Texture name="$parentCap" file="Interface\TargetingFrame\UI-StatusBar" hidden="true">
+						<Texture name="$parentCap" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" hidden="true">
 							<Size x="20" y="14"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
@@ -630,7 +630,7 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.224" g="0.396" b="0.839"/>
 				<Frames>
 					<Button name="$parentButton">

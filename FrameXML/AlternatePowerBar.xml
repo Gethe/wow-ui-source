@@ -59,7 +59,7 @@
 				self:GetParent():Click(button);
 			</OnMouseUp>
 		</Scripts>
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="0" g="0" b="1.0"/>
 	</StatusBar>
 	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--Primarily for Druids in forms (at the moment)-->

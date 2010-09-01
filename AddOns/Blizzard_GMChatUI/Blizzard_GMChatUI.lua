@@ -39,7 +39,7 @@ function GMChatFrame_OnLoad(self)
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
-	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 = ...;
+	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...;
 	if ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then
 		local info = ChatTypeInfo["WHISPER"];
 		

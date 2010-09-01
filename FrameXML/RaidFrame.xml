@@ -4,7 +4,7 @@
 	<Frame name="RaidInfoHeaderTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="24"/>
 					</Size>
@@ -14,7 +14,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="24"/>
 					</Size>
@@ -24,7 +24,7 @@
 					</Anchors>
 					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
@@ -296,7 +296,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size x="256" y="64"/>
 							<Anchors>
 								<Anchor point="TOP">

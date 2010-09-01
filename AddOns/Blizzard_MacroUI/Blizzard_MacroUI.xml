@@ -33,7 +33,7 @@
 			</Anchors>
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 	<Frame name="MacroFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>
@@ -51,7 +51,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
+				<Texture name="MacroFramePortrait" urgency="5" file="Interface\MacroFrame\MacroFrame-Icon">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -65,7 +65,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -73,7 +73,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -81,7 +81,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\MacroFrame\MacroFrame-BotLeft">
+				<Texture urgency="5" file="Interface\MacroFrame\MacroFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -89,7 +89,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\MacroFrame\MacroFrame-BotRight">
+				<Texture urgency="5" file="Interface\MacroFrame\MacroFrame-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -108,7 +108,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="MacroHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture name="MacroHorizontalBarLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="256" y="16"/>
 					</Size>
@@ -121,7 +121,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="75" y="16"/>
 					</Size>
@@ -134,7 +134,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
 				</Texture>
-				<Texture name="MacroFrameSelectedMacroBackground" file="Interface\Buttons\UI-EmptySlot">
+				<Texture name="MacroFrameSelectedMacroBackground" urgency="5" file="Interface\Buttons\UI-EmptySlot">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -478,7 +478,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -486,7 +486,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopRight">
 					<Size>
 						<AbsDimension x="64" y="256"/>
 					</Size>
@@ -498,7 +498,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -510,7 +510,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotRight">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -556,7 +556,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="MacroPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+						<Texture name="MacroPopupNameLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 							<Size>
 								<AbsDimension x="12" y="29"/>
 							</Size>
@@ -569,7 +569,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="MacroPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+						<Texture name="MacroPopupNameMiddle" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 							<Size>
 								<AbsDimension x="175" y="29"/>
 							</Size>
@@ -578,7 +578,7 @@
 							</Anchors>
 							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="MacroPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+						<Texture name="MacroPopupNameRight" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 							<Size>
 								<AbsDimension x="12" y="29"/>
 							</Size>

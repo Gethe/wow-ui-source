@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Texture name="TalentBranchTemplate" file="Interface\TalentFrame\UI-TalentBranches" virtual="true">
 		<Size>
-			<AbsDimension x="32" y="32"/>
+			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
@@ -10,42 +10,31 @@
 	</Texture>
 	<Texture name="TalentArrowTemplate" file="Interface\TalentFrame\UI-TalentArrows" virtual="true">
 		<Size>
-			<AbsDimension x="32" y="32"/>
+			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 	</Texture>
 	<Button name="TalentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentSlot" file="Interface\Buttons\UI-EmptySlot-White">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+			<Layer level="ARTWORK">
+				<Texture name="$parentSlot" inherits="Talent-SingleBorder">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-1" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentRankBorder" file="Interface\TalentFrame\TalentFrame-RankBorder">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+				<Texture name="$parentRankBorder" inherits="Talent-PointBg">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 				</Texture>
 				<FontString name="$parentRank" inherits="GameFontNormalSmall">
@@ -60,6 +49,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				_G[self:GetName().."NormalTexture"]:ClearAllPoints();
+			</OnLoad>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>

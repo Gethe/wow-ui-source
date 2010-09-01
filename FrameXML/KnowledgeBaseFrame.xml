@@ -7,7 +7,7 @@
 		</Size>	
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentHotIcon" file="Interface\HelpFrame\HotIssueIcon">
+				<Texture name="$parentHotIcon" urgency="5" file="Interface\HelpFrame\HotIssueIcon">
 					<Size>
 						<AbsDimension x="14" y="14"/>
 					</Size>
@@ -19,7 +19,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentUpdatedIcon" file="Interface\GossipFrame\AvailableQuestIcon">
+				<Texture name="$parentUpdatedIcon" urgency="5" file="Interface\GossipFrame\AvailableQuestIcon">
 					<Size>
 						<AbsDimension x="14" y="14"/>
 					</Size>
@@ -83,7 +83,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="KnowledgeBaseFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="KnowledgeBaseFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="336" y="64"/>
 					</Size>
@@ -374,9 +374,9 @@
 								KnowledgeBaseArticleListFrame_NextPage();
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="KnowledgeBaseArticleListFramePreviousButton">
@@ -405,9 +405,9 @@
 								KnowledgeBaseArticleListFrame_PreviousPage();
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="KnowledgeBaseArticleListItem1" inherits="KnowledgeBaseArticleListItemTemplate">

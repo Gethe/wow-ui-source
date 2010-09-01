@@ -39,7 +39,7 @@
 		<Frame frameStrata="MEDIUM" setAllPoints="true" name="$parentShine">
 			<Layers>
 				<Layer level="OVERLAY">
-					<Texture name="$parentTexture" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+					<Texture name="$parentTexture" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
 						<Size x="60" y="35"/>
 						<Anchors>
 							<Anchor point="CENTER">

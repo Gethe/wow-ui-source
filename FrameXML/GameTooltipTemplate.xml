@@ -232,7 +232,7 @@
 						HealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarTexture name="$parentTexture" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 			</StatusBar>
 		</Frames>
 		<Scripts>
@@ -427,6 +427,6 @@
 				self:SetStatusBarColor(0, 1.0, 0);
 			</OnLoad>
 		</Scripts>
-		<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+		<BarTexture name="$parentTexture" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 	</StatusBar>
 </Ui>

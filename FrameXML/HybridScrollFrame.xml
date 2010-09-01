@@ -111,7 +111,7 @@
 				HybridScrollFrame_OnValueChanged(self:GetParent(), value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
+		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
 			<Size>
 				<AbsDimension x="18" y="24"/>
 			</Size>
@@ -176,7 +176,7 @@
 				HybridScrollFrame_OnValueChanged(self:GetParent(), value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
+		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
 			<Size>
 				<AbsDimension x="18" y="24"/>
 			</Size>

@@ -14,7 +14,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentMiniBorderLeft" file="Interface\WorldMap\UI-WorldMapSmall-Left.tga" hidden="true">
+				<Texture name="$parentMiniBorderLeft" urgency="5" file="Interface\WorldMap\UI-WorldMapSmall-Left.tga" hidden="true">
 					<Size>
 						<AbsDimension x="512" y="512"/>
 					</Size>
@@ -650,9 +650,9 @@
 				<Scripts>
 					<OnClick function="WorldMapFrame_ToggleWindowSize" />
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="WorldMapFrameSizeUpButton" hidden="true">
 				<Size>
@@ -670,7 +670,7 @@
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<QuestPOIFrame name="WorldMapBlobFrame">
 				<Size>

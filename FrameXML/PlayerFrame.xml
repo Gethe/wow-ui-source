@@ -68,7 +68,7 @@
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="PlayerFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
+								<Texture name="PlayerFrameTexture" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame">
 									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
 								</Texture>
 								<Texture name="PlayerFrameVehicleTexture" file="Interface\Vehicles\UI-Vehicle-Frame" hidden="true">
@@ -396,7 +396,7 @@
 					</OnMouseUp>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
 				<Size>
@@ -420,7 +420,7 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">

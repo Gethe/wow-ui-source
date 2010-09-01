@@ -766,9 +766,9 @@
 								AuctionFrameBrowse_Search();
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="BrowseNextPageButton">
@@ -803,9 +803,9 @@
 								AuctionFrameBrowse_Search();
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="BrowseCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
@@ -1464,21 +1464,21 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size x="8" y="20"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="-5" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size x="8" y="20"/>
 									<Anchors>
 										<Anchor point="RIGHT" x="-10" y="0"/>
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size x="10" y="20"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
@@ -1549,21 +1549,21 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size x="8" y="20"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="-5" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size x="8" y="20"/>
 									<Anchors>
 										<Anchor point="RIGHT" x="-10" y="0"/>
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size x="10" y="20"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>

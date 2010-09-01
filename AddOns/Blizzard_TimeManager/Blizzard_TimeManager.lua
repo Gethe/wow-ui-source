@@ -117,8 +117,7 @@ function TimeManagerFrame_OnLoad(self)
 	UIDropDownMenu_SetWidth(TimeManagerAlarmMinuteDropDown, 30, 40);
 
 	UIDropDownMenu_Initialize(TimeManagerAlarmAMPMDropDown, TimeManagerAlarmAMPMDropDown_Initialize);
-	-- some languages have ridonculously long am/pm strings (i'm looking at you French) so we may have to
-	-- readjust the ampm dropdown width plus do some reanchoring if the text is too wide
+	-- some languages have long am/pm strings so we may have to readjust the ampm dropdown width plus do some reanchoring if the text is too wide
 	local maxAMPMWidth;
 	TimeManagerAMPMDummyText:SetText(TIMEMANAGER_AM);
 	maxAMPMWidth = TimeManagerAMPMDummyText:GetWidth();

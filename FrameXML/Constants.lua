@@ -20,6 +20,7 @@ FONT_COLOR_CODE_CLOSE		= "|r";
 NORMAL_FONT_COLOR			= {r=1.0, g=0.82, b=0.0};
 HIGHLIGHT_FONT_COLOR		= {r=1.0, g=1.0, b=1.0};
 RED_FONT_COLOR				= {r=1.0, g=0.1, b=0.1};
+DIM_RED_FONT_COLOR			= {r=0.8, g=0.1, b=0.1};
 GREEN_FONT_COLOR			= {r=0.1, g=1.0, b=0.1};
 GRAY_FONT_COLOR				= {r=0.5, g=0.5, b=0.5};
 YELLOW_FONT_COLOR			= {r=1.0, g=1.0, b=0.0};

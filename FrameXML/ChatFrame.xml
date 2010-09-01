@@ -119,7 +119,7 @@
 						self:GetParent():ToggleInputLanguage();
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
 				<NormalFont style="DialogButtonNormalText"/>
 			</Button>
 		</Frames>

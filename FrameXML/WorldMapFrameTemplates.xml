@@ -106,7 +106,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
+				<Texture urgency="5" file="Interface\Minimap\POIIcons" setAllPoints="true">
 					<TexCoords left="0.56640625" right="0.6328125" top="0.00390625" bottom="0.0703125"/>
 				</Texture>
 			</Layer>
@@ -177,7 +177,7 @@
 					</Anchors>
 					<Color r="1" g="0.82" b="0" />
 				</FontString>
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
+				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>

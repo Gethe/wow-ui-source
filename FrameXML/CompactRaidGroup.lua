@@ -1,5 +1,6 @@
 function CompactRaidGroup_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
 end
 
 function CompactRaidGroup_OnEvent(self, event, ...)
@@ -8,13 +9,22 @@ function CompactRaidGroup_OnEvent(self, event, ...)
 	end
 end
 
+function CompactRaidGroup_ApplyFunctionToAllFrames(frame, func, ...)
+	for i=1, MEMBERS_PER_RAID_GROUP do
+		local unitFrame = _G[frame:GetName().."Member"..i];
+		func(unitFrame, ...);
+	end
+end
+
 function CompactRaidGroup_GenerateForGroup(groupIndex)
+	local didCreate = false;
 	local frame = _G["CompactRaidGroup"..groupIndex]
 	if (  not frame ) then
 		frame = CreateFrame("Frame", "CompactRaidGroup"..groupIndex, UIParent, "CompactRaidGroupTemplate");
 		CompactRaidGroup_InitializeForGroup(frame, groupIndex);
+		didCreate = true;
 	end
-	return frame;
+	return frame, didCreate;
 end
 
 function CompactRaidGroup_InitializeForGroup(frame, groupIndex)

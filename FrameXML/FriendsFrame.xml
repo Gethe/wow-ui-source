@@ -799,7 +799,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="24"/>
 					</Size>
@@ -808,7 +808,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="53" y="24"/>
 					</Size>
@@ -817,7 +817,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="24"/>
 					</Size>
@@ -886,7 +886,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+				<Texture urgency="5" file="Interface\FriendsFrame\FriendsFrameScrollIcon">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -1100,7 +1100,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1111,7 +1111,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1122,7 +1122,7 @@
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="0" y="20"/>
 									</Size>
@@ -2830,7 +2830,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -2841,7 +2841,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -2852,7 +2852,7 @@
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="0" y="20"/>
 									</Size>

@@ -87,12 +87,14 @@ end
 function InspectTalentFrame_OnLoad(self)
 	self.inspect = true;
 	self.pet = false;
-	self.talentGroup = 1;
-	self.arrowInsetX = -3;
-	self.arrowInsetY = -3;
-	self.branchOffsetX = 2;
-	self.branchOffsetY = -2;
-
+	self.talentButtonSize = 30;
+	self.initialOffsetX = 62;
+	self.initialOffsetY = 12;
+	self.buttonSpacingX = 56;
+	self.buttonSpacingY = 46;
+	self.arrowInsetX = 2;
+	self.arrowInsetY = 2;
+	
 	TalentFrame_Load(self);
 
 	local button;
@@ -105,8 +107,7 @@ function InspectTalentFrame_OnLoad(self)
 		end
 	end
 	
-	InspectTalentFrameScrollFrameScrollBarScrollDownButton:SetScript("OnClick", InspectTalentFrameDownArrow_OnClick);
-
+	InspectTalentFrameScrollFrame.scrollBarHideable = 1;
 	-- setup tabs
 	PanelTemplates_SetNumTabs(self, MAX_TALENT_TABS);
 	PanelTemplates_UpdateTabs(self);

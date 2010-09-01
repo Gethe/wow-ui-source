@@ -1,5 +1,19 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+
+	<Texture name="ActionBarFlyoutButton-ArrowUp" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
+		<Size x="23" y="11"/>	
+		<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>	
+	</Texture>
+	<Texture name="ActionBarFlyoutButton-IconFrame" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
+		<Size x="42" y="42"/>	
+		<TexCoords left="0.01562500" right="0.67187500" top="0.39843750" bottom="0.72656250"/>	
+	</Texture>
+	<Texture name="ActionBarFlyoutButton-IconShadow" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
+		<Size x="48" y="48"/>	
+		<TexCoords left="0.01562500" right="0.76562500" top="0.00781250" bottom="0.38281250"/>	
+	</Texture>
+	
 	<CheckButton name="ActionButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="36" y="36"/>
@@ -8,8 +22,21 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon"/>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel = "1">
 				<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
+				<Texture name="$parentFlyoutBorder" inherits="ActionBarFlyoutButton-IconFrame" parentKey="FlyoutBorder" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFlyoutBorderShadow" inherits="ActionBarFlyoutButton-IconShadow" parentKey="FlyoutBorderShadow" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture name="$parentFlyoutArrow" inherits="ActionBarFlyoutButton-ArrowUp" parentKey="FlyoutArrow" hidden="true"/>
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
 					<Size>
 						<AbsDimension x="36" y="10"/>
@@ -71,7 +98,7 @@
 				</Anchors> 
 			</Cooldown>
 		</Frames>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+		<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="-15" y="15"/>
 				<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
@@ -79,7 +106,7 @@
 		</NormalTexture>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 </Ui>
 
