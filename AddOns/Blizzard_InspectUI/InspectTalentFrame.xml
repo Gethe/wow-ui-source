@@ -339,18 +339,6 @@
 							<Button name="InspectTalentFrameTalent26" inherits="TalentButtonTemplate" id="26"/>
 							<Button name="InspectTalentFrameTalent27" inherits="TalentButtonTemplate" id="27"/>
 							<Button name="InspectTalentFrameTalent28" inherits="TalentButtonTemplate" id="28"/>
-							<Button name="InspectTalentFrameTalent29" inherits="TalentButtonTemplate" id="29"/>
-							<Button name="InspectTalentFrameTalent30" inherits="TalentButtonTemplate" id="30"/>
-							<Button name="InspectTalentFrameTalent31" inherits="TalentButtonTemplate" id="31"/>
-							<Button name="InspectTalentFrameTalent32" inherits="TalentButtonTemplate" id="32"/>
-							<Button name="InspectTalentFrameTalent33" inherits="TalentButtonTemplate" id="33"/>
-							<Button name="InspectTalentFrameTalent34" inherits="TalentButtonTemplate" id="34"/>
-							<Button name="InspectTalentFrameTalent35" inherits="TalentButtonTemplate" id="35"/>
-							<Button name="InspectTalentFrameTalent36" inherits="TalentButtonTemplate" id="36"/>
-							<Button name="InspectTalentFrameTalent37" inherits="TalentButtonTemplate" id="37"/>
-							<Button name="InspectTalentFrameTalent38" inherits="TalentButtonTemplate" id="38"/>
-							<Button name="InspectTalentFrameTalent39" inherits="TalentButtonTemplate" id="39"/>
-							<Button name="InspectTalentFrameTalent40" inherits="TalentButtonTemplate" id="40"/>
 
 							<Frame name="InspectTalentFrameArrowFrame" setAllPoints="true">
 								<Layers>

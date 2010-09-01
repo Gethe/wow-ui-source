@@ -481,7 +481,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacOptionsFrameDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
+			<Button name="MacOptionsFrameDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
 				<Size>
 					<AbsDimension x="100" y="21"/>
 				</Size>

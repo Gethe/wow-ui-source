@@ -601,6 +601,8 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		--this should be the default, set in WatchFrameLineTemplate_Reset
 		if ( eligible ~= nil ) then
 			line.text.eligible = eligible;
+		else
+			line.text.eligible = true;
 		end
 	end
 	-- dash
@@ -870,9 +872,11 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 					end
 				else
 					for j = 1, numObjectives do
-						text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
+						text, objectiveType, finished = GetQuestLogLeaderBoard(j, questIndex);
 						if ( not finished ) then
-							text = WatchFrame_ReverseQuestObjective(text);
+							if (objectiveType ~= "spell") then
+								text = WatchFrame_ReverseQuestObjective(text);
+							end
 							line = WatchFrame_GetQuestLine();
 							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 							lastLine = line;

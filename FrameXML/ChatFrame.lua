@@ -2282,6 +2282,14 @@ SlashCmdList["TRANSFORM"] = function(msg)
 	Transform();
 end
 
+SlashCmdList["RANDOMPET"] = function(msg)
+	local numCompanions = GetNumCompanions("CRITTER");
+	if ( numCompanions > 0  ) then
+		local index = random(1, numCompanions);
+		CallCompanion("CRITTER", index);
+	end
+end
+
 for index, value in pairs(ChatTypeInfo) do
 	value.r = 1.0;
 	value.g = 1.0;
@@ -2899,7 +2907,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			else
 				if ( not showLink or strlen(arg2) == 0 ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+					if ( type == "TEXT_EMOTE" ) then
+						body = arg1;
+					else
+						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+					end
 				else
 					if ( type == "EMOTE" ) then
 						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..playerLink..coloredName.."|h");

@@ -402,7 +402,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacroDeleteButton" inherits="UIPanelButtonGrayTemplate" text="DELETE">
+			<Button name="MacroDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
 				<Size>
 					<AbsDimension x="80" y="22"/>
 				</Size>

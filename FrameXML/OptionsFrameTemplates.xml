@@ -332,7 +332,7 @@
 
 	<Frame name="OptionsFrameTemplate" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH" virtual="true">
 		<Size>
-			<AbsDimension x="648" y="520"/>
+			<AbsDimension x="858" y="660"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -376,7 +376,7 @@
 		<Frames>
 			<Frame name="$parentCategoryFrame" inherits="OptionsFrameListTemplate">
 				<Size>
-					<AbsDimension x="175" y="429"/>
+					<AbsDimension x="175" y="569"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">

@@ -542,6 +542,31 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame name="$parentPhasingIcon" parentKey="phasingIcon">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-7" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\TargetingFrame\UI-PhasingIcon" setAllPoints="true">
+							<TexCoords left="0.15625" right="0.84375" top="0.15625" bottom="0.84375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetParent(UIParent);
+						self:Hide();
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PARTY_PHASED_MESSAGE, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -596,7 +621,11 @@
 			</OnLoad>
 			<OnShow>
 				self:SetFrameLevel(2);
+				PartyMemberFrame_UpdatePhasingDisplay(self);
 			</OnShow>
+			<OnHide>
+				self.phasingIcon:Hide();
+			</OnHide>
 			<OnEvent>
 				PartyMemberFrame_OnEvent(self, event, ...);
 			</OnEvent>

@@ -111,22 +111,26 @@ function QuestInfo_ShowObjectives()
 	local numObjectives = GetNumQuestLeaderBoards();
 	local objective;
 	local text, type, finished;
+	local numVisibleObjectives = 0;
 	for i = 1, numObjectives do
-		objective = _G["QuestInfoObjective"..i];
 		text, type, finished = GetQuestLogLeaderBoard(i);
-		if ( not text or strlen(text) == 0 ) then
-			text = type;
+		if (type ~= "spell") then
+			numVisibleObjectives = numVisibleObjectives+1;
+			objective = _G["QuestInfoObjective"..numVisibleObjectives];
+			if ( not text or strlen(text) == 0 ) then
+				text = type;
+			end
+			if ( finished ) then
+				objective:SetTextColor(0.2, 0.2, 0.2);
+				text = text.." ("..COMPLETE..")";
+			else
+				objective:SetTextColor(0, 0, 0);
+			end
+			objective:SetText(text);
+			objective:Show();
 		end
-		if ( finished ) then
-			objective:SetTextColor(0.2, 0.2, 0.2);
-			text = text.." ("..COMPLETE..")";
-		else
-			objective:SetTextColor(0, 0, 0);
-		end
-		objective:SetText(text);
-		objective:Show();
 	end
-	for i = numObjectives + 1, MAX_OBJECTIVES do
+	for i = numVisibleObjectives + 1, MAX_OBJECTIVES do
 		_G["QuestInfoObjective"..i]:Hide();
 	end
 	if ( objective ) then
@@ -134,6 +138,60 @@ function QuestInfo_ShowObjectives()
 		return QuestInfoObjectivesFrame, objective;
 	else
 		QuestInfoObjectivesFrame:Hide();
+		return nil;
+	end
+end
+
+function QuestInfo_ShowSpecialObjectives()
+	-- Show objective spell
+	local spellID, spellName, spellTexture, finished;
+	if ( QuestInfoFrame.questLog) then
+		spellID, spellName, spellTexture, finished = GetQuestLogCriteriaSpell();
+	else
+		spellID, spellName, spellTexture, finished = GetCriteriaSpell();
+	end
+	
+	local lastFrame = nil;
+	local totalHeight = 0;
+	
+	if (spellID) then
+		QuestInfoSpellObjectiveFrame.Icon:SetTexture(spellTexture);
+		QuestInfoSpellObjectiveFrame.Name:SetText(spellName);
+		QuestInfoSpellObjectiveFrame.spellID = spellID;
+		
+		QuestInfoSpellObjectiveFrame:ClearAllPoints();
+		if (lastFrame) then
+			QuestInfoSpellObjectiveLearnLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -4);
+			totalHeight = totalHeight + 4;
+		else
+			QuestInfoSpellObjectiveLearnLabel:SetPoint("TOPLEFT", 0, 0);
+		end
+		
+		QuestInfoSpellObjectiveFrame:SetPoint("TOPLEFT", QuestInfoSpellObjectiveLearnLabel, "BOTTOMLEFT", 0, -4);
+		
+		if (finished and QuestInfoFrame.questLog) then -- don't show as completed for the initial offer, as it won't update properly
+			QuestInfoSpellObjectiveLearnLabel:SetText(LEARN_SPELL_OBJECTIVE.." ("..COMPLETE..")");
+			QuestInfoSpellObjectiveLearnLabel:SetTextColor(0.2, 0.2, 0.2);
+		else
+			QuestInfoSpellObjectiveLearnLabel:SetText(LEARN_SPELL_OBJECTIVE);
+			QuestInfoSpellObjectiveLearnLabel:SetTextColor(0, 0, 0);
+		end
+		
+		QuestInfoSpellObjectiveLearnLabel:Show();
+		QuestInfoSpellObjectiveFrame:Show();
+		totalHeight = totalHeight + QuestInfoSpellObjectiveFrame:GetHeight() + QuestInfoSpellObjectiveLearnLabel:GetHeight();
+		lastFrame = QuestInfoSpellObjectiveFrame;
+	else
+		QuestInfoSpellObjectiveFrame:Hide();
+		QuestInfoSpellObjectiveLearnLabel:Hide();
+	end
+	
+	if (lastFrame) then
+		QuestInfoSpecialObjectivesFrame:SetHeight(totalHeight);
+		QuestInfoSpecialObjectivesFrame:Show();
+		return QuestInfoSpecialObjectivesFrame;
+	else
+		QuestInfoSpecialObjectivesFrame:Hide();
 		return nil;
 	end
 end
@@ -297,8 +355,8 @@ function QuestInfo_ShowRewards()
 		playerTitle = GetRewardTitle();
 	end
 
-	local totalRewards = numQuestRewards + numQuestChoices + numQuestSpellRewards;	
-	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and xp == 0 and not playerTitle ) then
+	local totalRewards = numQuestRewards + numQuestChoices;
+	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 ) then
 		QuestInfoRewardsFrame:Hide();
 		return nil;
 	end
@@ -343,7 +401,6 @@ function QuestInfo_ShowRewards()
 			questItem:SetID(i)
 			questItem:Show();
 			-- For the tooltip
-			questItem.rewardType = "item"
 			_G["QuestInfoItem"..index.."Name"]:SetText(name);
 			SetItemButtonCount(questItem, numItems);
 			SetItemButtonTexture(questItem, texture);
@@ -397,17 +454,15 @@ function QuestInfo_ShowRewards()
 			learnSpellText:SetText(REWARD_SPELL);
 		end
 		
-		rewardsCount = rewardsCount + 1;
-		questItem = _G["QuestInfoItem"..rewardsCount];
+		questItem = QuestInfoRewardSpell;
 		questItem:Show();
 		-- For the tooltip
-		questItem.rewardType = "spell";
-		SetItemButtonCount(questItem, 0);
-		SetItemButtonTexture(questItem, texture);
-		_G["QuestInfoItem"..rewardsCount.."Name"]:SetText(name);
+		questItem.Icon:SetTexture(texture);
+		questItem.Name:SetText(name);
 		questItem:SetPoint("TOPLEFT", learnSpellText, "BOTTOMLEFT", -3, -5);
 		lastFrame = questItem;
 	else
+		QuestInfoRewardSpell:Hide();
 		QuestInfoSpellLearnText:Hide();
 	end
 	
@@ -466,7 +521,6 @@ function QuestInfo_ShowRewards()
 			questItem:SetID(i)
 			questItem:Show();
 			-- For the tooltip
-			questItem.rewardType = "item";
 			_G["QuestInfoItem"..index.."Name"]:SetText(name);
 			SetItemButtonCount(questItem, numItems);
 			SetItemButtonTexture(questItem, texture);
@@ -541,6 +595,7 @@ QUEST_TEMPLATE_DETAIL2 = { questLog = nil, chooseItems = nil, tooltip = "GameToo
 	elements = {
 		QuestInfo_ShowObjectivesHeader, 0, -10,	
 		QuestInfo_ShowObjectivesText, 0, -5,
+		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowGroupSize, 0, -10,
 		QuestInfo_ShowRewards, 0, -15,
 		QuestInfo_ShowSpacer, 0, -15
@@ -553,6 +608,7 @@ QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, tooltip = "GameToolti
 		QuestInfo_ShowObjectivesText, 0, -5,
 		QuestInfo_ShowTimer, 0, -10,
 		QuestInfo_ShowObjectives, 0, -10,
+		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowRequiredMoney, 0, 0,
 		QuestInfo_ShowGroupSize, 0, -10,
 		QuestInfo_ShowDescriptionHeader, 0, -10,

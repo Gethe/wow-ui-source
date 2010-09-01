@@ -1,6 +1,7 @@
 UIPanelWindows["GuildFrame"] = { area = "left", pushable = 1};
 local GUILDFRAME_PANELS = { };
 local GUILDFRAME_POPUPS = { };
+local NO_TABARD_COLORS = { r=0.4745, g=0.4588, b=0.5294 };
 
 function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
@@ -8,14 +9,19 @@ function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_XP_UPDATE");
 	self:RegisterEvent("GUILD_PERK_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("UPDATE_FACTION");
 	PanelTemplates_SetNumTabs(self, 5);
-	PanelTemplates_DisableTab(self, 3);		-- no news for now
-	PanelTemplates_DisableTab(self, 4);		-- no rewards for now
+	if ( not GuildUIEnabled() ) then
+		PanelTemplates_DisableTab(self, 4);
+	end
 	QueryGuildXP();
+	QueryGuildNews();
 	GuildRoster();
+	GuildFrame_UpdateTabard();
 	GuildFrame_UpdateLevel();
 	GuildFrame_UpdateXP();
 	GuildFrame_UpdatePlayerRank();
+	GuildFrame_UpdateFaction();
 	GuildFrame_CheckPermissions();
 end
 
@@ -42,16 +48,20 @@ function GuildFrame_OnEvent(self, event, ...)
 		GuildFrameMembersCount:SetText(onlineMembers.." / "..totalMembers);
 	elseif ( event == "GUILD_XP_UPDATE" ) then
 		GuildFrame_UpdateXP();
+	elseif ( event == "UPDATE_FACTION" ) then
+		GuildFrame_UpdateFaction();
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		GuildFrame_UpdatePlayerRank();
 		GuildFrame_CheckPermissions();
+		GuildFrame_UpdateTabard();
 		if ( not IsInGuild() and self:IsShown() ) then
 			HideUIPanel(self);
 		end
-	elseif ( event == "GUILD_PERK_UPDATE" ) then
-		GuildFrame_UpdateLevel();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		QueryGuildXP();
+		QueryGuildNews();
+	elseif ( event == "GUILD_PERK_UPDATE" ) then
+		GuildFrame_UpdateLevel();
 	end
 end
 
@@ -59,10 +69,14 @@ function GuildFrame_UpdateLevel()
 	local guildLevel = GetGuildLevel();
 	GuildLevelFrameText:SetText(guildLevel);
 	if ( GetGuildFactionGroup() == 0 ) then
-		GuildXPBarLevelText:SetFormattedText(GUILD_LEVEL_AND_FACTION, guildLevel, FACTION_HORDE);
+		GuildXPFrameLevelText:SetFormattedText(GUILD_LEVEL_AND_FACTION, guildLevel, FACTION_HORDE);
 	else
-		GuildXPBarLevelText:SetFormattedText(GUILD_LEVEL_AND_FACTION, guildLevel, FACTION_ALLIANCE);
-	end	
+		GuildXPFrameLevelText:SetFormattedText(GUILD_LEVEL_AND_FACTION, guildLevel, FACTION_ALLIANCE);
+	end
+	if ( guildLevel == MAX_GUILD_LEVEL ) then
+		GuildXPBar:Hide();
+		GuildXPFrameLevelText:SetPoint("BOTTOM", GuildXPFrame, "TOP", 0, -8);
+	end
 end
 
 function GuildFrame_UpdateXP()
@@ -79,6 +93,44 @@ function GuildFrame_UpdatePlayerRank()
 	end
 end
 
+function GuildFrame_UpdateFaction()
+	local factionBar = GuildFactionBar;
+	local gender = UnitSex("player");
+	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	--Normalize Values
+	barMax = barMax - barMin;
+	barValue = barValue - barMin;
+	barMin = 0;
+	GuildFactionBarLabel:SetText(barValue.." / "..barMax);
+	GuildFactionBarStanding:SetText(factionStandingtext);
+	factionBar:SetMinMaxValues(0, barMax);
+	factionBar:SetValue(barValue);
+end
+
+function GuildFrame_UpdateTabard()
+	local bkgR, bkgG, bkgB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
+	if ( emblemFilename ) then
+		local iconR = emblemR / 255;
+		local iconG = emblemG / 255;
+		local iconB = emblemB / 255;
+		GuildFrameTabardBackground:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
+		GuildFrameTabardRightIcon:SetTexture(emblemFilename);
+		GuildFrameTabardRightIcon:SetVertexColor(iconR, iconG, iconB);
+		-- temporary hack - the guild emblem texture is the right half of the icon and we are flipping that texture to get the left half. But		
+		-- the mask is applied when the texture is set, without considering texture coordinates, so we need to treat the left side as if it 
+		-- was a duplicate of the right side until after the texture is set. This includes using the same mask instead of a mirror-image one.
+		GuildFrameTabardLeftIcon:SetTexCoord(0, 1, 0, 1);
+		GuildFrameTabardLeftIcon:SetTexture(emblemFilename);
+		GuildFrameTabardLeftIcon:SetVertexColor(iconR, iconG, iconB);
+		GuildFrameTabardLeftIcon:SetTexCoord(1, 0, 0, 1);
+	else
+		GuildFrameTabardBackground:SetVertexColor(NO_TABARD_COLORS.r, NO_TABARD_COLORS.g, NO_TABARD_COLORS.b);
+		GuildFrameTabardLeftIcon:SetTexture("");
+		GuildFrameTabardRightIcon:SetTexture("");
+	end
+end
+
 function GuildFrame_CheckPermissions()
 	if ( IsGuildLeader() ) then
 		GuildControlButton:Enable();
@@ -92,6 +144,31 @@ function GuildFrame_CheckPermissions()
 	end
 end
 
+--****** Common Functions *******************************************************
+
+function GuildFrame_OpenAchievement(button, achievementID)
+	if ( not AchievementFrame ) then
+		AchievementFrame_LoadUI();
+	end	
+	if ( not AchievementFrame:IsShown() ) then
+		AchievementFrame_ToggleAchievementFrame();
+	end
+	AchievementFrame_SelectAchievement(achievementID);
+end
+
+function GuildFrame_LinkItem(button, itemID, itemLink)
+	if ( not itemLink ) then
+		_, itemLink = GetItemInfo(itemID);
+	end
+	if ( itemLink ) then
+		if ( ChatEdit_GetActiveWindow() ) then
+			ChatEdit_InsertLink(itemLink);
+		else
+			ChatFrame_OpenChat(itemLink);
+		end
+	end
+end
+
 --****** Panels/Popups **********************************************************
 
 function GuildFrame_RegisterPanel(frame)
@@ -99,13 +176,17 @@ function GuildFrame_RegisterPanel(frame)
 end
 
 function GuildFrame_ShowPanel(frameName)
+	local frame;
 	for index, value in pairs(GUILDFRAME_PANELS) do
 		if ( value == frameName ) then
-			_G[value]:Show()
+			frame = _G[value];
 		else
 			_G[value]:Hide();
 		end	
-	end 
+	end
+	if ( frame ) then
+		frame:Show();
+	end
 end
 
 function GuildFrame_RegisterPopup(frame)
@@ -150,10 +231,9 @@ function GuildFrame_TabClicked(self)
 	if ( tabIndex == 1 ) then -- Guild
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildMainFrame");
-		GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
-		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 170);
+		-- inset changes are in GuildMainFrame_OnShow()
 		GuildFrameBottomInset:Show();
-		GuildXPBar:Show();
+		GuildXPFrame:Show();
 		GuildFactionBar:Show();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
@@ -166,7 +246,7 @@ function GuildFrame_TabClicked(self)
 		GuildFrameInset:SetPoint("TOPLEFT", 4, -90);
 		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
 		GuildFrameBottomInset:Hide();
-		GuildXPBar:Hide();
+		GuildXPFrame:Hide();
 		GuildFactionBar:Hide();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
@@ -177,9 +257,9 @@ function GuildFrame_TabClicked(self)
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildNewsFrame");
 		GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
-		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 44);
+		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
 		GuildFrameBottomInset:Hide();
-		GuildXPBar:Show();
+		GuildXPFrame:Show();
 		GuildFactionBar:Hide();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
@@ -192,11 +272,12 @@ function GuildFrame_TabClicked(self)
 		GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
 		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 44);
 		GuildFrameBottomInset:Hide();
-		GuildXPBar:Hide();
-		GuildFactionBar:Hide();
+		GuildXPFrame:Hide();
+		GuildFactionBar:Show();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
+		updateRosterCount = true;
 		GuildFrameMembersCountLabel:Hide();
 	elseif ( tabIndex == 5 ) then -- Info
 		ButtonFrameTemplate_ShowButtonBar(GuildFrame);
@@ -204,24 +285,12 @@ function GuildFrame_TabClicked(self)
 		GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
 		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
 		GuildFrameBottomInset:Hide();
-		GuildXPBar:Hide();
+		GuildXPFrame:Hide();
 		GuildFactionBar:Hide();
 		GuildAddMemberButton:Show();
 		GuildControlButton:Show();
 		GuildViewLogButton:Show();
 		GuildFrameMembersCountLabel:Hide();
-	elseif ( tabIndex == 6 ) then -- old stuff
-		ButtonFrameTemplate_HideButtonBar(GuildFrame);
-		GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
-		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 40);
-		GuildFrameBottomInset:Hide();
-		GuildXPBar:Hide();
-		GuildFactionBar:Hide();
-		GuildAddMemberButton:Hide();
-		GuildControlButton:Hide();
-		GuildViewLogButton:Hide();
-		GuildFrameMembersCountLabel:Hide();
-		GuildFrame_ShowPanel("GuildDisplayFrame");
 	end
 	if ( updateRosterCount ) then
 		GuildRoster();
@@ -290,24 +359,38 @@ function GuildMainFrame_OnLoad(self)
 	GuildPerksContainer.update = GuildPerks_Update;
 	HybridScrollFrame_CreateButtons(GuildPerksContainer, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");	
 	self:RegisterEvent("GUILD_PERK_UPDATE");
-	self:RegisterEvent("UPDATE_FACTION");
+	self:RegisterEvent("GUILD_NEWS_UPDATE");
+	self:RegisterEvent("GUILD_MOTD");
 	-- faction icon
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
 		GuildNewPerksFrameFaction:SetTexCoord(0.42871094, 0.53808594, 0.60156250, 0.87890625);
-		SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPThrallmarFavor");
+		--SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPThrallmarFavor");
 	else  -- alliance
 		GuildNewPerksFrameFaction:SetTexCoord(0.31640625, 0.42675781, 0.60156250, 0.88281250);
-		SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPHonorHoldFavor");
+		--SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPHonorHoldFavor");
 	end
 	-- select its tab
 	GuildFrame_TabClicked(GuildFrameTab1);
-	-- display news and events
-	GuildMainFrame_SetUpdates(0, 0);
+	-- create buttons table for news update
+	local buttons = { };
+	for i = 1, 9 do
+		tinsert(buttons, _G["GuildUpdatesButton"..i]);
+	end
+	GuildMainFrame.buttons = buttons;
 end
 
 function GuildMainFrame_OnShow(self)
-	GuildMainFrame_UpdateFaction();
+	-- inset stuff
+	GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
+	if ( not GuildMainFrame.allPerks ) then
+		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 170);
+		GuildFrameBottomInset:Show();
+	else
+		GuildFrameBottomInset:Hide();
+		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 44);
+	end
 	GuildMainFrame_UpdatePerks();
+	GuildNewsSort(1);	-- disregard filters and stickies
 end
 
 function GuildMainFrame_OnEvent(self, event, ...)
@@ -316,14 +399,21 @@ function GuildMainFrame_OnEvent(self, event, ...)
 	end
 	if ( event == "GUILD_PERK_UPDATE" ) then
 		GuildMainFrame_UpdatePerks();
-	elseif ( event == "UPDATE_FACTION" ) then
-		GuildMainFrame_UpdateFaction();
+	elseif ( event == "GUILD_NEWS_UPDATE" or event == "GUILD_MOTD" ) then
+		GuildMainFrame_UpdateNewsEvents();
 	end
 end
 
 --****** News/Events ************************************************************
 
-function GuildMainFrame_SetUpdates(numNews, numEvents)
+function GuildMainFrame_UpdateNewsEvents()
+	local numNews = GetNumGuildNews();
+	if ( GetGuildRosterMOTD() ~= "" ) then
+		numNews = numNews + 1;
+	end
+	local numEvents = 0;
+
+	-- figure out a place to divide news from events
 	local divider;
 	local maxNews = max(1, numNews);
 	local maxEvents = max(1, numEvents);
@@ -342,6 +432,7 @@ function GuildMainFrame_SetUpdates(numNews, numEvents)
 	end
 	
 	local button;
+	local buttons = GuildMainFrame.buttons;
 	-- news
 	if ( numNews == 0 ) then
 		GuildUpdatesNoNews:Show();
@@ -351,16 +442,10 @@ function GuildMainFrame_SetUpdates(numNews, numEvents)
 		GuildUpdatesNoNews:Hide();
 	end
 	for i = 1, divider - 1 do
-		button = _G["GuildUpdatesButton"..i];
-		button:SetHeight(18);
-		if ( i > numNews ) then
-			button:Hide();
-		else
-			button.text:SetText("Placeholder guild news #"..i);
-			button:Show();
-			button.icon:Hide();
-		end
+		buttons[i]:SetHeight(18);
 	end
+	GuildNews_Update(true, divider - 1);
+	
 	-- divider
 	button = _G["GuildUpdatesButton"..divider];
 	GuildUpdatesDivider:SetPoint("CENTER", button);
@@ -390,45 +475,35 @@ end
 
 --****** Perks ******************************************************************
 
+function GuildPerksButton_OnEnter(self)
+	GuildPerksContainer.activeButton = self;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 36, 0);
+	GameTooltip:SetHyperlink(GetSpellLink(self.spellID));
+end
+
 function GuildMainFrame_UpdatePerks()
 	local guildLevel = GetGuildLevel();
-	local maxLevels = GetNumGuildPerks();
-	if ( guildLevel == 0 ) then
+	local perkIndex = guildLevel - 1;	-- no perk at first level
+	if ( perkIndex < 1 ) then
 		GuildLatestPerkButton:Hide();
 	else
 		GuildLatestPerkButton:Show();
-		local name, spellID, iconTexture = GetGuildPerkInfo(guildLevel);
+		local name, spellID, iconTexture = GetGuildPerkInfo(perkIndex);
 		GuildLatestPerkButtonIconTexture:SetTexture(iconTexture);
 		GuildLatestPerkButtonName:SetText(name);
 		GuildLatestPerkButton.spellID = spellID;
 	end
-	if ( guildLevel == maxLevels ) then
+	if ( guildLevel == MAX_GUILD_LEVEL ) then
 		GuildNextPerkButton:Hide();
 	else
-		local nextGuildLevel = guildLevel + 1;
-		local name, spellID, iconTexture = GetGuildPerkInfo(nextGuildLevel);
+		local name, spellID, iconTexture = GetGuildPerkInfo(perkIndex + 1);
 		GuildNextPerkButtonIconTexture:SetTexture(iconTexture);
 		GuildNextPerkButtonIconTexture:SetDesaturated(1);
 		GuildNextPerkButtonName:SetText(name);
-		GuildNextPerkButtonLabel:SetFormattedText(GUILD_NEXT_PERK_LEVEL, nextGuildLevel);
+		GuildNextPerkButtonLabel:SetFormattedText(GUILD_NEXT_PERK_LEVEL, guildLevel + 1);
 		GuildNextPerkButton.spellID = spellID;
 	end
 	GuildPerks_Update();
-end
-
-function GuildMainFrame_UpdateFaction()
-	local factionBar = GuildFactionBar;
-	local gender = UnitSex("player");
-	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
-	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
-	--Normalize Values
-	barMax = barMax - barMin;
-	barValue = barValue - barMin;
-	barMin = 0;
-	GuildFactionBarLabel:SetText(barValue.." / "..barMax);
-	GuildFactionBarStanding:SetText(factionStandingtext);
-	factionBar:SetMinMaxValues(0, barMax);
-	factionBar:SetValue(barValue);
 end
 
 function GuildPerks_Update()
@@ -472,6 +547,11 @@ function GuildPerks_Update()
 	local totalHeight = numPerks * scrollFrame.buttonHeight;
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+		
+	-- update tooltip
+	if ( scrollFrame.activeButton ) then
+		GuildPerksButton_OnEnter(scrollFrame.activeButton);
+	end
 end
 
 function GuildPerksToggleButton_OnClick(self)

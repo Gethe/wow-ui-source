@@ -90,12 +90,8 @@
 			<OnEnter>
 				if ( self:GetAlpha() > 0 ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					if ( self.rewardType == "item" ) then
-						GameTooltip:SetQuestItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem(GameTooltip);
-					elseif ( self.rewardType == "spell" ) then
-						GameTooltip:SetQuestRewardSpell();
-					end
+					GameTooltip:SetQuestItem(self.type, self:GetID());
+					GameTooltip_ShowCompareItem(GameTooltip);
 				end
 				CursorUpdate(self);
 			</OnEnter>
@@ -107,12 +103,55 @@
 				CursorOnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnClick>
-				if ( self.rewardType == "spell" ) then
-					if ( IsModifiedClick("CHATLINK") ) then
-						ChatEdit_InsertLink(GetQuestSpellLink());
-					end
-				else
-					HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+				HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestSpellTemplate" hidden="true" virtual="true">
+		<Size x="157" y="56"/>
+		<HitRectInsets left="0" right="0" top="0" bottom="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="Icon">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="-12" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Name">
+					<Size  x="90" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentNameFrame"  x="17" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSpellBorder" inherits="Spellbook-SlotFrame">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIconTexture" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.spellID) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetSpellByID(self.spellID);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") and self.spellID) then
+					ChatEdit_InsertLink(GetSpellLink(self.spellID));
 				end
 			</OnClick>
 		</Scripts>

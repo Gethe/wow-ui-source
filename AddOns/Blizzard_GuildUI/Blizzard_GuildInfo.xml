@@ -230,6 +230,7 @@
 					<OnLoad>
 						self.scrollBarHideable = true;
 						ScrollBar_AdjustAnchors(GuildInfoDetailsFrameScrollBar, 1, -7);
+						GuildInfoDetailsFrameScrollBar:Hide();
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>

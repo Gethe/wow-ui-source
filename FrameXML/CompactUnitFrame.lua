@@ -1,6 +1,6 @@
 --Widget Handlers
 local OPTION_TABLE_NONE = {};
-BOSS_DEBUFF_SCALE = 1.8;
+BOSS_DEBUFF_SIZE_INCREASE = 9;
 
 function CompactUnitFrame_OnLoad(self)
 	if ( not self:GetName() ) then
@@ -347,6 +347,21 @@ function CompactUnitFrame_UpdateStatusText(frame)
 	elseif ( UnitIsDead(frame.unit) ) then
 		frame.statusText:SetText(DEAD);
 		frame.statusText:Show();
+	elseif ( frame.optionTable.healthText == "health" ) then
+		frame.statusText:SetText(UnitHealth(frame.unit));
+		frame.statusText:Show();
+	elseif ( frame.optionTable.healthText == "losthealth" ) then
+		local healthLost = UnitHealthMax(frame.unit) - UnitHealth(frame.unit);
+		if ( healthLost > 0 ) then
+			frame.statusText:SetFormattedText(LOST_HEALTH, healthLost);
+			frame.statusText:Show();
+		else
+			frame.statusText:Hide();
+		end
+	elseif ( frame.optionTable.healthText == "perc" ) then
+		local perc = math.ceil(100 * (UnitHealth(frame.unit)/UnitHealthMax(frame.unit)));
+		frame.statusText:SetFormattedText("%d%%", perc);
+		frame.statusText:Show();
 	else
 		frame.statusText:Hide();
 	end
@@ -459,7 +474,8 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, true);
 				frameNum = frameNum + 1;
 				--Boss debuffs are about twice as big as normal debuffs, so display one less.
-				maxDebuffs = maxDebuffs - (BOSS_DEBUFF_SCALE - 1);
+				local bossDebuffScale = (debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE)/debuffFrame.baseSize
+				maxDebuffs = maxDebuffs - (bossDebuffScale - 1);
 			end
 		else
 			break;
@@ -587,7 +603,7 @@ end
 
 function CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, isBossDebuff)
 	if ( isBossDebuff ) then
-		debuffFrame:SetSize(debuffFrame.baseSize * BOSS_DEBUFF_SCALE, debuffFrame.baseSize * BOSS_DEBUFF_SCALE);
+		debuffFrame:SetSize(debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE, debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE);
 	else
 		debuffFrame:SetSize(debuffFrame.baseSize, debuffFrame.baseSize);
 	end
@@ -690,15 +706,22 @@ DefaultCompactUnitFrameOptions = {
 	displayBuffs = true,
 	displayDebuffs = true,
 	displayOnlyDispellableDebuffs = false,
+	healthText = "none",
 }
-	
+
+local NATIVE_UNIT_FRAME_HEIGHT = 36;
+local NATIVE_UNIT_FRAME_WIDTH = 72;
 DefaultCompactUnitFrameSetupOptions = {
 	displayPowerBar = true,
+	height = NATIVE_UNIT_FRAME_HEIGHT,
+	width = NATIVE_UNIT_FRAME_WIDTH,
 }
 
 function DefaultCompactUnitFrameSetup(frame)
 	local options = DefaultCompactUnitFrameSetupOptions;
-	frame:SetSize(72, 36)
+	local componentScale = min(options.height / NATIVE_UNIT_FRAME_HEIGHT, options.width / NATIVE_UNIT_FRAME_WIDTH);
+	
+	frame:SetSize(options.width, options.height)
 	frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg");
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
@@ -743,28 +766,33 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.name:SetPoint("TOPRIGHT", -3, -3);
 	frame.name:SetJustifyH("LEFT");
 	
-	frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, 10);
-	frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, 10);
-	frame.statusText:SetHeight(12);
+	local NATIVE_FONT_SIZE = 12;
+	local fontName, fontSize, fontFlags = frame.statusText:GetFont();
+	frame.statusText:SetFont(fontName, NATIVE_FONT_SIZE * componentScale, fontFlags);
+	frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, options.height / 3 - 2);
+	frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, options.height / 3 - 2);
+	frame.statusText:SetHeight(12 * componentScale);
+	
+	local buffSize = 11 * componentScale;
 	
 	CompactUnitFrame_SetMaxBuffs(frame, 3);
 	CompactUnitFrame_SetMaxDebuffs(frame, 3);
 	CompactUnitFrame_SetMaxDispelDebuffs(frame, 3);
 	
-	frame.buffFrames[1]:SetPoint("BOTTOMRIGHT", -3, 10);
+	frame.buffFrames[1]:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", -3, 10 + buffSize);
 	for i=1, #frame.buffFrames do
 		if ( i > 1 ) then
 			frame.buffFrames[i]:SetPoint("RIGHT", frame.buffFrames[i - 1], "LEFT", 0, 0);
 		end
-		frame.buffFrames[i]:SetSize(11, 11);
+		frame.buffFrames[i]:SetSize(buffSize, buffSize);
 	end
 	
-	frame.debuffFrames[1]:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 3, 21);
+	frame.debuffFrames[1]:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 3, 10 + buffSize);
 	for i=1, #frame.debuffFrames do
 		if ( i > 1 ) then
 			frame.debuffFrames[i]:SetPoint("TOPLEFT", frame.debuffFrames[i - 1], "TOPRIGHT", 0, 0);
 		end
-		frame.debuffFrames[i].baseSize = 11;
+		frame.debuffFrames[i].baseSize = buffSize;
 		--frame.debuffFrames[i]:SetSize(11, 11);
 	end
 	
@@ -787,7 +815,7 @@ function DefaultCompactUnitFrameSetup(frame)
 	CompactUnitFrame_SetOptionTable(frame, DefaultCompactUnitFrameOptions)
 end
 
-local DefaultCompactMiniFrameOptions = {
+DefaultCompactMiniFrameOptions = {
 	displaySelectionHighlight = true,
 	displayAggroHighlight = true,
 	displayName = true,
@@ -797,8 +825,14 @@ local DefaultCompactMiniFrameOptions = {
 	--displayDispelDebuffs = true,
 }
 
+DefaultCompactMiniFrameSetUpOptions = {
+	height = 18,
+	width = 72,
+}
+
 function DefaultCompactMiniFrameSetup(frame)
-	frame:SetSize(72, 18)
+	local options = DefaultCompactMiniFrameSetUpOptions;
+	frame:SetSize(options.width, options.height)
 	frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg");
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);

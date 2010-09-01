@@ -167,7 +167,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="Minimap">
 				<Offset>
-					<AbsDimension x="-21" y="38"/>
+					<AbsDimension x="-25" y="38"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

@@ -1,7 +1,7 @@
 
 local SPELLFLYOUT_DEFAULT_SPACING = 4;
 local SPELLFLYOUT_INITIAL_SPACING = 7;
-local SPELLFLYOUT_FINAL_SPACING = 7;
+local SPELLFLYOUT_FINAL_SPACING = 4;
 
 
 function SpellFlyoutButton_OnClick(self)
@@ -118,6 +118,8 @@ function SpellFlyout_OnEvent(self, event, ...)
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
+	elseif (event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
+		self:Hide();
 	elseif (event == "ACTIONBAR_PAGE_CHANGED") then
 		self:Hide();
 	end
@@ -136,6 +138,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 
 	local _, _, numSlots, isKnown = GetFlyoutInfo(flyoutID);
 	local actionBar = parent:GetParent();
+	self:SetParent(parent);
 	self.isActionBar = isActionBar;
 	
 	-- Make sure this flyout is known
@@ -157,7 +160,15 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	local numButtons = 0;
 	for i=1, numSlots do
 		local spellID, isKnown = GetFlyoutSlotInfo(flyoutID, i);
-		if (isKnown) then
+		local visible = true;
+		
+		-- Ignore Call Pet spells if there isn't a pet in that slot
+		local petIndex, petName = GetCallPetSpellInfo(spellID);
+		if (isActionBar and petIndex and (not petName or petName == "")) then
+			visible = false;
+		end
+		
+		if (isKnown and visible) then
 			local button = _G["SpellFlyoutButton"..numButtons+1];
 			if (not button) then
 				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");
@@ -212,12 +223,11 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	end
 	
 	if (numButtons == 0) then
-		self.Hide();
+		self:Hide();
 		return;
 	end
 	
 	-- Show the flyout
-	self:SetParent(parent);
 	self:SetFrameStrata("DIALOG");
 	self:ClearAllPoints();
 	
@@ -288,6 +298,8 @@ function SpellFlyout_OnShow(self)
 		self:RegisterEvent("SPELL_UPDATE_USABLE");
 		self:RegisterEvent("BAG_UPDATE");
 		self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+		self:RegisterEvent("PET_STABLE_UPDATE");
+		self:RegisterEvent("PET_STABLE_SHOW");
 		self.eventsRegistered = true;
 	end
 	if (self.isActionBar) then
@@ -302,6 +314,8 @@ function SpellFlyout_OnHide(self)
 		self:UnregisterEvent("SPELL_UPDATE_USABLE");
 		self:UnregisterEvent("BAG_UPDATE");
 		self:UnregisterEvent("ACTIONBAR_PAGE_CHANGED");
+		self:UnregisterEvent("PET_STABLE_UPDATE");
+		self:UnregisterEvent("PET_STABLE_SHOW");
 		self.eventsRegistered = false;
 	end
 	if (self:IsShown()) then

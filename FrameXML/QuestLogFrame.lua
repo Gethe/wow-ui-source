@@ -251,12 +251,27 @@ function QuestLog_OnEvent(self, event, ...)
 			QuestLog_UpdateQuestDetails(false);
 			QuestLog_UpdateMap();
 		end
+		if ((GetNumQuestLogEntries() == 0) or (GetQuestLogIndexByID(GetSuperTrackedQuestID()) == 0)) then
+			SetSuperTrackedQuestID(0);
+			WORLDMAP_SETTINGS.selectedQuestId = 0;
+		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
+		TUTORIAL_QUEST_ACCEPTED = true;
+		QuestPOIUpdateIcons();
+		local questID = select(9, GetQuestLogTitle(arg1));
+		SetSuperTrackedQuestID(questID);
+		WORLDMAP_SETTINGS.selectedQuestId = questID;
 		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1);
 			QuestLog_Update();
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
+		if (not IsTutorialFlagged(11)) then
+			local questID = select(9, GetQuestLogTitle(arg1));
+			if (questID == TUTORIAL_QUEST_TO_WATCH) then
+				TriggerTutorial(11);
+			end
+		end
 		if ( AUTO_QUEST_PROGRESS == "1" and 
 			 GetNumQuestLeaderBoards(arg1) > 0 and 
 			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
@@ -294,8 +309,16 @@ function QuestLog_OnHide(self)
 	PlaySound("igQuestLogClose");
 	QuestLogShowMapPOI_UpdatePosition();
 	QuestLogControlPanel_UpdatePosition();
-	
 	QuestLogDetailFrame_DetachFromQuestLog();
+	if (TUTORIAL_QUEST_ACCEPTED) then
+		if (not IsTutorialFlagged(2)) then
+			TriggerTutorial(2);
+			TriggerTutorial(3);
+		else
+			TriggerTutorial(10);
+		end
+		TUTORIAL_QUEST_ACCEPTED = nil
+	end
 end
 
 function QuestLog_OnUpdate(self, elapsed)

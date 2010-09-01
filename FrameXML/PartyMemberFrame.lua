@@ -99,6 +99,9 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("UNIT_HEALTH");
 	self:RegisterEvent("UNIT_CONNECTION");
+	self:RegisterEvent("PARTY_MEMBER_ENABLE");
+	self:RegisterEvent("PARTY_MEMBER_DISABLE");
+	self:RegisterEvent("UNIT_PHASE");
 
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
@@ -137,6 +140,7 @@ function PartyMemberFrame_UpdateMember (self)
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
 	PartyMemberFrame_UpdateOnlineStatus(self);
+	PartyMemberFrame_UpdatePhasingDisplay(self);
 	UpdatePartyMemberBackground();
 end
 
@@ -295,6 +299,21 @@ function PartyMemberFrame_UpdateReadyCheck (self)
 	end
 end
 
+function PartyMemberFrame_UpdatePhasingDisplay(self)
+	local id = self:GetID();
+	local partyID = "party"..id;
+	
+	local inPhase = UnitInPhase(partyID);
+	
+	if ( inPhase or not UnitExists(partyID) ) then
+		self:SetAlpha(1);
+		self.phasingIcon:Hide();
+	else
+		self:SetAlpha(0.6);
+		self.phasingIcon:Show();
+	end
+end
+
 function PartyMemberFrame_OnEvent(self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 	
@@ -313,6 +332,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);
+		PartyMemberFrame_UpdatePhasingDisplay(self);
 		return;
 	end
 	
@@ -414,6 +434,10 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
 		PartyMemberFrame_UpdateOnlineStatus(self);
+	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
+		if ( arg1 == unit ) then
+			PartyMemberFrame_UpdatePhasingDisplay(self);
+		end
 	end
 end
 

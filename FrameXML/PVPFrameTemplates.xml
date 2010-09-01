@@ -525,42 +525,8 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<!--Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts-->
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnClick>
-				local offset = FauxScrollFrame_GetOffset(self:GetParent().bgTypeScrollFrame);
-				local id = self:GetID() + offset;
-				local name = self:GetName();
-				name = strsub(name, 1, strlen(name)-1);
-				
-				for i=1,NUM_DISPLAYED_BATTLEGROUNDS do
-					if ( id == i + offset ) then
-						_G[name..i]:LockHighlight();
-					else
-						_G[name..i]:UnlockHighlight();
-					end
-				end
-				
-				if ( self.BGindex == self:GetParent().selectedBG ) then
-					return;
-				end
-				
-				self:GetParent().selectedBG = self.BGindex;
-				
-				_G[self:GetParent():GetName().."_ResetInfo"]();
-				_G[self:GetParent():GetName().."_UpdateJoinButton"]();
-			</OnClick>
-		</Scripts>
 		<HighlightTexture name="$parentHighlight" urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" parentKey="highlight">
 			<Color r="1.0" g="0.82" />
 		</HighlightTexture>
@@ -582,7 +548,7 @@
 	<Button name="PVPArenaTeamFlagTemplate" virtual="true">
 		<Size x="112" y="114"/>	
 		<Layers>
-			<Layer level="BACKGROUND">			
+			<Layer level="BACKGROUND">
 				<Texture name="$parentBanner" file="Interface\PVPFrame\PVP-Banner-2">
 					<Size>
 						<AbsDimension x="49" y="98"/>

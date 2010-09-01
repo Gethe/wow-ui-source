@@ -1,7 +1,9 @@
 NUM_WORLD_RAID_MARKERS = 5;
 NUM_RAID_ICONS = 8;
 
-MINIMUM_RAID_CONTAINER_HEIGHT = 80;
+MINIMUM_RAID_CONTAINER_HEIGHT = 72;
+local RESIZE_HORIZONTAL_OUTSETS = 4;
+local RESIZE_VERTICAL_OUTSETS = 7;
 
 function CompactRaidFrameManager_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
@@ -14,8 +16,10 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	self:RegisterEvent("RAID_TARGET_UPDATE");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	
-	self.containerResizeFrame:SetMinResize(self.container:GetWidth(), MINIMUM_RAID_CONTAINER_HEIGHT + 2);
+	self.containerResizeFrame:SetMinResize(self.container:GetWidth(), MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2);
 	self.dynamicContainerPosition = true;
 	
 	CompactRaidFrameContainer_SetFlowFilterFunction(self.container, CRFFlowFilterFunc)
@@ -46,8 +50,13 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 		CompactRaidFrameManager_UpdateLeaderButtonsShown(self);
+		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		CompactRaidFrameManager_UpdateLeaderButtonsShown(self);
+	elseif ( event == "RAID_TARGET_UPDATE" ) then
+		CompactRaidFrameManager_UpdateRaidIcons();
+	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
+		CompactRaidFrameManager_UpdateRaidIcons();
 	end
 end
 
@@ -77,7 +86,7 @@ function CompactRaidFrameManager_UpdateLeaderButtonsShown(self)
 	if ( IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
 		if ( not self.hasLeader ) then
 			self.hasLeader = true
-			self:SetHeight(180);
+			self:SetHeight(235);
 			self.displayFrame.leaderOptions:Show();
 		end
 	else
@@ -110,36 +119,6 @@ function CRFManager_RaidWorldMarkerDropDown_Update()
 	info.text = REMOVE_WORLD_MARKERS;
 	info.func = ClearRaidWorldMarker_OnClick;
 	info.arg1 = nil;	--Remove everything
-	UIDropDownMenu_AddButton(info);
-end
-
-local function RaidTargetIcon_OnClick(self, arg1, arg2, checked)
-	SetRaidTarget(arg1, arg2);
-end
-
-function CRFManager_RaidIconDropDown_Update()
-	local targetUnit = "target";
-	local info = UIDropDownMenu_CreateInfo();
-	
-	info.icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons";
-	for i=1, NUM_RAID_ICONS do
-		info.text = _G["RAID_TARGET_"..i];
-		info.tCoordLeft = mod((i-1)/4, 1);
-		info.tCoordRight = info.tCoordLeft + 0.25;
-		info.tCoordTop = floor((i-1)/4) * 0.25;
-		info.tCoordBottom = info.tCoordTop + 0.25;
-		info.checked = (GetRaidTargetIndex(targetUnit) == i);
-		info.func = RaidTargetIcon_OnClick;
-		info.arg1 = targetUnit;
-		info.arg2 = i;
-		UIDropDownMenu_AddButton(info);
-	end
-		
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = RAID_TARGET_NONE;
-	info.func = RaidTargetIcon_OnClick;
-	info.arg1 = targetUnit;
-	info.arg2 = 0;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -211,6 +190,33 @@ function CompactRaidFrameManager_ToggleGroupFilter(group)
 	CompactRaidFrameManager_UpdateFilterInfo(CompactRaidFrameManager);
 	CompactRaidFrameContainer_TryUpdate(CompactRaidFrameContainer);
 end
+
+function CompactRaidFrameManager_UpdateRaidIcons()
+	local unit = "target";
+	local disableAll = not CanBeRaidTarget(unit);
+	for i=1, NUM_RAID_ICONS do
+		local button = _G["CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidMarker"..i];	--.... /cry
+		if ( disableAll or i == GetRaidTargetIndex(unit) ) then
+			button:GetNormalTexture():SetDesaturated(true);
+			button:SetAlpha(0.7);
+			button:Disable();
+		else
+			button:GetNormalTexture():SetDesaturated(false);
+			button:SetAlpha(1);
+			button:Enable();
+		end
+	end
+	
+	local removeButton = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidMarkerRemove;
+	if ( not GetRaidTargetIndex(unit) ) then
+		removeButton:GetNormalTexture():SetDesaturated(true);
+		removeButton:Disable();
+	else
+		removeButton:GetNormalTexture():SetDesaturated(false);
+		removeButton:Enable();
+	end
+end
+		
 
 --Settings stuff
 local cachedSettings = {};
@@ -373,11 +379,10 @@ function CompactRaidFrameManager_UnlockContainer(self)
 end
 
 --ResizeFrame related functions
-local RESIZE_OUTSETS = 5;
 function CompactRaidFrameManager_ResizeFrame_Reanchor(manager)
 	manager.containerResizeFrame:ClearAllPoints();
-	manager.containerResizeFrame:SetPoint("TOPLEFT", manager.container, "TOPLEFT", -RESIZE_OUTSETS, RESIZE_OUTSETS);
-	manager.containerResizeFrame:SetPoint("BOTTOMLEFT", manager.container, "BOTTOMLEFT", -RESIZE_OUTSETS, -RESIZE_OUTSETS);
+	manager.containerResizeFrame:SetPoint("TOPLEFT", manager.container, "TOPLEFT", -RESIZE_HORIZONTAL_OUTSETS, RESIZE_VERTICAL_OUTSETS);
+	manager.containerResizeFrame:SetPoint("BOTTOMLEFT", manager.container, "BOTTOMLEFT", -RESIZE_HORIZONTAL_OUTSETS, -RESIZE_VERTICAL_OUTSETS);
 end
 
 function CompactRaidFrameManager_ResizeFrame_OnDragStart(manager)
@@ -419,7 +424,7 @@ function CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager)
 	manager.container:ClearAllPoints();
 	manager.container:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top);
 	
-	manager.container:SetHeight(manager.containerResizeFrame:GetHeight() - RESIZE_OUTSETS * 2);
+	manager.container:SetHeight(manager.containerResizeFrame:GetHeight() - RESIZE_VERTICAL_OUTSETS * 2);
 	CompactRaidFrameManager_ResizeFrame_Reanchor(manager);
 	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
 	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);

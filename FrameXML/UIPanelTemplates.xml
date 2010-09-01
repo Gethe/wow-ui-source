@@ -1480,41 +1480,21 @@
 		<Size x="67" y="67"/>	
 		<TexCoords left="0.73046875" right="0.99218750" top="0.00195313" bottom="0.13281250"/>	
 	</Texture>
+	<Texture name="PetTalent-TalentIconBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="59" y="59"/>	
+		<TexCoords left="0.73046875" right="0.96093750" top="0.13671875" bottom="0.25195313"/>	
+	</Texture>
 	<Texture name="Talent-GoldMedal-Glow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="54" y="54"/>	
-		<TexCoords left="0.73046875" right="0.94140625" top="0.13671875" bottom="0.24218750"/>	
+		<TexCoords left="0.73046875" right="0.94140625" top="0.25585938" bottom="0.36132813"/>	
 	</Texture>
 	<Texture name="Talent-TreeLockoutGradient" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="8" y="32"/>	
-		<TexCoords left="0.94921875" right="0.98046875" top="0.13671875" bottom="0.19921875"/>	
+		<TexCoords left="0.94921875" right="0.98046875" top="0.25585938" bottom="0.31835938"/>	
 	</Texture>
 	<Texture name="HelpPlateBox-Glow-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="11" y="11"/>	
-		<TexCoords left="0.94921875" right="0.99218750" top="0.20312500" bottom="0.22460938"/>	
-	</Texture>
-	<Texture name="PetTalent-PetIconBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="54" y="54"/>	
-		<TexCoords left="0.73046875" right="0.94140625" top="0.24609375" bottom="0.35156250"/>	
-	</Texture>
-	<Texture name="HelpPlateBox-Glow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="11" y="11"/>	
-		<TexCoords left="0.94921875" right="0.99218750" top="0.24609375" bottom="0.26757813"/>	
-	</Texture>
-	<Texture name="HelpPlateBox-Glow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="11" y="11"/>	
-		<TexCoords left="0.94921875" right="0.99218750" top="0.27148438" bottom="0.29296875"/>	
-	</Texture>
-	<Texture name="HelpPlateBox-Glow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="11" y="11"/>	
-		<TexCoords left="0.94921875" right="0.99218750" top="0.29687500" bottom="0.31835938"/>	
-	</Texture>
-	<Texture name="Talent-PrimaryHighlight-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="9" y="9"/>	
-		<TexCoords left="0.94921875" right="0.98437500" top="0.32226563" bottom="0.33984375"/>	
-	</Texture>
-	<Texture name="Talent-PrimaryHighlight-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="9" y="9"/>	
-		<TexCoords left="0.94921875" right="0.98437500" top="0.34375000" bottom="0.36132813"/>	
+		<TexCoords left="0.94921875" right="0.99218750" top="0.32226563" bottom="0.34375000"/>	
 	</Texture>
 	<Texture name="PetTalent-TreeBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="225" y="45"/>	
@@ -1532,7 +1512,7 @@
 		<Size x="225" y="44"/>	
 		<TexCoords left="0.00390625" right="0.88281250" top="0.45703125" bottom="0.54296875"/>	
 	</Texture>
-	<Texture name="HelpPlateBox-Shadow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+	<Texture name="HelpPlateBox-Shadow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="25" y="25"/>	
 		<TexCoords left="0.89062500" right="0.98828125" top="0.45703125" bottom="0.50585938"/>	
 	</Texture>
@@ -1540,7 +1520,7 @@
 		<Size x="16" y="16"/>	
 		<TexCoords left="0.89062500" right="0.95312500" top="0.50976563" bottom="0.54101563"/>	
 	</Texture>
-	<Texture name="Talent-PrimaryHighlight-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+	<Texture name="Talent-PrimaryHighlight-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="9" y="9"/>	
 		<TexCoords left="0.96093750" right="0.99609375" top="0.50976563" bottom="0.52734375"/>	
 	</Texture>
@@ -1552,117 +1532,145 @@
 		<Size x="53" y="21"/>	
 		<TexCoords left="0.78515625" right="0.99218750" top="0.54687500" bottom="0.58789063"/>	
 	</Texture>
-	<Texture name="Talent-PrimaryHighlight-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+	<Texture name="Talent-PrimaryHighlight-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="9" y="9"/>	
 		<TexCoords left="0.78515625" right="0.82031250" top="0.59179688" bottom="0.60937500"/>	
 	</Texture>
+	<Texture name="Talent-PrimaryHighlight-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="9" y="9"/>	
+		<TexCoords left="0.82812500" right="0.86328125" top="0.59179688" bottom="0.60937500"/>	
+	</Texture>
+	<Texture name="Talent-PrimaryHighlight-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="9" y="9"/>	
+		<TexCoords left="0.87109375" right="0.90625000" top="0.59179688" bottom="0.60937500"/>	
+	</Texture>
 	<Texture name="TalentCover-Overlay-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="8" y="8"/>	
-		<TexCoords left="0.82812500" right="0.85937500" top="0.59179688" bottom="0.60742188"/>	
+		<TexCoords left="0.91406250" right="0.94531250" top="0.59179688" bottom="0.60742188"/>	
 	</Texture>
 	<Texture name="TalentCover-Overlay-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="8" y="8"/>	
-		<TexCoords left="0.86718750" right="0.89843750" top="0.59179688" bottom="0.60742188"/>	
-	</Texture>
-	<Texture name="TalentCover-Overlay-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="8" y="8"/>	
-		<TexCoords left="0.90625000" right="0.93750000" top="0.59179688" bottom="0.60742188"/>	
-	</Texture>
-	<Texture name="TalentCover-Overlay-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="8" y="8"/>	
-		<TexCoords left="0.94531250" right="0.97656250" top="0.59179688" bottom="0.60742188"/>	
+		<TexCoords left="0.95312500" right="0.98437500" top="0.59179688" bottom="0.60742188"/>	
 	</Texture>
 	<Texture name="TalentHeader-GoldBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="198" y="33"/>	
 		<TexCoords left="0.00390625" right="0.77734375" top="0.61523438" bottom="0.67968750"/>	
 	</Texture>
-	<Texture name="Talent-SingleBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="31" y="30"/>	
-		<TexCoords left="0.78515625" right="0.90625000" top="0.61523438" bottom="0.67382813"/>	
+	<Texture name="PetTalent-SingleBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="32" y="32"/>	
+		<TexCoords left="0.78515625" right="0.91015625" top="0.61523438" bottom="0.67773438"/>	
 	</Texture>
 	<Texture name="Talent-PointBg-Green" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="20" y="19"/>	
-		<TexCoords left="0.91406250" right="0.99218750" top="0.61523438" bottom="0.65234375"/>	
+		<TexCoords left="0.91796875" right="0.99609375" top="0.61523438" bottom="0.65234375"/>	
+	</Texture>
+	<Texture name="HelpPlateBox-Glow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="11" y="11"/>	
+		<TexCoords left="0.91796875" right="0.96093750" top="0.65625000" bottom="0.67773438"/>	
 	</Texture>
 	<Texture name="HelpPlateArrow-Shadow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="101" y="41"/>	
 		<TexCoords left="0.00390625" right="0.39843750" top="0.68359375" bottom="0.76367188"/>	
 	</Texture>
-	<Texture name="PetTalent-SingleBorder-Shadow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="45" y="45"/>	
-		<TexCoords left="0.00390625" right="0.17968750" top="0.76757813" bottom="0.85546875"/>	
-	</Texture>
-	<Texture name="Talent-GoldMedal-Border" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="44" y="44"/>	
-		<TexCoords left="0.18750000" right="0.35937500" top="0.76757813" bottom="0.85351563"/>	
+	<Texture name="PetTalent-PetIconBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="54" y="54"/>	
+		<TexCoords left="0.00390625" right="0.21484375" top="0.76757813" bottom="0.87304688"/>	
 	</Texture>
 	<Texture name="TalentHeader-PrimaryIconBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="44" y="44"/>	
-		<TexCoords left="0.00390625" right="0.17578125" top="0.85937500" bottom="0.94531250"/>	
+		<TexCoords left="0.22265625" right="0.39453125" top="0.76757813" bottom="0.85351563"/>	
 	</Texture>
-	<Texture name="HelpPlateBox-Shadow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="25" y="25"/>	
-		<TexCoords left="0.00390625" right="0.10156250" top="0.94921875" bottom="0.99804688"/>	
+	<Texture name="TalentCover-Overlay-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="8" y="8"/>	
+		<TexCoords left="0.22265625" right="0.25390625" top="0.85742188" bottom="0.87304688"/>	
 	</Texture>
-	<Texture name="GoldLockIcon" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="17" y="21"/>	
-		<TexCoords left="0.10937500" right="0.17578125" top="0.94921875" bottom="0.99023438"/>	
+	<Texture name="TalentCover-Overlay-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="8" y="8"/>	
+		<TexCoords left="0.26171875" right="0.29296875" top="0.85742188" bottom="0.87304688"/>	
 	</Texture>
 	<Texture name="TalentHeader-SecondaryIconBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="44" y="44"/>	
-		<TexCoords left="0.18359375" right="0.35546875" top="0.85937500" bottom="0.94531250"/>	
-	</Texture>
-	<Texture name="HelpPlateBox-Shadow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="25" y="25"/>	
-		<TexCoords left="0.18359375" right="0.28125000" top="0.94921875" bottom="0.99804688"/>	
-	</Texture>
-	<Texture name="TalentHeader-PointCircle-Gold" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="23" y="23"/>	
-		<TexCoords left="0.28906250" right="0.37890625" top="0.94921875" bottom="0.99414063"/>	
-	</Texture>
-	<Texture name="Talent-SingleBorder-Glow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="44" y="44"/>	
-		<TexCoords left="0.40625000" right="0.57812500" top="0.68359375" bottom="0.76953125"/>	
-	</Texture>
-	<Texture name="HelpPlateArrow-Glow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="65" y="28"/>	
-		<TexCoords left="0.58593750" right="0.83984375" top="0.68359375" bottom="0.73828125"/>	
+		<TexCoords left="0.00390625" right="0.17578125" top="0.87695313" bottom="0.96289063"/>	
 	</Texture>
 	<Texture name="Talent-Inner-BotRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="14" y="14"/>	
-		<TexCoords left="0.58593750" right="0.64062500" top="0.74218750" bottom="0.76953125"/>	
+		<TexCoords left="0.00390625" right="0.05859375" top="0.96679688" bottom="0.99414063"/>	
 	</Texture>
 	<Texture name="Talent-Inner-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="14" y="14"/>	
-		<TexCoords left="0.64843750" right="0.70312500" top="0.74218750" bottom="0.76953125"/>	
+		<TexCoords left="0.06640625" right="0.12109375" top="0.96679688" bottom="0.99414063"/>	
+	</Texture>
+	<Texture name="HelpPlateBox-Glow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="11" y="11"/>	
+		<TexCoords left="0.12890625" right="0.17187500" top="0.96679688" bottom="0.98828125"/>	
+	</Texture>
+	<Texture name="PetTalent-SingleBorder-Glow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="44" y="44"/>	
+		<TexCoords left="0.18359375" right="0.35546875" top="0.87695313" bottom="0.96289063"/>	
 	</Texture>
 	<Texture name="Talent-Inner-BotLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="14" y="14"/>	
-		<TexCoords left="0.71093750" right="0.76562500" top="0.74218750" bottom="0.76953125"/>	
+		<TexCoords left="0.18359375" right="0.23828125" top="0.96679688" bottom="0.99414063"/>	
 	</Texture>
 	<Texture name="Talent-Inner-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="14" y="14"/>	
-		<TexCoords left="0.77343750" right="0.82812500" top="0.74218750" bottom="0.76953125"/>	
+		<TexCoords left="0.24609375" right="0.30078125" top="0.96679688" bottom="0.99414063"/>	
 	</Texture>
-	<Texture name="PetTalent-SingleBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="38" y="38"/>	
-		<TexCoords left="0.84765625" right="0.99609375" top="0.68359375" bottom="0.75781250"/>	
+	<Texture name="HelpPlateBox-Glow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="11" y="11"/>	
+		<TexCoords left="0.30859375" right="0.35156250" top="0.96679688" bottom="0.98828125"/>	
+	</Texture>
+	<Texture name="Talent-GoldMedal-Border" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="44" y="44"/>	
+		<TexCoords left="0.40625000" right="0.57812500" top="0.68359375" bottom="0.76953125"/>	
+	</Texture>
+	<Texture name="Talent-SingleBorder-Glow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="44" y="44"/>	
+		<TexCoords left="0.58593750" right="0.75781250" top="0.68359375" bottom="0.76953125"/>	
+	</Texture>
+	<Texture name="PetTalent-SingleBorder-Shadow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="40" y="38"/>	
+		<TexCoords left="0.76562500" right="0.92187500" top="0.68359375" bottom="0.75781250"/>	
+	</Texture>
+	<Texture name="GoldLockIcon" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="17" y="21"/>	
+		<TexCoords left="0.92968750" right="0.99609375" top="0.68359375" bottom="0.72460938"/>	
+	</Texture>
+	<Texture name="HelpPlateArrow-Glow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="65" y="28"/>	
+		<TexCoords left="0.40625000" right="0.66015625" top="0.77343750" bottom="0.82812500"/>	
+	</Texture>
+	<Texture name="HelpPlateBox-Shadow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="25" y="25"/>	
+		<TexCoords left="0.66796875" right="0.76562500" top="0.77343750" bottom="0.82226563"/>	
+	</Texture>
+	<Texture name="HelpPlateBox-Shadow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="25" y="25"/>	
+		<TexCoords left="0.77343750" right="0.87109375" top="0.77343750" bottom="0.82226563"/>	
+	</Texture>
+	<Texture name="TalentHeader-PointCircle-Gold" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="23" y="23"/>	
+		<TexCoords left="0.87890625" right="0.96875000" top="0.77343750" bottom="0.81835938"/>	
 	</Texture>
 	<Texture name="Talent-SingleBorder-Shadow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="37" y="36"/>	
-		<TexCoords left="0.40625000" right="0.55078125" top="0.77343750" bottom="0.84375000"/>	
+		<TexCoords left="0.40625000" right="0.55078125" top="0.83203125" bottom="0.90234375"/>	
+	</Texture>
+	<Texture name="Talent-SingleBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
+		<Size x="31" y="30"/>	
+		<TexCoords left="0.40625000" right="0.52734375" top="0.90625000" bottom="0.96484375"/>	
 	</Texture>
 	<Texture name="TalentHeader-PointCircle-Silver" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="23" y="23"/>	
-		<TexCoords left="0.40625000" right="0.49609375" top="0.84765625" bottom="0.89257813"/>	
+		<TexCoords left="0.55859375" right="0.64843750" top="0.83203125" bottom="0.87695313"/>	
 	</Texture>
 	<Texture name="Talent-PointBg" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="20" y="19"/>	
-		<TexCoords left="0.40625000" right="0.48437500" top="0.89648438" bottom="0.93359375"/>	
+		<TexCoords left="0.55859375" right="0.63671875" top="0.88085938" bottom="0.91796875"/>	
 	</Texture>
 	<Texture name="Talent-TitleGlow-Left" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="18" y="18"/>	
-		<TexCoords left="0.40625000" right="0.47656250" top="0.93750000" bottom="0.97265625"/>	
+		<TexCoords left="0.55859375" right="0.62890625" top="0.92187500" bottom="0.95703125"/>	
 	</Texture>
 
 	

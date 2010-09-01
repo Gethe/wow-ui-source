@@ -290,7 +290,7 @@
 		<Size x="60" y="28"/>
 		<Anchors>
 			<Anchor point="CENTER">
-				<Offset x="0" y="-68"/>
+				<Offset x="0" y="-75"/>
 			</Anchor>
 		</Anchors>
 		<Layers>

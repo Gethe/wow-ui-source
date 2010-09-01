@@ -64,6 +64,308 @@
 	-->
 
 	
+	<ScrollFrame name="PVPQueueInfoScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="232"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="scrollBarBackground">
+					<Size>
+						<AbsDimension x="25" y="84"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
+					<Size>
+						<AbsDimension x="30" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
+					<Size>
+						<AbsDimension x="30" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.scrollBarHideable = true;
+				ScrollFrame_OnLoad(self);
+				ScrollFrame_OnScrollRangeChanged(self);
+				local scrollBar = _G[self:GetName().."ScrollBar"];
+				self.scrollBarBackground:SetParent(scrollBar);
+				self.scrollBarArtTop:SetParent(scrollBar);
+				self.scrollBarArtBottom:SetParent(scrollBar);
+				
+				self.defaultWidth = self:GetWidth();
+				local resizeFunc = function(scrollBar)
+					if ( scrollBar:IsShown() ) then
+						self:SetWidth(self.defaultWidth);
+					else
+						self:SetWidth(self.defaultWidth + scrollBar:GetWidth() + 7);
+					end
+				end
+				
+				scrollBar:SetScript("OnHide", resizeFunc);
+				scrollBar:SetScript("OnShow", resizeFunc);
+				
+				resizeFunc(scrollBar);
+			</OnLoad>
+		</Scripts>
+		<ScrollChild>
+			<Frame name="$parentChildFrame">
+				<Size>
+					<AbsDimension x="1" y="1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentDescription" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP" text="">
+							<Size>
+								<AbsDimension x="275" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentRewardsInfo">
+						<Size>
+							<AbsDimension x="298" y="232"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitle" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="title" text="RANDOM_BATTLEGROUND">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="20" y="-15"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentDescription" inherits="QuestFont" justifyH="LEFT" parentKey="description" text="RANDOM_BATTLEGROUND_EXPLANATION">
+									<Size>
+										<AbsDimension x="280" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentWinReward" parentKey="winReward">
+								<Size>
+									<AbsDimension x="319" y="40"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-19" y="-15"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture setAllPoints="true">
+											<Color r="0.0" g="0.439" b="0.0" a="0.2"/>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="WIN" justifyH="CENTER">
+											<Size x="90" y="10"/>
+											<Anchors>
+												<Anchor point="LEFT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="$parentHonorSymbol" file="Interface\PVPFrame\PVP-Currency-Horde" parentKey="honorSymbol">
+											<Size x="32" y="32"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+										<FontString name="$parentHonorAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="honorAmount">
+											<Size x="65" y="12"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="3" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="$parentArenaSymbol" file="Interface\PVPFrame\PVP-ArenaPoints-Icon" parentKey="arenaSymbol">
+											<Size x="32" y="32"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+										<FontString name="$parentArenaAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="arenaAmount">
+											<Size x="65" y="12"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentArenaSymbol" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="3" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame name="$parentLossReward" parentKey="lossReward">
+								<Size>
+									<AbsDimension x="319" y="40"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentWinReward" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture setAllPoints="true">
+											<Color r="0.5608" g="0" b="0" a="0.2"/>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="LOSS" justifyH="CENTER">
+											<Size x="90" y="10"/>
+											<Anchors>
+												<Anchor point="LEFT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="$parentHonorSymbol" file="Interface\PVPFrame\PVP-Currency-Horde" parentKey="honorSymbol">
+											<Size x="32" y="32"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+										<FontString name="$parentHonorAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="honorAmount">
+											<Size x="65" y="12"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="3" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+										<Texture name="$parentArenaSymbol" file="Interface\PVPFrame\PVP-ArenaPoints-Icon" parentKey="arenaSymbol">
+											<Size x="32" y="32"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="5" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+										<FontString name="$parentArenaAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="arenaAmount">
+											<Size x="65" y="12"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeTo="$parentArenaSymbol" relativePoint="RIGHT">
+													<Offset>
+														<AbsDimension x="3" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</ScrollChild>
+	</ScrollFrame>
+	
 	<Frame name="PVPFrame" inherits="ButtonFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -249,6 +551,9 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick function="PVPHonor_ButtonClicked"/>
+						</Scripts>
 					</Button>
 					<Button name="$parentBgButton2" inherits="PVPBattlegroundButtonTemplate" id="2">
 						<Anchors>
@@ -258,6 +563,9 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick function="PVPHonor_ButtonClicked"/>
+						</Scripts>
 					</Button>
 					<Button name="$parentBgButton3" inherits="PVPBattlegroundButtonTemplate" id="3">
 						<Anchors>
@@ -267,6 +575,9 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick function="PVPHonor_ButtonClicked"/>
+						</Scripts>
 					</Button>
 					<Button name="$parentBgButton4" inherits="PVPBattlegroundButtonTemplate" id="4">
 						<Anchors>
@@ -276,6 +587,9 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick function="PVPHonor_ButtonClicked"/>
+						</Scripts>
 					</Button>
 					<Button name="$parentBgButton5" inherits="PVPBattlegroundButtonTemplate" id="5">
 						<Anchors>
@@ -285,6 +599,9 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick function="PVPHonor_ButtonClicked"/>
+						</Scripts>
 					</Button>
 					<ScrollFrame name="$parentTypeScrollFrame" inherits="FauxScrollFrameTemplate" parentKey="bgTypeScrollFrame">
 						<Anchors>
@@ -350,7 +667,6 @@
 					<OnLoad  function="PVPHonorFrame_OnLoad"/>
 					<OnEvent function="PVPHonorFrame_OnEvent"/>
 					<OnShow  function="PVPHonorFrame_OnShow"/>
-					<OnHide  function="PVPHonorFrame_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="PVPConquestFrame" enableMouse="true" hidden="true" parentKey="panel2">
@@ -603,7 +919,8 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<!--HighlightTexture file="Interface\PVPFrame\PVP-Conquest-Misc" alphaMode="ADD">
+<!--
+						<HighlightTexture file="Interface\PVPFrame\PVP-Conquest-Misc" alphaMode="ADD">
 							<Size x="314" y="60"/>
 							<TexCoords left="0.00097656" right="0.31242969" top="0.20531250" bottom="0.32098438"/>
 							<Color r="1.0" g="1.0" b="0.3" a="0.5"/>
@@ -612,12 +929,13 @@
 							<Size x="314" y="60"/>
 							<TexCoords left="0.00097656" right="0.31242969" top="0.20531250" bottom="0.32098438"/>
 							<Color r="0.5" g="0.5" b="1.0" a="0.5"/>
-						</PushedTexture-->
+						</PushedTexture>
 						<Scripts>
 							<OnClick>
 								PVPFrame_JoinClicked(self);
 							</OnClick>
 						</Scripts>
+-->
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -1040,6 +1358,7 @@
 	</Frame>
 	
 	
+	<Frame name="PVPTimerFrame"/>
 	
 	
 	<Frame name="PVPFramePopup" parent="UIParent" frameStrata="DIALOG" hidden="true">

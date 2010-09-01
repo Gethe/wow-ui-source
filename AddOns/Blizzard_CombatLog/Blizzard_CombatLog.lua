@@ -3353,7 +3353,10 @@ function CombatLog_AddEvent(...)
 		ChatFrame1:AddMessage(message, info.r, info.g, info.b);
 	end
 	-- Add the messages
-	COMBATLOG:AddMessage(CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, ... ));
+	local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, ... );
+	if ( text ) then
+		COMBATLOG:AddMessage(text, r, g, b, a);
+	end
 end
 
 --

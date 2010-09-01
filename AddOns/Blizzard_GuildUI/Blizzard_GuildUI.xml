@@ -179,16 +179,14 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetHyperlink(GetSpellLink(self.spellID));
-			</OnEnter>
+			<OnEnter function="GuildPerksButton_OnEnter"/>
 			<OnLeave>
+				GuildPerksContainer.activeButton = nil;
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then
-					ChatEdit_InsertLink(GetSpellLink(self.spellID));
+					GuildFrame_LinkItem(_, _, GetSpellLink(self.spellID));
 				end
 			</OnClick>
 		</Scripts>
@@ -262,6 +260,54 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
+	<Button name="GuildNewsButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="18"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentHeader" file="Interface\GuildFrame\GuildFrame" parentKey="header" setAllPoints="true">
+					<TexCoords left="0.63183594" right="0.94531250" top="0.57617188" bottom="0.61523438"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDash" inherits="GameFontHighlightSmall" text="QUEST_DASH" hidden="true" parentKey="dash">
+					<Anchors>
+						<Anchor point="LEFT" x="14" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="CENTER" wordwrap="false" parentKey="text">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentDash" relativePoint="RIGHT" x="0" y="0"/>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIcon" file="Interface\GuildFrame\GuildFrame" hidden="true" parentKey="icon">
+					<Size x="13" y="11"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentDash" x="-4" y="0"/>
+					</Anchors>
+					<TexCoords left="0.41406250" right="0.42675781" top="0.96875000" bottom="0.99023438"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				GuildNewsButton_OnEnter(self);
+			</OnEnter>
+			<OnClick>
+				GuildNewsButton_OnClick(self, button);
+			</OnClick>
+			<OnLeave>
+				GuildNewsFrame.activeButton = nil;
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
 <!--
 *******************************************************************************
 	Guild Frame
@@ -270,6 +316,13 @@
 	<Frame name="GuildFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">	
 		<Layers>
 			<Layer level="ARTWORK">
+				<Texture name="$parentTabardBackground" file="Interface\GuildFrame\GuildFrame">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
+				</Texture>
 				<FontString name="$parentMembersCount" inherits="GameFontHighlightSmall" text="1/1">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-14" y="8"/>
@@ -280,6 +333,20 @@
 						<Anchor point="RIGHT" relativeTo="$parentMembersCount" relativePoint="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentTabardLeftIcon" mask="Interface\GuildFrame\GuildLogoMask_R">
+					<Size x="40" y="80"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-16" y="15"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTabardRightIcon" mask="Interface\GuildFrame\GuildLogoMask_R">
+					<Size x="40" y="80"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentTabardLeftIcon" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -413,7 +480,11 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("ADD_GUILDMEMBER");
+						if ( StaticPopup_FindVisible("ADD_GUILDMEMBER") ) then
+							StaticPopup_Hide("ADD_GUILDMEMBER");
+						else
+							StaticPopup_Show("ADD_GUILDMEMBER");
+						end
 					</OnClick>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
@@ -451,7 +522,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="GuildXPBar">
+			<Frame name="GuildXPFrame">
 				<Size>
 					<AbsDimension x="264" y="20"/>
 				</Size>
@@ -459,119 +530,133 @@
 					<Anchor point="BOTTOMLEFT" relativeTo="GuildFrameInset" relativePoint="TOPLEFT" x="58" y="2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
-						</Texture>
-						<Texture name="$parentDivider1" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="40" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>	
-						<Texture name="$parentDivider2" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="80" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>
-						<Texture name="$parentDivider3" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="120" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>
-						<Texture name="$parentDivider4" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="160" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBG" file="Interface\GuildFrame\GuildFrame">
-							<Size x="0" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="0" y="0"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.39843750" right="0.41210938" top="0.96875000" bottom="0.99609375"/>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar">
-							<Size x="1" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
-							</Anchors>
-							<Color r="0.224" g="0.396" b="0.839"/>
-						</Texture>
-						<Texture name="$parentShadow" file="Interface\GuildFrame\GuildFrame">
-							<Size x="9" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
-						</Texture>
-						<Texture name="$parentCap" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" hidden="true">
-							<Size x="20" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<Color r="0" g="0.745" b="0.094"/>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="$parentCapMarker" file="Interface\GuildFrame\GuildFrame" hidden="true">
-							<Size x="9" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentCap" relativePoint="RIGHT" x="-4" y="0"/>
-							</Anchors>
-							<TexCoords left="0.38378906" right="0.39257813" top="0.95898438" bottom="0.99804688"/>
-						</Texture>
 						<FontString name="$parentLevelText" inherits="GameFontNormal">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="2"/>
 							</Anchors>
 						</FontString>
 					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="1">
-						<FontString name="$parentText" inherits="GameFontHighlightSmall">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="4"/>
-							</Anchors>
-						</FontString>
-					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad function="GuildXPBar_OnLoad"/>
-					<OnEnter function="GuildXPBar_OnEnter"/>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
+				<Frames>
+					<Frame name="GuildXPBar">
+						<Size>
+							<AbsDimension x="264" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
+									<Size x="18" y="18"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
+									<Size x="18" y="18"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
+								</Texture>
+								<Texture name="$parentDivider1" file="Interface\GuildFrame\GuildFrame">
+									<Size x="7" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="40" y="0"/>
+									</Anchors>
+									<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
+								</Texture>	
+								<Texture name="$parentDivider2" file="Interface\GuildFrame\GuildFrame">
+									<Size x="7" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="80" y="0"/>
+									</Anchors>
+									<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
+								</Texture>
+								<Texture name="$parentDivider3" file="Interface\GuildFrame\GuildFrame">
+									<Size x="7" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="120" y="0"/>
+									</Anchors>
+									<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
+								</Texture>
+								<Texture name="$parentDivider4" file="Interface\GuildFrame\GuildFrame">
+									<Size x="7" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="160" y="0"/>
+									</Anchors>
+									<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBG" file="Interface\GuildFrame\GuildFrame">
+									<Size x="0" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="0" y="0"/>
+										<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="RIGHT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.39843750" right="0.41210938" top="0.96875000" bottom="0.99609375"/>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar">
+									<Size x="1" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
+									</Anchors>
+									<Color r="0.224" g="0.396" b="0.839"/>
+								</Texture>
+								<Texture name="$parentShadow" file="Interface\GuildFrame\GuildFrame">
+									<Size x="9" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
+								</Texture>
+								<Texture name="$parentCap" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" hidden="true">
+									<Size x="20" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
+									</Anchors>
+									<Color r="0" g="0.745" b="0.094"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="$parentCapMarker" file="Interface\GuildFrame\GuildFrame" hidden="true">
+									<Size x="9" y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentCap" relativePoint="RIGHT" x="-4" y="0"/>
+									</Anchors>
+									<TexCoords left="0.38378906" right="0.39257813" top="0.95898438" bottom="0.99804688"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<FontString name="$parentText" inherits="GameFontHighlightSmall">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="4"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad function="GuildXPBar_OnLoad"/>
+							<OnEnter function="GuildXPBar_OnEnter"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
 			</Frame>
 			<StatusBar name="GuildFactionBar" drawLayer="BORDER">
 				<Size>
@@ -641,9 +726,15 @@
 						<Scripts>
 							<OnEnter>
 								GuildFactionBarLabel:Show();
+								local name, description = GetGuildFactionInfo();
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(GUILD_REPUTATION);
+								GameTooltip:AddLine(description, 1, 1, 1, 1, 1);
+								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave>
 								GuildFactionBarLabel:Hide();
+								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
 					</Button>
@@ -860,47 +951,56 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="GuildUpdatesButton1" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton1" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHeader1" relativePoint="BOTTOMLEFT" x="6" y="-4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentHeader1" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton2" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton2" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton3" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton3" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton4" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton4" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton5" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton5" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton6" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton6" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton7" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton7" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton8" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton8" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton7" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="GuildUpdatesButton9" inherits="GuildInfoButtonTemplate">
+					<Button name="GuildUpdatesButton9" inherits="GuildNewsButtonTemplate">
+						<Size x="320" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildUpdatesButton8" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
@@ -945,7 +1045,7 @@
 							</OnLeave>
 							<OnClick>
 								if ( IsModifiedClick("CHATLINK") ) then
-									ChatEdit_InsertLink(GetSpellLink(self.spellID));
+									GuildFrame_LinkItem(_, _, GetSpellLink(self.spellID));
 								end
 							</OnClick>
 						</Scripts>
@@ -984,7 +1084,7 @@
 							</OnLeave>
 							<OnClick>
 								if ( IsModifiedClick("CHATLINK") ) then
-									ChatEdit_InsertLink(GetSpellLink(self.spellID));
+									GuildFrame_LinkItem(_, _, GetSpellLink(self.spellID));
 								end
 							</OnClick>
 						</Scripts>

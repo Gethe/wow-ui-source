@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CompactRaidGroup.lua"/>
-	<Frame name="CompactRaidGroupTemplate" clampedToScreen="true" movable="true" virtual="true">
+	<Frame name="CompactRaidGroupTemplate" frameStrata="LOW" clampedToScreen="true" movable="true" virtual="true">
 		<Size x="72" y="199"/>
 		<Frames>
 			<Button name="$parentTitle" parentKey="title">

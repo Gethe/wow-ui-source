@@ -104,7 +104,7 @@ end
 
 function MiniMapBattlefieldFrame_OnUpdate (self, elapsed)
 	if ( GameTooltip:IsOwned(self) ) then
-		BattlefieldFrame_UpdateStatus(1);
+		PVP_UpdateStatus(1);
 		if ( self.tooltip ) then
 			GameTooltip:SetText(self.tooltip);
 		end

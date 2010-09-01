@@ -217,4 +217,27 @@
 			<OnMouseUp function="WorldMapQuestFrame_OnMouseUp" />
 		</Scripts>
 	</Frame>
+	<Button name="WorldMapMaelstromButtonTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				local zoneName = self:GetText();
+				self.zoneID = MAELSTROM_ZONES_ID[zoneName];
+			</OnLoad>
+			<OnClick>
+				if ( button == "LeftButton" ) then
+					SetMapZoom(WORLDMAP_MAELSTROM_ID, self.zoneID);
+				else
+					WorldMapZoomOutButton_OnClick();
+				end
+			</OnClick>
+			<OnEnter>
+				WorldMapFrame.maelstromZoneText = select(self.zoneID, GetMapZones(GetCurrentMapContinent()));
+			</OnEnter>
+			<OnLeave>
+				WorldMapFrame.maelstromZoneText = nil;
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" alpha="0.1"/>						
+	</Button>
 </Ui>

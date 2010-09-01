@@ -44,18 +44,15 @@ UIPanelWindows["CinematicFrame"] =				{ area = "full",				pushable = 0, 		xoffse
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
-UIPanelWindows["ArenaRegistrarFrame"] =			{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
-UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["MinigameFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["LFGParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["LFRParentFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["ArenaFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 
 local function GetUIPanelWindowInfo(frame, name)
@@ -1059,6 +1056,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
+	--["StreamingIcon"] = {baseY = true, baseX = 230, yOffset = 0, bottomEither = actionBarOffset - 8, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1};
 	
 	-- Vars
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
@@ -1766,9 +1764,16 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 	
 	-- Boss frames
-	local numBossFrames = 0;
 	local durabilityXOffset = CONTAINER_OFFSET_X;
 	local durabilityYOffset = anchorY;
+
+	if ( StreamingIcon and StreamingIcon:IsShown() ) then
+		StreamingIcon:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY + 20);
+		anchorY = anchorY - StreamingIcon:GetHeight();
+		durabilityYOffset = anchorY;
+	end
+
+	local numBossFrames = 0;
 	if ( Boss1TargetFrame ) then
 		for i = 1, MAX_BOSS_FRAMES do
 			if ( _G["Boss"..i.."TargetFrame"]:IsShown() ) then
@@ -1778,7 +1783,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end
 		if ( numBossFrames > 0 ) then
-			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY + 20);
+			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY);
 			anchorY = anchorY - 6 - numBossFrames * 66;
 			durabilityXOffset = durabilityXOffset + 135;
 		end

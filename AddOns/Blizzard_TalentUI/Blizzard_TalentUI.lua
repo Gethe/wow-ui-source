@@ -407,6 +407,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
@@ -498,7 +499,7 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 		end
 		PlayerTalentFramePetModel:SetUnit("pet");
 		PlayerTalentFrame_Refresh();
-	elseif ( event == "UNIT_LEVEL" ) then
+	elseif ( event == "UNIT_LEVEL") then
 		if ( selectedSpec ) then
 			local arg1 = ...;
 			if (arg1 == "player") then
@@ -507,6 +508,17 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel2);
 				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
 			end
+		end
+	elseif (event == "LEARNED_SPELL_IN_TAB") then
+		-- Must update the Mastery bonus if you just learned Mastery
+		if (PlayerTalentFramePanel1Summary:IsVisible()) then
+			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
+		end
+		if (PlayerTalentFramePanel2Summary:IsVisible()) then
+			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel2);
+		end
+		if (PlayerTalentFramePanel3Summary:IsVisible()) then
+			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
 		end
 	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
@@ -710,14 +722,6 @@ function PlayerTalentFrame_UpdatePetInfo(self)
 		else
 			PlayerTalentFramePetHappiness:Hide();
 		end
-		
-		local nextPetTalentLevel = GetNextPetTalentLevel();
-		if (nextPetTalentLevel and nextPetTalentLevel <= MAX_PLAYER_LEVEL) then
-			PlayerTalentFrameNextPetTalentString:SetFormattedText(PET_NEXT_TALENT_LEVEL, nextPetTalentLevel);
-			PlayerTalentFrameNextPetTalentString:Show();
-		else
-			PlayerTalentFrameNextPetTalentString:Hide();
-		end
 	end
 end
 
@@ -737,8 +741,14 @@ function PlayerTalentFramePanel_OnLoad(self)
 	TalentFrame_Load(self);
 end
 
-local function PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, spellId, formatString, desaturated)
+local function PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, spellId, spellId2, formatString, desaturated)
 	local name, subname, icon = GetSpellInfo(spellId);
+	if (spellId2) then
+		local name2, _, _ = GetSpellInfo(spellId2);
+		if (name2) then
+			name = name .. "/"..name2;
+		end
+	end
 	bonusFrame.Icon:SetTexture(icon);
 	if (formatString) then
 		bonusFrame.Label:SetFormattedText(formatString, name);
@@ -746,6 +756,8 @@ local function PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, spellId, fo
 		bonusFrame.Label:SetText(name);
 	end
 	bonusFrame.spellId = spellId;
+	bonusFrame.spellId2 = spellId2;
+	bonusFrame.extraTooltip = nil;
 	bonusFrame.Icon:SetDesaturated(desaturated);
 	bonusFrame.IconBorder:SetDesaturated(desaturated);
 	if (desaturated) then
@@ -850,7 +862,7 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 		for i=1, #bonuses do
 			local bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
 			if (bonusFrame) then
-				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, desaturateBonuses);
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, nil, desaturateBonuses);
 			end
 		end
 		
@@ -870,7 +882,7 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 			numSmallBonuses = numSmallBonuses+1;
 			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
 			if (bonusFrame) then
-				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, desaturateBonuses);
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, nil, desaturateBonuses);
 			end
 		end	
 		
@@ -879,9 +891,28 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 			numSmallBonuses = numSmallBonuses+1;
 			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
 			if (bonusFrame) then
-				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], TALENT_EARLY_SPELLS_LABEL, desaturateBonuses);
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, TALENT_EARLY_SPELLS_LABEL, desaturateBonuses);
 			end
 		end	
+		
+		-- Update mastery
+		local masterySpell, masterySpell2 = GetTalentTreeMasterySpells(self.talentTree);
+		if (UnitLevel("player") >= SHOW_MASTERY_LEVEL and masterySpell) then
+			local _, class = UnitClass("player");
+			local masteryKnown = IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
+			numSmallBonuses = numSmallBonuses+1;
+			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
+			if (bonusFrame) then
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, masterySpell, masterySpell2, TALENT_MASTERY_LABEL, desaturateBonuses or not masteryKnown);
+				if (not masteryKnown) then
+					bonusFrame.extraTooltip = GRAY_FONT_COLOR_CODE..TALENT_MASTERY_TOOLTIP_NOT_KNOWN..FONT_COLOR_CODE_CLOSE;
+				end
+				--Override icon to Mastery icon
+				local _, _, masteryTexture = GetSpellInfo(CLASS_MASTERY_SPELLS[class]);
+				bonusFrame.Icon:SetTexture(masteryTexture);
+				bonusFrame.Icon:SetDesaturated(desaturateBonuses or not masteryKnown);
+			end
+		end
 		
 		-- Hide unused bonus frames
 		local i = numSmallBonuses+1;
@@ -892,8 +923,18 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 			bonusFrame = _G[self.Summary:GetName().."Bonus"..i];
 		end
 		
-		-- Update description text
 		local descriptionFrame = self.Summary.Description;
+		
+		-- Update description height
+		if (numSmallBonuses > 4) then
+			descriptionFrame:SetHeight(64);
+			descriptionFrame:SetPoint("TOPLEFT", 10, -292);
+		else
+			descriptionFrame:SetHeight(88);
+			descriptionFrame:SetPoint("TOPLEFT", 10, -268);
+		end
+		
+		-- Update description text
 		descriptionFrame:SetWidth(178);
 		descriptionFrame.ScrollChild:SetWidth(descriptionFrame:GetWidth());
 		descriptionFrame.ScrollChild:SetHeight(descriptionFrame:GetHeight());
@@ -974,7 +1015,7 @@ function PlayerTalentFramePanel_Update(self)
 	end
 	
 	-- Update appearance of the Header icon and surrounding art
-	if (self.HeaderIcon) then
+	if (self.HeaderIcon and not self.pet) then
 		PlayerTalentFramePanel_ShowOrHideHeaderIcon(self);
 		if (primaryTree == self.talentTree) then
 			self.HeaderIcon.PointsSpent:Show();
@@ -1219,9 +1260,15 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			PlayerTalentFrameHeaderSubText:Hide();
 		end
 	elseif (selectedTab == PET_TALENTS_TAB) then
+		local nextPetTalentLevel = GetNextPetTalentLevel();
 		if (talentPoints > 0) then
 			local unspentPreviewPoints = talentPoints - GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			PlayerTalentFrameHeaderText:SetFormattedText(PET_UNSPENT_TALENT_POINTS, NORMAL_FONT_COLOR_CODE..unspentPreviewPoints..FONT_COLOR_CODE_CLOSE);
+			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
+			PlayerTalentFrameHeaderText:Show();
+			PlayerTalentFrameHeaderSubText:Hide();
+		elseif (nextPetTalentLevel and nextPetTalentLevel <= MAX_PLAYER_LEVEL) then
+			PlayerTalentFrameHeaderText:SetFormattedText(NEXT_TALENT_LEVEL, nextPetTalentLevel);
 			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
 			PlayerTalentFrameHeaderText:Show();
 			PlayerTalentFrameHeaderSubText:Hide();

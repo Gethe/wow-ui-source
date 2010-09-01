@@ -111,6 +111,20 @@ MOVING_STAT_CATEGORY = nil;
 
 local StatCategoryFrames = {};
 
+CLASS_MASTERY_SPELLS = {
+	["DEATHKNIGHT"] = 86471,
+	["DRUID"] = 86470 ,
+	["HUNTER"] = 86472,
+	["MAGE"] = 86473,
+	["PALADIN"] = 86474,
+	["PRIEST"] = 86475,
+	["ROGUE"] = 86476, 
+	["SHAMAN"] = 86477,
+	["WARLOCK"] = 86478,
+	["WARRIOR"] = 86479,
+};
+
+
 PAPERDOLL_STATINFO = {
 
 	-- General
@@ -359,6 +373,36 @@ PAPERDOLL_STATCATEGORY_DEFAULTORDER = {
 	"RESISTANCE",
 };
 
+BASE_MISS_CHANCE_PHYSICAL = {
+	[0] = 5.0;
+	[1] = 5.5;
+	[2] = 6.0;
+	[3] = 8.0;
+};
+
+BASE_MISS_CHANCE_SPELL = {
+	[0] = 4.0;
+	[1] = 5.0;
+	[2] = 6.0;
+	[3] = 17.0;
+};
+
+BASE_ENEMY_DODGE_CHANCE = {
+	[0] = 5.0;
+	[1] = 5.5;
+	[2] = 6.0;
+	[3] = 6.5;
+};
+
+BASE_ENEMY_PARRY_CHANCE = {
+	[0] = 5.0;
+	[1] = 5.5;
+	[2] = 6.0;
+	[3] = 14.0;
+};
+
+DUAL_WIELD_HIT_PENALTY = 19.0;
+
 function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
@@ -377,6 +421,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
+	self:RegisterEvent("MASTERY_UPDATE");
 	self:RegisterEvent("KNOWN_TITLES_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	PaperDoll_InitStatCategories();
@@ -418,7 +463,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	if ( unit == "player" ) then
 		if ( event == "UNIT_LEVEL" ) then
 			PaperDollFrame_SetLevel();
-		elseif ( event == "UNIT_DAMAGE" or event == "PLAYER_DAMAGE_DONE_MODS" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" ) then
+		elseif ( event == "UNIT_DAMAGE" or event == "PLAYER_DAMAGE_DONE_MODS" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER") then
 			PaperDollFrame_UpdateStats();
 		elseif ( event == "UNIT_RESISTANCES" ) then
 			PaperDollFrame_UpdateStats();
@@ -427,7 +472,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		end
 	end
 	
-	if ( event == "COMBAT_RATING_UPDATE" ) then
+	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" ) then
 		PaperDollFrame_UpdateStats();
 	end
 end
@@ -454,6 +499,95 @@ function PaperDollFrame_SetGuild()
 
 		HonorGuildText:Hide();
 	end
+end
+
+function GetMeleeMissChance(levelOffset, special)
+	if (levelOffset < 0 or levelOffset > 3) then
+		return 0;
+	end
+	local chance = BASE_MISS_CHANCE_PHYSICAL[levelOffset];
+	chance = chance - GetCombatRatingBonus(CR_HIT_MELEE) - GetHitModifier();
+	if (IsDualWielding() and not special) then
+		chance = chance + DUAL_WIELD_HIT_PENALTY;
+	end
+	if (chance < 0) then
+		chance = 0;
+	elseif (chance > 100) then
+		chance = 100;
+	end
+	return chance;
+end
+
+function GetRangedMissChance(levelOffset, special)
+	if (levelOffset < 0 or levelOffset > 3) then
+		return 0;
+	end
+	local chance = BASE_MISS_CHANCE_PHYSICAL[levelOffset];
+	chance = chance - GetCombatRatingBonus(CR_HIT_RANGED) - GetHitModifier();
+	if (chance < 0) then
+		chance = 0;
+	elseif (chance > 100) then
+		chance = 100;
+	end
+	return chance;
+end
+
+function GetSpellMissChance(levelOffset, special)
+	if (levelOffset < 0 or levelOffset > 3) then
+		return 0;
+	end
+	local chance = BASE_MISS_CHANCE_SPELL[levelOffset];
+	chance = chance - GetCombatRatingBonus(CR_HIT_SPELL) - GetSpellHitModifier();
+	if (chance < 0) then
+		chance = 0;
+	elseif (chance > 100) then
+		chance = 100;
+	end
+	return chance;
+end
+
+function GetEnemyDodgeChance(levelOffset)
+	if (levelOffset < 0 or levelOffset > 3) then
+		return 0;
+	end
+	local chance = BASE_ENEMY_DODGE_CHANCE[levelOffset];
+	local offhandChance = BASE_ENEMY_DODGE_CHANCE[levelOffset];
+	local expertisePct, offhandExpertisePct = GetExpertisePercent();
+	chance = chance - expertisePct;
+	offhandChance = offhandChance - offhandExpertisePct;
+	if (chance < 0) then
+		chance = 0;
+	elseif (chance > 100) then
+		chance = 100;
+	end
+	if (offhandChance < 0) then
+		offhandChance = 0;
+	elseif (offhandChance > 100) then
+		offhandChance = 100;
+	end
+	return chance, offhandChance;
+end
+
+function GetEnemyParryChance(levelOffset)
+	if (levelOffset < 0 or levelOffset > 3) then
+		return 0;
+	end
+	local chance = BASE_ENEMY_PARRY_CHANCE[levelOffset];
+	local offhandChance = BASE_ENEMY_PARRY_CHANCE[levelOffset];
+	local expertisePct, offhandExpertisePct = GetExpertisePercent();
+	chance = chance - expertisePct;
+	offhandChance = offhandChance - offhandExpertisePct;
+	if (chance < 0) then
+		chance = 0;
+	elseif (chance > 100) then
+		chance = 100;
+	end
+	if (offhandChance < 0) then
+		offhandChance = 0;
+	elseif (offhandChance > 100) then
+		offhandChance = 100;
+	end
+	return chance, offhandChance;
 end
 
 function PaperDollFrame_SetHealth(statFrame, unit)
@@ -1394,34 +1528,115 @@ function PaperDollFrame_SetRangedCritChance(statFrame)
 	statFrame.tooltip2 = format(CR_CRIT_RANGED_TOOLTIP, GetCombatRating(CR_CRIT_RANGED), GetCombatRatingBonus(CR_CRIT_RANGED));
 end
 
+function MeleeHitChance_OnEnter(statFrame)
+
+	if (MOVING_STAT_CATEGORY) then return; end
+	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
+	local hitChance = GetCombatRatingBonus(CR_HIT_MELEE) + GetHitModifier();
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..format("+%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:AddLine(format(STAT_HIT_MELEE_TOOLTIP, GetCombatRating(CR_HIT_MELEE), GetCombatRatingBonus(CR_HIT_MELEE)));
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, MISS_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	if (IsDualWielding()) then
+		GameTooltip:AddLine(STAT_HIT_NORMAL_ATTACKS, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	end
+	local playerLevel = UnitLevel("player");
+	for i=0, 3 do
+		local missChance = format("%.2f%%", GetMeleeMissChance(i, false));
+		local level = playerLevel + i;
+			if (i == 3) then
+				level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+			end
+		GameTooltip:AddDoubleLine("      "..level, missChance.."    ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	
+	if (IsDualWielding()) then
+		GameTooltip:AddLine(STAT_HIT_SPECIAL_ATTACKS, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		for i=0, 3 do
+			local missChance = format("%.2f%%", GetMeleeMissChance(i, true));
+			local level = playerLevel + i;
+			if (i == 3) then
+				level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+			end
+			GameTooltip:AddDoubleLine("      "..level, missChance.."    ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
+	end
+	
+	GameTooltip:Show();
+end
+
 function PaperDollFrame_SetMeleeHitChance(statFrame)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_HIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
-	local hitChance = GetCombatRatingBonus(CR_HIT_MELEE);
-	hitChance = format("%.2f%%", hitChance);
+	local hitChance = GetCombatRatingBonus(CR_HIT_MELEE) + GetHitModifier();
+	hitChance = format("+%.2f%%", hitChance);
 	text:SetText(hitChance);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..hitChance..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_HIT_MELEE_TOOLTIP, GetCombatRating(CR_HIT_MELEE), GetCombatRatingBonus(CR_HIT_MELEE));
+	statFrame:SetScript("OnEnter", MeleeHitChance_OnEnter);
+	statFrame:Show();
+end
+
+function RangedHitChance_OnEnter(statFrame)
+
+	if (MOVING_STAT_CATEGORY) then return; end
+	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
+	local hitChance = GetCombatRatingBonus(CR_HIT_RANGED) + GetHitModifier();
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..format("+%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:AddLine(format(STAT_HIT_RANGED_TOOLTIP, GetCombatRating(CR_HIT_RANGED), GetCombatRatingBonus(CR_HIT_RANGED)));
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, MISS_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	local playerLevel = UnitLevel("player");
+	for i=0, 3 do
+		local missChance = format("%.2f%%", GetRangedMissChance(i));
+		local level = playerLevel + i;
+			if (i == 3) then
+				level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+			end
+		GameTooltip:AddDoubleLine("      "..level, missChance.."    ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+		
+	GameTooltip:Show();
 end
 
 function PaperDollFrame_SetRangedHitChance(statFrame)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_HIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
-	local hitChance = GetCombatRatingBonus(CR_HIT_RANGED);
-	hitChance = format("%.2f%%", hitChance);
+	local hitChance = GetCombatRatingBonus(CR_HIT_RANGED) + GetHitModifier();
+	hitChance = format("+%.2f%%", hitChance);
 	text:SetText(hitChance);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..hitChance..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_HIT_RANGED_TOOLTIP, GetCombatRating(CR_HIT_RANGED), GetCombatRatingBonus(CR_HIT_RANGED));
+	statFrame:SetScript("OnEnter", RangedHitChance_OnEnter);
+	statFrame:Show();
+end
+
+function SpellHitChance_OnEnter(statFrame)
+
+	if (MOVING_STAT_CATEGORY) then return; end
+	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
+	local hitChance = GetCombatRatingBonus(CR_HIT_SPELL) + GetSpellHitModifier();
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..format("+%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:AddLine(format(STAT_HIT_SPELL_TOOLTIP, GetCombatRating(CR_HIT_SPELL), GetCombatRatingBonus(CR_HIT_SPELL)));
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, MISS_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	local playerLevel = UnitLevel("player");
+	for i=0, 3 do
+		local missChance = format("%.2f%%", GetSpellMissChance(i));
+		local level = playerLevel + i;
+			if (i == 3) then
+				level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+			end
+		GameTooltip:AddDoubleLine("      "..level, missChance.."    ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+		
+	GameTooltip:Show();
 end
 
 function PaperDollFrame_SetSpellHitChance(statFrame)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_HIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
-	local hitChance = GetCombatRatingBonus(CR_HIT_SPELL);
-	hitChance = format("%.2f%%", hitChance);
+	local hitChance = GetCombatRatingBonus(CR_HIT_SPELL) + GetSpellHitModifier();
+	hitChance = format("+%.2f%%", hitChance);
 	text:SetText(hitChance);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..hitChance..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_HIT_SPELL_TOOLTIP, GetCombatRating(CR_HIT_SPELL), GetCombatRatingBonus(CR_HIT_SPELL));
+	statFrame:SetScript("OnEnter", SpellHitChance_OnEnter);
+	statFrame:Show();
 end
 
 function PaperDollFrame_SetMeleeHaste(statFrame)
@@ -1509,6 +1724,72 @@ function PaperDollFrame_SetCombatManaRegen(statFrame)
 	statFrame:Show();
 end
 
+function Expertise_OnEnter(statFrame)
+
+	if (MOVING_STAT_CATEGORY) then return; end
+	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
+	local expertise, offhandExpertise = GetExpertise();
+	local expertisePercent, offhandExpertisePercent = GetExpertisePercent();
+	expertisePercent = format("%.2f", expertisePercent);
+	offhandExpertisePercent = format("%.2f", offhandExpertisePercent);
+	
+	local expertiseDisplay, expertisePercentDisplay;
+	if (IsDualWielding()) then
+		expertiseDisplay = expertise.." / "..offhandExpertise;
+		expertisePercentDisplay = expertisePercent.."% / "..offhandExpertisePercent.."%";
+	else
+		expertiseDisplay = expertise;
+		expertisePercentDisplay = expertisePercent.."%";
+	end
+	
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, _G["COMBAT_RATING_NAME"..CR_EXPERTISE]).." "..expertiseDisplay..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:AddLine(format(CR_EXPERTISE_TOOLTIP, expertisePercentDisplay, GetCombatRating(CR_EXPERTISE), GetCombatRatingBonus(CR_EXPERTISE)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	GameTooltip:AddLine(" ");
+	
+	-- Dodge chance
+	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, DODGE_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	local playerLevel = UnitLevel("player");
+	for i=0, 3 do
+		local mainhandDodge, offhandDodge = GetEnemyDodgeChance(i);
+		mainhandDodge = format("%.2f%%", mainhandDodge);
+		offhandDodge = format("%.2f%%", offhandDodge);
+		local level = playerLevel + i;
+		if (i == 3) then
+			level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+		end
+		local dodgeDisplay;
+		if (IsDualWielding() and mainhandDodge ~= offhandDodge) then
+			dodgeDisplay = mainhandDodge.." / "..offhandDodge;
+		else
+			dodgeDisplay = mainhandDodge.."  ";
+		end
+		GameTooltip:AddDoubleLine("      "..level, dodgeDisplay.."  ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	
+	-- Parry chance
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, PARRY_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	local playerLevel = UnitLevel("player");
+	for i=0, 3 do
+		local mainhandParry, offhandParry = GetEnemyParryChance(i);
+		mainhandParry = format("%.2f%%", mainhandParry);
+		offhandParry = format("%.2f%%", offhandParry);
+		local level = playerLevel + i;
+		if (i == 3) then
+			level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+		end
+		local parryDisplay;
+		if (IsDualWielding() and mainhandParry ~= offhandParry) then
+			parryDisplay = mainhandParry.." / "..offhandParry;
+		else
+			parryDisplay = mainhandParry.."  ";
+		end
+		GameTooltip:AddDoubleLine("      "..level, parryDisplay.."  ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+		
+	GameTooltip:Show();
+end
+
 function PaperDollFrame_SetExpertise(statFrame, unit)
 	if ( not unit ) then
 		unit = "player";
@@ -1522,30 +1803,63 @@ function PaperDollFrame_SetExpertise(statFrame, unit)
 		text = expertise;
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_EXPERTISE, text);
-	
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, _G["COMBAT_RATING_NAME"..CR_EXPERTISE]).." "..text..FONT_COLOR_CODE_CLOSE;
-	
-	local expertisePercent, offhandExpertisePercent = GetExpertisePercent();
-	expertisePercent = format("%.2f", expertisePercent);
-	if( offhandSpeed ) then
-		offhandExpertisePercent = format("%.2f", offhandExpertisePercent);
-		text = expertisePercent.."% / "..offhandExpertisePercent.."%";
-	else
-		text = expertisePercent.."%";
-	end
-	statFrame.tooltip2 = format(CR_EXPERTISE_TOOLTIP, text, GetCombatRating(CR_EXPERTISE), GetCombatRatingBonus(CR_EXPERTISE));
-
+	statFrame:SetScript("OnEnter", Expertise_OnEnter);
 	statFrame:Show();
 end
 
+function Mastery_OnEnter(statFrame)
+	if (MOVING_STAT_CATEGORY) then return; end
+	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
+	
+	local _, class = UnitClass("player");
+	local mastery = GetMastery();
+	local masteryBonus = GetCombatRatingBonus(CR_MASTERY);
+	mastery = format("%.2f", mastery);
+	
+	local title = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_MASTERY).." "..mastery..FONT_COLOR_CODE_CLOSE;
+	if (masteryBonus > 0) then
+		title = title..HIGHLIGHT_FONT_COLOR_CODE.." ("..format("%.2f", mastery-masteryBonus)..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..format("%.2f", masteryBonus)..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
+	end
+	GameTooltip:SetText(title);
+	
+	local masteryKnown = IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
+	local primaryTalentTree = GetPrimaryTalentTree();
+	if (masteryKnown and primaryTalentTree) then
+		local masterySpell, masterySpell2 = GetTalentTreeMasterySpells(primaryTalentTree);
+		if (masterySpell) then
+			GameTooltip:AddSpellByID(masterySpell);
+		end
+		if (masterySpell2) then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddSpellByID(masterySpell2);
+		end
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(format(STAT_MASTERY_TOOLTIP, GetCombatRating(CR_MASTERY), masteryBonus), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	else
+		GameTooltip:AddLine(format(STAT_MASTERY_TOOLTIP, GetCombatRating(CR_MASTERY), masteryBonus), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		GameTooltip:AddLine(" ");
+		if (masteryKnown) then
+			GameTooltip:AddLine(STAT_MASTERY_TOOLTIP_NO_TALENT_SPEC, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
+		else
+			GameTooltip:AddLine(STAT_MASTERY_TOOLTIP_NOT_KNOWN, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
+		end
+	end
+	GameTooltip:Show();
+end
+
 function PaperDollFrame_SetMastery(statFrame)
+	if (UnitLevel("player") < SHOW_MASTERY_LEVEL) then
+		statFrame:Hide();
+		return;
+	end
+	
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_MASTERY));
 	local text = _G[statFrame:GetName().."StatText"];
 	local mastery = GetMastery();
 	mastery = format("%.2f", mastery);
 	text:SetText(mastery);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_MASTERY).." "..mastery..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_MASTERY_TOOLTIP, GetCombatRating(CR_MASTERY), GetCombatRatingBonus(CR_MASTERY));
+	statFrame:SetScript("OnEnter", Mastery_OnEnter);
+	statFrame:Show();
 end
 
 function CharacterSpellBonusDamage_OnEnter (self)

@@ -318,7 +318,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 		PlayerFrameManaBar:SetWidth(100);
 		PlayerFrameManaBar:SetPoint("TOPLEFT",119,-52);
 	end
-	PlayerFrameVehicleTexture:Show();
+	PlayerFrame_ShowVehicleTexture();
 	
 	PlayerName:SetPoint("CENTER",50,23);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
@@ -342,7 +342,7 @@ function PlayerFrame_ToPlayerArt(self)
 	ComboFrame_Update();
 			
 	PlayerFrameTexture:Show();
-	PlayerFrameVehicleTexture:Hide();
+	PlayerFrame_HideVehicleTexture();
 	PlayerName:SetPoint("CENTER",50,19);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
 	PlayerMasterIcon:SetPoint("TOPLEFT",80,-10);
@@ -610,3 +610,39 @@ function DeathKnniggetThrobFunction (self, elapsed)
 	end
 end
 
+
+
+function PlayerFrame_ShowVehicleTexture()
+	PlayerFrameVehicleTexture:Show();
+	
+	local _, class = UnitClass("player");	
+	if ( class == "WARLOCK" ) then
+		ShardBarFrame:Hide();
+	elseif ( class == "SHAMAN" ) then
+		TotemFrame:Hide();
+	elseif ( class == "DRUID" ) then
+		EclipseBarFrame:Hide();
+	elseif ( class == "PALADIN" ) then
+		PaladinPowerBar:Hide();
+	elseif ( class == "DEATHKNIGHT" ) then
+		RuneFrame:Hide();
+	end
+end
+
+
+function PlayerFrame_HideVehicleTexture()
+	PlayerFrameVehicleTexture:Hide();
+		
+	local _, class = UnitClass("player");	
+	if ( class == "WARLOCK" ) then
+		ShardBarFrame:Show();
+	elseif ( class == "SHAMAN" ) then
+		TotemFrame:Show();
+	elseif ( class == "DRUID" ) then
+		EclipseBar_UpdateShown(EclipseBarFrame);
+	elseif ( class == "PALADIN" ) then
+		PaladinPowerBar:Show();
+	elseif ( class == "DEATHKNIGHT" ) then
+		RuneFrame:Show();
+	end
+end

@@ -186,6 +186,8 @@ function ActionButton_Update (self)
 			self:RegisterEvent("COMPANION_UPDATE");
 			self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 			self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+			self:RegisterEvent("PET_STABLE_UPDATE");
+			self:RegisterEvent("PET_STABLE_SHOW");
 			self.eventsRegistered = true;
 		end
 
@@ -214,6 +216,8 @@ function ActionButton_Update (self)
 			self:UnregisterEvent("COMPANION_UPDATE");
 			self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
 			self:UnregisterEvent("LEARNED_SPELL_IN_TAB");
+			self:UnregisterEvent("PET_STABLE_UPDATE");
+			self:UnregisterEvent("PET_STABLE_SHOW");
 			self.eventsRegistered = nil;
 		end
 
@@ -416,6 +420,9 @@ function ActionButton_OnEvent (self, event, ...)
 		if ( ActionButton_IsFlashing(self) and not IsAttackAction(self.action) ) then
 			ActionButton_StopFlash(self);
 		end
+	elseif ( event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
+		-- Has to update everything for now, but this event should happen infrequently
+		ActionButton_Update(self);
 	end
 end
 

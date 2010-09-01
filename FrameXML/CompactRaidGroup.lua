@@ -9,10 +9,14 @@ function CompactRaidGroup_OnEvent(self, event, ...)
 	end
 end
 
-function CompactRaidGroup_ApplyFunctionToAllFrames(frame, func, ...)
-	for i=1, MEMBERS_PER_RAID_GROUP do
-		local unitFrame = _G[frame:GetName().."Member"..i];
-		func(unitFrame, ...);
+function CompactRaidGroup_ApplyFunctionToAllFrames(frame, updateSpecifier, func, ...)
+	if ( updateSpecifier == "normal" or updateSpecifier == "all" ) then
+		for i=1, MEMBERS_PER_RAID_GROUP do
+			local unitFrame = _G[frame:GetName().."Member"..i];
+			func(unitFrame, ...);
+		end
+	elseif ( updateSpecifier == "group" ) then
+		func(frame, ...);
 	end
 end
 
@@ -22,6 +26,7 @@ function CompactRaidGroup_GenerateForGroup(groupIndex)
 	if (  not frame ) then
 		frame = CreateFrame("Frame", "CompactRaidGroup"..groupIndex, UIParent, "CompactRaidGroupTemplate");
 		CompactRaidGroup_InitializeForGroup(frame, groupIndex);
+		CompactRaidGroup_UpdateLayout(frame);
 		didCreate = true;
 	end
 	return frame, didCreate;
@@ -53,6 +58,14 @@ function CompactRaidGroup_UpdateUnits(frame)
 		local unitFrame = _G[frame:GetName().."Member"..frameIndex];
 		CompactUnitFrame_SetUnit(unitFrame, nil);
 	end
+end
+
+function CompactRaidGroup_UpdateLayout(frame)
+	local totalHeight = frame.title:GetHeight();
+	totalHeight = totalHeight + _G[frame:GetName().."Member1"]:GetHeight() * MEMBERS_PER_RAID_GROUP;
+	
+	frame:SetHeight(totalHeight);
+	frame:SetWidth(_G[frame:GetName().."Member1"]:GetWidth());
 end
 
 function CompactRaidGroup_StartMoving(frame)

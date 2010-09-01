@@ -1,45 +1,58 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="QuestInfo.lua"/>
+	
+	<Button name="QuestInfoRewardSpellTemplate" inherits="QuestSpellTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				local tooltip = _G[QuestInfoFrame.tooltip];
+				if ( tooltip ) then
+					tooltip:SetOwner(self, "ANCHOR_RIGHT");
+					if ( QuestInfoFrame.questLog ) then
+						tooltip:SetQuestLogRewardSpell();
+					else
+						tooltip:SetQuestRewardSpell();
+					end
+				end
+			</OnEnter>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") ) then
+					if ( QuestInfoFrame.questLog ) then
+						ChatEdit_InsertLink(GetQuestLogSpellLink());
+					else
+						ChatEdit_InsertLink(GetQuestSpellLink());
+					end
+				end
+			</OnClick>
+			<OnLeave>
+				if ( QuestInfoFrame.tooltip ) then
+					_G[QuestInfoFrame.tooltip]:Hide();
+					ResetCursor();
+				end
+			</OnLeave>
+		</Scripts>
+	</Button>
 
 	<Button name="QuestInfoRewardItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
 				local tooltip = _G[QuestInfoFrame.tooltip];
-				if ( tooltip ) then					
+				if ( tooltip ) then
 					tooltip:SetOwner(self, "ANCHOR_RIGHT");
-					if ( self.rewardType == "item" ) then
-						if ( QuestInfoFrame.questLog ) then
-							tooltip:SetQuestLogItem(self.type, self:GetID());
-						else
-							tooltip:SetQuestItem(self.type, self:GetID());
-						end
-						GameTooltip_ShowCompareItem(tooltip);
-					elseif ( self.rewardType == "spell" ) then
-						if ( QuestInfoFrame.questLog ) then
-							tooltip:SetQuestLogRewardSpell();
-						else
-							tooltip:SetQuestRewardSpell();
-						end
+					if ( QuestInfoFrame.questLog ) then
+						tooltip:SetQuestLogItem(self.type, self:GetID());
+					else
+						tooltip:SetQuestItem(self.type, self:GetID());
 					end
+					GameTooltip_ShowCompareItem(tooltip);
 				end
 			</OnEnter>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					if ( self.rewardType == "spell" ) then
-						if ( IsModifiedClick("CHATLINK") ) then
-							if ( QuestInfoFrame.questLog ) then
-								ChatEdit_InsertLink(GetQuestLogSpellLink());
-							else
-								ChatEdit_InsertLink(GetQuestSpellLink());
-							end
-						end
+					if ( QuestInfoFrame.questLog ) then
+						HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
 					else
-						if ( QuestInfoFrame.questLog ) then
-							HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
-						else
-							HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
-						end
+						HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
 					end
 				else
 					if ( QuestInfoFrame.chooseItems ) then
@@ -183,6 +196,21 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+	
+	<Frame name="QuestInfoSpecialObjectivesFrame" hidden="true">
+		<Size x="285" y="10"/>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="QuestInfoSpellObjectiveLearnLabel" inherits="QuestFontNormalSmall" justifyH="LEFT" text="LEARN_SPELL_OBJECTIVE"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="QuestInfoSpellObjectiveFrame" inherits="QuestSpellTemplate" hidden="true"/>
+		</Frames>
 	</Frame>
 	
 	<Frame name="QuestInfoTimerFrame" hidden="true">
@@ -339,6 +367,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="QuestInfoRewardSpell" inherits="QuestInfoRewardSpellTemplate" hidden="true"/>
 			<Button name="QuestInfoItem1" inherits="QuestInfoRewardItemTemplate" hidden="true" />
 			<Button name="QuestInfoItem2" inherits="QuestInfoRewardItemTemplate" hidden="true" />
 			<Button name="QuestInfoItem3" inherits="QuestInfoRewardItemTemplate" hidden="true" />

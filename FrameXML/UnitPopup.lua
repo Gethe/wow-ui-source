@@ -1304,10 +1304,9 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "PET_ABANDON" ) then
 		StaticPopup_Show("ABANDON_PET");
 	elseif ( button == "PET_PAPERDOLL" ) then
-		if ( PetPaperDollFrame.selectedTab == 1 or (not PetPaperDollFrame:IsVisible()) ) then	--If the frame is already shown, but turned to a different tab (mounts or companions), just change tabs
+		if (not PetPaperDollFrame:IsVisible()) then
 			ToggleCharacter("PetPaperDollFrame");
 		end
-		PetPaperDollFrame_SetTab(1);
 	elseif ( button == "PET_RENAME" ) then
 		StaticPopup_Show("RENAME_PET");
 	elseif ( button == "FREE_FOR_ALL" ) then

@@ -30,6 +30,11 @@
 						<Anchor point="TOPLEFT" x="-1" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentSlotShadow" inherits="Talent-SingleBorder-Shadow">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="3"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentRankBorder" inherits="Talent-PointBg">

@@ -1,73 +1,204 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildNews.lua"/>
-	<Frame name="GuildNewsFrame" parent="GuildFrame" setAllPoints="true" hidden="true">
+<!--
+*******************************************************************************
+	Templates
+*******************************************************************************
+-->
+	<CheckButton name="GuildNewsCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="1" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="GuildNewsFilter_OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	<!-- GuildNewsButtonTemplate is in GuildUI.xml -->
+<!--
+*******************************************************************************
+	News panel
+*******************************************************************************
+-->
+	<Frame name="GuildNewsFrame" parent="GuildFrame" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" x="4" y="-65"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-7" y="26"/>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\GuildFrame\GuildFrame">
-					<Size x="302" y="312"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-27" y="-70"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-3" y="3"/>
+					</Anchors>
 					<TexCoords left="0.00097656" right="0.31445313" top="0.00195313" bottom="0.59765625"/>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentHeader" file="Interface\GuildFrame\GuildFrame">
+					<Size x="319" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-3"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString	inherits="GameFontNormal" text="GUILD_NEWS">
+					<Size>
+						<AbsDimension x="0" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHeader" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentNoNews" inherits="GameFontDisable" text="GUILD_NO_GUILD_NEWS" hidden="true">
+					<Size>
+						<AbsDimension x="0" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-11"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollingMessageFrame name="GuildNewsMessageFrame" maxLines="1000" fade="false">
-				<Size x="298" y="312"/>
+			<Button name="GuildNewsSetFiltersButton" text="GUILD_SET_FILTERS_LINK">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
+					<Anchor point="RIGHT" relativeTo="$parentHeader" x="-8" y="0"/>
+				</Anchors>
+				<ButtonText>
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Color r="0.973" g="0.937" b="0.580"/>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+				<Scripts>
+					<OnClick>
+						GuildFramePopup_Show(GuildNewsFiltersFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<ScrollFrame name="GuildNewsContainer" inherits="MinimalHybridScrollFrameTemplate">
+				<Size x="298" y="305"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="-31" y="-70"/>
+							<AbsDimension x="4" y="-25"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\GuildFrame\GuildFrame" hidden="true">
-							<TexCoords left="0.31640625" right="0.62988281" top="0.00195313" bottom="0.59765625"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<FontString inherits="GameFontNormal" justifyH="LEFT"/>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="4" y="-12"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="4" y="11"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								--self:GetParent().scrollBar = self;
-							</OnLoad>
-							<OnValueChanged> 
-								GuildNewsScrollBar_OnValueChanged(self:GetParent(), value);
-							</OnValueChanged>
-						</Scripts>
-					</Slider>
-				</Frames>
+			</ScrollFrame>
+			<Frame name="GuildNewsDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
 				<Scripts>
-					<OnHyperlinkClick>
-						SetItemRef(link, text, button);
-					</OnHyperlinkClick>
+					<OnLoad function="GuildNewsDropDown_OnLoad"/>
 				</Scripts>
-			</ScrollingMessageFrame>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="GuildNewsFrame_OnLoad"/>
+			<OnShow function="GuildNewsFrame_OnShow"/>
+			<OnEvent function="GuildNewsFrame_OnEvent"/>
+			<OnHide function="GuildNewsFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+<!--
+*******************************************************************************
+	Popup
+*******************************************************************************
+-->	
+	<Frame name="GuildNewsFiltersFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="GuildFrame" enableMouse="true" inherits="TranslucentFrameTemplate">
+		<Size>
+			<AbsDimension x="264" y="204"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="0" y="-20"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="wolf">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.6"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="GUILD_NEWS_FILTERS">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<CheckButton name="GuildNewsFilterButton1" inherits="GuildNewsCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="24" y="-40"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GuildNewsFilterButton2" inherits="GuildNewsCheckButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GuildNewsFilterButton3" inherits="GuildNewsCheckButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GuildNewsFilterButton4" inherits="GuildNewsCheckButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GuildNewsFilterButton5" inherits="GuildNewsCheckButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GuildNewsFilterButton6" inherits="GuildNewsCheckButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildNewsFiltersFrame_OnLoad"/>
+			<OnShow function="GuildNewsFiltersFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

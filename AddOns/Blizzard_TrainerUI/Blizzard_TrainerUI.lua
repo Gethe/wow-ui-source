@@ -48,7 +48,6 @@ function ClassTrainerFrame_Show()
 	end
 
 	ClassTrainerFrame.selectedService = nil;
-	ClassTrainerTrainButton:Disable();
 	--Reset scrollbar
 	ClassTrainerListScrollFrameScrollBar:SetMinMaxValues(0, 0); 
 	ClassTrainerListScrollFrameScrollBar:SetValue(0);
@@ -206,7 +205,7 @@ function ClassTrainerFrame_Update()
 				skillButton.subText:Hide();
 			end
 			
-			local moneyCost = GetTrainerServiceCost(skillIndex);
+			local moneyCost, isProfession = GetTrainerServiceCost(skillIndex);
 			if ( moneyCost and moneyCost > 0 ) then
 				MoneyFrame_Update(skillButton.money:GetName(), moneyCost);
 				if ( playerMoney >= moneyCost ) then
@@ -216,14 +215,20 @@ function ClassTrainerFrame_Update()
 					unavailable = true;
 				end
 			end
-			
 			-- Place the highlight and lock the highlight state
 			if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
-				local prof1, prof2 = GetProfessions();
 				ClassTrainerFrame.showDialog = nil;
 				
+				if isProfession then
+					ClassTrainerFrame.showDialog = true;
+					local _, prof2 = GetProfessions();
+					if prof2 then
+						unavailable = true;
+					end
+				end 
+			
 				skillButton.selectedTex:Show();
-				if ( serviceType == "available" and not unavailable and not prof2) then
+				if ( serviceType == "available" and not unavailable) then
 					ClassTrainerTrainButton:Enable();
 				else
 					ClassTrainerTrainButton:Disable();

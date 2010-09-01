@@ -22,7 +22,7 @@ function QuestFrame_OnEvent(self, event, ...)
 	if ( (event == "QUEST_ITEM_UPDATE") and not QuestFrame:IsShown() ) then
 		return;
 	end
-
+		
 	if ( event == "QUEST_GREETING" ) then
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameGreetingPanel:Show();
@@ -61,6 +61,10 @@ function QuestFrame_OnEvent(self, event, ...)
 	QuestFrame_SetPortrait();
 	ShowUIPanel(QuestFrame);
 	if ( not QuestFrame:IsShown() ) then
+		QuestFrameGreetingPanel:Hide();
+		QuestFrameDetailPanel:Hide();
+		QuestFrameProgressPanel:Hide();
+		QuestFrameRewardPanel:Hide();
 		CloseQuest();
 		return;
 	end
@@ -325,6 +329,15 @@ function QuestFrame_OnHide()
 		QuestFrame.autoQuest = nil;
 	end
 	CloseQuest();
+	if (TUTORIAL_QUEST_ACCEPTED) then
+		if (not IsTutorialFlagged(2)) then
+			TriggerTutorial(2);
+			TriggerTutorial(3);
+		else
+			TriggerTutorial(10);
+		end
+		TUTORIAL_QUEST_ACCEPTED = nil
+	end
 	PlaySound("igQuestListClose");
 end
 

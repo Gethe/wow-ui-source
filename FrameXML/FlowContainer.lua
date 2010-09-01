@@ -93,38 +93,42 @@ function FlowContainer_DoLayout(container)
 		secondarySpacing = container.flowHorizontalSpacing or 0;
 	end
 	
+	--To make things easier to understand, I'll comment this as if it was horizontal. To see the vertical comments, just turn your head 90 degrees.
 	local currentSecondaryLine, currentPrimaryLine = 1, 1;
 	local currentSecondaryOffset, currentPrimaryOffset = 0, 0;
 	local lineMaxSize = 0;
 	local atomicAddStart = nil;
+	local atomicAtBeginning = nil;
 	local i = 1;
 	while ( i <= #container.flowFrames ) do
 		local object = container.flowFrames[i];
 		local doContinue = false;
-		--To make things easier to understand, I'll comment this as if it was horizontal. To see the vertical comments, just turn your head 90 degrees.
 		--If it doesn't fit on the current row, move to the next.
 		if ( object == "linebreak" or	--Force a new line
 			type(object) == "table" and	--Make sure this is an actual object before checking further.
 				((container.flowMaxPerLine and currentPrimaryLine > container.flowMaxPerLine) or	--We went past the max number of columns
 					currentSecondaryOffset + object["Get"..primaryDirection](object) > container["Get"..primaryDirection](container)) ) then	--We went past the max pixel width.
-				currentSecondaryOffset = 0;	--Move back all the way to the left
-				currentPrimaryLine = 1;	--Reset column count
-				currentPrimaryOffset = currentPrimaryOffset + lineMaxSize + secondarySpacing;	--Move down by the size of the biggest object in the last row
-				currentSecondaryLine = currentSecondaryLine + 1;	--Move to the next row.
-				lineMaxSize = 0;
-				if ( atomicAddStart ) then
-					--We wrapped around. So we want to move back to the first item in the atomic add and continue from the position we're leaving off (the new line).
-					i = atomicAddStart;
-					atomicAddStart = nil;
-					doContinue = true;
+					
+				if ( not (atomicAddStart and atomicAtBeginning) ) then	--If we're in an atomic add and we started at the beginning of the line, wrapping won't help us
+					currentSecondaryOffset = 0;	--Move back all the way to the left
+					currentPrimaryLine = 1;	--Reset column count
+					currentPrimaryOffset = currentPrimaryOffset + lineMaxSize + secondarySpacing;	--Move down by the size of the biggest object in the last row
+					currentSecondaryLine = currentSecondaryLine + 1;	--Move to the next row.
+					lineMaxSize = 0;
+					if ( atomicAddStart ) then
+						--We wrapped around. So we want to move back to the first item in the atomic add and continue from the position we're leaving off (the new line).
+						i = atomicAddStart;
+						atomicAtBeginning = true;
+						doContinue = true;
+					end
 				end
 		end
 		
 		if ( not doContinue ) then
 			local objectType = type(object);
 			if ( objectType == "table" ) then	--This is an actual frame
-				--Did we completely run out of room? Assert for now.
-				assert(currentPrimaryOffset + object["Get"..secondaryDirection](object) < container["Get"..secondaryDirection](container));
+				--Did we completely run out of room? Assert for now. --Scratch that, we're just going to keep growing. When we have time, we'll probably want a "didn't fit" callback.
+				--assert(currentPrimaryOffset + object["Get"..secondaryDirection](object) < container["Get"..secondaryDirection](container));
 				
 				--Add it.
 				object:ClearAllPoints();
@@ -141,9 +145,13 @@ function FlowContainer_DoLayout(container)
 				currentSecondaryOffset = currentSecondaryOffset + object;
 			elseif ( objectType == "string" ) then
 				if ( object == "beginatomic" ) then
+					if ( currentSecondaryOffset == 0 ) then
+						atomicAtBeginning = true;		--If we're already at the top, we don't want to move anything to the next row. (There's no way it would help.)
+					end
 					atomicAddStart = i + 1;
 				elseif ( object == "endatomic" ) then
 					atomicAddStart = nil;
+					atomicAtBeginning = nil;
 				end
 			end
 			i = i + 1;

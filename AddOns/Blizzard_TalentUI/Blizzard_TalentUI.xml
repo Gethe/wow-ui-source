@@ -71,13 +71,6 @@
 	</Button>
 	<Button name="PlayerTalentButtonTemplate" inherits="TalentButtonTemplate" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentSlotShadow" inherits="Talent-SingleBorder-Shadow">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-4" y="3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentGlowBorder" inherits="Talent-SingleBorder-Glow" alphaMode="ADD" alpha="0.75">
 					<Anchors>
@@ -115,9 +108,7 @@
 	</Button>
 
 	<Button name="PetTalentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="38" y="38"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
@@ -125,7 +116,7 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentSlotShadow" inherits="PetTalent-SingleBorder-Shadow">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="3"/>
+						<Anchor point="TOPLEFT" x="-4" y="3"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentSlot" inherits="PetTalent-SingleBorder">
@@ -134,10 +125,22 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentGlowBorder" inherits="PetTalent-SingleBorder-Glow" alphaMode="ADD" alpha="0.75">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentRankBorder" inherits="Talent-PointBg">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-4" y="4" />
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRankBorderGreen" inherits="Talent-PointBg-Green" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 				</Texture>
 				<FontString name="$parentRank" inherits="GameFontNormalSmall">
@@ -177,7 +180,7 @@
 
 	<Texture name="PetTalentArrowTemplate" inherits="TalentArrowTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="38" y="38"/>
+			<AbsDimension x="32" y="32"/>
 		</Size>
 	</Texture>
 	
@@ -223,6 +226,20 @@
 				if (self.spellId) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetSpellByID(self.spellId);
+					if (self.spellId2) then
+						local name1 = GetSpellInfo(self.spellId);
+						local name2 = GetSpellInfo(self.spellId2);
+						GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..name1.."/"..name2..FONT_COLOR_CODE_CLOSE);
+						GameTooltip:AddSpellByID(self.spellId);
+						GameTooltip:AddLine(" ");
+						GameTooltip:AddSpellByID(self.spellId2);
+					else
+						GameTooltip:SetSpellByID(self.spellId);
+					end
+					if (self.extraTooltip) then
+						GameTooltip:AddLine(" ");
+						GameTooltip:AddLine(self.extraTooltip, nil, nil, nil, true);
+					end
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -431,18 +448,6 @@
 			<Button name="$parentTalent26" inherits="PlayerTalentButtonTemplate" id="26"/>
 			<Button name="$parentTalent27" inherits="PlayerTalentButtonTemplate" id="27"/>
 			<Button name="$parentTalent28" inherits="PlayerTalentButtonTemplate" id="28"/>
-			<Button name="$parentTalent29" inherits="PlayerTalentButtonTemplate" id="29"/>
-			<Button name="$parentTalent30" inherits="PlayerTalentButtonTemplate" id="30"/>
-			<Button name="$parentTalent31" inherits="PlayerTalentButtonTemplate" id="31"/>
-			<Button name="$parentTalent32" inherits="PlayerTalentButtonTemplate" id="32"/>
-			<Button name="$parentTalent33" inherits="PlayerTalentButtonTemplate" id="33"/>
-			<Button name="$parentTalent34" inherits="PlayerTalentButtonTemplate" id="34"/>
-			<Button name="$parentTalent35" inherits="PlayerTalentButtonTemplate" id="35"/>
-			<Button name="$parentTalent36" inherits="PlayerTalentButtonTemplate" id="36"/>
-			<Button name="$parentTalent37" inherits="PlayerTalentButtonTemplate" id="37"/>
-			<Button name="$parentTalent38" inherits="PlayerTalentButtonTemplate" id="38"/>
-			<Button name="$parentTalent39" inherits="PlayerTalentButtonTemplate" id="39"/>
-			<Button name="$parentTalent40" inherits="PlayerTalentButtonTemplate" id="40"/>
 
 			<Frame name="$parentArrow" setAllPoints="true">
 				<Layers>
@@ -676,6 +681,12 @@
 					<Frame name="$parentBonus4" inherits="PlayerTalentPassiveBonusTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentBonus3" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="RIGHT" x="-10"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentBonus5" inherits="PlayerTalentPassiveBonusTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentBonus4" relativePoint="BOTTOMLEFT"/>
 							<Anchor point="RIGHT" x="-10"/>
 						</Anchors>
 					</Frame>
@@ -1030,29 +1041,23 @@
 	<Frame name="PlayerTalentFramePetTalents" useParentLevel="true" setAllPoints="true" parent="PlayerTalentFrame">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="PlayerTalentFramePetModelBg" file="Interface\TalentFrame\PetTalent-PetBG" hidden="true">
+				<Texture name="PlayerTalentFramePetModelBg" file="Interface\TalentFrame\PetTalent-PetBG">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" y="-1"/>
-						<Anchor point="BOTTOM" relativeTo="PlayerTalentFrameInsetBg" y="1"/>
+						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="4" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<PlayerModel name="PlayerTalentFramePetModel">
-				<Size>
-					<AbsDimension x="372" y="300"/>
-				</Size>
+				<Size x="369" y="314"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="17" y="-116"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="18" y="-116"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						Model_OnLoad(self);
+						self:SetCamDistanceScale(1.3);
 						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 					</OnLoad>
 					<OnEvent>
@@ -1068,7 +1073,7 @@
 						<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-17" y="-16"/>
+									<AbsDimension x="-17" y="2"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1103,7 +1108,7 @@
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<Frame name="PlayerTalentFramePetShadowOverlay" inherits="ShadowOverlayTemplate" setAllPoints="true" useParentLevel="true" hidden="true"/>
+					<Frame name="PlayerTalentFramePetShadowOverlay" inherits="ShadowOverlayTemplate" setAllPoints="true" useParentLevel="true"/>
 				</Frames>
 			</PlayerModel>
 			<Frame name="PlayerTalentFramePetInfo">
@@ -1116,22 +1121,22 @@
 						<Texture name="PlayerTalentFramePetIcon">
 							<Size x="40" y="40"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="2" y="-1"/>
+								<Anchor point="TOPLEFT" x="3" y="-2"/>
 							</Anchors>
 						</Texture>
 						<FontString name="PlayerTalentFramePetNameText" inherits="GameFontNormalLeft">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="56" y="-8"/>
+								<Anchor point="TOPLEFT" x="52" y="-8"/>
 							</Anchors>
 						</FontString>
 						<FontString name="PlayerTalentFramePetLevelText" inherits="GameFontHighlightSmallLeft">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="56" y="2"/>
+								<Anchor point="BOTTOMLEFT" x="52" y="2"/>
 							</Anchors>
 						</FontString>
 						<FontString name="PlayerTalentFramePetTypeText" inherits="GameFontHighlightSmallRight">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1141,13 +1146,6 @@
 								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetIcon" x="-7" y="7"/>
 							</Anchors>
 						</Texture>
-						<FontString name="PlayerTalentFrameNextPetTalentString" inherits="GameFontBlack">
-							<Size x="0" y="22"/>
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" y="-5"/>
-							</Anchors>
-							<Color r="0.71" g="0.67" b="0.49"/>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -1156,7 +1154,7 @@
 							<AbsDimension x="24" y="23"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-3" y="-2"/>
+							<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1213,17 +1211,33 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="PlayerTalentFramePetPanelBackgroundTopLeft">
-							<Size>
-								<AbsDimension x="95" y="268"/>
-							</Size>
+							<TexCoords left="0.13671875" right="1" top="0.0234375" bottom="1"/>
+							<Size x="221" y="250"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="5" y="-53"/>
-								<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 							</Anchors>
 						</Texture>
-						<Texture name="PlayerTalentFramePetPanelBackgroundTopRight" hidden="true" />
-						<Texture name="PlayerTalentFramePetPanelBackgroundBottomLeft" hidden="true" />
-						<Texture name="PlayerTalentFramePetPanelBackgroundBottomRight" hidden="true" />
+						<Texture name="PlayerTalentFramePetPanelBackgroundTopRight">
+							<TexCoords left="0" right="0.109375" top="0.0234375" bottom="1"/>
+							<Size x="7" y="250"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PlayerTalentFramePetPanelBackgroundBottomLeft">
+							<TexCoords left="0.13671875" right="1" top="0" bottom="0.53125"/>
+							<Size x="221" y="68"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PlayerTalentFramePetPanelBackgroundBottomRight">
+							<TexCoords left="0" right="0.109375" top="0" bottom="0.53125"/>
+							<Size x="7" y="68"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
 						
 						<Texture name="PlayerTalentFramePetPanelHeaderBackground" inherits="PetTalent-TreeTitle-BG" parentKey="HeaderBackground">
 							<Anchors>
@@ -1276,28 +1290,30 @@
 							<Size x="100" y="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft" x="0" y="0"/>
-								<Anchor point="RIGHT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft"/>
+								<Anchor point="RIGHT" relativeTo="PlayerTalentFramePetPanelBackgroundTopRight"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a="0.25"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString name="PlayerTalentFramePetPanelPointsSpent" inherits="GameFontHighlightHuge" justifyH="CENTER" parentKey="PointsSpent">
-							<Size x="0" y="22"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="PlayerTalentFramePetPanelHeaderBackground" relativePoint="BOTTOMLEFT">
-									<Offset x="29" y="8"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
 						<FontString name="PlayerTalentFramePetPanelName" inherits="GameFontNormal" justifyH="LEFT" parentKey="Name">
 							<Size x="0" y="15"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="PlayerTalentFramePetPanelHeaderBackground">
-									<Offset x="68" y="-2"/>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="PlayerTalentFramePetPanelHeaderBackground" x="62" y="0"/>
 							</Anchors>
 						</FontString>
+						<Texture name="PlayerTalentFramePetPanelRoleIcon" file="Interface\LFGFrame\LFGRole" parentKey="RoleIcon" hidden="true">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="PlayerTalentFramePetPanelHeaderBackground" x="-10" y="-14"/>
+							</Anchors>
+						</Texture>
+						<Texture name="PlayerTalentFramePetPanelRoleIcon2" file="Interface\LFGFrame\LFGRole" parentKey="RoleIcon2" hidden="true">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="PlayerTalentFramePetPanelRoleIcon" relativePoint="LEFT" x="-1" />
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>		
@@ -1325,22 +1341,6 @@
 					<Button name="PlayerTalentFramePetPanelTalent22" inherits="PetTalentButtonTemplate" id="22"/>
 					<Button name="PlayerTalentFramePetPanelTalent23" inherits="PetTalentButtonTemplate" id="23"/>
 					<Button name="PlayerTalentFramePetPanelTalent24" inherits="PetTalentButtonTemplate" id="24"/>
-					<Button name="PlayerTalentFramePetPanelTalent25" inherits="PetTalentButtonTemplate" id="25"/>
-					<Button name="PlayerTalentFramePetPanelTalent26" inherits="PetTalentButtonTemplate" id="26"/>
-					<Button name="PlayerTalentFramePetPanelTalent27" inherits="PetTalentButtonTemplate" id="27"/>
-					<Button name="PlayerTalentFramePetPanelTalent28" inherits="PetTalentButtonTemplate" id="28"/>
-					<Button name="PlayerTalentFramePetPanelTalent29" inherits="PetTalentButtonTemplate" id="29"/>
-					<Button name="PlayerTalentFramePetPanelTalent30" inherits="PetTalentButtonTemplate" id="30"/>
-					<Button name="PlayerTalentFramePetPanelTalent31" inherits="PetTalentButtonTemplate" id="31"/>
-					<Button name="PlayerTalentFramePetPanelTalent32" inherits="PetTalentButtonTemplate" id="32"/>
-					<Button name="PlayerTalentFramePetPanelTalent33" inherits="PetTalentButtonTemplate" id="33"/>
-					<Button name="PlayerTalentFramePetPanelTalent34" inherits="PetTalentButtonTemplate" id="34"/>
-					<Button name="PlayerTalentFramePetPanelTalent35" inherits="PetTalentButtonTemplate" id="35"/>
-					<Button name="PlayerTalentFramePetPanelTalent36" inherits="PetTalentButtonTemplate" id="36"/>
-					<Button name="PlayerTalentFramePetPanelTalent37" inherits="PetTalentButtonTemplate" id="37"/>
-					<Button name="PlayerTalentFramePetPanelTalent38" inherits="PetTalentButtonTemplate" id="38"/>
-					<Button name="PlayerTalentFramePetPanelTalent39" inherits="PetTalentButtonTemplate" id="39"/>
-					<Button name="PlayerTalentFramePetPanelTalent40" inherits="PetTalentButtonTemplate" id="40"/>
 
 					<Frame name="PlayerTalentFramePetPanelArrow" setAllPoints="true">
 						<Layers>
@@ -1378,6 +1378,42 @@
 							</Layer>
 						</Layers>
 					</Frame>
+					
+					<Frame name="$parentHeaderIcon" parentKey="HeaderIcon">
+						<Size x="46" y="46"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground" x="2" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="$parentIcon" parentKey="Icon">
+									<Size x="46" y="46"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="$parentBorder" inherits="PetTalent-TalentIconBorder" parentKey="Border">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeto="$parentIcon" x="-7" y="7"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentPointsSpentBgGold" inherits="TalentHeader-PointCircle-Gold" parentKey="PointsSpentBgGold">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-6"/>
+									</Anchors>
+								</Texture>
+								<FontString name="$parentPointsSpent" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="PointsSpent">
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="$parentPointsSpentBgGold"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -1385,9 +1421,10 @@
 						self.pet = true;
 						self.position = nil;
 						PlayerTalentFramePanel_OnLoad(self);
-						self.talentButtonSize = 38;
-						self.buttonSpacingX = 55;
+						self.talentButtonSize = 32;
+						self.buttonSpacingX = 52;
 						self.buttonSpacingY = 50;
+						self.initialOffsetX = 24;
 						self.initialOffsetY = 72;
 					</OnLoad>
 				</Scripts>

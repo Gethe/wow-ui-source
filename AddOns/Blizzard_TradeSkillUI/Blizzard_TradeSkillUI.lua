@@ -126,12 +126,7 @@ function TradeSkillFrame_Update()
 		TradeSkillCollapseAllButton:Enable();
 	end
 
-	if ( rank < 75 ) and ( not IsTradeSkillLinked() ) and ( not isTradeSkillGuild ) then
-		TradeSkillFrameSearchBox:Hide();
-		SetTradeSkillItemNameFilter("");	--In case they are switching from an inspect WITH a filter directly to their own without.
-	else
-		TradeSkillFrameSearchBox:Show();
-	end
+	
 	-- ScrollFrame update
 	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
 	-- Fixing up the search exit bar not handled in FauxScrollFrame_Update
@@ -517,7 +512,7 @@ end
 
 function TradeSkillSearch_OnTextChanged(self)
 	local text = self:GetText();
-
+	
 	if ( text == SEARCH ) then
 		SetTradeSkillItemNameFilter("");
 		return;

@@ -2122,6 +2122,7 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	AchievementFrameAchievements_Update();
 
 	local shown = false;
+	local previousScrollValue;
 	while ( not shown ) do
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
 			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
@@ -2141,10 +2142,12 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 			newHeight = min(newHeight, maxVal);
 			AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);
 		else
-			if ( AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then
+			local scrollValue = AchievementFrameAchievementsContainerScrollBar:GetValue();
+			if ( scrollValue == maxVal or scrollValue == previousScrollValue ) then
 				--assert(false, "Failed to find achievement " .. id .. " while jumping!")
 				return;
 			else
+				previousScrollValue = scrollValue;
 				HybridScrollFrame_OnMouseWheel(AchievementFrameAchievementsContainer, -1);
 			end			
 		end

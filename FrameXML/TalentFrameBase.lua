@@ -2,7 +2,7 @@ MAX_TALENT_GROUPS = 2;
 MAX_TALENT_TABS = 3;
 MAX_NUM_TALENT_TIERS = 7;
 NUM_TALENT_COLUMNS = 4;
-MAX_NUM_TALENTS = 40;
+MAX_NUM_TALENTS = 28;
 PLAYER_TALENTS_PER_TIER = 5;
 PET_TALENTS_PER_TIER = 3;
 
@@ -217,7 +217,6 @@ function TalentFrame_Update(TalentFrame)
 						
 						if (_G[buttonName.."GlowBorder"]) then
 							if (unspentPoints > 0) then
-								_G[buttonName.."Slot"]:Hide();
 								_G[buttonName.."GlowBorder"]:Show();
 							else
 								_G[buttonName.."GlowBorder"]:Hide();
@@ -256,7 +255,9 @@ function TalentFrame_Update(TalentFrame)
 				button:Hide();
 			end
 		else	
-			button:Hide();
+			if (button) then
+				button:Hide();
+			end
 		end
 	end
 

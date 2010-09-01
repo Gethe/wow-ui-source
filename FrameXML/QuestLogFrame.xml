@@ -104,28 +104,6 @@
 		<HighlightFont style="GameFontHighlightLeft"/>
 		<DisabledFont style="GameFontHighlightLeft"/>
 	</Button>
-	<Button name="QuestLogRewardItemTemplate" inherits="QuestItemTemplate" virtual="true">
-		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if ( self.rewardType == "item" ) then
-					GameTooltip:SetQuestLogItem(self.type, self:GetID());
-					GameTooltip_ShowCompareItem(GameTooltip);
-				elseif ( self.rewardType == "spell" ) then
-					GameTooltip:SetQuestLogRewardSpell();
-				end
-			</OnEnter>
-			<OnClick>
-				if ( self.rewardType == "spell" ) then
-					if ( IsModifiedClick("CHATLINK") ) then
-						ChatEdit_InsertLink(GetQuestLogSpellLink());
-					end
-				else
-					HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
-				end
-			</OnClick>
-		</Scripts>
-	</Button>
 
 	<Frame name="QuestLogControlPanel" enableMouse="true" hidden="true">
 		<Size x="256" y="26"/>

@@ -5,6 +5,10 @@ MOONKIN_FORM = 31
 
 
 function EclipseBar_UpdateShown(self)
+	if VehicleMenuBar:IsShown() then
+		return;
+	end
+
 	-- Disable rune frame if not a DRUID.
 	local _, class = UnitClass("player");
 	local form  = GetShapeshiftFormID();

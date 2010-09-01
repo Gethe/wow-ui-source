@@ -1968,7 +1968,7 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Button name="$parentDefaultButton" inherits="UIPanelButtonGrayTemplate" text="CHAT_DEFAULTS">
+			<Button name="$parentDefaultButton" inherits="UIPanelButtonTemplate" text="CHAT_DEFAULTS">
 				<Size>
 					<AbsDimension x="130" y="22"/>
 				</Size>
@@ -1983,7 +1983,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonGrayTemplate" text="COMBATLOG_DEFAULTS">
+			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonTemplate" text="COMBATLOG_DEFAULTS">
 				<Size>
 					<AbsDimension x="170" y="22"/>
 				</Size>

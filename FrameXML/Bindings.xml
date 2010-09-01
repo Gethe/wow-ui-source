@@ -1341,4 +1341,5 @@
 	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
 	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>
+	<ModifiedClick action="TRADESEARCHADD" default="SHIFT"/>
 </Bindings>

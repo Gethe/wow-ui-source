@@ -69,6 +69,12 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 		initFunction(frame, level, frame.menuList);
 	end
 
+	--master frame
+	if(level == nil) then
+		level = 1;
+	end
+	_G["DropDownList"..level].dropdown = frame;
+
 	-- Change appearance based on the displayMode
 	if ( displayMode == "MENU" ) then
 		local name = frame:GetName();
@@ -451,29 +457,34 @@ end
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	local button, checked, checkImage, normalText, width;
 	local maxWidth = 0;
+	local somethingChecked = nil; 
 	if ( not dropdownLevel ) then
 		dropdownLevel = UIDROPDOWNMENU_MENU_LEVEL;
 	end
-	
+
+	local listFrame = _G["DropDownList"..dropdownLevel];
+	listFrame.numButtons = listFrame.numButtons or 0;
 	-- Just redraws the existing menu
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
 		button = _G["DropDownList"..dropdownLevel.."Button"..i];
 		checked = nil;
-		-- See if checked or not
-		if ( UIDropDownMenu_GetSelectedName(frame) ) then
-			if ( button:GetText() == UIDropDownMenu_GetSelectedName(frame) ) then
-				checked = 1;
-			end
-		elseif ( UIDropDownMenu_GetSelectedID(frame) ) then
-			if ( button:GetID() == UIDropDownMenu_GetSelectedID(frame) ) then
-				checked = 1;
-			end
-		elseif ( UIDropDownMenu_GetSelectedValue(frame) ) then
-			if ( button.value == UIDropDownMenu_GetSelectedValue(frame) ) then
-				checked = 1;
+
+		if(i <= listFrame.numButtons) then
+			-- See if checked or not
+			if ( UIDropDownMenu_GetSelectedName(frame) ) then
+				if ( button:GetText() == UIDropDownMenu_GetSelectedName(frame) ) then
+					checked = 1;
+				end
+			elseif ( UIDropDownMenu_GetSelectedID(frame) ) then
+				if ( button:GetID() == UIDropDownMenu_GetSelectedID(frame) ) then
+					checked = 1;
+				end
+			elseif ( UIDropDownMenu_GetSelectedValue(frame) ) then
+				if ( button.value == UIDropDownMenu_GetSelectedValue(frame) ) then
+					checked = 1;
+				end
 			end
 		end
-		
 		if (button.checked and type(button.checked) == "function") then
 			checked = button.checked(button);
 		end
@@ -483,6 +494,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
 			uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
 			if ( checked ) then
+				somethingChecked = true;
 				if ( useValue ) then
 					UIDropDownMenu_SetText(frame, button.value);
 				else
@@ -517,7 +529,9 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			end
 		end
 	end
-
+	if(somethingChecked == nil) then
+		UIDropDownMenu_SetText(frame, VIDEO_QUALITY_LABEL6);
+	end
 	if (not frame.noResize) then
 		for i=1, UIDROPDOWNMENU_MAXBUTTONS do
 			button = _G["DropDownList"..dropdownLevel.."Button"..i];

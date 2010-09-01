@@ -755,6 +755,13 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end
+	if ( TradeSkillFrame and TradeSkillFrame:IsShown() and IsModifiedClick("TRADESEARCHADD") )  then
+			local name = GetItemInfo( GetContainerItemID( self:GetParent():GetID(), self:GetID()) );
+			TradeSkillFrameSearchBox:SetFontObject("ChatFontSmall");
+			TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
+			TradeSkillFrameSearchBox:SetText(name);
+			return;
+	end
 	if ( IsModifiedClick("SOCKETITEM") ) then
 		SocketContainerItem(self:GetParent():GetID(), self:GetID());
 	end

@@ -1,4 +1,5 @@
 NUM_WORLDMAP_POIS = 0;
+NUM_WORLDMAP_GRAVEYARDS = 0;
 NUM_WORLDMAP_POI_COLUMNS = 14;
 WORLDMAP_POI_TEXTURE_WIDTH = 256;
 NUM_WORLDMAP_OVERLAYS = 0;
@@ -8,6 +9,8 @@ NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
+WORLDMAP_MAELSTROM_ID = 5;
+MAELSTROM_ZONES_ID = { TheMaelstrom = 0, Deepholm = 1, Kezan = 2, TheLostIsles = 3 };
 WORLDMAP_WINTERGRASP_ID = 501;
 
 QUESTFRAME_MINHEIGHT = 34;
@@ -78,6 +81,9 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_POI_UPDATE");
+	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("REQUEST_CEMETERY_LIST_RESPONSE");
+	
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
 	self.areaName = nil;
@@ -173,7 +179,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		if ( self:IsShown() ) then
 			HideUIPanel(WorldMapFrame);
 		end
-	elseif ( event == "WORLD_MAP_UPDATE" ) then
+	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" ) then
 		if ( not self.blockWorldMapUpdate and self:IsShown() ) then
 			WorldMapFrame_UpdateMap();
 		end
@@ -202,6 +208,20 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	elseif ( ( event == "QUEST_LOG_UPDATE" or event == "QUEST_POI_UPDATE" ) and self:IsShown() ) then
 		WorldMapFrame_DisplayQuests();
 		WorldMapQuestFrame_UpdateMouseOver();
+	elseif  ( event == "SKILL_LINES_CHANGED" ) then
+		local _, _, arch = GetProfessions();
+		if arch then
+			WorldMapShowDigSites:Show();
+			local showDig = GetCVarBool("digSites");
+			WorldMapShowDigSites:SetChecked(showDig);
+			if showDig then
+				WorldMapArchaeologyDigSites:Show();
+			else
+				WorldMapArchaeologyDigSites:Hide();
+			end
+		else
+			WorldMapShowDigSites:Hide();
+		end
 	end
 end
 
@@ -240,15 +260,30 @@ function WorldMapFrame_Update()
 			mapFileName = "Cosmic";
 			OutlandButton:Show();
 			AzerothButton:Show();
+			DeepholmButton:Hide();
+			KezanButton:Hide();
+			LostIslesButton:Hide();
 		else
 			-- Temporary Hack (Temporary meaning 6 yrs, haha)
 			mapFileName = "World";
 			OutlandButton:Hide();
 			AzerothButton:Hide();
+			DeepholmButton:Hide();
+			KezanButton:Hide();
+			LostIslesButton:Hide();
 		end
 	else
 		OutlandButton:Hide();
 		AzerothButton:Hide();
+		if ( GetCurrentMapContinent() == WORLDMAP_MAELSTROM_ID and GetCurrentMapZone() == 0 ) then
+			DeepholmButton:Show();
+			KezanButton:Show();
+			LostIslesButton:Show();
+		else
+			DeepholmButton:Hide();
+			KezanButton:Hide();
+			LostIslesButton:Hide();
+		end
 	end
 
 	local texName;
@@ -283,11 +318,13 @@ function WorldMapFrame_Update()
 		end
 		NUM_WORLDMAP_POIS = numPOIs;
 	end
+	local numGraveyards = 0;
+	local currentGraveyard = GetCemeteryPreference();
 	for i=1, NUM_WORLDMAP_POIS do
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
 		if ( i <= numPOIs ) then
-			local name, description, textureIndex, x, y, mapLinkID = GetMapLandmarkInfo(i);
+			local name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID = GetMapLandmarkInfo(i);
 			local x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
 			_G[worldMapPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
 			x = x * WorldMapButton:GetWidth();
@@ -296,11 +333,35 @@ function WorldMapFrame_Update()
 			worldMapPOI.name = name;
 			worldMapPOI.description = description;
 			worldMapPOI.mapLinkID = mapLinkID;
-			worldMapPOI:Show();
+			if ( graveyardID and graveyardID > 0 ) then
+				worldMapPOI.graveyard = graveyardID;
+				numGraveyards = numGraveyards + 1;
+				local graveyard = WorldMap_GetGraveyardButton(numGraveyards);
+				graveyard:SetPoint("CENTER", worldMapPOI);
+				graveyard:SetFrameLevel(worldMapPOI:GetFrameLevel() - 1);
+				graveyard:Show();
+				if ( currentGraveyard == graveyardID ) then
+					graveyard.texture:SetTexture(0, 1, 0, 0.5);
+				else
+					graveyard.texture:SetTexture(1, 1, 0, 0.5);
+				end
+				worldMapPOI:Hide();		-- lame way to force tooltip redraw
+			else
+				worldMapPOI.graveyard = nil;
+			end
+			worldMapPOI:Show();	
 		else
 			worldMapPOI:Hide();
 		end
 	end
+	if ( numGraveyards > NUM_WORLDMAP_GRAVEYARDS ) then
+		NUM_WORLDMAP_GRAVEYARDS = numGraveyards;
+	else
+		for i = numGraveyards + 1, NUM_WORLDMAP_GRAVEYARDS do
+			_G["WorldMapFrameGraveyard"..i]:Hide();
+		end
+	end
+	
 
 	-- Setup the overlays
 	local textureCount = 0;
@@ -463,6 +524,19 @@ function WorldMapPOI_OnEnter(self)
 	else
 		WorldMapFrameAreaLabel:SetText(self.name);
 		WorldMapFrameAreaDescription:SetText("");
+		-- need localization
+		if ( self.graveyard ) then
+			WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			if ( self.graveyard == GetCemeteryPreference() ) then
+				WorldMapTooltip:SetText("Selected Graveyard");
+				WorldMapTooltip:AddLine("You will appear at this graveyard when you respawn.", 1, 1, 1, 1);
+				WorldMapTooltip:Show();
+			else
+				WorldMapTooltip:SetText("Eligible Graveyard");
+				WorldMapTooltip:AddLine("Click here to set your respawn point at this graveyard.", 1, 1, 1, 1);
+				WorldMapTooltip:Show();
+			end			
+		end
 	end
 end
 
@@ -470,11 +544,15 @@ function WorldMapPOI_OnLeave()
 	WorldMapFrame.poiHighlight = nil;
 	WorldMapFrameAreaLabel:SetText(WorldMapFrame.areaName);
 	WorldMapFrameAreaDescription:SetText("");
+	WorldMapTooltip:Hide();
 end
 
 function WorldMapPOI_OnClick(self, button)
 	if ( self.mapLinkID ) then
 		ClickLandmark(self.mapLinkID);
+	elseif ( self.graveyard ) then
+		SetCemeteryPreference(self.graveyard);
+		WorldMapFrame_Update();
 	else
 		WorldMapButton_OnClick(WorldMapButton, button);
 	end
@@ -494,6 +572,28 @@ function WorldMap_CreatePOI(index)
 	texture:SetHeight(16);
 	texture:SetPoint("CENTER", 0, 0);
 	texture:SetTexture("Interface\\Minimap\\POIIcons");
+end
+
+function WorldMap_GetGraveyardButton(index)
+	-- everything here is temp
+	local frameName = "WorldMapFrameGraveyard"..index;
+	local button = _G[frameName];
+	if ( not button ) then
+		button = CreateFrame("Button", frameName, WorldMapButton);
+		button:SetWidth(32);
+		button:SetHeight(32);
+		button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		button:SetScript("OnEnter", nil);
+		button:SetScript("OnLeave", nil);
+		button:SetScript("OnClick", nil);
+		
+		local texture = button:CreateTexture(button:GetName().."Texture", "ARTWORK");
+		texture:SetWidth(24);
+		texture:SetHeight(24);
+		texture:SetPoint("CENTER", 0, 0);
+		button.texture = texture;
+	end
+	return button;
 end
 
 function WorldMap_GetPOITextureCoords(index)
@@ -775,7 +875,11 @@ function WorldMapButton_OnUpdate(self, elapsed)
 
 	WorldMapFrame.areaName = name;
 	if ( not WorldMapFrame.poiHighlight ) then
-		WorldMapFrameAreaLabel:SetText(name);
+		if ( WorldMapFrame.maelstromZoneText ) then
+			WorldMapFrameAreaLabel:SetText(WorldMapFrame.maelstromZoneText);
+		else
+			WorldMapFrameAreaLabel:SetText(name);
+		end
 	end
 	if ( fileName ) then
 		WorldMapHighlight:SetTexCoord(0, texPercentageX, 0, texPercentageY);
@@ -1572,6 +1676,15 @@ function WorldMapFrame_UpdateMap(questId)
 	end
 end
 
+function ArchaeologyDigSiteFrame_OnUpdate()
+	WorldMapArchaeologyDigSites:DrawNone();
+	local numEntries = ArchaeologyMapUpdateAll();
+	for i = 1, numEntries do
+		local blobID = ArcheologyGetVisibleBlobID(i);
+		WorldMapArchaeologyDigSites:DrawBlob(blobID, true);
+	end
+end
+
 function WorldMapFrame_UpdateQuests()
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily;
 	local questId, questLogIndex;
@@ -1619,7 +1732,7 @@ function WorldMapFrame_UpdateQuests()
 			questFrame.level = level;		-- for difficulty color
 			-- display map POI and turn off blob
 			WorldMapFrame_DisplayQuestPOI(questFrame, isComplete);
-			WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
+			WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
 			-- set quest text
 			questFrame.title:SetText(title);
 			if ( IsQuestWatched(questLogIndex) ) then
@@ -1679,7 +1792,7 @@ function WorldMapFrame_UpdateQuests()
 			break;
 		end		
 		questFrame:Hide();
-		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
+		WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
 		questFrame.questId = 0;
 	end
 	QuestPOI_HideButtons("WorldMapPOIFrame", QUEST_POI_NUMERIC, numPOINumeric + 1);
@@ -1697,7 +1810,7 @@ function WorldMapFrame_SelectQuestFrame(questFrame)
 		poiIcon = currentSelection.poiIcon;
 		QuestPOI_DeselectButton(poiIcon);
 		QuestPOI_DeselectButtonByParent("WorldMapQuestScrollChildFrame");
-		WorldMapBlobFrame:DrawQuestBlob(currentSelection.questId, false);
+		WorldMapBlobFrame:DrawBlob(currentSelection.questId, false);
 		if ( MAP_QUEST_DIFFICULTY == "1" ) then
 			color = GetQuestDifficultyColor(currentSelection.level);
 			currentSelection.title:SetTextColor(color.r, color.g, color.b);
@@ -1737,9 +1850,9 @@ function WorldMapFrame_SelectQuestFrame(questFrame)
 	WorldMapTrackQuest:SetChecked(IsQuestWatched(questFrame.questLogIndex));
 	-- quest blob
 	if ( questFrame.completed ) then
-		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, false);
+		WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
 	else
-		WorldMapBlobFrame:DrawQuestBlob(questFrame.questId, true);
+		WorldMapBlobFrame:DrawBlob(questFrame.questId, true);
 	end
 end
 
@@ -1833,7 +1946,7 @@ function WorldMapQuestFrame_OnEnter(self)
 	end	
 	WorldMapQuestHighlightedFrame:Show();
 	if ( not self.completed ) then
-		WorldMapBlobFrame:DrawQuestBlob(self.questId, true);
+		WorldMapBlobFrame:DrawBlob(self.questId, true);
 	end
 end
 
@@ -1849,7 +1962,7 @@ function WorldMapQuestFrame_OnLeave(self)
 	end		
 	WorldMapQuestHighlightedFrame:Hide();
 	if ( not self.completed ) then
-		WorldMapBlobFrame:DrawQuestBlob(self.questId, false);
+		WorldMapBlobFrame:DrawBlob(self.questId, false);
 	end
 end
 
@@ -1894,7 +2007,7 @@ function WorldMapQuestPOI_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	if ( self.quest ~= WORLDMAP_SETTINGS.selectedQuest ) then
 		if ( WORLDMAP_SETTINGS.selectedQuest ) then
-			WorldMapBlobFrame:DrawQuestBlob(WORLDMAP_SETTINGS.selectedQuestId, false);
+			WorldMapBlobFrame:DrawBlob(WORLDMAP_SETTINGS.selectedQuestId, false);
 		end
 		WorldMapFrame_SelectQuestFrame(self.quest);
 	end
@@ -2116,7 +2229,7 @@ end
 function WorldMapTitleButton_OnDragStart()
 	if ( WORLDMAP_SETTINGS.advanced and not WORLDMAP_SETTINGS.locked ) then
 		if ( WORLDMAP_SETTINGS.selectedQuest ) then
-			WorldMapBlobFrame:DrawQuestBlob(WORLDMAP_SETTINGS.selectedQuestId, false);
+			WorldMapBlobFrame:DrawBlob(WORLDMAP_SETTINGS.selectedQuestId, false);
 		end
 		WorldMapScreenAnchor:ClearAllPoints();
 		WorldMapFrame:ClearAllPoints();
@@ -2129,7 +2242,7 @@ function WorldMapTitleButton_OnDragStop()
 		WorldMapFrame:StopMovingOrSizing();
 		WorldMapBlobFrame_CalculateHitTranslations();
 		if ( WORLDMAP_SETTINGS.selectedQuest and not WORLDMAP_SETTINGS.selectedQuest.completed ) then
-			WorldMapBlobFrame:DrawQuestBlob(WORLDMAP_SETTINGS.selectedQuestId, true);
+			WorldMapBlobFrame:DrawBlob(WORLDMAP_SETTINGS.selectedQuestId, true);
 		end		
 		-- move the anchor
 		WorldMapScreenAnchor:StartMoving();

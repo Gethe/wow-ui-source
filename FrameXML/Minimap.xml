@@ -106,7 +106,7 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="21" y="-53"/>
+									<AbsDimension x="24" y="-37"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -169,7 +169,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-13"/>
+									<AbsDimension x="13" y="-19"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -231,9 +231,6 @@
 						</Layers>
 						<Frames>
 							<Frame name="MiniMapBattlefieldDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
-								<Scripts>
-									<OnLoad function="MiniMapBattlefieldDropDown_OnLoad"/>
-								</Scripts>
 							</Frame>
 						</Frames>
 						<Scripts>
@@ -313,14 +310,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="MiniMapWorldMapButton" hidden="false" inherits="MiniMapButtonTemplate">
+							<Button name="MiniMapWorldMapButton" inherits="MiniMapButtonTemplate">
 								<Size>
 									<AbsDimension x="33" y="33"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPRIGHT">
 										<Offset>
-											<AbsDimension x="-21" y="-1"/>
+											<AbsDimension x="0" y="20"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -374,7 +371,7 @@
 								<Size x="32" y="32"/>
 								<Anchors>
 									<Anchor point="TOPLEFT">
-										<Offset x="13" y="-40"/>
+										<Offset x="9" y="-45"/>
 									</Anchor>
 								</Anchors>
 								<Layers>
@@ -471,7 +468,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="25" y="-100"/>
+											<AbsDimension x="22" y="-100"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -512,6 +509,9 @@
 										self:RegisterEvent("PLAYER_ENTERING_WORLD");
 										self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
 										self:RegisterEvent("LFG_PROPOSAL_UPDATE");
+										self:RegisterEvent("LFG_PROPOSAL_FAILED");
+										self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
+										self:RegisterEvent("LFG_PROPOSAL_SHOW");
 										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>
@@ -529,7 +529,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="71" y="-20"/>
+											<AbsDimension x="72" y="-25"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -558,7 +558,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="51" y="-39"/>
+											<AbsDimension x="50" y="-43"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

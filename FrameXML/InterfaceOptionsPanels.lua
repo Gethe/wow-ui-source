@@ -99,6 +99,11 @@ local function InterfaceOptionsPanel_Default (self)
 			control.setFunc(control:GetValue());
 		end
 	end
+	if ( self.defaultFuncs ) then
+		for _, defaultFunc in SecureNext, self.defaultFuncs do
+			defaultFunc();
+		end
+	end
 end
 
 local function InterfaceOptionsPanel_Refresh (self)
@@ -115,6 +120,10 @@ function InterfaceOptionsPanel_OnLoad (self)
 	InterfaceOptions_AddCategory(self);
 end
 
+function InterfaceOptionsPanel_RegisterSetToDefaultFunc(func, self)
+	self.defaultFuncs = self.defaultFuncs or {};
+	tinsert(self.defaultFuncs, func);
+end
 
 -- [[ Controls Options Panel ]] --
 
@@ -1201,6 +1210,7 @@ NamePanelOptions = {
 	UnitNameNPC = { text = "UNIT_NAME_NPC" },
 	UnitNameNonCombatCreatureName = { text = "UNIT_NAME_NONCOMBAT_CREATURE" },
 	UnitNamePlayerGuild = { text = "UNIT_NAME_GUILD" },
+	UnitNameGuildTitle = { text = "UNIT_NAME_GUILD_TITLE" },
 	UnitNamePlayerPVPTitle = { text = "UNIT_NAME_PLAYER_TITLE" },
 	
 	UnitNameFriendlyPlayerName = { text = "UNIT_NAME_FRIENDLY" },
@@ -1550,6 +1560,8 @@ RaidFramePanelOptions = {
 	raidFramesDisplayAggroHighlight = { text = "DISPLAY_RAID_AGGRO_HIGHLIGHT" },
 	raidFramesDisplayOnlyDispellableDebuffs = { text = "DISPLAY_ONLY_DISPELLABLE_DEBUFFS" },
 	raidFramesDisplayPowerBars = { text = "DISPLAY_POWER_BARS" },
+	raidFramesHeight = { text = "RAID_FRAMES_HEIGHT", minValue = 36, maxValue = 72, valueStep = 2 },
+	raidFramesWidth = { text = "RAID_FRAMES_WIDTH", minValue = 72, maxValue = 144, valueStep = 2 },
 }
 
 function InterfaceOptionsRaidFramePanelSortBy_OnEvent (self, event, ...)
@@ -1641,7 +1653,7 @@ function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName)
 			enabled = true;
 		end
 		DefaultCompactUnitFrameOptions[optionName] = enabled;
-		CompactRaidFrameContainer_ApplyToUnitFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
 	end
 end
 
@@ -1652,9 +1664,111 @@ function InterfaceOptionsRaidFramePanel_GenerateRaidSetUpOptionToggle(optionName
 			enabled = true;
 		end
 		DefaultCompactUnitFrameSetupOptions[optionName] = enabled;
-		CompactRaidFrameContainer_ApplyToUnitFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
-		CompactRaidFrameContainer_ApplyToUnitFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
 	end
+end
+
+function InterfaceOptionsRaidFramePanelHealthTextOption_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "raidFramesHealthText";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_RAID_HEALTH_TEXT_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelHealthTextOption_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+		DefaultCompactUnitFrameOptions.healthText = value;
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				DefaultCompactUnitFrameOptions.healthText = value;
+				CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+				CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+				self.tooltip = _G["OPTION_RAID_HEALTH_TEXT_"..strupper(value)];
+				SetCVar(self.cvar, value);
+				UIDropDownMenu_SetSelectedValue( InterfaceOptionsRaidFramePanelHealthTextOption, value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelHealthTextOption_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsRaidFramePanelHealthTextOption_OnClick(self)
+	InterfaceOptionsRaidFramePanelHealthTextOption:SetValue(self.value);
+end
+
+function InterfaceOptionsRaidFramePanelHealthTextOption_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsRaidFramePanelHealthTextOption);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = RAID_HEALTH_TEXT_NONE;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "none";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_NONE;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_NONE;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = RAID_HEALTH_TEXT_HEALTH;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "health";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_HEALTH;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_HEALTH;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = RAID_HEALTH_TEXT_LOSTHEALTH;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "losthealth";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_LOSTHEALTH;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_LOSTHEALTH;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = RAID_HEALTH_TEXT_PERC;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "perc";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_PERC;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_PERC;
+	UIDropDownMenu_AddButton(info);
 end
 
 -- [[ Camera Options Panel ]] --

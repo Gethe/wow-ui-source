@@ -32,7 +32,7 @@
 					<OnClick function="AudioOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
+			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
 				<Size>
 					<AbsDimension x="96" y="22"/>
 				</Size>

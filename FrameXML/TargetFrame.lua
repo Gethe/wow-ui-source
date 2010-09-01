@@ -399,8 +399,8 @@ function TargetFrame_UpdateAuras (self)
 				frameStealable:Hide();
 			end
 
-			-- set the buff to be big if the target is not the player and the buff is cast by the player or his pet
-			largeBuffList[i] = (not playerIsTarget and PLAYER_UNITS[caster]);
+			-- set the buff to be big if the buff is cast by the player or his pet
+			largeBuffList[i] = PLAYER_UNITS[caster];
 
 			numBuffs = numBuffs + 1;
 

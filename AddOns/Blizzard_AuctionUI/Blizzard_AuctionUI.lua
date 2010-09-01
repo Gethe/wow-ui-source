@@ -1138,6 +1138,7 @@ function AuctionFrameAuctions_OnEvent(self, event, ...)
 	if ( event == "AUCTION_OWNED_LIST_UPDATE" ) then
 		AuctionFrameAuctions_Update();
 	elseif ( event == "AUCTION_MULTISELL_START" ) then
+		local arg1 = ...;
 		AuctionsCreateAuctionButton:Disable();
 		MoneyInputFrame_ClearFocus(StartPrice);
 		MoneyInputFrame_ClearFocus(BuyoutPrice);
@@ -1151,6 +1152,7 @@ function AuctionFrameAuctions_OnEvent(self, event, ...)
 		AuctionProgressBarIcon:SetTexture(iconTexture);
 		AuctionProgressFrame:Show();
 	elseif ( event == "AUCTION_MULTISELL_UPDATE" ) then
+		local arg1, arg2 = ...;
 		AuctionProgressBar:SetValue(arg1);
 		AuctionProgressBarText:SetFormattedText(AUCTION_CREATING, arg1, arg2);
 		if ( arg1 == arg2 ) then
@@ -1455,7 +1457,7 @@ function DurationDropDown_OnClick(self)
 end
 
 function UpdateDeposit()
-	MoneyFrame_Update("AuctionsDepositMoneyFrame", CalculateAuctionDeposit(AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber() * AuctionsNumStacksEntry:GetNumber()));
+	MoneyFrame_Update("AuctionsDepositMoneyFrame", CalculateAuctionDeposit(AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber()));
 end
 
 function AuctionSellItemButton_OnEvent(self, event, ...)

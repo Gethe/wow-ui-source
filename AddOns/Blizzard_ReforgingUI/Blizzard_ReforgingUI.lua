@@ -20,6 +20,7 @@ end
 
 function ReforgingFrame_OnLoad(self)
 	self:RegisterEvent("FORGE_MASTER_SET_ITEM");
+	self:RegisterEvent("FORGE_MASTER_ITEM_CHANGED");
 	SetPortraitToTexture(ReforgingFramePortrait, "Interface\\Icons\\Ability_ThunderClap");
 	UIDropDownMenu_SetWidth(ReforgingFrameFilterOldStat, 135);
 	UIDropDownMenu_SetWidth(ReforgingFrameFilterNewStat, 135);
@@ -62,7 +63,26 @@ function ReforgingFrame_OnEvent(self, event, ...)
 		ReforgingFrameBottomRedBg:Hide();
 		
 		ReforgingFrame_Update(self);
+	elseif event == "FORGE_MASTER_ITEM_CHANGED" then
+		self.topInset.invisButton.glow.reforgeAnim:Play();
 	end
+end
+
+
+function ReforgingFrame_OnFinishedAnim(self)
+	UIDropDownMenu_SetText(ReforgingFrameFilterOldStat, REFORGE_OLD_FILTER_TEXT);
+	UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, GRAY_FONT_COLOR_CODE..REFORGE_NEW_FILTER_TEXT);
+	UIDropDownMenu_DisableDropDown(ReforgingFrameFilterNewStat);
+	ReforgingFrameBottomRedText:SetText("");
+	ReforgingFrameBottomGreenText:SetText("");
+	ReforgingFrame.srcStat = nil;
+	ReforgingFrame.srcValue = nil;
+	ReforgingFrame.destStat = nil;
+	ReforgingFrame.destValue = nil;
+	ReforgingFrameBottomGreenBg:Hide();
+	ReforgingFrameBottomRedBg:Hide();
+		
+	ReforgingFrame_Update(self);
 end
 
 

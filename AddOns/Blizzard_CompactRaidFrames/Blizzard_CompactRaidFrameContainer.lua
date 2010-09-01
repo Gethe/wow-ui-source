@@ -32,6 +32,7 @@ function CompactRaidFrameContainer_OnLoad(self)
 	self.frameUpdateList = {
 		normal = {},	--Groups are also in this normal list.
 		mini = {},
+		group = {},
 	}
 
 	self.unitFrameUnusedFunc = function(frame)
@@ -99,11 +100,11 @@ function CompactRaidFrameContainer_SetDisplayMainTankAndAssist(self, displayFlag
 	end
 end
 
-function CompactRaidFrameContainer_ApplyToUnitFrames(self, updateSpecifier, func, ...)
+function CompactRaidFrameContainer_ApplyToFrames(self, updateSpecifier, func, ...)
 	for specifier, list in pairs(self.frameUpdateList) do
 		if ( updateSpecifier == "all" or specifier == updateSpecifier ) then
 			for i=1, #list do
-				list[i]:applyFunc(func, ...);
+				list[i]:applyFunc(updateSpecifier, func, ...);
 			end
 		end
 	end
@@ -175,9 +176,11 @@ do
 				numGroups = numGroups + 1;
 				local groupFrame, didCreation = CompactRaidGroup_GenerateForGroup(groupNum);
 				groupFrame:SetParent(self);
+				groupFrame:SetFrameStrata("LOW");
 				groupFrame.unusedFunc = groupFrame.Hide;
 				if ( didCreation ) then
 					tinsert(self.frameUpdateList.normal, groupFrame);
+					tinsert(self.frameUpdateList.group, groupFrame);
 				end
 				FlowContainer_AddObject(self, groupFrame);
 				groupFrame:Show();
@@ -252,7 +255,7 @@ function CompactRaidFrameContainer_AddUnitFrame(self, unit, frameType)
 	return frame;
 end
 
-local function applyFunc(unitFrame, func, ...)
+local function applyFunc(unitFrame, updateSpecifier, func, ...)
 	func(unitFrame, ...);
 end
 

@@ -419,7 +419,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
-			<Button name="KeyBindingFrameDefaultButton" inherits="UIPanelButtonGrayTemplate" text="RESET_TO_DEFAULT">
+			<Button name="KeyBindingFrameDefaultButton" inherits="UIPanelButtonTemplate" text="RESET_TO_DEFAULT">
 				<Size>
 					<AbsDimension x="130" y="22"/>
 				</Size>

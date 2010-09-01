@@ -3,23 +3,28 @@
 	<Script file="Blizzard_ReforgingUI.lua"/>
 
 
-	<!--	size=512,128  ReforgingTextures
-	<Texture name="Reforging-GreenBg.png" >
-		<Size x="143" y="31"/>	
-		<TexCoords left="0.00195313" right="0.28125000" top="0.00781250" bottom="0.25000000"/>	
-	</Texture>
-	<Texture name="Reforging-RedBg.png" >
-		<Size x="143" y="31"/>	
-		<TexCoords left="0.00195313" right="0.28125000" top="0.26562500" bottom="0.50781250"/>	
-	</Texture>
-	<Texture name="Reforging-Item-TitleBg.png" >
-		<Size x="320" y="50"/>	
-		<TexCoords left="0.28515625" right="0.91015625" top="0.00781250" bottom="0.39843750"/>	
-	</Texture>
-	<Texture name="Reforging-CompleteBg.png" >
-		<Size x="330" y="53"/>	
-		<TexCoords left="0.28515625" right="0.92968750" top="0.41406250" bottom="0.82812500"/>	
-	</Texture-->
+	<!--	size=512,256
+		<Texture name="Reforging-GreenBg.png" >
+			<Size x="143" y="31"/>
+			<TexCoords left="0.00195313" right="0.28125000" top="0.00390625" bottom="0.12500000"/>	
+		</Texture>
+		<Texture name="Reforging-RedBg.png" >
+			<Size x="143" y="31"/>
+			<TexCoords left="0.00195313" right="0.28125000" top="0.13281250" bottom="0.25390625"/>	
+		</Texture>
+		<Texture name="Reforging-Item-TitleBg.png" >
+			<Size x="320" y="50"/>
+			<TexCoords left="0.28515625" right="0.91015625" top="0.00390625" bottom="0.19921875"/>	
+		</Texture>
+		<Texture name="Reforging-CompleteBg.png" >
+			<Size x="330" y="53"/>
+			<TexCoords left="0.28515625" right="0.92968750" top="0.20703125" bottom="0.41406250"/>	
+		</Texture>
+		<Texture name="Reforge-Glow.png" >
+			<Size x="330" y="72"/>
+			<TexCoords left="0.28515625" right="0.92968750" top="0.42187500" bottom="0.70312500"/>	
+		</Texture>
+	-->
 
 	<Frame name="ReforgingStatTemplate" virtual="true">
 		<Size x="157" y="15"/> 
@@ -51,8 +56,8 @@
 		<Layers>
 			<Layer level="BORDER">
 				<Texture  name="$parentBottomBg" file="Interface\Reforging\ReforgingTextures">
-					<Size x="332" y="53"/>	
-					<TexCoords left="0.28515625" right="0.92968750" top="0.41406250" bottom="0.82812500"/>
+					<Size x="330" y="53"/>
+					<TexCoords left="0.28515625" right="0.92968750" top="0.20703125" bottom="0.41406250"/>
 					<Anchors>
 						<Anchor point="BOTTOM"  x="-1" y="28"/>
 					</Anchors>
@@ -60,15 +65,15 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture  name="$parentBottomGreenBg" file="Interface\Reforging\ReforgingTextures">
-					<Size x="143" y="31"/>	
-					<TexCoords left="0.00195313" right="0.28125000" top="0.00781250" bottom="0.25000000"/>
+					<Size x="143" y="31"/>
+					<TexCoords left="0.00195313" right="0.28125000" top="0.00390625" bottom="0.12500000"/>
 					<Anchors>
 						<Anchor point="RIGHT"  relativeTo="$parentBottomBg" x="-20" y="3"/>
 					</Anchors>
 				</Texture>
 				<Texture  name="$parentBottomRedBg" file="Interface\Reforging\ReforgingTextures">
-					<Size x="143" y="31"/>	
-					<TexCoords left="0.00195313" right="0.28125000" top="0.26562500" bottom="0.50781250"/>
+					<Size x="143" y="31"/>
+					<TexCoords left="0.00195313" right="0.28125000" top="0.13281250" bottom="0.25390625"/>
 					<Anchors>
 						<Anchor point="LEFT"  relativeTo="$parentBottomBg" x="20" y="3"/>
 					</Anchors>
@@ -139,8 +144,8 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture  name="$parentLableBg" file="Interface\Reforging\ReforgingTextures">
-								<Size x="320" y="50"/>	
-								<TexCoords left="0.28515625" right="0.91015625" top="0.00781250" bottom="0.39843750"/>	
+								<Size x="320" y="50"/>
+								<TexCoords left="0.28515625" right="0.91015625" top="0.00390625" bottom="0.19921875"/>
 								<Anchors>
 									<Anchor point="CENTER" y="-1"/>
 								</Anchors>
@@ -148,35 +153,48 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="ReforgingFrameItemButton" inherits="ItemButtonTemplate">
+					<Button name="ReforgingFrameItemButton">
+						<Size x="58" y="58"/>
 						<Anchors>
-							<Anchor point="LEFT"  x="11" y="-1"/>
+							<Anchor point="LEFT"  x="5" y="-2"/>
 						</Anchors>
 						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentFrame" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
-									<Size x="54" y="54"/>
-										<Anchors>
-											<Anchor point="CENTER" x="0" y="0" />
-										</Anchors>
-									<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
-								</Texture>
+							<Layer level="BORDER">
+								<Texture name="$parentIconTexture"/>
+								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-5" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString name="$parentName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="name">
 									<Size x="250" y="12"/>
 									<Anchors>
-										<Anchor point="TOPLEFT"  relativePoint="TOPRIGHT" x="14" y="-7"/>
+										<Anchor point="LEFT"  relativePoint="RIGHT" x="14" y="10"/>
 									</Anchors>
 								</FontString>
-								<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="boundStatus">
+								<FontString name="$parentBoundStatus" inherits="GameFontNormal" justifyH="LEFT" parentKey="boundStatus">
 									<Size x="250" y="12"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" y="-5"/>
 									</Anchors>
 									<Color r="1" g="1" b="1" a="1"/>
 								</FontString>
-								<FontString inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="missingText" text="REFORGE_MISSING_ITEM">
+								<FontString name="$parentMissingText" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="missingText" text="REFORGE_MISSING_ITEM">
 									<Size x="250" y="12"/>
 									<Anchors>
 										<Anchor point="LEFT"  relativePoint="RIGHT" x="14" y="0"/>
@@ -184,7 +202,18 @@
 									<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
 								</FontString>
 							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentFrame" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+									<Size x="72" y="72"/>
+										<Anchors>
+											<Anchor point="CENTER" x="0" y="0" />
+										</Anchors>
+									<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+								</Texture>
+							</Layer>
 						</Layers>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 						<Scripts>
 							<OnLoad>
 								self:RegisterForDrag("LeftButton");
@@ -201,7 +230,6 @@
 								ReforgingFrame_AddItemClick(self, button);
 							</OnClick>
 							<OnDragStart>
-								print("dumb")
 								ReforgingFrame_AddItemClick(self, button);
 							</OnDragStart>
 							<OnReceiveDrag>
@@ -209,13 +237,40 @@
 							</OnReceiveDrag>
 						</Scripts>
 					</Button>
-					<Button name="$parentInvisibleButton">
+					<Button name="$parentInvisibleButton" parentKey="invisButton">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
+						<Frames>
+							<Frame name="$parentFinishedGlow" setAllPoints="true" parentKey="glow">
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture  name="$parentFinishedGlow" file="Interface\Reforging\ReforgingTextures" alphaMode="ADD">
+											<Size x="330" y="72"/>
+											<TexCoords left="0.28515625" right="0.92968750" top="0.42187500" bottom="0.70312500"/>
+											<Anchors>
+												<Anchor point="CENTER" y="-1"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="reforgeAnim">
+										<Alpha change="1" duration="0.1" order="1" />
+										<Alpha startDelay="0.1" change="-1" duration="0.5" order="2" />
+										<Scripts>
+											<OnFinished>
+												ReforgingFrame_OnFinishedAnim(ReforgingFrame);
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnLoad>
+								self.glow:SetAlpha(0);
 								self:RegisterForClicks("LeftButtonUp");
 							</OnLoad>
 							<OnClick>
