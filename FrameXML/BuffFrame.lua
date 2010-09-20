@@ -11,6 +11,7 @@ DEBUFF_ACTUAL_DISPLAY = 0;
 BUFF_ROW_SPACING = 0;
 CONSOLIDATED_BUFFS_PER_ROW = 4;
 CONSOLIDATED_BUFF_ROW_HEIGHT = 0;
+NUM_TEMP_ENCHANT_FRAMES = 3;
 
 DebuffTypeColor = { };
 DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
@@ -398,61 +399,53 @@ function TemporaryEnchantFrame_OnUpdate(self, elapsed)
 		return;
 	end
 
-	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges = GetWeaponEnchantInfo();
-	if ( not hasMainHandEnchant and not hasOffHandEnchant ) then
-		-- No enchants, kick out early
+	TemporaryEnchantFrame_Update(GetWeaponEnchantInfo());
+end
+
+local textureMapping = {
+	[1] = 16,	--Main hand
+	[2] = 17,	--Off-hand
+	[3] = 18,	--Ranged
+};
+
+function TemporaryEnchantFrame_Update(...)
+	local RETURNS_PER_ITEM = 3;
+	local numVals = select("#", ...);
+	local numItems = numVals / RETURNS_PER_ITEM;
+	
+	if ( numItems == 0 ) then
 		TemporaryEnchantFrame_Hide();
 		return;
 	end
-
-	-- Has enchants
-	local enchantButton;
-	local textureName;
-	local buffAlphaValue;
+	
 	local enchantIndex = 0;
-	if ( hasOffHandEnchant ) then
-		enchantIndex = enchantIndex + 1;
-		textureName = GetInventoryItemTexture("player", 17);
-		TempEnchant1:SetID(17);
-		TempEnchant1Icon:SetTexture(textureName);
-		TempEnchant1:Show();
+	for itemIndex = numItems, 1, -1 do	--Loop through the items from the back.
+		local hasEnchant, enchantExpiration, enchantCharges = select(RETURNS_PER_ITEM * (itemIndex - 1) + 1, ...);
+		if ( hasEnchant ) then
+			enchantIndex = enchantIndex + 1;
+			local enchantButton = _G["TempEnchant"..enchantIndex];
+			local textureName = GetInventoryItemTexture("player", textureMapping[itemIndex]);
+			enchantButton:SetID(textureMapping[itemIndex]);
+			_G[enchantButton:GetName().."Icon"]:SetTexture(textureName);
+			enchantButton:Show();
 
-		-- Show buff durations if necessary
-		if ( offHandExpiration ) then
-			offHandExpiration = offHandExpiration/1000;
-		end
-		AuraButton_UpdateDuration(TempEnchant1, offHandExpiration);
+			-- Show buff durations if necessary
+			if ( enchantExpiration ) then
+				enchantExpiration = enchantExpiration/1000;
+			end
+			AuraButton_UpdateDuration(enchantButton, enchantExpiration);
 
-		-- Handle flashing
-		if ( offHandExpiration and offHandExpiration < BUFF_WARNING_TIME ) then
-			TempEnchant1:SetAlpha(BuffFrame.BuffAlphaValue);
-		else
-			TempEnchant1:SetAlpha(1.0);
-		end
-	end
-	if ( hasMainHandEnchant ) then
-		enchantIndex = enchantIndex + 1;
-		enchantButton = _G["TempEnchant"..enchantIndex];
-		textureName = GetInventoryItemTexture("player", 16);
-		enchantButton:SetID(16);
-		_G[enchantButton:GetName().."Icon"]:SetTexture(textureName);
-		enchantButton:Show();
-
-		-- Show buff durations if necessary
-		if ( mainHandExpiration ) then
-			mainHandExpiration = mainHandExpiration/1000;
-		end
-		AuraButton_UpdateDuration(enchantButton, mainHandExpiration);
-
-		-- Handle flashing
-		if ( mainHandExpiration and mainHandExpiration < BUFF_WARNING_TIME ) then
-			enchantButton:SetAlpha(BuffFrame.BuffAlphaValue);
-		else
-			enchantButton:SetAlpha(1.0);
+			-- Handle flashing
+			if ( enchantExpiration and enchantExpiration < BUFF_WARNING_TIME ) then
+				enchantButton:SetAlpha(BuffFrame.BuffAlphaValue);
+			else
+				enchantButton:SetAlpha(1.0);
+			end
 		end
 	end
+	
 	--Hide unused enchants
-	for i=enchantIndex+1, 2 do
+	for i=enchantIndex+1, NUM_TEMP_ENCHANT_FRAMES do
 		_G["TempEnchant"..i]:Hide();
 		_G["TempEnchant"..i.."Duration"]:Hide();
 	end
@@ -486,6 +479,8 @@ function TempEnchantButton_OnClick(self, button)
 		CancelItemTempEnchantment(1);
 	elseif ( self:GetID() == 17 ) then
 		CancelItemTempEnchantment(2);
+	elseif ( self:GetID() == 18 ) then
+		CancelItemTempEnchantment(3);
 	end
 end
 

@@ -279,7 +279,7 @@
 					</Layer>
 				</Layers>
 				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r="0.25" g="0.25" b="0.75" />
+				<BarColor r="0.03125" g="0.85" b="0.0" />
 			</StatusBar>
 			<Button name="$parentSummarytButton" parentKey="tab1" id="1">
 				<Size x="63" y="57"/>

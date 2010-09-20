@@ -52,7 +52,7 @@
 			</Button>
 			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
 				<Size>
-					<AbsDimension x="96" y="22"/>
+					<AbsDimension x="126" y="22"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">

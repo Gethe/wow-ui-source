@@ -10,7 +10,6 @@ function GuildRewardsFrame_OnLoad(self)
 end
 
 function GuildRewardsFrame_OnShow(self)
-	GuildRewards_Update();
 	RequestGuildRewards();
 end
 
@@ -21,9 +20,7 @@ function GuildRewardsFrame_OnHide(self)
 end
 
 function GuildRewardsFrame_OnEvent(self, event)
-	if ( self:IsShown() ) then
-		GuildRewards_Update();
-	end
+	GuildRewards_Update();
 end
 
 function GuildRewards_Update()
@@ -36,7 +33,7 @@ function GuildRewards_Update()
 	local numRewards = GetNumGuildRewards();
 	local gender = UnitSex("player");
 	local _, _, standingID = GetGuildFactionInfo();
-	
+
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;

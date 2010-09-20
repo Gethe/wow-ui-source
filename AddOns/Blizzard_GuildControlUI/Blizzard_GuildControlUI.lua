@@ -62,6 +62,9 @@ end
 
 function GuildControlUI_SetBankTabWithdrawChange(self)
 	local withdrawals = self:GetText();
+	if ( not tonumber(withdrawals) ) then
+		withdrawals = 0;
+	end
 	SetGuildBankTabItemWithdraw(self:GetParent():GetParent().tabIndex, withdrawals);
 end
 
@@ -79,7 +82,7 @@ function GuildControlUI_BankTabPermissions_Update(self)
 	if numTabs < MAX_GUILDBANK_TABS then
 		scrollHeight = scrollHeight + BANK_TAB_HEIGHT;
 		canBuyTab = true;
-		hasScrollBar =  numTabs > 3;		
+		hasScrollBar =  numTabs > 2;
 	end	
 	
 	if hasScrollBar then
@@ -103,9 +106,11 @@ function GuildControlUI_BankTabPermissions_Update(self)
 			buttons[i].owned.tabName:SetText(name);	
 			buttons[i].owned.tabIcon:SetTexture(icon);
 			buttons[i].owned.viewCB:SetChecked(isViewable);
-			buttons[i].owned.infoCB:SetChecked(false);
+			buttons[i].owned.infoCB:SetChecked(editText);
 			buttons[i].owned.depositCB:SetChecked(canDeposit);
-			buttons[i].owned.editBox:SetText(numWithdrawals);
+			if ( GuildControlUIRankBankFrame.activeEditBox ~= buttons[i].owned.editBox ) then
+				buttons[i].owned.editBox:SetText(numWithdrawals);
+			end
 			buttons[i].owned:Show();		
 			buttons[i].buy:Hide();
 		end
@@ -142,8 +147,24 @@ function GuildControlUI_RankPermissions_Update(self)
 		if ( checkbox ) then -- skip obsolete (14)
 			checkbox:SetChecked(flags[i]);
 		end
-	end		
+	end
 	self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
+	
+	-- disable the Authenticate checkbox for the last rank or if a rank has members
+	checkbox = _G[prefix.."18"];
+	if ( currentRank == GuildControlGetNumRanks() ) then
+		checkbox.text:SetFontObject("GameFontDisableSmall");
+		checkbox:Disable();
+		checkbox.tooltipFrame.tooltip = AUTHENTICATOR_GUILD_RANK_LAST;
+	elseif ( GetNumMembersInRank(currentRank ) > 0 ) then
+		checkbox.text:SetFontObject("GameFontDisableSmall");
+		checkbox:Disable();
+		checkbox.tooltipFrame.tooltip = AUTHENTICATOR_GUILD_RANK_IN_USE;
+	else
+		checkbox.text:SetFontObject("GameFontHighlightSmall");
+		checkbox:Enable();
+		checkbox.tooltipFrame.tooltip = nil;
+	end	
 end
 
 
@@ -169,26 +190,56 @@ function GuildControlUI_RankOrder_Update(self)
 		rankFrame:Show();
 		rankFrame.rankLabel:SetText(RANK.." "..i..":");
 		rankFrame.nameBox:SetText(GuildControlGetRankName(i));
-		
 
-		
 		if numRanks == 2 then
 			rankFrame.deleteButton:Disable();
+			rankFrame.deleteButton.tooltip = nil;
 			rankFrame.upButton:Disable();
 			rankFrame.downButton:Disable();
 		elseif i > 1 then
-			--Needs to check if the rank is empty
-			rankFrame.deleteButton:Enable();
-			
-			if i==2 then
-				rankFrame.upButton:Disable();
-				rankFrame.downButton:Enable();
-			elseif i==numRanks then
-				rankFrame.downButton:Disable();
+			if ( GetNumMembersInRank(i) == 0 ) then
+				-- can't delete last rank if next-to-last has authenticator
+				rankFrame.deleteButton:Enable();
+				rankFrame.deleteButton.tooltip = nil;
+				if ( i == numRanks ) then
+					GuildControlSetRank(i - 1);
+					local requiresAuthenticator = select(18, GuildControlGetRankFlags());
+					if ( requiresAuthenticator ) then
+						rankFrame.deleteButton:Disable();
+						rankFrame.deleteButton.tooltip = AUTHENTICATOR_GUILD_RANK_CHANGE;
+					end
+				end
 			else
+				rankFrame.deleteButton:Disable();
+				rankFrame.deleteButton.tooltip = ERR_GUILD_RANK_IN_USE;
+			end
+			local canShiftUp, canShiftDown = GuildControlGetAllowedShifts(i);
+			if ( canShiftUp ) then
 				rankFrame.upButton:Enable();
+				rankFrame.upButton.tooltip = nil;
+			else
+				-- if it's the last rank then it can't shift up if it would move an authenticated rank to the bottom
+				if ( i == numRanks ) then
+					rankFrame.upButton:Disable();
+					rankFrame.upButton.tooltip = AUTHENTICATOR_GUILD_RANK_CHANGE;
+				else
+					rankFrame.upButton:Disable();
+					rankFrame.upButton.tooltip = nil;
+				end
+			end
+			if ( canShiftDown ) then
 				rankFrame.downButton:Enable();
-			end			
+				rankFrame.downButton.tooltip = nil;
+			else
+				-- if it's the next to last rank then it can't shift down if it would move an authenticated rank to the bottom
+				if ( i == numRanks - 1 ) then
+					rankFrame.downButton:Disable();
+					rankFrame.downButton.tooltip = AUTHENTICATOR_GUILD_RANK_CHANGE;
+				else
+					rankFrame.downButton:Disable();
+					rankFrame.downButton.tooltip = nil;
+				end
+			end
 		end
 	end
 	--hide removed ransk	
@@ -250,6 +301,7 @@ end
 
 
 function GuildControlUI_AddRankButton_OnClick()
+	PlaySound("igMainMenuOpen");
 	GuildControlAddRank(GUILD_NEW_RANK);
 	CloseDropDownMenus();
 end
@@ -329,6 +381,12 @@ end
 
 
 function GuildControlUIRankDropDown_OnClick(self)
+	-- save withdraw limit if needed
+	local activeEditBox = GuildControlUIRankBankFrame.activeEditBox;
+	if ( activeEditBox ) then
+		activeEditBox:ClearFocus();
+	end
+	
 	GuildControlUI.currentRank = self:GetID()+1; --igonre officer
 	GuildControlSetRank(GuildControlUI.currentRank);
 	GuildControlUI.rankUpdate(GuildControlUI.currFrame);

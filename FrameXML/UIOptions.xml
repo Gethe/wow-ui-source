@@ -7,5 +7,6 @@
 	<Font name="OptionsFontHighlight" inherits="GameFontHighlight" virtual="true"/>
 	<Font name="OptionsFontLarge" inherits="GameFontNormalLarge" virtual="true"/>
 	<Font name="OptionsFontLeft" inherits="GameFontNormal" virtual="true"/>
+	<Script file="OptionsPanelTemplates.lua"/>
 </Ui>
 

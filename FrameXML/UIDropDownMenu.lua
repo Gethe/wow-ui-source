@@ -267,6 +267,11 @@ function UIDropDownMenu_AddButton(info, level)
 		invisibleButton:Show();
 		info.colorCode = nil;
 	end
+	
+	-- If there is a color for a disabled line, set it
+	if( info.disablecolor ) then
+		info.colorCode = info.disablecolor;
+	end
 
 	-- Configure button
 	if ( info.text ) then

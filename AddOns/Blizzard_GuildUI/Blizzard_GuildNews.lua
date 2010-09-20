@@ -1,5 +1,3 @@
-local BUTTON_WIDTH_WITH_SCROLLBAR = 298;
-local BUTTON_WIDTH_NO_SCROLLBAR = 320;
 local NEWS_MOTD = -1;				-- pseudo category
 local NEWS_GUILD_ACHIEVEMENT = 0;
 local NEWS_PLAYER_ACHIEVEMENT = 1;
@@ -8,7 +6,8 @@ local NEWS_ITEM_LOOTED = 3;
 local NEWS_ITEM_CRAFTED = 4;
 local NEWS_ITEM_PURCHASED = 5;
 local NEWS_GUILD_LEVEL = 6;
-	
+local NEWS_GUILD_CREATE = 7;
+
 function GuildNewsFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
@@ -37,7 +36,7 @@ function GuildNewsFrame_OnEvent(self, event)
 end
 
 function GuildNews_Update(frontPage, numButtons)
-	local scrollFrame, offset, buttons, button, index, newButtonWidth;
+	local scrollFrame, offset, buttons, button, index;
 	local numGuildNews = GetNumGuildNews();
 	
 	if ( frontPage ) then
@@ -65,10 +64,13 @@ function GuildNews_Update(frontPage, numButtons)
 		if ( index == 0 ) then
 			button.text:SetPoint("LEFT", 24, 0);
 			button.icon:Show();
-			button.icon:SetWidth(16);
-			button.icon:SetHeight(11);
-			button.icon:SetTexture("Interface\\GuildFrame\\GuildExtra");
-			button.icon:SetTexCoord(0.56640625, 0.59765625, 0.86718750, 0.95312500);
+			if ( button.icon.type ~= "motd" ) then
+				button.icon.type = "motd";
+				button.icon:SetWidth(16);
+				button.icon:SetHeight(11);
+				button.icon:SetTexture("Interface\\GuildFrame\\GuildExtra");
+				button.icon:SetTexCoord(0.56640625, 0.59765625, 0.86718750, 0.95312500);
+			end
 			button.text:SetFormattedText(GUILD_NEWS_MOTD, motd);
 			button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			button.dash:Hide();
@@ -84,7 +86,7 @@ function GuildNews_Update(frontPage, numButtons)
 					weekday = 7;
 				end
 				button.text:SetPoint("LEFT", 14, 0);
-				button.text:SetFormattedText(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday], day, month);
+				button.text:SetFormattedText(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday + 1], day + 1, month + 1);
 				button.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				button.header:Show();
 				button.icon:Hide();
@@ -94,42 +96,47 @@ function GuildNews_Update(frontPage, numButtons)
 				button.text:SetPoint("LEFT", 24, 0);
 				if ( isSticky ) then
 					button.icon:Show();
-					button.icon:SetWidth(13);
-					button.icon:SetHeight(11);
-					button.icon:SetTexture("Interface\\GuildFrame\\GuildFrame");
-					button.icon:SetTexCoord(0.41406250, 0.42675781, 0.96875000, 0.99023438);
+					if ( button.icon.type ~= "news" ) then
+						button.icon.type = "news";
+						button.icon:SetWidth(13);
+						button.icon:SetHeight(11);
+						button.icon:SetTexture("Interface\\GuildFrame\\GuildFrame");
+						button.icon:SetTexCoord(0.41406250, 0.42675781, 0.96875000, 0.99023438);
+					end
 					button.dash:Hide();
 				else
 					button.icon:Hide();
 					button.dash:Show();
 				end
-				-- if we didn't get a player or guild name...
-				if ( not text1 ) then
-					text1 = UNKNOWN;
-				end
-				if ( text2 ) then
+				text1 = text1 or UNKNOWN;
+				button.index = index;
+				button.newsType = newsType;
+				button.id = id;
+				if ( text2 and text2 ~= UNKNOWN ) then
 					if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
 						local _, itemLink = GetItemInfo(id);
 						if ( itemLink ) then
 							text2 = itemLink;
 						end
-					elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT or newsType == NEWS_GUILD_ACHIEVEMENT ) then
+					elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT ) then
 						text2 = ACHIEVEMENT_COLOR_CODE.."["..text2.."]|r";
+					elseif ( newsType == NEWS_GUILD_ACHIEVEMENT ) then
+						text1 = ACHIEVEMENT_COLOR_CODE.."["..text2.."]|r";	-- only using achievement name
 					elseif ( newsType == NEWS_DUNGEON_ENCOUNTER ) then
 						text2 = "|cffd10000["..text2.."]|r";
 					end
-					button.index = index;
-					button.newsType = newsType;
-				else
-					-- Uh oh, something didn't get resolved. Don't have a tooltip or right-click menu.
-					text2 = UNKNOWN;
+				elseif ( newsType ~= NEWS_GUILD_CREATE ) then
+					-- no right-click menu or tooltip for unresolved news items
 					button.index = nil;
 					button.newsType = nil;
+					text2 = UNKNOWN;
+					if ( newsType == NEWS_GUILD_ACHIEVEMENT ) then
+						text1 = text2;	-- only using achievement name
+					end
 				end
 				button.text:SetFormattedText(_G["GUILD_NEWS_FORMAT"..newsType], text1, text2);
 				button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				button.header:Hide();
-				button.id = id;
 				button:Enable();
 			end
 			button:Show();
@@ -157,25 +164,7 @@ function GuildNews_Update(frontPage, numButtons)
 		local totalHeight = (numGuildNews + haveMOTD) * scrollFrame.buttonHeight;
 		local displayedHeight = numButtons * scrollFrame.buttonHeight;
 		HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-		
-		-- resize buttons due to scrollbar
-		if ( scrollFrame.scrollBar:IsShown() ) then
-			if ( GuildNewsContainer.wideButtons ) then
-				newButtonWidth = BUTTON_WIDTH_WITH_SCROLLBAR;
-			end
-		else
-			if ( not GuildNewsContainer.wideButtons ) then
-				newButtonWidth = BUTTON_WIDTH_NO_SCROLLBAR;
-			end
-		end
-		if ( newButtonWidth ) then
-			for i = 1, numButtons do
-				buttons[i]:SetWidth(newButtonWidth);
-			end
-			GuildNewsContainer.wideButtons = not GuildNewsContainer.wideButtons;
-			scrollFrame:SetWidth(newButtonWidth);
-			scrollFrame.scrollChild:SetWidth(newButtonWidth);
-		end
+		GuildFrame_UpdateScrollFrameWidth(scrollFrame);
 	end
 end
 
@@ -223,8 +212,6 @@ function GuildNewsButton_OnEnter(self)
 		local isSticky, isHeader, newsType, text1, text2, id, data1, data2 = GetGuildNewsInfo(self.index);
 		local zone = GetRealZoneText(data1);
 		if ( data2 and data2 > 0 ) then
-			GuildNewsBossModel:SetPoint("LEFT", GuildFrame, "RIGHT", 2, 0);
-			GuildNewsBossModel:SetPoint("BOTTOM", self, "TOP", 0, 0);
 			GuildNewsBossModel:Show();
 			GuildNewsBossModel:SetDisplayInfo(data2);
 			GuildNewsBossNameText:SetText(text2);
@@ -284,7 +271,7 @@ function GuildNewsDropDown_Initialize(self)
 	
 	local isSticky, isHeader, newsType, text1, text2, id, data, data2, weekday, day, month, year = GetGuildNewsInfo(self.newsIndex);
 	-- we don't have any options for these combinations
-	if ( ( newsType == NEWS_DUNGEON_ENCOUNTER or newsType == NEWS_GUILD_LEVEL ) and not CanEditMOTD() ) then
+	if ( ( newsType == NEWS_DUNGEON_ENCOUNTER or newsType == NEWS_GUILD_LEVEL or newsType == NEWS_GUILD_CREATE ) and not CanEditMOTD() ) then
 		return;
 	end
 
@@ -293,6 +280,8 @@ function GuildNewsDropDown_Initialize(self)
 	info.isTitle = 1;
 	if ( newsType == NEWS_GUILD_LEVEL ) then
 		info.text = string.format(GUILD_LEVEL, text2);
+	elseif ( newsType == NEWS_GUILD_CREATE ) then
+		info.text = GUILD_CREATION;
 	else
 		info.text = text2;
 	end
@@ -337,20 +326,19 @@ end
 
 function GuildNewsFiltersFrame_OnLoad(self)
 	GuildFrame_RegisterPopup(self);
-	GuildNewsFilterButton1Text:SetText("Guild Achievements");
-	GuildNewsFilterButton2Text:SetText("Member Achievements");
-	GuildNewsFilterButton3Text:SetText("Raid Boss Kills");
-	GuildNewsFilterButton4Text:SetText("Epic Items Looted");
-	GuildNewsFilterButton5Text:SetText("Epic Items Crafted");
-	GuildNewsFilterButton6Text:SetText("Epic Items Bought");
-	GuildNewsFilterButton7Text:SetText("Guild Levels");
+	for i = 1, 7 do
+		_G["GuildNewsFilterButton"..i.."Text"]:SetText(_G["GUILD_NEWS_FILTER"..i]);
+	end
 end
 
 function GuildNewsFiltersFrame_OnShow(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	local filters = { GetGuildNewsFilters() };
 	for i = 1, #filters do
-		if ( filters[i] ) then
-			_G["GuildNewsFilterButton"..i]:SetChecked(true);
+		-- skip 8th flag - guild creation
+		local checkbox = _G["GuildNewsFilterButton"..i];
+		if ( checkbox ) then
+			checkbox:SetChecked(true);
 		end
 	end
 end

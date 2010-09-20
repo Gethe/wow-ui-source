@@ -38,12 +38,6 @@ end
 
 function VideoOptionsFrameOkay_OnClick (self, button, down, apply)
 	OptionsFrameOkay_OnClick(VideoOptionsFrame, apply);
-
-	if ( VideoOptionsFrame.gxRestart ) then
-		VideoOptionsFrame.gxRestart = nil;
-		RestartGx();
-	end
-
 	if ( not apply ) then
 		VideoOptionsFrame_Toggle();
 	end
@@ -51,12 +45,7 @@ end
 
 function VideoOptionsFrameCancel_OnClick (self, button)
 	OptionsFrameCancel_OnClick(VideoOptionsFrame);
-
-	VideoOptionsFrame.gxRestart = nil;
-
 	VideoOptionsFrame.logout = nil;
-	VideoOptionsFrame.gameRestart = nil;
-
 	VideoOptionsFrame_Toggle();
 end
 

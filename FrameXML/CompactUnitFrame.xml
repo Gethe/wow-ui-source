@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CompactUnitFrame.lua"/>
-	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false">
+	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" useParentLevel="true">
 		<Size>
 			<AbsDimension x="17" y="17"/>
 		</Size>
@@ -63,12 +63,12 @@
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), self.filter);
+					GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), self.filter);
+				GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -87,12 +87,12 @@
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitBuff(self:GetParent().unit, self:GetID());
+					GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID());
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitBuff(self:GetParent().unit, self:GetID());
+				GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -119,31 +119,39 @@
 			<OnClick function="PassClickToParent"/>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), "RAID");
+					GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), "RAID");
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID());
+				GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="CompactUnitFrameTemplate" toplevel="true" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
+	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" parentKey="background" setAllPoints="true" forceAlpha="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentHorizDivider" parentKey="horizDivider" horizTile="true" forceAlpha="true"/>
+				<Texture name="$parentHorizTopBorder" parentKey="horizTopBorder" horizTile="true" forceAlpha="true"/>
+				<Texture name="$parentHorizBottomBorder" parentKey="horizBottomBorder" horizTile="true" forceAlpha="true"/>
+				<Texture name="$parentVertLeftBorder" parentKey="vertLeftBorder" vertTile="true" forceAlpha="true"/>
+				<Texture name="$parentVertRightBorder" parentKey="vertRightBorder" vertTile="true" forceAlpha="true"/>
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name"/>
 				<FontString name="$parentStatusText" inherits="GameFontDisable" parentKey="statusText"/>
 				<Texture name="$parentRoleIcon" hidden="true" parentKey="roleIcon"/>
 				<Texture name="$parentAggroHighlight" parentKey="aggroHighlight"/>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight"/>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" parentKey="background" setAllPoints="true"/>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight" forceAlpha="true"/>
+				<Texture name="$parentReadyCheckIcon" parentKey="readyCheckIcon" forceAlpha="true"/>
 			</Layer>
 		</Layers>
 		<Frames>

@@ -1,4 +1,4 @@
--- SecureHandlers.lua (Part of the new Secure Headers implementation)
+-- SecureHandlers.lua (Part of the Secure Handlers implementation)
 --
 -- Lua code to support the various handlers and templates which can execute
 -- code in a secure, but restricted, environment.
@@ -13,10 +13,7 @@ local forceinsecure = forceinsecure;
 local geterrorhandler = geterrorhandler;
 local issecure = issecure;
 local newproxy = newproxy;
-local pairs = pairs;
 local pcall = pcall;
-local rawget = rawget;
-local scrub = scrub;
 local securecall = securecall;
 local select = select;
 local tostring = tostring;
@@ -28,8 +25,7 @@ local InCombatLockdown = InCombatLockdown;
 
 local CallRestrictedClosure = CallRestrictedClosure;
 local GetFrameHandle = GetFrameHandle;
-local IsFrameHandle = IsFrameHandle;
-local RestrictedTable_create = rtable.newtable;
+local GetManagedEnvironment = GetManagedEnvironment;
 
 -- SoftError(message)
 -- Report an error message without stopping execution
@@ -43,49 +39,8 @@ local function SoftError(message)
 end
 
 ---------------------------------------------------------------------------
--- Working environments and control handles
-
-local function ManagedEnvironmentsIndex(t, k)
-    if (not issecure() or type(k) ~= "table") then
-        error("Invalid access of managed environments table");
-        return;
-    end;
-
-    local ownerHandle = GetFrameHandle(k, true);
-    if (not ownerHandle) then
-        error("Invalid access of managed environments table (bad frame)");
-        return;
-    end
-    local _, explicitProtected = ownerHandle:IsProtected();
-    if (not explicitProtected) then
-        error("Invalid access of managed environments table (not protected)");
-        return;
-    end
-
-    local e = RestrictedTable_create();
-    e._G = e;
-    e.owner = ownerHandle;
-    t[k] = e;
-    return e;
-end
-
-local LOCAL_Managed_Environments = {};
-setmetatable(LOCAL_Managed_Environments,
-             {
-                 __index = ManagedEnvironmentsIndex,
-                 __mode = "k",
-             });
-
-function GetManagedEnvironment(envKey)
-    if ( issecure() ) then
-        return LOCAL_Managed_Environments[envKey];
-    else
-        return rawget(LOCAL_Managed_Environments, envKey);
-    end
-end
-
----------------------------------------------------------------------------
 -- Standard invocation for header executions and child executions
+
 
 local function SecureHandler_Self_Execute(self, signature, body, ...)
     if (type(body) ~= "string") then return; end
@@ -96,7 +51,7 @@ local function SecureHandler_Self_Execute(self, signature, body, ...)
         return;
     end
 
-    local environment = LOCAL_Managed_Environments[self];
+    local environment = GetManagedEnvironment(self);
 
     return CallRestrictedClosure(signature, environment, selfHandle,
                                  body, selfHandle, ...);
@@ -108,7 +63,7 @@ local function SecureHandler_Other_Execute(header, self, signature, body, ...)
     local selfHandle = GetFrameHandle(self, true);
     if (not selfHandle) then return; end
 
-    local environment = LOCAL_Managed_Environments[header];
+    local environment = GetManagedEnvironment(header);
     return CallRestrictedClosure(signature, environment, selfHandle,
                                  body, selfHandle, ...);
 end
@@ -196,8 +151,8 @@ local function PickupAny(kind, target, detail, ...)
         PickupSpell(target, detail)
     elseif kind == 'companion' then
         PickupCompanion(target, detail)
-        elseif kind == 'equipmentset' then
-                PickupEquipmentSet(target);
+    elseif kind == 'equipmentset' then
+        PickupEquipmentSet(target);
     end
 end
 
@@ -228,11 +183,11 @@ local function CreateWrapClosure(handler, header, preBody, postBody)
     local wrap;
     if (postBody) then
         wrap = function(self, ...)
-                   if (self == MAGIC_UNWRAP) then
-                       return header, preBody, postBody;
-                   end
-                   return handler(self, header, preBody, postBody, wrap, ...);
-               end
+					if (self == MAGIC_UNWRAP) then
+						return header, preBody, postBody;
+					end
+					return handler(self, header, preBody, postBody, wrap, ...);
+				end
     else
         wrap = function(self, ...)
                    if (self == MAGIC_UNWRAP) then
@@ -422,20 +377,20 @@ local function Wrapped_Drag(self, header, preBody, postBody, wrap, ...)
     if ( IsWrapEligible(self) ) then
         local selfHandle = GetFrameHandle(self, true);
         if (selfHandle) then
-            local environment = LOCAL_Managed_Environments[header];
+            local environment = GetManagedEnvironment(header);
             local button = ...;
-            local type, target, x1, x2, x3 =
+            local pickupType, target, x1, x2, x3 =
                 CallRestrictedClosure("self,button,kind,value,...",
                                       environment,
                                       environment.owner, preBody,
                                       selfHandle, button,
                                       GetCursorInfo());
-            if (type == false) then
+            if (pickupType == false) then
                 return;
-            elseif (type == "message") then
+            elseif (pickupType == "message") then
                 message = target;
-            elseif (type) then
-                PickupAny(type, target, x1, x2, x3);
+            elseif (pickupType) then
+                PickupAny(pickupType, target, x1, x2, x3);
                 return;
             end
         end

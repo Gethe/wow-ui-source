@@ -150,7 +150,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentBlockTrades" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-2" y="-8"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -364,12 +364,28 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
-			<CheckButton name="$parentAutoSelfCast" inherits="InterfaceOptionsCheckButtonTemplate">
+			</CheckButton>
+			<CheckButton name="$parentShowSpellAlerts" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentNameplateClassColors" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-16"/>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "displaySpellActivationOverlays";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>			
+			<CheckButton name="$parentAutoSelfCast" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowSpellAlerts" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -942,6 +958,22 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentemphasizeMySpellEffects" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "emphasizeMySpellEffects";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsDisplayPanel_OnLoad"/>
@@ -1135,11 +1167,12 @@
 						InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay();
 						self:RegisterEvent("BN_MATURE_LANGUAGE_FILTER");
 						self:RegisterEvent("BN_CONNECTED");
+						self:RegisterEvent("VARIABLES_LOADED");
 						
 						InterfaceOptionsSocialPanelProfanityFilter_SyncWithBattlenet();
 					</OnLoad>
 					<OnEvent>
-						if ( event == "BN_MATURE_LANGUAGE_FILTER" or event == "BN_CONNECTED") then
+						if ( event == "BN_MATURE_LANGUAGE_FILTER" or event == "BN_CONNECTED" or event == "VARIABLES_LOADED" ) then
 							InterfaceOptionsSocialPanelProfanityFilter_SyncWithBattlenet();
 						end
 					</OnEvent>
@@ -2680,33 +2713,10 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
-			<CheckButton name="$parentRaidRange" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentPartyPets" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.setFunc = function (value)
-							if ( value == "1") then
-								RaidFrame.showRange = 1;
-							else
-								RaidFrame.showRange = nil;
-							end
-						end;
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "showRaidRange";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentArenaEnemyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRaidRange" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentPartyPets" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -2793,12 +2803,54 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentRaidStylePartyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFullSizeFocusFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useCompactPartyFrames";
+						self.setFunc = function (value)
+							RaidOptionsFrame_UpdatePartyFrames()
+							CompactPartyFrame_UpdateShown(CompactPartyFrame);
+							if ( value == "1" ) then
+								_G[self:GetParent():GetName().."ResetPartyPosition"]:Show();
+							else
+								_G[self:GetParent():GetName().."ResetPartyPosition"]:Hide();
+							end
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
+					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentResetPartyPosition" inherits="UIPanelButtonTemplate2" text="RESET_POSITION">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRaidStylePartyFrames" relativePoint="BOTTOMLEFT" x="20" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CompactPartyFrame_ResetPosition(CompactPartyFrame);
+						CompactPartyFrame:SetUserPlaced(false);
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.name = UNITFRAME_LABEL;
 				self.options = UnitFramePanelOptions;
 				InterfaceOptionsPanel_OnLoad(self);
+				InterfaceOptionsPanel_RegisterSetToDefaultFunc(function() _G[self:GetName().."ResetPartyPosition"]:Click(); end, self);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -2897,7 +2949,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "raidFramesDisplayIncomingHeals";
-						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayHealPrediction");
+						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayHealPrediction", "all");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
@@ -2914,7 +2966,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "raidFramesDisplayAggroHighlight";
-						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayAggroHighlight");
+						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayAggroHighlight", "all");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
@@ -2940,15 +2992,39 @@
 					</OnEvent>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentDisplayOnlyDispellableDebuffs" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentDisplayBorder" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDisplayPowerBars" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "raidOptionShowBorders";
+						local unitFrameFunc = InterfaceOptionsRaidFramePanel_GenerateRaidSetUpOptionToggle("displayBorder");
+						self.setFunc = function(value)
+							unitFrameFunc(value);
+							CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "group", CompactRaidGroup_UpdateBorder);
+							CompactRaidFrameManager_SetSetting("ShowBorders", value);
+							--The group sizes may change due to adding a border.
+							CompactRaidFrameContainer_TryUpdate(CompactRaidFrameContainer);
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
+					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentDisplayOnlyDispellableDebuffs" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayBorder" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "raidFramesDisplayOnlyDispellableDebuffs";
-						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayOnlyDispellableDebuffs");
+						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("displayOnlyDispellableDebuffs", "normal");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
@@ -3016,6 +3092,7 @@
 						self.cvar = "raidFramesHeight";
 						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
 							DefaultCompactUnitFrameSetupOptions.height = value;
 							DefaultCompactMiniFrameSetUpOptions.height = value / 2;
 							CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
@@ -3049,6 +3126,7 @@
 						self.cvar = "raidFramesWidth";
 						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
 							DefaultCompactUnitFrameSetupOptions.width = value;
 							DefaultCompactMiniFrameSetUpOptions.width = value;
 							CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
@@ -3103,13 +3181,30 @@
 					<OnEvent function="InterfaceOptionsRaidFramePanelHealthTextOption_OnEvent"/>
 				</Scripts>
 			</Frame>
+			<CheckButton name="$parentDisplayClassColor" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHealthTextOption" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "raidFramesDisplayClassColor";
+						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateOptionToggle("useClassColors", "normal");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
+					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.name = RAID_FRAMES_LABEL;
 				self.options = RaidFramePanelOptions;
 				InterfaceOptionsPanel_OnLoad(self);
-				InterfaceOptionsPanel_RegisterSetToDefaultFunc(function() CompactRaidFrameManager_ResetContainerPosition() end, self);
+				InterfaceOptionsPanel_RegisterSetToDefaultFunc(function() _G[self:GetName().."ResetPosition"]:Click(); end, self);
 			</OnLoad>
 		</Scripts>		
 	</Frame>
@@ -3817,120 +3912,6 @@
 		</Scripts>	
 	</Frame>
 	
-	<!-- Features panel -->
-	<Frame name="InterfaceOptionsFeaturesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="FEATURES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubText" text="FEATURES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension y="32" x="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentEquipmentManager" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-2" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentDescription" inherits="GameFontHighlight" text="OPTION_USE_EQUIPMENT_MANAGER_DESCRIPTION" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="350" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="35" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetFontObject(GameFontNormal);
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "equipmentManager";
-						self.setFunc = function(value) if ( value == "1" ) then GearManagerToggleButton:Show() else GearManagerToggleButton:Hide() end end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnHide>
-						CanUseEquipmentSets();
-					</OnHide>
-				</Scripts>
-			</CheckButton>	
-			<CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEquipmentManagerDescription" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-35" y="-25"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentDescription" inherits="GameFontHighlight" text="OPTION_PREVIEW_TALENT_CHANGES_DESCRIPTION" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="350" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="35" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetFontObject(GameFontNormal);
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "previewTalents";
-						self.setFunc = function (value) InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc(); end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.name = FEATURES_LABEL;
-				self.options = FeaturesPanelOptions;
-				InterfaceOptionsPanel_OnLoad(self);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	
 	<!-- Help panel -->
 	
 	<Frame name="InterfaceOptionsHelpPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
@@ -4185,79 +4166,6 @@
 				self.name = LANGUAGES_LABEL;
 				self.options = LanguagesPanelOptions;
 				InterfaceOptionsLanguagesPanel_OnLoad(self);			
-			</OnLoad>
-		</Scripts>		
-	</Frame>
-	
-	<!-- Development Options -->
-
-	<Frame name="InterfaceOptionsDevelopmentPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="Development" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubText" text="Temporary Development options to allow for better iteration." inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension y="32" x="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentCompactPartyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-2" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "useCompactPartyFrames";
-						self.setFunc = function (value) RaidOptionsFrame_UpdatePartyFrames(); CompactPartyFrame_UpdateShown(CompactPartyFrame); end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<Button name="$parentResetCompactPartyPosition" inherits="UIPanelButtonTemplate" text="Reset Position">
-				<Size x="160" y="22"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentCompactPartyFrames" relativePoint="RIGHT" x="200" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						CompactPartyFrame_ResetPosition(CompactPartyFrame);
-						CompactPartyFrame:SetUserPlaced(false);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.name = "Development";
-				self.options = DevelopmentPanelOptions;
-				InterfaceOptionsDevelopmentPanel_OnLoad(self);			
 			</OnLoad>
 		</Scripts>		
 	</Frame>

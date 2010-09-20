@@ -806,7 +806,6 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local topEdge = 0;
 
 	local playerMoney = GetMoney();
-	local selectedQuestId = WORLDMAP_SETTINGS.selectedQuestId;
 	if ( not WorldMapFrame:IsShown() ) then
 		-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
 		-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
@@ -821,11 +820,21 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	table.wipe(VISIBLE_WATCHES);
 	WatchFrame_ResetQuestLines();
 	
+	if ((numQuestWatches == 0) or (not IsQuestWatched(GetQuestLogIndexByID(GetSuperTrackedQuestID())))) then
+		SetSuperTrackedQuestID(0);
+	end
+	
 	for i = 1, numQuestWatches do
 		WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
 		questIndex = GetQuestIndexForWatch(i);
 		if ( questIndex ) then
 			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
+			
+			if (GetSuperTrackedQuestID() == 0) then
+				SetSuperTrackedQuestID(questID);
+				WORLDMAP_SETTINGS.selectedQuestId = questID;
+			end
+			
 			local requiredMoney = GetQuestLogRequiredMoney(questIndex);			
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
 			if ( isComplete and isComplete < 0 ) then
@@ -842,7 +851,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 			end			
 			
 			if ( filterOK ) then
-				local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
+				local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questIndex);
 				if ( requiredMoney > 0 ) then
 					WatchFrame.watchMoney = true;	-- for update event			
 				end
@@ -876,7 +885,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 				else
 					for j = 1, numObjectives do
 						text, objectiveType, finished = GetQuestLogLeaderBoard(j, questIndex);
-						if ( not finished ) then
+						if ( not finished and text ) then
 							if (objectiveType ~= "spell") then
 								text = WatchFrame_ReverseQuestObjective(text);
 							end
@@ -906,7 +915,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 				table.insert(VISIBLE_WATCHES, numVisible, questIndex);		-- save the quest log index because watch order can change after dropdown is opened
 				-- turn on quest item
 				local itemButton;
-				if ( item and not isComplete ) then
+				if ( item and (not isComplete or showItemWhenComplete) ) then
 					watchItemIndex = watchItemIndex + 1;
 					itemButton = _G["WatchFrameItem"..watchItemIndex];
 					if ( not itemButton ) then
@@ -974,8 +983,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	
 	WatchFrame_ReleaseUnusedQuestLines();
 
-	if ( selectedQuestId ) then
-		QuestPOI_SelectButtonByQuestId("WatchFrameLines", selectedQuestId, true);	
+	if ( WORLDMAP_SETTINGS.selectedQuestId ) then
+		QuestPOIUpdateIcons();
+		QuestPOI_SelectButtonByQuestId("WatchFrameLines", WORLDMAP_SETTINGS.selectedQuestId, true);	
 	end
 	
 	return lastLine or nextAnchor, maxWidth, numQuestWatches;	
@@ -1254,7 +1264,7 @@ function WatchFrameItem_OnUpdate (self, elapsed)
 	if ( rangeTimer ) then
 		rangeTimer = rangeTimer - elapsed;
 		if ( rangeTimer <= 0 ) then
-			local link, item, charges = GetQuestLogSpecialItemInfo(self:GetID());
+			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
 			if ( not charges or charges ~= self.charges ) then
 				WatchFrame_Update();
 				return;
@@ -1295,7 +1305,7 @@ end
 function WatchFrameItem_OnClick (self, button, down)
 	local questIndex = self:GetID();
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local link, item, charges = GetQuestLogSpecialItemInfo(questIndex);
+		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questIndex);
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
@@ -1455,6 +1465,7 @@ function WatchFrameHeaderDropDown_Initialize (self)
 	info.tooltipText = TOOLTIP_TRACKER_FILTER_ACHIEVEMENTS;
 	info.arg1 = WATCHFRAME_FILTER_ACHIEVEMENTS;
 	info.func = WatchFrame_SetFilter;
+	info.isNotRadio = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	-- filter: completed quests
 	info = UIDropDownMenu_CreateInfo();
@@ -1464,6 +1475,7 @@ function WatchFrameHeaderDropDown_Initialize (self)
 	info.tooltipText = TOOLTIP_TRACKER_FILTER_COMPLETED_QUESTS;
 	info.arg1 = WATCHFRAME_FILTER_COMPLETED_QUESTS;
 	info.func = WatchFrame_SetFilter;
+	info.isNotRadio = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
 	-- filter: current zone
 	info = UIDropDownMenu_CreateInfo();
@@ -1473,6 +1485,7 @@ function WatchFrameHeaderDropDown_Initialize (self)
 	info.tooltipText = TOOLTIP_TRACKER_FILTER_REMOTE_ZONES;
 	info.arg1 = WATCHFRAME_FILTER_REMOTE_ZONES;
 	info.func = WatchFrame_SetFilter;
+	info.isNotRadio = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
 end
 

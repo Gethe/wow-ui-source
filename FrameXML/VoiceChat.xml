@@ -275,12 +275,12 @@
 			</OnEvent>
 			<OnClick>
 				if ( button == "LeftButton" ) then
-					ToggleFriendsFrame(4);
+					ToggleFriendsFrame(3);
 				elseif ( button == "RightButton" ) then
 					if ( self.count and self.count > 0 ) then
 						ToggleDropDownMenu(1, nil, MiniMapVoiceChatDropDown, "MiniMapVoiceChatFrame", 0, -5);
 					else
-						ToggleFriendsFrame(4);
+						ToggleFriendsFrame(3);
 					end
 				end
 			</OnClick>

@@ -278,6 +278,7 @@
 				HideParentPanel(self);
 			</OnClick>
 		</Scripts>
+		<DisabledTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
 		<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 		<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
@@ -834,7 +835,7 @@
 			</Anchors>
 		</HighlightTexture>
     </Button>
-	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
 		<Size>
 			<AbsDimension x="144" y="21"/>
 		</Size>
@@ -2200,7 +2201,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentPortrait">
+				<Texture name="$parentPortrait" parentKey="portrait">
 					<Size x="60" y="60"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="7" />
@@ -2208,7 +2209,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentPortraitFrame" inherits="UI-Frame-Portrait">
+				<Texture name="$parentPortraitFrame" inherits="UI-Frame-Portrait" parentKey="portraitFrame">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-14" y="11"/>
 					</Anchors>
@@ -2218,7 +2219,12 @@
 						<Anchor point="TOPRIGHT" x="0" y="1"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopBorder" inherits="_UI-Frame-TitleTile">
+				<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true" parentKey="topLeftCorner">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopBorder" inherits="_UI-Frame-TitleTile" parentKey="topBorderBar">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
 						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
@@ -2227,6 +2233,8 @@
 				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-4"/>
+						<Anchor point="LEFT" x="60"/>
+						<Anchor point="RIGHT" x="-60"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -2253,7 +2261,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile">
+				<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>

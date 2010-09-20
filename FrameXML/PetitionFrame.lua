@@ -71,3 +71,13 @@ function PetitionFrame_Update(self)
 	end
 end
 
+function PetitionFrameSignButton_OnClick(self)
+	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	if ( standingID > 4 or barValue > 0 ) then
+		StaticPopup_Show("CONFIRM_GUILD_CHARTER_SIGNATURE");
+	else
+		SignPetition();
+	end
+end
+
+

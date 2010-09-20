@@ -135,7 +135,11 @@ function PetStable_Update(updateModel)
 	end
 	
 	-- If no selected pet, try to set one
-	if ( not PetStableFrame.selectedPet or not GetStablePetInfo(PetStableFrame.selectedPet)) then
+	if (PetStableFrame.selectedPet and not GetStablePetInfo(PetStableFrame.selectedPet)) then
+		PetStableFrame.selectedPet = nil;
+	end
+	
+	if ( not PetStableFrame.selectedPet ) then
 		for i=1, NUM_PET_ACTIVE_SLOTS do
 			local petSlot = PetStable_GetPetSlot(i, true);
 			if ( GetStablePetInfo(petSlot) ) then

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="TutorialFrame.lua"/>
-	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true" donteatinput="true">
+	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true" propagateKeyboardInput="true">
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="100"/>
 		</Anchors>
@@ -103,6 +103,13 @@
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="TutorialFrameMouse" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="76" y="101"/>
+					<TexCoords left="0.1542969" right="0.3007813" top="0.4257813" bottom="0.6210938"/>
+					<Color r="1.0" g="1.0" b="1.0" a="0.0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -263,6 +270,14 @@
 			<OnKeyDown function="TutorialFrame_OnKeyDown"/>
 			<OnMouseDown function="TutorialFrame_OnMouseDown"/>
 		</Scripts>
+		<Animations>
+			<AnimationGroup name="AnimateMouse" looping="bounce">
+				<Alpha target="TutorialFrameMouse" change="1" duration="0.8" smoothing="IN_OUT"/>
+			</AnimationGroup>
+			<AnimationGroup name="AnimateCallout" looping="bounce">
+				<Alpha target="TutorialFrameCallOut" change="-0.5" duration="0.8" smoothing="IN_OUT"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 	<Button name="TutorialFrameAlertButton" parent="UIParent" frameStrata="DIALOG" hidden="true" >
 		<Size x="116" y="71"/>

@@ -163,6 +163,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
 	self:RegisterEvent("INSTANCE_LOCK_START");
 	self:RegisterEvent("INSTANCE_LOCK_STOP");
+	self:RegisterEvent("INSTANCE_LOCK_WARNING");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
@@ -735,7 +736,7 @@ function UIParent_OnEvent(self, event, ...)
 		SpellbookMicroButton:Disable();
 		TalentMicroButton:Disable();
 		QuestLogMicroButton:Disable();
-		SocialsMicroButton:Disable();
+		GuildMicroButton:Disable();
 		WorldMapMicroButton:Disable();
 		]]
 
@@ -749,7 +750,7 @@ function UIParent_OnEvent(self, event, ...)
 		SpellbookMicroButton:Enable();
 		TalentMicroButton:Enable();
 		QuestLogMicroButton:Enable();
-		SocialsMicroButton:Enable();
+		GuildMicroButton:Enable();
 		WorldMapMicroButton:Enable();
 		]]
 
@@ -779,9 +780,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "INSTANCE_BOOT_STOP" ) then
 		StaticPopup_Hide("INSTANCE_BOOT");
 	elseif ( event == "INSTANCE_LOCK_START" ) then
-		StaticPopup_Show("INSTANCE_LOCK");
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, true);
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
+	elseif ( event == "INSTANCE_LOCK_WARNING" ) then
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, false);
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
@@ -2731,6 +2734,12 @@ MODELFRAME_MAX_PET_ZOOM = 0.7;
 function Model_OnLoad (self)
 	self.rotation = 0.61;
 	self:SetRotation(self.rotation);
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function Model_OnEvent(self, event, ...)
+	self:RefreshUnit();
 end
 
 function Model_RotateLeft(model, rotationIncrement)
@@ -2892,28 +2901,31 @@ function CursorOnUpdate(self)
 	end
 end
 
-function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed)
+function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed, throttle)
 	if ( not texture.frame ) then
 		-- initialize everything
 		texture.frame = 1;
-		texture.numColumns = textureWidth/frameWidth;
-		texture.numRows = textureHeight/frameHeight;
+		texture.throttle = throttle;
+		texture.numColumns = floor(textureWidth/frameWidth);
+		texture.numRows = floor(textureHeight/frameHeight);
 		texture.columnWidth = frameWidth/textureWidth;
 		texture.rowHeight = frameHeight/textureHeight;
 	end
 	local frame = texture.frame;
-	if ( not texture.throttle or texture.throttle > 0.1 ) then
-		texture.throttle = 0;
-		if ( frame > numFrames ) then
-			frame = 1;
+	if ( not texture.throttle or texture.throttle > throttle ) then
+		local framesToAdvance = floor(texture.throttle / throttle);
+		while ( frame + framesToAdvance > numFrames ) do
+			frame = frame - numFrames;
 		end
+		frame = frame + framesToAdvance;
+		texture.throttle = 0;
 		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
 		local right = left + texture.columnWidth;
 		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
 		local top = bottom - texture.rowHeight;
 		texture:SetTexCoord(left, right, top, bottom);
 
-		texture.frame = frame + 1;
+		texture.frame = frame;
 	else
 		texture.throttle = texture.throttle + elapsed;
 	end
@@ -3178,8 +3190,7 @@ function CanGroupInvite()
 end
 
 function UnitHasMana(unit)
-	local powerType, powerToken = UnitPowerType(unit);
-	if ( powerToken == "MANA" and UnitPowerMax(unit, powerType) > 0 ) then
+	if ( UnitPowerMax(unit, SPELL_POWER_MANA) > 0 ) then
 		return 1;
 	end
 	return nil;
@@ -3570,45 +3581,81 @@ function GMError(...)
 	end
 end
 
-function SetGuildTabardTextures(leftEmblem, rightEmblem, background, border, hasMask)
-	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
+function SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	-- texure dimensions are 1024x1024, icon dimensions are 64x64
+	local emblemSize, columns, offset;
+	if ( emblemTexture ) then
+		emblemSize = 64 / 1024;
+		columns = 16
+		offset = 0;
+	end
+	SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+end
+
+function SetSmallGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	-- texure dimensions are 256x256, icon dimensions are 16x16, centered in 18x18 cells
+	local emblemSize, columns, offset;
+	if ( emblemTexture ) then
+		emblemSize = 18 / 256;
+		columns = 14;
+		offset = 1 / 256;
+	end
+	SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+end
+
+function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTexture, backgroundTexture, borderTexture, tabardData)
+	if ( leftEmblemTexture and rightEmblemTexture ) then
+		SetGuildTabardTextures(nil, nil, nil, unit, leftEmblemTexture, backgroundTexture, borderTexture, tabardData);
+		rightEmblemTexture:SetTexture(leftEmblemTexture:GetTexture());
+		rightEmblemTexture:SetVertexColor(leftEmblemTexture:GetVertexColor());
+	end
+end
+
+function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename;
+	if ( tabardData ) then
+		bkgR = tabardData[1];
+		bkgG = tabardData[2];
+		bkgB = tabardData[3];
+		borderR = tabardData[4];
+		borderG = tabardData[5];
+		borderB = tabardData[6];
+		emblemR = tabardData[7];
+		emblemG = tabardData[8];
+		emblemB = tabardData[9];
+		emblemFilename = tabardData[10];
+	else
+		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo(unit);
+	end
 	if ( emblemFilename ) then
-		if ( background ) then
-			background:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
+		if ( backgroundTexture ) then
+			backgroundTexture:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
 		end
-		if ( border ) then
-			border:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
+		if ( borderTexture ) then
+			borderTexture:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
 		end
-		if ( leftEmblem and rightEmblem ) then
-			local iconR = emblemR / 255;
-			local iconG = emblemG / 255;
-			local iconB = emblemB / 255;
-			rightEmblem:SetTexture(emblemFilename);
-			rightEmblem:SetVertexColor(iconR, iconG, iconB);
-			if ( hasMask ) then
-				-- temporary hack - the guild emblem texture is the right half of the icon and we are flipping that texture to get the left half. But
-				-- the mask is applied when the texture is set, without considering texture coordinates, so we need to treat the left side as if it
-				-- was a duplicate of the right side until after the texture is set. This includes using the same mask instead of a mirror-image one.
-				local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = leftEmblem:GetTexCoord();
-				leftEmblem:SetTexCoord(URx,URy,LRx,LRy,ULx,ULy,LLx,LLy);
-				leftEmblem:SetTexture(emblemFilename);
-				leftEmblem:SetVertexColor(iconR, iconG, iconB);
-				leftEmblem:SetTexCoord(ULx,ULy,LLx,LLy,URx,URy,LRx,LRy);
-			else
-				leftEmblem:SetTexture(emblemFilename);
-				leftEmblem:SetVertexColor(iconR, iconG, iconB);
+		if ( emblemSize ) then
+			local index = emblemFilename:match("([%d]+)");
+			if ( index) then
+				index = tonumber(index);
+				xCoord = mod(index, columns) * emblemSize;
+				yCoord = floor(index / columns) * emblemSize;
+				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
 			end
+			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
+		elseif ( emblemTexture ) then
+			emblemTexture:SetTexture(emblemFilename);
+			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
 		end
 	else
-		if ( background ) then
-			background:SetVertexColor(0.4745, 0.4588, 0.5294);
+		if ( backgroundTexture ) then
+			backgroundTexture:SetVertexColor(0.4745, 0.4588, 0.5294);
 		end
-		if ( border ) then
-			border:SetVertexColor(0.2, 0.2, 0.2);
+		if ( borderTexture ) then
+			borderTexture:SetVertexColor(0.2, 0.2, 0.2);
 		end
-		if ( leftEmblem and rightEmblem ) then
-			leftEmblem:SetTexture("");
-			rightEmblem:SetTexture("");
+		if ( emblemTexture ) then
+			emblemTexture:SetTexture("");
 		end
 	end
 end

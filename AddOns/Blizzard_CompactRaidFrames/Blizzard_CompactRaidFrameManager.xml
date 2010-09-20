@@ -118,7 +118,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentContainerResizeFrame" resizable="true" dontSavePosition="true" parentKey="containerResizeFrame">
+			<Frame name="$parentContainerResizeFrame" frameStrata="LOW" resizable="true" movable="true" dontSavePosition="true" clampedToScreen="true"  parentKey="containerResizeFrame">
 				<Size x="300" y="200"/>
 				<Layers>
 					<Layer level="BORDER">
@@ -342,8 +342,8 @@
 								_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
 							</OnMouseUp>
 							<OnClick>
-								--InterfaceOptionsFrame_OpenToCategory(RAID_FRAMES_LABEL);
-								ToggleFriendsFrame(4);
+								InterfaceOptionsFrame_OpenToCategory(RAID_FRAMES_LABEL);
+								--ToggleFriendsFrame(4);
 							</OnClick>
 						</Scripts>
 					</Button>

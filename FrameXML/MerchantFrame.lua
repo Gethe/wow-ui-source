@@ -81,7 +81,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	
 	MerchantPageText:SetFormattedText(MERCHANT_PAGE_NUMBER, MerchantFrame.page, math.ceil(numMerchantItems / MERCHANT_ITEMS_PER_PAGE));
 
-	local name, texture, price, quantity, numAvailable, isUsable, extendedCost;
+	local name, texture, price, stackCount, numAvailable, isUsable, extendedCost;
 	for i=1, MERCHANT_ITEMS_PER_PAGE, 1 do
 		local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
 		local itemButton = _G["MerchantItem"..i.."ItemButton"];
@@ -89,9 +89,9 @@ function MerchantFrame_UpdateMerchantInfo()
 		local merchantMoney = _G["MerchantItem"..i.."MoneyFrame"];
 		local merchantAltCurrency = _G["MerchantItem"..i.."AltCurrencyFrame"];
 		if ( index <= numMerchantItems ) then
-			name, texture, price, quantity, numAvailable, isUsable, extendedCost = GetMerchantItemInfo(index);
+			name, texture, price, stackCount, numAvailable, isUsable, extendedCost = GetMerchantItemInfo(index);
 			_G["MerchantItem"..i.."Name"]:SetText(name);
-			SetItemButtonCount(itemButton, quantity);
+			SetItemButtonCount(itemButton, stackCount);
 			SetItemButtonStock(itemButton, numAvailable);
 			SetItemButtonTexture(itemButton, texture);
 			
@@ -419,14 +419,13 @@ function MerchantItemButton_OnModifiedClick(self, button)
 		end
 		if ( IsModifiedClick("SPLITSTACK") ) then
 			local maxStack = GetMerchantItemMaxStack(self:GetID());
-			if ( maxStack > 1 ) then
-				if ( self.price and (self.price > 0) ) then
-					local canAfford = floor(GetMoney() / self.price);
-					if ( canAfford < maxStack ) then
-						maxStack = canAfford;
-					end
+			local _, _, price, stackCount = GetMerchantItemInfo(self:GetID());
+			if ( maxStack > 1 and price and (price > 0) ) then
+				local canAfford = floor(GetMoney() / (price / stackCount));
+				if ( canAfford > 0 ) then
+					local maxPurchasable = min(maxStack, canAfford);
+					OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT");
 				end
-				OpenStackSplitFrame(maxStack, self, "BOTTOMLEFT", "TOPLEFT");
 			end
 			return;
 		end

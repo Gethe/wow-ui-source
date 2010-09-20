@@ -106,6 +106,9 @@ ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flash
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_CONVERSATION"]			= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["COMBAT_GUILD_XP_GAIN"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+
+--NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
@@ -155,6 +158,7 @@ ChatTypeGroup["BATTLEGROUND_LEADER"] = {
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
 	"GUILD_MOTD",
+	"UNIT_GUILD_LEVEL",
 };
 ChatTypeGroup["OFFICER"] = {
 	"CHAT_MSG_OFFICER",
@@ -260,6 +264,11 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
 	"CHAT_MSG_BN_INLINE_TOAST_CONVERSATION",
 };
+ChatTypeGroup["COMBAT_GUILD_XP_GAIN"] = {
+	"CHAT_MSG_COMBAT_GUILD_XP_GAIN",
+};
+--NEW_CHAT_TYPE - Add the chat type above.
+
 ChatTypeGroupInverted = {};
 for group, values in pairs(ChatTypeGroup) do
 	for _, value in pairs(values) do
@@ -288,27 +297,6 @@ end
 function Chat_GetChatCategory(chatType)
 	return CHAT_INVERTED_CATEGORY_LIST[chatType] or chatType;
 end
-
-ChannelMenuChatTypeGroups = {};
-ChannelMenuChatTypeGroups[1] = "SAY";
-ChannelMenuChatTypeGroups[2] = "YELL";
-ChannelMenuChatTypeGroups[3] = "GUILD";
-ChannelMenuChatTypeGroups[4] = "WHISPER";
-ChannelMenuChatTypeGroups[5] = "PARTY";
-
-CombatLogMenuChatTypeGroups = {};
-CombatLogMenuChatTypeGroups[1] = "OPENING";
-CombatLogMenuChatTypeGroups[2] = "TRADESKILLS";
-CombatLogMenuChatTypeGroups[3] = "PET_INFO";
-CombatLogMenuChatTypeGroups[4] = "COMBAT_MISC_INFO";
-CombatLogMenuChatTypeGroups[5] = "COMBAT_XP_GAIN";
-CombatLogMenuChatTypeGroups[6] = "COMBAT_HONOR_GAIN";
-CombatLogMenuChatTypeGroups[7] = "COMBAT_FACTION_CHANGE";
-
-OtherMenuChatTypeGroups = {};
-OtherMenuChatTypeGroups[1] = "CREATURE";
-OtherMenuChatTypeGroups[2] = "SKILL";
-OtherMenuChatTypeGroups[3] = "LOOT";
 
 -- list of text emotes that we want to show on the Emote submenu (these have anims)
 EmoteList = {
@@ -2092,10 +2080,10 @@ end
 SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
 	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:IsShown() ) then
-		ToggleFriendsFrame(5);
+		ToggleFriendsFrame(4);
 		RaidInfoFrame:Show();
 	elseif ( not RaidFrame:IsShown() ) then
-		ToggleFriendsFrame(5);
+		ToggleFriendsFrame(4);
 	end
 end
 
@@ -2287,6 +2275,15 @@ SlashCmdList["RANDOMPET"] = function(msg)
 	if ( numCompanions > 0  ) then
 		local index = random(1, numCompanions);
 		CallCompanion("CRITTER", index);
+	end
+end
+
+
+SlashCmdList["WARGAME"] = function(msg)
+	local target, area = strmatch(msg, "%s*(%a+)%s*([%a%s]*)");
+	if ( target and target ~= "" ) then
+		if area and area == "" then area = nil end 
+		StartWarGame(target, area );
 	end
 end
 
@@ -2587,7 +2584,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		return true;
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
-		LevelUpDisplay_ChatPrint(self, level)
+		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
 		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;
@@ -2634,6 +2631,11 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
 		return true;
+	elseif ( event == "UNIT_GUILD_LEVEL" ) then
+		local unit, level = ...;
+		if ( unit == "player" ) then
+			LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_GUILD);
+		end
 	end
 end
 
@@ -4387,6 +4389,7 @@ function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "PET_INFO");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_MISC_INFO");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_XP_GAIN");
+	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_GUILD_XP_GAIN");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HONOR_GAIN");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FACTION_CHANGE");
 end

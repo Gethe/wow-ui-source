@@ -26,7 +26,7 @@ function UpdateMicroButtonsParent(parent)
 	QuestLogMicroButton:SetParent(parent);
 	MainMenuMicroButton:SetParent(parent);
 	PVPMicroButton:SetParent(parent);
-	SocialsMicroButton:SetParent(parent);
+	GuildMicroButton:SetParent(parent);
 	LFDMicroButton:SetParent(parent);
 	HelpMicroButton:SetParent(parent);
 	AchievementMicroButton:SetParent(parent);
@@ -89,14 +89,19 @@ function UpdateMicroButtons()
 		end
 	end
 
+	GuildMicroButton_UpdateTabard();
 	if ( GuildFrame and GuildFrame:IsShown() ) then
-		SocialsMicroButton:SetButtonState("PUSHED", 1);
+		GuildMicroButton:SetButtonState("PUSHED", 1);
+		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
+		GuildMicroButtonTabard:SetAlpha(0.70);
 	else
 		if ( IsInGuild() ) then
-			SocialsMicroButton:Enable();
-			SocialsMicroButton:SetButtonState("NORMAL");
+			GuildMicroButton:Enable();
+			GuildMicroButton:SetButtonState("NORMAL");
+			GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
+			GuildMicroButtonTabard:SetAlpha(1);
 		else
-			SocialsMicroButton:Disable();
+			GuildMicroButton:Disable();
 		end
 	end
 	
@@ -120,7 +125,7 @@ function UpdateMicroButtons()
 	if ( AchievementFrame and AchievementFrame:IsShown() ) then
 		AchievementMicroButton:SetButtonState("PUSHED", 1);
 	else
-		if ( HasCompletedAnyAchievement() and CanShowAchievementUI() ) then
+		if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
 			AchievementMicroButton:Enable();
 			AchievementMicroButton:SetButtonState("NORMAL");
 		else
@@ -144,12 +149,41 @@ function AchievementMicroButton_OnEvent(self, event, ...)
 	end
 end
 
-function SocialsMicroButton_OnEvent(self, event, ...)
+function GuildMicroButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BINDINGS" ) then
-		SocialsMicroButton.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLEGUILDTAB");
-	else
+		GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
+	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
+		GuildMicroButtonTabard.needsUpdate = true;
 		UpdateMicroButtons();
 	end
+end
+
+function GuildMicroButton_UpdateTabard(forceUpdate)
+	local tabard = GuildMicroButtonTabard;
+	if ( not tabard.needsUpdate and not forceUpdate ) then
+		return;
+	end
+	-- switch textures if the guild has a custom tabard	
+	local emblemFilename = select(10, GetGuildLogoInfo());
+	if ( emblemFilename ) then
+		if ( not tabard:IsShown() ) then
+			local button = GuildMicroButton;
+			button:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
+			button:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
+			-- no need to change disabled texture, should always be available if you're in a guild
+			tabard:Show();
+		end
+		SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background);
+	else
+		if ( tabard:IsShown() ) then
+			local button = GuildMicroButton;
+			button:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Socials-Up");
+			button:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Socials-Down");
+			button:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Socials-Disabled");
+			tabard:Hide();
+		end
+	end
+	tabard.needsUpdate = nil;
 end
 
 function CharacterMicroButton_OnLoad(self)

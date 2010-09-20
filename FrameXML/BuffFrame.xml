@@ -217,6 +217,15 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<Button name="TempEnchant3" inherits="TempEnchantButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="TempEnchant2" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnUpdate function="TemporaryEnchantFrame_OnUpdate"/>

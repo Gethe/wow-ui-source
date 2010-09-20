@@ -795,7 +795,7 @@ function FCF_ResetAllWindows()
 end
 
 --[[function FCF_ChatChannels()
-	ToggleFriendsFrame(4);
+	ToggleFriendsFrame(3);
 end]]--
 
 function FCF_SetWindowName(frame, name, doNotSave)

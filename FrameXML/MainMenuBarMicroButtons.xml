@@ -10,12 +10,17 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnEnter>
-				if ( self:IsEnabled() == 1 or self.minLevel ) then
+				if ( self:IsEnabled() or self.minLevel or self.disabledTooltip ) then
 					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 					GameTooltip:AddLine(" ");
-					if ( self:IsEnabled() == 0 and self.minLevel ) then
-						GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-						GameTooltip:Show();
+					if ( not self:IsEnabled() ) then
+						if ( self.minLevel ) then
+							GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+							GameTooltip:Show();
+						elseif ( self.disabledTooltip ) then
+							GameTooltip:AddLine(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+							GameTooltip:Show();
+						end
 					end
 				end
 			</OnEnter>
@@ -120,7 +125,13 @@
 				LoadMicroButtonTextures(self, "Talents");
 				self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
 				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
-				self.minLevel = SHOW_TALENT_LEVEL;
+				
+				local _, class = UnitClass("player");
+				if (class == "DEATHKNIGHT") then
+					self.disabledTooltip = TALENTS_UNAVAILABLE_TOOLTIP;
+				else
+					self.minLevel = SHOW_TALENT_LEVEL;
+				end
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
@@ -175,7 +186,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -183,15 +194,47 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Frames>
+			<Frame name="$parentTabard" hidden="true">
+				<Size>
+					<AbsDimension x="28" y="58"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentBackground" file="Interface\Buttons\UI-MicroButton-Guild-Banner" parentKey="background">
+							<Size>
+								<AbsDimension x="30" y="60"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture name="$parentEmblem" parentKey="emblem" file="Interface\GuildFrame\GuildEmblems_01">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-9"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Socials");
-				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLEGUILDTAB");
-				self.newbieText = NEWBIE_TOOLTIP_SOCIAL;
+				self.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
+				self.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
+				self.disabledTooltip = GUILD_BECOMES_AVAILABLE;
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
+				GuildMicroButton_UpdateTabard(true);
 			</OnLoad>
-			<OnEvent function="SocialsMicroButton_OnEvent"/>
+			<OnEvent function="GuildMicroButton_OnEvent"/>
 			<OnClick>
 				ToggleGuildFrame();
 			</OnClick>
@@ -199,7 +242,7 @@
 	</Button>
 	<Button name="PVPMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>

@@ -82,18 +82,24 @@ end
 
 
 function GlyphFrame_OnShow (self)
-	GlyphFrame_Update();
+	GlyphFrame_Update(self);
 	ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
 	PlayerTalentFrameInset:SetPoint("BOTTOMRIGHT",  -197,  PANEL_INSET_BOTTOM_OFFSET);
 	PlayerTalentFrameActivateButton:SetPoint( "TOpRIGHT", -205, -35);
 	SetGlyphNameFilter("");
 	GlyphFrame_UpdateGlyphList ();
+
+	_G["PlayerTalentFrame".."BtnCornerLeft"]:Hide();
+	_G["PlayerTalentFrame".."BtnCornerRight"]:Hide();
 end
 
 function GlyphFrame_OnHide (self)
 	ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
 	ButtonFrameTemplate_ShowButtonBar(PlayerTalentFrame);
 	PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
+	
+	_G["PlayerTalentFrame".."BtnCornerLeft"]:Show();
+	_G["PlayerTalentFrame".."BtnCornerRight"]:Show();
 end
 
 function GlyphFrame_OnEnter (self)
@@ -117,8 +123,9 @@ function GlyphFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "USE_GLYPH") then
 		GlyphFrame_UpdateGlyphList();
+		GlyphFrame_Update (self);
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		GlyphFrame_Update();
+		GlyphFrame_Update(self);
 	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
 		local index = ...;
 		local glyph = _G["GlyphFrameGlyph" .. index];
@@ -133,12 +140,16 @@ function GlyphFrame_OnEvent (self, event, ...)
 					PlaySound("Glyph_MinorCreate");
 				elseif ( glyphType == GLYPH_TYPE_MAJOR ) then
 					PlaySound("Glyph_MajorCreate");
+				else
+					PlaySound("Glyph_MajorCreate");
 				end
 			elseif ( event == "GLYPH_REMOVED" ) then
-				GlyphFrame_StopSlotAnimation(index);
+				--GlyphFrame_StopSlotAnimation(index);
 				if ( glyphType == GLYPH_TYPE_MINOR ) then
 					PlaySound("Glyph_MinorDestroy");
 				elseif ( glyphType == GLYPH_TYPE_MAJOR ) then
+					PlaySound("Glyph_MajorDestroy");
+				else
 					PlaySound("Glyph_MajorDestroy");
 				end
 			end
@@ -166,7 +177,7 @@ function GlyphFrame_PulseGlow ()
 	GlyphFrame.glow.pulse:Play();
 end
 
-function GlyphFrame_Update ()
+function GlyphFrame_Update (self)
 	local isActiveTalentGroup =
 		PlayerTalentFrame and not PlayerTalentFrame.pet and
 		PlayerTalentFrame.talentGroup == GetActiveTalentGroup(PlayerTalentFrame.pet);
@@ -183,6 +194,18 @@ function GlyphFrame_Update ()
 		else
 			glyph.highlight:Hide();
 		end
+	end
+	
+	local name, count, texture, spellID = GetGlyphClearInfo();
+	if name then 
+		self.clearInfo.name:SetText(name);
+		self.clearInfo.count:SetText(count);
+		self.clearInfo.icon:SetTexture(texture);
+		self.clearInfo.spellID = spellID
+	else
+		self.clearInfo.name:SetText("");
+		self.clearInfo.count:SetText("");
+		self.clearInfo.icon:SetTexture("");
 	end
 end
 
@@ -203,9 +226,10 @@ function GlyphFrame_UpdateGlyphList ()
 	end
 	currentHeader = 1;	
 	
+	local selectedIndex = GetSelectedGlyphSpellIndex();
 	
 	for i = 1, numButtons do
-		button = buttons[i];
+		local button = buttons[i];
 		local index = offset + i;
 		if index <= numGlyphs  then
 			local name, glyphType, isKnown, icon, castSpell = GetGlyphInfo(index);
@@ -239,16 +263,15 @@ function GlyphFrame_UpdateGlyphList ()
 				button.tooltipName = name;
 				button.castSpellID = castSpell;
 				if isKnown then
-					button.cursor = icon;
 					button.icon:SetDesaturated(0);
 					button.name:SetText(name);
 					button.typeName:SetText(GLYPH_STRING[glyphType]);
 					button.disabledBG:Hide();
-					if GlyphFrame.selectedIndex == index then
-						button.selectedTex:Show();
+					if selectedIndex and selectedIndex == index then
 						if GlyphFrame.selectedButton then
 							GlyphFrame.selectedButton.selectedTex:Hide();
 						end
+						button.selectedTex:Show();
 						GlyphFrame.selectedButton = button;
 					else
 						button.selectedTex:Hide();
@@ -269,7 +292,7 @@ function GlyphFrame_UpdateGlyphList ()
 	
 	local totalHeight = (numGlyphs-3) * (GLYPH_BUTTON_HEIGHT + 0);
 	totalHeight = totalHeight + (3 * (GLYPH_HEADER_BUTTON_HEIGHT + 0));
-	HybridScrollFrame_Update(scrollFrame, totalHeight+5, 370);
+	HybridScrollFrame_Update(scrollFrame, totalHeight+5, 330);
 	
 	local known =  IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
 	local unknown =  IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
@@ -404,8 +427,32 @@ end
 function GlyphFrameGlyph_UpdateSlot (self)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
-	local enabled, glyphType, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup);
+	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup);
 
+
+	-- Unlock Glyph Display
+	if id == 3 then -- second minor glyph
+		if enabled then
+			GlyphFrame.levelOverlay1:Hide();
+			GlyphFrame.levelOverlayText1:Hide();
+		else
+			GlyphFrame.levelOverlay1:Show();
+			GlyphFrame.levelOverlayText1:SetText(_G["GLYPH_SLOT_TOOLTIP"..glyphTooltipIndex]);
+			GlyphFrame.levelOverlayText1:Show();
+		end
+	end
+	if id == 5 then -- third minor glyph
+		if enabled then
+			GlyphFrame.levelOverlay2:Hide();
+			GlyphFrame.levelOverlayText2:Hide();
+		else
+			GlyphFrame.levelOverlay2:Show();
+			GlyphFrame.levelOverlayText2:SetText(_G["GLYPH_SLOT_TOOLTIP"..glyphTooltipIndex]);
+			GlyphFrame.levelOverlayText2:Show();
+		end
+	end
+	
+	
 	GlyphFrameGlyph_SetGlyphType(self, glyphType);
 
 	self.elapsed = 0;
@@ -431,7 +478,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 			slotAnimation.sparkle:Hide();
 		end
 		self.spell = nil;
-
+		self.glyph:SetTexture("");
 		self:Show();
 	else
 		slotAnimation.glyph = true;
@@ -449,19 +496,21 @@ end
 
 function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
 	local info = GLYPH_TYPE_INFO[glyphType];
-	glyph.glyphType = glyphType;
-	
-	glyph.ring:SetWidth(info.ring.size);
-	glyph.ring:SetHeight(info.ring.size);
-	glyph.ring:SetTexCoord(info.ring.left, info.ring.right, info.ring.top, info.ring.bottom);
-	
-	glyph.highlight:SetWidth(info.highlight.size);
-	glyph.highlight:SetHeight(info.highlight.size);
-	glyph.highlight:SetTexCoord(info.highlight.left, info.highlight.right, info.highlight.top, info.highlight.bottom);
-	
-	glyph.glyph:SetWidth(info.ring.size - 4);
-	glyph.glyph:SetHeight(info.ring.size - 4);
-	glyph.glyph:SetAlpha(0.75);
+	if info then
+		glyph.glyphType = glyphType;
+		
+		glyph.ring:SetWidth(info.ring.size);
+		glyph.ring:SetHeight(info.ring.size);
+		glyph.ring:SetTexCoord(info.ring.left, info.ring.right, info.ring.top, info.ring.bottom);
+		
+		glyph.highlight:SetWidth(info.highlight.size);
+		glyph.highlight:SetHeight(info.highlight.size);
+		glyph.highlight:SetTexCoord(info.highlight.left, info.highlight.right, info.highlight.top, info.highlight.bottom);
+		
+		glyph.glyph:SetWidth(info.ring.size - 4);
+		glyph.glyph:SetHeight(info.ring.size - 4);
+		glyph.glyph:SetAlpha(0.75);
+	end
 end
 
 
@@ -480,28 +529,30 @@ end
 function GlyphFrameGlyph_OnClick (self, button)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
+	local _, _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
 
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
 		local link = GetGlyphLink(id, talentGroup);
-		if ( link ) then
+		if link then
 			ChatEdit_InsertLink(link);
 		end
-	elseif ( button == "RightButton" ) then
-		if ( IsShiftKeyDown() and talentGroup == GetActiveTalentGroup() ) then
-			local glyphName;
-			local _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
-			if ( glyphSpell ) then
-				glyphName = GetSpellInfo(glyphSpell);
-				local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", glyphName);
-				dialog.data = id;
+	elseif talentGroup == GetActiveTalentGroup()  then
+		if button == "RightButton" then
+			if  IsShiftKeyDown() then
+				local glyphName;
+				if ( glyphSpell ) then
+					glyphName = GetSpellInfo(glyphSpell);
+					local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, glyphName);
+					dialog.data = id;
+				end
 			end
-		end
-	elseif ( talentGroup == GetActiveTalentGroup() ) then
-		if ( self.glyph:IsShown() and GlyphMatchesSocket(id) ) then
-			local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", id);
-			dialog.data = id;
-		else
-			PlaceGlyphInSocket(id);
+		elseif  GlyphMatchesSocket(id)  then
+			if glyphSpell then
+				local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT");
+				dialog.data = id;
+			else
+				PlaceGlyphInSocket(id);
+			end
 		end
 	end
 end
@@ -538,8 +589,7 @@ function GlyphFrameSpell_OnClick (self, button)
 		GlyphFrame.selectedButton.selectedTex:Hide();
 	end
 	
-	SetCursor(self.cursor);
-	GlyphFrame.selectedIndex = self.glyphIndex;
+	SetCursor(nil);
 	GlyphFrame.selectedButton = self;
 	GlyphFrame.selectedButton.selectedTex:Show();
 end

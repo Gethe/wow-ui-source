@@ -128,11 +128,8 @@
 					<OnLoad>
 						Model_OnLoad(self);
 						self:SetCamDistanceScale(1.3);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 					</OnLoad>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
+					<OnEvent function="Model_OnEvent"/>
 					<OnUpdate function="Model_OnUpdate"/>
 					<OnMouseDown function="Model_OnMouseDown"/>
 					<OnMouseUp function="Model_OnMouseUp"/>

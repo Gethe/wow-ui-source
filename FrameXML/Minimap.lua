@@ -151,7 +151,7 @@ function Minimap_ZoomOut()
 end
 
 function EyeTemplate_OnUpdate(self, elapsed)
-	AnimateTexCoords(self.texture, 512, 256, 64, 64, 29, elapsed)
+	AnimateTexCoords(self.texture, 512, 256, 64, 64, 29, elapsed, 0.1)
 end
 
 function EyeTemplate_StartAnimating(eye)
@@ -421,24 +421,52 @@ end
 function MiniMapTrackingShineFadeOut()
 	UIFrameFadeOut(MiniMapTrackingButtonShine, 0.5);
 end
+
+--
+-- Dungeon Difficulty
+--
 						
 local selectedRaidDifficulty;
 local allowedRaidDifficulty;
-function MiniMapInstanceDifficulty_OnEvent(self)
+local IS_GUILD_GROUP;
+
+function MiniMapInstanceDifficulty_OnEvent(self, event)
+	if ( event == "GUILD_PARTY_STATE_UPDATED" ) then
+		if ( InGuildParty() ~= IS_GUILD_GROUP ) then
+			IS_GUILD_GROUP = not IS_GUILD_GROUP;
+			MiniMapInstanceDifficulty_Update();
+		end
+	elseif ( event == "PLAYER_DIFFICULTY_CHANGED" ) then
+		MiniMapInstanceDifficulty_Update();
+	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
+		RequestGuildPartyState();
+		MiniMapInstanceDifficulty_Update();
+	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
+		local tabard = GuildInstanceDifficulty;
+		SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background, tabard.border);
+		if ( IsInGuild() ) then
+			RequestGuildPartyState();
+		else
+			IS_GUILD_GROUP = nil;
+			MiniMapInstanceDifficulty_Update();
+		end
+	else
+		RequestGuildPartyState();
+	end
+end
+
+function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
-	if ( ( instanceType == "party" or instanceType == "raid" ) and not ( difficulty == 1 and maxPlayers == 5 ) ) then		
+	if ( ( instanceType == "party" or instanceType == "raid" ) and not ( difficulty == 1 and maxPlayers == 5 and not IS_GUILD_GROUP ) ) then
 		local isHeroic = false;
 		if ( instanceType == "party" and difficulty == 2 ) then
 			isHeroic = true;
 		elseif ( instanceType == "raid" ) then
 			if ( isDynamicInstance ) then
 				selectedRaidDifficulty = difficulty;
-				if ( playerDifficulty == 1 ) then
-					if ( selectedRaidDifficulty <= 2 ) then
-						selectedRaidDifficulty = selectedRaidDifficulty + 2;
-					end
-					isHeroic = true;
-				end
+				--if ( selectedRaidDifficulty > 1 ) then
+				--	isHeroic = true;
+				--end
 				-- if modified difficulty is normal then you are allowed to select heroic, and vice-versa
 				if ( selectedRaidDifficulty == 1 ) then
 					allowedRaidDifficulty = 3;
@@ -450,27 +478,50 @@ function MiniMapInstanceDifficulty_OnEvent(self)
 					allowedRaidDifficulty = 2;
 				end
 				allowedRaidDifficulty = "RAID_DIFFICULTY"..allowedRaidDifficulty;
-			elseif ( difficulty > 2 ) then
+			end
+			if ( difficulty > 2 ) then
 				isHeroic = true;
 			end
 		end
 
-		MiniMapInstanceDifficultyText:SetText(maxPlayers);
-		-- the 1 looks a little off when text is centered
-		local xOffset = 0;
-		if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
-			xOffset = -1;
-		end
-		if ( isHeroic ) then
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
+		if ( IS_GUILD_GROUP ) then
+			GuildInstanceDifficultyText:SetText(maxPlayers);
+			GuildInstanceDifficultyText:ClearAllPoints();
+			if ( isHeroic ) then
+				if ( maxPlayers > 10 ) then
+					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 8, 7);
+					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
+				else
+					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 11, 7);
+					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
+				end
+				GuildInstanceDifficultyHeroicTexture:Show();
+			else
+				GuildInstanceDifficultyHeroicTexture:Hide();
+				GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
+			end
+			MiniMapInstanceDifficulty:Hide();
+			GuildInstanceDifficulty:Show();
 		else
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
+			MiniMapInstanceDifficultyText:SetText(maxPlayers);
+			-- the 1 looks a little off when text is centered
+			local xOffset = 0;
+			if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
+				xOffset = -1;
+			end
+			if ( isHeroic ) then
+				MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
+				MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
+			else
+				MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
+				MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
+			end
+			MiniMapInstanceDifficulty:Show();
+			GuildInstanceDifficulty:Hide();
 		end
-		self:Show();
 	else
-		self:Hide();
+		MiniMapInstanceDifficulty:Hide();
+		GuildInstanceDifficulty:Hide();
 	end
 end
 

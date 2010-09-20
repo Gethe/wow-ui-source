@@ -287,18 +287,50 @@ size=1024,1024
 					</Animations>
 					<Color r="1.0" g="1.0" b="1.0" a="0.0"/>
 				</Texture>
+				<Texture name="$LevelOverlay1" parentKey="levelOverlay1" file="Interface\Spellbook\UI-GlyphFrame">
+					<Size x="218" y="248"/>
+					<TexCoords left="0.00097656" right="0.21386719" top="0.42578125" bottom="0.66796875"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBackground" x="-110" y="-20"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$LevelOverlayText1" inherits="GameFontNormalHugeBlack" justifyH="CENTER" parentKey="levelOverlayText1" text="GLYPH_SLOT_TOOLTIP1">
+					<Size>
+						<AbsDimension x="130" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$LevelOverlay1"/>
+					</Anchors>
+					<Color r="0.2" g="0.1" b="0.09" a="0.8"/>
+				</FontString>	
+				<Texture name="$LevelOverlay2" parentKey="levelOverlay2" file="Interface\Spellbook\UI-GlyphFrame">
+					<Size x="284" y="227"/>
+					<TexCoords left="0.21582031" right="0.49316406" top="0.42578125" bottom="0.64746094"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBackground" x="80" y="-100"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$LevelOverlayText2" inherits="GameFontNormalHugeBlack" justifyH="CENTER" parentKey="levelOverlayText2" text="GLYPH_SLOT_TOOLTIP1">
+					<Size>
+						<AbsDimension x="130" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$LevelOverlay2"/>
+					</Anchors>
+					<Color r="0.2" g="0.1" b="0.09" a="0.8"/>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentSideInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="sideInset">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" x="4" y="380" />
-					<Anchor point="BOTTOMRIGHT" x="194" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" x="194" y="30"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame">
-							<Size x="168" y="380"/>
+							<Size x="168" y="348"/>
 							<TexCoords left="0.49511719" right="0.64941406" top="0.42578125" bottom="0.79492188"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="2" y="-2"/>
@@ -307,6 +339,45 @@ size=1024,1024
 					</Layer>
 				</Layers>
 			</Frame>
+			<Button name="$parentClearInfoFrame" parentKey="clearInfo">
+				<Size x="30" y="30"/> 
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="8" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIcon" parentKey="icon">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentName" inherits="GameFontNormal" parentKey="name">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if self.spellID then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetSpellByID(self.spellID);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip_Hide();
+						self.showingTooltip = false;
+					</OnLeave>
+				</Scripts>
+			</Button>
 			<EditBox name="$parentSearchBox" autoFocus="false">
 				<Size>
 					<AbsDimension x="180" y="20"/>
@@ -403,7 +474,7 @@ size=1024,1024
 				</Scripts>
 			</Frame>
 			<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
-				<Size x="185" y="370"/>
+				<Size x="185" y="330"/>
 					<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSideInset" x="5" y="-3"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentSideInset" x="-21" y="2"/>

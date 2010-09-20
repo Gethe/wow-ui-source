@@ -308,15 +308,15 @@ SECURE_ACTIONS.action =
         if ( action ) then
             -- Save macros in case the one for this action is being edited
             securecall("MacroFrame_SaveMacro");
-			
-			local actionType, flyoutId = GetActionInfo(action);
-			local cursorType = GetCursorInfo();
-			if (actionType == "flyout" and not cursorType ) then
-				SpellFlyout:Toggle(flyoutId, self, nil, 3, true);
-			else
-				SpellFlyout:Hide();
-				UseAction(action, unit, button);
-			end
+
+            local actionType, flyoutId = GetActionInfo(action);
+            local cursorType = GetCursorInfo();
+            if (actionType == "flyout" and not cursorType ) then
+                SpellFlyout:Toggle(flyoutId, self, nil, 3, true);
+            else
+                SpellFlyout:Hide();
+                UseAction(action, unit, button);
+            end
         end
     end;
 
@@ -328,7 +328,13 @@ SECURE_ACTIONS.pet =
             CastPetAction(action, unit);
         end
     end;
-   
+
+SECURE_ACTIONS.flyout = 
+	function (self, unit, button)
+		local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
+		SpellFlyout:Toggle(flyoutId, self, nil, 3, true);
+	end;
+
 SECURE_ACTIONS.multispell = 
     function (self, unit, button)
         local action = ActionButton_CalculateAction(self, button);

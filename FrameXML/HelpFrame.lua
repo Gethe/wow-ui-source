@@ -10,13 +10,12 @@ HELPFRAME_START_PAGE = "KBase";
 
 -- helpFrames contains the names of all the frames that can go into the frameStack
 local helpFrames = {
-	["GMTalk"]			= "HelpFrameGMTalk",
+	["AccountSecurity"]	= "HelpFrameAccountSecurity",
 	["Stuck"]			= "HelpFrameStuck",
-	["ReportIssue"]		= "HelpFrameReportIssue",
+	["OpenTicketInstructions"]		= "HelpFrameOpenTicketInstructions",
 	["OpenTicket"]		= "HelpFrameOpenTicket",
 	["GMResponse"]		= "HelpFrameViewResponse",
 	["NeedMoreHelp"]	= "HelpFrameOpenTicket",
-	["Welcome"]			= "HelpFrameWelcome",
 	["KBase"]			= "KnowledgeBaseFrame",
 	["Lag"]				= "HelpFrameLag",
 };
@@ -40,7 +39,7 @@ local ticketQueueActive = true;
 
 local haveTicket = false;		-- true if the server tells us we have an open ticket
 local haveResponse = false;		-- true if we got a GM response to a previous ticket
-local needResponse = true;		-- true if we want a GM to contact us when we open a new ticket
+local needResponse = true;		-- true if we want a GM to contact us when we open a new ticket (Note:  This flag is always true right now)
 
 
 --
@@ -80,7 +79,6 @@ function HelpFrame_OnEvent(self, event, ...)
 			ticketQueueActive = true;
 		else
 			ticketQueueActive = false;
-			HelpFrameStuckOpenTicket:Disable();
 			if ( status == GMTICKET_QUEUE_STATUS_DISABLED ) then
 				StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
 			end
@@ -152,11 +150,9 @@ function HelpFrame_OnEvent(self, event, ...)
 			HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
 
 			-- hide the buttons that open a ticket and show the buttons that edit a ticket
-			KnowledgeBaseFrameGMTalk:Hide();
-			KnowledgeBaseFrameReportIssue:Hide();
-			HelpFrameStuckOpenTicket:Hide();
+			KnowledgeBaseFrameOpenTicket:Hide();
 			KnowledgeBaseFrameEditTicket:Show();
-			KnowledgeBaseFrameAbandonTicket:Show();
+			HelpFrameOpenTicketAbandon:Show();
 		else
 			-- the player does not have a ticket
 			HelpFrameOpenTicketEditBox:SetText("");
@@ -166,11 +162,9 @@ function HelpFrame_OnEvent(self, event, ...)
 			HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_TEXT);
 
 			-- hide the buttons that edit a ticket and show the buttons that open a ticket
-			KnowledgeBaseFrameGMTalk:Show();
-			KnowledgeBaseFrameReportIssue:Show();
-			HelpFrameStuckOpenTicket:Show();
+			KnowledgeBaseFrameOpenTicket:Show();
 			KnowledgeBaseFrameEditTicket:Hide();
-			KnowledgeBaseFrameAbandonTicket:Hide();
+			HelpFrameOpenTicketAbandon:Hide();
 		end
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
 		local ticketDescription, response = ...;
@@ -201,11 +195,9 @@ function HelpFrame_OnEvent(self, event, ...)
 		-- hide the buttons that edit a ticket and show the buttons that open a ticket
 		-- the player shouldn't be able to edit or open a ticket while a response is up, but they will at least be able to view
 		-- the information on the various help pages this way
-		KnowledgeBaseFrameGMTalk:Show();
-		KnowledgeBaseFrameReportIssue:Show();
-		HelpFrameStuckOpenTicket:Show();
+		KnowledgeBaseFrameOpenTicket:Show();
 		KnowledgeBaseFrameEditTicket:Hide();
-		KnowledgeBaseFrameAbandonTicket:Hide();
+		HelpFrameOpenTicketAbandon:Hide();
 	end
 end
 
@@ -281,31 +273,35 @@ end
 
 
 --
--- HelpFrameGMTalk
---
-
-function HelpFrameGMTalk_OnShow(self)
-	needResponse = true;
-end
-
-
---
--- HelpFrameReportIssue
---
-
-function HelpFrameReportIssue_OnShow(self)
-	needResponse = false;
-end
-
-
---
 -- HelpFrameStuck
 --
 
-function HelpFrameStuck_OnShow(self)
-	needResponse = true;
+function HelpFrameStuckHearthstone_UpdateTooltip(self)
+	self:GetScript("OnEnter")(self);
 end
 
+function HelpFrameStuckHearthstone_Update(self)
+	local cooldown = self.Cooldown;
+	local start, duration, enable = GetItemCooldown(HEARTHSTONE_ITEM_ID);
+	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	if ( duration > 0 and enable == 0 ) then
+		self.IconTexture:SetVertexColor(0.4, 0.4, 0.4);
+	else
+		self.IconTexture:SetVertexColor(1, 1, 1);
+	end
+	
+	if (PlayerHasHearthstone()) then
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD");
+		self.IconTexture:SetDesaturated(false);
+	else
+		self:SetHighlightTexture(nil);
+		self.IconTexture:SetDesaturated(true);
+	end
+	
+	if (GameTooltip:GetOwner() == self) then
+		self:UpdateTooltip();
+	end
+end
 
 --
 -- HelpFrameOpenTicket

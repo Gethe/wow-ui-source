@@ -1,7 +1,7 @@
 
-INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectTalentFrame", "InspectTalentFrame", "InspectTalentFrame" };
+INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectTalentFrame", "InspectGuildFrame" };
 
-UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, xoffset = -16, yoffset = 14 };
+UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, };
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
@@ -10,7 +10,7 @@ function InspectFrame_Show(unit)
 		InspectFrame.unit = unit;
 		InspectSwitchTabs(1);
 		ShowUIPanel(InspectFrame);
-		InspectFrame_UpdateTalentTab();
+		InspectFrame_UpdateTabs();
 	end
 end
 
@@ -22,8 +22,9 @@ function InspectFrame_OnLoad(self)
 	self.unit = nil;
 
 	-- Tab Handling code
-	PanelTemplates_SetNumTabs(self, 3);
+	PanelTemplates_SetNumTabs(self, 4);
 	PanelTemplates_SetTab(self, 1);
+	self.TitleText:SetFontObject("GameFontHighlight");
 end
 
 function InspectFrame_OnEvent(self, event, ...)
@@ -43,14 +44,13 @@ function InspectFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
-			InspectNameText:SetText(UnitName(arg1));
+			InspectFrameTitleText:SetText(UnitName(arg1));
 		end
 		return;
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
 			SetPortraitTexture(InspectFramePortrait, arg1);
-			SetPortraitTexture(InspectPVPFramePortrait, arg1);
 		end
 		return;
 	end
@@ -61,9 +61,8 @@ function InspectFrame_UnitChanged(self)
 	NotifyInspect(unit);
 	InspectPaperDollFrame_OnShow(self);
 	SetPortraitTexture(InspectFramePortrait, unit);
-	SetPortraitTexture(InspectPVPFramePortrait, unit);
-	InspectNameText:SetText(UnitName(unit));
-	InspectFrame_UpdateTalentTab();
+	InspectFrameTitleText:SetText(UnitName(unit));
+	InspectFrame_UpdateTabs();
 	if ( InspectPVPFrame:IsShown() ) then
 		InspectPVPFrame_OnShow();
 	end
@@ -75,8 +74,7 @@ function InspectFrame_OnShow(self)
 	end
 	PlaySound("igCharacterInfoOpen");	
 	SetPortraitTexture(InspectFramePortrait, self.unit);
-	SetPortraitTexture(InspectPVPFramePortrait, self.unit);
-	InspectNameText:SetText(UnitName(self.unit));
+	InspectFrameTitleText:SetText(UnitName(self.unit));
 end
 
 function InspectFrame_OnHide(self)
@@ -115,10 +113,12 @@ function InspectFrameTab_OnClick(self)
 	InspectSwitchTabs(self:GetID());
 end
 
-function InspectFrame_UpdateTalentTab()
+function InspectFrame_UpdateTabs()
 	if ( not InspectFrame.unit ) then
 		return;
 	end
+	
+	-- Talent tab
 	local level = UnitLevel(InspectFrame.unit);
 	if ( level > 0 and level < 10 ) then
 		PanelTemplates_DisableTab(InspectFrame, 3);
@@ -128,5 +128,16 @@ function InspectFrame_UpdateTalentTab()
 	else
 		PanelTemplates_EnableTab(InspectFrame, 3);
 		InspectTalentFrame_UpdateTabs();
+	end
+	
+	-- Guild tab
+	local guildName = GetGuildInfo(InspectFrame.unit);
+	if ( guildName and guildName ~= "" ) then
+		PanelTemplates_EnableTab(InspectFrame, 4);
+	else
+		PanelTemplates_DisableTab(InspectFrame, 4);
+		if ( PanelTemplates_GetSelectedTab(InspectFrame) == 4 ) then
+			InspectSwitchTabs(1);
+		end	
 	end
 end

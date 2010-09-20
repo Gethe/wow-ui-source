@@ -156,6 +156,14 @@ MoneyTypeInfo["TOOLTIP"] = {
 	truncateSmallCoins = nil,
 };
 
+MoneyTypeInfo["REFORGE"] = {
+	UpdateFunc = function(self)
+		return self.staticMoney;
+	end,
+	collapse = 1,
+	showSmallerCoins = "Backpack",
+};
+
 function MoneyFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("PLAYER_TRADE_MONEY");

@@ -139,6 +139,9 @@ PAPERDOLL_STATINFO = {
 	["MASTERY"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetMastery(statFrame, unit); end
 	},
+	["ITEMLEVEL"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetItemLevel(statFrame, unit); end
+	},
 	
 	-- Base stats
 	["STRENGTH"] = {
@@ -276,6 +279,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"HEALTH",
 				"DRUIDMANA",  -- Only appears for Druids when in bear/cat form
 				"POWER",
+				"ITEMLEVEL",
 			}
 	},
 						
@@ -418,6 +422,10 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
+	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
+	self:RegisterEvent("PLAYER_BANKSLOTS_CHANGED");
+	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_READY");
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -465,7 +473,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		end
 	end
 	
-	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" ) then
+	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" or event == "BAG_UPDATE" or event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_BANKSLOTS_CHANGED" or event == "PLAYER_AVG_ITEM_LEVEL_READY") then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	elseif (event == "VARIABLES_LOADED") then
 		if (GetCVar("characterFrameCollapsed") ~= "0") then
@@ -476,6 +484,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		PaperDoll_InitStatCategories(PAPERDOLL_STATCATEGORY_DEFAULTORDER, "statCategoryOrder", "statCategoriesCollapsed", "player");
 	elseif (event == "PLAYER_TALENT_UPDATE") then
 		PaperDollFrame_SetLevel();
+		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	end
 end
 
@@ -703,20 +712,11 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		local _, unitClass = UnitClass("player");
 		unitClass = strupper(unitClass);
 		
+		-- Strength
 		if ( statIndex == 1 ) then
 			local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
 			statFrame.tooltip2 = format(statFrame.tooltip2, attackPower);
-			if ( unitClass == "WARRIOR" or unitClass == "SHAMAN" or unitClass == "PALADIN" ) then
-				statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format( STAT_BLOCK_TOOLTIP, max(0, effectiveStat*BLOCK_PER_STRENGTH-10) );
-			end
-		elseif ( statIndex == 3 ) then
-			local baseStam = min(20, effectiveStat);
-			local moreStam = effectiveStat - baseStam;
-			statFrame.tooltip2 = format(statFrame.tooltip2, (baseStam + (moreStam*HEALTH_PER_STAMINA))*GetUnitMaxHealthModifier("player"));
-			local petStam = ComputePetBonus("PET_BONUS_STAM", effectiveStat );
-			if( petStam > 0 ) then
-				statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_STAMINA,petStam);
-			end
+		-- Agility
 		elseif ( statIndex == 2 ) then
 			local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
 			if ( attackPower > 0 ) then
@@ -724,29 +724,29 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			else
 				statFrame.tooltip2 = format(statFrame.tooltip2, GetCritChanceFromAgility("player"));
 			end
+		-- Stamina
+		elseif ( statIndex == 3 ) then
+			local baseStam = min(20, effectiveStat);
+			local moreStam = effectiveStat - baseStam;
+			statFrame.tooltip2 = format(statFrame.tooltip2, (baseStam + (moreStam*HEALTH_PER_STAMINA))*GetUnitMaxHealthModifier("player"));
+		-- Intellect
 		elseif ( statIndex == 4 ) then
-			local baseInt = min(20, effectiveStat);
-			local moreInt = effectiveStat - baseInt
 			if ( UnitHasMana("player") ) then
-				statFrame.tooltip2 = format(statFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, GetSpellCritChanceFromIntellect("player"));
+				local baseInt = min(20, effectiveStat);
+				local moreInt = effectiveStat - baseInt
+				statFrame.tooltip2 = format(statFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
 			else
-				statFrame.tooltip2 = nil;
+				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
 			end
-			local petInt = ComputePetBonus("PET_BONUS_INT", effectiveStat );
-			if( petInt > 0 ) then
-				if ( not statFrame.tooltip2 ) then
-					statFrame.tooltip2 = "";
-				end
-				statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_INTELLECT,petInt);
-			end
+		-- Spirit
 		elseif ( statIndex == 5 ) then
 			-- All mana regen stats are displayed as mana/5 sec.
-			-- statFrame.tooltip2 = format(statFrame.tooltip2, GetUnitHealthRegenRateFromSpirit("player"));
 			if ( UnitHasMana("player") ) then
 				local regen = GetUnitManaRegenRateFromSpirit("player");
 				regen = floor( regen * 5.0 );
-				--statFrame.tooltip2 = statFrame.tooltip2.."\n"..format(MANA_REGEN_FROM_SPIRIT, regen);
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, regen);
+			else
+				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
 			end
 		end
 	elseif (unit == "pet") then
@@ -763,17 +763,13 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		elseif ( statIndex == 4 ) then
 			if ( UnitHasMana("pet") ) then
 				local manaGain = ((effectiveStat-20)*15+20)*GetUnitPowerModifier("pet");
-				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain, GetSpellCritChanceFromIntellect("pet"));
+				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("pet"));
 			else
-				local newLineIndex = strfind(statFrame.tooltip2, "|n")+2;
-				statFrame.tooltip2 = strsub(statFrame.tooltip2, newLineIndex);
-				statFrame.tooltip2 = format(statFrame.tooltip2, GetSpellCritChanceFromIntellect("pet"));
+				statFrame.tooltip2 = nil;
 			end
 		elseif ( statIndex == 5 ) then
 			statFrame.tooltip2 = "";
-			-- statFrame.tooltip2 = format(statFrame.tooltip2, GetUnitHealthRegenRateFromSpirit("pet"));
 			if ( UnitHasMana("pet") ) then
-				--statFrame.tooltip2 = statFrame.tooltip2.."\n"..format(MANA_REGEN_FROM_SPIRIT, GetUnitManaRegenRateFromSpirit("pet"));
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, GetUnitManaRegenRateFromSpirit("pet"));
 			end
 		end
@@ -802,7 +798,7 @@ function PaperDollFrame_SetResistance(statFrame, unit, resistanceIndex)
 		statFrame.tooltip = statFrame.tooltip..FONT_COLOR_CODE_CLOSE.." )";
 	end
 	
-	statFrame.tooltip2 = format(RESISTANCE_TOOLTIP_SUBTEXT, _G["RESISTANCE_TYPE"..resistanceIndex]);
+	statFrame.tooltip2 = format(RESISTANCE_TOOLTIP_SUBTEXT, _G["SPELL_SCHOOL"..resistanceIndex.."_CAP"], ResistancePercent(resistance, UnitLevel(unit)));
 	
 	-- TODO: Put this in the tooltip?
 	--local petBonus = ComputePetBonus( "PET_BONUS_RES", resistance );
@@ -872,19 +868,12 @@ function PaperDollFrame_SetResilience(statFrame, unit)
 		return;
 	end
 
-	--local critResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
 	local damageResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	
-	local critMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
-	local critRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
-	
-	--local damageMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
 	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageResilience);
+	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..damageResilience..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, 
-								min(critRatingBonus, critMaxRatingBonus), 
 								damageRatingBonus 
 								);
 	statFrame:Show();
@@ -1424,8 +1413,6 @@ function PaperDollFrame_SetSpellCritChance(statFrame, unit)
 		minCrit = min(minCrit, spellCrit);
 		statFrame.spellCrit[i] = spellCrit;
 	end
-	-- Add agility contribution
-	--minCrit = minCrit + GetSpellCritChanceFromIntellect();
 	minCrit = format("%.2f%%", minCrit);
 	text:SetText(minCrit);
 	statFrame.minCrit = minCrit;
@@ -1838,6 +1825,20 @@ function PaperDollFrame_SetMastery(statFrame, unit)
 	statFrame:Show();
 end
 
+function PaperDollFrame_SetItemLevel(statFrame, unit)
+	if ( unit ~= "player" ) then
+		statFrame:Hide();
+		return;
+	end
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_AVERAGE_ITEM_LEVEL));
+	local text = _G[statFrame:GetName().."StatText"];
+	local avgItemLevel = GetAverageItemLevel();
+	avgItemLevel = floor(avgItemLevel);
+	text:SetText(avgItemLevel);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = STAT_AVERAGE_ITEM_LEVEL_TOOLTIP;
+end
+
 function CharacterSpellBonusDamage_OnEnter (self)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1877,14 +1878,16 @@ end
 function CharacterSpellCritChance_OnEnter (self)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, COMBAT_RATING_NAME11).." "..GetCombatRating(11)..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, SPELL_CRIT_CHANCE).." "..self.minCrit..FONT_COLOR_CODE_CLOSE);
 	local spellCrit;
 	for i=2, MAX_SPELL_SCHOOLS do
-		spellCrit = format("%.2f", self.spellCrit[i]);
-		spellCrit = spellCrit.."%";
-		GameTooltip:AddDoubleLine(_G["DAMAGE_SCHOOL"..i], spellCrit, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GameTooltip:AddTexture("Interface\\PaperDollInfoFrame\\SpellSchoolIcon"..i);
+		spellCrit = format("%.2f%%", self.spellCrit[i]);
+		if (spellCrit ~= self.minCrit) then
+			GameTooltip:AddDoubleLine(_G["DAMAGE_SCHOOL"..i], spellCrit, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			GameTooltip:AddTexture("Interface\\PaperDollInfoFrame\\SpellSchoolIcon"..i);
+		end
 	end
+	GameTooltip:AddLine(format(CR_CRIT_SPELL_TOOLTIP, GetCombatRating(CR_CRIT_SPELL), GetCombatRatingBonus(CR_CRIT_SPELL)));
 	GameTooltip:Show();
 end
 

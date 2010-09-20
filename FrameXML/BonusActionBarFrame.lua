@@ -150,7 +150,9 @@ function ShowBonusActionBar (force)
 				BonusActionBarFrame.nextAnimBar = nil;
 				BonusActionBarFrame.animOut = false;
 				shownFrame.barToShow = nil;
-				BonusActionBarFrame.slideout:Play(true); -- Slide bar in
+				if ( not BonusActionBarFrame:IsShown() ) then
+					BonusActionBarFrame.slideout:Play(true); -- Slide bar in
+				end
 			else
 				shownFrame.nextAnimBar = MainMenuBar;
 				shownFrame.barToShow = BonusActionBarFrame;

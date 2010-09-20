@@ -52,7 +52,7 @@ function ArchaeologyFrame_Hide()
 end
 
 function ArchaeologyFrame_ShowFailed(self)
-	--CloseTradeSkill();
+	CloseResearch();
 end
 
 
@@ -116,6 +116,7 @@ end
 
 
 function ArchaeologyFrame_OnHide(self)
+	CloseResearch();
 end
 
 

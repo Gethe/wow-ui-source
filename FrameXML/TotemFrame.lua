@@ -6,6 +6,8 @@ function TotemFrame_OnLoad(self)
 	local _, class = UnitClass("player");
 	if ( class == "DEATHKNIGHT" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 65, -55);
+	elseif ( class == "PALADIN" ) then
+		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 67, -63);
 	end
 end
 

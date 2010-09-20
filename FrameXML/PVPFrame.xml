@@ -393,7 +393,7 @@
 			<!-- Tabs  Honor, Conquest, Arena Teams	-->
 			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="HONOR">
                 <Anchors>
-					<Anchor point="BOTTOMLEFT" x="11" y="-33"/>
+					<Anchor point="BOTTOMLEFT" x="11" y="-31"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
@@ -444,12 +444,21 @@
             </Button>
 			<StatusBar name="$parentConquestBar" drawLayer="BACKGROUND">
 				<Size>
-					<AbsDimension x="70" y="12"/>
+					<AbsDimension x="90" y="12"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTypeValue" relativePoint="RIGHT" x="14" y="0"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="06"/>
+						</Texture>
+					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Anchors>
@@ -531,7 +540,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentWarGameButton" inherits="MagicButtonTemplate" text="WARGAME">
+					<Button name="$parentWarGameButton" inherits="MagicButtonTemplate" text="WARGAME" motionScriptsWhileDisabled="true">
 						<Size x="130" y="22"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="PVPFrameRightButton" relativePoint="TOPLEFT"/>
@@ -541,6 +550,11 @@
 							<OnClick>
 								PVPFrame_JoinClicked(self, true, true);
 							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(WARGAME_TOOLTIP, nil, nil, nil, nil, true );
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 					<Button name="$parentBgButton1" inherits="PVPBattlegroundButtonTemplate" id="1">
@@ -733,9 +747,9 @@
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentBG1" relativePoint="TOPLEFT" x="10" y="-35"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentTopRatingText" inherits="GameFontHighlightLarge" justifyH="RIGHT" parentKey="topRatingText" text="RATING">
+						<FontString name="$parentTopRatingText" inherits="GameFontHighlight" justifyH="RIGHT" parentKey="topRatingText" text="RATING">
 							<Size>
-								<AbsDimension x="60" y="0"/>
+								<AbsDimension x="120" y="0"/>
 							</Size>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBG1" relativePoint="TOPRIGHT" x="-10" y="-35"/>
@@ -821,7 +835,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentArenaAmount" inherits="GameFontHighlightMedium" justifyH="RIGHT" parentKey="arenaAmount" text="200">
+								<FontString name="$parentArenaAmount" inherits="GameFontHighlightMedium" justifyH="RIGHT" parentKey="winAmount" text="200">
 									<Size x="45" y="12"/>
 									<Anchors>
 										<Anchor point="RIGHT"  x="-25" y="0"/>
@@ -1105,7 +1119,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 110);
+								WhoFrameColumn_SetWidth(self, 130);
 								self.sortType = "name";
 							</OnLoad>
 						</Scripts>
@@ -1418,37 +1432,15 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<!--Texture name="$parentBottomArt" file="Interface\LFGFrame\UI-LFG-FILIGREE">
-					<Size>
-						<AbsDimension x="287" y="72"/>
-					</Size>
+				<FontString name="$parentTimer" inherits="GameFontHighlightExtraSmall" parentKey="timer">
 					<Anchors>
-						<Anchor point="BOTTOM">
+						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="0" y="55"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.0" right="0.5605" top="0.0" bottom="0.5625"/>
-				</Texture-->
-				<!--FontString name="$parentYourRoleDescription" inherits="GameFontHighlightExtraSmall" text="YOUR_ROLE">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="108" y="93"/>
+								<AbsDimension x="-40" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentRoleLabel" inherits="GameFontNormalLarge" text="HEALER">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentYourRoleDescription" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString-->
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1512,6 +1504,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="PVPFramePopup_OnLoad"/>
+			<OnUpdate function="PVPFramePopup_OnUpdate"/>
 			<OnEvent function="PVPFramePopup_OnEvent"/>
 		</Scripts>
 	</Frame>

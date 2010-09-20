@@ -111,6 +111,22 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentTabardEmblem" parentKey="TabardEmblem" hidden="true" urgency="5" file="Interface\GuildFrame\GuildEmblemsLG_01">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture name="$parentTabardIconFrame" file="Interface\Spellbook\GuildSpellbooktabIconFrame" parentKey="TabardIconFrame" hidden="true">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnClick>
@@ -1303,11 +1319,8 @@
 							<OnLoad>
 								Model_OnLoad(self);
 								self:SetPosition(0, 0, 0.2); -- Small offset to position pets above the text
-								self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 							</OnLoad>
-							<OnEvent>
-								self:RefreshUnit();
-							</OnEvent>
+							<OnEvent function="Model_OnEvent"/>
 							<OnUpdate function="Model_OnUpdate"/>
 							<OnMouseUp function="Model_OnMouseUp"/>
 							<OnMouseDown function="Model_OnMouseDown"/>

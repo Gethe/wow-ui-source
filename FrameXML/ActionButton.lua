@@ -177,6 +177,7 @@ function ActionButton_Update (self)
 			self:RegisterEvent("PLAYER_TARGET_CHANGED");
 			self:RegisterEvent("TRADE_SKILL_SHOW");
 			self:RegisterEvent("TRADE_SKILL_CLOSE");
+			self:RegisterEvent("ARCHAEOLOGY_CLOSED");
 			self:RegisterEvent("PLAYER_ENTER_COMBAT");
 			self:RegisterEvent("PLAYER_LEAVE_COMBAT");
 			self:RegisterEvent("START_AUTOREPEAT_SPELL");
@@ -199,7 +200,6 @@ function ActionButton_Update (self)
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateUsable(self);
 		ActionButton_UpdateCooldown(self);
-		ActionButton_UpdateOverlayGlow(self);
 		ActionButton_UpdateFlash(self);
 	else
 		if ( self.eventsRegistered ) then
@@ -209,6 +209,7 @@ function ActionButton_Update (self)
 			self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
 			self:UnregisterEvent("PLAYER_TARGET_CHANGED");
 			self:UnregisterEvent("TRADE_SKILL_SHOW");
+			self:UnregisterEvent("ARCHAEOLOGY_CLOSED");
 			self:UnregisterEvent("TRADE_SKILL_CLOSE");
 			self:UnregisterEvent("PLAYER_ENTER_COMBAT");
 			self:UnregisterEvent("PLAYER_LEAVE_COMBAT");
@@ -272,6 +273,8 @@ function ActionButton_Update (self)
 	
 	-- Update flyout appearance
 	ActionButton_UpdateFlyout(self);
+	
+	ActionButton_UpdateOverlayGlow(self);
 
 	-- Update tooltip
 	if ( GameTooltip:GetOwner() == self ) then
@@ -360,6 +363,18 @@ function ActionButton_UpdateCooldown (self)
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 end
 
+--Overlay stuff
+local unusedOverlayGlows = {};
+local numOverlays = 0;
+function ActionButton_GetOverlayGlow()
+	local overlay = tremove(unusedOverlayGlows);
+	if ( not overlay ) then
+		numOverlays = numOverlays + 1;
+		overlay = CreateFrame("Frame", "ActionButtonOverlay"..numOverlays, UIParent, "ActionBarButtonSpellActivationAlert");
+	end
+	return overlay;
+end
+
 function ActionButton_UpdateOverlayGlow(self)
 	local spellType, id, subType  = GetActionInfo(self.action);
 	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
@@ -370,19 +385,37 @@ function ActionButton_UpdateOverlayGlow(self)
 end
 
 function ActionButton_ShowOverlayGlow(self)
-	if ( not self.overlayed ) then
-		self.overlayed = true;
-		--self.icon:SetVertexColor(0, 1, 0);
-		self.icon:SetTexCoord(0, 1, 1, 0);
+	if ( self.overlay ) then
+		if ( self.overlay.animOut:IsPlaying() ) then
+			self.overlay.animOut:Stop();
+			self.overlay.animIn:Play();
+		end
+	else
+		self.overlay = ActionButton_GetOverlayGlow();
+		local frameWidth, frameHeight = self:GetSize();
+		self.overlay:SetParent(self);
+		self.overlay:ClearAllPoints();
+		self.overlay:SetPoint("TOPLEFT", self, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2);
+		self.overlay:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2);
+		self.overlay.animIn:Play();
 	end
 end
 
 function ActionButton_HideOverlayGlow(self)
-	if ( self.overlayed ) then
-		self.overlayed = false;
-		--self.icon:SetVertexColor(1, 1, 1);
-		self.icon:SetTexCoord(0, 1, 0, 1);
+	if ( self.overlay ) then
+		if ( self.overlay.animIn:IsPlaying() ) then
+			self.overlay.animIn:Stop();
+		end
+		self.overlay.animOut:Play();
 	end
+end
+
+function ActionButton_OverlayGlowAnimOutFinished(animGroup)
+	local overlay = animGroup:GetParent();
+	local actionButton = overlay:GetParent();
+	overlay:Hide();
+	tinsert(unusedOverlayGlows, overlay);
+	actionButton.overlay = nil;
 end
 
 function ActionButton_OnEvent (self, event, ...)
@@ -432,7 +465,7 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_UpdateUsable(self);
 	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
 		ActionButton_UpdateCooldown(self);
-	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
+	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
 		ActionButton_UpdateState(self);
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
 		if ( IsAttackAction(self.action) ) then

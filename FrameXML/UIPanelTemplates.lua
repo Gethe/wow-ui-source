@@ -640,6 +640,25 @@ function ButtonFrameTemplate_ShowAttic(self)
 	self.TopTileStreaks:Show();
 end
 
+
+function ButtonFrameTemplate_HidePortrait(self)
+	self.portrait:Hide();
+	self.portraitFrame:Hide();
+	self.topLeftCorner:Show();
+	self.topBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "TOPRIGHT",  0, 0);
+	self.leftBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "BOTTOMLEFT",  0, 0);
+end
+
+
+function ButtonFrameTemplate_ShowPortrait(self)
+	self.portrait:Show();
+	self.portraitFrame:Show();
+	self.topLeftCorner:Hide();
+	self.topBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "TOPRIGHT",  0, -10);
+	self.leftBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT",  8, 0);
+end
+
+
 -- SquareButton template code
 SQUARE_BUTTON_TEXCOORDS = {
 	["UP"] = {     0.45312500,    0.64062500,     0.01562500,     0.20312500};

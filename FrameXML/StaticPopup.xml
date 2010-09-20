@@ -67,11 +67,7 @@
 						<AbsDimension x="36" y="36"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="24" y="10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="24" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -101,33 +97,40 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
+				<Layers>				
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
 							<Size>
-								<AbsDimension x="75" y="32"/>
+								<AbsDimension x="32" y="32"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="-10" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="-10" y="0"/>
 							</Anchors>
-							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
 							<Size>
-								<AbsDimension x="75" y="32"/>
+								<AbsDimension x="32" y="32"/>
 							</Size>
 							<Anchors>
-								<Anchor point="RIGHT">
+								<Anchor point="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
+							<Size>
+								<AbsDimension x="0" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="10" y="0"/>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
-							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -143,74 +146,6 @@
 					</OnTextChanged>
 					<OnLoad>
 						self:GetParent().editBox = self;
-					</OnLoad>
-				</Scripts>
-				<FontString inherits="ChatFontNormal"/>
-			</EditBox>
-			<EditBox name="$parentWideEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
-				<Size>
-					<AbsDimension x="350" y="64"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size>
-								<AbsDimension x="256" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="-10" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-							<Size>
-								<AbsDimension x="75" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="10" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size>
-								<AbsDimension x="5" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.29296875" right="1.0" top="0" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnterPressed>
-						StaticPopup_EditBoxOnEnterPressed(self);
-					</OnEnterPressed>
-					<OnEscapePressed>
-						StaticPopup_EditBoxOnEscapePressed(self);
-					</OnEscapePressed>
-					<OnLoad>
-						self:GetParent().wideEditBox = self;
 					</OnLoad>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>

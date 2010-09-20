@@ -106,6 +106,30 @@
 			</OnEnter>
 		</Scripts>
 	</Button>
+	
+	<Frame name="PlayerTalentFrameRoleIconTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.role) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.._G[self.role]..FONT_COLOR_CODE_CLOSE);
+					if (_G["TALENT_SPEC_"..self.role.."_TOOLTIP"]) then
+						GameTooltip:AddLine(_G["TALENT_SPEC_"..self.role.."_TOOLTIP"], NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+					end
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
 
 	<Button name="PetTalentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
@@ -396,18 +420,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentRoleIcon" parentKey="RoleIcon" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderBackground" x="-6" y="-9"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRoleIcon2" parentKey="RoleIcon2" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRoleIcon" relativePoint="LEFT" x="-1" />
-					</Anchors>
-				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalLeft" parentKey="Name">
 					<Size x="0" y="15"/>
 					<Anchors>
@@ -419,7 +431,17 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>		
+		<Frames>
+			<Frame name="$parentRoleIcon" inherits="PlayerTalentFrameRoleIconTemplate" parentKey="RoleIcon" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentHeaderBackground" x="-6" y="-9"/>
+				</Anchors>
+			</Frame>
+			<Frame name = "$parentRoleIcon2" inherits="PlayerTalentFrameRoleIconTemplate" parentKey="RoleIcon2" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentRoleIcon" relativePoint="LEFT" x="-1" />
+				</Anchors>
+			</Frame>
 			<Button name="$parentTalent1" inherits="PlayerTalentButtonTemplate" id="1"/>
 			<Button name="$parentTalent2" inherits="PlayerTalentButtonTemplate" id="2"/>
 			<Button name="$parentTalent3" inherits="PlayerTalentButtonTemplate" id="3"/>
@@ -638,22 +660,30 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="RoleIcon" hidden="false">
-							<Size x="19" y="19"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconBorder"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentRoleIcon2" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="RoleIcon2" hidden="true">
-							<Size x="19" y="19"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="TOPRIGHT" x="-3" y="-7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
 				<Frames>
+					<Frame name="$parentRoleIcon" inherits="PlayerTalentFrameRoleIconTemplate" parentKey="RoleIcon" hidden="false">
+						<Size x="19" y="19"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconBorder"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentRoleIcon2" inherits="PlayerTalentFrameRoleIconTemplate" parentKey="RoleIcon2" hidden="true">
+						<Size x="19" y="19"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="TOPRIGHT" x="-3" y="-7"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
+							</OnLoad>
+						</Scripts>
+					</Frame>
 					<Frame name="$parentActiveBonus1" inherits="PlayerTalentActiveBonusTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="14" y="-114"/>
@@ -908,10 +938,19 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="PlayerTalentFrameResetButton" relativePoint="LEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="PlayerTalentFrameLearnButtonFlash" inherits="UIPanelButtonHighlightTexture" parentKey="Flash" hidden="true"/>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnEnter function="PlayerTalentFrameLearnButton_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="PlayerTalentFrameLearnButton_OnClick"/>
+					<OnHide>
+						UIFrameFlashRemoveFrame(self.Flash);
+						self.Flash:Hide();
+					</OnHide>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -1058,11 +1097,8 @@
 					<OnLoad>
 						Model_OnLoad(self);
 						self:SetCamDistanceScale(1.3);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 					</OnLoad>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
+					<OnEvent function="Model_OnEvent"/>
 					<OnMouseUp function="Model_OnMouseUp"/>
 					<OnMouseDown function="Model_OnMouseDown"/>
 					<OnMouseWheel>

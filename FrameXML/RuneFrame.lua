@@ -111,7 +111,7 @@ function RuneFrame_OnEvent (self, event, ...)
 				RuneButton_ShineFadeIn(runeButton.shine)
 			end
 		else 
-			print("We got a bad rune index:", runeIndex)
+			assert(false, "Bad rune index")
 		end
 	elseif ( event == "RUNE_TYPE_UPDATE" ) then
 		local runeIndex = ...;

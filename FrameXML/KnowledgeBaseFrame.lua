@@ -130,8 +130,7 @@ function KnowledgeBaseFrame_OnEvent(self, event, ...)
 		if ( status == GMTICKET_QUEUE_STATUS_ENABLED ) then
 			GetGMTicket();
 		else
-			KnowledgeBaseFrameGMTalk:Disable();
-			KnowledgeBaseFrameReportIssue:Disable();
+			KnowledgeBaseFrameOpenTicket:Disable();
 		end
 	end
 

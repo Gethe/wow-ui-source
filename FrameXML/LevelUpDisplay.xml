@@ -130,12 +130,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine2">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine2" parentKey="gLine2">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
 					<Size x="418" y="7"/>
-					<TexCoords left="0.00195313" right="0.81835938" top="0.01953125" bottom="0.03320313"/>
 					<Animations>
 						<AnimationGroup parentKey="grow">
 							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1"/>
@@ -148,12 +147,11 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine" parentKey="gLine">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>
 					<Size x="418" y="7"/>
-					<TexCoords left="0.00195313" right="0.81835938" top="0.01953125" bottom="0.03320313"/>
 					<Animations>
 						<AnimationGroup parentKey="grow">
 							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1"/>
@@ -184,7 +182,7 @@
 								<Anchor point="BOTTOM" x="0" y="5"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" text="LEVEL_UP_YOU_REACHED">
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="reachedText">
 							<Anchors>
 								<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
 							</Anchors>
@@ -248,12 +246,11 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGoldBg">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGoldBg" parentKey="goldBG">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="53"/>
 					</Anchors>
 					<Size x="223" y="115"/>
-					<TexCoords left="0.56054688" right="0.99609375" top="0.24218750" bottom="0.46679688"/>
 				</Texture>
 				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentBlackBg">
 					<Anchors>
@@ -265,12 +262,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentDot">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentDot" parentKey="dot">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentGoldBg" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 					<Size x="21" y="22"/>
-					<TexCoords left="0.64257813" right="0.68359375" top="0.18750000" bottom="0.23046875"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -280,7 +276,7 @@
 						<Anchor point="BOTTOM" relativeTo="$parentGoldBg" relativePoint="BOTTOM" x="0" y="5"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" text="LEVEL_UP_YOU_REACHED">
+				<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="reachedText">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
 					</Anchors>

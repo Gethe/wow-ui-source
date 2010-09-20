@@ -256,6 +256,7 @@ CombatPanelOptions = {
 	showTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
 	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
+	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
 }
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
@@ -561,6 +562,7 @@ DisplayPanelOptions = {
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	showItemLevel = { text = "SHOW_ITEM_LEVEL" },
 	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
+	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -1509,11 +1511,11 @@ StatusTextPanelOptions = {
 UnitFramePanelOptions = {
 	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
 	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
-	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 	showArenaEnemyCastbar = { text = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
 	showArenaEnemyPets = { text = "SHOW_ARENA_ENEMY_PETS_TEXT" },
 	fullSizeFocusFrame = { text = "FULL_SIZE_FOCUS_FRAME_TEXT" },
+	useCompactPartyFrames = { text = "USE_RAID_STYLE_PARTY_FRAMES" },
 }
 
 function BlizzardOptionsPanel_UpdateRaidPullouts ()
@@ -1561,8 +1563,10 @@ RaidFramePanelOptions = {
 	raidFramesDisplayAggroHighlight = { text = "DISPLAY_RAID_AGGRO_HIGHLIGHT" },
 	raidFramesDisplayOnlyDispellableDebuffs = { text = "DISPLAY_ONLY_DISPELLABLE_DEBUFFS" },
 	raidFramesDisplayPowerBars = { text = "DISPLAY_POWER_BARS" },
+	raidOptionShowBorders = { text = "SHOW_BORDERS" },
 	raidFramesHeight = { text = "RAID_FRAMES_HEIGHT", minValue = 36, maxValue = 72, valueStep = 2 },
 	raidFramesWidth = { text = "RAID_FRAMES_WIDTH", minValue = 72, maxValue = 144, valueStep = 2 },
+	raidFramesDisplayClassColor = { text = "RAID_USE_CLASS_COLORS" },
 }
 
 function InterfaceOptionsRaidFramePanelSortBy_OnEvent (self, event, ...)
@@ -1647,14 +1651,20 @@ function InterfaceOptionsRaidFramePanelSortBy_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName)
+function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName, optionTarget)
 	return function(value)
 		local enabled;
 		if(value and value ~= "0") then
 			enabled = true;
 		end
-		DefaultCompactUnitFrameOptions[optionName] = enabled;
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		if ( optionTarget == "normal" or optionTarget == "all" ) then
+			DefaultCompactUnitFrameOptions[optionName] = enabled;
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		end
+		if ( optionTarget == "mini" or optionTarget == "all" ) then
+			DefaultCompactMiniFrameOptions[optionName] = enabled;
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", CompactUnitFrame_UpdateAll);
+		end
 	end
 end
 
@@ -2068,13 +2078,6 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 	UIDropDownMenu_AddButton(info);
 end
 
--- [[ Features Panel ]] --
-
-FeaturesPanelOptions = {
-	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },
-	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
-}
-
 -- [[ Help Options Panel ]] --
 
 HelpPanelOptions = {
@@ -2092,15 +2095,12 @@ LanguagesPanelOptions = {
 }
 
 function InterfaceOptionsLanguagesPanel_OnLoad (panel)
--- turn off language changing in Beta until fixed
-return;
-
-	--[[-- Check and see if we have more than one locale. If we don't, then don't register this panel.
+	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
 	if ( #({GetExistingLocales()}) <= 1 ) then
 		return;
 	end
 
-	InterfaceOptionsPanel_OnLoad(panel);]]
+	InterfaceOptionsPanel_OnLoad(panel);
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent (self, event, ...)
@@ -2166,14 +2166,4 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 			UIDropDownMenu_AddButton(createInfo);
 		end
 	end
-end
-
--- [[ Development Options Panel ]] --
-
-DevelopmentPanelOptions = {
-	useCompactPartyFrames = { text = "Use Compact Party Frames" },
-}
-
-function InterfaceOptionsDevelopmentPanel_OnLoad (panel)
-	InterfaceOptionsPanel_OnLoad(panel);
 end

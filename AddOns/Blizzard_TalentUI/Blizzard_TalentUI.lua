@@ -382,7 +382,7 @@ function PlayerTalentFrame_ShowGlyphFrame()
 	if ( GlyphFrame ) then
 		-- show/update the glyph frame
 		if ( GlyphFrame:IsShown() ) then
-			GlyphFrame_Update();
+			GlyphFrame_Update(GlyphFrame);
 		else
 			GlyphFrame:Show();
 		end
@@ -546,8 +546,8 @@ function PlayerTalentFrame_Refresh()
 	if ( selectedTab == GLYPH_TALENT_TAB ) then
 		PlayerTalentFrame_HideTalentTab();
 		PlayerTalentFrame_HidePetTalentTab();
-		PlayerTalentFrame_ShowGlyphFrame();
 		PlayerTalentFrame.pet = false;
+		PlayerTalentFrame_ShowGlyphFrame();
 	elseif (selectedTab == PET_TALENTS_TAB) then
 		PlayerTalentFrame_HideGlyphFrame();
 		PlayerTalentFrame_HideTalentTab();
@@ -607,7 +607,7 @@ function PlayerTalentFrame_Update(playerLevel)
 		PlayerTalentFrame_UpdatePetInfo(PlayerTalentFrame);
 	end
 	
-	if (selectedSpec == activeSpec) then
+	if (not PlayerTalentFrame.pet and selectedSpec == activeSpec and numTalentGroups > 1) then
 		PlayerTalentFrameTitleGlowLeft:Show();
 		PlayerTalentFrameTitleGlowRight:Show();
 		PlayerTalentFrameTitleGlowCenter:Show();
@@ -785,15 +785,17 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 		
 		-- Update roles
 		if ( role1 == "TANK" or role1 == "HEALER" or role1 == "DAMAGER") then
-			summary.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role1));
+			summary.RoleIcon.Icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role1));
 			summary.RoleIcon:Show();
+			summary.RoleIcon.role = role1;
 		else
 			summary.RoleIcon:Hide();
 		end
 		
 		if ( role2 == "TANK" or role2 == "HEALER" or role2 == "DAMAGER") then
-			summary.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
+			summary.RoleIcon2.Icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
 			summary.RoleIcon2:Show();
+			summary.RoleIcon2.role = role2;
 			summary.RoleIcon:SetPoint("BOTTOMRIGHT", summary.IconBorder, -9, -1);
 		else
 			summary.RoleIcon2:Hide();
@@ -808,19 +810,19 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 				summary.Icon:SetDesaturated(1);
 				summary.IconBorder:SetDesaturated(1);
 				summary.IconGlow:SetVertexColor(1, 1, 1);
-				summary.RoleIcon:SetDesaturated(1);
-				summary.RoleIcon2:SetDesaturated(1);
+				summary.RoleIcon.Icon:SetDesaturated(1);
+				summary.RoleIcon2.Icon:SetDesaturated(1);
 			else
 				summary.Icon:SetDesaturated(0);
 				summary.IconBorder:SetDesaturated(0);
-				summary.RoleIcon:SetDesaturated(0);
-				summary.RoleIcon2:SetDesaturated(0);
+				summary.RoleIcon.Icon:SetDesaturated(0);
+				summary.RoleIcon2.Icon:SetDesaturated(0);
 			end
 		else
 			summary.Icon:SetDesaturated(0);
 			summary.IconBorder:SetDesaturated(0);
-			summary.RoleIcon:SetDesaturated(0);
-			summary.RoleIcon2:SetDesaturated(0);
+			summary.RoleIcon.Icon:SetDesaturated(0);
+			summary.RoleIcon2.Icon:SetDesaturated(0);
 		end
 		
 		-- Update border glow
@@ -1051,15 +1053,17 @@ function PlayerTalentFramePanel_Update(self)
 		
 		-- Update roles
 		if ( role1 == "TANK" or role1 == "HEALER" or role1 == "DAMAGER") then
-			self.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmall(role1));
+			self.RoleIcon.Icon:SetTexCoord(GetTexCoordsForRoleSmall(role1));
 			self.RoleIcon:Show();
+			self.RoleIcon.role = role1;
 		else
 			self.RoleIcon:Hide();
 		end
 		
 		if ( role2 == "TANK" or role2 == "HEALER" or role2 == "DAMAGER") then
-			self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmall(role2));
+			self.RoleIcon2.Icon:SetTexCoord(GetTexCoordsForRoleSmall(role2));
 			self.RoleIcon2:Show();
+			self.RoleIcon2.role = role2;
 		else
 			self.RoleIcon2:Hide();
 		end
@@ -1099,8 +1103,8 @@ function PlayerTalentFramePanel_Update(self)
 		self.HeaderBorder:SetDesaturated(1);
 		self.Name:SetFontObject(GameFontDisable);
 		if (self.RoleIcon) then
-			self.RoleIcon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
-			self.RoleIcon2:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
+			self.RoleIcon.Icon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
+			self.RoleIcon2.Icon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
 		end
 	elseif (not self.pet) then
 		self.GlowLeft:SetDesaturated(0);
@@ -1114,8 +1118,8 @@ function PlayerTalentFramePanel_Update(self)
 		self.HeaderBorder:SetDesaturated(0);
 		self.Name:SetFontObject(GameFontNormal);
 		if (self.RoleIcon) then
-			self.RoleIcon:SetTexture("Interface\\LFGFrame\\LFGRole");
-			self.RoleIcon2:SetTexture("Interface\\LFGFrame\\LFGRole");
+			self.RoleIcon.Icon:SetTexture("Interface\\LFGFrame\\LFGRole");
+			self.RoleIcon2.Icon:SetTexture("Interface\\LFGFrame\\LFGRole");
 		end
 	end
 	
@@ -1217,6 +1221,14 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			else
 				PlayerTalentFrameLearnButtonTutorial:Hide();
 			end
+			
+			if (previewPointsSpent > 0) then
+				UIFrameFlash(PlayerTalentFrameLearnButton.Flash, 0.75, 0.75, -1, nil);
+			else
+				UIFrameFlashRemoveFrame(PlayerTalentFrameLearnButton.Flash);
+				PlayerTalentFrameLearnButton.Flash:Hide();
+			end
+			
 		else
 			PlayerTalentFrameLearnButton:Disable();
 			PlayerTalentFrameResetButton:Disable();

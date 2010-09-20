@@ -86,6 +86,7 @@ function SpellBookFrame_OnLoad(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");	
 	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	-- Init page nums
@@ -121,8 +122,8 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			SpellBookFrame_Update();
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
-		local arg1 = ...;
-		local flashFrame = _G["SpellBookSkillLineTab"..arg1.."Flash"];
+		local spellID, tabNum = ...;
+		local flashFrame = _G["SpellBookSkillLineTab"..tabNum.."Flash"];
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			return;
 		else
@@ -131,8 +132,10 @@ function SpellBookFrame_OnEvent(self, event, ...)
 				SpellBookFrame.flashTabs = 1;
 			end
 		end
-	elseif  event == "SKILL_LINES_CHANGED"  then
+	elseif (event == "SKILL_LINES_CHANGED") then
 		SpellBook_UpdateProfTab();
+	elseif (event == "PLAYER_GUILD_UPDATE") then
+		SpellBookFrame_UpdateSkillLineTabs();
 	end
 end
 
@@ -346,7 +349,7 @@ function SpellButton_OnEvent(self, event, ...)
 		SpellButton_UpdateButton(self);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		SpellButton_UpdateSelection(self);
-	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" ) then
+	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" or event == "ARCHAEOLOGY_CLOSED" ) then
 		SpellButton_UpdateSelection(self);
 	elseif ( event == "PET_BAR_UPDATE" ) then
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
@@ -362,6 +365,7 @@ function SpellButton_OnShow(self)
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
+	self:RegisterEvent("ARCHAEOLOGY_CLOSED");
 	self:RegisterEvent("PET_BAR_UPDATE");
 
 	--SpellButton_UpdateButton(self);
@@ -374,6 +378,7 @@ function SpellButton_OnHide(self)
 	self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:UnregisterEvent("TRADE_SKILL_SHOW");
 	self:UnregisterEvent("TRADE_SKILL_CLOSE");
+	self:UnregisterEvent("ARCHAEOLOGY_CLOSED");
 	self:UnregisterEvent("PET_BAR_UPDATE");
 end
  
@@ -471,7 +476,7 @@ function SpellButton_UpdateButton(self)
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 1;
 	end
-	local temp, texture, offset, numSlots = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+	local temp, texture, offset, numSlots = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
 	SpellBookFrame.selectedSkillLineOffset = offset;
 	
@@ -713,7 +718,7 @@ function SpellBook_GetSpellBookSlot(spellButton)
 		return id + (SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[BOOKTYPE_PET] - 1));
 	else
 		local relativeSlot = id + ( SPELLS_PER_PAGE * (SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] - 1));
-		if (relativeSlot <= SpellBookFrame.selectedSkillLineNumSlots) then
+		if ( SpellBookFrame.selectedSkillLineNumSlots and relativeSlot <= SpellBookFrame.selectedSkillLineNumSlots) then
 			local slot = SpellBookFrame.selectedSkillLineOffset + relativeSlot;
 			local slotType = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 			return slot, slotType;
@@ -734,7 +739,7 @@ function SpellBook_GetCurrentPage()
 		maxPages = ceil(GetNumCompanions(SpellBookCompanionsFrame.mode)/NUM_COMPANIONS_PER_PAGE);
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_SPELL) then
 		currentPage = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
-		local name, texture, offset, numSlots = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
+		local name, texture, offset, numSlots = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 		maxPages = ceil(numSlots/SPELLS_PER_PAGE);
 	end
 	return currentPage, maxPages;
@@ -763,10 +768,6 @@ function SpellBook_ReleaseAutoCastShine (shine)
 	shine:Hide();
 	AutoCastShine_AutoCastStop(shine);
 	tinsert(shineGet, shine);
-end
-
-function SpellBook_GetTabInfo(skillLine)
-	return GetSpellTabInfo(skillLine);
 end
 
 ----------------------------------------------------------------------
@@ -1067,23 +1068,36 @@ end
 --------------------- Update functions for tabs --------------------
 -------------------------------------------------------------------
 
-function SpellBook_UpdatePlayerTab()
-
-	-- Setup skillline tabs
-	local name, texture, offset, numSlots = SpellBook_GetTabInfo(SpellBookFrame.selectedSkillLine);
-	SpellBookFrame.selectedSkillLineOffset = offset;
-	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
-	
-	SpellBookFrame_UpdatePages();
-
+function SpellBookFrame_UpdateSkillLineTabs()
 	local numSkillLineTabs = GetNumSpellTabs();
 	for i=1, MAX_SKILLLINE_TABS do
 		local skillLineTab = _G["SpellBookSkillLineTab"..i];
+		local prevTab = _G["SpellBookSkillLineTab"..i-1];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			local name, texture = GetSpellTabInfo(i);
+			local name, texture, _, _, isGuild = GetSpellTabInfo(i);
 			skillLineTab:SetNormalTexture(texture);
 			skillLineTab.tooltip = name;
 			skillLineTab:Show();
+			
+			-- Guild tab gets additional space
+			if (prevTab) then
+				if (isGuild) then
+					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -46);
+				else
+					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -17);
+				end
+			end
+			
+			-- Guild tab must show the Guild Banner
+			if (isGuild) then
+				skillLineTab:SetNormalTexture("Interface\\SpellBook\\GuildSpellbooktabBG");
+				skillLineTab.TabardEmblem:Show();
+				skillLineTab.TabardIconFrame:Show();
+				SetLargeGuildTabardTextures("player", skillLineTab.TabardEmblem, skillLineTab:GetNormalTexture(), skillLineTab.TabardIconFrame);
+			else
+				skillLineTab.TabardEmblem:Hide();
+				skillLineTab.TabardIconFrame:Hide();
+			end
 
 			-- Set the selected tab
 			if ( SpellBookFrame.selectedSkillLine == i ) then
@@ -1097,6 +1111,18 @@ function SpellBook_UpdatePlayerTab()
 			skillLineTab:Hide();
 		end
 	end
+end
+
+function SpellBook_UpdatePlayerTab()
+
+	-- Setup skillline tabs
+	local name, texture, offset, numSlots = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
+	SpellBookFrame.selectedSkillLineOffset = offset;
+	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
+	
+	SpellBookFrame_UpdatePages();
+
+	SpellBookFrame_UpdateSkillLineTabs();
 
 	SpellBookFrame_UpdateSpells();
 end
@@ -1136,6 +1162,8 @@ function UpdateProfessionButton(self)
 	self.spellString:SetText(spellName);
 	self.subSpellString:SetText(subSpellName);	
 	self.iconTexture:SetTexture(texture);
+	
+	SpellButton_UpdateSelection(self);
 end
 
 function FormatProfession(frame, index)

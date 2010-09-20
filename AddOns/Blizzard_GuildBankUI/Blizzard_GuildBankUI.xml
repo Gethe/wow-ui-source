@@ -14,7 +14,7 @@
 				end
 				if ( IsModifiedClick("SPLITSTACK") ) then
 					local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
-					if ( not locked ) then
+					if ( not locked and count > 1) then
 						OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
 					end
 					return;

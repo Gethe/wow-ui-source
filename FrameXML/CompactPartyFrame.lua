@@ -2,18 +2,22 @@ function CompactPartyFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE")
 	
-	local unitFrame = _G[self:GetName().."MemberSelf"];
+	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
+	
+	local unitFrame = _G[self:GetName().."Member1"];
 	CompactUnitFrame_SetUnit(unitFrame, "player");
 	CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
 	CompactUnitFrame_SetUpdateAllEvent(unitFrame, "PARTY_MEMBERS_CHANGED");
 	
-	for i=1, MEMBERS_PER_RAID_GROUP - 1 do
+	for i=2, MEMBERS_PER_RAID_GROUP do
 		local unitFrame = _G[self:GetName().."Member"..i];
-		CompactUnitFrame_SetUnit(unitFrame, "party"..i);
+		CompactUnitFrame_SetUnit(unitFrame, "party"..(i-1));
 		CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
 		CompactUnitFrame_SetUpdateAllEvent(unitFrame, "PARTY_MEMBERS_CHANGED");
 	end
 	
+	self.movable = true;
+	self.title:SetText(PARTY);
 	CompactPartyFrame_UpdateShown(self);
 	CompactPartyFrame_ResetPosition(self);
 end

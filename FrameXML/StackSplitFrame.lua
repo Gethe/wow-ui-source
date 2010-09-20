@@ -4,16 +4,12 @@ function OpenStackSplitFrame(maxStack, parent, anchor, anchorTo)
 		StackSplitFrame.owner.hasStackSplit = 0;
 	end
 	
-	if ( not maxStack ) then
-		maxStack = 0;
-	end
-
-	StackSplitFrame.maxStack = maxStack;
-	if ( StackSplitFrame.maxStack < 2 ) then
+	if ( not maxStack or maxStack < 1 ) then
 		StackSplitFrame:Hide();
 		return;
 	end
 
+	StackSplitFrame.maxStack = maxStack;
 	StackSplitFrame.owner = parent;
 	parent.hasStackSplit = 1;
 	StackSplitFrame.split = 1;

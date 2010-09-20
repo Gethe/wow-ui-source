@@ -1,12 +1,17 @@
-
-SHARD_BAR_POWER_INDEX = 7;
 SHARD_BAR_NUM_SHARDS = 3;
+
 
 
 function ShardBar_OnRecharge(self)
 	UIFrameFadeOut(self.shardGlow, 0.05);
 end
 
+local shardFadeInfo={
+				mode = "IN",
+				timeToFade = 0.2,
+				finishedFunc = ShardBar_OnRecharge,
+				finishedArg1 = "",
+			}
 
 function ShardBar_ToggleShard(self, visible)
 	if visible then
@@ -14,13 +19,14 @@ function ShardBar_ToggleShard(self, visible)
 		self.shardGlow:Hide();
 		self.shardSmoke1.animUsed:Play();
 		self.shardSmoke2.animUsed:Play();
-	else	
-		local shardFadeInfo={
-						mode = "IN",
-						timeToFade = 0.2,
-						finishedFunc = ShardBar_OnRecharge,
-						finishedArg1 = self,
-					}	
+	else
+		for a,b in pairs(shardFadeInfo) do 
+			shardFadeInfo[a] = nil;
+		end
+		shardFadeInfo.mode = "IN";
+		shardFadeInfo.timeToFade = 0.2;
+		shardFadeInfo.finishedFunc = ShardBar_OnRecharge;
+		shardFadeInfo.finishedArg1 = self;
 		UIFrameFade(self.shardGlow, shardFadeInfo);	
 		UIFrameFadeIn(self.shardFill, 0.2);		
 	end
@@ -28,7 +34,7 @@ end
 
 
 function ShardBar_Update()
-	local numShards = UnitPower( ShardBarFrame:GetParent().unit, SHARD_BAR_POWER_INDEX );
+	local numShards = UnitPower( ShardBarFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
 	for i=1,SHARD_BAR_NUM_SHARDS do
 		local shard = _G["ShardBarFrameShard"..i];
 		local isShown = shard.shardFill:IsVisible() == 1;

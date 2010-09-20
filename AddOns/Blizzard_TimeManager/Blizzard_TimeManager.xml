@@ -303,7 +303,7 @@
 				<FontString name="TimeManagerClockTicker" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
+							<Offset x="3" y="1"/>
 						</Anchor>
 					</Anchors>
 				</FontString>

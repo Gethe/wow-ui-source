@@ -3,6 +3,14 @@
 --
 
 local strsplit = strsplit;
+local select = select;
+local tonumber = tonumber;
+local type = type;
+local floor = math.floor;
+local ceil = math.ceil;
+local min = math.min;
+local max = math.max;
+local abs = math.abs;
 
 --[[
 List of the various configuration attributes
@@ -77,11 +85,12 @@ local function getRelativePointAnchor( point )
 end
 
 local function setAttributesWithoutResponse(self, ...)
+	local oldIgnore = self:GetAttribute("_ignore");
 	self:SetAttribute("_ignore", "attributeChanges");
 	for	i = 1, select('#', ...), 2 do
 		self:SetAttribute(select(i, ...));
 	end
-	self:SetAttribute("_ignore", nil);
+	self:SetAttribute("_ignore", oldIgnore);
 end
 
 local CallRestrictedClosure = CallRestrictedClosure;
@@ -723,8 +732,9 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		button = self:GetAttribute("child"..deadIndex)
 	end
 
+	local consolidateProxy = nil;
 	if ( consolidateTable ) then
-		local consolidateProxy = self:GetAttribute("consolidateProxy");
+		consolidateProxy = self:GetAttribute("consolidateProxy");
 		if ( type(consolidateProxy) == 'STRING' ) then
 			local template, widgetType = extractTemplateInfo(consolidateProxy, "Button");
 			if ( template ) then
@@ -749,7 +759,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		end
 	end
 	if ( weaponPosition ) then
-		local hasMainHandEnchant, hasOffHandEnchant, _;
+		local hasMainHandEnchant, hasOffHandEnchant, _, tempEnchant1, tempEnchant2;
 		hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = GetWeaponEnchantInfo();
 		
 		if ( hasOffHandEnchant ) then
@@ -757,7 +767,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 			if ( not tempEnchant2 ) then
 				local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
 				if ( template ) then
-					tempEnchant1 = CreateFrame(widgetType, name and name.."TempEnchant2", self, template);
+					tempEnchant2 = CreateFrame(widgetType, name and name.."TempEnchant2", self, template);
 					setAttributesWithoutResponse(self, "tempEnchant2", tempEnchant2);
 				end
 			end
@@ -767,13 +777,13 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 				tempEnchant2:SetAttribute("target-slot", slot);
 				tempEnchant2:SetID(slot);
 				if ( weaponPosition == 0 ) then
-					tinsert(buttons, tempEnchant1);
+					tinsert(buttons, tempEnchant2);
 				else
-					tinsert(buttons, weaponPosition, tempEnchant1);
+					tinsert(buttons, weaponPosition, tempEnchant2);
 				end
 			end
 		else
-			local tempEnchant2 = self:GetAttribute("tempEnchant2");
+			tempEnchant2 = self:GetAttribute("tempEnchant2");
 			if ( tempEnchant2 and type(tempEnchant2.Hide) == 'function' ) then
 				tempEnchant2:Hide();
 			end
@@ -800,7 +810,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 				end
 			end
 		else
-			local tempEnchant1 = self:GetAttribute("tempEnchant1");
+			tempEnchant1 = self:GetAttribute("tempEnchant1");
 			if ( tempEnchant1 and type(tempEnchant1.Hide) == 'function' ) then
 				tempEnchant1:Hide();
 			end
@@ -809,23 +819,23 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 
 	local display = #buttons
 	if ( wrapAfter and maxWraps ) then
-		display = math.min(display, wrapAfter * maxWraps);
+		display = min(display, wrapAfter * maxWraps);
 	end
 
 	local left, right, top, bottom = math.huge, 0, 0, math.huge;
 	for index=1,display do
 		local button = buttons[index];
-		local tick, cycle = math.floor((index - 1) % wrapAfter), math.floor((index - 1) / wrapAfter);
+		local tick, cycle = floor((index - 1) % wrapAfter), floor((index - 1) / wrapAfter);
 		button:SetPoint(point, self, cycle * wrapXOffset + tick * xOffset, cycle * wrapYOffset + tick * yOffset);
 		button:Show();
-		left = math.min(left, button:GetLeft() or math.huge);
-		right = math.max(right, button:GetRight() or 0);
-		top = math.max(top, button:GetTop() or 0);
-		bottom = math.min(bottom, button:GetBottom() or math.huge);
+		left = min(left, button:GetLeft() or math.huge);
+		right = max(right, button:GetRight() or 0);
+		top = max(top, button:GetTop() or 0);
+		bottom = min(bottom, button:GetBottom() or math.huge);
 	end
 	if ( display >= 1 ) then
-		self:SetWidth(math.max(right - left, minWidth));
-		self:SetHeight(math.max(top - bottom, minHeight));
+		self:SetWidth(max(right - left, minWidth));
+		self:SetHeight(max(top - bottom, minHeight));
 	else
 		self:SetWidth(minWidth);
 		self:SetHeight(minHeight);
@@ -998,7 +1008,7 @@ function SecureAuraHeader_Update(self)
 				aura.index = i;
 				local targetList = sortingTable;
 				if ( consolidateTable and aura.shouldConsolidate ) then
-					if ( not aura.expires or duration <= 30 or (aura.expires - time < math.max(consolidateThreshold, duration * consolidateFraction)) ) then
+					if ( not aura.expires or duration <= 30 or (aura.expires - time < max(consolidateThreshold, duration * consolidateFraction)) ) then
 						targetList = consolidateTable;
 					end
 				end

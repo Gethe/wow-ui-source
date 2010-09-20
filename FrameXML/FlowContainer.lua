@@ -2,6 +2,10 @@ function FlowContainer_Initialize(container)
 	container.flowFrames = {};
 	--Default orientation to horizontal for now.
 	FlowContainer_SetOrientation(container, "horizontal");
+	
+	--So far, we haven't actually used any space.
+	container.flowMaxPrimaryUsed = 0;
+	container.flowMaxSecondaryUsed = 0;
 end
 
 function FlowContainer_PauseUpdates(container)
@@ -73,6 +77,14 @@ function FlowContainer_RemoveAllObjects(container)
 	container.flowFrames = {};	--GC no worse than a table.wipe here.
 end
 
+function FlowContainer_GetUsedBounds(container)	--Return x, y
+	if ( container.flowOrientation == "horizontal" ) then
+		return container.flowMaxSecondaryUsed, container.flowMaxPrimaryUsed;
+	else
+		return container.flowMaxPrimaryUsed, container.flowMaxSecondaryUsed;
+	end
+end
+
 --:GetWidth() and :GetHeight() are used in this function. --meta-comment: Comment added in case anyone ever searches all files for these.
 function FlowContainer_DoLayout(container)
 	if ( container.flowPauseUpdates ) then
@@ -97,6 +109,7 @@ function FlowContainer_DoLayout(container)
 	local currentSecondaryLine, currentPrimaryLine = 1, 1;
 	local currentSecondaryOffset, currentPrimaryOffset = 0, 0;
 	local lineMaxSize = 0;
+	local maxSecondaryOffset = 0;
 	local atomicAddStart = nil;
 	local atomicAtBeginning = nil;
 	local i = 1;
@@ -139,6 +152,11 @@ function FlowContainer_DoLayout(container)
 				end
 				
 				currentSecondaryOffset = currentSecondaryOffset + object["Get"..primaryDirection](object) + primarySpacing;
+				
+				if ( not atomicAddStart ) then	--If we're in the middle of an atomic add, we'll save off the last part when we finish the add.
+					maxSecondaryOffset = max(maxSecondaryOffset, currentSecondaryOffset);
+				end
+				
 				currentPrimaryLine = currentPrimaryLine + 1;
 				lineMaxSize = max(lineMaxSize, object["Get"..secondaryDirection](object));
 			elseif ( objectType == "number" ) then	--This is a spacer.
@@ -150,11 +168,16 @@ function FlowContainer_DoLayout(container)
 					end
 					atomicAddStart = i + 1;
 				elseif ( object == "endatomic" ) then
+					maxSecondaryOffset = max(maxSecondaryOffset, currentSecondaryOffset);	--We weren't updating the max offset while in an atomic add, so we have to do it now.
 					atomicAddStart = nil;
 					atomicAtBeginning = nil;
 				end
 			end
 			i = i + 1;
 		end		
-	end	
+	end
+	
+	--Save off how much we actually used.
+	container.flowMaxPrimaryUsed = currentPrimaryOffset + lineMaxSize;
+	container.flowMaxSecondaryUsed = maxSecondaryOffset;
 end
