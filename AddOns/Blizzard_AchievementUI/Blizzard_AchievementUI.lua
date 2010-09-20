@@ -633,8 +633,9 @@ function AchievementFrameCategories_SelectButton (button)
 	if ( achievementFunctions.clearFunc ) then
 		achievementFunctions.clearFunc();
 	end
-	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 	achievementFunctions.updateFunc();
+	
+	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 end
 
 function AchievementFrameAchievements_OnShow()
@@ -911,8 +912,6 @@ function AchievementFrameAchievements_ToggleView()
 			button.glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
 		end
 	end
-	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
-	AchievementFrameAchievements_Update();
 end
 
 -- [[ Achievement Icon ]] --
@@ -968,9 +967,7 @@ function AchievementButton_UpdatePlusMinusTexture (button)
 	local display = false;
 	if ( GetAchievementNumCriteria(id) ~= 0 ) then
 		display = true;
-	elseif ( button.completed and GetPreviousAchievement(id) ) then
-		display = true;
-	elseif ( not button.completed and GetAchievementGuildRep(id) ) then
+	elseif ( GetPreviousAchievement(id) and button.completed ) then
 		display = true;
 	end
 	
@@ -1269,22 +1266,24 @@ end
 
 function AchievementButton_DisplayObjectives (button, id, completed)
 	local objectives = AchievementFrameAchievementsObjectives;
-	local topAnchor = button.hiddenDescription;
+	
 	objectives:ClearAllPoints();
 	objectives:SetParent(button);
 	objectives:Show();
 	objectives.completed = completed;
-	local height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
+	local height = 0;
 	if ( objectives.id == id ) then
 		local ACHIEVEMENTMODE_CRITERIA = 1;
 		if ( objectives.mode == ACHIEVEMENTMODE_CRITERIA ) then
 			if ( objectives:GetHeight() > 0 ) then
-				objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
+				objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
 				objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, 0);
 				objectives:SetPoint("RIGHT", "$parentShield", "LEFT", -10, 0);
 			end
+			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 		else
-			objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
+			objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
+			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 		end
 	elseif ( completed and GetPreviousAchievement(id) ) then
 		objectives:SetHeight(0);
@@ -1293,7 +1292,8 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetMiniAchievements();
 		AchievementButton_ResetMetas();
 		AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
-		objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
+		objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
+		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	else
 		objectives:SetHeight(0);	
 		AchievementButton_ResetCriteria();
@@ -1302,13 +1302,13 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetMetas();
 		AchievementObjectives_DisplayCriteria(objectives, id);
 		if ( objectives:GetHeight() > 0 ) then
-			objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
+			objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
 			objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, -25);
 			objectives:SetPoint("RIGHT", "$parentShield", "LEFT", -10, 0);
 		end
+		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	end
-	height = height + objectives:GetHeight();
-	
+
 	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT or button.numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED ) then		
 		button.hiddenDescription:Show();
 		button.description:Hide();
@@ -1577,31 +1577,10 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		return;
 	end
 
-	local initialOffset = 0;
 	local ACHIEVEMENTMODE_CRITERIA = 1;
-	local numRows = 0;
+	local numCriteria = GetAchievementNumCriteria(id);
 	
-	local requiresRep, hasRep, repLevel;
-	objectivesFrame.repCriteria:Hide();
-	if ( not objectivesFrame.completed ) then
-		requiresRep, hasRep, repLevel = GetAchievementGuildRep(id);
-		if ( requiresRep ) then
-			initialOffset = -ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT;
-			local gender = UnitSex("player");
-			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
-			objectivesFrame.repCriteria:SetFormattedText(ACHIEVEMENT_REQUIRES_GUILD_REPUTATION, factionStandingtext);
-			if ( hasRep ) then
-				objectivesFrame.repCriteria:SetTextColor(0, 1, 0);
-			else
-				objectivesFrame.repCriteria:SetTextColor(1, 0, 0);
-			end
-			objectivesFrame.repCriteria:Show();
-			numRows = 1;
-		end
-	end
-
-	local numCriteria = GetAchievementNumCriteria(id);	
-	if ( numCriteria == 0 and not requiresRep ) then
+	if ( numCriteria == 0 ) then
 		objectivesFrame.mode = ACHIEVEMENTMODE_CRITERIA;
 		objectivesFrame:SetHeight(0);
 		return;
@@ -1612,6 +1591,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	-- Why textStrings? You try naming anything just "string" and see how happy you are.
 	local textStrings, progressBars, metas = 0, 0, 0;
 	
+	local numRows = 0;
 	local maxCriteriaWidth = 0;
 	local yPos;
 	for i = 1, numCriteria do	
@@ -1622,14 +1602,14 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			local metaCriteria = AchievementButton_GetMeta(metas);
 			
 			if ( metas == 1 ) then
-				metaCriteria:SetPoint("TOP", objectivesFrame, "TOP", 0, -4 + initialOffset);
+				metaCriteria:SetPoint("TOP", objectivesFrame, "TOP", 0, -4);
 				numRows = numRows + 2;
 			elseif ( math.fmod(metas, 2) == 0 ) then
 				yPos = -((metas/2 - 1) * 28) - 8;
-				metaCriteriaTable[metas-1]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yPos + initialOffset);
-				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 210, yPos + initialOffset);
+				metaCriteriaTable[metas-1]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yPos);
+				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 210, yPos);
 			else
-				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, -(math.ceil(metas/2 - 1) * 28) - 8 + initialOffset);
+				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, -(math.ceil(metas/2 - 1) * 28) - 8);
 				numRows = numRows + 2;
 			end
 			
@@ -1675,7 +1655,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			local progressBar = AchievementButton_GetProgressBar(progressBars);
 			
 			if ( progressBars == 1 ) then
-				progressBar:SetPoint("TOP", objectivesFrame, "TOP", 4, -4 + initialOffset);
+				progressBar:SetPoint("TOP", objectivesFrame, "TOP", 4, -4);
 			else
 				progressBar:SetPoint("TOP", progressBarTable[progressBars-1], "BOTTOM", 0, 0);
 			end
@@ -1694,9 +1674,9 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			criteria:ClearAllPoints();
 			if ( textStrings == 1 ) then
 				if ( numCriteria == 1 ) then
-					criteria:SetPoint("TOP", objectivesFrame, "TOP", -14, initialOffset);
+					criteria:SetPoint("TOP", objectivesFrame, "TOP", -14, 0);
 				else
-					criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 0, initialOffset);
+					criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 0, 0);
 				end
 				
 			else
@@ -1761,7 +1741,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				
 				if ( rows == 1 ) then
 					criteriaTable[i]:ClearAllPoints();
-					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns), initialOffset);
+					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns), 0);
 				else
 					criteriaTable[i]:ClearAllPoints();
 					criteriaTable[i]:SetPoint("TOPLEFT", criteriaTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
@@ -1771,7 +1751,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		end
 	end
 
-	if ( metas > 0 or progressBars > 0 ) then
+	if ( metas > 0 ) then
 		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_METAROWHEIGHT + 10);
 	else
 		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT);
@@ -2241,7 +2221,7 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 		return;
 	end
 	
-	local _, _, _, achCompleted, _, _, _, _, flags = GetAchievementInfo(id);
+	local _, _, _, achCompleted = GetAchievementInfo(id);
 	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
@@ -2250,7 +2230,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	
 	local tabIndex = 1;
 	local category = GetAchievementCategory(id);
-	if ( bit.band(flags, ACHIEVEMENT_FLAGS_GUILD) == ACHIEVEMENT_FLAGS_GUILD ) then
+	local _, parentCategory = GetCategoryInfo(category);
+	if ( parentCategory == GUILD_CATEGORY_ID ) then
 		tabIndex = 2;
 	end
 	

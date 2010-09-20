@@ -1,8 +1,6 @@
 UIPanelWindows["GuildFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 local GUILDFRAME_PANELS = { };
 local GUILDFRAME_POPUPS = { };
-local BUTTON_WIDTH_WITH_SCROLLBAR = 298;
-local BUTTON_WIDTH_NO_SCROLLBAR = 320;
 
 function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
@@ -19,7 +17,6 @@ function GuildFrame_OnLoad(self)
 	QueryGuildXP();
 	QueryGuildNews();
 	GuildRoster();
-	OpenCalendar();		-- to get event data
 	GuildFrame_UpdateTabard();
 	GuildFrame_UpdateLevel();
 	GuildFrame_UpdateXP();
@@ -154,29 +151,6 @@ function GuildFrame_LinkItem(button, itemID, itemLink)
 			ChatFrame_OpenChat(itemLink);
 		end
 	end
-end
-
-function GuildFrame_UpdateScrollFrameWidth(scrollFrame)
-	local newButtonWidth;
-	local buttons = scrollFrame.buttons;
-
-	if ( scrollFrame.scrollBar:IsShown() ) then
-		if ( scrollFrame.wideButtons ) then
-			newButtonWidth = BUTTON_WIDTH_WITH_SCROLLBAR;
-		end
-	else
-		if ( not scrollFrame.wideButtons ) then
-			newButtonWidth = BUTTON_WIDTH_NO_SCROLLBAR;
-		end
-	end
-	if ( newButtonWidth ) then
-		for i = 1, #buttons do
-			buttons[i]:SetWidth(newButtonWidth);
-		end
-		scrollFrame.wideButtons = not scrollFrame.wideButtons;
-		scrollFrame:SetWidth(newButtonWidth);
-		scrollFrame.scrollChild:SetWidth(newButtonWidth);
-	end	
 end
 
 --****** Panels/Popups **********************************************************
@@ -374,8 +348,10 @@ function GuildMainFrame_OnLoad(self)
 	-- faction icon
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
 		GuildNewPerksFrameFaction:SetTexCoord(0.42871094, 0.53808594, 0.60156250, 0.87890625);
+		--SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPThrallmarFavor");
 	else  -- alliance
 		GuildNewPerksFrameFaction:SetTexCoord(0.31640625, 0.42675781, 0.60156250, 0.88281250);
+		--SetPortraitToTexture("GuildFramePortrait", "Interface\\Icons\\Spell_Misc_HellifrePVPHonorHoldFavor");
 	end
 	-- select its tab
 	GuildFrame_TabClicked(GuildFrameTab1);
@@ -419,7 +395,7 @@ function GuildMainFrame_UpdateNewsEvents()
 	if ( GetGuildRosterMOTD() ~= "" ) then
 		numNews = numNews + 1;
 	end
-	local numEvents = CalendarGetNumGuildEvents();
+	local numEvents = 0;
 
 	-- figure out a place to divide news from events
 	local divider;
@@ -451,7 +427,6 @@ function GuildMainFrame_UpdateNewsEvents()
 	end
 	for i = 1, divider - 1 do
 		buttons[i]:SetHeight(18);
-		buttons[i].isEvent = nil;
 	end
 	GuildNews_Update(true, divider - 1);
 	
@@ -469,18 +444,14 @@ function GuildMainFrame_UpdateNewsEvents()
 		GuildUpdatesNoEvents:Hide();
 	end
 	for i = 1, 9 - divider do
-		button = buttons[divider + i];
+		button = _G["GuildUpdatesButton"..(divider + i)];
+		button:SetHeight(18);
 		if ( i > numEvents ) then
 			button:Hide();
 		else
-			button:SetHeight(18);
-			-- check if this button used to show news
-			if ( not button.isEvent ) then
-				button.isEvent = true;
-				button.icon:Show();
-				button.dash:Hide();
-			end
-			GuildInfoEvents_SetButton(button, i);
+			button.text:SetText("Placeholder guild event #"..i);
+			button.icon:SetTexture("Interface\\LFGFrame\\LFGIcon-NAXXRAMAS");
+			button.icon:Show();
 			button:Show();
 		end
 	end

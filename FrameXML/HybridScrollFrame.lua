@@ -81,7 +81,7 @@ function HybridScrollFrameScrollButton_OnClick (self, button, down)
 end
 
 function HybridScrollFrame_Update (self, totalHeight, displayedHeight)
-	local range = floor(totalHeight - self:GetHeight() + 0.5);
+	local range = totalHeight - self:GetHeight();
 	if ( range > 0 and self.scrollBar ) then
 		local minVal, maxVal = self.scrollBar:GetMinMaxValues();
 		if ( math.floor(self.scrollBar:GetValue()) >= math.floor(maxVal) ) then

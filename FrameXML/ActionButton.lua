@@ -360,18 +360,6 @@ function ActionButton_UpdateCooldown (self)
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 end
 
---Overlay stuff
-local unusedOverlayGlows = {};
-local numOverlays = 0;
-function ActionButton_GetOverlayGlow()
-	local overlay = tremove(unusedOverlayGlows);
-	if ( not overlay ) then
-		numOverlays = numOverlays + 1;
-		overlay = CreateFrame("Frame", "ActionButtonOverlay"..numOverlays, UIParent, "ActionBarButtonSpellActivationAlert");
-	end
-	return overlay;
-end
-
 function ActionButton_UpdateOverlayGlow(self)
 	local spellType, id, subType  = GetActionInfo(self.action);
 	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
@@ -382,37 +370,19 @@ function ActionButton_UpdateOverlayGlow(self)
 end
 
 function ActionButton_ShowOverlayGlow(self)
-	if ( self.overlay ) then
-		if ( self.overlay.animOut:IsPlaying() ) then
-			self.overlay.animOut:Stop();
-			self.overlay.animIn:Play();
-		end
-	else
-		self.overlay = ActionButton_GetOverlayGlow();
-		local frameWidth, frameHeight = self:GetSize();
-		self.overlay:SetParent(self);
-		self.overlay:ClearAllPoints();
-		self.overlay:SetPoint("TOPLEFT", self, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2);
-		self.overlay:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2);
-		self.overlay.animIn:Play();
+	if ( not self.overlayed ) then
+		self.overlayed = true;
+		--self.icon:SetVertexColor(0, 1, 0);
+		self.icon:SetTexCoord(0, 1, 1, 0);
 	end
 end
 
 function ActionButton_HideOverlayGlow(self)
-	if ( self.overlay ) then
-		if ( self.overlay.animIn:IsPlaying() ) then
-			self.overlay.animIn:Stop();
-		end
-		self.overlay.animOut:Play();
+	if ( self.overlayed ) then
+		self.overlayed = false;
+		--self.icon:SetVertexColor(1, 1, 1);
+		self.icon:SetTexCoord(0, 1, 0, 1);
 	end
-end
-
-function ActionButton_OverlayGlowAnimOutFinished(animGroup)
-	local overlay = animGroup:GetParent();
-	local actionButton = overlay:GetParent();
-	overlay:Hide();
-	tinsert(unusedOverlayGlows, overlay);
-	actionButton.overlay = nil;
 end
 
 function ActionButton_OnEvent (self, event, ...)

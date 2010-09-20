@@ -15,9 +15,7 @@ end
 function SpellActivationOverlay_OnEvent(self, event, ...)
 	if ( event == "SPELL_ACTIVATION_OVERLAY_SHOW" ) then
 		local spellID, texture, positions, scale, r, g, b = ...;
-		if ( GetCVarBool("displaySpellActivationOverlays") ) then 
-			SpellActivationOverlay_ShowAllOverlays(self, spellID, texture, positions, scale, r, g, b)
-		end
+		SpellActivationOverlay_ShowAllOverlays(self, spellID, texture, positions, scale, r, g, b)
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_HIDE" ) then
 		local spellID = ...;
 		SpellActivationOverlay_HideOverlays(self, spellID);

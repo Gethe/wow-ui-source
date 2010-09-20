@@ -22,12 +22,12 @@
 								<Anchor point="TOPLEFT" relativeTo="$parent"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Guild">
+						<Texture name="$parentIcon" file="Interface\GuildFrame\GuildAchievements">
 							<Size x="20" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentRequires" relativePoint="RIGHT" x="4" y="0"/>
 							</Anchors>
-							<TexCoords left="0.63281250" right="0.67187500" top="0.13085938" bottom="0.16601563"/>
+							<TexCoords left="0.44726563" right="0.46679688" top="0.27734375" bottom="0.34765625"/>
 						</Texture>
 						<FontString name="$parentText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" parentKey="text">
 							<Size x="0" y="12"/>

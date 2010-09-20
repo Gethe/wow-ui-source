@@ -256,7 +256,6 @@ CombatPanelOptions = {
 	showTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
 	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
-	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
 }
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
@@ -2069,6 +2068,13 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 	UIDropDownMenu_AddButton(info);
 end
 
+-- [[ Features Panel ]] --
+
+FeaturesPanelOptions = {
+	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },
+	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
+}
+
 -- [[ Help Options Panel ]] --
 
 HelpPanelOptions = {
@@ -2086,12 +2092,15 @@ LanguagesPanelOptions = {
 }
 
 function InterfaceOptionsLanguagesPanel_OnLoad (panel)
-	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
+-- turn off language changing in Beta until fixed
+return;
+
+	--[[-- Check and see if we have more than one locale. If we don't, then don't register this panel.
 	if ( #({GetExistingLocales()}) <= 1 ) then
 		return;
 	end
 
-	InterfaceOptionsPanel_OnLoad(panel);
+	InterfaceOptionsPanel_OnLoad(panel);]]
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent (self, event, ...)

@@ -45,11 +45,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentRaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate" parentKey="raidBossEmoteFrame">
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-20"/>
-				</Anchors>
-			</Frame>
 			<Frame name="$parentCloseDialog" parentKey="closeDialog">
 				<Size x="320" y="84"/>
 				<Anchors>

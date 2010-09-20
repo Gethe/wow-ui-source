@@ -1,7 +1,7 @@
 
 INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectTalentFrame", "InspectTalentFrame", "InspectTalentFrame" };
 
-UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, };
+UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, xoffset = -16, yoffset = 14 };
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
@@ -24,7 +24,6 @@ function InspectFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 3);
 	PanelTemplates_SetTab(self, 1);
-	self.TitleText:SetFontObject("GameFontHighlight");
 end
 
 function InspectFrame_OnEvent(self, event, ...)
@@ -44,13 +43,14 @@ function InspectFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
-			InspectFrameTitleText:SetText(UnitName(arg1));
+			InspectNameText:SetText(UnitName(arg1));
 		end
 		return;
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
 			SetPortraitTexture(InspectFramePortrait, arg1);
+			SetPortraitTexture(InspectPVPFramePortrait, arg1);
 		end
 		return;
 	end
@@ -61,7 +61,8 @@ function InspectFrame_UnitChanged(self)
 	NotifyInspect(unit);
 	InspectPaperDollFrame_OnShow(self);
 	SetPortraitTexture(InspectFramePortrait, unit);
-	InspectFrameTitleText:SetText(UnitName(unit));
+	SetPortraitTexture(InspectPVPFramePortrait, unit);
+	InspectNameText:SetText(UnitName(unit));
 	InspectFrame_UpdateTalentTab();
 	if ( InspectPVPFrame:IsShown() ) then
 		InspectPVPFrame_OnShow();
@@ -74,7 +75,8 @@ function InspectFrame_OnShow(self)
 	end
 	PlaySound("igCharacterInfoOpen");	
 	SetPortraitTexture(InspectFramePortrait, self.unit);
-	InspectFrameTitleText:SetText(UnitName(self.unit));
+	SetPortraitTexture(InspectPVPFramePortrait, self.unit);
+	InspectNameText:SetText(UnitName(self.unit));
 end
 
 function InspectFrame_OnHide(self)

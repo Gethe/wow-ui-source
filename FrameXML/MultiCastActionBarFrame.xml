@@ -11,7 +11,7 @@
 				<Texture file="Interface\Buttons\UI-TotemBar" parentKey="background"/>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\Buttons\UI-TotemBar" parentKey="overlayTex">
+				<Texture file="Interface\Buttons\UI-TotemBar" parentKey="overlay">
 					<Size x="34" y="34"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -38,7 +38,7 @@
 		</Size>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\Buttons\UI-TotemBar" parentKey="overlayTex">
+				<Texture file="Interface\Buttons\UI-TotemBar" parentKey="overlay">
 					<Size x="34" y="34"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

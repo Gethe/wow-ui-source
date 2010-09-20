@@ -142,12 +142,6 @@ function PetPaperDollFrame_Update()
 	elseif (playerClass == "WARLOCK") then
 		PetPaperDollPetModelBg:Show();
 		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-Warlock");
-	elseif (playerClass == "MAGE") then
-		PetPaperDollPetModelBg:Show();
-		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-Mage");
-	elseif (playerClass == "DEATHKNIGHT") then
-		PetPaperDollPetModelBg:Show();
-		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-DeathKnight");
 	else
 		PetPaperDollPetModelBg:Hide();
 	end

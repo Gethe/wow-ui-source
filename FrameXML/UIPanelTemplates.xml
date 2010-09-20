@@ -278,7 +278,6 @@
 				HideParentPanel(self);
 			</OnClick>
 		</Scripts>
-		<DisabledTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
 		<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 		<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>

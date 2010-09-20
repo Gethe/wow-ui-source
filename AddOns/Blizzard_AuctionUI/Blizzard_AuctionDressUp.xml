@@ -70,7 +70,6 @@
 			</Anchors>
                 <Scripts>
                 <OnLoad function="Model_OnLoad"/>
-				<OnEvent function="Model_OnEvent"/>
 				<OnMouseUp function="Model_OnMouseUp"/>
 				<OnMouseDown function="Model_OnMouseDown"/>
                 <OnUpdate function="Model_OnUpdate"/>

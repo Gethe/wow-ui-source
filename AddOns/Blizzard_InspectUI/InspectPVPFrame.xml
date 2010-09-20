@@ -2,7 +2,16 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="InspectPVPFrame.lua"/>
 	<Include file="PVPFrameTemplates.xml"/>
-	<Frame name="InspectPVPFrame" enableMouse="true" parent="InspectFrame" hidden="true" useParentLevel="true" setAllPoints="true" id="2">
+	<Frame name="InspectPVPFrame" inherits="PortraitFrameTemplate" enableMouse="true" parent="InspectFrame" hidden="true" id="2">
+		<Size>
+			<AbsDimension x="337" y="423"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="15" y="-14"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" file="Interface\PVPFrame\PVP-Conquest-Misc">
@@ -83,12 +92,18 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="6" />
+				</Anchors>
+			</Frame>
 		<!-- Arena Teams -->
 			<Frame name="InspectPVPTeam1Standard" inherits="PVPTeamStandardTemplate">
 				<Anchors>
 					<Anchor point="LEFT">
 						<Offset>
-							<AbsDimension x="14" y="-8"/>
+							<AbsDimension x="14" y="-7"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

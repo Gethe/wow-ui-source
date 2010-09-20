@@ -84,16 +84,14 @@
 	</Frame>
 	<Button name="QuestItemTemplate" inherits="LargeItemButtonTemplate" virtual="true">
 		<Scripts>
+			<OnLoad>
+				self.hasItem = 1;
+			</OnLoad>
 			<OnEnter>
 				if ( self:GetAlpha() > 0 ) then
-					if (self.objectType == "item") then
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetQuestItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem(GameTooltip);
-					elseif (self.objectType == "currency") then
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetQuestCurrency(self.type, self:GetID());
-					end
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetQuestItem(self.type, self:GetID());
+					GameTooltip_ShowCompareItem(GameTooltip);
 				end
 				CursorUpdate(self);
 			</OnEnter>
@@ -105,9 +103,7 @@
 				CursorOnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnClick>
-				if (self.objectType == "item") then
-					HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
-				end
+				HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
 			</OnClick>
 		</Scripts>
 	</Button>

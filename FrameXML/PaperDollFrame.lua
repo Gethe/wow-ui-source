@@ -476,7 +476,6 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		PaperDoll_InitStatCategories(PAPERDOLL_STATCATEGORY_DEFAULTORDER, "statCategoryOrder", "statCategoriesCollapsed", "player");
 	elseif (event == "PLAYER_TALENT_UPDATE") then
 		PaperDollFrame_SetLevel();
-		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	end
 end
 
@@ -873,12 +872,19 @@ function PaperDollFrame_SetResilience(statFrame, unit)
 		return;
 	end
 
+	--local critResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
 	local damageResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageResilience);
 	
+	local critMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
+	local critRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
+	
+	--local damageMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
+	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
+	
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageResilience);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..damageResilience..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, 
+								min(critRatingBonus, critMaxRatingBonus), 
 								damageRatingBonus 
 								);
 	statFrame:Show();

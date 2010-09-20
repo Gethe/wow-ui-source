@@ -1,7 +1,7 @@
 
 FRAMERATE_FREQUENCY = 0.25;
 local TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
-local TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
+local TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
 
 function ToggleFramerate(benchmark)
 	FramerateText.benchmark = benchmark;
@@ -29,7 +29,7 @@ end
 function WorldFrame_OnLoad(self)
 	self:IgnoreDepth(true);
 	TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
-	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
+	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
 end
 
 function WorldFrame_OnUpdate(self, elapsed)
@@ -88,10 +88,10 @@ function WorldFrame_OnUpdate(self, elapsed)
 			end
 		end
 	end
-	if ( not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() and not QuestFrame:IsShown() ) then
-		TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = TUTORIAL_TIMER_FIRST_QUEST_COMPLETE - elapsed;
-		if (TUTORIAL_TIMER_FIRST_QUEST_COMPLETE < 0) then
-			TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 20;
+	if ( not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() ) then
+		TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = TUTORIAL_TIMER_FIRST_QUEST_COMPLETE + elapsed;
+		if (TUTORIAL_TIMER_FIRST_QUEST_COMPLETE > 10) then
+			TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
 			TriggerTutorial(57);
 		end
 	end

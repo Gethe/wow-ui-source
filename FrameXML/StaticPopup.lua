@@ -140,10 +140,10 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		local _, currentHonor, _, _, _, maxHonor = GetCurrencyInfo(392);
-		local _, currentArenaPoints, _, _, _, maxArenaPoints = GetCurrencyInfo(390);
-		local overflowHonor = maxHonor > 0 and MerchantFrame.honorPoints and ( MerchantFrame.honorPoints + currentHonor > maxHonor );
-		local overflowArena = maxArenaPoints > 0 and MerchantFrame.arenaPoints and ( MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints );
+		local currentHonor, maxHonor = GetHonorCurrency();
+		local currentArenaPoints, maxArenaPoints = GetArenaCurrency();
+		local overflowHonor = MerchantFrame.honorPoints and ( MerchantFrame.honorPoints + currentHonor > maxHonor );
+		local overflowArena = MerchantFrame.arenaPoints and ( MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints );
 		if ( overflowHonor and overflowArena ) then
 			StaticPopup_Show("CONFIRM_REFUND_MAX_HONOR_AND_ARENA", (MerchantFrame.honorPoints + currentHonor - maxHonor), (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints) )
 		elseif ( overflowHonor ) then
@@ -2277,29 +2277,19 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	text = AREA_SPIRIT_HEAL,
-	button1 = CHOOSE_LOCATION,
-	button2 = CANCEL,
+	button1 = CANCEL,
 	OnShow = function(self)
 		self.timeleft = GetAreaSpiritHealerTime();
 	end,
 	OnAccept = function(self)
-		ShowUIPanel(WorldMapFrame);
-		return true;	--Don't close this popup.
-	end,
-	OnCancel = function(self)
 		CancelAreaSpiritHeal();
-	end,
-	DisplayButton1 = function(self)
-		return IsCemeterySelectionAvailable();
 	end,
 	timeout = 0,
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
-	timeoutInformationalOnly = 1,
+	hideOnEscape = 1
 };
-
 StaticPopupDialogs["BIND_ENCHANT"] = {
 	text = BIND_ENCHANT,
 	button1 = OKAY,
@@ -2445,59 +2435,6 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 			return;
 		end
 		RespondInstanceLock(false);
-		self.name, self.difficultyName = nil, nil;
-		self.lockTimeleft = nil;
-	end,
-	timeout = 0,
-	showAlert = 1,
-	whileDead = 1,
-	interruptCinematic = 1,
-	notClosableByLogout = 1,
-	noCancelOnReuse = 1,
-};
-
-StaticPopupDialogs["INSTANCE_LOCK_WARNING"] = {
-	-- we use a custom timer called lockTimeleft in here to avoid special casing the static popup code
-	-- if you use timeout or timeleft then you will go through the StaticPopup system's standard OnUpdate
-	-- code which we don't want for this dialog
-	text = INSTANCE_LOCK_WARNING,
-	button1 = OKAY,
-	OnShow = function(self)
-		local type, difficulty;
-		self.name, type, difficulty, self.difficultyName = GetInstanceInfo();
-
-		self.extraFrame:SetAllPoints(self.text)
-		self.extraFrame:Show()
-		self.extraFrame:SetScript("OnEnter", InstanceLock_OnEnter)
-		self.extraFrame:SetScript("OnLeave", GameTooltip_Hide)
-		
-	end,
-	OnHide = function(self)
-		self.extraFrame:SetScript("OnEnter", nil)
-		self.extraFrame:SetScript("OnLeave", nil)
-	end,
-	OnUpdate = function(self, elapsed)
-
-		local name = GetDungeonNameWithDifficulty(self.name, self.difficultyName);
-
-		-- Set dialog message using information that describes which bosses are still around
-		--local text = _G[self:GetName().."Text"];
-		--local lockstring = string.format((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
-		--local time, extending;
-		--time, extending, self.extraFrame.encountersTotal, self.extraFrame.encountersComplete = GetInstanceLockTimeRemaining();
-		--local bosses = string.format(BOSSES_KILLED, self.extraFrame.encountersComplete, self.extraFrame.encountersTotal);
-		--text:SetFormattedText(INSTANCE_LOCK_SEPARATOR, lockstring, bosses);
-
-		-- make sure the dialog fits the text
-		StaticPopup_Resize(self, "INSTANCE_LOCK_WARNING");
-	end,
-	OnAccept = function(self)
-		self:Hide();
-		self.name, self.difficultyName = nil, nil;
-		self.lockTimeleft = nil;
-	end,
-	OnCancel = function(self)
-		self:Hide();
 		self.name, self.difficultyName = nil, nil;
 		self.lockTimeleft = nil;
 	end,
@@ -2939,8 +2876,7 @@ function StaticPopup_Resize(dialog, which)
 	
 	local maxHeightSoFar, maxWidthSoFar = (dialog.maxHeightSoFar or 0), (dialog.maxWidthSoFar or 0);
 	local width = 320;
-	
-	if ( dialog.numButtons == 3 ) then
+	if ( info.button3 ) then
 		width = 440;
 	elseif (info.hasWideEditBox or info.showAlert or info.showAlertGear or info.closeButton) then
 		-- Widen
@@ -2974,7 +2910,6 @@ function StaticPopup_Resize(dialog, which)
 	end
 end
 
-local tempButtonLocs = {};	--So we don't make a new table each time.
 function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3214,53 +3149,66 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local button1 = _G[dialog:GetName().."Button1"];
 	local button2 = _G[dialog:GetName().."Button2"];
 	local button3 = _G[dialog:GetName().."Button3"];
-	
-	do	--If there is any recursion in this block, we may get errors (tempButtonLocs is static). If you have to recurse, we'll have to create a new table each time.
-		assert(#tempButtonLocs == 0);	--If this fails, we're recursing. (See the table.wipe at the end of the block)
-		
-		tinsert(tempButtonLocs, button1);
-		tinsert(tempButtonLocs, button2);
-		tinsert(tempButtonLocs, button3);
-		
-		for i=#tempButtonLocs, 1, -1 do
-			--Do this stuff before we move it. (This is why we go back-to-front)
-			tempButtonLocs[i]:SetText(info["button"..i]);
-			tempButtonLocs[i]:Hide();
-			tempButtonLocs[i]:ClearAllPoints();
-			--Now we possibly remove it.
-			if ( not (info["button"..i] and ( not info["DisplayButton"..i] or info["DisplayButton"..i]())) ) then
-				tremove(tempButtonLocs, i);
-			end
+	if ( info.button3 and ( not info.DisplayButton3 or info.DisplayButton3() ) ) then
+		button1:ClearAllPoints();
+		button2:ClearAllPoints();
+		button3:ClearAllPoints();
+		button1:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
+		button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+		button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
+		button2:SetText(info.button2);
+		button3:SetText(info.button3);
+		local width = button2:GetTextWidth();
+		if ( width > 110 ) then
+			button2:SetWidth(width + 20);
+		else
+			button2:SetWidth(120);
 		end
-		
-		local numButtons = #tempButtonLocs;
-		--Save off the number of buttons.
-		dialog.numButtons = numButtons;
-		
-		if ( numButtons == 3 ) then
-			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
-		elseif ( numButtons == 2 ) then
-			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
-		elseif ( numButtons == 1 ) then
-			tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+		button2:Enable();
+		button2:Show();
+
+		width = button3:GetTextWidth();
+		if ( width > 110 ) then
+			button3:SetWidth(width + 20);
+		else
+			button3:SetWidth(120);
 		end
-		
-		for i=1, numButtons do
-			if ( i > 1 ) then
-				tempButtonLocs[i]:SetPoint("LEFT", tempButtonLocs[i-1], "RIGHT", 13, 0);
-			end
-			
-			local width = tempButtonLocs[i]:GetTextWidth();
-			if ( width > 110 ) then
-				tempButtonLocs[i]:SetWidth(width + 20);
-			else
-				tempButtonLocs[i]:SetWidth(120);
-			end
-			tempButtonLocs[i]:Enable();
-			tempButtonLocs[i]:Show();
+		button3:Enable();
+		button3:Show();
+	elseif ( info.button2 and
+	   ( not info.DisplayButton2 or info.DisplayButton2() ) ) then
+		button1:ClearAllPoints();
+		button2:ClearAllPoints();
+		button1:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
+		button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
+		button2:SetText(info.button2);
+		local width = button2:GetTextWidth();
+		if ( width > 110 ) then
+			button2:SetWidth(width + 20);
+		else
+			button2:SetWidth(120);
 		end
-		
-		table.wipe(tempButtonLocs);
+		button2:Enable();
+		button2:Show();
+		button3:Hide();
+	else
+		button1:ClearAllPoints();
+		button1:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+		button2:Hide();
+		button3:Hide();
+	end
+	if ( info.button1 ) then
+		button1:SetText(info.button1);
+		local width = button1:GetTextWidth();
+		if ( width > 120 ) then
+			button1:SetWidth(width + 20);
+		else
+			button1:SetWidth(120);
+		end
+		button1:Enable();
+		button1:Show();
+	else
+		button1:Hide();
 	end
 
 	-- Set the miscellaneous variables for the dialog

@@ -110,7 +110,6 @@ MultiCastActionBarFrame.xml
 BonusActionBarFrame.xml
 MainMenuBarBagButtons.xml
 WorldMapFrame.xml
-RaidWarning.xml
 CinematicFrame.xml
 ItemRef.xml
 ComboFrame.xml
@@ -126,6 +125,7 @@ PetStable.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
 DressUpFrame.xml
+RaidWarning.xml
 PVPFrameTemplates.xml
 PVPFrame.xml
 ArenaRegistrarFrame.xml

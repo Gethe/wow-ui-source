@@ -205,7 +205,7 @@ function GlyphFrame_UpdateGlyphList ()
 	
 	
 	for i = 1, numButtons do
-		local button = buttons[i];
+		button = buttons[i];
 		local index = offset + i;
 		if index <= numGlyphs  then
 			local name, glyphType, isKnown, icon, castSpell = GetGlyphInfo(index);

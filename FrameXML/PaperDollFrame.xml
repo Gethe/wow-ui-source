@@ -389,7 +389,9 @@
 				</Frames>
 			</Frame>			
 			<PlayerModel name="CharacterModelFrame">
-                <Size x="231" y="320"/>
+                <Size>
+					<AbsDimension x="231" y="320"/>
+                </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT" x="52" y="-66"/>
                 </Anchors>
@@ -487,8 +489,13 @@
 					</Layer>
 				</Layers>
                 <Scripts>
-                    <OnLoad function="Model_OnLoad"/>
-					<OnEvent function="Model_OnEvent"/>
+                    <OnLoad>
+                        Model_OnLoad(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+                    </OnLoad>
+					<OnEvent>
+						self:RefreshUnit();
+					</OnEvent>
                     <OnUpdate function="Model_OnUpdate"/>
 					<OnMouseUp function="CharacterModelFrame_OnMouseUp"/>
 					<OnMouseDown function="Model_OnMouseDown"/>
@@ -505,7 +512,7 @@
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="4" y="0"/>
+							<Anchor point="TOPLEFT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>

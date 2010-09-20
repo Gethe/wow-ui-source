@@ -10,7 +10,6 @@ function InspectPVPFrame_OnEvent(self, event, ...)
 end
 
 function InspectPVPFrame_OnShow()
-	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 	InspectPVPFrame_Update();
 	if ( not HasInspectHonorData() ) then
 		RequestInspectHonorData();

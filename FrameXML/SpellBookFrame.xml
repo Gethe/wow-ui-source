@@ -1303,8 +1303,11 @@
 							<OnLoad>
 								Model_OnLoad(self);
 								self:SetPosition(0, 0, 0.2); -- Small offset to position pets above the text
+								self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 							</OnLoad>
-							<OnEvent function="Model_OnEvent"/>
+							<OnEvent>
+								self:RefreshUnit();
+							</OnEvent>
 							<OnUpdate function="Model_OnUpdate"/>
 							<OnMouseUp function="Model_OnMouseUp"/>
 							<OnMouseDown function="Model_OnMouseDown"/>

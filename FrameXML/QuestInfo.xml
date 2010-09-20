@@ -40,24 +40,15 @@
 				if ( tooltip ) then
 					tooltip:SetOwner(self, "ANCHOR_RIGHT");
 					if ( QuestInfoFrame.questLog ) then
-						if (self.objectType == "item") then
-							tooltip:SetQuestLogItem(self.type, self:GetID());
-							GameTooltip_ShowCompareItem(tooltip);
-						elseif (self.objectType == "currency") then
-							tooltip:SetQuestLogCurrency(self.type, self:GetID());
-						end
+						tooltip:SetQuestLogItem(self.type, self:GetID());
 					else
-						if (self.objectType == "item") then
-							tooltip:SetQuestItem(self.type, self:GetID());
-							GameTooltip_ShowCompareItem(tooltip);
-						elseif (self.objectType == "currency") then
-							tooltip:SetQuestCurrency(self.type, self:GetID());
-						end
+						tooltip:SetQuestItem(self.type, self:GetID());
 					end
+					GameTooltip_ShowCompareItem(tooltip);
 				end
 			</OnEnter>
 			<OnClick>
-				if ( IsModifiedClick() and self.objectType == "item") then
+				if ( IsModifiedClick() ) then
 					if ( QuestInfoFrame.questLog ) then
 						HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
 					else

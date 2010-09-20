@@ -27,10 +27,8 @@ function CinematicFrame_OnEvent(self, event, ...)
 		self.isRealCinematic = arg1;	--If it isn't real, it's a vehicle cinematic
 		self.closeDialog:Hide();
 		ShowUIPanel(self, 1);
-		RaidNotice_Clear(self.raidBossEmoteFrame);
 	elseif ( event == "CINEMATIC_STOP" ) then
 		HideUIPanel(self);
-		RaidNotice_Clear(RaidBossEmoteFrame);	--Clear the normal boss emote frame. If there are any messages left over from the cinematic, we don't want to show them.
 	end
 end
 

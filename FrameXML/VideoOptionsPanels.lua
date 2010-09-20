@@ -30,179 +30,59 @@ OVERALL_QUALITY = "Overall Quality";
 SUNSHAFTS = "Sunshafts";
 MAXFPS = "MaxFPS";
 MAXFPSBK = "MaxFPSbk"
-RECOMMENDED = "Recommended: "
-GREYCOLORCODE = "|cff7f7f7f"
-GREENCOLORCODE= "|cff00ff00"
 
 VideoOptionsFrame:SetSize(858,660);
 VideoOptionsFrameCategoryFrame:SetSize(175,569);
-local DefaultVideoOptions = {};
-
-
-
-VRN_NOMULTISAMPLE="VRN_NOMULTISAMPLE";
-VRN_ILLEGAL="VRN_ILLEGAL";
-VRN_UNSUPPORTED="VRN_UNSUPPORTED";
-VRN_GRAPHICS="VRN_GRAPHICS";
-VRN_NEEDS_2_0="VRN_NEEDS_2_0";
-VRN_NEEDS_3_0="VRN_NEEDS_3_0";
-VRN_NEEDS_4_0="VRN_NEEDS_4_0";
-VRN_NEEDS_5_0="VRN_NEEDS_5_0";
-VRN_NEEDS_MACOS_10_5_5="VRN_NEEDS_MACOS_10_5_5";
-VRN_NEEDS_MACOS_10_5_7="VRN_NEEDS_MACOS_10_5_7";
-VRN_CPUMEM_2GB="VRN_CPUMEM_2GB";
-VRN_DUALCORE="VRN_DUALCORE";
-VRN_WINDOWS_UNSUPPORTED="VRN_WINDOWS_UNSUPPORTED";
-VRN_MACOS_UNSUPPORTED="VRN_MACOS_UNSUPPORTED";
-
-local ErrorCodes =
-{
-	VRN_NOMULTISAMPLE,
-	VRN_ILLEGAL,
-	VRN_UNSUPPORTED,
-	VRN_GRAPHICS,
-	VRN_DUALCORE,
-	VRN_CPUMEM_2GB,
-	VRN_NEEDS_2_0,
-	VRN_NEEDS_3_0,
-	VRN_NEEDS_4_0,
-	VRN_NEEDS_5_0,
-	VRN_MACOS_UNSUPPORTED,
-	VRN_WINDOWS_UNSUPPORTED,
-	VRN_NEEDS_MACOS_10_5_5,
-	VRN_NEEDS_MACOS_10_5_7,
-};
-
-function GetLowBit(value)
-	if(value == 0) then
-		return 0;
-	end
-	local index = 1;
-	while (value > 0) do
-		value = floor(value/2);
-		index = index + 1;
-		if(index > 32) then
-			return;	-- ??
-		end
-	end
-	return index;
-end
 
 function Graphics_PrepareTooltip(self)
-	-- this code should be elsewhere
-	if (self.data ~= nil) then
-		for i, value in ipairs(self.data) do
-			self.table[i]=value.text;
-		end
-	end
-
 	local tooltip = "";
-	if(self.description == nil) then
-		self.description = "Description tbd";
-	end
 	if(self.description ~= nil) then
 		tooltip = tooltip .. self.description .. "|n|n";
 	end
-
-
-	-- get validation data
 	if (self.data ~= nil) then
-		self.validity = {}
+		local cvar_data = {}
+		local cvar_count = 0;
 		for i, value in ipairs(self.data) do
+			self.table[i]=value.text;
 			if(value.cvars ~= nil) then
-				for cvar_name, cvar_value in pairs(value.cvars) do
-					if(self.validity[cvar_name] == nil) then
-						self.validity[cvar_name] = {};
+				if(cvar_count == 0) then
+					for cvar_name, cvar_value in pairs(value.cvars) do
+						tinsert(cvar_data, cvar_name);
+						cvar_count = cvar_count + 1;
 					end
-					self.validity[cvar_name][cvar_value] = 0;
+				end
+				-- there should be the same number of cvars on each. test for this!
+				for cvar_name, cvar_value in pairs(value.cvars) do
+					tinsert(cvar_data, cvar_value);
 				end
 			end
 		end
-		for cvar_name, table in pairs(self.validity) do
-			local cvar_data = {}
-			tinsert(cvar_data, cvar_name);
-			for cvar_value, valid in pairs(table) do
-				tinsert(cvar_data, cvar_value);
-			end
-			local validity = {GetToolTipInfo(1, #cvar_data - 1, unpack(cvar_data) )};
-			local index = 1;
-			for cvar_value, valid in pairs(table) do
-				self.validity[cvar_name][cvar_value] = validity[index];
-				index = index + 1;
-			end
-		end
+		local validity = {GetToolTipInfo(cvar_count, (#cvar_data)/cvar_count - 1, unpack(cvar_data) )};
 		-- we now have a table of bit fields which will tell us yes/no/maybe, etc, with each option.
 
-		local recommendedValue = nil;
 		for i, value in ipairs(self.data) do
-			if(value.tooltip == nil) then
-				value.tooltip = "Tooltip tbd";
-			end
-			local invalid = false;
-			local recommended = false;
-			local errorValue = nil;
-			if(value.cvars ~= nil) then
-				recommended = true;
-				for cvar_name, cvar_value in pairs(value.cvars) do
-					local validity = self.validity[cvar_name][cvar_value];
-					local index = 0;
-					while(validity > 0) do
-						invalid = true;
-						index = index + 1;
-						if(index > 32) then	-- ??
-							break;
-						end
-						local err = GetLowBit(validity);
-						validity = floor( validity - (2^err) );
-						errorValue = (errorValue or "") .. ErrorCodes[err] .. "|n";
-					end
-					if(DefaultVideoOptions[cvar_name] ~= cvar_value) then
-						recommended = false;
-					end
-				end
-			end
-			if(not invalid and recommended) then
-				recommendedValue = value.text;
-			end
+			local invalid = (validity[i] ~= nil) and (validity[i] ~= 0);
 			tooltip = tooltip .. "|cffffd200" .. value.text .. ":|r ";
 			if (value.tooltip ~= nil) then
 				if(invalid) then
-					tooltip = tooltip .. GREYCOLORCODE;
-				elseif(recommended) then
-					tooltip = tooltip .. GREENCOLORCODE;
-				end
-				tooltip =  tooltip .. value.tooltip;
-				if(invalid or recommended) then
-					tooltip = tooltip .. "|r";
-				end
-			else
-				if(invalid) then
 					tooltip = tooltip .. "|cff7f7f7f";
 				end
+				tooltip =  tooltip .. value.tooltip;
 				if(invalid) then
 					tooltip = tooltip .. " (0x" .. string.format("%x", validity[i]) .. ")" .. "|r";
 				end
 			end
 			tooltip = tooltip .. "|n";
-			if(errorValue ~= nil) then
-				tooltip = tooltip .. "|cffff0000" .. errorValue .. "|r";
-			end
-			if(i ~= #self.data) then
-				tooltip = tooltip .. "|n";	-- no space after the last item (unless recommended is coming)
-			end
-		end
-		if(recommendedValue ~= nil) then
-			tooltip = tooltip .. "|n" .. RECOMMENDED .. GREENCOLORCODE .. recommendedValue .. "|r|n";
 		end
 	end
---	if(self.restart == true) then
---		tooltip = tooltip .. "|n|cffff0000" .. NEED_GXRESTART .. "|r";
---	end
+	if(self.restart == true) then
+		tooltip = tooltip .. "|n|cffff0000" .. NEED_GXRESTART .. "|r";
+	end
 	self.tooltip = tooltip;
 end
 
 function Graphics_Default (self)
-	SetDefaultVideoOptions(0);
+	RestoreVideoResolutionDefaults();
 	for _, control in next, self.controls do
 		control.newValue = nil;
 	end
@@ -213,7 +93,6 @@ function Graphics_Refresh (self)
 	BlizzardOptionsPanel_Refresh(self);
 	-- second level.
 
-	-- do three levels of dependency
 	for i=1,3 do
 		for key, value in pairs(VideoData) do
 			if(_G[key].needrefresh) then
@@ -286,10 +165,6 @@ function VideoOptionsPanel_Default (self)
 end
 
 function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
-	local defaults =  {GetDefaultVideoOptions()};
-	for i=1, #defaults, 2 do
-		DefaultVideoOptions[defaults[i]]=defaults[i+1];
-	end
 	okay = okay or VideoOptionsPanel_Okay;
 	cancel = cancel or VideoOptionsPanel_Cancel;
 	default = default or VideoOptionsPanel_Default;
@@ -342,20 +217,15 @@ function Graphics_TableLookupValidate(self, val)
 		return id;
 	end
 end
----------------------------------------------------
-function VideoOptionsCopyData(self)
+-- generic functions used for all drop-downs
+-------------------------------------------------------------------------------------------------------
+function VideoOptionsDropDown_OnLoad(self)
 	local dropdownkey = self:GetName();
 	if(VideoData[dropdownkey] ~= nil) then
 		for key, value in pairs(VideoData[dropdownkey]) do
 			self[key] = value;
 		end
-		self.key = dropdownkey;
 	end
-end
--- generic functions used for all drop-downs
--------------------------------------------------------------------------------------------------------
-function VideoOptionsDropDown_OnLoad(self)
-	VideoOptionsCopyData(self);
 	self.tablerefresh = true;
 	self.tooltiprefresh = true;
 	if(self.onload ~= nil) then
@@ -365,7 +235,6 @@ function VideoOptionsDropDown_OnLoad(self)
 	self.initialize = self.initialize or 
 		function (self, level)
 			self.newValue = nil;
-			self.selectedID = nil;
 			if(self.tablerefresh) then
 				self.table = {};
 				self.tablerefresh = false;
@@ -393,38 +262,12 @@ function VideoOptionsDropDown_OnLoad(self)
 				self.tooltiprefresh = false;
 				Graphics_PrepareTooltip(self);
 			end
---			local v = self:GetValue();
+			local info = VideoOptionsDropDownMenu_CreateInfo();
 			for mode, text in ipairs(self.table) do
-				local info = VideoOptionsDropDownMenu_CreateInfo();
 				info.text = text;
 				info.value = text;
 				info.func = self.onclickfunction or VideoOptionsDropDown_OnClick;
 				info.checked = nil;
-
---				if(mode == v) then
---					info.checked = 1;
---				else
---					info.checked = nil;
---				end
-
-				-- disable and recommended settings!
-				if(self.data ~= nil) then
-					if(self.data[mode].cvars ~= nil) then
-						local recommended = true;
-						for cvar_name, cvar_value in pairs(self.data[mode].cvars) do
-							if(self.validity[cvar_name][cvar_value] ~= 0) then
-								info.notClickable = true;
-								info.disablecolor = GREYCOLORCODE;
-							end
-							if(DefaultVideoOptions[cvar_name] ~= cvar_value) then
-								recommended = false;
-							end
-						end
-						if(recommended) then
-							info.colorCode = GREENCOLORCODE;
-						end
-					end
-				end
 				VideoOptionsDropDownMenu_AddButton(info);
 			end
 		end
@@ -433,64 +276,43 @@ function VideoOptionsDropDown_OnLoad(self)
 	self.GetNewValueString = self.GetNewValueString or 
 		function(self)
 			if(self.table ~= nil) then
-				return self.table[self:GetValue()];
+				-- there is a bit of a design flaw in the options widgets.
+				-- the code relies on either self.newValue==nil or self.newValue~=self.value
+				-- instead of just the second. this patch is the result. todo : fix.
+				return self.table[self.newValue or self.selectedID or self.value];
 			end
 			return nil;
 		end
 	self.type = self.type or CONTROLTYPE_DROPDOWN;
 	-- register the control
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 	if(self.width == nil) then
 		self.width = 110;
 	end
 	VideoOptionsDropDownMenu_SetWidth(self.width, self);
+
+
 	-- force another control to change to a value
 	self.notifytarget = self.notifytarget or
 		function (self, value)
-			local index;
 			for i, val in ipairs(self.table) do
 				if(val == value) then
-					index = i;
+					self.newValue = i;
 					break;
 				end
 			end
-			local valid = true;			
-			if(self.data ~= nil) then
-				if(self.data[index].cvars ~= nil) then
-					for cvar_name, cvar_value in pairs(self.data[index].cvars) do
-						if(self.validity[cvar_name][cvar_value] ~= 0) then
-							valid = false;
-						end
-					end
-				end
-			end
-			if(valid) then
-				self.selectedName = nil;
-				self.selectedValue = nil;
-				self.newValue = index;
-				self.selectedID = index;
-				VideoOptionsDropDownMenu_SetText(value, self);
-			end
+			self.selectedName = value;
+			self.selectedID = nil;
+			self.selectedValue = nil;
+			VideoOptionsDropDownMenu_SetText(value, self);	-- we only notify with legal values??
 		end
 
 	self.lookup = self.lookup or Graphics_TableLookup;
 	self.RefreshValue = self.RefreshValue or Graphics_TableRefreshValue;
 	self.dependtarget = self.dependtarget or Graphics_TableDependTarget;
-	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 end
--------------------------------------------------------------------------------------------------------
-function VideoOptionsSlider_OnLoad(self)
-	VideoOptionsCopyData(self);
-	self.type = self.type or CONTROLTYPE_SLIDER;
-	self.dependtarget = self.dependtarget or Graphics_TableDependTarget;
-	self.RefreshValue = self.RefreshValue or 
-		function(self)
-			if(self.onrefresh) then
-				self:onrefresh();
-			end
-		end
-	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-end
--------------------------------------------------------------------------------------------------------
+
+
 function VideoOptionsDropDown_OnClick(self)
 	local value = self:GetID();
 	local dropdown = self:GetParent().dropdown;
@@ -502,20 +324,13 @@ function VideoOptionsDropDown_OnClick(self)
 			_G[key].notifytarget(_G[key], notify_value);
 		end
 	end
-	-- check whether it is valid	
 	VideoOptionsDropDownMenu_SetSelectedID(dropdown, value, 1);
-	VideoOptionsDropDownMenu_SetSelectedID(dropdown, dropdown:GetValue(), 1);
-
---	if ( dropdown.value == value ) then
---		dropdown.newValue = nil;
---	else
---		VideoOptionsFrameApply:Enable();		-- we have a change, enable the Apply button
---		dropdown.newValue = value;
---	end
-
-	VideoOptionsFrameApply:Enable();		-- we have a change, enable the Apply button
-	dropdown.newValue = value;
-
+	if ( dropdown.value == value ) then
+		dropdown.newValue = nil;
+	else
+		VideoOptionsFrameApply:Enable();		-- we have a change, enable the Apply button
+		dropdown.newValue = value;
+	end
 	if(dropdown.dependent ~= nil) then
 		for i, key in ipairs(dropdown.dependent) do
 			local func = _G[key].dependtarget;
@@ -526,10 +341,11 @@ function VideoOptionsDropDown_OnClick(self)
 	end
 end
 
+--
+-- if skipcvar is true, we are doing a validation based on the user selected options,
+-- not the state of the cvars
+--
 function Graphics_TableGetValue(self)
-	if(self.selectedID ~= nil) then
-		return self.selectedID;
-	end
 	local readCvars = {};
 	for key, value in ipairs(self.data) do
 		local match = true;
@@ -593,7 +409,7 @@ function VideoOptionsStereoPanel_OnLoad (self)
 end
 
 function VideoOptionsStereoPanel_Default(self)
-	SetDefaultVideoOptions(2);
+	RestoreVideoStereoDefaults();
 	for _, control in next, self.controls do
 		if ( control.defaultValue and control.value ~= control.defaultValue ) then
 			control:SetValue(control.defaultValue);
@@ -633,39 +449,16 @@ function VideoOptionsStereoPanel_OnEvent(self, event, ...)
 			end
 	end
 end
-
-
--------------------------------------------------------------------------------------------------------
-function Slider_Disable(self)
-	local label = _G[self:GetName().."Label"];
-	if ( label ) then
-		label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	end
-	BlizzardOptionsPanel_Slider_Disable(self);
-end
-
--------------------------------------------------------------------------------------------------------
-function Slider_Enable(self)
-	local label = _G[self:GetName().."Label"];
-	if ( label ) then
-		label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	end
-	BlizzardOptionsPanel_Slider_Enable(self);
-end
 -------------------------------------------------------------------------------------------------------
 function VideoOptions_Enable(self)
 	if(self.type == CONTROLTYPE_DROPDOWN) then
 		VideoOptionsDropDownMenu_EnableDropDown(self);
-	elseif(self.type == CONTROLTYPE_SLIDER) then
-		Slider_Enable(self);
 	end
 end
 -------------------------------------------------------------------------------------------------------
 function VideoOptions_Disable(self)
 	if(self.type == CONTROLTYPE_DROPDOWN) then
 		VideoOptionsDropDownMenu_DisableDropDown(self);
-	elseif(self.type == CONTROLTYPE_SLIDER) then
-		Slider_Disable(self);
 	end
 end
 -------------------------------------------------------------------------------------------------------

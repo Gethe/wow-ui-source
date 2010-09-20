@@ -416,7 +416,7 @@ function MultiCastSlotButton_Update(self, slot)
 	else
 		-- fixup textures
 		local tcoords = SLOT_OVERLAY_TCOORDS[slot];
-		self.overlayTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
+		self.overlay:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 		tcoords = SLOT_EMPTY_TCOORDS[slot];
 		self.background:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 
@@ -485,7 +485,7 @@ function MultiCastActionButton_Update(self, id, index, slot)
 		-- fixup textures
 		local tcoords;
 		tcoords = SLOT_OVERLAY_TCOORDS[slot];
-		self.overlayTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
+		self.overlay:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 		self:Show();
 	end
 end

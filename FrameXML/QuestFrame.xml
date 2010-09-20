@@ -867,8 +867,11 @@
 				Model_OnLoad(self);
 				self:SetPortraitZoom(0.6);
 				self:SetRotation(0);
+				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 			</OnLoad>
-			<OnEvent function="Model_OnEvent"/>
+			<OnEvent>
+				self:RefreshUnit();
+			</OnEvent>
 		</Scripts>
 	</PlayerModel>
  </Ui>

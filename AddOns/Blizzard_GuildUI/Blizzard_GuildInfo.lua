@@ -1,20 +1,9 @@
-local GUILD_EVENT_TEXTURES = {
-	--[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
-	--[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
-	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
-	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
-	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
-};
-local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
+local GUILD_INFO_BUTTON_HEIGHT = 18;
 
 function GuildInfoFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
 	GuildInfoEventsContainer.update = GuildInfoEvents_Update;
-	HybridScrollFrame_CreateButtons(GuildInfoEventsContainer, "GuildNewsButtonTemplate", 0, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
-	local buttons = GuildInfoEventsContainer.buttons;
-	for i = 1, #buttons do
-		buttons[i].isEvent = true;
-	end
+	HybridScrollFrame_CreateButtons(GuildInfoEventsContainer, "GuildInfoButtonTemplate", 0, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 	self:RegisterEvent("GUILD_MOTD");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	GuildInfoFrame_UpdateText();
@@ -28,13 +17,12 @@ function GuildInfoFrame_OnLoad(self)
 	fontString = GuildInfoEditEventButton:GetFontString();
 	GuildInfoEditEventButton:SetHeight(fontString:GetHeight() + 4);
 	GuildInfoEditEventButton:SetWidth(fontString:GetWidth() + 4);
+
+	-- moving the events scrollbar onto the scrollframe to obscure button highlights because I'm not resizing the buttons when hiding the scrollbar
+	GuildInfoEventsContainerScrollBar:SetFrameLevel(100);
+	ScrollBar_AdjustAnchors(GuildInfoEventsContainerScrollBar, 1, -1, -22);
 	
-	-- faction icon
-	if ( GetGuildFactionGroup() == 0 ) then  -- horde
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
-	else  -- alliance
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP02";
-	end
+	GuildInfoEvents_Update();
 end
 
 function GuildInfoFrame_OnEvent(self, event, arg1)
@@ -60,10 +48,6 @@ function GuildInfoFrame_OnEvent(self, event, arg1)
 	end
 end
 
-function GuildInfoFrame_OnShow()
-	GuildInfoEvents_Update();
-end
-
 function GuildInfoFrame_UpdateText()
 	GuildInfoMOTD:SetText(GetGuildRosterMOTD());
 	GuildInfoDetails:SetText(GetGuildInfoText());
@@ -79,83 +63,33 @@ function GuildInfoEvents_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local button, index;
-	local numEvents = CalendarGetNumGuildEvents();
 	
-	if ( numEvents > 0 ) then
-		GuildInfoNoEvents:Hide();
-	else
-		GuildInfoNoEvents:Show();
-	end
-
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
-		if ( index <= numEvents ) then
-			GuildInfoEvents_SetButton(button, index);
-			button:Show();
-		else
-			button:Hide();
-		end
+		button:Hide();
+		-- waiting on API
+		--button.text:SetText();
+		--button.icon:SetTexture();
+		--button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		--button.text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
-	local totalHeight = numEvents * scrollFrame.buttonHeight;
-	local displayedHeight = numButtons * scrollFrame.buttonHeight;
+	local totalHeight = 0 * GUILD_INFO_BUTTON_HEIGHT;
+	local displayedHeight = numButtons * GUILD_INFO_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-	GuildFrame_UpdateScrollFrameWidth(scrollFrame);
 end
 
-function GuildInfoEvents_SetButton(button, eventIndex)
-	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, textureName = CalendarGetGuildEventInfo(eventIndex);
-	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
-	local displayDay;
-	
-	if ( today["day"] == day and today["month"] == month ) then
-		displayDay = NORMAL_FONT_COLOR_CODE..GUILD_EVENT_TODAY..FONT_COLOR_CODE_CLOSE;
-	elseif ( abs(today["day"] - day) > 6 ) then		-- good-enough calculation of next week
-		displayDay = string.format(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday], day, month);
+function GuildInfoFrame_AddEvent(event)
+	local messageFrame = GuildInfoEventsFrame;
+	messageFrame:AddMessage(event);
+	if ( messageFrame:AtTop() and messageFrame:AtBottom() ) then
+		GuildInfoEventsFrameScrollBar:Hide();
 	else
-		displayDay = CALENDAR_WEEKDAY_NAMES[weekday];
-	end
-	button.text:SetFormattedText(GUILD_EVENT_FORMAT, displayDay, displayTime, title);
-	button.index = eventIndex;
-	-- icon
-	if ( button.icon.type ~= "event" ) then
-		button.icon.type = "event"
-		button.icon:SetTexCoord(0, 1, 0, 1);
-		button.icon:SetWidth(14);
-		button.icon:SetHeight(14);
-	end
-	if ( GUILD_EVENT_TEXTURES[eventType] ) then
-		button.icon:SetTexture(GUILD_EVENT_TEXTURES[eventType]);
-	else
-		button.icon:SetTexture(GUILD_EVENT_TEXTURE_PATH..textureName);
-	end	
-end
-
-function GuildInfoEventButton_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		if ( CalendarFrame and CalendarFrame:IsShown() ) then
-			-- if the calendar is already open we need to do some work that's normally happening in CalendarFrame_OnShow
-			local weekday, month, day, year = CalendarGetDate();
-			CalendarSetAbsMonth(month, year);
-		else
-			ToggleCalendar();
-		end
-		local monthOffset, day, eventIndex = CalendarGetGuildEventSelectionInfo(self.index);
-		CalendarSetMonth(monthOffset);
-		-- need to highlight the proper day/event in calendar
-		local _, _, _, firstDay = CalendarGetMonth();
-		local buttonIndex = day + firstDay - 1;
-		local dayButton = _G["CalendarDayButton"..buttonIndex];
-		CalendarDayButton_Click(dayButton);
-		if ( eventIndex <= 4 ) then -- can only see 4 events per day
-			local eventButton = _G["CalendarDayButton"..buttonIndex.."EventButton"..eventIndex];
-			CalendarDayEventButton_Click(eventButton, true);	-- true to open the event
-		else
-			CalendarFrame_SetSelectedEvent();	-- clears any event highlights
-			CalendarOpenEvent(0, day, eventIndex);
-		end
-		
+		local scrollBar = GuildInfoEventsFrameScrollBar;
+		scrollBar:Show();
+		eventsOffset = messageFrame:GetNumMessages() - messageFrame:GetNumLinesDisplayed();
+		scrollBar:SetMinMaxValues(0, eventsOffset);
+		scrollBar:SetValue(0);
 	end
 end
 

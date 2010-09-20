@@ -115,7 +115,6 @@ end
 
 function InspectTalentFrame_OnShow()
 	InspectTalentFrame:RegisterEvent("INSPECT_READY");
-	ButtonFrameTemplate_ShowButtonBar(InspectFrame);
 	InspectTalentFrame_Update();
 end
 

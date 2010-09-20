@@ -163,7 +163,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
 	self:RegisterEvent("INSTANCE_LOCK_START");
 	self:RegisterEvent("INSTANCE_LOCK_STOP");
-	self:RegisterEvent("INSTANCE_LOCK_WARNING");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
@@ -783,8 +782,6 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("INSTANCE_LOCK");
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
-	elseif ( event == "INSTANCE_LOCK_WARNING" ) then
-		StaticPopup_Show("INSTANCE_LOCK_WARNING");
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
@@ -2734,12 +2731,6 @@ MODELFRAME_MAX_PET_ZOOM = 0.7;
 function Model_OnLoad (self)
 	self.rotation = 0.61;
 	self:SetRotation(self.rotation);
-	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-end
-
-function Model_OnEvent(self, event, ...)
-	self:RefreshUnit();
 end
 
 function Model_RotateLeft(model, rotationIncrement)
@@ -2901,31 +2892,28 @@ function CursorOnUpdate(self)
 	end
 end
 
-function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed, throttle)
+function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed)
 	if ( not texture.frame ) then
 		-- initialize everything
 		texture.frame = 1;
-		texture.throttle = throttle;
-		texture.numColumns = floor(textureWidth/frameWidth);
-		texture.numRows = floor(textureHeight/frameHeight);
+		texture.numColumns = textureWidth/frameWidth;
+		texture.numRows = textureHeight/frameHeight;
 		texture.columnWidth = frameWidth/textureWidth;
 		texture.rowHeight = frameHeight/textureHeight;
 	end
 	local frame = texture.frame;
-	if ( not texture.throttle or texture.throttle > throttle ) then
-		local framesToAdvance = floor(texture.throttle / throttle);
-		while ( frame + framesToAdvance > numFrames ) do
-			frame = frame - numFrames;
-		end
-		frame = frame + framesToAdvance;
+	if ( not texture.throttle or texture.throttle > 0.1 ) then
 		texture.throttle = 0;
+		if ( frame > numFrames ) then
+			frame = 1;
+		end
 		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
 		local right = left + texture.columnWidth;
 		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
 		local top = bottom - texture.rowHeight;
 		texture:SetTexCoord(left, right, top, bottom);
 
-		texture.frame = frame;
+		texture.frame = frame + 1;
 	else
 		texture.throttle = texture.throttle + elapsed;
 	end

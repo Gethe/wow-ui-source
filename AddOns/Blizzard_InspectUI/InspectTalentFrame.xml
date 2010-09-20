@@ -1,31 +1,122 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="InspectTalentFrame.lua"/>
-	<Frame name="InspectTalentFrame" setAllPoints="true" useParentLevel="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4">
+	<Frame name="InspectTalentFrame" setAllPoints="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="InspectTalentFrameBackgroundTopLeft">
-					<Size x="274" y="258"/>
+				<Texture name="InspectTalentFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="3" y="-3"/>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="InspectTalentFrameBackgroundTopLeft">
+					<Size>
+						<AbsDimension x="272" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="23" y="-77"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundTopRight">
-					<Size x="69" y="258"/>
+					<Size>
+						<AbsDimension x="68" y="256"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundBottomLeft">
-					<Size x="274" y="129"/>
+					<Size>
+						<AbsDimension x="272" y="128"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundBottomRight">
-					<Size  x="69" y="129"/>
+					<Size>
+						<AbsDimension x="68" y="128"/>
+					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -33,7 +124,11 @@
 		<Frames>
 			<Button name="$parentTab1" inherits="TabButtonTemplate" text="OK" id="1">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="InspectFrameInset" relativePoint="TOPLEFT" x="60" y="0"/>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="-40"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -67,32 +162,63 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="InspectTalentFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
 			<Frame name="InspectTalentFramePointsBar">
-				<Size x="331" y="18"/>
+				<Size x="331" y="26"/>
 				<Anchors>
 					<Anchor point="LEFT">
-						<Offset x="5" y="0"/>
+						<Offset x="16" y="0"/>
 					</Anchor>
 					<Anchor point="RIGHT">
-						<Offset x="-6" y="0"/>
+						<Offset x="-36" y="0"/>
 					</Anchor>
 					<Anchor point="BOTTOM">
-						<Offset x="0" y="6"/>
+						<Offset x="0" y="81"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" file="Interface\Buttons\UI-Button-Borders2" setAllPoints="true">
+							<Size x="331" y="26"/>
+							<TexCoords left="0.0" right="0.646484375" top="0.2109375" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentBorderLeft" file="Interface\Buttons\UI-Button-Borders2">
 							<Size x="6" y="18"/>
 							<Anchors>
-								<Anchor point="LEFT"/>
+								<Anchor point="LEFT">
+									<Offset x="4" y="0"/>
+								</Anchor>
+								<Anchor point="TOP">
+									<Offset x="0" y="-5"/>
+								</Anchor>
+								<Anchor point="BOTTOM">
+									<Offset x="0" y="5"/>
+								</Anchor>
 							</Anchors>
 							<TexCoords left="0.0" right="0.01171875" top="0.421875" bottom="0.5625"/>
 						</Texture>
 						<Texture name="$parentBorderRight" file="Interface\Buttons\UI-Button-Borders2">
 							<Size x="6" y="18"/>
 							<Anchors>
-								<Anchor point="RIGHT"/>
+								<Anchor point="RIGHT">
+									<Offset x="-4" y="0"/>
+								</Anchor>
+								<Anchor point="TOP">
+									<Offset x="0" y="-5"/>
+								</Anchor>
+								<Anchor point="BOTTOM">
+									<Offset x="0" y="5"/>
+								</Anchor>
 							</Anchors>
 							<TexCoords left="0.3046875" right="0.31640625" top="0.421875" bottom="0.5625"/>
 						</Texture>
@@ -133,9 +259,9 @@
 					<AbsDimension x="296" y="332"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT">
+					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="8" y="-64"/>
+							<AbsDimension x="-65" y="-77"/>
 						</Offset>
 					</Anchor>
 					<Anchor point="BOTTOM" relativeTo="InspectTalentFramePointsBar" relativePoint="TOP">

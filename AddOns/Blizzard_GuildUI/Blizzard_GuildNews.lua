@@ -1,3 +1,5 @@
+local BUTTON_WIDTH_WITH_SCROLLBAR = 298;
+local BUTTON_WIDTH_NO_SCROLLBAR = 320;
 local NEWS_MOTD = -1;				-- pseudo category
 local NEWS_GUILD_ACHIEVEMENT = 0;
 local NEWS_PLAYER_ACHIEVEMENT = 1;
@@ -35,7 +37,7 @@ function GuildNewsFrame_OnEvent(self, event)
 end
 
 function GuildNews_Update(frontPage, numButtons)
-	local scrollFrame, offset, buttons, button, index;
+	local scrollFrame, offset, buttons, button, index, newButtonWidth;
 	local numGuildNews = GetNumGuildNews();
 	
 	if ( frontPage ) then
@@ -63,13 +65,10 @@ function GuildNews_Update(frontPage, numButtons)
 		if ( index == 0 ) then
 			button.text:SetPoint("LEFT", 24, 0);
 			button.icon:Show();
-			if ( button.icon.type ~= "motd" ) then
-				button.icon.type = "motd";
-				button.icon:SetWidth(16);
-				button.icon:SetHeight(11);
-				button.icon:SetTexture("Interface\\GuildFrame\\GuildExtra");
-				button.icon:SetTexCoord(0.56640625, 0.59765625, 0.86718750, 0.95312500);
-			end
+			button.icon:SetWidth(16);
+			button.icon:SetHeight(11);
+			button.icon:SetTexture("Interface\\GuildFrame\\GuildExtra");
+			button.icon:SetTexCoord(0.56640625, 0.59765625, 0.86718750, 0.95312500);
 			button.text:SetFormattedText(GUILD_NEWS_MOTD, motd);
 			button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			button.dash:Hide();
@@ -95,13 +94,10 @@ function GuildNews_Update(frontPage, numButtons)
 				button.text:SetPoint("LEFT", 24, 0);
 				if ( isSticky ) then
 					button.icon:Show();
-					if ( button.icon.type ~= "news" ) then
-						button.icon.type = "news";
-						button.icon:SetWidth(13);
-						button.icon:SetHeight(11);
-						button.icon:SetTexture("Interface\\GuildFrame\\GuildFrame");
-						button.icon:SetTexCoord(0.41406250, 0.42675781, 0.96875000, 0.99023438);
-					end
+					button.icon:SetWidth(13);
+					button.icon:SetHeight(11);
+					button.icon:SetTexture("Interface\\GuildFrame\\GuildFrame");
+					button.icon:SetTexCoord(0.41406250, 0.42675781, 0.96875000, 0.99023438);
 					button.dash:Hide();
 				else
 					button.icon:Hide();
@@ -130,11 +126,7 @@ function GuildNews_Update(frontPage, numButtons)
 					button.index = nil;
 					button.newsType = nil;
 				end
-				if ( newsType == NEWS_GUILD_ACHIEVEMENT ) then
-					button.text:SetFormattedText(_G["GUILD_NEWS_FORMAT"..newsType], text2);
-				else
-					button.text:SetFormattedText(_G["GUILD_NEWS_FORMAT"..newsType], text1, text2);
-				end
+				button.text:SetFormattedText(_G["GUILD_NEWS_FORMAT"..newsType], text1, text2);
 				button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				button.header:Hide();
 				button.id = id;
@@ -165,7 +157,25 @@ function GuildNews_Update(frontPage, numButtons)
 		local totalHeight = (numGuildNews + haveMOTD) * scrollFrame.buttonHeight;
 		local displayedHeight = numButtons * scrollFrame.buttonHeight;
 		HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-		GuildFrame_UpdateScrollFrameWidth(scrollFrame);
+		
+		-- resize buttons due to scrollbar
+		if ( scrollFrame.scrollBar:IsShown() ) then
+			if ( GuildNewsContainer.wideButtons ) then
+				newButtonWidth = BUTTON_WIDTH_WITH_SCROLLBAR;
+			end
+		else
+			if ( not GuildNewsContainer.wideButtons ) then
+				newButtonWidth = BUTTON_WIDTH_NO_SCROLLBAR;
+			end
+		end
+		if ( newButtonWidth ) then
+			for i = 1, numButtons do
+				buttons[i]:SetWidth(newButtonWidth);
+			end
+			GuildNewsContainer.wideButtons = not GuildNewsContainer.wideButtons;
+			scrollFrame:SetWidth(newButtonWidth);
+			scrollFrame.scrollChild:SetWidth(newButtonWidth);
+		end
 	end
 end
 
@@ -213,6 +223,8 @@ function GuildNewsButton_OnEnter(self)
 		local isSticky, isHeader, newsType, text1, text2, id, data1, data2 = GetGuildNewsInfo(self.index);
 		local zone = GetRealZoneText(data1);
 		if ( data2 and data2 > 0 ) then
+			GuildNewsBossModel:SetPoint("LEFT", GuildFrame, "RIGHT", 2, 0);
+			GuildNewsBossModel:SetPoint("BOTTOM", self, "TOP", 0, 0);
 			GuildNewsBossModel:Show();
 			GuildNewsBossModel:SetDisplayInfo(data2);
 			GuildNewsBossNameText:SetText(text2);

@@ -45,7 +45,6 @@ function InspectPaperDollFrame_SetLevel()
 end
 
 function InspectPaperDollFrame_OnShow()
-	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 	InspectModelFrame:SetUnit(InspectFrame.unit);
 	InspectPaperDollFrame_SetLevel();
 	InspectPaperDollItemSlotButton_Update(InspectHeadSlot);

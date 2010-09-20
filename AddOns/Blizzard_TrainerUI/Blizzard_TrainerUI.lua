@@ -1,9 +1,7 @@
 
 CLASS_TRAINER_SKILLS_DISPLAYED = 7;
-CLASS_TRAINER_SCROLL_HEIGHT = 330
-CLASS_TRAINER_SKILL_BUTTON_WIDTH = 318
-CLASS_TRAINER_SKILL_BUTTON_WIDTH = 318
-CLASS_TRAINER_SKILL_BARBUTTON_WIDTH = 298
+CLASS_TRAINER_SKILL_BUTTON_WIDTH = 316
+CLASS_TRAINER_SKILL_BARBUTTON_WIDTH = 293
 CLASS_TRAINER_SKILL_HEIGHT = 47;
 MAX_LEARNABLE_PROFESSIONS = 2;
 
@@ -25,7 +23,7 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	OnAccept = function(self)
 		BuyTrainerService(ClassTrainerFrame.selectedService);
 		ClassTrainerFrame.showSkillDetails = 1;
-		ClassTrainerFrame.showDialog = nil;
+		ClassTrainerFrame.showDialog = nil;		
 		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 		ClassTrainerFrame_Update();
 	end,
@@ -48,6 +46,14 @@ function ClassTrainerFrame_Show()
 		CloseTrainer();
 		return;
 	end
+
+	ClassTrainerFrame.selectedService = nil;
+	--Reset scrollbar
+	ClassTrainerListScrollFrameScrollBar:SetMinMaxValues(0, 0); 
+	ClassTrainerListScrollFrameScrollBar:SetValue(0);
+	ClassTrainer_SelectNearestLearnableSkill();
+	ClassTrainerFrame_Update();
+	UpdateMicroButtons();
 end
 
 function ClassTrainerFrame_Hide()
@@ -58,28 +64,17 @@ function ClassTrainerFrame_OnLoad(self)
 	SetPortraitTexture(ClassTrainerFramePortrait, "npc");
 	self:RegisterEvent("TRAINER_UPDATE");
 	self:RegisterEvent("TRAINER_DESCRIPTION_UPDATE");
+	
+	self.BG:SetPoint("TOPLEFT", ClassTrainerSkill1, "TOPLEFT", 0, 0);
+	self.BG:SetPoint("BOTTOMRIGHT", ClassTrainerSkill7, "BOTTOMRIGHT", 0, 0);
 	MoneyFrame_SetMaxDisplayWidth(ClassTrainerFrameMoneyFrame, 152);
-
-
-	self.BG:SetPoint("TOPLEFT", self.scrollFrame, "TOPLEFT", -3, 4);
-	self.BG:SetPoint("BOTTOMRIGHT", self.scrollFrame, "BOTTOMRIGHT", 3, -4);
-	self.scrollFrame.update = ClassTrainerFrame_Update;
-	self.scrollFrame.stepSize = 12;
-	HybridScrollFrame_CreateButtons(self.scrollFrame, "ClassTrainerSkillButtonTemplate", 1, -1, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 end
 
 
 function ClassTrainerFrame_OnShow(self)
 	PlaySound("igCharacterInfoOpen");
+	ClassTrainerListScrollFrame:SetHeight(self.Inset:GetHeight());
 	ClassTrainerTrainButton:Disable();
-	
-
-	ClassTrainerFrame.selectedService = nil;
-	--Reset scrollbar
-	ClassTrainerFrame_Update();
-	ClassTrainerFrame.scrollFrame.scrollBar:SetValue(0);
-	ClassTrainer_SelectNearestLearnableSkill();
-	UpdateMicroButtons();
 end
 
 
@@ -97,212 +92,197 @@ function ClassTrainerFrame_Update()
 	ClassTrainerFrameTitleText:SetText(UnitName("npc"));
 	--ClassTrainerGreetingText:SetText(GetTrainerGreetingText());
 	local numTrainerServices = GetNumTrainerServices();
+	
+
+	-- ScrollFrame update
+	FauxScrollFrame_Update(ClassTrainerListScrollFrame, numTrainerServices, CLASS_TRAINER_SKILLS_DISPLAYED, CLASS_TRAINER_SKILL_HEIGHT, nil, nil, nil, 
+											ClassTrainerFrameInset, CLASS_TRAINER_SKILL_BARBUTTON_WIDTH, CLASS_TRAINER_SKILL_BUTTON_WIDTH );
+	local skillOffset = FauxScrollFrame_GetOffset(ClassTrainerListScrollFrame);
+	
+
 	local selected = GetTrainerSelectionIndex();
 	local playerMoney = GetMoney();
-	local isTradeSkill = IsTradeskillTrainer()
-	local scrollFrame = ClassTrainerFrame.scrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-	local displayHeight = CLASS_TRAINER_SCROLL_HEIGHT;
+
+	local isTradeSkill = IsTradeskillTrainer();
 	
 	
 	local _, _, _, _, _, topServiceLine = GetTrainerServiceInfo(1);
-	local tradeSkillDisplay = (topServiceLine == TRADESKILL_SERVICE_STEP_LUA) and isTradeSkill and numTrainerServices >  CLASS_TRAINER_SKILLS_DISPLAYED;
+	local tradeSkillDisplay = (topServiceLine == TRADESKILL_SERVICE_STEP_LUA) and isTradeSkill;
 	if tradeSkillDisplay then
-		ClassTrainerFrame.tradeSkillDisplay = true;
-		scrollFrame:ClearAllPoints();
-		scrollFrame:SetPoint("TOPLEFT", ClassTrainerFrame.bottomInset, "TOPLEFT", 5, -5);
-		displayHeight = CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5;
-		scrollFrame:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5);
+		ClassTrainerSkill1:SetHeight(39);			
+		ClassTrainerSkill2:SetPoint("TOPLEFT", ClassTrainerSkill1, "BOTTOMLEFT", 0, -10);
+		ClassTrainerListScrollFrame:SetPoint("TOPRIGHT", ClassTrainerSkill2, "TOPRIGHT", 0, 2);
+		ClassTrainerFrame.BG:SetPoint("TOPLEFT", ClassTrainerSkill2, "TOPLEFT", 0, 0);		
+		if numTrainerServices > CLASS_TRAINER_SKILLS_DISPLAYED then
+			ClassTrainerFrame.BG:SetPoint("BOTTOMRIGHT", ClassTrainerSkill7, "BOTTOMRIGHT", 0, 0);
+		else
+			ClassTrainerFrame.BG:SetPoint("BOTTOMRIGHT", ClassTrainerFrame.bottomInset, "BOTTOMRIGHT", 0, 0);
+		end
+		
 		ClassTrainerFrame.bottomInset:Show();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "TOPRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_ATTIC_OFFSET-47);
-		ClassTrainerFrame_SetServiceButton( ClassTrainerFrame.skillStepButton, 1, playerMoney, selected, isTradeSkill ); -- 1 will be the next skill step
-		offset = offset + 1;
-	else
-		ClassTrainerFrame.tradeSkillDisplay = false;
-		scrollFrame:ClearAllPoints();
-		scrollFrame:SetPoint("TOPLEFT", ClassTrainerFrame.Inset, "TOPLEFT", 5, -5);
-		scrollFrame:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT);
-		ClassTrainerFrame.bottomInset:Hide();
+	else		
+		ClassTrainerSkill1:SetHeight(47);			
+		ClassTrainerSkill2:SetPoint("TOPLEFT", ClassTrainerSkill1, "BOTTOMLEFT", 0, 0);
+		ClassTrainerListScrollFrame:SetPoint("TOPRIGHT", ClassTrainerSkill1, "TOPRIGHT", 0, 2);
+		ClassTrainerFrame.BG:SetPoint("TOPLEFT", ClassTrainerSkill1, "TOPLEFT", 0, 0);
+		if numTrainerServices > CLASS_TRAINER_SKILLS_DISPLAYED then
+			ClassTrainerFrame.BG:SetPoint("BOTTOMRIGHT", ClassTrainerSkill7, "BOTTOMRIGHT", 0, 0);
+		else
+			ClassTrainerFrame.BG:SetPoint("BOTTOMRIGHT", ClassTrainerFrame.Inset, "BOTTOMRIGHT", 0, 0);
+		end
+		
+		ClassTrainerFrame.bottomInset:Hide();		
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
-		ClassTrainerFrame.skillStepButton:Hide();
 	end
-
-
-	local buttonSize = CLASS_TRAINER_SKILL_BARBUTTON_WIDTH;
-	if numTrainerServices <=  CLASS_TRAINER_SKILLS_DISPLAYED then
-		buttonSize = CLASS_TRAINER_SKILL_BUTTON_WIDTH;
-	end
-	scrollFrame:SetWidth(buttonSize+2);
-
+	
 	-- Fill in the skill buttons
-	for i=1, numButtons do
-		local skillIndex = i + offset;
-		local skillButton = buttons[i]; 
-		if ( skillIndex <= numTrainerServices) then	
-			ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill );
-			skillButton:SetWidth(buttonSize);
+	for i=1, CLASS_TRAINER_SKILLS_DISPLAYED, 1 do
+
+		local skillIndex = i + skillOffset;
+		if tradeSkillDisplay then
+			skillIndex = 1;
+		end
+		
+		local skillButton = _G["ClassTrainerSkill"..i]; 
+		local unavailable = false;
+		local serviceName, serviceSubText, serviceType, isExpanded;
+		if ( skillIndex <= numTrainerServices or tradeSkillDisplay ) then	
+			serviceName, serviceSubText, serviceType, texture, reqLevel = GetTrainerServiceInfo(skillIndex);
+			if ( not serviceName ) then
+				serviceName = UNKNOWN;
+			end	
+
+			skillButton.name:SetText(serviceName);
+			skillButton.icon:SetTexture(texture);
+			
+			
+			local requirements = "";		
+			local separator = "";
+			if reqLevel > 1 then
+				if ( UnitLevel("player") >= reqLevel ) then
+					requirements = requirements..format(TRAINER_REQ_LEVEL, reqLevel);
+				else
+					requirements = requirements..format(TRAINER_REQ_LEVEL_RED, reqLevel);
+				end
+				separator = PLAYER_LIST_DELIMITER;
+			end
+			if ( isTradeSkill ) then
+				local skill, rank, hasReq = GetTrainerServiceSkillReq(skillIndex);
+				if ( skill ) then
+					if ( hasReq ) then
+						requirements = requirements..separator..format(TRAINER_REQ_SKILL_RANK, skill, rank );
+					else
+						requirements = requirements..separator..format(TRAINER_REQ_SKILL_RANK_RED, skill, rank );
+					end
+					separator = PLAYER_LIST_DELIMITER;
+				end			
+			end	
+			
+			-- Ability Requirements
+			local numRequirements = GetTrainerServiceNumAbilityReq(skillIndex);
+			local ability;
+			if ( numRequirements > 0 ) then
+				for i=1, numRequirements, 1 do
+					ability, hasReq = GetTrainerServiceAbilityReq(skillIndex, i);					
+					if ( hasReq ) then
+						requirements = requirements..separator..format(TRAINER_REQ_ABILITY, ability );
+					else
+						requirements = requirements..separator..format(TRAINER_REQ_ABILITY_RED, ability );
+					end
+				end
+			end
+			
+			if ( requirements ~= "" and serviceType ~= "used" ) then
+				skillButton.subText:Show();
+				skillButton.subText:SetText(REQUIRES_LABEL.." "..requirements);
+				skillButton.money:Show();
+			elseif ( serviceType == "used" ) then
+				skillButton.subText:Show();
+				skillButton.subText:SetText(ITEM_SPELL_KNOWN);
+				skillButton.money:Hide();
+			else
+				skillButton.subText:Hide();
+			end
+			
+			local moneyCost, isProfession = GetTrainerServiceCost(skillIndex);
+			if ( moneyCost and moneyCost > 0 ) then
+				MoneyFrame_Update(skillButton.money:GetName(), moneyCost);
+				if ( playerMoney >= moneyCost ) then
+					SetMoneyFrameColor(skillButton.money:GetName(), "white");
+				else
+					SetMoneyFrameColor(skillButton.money:GetName(), "red");
+					unavailable = true;
+				end
+			end
+			-- Place the highlight and lock the highlight state
+			if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
+				ClassTrainerFrame.showDialog = nil;
+				
+				if isProfession then
+					ClassTrainerFrame.showDialog = true;
+					local _, prof2 = GetProfessions();
+					if prof2 then
+						unavailable = true;
+					end
+				end 
+			
+				skillButton.selectedTex:Show();
+				if ( serviceType == "available" and not unavailable) then
+					ClassTrainerTrainButton:Enable();
+				else
+					ClassTrainerTrainButton:Disable();
+				end
+			else
+				skillButton.selectedTex:Hide();
+			end			
+			
+			
+			if ( serviceType == "unavailable" ) then
+				skillButton.icon:SetDesaturated(1);
+				skillButton.name:SetFontObject(GameFontNormalLeftGrey);
+				skillButton.disabledBG:Show();
+			else			
+				skillButton.icon:SetDesaturated(0);
+				skillButton.name:SetFontObject(GameFontNormal);
+				skillButton.disabledBG:Hide();
+			end	
+			skillButton:SetID(skillIndex);
+			skillButton:Show();
+			
+			if skillButton.showingTooltip then
+				GameTooltip:SetTrainerService(skillButton:GetID());
+			end			
 		else
 			skillButton:Hide();
 		end
-	end
-	
-	if (tradeSkillDisplay) then
-		numTrainerServices = numTrainerServices -1;
-	end
-	local totalHeight = CLASS_TRAINER_SKILL_HEIGHT * numTrainerServices ;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayHeight);
-end
-
-
-function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill )
-
-	local unavailable = false;
-	local serviceName, serviceSubText, serviceType, texture, reqLevel = GetTrainerServiceInfo(skillIndex);
-	if ( not serviceName ) then
-		serviceName = UNKNOWN;
-	end
-
-	skillButton.icon:SetTexture(texture);
-	
-	
-	local requirements = "";
-	local separator = "";
-	if reqLevel > 1 then
-		if ( UnitLevel("player") >= reqLevel ) then
-			requirements = requirements..format(TRAINER_REQ_LEVEL, reqLevel);
-		else
-			requirements = requirements..format(TRAINER_REQ_LEVEL_RED, reqLevel);
-		end
-		separator = PLAYER_LIST_DELIMITER;
-	end
-	
-	if ( isTradeSkill ) then
-		local skill, rank, hasReq = GetTrainerServiceSkillReq(skillIndex);
-		if ( skill ) then
-			if ( hasReq ) then
-				requirements = requirements..separator..format(TRAINER_REQ_SKILL_RANK, skill, rank );
-			else
-				requirements = requirements..separator..format(TRAINER_REQ_SKILL_RANK_RED, skill, rank );
-			end
-			separator = PLAYER_LIST_DELIMITER;
-		end
-	end
-	
-	-- Ability Requirements
-	local numRequirements = GetTrainerServiceNumAbilityReq(skillIndex);
-	local ability;
-	if ( numRequirements > 0 ) then
-		for i=1, numRequirements, 1 do
-			ability, hasReq = GetTrainerServiceAbilityReq(skillIndex, i);
-			if ( hasReq ) then
-				requirements = requirements..separator..format(TRAINER_REQ_ABILITY, ability );
-			else
-				requirements = requirements..separator..format(TRAINER_REQ_ABILITY_RED, ability );
-			end
-		end
-	end
-	
-	if ( serviceType == "unavailable" ) then
-		skillButton.icon:SetDesaturated(1);
-		skillButton.name:SetText(GRAY_FONT_COLOR_CODE..serviceName);
-		skillButton.disabledBG:Show();
-	else
-		skillButton.icon:SetDesaturated(0);
-		skillButton.disabledBG:Hide();
-	end
-	
-	if ( requirements ~= "" and serviceType ~= "used" ) then
-		requirements = REQUIRES_LABEL.." "..requirements;
-		skillButton.money:Show();
-	elseif ( serviceType == "used" ) then
-		requirements = ITEM_SPELL_KNOWN;
-		skillButton.money:Hide();
-	else
-		requirements = "";
-	end
-	skillButton.name:SetText(serviceName);
-	skillButton.subText:SetText(requirements);
-	
-	
-	local moneyCost, isProfession = GetTrainerServiceCost(skillIndex);
-	if ( moneyCost and moneyCost > 0 ) then
-		MoneyFrame_Update(skillButton.money:GetName(), moneyCost);
-		if ( playerMoney >= moneyCost ) then
-			SetMoneyFrameColor(skillButton.money:GetName(), "white");
-		else
-			SetMoneyFrameColor(skillButton.money:GetName(), "red");
-			unavailable = true;
-		end
-	end
-	-- Place the highlight and lock the highlight state
-	if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
-		ClassTrainerFrame.showDialog = nil;
 		
-		if isProfession then
-			ClassTrainerFrame.showDialog = true;
-			local _, prof2 = GetProfessions();
-			if prof2 then
-				unavailable = true;
-			end
-		end 
-	
-		skillButton.selectedTex:Show();
-		if ( serviceType == "available" and not unavailable) then
-			ClassTrainerTrainButton:Enable();
+		-- Set button widths if scrollbar is shown or hidden
+		if ( ClassTrainerListScrollFrame:IsShown() and not tradeSkillDisplay ) then
+			skillButton:SetWidth(CLASS_TRAINER_SKILL_BARBUTTON_WIDTH);
 		else
-			ClassTrainerTrainButton:Disable();
-		end
-	else
-		skillButton.selectedTex:Hide();
+			skillButton:SetWidth(CLASS_TRAINER_SKILL_BUTTON_WIDTH);
+		end	
+		tradeSkillDisplay = false; -- only evaluate this the first time through the loop
 	end
-
-	if skillButton.showingTooltip then
-		GameTooltip:SetTrainerService(skillButton:GetID());
-	end
-	
-	skillButton:SetID(skillIndex);
-	skillButton:Hide(); -- Forces the anchors in the button to update (Hack)
-	skillButton:Show();
 end
-
 
 function ClassTrainer_SelectNearestLearnableSkill()
-	ClassTrainerTrainButton:Disable();
 	local numServices = GetNumTrainerServices();
-	local startIndex = ClassTrainerFrame.selectedService;
-	ClassTrainerFrame.selectedService = nil;
-	if not startIndex or  startIndex> numServices then
-		 startIndex = 1;
-	else 
-		local _, _, serviceType = GetTrainerServiceInfo(startIndex);
-		if ( serviceType == "unavailable" ) then
-			startIndex = 1;
-		end
-	end
-	
 	if ( numServices > 0 ) then
-		for i=startIndex, numServices do 
-			local _, _, serviceType = GetTrainerServiceInfo(i);
-			if ( serviceType == "available" ) then
-				ClassTrainerFrame.selectedService = i;
-				break;
+		if ( ClassTrainerFrame.selectedService and ClassTrainerFrame.selectedService <=  numServices ) then
+			ClassTrainer_SetSelection( ClassTrainerFrame.selectedService);		
+		else	
+			local selectionIndex = GetTrainerSelectionIndex();
+			ClassTrainer_SetSelection(selectionIndex);
+			if ( selectionIndex and (selectionIndex <= numServices and selectionIndex >= 2)) then
+				ClassTrainerFrame_Update();
+				ClassTrainerListScrollFrameScrollBar:SetValue((selectionIndex-1)*CLASS_TRAINER_SKILL_HEIGHT);
 			end
 		end
-	end
-	
-	if ClassTrainerFrame.selectedService then
-		ClassTrainer_SetSelection( ClassTrainerFrame.selectedService);
-		local offset = HybridScrollFrame_GetOffset(ClassTrainerFrame.scrollFrame);
-		if ClassTrainerFrame.selectedService > offset + CLASS_TRAINER_SKILLS_DISPLAYED then
-			if ClassTrainerFrame.tradeSkillDisplay then
-				ClassTrainerFrame.scrollFrame.scrollBar:SetValue( (ClassTrainerFrame.selectedService-2)*CLASS_TRAINER_SKILL_HEIGHT);
-			else
-				ClassTrainerFrame.scrollFrame.scrollBar:SetValue( (ClassTrainerFrame.selectedService-1)*CLASS_TRAINER_SKILL_HEIGHT);
-			end
-		end
-		ClassTrainerFrame_Update();
+	else
+		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+		ClassTrainerListScrollFrameScrollBar:SetValue(0);
 	end
 end
 
@@ -378,7 +358,8 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function ClassTrainerFrameFilterDropDown_OnClick(self)
+function ClassTrainerFrameFilterDropDown_OnClick(self)	
+	ClassTrainerListScrollFrameScrollBar:SetValue(0);
 	if ( UIDropDownMenuButton_GetChecked(self) ) then
 		SetTrainerServiceTypeFilter(self.value, 1);
 	else

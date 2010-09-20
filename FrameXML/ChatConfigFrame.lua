@@ -12,7 +12,7 @@ MAX_COMBATLOG_FILTERS = 20;
 CHATCONFIG_CHANNELS_MAXWIDTH = 145;
 
 --Chat options
---NEW_CHAT_TYPE - Add a new chat type to one of the below sections so that people can change it in the Chat Config.
+
 CHAT_CONFIG_CHAT_LEFT = {
 	[1] = {
 		type = "SAY",
@@ -149,54 +149,49 @@ CHAT_CONFIG_OTHER_COMBAT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_XP_GAIN"); end;
 	},
 	[2] = {
-		type = "COMBAT_GUILD_XP_GAIN",
-		checked = function () return IsListeningForMessageType("COMBAT_GUILD_XP_GAIN"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_GUILD_XP_GAIN") end;
-	},
-	[3] = {
 		type = "COMBAT_HONOR_GAIN",
 		checked = function () return IsListeningForMessageType("COMBAT_HONOR_GAIN"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_HONOR_GAIN"); end;
 	},
-	[4] = {
+	[3] = {
 		type = "COMBAT_FACTION_CHANGE",
 		checked = function () return IsListeningForMessageType("COMBAT_FACTION_CHANGE"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_FACTION_CHANGE"); end;
 	},
-	[5] = {
+	[4] = {
 		text = SKILLUPS,
 		type = "SKILL",
 		checked = function () return IsListeningForMessageType("SKILL"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "SKILL"); end;
 	},
-	[6] = {
+	[5] = {
 		text = ITEM_LOOT,
 		type = "LOOT",
 		checked = function () return IsListeningForMessageType("LOOT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "LOOT"); end;
 	},
-	[7] = {
+	[6] = {
 		text = MONEY_LOOT,
 		type = "MONEY",
 		checked = function () return IsListeningForMessageType("MONEY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "MONEY"); end;
 	},
-	[8] = {
+	[7] = {
 		type = "TRADESKILLS",
 		checked = function () return IsListeningForMessageType("TRADESKILLS"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "TRADESKILLS"); end;
 	},
-	[9] = {
+	[8] = {
 		type = "OPENING",
 		checked = function () return IsListeningForMessageType("OPENING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "OPENING"); end;
 	},
-	[10] = {
+	[9] = {
 		type = "PET_INFO",
 		checked = function () return IsListeningForMessageType("PET_INFO"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PET_INFO"); end;
 	},
-	[11] = {
+	[10] = {
 		type = "COMBAT_MISC_INFO",
 		checked = function () return IsListeningForMessageType("COMBAT_MISC_INFO"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_MISC_INFO"); end;

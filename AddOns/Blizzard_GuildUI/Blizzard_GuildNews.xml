@@ -204,9 +204,6 @@
 -->
 	<PlayerModel name="GuildNewsBossModel" enableMouse="true" hidden="true" parent="GuildFrame" clampedToScreen="true" framestrata="HIGH">
 		<Size x="198" y="230"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="-3" y="-43"/>
-		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBg" inherits="QuestPortrait-MrBrownstone">
@@ -361,9 +358,12 @@
 				Model_OnLoad(self);
 				self:SetPortraitZoom(0.6);
 				self:SetRotation(0);
+				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 				self:SetClampRectInsets(0, 0, 24, 0);
 			</OnLoad>
-			<OnEvent function="Model_OnEvent"/>
+			<OnEvent>
+				self:RefreshUnit();
+			</OnEvent>
 		</Scripts>
 	</PlayerModel>
 </Ui>
