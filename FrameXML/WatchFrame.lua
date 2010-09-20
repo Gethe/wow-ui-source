@@ -289,7 +289,7 @@ function WatchFrame_OnEvent (self, event, ...)
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
 		local questId = ...;
 		WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE");
-		PlaySound("ReadyCheck");
+		PlaySound("UI_AutoQuestComplete");
 	end
 end
 
@@ -835,10 +835,12 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 				WORLDMAP_SETTINGS.selectedQuestId = questID;
 			end
 			
+			local questFailed = false;
 			local requiredMoney = GetQuestLogRequiredMoney(questIndex);			
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
 			if ( isComplete and isComplete < 0 ) then
 				isComplete = false;
+				questFailed = true;
 			elseif ( numObjectives == 0 and playerMoney >= requiredMoney ) then
 				isComplete = true;		
 			end
@@ -882,6 +884,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
 						lastLine = line;
 					end
+				elseif ( questFailed ) then
+					line = WatchFrame_GetQuestLine();
+					WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, FAILED, DASH_HIDE, nil, nil, false);
+					lastLine = line;
 				else
 					for j = 1, numObjectives do
 						text, objectiveType, finished = GetQuestLogLeaderBoard(j, questIndex);

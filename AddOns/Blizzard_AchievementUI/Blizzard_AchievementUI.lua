@@ -48,6 +48,7 @@ ACHIEVEMENT_FILTER_COMPLETE = 2;
 ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
 local FEAT_OF_STRENGTH_ID = 81;
+local GUILD_FEAT_OF_STRENGTH_ID = 15093;
 local GUILD_CATEGORY_ID = 15076;
 local IN_GUILD_VIEW;
 local TEXTURES_OFFSET = 0;		-- 0.5 when in guild view
@@ -492,7 +493,7 @@ function AchievementFrameCategories_DisplayButton (button, element)
 	-- kind of janky
 	if ( id == "summary" ) then
 		categoryName = ACHIEVEMENT_SUMMARY_CATEGORY;
-		numAchievements, numCompleted = GetNumCompletedAchievements();
+		numAchievements, numCompleted = GetNumCompletedAchievements(IN_GUILD_VIEW);
 	else
 		categoryName, parentID, flags = GetCategoryInfo(id);
 		numAchievements, numCompleted = AchievementFrame_GetCategoryTotalNumAchievements(id, true);
@@ -508,7 +509,10 @@ function AchievementFrameCategories_DisplayButton (button, element)
 		-- This is the feat of strength category since it's sorted to the end of the list
 		button.text = FEAT_OF_STRENGTH_DESCRIPTION;
 		button.showTooltipFunc = AchievementFrameCategory_FeatOfStrengthTooltip;
-	elseif ( AchievementFrame.selectedTab == 1 ) then
+	elseif ( id == GUILD_FEAT_OF_STRENGTH_ID ) then
+		button.text = GUILD_FEAT_OF_STRENGTH_DESCRIPTION;
+		button.showTooltipFunc = AchievementFrameCategory_FeatOfStrengthTooltip;
+	elseif ( AchievementFrame.selectedTab == 1 or AchievementFrame.selectedTab == 2 ) then
 		button.text = nil;
 		button.numAchievements = numAchievements;
 		button.numCompleted = numCompleted;
@@ -613,7 +617,7 @@ function AchievementFrameCategories_SelectButton (button)
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
 		elseif ( achievementFunctions == ACHIEVEMENT_FUNCTIONS or achievementFunctions == GUILD_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
-			if ( id == FEAT_OF_STRENGTH_ID ) then
+			if ( id == FEAT_OF_STRENGTH_ID or id == GUILD_FEAT_OF_STRENGTH_ID ) then
 				AchievementFrameFilterDropDown:Hide();
 				AchievementFrameHeaderRightDDLInset:Hide();
 			else
@@ -642,7 +646,7 @@ function AchievementFrameAchievements_OnShow()
 	if ( AchievementFrameAchievements.guildView ~= IN_GUILD_VIEW ) then
 		AchievementFrameAchievements_ToggleView();
 	end
-	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID ) then
+	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID or achievementFunctions.selectedCategory == GUILD_FEAT_OF_STRENGTH_ID ) then
 		AchievementFrameFilterDropDown:Hide();
 		AchievementFrameHeaderRightDDLInset:Hide();
 	else
@@ -800,6 +804,11 @@ function AchievementFrameAchievements_Update ()
 	
 	-- If the current category is feats of strength and there are no entries then show the explanation text
 	if ( AchievementFrame_IsFeatOfStrength() and numAchievements == 0 ) then
+		if ( AchievementFrame.selectedTab == 1 ) then
+			AchievementFrameAchievementsFeatOfStrengthText:SetText(FEAT_OF_STRENGTH_DESCRIPTION);
+		else
+			AchievementFrameAchievementsFeatOfStrengthText:SetText(GUILD_FEAT_OF_STRENGTH_DESCRIPTION);
+		end	
 		AchievementFrameAchievementsFeatOfStrengthText:Show();
 	else
 		AchievementFrameAchievementsFeatOfStrengthText:Hide();
@@ -3018,7 +3027,7 @@ function AchievementFrame_IsComparison()
 end
 
 function AchievementFrame_IsFeatOfStrength()
-	if ( AchievementFrame.selectedTab == 1 and achievementFunctions.selectedCategory == displayCategories[#displayCategories].id ) then
+	if ( ( AchievementFrame.selectedTab == 1 or AchievementFrame.selectedTab == 2 ) and achievementFunctions.selectedCategory == displayCategories[#displayCategories].id ) then
 		return true;
 	end
 	return false;
@@ -3159,9 +3168,9 @@ end
 
 function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)
 	if ( IN_GUILD_VIEW ) then
-		-- check if achievement might have names
 		local achievementId = requestFrame.id;
 		local _, achievementName, points, completed, month, day, year, description, flags, iconpath = GetAchievementInfo(achievementId);
+		-- check if achievement has names
 		if ( bit.band(flags, ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS) == ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS ) then
 			local numMembers = GetGuildAchievementNumMembers(achievementId);
 			if ( numMembers == 0 ) then
@@ -3188,8 +3197,8 @@ function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)
 					GameTooltip:AddLine(leftMemberName);
 				end
 			end
-		-- otherwise, we might have names on the criteria
-		else
+		-- otherwise check if criteria has names
+		elseif ( bit.band(flags, ACHIEVEMENT_FLAGS_SHOW_CRITERIA_MEMBERS) == ACHIEVEMENT_FLAGS_SHOW_CRITERIA_MEMBERS ) then
 			local numCriteria = GetAchievementNumCriteria(achievementId);
 			local firstName = true;
 			for i = 1, numCriteria do

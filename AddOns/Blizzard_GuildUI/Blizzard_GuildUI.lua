@@ -20,9 +20,10 @@ function GuildFrame_OnLoad(self)
 	GuildFrame_UpdateTabard();
 	GuildFrame_UpdateLevel();
 	GuildFrame_UpdateXP();
-	GuildFrame_UpdatePlayerRank();
 	GuildFrame_UpdateFaction();
 	GuildFrame_CheckPermissions();
+	local guildName = GetGuildInfo("player");
+	GuildFrameTitleText:SetText(guildName);
 end
 
 function GuildFrame_OnShow(self)
@@ -78,7 +79,6 @@ function GuildFrame_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_FACTION" ) then
 		GuildFrame_UpdateFaction();
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
-		GuildFrame_UpdatePlayerRank();
 		GuildFrame_CheckPermissions();
 		GuildFrame_UpdateTabard();
 		if ( not IsInGuild() and self:IsShown() ) then
@@ -112,15 +112,6 @@ end
 function GuildFrame_UpdateXP()
 	local currentXP, nextLevelXP, dailyXP, maxDailyXP = UnitGetGuildXP("player");
 	GuildXPBar_SetProgress(currentXP, nextLevelXP + currentXP, maxDailyXP - dailyXP);
-end
-
-function GuildFrame_UpdatePlayerRank()
-	local guildName, title, rank = GetGuildInfo("player");
-	if ( guildName ) then
-		GuildFrameTitleText:SetFormattedText(GUILD_TITLE_TEMPLATE, title, guildName);
-	else 
-		GuildFrameTitleText:SetText("");
-	end
 end
 
 function GuildFrame_UpdateFaction()

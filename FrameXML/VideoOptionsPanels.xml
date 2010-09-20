@@ -82,11 +82,11 @@
 	
 	<Texture name="videoUnderline" virtual="true" >
 		<Size x="580" y="1"/>
-		<Color r="0.5" g="0.5" b="0.5" a="1"/>
+		<Color r="1" g="1" b="1" a="0.2"/>
 	</Texture>
 	<Texture name="videoSubUnderline" virtual="true" >
 		<Size x="250" y="1"/>
-		<Color r="0.5" g="0.5" b="0.5" a="1"/>
+		<Color r="1" g="1" b="1" a="0.2"/>
 	</Texture>
 
 	<!-- Graphics Panel. Delta_y is n*30 + 16 -->
@@ -318,7 +318,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="$parentLow2" inherits="OptionsFontSmall" text="TEXT_LOW">
+						<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 									<Offset>
@@ -327,7 +327,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentFair" inherits="OptionsFontSmall" text="TEXT_FAIR">
+						<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 									<Offset>
@@ -343,7 +343,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentMed" inherits="OptionsFontSmall" text="TEXT_MEDIUM">
+						<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 									<Offset>
@@ -352,7 +352,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="TEXT_HIGH">
+						<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 									<Offset>
@@ -361,7 +361,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentUltra" inherits="OptionsFontSmall" text="TEXT_ULTRA">
+						<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 									<Offset>
@@ -487,7 +487,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GROUND_DENSITY">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GROUND_CLUTTER">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT">
 									<Offset x="0" y="0"/>
@@ -643,12 +643,25 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.64" maxValue="1.15" valueStep=".01" >
+			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursorDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="-90" y="-20"/>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentTick" inherits="OptionsFontHighlightSmall" text="1.0">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="138" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						if(InGlue()) then

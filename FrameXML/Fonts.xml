@@ -227,7 +227,6 @@
 			<AbsValue val="18"/>
 		</FontHeight>
 	</Font>
-	
 	<Font name="QuestFont_Shadow_Small" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<Shadow>
 			<Offset>

@@ -19,6 +19,7 @@ function MovieFrame_PlayMovie(self, movieID)
 	self:Show();
 	local playSuccess, errorCode = self:StartMovie(movieID);
 	if ( not playSuccess ) then
+		StaticPopup_Show("ERROR_CINEMATIC");
 		self:Hide();
 		GameMovieFinished();
 	end

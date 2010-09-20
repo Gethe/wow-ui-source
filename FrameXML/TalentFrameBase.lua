@@ -14,6 +14,7 @@ MAX_NUM_BRANCH_TEXTURES = 30;
 MAX_NUM_ARROW_TEXTURES = 30;
 INITIAL_TALENT_OFFSET_X_DEFAULT = 35;
 INITIAL_TALENT_OFFSET_Y_DEFAULT = 20;
+TALENT_GOLD_BORDER_WIDTH = 5;
 
 TALENT_HYBRID_ICON = "Interface\\Icons\\Ability_DualWieldSpecialization";
 
@@ -99,7 +100,7 @@ function TalentFrame_Update(TalentFrame)
 
 	local talentFrameName = TalentFrame:GetName();
 	local selectedTab = PanelTemplates_GetSelectedTab(TalentFrame) or TalentFrame.talentTree;
-	local preview = GetCVarBool("previewTalents");
+	local preview = GetCVarBool("previewTalentsOption");
 	local talentButtonSize = TalentFrame.talentButtonSize or TALENT_BUTTON_SIZE_DEFAULT;
 	local initialOffsetX = TalentFrame.initialOffsetX or INITIAL_TALENT_OFFSET_X_DEFAULT;
 	local initialOffsetY = TalentFrame.initialOffsetY or INITIAL_TALENT_OFFSET_Y_DEFAULT;
@@ -157,12 +158,12 @@ function TalentFrame_Update(TalentFrame)
 	local talentFrameTalentName = talentFrameName.."Talent";
 	local forceDesaturated, tierUnlocked;
 	for i=1, MAX_NUM_TALENTS do
-		local buttonName = talentFrameTalentName..i;
-		local button = _G[buttonName];
+		local button = _G[talentFrameTalentName..i];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq, previewRank, meetsPreviewPrereq =
+			local name, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional, goldBorder =
 				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+			
 			if ( name and tier <= MAX_NUM_TALENT_TIERS) then
 				local displayRank;
 				if ( preview ) then
@@ -171,7 +172,7 @@ function TalentFrame_Update(TalentFrame)
 					displayRank = rank;
 				end
 
-				_G[buttonName.."Rank"]:SetText(displayRank);
+				button.Rank:SetText(displayRank);
 				SetTalentButtonLocation(button, tier, column, talentButtonSize, initialOffsetX, initialOffsetY, buttonSpacingX, buttonSpacingY);
 				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
 			
@@ -189,7 +190,19 @@ function TalentFrame_Update(TalentFrame)
 					tierUnlocked = nil;
 				end
 					
-				SetItemButtonTexture(button, iconTexture);
+				SetItemButtonTexture(button, iconTexture); 
+				
+				if (goldBorder and button.GoldBorder) then
+					button.GoldBorder:Show();
+					button.Slot:Hide();
+					button.SlotShadow:Hide();
+				else
+					if (button.GoldBorder) then
+						button.GoldBorder:Hide();
+					end
+					button.Slot:Show();
+					button.SlotShadow:Show();
+				end
 				
 				-- Talent must meet prereqs or the player must have no points to spend
 				local prereqsSet =
@@ -198,58 +211,76 @@ function TalentFrame_Update(TalentFrame)
 				if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
 					SetItemButtonDesaturated(button, nil);
 					
-					_G[buttonName.."RankBorder"]:Show();
-					_G[buttonName.."RankBorder"]:SetVertexColor(1, 1, 1);
-					_G[buttonName.."Rank"]:Show();
-					_G[buttonName.."Slot"]:Show();
+					button.RankBorder:Show();
+					button.RankBorder:SetVertexColor(1, 1, 1);
+					button.Rank:Show();
+					
+					button.GoldBorder:SetDesaturated(nil);
 
 					if ( displayRank < maxRank ) then
 						-- Rank is green if not maxed out
-						_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+						button.Rank:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 						
-						if (_G[buttonName.."RankBorderGreen"]) then
-							_G[buttonName.."RankBorder"]:Hide();
-							_G[buttonName.."RankBorderGreen"]:Show();
-							_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
+						if (button.RankBorderGreen) then
+							button.RankBorder:Hide();
+							button.RankBorderGreen:Show();
+							button.Slot:SetVertexColor(1.0, 0.82, 0);
 						else
-							_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
+							button.Slot:SetVertexColor(0.1, 1.0, 0.1);
 						end
 						
-						if (_G[buttonName.."GlowBorder"]) then
-							if (unspentPoints > 0) then
-								_G[buttonName.."GlowBorder"]:Show();
+						if (button.GlowBorder) then
+							if (unspentPoints > 0 and not goldBorder) then
+								button.GlowBorder:Show();
 							else
-								_G[buttonName.."GlowBorder"]:Hide();
+								button.GlowBorder:Hide();
+							end
+						end
+						
+						if (button.GoldBorderGlow) then
+							if (unspentPoints > 0 and goldBorder) then
+								button.GoldBorderGlow:Show();
+							else
+								button.GoldBorderGlow:Hide();
 							end
 						end
 					else
-						_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
-						_G[buttonName.."Rank"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-						if (_G[buttonName.."GlowBorder"]) then
-							_G[buttonName.."GlowBorder"]:Hide();
+						button.Slot:SetVertexColor(1.0, 0.82, 0);
+						button.Rank:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						if (button.GlowBorder) then
+							button.GlowBorder:Hide();
 						end
-						if (_G[buttonName.."RankBorderGreen"]) then
-							_G[buttonName.."RankBorderGreen"]:Hide();
+						if (button.GoldBorderGlow) then
+							button.GoldBorderGlow:Hide();
+						end
+						if (button.RankBorderGreen) then
+							button.RankBorderGreen:Hide();
 						end
 					end
 				else
 					SetItemButtonDesaturated(button, 1);
-					_G[buttonName.."Slot"]:SetVertexColor(0.5, 0.5, 0.5);
-					_G[buttonName.."Slot"]:Show();
+					button.GoldBorder:SetDesaturated(1);
+					button.Slot:SetVertexColor(0.5, 0.5, 0.5);
 					if ( rank == 0 ) then
-						_G[buttonName.."RankBorder"]:Hide();
-						_G[buttonName.."Rank"]:Hide();
+						button.RankBorder:Hide();
+						button.Rank:Hide();
 					else
-						_G[buttonName.."RankBorder"]:SetVertexColor(0.5, 0.5, 0.5);
-						_G[buttonName.."Rank"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						button.RankBorder:SetVertexColor(0.5, 0.5, 0.5);
+						button.Rank:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
-					if (_G[buttonName.."GlowBorder"]) then
-						_G[buttonName.."GlowBorder"]:Hide();
+					if (button.GlowBorder) then
+						button.GlowBorder:Hide();
 					end
-					if (_G[buttonName.."RankBorderGreen"]) then
-						_G[buttonName.."RankBorderGreen"]:Hide();
+					if (button.GoldBorderGlow) then
+						button.GoldBorderGlow:Hide();
+					end
+					if (button.RankBorderGreen) then
+						button.RankBorderGreen:Hide();
 					end
 				end
+				
+				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].goldBorder = goldBorder;
+				
 				button:Show();
 			else
 				button:Hide();
@@ -287,14 +318,20 @@ function TalentFrame_Update(TalentFrame)
 			
 			if (node.id) then
 				-- There is a talent in this slot; draw arrows
+				local arrowInsetX, arrowInsetY = (TalentFrame.arrowInsetX or 0), (TalentFrame.arrowInsetY or 0);
+				if (node.goldBorder) then
+					arrowInsetX = arrowInsetX - TALENT_GOLD_BORDER_WIDTH;
+					arrowInsetY = arrowInsetY - TALENT_GOLD_BORDER_WIDTH;
+				end
+				
 				if ( node.rightArrow ~= 0 ) then
-					TalentFrame_SetArrowTexture(i, j, TALENT_ARROW_TEXTURECOORDS["right"][node.rightArrow], xOffset + talentButtonSize/2 - (TalentFrame.arrowInsetX or 0), yOffset, TalentFrame);
+					TalentFrame_SetArrowTexture(i, j, TALENT_ARROW_TEXTURECOORDS["right"][node.rightArrow], xOffset + talentButtonSize/2 - arrowInsetX, yOffset, TalentFrame);
 				end
 				if ( node.leftArrow ~= 0 ) then
-					TalentFrame_SetArrowTexture(i, j, TALENT_ARROW_TEXTURECOORDS["left"][node.leftArrow], xOffset - talentButtonSize/2 + (TalentFrame.arrowInsetX or 0), yOffset, TalentFrame);
+					TalentFrame_SetArrowTexture(i, j, TALENT_ARROW_TEXTURECOORDS["left"][node.leftArrow], xOffset - talentButtonSize/2 + arrowInsetX, yOffset, TalentFrame);
 				end
 				if ( node.topArrow ~= 0 ) then
-					TalentFrame_SetArrowTexture(i, j, TALENT_ARROW_TEXTURECOORDS["top"][node.topArrow], xOffset, yOffset + talentButtonSize/2 - (TalentFrame.arrowInsetY or 0), TalentFrame);
+					TalentFrame_SetArrowTexture(i, j, TALENT_ARROW_TEXTURECOORDS["top"][node.topArrow], xOffset, yOffset + talentButtonSize/2 - arrowInsetY, TalentFrame);
 				end
 			else
 				-- No talent; draw branches
@@ -568,7 +605,7 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	cache.primaryTabIndex = 0;
 	cache.totalPointsSpent = 0;
 
-	local preview = GetCVarBool("previewTalents");
+	local preview = GetCVarBool("previewTalentsOption");
 
 	local highPointsSpent = 0;
 	local highPointsSpentIndex;

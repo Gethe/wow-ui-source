@@ -1,4 +1,5 @@
 MAX_HOLY_POWER = 3;
+PALADINPOWERBAR_SHOW_LEVEL = 8
 
 
 
@@ -39,7 +40,11 @@ function PaladinPowerBar_OnLoad (self)
 	if ( class ~= "PALADIN" ) then
 		self:Hide();
 		return;
+	elseif UnitLevel("player") < PALADINPOWERBAR_SHOW_LEVEL then
+		self:RegisterEvent("PLAYER_LEVEL_UP");
+		self:SetAlpha(0);
 	end
+
 	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
@@ -55,6 +60,13 @@ end
 function PaladinPowerBar_OnEvent (self, event, arg1, arg2)
 	if ( (event == "UNIT_POWER") and (arg1 == self:GetParent().unit) ) then
 		if ( arg2 == "HOLY_POWER" ) then
+			PaladinPowerBar_Update(self);
+		end
+	elseif( event ==  "PLAYER_LEVEL_UP" ) then
+		local level = arg1;
+		if level >= PALADINPOWERBAR_SHOW_LEVEL then
+			self:UnregisterEvent("PLAYER_LEVEL_UP");
+			self.showAnim:Play();
 			PaladinPowerBar_Update(self);
 		end
 	else

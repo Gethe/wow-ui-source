@@ -210,8 +210,11 @@ PAPERDOLL_STATINFO = {
 	},
 	
 	-- Spell
-	["SPELLPOWER"] = {
+	["SPELLDAMAGE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellBonusDamage(statFrame, unit); end
+	},
+	["SPELLHEALING"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellBonusHealing(statFrame, unit); end
 	},
 	["SPELL_HASTE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellHaste(statFrame, unit); end
@@ -326,7 +329,8 @@ PAPERDOLL_STATCATEGORIES = {
 	["SPELL"] = {
 			id = 5,
 			stats = {
-				"SPELLPOWER", 
+				"SPELLDAMAGE",    -- If Damage and Healing are the same, this changes to Spell Power
+				"SPELLHEALING",    -- If Damage and Healing are the same, this is hidden
 				"SPELL_HASTE", 
 				"SPELL_HITCHANCE",
 				"SPELL_PENETRATION",
@@ -426,6 +430,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:RegisterEvent("PLAYER_BANKSLOTS_CHANGED");
 	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_READY");
+	self:RegisterEvent("PLAYER_DAMAGE_DONE_MODS");
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -473,7 +478,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		end
 	end
 	
-	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" or event == "BAG_UPDATE" or event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_BANKSLOTS_CHANGED" or event == "PLAYER_AVG_ITEM_LEVEL_READY") then
+	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" or event == "BAG_UPDATE" or event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_BANKSLOTS_CHANGED" or event == "PLAYER_AVG_ITEM_LEVEL_READY" or event == "PLAYER_DAMAGE_DONE_MODS") then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	elseif (event == "VARIABLES_LOADED") then
 		if (GetCVar("characterFrameCollapsed") ~= "0") then
@@ -1362,7 +1367,6 @@ function PaperDollFrame_SetRangedAttackPower(statFrame, unit)
 end
 
 function PaperDollFrame_SetSpellBonusDamage(statFrame, unit)
-	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLPOWER));
 	local text = _G[statFrame:GetName().."StatText"];
 	local minModifier = 0;
 	
@@ -1387,8 +1391,51 @@ function PaperDollFrame_SetSpellBonusDamage(statFrame, unit)
 		statFrame.bonusDamage = nil;
 	end
 	
+	local spellHealing = GetSpellBonusHealing();
+	if (spellHealing == minModifier) then
+		_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLPOWER));
+		statFrame.tooltip = STAT_SPELLPOWER;
+		statFrame.tooltip2 = STAT_SPELLPOWER_TOOLTIP;
+	else
+		_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLDAMAGE));
+		statFrame.tooltip = STAT_SPELLDAMAGE;
+		statFrame.tooltip2 = STAT_SPELLDAMAGE_TOOLTIP;
+	end
+	
 	text:SetText(minModifier);
 	statFrame.minModifier = minModifier;
+	statFrame.unit = unit;
+	statFrame:SetScript("OnEnter", CharacterSpellBonusDamage_OnEnter);
+	statFrame:Show();
+end
+
+function PaperDollFrame_SetSpellBonusHealing(statFrame, unit)
+	local text = _G[statFrame:GetName().."StatText"];
+	local minDamage = 0;
+	
+	if (unit == "player") then
+		local holySchool = 2;
+		-- Start at 2 to skip physical damage
+		minDamage = GetSpellBonusDamage(holySchool);		
+		for i=(holySchool+1), MAX_SPELL_SCHOOLS do
+			minDamage = min(minDamage, GetSpellBonusDamage(i));
+		end
+	elseif (unit == "pet") then
+		minDamage = GetPetSpellBonusDamage();
+	end
+	statFrame.bonusDamage = nil;
+	
+	local spellHealing = GetSpellBonusHealing();
+	if (spellHealing == minDamage) then
+		statFrame:Hide();
+		return;
+	end
+	
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLHEALING));
+	statFrame.tooltip = STAT_SPELLHEALING;
+	statFrame.tooltip2 = STAT_SPELLHEALING_TOOLTIP;
+	text:SetText(spellHealing);
+	statFrame.minModifier = spellHealing;
 	statFrame.unit = unit;
 	statFrame:SetScript("OnEnter", CharacterSpellBonusDamage_OnEnter);
 	statFrame:Show();
@@ -1842,7 +1889,7 @@ end
 function CharacterSpellBonusDamage_OnEnter (self)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_SPELLPOWER).." "..self.minModifier..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, self.tooltip).." "..self.minModifier..FONT_COLOR_CODE_CLOSE);
 
 	for i=2, MAX_SPELL_SCHOOLS do
 		if (self.bonusDamage and self.bonusDamage[i] ~= self.minModifier) then
@@ -1851,9 +1898,9 @@ function CharacterSpellBonusDamage_OnEnter (self)
 		end
 	end
 	
-	GameTooltip:AddLine(STAT_SPELLPOWER_TOOLTIP);
+	GameTooltip:AddLine(self.tooltip2);
 	
-	if (self.unit == "player") then
+	if (self.bonusDamage and self.unit == "player") then
 		local petStr, damage;
 		if (self.bonusDamage[6] == self.minModifier and self.bonusDamage[3] == self.minModifier) then
 			petStr = PET_BONUS_TOOLTIP_WARLOCK_SPELLDMG;
@@ -3236,7 +3283,6 @@ function GearManagerDialog_OnLoad (self)
 		button.text = _G["GearSetButton" .. i .. "Name"];
 		tinsert(self.buttons, button);
 	end
-	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("EQUIPMENT_SWAP_FINISHED");
 end
 
@@ -3271,10 +3317,6 @@ end
 function GearManagerDialog_OnEvent (self, event, ...)
 	if ( event == "EQUIPMENT_SETS_CHANGED" ) then
 		GearManagerDialog_Update();
-	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVarBool("equipmentManager") ) then
-			GearManagerToggleButton:Show();
-		end		
 	elseif ( event == "EQUIPMENT_SWAP_FINISHED" ) then
 		local completed, setName = ...;
 		if ( completed ) then

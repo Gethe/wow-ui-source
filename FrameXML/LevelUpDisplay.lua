@@ -1,5 +1,6 @@
 LEVEL_UP_TYPE_CHARACTER = "character";	--Name used in globalstring LEVEL_UP
 LEVEL_UP_TYPE_GUILD = "guild";	--Name used in globalstring GUILD_LEVEL_UP
+LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
@@ -28,6 +29,14 @@ local levelUpTexCoords = {
 		dot = { 0.64257813, 0.68359375, 0.77734375, 0.8203125 },
 		goldBG = { 0.56054688, 0.99609375, 0.486328125, 0.7109375 },
 		gLine = { 0.00195313, 0.81835938, 0.96484375, 0.97851563 },
+		textTint = {0.11765, 1, 0},
+	},
+	[LEVEL_UP_TYPE_PET] = {
+		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
+		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.5, 0.25},
+		textTint = {1, 0.7, 0.25},
 	},
 }
 
@@ -37,6 +46,13 @@ LEVEL_UP_TYPES = {
 										text=LEVEL_UP_TALENT_MAIN,
 										subText=LEVEL_UP_TALENT_SUB,
 										link=LEVEL_UP_TALENTPOINT_LINK;
+									},
+	
+	["PetTalentPoint"] 		= {	icon="Interface\\Icons\\Ability_Marksmanship",
+										subIcon=SUBICON_TEXCOOR_ARROW,
+										text=PET_LEVEL_UP_TALENT_MAIN,
+										subText=PET_LEVEL_UP_TALENT_SUB,
+										link=PET_LEVEL_UP_TALENTPOINT_LINK;
 									},
 									
 	["TalentsUnlocked"] 	= {	icon="Interface\\Icons\\Ability_Marksmanship",
@@ -193,12 +209,14 @@ LEVEL_UP_CLASS_HACKS = {
 function LevelUpDisplay_Onload(self)	
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_GUILD_LEVEL");
+	self:RegisterEvent("UNIT_LEVEL");
 	self.currSpell = 0;
 end
 
 
 
 function LevelUpDisplay_OnEvent(self, event, ...)
+	local arg1 = ...;
 	if event ==  "PLAYER_LEVEL_UP" then
 		local level = ...
 		self.level = level;
@@ -213,6 +231,11 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			self:Show();
 			LevelUpDisplaySide:Hide();
 		end
+	elseif event == "UNIT_LEVEL" and arg1 == "pet" then
+		self.level = UnitLevel("pet");
+		self.type = LEVEL_UP_TYPE_PET;
+		self:Show();
+		LevelUpDisplaySide:Hide();
 	end
 end
 
@@ -231,7 +254,6 @@ function LevelUpDisplay_BuildCharacterList(self)
 	if  hackTable and hackTable[self.level] then
 		hackTable = hackTable[self.level];
 		for _,spelltype in pairs(hackTable) do
-		print(spelltype)
 			if LEVEL_UP_TYPES[spelltype] and LEVEL_UP_TYPES[spelltype].spellID then 
 				name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
 				self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
@@ -260,6 +282,18 @@ function LevelUpDisplay_BuildCharacterList(self)
 	self.currSpell = 1;
 end
 
+function LevelUpDisplay_BuildPetList(self)
+	local name, icon = "","";
+	self.unlockList = {};
+	if  self.level == GetNextPetTalentLevel(self.level-1)  then
+		self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["PetTalentPoint"]
+	end
+
+	-- TODO: Pet Spells
+	
+	self.currSpell = 1;
+end
+
 function LevelUpDisplay_BuildGuildList(self)
 	local name, icon = "", "";
 	self.unlockList = {};
@@ -283,14 +317,33 @@ function LevelUpDisplay_OnShow(self)
 			LevelUpDisplay_BuildCharacterList(self);
 			self.levelFrame.reachedText:SetText(LEVEL_UP_YOU_REACHED)
 			self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+		elseif ( self.type == LEVEL_UP_TYPE_PET ) then
+			LevelUpDisplay_BuildPetList(self);
+			local petName = UnitName("pet");
+			self.levelFrame.reachedText:SetFormattedText(PET_LEVEL_UP_REACHED, petName or "");
+			self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
 		elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
 			LevelUpDisplay_BuildGuildList(self);
 			local guildName = GetGuildInfo("player");
 			self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
-			self.levelFrame.levelText:SetFormattedText(GUILD_LEVEL_GAINED,self.level);
+			self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
 		end
 		self.gLine:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
 		self.gLine2:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
+		if (levelUpTexCoords[self.type].tint) then
+			self.gLine:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+			self.gLine2:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+		else
+			self.gLine:SetVertexColor(1, 1, 1);
+			self.gLine2:SetVertexColor(1, 1, 1);
+		end
+		
+		if (levelUpTexCoords[self.type].textTint) then
+			self.levelFrame.levelText:SetTextColor(unpack(levelUpTexCoords[self.type].textTint));
+		else
+			self.levelFrame.levelText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
+		
 		self.levelFrame.levelUp:Play();
 	end
 end
@@ -314,8 +367,8 @@ end
 
 --Side display Functions
 
-function LevelUpDisplay_ShowSideDisplay(level, levelUpType)
-	if LevelUpDisplaySide.level and LevelUpDisplaySide.level == level and LevelUpDisplaySide.type == levelUpType then
+function LevelUpDisplay_ShowSideDisplay(level, levelUpType, arg1)
+	if LevelUpDisplaySide.level and LevelUpDisplaySide.level == level and LevelUpDisplaySide.type == levelUpType and LevelUpDisplaySide.arg1 == arg1 then
 		if LevelUpDisplaySide:IsVisible() then		
 			LevelUpDisplaySide:Hide();	
 		else	
@@ -324,6 +377,7 @@ function LevelUpDisplay_ShowSideDisplay(level, levelUpType)
 	else
 		LevelUpDisplaySide.level = level;
 		LevelUpDisplaySide.type = levelUpType;
+		LevelUpDisplaySide.arg1 = arg1;
 		LevelUpDisplaySide:Hide();
 		LevelUpDisplaySide:Show();
 	end
@@ -335,14 +389,34 @@ function LevelUpDisplaySide_OnShow(self)
 		LevelUpDisplay_BuildCharacterList(self);
 		self.reachedText:SetText(LEVEL_UP_YOU_REACHED);
 		self.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+	elseif ( self.type == LEVEL_UP_TYPE_PET ) then
+		LevelUpDisplay_BuildPetList(self);
+		local petName = self.arg1;
+		self.reachedText:SetFormattedText(PET_LEVEL_UP_REACHED, petName);
+		self.levelText:SetFormattedText(LEVEL_GAINED,self.level);
 	elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
 		LevelUpDisplay_BuildGuildList(self);
 		local guildName = GetGuildInfo("player");
 		self.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
-		self.levelText:SetFormattedText(GUILD_LEVEL_GAINED,self.level);
+		self.levelText:SetFormattedText(LEVEL_GAINED,self.level);
 	end
 	self.goldBG:SetTexCoord(unpack(levelUpTexCoords[self.type].goldBG));
 	self.dot:SetTexCoord(unpack(levelUpTexCoords[self.type].dot));
+	
+	if (levelUpTexCoords[self.type].tint) then
+		self.goldBG:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+		self.dot:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+	else
+		self.goldBG:SetVertexColor(1, 1, 1);
+		self.dot:SetVertexColor(1, 1, 1);
+	end
+	
+	if (levelUpTexCoords[self.type].textTint) then
+		self.levelText:SetTextColor(unpack(levelUpTexCoords[self.type].textTint));
+	else
+		self.levelText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	
 	local i = 1;
 	local displayFrame = _G["LevelUpDisplaySideUnlockFrame1"];
 	while i <=  #self.unlockList do	
@@ -404,6 +478,15 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType)
 	if ( levelUpType == LEVEL_UP_TYPE_CHARACTER ) then
 		LevelUpDisplay_BuildCharacterList(chatLevelUP);
 		levelstring = format(LEVEL_UP, level, level);
+		info = ChatTypeInfo["SYSTEM"];
+	elseif ( levelUpType == LEVEL_UP_TYPE_PET ) then
+		LevelUpDisplay_BuildPetList(chatLevelUP);
+		local petName = UnitName("pet");
+		if (petName) then
+			levelstring = format(PET_LEVEL_UP, petName, level, petName, level);
+		else
+			levelstring = "";
+		end
 		info = ChatTypeInfo["SYSTEM"];
 	elseif ( levelUpType == LEVEL_UP_TYPE_GUILD ) then
 		LevelUpDisplay_BuildGuildList(chatLevelUP);

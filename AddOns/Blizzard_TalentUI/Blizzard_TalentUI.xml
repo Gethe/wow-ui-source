@@ -72,14 +72,19 @@
 	<Button name="PlayerTalentButtonTemplate" inherits="TalentButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentGlowBorder" inherits="Talent-SingleBorder-Glow" alphaMode="ADD" alpha="0.75">
+				<Texture name="$parentGlowBorder" inherits="Talent-SingleBorder-Glow" alphaMode="ADD" alpha="0.75" parentKey="GlowBorder">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-7" y="7"/>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentGoldBorderGlow" inherits="Talent-GoldMedal-Glow" alphaMode="ADD" alpha="0.75" hidden="true" parentKey="GoldBorderGlow">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-12" y="12"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentRankBorderGreen" inherits="Talent-PointBg-Green" hidden="true">
+				<Texture name="$parentRankBorderGreen" inherits="Talent-PointBg-Green" hidden="true" parentKey="RankBorderGreen">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
@@ -111,7 +116,7 @@
 		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
+				<Texture name="$parentIcon" file="Interface\LFGFrame\LFGRole" parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -138,36 +143,46 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentSlotShadow" inherits="PetTalent-SingleBorder-Shadow">
+				<Texture name="$parentSlotShadow" inherits="PetTalent-SingleBorder-Shadow" parentKey="SlotShadow">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4" y="3"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentSlot" inherits="PetTalent-SingleBorder">
+				<Texture name="$parentSlot" inherits="PetTalent-SingleBorder" parentKey="Slot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentGlowBorder" inherits="PetTalent-SingleBorder-Glow" alphaMode="ADD" alpha="0.75">
+				<Texture name="$parentGoldBorder" inherits="Talent-GoldMedal-Border" parentKey="GoldBorder" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentGlowBorder" inherits="PetTalent-SingleBorder-Glow" alphaMode="ADD" alpha="0.75" parentKey="GlowBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGoldBorderGlow" inherits="Talent-GoldMedal-Glow" alphaMode="ADD" alpha="0.75" hidden="true" parentKey="GoldBorderGlow">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-11" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentRankBorder" inherits="Talent-PointBg">
+				<Texture name="$parentRankBorder" inherits="Talent-PointBg" parentKey="RankBorder">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 				</Texture>
-				<Texture name="$parentRankBorderGreen" inherits="Talent-PointBg-Green" hidden="true">
+				<Texture name="$parentRankBorderGreen" inherits="Talent-PointBg-Green" hidden="true" parentKey="RankBorderGreen">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 				</Texture>
-				<FontString name="$parentRank" inherits="GameFontNormalSmall">
+				<FontString name="$parentRank" inherits="GameFontNormalSmall" parentKey="Rank">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentRankBorder">
 							<Offset>
@@ -342,6 +357,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<Texture name="$parentGlowTopLeft" inherits="Talent-PrimaryHighlight-TopLeft" parentKey="GlowTopLeft" alphamode="ADD" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowTopRight" inherits="Talent-PrimaryHighlight-TopRight" parentKey="GlowTopRight" alphamode="ADD" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBackgroundTopLeft"/>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBackgroundBottomLeft"/>
@@ -350,6 +375,12 @@
 				<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackgroundBottomLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowTop" inherits="_Talent-PrimaryHighlight-Top" parentKey="GlowTop" alphamode="ADD" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphamode="ADD" alpha="0.5" hidden="true">
@@ -361,13 +392,13 @@
 				<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphamode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -796,7 +827,7 @@
 					</OnLoad>
 					<OnClick>
 						PlayerTalentFrameTalents.summariesShownWhenPrimary = false;
-						if ( GetCVarBool("previewTalents") ) then
+						if ( GetCVarBool("previewTalentsOption") ) then
 							SetPreviewPrimaryTalentTree(self:GetParent().talentTree, self:GetParent().talentGroup);
 						else
 							SetPrimaryTalentTree(self:GetParent().talentTree);
@@ -839,18 +870,6 @@
 						<Anchor point="TOPRIGHT" relativeTo="PlayerTalentFrameTitleGlowRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="PlayerTalentFrameHeaderText" inherits="GameFontHighlightLarge" parentKey="HeaderText" text="Choose Your Talent Specialization" hidden="true">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-34"/>
-					</Anchors>
-				</FontString>
-				<FontString name="PlayerTalentFrameHeaderSubText" inherits="GameFontDisableSmall" parentKey="SubHeaderText" text="You may change this at your trainer at any time" hidden="true">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="PlayerTalentFrameHeaderText" relativePoint="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -948,11 +967,61 @@
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="PlayerTalentFrameLearnButton_OnClick"/>
 					<OnHide>
-						UIFrameFlashRemoveFrame(self.Flash);
+						UIFrameFlashStop(self.Flash);
 						self.Flash:Hide();
 					</OnHide>
 				</Scripts>
 			</Button>
+			<Frame name="PlayerTalentFrameHeaderFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="PlayerTalentFrameHeaderText" inherits="GameFontHighlightLarge" parentKey="HeaderText" text="Choose Your Talent Specialization" hidden="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-34"/>
+							</Anchors>
+						</FontString>
+						<FontString name="PlayerTalentFrameHeaderSubText" inherits="GameFontDisableSmall" parentKey="SubHeaderText" text="You may change this at your trainer at any time" hidden="true">
+							<Color r="0.65" g="0.65" b="0.65"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="PlayerTalentFrameHeaderText" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="PlayerTalentFrameHeaderHelpBox" inherits="GlowBoxTemplate" useParentLevel="true">
+						<Size x="0" y="34"/>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="TOPLEFT" x="72" y="-41"/>
+							<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="-72" y="-41"/>
+						</Anchors>
+						<Frames>
+							<Frame name="PlayerTalentFrameHeaderHelpBoxArrow1" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+									<Anchor point="LEFT" x="8"/>
+								</Anchors>
+							</Frame>
+							<Frame name="PlayerTalentFrameHeaderHelpBoxArrow2" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+								</Anchors>
+							</Frame>
+							<Frame name="PlayerTalentFrameHeaderHelpBoxArrow3" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+									<Anchor point="RIGHT" x="-8"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+5);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnShow function="PlayerTalentFrame_OnShow"/>
@@ -1221,6 +1290,27 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
+					<Frame name="PlayerTalentFramePetDiet" enableMouse="true" hidden="false">
+						<Size x="24" y="23"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="PlayerTalentFramePetHappiness" x="-4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PetPaperDollFrame\PetStable-DietIcon">
+									<Size x="24" y="23"/>
+									<TexCoords left="0" right="0.75" top="0" bottom="0.71875"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(format(PET_DIET_TEMPLATE, BuildListString(GetPetFoodTypes())));
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -1343,21 +1433,19 @@
 								<Anchor point="LEFT" relativeTo="PlayerTalentFramePetPanelHeaderBackground" x="62" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture name="PlayerTalentFramePetPanelRoleIcon" file="Interface\LFGFrame\LFGRole" parentKey="RoleIcon" hidden="true">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="PlayerTalentFramePetPanelHeaderBackground" x="-10" y="-14"/>
-							</Anchors>
-						</Texture>
-						<Texture name="PlayerTalentFramePetPanelRoleIcon2" file="Interface\LFGFrame\LFGRole" parentKey="RoleIcon2" hidden="true">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="PlayerTalentFramePetPanelRoleIcon" relativePoint="LEFT" x="-1" />
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>		
+				<Frames>
+					<Frame name="PlayerTalentFramePetPanelRoleIcon" inherits="PlayerTalentFrameRoleIconTemplate" parentKey="RoleIcon" hidden="true">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="PlayerTalentFramePetPanelHeaderBackground" x="-10" y="-14"/>
+						</Anchors>
+					</Frame>
+					<Frame name="PlayerTalentFramePetPanelRoleIcon2" inherits="PlayerTalentFrameRoleIconTemplate" parentKey="RoleIcon2" hidden="true">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="PlayerTalentFramePetPanelRoleIcon" relativePoint="LEFT" x="-1" />
+						</Anchors>
+					</Frame>
 					<Button name="PlayerTalentFramePetPanelTalent1" inherits="PetTalentButtonTemplate" id="1"/>
 					<Button name="PlayerTalentFramePetPanelTalent2" inherits="PetTalentButtonTemplate" id="2"/>
 					<Button name="PlayerTalentFramePetPanelTalent3" inherits="PetTalentButtonTemplate" id="3"/>
@@ -1471,5 +1559,5 @@
 				</Scripts>
 			</Frame>
 		</Frames>			
-	</Frame>
+	</Frame>	
 </Ui>

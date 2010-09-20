@@ -1,8 +1,4 @@
 
-
-MOONKIN_FORM = 31
-
-
 ECLIPSE_BAR_TRAVEL = 38;
 
 ECLIPSE_BAR_SOLAR_BUFF_ID = 48517;
@@ -37,10 +33,8 @@ function EclipseBar_UpdateShown(self)
 			self.showPercent = GetCVarBool("statusTextPercentage");	
 			if GetCVarBool("playerStatusText") then
 				self.powerText:Show();
-				self.lockShow = true;
 			else
 				self.powerText:Hide();
-				self.lockShow = false;
 			end
 			self:Show();
 		else
@@ -71,8 +65,7 @@ end
 
 function EclipseBar_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
-	self:RegisterEvent("PLAYER_TALENT_UPDATE");	
-	self:RegisterEvent("MASTERY_UPDATE");
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");	
 	self:RegisterEvent("UNIT_AURA");
 end

@@ -192,7 +192,7 @@ function BNToastFrame_Show()
 	local frame = BNToastFrame;
 	BNToastFrame_UpdateAnchor(true);
 	frame:Show();
-	PlaySound(18019);
+	PlaySoundKitID(18019);
 	frame.toastType = toastType;
 	frame.toastData = toastData;
 	frame.animIn:Play();

@@ -745,7 +745,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontNormalSmall" text="GUILD_MEMBERS_ONLINE">
+				<FontString name="$parentMembersCountLabel" inherits="GameFontNormalSmall" text="GUILD_MEMBERS_ONLINE">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="GuildFrameMembersCount" relativePoint="TOPRIGHT" x="0" y="6"/>
 					</Anchors>
@@ -1069,9 +1069,10 @@
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="0" y="0"/>
 									</Anchors>
 								</Texture>
-								<FontString	name="$parentLabel" inherits="SystemFont_Shadow_Med2">
+								<FontString	name="$parentLabel" justifyH="LEFT" inherits="SystemFont_Shadow_Med2">
+									<Size x="144" y="38"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="12"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
 									</Anchors>
 									<Color r="1" g="0.82" b="0"/>
 								</FontString>

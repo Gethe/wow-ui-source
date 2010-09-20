@@ -23,11 +23,24 @@ function EquipmentManager_UpdateFreeBagSpace ()
 		wipe(workTable);
 		local _, bagType = GetContainerNumFreeSlots(i);
 		if ( GetContainerFreeSlots(i, workTable) ) then
+			if (not bagSlots[i]) then
+				bagSlots[i] = {};
+			end
+			
+			-- Reset all EMPTY bag slots
+			for index, flag in next, bagSlots[i] do
+				if (flag == SLOT_EMPTY) then
+					bagSlots[i][index] = nil;
+				end
+			end
+			
 			for index, slot in next, workTable do
 				if ( bagSlots[i] and not bagSlots[i][slot] and bagType == 0 ) then -- Don't overwrite locked slots, don't reset empty slots to empty, only use normal bags
 					bagSlots[i][slot] = SLOT_EMPTY;
 				end
 			end
+		else
+			bagSlots[i] = nil;
 		end
 	end
 end
@@ -37,11 +50,7 @@ local function _EquipmentManager_BagsFullError()
 end
 
 function EquipmentManager_OnEvent (self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" or event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
-		for i = #EQUIPMENTMANAGER_BAGSLOTS + 1, NUM_BAG_SLOTS + GetNumBankSlots() do
-			EQUIPMENTMANAGER_BAGSLOTS[i] = {};
-		end
-	elseif ( event == "WEAR_EQUIPMENT_SET" ) then
+	if ( event == "WEAR_EQUIPMENT_SET" ) then
 		local setName = ...;
 		EquipmentManager_EquipSet(setName);
 	elseif ( event == "ITEM_UNLOCKED" ) then
@@ -49,9 +58,9 @@ function EquipmentManager_OnEvent (self, event, ...)
 		
 		if ( not arg2 ) then
 			EQUIPMENTMANAGER_INVENTORYSLOTS[arg1] = nil;
-		else
+		elseif (EQUIPMENTMANAGER_BAGSLOTS[arg1]) then
 			EQUIPMENTMANAGER_BAGSLOTS[arg1][arg2] = nil;
-		end			
+		end
 
 	elseif ( event == "BANKFRAME_OPENED" ) then
 		_isAtBank = true;
@@ -61,8 +70,6 @@ function EquipmentManager_OnEvent (self, event, ...)
 end
 
 EquipmentManager:SetScript("OnEvent", EquipmentManager_OnEvent);
-EquipmentManager:RegisterEvent("PLAYER_ENTERING_WORLD");
-EquipmentManager:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 EquipmentManager:RegisterEvent("WEAR_EQUIPMENT_SET");
 EquipmentManager:RegisterEvent("ITEM_UNLOCKED");
 EquipmentManager:RegisterEvent("BANKFRAME_OPENED");
@@ -306,6 +313,9 @@ function EquipmentManager_RunAction (action)
 	if ( UnitAffectingCombat("player") and not INVSLOTS_EQUIPABLE_IN_COMBAT[action.invSlot] ) then
 		return true;
 	end
+	
+	EquipmentManager_UpdateFreeBagSpace();
+	
 	action.run = true;
 	if ( action.type == EQUIP_ITEM or action.type == SWAP_ITEM ) then
 		if ( not action.bags ) then

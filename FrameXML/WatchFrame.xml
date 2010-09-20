@@ -466,7 +466,7 @@
 								UIFrameFlash(self, 0.75, 0.75, -1, nil);
 							</OnShow>
 							<OnHide>
-								UIFrameFlashRemoveFrame(self);
+								UIFrameFlashStop(self);
 							</OnHide>
 						</Scripts>
 					</Frame>

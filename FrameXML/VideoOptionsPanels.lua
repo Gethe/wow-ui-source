@@ -2,11 +2,6 @@
 ----------------------------
 VideoData={};				--master array
 -------------------------------------------------------------------------------------------------------
-TEXT_LOW 	= VIDEO_QUALITY_LABEL1;
-TEXT_FAIR 	= VIDEO_QUALITY_LABEL2;
-TEXT_MEDIUM = VIDEO_QUALITY_LABEL3;
-TEXT_HIGH 	= VIDEO_QUALITY_LABEL4;
-TEXT_ULTRA 	= VIDEO_QUALITY_LABEL5;
 
 GREYCOLORCODE = "|cff7f7f7f"
 GREENCOLORCODE= "|cff00ff00"
@@ -33,6 +28,10 @@ local ErrorCodes =
 	VRN_WINDOWS_UNSUPPORTED,
 	VRN_NEEDS_MACOS_10_5_5,
 	VRN_NEEDS_MACOS_10_5_7,
+	VRN_NEEDS_MACOS_10_5_8,
+	VRN_NEEDS_MACOS_10_6_4,
+	VRN_NEEDS_MACOS_10_6_5,
+	VRN_GPU_DRIVER,
 };
 
 function VideoOptionsValueChanged(self, value, flag)
@@ -149,11 +148,11 @@ function Graphics_PrepareTooltip(self)
 			-- end
 		end
 		if(recommendedValue ~= nil) then
-			tooltip = tooltip .. "|n" .. RECOMMENDED .. ": " .. GREENCOLORCODE .. recommendedValue .. "|r|n";
+			tooltip = tooltip .. "|n" .. VIDEO_OPTIONS_RECOMMENDED .. ": " .. GREENCOLORCODE .. recommendedValue .. "|r|n";
 		end
 	end
 	if(self.clientRestart == true) then
-		tooltip = tooltip .. "|n|cffff0000" .. NEED_CLIENTRESTART .. "|r";
+		tooltip = tooltip .. "|n|cffff0000" .. VIDEO_OPTIONS_NEED_CLIENTRESTART .. "|r";
 	end
 	self.tooltip = tooltip;
 end
@@ -197,7 +196,7 @@ end
 function ControlSetValue(self, value)
 	if(value ~= nil) then
 		self:SetValue(value);
-		self.value = value;
+		self.value = nil;
 		self.newValue = nil;
 	end
 end
@@ -220,6 +219,9 @@ local function FinishChanges(self)
 end
 
 local function CommitChange(self)
+	if(self:GetName() == "Graphics_Quality") then
+		return;
+	end
 	local value = self.newValue or self.value;
 	if ( self.newValue ) then
 		if ( self.value ~= self.newValue ) then
@@ -646,13 +648,44 @@ function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
 end
 
 function Graphics_OnLoad (self)
-	self.name = RESOLUTION_LABEL;
+	if(IsGMClient() and InGlue()) then
+		local qualityNames =
+		{
+			VIDEO_QUALITY_LABEL1,
+			VIDEO_QUALITY_LABEL2,
+			VIDEO_QUALITY_LABEL3,
+			VIDEO_QUALITY_LABEL4,
+			VIDEO_QUALITY_LABEL5,
+		}
+		local count = #VideoData["Graphics_Quality"].data;
+		for i=1, count do
+			local defaults =  {GetVideoOptions(i)};
+			ThisVideoOptions = {};
+			for m=1, #defaults, 2 do
+				ThisVideoOptions[defaults[m]]=defaults[m+1];
+			end
+			local notify = VideoData["Graphics_Quality"].data[i].notify;
+			for key, value in pairs(notify) do
+				for j=1, #VideoData[key].data do
+					if(VideoData[key].data[j].text == value) then
+						for cvar, cvar_value in pairs(VideoData[key].data[j].cvars) do
+							if(ThisVideoOptions[cvar] ~= cvar_value) then
+								print("mismatch " .. key .. "[" .. qualityNames[i] .. "]:" .. cvar .. ", c++:" .. ThisVideoOptions[cvar] .. " ~= lua:" .. cvar_value);
+								VideoData[key].data[j].cvars[cvar] = ThisVideoOptions[cvar];
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	self.name = GRAPHICS_LABEL;
 	VideoOptionsPanel_OnLoad(self, nil, nil, Graphics_Default, nil)
 	self:SetScript("OnEvent", Graphics_OnEvent);
 end
 
 function Advanced_OnLoad (self)
-	self.name = EFFECTS_LABEL;
+	self.name = ADVANCED_LABEL;
 	VideoOptionsPanel_OnLoad(self, nil, nil, Advanced_Default, nil)
 	-- this must come AFTER the parent OnLoad because the functions will be set to defaults there
 	self:SetScript("OnEvent", Graphics_OnEvent);

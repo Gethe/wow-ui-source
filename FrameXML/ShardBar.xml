@@ -91,37 +91,47 @@
 	</Layers>
   </Frame>
 
-  <Frame name="ShardBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false">
-    <Size>
-      <AbsDimension x="110" y="25"/>
-    </Size>
-    <Anchors>
-      <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
-        <Offset>
-          <AbsDimension x="50" y="34"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-	<Frames>
-		<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
-			<Anchors>
-				<Anchor point="TOPLEFT"/>
-			</Anchors>
-		</Frame>	
-		<Frame name="$parentShard2" inherits="ShardTemplate" parentKey="shard2">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="35"/>
-			</Anchors>
-		</Frame>
-		<Frame name="$parentShard3" inherits="ShardTemplate" parentKey="shard3">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="35"/>
-			</Anchors>
-		</Frame>
-	</Frames>
-    <Scripts>
-      <OnLoad function="ShardBar_OnLoad"/>
-      <OnEvent function="ShardBar_OnEvent"/>
-    </Scripts>
-  </Frame>
+	<Frame name="ShardBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false">
+		<Size>
+		  <AbsDimension x="110" y="25"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
+			<Offset>
+			  <AbsDimension x="50" y="34"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>	
+			<Frame name="$parentShard2" inherits="ShardTemplate" parentKey="shard2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="35"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentShard3" inherits="ShardTemplate" parentKey="shard3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="35"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha change="1" duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad function="ShardBar_OnLoad"/>
+			<OnEvent function="ShardBar_OnEvent"/>
+		</Scripts>
+	</Frame>
 </Ui>

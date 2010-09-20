@@ -10,9 +10,9 @@
 		<Size x="299" y="47"/>
 		<Frames>
 			<Frame name="$parentAchievement" parentKey="achievement" hidden="true">
+				<Size x="246" y="12"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentSubText"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

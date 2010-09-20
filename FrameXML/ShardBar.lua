@@ -1,4 +1,5 @@
 SHARD_BAR_NUM_SHARDS = 3;
+SHARDBAR_SHOW_LEVEL = 10;
 
 
 
@@ -52,6 +53,9 @@ function ShardBar_OnLoad (self)
 	local _, class = UnitClass("player");	
 	if ( class ~= "WARLOCK" ) then
 		self:Hide();
+	elseif UnitLevel("player") < SHARDBAR_SHOW_LEVEL then
+		self:RegisterEvent("PLAYER_LEVEL_UP");
+		self:SetAlpha(0);
 	end
 	
 	self:RegisterEvent("UNIT_POWER");
@@ -68,12 +72,19 @@ end
 
 
 function ShardBar_OnEvent (self, event, arg1, arg2)
-	if ( event == "UNIT_DISPLAYPOWER" ) then		
+	if ( event == "UNIT_DISPLAYPOWER" ) then
 		ShardBar_Update();	
-	elseif ( event=="PLAYER_ENTERING_WORLD" ) then	
+	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
 		ShardBar_Update();	
 	elseif ( (event == "UNIT_POWER") and (arg1 == self:GetParent().unit) ) then
 		if ( arg2 == "SOUL_SHARDS" ) then
+			ShardBar_Update();
+		end
+	elseif( event ==  "PLAYER_LEVEL_UP" ) then
+		local level = arg1;
+		if level >= SHARDBAR_SHOW_LEVEL then
+			self:UnregisterEvent("PLAYER_LEVEL_UP");
+			self.showAnim:Play();
 			ShardBar_Update();
 		end
 	end

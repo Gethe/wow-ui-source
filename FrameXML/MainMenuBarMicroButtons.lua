@@ -141,6 +141,14 @@ function UpdateMicroButtons()
 	end
 end
 
+function MicroButtonPulse(self, duration)
+	UIFrameFlash(self.Flash, 1.0, 1.0, duration or -1, false, 0, 0, "microbutton");
+end
+
+function MicroButtonPulseStop(self)
+	UIFrameFlashStop(self.Flash);
+end
+
 function AchievementMicroButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BINDINGS" ) then
 		AchievementMicroButton.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
@@ -236,10 +244,24 @@ function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
 		if ( not (PlayerTalentFrame and PlayerTalentFrame:IsShown()) and GetNextTalentLevel() == level) then
-			SetButtonPulse(self, 60, 1);
+			MicroButtonPulse(self);
+		end
+		if (level == SHOW_TALENT_LEVEL) then
+			TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_TUTORIAL);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
 		end
 	elseif ( event == "PLAYER_TALENT_UPDATE") then
 		UpdateMicroButtons();
+		
+		-- On the first update from the server, flash the button if there are unspent points
+		-- Small hack: GetNumTalentTabs should return 0 if talents haven't been initialized yet
+		if (not self.receivedUpdate and GetNumTalentTabs(false, false) > 0) then
+			self.receivedUpdate = true;
+			if (GetUnspentTalentPoints(false, false, 1) > 0 or GetUnspentTalentPoints(false, false, 2) > 0) then
+				MicroButtonPulse(self);
+			end
+		end
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText =  MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
 	end

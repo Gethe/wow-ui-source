@@ -50,7 +50,7 @@
 					<OnClick function="VideoOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
+			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="RECOMMENDED">
 				<Size>
 					<AbsDimension x="126" y="22"/>
 				</Size>

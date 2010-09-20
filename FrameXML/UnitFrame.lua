@@ -245,7 +245,9 @@ function UnitFrameHealthBar_OnEvent(self, event, ...)
 			self:SetScript("OnUpdate", nil);
 		end
 	else
-		UnitFrameHealthBar_Update(self, ...);
+		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+			UnitFrameHealthBar_Update(self, ...);
+		end
 	end
 end
 
@@ -253,9 +255,11 @@ function UnitFrameHealthBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues) then
 		local currValue = UnitHealth(self.unit);
 		if ( currValue ~= self.currValue ) then
-			self:SetValue(currValue);
-			self.currValue = currValue;
-			TextStatusBar_UpdateTextString(self);
+			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+				self:SetValue(currValue);
+				self.currValue = currValue;
+				TextStatusBar_UpdateTextString(self);
+			end
 		end
 	end
 end
@@ -343,7 +347,9 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 			self:SetScript("OnUpdate", nil);
 		end
 	else
-		UnitFrameManaBar_Update(self, ...);
+		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+			UnitFrameManaBar_Update(self, ...);
+		end
 	end
 end
 
@@ -351,9 +357,11 @@ function UnitFrameManaBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues ) then
 		local currValue = UnitPower(self.unit, self.powerType);
 		if ( currValue ~= self.currValue ) then
-			self:SetValue(currValue);
-			self.currValue = currValue;
-			TextStatusBar_UpdateTextString(self);
+			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+				self:SetValue(currValue);
+				self.currValue = currValue;
+				TextStatusBar_UpdateTextString(self);
+			end
 		end
 	end
 end

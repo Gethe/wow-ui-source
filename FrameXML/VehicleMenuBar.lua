@@ -829,8 +829,12 @@ end
 
 function VehicleMenuBar_OnEvent(self, event, ...)
 	if ( event == "UNIT_ENTERED_VEHICLE" ) then
-		UnitFrameHealthBar_Update(VehicleMenuBarHealthBar, "vehicle");
-		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
+		local unit, showVehicleFrame, skinName, enterSoundName, isControlSeat, seatIndicator, vehicleGUID = ...;
+		if ( unit == "player" ) then
+			UnitFrameHealthBar_Update(VehicleMenuBarHealthBar, "vehicle");
+			UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
+			self.vehicleGUID = vehicleGUID;
+		end
 	elseif ( event == "UNIT_DISPLAYPOWER" ) then	--For those crazy helicopter-cats that turn into bears
 		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
 	end

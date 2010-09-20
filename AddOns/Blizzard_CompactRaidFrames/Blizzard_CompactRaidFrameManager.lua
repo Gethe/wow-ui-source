@@ -111,7 +111,7 @@ function CRFManager_RaidWorldMarkerDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 	
 	for i=1, NUM_WORLD_RAID_MARKERS do
-		info.text = format(WORLD_MARKER, i);
+		info.text = _G["WORLD_MARKER"..i];
 		info.func = RaidWorldMarker_OnClick;
 		info.arg1 = i;
 		UIDropDownMenu_AddButton(info);
@@ -147,19 +147,21 @@ end
 
 function CompactRaidFrameManager_UpdateRoleFilterButton(button)
 	local totalAlive, totalCount = RaidInfoCounts["aliveRole"..button.role], RaidInfoCounts["totalRole"..button.role]
-	button:SetFormattedText("%s%d/%d", button.roleTexture, totalAlive, totalCount);
+	button:SetFormattedText("%s %d/%d", button.roleTexture, totalAlive, totalCount);
 	local keepGroupsTogether = CompactRaidFrameManager_GetSetting("KeepGroupsTogether");
 	keepGroupsTogether = keepGroupsTogether and keepGroupsTogether ~= "0";
 	if ( totalCount == 0 or keepGroupsTogether ) then
-		button:UnlockHighlight();
+		button.selectedHighlight:Hide();
 		button:Disable();
+		button:SetAlpha(0.5);
 	else
 		button:Enable();
+		button:SetAlpha(1);
 		local isFiltered = CRF_GetFilterRole(button.role)
 		if ( isFiltered ) then
-			button:LockHighlight();
+			button.selectedHighlight:Show();
 		else
-			button:UnlockHighlight();
+			button.selectedHighlight:Hide();
 		end
 	end
 end
@@ -174,15 +176,17 @@ function CompactRaidFrameManager_UpdateGroupFilterButton(button, usedGroups)
 	local group = button:GetID();
 	if ( usedGroups[group] ) then
 		button:Enable();
+		button:SetAlpha(1);
 		local isFiltered = CRF_GetFilterGroup(group);
 		if ( isFiltered ) then
-			button:LockHighlight();
+			button.selectedHighlight:Show();
 		else
-			button:UnlockHighlight();
+			button.selectedHighlight:Hide();
 		end
 	else
-		button:UnlockHighlight();
+		button.selectedHighlight:Hide();
 		button:Disable();
+		button:SetAlpha(0.5);
 	end
 end
 

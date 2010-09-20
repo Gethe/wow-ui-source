@@ -286,7 +286,7 @@
 		</Scripts>
 	</Frame>
 	<!-- Minimap button to access the TimeManagerButton -->
-	<Button name="TimeManagerClockButton" parent="Minimap" hidden="true">
+	<Button name="TimeManagerClockButton" parent="Minimap">
 		<Size x="60" y="28"/>
 		<Anchors>
 			<Anchor point="CENTER">

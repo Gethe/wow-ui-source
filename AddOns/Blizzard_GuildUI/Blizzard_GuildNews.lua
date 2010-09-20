@@ -223,7 +223,7 @@ function GuildNewsButton_OnEnter(self)
 			GameTooltip:Show();
 		end
 	elseif ( newsType == NEWS_MOTD ) then
-		if ( self.text:GetStringWidth() > self.text:GetRight() - self.text:GetLeft() ) then
+		if ( self.text:IsTruncated() ) then
 			GuildNewsButton_AnchorTooltip(self);
 			GameTooltip:SetText(GUILD_MOTD_LABEL);
 			GameTooltip:AddLine(GetGuildRosterMOTD(), 1, 1, 1, 1);

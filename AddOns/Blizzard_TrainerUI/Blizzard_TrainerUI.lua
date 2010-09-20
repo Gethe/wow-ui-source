@@ -72,7 +72,7 @@ end
 function ClassTrainerFrame_OnShow(self)
 	PlaySound("igCharacterInfoOpen");
 	ClassTrainerTrainButton:Disable();
-	
+	CloseGossip();
 
 	ClassTrainerFrame.selectedService = nil;
 	--Reset scrollbar
@@ -346,7 +346,7 @@ end
 function ClassTrainerFrameFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, ClassTrainerFrameFilterDropDown_Initialize);
 	UIDropDownMenu_SetText(self, FILTER);
-	UIDropDownMenu_SetWidth(self, 60);
+	UIDropDownMenu_SetWidth(self, 100);
 end
 
 function ClassTrainerFrameFilterDropDown_Initialize()

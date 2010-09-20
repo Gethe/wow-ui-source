@@ -455,6 +455,7 @@
 								self.prefix = HEALTH;
 								self.tooltipAnchorPoint = "ANCHOR_LEFT";
 								self.alwaysShow = true;
+								self.ignoreNoUnit = true;
 								UnitFrameHealthBar_Initialize("vehicle", self, VehicleMenuBarHealthBarText, true);
 								UnitFrameHealthBar_Update(self, "vehicle");
 							</OnLoad>
@@ -501,6 +502,7 @@
 								self.showPercentage = true;
 								self.tooltipAnchorPoint = "ANCHOR_RIGHT";
 								self.alwaysShow = true;
+								self.ignoreNoUnit = true;
 								UnitFrameManaBar_Initialize ("vehicle", self, VehicleMenuBarPowerBarText, true);
 								UnitFrameManaBar_Update(self, "vehicle");
 							</OnLoad>

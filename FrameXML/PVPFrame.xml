@@ -821,7 +821,7 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture setAllPoints="true">
-									<Color r="0.0" g="0.439" b="0.0" a="0.2"/>
+									<Color r="0.0" g="0.439" b="0.0" a="0.1"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
@@ -992,7 +992,7 @@
 					</Layer>
 				</Layers>
 				<Frames>	
-					<Button name="$parentWeeklyToggleRight">
+					<Button name="$parentWeeklyToggleRight" parentKey="weeklyToggleRight">
 						<Size>
 							<AbsDimension x="24" y="24"/>
 						</Size>
@@ -1064,7 +1064,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button name="$parentWeeklyToggleLeft">
+					<Button name="$parentWeeklyToggleLeft" parentKey="weeklyToggleLeft">
 						<Size>
 							<AbsDimension x="24" y="24"/>
 						</Size>
@@ -1279,26 +1279,12 @@
 							<Anchor point="CENTER" relativeTo="$parentInfoBG"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentNoTeamsFrame" parentKey="noTeams" hidden="true" enableMouse="true">
+					<Frame name="$parentNoTeamsFrame" inherits="GlowBoxTemplate"  parentKey="noTeams" hidden="true" enableMouse="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-3" y="-112"/>
 							<Anchor point="BOTTOMRIGHT" x="5" y="2"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture>
-									<Color r="1" g="1" b="0"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="1">
-								<Texture>	
-									<Anchors>
-										<Anchor point="TOPLEFT" x="1" y="-1"/>
-										<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
-									</Anchors>
-									<Color r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentTitle" inherits="QuestTitleFontBlackShadow" text="ARENA_TEAMS"  justifyH="CENTER">
 									<Anchors>
@@ -1306,6 +1292,7 @@
 									</Anchors>
 								</FontString>
 								<FontString inherits="GameFontRed" text="ARENA_TEAMS_INVALID_WARNING"  justifyH="CENTER">
+									<Size x="280" y="0"/>
 									<Anchors>
 										<Anchor point="TOP"  relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-6"/>
 									</Anchors>
@@ -1325,26 +1312,12 @@
 							</Layer>
 						</Layers>	
 					</Frame>
-					<Frame name="$parentInvalidTeamFrame" parentKey="invalidTeam" hidden="true" frameStrata="HIGH">
+					<Frame name="$parentInvalidTeamFrame" inherits="GlowBoxTemplate" parentKey="invalidTeam" hidden="true">
 						<Size x="295" y="35"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"  relaTiveTo="$parentTeamData" relativePoint="TOPLEFT" x="9" y="-31"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture>
-									<Color r="1" g="1" b="0"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="1">
-								<Texture>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="1" y="-1"/>
-										<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
-									</Anchors>
-									<Color r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentInfo" parentKey="text" inherits="GameFontHighlightSmall" text="ARENA_CAPTAIN_INVALID_TEAM"  justifyH="LEFT">
 									<Size x="280" y="0"/>
@@ -1361,6 +1334,35 @@
 					<OnShow function="PVPTeamManagementFrame_OnShow"/>
 					<OnEvent function="PVPTeamManagementFrame_OnEvent"/>
 				</Scripts>
+			</Frame>
+			
+			<Frame name="$parentLowLevelFrame" inherits="GlowBoxTemplate"  parentKey="lowLevelFrame" hidden="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-64"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="29"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitle" inherits="QuestTitleFontBlackShadow" text="ARENA_TEAMS"  justifyH="CENTER" parentKey="title">
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-60"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentError" inherits="GameFontRed" text="ARENA_TEAMS_INVALID_WARNING"  justifyH="CENTER" parentKey="error" >
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="TOP"  relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-6"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentInfo"  inherits="GameFontHighlight" text="ARENA_INFO"  justifyH="CENTER" justifyV="TOP" parentKey="description">
+							<Size x="280" y="180"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentError" relativePoint="BOTTOM" x="0" y="-15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -1389,14 +1391,6 @@
 			</EdgeSize>
 		</Backdrop>
 		<Layers>
-			<Layer level="BORDER">
-				<Texture name="$parentBackground" parentKey="background" file="Interface\PVPFrame\Pvp-Background-Random" >
-					<Size x="256" y="128"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-24"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentBackground" file="Interface\PVPFrame\PVP-Conquest-Misc" >
 					<Size x="293" y="128"/>

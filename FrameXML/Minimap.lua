@@ -430,10 +430,11 @@ local selectedRaidDifficulty;
 local allowedRaidDifficulty;
 local IS_GUILD_GROUP;
 
-function MiniMapInstanceDifficulty_OnEvent(self, event)
+function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
 	if ( event == "GUILD_PARTY_STATE_UPDATED" ) then
-		if ( InGuildParty() ~= IS_GUILD_GROUP ) then
-			IS_GUILD_GROUP = not IS_GUILD_GROUP;
+		local isGuildGroup = ...;
+		if ( isGuildGroup ~= IS_GUILD_GROUP ) then
+			IS_GUILD_GROUP = isGuildGroup;
 			MiniMapInstanceDifficulty_Update();
 		end
 	elseif ( event == "PLAYER_DIFFICULTY_CHANGED" ) then
@@ -457,7 +458,7 @@ end
 
 function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
-	if ( ( instanceType == "party" or instanceType == "raid" ) and not ( difficulty == 1 and maxPlayers == 5 and not IS_GUILD_GROUP ) ) then
+	if ( IS_GUILD_GROUP or ((instanceType == "party" or instanceType == "raid") and not (difficulty == 1 and maxPlayers == 5)) ) then
 		local isHeroic = false;
 		if ( instanceType == "party" and difficulty == 2 ) then
 			isHeroic = true;
@@ -483,9 +484,16 @@ function MiniMapInstanceDifficulty_Update()
 				isHeroic = true;
 			end
 		end
-
 		if ( IS_GUILD_GROUP ) then
-			GuildInstanceDifficultyText:SetText(maxPlayers);
+			if ( maxPlayers == 0 ) then
+				GuildInstanceDifficultyText:SetText("");
+				GuildInstanceDifficultyDarkBackground:SetAlpha(0);
+				GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -16);
+			else
+				GuildInstanceDifficultyText:SetText(maxPlayers);
+				GuildInstanceDifficultyDarkBackground:SetAlpha(0.7);
+				GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
+			end
 			GuildInstanceDifficultyText:ClearAllPoints();
 			if ( isHeroic ) then
 				if ( maxPlayers > 10 ) then
@@ -501,6 +509,7 @@ function MiniMapInstanceDifficulty_Update()
 				GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
 			end
 			MiniMapInstanceDifficulty:Hide();
+			SetSmallGuildTabardTextures("player", GuildInstanceDifficulty.emblem, GuildInstanceDifficulty.background, GuildInstanceDifficulty.border);
 			GuildInstanceDifficulty:Show();
 		else
 			MiniMapInstanceDifficultyText:SetText(maxPlayers);

@@ -1106,7 +1106,7 @@
 				</Layers>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, SKILLFRAME_SKILL_HEIGHT, WorldStateScoreFrame_Update);
+						FauxScrollFrame_OnVerticalScroll(self, offset, SCORE_BUTTON_HEIGHT, WorldStateScoreFrame_Update);
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>

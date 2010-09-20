@@ -152,6 +152,7 @@ function SpellBookFrame_OnShow(self)
 	UpdateMicroButtons();
 
 	SpellBookFrame_PlayOpenSound();
+	MicroButtonPulseStop(SpellbookMicroButton);
 end
 
 function SpellBookFrame_Update()
@@ -325,7 +326,7 @@ function SpellBookFrame_OnHide(self)
 	SpellBookFrame_PlayCloseSound();
 
 	-- Stop the flash frame from flashing if its still flashing.. flash flash flash
-	UIFrameFlashRemoveFrame(SpellBookTabFlashFrame);
+	UIFrameFlashStop(SpellBookTabFlashFrame);
 	-- Hide all the flashing textures
 	for i=1, MAX_SKILLLINE_TABS do
 		_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
@@ -691,7 +692,10 @@ function SpellBookSkillLineTab_OnClick(self)
 		PlaySound("igAbiliityPageTurn");
 		SpellBookFrame.selectedSkillLine = id;
 		SpellBookFrame_Update();
+	else
+		self:SetChecked(1);
 	end
+	
 	-- Stop tab flashing
 	if ( self ) then
 		local tabFlash = _G[self:GetName().."Flash"];
@@ -786,7 +790,7 @@ function SpellBookCompanionsFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "COMPANION_LEARNED" ) then
 		if ( not SpellBookFrame:IsVisible() ) then
-			SetButtonPulse(SpellbookMicroButton, 60, 1);
+			MicroButtonPulse(SpellbookMicroButton, 60);
 		end
 		-- FIXME
 		--if ( not self:IsVisible() ) then

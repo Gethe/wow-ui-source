@@ -89,10 +89,6 @@ function QuestFrameRewardPanel_OnShow()
 	QuestFrameRewardPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight-blank");
 	QuestInfo_Display(QUEST_TEMPLATE_REWARD, QuestRewardScrollChildFrame, QuestFrameCompleteQuestButton, material);
 	QuestRewardScrollFrameScrollBar:SetValue(0);
-	if ( QUEST_FADING_DISABLE == "0" ) then
-		QuestRewardScrollChildFrame:SetAlpha(0);
-		UIFrameFadeIn(QuestRewardScrollChildFrame, QUESTINFO_FADE_IN);
-	end
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
 		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, questPortraitName, -33, -62);
@@ -157,10 +153,6 @@ function QuestFrameProgressPanel_OnShow()
 		QuestFrameCompleteButton:Disable();
 	end
 	QuestFrameProgressItems_Update();
-	if ( QUEST_FADING_DISABLE == "0" ) then
-		QuestProgressScrollChildFrame:SetAlpha(0);
-		UIFrameFadeIn(QuestProgressScrollChildFrame, QUESTINFO_FADE_IN);
-	end
 end
 
 function QuestFrameProgressItems_Update()
@@ -237,10 +229,6 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrame_HideQuestPortrait();
-	if ( QUEST_FADING_DISABLE == "0" ) then
-		QuestGreetingScrollChildFrame:SetAlpha(0);
-		UIFrameFadeIn(QuestGreetingScrollChildFrame, QUESTINFO_FADE_IN);
-	end
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameGreetingPanel, material);
 	GreetingText:SetText(GetGreetingText());
@@ -353,8 +341,10 @@ function QuestFrame_OnHide()
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
 			TriggerTutorial(2);
---			TriggerTutorial(3);
-		else
+			if (not CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond) then
+				TriggerTutorial(10);
+			end
+		elseif (CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond and  not IsTutorialFlagged(10)) then
 			TriggerTutorial(10);
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil

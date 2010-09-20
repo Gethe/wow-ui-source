@@ -14,7 +14,10 @@
 
 local type = type;
 local error = error;
+local geterrorhandler = geterrorhandler;
 local issecure = issecure;
+local forceinsecure = forceinsecure;
+local securecall = securecall;
 local setmetatable = setmetatable;
 local getmetatable = getmetatable;
 local tostring = tostring;
@@ -27,6 +30,7 @@ local newproxy = newproxy;
 local select = select;
 local wipe = wipe;
 local tonumber = tonumber;
+local pcall = pcall;
 
 local t_insert = table.insert;
 local t_maxn = table.maxn;
@@ -100,11 +104,6 @@ end
 
 function getprinthandler() return LOCAL_PrintHandler; end
 
-local geterrorhandler = geterrorhandler;
-local forceinsecure = forceinsecure;
-local pcall = pcall;
-local securecall = securecall;
-
 local function print_inner(...)
     forceinsecure();
     local ok, err = pcall(LOCAL_PrintHandler, ...);
@@ -119,7 +118,26 @@ function print(...)
 end
 
 ---------------------------------------------------------------------------
--- Frame Handles -- Userdata handles referencing explicitly protected frames
+-- FRAME HANDLES
+--
+-- Handle objects to access frames during restricted execution in order to
+-- allow safe manipulation of frame properties. These handles can be passed
+-- around safely without allowing their destinations or functions to be
+-- tampered with.
+--
+-- HANDLES: These are lightweight userdata objects with a shared metatable
+--          that stand in for frames. They're persistent once created (i.e.
+--          a given frame always has the same handle). Internally these map
+--          to a 'copied' frame object. Only explcitly protected frames can
+--          be assigned handles.
+--
+-- METHODS: The handler methods are contained in a table which is then set
+--          as the __index on the handlers. These are in two groups, there
+--          are 'read' methods that may be blocked in some situations, and
+--          there are 'write' methods which simply require that an execution
+--          is active.
+--
+-- Method definitions can be found in RestrictedFrames.lua
 --
 -- LOCAL_FrameHandle_Protected_Frames -- handle keys, frame surrogate values
 --                                       (explicitly protected)
@@ -136,9 +154,16 @@ setmetatable(LOCAL_FrameHandle_Protected_Frames, { __mode = "k" });
 setmetatable(LOCAL_FrameHandle_Other_Frames, { __mode = "k" });
 
 -- Setup metatable for prototype object
-local FrameHandle_Prototype = newproxy(true);
+local LOCAL_FrameHandle_Prototype = newproxy(true);
+-- HANDLE is the frame handle method namespace (populated later)
+local HANDLE = {};
+do
+    local meta = getmetatable(LOCAL_FrameHandle_Prototype);
+    meta.__index = HANDLE;
+    meta.__metatable = false;
+end
 
-local function IsFrameHandle(handle, protected)
+function IsFrameHandle(handle, protected)
     local surrogate = LOCAL_FrameHandle_Protected_Frames[handle];
     if ((surrogate == nil) and not protected) then
         surrogate = LOCAL_FrameHandle_Other_Frames[handle];
@@ -146,13 +171,16 @@ local function IsFrameHandle(handle, protected)
     return (surrogate ~= nil);
 end
 
-local function GetFrameHandleFrame(handle, protected)
+function GetFrameHandleFrame(handle, protected, onlyProtected)
     local surrogate = LOCAL_FrameHandle_Protected_Frames[handle];
-    if (surrogate == nil and not protected) then
+    local protectedSurrogate = true;
+    if ((surrogate == nil)
+        and (not protected or (not (onlyProtected or InCombatLockdown())))) then
         surrogate = LOCAL_FrameHandle_Other_Frames[handle];
+        protectedSurrogate = false;
     end
     if (surrogate ~= nil) then
-        return surrogate[1];
+        return surrogate[1], protectedSurrogate;
     end
 end
 
@@ -165,7 +193,7 @@ local function FrameHandleLookup_index(t, frame)
     if (not issecure()) then
         return;
     end
-    local handle = newproxy(FrameHandle_Prototype);
+    local handle = newproxy(LOCAL_FrameHandle_Prototype);
     LOCAL_FrameHandle_Lookup[frame] = handle;
     if (protected) then
         LOCAL_FrameHandle_Protected_Frames[handle] = surrogate;
@@ -177,7 +205,7 @@ end
 setmetatable(LOCAL_FrameHandle_Lookup, { __index = FrameHandleLookup_index; });
 
 -- Gets the handle for a frame (if available)
-local function GetFrameHandle(frame, protected)
+function GetFrameHandle(frame, protected)
     local handle = LOCAL_FrameHandle_Lookup[frame];
     if (protected and (frame ~= nil)) then
         if (not LOCAL_FrameHandle_Protected_Frames[handle]) then
@@ -187,20 +215,34 @@ local function GetFrameHandle(frame, protected)
     return handle;
 end
 
--- export for RestrictedFrames.lua
--- this insures we are never referring to the global version
-_G.FrameHandle_Prototype = FrameHandle_Prototype;
-_G.IsFrameHandle = IsFrameHandle;
-_G.GetFrameHandle = GetFrameHandle;
-_G.GetFrameHandleFrame = GetFrameHandleFrame;
+local handleNamespaceInitialized = false;
+
+-- Single-shot function to populate the frame handle namespace
+function InitFrameHandleNamespace(namespace)
+    if (not handleNamespaceInitialized) then
+        -- Prevent further calls
+        handleNamespaceInitialized = true;
+
+        for k, v in pairs(namespace) do
+            if (type(k) == "string" and type(v) == "function"
+                and issecure()) then
+                HANDLE[k] = v;
+            end
+        end
+    end
+end
+
 ---------------------------------------------------------------------------
 -- RESTRICTED TABLES
 --
 -- Provides fully proxied tables with restrictions on their contents.
---
+
+-- Capture IsFrameHandle (declared earlier)
+local IsFrameHandle = IsFrameHandle;
 
 -- Mapping table from restricted table 'proxy' to the 'real' storage
-local LOCAL_Restricted_Tables = setmetatable({}, { __mode="k" });
+local LOCAL_Restricted_Tables = {};
+setmetatable(LOCAL_Restricted_Tables, { __mode="k" });
 
 -- Metatable common to all restricted tables (This introduces one
 -- level of indirection in every use as a means to share the same
@@ -245,7 +287,8 @@ local LOCAL_Restricted_Table_Meta = {
     __metatable = false, -- False means read-write proxy
 }
 
-local LOCAL_Readonly_Restricted_Tables = setmetatable({}, { __mode="k" });
+local LOCAL_Readonly_Restricted_Tables = {};
+setmetatable(LOCAL_Readonly_Restricted_Tables, { __mode="k" });
 
 local function CheckReadonlyValue(ret)
     if (type(ret) == "userdata") then
@@ -346,13 +389,15 @@ function GetReadonlyRestrictedTable(ref)
     end
     error("Invalid restricted table");
 end
--- needed for RestrictedExecution.lua
+
+-- isWritableRef = IsWritableRestrictedTable(ref)
+--
+-- Given a restricted table, return true if it is writable
 function IsWritableRestrictedTable(ref)
     if (LOCAL_Restricted_Tables[ref]) then
         return true;
-    else
-        return false;
     end
+    return false;
 end
 
 -- key = RestrictedTable_next(table [,key])
@@ -591,7 +636,13 @@ rtable = {
     rtgsub = RestrictedTable_rtgsub;
 };
 
+-- Add this version of gsub to the string metatable
+string.rtgsub = RestrictedTable_rtgsub;
+
+
 ---------------------------------------------------------------------------
+-- WORKING ENVIRONMENTS
+--
 -- Working environments and control handles
 
 local function ManagedEnvironmentsIndex(t, k)
@@ -618,17 +669,18 @@ local function ManagedEnvironmentsIndex(t, k)
     return e;
 end
 
-local LOCAL_Managed_Environments = setmetatable({},
-    {
-        __index = ManagedEnvironmentsIndex,
-        __mode = "k",
-    }
-);
+local LOCAL_Managed_Environments = {};
+setmetatable(LOCAL_Managed_Environments,
+             {
+                 __index = ManagedEnvironmentsIndex,
+                 __mode = "k",
+             });
 
-function GetManagedEnvironment(envKey)
-    if ( issecure() ) then
+function GetManagedEnvironment(envKey, withCreate)
+    if (withCreate) then
         return LOCAL_Managed_Environments[envKey];
     else
         return rawget(LOCAL_Managed_Environments, envKey);
     end
 end
+

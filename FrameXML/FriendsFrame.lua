@@ -862,6 +862,14 @@ function FriendsFrame_OnEvent(self, event, ...)
 			BNetBroadcasts = { };
 		end
 		FriendsList_Update();
+		-- update Friends of Friends
+		local presenceID = ...;
+		if ( event == "BN_FRIEND_LIST_SIZE_CHANGED" and presenceID ) then
+			FriendsFriendsFrame.requested[presenceID] = nil;
+			if ( FriendsFriendsFrame:IsShown() ) then
+				FriendsFriendsList_Update();
+			end
+		end
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		local arg1 = ...;
 		if ( arg1 ) then	--There is no presenceID given if this is ourself.

@@ -2,8 +2,8 @@ GLYPH_TYPE_MAJOR = 1;
 GLYPH_TYPE_MINOR = 2;
 GLYPH_TYPE_PRIME = 3;
 
-GLYPH_STRING 				= { PRIME_GLYPH,   MAJOR_GLYPH,   MINOR_GLYPH}
-GLYPH_STRING_PLURAL 	= { PRIME_GLYPHS,	MAJOR_GLYPHS, MINOR_GLYPHS}
+GLYPH_STRING = { PRIME_GLYPH, MAJOR_GLYPH, MINOR_GLYPH}
+GLYPH_STRING_PLURAL = { PRIME_GLYPHS, MAJOR_GLYPHS, MINOR_GLYPHS}
 
 GLYPH_HEADER_BUTTON_HEIGHT = 23;
 GLYPH_BUTTON_HEIGHT = 40;
@@ -15,18 +15,17 @@ GLYPH_FILTER_UNKNOWN = 16;
 
 GLYPH_TYPE_INFO = {};
 GLYPH_TYPE_INFO[GLYPH_TYPE_PRIME] =  {
-																ring 			= { size = 82, left = 0.85839844, right = 0.93847656, top = 0.22265625, bottom = 0.30273438 };
-																highlight 	= { size = 96, left = 0.85839844, right = 0.95214844, top = 0.30468750, bottom = 0.39843750 };
-															}
+	ring = { size = 82, left = 0.85839844, right = 0.93847656, top = 0.22265625, bottom = 0.30273438 };
+	highlight = { size = 96, left = 0.85839844, right = 0.95214844, top = 0.30468750, bottom = 0.39843750 };
+}
 GLYPH_TYPE_INFO[GLYPH_TYPE_MAJOR] =  {
-																ring 			= { size = 66, left = 0.85839844, right = 0.92285156, top = 0.00097656, bottom = 0.06542969 };
-																highlight 	= { size = 80, left = 0.85839844, right = 0.93652344, top = 0.06738281, bottom = 0.14550781 };
-															}
+	ring = { size = 66, left = 0.85839844, right = 0.92285156, top = 0.00097656, bottom = 0.06542969 };
+	highlight = { size = 80, left = 0.85839844, right = 0.93652344, top = 0.06738281, bottom = 0.14550781 };
+}
 GLYPH_TYPE_INFO[GLYPH_TYPE_MINOR] =  {
-																ring 			= { size = 61, left = 0.92480469, right = 0.98437500, top = 0.00097656, bottom = 0.06054688 };
-																highlight 	= { size = 75, left = 0.85839844, right = 0.93164063, top = 0.14746094, bottom = 0.22070313 };
-															}
-
+	ring = { size = 61, left = 0.92480469, right = 0.98437500, top = 0.00097656, bottom = 0.06054688 };
+	highlight = { size = 75, left = 0.85839844, right = 0.93164063, top = 0.14746094, bottom = 0.22070313 };
+}
 
 NUM_GLYPH_SLOTS = 9;
 
@@ -76,8 +75,6 @@ function GlyphFrame_OnLoad (self)
 	self.scrollFrame.scrollBar.doNotHide = true;
 	self.scrollFrame.dynamic = GlyphFrame_CalculateScroll;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "GlyphSpellButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -GLYPH_BUTTON_OFFSET, "TOP", "BOTTOM");
-	
-
 end
 
 
@@ -123,7 +120,7 @@ function GlyphFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "USE_GLYPH") then
 		GlyphFrame_UpdateGlyphList();
-		GlyphFrame_Update (self);
+		GlyphFrame_Update(self);
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		GlyphFrame_Update(self);
 	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
@@ -428,7 +425,9 @@ function GlyphFrameGlyph_UpdateSlot (self)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup);
-
+	if not glyphType then
+		return;
+	end
 
 	-- Unlock Glyph Display
 	if id == 3 then -- second minor glyph

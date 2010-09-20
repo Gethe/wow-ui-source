@@ -2,87 +2,87 @@
 -- Overall Quality
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_Quality"]={
-	name=OVERALL_QUALITY;
+	name = OVERALL_QUALITY;
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_QUALITY_LABEL1,
 			tooltip = VIDEO_QUALITY_SUBTEXT1,
 			notify = {
-				Graphics_ViewDistanceDropDown = TEXT_LOW,
-				Graphics_ParticleDensityDropDown = TEXT_LOW,
-				Graphics_EnvironmentalDetailDropDown = TEXT_LOW,
-				Graphics_GroundClutterDropDown = TEXT_LOW,
-				Graphics_ShadowsDropDown = TEXT_LOW,
-				Graphics_TextureResolutionDropDown = TEXT_LOW,
-				Graphics_FilteringDropDown = TEXT_BILINEAR,
-				Graphics_LiquidDetailDropDown = TEXT_LOW,
-				Graphics_SunshaftsDropDown = TEXT_DISABLED,
-				Graphics_ProjectedTexturesDropDown = TEXT_DISABLED,
+				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_ShadowsDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_FilteringDropDown = VIDEO_OPTIONS_BILINEAR,
+				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
+				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 			},
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_QUALITY_LABEL2,
 			tooltip = VIDEO_QUALITY_SUBTEXT2,
 			notify = {
-				Graphics_ViewDistanceDropDown = TEXT_FAIR,
-				Graphics_ParticleDensityDropDown = TEXT_FAIR,
-				Graphics_EnvironmentalDetailDropDown = TEXT_FAIR,
-				Graphics_GroundClutterDropDown = TEXT_FAIR,
-				Graphics_ShadowsDropDown = TEXT_FAIR,
-				Graphics_TextureResolutionDropDown = TEXT_FAIR,
-				Graphics_FilteringDropDown = TEXT_TRILINEAR,
-				Graphics_LiquidDetailDropDown = TEXT_FAIR,
-				Graphics_SunshaftsDropDown = TEXT_DISABLED,
-				Graphics_ProjectedTexturesDropDown = TEXT_DISABLED,
+				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_FAIR,
+				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_FAIR,
+				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_FAIR,
+				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_FAIR,
+				Graphics_ShadowsDropDown = VIDEO_OPTIONS_FAIR,
+				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_FAIR,
+				Graphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
+				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_FAIR,
+				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
+				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 			},
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_QUALITY_LABEL3,
 			tooltip = VIDEO_QUALITY_SUBTEXT3,
 			notify = {
-				Graphics_ViewDistanceDropDown = TEXT_MEDIUM,
-				Graphics_ParticleDensityDropDown = TEXT_MEDIUM,
-				Graphics_EnvironmentalDetailDropDown = TEXT_MEDIUM,
-				Graphics_GroundClutterDropDown = TEXT_MEDIUM,
-				Graphics_ShadowsDropDown = TEXT_MEDIUM,
-				Graphics_TextureResolutionDropDown = TEXT_HIGH,
-				Graphics_FilteringDropDown = TEXT_4XANISOTROPIC,
-				Graphics_LiquidDetailDropDown = TEXT_MEDIUM,
-				Graphics_SunshaftsDropDown = TEXT_LOW,
-				Graphics_ProjectedTexturesDropDown = TEXT_ENABLED,
+				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_ShadowsDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_FilteringDropDown = VIDEO_OPTIONS_4XANISOTROPIC,
+				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			},
 		},
 		[4] = {
-			text = TEXT_HIGH,
+			text = VIDEO_QUALITY_LABEL4,
 			tooltip = VIDEO_QUALITY_SUBTEXT4,
 			notify = {
-				Graphics_ViewDistanceDropDown = TEXT_HIGH,
-				Graphics_ParticleDensityDropDown = TEXT_HIGH,
-				Graphics_EnvironmentalDetailDropDown = TEXT_HIGH,
-				Graphics_GroundClutterDropDown = TEXT_HIGH,
-				Graphics_ShadowsDropDown = TEXT_HIGH,
-				Graphics_TextureResolutionDropDown = TEXT_HIGH,
-				Graphics_FilteringDropDown = TEXT_8XANISOTROPIC,
-				Graphics_LiquidDetailDropDown = TEXT_MEDIUM,
-				Graphics_SunshaftsDropDown = TEXT_HIGH,
-				Graphics_ProjectedTexturesDropDown = TEXT_ENABLED,
+				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_ShadowsDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_FilteringDropDown = VIDEO_OPTIONS_8XANISOTROPIC,
+				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			},
 		},
 		[5] = {
-			text = TEXT_ULTRA,
+			text = VIDEO_QUALITY_LABEL5,
 			tooltip = VIDEO_QUALITY_SUBTEXT5,
 			notify = {
-				Graphics_ViewDistanceDropDown = TEXT_ULTRA,
-				Graphics_TextureResolutionDropDown = TEXT_HIGH,
-				Graphics_ParticleDensityDropDown = TEXT_ULTRA,
-				Graphics_EnvironmentalDetailDropDown = TEXT_ULTRA,
-				Graphics_GroundClutterDropDown = TEXT_ULTRA,
-				Graphics_ShadowsDropDown = TEXT_ULTRA,
-				Graphics_TextureResolutionDropDown = TEXT_HIGH,
-				Graphics_FilteringDropDown = TEXT_16XANISOTROPIC,
-				Graphics_LiquidDetailDropDown = TEXT_ULTRA,
-				Graphics_SunshaftsDropDown = TEXT_HIGH,
-				Graphics_ProjectedTexturesDropDown = TEXT_ENABLED,
+				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_ULTRA,
+				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_ULTRA,
+				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_ULTRA,
+				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_ULTRA,
+				Graphics_ShadowsDropDown = VIDEO_OPTIONS_ULTRA,
+				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_FilteringDropDown = VIDEO_OPTIONS_16XANISOTROPIC,
+				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_ULTRA,
+				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			},
 		},
 	},
@@ -196,11 +196,11 @@ VideoData["Graphics_Quality"]={
 -------------------------------------------------------------------------------------------------------
 
 VideoData["Graphics_DisplayModeDropDown"]={
-	name=DISPLAY_MODE;
-	description = "Allows you to change the primary display mode of the game to Fullscreen, Windowed, or Windowed (Fullscreen).  Windowed modes may cause a drop in performance.",
+	name = DISPLAY_MODE;
+	description = OPTION_TOOLTIP_DISPLAY_MODE,
 	dataA = {
 		[1] = {
-			text = "Windowed",
+			text = VIDEO_OPTIONS_WINDOWED,
 			cvars =	{
 				gxWindow = 1,
 				gxMaximize = 0,
@@ -209,7 +209,7 @@ VideoData["Graphics_DisplayModeDropDown"]={
 			fullscreen = false;
 		},
 		[2] = {
-			text = "Windowed (Fullscreen)",
+			text = VIDEO_OPTIONS_WINDOWED_FULLSCREEN,
 			cvars =	{
 				gxWindow = 1,
 				gxMaximize = 1,
@@ -218,7 +218,7 @@ VideoData["Graphics_DisplayModeDropDown"]={
 			fullscreen = true;
 		},
 		[3] = {
-			text = "Fullscreen",
+			text = VIDEO_OPTIONS_FULLSCREEN,
 			cvars =	{
 				gxWindow = 0,
 				gxMaximize = 0,
@@ -229,7 +229,7 @@ VideoData["Graphics_DisplayModeDropDown"]={
 	},
 	dataB = {
 		[1] = {
-			text = "Windowed",
+			text = VIDEO_OPTIONS_WINDOWED,
 			cvars =	{
 				gxWindow = 1,
 				gxMaximize = 0,
@@ -274,15 +274,23 @@ VideoData["Graphics_DisplayModeDropDown"]={
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_PrimaryMonitorDropDown"]={
-	name=PRIMARY_MONITOR;
-	description = "Allows you to change the primary monitor used by the display.",
+	name = PRIMARY_MONITOR;
+	description = OPTION_TOOLTIP_PRIMARY_MONITOR,
 	
 	table = {},
 	tablefunction = 
 		function(self)
 			local count = GetMonitorCount();
 			for i=1, count do
-				self.table[i] = GetMonitorName(i);
+				local name = GetMonitorName(i);
+				if(not name) then
+					if(i == 1) then
+						name = VIDEO_OPTIONS_MONITOR_PRIMARY;
+					else
+						name = string.format(VIDEO_OPTIONS_MONITOR, i-1);
+					end
+				end
+				self.table[i] = name;
 			end
 		end,
 	SetValue = 
@@ -326,8 +334,8 @@ function DecodeResolution(valueString)
 end
 
 VideoData["Graphics_ResolutionDropDown"]={
-	name=RESOLUTION;
-	description = "Higher resolution will result in increased clarity, but this greatly affects performance.  Choose a resolution that matches the aspect ratio of your monitor.",	
+	name = RESOLUTION;
+	description = OPTION_TOOLTIP_RESOLUTION,	
 	
 	tablefunction = 
 		function(self)
@@ -364,7 +372,7 @@ VideoData["Graphics_ResolutionDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_MultiSampleDropDown"]={
-	name=MULTISAMPLE;
+	name = MULTISAMPLE;
 	description = OPTION_TOOLTIP_MULTISAMPLING;
 	
 	table = {},
@@ -372,7 +380,7 @@ VideoData["Graphics_MultiSampleDropDown"]={
 	tablenext = 3;
 	readfilter =
 		function(self, colorBits, depthBits, multiSample)
-			return format(MULTISAMPLING_SHORT_FORMAT_STRING, multiSample);
+			return format(VIDEO_OPTIONS_MULTISAMPLE_FORMAT_STRING, multiSample);
 		end,
 	SetValue = 
 		function (self, value)
@@ -384,8 +392,8 @@ VideoData["Graphics_MultiSampleDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_RefreshDropDown"]={
-	name=REFRESH_RATE;
-	description = "Refers to the number of times the image is drawn to the monitor.  Some players may see a flicker if the refresh rate is too low.",
+	name = REFRESH_RATE;
+	description = OPTION_TOOLTIP_REFRESH_RATE,
 	
 	cvar = "gxRefresh";
 	-- code run for dependent target
@@ -426,18 +434,18 @@ VideoData["Graphics_RefreshDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_VerticalSyncDropDown"]={
-	name=VERTICAL_SYNC;
-	description = "Synchronizes your frame rate to some fraction of your monitor's refresh rate.",
+	name = VERTICAL_SYNC;
+	description = OPTION_TOOLTIP_VERTICAL_SYNC,
 	
 	data = {
 		[1] = {
-			text = "Disabled",
+			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				gxVSync = 0,
 			},
 		},
 		[2] = {
-			text = "Enabled",
+			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
 				gxVSync = 1,
 			},
@@ -451,36 +459,36 @@ VideoData["Graphics_VerticalSyncDropDown"]={
 -------------------------------------------------------------------------------------------------------
 
 VideoData["Graphics_ViewDistanceDropDown"]={
-	name=FARCLIP;
-	description = "View distance controls how far you can see. Larger view distances require more memory and a faster processor.",
+	name = FARCLIP;
+	description = OPTION_TOOLTIP_FARCLIP,
 
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				farClip = 185,
 			},
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
 				farClip = 507,
 			},
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				farClip = 727,
 			},
 		},
 		[4] = {
-			text = TEXT_HIGH,
+			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				farClip = 1057,
 			},
 		},
 		[5] = {
-			text = TEXT_ULTRA,
+			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
 				farClip = 1250,
 			},
@@ -493,40 +501,40 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_GroundClutterDropDown"]={
-	name= "Ground Clutter";
-	description = "Controls the density and the distance at which ground clutter items, like grass and foliage, are placed. Decrease to improve performance.",
+	name= GROUND_CLUTTER;
+	description = OPTION_TOOLTIP_GROUND_CLUTTER,
 
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				groundEffectDist = 70,
 				groundEffectDensity = 16,
 			},
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
 				groundEffectDist = 110,
 				groundEffectDensity = 40,
 			},
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				groundEffectDist = 160,
 				groundEffectDensity = 64,
 			},
 		},
 		[4] = {
-			text = TEXT_HIGH,
+			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				groundEffectDist = 220,
 				groundEffectDensity = 96,
 			},
 		},
 		[5] = {
-			text = TEXT_ULTRA,
+			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
 				groundEffectDist = 300,
 				groundEffectDensity = 128,
@@ -540,36 +548,36 @@ VideoData["Graphics_GroundClutterDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_EnvironmentalDetailDropDown"]={
-	name=ENVIRONMENT_DETAIL;
+	name = ENVIRONMENT_DETAIL;
 	description = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
 
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				environmentDetail = 50,
 			},
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
 				environmentDetail = 75,
 			},
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				environmentDetail = 100,
 			},
 		},
 		[4] = {
-			text = TEXT_HIGH,
+			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				environmentDetail = 125,
 			},
 		},
 		[5] = {
-			text = TEXT_ULTRA,
+			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
 				environmentDetail = 150,
 			},
@@ -582,40 +590,40 @@ VideoData["Graphics_EnvironmentalDetailDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ParticleDensityDropDown"]={
-	name=PARTICLE_DENSITY;
-	description =  OPTION_TOOLTIP_PARTICLE_DENSITY,
+	name = PARTICLE_DENSITY;
+	description = OPTION_TOOLTIP_PARTICLE_DENSITY,
 
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				particleDensity = 10,
 				weatherDensity = 0,
 			},
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
 				particleDensity = 40,
 				weatherDensity = 1,
 			},
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				particleDensity = 60,
 				weatherDensity = 1,
 			},
 		},
 		[4] = {
-			text = TEXT_HIGH,
+			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				particleDensity = 80,
 				weatherDensity = 2,
 			},
 		},
 		[5] = {
-			text = TEXT_ULTRA,
+			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
 				particleDensity = 100,
 				weatherDensity = 3,
@@ -629,48 +637,48 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ShadowsDropDown"]={
-	name=SHADOW_QUALITY;
-	description = "Controls both the method and quality of shadows. Decreasing this may greatly improve performance.",
+	name = SHADOW_QUALITY;
+	description = OPTION_TOOLTIP_SHADOW_QUALITY,
 
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				shadowMode = 0,
 			},
-			tooltip = "Low-resolution terrain shadows, blob shadows for units.";
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_LOW;
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
 				shadowMode = 1,
 				shadowTextureSize = 1024,
 			},
-			tooltip = "Low-resolution terrain shadows, low-resolution dynamic shadows near player.";
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_FAIR;
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				shadowMode = 1,
 				shadowTextureSize = 2048,
 			},
-			tooltip = "Low-resolution terrain shadows, high-resolution dynamic shadows near player.";
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
 		},
 		[4] = {
-			text = TEXT_HIGH,
+			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				shadowMode = 2,
 				shadowTextureSize = 2048,
 			},
-			tooltip = "High-resolution environment shadows, high-resolution dynamic shadows near player.";
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
 		},
 		[5] = {
-			text = TEXT_ULTRA,
+			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
 				shadowMode = 3,
 				shadowTextureSize = 2048,
 			},
-			tooltip = "High-resolution dynamic shadows for the entire scene.";
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
 		},
 	},
 	dependent = {
@@ -680,41 +688,45 @@ VideoData["Graphics_ShadowsDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_TextureResolutionDropDown"]={
-	name=TEXTURE_DETAIL;
+	name = TEXTURE_DETAIL;
 	description = OPTION_TOOLTIP_TEXTURE_DETAIL,
 
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				baseMip = 1,
 				terrainMipLevel = 1,
 				componentTextureLevel = 8,
 			},
+			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_LOW,
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				baseMip = 1,
-				terrainMipLevel = 0,
+				baseMip = 0,
+				terrainMipLevel = 1,
 				componentTextureLevel = 8,
 			},
+			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR,
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				baseMip = 0,
 				terrainMipLevel = 0,
 				componentTextureLevel = 8,
 			},
+			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_MEDIUM,
 		},
 		[4] = {
-			text = TEXT_HIGH,
+			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				baseMip = 0,
 				terrainMipLevel = 0,
 				componentTextureLevel = 9,
 			},
+			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
 		},
 	},
 	dependent = {
@@ -724,18 +736,18 @@ VideoData["Graphics_TextureResolutionDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_ProjectedTexturesDropDown"]={
-	name=PROJECTED_TEXTURES;
+	name = PROJECTED_TEXTURES;
 	description = OPTION_TOOLTIP_PROJECTED_TEXTURES,
 
 	data = {
 		[1] = {
-			text = TEXT_DISABLED,
+			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				projectedTextures = 0,
 			},
 		},
 		[2] = {
-			text = TEXT_ENABLED,
+			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
 				projectedTextures = 1,
 			},
@@ -748,42 +760,42 @@ VideoData["Graphics_ProjectedTexturesDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_FilteringDropDown"]={
-	name=ANISOTROPIC;
-	description = "Controls how textures are sampled. Higher settings make textures appear sharper in the distance and at glancing angles. Decrease to improve performance.",
+	name = ANISOTROPIC;
+	description = OPTION_TOOLTIP_ANISOTROPIC,
 
 	data = {
 		[1] = {
-			text = TEXT_BILINEAR,
+			text = VIDEO_OPTIONS_BILINEAR,
 			cvars =	{
 				textureFilteringMode = 0,
 			},
 		},
 		[2] = {
-			text = TEXT_TRILINEAR,
+			text = VIDEO_OPTIONS_TRILINEAR,
 			cvars =	{
 				textureFilteringMode = 1,
 			},
 		},
 		[3] = {
-			text = TEXT_2XANISOTROPIC,
+			text = VIDEO_OPTIONS_2XANISOTROPIC,
 			cvars =	{
 				textureFilteringMode = 2,
 			},
 		},
 		[4] = {
-			text = TEXT_4XANISOTROPIC,
+			text = VIDEO_OPTIONS_4XANISOTROPIC,
 			cvars =	{
 				textureFilteringMode = 3,
 			},
 		},
 		[5] = {
-			text = TEXT_8XANISOTROPIC,
+			text = VIDEO_OPTIONS_8XANISOTROPIC,
 			cvars =	{
 				textureFilteringMode = 4,
 			},
 		},
 		[6] = {
-			text = TEXT_16XANISOTROPIC,
+			text = VIDEO_OPTIONS_16XANISOTROPIC,
 			cvars =	{
 				textureFilteringMode = 5,
 			},
@@ -796,42 +808,42 @@ VideoData["Graphics_FilteringDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_LiquidDetailDropDown"]={
-	name=LIQUID_DETAIL;
+	name = LIQUID_DETAIL;
 	description = OPTION_TOOLTIP_LIQUID_DETAIL,
 
 	data = {
 		[1] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				waterDetail = 0,
 			},
-			tooltip = "Animated liquid textures, texture based ripples and no reflection.",
+			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_LOW,
 		},
 		[2] = {
-			text = TEXT_FAIR,
+			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
 				waterDetail = 1,
 				reflectionMode = 0,
 			},
-			tooltip = "Normalmap liquid textures, texture based ripples and sky reflection.",
+			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_FAIR,
 		},
 		[3] = {
-			text = TEXT_MEDIUM,
+			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				waterDetail = 2,
 				rippleDetail = 1,
 				reflectionMode = 0,
 			},
-			tooltip = "Normalmap liquid textures, procedural ripples and screen-based reflection.",
+			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM,
 		},
 		[4] = {
-			text = TEXT_ULTRA,
+			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
 				waterDetail = 3,
 				rippleDetail = 2,
 				reflectionMode = 3,
 			},
-			tooltip = "Normalmap liquid textures, procedural ripples and full reflection.",
+			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA,
 		},
 	},
 	dependent = {
@@ -841,30 +853,30 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_SunshaftsDropDown"]={
-	name=SUNSHAFTS;
-	description = "Controls the method and quality used to display sunshaft and glare effects. Disabling this setting may improve performance.",
+	name = SUNSHAFTS;
+	description = OPTION_TOOLTIP_SUNSHAFTS,
 
 	data = {
 		[1] = {
-			text = TEXT_DISABLED,
+			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				sunshafts = 0,
 			},
-			tooltip = "Traditional sunshafts and glare.",
+			tooltip = VIDEO_OPTIONS_SUNSHAFTS_DISABLED,
 		},
 		[2] = {
-			text = TEXT_LOW,
+			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				sunshafts = 1,
 			},
-			tooltip = "Depth-based sunshafts and glare.",
+			tooltip = VIDEO_OPTIONS_SUNSHAFTS_LOW,
 		},
 		[3] = {
-			text = TEXT_HIGH,
+			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				sunshafts = 2,
 			},
-			tooltip = "Depth-based sunshafts and glare with improved sampling to reduce anti-aliasing.",
+			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
 		},
 	},
 	dependent = {
@@ -877,58 +889,62 @@ VideoData["Graphics_SunshaftsDropDown"]={
 -------------------------------------------------------------------------------------------------------
 
 VideoData["Advanced_BufferingDropDown"]={
-	name=TRIPLE_BUFFER;
+	name = TRIPLE_BUFFER;
+	description = OPTION_TOOLTIP_TRIPLE_BUFFER,
+	
 	data = {
 		[1] = {
-			text = TEXT_DISABLED,
+			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				gxTripleBuffer = 0,
 			},
 		},
 		[2] = {
-			text = TEXT_ENABLED,
+			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
 				gxTripleBuffer = 1,
 			},
 		},
 	},
 	restart = true;
-	description =  OPTION_TOOLTIP_TRIPLE_BUFFER,
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Advanced_LagDropDown"]={
-	name=FIX_LAG;
+	name = FIX_LAG;
+	description = OPTION_TOOLTIP_FIX_LAG,
+	
 	data = {
 		[1] = {
-			text = TEXT_DISABLED,
+			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				gxFixLag = 0,
 			},
 		},
 		[2] = {
-			text = TEXT_ENABLED,
+			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
 				gxFixLag = 1,
 			},
 		},
 	},
 	restart = true,
-	description =  OPTION_TOOLTIP_FIX_LAG,
 }
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Advanced_HardwareCursorDropDown"]={
-	name=HARDWARE_CURSOR;
+	name = HARDWARE_CURSOR;
+	description = OPTION_TOOLTIP_HARDWARE_CURSOR,
+	
 	data = {
 		[1] = {
-			text = TEXT_DISABLED,
+			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				gxCursor = 0,
 			},
 		},
 		[2] = {
-			text = TEXT_ENABLED,
+			text = VIDEO_OPTIONS_ENABLED,
 			cvars =	{
 				gxCursor = 1,
 			},
@@ -941,12 +957,11 @@ VideoData["Advanced_HardwareCursorDropDown"]={
 				self:Disable();
 			end
 		end,
-	description =  OPTION_TOOLTIP_HARDWARE_CURSOR,
 	restart = true,
 }
 
 VideoData["Advanced_MaxFPSSlider"]={
-	name=MAXFPS;
+	name = MAXFPS;
 	tooltip = OPTION_MAXFPS,
 	initialize = 
 		function(self)
@@ -961,7 +976,7 @@ VideoData["Advanced_MaxFPSSlider"]={
 		end,
 }
 VideoData["Advanced_MaxFPSBKSlider"]={
-	name=MAXFPSBK;
+	name = MAXFPSBK;
 	tooltip = OPTION_MAXFPSBK,
 	initialize = 
 		function(self)
@@ -977,16 +992,16 @@ VideoData["Advanced_MaxFPSBKSlider"]={
 }
 
 VideoData["Advanced_MaxFPSCheckBox"]={
-	name=MAXFPS_CHECK;
+	name = MAXFPS_CHECK;
 	tooltip = OPTION_MAXFPS_CHECK,
 }
 VideoData["Advanced_MaxFPSBKCheckBox"]={
-	name=MAXFPSBK_CHECK;
+	name = MAXFPSBK_CHECK;
 	tooltip = OPTION_MAXFPSBK_CHECK,
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Advanced_GammaSlider"]={
-	name=GAMMA;
+	name = GAMMA;
 	tooltip = OPTION_TOOLTIP_GAMMA,
 	type = CONTROLTYPE_SLIDER,
 	onrefresh =
@@ -1012,7 +1027,7 @@ VideoData["Advanced_GammaSlider"]={
 }
 -------------------------------------------------------------------------------------------------------
 VideoData["Advanced_DesktopGamma"]={
-	name=DESKTOP_GAMMA;
+	name = DESKTOP_GAMMA;
 	tooltip = OPTION_TOOLTIP_DESKTOP_GAMMA,
 	cvar = "desktopGamma",
 	GetValue =
@@ -1046,11 +1061,11 @@ VideoData["Advanced_DesktopGamma"]={
 		end,
 }
 VideoData["Advanced_UseUIScale"]={
-	name=USE_UISCALE;
+	name = USE_UISCALE;
 	tooltip = OPTION_TOOLTIP_USE_UISCALE,
 }
 VideoData["Advanced_StereoEnabled"]={
-	name=ENABLE_STEREO_VIDEO;
+	name = ENABLE_STEREO_VIDEO;
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
 }
 

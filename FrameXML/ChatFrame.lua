@@ -115,6 +115,7 @@ ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
 	"TIME_PLAYED_MSG",
 	"PLAYER_LEVEL_UP",
+	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 };
 ChatTypeGroup["SAY"] = {
@@ -2586,6 +2587,11 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
 		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
 		return true;
+	elseif (event == "UNIT_LEVEL" ) then
+		local arg1 = ...;
+		if (arg1 == "pet") then
+			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
+		end
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;
 		local info = ChatTypeInfo["SYSTEM"];
@@ -3329,7 +3335,7 @@ end
 function ChatEdit_OnEvent(self, event, ...)
 	if ( event == "UPDATE_CHAT_COLOR" ) then
 		local chatType = ...;
-		if ( chatType == self:GetAttribute("chatType") ) then
+		if ( self:IsShown() ) then
 			ChatEdit_UpdateHeader(self);
 		end
 	end
@@ -3612,7 +3618,11 @@ function ChatEdit_UpdateHeader(editBox)
 		
 		header:SetFormattedText(CHAT_WHISPER_SEND, editBox:GetAttribute("tellTarget"));
 	elseif ( type == "BN_WHISPER" ) then
-		header:SetFormattedText(CHAT_BN_WHISPER_SEND, editBox:GetAttribute("tellTarget"));
+		local name = editBox:GetAttribute("tellTarget");
+		if ( strlenutf8(name) > 30 ) then	--We only show the first 30 letters of a name (bug 205388)
+			name = strsub(name, 1, 30).."...";
+		end
+		header:SetFormattedText(CHAT_BN_WHISPER_SEND, name);
 	elseif ( type == "EMOTE" ) then
 		header:SetFormattedText(CHAT_EMOTE_SEND, UnitName("player"));
 	elseif ( type == "CHANNEL" ) then

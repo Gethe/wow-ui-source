@@ -130,18 +130,10 @@ function ENV.PlayerInGroup()
 end
 
 function ENV.UnitHasVehicleUI(unit)
-        unit = tostring(unit);
-        return UnitHasVehicleUI(unit) and 
-                (UnitCanAssist("player", unit:gsub("(%D+)(%d*)", "%1pet%2")) and true) or 
-                (UnitCanAssist("player", unit) and false);
-end
-
-function ENV.RegisterAttributeDriver(frameHandle, ...)
-    return RegisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
-end
-
-function ENV.UnregisterAttributeDriver(frameHandle, ...)
-    return UnregisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+    unit = tostring(unit);
+    return UnitHasVehicleUI(unit) and
+        (UnitCanAssist("player", unit:gsub("(%D+)(%d*)", "%1pet%2")) and true) or
+        (UnitCanAssist("player", unit) and false);
 end
 
 function ENV.RegisterStateDriver(frameHandle, ...)
@@ -150,6 +142,14 @@ end
 
 function ENV.UnregisterStateDriver(frameHandle, ...)
     return UnregisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+end
+
+function ENV.RegisterAttributeDriver(frameHandle, ...)
+    return RegisterAttributeDriver(GetFrameHandleFrame(frameHandle), ...);
+end
+
+function ENV.UnregisterAttributeDriver(frameHandle, ...)
+    return UnregisterAttributeDriver(GetFrameHandleFrame(frameHandle), ...);
 end
 
 function ENV.RegisterUnitWatch(frameHandle, ...)
@@ -166,15 +166,15 @@ end
 
 local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
 local function scrubActionInfo(actionType, ...)
-	if ( safeActionTypes[actionType]) then
-		return actionType, ...
-	else
-		return actionType
-	end
+    if ( safeActionTypes[actionType]) then
+        return actionType, ...
+    else
+        return actionType
+    end
 end
 
 function ENV.GetActionInfo(...)
-	return scrubActionInfo(GetActionInfo(...));
+    return scrubActionInfo(GetActionInfo(...));
 end
 
 ENV = nil;

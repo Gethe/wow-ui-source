@@ -40,13 +40,13 @@ local MOUSE_SIZE = { x = 76, y = 101}
 local TUTORIALFRAME_QUEUE = { };
 
 local TUTORIAL_QUEST_ARRAY = {
-	["HUMAN"] = {questID = 7, displayNPC = 197, killCreature = 6},
+	["HUMAN"] = {questID = 7, displayNPC = 197, killCreature = 49871},
 	["DWARF"] = {questID = 24469, displayNPC = 37081, killCreature = 37070},
-	["NIGHTELF"] = {questID = 456, displayNPC = 2079, killCreature = 6},
+	["NIGHTELF"] = {questID = 456, displayNPC = 2079, killCreature = 2031},
 	["GNOME"] = {questID = 27670, displayNPC = 15744, killCreature = 46363},
-	["ORC"] = {questID = 25126, displayNPC = 3143, killCreature = 3098},
+	["ORC"] = {questID = 25126, displayNPC = 3143, killCreature = 3098, killQuestSecond = true},
 	["SCOURGE"] = {questID = 26799, displayNPC = 1569, killCreature = 1501},
-	["TAUREN"] = {questID = 14452, displayNPC = 9937, killCreature = 2952},
+	["TAUREN"] = {questID = 14452, displayNPC = 9937, killCreature = 36943, killQuestSecond = true},
 
 	["TROLLWARRIOR"] = nil,
 
@@ -55,6 +55,8 @@ local TUTORIAL_QUEST_ARRAY = {
 	["WORGEN"] = nil,
 	["GOBLIN"] = nil,
 };
+CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY["HUMAN"];
+
 
 local DISPLAY_DATA = {
 	-- layers can be BACKGROUND, BORDER, ARTWORK, OVERLAY, HIGHLIGHT
@@ -145,7 +147,6 @@ local DISPLAY_DATA = {
 	},
 	
 	[10] = { --TUTORIAL_SECOND_QUEST
-		raceRequired = true;
  		tileHeight = 24, 
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
 		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
@@ -587,9 +588,11 @@ function TutorialFrame_OnEvent(self, event, ...)
 		className = strupper(className);
 		raceName = strupper(raceName);
 		if (TUTORIAL_QUEST_ARRAY[raceName..className]) then
-			TUTORIAL_QUEST_TO_WATCH = TUTORIAL_QUEST_ARRAY[raceName..className].questID;
+			CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY[raceName..className];
+			TUTORIAL_QUEST_TO_WATCH = CURRENT_TUTORIAL_QUEST_INFO.questID;
 		elseif (TUTORIAL_QUEST_ARRAY[raceName]) then
-			TUTORIAL_QUEST_TO_WATCH = TUTORIAL_QUEST_ARRAY[raceName].questID;
+			CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY[raceName];
+			TUTORIAL_QUEST_TO_WATCH = CURRENT_TUTORIAL_QUEST_INFO.questID;
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
 		local spellID = ...;
@@ -709,7 +712,7 @@ function TutorialFrame_Update(currentTutorial)
 	className = strupper(className);
 	raceName = strupper(raceName);
 	
-	if ( displayData.raceRequired and not TUTORIAL_QUEST_ARRAY[raceName..className] and not TUTORIAL_QUEST_ARRAY[raceName]) then
+	if ( displayData.raceRequired and not CURRENT_TUTORIAL_QUEST_INFO) then
 		return;
 	end
 
@@ -766,28 +769,15 @@ function TutorialFrame_Update(currentTutorial)
 		TutorialFrame:SetSize(TUTORIALFRAME_WIDTH, height);
 	end
 
-	local displayNPC, killCreature;
-	if (TUTORIAL_QUEST_ARRAY[raceName..className]) then
-		displayNPC = TUTORIAL_QUEST_ARRAY[raceName..className].displayNPC;
-		killCreature = TUTORIAL_QUEST_ARRAY[raceName..className].killCreature;
-	elseif (TUTORIAL_QUEST_ARRAY[raceName]) then
-		displayNPC = TUTORIAL_QUEST_ARRAY[raceName].displayNPC;
-		killCreature = TUTORIAL_QUEST_ARRAY[raceName].killCreature;
-	end
-	if (displayData.displayNPC and displayNPC) then
-		TutorialNPCModel:SetCreature(displayNPC);
-		TutorialNPCModel:Show();
-	elseif (displayData.killCreature and killCreature) then
-		TutorialNPCModel:SetCreature(killCreature);
-		TutorialNPCModel:Show();
-	end
-
 	-- setup the text
 	-- check for race-class specific first, then race specific, then class, then normal
 	local text = _G["TUTORIAL"..currentTutorial.."_"..raceName.."_"..className];
 	if ( not text ) then
 		text = _G["TUTORIAL"..currentTutorial.."_"..raceName];
 		if ( not text ) then
+			if ( displayData.raceRequired ) then
+				return;
+			end
 			text = _G["TUTORIAL"..currentTutorial.."_"..className];
 			if ( not text ) then
 				text = _G["TUTORIAL"..currentTutorial];
@@ -799,6 +789,16 @@ function TutorialFrame_Update(currentTutorial)
 		return;
 	end
 	
+	local displayNPC = CURRENT_TUTORIAL_QUEST_INFO.displayNPC;
+	local killCreature = CURRENT_TUTORIAL_QUEST_INFO.killCreature;
+	if (displayData.displayNPC and displayNPC) then
+		TutorialNPCModel:SetCreature(displayNPC);
+		TutorialNPCModel:Show();
+	elseif (displayData.killCreature and killCreature) then
+		TutorialNPCModel:SetCreature(killCreature);
+		TutorialNPCModel:Show();
+	end
+
 	-- setup the title
 	-- check for race-class specific first, then race specific, then class, then normal
 	if (displayData.tileHeight > 0) then

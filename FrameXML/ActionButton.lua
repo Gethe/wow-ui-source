@@ -406,7 +406,11 @@ function ActionButton_HideOverlayGlow(self)
 		if ( self.overlay.animIn:IsPlaying() ) then
 			self.overlay.animIn:Stop();
 		end
-		self.overlay.animOut:Play();
+		if ( self:IsVisible() ) then
+			self.overlay.animOut:Play();
+		else
+			ActionButton_OverlayGlowAnimOutFinished(self.overlay.animOut);	--We aren't shown anyway, so we'll instantly hide it.
+		end
 	end
 end
 
@@ -438,6 +442,10 @@ function ActionButton_OnEvent (self, event, ...)
 	end
 	if ( event == "ACTIONBAR_PAGE_CHANGED" or event == "UPDATE_BONUS_ACTIONBAR" ) then
 		ActionButton_UpdateAction(self);
+		local actionType, id, subType = GetActionInfo(self.action);
+		if ( actionType == "spell" and id == 0 ) then
+			ActionButton_HideOverlayGlow(self);
+		end
 		return;
 	end
 	if ( event == "ACTIONBAR_SHOWGRID" ) then

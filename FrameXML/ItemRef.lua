@@ -171,8 +171,8 @@ function SetItemRef(link, text, button, chatFrame)
 		GMChatStatusFrame_OnClick();
 		return;
 	elseif ( strsub(link, 1, 7) == "levelup" ) then
-		local _, level, levelUpType = strsplit(":", link);
-		LevelUpDisplay_ShowSideDisplay(tonumber(level), _G[levelUpType]);
+		local _, level, levelUpType, arg1 = strsplit(":", link);
+		LevelUpDisplay_ShowSideDisplay(tonumber(level), _G[levelUpType], arg1);
 		return;
 	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
 		TogglePVPFrame();
@@ -185,6 +185,9 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
 		ToggleTalentFrame();
+		return;
+	elseif ( strsub(link, 1, 13) == "pettalentpane" ) then
+		TogglePetTalentFrame();
 		return;
 	end
     

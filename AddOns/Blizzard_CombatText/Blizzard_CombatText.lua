@@ -307,7 +307,12 @@ function CombatText_OnEvent(self, event, ...)
 			message = COMBAT_TEXT_RESIST;
 		end
 	elseif ( messageType == "HONOR_GAINED" ) then
-		if ( tonumber(data) > 0 ) then
+		data = tonumber(data);
+		if ( not data or abs(data) < 1 ) then
+			return;
+		end
+		data = floor(data);
+		if ( data > 0 ) then
 			data = "+"..data;
 		end
 		message = format(COMBAT_TEXT_HONOR_GAINED, data);

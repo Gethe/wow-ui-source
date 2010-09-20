@@ -179,6 +179,7 @@ function MainMenuBar_OnLoad(self)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("UNIT_LEVEL");
 	
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
@@ -186,7 +187,7 @@ end
 
 local firstEnteringWorld = true;
 function MainMenuBar_OnEvent(self, event, ...)
-	local arg1, arg2, arg3, arg4, arg5 = ...;
+	local arg1, arg2, arg3, arg4, arg5, arg6, arg7 = ...;
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarPageNumber:SetText(GetActionBarPage());
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
@@ -205,7 +206,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 			if ( (not showTokenFrame) and (hasNormalTokens) ) then
 				SetCVar("showTokenFrame", 1);
 				if ( not CharacterFrame:IsVisible() ) then
-					SetButtonPulse(CharacterMicroButton, 60, 1);
+					MicroButtonPulse(CharacterMicroButton, 60);
 				end
 				if ( not TokenFrame:IsVisible() ) then
 					SetButtonPulse(CharacterFrameTab4, 60, 1);
@@ -214,7 +215,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 			if ( (not showTokenFrameHonor) and (hasPVPTokens) ) then
 				SetCVar("showTokenFrameHonor", 1);
 				if ( not CharacterFrame:IsVisible() ) then
-					SetButtonPulse(CharacterMicroButton, 60, 1);
+					MicroButtonPulse(CharacterMicroButton, 60);
 				end
 				if ( not TokenFrame:IsVisible() ) then
 					SetButtonPulse(CharacterFrameTab4, 60, 1);
@@ -259,6 +260,10 @@ function MainMenuBar_OnEvent(self, event, ...)
 		VehicleMenuBar.skin = arg3;
 		if ( arg2 ) then	--We are going to show a vehicle UI
 			if ( MainMenuBar.state == "vehicle" ) then
+				--We don't want to animate down the UI if we just changed seats within one vehicle.
+				if ( arg7 == VehicleMenuBar.vehicleGUID ) then
+					return;
+				end
 				MultiBarRight.ignoreFramePositionManager = true;
 				SetUpAnimation(VehicleMenuBar, AnimDataTable.MenuBar_Slide, MainMenuBar_AnimFinished, false);
 			else
@@ -292,7 +297,8 @@ function MainMenuBar_OnEvent(self, event, ...)
 				HideBonusActionBar();
 			end
 		end
-		
+	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then
+		UpdateMicroButtons();
 	end
 end
 
@@ -508,6 +514,21 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:AddLine(NEWBIE_TOOLTIP_FRAMERATE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+	end
+	GameTooltip:AddLine("\n");
+
+	string = format(MAINMENUBAR_BANDWIDTH_LABEL, GetAvailableBandwidth());
+	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
+	if ( SHOW_NEWBIE_TIPS == "1" ) then
+		GameTooltip:AddLine(NEWBIE_TOOLTIP_BANDWIDTH, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+	end
+	GameTooltip:AddLine("\n");
+
+	local percent = floor(GetDownloadedPercentage()*100+0.5);
+	string = format(MAINMENUBAR_DOWNLOAD_PERCENT_LABEL, percent);
+	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
+	if ( SHOW_NEWBIE_TIPS == "1" ) then
+		GameTooltip:AddLine(NEWBIE_TOOLTIP_DOWNLOAD_PERCENT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 	end
 
 	-- AddOn mem usage

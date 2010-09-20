@@ -257,7 +257,7 @@
 				if (not self.noResize) then
 					self:SetWidth(self.maxWidth+25);
 				end
-				self.showTime = nil;
+				self.showTimer = nil;
 				if ( self:GetID() > 1 ) then
 					self.parent = _G["DropDownList"..(self:GetID() - 1)];
 				end

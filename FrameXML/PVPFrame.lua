@@ -1,4 +1,6 @@
 -- PVP Global Lua Constants
+CONQUEST_CURRENCY = 390;
+HONOR_CURRENCY = 392;
 
 WORLD_PVP_TIME_UPDATE_IINTERVAL = 1;
 MAX_BATTLEFIELD_QUEUES = 2;
@@ -25,6 +27,7 @@ MAX_ARENA_TEAM_MEMBER_SCROLL_WIDTH = 300;
 
 NUM_DISPLAYED_BATTLEGROUNDS = 5;
 
+NO_ARENA_SEASON = 0;
 
 
 BG_BUTTON_WIDTH = 320;
@@ -49,6 +52,10 @@ PVPHONOR_TEXTURELIST[120] = "Interface\\PVPFrame\\PvpBg-Gilneas";
 local PVPWORLD_TEXTURELIST = {};
 PVPWORLD_TEXTURELIST[1] = "Interface\\PVPFrame\\PvpBg-Wintergrasp";
 PVPWORLD_TEXTURELIST[21] = "Interface\\PVPFrame\\PvpBg-TolBarad";
+
+local PVPWORLD_DESCRIPTIONS = {};
+PVPWORLD_DESCRIPTIONS[1] = WINTERGRASP_DESCRIPTION;
+PVPWORLD_DESCRIPTIONS[21] = TOL_BARAD_DESCRIPTION;
 
 
 
@@ -110,7 +117,7 @@ function PVPFrame_OnLoad(self)
 	PVPFrame_TabClicked(PVPFrameTab1);
 	SetPortraitToTexture(PVPFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	
-	self:RegisterEvent("HONOR_CURRENCY_UPDATE");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
 	
@@ -132,6 +139,9 @@ function PVPFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
 	
 	PVPFrame.timerDelay = 0;
+	
+	PVPFrameTab2.info = ARENA_CONQUEST_INFO;
+	PVPFrameTab3.info = ARENA_TEAM_INFO;
 end
 
 
@@ -147,7 +157,7 @@ function PVPFrame_OnEvent(self, event, ...)
 		FauxScrollFrame_OnVerticalScroll(PVPHonorFrameTypeScrollFrame, 0, 16, PVPHonor_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
 		MiniMapBattlefieldDropDown_OnLoad();
 		PVP_UpdateStatus(false, nil);
-	elseif event == "HONOR_CURRENCY_UPDATE" then
+	elseif event == "CURRENCY_DISPLAY_UPDATE" then
 		PVPFrame_UpdateCurrency(self);
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		local arg1 = ...
@@ -279,15 +289,17 @@ function PVPFrame_UpdateCurrency(self, value)
 	
 	if value then
 		currency = value
-	else
+	elseif self.lastSelectedTab then
 		local index = self.lastSelectedTab:GetID()	
 		if index == 1 then -- Honor Page	
-			_, currency = GetCurrencyInfo(392);
+			_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 		elseif index == 2 then -- Conquest 
-			_, currency = GetCurrencyInfo(390);
+			_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 		elseif index == 3 then -- Arena Management
-			_, currency = GetCurrencyInfo(390);
+			_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 		end
+	else
+		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 	end
 	
 	local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
@@ -330,7 +342,12 @@ function PVPFrame_TabClicked(self)
 	PVPFrameRightButton:Hide();
 	PVPFrame.panel1:Hide();	
 	PVPFrame.panel2:Hide();	
-	PVPFrame.panel3:Hide();	
+	PVPFrame.panel3:Hide();
+	
+	PVPFrame.lowLevelFrame:Hide();
+	PVPFrameLeftButton:Show();
+	
+	
 	PVPFrameTitleText:SetText(self:GetText());	
 	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
 	PVPFrame.topInset:Hide();
@@ -347,7 +364,23 @@ function PVPFrame_TabClicked(self)
 		PVPFrameConquestBar:Hide();
 		PVPFrameTypeIcon:SetTexCoord(0.0, 0.58, 0, 0.58);
 		PVPFrameTypeIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-		_, currency = GetCurrencyInfo(392);
+		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
+	elseif UnitLevel("player") < 70 then
+		self:GetParent().lastSelectedTab = nil;
+		PVPFrameLeftButton:Hide();
+		PVPFrame.lowLevelFrame.title:SetText(self:GetText());
+		PVPFrame.lowLevelFrame.error:SetFormattedText(PVP_CONQUEST_LOWLEVEL, self:GetText());
+		PVPFrame.lowLevelFrame.description:SetText(self.info);
+		PVPFrame.lowLevelFrame:Show();
+		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
+	elseif GetCurrentArenaSeason() == NO_ARENA_SEASON then
+		self:GetParent().lastSelectedTab = nil;
+		PVPFrameLeftButton:Hide();
+		PVPFrame.lowLevelFrame.title:SetText(self:GetText());
+		PVPFrame.lowLevelFrame.error:SetText("");
+		PVPFrame.lowLevelFrame.description:SetText(ARENA_MASTER_NO_SEASON_TEXT);
+		PVPFrame.lowLevelFrame:Show();
+		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
@@ -356,7 +389,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameConquestBar:Show();
 		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-		_, currency = GetCurrencyInfo(390);
+		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 3 then -- Arena Management
 		PVPFrameLeftButton:SetText(ADDMEMBER_TEAM);
 		PVPFrameLeftButton:Disable();
@@ -368,7 +401,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -281);
 		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-		_, currency = GetCurrencyInfo(390);
+		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	end
 	
 	PVPFrame_UpdateCurrency(self, currency);
@@ -540,6 +573,7 @@ end
 function PVPHonor_UpdateInfo()
 	if PVPHonorFrame.selectedIsWorldPvp then
 		pvpID, _, _, _, _, _, mapDescription = GetWorldPVPAreaInfo(PVPHonorFrame.selectedPvpID);
+		mapDescription = PVPWORLD_DESCRIPTIONS[pvpID]
 		if not mapDescription or mapDescription == "" then
 			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText("Missing Map Description");
 		else
@@ -770,7 +804,7 @@ function PVPConquestFrame_Update(self)
 			self.infoButton.bottomLeftText:Show();
 		end
 	else -- Rated BG
-		local personalBGRating, ratedBGreward = GetPersonalRatedBGInfo();
+		local personalBGRating, ratedBGreward, _, _, weeklyWins, weeklyPlayed = GetPersonalRatedBGInfo();
 		self.topRatingText:SetText(RATING..": "..personalBGRating);
 		self.winReward.winAmount:SetText(ratedBGreward);
 		
@@ -790,8 +824,8 @@ function PVPConquestFrame_Update(self)
 		end
 		
 		
-		self.infoButton.winsValue:SetText(prefixColorCode.."0");
-		self.infoButton.lossesValue:SetText(prefixColorCode.."0");
+		self.infoButton.winsValue:SetText(prefixColorCode..weeklyWins);
+		self.infoButton.lossesValue:SetText(prefixColorCode..(weeklyPlayed-weeklyWins));
 		self.infoButton.topLeftText:SetText(prefixColorCode..ARENA_THIS_WEEK);
 		
 		self.infoButton.arenaError:Hide();
@@ -882,6 +916,8 @@ function PVPTeamManagementFrame_OnLoad(self)
 			button.BG:Hide();
 		end
 	end
+	
+	PvP_WeeklyText:SetText(ARENA_WEEKLY_STATS);
 end
 
 
@@ -912,7 +948,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 		if self.selectedTeam then
 			flagbutton = self.selectedTeam;
 		else 
-			self.invalidTeam:Show();
+			self.noTeams:Show();
 			return;
 		end
 	end
@@ -972,6 +1008,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 	
 	if ( teamSize > numMembers ) then
 		self.invalidTeam:Show();
+		self.invalidTeam:SetFrameLevel(self:GetFrameLevel() + 2);
 		if IsArenaTeamCaptain(teamIndex) then
 			self.invalidTeam.text:SetText(ARENA_CAPTAIN_INVALID_TEAM);
 		else
@@ -994,7 +1031,6 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 		
 		
 		if ( i > numMembers ) then
-			--button:Hide();
 			button:Disable();
 			_G[TeammateButtonName..i.."NameText"]:SetText("");
 			--classText = _G[TeammateButtonName..i.."ClassText"];  ADD class color and Icon
@@ -1167,6 +1203,9 @@ function PVPTeamManagementFrame_UpdateTeams(self)
 		end
 
 		self.noTeams:Hide();
+		self.weeklyToggleLeft:Enable();
+		self.weeklyToggleRight:Enable();
+		PVPFrameLeftButton:Enable();
 		if  self.selectedTeam then 
 			PVPTeamManagementFrame_UpdateTeamInfo(self, self.selectedTeam)
 		elseif  self.defaultTeam then 
@@ -1174,8 +1213,11 @@ function PVPTeamManagementFrame_UpdateTeams(self)
 		else
 			--We have not arena teams
 			self.noTeams:Show();
+			PVPFrameLeftButton:Disable();
+			self.weeklyToggleLeft:Disable();
+			self.weeklyToggleRight:Disable();
 			self.invalidTeam:Hide();
-			self.noTeams:SetFrameLevel(self:GetFrameLevel() +3);			
+			self.noTeams:SetFrameLevel(self:GetFrameLevel() + 2);
 			FauxScrollFrame_Update(self.teamMemberScrollFrame, 0, MAX_ARENA_TEAM_MEMBERS_SHOWN, 18);
 		end	
 end
@@ -1464,6 +1506,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 				info.func = function (self, ...) AcceptBattlefieldPort(...) end;
 				info.arg1 = i;
 				info.notCheckable = 1;
+				info.disabled = registeredMatch and not (IsPartyLeader() or IsRaidLeader());
 				UIDropDownMenu_AddButton(info);
 
 			elseif ( status == "confirm" ) then
@@ -1706,7 +1749,11 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 					waitTime = SecondsToTime(waitTime/1000, 1);
 				end
 				MiniMapBattlefieldFrame.waitTime[i] = waitTime;
-				tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue));
+				if( registeredMatch and teamSize == 0 ) then
+					tooltip = format(BATTLEFIELD_IN_QUEUE_RATED, mapName, waitTime, SecondsToTime(timeInQueue));
+				else
+					tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue));
+				end
 				
 				if ( not tooltipOnly ) then
 					if ( not IsAlreadyInQueue(mapName) ) then

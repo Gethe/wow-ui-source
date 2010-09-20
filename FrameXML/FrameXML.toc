@@ -155,9 +155,10 @@ CompactPartyFrame.xml
 RolePoll.xml
 SpellFlyout.xml
 PaladinPowerBar.xml
-StreamingFrame.xml
 SpellActivationOverlay.xml
 GuildInviteFrame.xml
+GhostFrame.xml
+StreamingFrame.xml
 
 ## add new modules above here
 LocalizationPost.xml

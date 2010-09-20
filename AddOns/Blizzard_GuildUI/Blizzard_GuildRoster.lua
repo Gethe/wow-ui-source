@@ -17,7 +17,8 @@ local GUILD_ROSTER_COLUMNS = {
 	tradeskill = { "wideName", "zone", "skill" },
 };
 
-local GUILD_ROSTER_COLUMN_DATA = {
+-- global for localization changes
+GUILD_ROSTER_COLUMN_DATA = {
 	level = { width = 32, text = LEVEL_ABBR, stringJustify="CENTER" },
 	class = { width = 32, text = CLASS_ABBR, hasIcon = true },
 	name = { width = 81, text = NAME, stringJustify="LEFT" },

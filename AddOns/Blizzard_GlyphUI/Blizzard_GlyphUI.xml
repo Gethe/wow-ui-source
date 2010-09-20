@@ -378,7 +378,7 @@ size=1024,1024
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<EditBox name="$parentSearchBox" autoFocus="false">
+			<EditBox name="$parentSearchBox" autoFocus="false" letters="25">
 				<Size>
 					<AbsDimension x="180" y="20"/>
 				</Size>

@@ -807,14 +807,14 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.myHealPredictionBar:SetWidth(options.width);
 	frame.myHealPredictionBar:SetStatusBarTexture("", "BORDER", -1);
 	frame.myHealPredictionBar:GetStatusBarTexture():SetTexture(1, 1, 1);
-	frame.myHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 139/255, 20/255, 10/255, 202/255, 29/255);
+	frame.myHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
 	
 	frame.otherHealPredictionBar:SetPoint("TOPLEFT", frame.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0);
 	frame.otherHealPredictionBar:SetPoint("BOTTOMLEFT", frame.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0);
 	frame.otherHealPredictionBar:SetWidth(options.width);
 	frame.otherHealPredictionBar:SetStatusBarTexture("", "BORDER", -1);
 	frame.otherHealPredictionBar:GetStatusBarTexture():SetTexture(1, 1, 1);
-	frame.otherHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 3/255, 72/255, 5/255, 2/255, 101/255, 18/255);
+	frame.otherHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 11/255, 53/255, 43/255, 21/255, 89/255, 72/255);
 	
 	frame.roleIcon:ClearAllPoints();
 	frame.roleIcon:SetPoint("TOPLEFT", 3, -2);

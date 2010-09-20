@@ -9,19 +9,11 @@ end
 function GossipFrame_OnEvent(self, event, ...)
 	if ( event == "GOSSIP_SHOW" ) then
 		-- if there is only a non-gossip option, then go to it directly
-		local numAvailableQuests = GetNumGossipAvailableQuests();
-		local numActiveQuests = GetNumGossipActiveQuests();
-		local numGossipOptions = GetNumGossipOptions();
-		local totalGossip = numAvailableQuests + numActiveQuests + numGossipOptions;
-		if ( (totalGossip == 1) and not ForceGossip() ) then
-			if (numAvailableQuests == 1) then
-				SelectGossipAvailableQuest(1);
-			elseif (numActiveQuests == 1) then
-				SelectGossipActiveQuest(1);
-			elseif (numGossipOptions == 1) then
-				SelectGossipActiveQuest(1);
-			else
+		if ( (GetNumGossipAvailableQuests() == 0) and (GetNumGossipActiveQuests() == 0) and (GetNumGossipOptions() == 1) and not ForceGossip() ) then
+			local text, gossipType = GetGossipOptions();
+			if ( gossipType ~= "gossip" ) then
 				SelectGossipOption(1);
+				return;
 			end
 		end
 

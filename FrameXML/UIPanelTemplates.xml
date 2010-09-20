@@ -1397,8 +1397,93 @@
 		</PushedTexture>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
-	
-	
+	<Button name="UIPanelLargeSilverButton" virtual="true">
+		<Size>
+			<AbsDimension x="96" y="46"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Buttons\UI-SilverButtonLG-Left-Up">
+					<Size>
+						<AbsDimension x="32" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Buttons\UI-SilverButtonLG-Right-Up">
+					<Size>
+						<AbsDimension x="32" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Buttons\UI-SilverButtonLG-Mid-Up">
+					<Size>
+						<AbsDimension x="32" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture name="$parentLeft" file="Interface\Buttons\UI-SilverButtonLG-Left-Hi">
+					<Size>
+						<AbsDimension x="32" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Buttons\UI-SilverButtonLG-Right-Hi">
+					<Size>
+						<AbsDimension x="32" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Buttons\UI-SilverButtonLG-Mid-Hi">
+					<Size>
+						<AbsDimension x="32" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				if ( self:IsEnabled() ) then
+					local name = self:GetName();
+					_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-SilverButtonLG-Left-Down");
+					_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-SilverButtonLG-Mid-Down");
+					_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-SilverButtonLG-Right-Down");
+					local contentsFrame = _G[name.."ContentsFrame"];
+					if ( contentsFrame ) then
+						contentsFrame:SetPoint("TOPLEFT", -2, -1);
+					end
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self:IsEnabled() ) then
+					local name = self:GetName();
+					_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-SilverButtonLG-Left-Up");
+					_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-SilverButtonLG-Mid-Up");
+					_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-SilverButtonLG-Right-Up");
+					local contentsFrame = _G[name.."ContentsFrame"];
+					if ( contentsFrame ) then
+						contentsFrame:SetPoint("TOPLEFT", 0, 0);
+					end
+				end
+			</OnMouseUp>
+		</Scripts>
+	</Button>
 	
 <!--
 *******************************************************************************
@@ -2448,6 +2533,29 @@
 			</Frame>
 		</Frames>
 	</Frame>
+
+<!--
+*******************************************************************************
+	TruncatedButtonTemplate
+	This button template will truncate any text that goes out of the button. If text is truncated,
+	the button will have a tooltip with the full text.
+*******************************************************************************
+-->
+	<Button name="TruncatedButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnSizeChanged>
+				local text = _G[self:GetName().."Text"];
+				text:SetWidth(self:GetWidth() - 5);
+				text:SetHeight(self:GetHeight());
+			</OnSizeChanged>
+			<OnEnter>
+				TruncatedButton_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				TruncatedButton_OnLeave(self);
+			</OnLeave>
+		</Scripts>
+	</Button>
 	
 <!--
 *******************************************************************************

@@ -65,7 +65,18 @@ function ReforgingFrame_OnEvent(self, event, ...)
 		
 		ReforgingFrame_Update(self);
 	elseif event == "FORGE_MASTER_ITEM_CHANGED" then
-		self.topInset.invisButton.glow.reforgeAnim:Play();
+		-- this event can trigger from other item changes, like
+		-- a temporary enchant expiring
+		local reforged = GetReforgeItemInfo();
+		if ( reforged ==  ReforgingFrame.reforgeEvent ) then
+			ReforgingFrame.reforgeEvent = nil;
+			if ( reforged == 0 ) then
+				PlaySoundKitID(23292);
+			else
+				PlaySoundKitID(23291);
+			end
+			self.topInset.invisButton.glow.reforgeAnim:Play();
+		end
 	end
 end
 
@@ -226,11 +237,13 @@ end
 
 
 function ReforgingFrame_RestoreClick(self)
-	ReforgeItem(0);
+	ReforgingFrame.reforgeEvent = 0;
+	ReforgeItem(0);	
 end
 
 
 function ReforgingFrame_ReforgeClick(self)
+	ReforgingFrame.reforgeEvent = ReforgingFrame.reforgeID;
 	ReforgeItem(ReforgingFrame.reforgeID);
 end
 

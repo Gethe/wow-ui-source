@@ -91,6 +91,12 @@
 			<OnUpdate>
 				AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
 			</OnUpdate>
+			<OnHide>
+				if ( self.animOut:IsPlaying() ) then
+					self.animOut:Stop();
+					ActionButton_OverlayGlowAnimOutFinished(self.animOut);
+				end
+			</OnHide>
 		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -142,8 +148,6 @@
 				<Alpha target="$parentOuterGlowOver" duration="0.2" change="-1" order="2"/>
 				<Alpha target="$parentOuterGlow" duration="0.2" change="-1" order="2"/>
 				<Scripts>
-					<OnPlay>
-					</OnPlay>
 					<OnFinished>
 						ActionButton_OverlayGlowAnimOutFinished(self);
 					</OnFinished>

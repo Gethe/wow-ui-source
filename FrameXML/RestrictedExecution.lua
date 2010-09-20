@@ -94,6 +94,10 @@ local function BuildRestrictedClosure(body, env, signature)
     return function(self, ...) return def(SelfScrub(self), scrub(...)) end;
 end
 
+-- Max number of cached closures before cache dump, if this value proves
+-- problematic we may wish to make it tunable.
+local CLOSURE_CACHE_MAX = 1000;
+
 -- factory = CreateClosureFactory(env, signature)
 --
 -- env -- The desired environment table for the closures
@@ -103,16 +107,36 @@ end
 -- has restricted closure values. It's weak-keyed and uses an __index
 -- metamethod that automatically creates necessary closures on demand.
 local function CreateClosureFactory(env, signature)
+    local newCache, oldCache = {}, {};
+    local newCount = 0;
+
     local function metaIndex(t, k)
         if (type(k) == "string") then
-            local closure, err = BuildRestrictedClosure(k, env, signature);
+            local closure = oldCache[k];
             if (not closure) then
-                -- Put the error into a closure to avoid constantly
-                -- re-parsing it
-                err = tostring(err or "Closure creation failed");
-                closure = function() error(err) end;
+                local newClosure, err = BuildRestrictedClosure(k, env, signature);
+                if (newClosure) then
+                    closure = newClosure;
+                else
+                    -- Put the error into a closure to avoid constantly
+                    -- re-parsing it
+                    err = tostring(err or "Closure creation failed");
+                    closure = function() error(err) end;
+                end
             end
             if (issecure()) then
+                newCount = newCount + 1;
+                if (newCount > CLOSURE_CACHE_MAX) then
+                    -- The cache is full, rotate it
+                    for ok in pairs(t) do
+                        t[ok] = nil;
+                    end
+                    oldCache = newCache;
+                    newCache = {};
+                    newCount = 0;
+                end
+
+                newCache[k] = closure;
                 t[k] = closure;
             end
             return closure;
@@ -122,7 +146,7 @@ local function CreateClosureFactory(env, signature)
     end
 
     local ret = {};
-    setmetatable(ret, { __index = metaIndex, __mode = "k" });
+    setmetatable(ret, { __index = metaIndex });
     return ret;
 end
 
@@ -267,21 +291,6 @@ local LOCAL_Restricted_Global_Functions = {
     rtgsub = rtable.rtgsub;
 };
 
--- Add this version of gsub to the string metatable
-string.rtgsub = rtable.rtgsub;
-
-local LOCAL_Table_Namespace = {
-    table = {
-        maxn = rtable.maxn;
-        insert = rtable.insert;
-        remove = rtable.remove;
-        sort = rtable.sort;
-        concat = rtable.concat;
-        wipe = rtable.wipe;
-        new = rtable.newtable;
-    }
-};
-
 -- A helper function to recursively copy and protect scopes
 local function PopulateGlobalFunctions(src, dest)
     for k, v in pairs(src) do
@@ -309,6 +318,18 @@ if (RESTRICTED_FUNCTIONS_SCOPE) then
                             LOCAL_Restricted_Global_Functions);
     RESTRICTED_FUNCTIONS_SCOPE = nil;
 end
+
+local LOCAL_Table_Namespace = {
+    table = {
+        maxn = rtable.maxn;
+        insert = rtable.insert;
+        remove = rtable.remove;
+        sort = rtable.sort;
+        concat = rtable.concat;
+        wipe = rtable.wipe;
+        new = rtable.newtable;
+    }
+};
 
 PopulateGlobalFunctions(LOCAL_Table_Namespace,
                         LOCAL_Restricted_Global_Functions);

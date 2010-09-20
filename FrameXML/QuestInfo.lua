@@ -6,11 +6,7 @@ function QuestInfoFadingFrame_OnUpdate(self, elapsed)
 		PlaySound("WriteQuest");
 		if ( not QuestInfoDescriptionText:SetAlphaGradient(self.fadingProgress, QUEST_DESCRIPTION_GRADIENT_LENGTH) ) then
 			self.fading = nil;
-			if ( QUEST_FADING_DISABLE == "0" ) then
-				UIFrameFadeIn(self, QUESTINFO_FADE_IN );
-			else
-				self:SetAlpha(1);
-			end
+			self:SetAlpha(1);
 			QuestInfoFrame.acceptButton:Enable();
 		end
 	end
@@ -601,9 +597,7 @@ function QuestInfo_ShowFadingFrame()
 		QuestInfoFadingFrame.fading = 1;
 		QuestInfoFadingFrame.fadingProgress = 0;
 		QuestInfoDescriptionText:SetAlphaGradient(0, QUEST_DESCRIPTION_GRADIENT_LENGTH);
-		if ( QUEST_FADING_DISABLE == "1" ) then
-			QuestInfoFadingFrame.fadingProgress = 1024;
-		end
+		QuestInfoFadingFrame.fadingProgress = 1024;
 	return QuestInfoFadingFrame;
 end
 

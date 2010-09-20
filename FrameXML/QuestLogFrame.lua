@@ -315,8 +315,10 @@ function QuestLog_OnHide(self)
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
 			TriggerTutorial(2);
---			TriggerTutorial(3);
-		else
+			if (not CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond) then
+				TriggerTutorial(10);
+			end
+		elseif (CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond and  not IsTutorialFlagged(10)) then
 			TriggerTutorial(10);
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil

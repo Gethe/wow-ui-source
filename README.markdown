@@ -1,5 +1,6 @@
 ﻿
-**World of Warcraft: Cataclysm Beta Patch Notes **
+
+**World of Warcraft: Cataclysm Beta Patch Notes (version 12942)**
 
 Welcome to the World of Warcraft: Cataclysm beta test! Patch notes listed here
 are not comprehensive and will be changed throughout the testing process.
@@ -18,7 +19,7 @@ worgen character is not available for testing.
 Isle of Kezan in a goblin paradise, players will face a treacherous road
 ahead!
 
-  * The level cap for all characters is 83.
+  * The level cap for all characters is 85.
 
   * Elements of the guild leveling, perks, and roster page are now functional.
 Players should once again be able to buy and register guild charters, which
@@ -43,10 +44,19 @@ patching World of Warcraft. We'd like to get your feedback on the toolset and
 gameplay experience. Please head to the forums [here][4] for additional
 information.
 
+  * Flight Master's License is a new flight skill required for flying around
+Kalimdor and Eastern Kingdoms, available to characters levels 60 and higher
+for 250 gold.
+
   * Players may use our Character Copy feature for copying existing characters
 to beta realms, or may choose from high-level pre-made template characters.
 
+  * Level 85 pre-made template characters are now available for copy.
+
 **PvP**
+
+  * Honor has been adjusted completely. Any activity which yields Honor will
+now award much less. The Honor cost of items has been reduced to compensate.
 
   * Tol Barad is now available for testing. Players can reach the zone by
 speaking to NPCs in the capital cities.
@@ -61,10 +71,13 @@ speaking to NPCs in the capital cities.
 
 **Zones**
 
-  * Mount Hyjal and Vashj'ir, two new level 80-82 zones, are available for
-testing. Deepholm, a new level 82-83 zone is available for testing. Players
-may find their way to these zones by speaking with temporary teleportation
-NPCs located in any major city.
+  * Mount Hyjal and Vashj'ir are available for testing.
+
+  * Deepholm is available for testing.
+
+  * Uldum is partially available for testing.
+
+  * Twilight Highlands is partially available for testing.
 
   * The level ranges of Gilneas and the Lost Isles are in the process of being
 adjusted slightly. Creature, quest, and quest reward levels are all being
@@ -75,11 +88,12 @@ Further fine tuning will continue in future content updates.
 
   * Eastern Kingdoms
 
-    * Arathi Highlands, Badlands, Blasted Lands, The Cape of Stranglethorn,
-Dun Morogh, Duskwood, Eastern Plaguelands, Elwynn Forest, Hinterlands, Loch
-Modan, Northern Stranglethorn, Northshire, Redridge Mountains, Searing Gorge,
-Silverpine Forest, Swamp of Sorrows, Tirisfal Glades, Western Plaguelands and
-Westfall are ready for testing.
+    * Arathi Highlands, Badlands, Blasted Lands, Burning Steppes, The Cape of
+Stranglethorn, Dun Morogh, Duskwood, Eastern Plaguelands, Elwynn Forest,
+Hillsbrad Foothills, Hinterlands, Loch Modan, Northern Stranglethorn,
+Northshire, Redridge Mountains, Searing Gorge, Silverpine Forest, Swamp of
+Sorrows, Tirisfal Glades, Western Plaguelands and Westfall are ready for
+testing.
 
   * Kalimdor
 
@@ -88,14 +102,13 @@ on polishing the quest experience and flow, as well as zone aesthetics.
 
 **Dungeons & Raids**
 
-  * Blackrock Caverns, a new level 80-81 five-player dungeon, is available for
-testing.
+  * Hero Points have been renamed Justice Points.
 
-  * The Stonecore, a new level 82-84 five-player dungeon, is available for
-testing.
+  * All 5-player Cataclysm dungeons are now available for testing.
 
-  * Throne of the Tides, a new level 80-81 five-player dungeon, is available
-for testing.
+  * Players no longer need to discover pre-Cataclysm dungeons in order to
+access them via the Looking For Dungeon system. All Cataclysm level 80-85
+dungeons still need to be discovered before being unlocked in the system.
 
 **Classes: General**
 
@@ -104,17 +117,10 @@ than minimum and maximum damage potential. This feature is on by default but
 can be changed via the Display settings under User Interface options. Note:
 this change has not yet been implemented for the mage class.
 
-  * All hunter and warlock pets have been deleted to address a data corruption
-issue. Hunters will need to tame new pets, while warlocks will notice the
-names of their pets have changed.
-
   * Ammo has been removed from the game.
 
   * The character levels at which classes gain new spells and abilities have
 changed.
-
-  * The glyph system is in the process of being altered. Existing glyphs may
-not be fully supported or functional.
 
   * Many item and class stats have been changed or removed.
 
@@ -123,7 +129,7 @@ not be fully supported or functional.
   * Spells and abilities no longer have multiple ranks and now scale with
 character level.
 
-  * A first pass on new talent trees has been implemented.
+  * New talent trees have been implemented.
 
     * Each specialization has been reduced to a 31-point talent tree.
 
@@ -194,22 +200,32 @@ classes.
 
 **Professions**
 
-  * The updated glyph system is now functional, though several classes still
-need passes on their glyph choices.
+  * Archaeology, a new secondary profession, has been added. Players can learn
+this profession in order to search for ancient artifacts around the world to
+advance their Archaeology skill and create unique new items.
+
+    * To recover artifacts, you need to collect artifact fragments. Fragments
+are found in dig sites visible on your map. When you reach a dig site, use the
+Survey ability. Your survey tool will indicate the approximate direction and
+distance to the cache of fragments. You can collect fragments three times in a
+dig site before you need to move to a new dig site. Once you have enough
+fragments, you can solve an artifact to learn a little more about Azeroth's
+past. Happy hunting!
+
+  * The updated glyph system is now functional.
 
   * The Reforging interface has been implemented and the NPCs should now be
 functional for testing this feature.
 
 **User Interface**
 
+  * The ability to use third-party addons has been enabled.
+
   * Leave feedback about the latest user interface changes [ here][7].
 
   * Spell Alerts have been added to notify players when procs on select spells
 and abilities occur. A visual notification will display around the character
 and the activated ability will be highlighted on the action bar.
-
-  * The ability to use third-party addons has been temporarily disabled for
-the test environment.
 
   * The Arena Teams pane has been improved.
 
@@ -248,86 +264,138 @@ visual appeal.
 
 **Graphics**
 
-  * Experimental support for DX11 (can be enabled by passing '-d3d11' on the
-command line or adding SET gxApi "d3d11" to the Config.WTF file).
+  * Improved water and lava rendering system (Video Options - Liquid Detail on
+the Graphics Panel)
 
-  * OpenGL Hardware Cursor support (can be enabled on the Video Resolution
-Panel).
+  * Dynamic Sunshafts effect (Video Options - Sunshafts on the Graphics Panel)
 
-  * Improved water and lava rendering system (enabled by the Liquid Detail
-slider on the Video Effects Panel)
+  * Multi-monitor support (Video Options - Primary Monitor on the Graphics
+Panel)
 
-    * 0 = Classic Water
+  * OpenGL Hardware Cursor support for Windows (Video Options - Hardware
+Cursor on the Advanced Panel)
 
-    * 1 = New Water (fake reflections)
-
-    * 2 = New Water (ocean has real reflection for terrain)
-
-    * These values are likely to change during Beta.
-
-  * Dynamic Sunshafts effect (enabled by the Sunshafts option on the Video
-Effects Panel).
+  * Experimental support for DX11 (enabled by passing '-d3d11' on the command
+line or adding SET gxApi "d3d11" to the Config.WTF file)
 
 **Known Issues**
 
-  * The Swift Spectral Gryphon does not increase movement speed.
+  * General Issues
 
-  * Floating Combat Text is not functioning.
+    * The Swift Spectral Gryphon does not increase movement speed.
 
-  * The Abyssal Seahorse requires Artisan Riding to use, but the Subdued
+    * Several helmet models appear as error cubes on goblin male and female
+characters.
+
+    * One of the Worgen skin textures is appearing on the human form on the
+face.
+
+    * Pyrite Deposits, Elementium Veins, and Rich Elementium Veins cannot be
+mined from.
+
+    * First Aid recipes are not showing up in the Spellbook once learned.
+
+    * Mounts (both flying and ground) cannot be used in several parts of the
+world.
+
+    * Some trainers are not functioning properly.
+
+    * Robes do not have durability.
+
+    * You are not able to learn a second profession.
+
+    * Removing a member from an Arena team will crash your client.
+
+    * The Abyssal Seahorse requires Artisan Riding to use, but the Subdued
 Abyssal Seahorse only requires Expert Riding to learn.
 
-  * The portal from the Deepholm Temple of Earth to Orgrimmar currently spawns
-players underneath the world.
+    * The portal from the Deepholm Temple of Earth to Orgrimmar currently
+spawns players underneath the world.
 
-  * Worgen are playing their idle sound effect every time they stop moving.
+    * Worgen are playing their idle sound effect every time they stop moving.
 
-  * All Heirloom items now have durability.
+    * There is a large section of terrain that is blocking the entrance to
+Night Web's Hollow.
 
-  * Robes do not have durability.
+    * Several cloaks are displayed incorrectly on draenei females.
 
-  * The bones for the quest "Spirits of Stonemaul Hold" cannot be interacted
-with.
+    * Players are currently unable to create new worgen characters.
 
-  * There is a large section of terrain that is blocking the entrance to Night
-Web's Hollow.
+  * Combat
 
-  * Characters cannot interact with Egg of Onyxia for the quest "The Brood of
-Onyxia."
+    * Experience gained from completing Battleground objectives is very low.
 
-  * Several cloaks are displayed incorrectly on draenei females.
+    * Players are unable to have more than 40 honor at once.
 
-  * Ground mounts can be used when underwater in Vashj'ir.
+    * The client may lock up after finishing an Alterac Valley or Isle of
+Conquest game.
 
-  * Corpses are not tapped on the quest "Free Your Mind" allowing other
+    * Ritual of Summoning does not actually create a Summoning Stone.
+
+    * Strand of the Ancients is not working correctly for the attacking or
+defending teams.
+
+    * Heart of the Phoenix does not revive a hunter's pet after it dies.
+
+    * Bane of Doom does not summon a Demon Guardian.
+
+    * Wild Mushroom does not scale with spell power.
+
+    * Players are unable to get the Veteran buff when joining a Tol Barad
+battle after it has started.
+
+    * Floating Combat Text is not functioning.
+
+    * The spell effect visuals for Healing Rain and Earthquake look awkward
+when cast on a staircase or a steep incline.
+
+  * Quests
+
+    * Lord Darius Crowley is sporting a placeholder cube on his head.
+
+    * Corpses are not tapped on the quest "Free Your Mind" allowing other
 players to use the Sovereign Rod on targets they did not kill.
 
-  * While on the quest "Blood and Thunder!" NPCs will despawn prior to the
+    * The quest giver item Tattered Treasure Map can drop again after the
+quest "The Horde's Hoard" has been completed.
+
+    * Sound is cutting in and out during two segments of Mor'norokk's voice
+over during the quest, "Some Spraining to Do".
+
+    * Chip Endale cannot path causing him to evade if pulled during combat.
+
+    * The bones for the quest "Spirits of Stonemaul Hold" cannot be interacted
+with.
+
+    * Characters cannot interact with Egg of Onyxia for the quest "The Brood
+of Onyxia."
+
+    * While on the quest "Blood and Thunder!" NPCs will despawn prior to the
 event and the quest cannot be completed.
 
-  * Sound is cutting in and out during two segments of Mor'norokk's voiceover
-during the quest, "Some Spraining to Do".
+  * Reputation
 
-  * The spell effect visuals for Healing Rain and Earthquake look awkward when
-cast on a staircase or a steep incline.
-
-  * Guild control and guild banks are experiencing issues related to the new
-guild leveling interface and functionality. In addition, guild experience may
-not display properly when players change zones, and guild members will be
-demoted to the lowest guild rank when logging out.
-
-  * Battleground queues are undergoing significant changes and are not
-currently operational.
-
-  * Players are currently unable to create new worgen characters.
-
-  * Selecting high Liquid Detail when using Geforce 6 & 7 series video cards
-will currently prevent lava and water from rendering properly. You can
-temporarily restore liquid to the world by reducing the Liquid Detail setting
-via the Video Effects Panel, or by typing "waterDetail 0" in your Config.WTF
-file.
+    * It is possible to mark yourself At War with your guild in the reputation
+window.
 
 **Bug Fixes**
+
+  * Players should no longer die upon taking the portal to the Maelstrom
+during 'The Maelstrom.'
+
+  * The male troll shoulder geometry has been realigned.
+
+  * The quest giver Toshe Chaosrender is should no longer spawn underground.
+
+  * Players can eat in Vashj'ir.
+
+  * Gaining a talent point no longer displays every time a level is gained.
+
+  * Crafted mounts no longer producing errors when used.
+
+  * Guild controls, banks, and experience should now be working properly.
+
+  * Ground mounts can no longer be used when underwater in Vashj'ir.
 
   * Players should no longer get stuck at the loading screen when teleporting
 to Moonglade en route to Hyjal.

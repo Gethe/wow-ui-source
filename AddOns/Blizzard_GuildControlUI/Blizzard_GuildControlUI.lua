@@ -79,7 +79,7 @@ function GuildControlUI_BankTabPermissions_Update(self)
 	local canBuyTab = false;
 	local hasScrollBar = true;
 	
-	if numTabs < MAX_GUILDBANK_TABS then
+	if numTabs < MAX_BUY_GUILDBANK_TABS then
 		scrollHeight = scrollHeight + BANK_TAB_HEIGHT;
 		canBuyTab = true;
 		hasScrollBar =  numTabs > 2;

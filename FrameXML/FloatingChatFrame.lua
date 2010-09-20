@@ -1524,7 +1524,7 @@ function FCF_SelectDockFrame(frame)
 	end
 	
 	if ( tabFlash ) then
-		UIFrameFlashRemoveFrame(tabFlash);
+		UIFrameFlashStop(tabFlash);
 		tabFlash:Hide();
 	end
 	FCFDock_SelectWindow(GENERAL_CHAT_DOCK, frame);
@@ -1843,6 +1843,10 @@ function FCF_MaximizeFrame(chatFrame)
 	chatTab:Show();
 	
 	FCF_FadeInChatFrame(chatFrame);
+	
+	if ( GetCVar("chatStyle") == "im" ) then
+		ChatEdit_SetLastActiveWindow(chatFrame.editBox);
+	end
 end
 
 function FCF_CreateMinimizedFrame(chatFrame)

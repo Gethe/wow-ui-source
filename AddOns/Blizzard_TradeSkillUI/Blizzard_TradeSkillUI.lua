@@ -141,15 +141,6 @@ function TradeSkillFrame_Update()
 	end
 
 	
-	-- ScrollFrame update
-	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
-	-- Fixing up the search exit bar not handled in FauxScrollFrame_Update
-	if TradeSkillListScrollFrame:IsShown() then
-		TradeSkillFilterBar:SetWidth(293);
-	else
-		TradeSkillFilterBar:SetWidth(316);
-	end
-	
 	TradeSkillHighlightFrame:Hide();
 	local skillName, skillType, numAvailable, isExpanded, altVerb;
 	local skillIndex, skillButton, skillButtonText, skillButtonCount;
@@ -158,10 +149,21 @@ function TradeSkillFrame_Update()
 	local skillNamePrefix = " ";
 	local diplayedSkills = TRADE_SKILLS_DISPLAYED;
 	local hasFilterBar = TradeSkillFilterBar:IsShown();
+	local numList = numTradeSkills;
 	if  hasFilterBar then
 		diplayedSkills = TRADE_SKILLS_DISPLAYED - 1;
+		numList = numList+1;
 	end	
 	local buttonIndex = 0;
+
+	-- ScrollFrame update
+	FauxScrollFrame_Update(TradeSkillListScrollFrame, numList, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
+	-- Fixing up the search exit bar not handled in FauxScrollFrame_Update
+	if TradeSkillListScrollFrame:IsShown() then
+		TradeSkillFilterBar:SetWidth(293);
+	else
+		TradeSkillFilterBar:SetWidth(316);
+	end
 	
 	for i=1, diplayedSkills, 1 do
 		

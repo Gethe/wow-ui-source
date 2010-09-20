@@ -657,7 +657,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Button name="GearManagerToggleButton" hidden="true">
+			<Button name="GearManagerToggleButton">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT">

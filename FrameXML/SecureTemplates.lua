@@ -81,6 +81,12 @@ function SecureButton_GetModifierPrefix(frame)
     return prefix;
 end
 
+-- Build lookup table for less common buttons
+local BUTTON_LOOKUP_TABLE = {};
+for n = 4, 31 do
+    BUTTON_LOOKUP_TABLE["Button" .. n] = tostring(n);
+end
+
 function SecureButton_GetButtonSuffix(button)
     if ( button == "LeftButton" ) then
         return "1";
@@ -88,64 +94,13 @@ function SecureButton_GetButtonSuffix(button)
         return "2";
     elseif ( button == "MiddleButton" ) then
         return "3";
-    elseif ( button == "Button4" ) then
-        return "4";
-    elseif ( button == "Button5" ) then
-        return "5";
-    elseif ( button == "Button6" ) then
-        return "6";
-    elseif ( button == "Button7" ) then
-        return "7";
-    elseif ( button == "Button8" ) then
-        return "8";    
-    elseif ( button == "Button9" ) then
-        return "9";
-    elseif ( button == "Button10" ) then
-        return "10";
-    elseif ( button == "Button11" ) then
-        return "11";
-    elseif ( button == "Button12" ) then
-        return "12";
-    elseif ( button == "Button13" ) then
-        return "13";
-    elseif ( button == "Button14" ) then
-        return "14";
-    elseif ( button == "Button15" ) then
-        return "15";
-    elseif ( button == "Button16" ) then
-        return "16";
-    elseif ( button == "Button17" ) then
-        return "17";
-    elseif ( button == "Button18" ) then
-        return "18";    
-    elseif ( button == "Button19" ) then
-        return "19";
-    elseif ( button == "Button20" ) then
-        return "20";
-    elseif ( button == "Button21" ) then
-        return "21";
-    elseif ( button == "Button22" ) then
-        return "22";
-    elseif ( button == "Button23" ) then
-        return "23";
-    elseif ( button == "Button24" ) then
-        return "24";
-    elseif ( button == "Button25" ) then
-        return "25";
-    elseif ( button == "Button26" ) then
-        return "26";
-    elseif ( button == "Button27" ) then
-        return "27";
-    elseif ( button == "Button28" ) then
-        return "28";    
-    elseif ( button == "Button29" ) then
-        return "29";
-    elseif ( button == "Button30" ) then
-        return "30";
-    elseif ( button == "Button31" ) then
-        return "31";
-    elseif ( button and button ~= "" ) then
-        return "-" .. tostring(button);
+    elseif (button and button ~= "") then
+        local lookup = BUTTON_LOOKUP_TABLE[button];
+        if ( lookup ) then
+            return lookup
+        else
+            return "-" .. tostring(button);
+        end
     end
     return "";
 end
@@ -175,48 +130,48 @@ function SecureButton_GetAttribute(frame, name)
 end
 
 function SecureButton_GetModifiedUnit(self, button)
-    local unit = SecureButton_GetModifiedAttribute(self, "unit", button);
-    if ( unit ) then
-        local unitsuffix = SecureButton_GetModifiedAttribute(self, "unitsuffix", button);
-        if ( unitsuffix ) then
-            unit = unit .. unitsuffix;
-            -- map raid1pet to raidpet1
-            unit = gsub(unit, "^([^%d]+)([%d]+)[pP][eE][tT]", "%1pet%2");
-            unit = gsub(unit, "^[pP][lL][aA][yY][eE][rR][pP][eE][tT]", "pet");
+        local unit = SecureButton_GetModifiedAttribute(self, "unit", button);
+        if ( unit ) then
+                local unitsuffix = SecureButton_GetModifiedAttribute(self, "unitsuffix", button);
+                if ( unitsuffix ) then
+                        unit = unit .. unitsuffix;
+                        -- map raid1pet to raidpet1
+                        unit = gsub(unit, "^([^%d]+)([%d]+)[pP][eE][tT]", "%1pet%2");
+                        unit = gsub(unit, "^[pP][lL][aA][yY][eE][rR][pP][eE][tT]", "pet");
+                end
+
+                local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");
+                if ( hadPet == 0 ) then
+                        noPet, hadPet = unit:gsub("^[pP][eE][tT]", "player");
+                end
+                local noPetNoTarget, hadTarget = noPet:gsub("[tT][aA][rR][gG][eE][tT]", "");
+                if ( UnitHasVehicleUI(noPetNoTarget) and
+                                SecureButton_GetModifiedAttribute(self, "toggleForVehicle", button) and
+                                (noPetNoTarget == noPetNoTarget:gsub("^[mM][oO][uU][sS][eE][oO][vV][eE][rR]", "")
+                                                               :gsub("^[fF][oO][cC][uU][sS]", "")
+                                                               :gsub("^[aA][rR][eE][nN][aA]%d", ""))
+                                -- NOTE: using these 3 gsubs is faster than a :lower() call and a table lookup
+                                -- "target" is not included in the above check because it is already filtered out earlier on
+                                ) then
+                        if ( hadPet ~= 0 ) then
+                                unit = noPet;
+                        elseif ( (hadTarget == 0) or SecureButton_GetModifiedAttribute(self, "allowVehicleTarget", button) ) then
+                                unit = unit:gsub("^[pP][lL][aA][yY][eE][rR]", "pet"):gsub("^([%a]+)([%d]+)", "%1pet%2");
+                        end
+                end
+
+                return unit;
         end
-        
-        local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");
-        if ( hadPet == 0 ) then
-            noPet, hadPet = unit:gsub("^[pP][eE][tT]", "player");
+        if ( SecureButton_GetModifiedAttribute(self, "checkselfcast", button) ) then
+                if ( IsModifiedClick("SELFCAST") ) then
+                        return "player";
+                end
         end
-        local noPetNoTarget, hadTarget = noPet:gsub("[tT][aA][rR][gG][eE][tT]", "");
-        if ( UnitHasVehicleUI(noPetNoTarget) and 
-                SecureButton_GetModifiedAttribute(self, "toggleForVehicle", button) and
-                (noPetNoTarget == noPetNoTarget:gsub("^[mM][oO][uU][sS][eE][oO][vV][eE][rR]", "")
-                                               :gsub("^[fF][oO][cC][uU][sS]", "")
-                                               :gsub("^[aA][rR][eE][nN][aA]%d", ""))
-                -- NOTE: using these 3 gsubs is faster than a :lower() call and a table lookup
-                -- "target" is not included in the above check because it is already filtered out earlier on
-                ) then
-            if ( hadPet ~= 0 ) then
-                unit = noPet;
-            elseif ( (hadTarget == 0) or SecureButton_GetModifiedAttribute(self, "allowVehicleTarget", button) ) then
-                unit = unit:gsub("^[pP][lL][aA][yY][eE][rR]", "pet"):gsub("^([%a]+)([%d]+)", "%1pet%2");
-            end
+        if ( SecureButton_GetModifiedAttribute(self, "checkfocuscast", button) ) then
+                if ( IsModifiedClick("FOCUSCAST") ) then
+                        return "focus";
+                end
         end
-        
-        return unit;
-    end
-    if ( SecureButton_GetModifiedAttribute(self, "checkselfcast", button) ) then
-        if ( IsModifiedClick("SELFCAST") ) then
-            return "player";
-        end
-    end
-    if ( SecureButton_GetModifiedAttribute(self, "checkfocuscast", button) ) then
-        if ( IsModifiedClick("FOCUSCAST") ) then
-            return "focus";
-        end
-    end
 end
 function SecureButton_GetUnit(self)
     local unit = SecureButton_GetAttribute(self, "unit");
@@ -311,7 +266,8 @@ SECURE_ACTIONS.action =
 
             local actionType, flyoutId = GetActionInfo(action);
             local cursorType = GetCursorInfo();
-            if (actionType == "flyout" and not cursorType ) then
+
+            if ( actionType == "flyout" and not cursorType ) then
                 SpellFlyout:Toggle(flyoutId, self, nil, 3, true);
             else
                 SpellFlyout:Hide();
@@ -329,13 +285,13 @@ SECURE_ACTIONS.pet =
         end
     end;
 
-SECURE_ACTIONS.flyout = 
-	function (self, unit, button)
-		local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
-		SpellFlyout:Toggle(flyoutId, self, nil, 3, true);
-	end;
+SECURE_ACTIONS.flyout =
+        function (self, unit, button)
+                local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
+                SpellFlyout:Toggle(flyoutId, self, nil, 3, true);
+        end;
 
-SECURE_ACTIONS.multispell = 
+SECURE_ACTIONS.multispell =
     function (self, unit, button)
         local action = ActionButton_CalculateAction(self, button);
         local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
@@ -348,7 +304,7 @@ SECURE_ACTIONS.spell =
     function (self, unit, button)
         local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
         local spellID = tonumber(spell);
-        if ( spellID) then
+        if ( spellID ) then
             CastSpellByID(spellID, unit);
         elseif ( spell ) then
             CastSpellByName(spell, unit);
@@ -395,7 +351,7 @@ SECURE_ACTIONS.macro =
         end
     end;
 
-local cancelableItems = {
+local CANCELABLE_ITEMS = {
     [GetInventorySlotInfo("MainHandSlot")] = 1, -- main hand slot
     [GetInventorySlotInfo("SecondaryHandSlot")] = 2 -- off-hand slot
 };
@@ -407,8 +363,8 @@ SECURE_ACTIONS.cancelaura =
             CancelUnitBuff(unit, spell, SecureButton_GetModifiedAttribute(self, "rank", button));
         else
             local slot = tonumber(SecureButton_GetModifiedAttribute(self, "target-slot", button));
-            if ( slot and cancelableItems[slot] ) then
-                CancelItemTempEnchant(cancelableItems[slot]);
+            if ( slot and CANCELABLE_ITEMS[slot] ) then
+                CancelItemTempEnchant(CANCELABLE_ITEMS[slot]);
             else
                 local index = SecureButton_GetModifiedAttribute(self, "index", button) or self:GetID();
                 if ( index ) then
@@ -536,24 +492,23 @@ function SecureActionButton_OnClick(self, button, down)
 
     -- Perform the requested action!
     if ( actionType ) then
-        -- Re TODO: GMA call allows generic click handler snippets; it's second to prevent values set on the frame from suppressing it
-       local atRisk = false;
+        local atRisk = false;
         local handler = SECURE_ACTIONS[actionType]
-        if not handler then
+        if ( not handler ) then
             atRisk = true; -- user-provided function, be careful
+            -- GMA call allows generic click handler snippets
             handler = SecureButton_GetModifiedAttribute(self, "_"..actionType, button);
         end
         if ( not handler ) then
-            atRisk = false; -- functions retrieved from table keys carry their own taint
+            atRisk = false;
+            -- functions retrieved from table keys carry their own taint
             handler = rawget(self, actionType);
         end
         if ( type(handler) == 'function' ) then
-            -- TODO actiontype is ignored by internal handlers, presently left in to facilitate multi-purpose custom handlers; would we rather remove it entirely?
-            if atRisk then 
+            if ( atRisk ) then
                 forceinsecure();
             end
-            handler(self, unit, button, actionType);
-
+            handler(self, unit, button);
         elseif ( type(handler) == 'string' ) then
             SecureHandler_OnClick(self, "_"..actionType, button, down);
         end

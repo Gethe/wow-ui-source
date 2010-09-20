@@ -73,7 +73,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			DEFAULT_CHAT_FRAME:AddMessage(pflag.."|HGMChat|h["..GM_CHAT_STATUS_READY_DESCRIPTION.."]|h", info.r, info.g, info.b, info.id);
 			DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(true);
 			DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = true;
-			SetButtonPulse(HelpMicroButton, 3600, 1.0);
+			MicroButtonPulse(HelpMicroButton, 3600);
 			SetButtonPulse(GMChatOpenLog, 3600, 1.0);
 		else
 			ChatEdit_SetLastTellTarget(arg2);
@@ -134,7 +134,7 @@ function GMChatFrame_OnShow(self)
 		SetCVar("lastTalkedToGM", self.lastGMForCVar);
 	end
 	
-	SetButtonPulse(HelpMicroButton, 0, 1);	--Stop the buttons from pulsing.
+	MicroButtonPulseStop(HelpMicroButton);	--Stop the buttons from pulsing.
 	SetButtonPulse(GMChatOpenLog, 0, 1);
 	
 	self:SetScript("OnUpdate", GMChatFrame_OnUpdate);

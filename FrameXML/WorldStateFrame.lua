@@ -11,6 +11,8 @@ WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = 0;
 WORLDSTATEALWAYSUPFRAME_TIMETORUN = 60;
 WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL = 5;
 
+SCORE_BUTTON_HEIGHT = 16;
+
 WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES = {};
 
 local inBattleground = false;
@@ -116,6 +118,7 @@ function WorldStateAlwaysUpFrame_Update()
 	local inInstance, instanceType = IsInInstance();
 	local alwaysUpShown = 1;
 	local extendedUIShown = 1;
+	local alwaysUpHeight = 10;
 	for i=1, numUI do
 		uiType, state, text, icon, dynamicIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
 		if ( (uiType ~= 1) or ((WORLD_PVP_OBJECTIVES_DISPLAY == "1") or (WORLD_PVP_OBJECTIVES_DISPLAY == "2" and IsSubZonePVPPOI()) or (instanceType == "pvp")) ) then
@@ -176,6 +179,7 @@ function WorldStateAlwaysUpFrame_Update()
 						frameDynamicButton:Hide();
 					end
 					alwaysUpShown = alwaysUpShown + 1;
+					alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
 				end	
 				if ( icon ~= "" ) then
 					frame.tooltip = tooltip;
@@ -196,6 +200,7 @@ function WorldStateAlwaysUpFrame_Update()
 			frame:Hide();
 		end
 	end
+	WorldStateAlwaysUpFrame:SetHeight(alwaysUpHeight);
 end
 
 function WorldStateAlwaysUpFrame_OnUpdate(self, elapsed)
@@ -622,7 +627,7 @@ function WorldStateScoreFrame_Update()
 	else
 		WorldStateScoreScrollFrame:Hide();
         end
-	FauxScrollFrame_Update(WorldStateScoreScrollFrame, numScores, MAX_WORLDSTATE_SCORE_BUTTONS, 16 );
+	FauxScrollFrame_Update(WorldStateScoreScrollFrame, numScores, MAX_WORLDSTATE_SCORE_BUTTONS, SCORE_BUTTON_HEIGHT );
 
 	-- Setup Columns
 	local text, icon, tooltip, columnButton;
@@ -901,7 +906,7 @@ function WorldStateScoreFrame_Resize()
 	local scrollBar = 37;
 	local name;
 	
-	width = WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth();
+	local width = WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth();
 
 	if ( isArena ) then
 		columns = 3;
@@ -951,17 +956,17 @@ function WorldStateScoreFrame_Resize()
 			end
 		else
 			if ( isRegistered ) then
-				scoreButton.team:SetPoint("LEFT", "WorldStateScoreButton"..(i-1).."Team", "LEFT", 0,  -16);
-				scoreButton.teamSkill:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."TeamSkill", "CENTER", 0, -16);
+				scoreButton.team:SetPoint("LEFT", "WorldStateScoreButton"..(i-1).."Team", "LEFT", 0,  -SCORE_BUTTON_HEIGHT);
+				scoreButton.teamSkill:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."TeamSkill", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
 			end
-			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorableKills", "CENTER", 0, -16);
-			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -16);
-			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Deaths", "CENTER", 0, -16);
-			scoreButton.damage:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Damage", "CENTER", 0, -16);
-			scoreButton.healing:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Healing", "CENTER", 0, -16);
-			scoreButton.honorGained:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorGained", "CENTER", 0, -16);
+			scoreButton.honorableKills:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorableKills", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			scoreButton.killingBlows:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."KillingBlows", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			scoreButton.deaths:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Deaths", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			scoreButton.damage:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Damage", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			scoreButton.healing:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Healing", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
+			scoreButton.honorGained:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."HonorGained", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
 			for j=1, MAX_NUM_STAT_COLUMNS do
-				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Column"..j.."Text", "CENTER", 0, -16);
+				_G["WorldStateScoreButton"..i.."Column"..j.."Text"]:SetPoint("CENTER", "WorldStateScoreButton"..(i-1).."Column"..j.."Text", "CENTER", 0, -SCORE_BUTTON_HEIGHT);
 			end
 		end
 	end

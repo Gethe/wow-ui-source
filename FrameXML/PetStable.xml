@@ -89,12 +89,14 @@
 				PickupStablePet(self.petSlot);
 			</OnDragStart>
 			<OnReceiveDrag>
-				local cursorType, petSlot = GetCursorInfo();
-				if (cursorType == "pet") then
-					SetPetSlot(petSlot, self.petSlot);
-					ClearCursor();
+				if (self:IsEnabled()) then
+					local cursorType, petSlot = GetCursorInfo();
+					if (cursorType == "pet") then
+						SetPetSlot(petSlot, self.petSlot);
+						ClearCursor();
+					end
+					PlaySound("igMainMenuOptionCheckBoxOn");
 				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnReceiveDrag>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -109,13 +111,34 @@
 						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="12" y="7"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBorder" inherits="PetTalent-PetIconBorder">
+				<Texture name="$parentBorder" inherits="PetTalent-PetIconBorder" parentKey="Border">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-8" y="8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame name="$parentLockIcon" hidden="true" parentKey="LockIcon" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIcon" inherits="GoldLockIcon">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						PetStableSlot_Lock_OnEnter(self);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
 	</Button>
 	<Frame name="PetStableFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Size x="417" y="438"/>

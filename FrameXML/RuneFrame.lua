@@ -20,6 +20,15 @@ local runeTextures = {
 	[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Chromatic-Off.tga",
 }
 
+
+
+local runeEnergizeTextures = {
+	[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\Deathknight-Energize-Blood",
+	[RUNETYPE_UNHOLY] = "Interface\\PlayerFrame\\Deathknight-Energize-Unholy",
+	[RUNETYPE_FROST] = "Interface\\PlayerFrame\\Deathknight-Energize-Frost",
+	[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\Deathknight-Energize-White",
+}
+
 local runeColors = {
 	[RUNETYPE_BLOOD] = {1, 0, 0},
 	[RUNETYPE_UNHOLY] = {0, 0.5, 0},
@@ -34,9 +43,9 @@ runeMapping = {
 }
 
 function RuneButton_OnLoad (self)
-	self.rune = _G[self:GetName().."Rune"];
 	self.fill = _G[self:GetName().."Fill"];
 	self.shine = _G[self:GetName().."ShineTexture"];
+	self.colorOrb = _G[self:GetName().."RuneColorGlow"];
 end
 
 function RuneButton_Update (self, rune, dontFlash)
@@ -46,6 +55,8 @@ function RuneButton_Update (self, rune, dontFlash)
 		self.shine:SetVertexColor(unpack(runeColors[runeType]));
 		RuneButton_ShineFadeIn(self.shine)
 	end
+	
+	self.colorOrb:SetTexture(runeEnergizeTextures[runeType]);
 	
 	if (runeType) then
 		self.rune:SetTexture(iconTextures[runeType]);
@@ -95,20 +106,26 @@ function RuneFrame_OnEvent (self, event, ...)
 			end
 		end
 	elseif ( event == "RUNE_POWER_UPDATE" ) then
-		local runeIndex = ...;
+		local runeIndex, isEnergize = ...;
 		if runeIndex and runeIndex >= 1 and runeIndex <= MAX_RUNES  then 
 			local runeButton = _G["RuneButtonIndividual"..runeIndex];
 			local cooldown = _G[runeButton:GetName().."Cooldown"];
 			
 			local start, duration, runeReady = GetRuneCooldown(runeIndex);
+			
 			if not runeReady  then
 				if start then
 					CooldownFrame_SetTimer(cooldown, start, duration, 1);
 				end
+				runeButton.energize:Stop();
 			else
 				cooldown:Hide();
 				runeButton.shine:SetVertexColor(1, 1, 1);
 				RuneButton_ShineFadeIn(runeButton.shine)
+			end
+			
+			if isEnergize  then
+				runeButton.energize:Play();
 			end
 		else 
 			assert(false, "Bad rune index")
