@@ -1,5 +1,7 @@
 
 FRAMERATE_FREQUENCY = 0.25;
+local TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
+local TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
 
 function ToggleFramerate(benchmark)
 	FramerateText.benchmark = benchmark;
@@ -26,6 +28,8 @@ end
 
 function WorldFrame_OnLoad(self)
 	self:IgnoreDepth(true);
+	TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
+	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
 end
 
 function WorldFrame_OnUpdate(self, elapsed)
@@ -71,6 +75,26 @@ function WorldFrame_OnUpdate(self, elapsed)
 	if ( StopwatchTicker and not StopwatchTicker:IsVisible() and Stopwatch_IsPlaying() ) then
 		StopwatchTicker_OnUpdate(StopwatchTicker, elapsed);
 	end
+	
+	-- need to do some polling for a few tutorials
+	if ( not IsTutorialFlagged(4) and TUTORIAL_QUEST_TO_WATCH ) then
+		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;
+		local questIndex = GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH);
+		if ( (questIndex > 0) and (TUTORIAL_TIMER_CLOSE_TO_QUEST > 2)) then
+			TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
+			local distSq = GetDistanceSqToQuest(questIndex);
+			if (distSq and distSq > 0 and distSq < TUTORIAL_DISTANCE_TO_QUEST_KILL_SQ) then
+				TriggerTutorial(4);
+			end
+		end
+	end
+	if ( not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() ) then
+		TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = TUTORIAL_TIMER_FIRST_QUEST_COMPLETE + elapsed;
+		if (TUTORIAL_TIMER_FIRST_QUEST_COMPLETE > 10) then
+			TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
+			TriggerTutorial(57);
+		end
+	end
 end
 
 ACTION_STATUS_FADETIME = 2.0;
@@ -88,12 +112,15 @@ function ActionStatus_OnLoad(self)
 end
 
 function ActionStatus_OnEvent(self, event, ...)
+	self.startTime = GetTime();
+	self:SetAlpha(1.0);
 	if ( event == "SCREENSHOT_SUCCEEDED" ) then
 		ActionStatus_DisplayMessage(SCREENSHOT_SUCCESS, true);
 	end
 	if ( event == "SCREENSHOT_FAILED" ) then
 		ActionStatus_DisplayMessage(SCREENSHOT_FAILURE, true);
 	end
+	self:Show();
 end
 
 function ActionStatus_DisplayMessage(text, ignoreNewbieTooltipSetting)

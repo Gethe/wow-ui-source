@@ -1,9 +1,11 @@
 --Readability == win
-local FirstTime = true;
 local RUNETYPE_BLOOD = 1;
 local RUNETYPE_UNHOLY = 2;
 local RUNETYPE_FROST = 3;
 local RUNETYPE_DEATH = 4;
+
+local MAX_RUNES = 6;
+
 
 local iconTextures = {};
 iconTextures[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood";
@@ -32,42 +34,12 @@ runeMapping = {
 }
 
 function RuneButton_OnLoad (self)
-	RuneFrame_AddRune(RuneFrame, self);
-	
 	self.rune = _G[self:GetName().."Rune"];
 	self.fill = _G[self:GetName().."Fill"];
 	self.shine = _G[self:GetName().."ShineTexture"];
-	RuneButton_Update(self);
-end
-
-function RuneButton_OnUpdate (self, elapsed)
-	-- Constants that aren't used elsewhere and are actually constant are happiest inside their functions ;)
-	--local RUNE_HEIGHT = 18;
-	--local MIN_RUNE_ALPHA = .4
-	
-	local cooldown = _G[self:GetName().."Cooldown"];
-	local start, duration, runeReady = GetRuneCooldown(self:GetID());
-	
-	local displayCooldown = (runeReady and 0) or 1;
-	
-	CooldownFrame_SetTimer(cooldown, start, duration, displayCooldown);
-	
-	-- if ( not enable ) then
-		-- self.fill:SetHeight(RUNE_HEIGHT * ((GetTime() - start)/duration));
-		-- self.fill:SetTexCoord(0, 1, (1 - ((GetTime() - start)/duration)), 1);
-		-- self.fill:SetAlpha(math.max(MIN_RUNE_ALPHA, (GetTime() - start)/duration));
-	-- else
-	
-	if ( runeReady ) then
-		-- self.fill:SetHeight(RUNE_HEIGHT);
-		-- self.fill:SetTexCoord(0, 1, 0, 1);
-		-- self.fill:SetAlpha(1);
-		self:SetScript("OnUpdate", nil);
-	end
 end
 
 function RuneButton_Update (self, rune, dontFlash)
-	rune = rune or self:GetID();
 	local runeType = GetRuneType(rune);
 	
 	if ( (not dontFlash) and (runeType) and (runeType ~= self.rune.runeType)) then
@@ -77,14 +49,11 @@ function RuneButton_Update (self, rune, dontFlash)
 	
 	if (runeType) then
 		self.rune:SetTexture(iconTextures[runeType]);
-		-- self.fill:SetTexture(iconTextures[runeType]);
 		self.rune:Show();
-		-- self.fill:Show();
 		self.rune.runeType = runeType;
 		self.tooltipText = _G["COMBAT_TEXT_RUNE_"..runeMapping[runeType]];
 	else
 		self.rune:Hide();
-		-- self.fill:Hide();
 		self.tooltipText = nil;
 	end
 
@@ -115,49 +84,41 @@ function RuneFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
 	self:SetScript("OnEvent", RuneFrame_OnEvent);
-	
-	self.runes = {};
 end
 
 function RuneFrame_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( FirstTime ) then
-			RuneFrame_FixRunes(self);
-			FirstTime = false;
-		end
-		for rune in next, self.runes do
-			RuneButton_Update(self.runes[rune], rune, true);
+		for i=1,MAX_RUNES do
+			local runeButton = _G["RuneButtonIndividual"..i];
+			if runeButton then
+				RuneButton_Update(runeButton, i, true);
+			end
 		end
 	elseif ( event == "RUNE_POWER_UPDATE" ) then
-		local rune, usable = ...;
-		if ( not usable and rune and self.runes[rune] ) then
-			self.runes[rune]:SetScript("OnUpdate", RuneButton_OnUpdate);
-		elseif ( usable and rune and self.runes[rune] ) then
-			self.runes[rune].shine:SetVertexColor(1, 1, 1);
-			RuneButton_ShineFadeIn(self.runes[rune].shine)
+		local runeIndex = ...;
+		if runeIndex and runeIndex >= 1 and runeIndex <= MAX_RUNES  then 
+			local runeButton = _G["RuneButtonIndividual"..runeIndex];
+			local cooldown = _G[runeButton:GetName().."Cooldown"];
+			
+			local start, duration, runeReady = GetRuneCooldown(runeIndex);
+			if not runeReady  then
+				if start then
+					CooldownFrame_SetTimer(cooldown, start, duration, 1);
+				end
+			else
+				cooldown:Hide();
+				runeButton.shine:SetVertexColor(1, 1, 1);
+				RuneButton_ShineFadeIn(runeButton.shine)
+			end
+		else 
+			print("We got a bad rune index:", runeIndex)
 		end
 	elseif ( event == "RUNE_TYPE_UPDATE" ) then
-		local rune = ...;
-		if ( rune ) then
-			RuneButton_Update(self.runes[rune], rune);
+		local runeIndex = ...;
+		if ( runeIndex and runeIndex >= 1 and runeIndex <= MAX_RUNES ) then
+			RuneButton_Update(_G["RuneButtonIndividual"..runeIndex], runeIndex);
 		end
 	end
-end
-
-function RuneFrame_AddRune (runeFrame, rune)
-	tinsert(runeFrame.runes, rune);
-end
-
-function RuneFrame_FixRunes	(runeFrame)	--We want to swap where frost and unholy appear'
-	local temp;
-	
-	temp = runeFrame.runes[3];
-	runeFrame.runes[3] = runeFrame.runes[5];
-	runeFrame.runes[5] = temp;
-	
-	temp = runeFrame.runes[4];
-	runeFrame.runes[4] = runeFrame.runes[6];
-	runeFrame.runes[6] = temp;
 end
 
 function RuneButton_ShineFadeIn(self)

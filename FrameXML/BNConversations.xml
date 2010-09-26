@@ -76,7 +76,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size x="356" y="64"/>
 					<Anchors>
 						<Anchor point="TOP">

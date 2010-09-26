@@ -8,7 +8,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -20,7 +20,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -32,7 +32,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -44,7 +44,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -58,7 +58,7 @@
 				</Texture>
 				<FontString name="HonorLevelText" inherits="GameFontNormalSmall" text="Level level race class">
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="CharacterNameText" relativePoint="BOTTOM">
+                        <Anchor point="TOP" relativeTo="CharacterFrameTitleText" relativePoint="BOTTOM">
                             <Offset>
                                 <AbsDimension x="0" y="-6"/>
                             </Offset>
@@ -358,7 +358,7 @@
 				<Scripts>
 					<OnLoad function="LowerFrameLevel"/>
 				</Scripts>
-				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 			</StatusBar>
 		</Frames>
 		<Scripts>

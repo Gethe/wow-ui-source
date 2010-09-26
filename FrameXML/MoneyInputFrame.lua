@@ -1,3 +1,4 @@
+local popupOwner;
 
 function MoneyInputFrame_ResetMoney(moneyFrame)
 	_G[moneyFrame:GetName().."Gold"]:SetText("");
@@ -68,18 +69,60 @@ function MoneyInputFrame_OnTextChanged(self)
 		end
 		moneyFrame.expectChanges = nil;
 	end
-	if ( self:GetParent().onValueChangedFunc ) then
-		self:GetParent().onValueChangedFunc();
+	if ( self.expandOnDigits ) then
+		if ( strlen(self:GetText()) >= self.expandOnDigits ) then
+			moneyFrame.fixedSilver:Show();
+			moneyFrame.fixedSilver.amount:SetText(moneyFrame.silver:GetNumber());
+			moneyFrame.silver:Hide();
+			moneyFrame.fixedCopper:Show();
+			moneyFrame.fixedCopper.amount:SetText(moneyFrame.copper:GetNumber());
+			moneyFrame.copper:Hide();
+			moneyFrame.gold:SetWidth(self.normalWidth);
+		else
+			moneyFrame.gold:SetWidth(self.minWidth);
+			moneyFrame.silver:Show();
+			moneyFrame.fixedSilver:Hide();
+			moneyFrame.copper:Show();
+			moneyFrame.fixedCopper:Hide();
+		end
+	end
+	if ( self.darkenOnDigits ) then
+		if ( strlen(self:GetText()) >= self.darkenOnDigits ) then
+			self.texture:SetAlpha(0.2);
+			self.label:SetAlpha(0.2);
+		else
+			self.texture:SetAlpha(1);
+			self.label:SetAlpha(1);
+		end
+	end	
+	if ( moneyFrame.onValueChangedFunc ) then
+		moneyFrame.onValueChangedFunc();
 	end
 end
 
-function MoneyInputFrame_SetMode(frame, mode)
+function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
+	local goldFrame = frame.gold;
+	goldFrame.normalWidth = goldFrame:GetWidth();
+	goldFrame.minWidth = width;
+	goldFrame.expandOnDigits = expandOnDigits;
+	goldFrame:SetWidth(width);
+	
 	local frameName = frame:GetName();
-	if ( mode == "compact" ) then
-		_G[frameName.."Copper"]:SetPoint("LEFT", frameName.."Silver", "RIGHT", 11, 0);
-		_G[frameName.."Silver"]:SetPoint("LEFT", frameName.."Gold", "RIGHT", 22, 0);
-		_G[frameName.."Gold"]:SetWidth(56);
-	end
+	local coinFrame;
+	-- silver
+	coinFrame = CreateFrame("Frame", frameName.."FixedSilver", frame, "FixedCoinFrameTemplate");
+	coinFrame:SetPoint("LEFT", goldFrame, "RIGHT", 2, 0);
+	coinFrame.texture:SetTexture("Interface\\MoneyFrame\\UI-MoneyIcons");
+	coinFrame.texture:SetTexCoord(0.25, 0.5, 0, 1);
+	coinFrame.label:SetText(SILVER_AMOUNT_SYMBOL);
+	frame.fixedSilver = coinFrame;
+	-- copper
+	coinFrame = CreateFrame("Frame", frameName.."FixedCopper", frame, "FixedCoinFrameTemplate");
+	coinFrame:SetPoint("LEFT", frame.fixedSilver, "RIGHT", 2, 0);
+	coinFrame.texture:SetTexture("Interface\\MoneyFrame\\UI-MoneyIcons");
+	coinFrame.texture:SetTexCoord(0.5, 0.75, 0, 1);
+	coinFrame.label:SetText(COPPER_AMOUNT_SYMBOL);
+	frame.fixedCopper = coinFrame;
 end
 
 -- Used to set the frames before the moneyframe when tabbing through
@@ -103,6 +146,12 @@ function MoneyInputFrame_OnShow(moneyFrame)
 		moneyFrame.copper.label:Show();
 		moneyFrame.gold.label:Show();
 		moneyFrame.silver.label:Show();
+		if ( moneyFrame.gold.expandOnDigits ) then
+			moneyFrame.fixedSilver.texture:Hide();
+			moneyFrame.fixedCopper.texture:Hide();
+			moneyFrame.fixedSilver.label:Show();
+			moneyFrame.fixedCopper.label:Show();
+		end
 	else
 		moneyFrame.copper.texture:Show();
 		moneyFrame.gold.texture:Show();
@@ -110,5 +159,34 @@ function MoneyInputFrame_OnShow(moneyFrame)
 		moneyFrame.copper.label:Hide();
 		moneyFrame.gold.label:Hide();
 		moneyFrame.silver.label:Hide();
+		if ( moneyFrame.gold.expandOnDigits ) then
+			moneyFrame.fixedSilver.texture:Show();
+			moneyFrame.fixedCopper.texture:Show();
+			moneyFrame.fixedSilver.label:Hide();
+			moneyFrame.fixedCopper.label:Hide();
+		end		
+	end
+end
+
+function MoneyInputFrame_OpenPopup(moneyFrame)
+	if ( popupOwner ) then
+		popupOwner.hasPickup = 0;
+	end
+	popupOwner = moneyFrame;
+	moneyFrame.hasPickup = 1;
+	StaticPopup_Show("PICKUP_MONEY");
+end
+
+function MoneyInputFrame_ClosePopup()
+	popupOwner = nil;
+	StaticPopup_Hide("PICKUP_MONEY");
+end
+
+function MoneyInputFrame_PickupPlayerMoney(moneyFrame)
+	local copper = MoneyInputFrame_GetCopper(moneyFrame);
+	if ( copper > GetMoney() ) then
+		UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);
+	else
+		PickupPlayerMoney(copper);
 	end
 end

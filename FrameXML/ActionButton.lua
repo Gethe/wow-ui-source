@@ -186,6 +186,10 @@ function ActionButton_Update (self)
 			self:RegisterEvent("COMPANION_UPDATE");
 			self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 			self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+			self:RegisterEvent("PET_STABLE_UPDATE");
+			self:RegisterEvent("PET_STABLE_SHOW");
+			self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
+			self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 			self.eventsRegistered = true;
 		end
 
@@ -195,6 +199,7 @@ function ActionButton_Update (self)
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateUsable(self);
 		ActionButton_UpdateCooldown(self);
+		ActionButton_UpdateOverlayGlow(self);
 		ActionButton_UpdateFlash(self);
 	else
 		if ( self.eventsRegistered ) then
@@ -214,6 +219,10 @@ function ActionButton_Update (self)
 			self:UnregisterEvent("COMPANION_UPDATE");
 			self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
 			self:UnregisterEvent("LEARNED_SPELL_IN_TAB");
+			self:UnregisterEvent("PET_STABLE_UPDATE");
+			self:UnregisterEvent("PET_STABLE_SHOW");
+			self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
+			self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 			self.eventsRegistered = nil;
 		end
 
@@ -260,6 +269,9 @@ function ActionButton_Update (self)
 		end
 	end
 	ActionButton_UpdateCount(self);	
+	
+	-- Update flyout appearance
+	ActionButton_UpdateFlyout(self);
 
 	-- Update tooltip
 	if ( GameTooltip:GetOwner() == self ) then
@@ -348,6 +360,31 @@ function ActionButton_UpdateCooldown (self)
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 end
 
+function ActionButton_UpdateOverlayGlow(self)
+	local spellType, id, subType  = GetActionInfo(self.action);
+	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
+		ActionButton_ShowOverlayGlow(self);
+	else
+		ActionButton_HideOverlayGlow(self);
+	end
+end
+
+function ActionButton_ShowOverlayGlow(self)
+	if ( not self.overlayed ) then
+		self.overlayed = true;
+		--self.icon:SetVertexColor(0, 1, 0);
+		self.icon:SetTexCoord(0, 1, 1, 0);
+	end
+end
+
+function ActionButton_HideOverlayGlow(self)
+	if ( self.overlayed ) then
+		self.overlayed = false;
+		--self.icon:SetVertexColor(1, 1, 1);
+		self.icon:SetTexCoord(0, 1, 0, 1);
+	end
+end
+
 function ActionButton_OnEvent (self, event, ...)
 	local arg1 = ...;
 	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB") then
@@ -412,6 +449,19 @@ function ActionButton_OnEvent (self, event, ...)
 	elseif ( event == "STOP_AUTOREPEAT_SPELL" ) then
 		if ( ActionButton_IsFlashing(self) and not IsAttackAction(self.action) ) then
 			ActionButton_StopFlash(self);
+		end
+	elseif ( event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
+		-- Has to update everything for now, but this event should happen infrequently
+		ActionButton_Update(self);
+	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" ) then
+		local actionType, id, subType = GetActionInfo(self.action);
+		if ( actionType == "spell" and id == arg1 ) then
+			ActionButton_ShowOverlayGlow(self);
+		end
+	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" ) then
+		local actionType, id, subType = GetActionInfo(self.action);
+		if ( actionType == "spell" and id == arg1 ) then
+			ActionButton_HideOverlayGlow(self);
 		end
 	end
 end
@@ -520,4 +570,36 @@ function ActionButton_IsFlashing (self)
 	end
 	
 	return nil;
+end
+
+function ActionButton_UpdateFlyout(self)
+	local actionType = GetActionInfo(self.action);
+	if (actionType == "flyout") then
+		-- Update border and determine arrow position
+		local arrowDistance;
+		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
+			self.FlyoutBorder:Show();
+			self.FlyoutBorderShadow:Show();
+			arrowDistance = 5;
+		else
+			self.FlyoutBorder:Hide();
+			self.FlyoutBorderShadow:Hide();
+			arrowDistance = 2;
+		end
+		
+		-- Update arrow
+		self.FlyoutArrow:Show();
+		self.FlyoutArrow:ClearAllPoints();
+		if (self:GetParent() == MultiBarRight or self:GetParent() == MultiBarLeft) then
+			self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
+			SetClampedTextureRotation(self.FlyoutArrow, 270);
+		else
+			self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, arrowDistance);
+			SetClampedTextureRotation(self.FlyoutArrow, 0);
+		end
+	else
+		self.FlyoutBorder:Hide();
+		self.FlyoutBorderShadow:Hide();
+		self.FlyoutArrow:Hide();
+	end
 end

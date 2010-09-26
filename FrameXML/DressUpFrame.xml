@@ -31,7 +31,7 @@
             </Texture>
         </Layer>
 		<Layer level="ARTWORK">
-			<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+			<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 				<Size>
 					<AbsDimension x="256" y="256"/>
 				</Size>
@@ -39,7 +39,7 @@
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 			</Texture>
-			<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+			<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 				<Size>
 					<AbsDimension x="128" y="256"/>
 				</Size>
@@ -51,7 +51,7 @@
 					</Anchor>
 				</Anchors>
 			</Texture>
-			<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+			<Texture urgency="5" file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
 				<Size>
 					<AbsDimension x="256" y="256"/>
 				</Size>
@@ -63,7 +63,7 @@
 					</Anchor>
 				</Anchors>
 			</Texture>
-			<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+			<Texture urgency="5" file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
 				<Size>
 					<AbsDimension x="128" y="256"/>
 				</Size>
@@ -196,6 +196,11 @@
 			<Scripts>
                 <OnLoad function="Model_OnLoad"/>
                 <OnUpdate function="Model_OnUpdate"/>
+				<OnMouseUp function="Model_OnMouseUp"/>
+				<OnMouseDown function="Model_OnMouseDown"/>
+				<OnMouseWheel>
+					Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PLAYER_ZOOM);
+				</OnMouseWheel>
             </Scripts>
 			<Frames>
 				<Button name="DressUpModelRotateLeftButton">
@@ -217,7 +222,7 @@
 							Model_RotateLeft(self:GetParent());
 						</OnClick>
 					</Scripts>
-					<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+					<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 					<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 					<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 				</Button>
@@ -236,7 +241,7 @@
 							Model_RotateRight(self:GetParent());
 						</OnClick>
 					</Scripts>
-					<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+					<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 					<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 					<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 				</Button>

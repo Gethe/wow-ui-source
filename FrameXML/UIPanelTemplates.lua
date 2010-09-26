@@ -288,9 +288,6 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 			_G[self:GetName().."ScrollBar"]:Hide();
 			_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
-			if ( self.haveTrack ) then
-				_G[self:GetName().."Track"]:Hide();
-			end
 		else
 			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
@@ -303,9 +300,6 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
 		_G[self:GetName().."ScrollBar"]:Show();
 		_G[scrollbar:GetName().."ThumbTexture"]:Show();
-		if ( self.haveTrack ) then
-			_G[self:GetName().."Track"]:Show();
-		end		
 		-- The 0.005 is to account for precision errors
 		if ( yrange - value > 0.005 ) then
 			_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
@@ -334,6 +328,26 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 			middle:Show();
 		end
 	end
+end
+
+function ScrollBar_AdjustAnchors(scrollBar, topAdj, bottomAdj, xAdj)
+	-- assumes default anchoring of topleft-topright, bottomleft-bottomright
+	local topY = 0;
+	local bottomY = 0;
+	local point, parent, refPoint, x, y;
+	for i = 1, 2 do
+		point, parent, refPoint, x, y = scrollBar:GetPoint(i);
+		if ( point == "TOPLEFT" ) then
+			topY = y;
+		elseif ( point == "BOTTOMLEFT" ) then
+			bottomY = y;
+		end
+	end
+	xAdj = xAdj or 0;
+	topAdj = topAdj or 0;
+	bottomAdj = bottomAdj or 0;
+	scrollBar:SetPoint("TOPLEFT", parent, "TOPRIGHT", x + xAdj, topY + topAdj);
+	scrollBar:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", x + xAdj, bottomY + bottomAdj);
 end
 
 function ScrollingEdit_OnTextChanged(self, scrollFrame)
@@ -486,121 +500,158 @@ function UIFrameCache:ReleaseFrame (frame)
 	end	
 end
 
--- positionFunc = Callback to determine the visible buttons.
---		arguments: scroll value
---		must return: index of the topmost visible button (or nil if there are no buttons)
---					 the total height used by all buttons prior to topmost
---					 the total height of all the buttons
--- buttonFunc = Callback to configure each button
---		arguments: button, button index, first button
---			NOTE: first button is true if this is the first button in a rendering pass. For scrolling optimization, positionFunc may be called without subsequent calls to buttonFunc.
---		must return: height of button
-function DynamicScrollFrame_CreateButtons(self, buttonTemplate, minButtonHeight, buttonFunc, positionFunc)
-	if ( self.buttons ) then
-		return;
-	end
-
-	local scrollChild = self.scrollChild;
-	local scrollHeight = self:GetHeight();
-	local buttonName = self:GetName().."Button";
-	local buttons = { };
-	local numButtons;
+-- Magic Button code
+function MagicButton_OnLoad(self)
+	local leftHandled = false;
+	local rightHandled = false;
 	
-	local button = CreateFrame("BUTTON", buttonName.."1", scrollChild, buttonTemplate);
-	button:SetPoint("TOPLEFT", 0, 0);
-	tinsert(buttons, button);
-	numButtons = math.ceil(scrollHeight / minButtonHeight) + 3;
-	for i = 2, numButtons do
-		button = CreateFrame("BUTTON", buttonName..i, scrollChild, buttonTemplate);
-		button:SetPoint("TOPLEFT", buttons[i-1], "BOTTOMLEFT", 0, 0);
-		tinsert(buttons, button);
-	end
-	self.buttons = buttons;
-	self.numButtons = numButtons;
-	self.usedButtons = 0;
-	self.buttonFunc = buttonFunc;
-	self.positionFunc = positionFunc;
-	self.scrollHeight = scrollHeight;
-	-- optimization vars
-	self.lastOffset = -1;
-	self.topIndex = -1;
-	self.nextButtonOffset = -1;
-end
-
-function DynamicScrollFrame_OnVerticalScroll(self, offset)
-	offset = math.floor(offset + 0.5);
-	if ( offset ~= self.lastOffset ) then
-		local scrollBar = self.scrollBar;
-		local min, max = scrollBar:GetMinMaxValues();
-		scrollBar:SetValue(offset);
-		if ( offset == 0 ) then
-			_G[scrollBar:GetName().."ScrollUpButton"]:Disable();
-		else
-			_G[scrollBar:GetName().."ScrollUpButton"]:Enable();
-		end
-		if ( offset == math.floor(max + 0.5) ) then
-			_G[scrollBar:GetName().."ScrollDownButton"]:Disable();
-		else
-			_G[scrollBar:GetName().."ScrollDownButton"]:Enable();
-		end
-		self.lastOffset = offset;
-		DynamicScrollFrame_Update(self, offset, true);
-	end
-end
-
-function DynamicScrollFrame_Update(self, scrollValue, isScrollUpdate)
-	if ( not self.positionFunc ) then
-		return;
-	end
-	if ( not scrollValue ) then
-		scrollValue = floor(self.scrollBar:GetValue() + 0.5);
-	end
-	local buttonIndex = 0;
-	local buttons = self.buttons;
-	local topIndex, heightUsed, totalHeight = self.positionFunc(scrollValue);
-	if ( topIndex ) then
-		if ( isScrollUpdate and self.topIndex == topIndex and ( self.nextButtonOffset == 0 or scrollValue < self.nextButtonOffset ) ) then
-			return;
-		end
-		self.allowedRange = totalHeight - self.scrollHeight;		-- temp fix to jitter scroll (see task 39261)
-		self.topIndex = topIndex;
-		local button;
-		local buttonFunc = self.buttonFunc;
-		local buttonHeight;
-		local visibleRange = scrollValue + self.scrollHeight;
-		if ( topIndex > 1 ) then
-			buttons[1]:SetHeight(heightUsed);
-			buttons[1]:Show();
-			buttonIndex = 1;
-		end
-		for dataIndex = topIndex, topIndex + self.numButtons - 1 do
-			buttonIndex = buttonIndex + 1;
-			button = buttons[buttonIndex];
-			buttonHeight = buttonFunc(button, dataIndex, (dataIndex == topIndex));
-			button:SetHeight(buttonHeight);
-			heightUsed = heightUsed + buttonHeight;
-			if ( heightUsed >= totalHeight ) then
-				self.nextButtonOffset = 0;
-				break;
-			elseif ( heightUsed >= visibleRange ) then
-				buttonIndex = buttonIndex + 1;
-				button = buttons[buttonIndex];
-				button:SetHeight(totalHeight - heightUsed);
-				button:Show();
-				self.nextButtonOffset = floor(scrollValue + heightUsed - visibleRange);
-				break;
+	-- Find out where this button is anchored and adjust positions/separators as necessary
+	for i=1, self:GetNumPoints() do
+		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
+		
+		if (relativeTo:GetObjectType() == "Button" and (point == "TOPLEFT" or point == "LEFT")) then
+			
+			if (offsetX == 0 and offsetY == 0) then
+				self:SetPoint(point, relativeTo, relativePoint, 1, 0);
+			end	
+			
+			if (relativeTo.RightSeparator) then
+				-- Modify separator to make it a Middle
+				self.LeftSeparator = relativeTo.RightSeparator;
+			else
+				-- Add a Middle separator
+				self.LeftSeparator = self:CreateTexture(self:GetName().."_LeftSeparator", "BORDER");
+				relativeTo.RightSeparator = self.LeftSeparator;
 			end
+			
+			self.LeftSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
+			self.LeftSeparator:SetTexCoord("0.00781250", "0.10937500", "0.75781250", "0.95312500");
+			self.LeftSeparator:SetWidth(13);
+			self.LeftSeparator:SetHeight(25);
+			self.LeftSeparator:SetPoint("TOPRIGHT", self, "TOPLEFT", 5, 1);
+			
+			leftHandled = true;	
+			
+		elseif (relativeTo:GetObjectType() == "Button" and (point == "TOPRIGHT" or point == "RIGHT")) then
+		
+			if (offsetX == 0 and offsetY == 0) then
+				self:SetPoint(point, relativeTo, relativePoint, -1, 0);
+			end	
+			
+			if (relativeTo.LeftSeparator) then
+				-- Modify separator to make it a Middle
+				self.RightSeparator = relativeTo.LeftSeparator;
+			else
+				-- Add a Middle separator
+				self.RightSeparator = self:CreateTexture(self:GetName().."_RightSeparator", "BORDER");
+				relativeTo.LeftSeparator = self.RightSeparator;
+			end
+			
+			self.RightSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
+			self.RightSeparator:SetTexCoord("0.00781250", "0.10937500", "0.75781250", "0.95312500");
+			self.RightSeparator:SetWidth(13);
+			self.RightSeparator:SetHeight(25);
+			self.RightSeparator:SetPoint("TOPLEFT", self, "TOPRIGHT", -5, 1);
+			
+			rightHandled = true;
+			
+		elseif (point == "BOTTOMLEFT") then
+			if (offsetX == 0 and offsetY == 0) then
+				self:SetPoint(point, relativeTo, relativePoint, 4, 4);
+			end	
+			leftHandled = true;
+		elseif (point == "BOTTOMRIGHT") then
+			if (offsetX == 0 and offsetY == 0) then
+				self:SetPoint(point, relativeTo, relativePoint, -6, 4);
+			end
+			rightHandled = true;
+		elseif (point == "BOTTOM") then
+			if (offsetY == 0) then
+				self:SetPoint(point, relativeTo, relativePoint, 0, 4);
+			end
+		end	
+	end	
+	
+	-- If this button didn't have a left anchor, add the left border texture
+	if (not leftHandled) then
+		if (not self.LeftSeparator) then
+			-- Add a Left border
+			self.LeftSeparator = self:CreateTexture(self:GetName().."_LeftSeparator", "BORDER");
+			self.LeftSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
+			self.LeftSeparator:SetTexCoord("0.24218750", "0.32812500", "0.63281250", "0.82812500");
+			self.LeftSeparator:SetWidth(11);
+			self.LeftSeparator:SetHeight(25);
+			self.LeftSeparator:SetPoint("TOPRIGHT", self, "TOPLEFT", 6, 1);
 		end
 	end
-	for i = buttonIndex + 1, self.numButtons do
-		buttons[i]:Hide();
+	
+	-- If this button didn't have a right anchor, add the right border texture
+	if (not rightHandled) then
+		if (not self.RightSeparator) then
+			-- Add a Right border
+			self.RightSeparator = self:CreateTexture(self:GetName().."_RightSeparator", "BORDER");
+			self.RightSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
+			self.RightSeparator:SetTexCoord("0.90625000", "0.99218750", "0.00781250", "0.20312500");
+			self.RightSeparator:SetWidth(11);
+			self.RightSeparator:SetHeight(25);
+			self.RightSeparator:SetPoint("TOPLEFT", self, "TOPRIGHT", -6, 1);
+		end
 	end
-	self.usedButtons = buttonIndex;
 end
 
-function DynamicScrollFrame_UnlockAllHighlights(self)
-	local buttons = self.buttons;
-	for i = 1, self.usedButtons do
-		buttons[i]:UnlockHighlight();
+-- ButtonFrameTemplate code
+function ButtonFrameTemplate_HideButtonBar(self)
+	if self.bottomInset then 
+		self.bottomInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
+	else
+		_G[self:GetName() .. "Inset"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
+	end
+	_G[self:GetName() .. "BtnCornerLeft"]:Hide();
+	_G[self:GetName() .. "BtnCornerRight"]:Hide();
+	_G[self:GetName() .. "ButtonBottomBorder"]:Hide();
+end
+
+function ButtonFrameTemplate_ShowButtonBar(self)
+	if self.topInset then 
+		self.topInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
+	else
+		_G[self:GetName() .. "Inset"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
+	end
+	_G[self:GetName() .. "BtnCornerLeft"]:Show();
+	_G[self:GetName() .. "BtnCornerRight"]:Show();
+	_G[self:GetName() .. "ButtonBottomBorder"]:Show();
+end
+
+function ButtonFrameTemplate_HideAttic(self)
+	if self.topInset then 
+		self.topInset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_TOP_OFFSET);
+	else
+		self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_TOP_OFFSET);
+	end
+	self.TopTileStreaks:Hide();
+end
+
+function ButtonFrameTemplate_ShowAttic(self)
+	if self.topInset then 
+		self.topInset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
+	else
+		self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
+	end
+	self.TopTileStreaks:Show();
+end
+
+-- SquareButton template code
+SQUARE_BUTTON_TEXCOORDS = {
+	["UP"] = {     0.45312500,    0.64062500,     0.01562500,     0.20312500};
+	["DOWN"] = {   0.45312500,    0.64062500,     0.20312500,     0.01562500};
+	["LEFT"] = {   0.23437500,    0.42187500,     0.01562500,     0.20312500};
+	["RIGHT"] = {  0.42187500,    0.23437500,     0.01562500,     0.20312500};
+	["DELETE"] = { 0.01562500,    0.20312500,     0.01562500,     0.20312500};
+};
+
+function SquareButton_SetIcon(self, name)
+	local coords = SQUARE_BUTTON_TEXCOORDS[strupper(name)];
+	if (coords) then
+		self.icon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 	end
 end

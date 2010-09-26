@@ -24,6 +24,9 @@ local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
+ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155};
+ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {4943, 4860, 4989, 4947};
+ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
 ACHIEVEMENT_CATEGORY_NORMAL_R = 0;
 ACHIEVEMENT_CATEGORY_NORMAL_G = 0;
@@ -45,6 +48,12 @@ ACHIEVEMENT_FILTER_COMPLETE = 2;
 ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
 local FEAT_OF_STRENGTH_ID = 81;
+local GUILD_CATEGORY_ID = 15076;
+local IN_GUILD_VIEW;
+local TEXTURES_OFFSET = 0;		-- 0.5 when in guild view
+
+local displayStatCategories = {};
+
 
 local trackedAchievements = {};
 local function updateTrackedAchievements (...) 
@@ -66,15 +75,17 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 			HideUIPanel(AchievementFrame);
 		else
 			ShowUIPanel(AchievementFrame);
+			AchievementFrame_SetTabs();
 			AchievementFrameTab_OnClick(1);
 		end
 		return;
 	end
-	if ( AchievementFrame:IsShown() and AchievementFrame.selectedTab == 2 ) then
+	if ( AchievementFrame:IsShown() and AchievementFrame.selectedTab == 3 ) then
 		HideUIPanel(AchievementFrame);
 	else
 		ShowUIPanel(AchievementFrame);
-		AchievementFrameTab_OnClick(2);
+		AchievementFrame_SetTabs();
+		AchievementFrameTab_OnClick(3);
 	end
 end
 
@@ -83,15 +94,19 @@ function AchievementFrame_DisplayComparison (unit)
 	AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
 	AchievementFrameTab_OnClick(1);
 	ShowUIPanel(AchievementFrame);
+	AchievementFrame_SetTabs();
 	--AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameSummary);
 	AchievementFrameComparison_SetUnit(unit);
 	AchievementFrameComparison_ForceUpdate();
 end
 
 function AchievementFrame_OnLoad (self)
-	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetNumTabs(self, 3);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
+	
+	AchievementFrameSummary.forceOnShow = AchievementFrameSummary_OnShow;
+	AchievementFrameAchievements.forceOnShow = AchievementFrameAchievements_OnShow;
 end
 
 function AchievementFrame_OnShow (self)
@@ -121,11 +136,65 @@ function AchievementFrame_ForceUpdate ()
 	end
 end
 
+function AchievementFrame_SetTabs()
+	if ( not IsInGuild() or AchievementFrameComparison:IsShown() ) then
+		AchievementFrameTab2:Hide();
+		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab1, "RIGHT", -5, 0);
+	else
+		AchievementFrameTab2:Show();
+		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab2, "RIGHT", -5, 0);
+	end
+end
+
+function AchievementFrame_ToggleView()
+	-- summary and scrollframes get toggled in their respective OnShow
+	if ( IN_GUILD_VIEW ) then
+		IN_GUILD_VIEW = nil;
+		TEXTURES_OFFSET = 0;
+		-- container backgrounds
+		AchievementFrameAchievementsBackground:SetTexCoord(0, 1, 0, 0.5);
+		AchievementFrameSummaryBackground:SetTexCoord(0, 1, 0, 0.5);
+		-- header
+		AchievementFrameHeaderPoints:SetVertexColor(1, 1, 1);
+		AchievementFrameHeaderTitle:SetText(ACHIEVEMENT_TITLE);
+		local shield = AchievementFrameHeaderShield;
+		shield:SetTexture("Interface\\AchievementFrame\\UI-Achievement-TinyShield");
+		shield:SetTexCoord(0, 0.625, 0, 0.625);
+		shield:SetHeight(20);
+	else
+		IN_GUILD_VIEW = true;
+		TEXTURES_OFFSET = 0.5;
+		-- container background
+		AchievementFrameAchievementsBackground:SetTexCoord(0, 1, 0.5, 1);
+		AchievementFrameSummaryBackground:SetTexCoord(0, 1, 0.5, 1);
+		-- header
+		AchievementFrameHeaderPoints:SetVertexColor(0, 1, 0);
+		AchievementFrameHeaderTitle:SetText(GUILD_ACHIEVEMENTS_TITLE);
+		local shield = AchievementFrameHeaderShield;
+		shield:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+		shield:SetTexCoord(0.63281250, 0.67187500, 0.13085938, 0.16601563);
+		shield:SetHeight(18);
+		-- guild emblem
+		local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
+		if ( emblemFilename ) then
+			AchievementFrameGuildEmblemLeft:SetTexture(emblemFilename);
+			AchievementFrameGuildEmblemRight:SetTexture(emblemFilename);
+			AchievementFrameGuildEmblemLeft:SetVertexColor(0.4, 0.2, 0, 0.5);
+			AchievementFrameGuildEmblemRight:SetVertexColor(0.4, 0.2, 0, 0.5);
+		end
+	end
+	AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints(IN_GUILD_VIEW));
+end
+
 function AchievementFrameBaseTab_OnClick (id)
 	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..id], AchievementFrame);
 	
-	local isSummary = false
+	local isSummary = false;
+	local swappedView = false;
 	if ( id == 1 ) then
+		if ( IN_GUILD_VIEW ) then
+			AchievementFrame_ToggleView();
+		end
 		achievementFunctions = ACHIEVEMENT_FUNCTIONS;
 		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES); -- This needs to happen before AchievementFrame_ShowSubFrame (fix for bug 157885)
 		if ( achievementFunctions.selectedCategory == "summary" ) then
@@ -135,9 +204,28 @@ function AchievementFrameBaseTab_OnClick (id)
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 		end
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-AchievementWatermark");
+		AchievementFrameCategoriesBG:SetTexCoord(0, 0.5, 0, 1);
+		AchievementFrameGuildEmblemLeft:Hide();
+		AchievementFrameGuildEmblemRight:Hide();
+	elseif ( id == 2) then
+		if ( not IN_GUILD_VIEW ) then
+			AchievementFrame_ToggleView();
+		end	
+		achievementFunctions = GUILD_ACHIEVEMENT_FUNCTIONS;
+		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES); -- This needs to happen before AchievementFrame_ShowSubFrame (fix for bug 157885)
+		if ( achievementFunctions.selectedCategory == "summary" ) then
+			isSummary = true;
+			AchievementFrame_ShowSubFrame(AchievementFrameSummary);
+		else
+			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
+		end
+		AchievementFrameWaterMark:SetTexture();
+		AchievementFrameCategoriesBG:SetTexCoord(0.5, 1, 0, 1);
+		AchievementFrameGuildEmblemLeft:Show();
+		AchievementFrameGuildEmblemRight:Show();
 	else
 		achievementFunctions = STAT_FUNCTIONS;
-		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
+		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES); -- This needs to happen before AchievementFrame_ShowSubFrame (fix for bug 157885)
 		if ( achievementFunctions.selectedCategory == "summary" ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
 			achievementFunctions.selectedCategory = ACHIEVEMENT_COMPARISON_STATS_SUMMARY_ID;
@@ -146,6 +234,9 @@ function AchievementFrameBaseTab_OnClick (id)
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
 		end
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-StatWatermark");
+		AchievementFrameCategoriesBG:SetTexCoord(0, 0.5, 0, 1);	
+		AchievementFrameGuildEmblemLeft:Hide();
+		AchievementFrameGuildEmblemRight:Hide();
 	end
 	
 	AchievementFrameCategories_Update();
@@ -158,6 +249,11 @@ end
 AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 
 function AchievementFrameComparisonTab_OnClick (id)
+	if ( IN_GUILD_VIEW ) then
+		AchievementFrame_ToggleView();
+		AchievementFrameGuildEmblemLeft:Hide();
+		AchievementFrameGuildEmblemRight:Hide();
+	end
 	if ( id == 1 ) then
 		achievementFunctions = COMPARISON_ACHIEVEMENT_FUNCTIONS;
 		AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonContainer);
@@ -167,7 +263,7 @@ function AchievementFrameComparisonTab_OnClick (id)
 		AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonStatsContainer);
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-StatWatermark");
 	end
-	
+	AchievementFrameCategoriesBG:SetTexCoord(0, 0.5, 0, 1);
 	AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 	AchievementFrameCategories_Update();
 	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..id], AchievementFrame);
@@ -195,7 +291,12 @@ function AchievementFrame_ShowSubFrame(...)
 			end
 		end
 		if ( show ) then
-			subFrame:Show();
+			-- force the OnShow to run if we need to swap views on the subFrame
+			if ( subFrame.forceOnShow and subFrame.guildView ~= IN_GUILD_VIEW and subFrame:IsShown() ) then
+				subFrame.forceOnShow();
+			else
+				subFrame:Show();
+			end
 		else
 			subFrame:Hide();
 		end
@@ -275,7 +376,7 @@ function AchievementFrameCategories_GetCategoryList (categories)
 
 	for i, id in next, cats do
 		local _, parent = GetCategoryInfo(id);
-		if ( parent == -1 ) then
+		if ( parent == -1 or parent == GUILD_CATEGORY_ID ) then
 			tinsert(categories, { ["id"] = id });
 		end
 	end
@@ -448,7 +549,7 @@ end
 
 function AchievementFrameCategories_SelectButton (button)
 	local id = button.element.id;
-	
+
 	if ( type(button.element.parent) ~= "number" ) then
 		-- Is top level category (can expand/contract)
 		if ( button.isSelected and button.element.collapsed == false ) then
@@ -486,7 +587,7 @@ function AchievementFrameCategories_SelectButton (button)
 	
 	--Intercept "summary" category
 	if ( id == "summary" ) then
-		if ( achievementFunctions == ACHIEVEMENT_FUNCTIONS ) then
+		if ( achievementFunctions == ACHIEVEMENT_FUNCTIONS or achievementFunctions == GUILD_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameSummary);
 			achievementFunctions.selectedCategory = id;
 			return;
@@ -509,10 +610,8 @@ function AchievementFrameCategories_SelectButton (button)
 	else
 		if ( achievementFunctions == STAT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
-			AchievementFrameStatsContainerScrollBar:SetValue(0);
-		elseif ( achievementFunctions == ACHIEVEMENT_FUNCTIONS ) then
+		elseif ( achievementFunctions == ACHIEVEMENT_FUNCTIONS or achievementFunctions == GUILD_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
-			AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 			if ( id == FEAT_OF_STRENGTH_ID ) then
 				AchievementFrameFilterDropDown:Hide();
 				AchievementFrameHeaderRightDDLInset:Hide();
@@ -534,11 +633,15 @@ function AchievementFrameCategories_SelectButton (button)
 	if ( achievementFunctions.clearFunc ) then
 		achievementFunctions.clearFunc();
 	end
-	
 	achievementFunctions.updateFunc();
+	
+	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 end
 
 function AchievementFrameAchievements_OnShow()
+	if ( AchievementFrameAchievements.guildView ~= IN_GUILD_VIEW ) then
+		AchievementFrameAchievements_ToggleView();
+	end
 	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID ) then
 		AchievementFrameFilterDropDown:Hide();
 		AchievementFrameHeaderRightDDLInset:Hide();
@@ -591,11 +694,6 @@ end
 function AchievementCategoryButton_OnLoad (button)
 	button:EnableMouse(true);
 	button:EnableMouseWheel(true);
-	
-	local buttonName = button:GetName();
-	
-	button.label = _G[buttonName .. "Label"];
-	button.background = _G[buttonName.."Background"];
 end
 
 function AchievementCategoryButton_OnClick (button)
@@ -609,7 +707,7 @@ function AchievementFrameAchievements_OnLoad (self)
 	AchievementFrameAchievementsContainerScrollBar.Show = 
 		function (self)
 			AchievementFrameAchievements:SetWidth(504);
-			for _, button in next, AchievementFrameAchievements.buttons do
+			for _, button in next, AchievementFrameAchievementsContainer.buttons do
 				button:SetWidth(496);
 			end
 			getmetatable(self).__index.Show(self);
@@ -618,7 +716,7 @@ function AchievementFrameAchievements_OnLoad (self)
 	AchievementFrameAchievementsContainerScrollBar.Hide = 
 		function (self)
 			AchievementFrameAchievements:SetWidth(530);
-			for _, button in next, AchievementFrameAchievements.buttons do
+			for _, button in next, AchievementFrameAchievementsContainer.buttons do
 				button:SetWidth(522);
 			end
 			getmetatable(self).__index.Hide(self);
@@ -647,7 +745,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		if ( AchievementFrameAchievementsContainer:IsShown() and selection == achievementID ) then
 			AchievementFrame_SelectAchievement(selection, true);
 		end
-		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
+		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints(IN_GUILD_VIEW));
 
 	elseif ( event == "CRITERIA_UPDATE" ) then
 		if ( AchievementFrameAchievements.selection ) then
@@ -748,7 +846,7 @@ end
 
 function AchievementFrameAchievements_ClearSelection ()
 	AchievementButton_ResetObjectives();
-	for _, button in next, AchievementFrameAchievements.buttons do
+	for _, button in next, AchievementFrameAchievementsContainer.buttons do
 		button:Collapse();
 		if ( not button:IsMouseOver() ) then
 			button.highlight:Hide();
@@ -762,6 +860,58 @@ function AchievementFrameAchievements_ClearSelection ()
 	end
 	
 	AchievementFrameAchievements.selection = nil;
+end
+
+function AchievementFrameAchievements_ToggleView()
+	if ( AchievementFrameAchievements.guildView ) then
+		AchievementFrameAchievements.guildView = nil;
+		for _, button in next, AchievementFrameAchievementsContainer.buttons do
+			local name = button:GetName();
+			-- reset button info to get proper saturation/desaturation
+			button.completed = nil;
+			button.id = nil;
+			-- title
+			button.titleBar:SetAlpha(0.8);
+			-- icon frame
+			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
+			button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
+			-- tsunami
+			local tsunami = _G[name.."BottomTsunami1"];
+			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			tsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
+			tsunami:SetAlpha(0.35);
+			local tsunami = _G[name.."TopTsunami1"];
+			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			tsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
+			tsunami:SetAlpha(0.3);
+			-- glow
+			button.glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
+		end
+	else
+		AchievementFrameAchievements.guildView = true;
+		for _, button in next, AchievementFrameAchievementsContainer.buttons do
+			local name = button:GetName();
+			-- reset button info to get proper saturation/desaturation
+			button.completed = nil;
+			button.id = nil;
+			-- title
+			button.titleBar:SetAlpha(1);
+			-- icon frame
+			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+			button.icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
+			-- tsunami
+			local tsunami = _G[name.."BottomTsunami1"];
+			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			tsunami:SetTexCoord(0, 0.72265, 0.58984375, 0.65234375);
+			tsunami:SetAlpha(0.2);
+			local tsunami = _G[name.."TopTsunami1"];
+			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			tsunami:SetTexCoord(0.72265, 0, 0.65234375, 0.58984375);
+			tsunami:SetAlpha(0.15);
+			-- glow
+			button.glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
+		end
+	end
 end
 
 -- [[ Achievement Icon ]] --
@@ -779,11 +929,6 @@ function AchievementIcon_Saturate (self)
 end
 
 function AchievementIcon_OnLoad (self)
-	local name = self:GetName();
-	self.bling = _G[name .. "Bling"];
-	self.texture = _G[name .. "Texture"];
-	self.frame = _G[name .. "Overlay"];
-	
 	self.Desaturate = AchievementIcon_Desaturate;
 	self.Saturate = AchievementIcon_Saturate;
 end
@@ -791,18 +936,14 @@ end
 -- [[ Achievement Shield ]] --
 
 function AchievementShield_Desaturate (self)
-	self.icon:SetTexCoord(.5, 1, 0, 1);
+	self.icon:SetTexCoord(.5, 1, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.5);
 end
 
 function AchievementShield_Saturate (self)
-	self.icon:SetTexCoord(0, .5, 0, 1);
+	self.icon:SetTexCoord(0, .5, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.5);
 end
 
 function AchievementShield_OnLoad (self)
-	local name = self:GetName();
-	self.icon = _G[name .. "Icon"];
-	self.points = _G[name .. "Points"];
-	
 	self.Desaturate = AchievementShield_Desaturate;
 	self.Saturate = AchievementShield_Saturate;
 end
@@ -815,6 +956,7 @@ ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT = 15;
 ACHIEVEMENTBUTTON_METAROWHEIGHT = 14;
 ACHIEVEMENTBUTTON_MAXHEIGHT = 232;
 ACHIEVEMENTBUTTON_TEXTUREHEIGHT = 128;
+GUILDACHIEVEMENTBUTTON_MINHEIGHT = 128;
 
 function AchievementButton_UpdatePlusMinusTexture (button)
 	local id = button.id;
@@ -830,15 +972,15 @@ function AchievementButton_UpdatePlusMinusTexture (button)
 	end
 	
 	if ( display ) then
-		button.plusMinus:Show();			
+		button.plusMinus:Show();
 		if ( button.collapsed and button.saturated ) then
-			button.plusMinus:SetTexCoord(0, .5, 0, .5);
+			button.plusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
 		elseif ( button.collapsed ) then
-			button.plusMinus:SetTexCoord(.5, 1, 0, .5);
+			button.plusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
 		elseif ( button.saturated ) then
-			button.plusMinus:SetTexCoord(0, .5, .5, 1);
+			button.plusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
 		else
-			button.plusMinus:SetTexCoord(.5, 1, .5, 1);
+			button.plusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
 		end
 	else
 		button.plusMinus:Hide();
@@ -853,12 +995,12 @@ function AchievementButton_Collapse (self)
 	self.collapsed = true;
 	AchievementButton_UpdatePlusMinusTexture(self);
 	self:SetHeight(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT);	
-	_G[self:GetName() .. "Background"]:SetTexCoord(0, 1, 1-(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 256), 1);
-	_G[self:GetName() .. "Glow"]:SetTexCoord(0, 1, 0, ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 128);
-	
+	self.background:SetTexCoord(0, 1, 1-(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 256), 1);
 	if ( not self.tracked:GetChecked() ) then
 		self.tracked:Hide();
 	end
+	self.guildCornerL:Hide();
+	self.guildCornerR:Hide();
 end
 
 function AchievementButton_Expand (self, height)
@@ -868,20 +1010,31 @@ function AchievementButton_Expand (self, height)
 	
 	self.collapsed = nil;
 	AchievementButton_UpdatePlusMinusTexture(self);
+	if ( IN_GUILD_VIEW ) then
+		if ( height < GUILDACHIEVEMENTBUTTON_MINHEIGHT ) then
+			height = GUILDACHIEVEMENTBUTTON_MINHEIGHT;
+		end
+		self.guildCornerL:Show();
+		self.guildCornerR:Show();
+	end
 	self:SetHeight(height);
-	_G[self:GetName() .. "Background"]:SetTexCoord(0, 1, max(0, 1-(height / 256)), 1);
-	_G[self:GetName() .. "Glow"]:SetTexCoord(0, 1, 0, (height+5) / 128);
+	self.background:SetTexCoord(0, 1, max(0, 1-(height / 256)), 1);
 end
 
 function AchievementButton_Saturate (self)
-	local name = self:GetName();
 	self.saturated = true;	
-	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0, 0.3125);
-	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-	_G[name .. "Glow"]:SetVertexColor(1.0, 1.0, 1.0);
+	if ( IN_GUILD_VIEW ) then
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal");
+		self.titleBar:SetTexCoord(0, 1, 0.83203125, 0.91015625);
+		self.shield.points:SetVertexColor(0, 1, 0);
+	else
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
+		self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
+		self.shield.points:SetVertexColor(1, 1, 1);
+	end
+	self.glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
-	self.shield.points:SetVertexColor(1, 1, 1);
 	self.reward:SetVertexColor(1, .82, 0);
 	self.label:SetVertexColor(1, 1, 1);
 	self.description:SetTextColor(0, 0, 0, 1);
@@ -891,11 +1044,15 @@ function AchievementButton_Saturate (self)
 end
 
 function AchievementButton_Desaturate (self)
-	local name = self:GetName();
 	self.saturated = nil;
-	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0.34375, 0.65625);
-	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-	_G[name .. "Glow"]:SetVertexColor(.22, .17, .13);
+	if ( IN_GUILD_VIEW ) then
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal-Desaturated");
+		self.titleBar:SetTexCoord(0, 1, 0.74609375, 0.82421875);
+	else
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
+		self.titleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
+	end
+	self.glow:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
 	self.shield:Desaturate();
 	self.shield.points:SetVertexColor(.65, .65, .65);
@@ -908,21 +1065,6 @@ function AchievementButton_Desaturate (self)
 end
 
 function AchievementButton_OnLoad (self)
-	local name = self:GetName();
-	self.label = _G[name .. "Label"];
-	self.description = _G[name .. "Description"];
-	self.hiddenDescription = _G[name .. "HiddenDescription"];
-	self.reward = _G[name .. "Reward"];
-	self.rewardBackground = _G[name.."RewardBackground"];
-	self.icon = _G[name .. "Icon"];
-	self.shield = _G[name .. "Shield"];
-	self.objectives = _G[name .. "Objectives"];
-	self.highlight = _G[name .. "Highlight"];
-	self.dateCompleted = _G[name .. "DateCompleted"]
-	self.tracked = _G[name .. "Tracked"];
-	self.check = _G[name .. "Check"];
-	self.plusMinus = _G[name .. "PlusMinus"];
-	
 	self.dateCompleted:ClearAllPoints();
 	self.dateCompleted:SetPoint("TOP", self.shield, "BOTTOM", -3, 6);
 	if ( not ACHIEVEMENTUI_FONTHEIGHT ) then
@@ -941,12 +1083,9 @@ function AchievementButton_OnLoad (self)
 	
 	self:Collapse();
 	self:Desaturate();
-	
-	AchievementFrameAchievements.buttons = AchievementFrameAchievements.buttons or {};
-	tinsert(AchievementFrameAchievements.buttons, self);
 end
 
-function AchievementButton_OnClick (self, ignoreModifiers)
+function AchievementButton_OnClick (self, button, down, ignoreModifiers)
 	if(IsModifiedClick() and not ignoreModifiers) then
 		if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 			local achievementLink = GetAchievementLink(self.id);
@@ -1116,6 +1255,9 @@ function AchievementFrameAchievements_SelectButton (button)
 	achievements.selection = button.id;
 	achievements.selectionIndex = button.index;
 	button.selected = true;
+	
+		
+	SetFocusedAchievement(button.id);
 end
 
 function AchievementButton_ResetObjectives ()
@@ -1267,15 +1409,27 @@ end
 
 function AchievementButton_GetMeta (index)
 	local metaCriteriaTable = metaCriteriaTable;
-	if ( metaCriteriaTable[index] ) then
-		return metaCriteriaTable[index];
+	if ( not metaCriteriaTable[index] ) then
+		local frame = CreateFrame("BUTTON", "AchievementFrameMeta" .. index, AchievementFrameAchievements, "MetaCriteriaTemplate");
+		AchievementButton_LocalizeMetaAchievement(frame);
+		metaCriteriaTable[index] = frame;
 	end
-	
-	local frame = CreateFrame("BUTTON", "AchievementFrameMeta" .. index, AchievementFrameAchievements, "MetaCriteriaTemplate");
-	AchievementButton_LocalizeMetaAchievement(frame);
-	metaCriteriaTable[index] = frame;
-	
-	return frame;
+
+	if ( metaCriteriaTable[index].guildView ~= IN_GUILD_VIEW ) then
+		AchievementButton_ToggleMetaView(metaCriteriaTable[index]);
+	end
+	return metaCriteriaTable[index];
+end
+
+function AchievementButton_ToggleMetaView(frame)
+	if ( IN_GUILD_VIEW ) then
+		frame.border:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+		frame.border:SetTexCoord(0.89062500, 0.97070313, 0.00195313, 0.08203125);
+	else
+		frame.border:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Progressive-IconBorder");
+		frame.border:SetTexCoord(0, 0.65625, 0, 0.65625);
+	end
+	frame.guildView = IN_GUILD_VIEW;
 end
 
 function AchievementButton_GetProgressivePoints(achievementID)
@@ -1320,7 +1474,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		
 		miniAchievement:Show();
 		miniAchievement:SetParent(objectivesFrame);
-		_G[miniAchievement:GetName() .. "Icon"]:SetTexture(iconpath);
+		miniAchievement.icon:SetTexture(iconpath);
 		if ( index == 1 ) then
 			miniAchievement:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", -4, -4);
 		elseif ( index == 7 ) then
@@ -1459,7 +1613,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				numRows = numRows + 2;
 			end
 			
-			local id, achievementName, points, completed, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
+			local id, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
 			
 			if ( month ) then
 				metaCriteria.date = string.format(SHORTDATE, day, month, year);
@@ -1471,6 +1625,8 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			metaCriteria.label:SetText(achievementName);
 			metaCriteria.icon:SetTexture(iconpath);
 
+			-- have to check if criteria is completed here, can't just check if achievement is completed.
+			-- This is because the criteria could have modifiers on it that prevent completion even though the achievement is earned.
 			if ( objectivesFrame.completed and completed ) then
 				metaCriteria.check:Show();
 				metaCriteria.border:SetVertexColor(1, 1, 1, 1);
@@ -1636,7 +1792,6 @@ function AchievementFrameStats_OnLoad (self)
 	HybridScrollFrame_CreateButtons(AchievementFrameStatsContainer, "StatTemplate");
 end
 
-local displayStatCategories = {};
 
 function AchievementFrameStats_Update ()
 	local category = achievementFunctions.selectedCategory;
@@ -1785,14 +1940,6 @@ function AchievementFrameStats_SetHeader(button, id)
 end
 
 function AchievementStatButton_OnLoad(self, parentFrame)
-	local name = self:GetName();
-	self.background = _G[name.."BG"];
-	self.left = _G[name.."HeaderLeft"];
-	self.middle = _G[name.."HeaderMiddle"];
-	self.right = _G[name.."HeaderRight"];
-	self.text = _G[name.."Text"];
-	self.title = _G[name.."Title"];
-	self.value = _G[name.."Value"];
 	self.value:SetVertexColor(1, 0.97, 0.6);
 	parentFrame.buttons = parentFrame.buttons or {};
 	tinsert(parentFrame.buttons, self);
@@ -1811,6 +1958,9 @@ end
 -- [[ Summary Frame ]] --
 function AchievementFrameSummary_OnShow()
 	if ( achievementFunctions ~= COMPARISON_ACHIEVEMENT_FUNCTIONS and achievementFunctions ~= COMPARISON_STAT_FUNCTIONS ) then
+		if ( AchievementFrameSummary.guildView ~= IN_GUILD_VIEW ) then
+			AchievementFrameSummary_ToggleView();
+		end
 		AchievementFrameSummary:SetWidth(530);
 		AchievementFrameSummary_Update();
 	else
@@ -1824,7 +1974,49 @@ end
 
 function AchievementFrameSummary_Update(isCompare)
 	AchievementFrameSummaryCategoriesStatusBar_Update();
-	AchievementFrameSummary_UpdateAchievements(GetLatestCompletedAchievements());
+	AchievementFrameSummary_UpdateAchievements(GetLatestCompletedAchievements(IN_GUILD_VIEW));
+end
+
+function AchievementFrameSummary_ToggleView()
+	local tCategories;
+ 	if ( AchievementFrameSummary.guildView ) then
+		AchievementFrameSummary.guildView = nil;
+		tCategories = ACHIEVEMENTUI_SUMMARYCATEGORIES;
+		-- recent achievements
+		for i = 1, 4 do
+			local button = _G["AchievementFrameSummaryAchievement"..i];
+			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
+			button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
+			button.icon.frame:SetPoint("CENTER", -1, 2);
+			button.glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
+			button.titleBar:SetAlpha(0.5);
+		end
+	else
+		AchievementFrameSummary.guildView = true;
+		tCategories = ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES;
+		-- recent achievements
+		for i = 1, 4 do
+			local button = _G["AchievementFrameSummaryAchievement"..i];	
+			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+			button.icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
+			button.icon.frame:SetPoint("CENTER", 0, 2);
+			button.glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
+			button.titleBar:SetAlpha(1);
+		end
+	end
+	-- categories
+	for i = 1, 8 do
+		local statusBar = _G["AchievementFrameSummaryCategoriesCategory"..i];
+		if ( tCategories[i] ) then
+			local categoryName = GetCategoryInfo(tCategories[i]);
+			statusBar.label:SetText(categoryName);
+			statusBar:Show();
+			statusBar:SetID(tCategories[i]);
+			AchievementFrameSummaryCategory_OnShow(statusBar);	-- to calculate progress
+		else
+			statusBar:Hide();
+		end
+	end
 end
 
 function AchievementFrameSummary_UpdateAchievements(...)
@@ -1880,8 +2072,14 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			button.tooltipTitle = nil;
 			button:Show();
 		else
+			local tAchievements;
+			if ( IN_GUILD_VIEW ) then
+				tAchievements = ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS;
+			else
+				tAchievements = ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS;
+			end
 			for i=defaultAchievementCount, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
-				achievementID = ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS[defaultAchievementCount];
+				achievementID = tAchievements[defaultAchievementCount];
 				if ( not achievementID ) then
 					break;
 				end
@@ -1923,7 +2121,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 end
 
 function AchievementFrameSummaryCategoriesStatusBar_Update()
-	local total, completed = GetNumCompletedAchievements();
+	local total, completed = GetNumCompletedAchievements(IN_GUILD_VIEW);
 	AchievementFrameSummaryCategoriesStatusBar:SetMinMaxValues(0, total);
 	AchievementFrameSummaryCategoriesStatusBar:SetValue(completed);
 	AchievementFrameSummaryCategoriesStatusBarText:SetText(completed.."/"..total);
@@ -1931,7 +2129,6 @@ end
 
 function AchievementFrameSummaryAchievement_OnLoad(self)
 	AchievementComparisonPlayerButton_OnLoad(self);
-	self.highlight = _G[self:GetName().."Highlight"];
 	AchievementFrameSummaryAchievements.buttons = AchievementFrameSummaryAchievements.buttons or {};
 	tinsert(AchievementFrameSummaryAchievements.buttons, self);
 	self:Saturate();
@@ -1980,11 +2177,8 @@ end
 function AchievementFrameSummaryCategory_OnLoad (self)
 	self:SetMinMaxValues(0, 100);
 	self:SetValue(0);
-	local name = self:GetName();
-	self.text = _G[name .. "Text"];
-	
 	local categoryName = GetCategoryInfo(self:GetID());
-	_G[name .. "Label"]:SetText(categoryName);
+	self.label:SetText(categoryName);
 end
 
 function AchievementFrame_GetCategoryTotalNumAchievements (id, showAll)
@@ -2034,8 +2228,15 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	end
 	
+	local tabIndex = 1;
+	local category = GetAchievementCategory(id);
+	local _, parentCategory = GetCategoryInfo(category);
+	if ( parentCategory == GUILD_CATEGORY_ID ) then
+		tabIndex = 2;
+	end
+	
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
-	AchievementFrameTab_OnClick(1);
+	AchievementFrameTab_OnClick(tabIndex);
 	AchievementFrameSummary:Hide();
 	AchievementFrameAchievements:Show();
 
@@ -2066,7 +2267,6 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	end
 	
 	AchievementFrameCategories_ClearSelection();
-	local category = GetAchievementCategory(id);
 	
 	local categoryIndex, parent, hidden = 0;
 	for i, entry in next, ACHIEVEMENTUI_CATEGORIES do
@@ -2120,13 +2320,14 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	AchievementFrameAchievements_ClearSelection();	
 	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 	AchievementFrameAchievements_Update();
-	
+
 	local shown = false;
+	local previousScrollValue;
 	while ( not shown ) do
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
 			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
 				-- The "True" here ignores modifiers, so you don't accidentally track or link this achievement. :P
-				AchievementButton_OnClick(button, true);
+				AchievementButton_OnClick(button, nil, nil, true);
 				
 				-- We found the button!
 				shown = button;
@@ -2141,10 +2342,12 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 			newHeight = min(newHeight, maxVal);
 			AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);
 		else
-			if ( AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then
+			local scrollValue = AchievementFrameAchievementsContainerScrollBar:GetValue();
+			if ( scrollValue == maxVal or scrollValue == previousScrollValue ) then
 				--assert(false, "Failed to find achievement " .. id .. " while jumping!")
 				return;
 			else
+				previousScrollValue = scrollValue;
 				HybridScrollFrame_OnMouseWheel(AchievementFrameAchievementsContainer, -1);
 			end			
 		end
@@ -2208,7 +2411,7 @@ end
 
 function AchievementFrame_SelectSummaryStatistic (criteriaId)
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
-	AchievementFrameTab_OnClick(2);
+	AchievementFrameTab_OnClick(3);
 	AchievementFrameStats:Show();
 	AchievementFrameSummary:Hide();
 	
@@ -2512,7 +2715,6 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 	end
 end
 
-local displayStatCategories = {};
 function AchievementFrameComparison_UpdateStats ()
 	local category = achievementFunctions.selectedCategory;
 	local scrollFrame = AchievementFrameComparisonStatsContainer;
@@ -2584,21 +2786,8 @@ function AchievementFrameComparison_UpdateStats ()
 end
 
 function AchievementFrameComparisonStat_OnLoad (self)
-	local name = self:GetName();
-	self.background = _G[name.."BG"];
-	self.left = _G[name.."HeaderLeft"];
-	self.middle = _G[name.."HeaderMiddle"];
-	self.right = _G[name.."HeaderRight"];
-	self.left2 = _G[name.."HeaderLeft2"];
-	self.middle2 = _G[name.."HeaderMiddle2"];
-	self.right2 = _G[name.."HeaderRight2"];
-	self.text = _G[name.."Text"];
-	self.title = _G[name.."Title"];
-	self.value = _G[name.."Value"];
 	self.value:SetVertexColor(1, 0.97, 0.6);
-	self.friendValue = _G[name.."ComparisonValue"];
 	self.friendValue:SetVertexColor(1, 0.97, 0.6);
-	self.mouseover = _G[name.. "Mouseover"];
 end
 
 function AchievementFrameComparisonStats_SetStat (button, category, index, colorIndex, isSummary)
@@ -2710,12 +2899,18 @@ end
 
 function AchievementComparisonPlayerButton_Saturate (self)
 	local name = self:GetName();
-	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0, 0.3125);
-	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-	_G[name .. "Glow"]:SetVertexColor(1.0, 1.0, 1.0);
+	if ( IN_GUILD_VIEW ) then
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal");
+		self.titleBar:SetTexCoord(0, 1, 0.83203125, 0.91015625);
+		self.shield.points:SetVertexColor(0, 1, 0);
+	else
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
+		self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
+		self.shield.points:SetVertexColor(1, 1, 1);
+	end
+	self.glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
-	self.shield.points:SetVertexColor(1, 1, 1);
 	self.label:SetVertexColor(1, 1, 1);
 	self.description:SetTextColor(0, 0, 0, 1);
 	self.description:SetShadowOffset(0, 0);
@@ -2724,9 +2919,14 @@ end
 
 function AchievementComparisonPlayerButton_Desaturate (self)
 	local name = self:GetName();
-	_G[name .. "TitleBackground"]:SetTexCoord(0, 0.9765625, 0.34375, 0.65625);
-	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-	_G[name .. "Glow"]:SetVertexColor(.22, .17, .13);
+	if ( IN_GUILD_VIEW ) then
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal-Desaturated");
+		self.titleBar:SetTexCoord(0, 1, 0.74609375, 0.82421875);
+	else
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
+		self.titleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
+	end
+	self.glow:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
 	self.shield:Desaturate();
 	self.shield.points:SetVertexColor(.65, .65, .65);
@@ -2737,15 +2937,6 @@ function AchievementComparisonPlayerButton_Desaturate (self)
 end
 
 function AchievementComparisonPlayerButton_OnLoad (self)
-	local name = self:GetName();
-	
-	self.label = _G[name .. "Label"];
-	self.description = _G[name .. "Description"];
-	self.icon = _G[name .. "Icon"];
-	self.shield = _G[name .. "Shield"];
-	self.dateCompleted = _G[name .. "DateCompleted"];
-	self.titleBar = _G[name .. "TitleBackground"];
-	
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Saturate = AchievementComparisonPlayerButton_Saturate;
 	self.Desaturate = AchievementComparisonPlayerButton_Desaturate;
@@ -2757,10 +2948,9 @@ function AchievementComparisonPlayerButton_OnLoad (self)
 end
 
 function AchievementComparisonFriendButton_Saturate (self)
-	local name = self:GetName();
-	_G[name .. "TitleBackground"]:SetTexCoord(0.3, 0.575, 0, 0.3125);
-	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-	_G[name .. "Glow"]:SetVertexColor(1.0, 1.0, 1.0);
+	self.titleBar:SetTexCoord(0.3, 0.575, 0.66015625, 0.73828125);
+	self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
+	self.glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
 	self.shield.points:SetVertexColor(1, 1, 1);
@@ -2769,10 +2959,9 @@ function AchievementComparisonFriendButton_Saturate (self)
 end
 
 function AchievementComparisonFriendButton_Desaturate (self)
-	local name = self:GetName();
-	_G[name .. "TitleBackground"]:SetTexCoord(0.3, 0.575, 0.34375, 0.65625);
-	_G[name .. "Background"]:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-	_G[name .. "Glow"]:SetVertexColor(.22, .17, .13);
+	self.titleBar:SetTexCoord(0.3, 0.575, 0.74609375, 0.82421875);
+	self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
+	self.glow:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
 	self.shield:Desaturate();
 	self.shield.points:SetVertexColor(.65, .65, .65);
@@ -2781,12 +2970,6 @@ function AchievementComparisonFriendButton_Desaturate (self)
 end
 
 function AchievementComparisonFriendButton_OnLoad (self)
-	local name = self:GetName();
-	
-	self.status = _G[name .. "Status"];
-	self.icon = _G[name .. "Icon"];
-	self.shield = _G[name .. "Shield"];
-	
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 	self.Saturate = AchievementComparisonFriendButton_Saturate;
 	self.Desaturate = AchievementComparisonFriendButton_Desaturate;
@@ -2807,6 +2990,13 @@ end
 
 ACHIEVEMENT_FUNCTIONS = {
 	categoryAccessor = GetCategoryList,
+	clearFunc = AchievementFrameAchievements_ClearSelection,
+	updateFunc = AchievementFrameAchievements_Update,
+	selectedCategory = "summary";
+}
+
+GUILD_ACHIEVEMENT_FUNCTIONS = {
+	categoryAccessor = GetGuildCategoryList,
 	clearFunc = AchievementFrameAchievements_ClearSelection,
 	updateFunc = AchievementFrameAchievements_Update,
 	selectedCategory = "summary";
@@ -2851,7 +3041,7 @@ ACHIEVEMENT_TEXTURES_TO_LOAD = {
 	},
 	{	
 		name="AchievementFrameCategoriesBG", 
-		file="Interface\\AchievementFrame\\UI-Achievement-AchievementBackground",
+		file="Interface\\AchievementFrame\\UI-Achievement-Parchment",
 	},
 	{	
 		name="AchievementFrameWaterMark", 

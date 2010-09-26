@@ -10,6 +10,7 @@ PET_ATTACK_TEXTURE = "Interface\\Icons\\Ability_GhoulFrenzy";
 PET_FOLLOW_TEXTURE = "Interface\\Icons\\Ability_Tracking";
 PET_WAIT_TEXTURE = "Interface\\Icons\\Spell_Nature_TimeStop";
 PET_DISMISS_TEXTURE = "Interface\\Icons\\Spell_Shadow_Teleport";
+PET_MOVE_TO_TEXTURE = "Interface\\Icons\\Spell_Holy_Stoicism";
 
 function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_CONTROL_LOST");
@@ -184,9 +185,9 @@ function PetActionBar_UpdatePositionValues()
 	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
 		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
 	elseif ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
-		PETACTIONBAR_XPOS = _G["ShapeshiftButton"..GetNumShapeshiftForms()]:GetRight() + 20;
+		PETACTIONBAR_XPOS = 500;
 	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
-		PETACTIONBAR_XPOS = MultiCastActionBarFrame:GetRight() + 20;
+		PETACTIONBAR_XPOS = 500;
 	else
 		PETACTIONBAR_XPOS = 36;
 	end
@@ -300,7 +301,7 @@ function PetActionButton_OnModifiedClick (self, button)
 end
 
 function PetActionButton_OnDragStart (self)
-	if ( LOCK_ACTIONBAR ~= "1" ) then
+	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
 		self:SetChecked(0);
 		PickupPetAction(self:GetID());
 		PetActionBar_Update();
@@ -308,11 +309,9 @@ function PetActionButton_OnDragStart (self)
 end
 
 function PetActionButton_OnReceiveDrag (self)
-	if ( LOCK_ACTIONBAR ~= "1" ) then
-		self:SetChecked(0);
-		PickupPetAction(self:GetID());
-		PetActionBar_Update();
-	end
+	self:SetChecked(0);
+	PickupPetAction(self:GetID());
+	PetActionBar_Update();
 end
 
 function PetActionButton_OnEnter (self)
@@ -320,13 +319,14 @@ function PetActionButton_OnEnter (self)
 		return;
 	end
 	local uber = GetCVar("UberTooltips");
-	if ( self.isToken or (uber == "0") ) then
-		if ( uber == "0" ) then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( uber == "0" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local bindingText = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), "KEY_");
+		if (bindingText and bindingText ~= "") then
+			GameTooltip:SetText(self.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..bindingText..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
 		else
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+			GameTooltip:SetText(self.tooltipName, 1.0, 1.0, 1.0);
 		end
-		GameTooltip:SetText(self.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), "KEY_")..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
 		if ( self.tooltipSubtext ) then
 			GameTooltip:AddLine(self.tooltipSubtext, "", 0.5, 0.5, 0.5);
 		end

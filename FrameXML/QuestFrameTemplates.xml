@@ -9,7 +9,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -17,7 +17,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>		
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -25,7 +25,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -90,12 +90,8 @@
 			<OnEnter>
 				if ( self:GetAlpha() > 0 ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					if ( self.rewardType == "item" ) then
-						GameTooltip:SetQuestItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem(GameTooltip);
-					elseif ( self.rewardType == "spell" ) then
-						GameTooltip:SetQuestRewardSpell();
-					end
+					GameTooltip:SetQuestItem(self.type, self:GetID());
+					GameTooltip_ShowCompareItem(GameTooltip);
 				end
 				CursorUpdate(self);
 			</OnEnter>
@@ -107,12 +103,55 @@
 				CursorOnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnClick>
-				if ( self.rewardType == "spell" ) then
-					if ( IsModifiedClick("CHATLINK") ) then
-						ChatEdit_InsertLink(GetQuestSpellLink());
-					end
-				else
-					HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+				HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestSpellTemplate" hidden="true" virtual="true">
+		<Size x="157" y="56"/>
+		<HitRectInsets left="0" right="0" top="0" bottom="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="Icon">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="-12" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Name">
+					<Size  x="90" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentNameFrame"  x="17" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSpellBorder" inherits="Spellbook-SlotFrame">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIconTexture" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.spellID) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetSpellByID(self.spellID);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") and self.spellID) then
+					ChatEdit_InsertLink(GetSpellLink(self.spellID));
 				end
 			</OnClick>
 		</Scripts>
@@ -123,7 +162,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon">
+				<Texture name="$parentQuestIcon" urgency="5" file="Interface\GossipFrame\AvailableQuestIcon">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -242,31 +281,47 @@
 			</Layer>
 		</Layers>
 	</Frame>
-   <Frame name="QuestTalentFrameTemplate" virtual="true">
-		<Size x="500" y="20"/>
+   <Button name="QuestSkillPointFrameTemplate" inherits="LargeItemButtonTemplate" virtual="true">
 		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="$parentReceiveText" inherits="QuestFont" text="BONUS_TALENTS">
+			<Layer level="OVERLAY">
+				<Texture name="$parentSkillPointBg" file="Interface\QuestFrame\SkillUp-BG">
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="12" y="-6"/>
 					</Anchors>
-				</FontString>
-				<FontString name="$parentPoints" inherits="NumberFontNormalLarge" justifyH="LEFT">
+				</Texture>
+				<Texture name="$parentSkillPointBgGlow" file="Interface\QuestFrame\SkillUp-Glow" alphaMode="ADD" alpha="0.3">
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentReceiveText" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="15" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="$parentSkillPointBg"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentPoints" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentSkillPointBg" relativePoint="CENTER" x="3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-   </Frame>
+		<Scripts>
+			<OnLoad>
+				-- Hacks to get this to display a little more nicely
+				_G[self:GetName().."IconTexture"]:SetPoint("TOPLEFT", -3, 0);
+				_G[self:GetName().."Name"]:SetPoint("LEFT", _G[self:GetName().."NameFrame"], 24, 0);
+				_G[self:GetName().."Name"]:SetWidth(81);
+			</OnLoad>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+   </Button>
+	<Button name="QuestTalentFrameTemplate" inherits="QuestSkillPointFrameTemplate" virtual="true"/>
    <Frame name="QuestXPFrameTemplate" virtual="true">
 		<Size x="280" y="20"/>
 		<Layers>
@@ -329,7 +384,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTitleFrameLeft" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture name="$parentTitleFrameLeft" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size x="4" y="40"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
@@ -338,7 +393,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.1171875" top="0.15625" bottom="0.828125"/>
 				</Texture>
-				<Texture name="$parentTitleFrameCenter" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture name="$parentTitleFrameCenter" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size x="200" y="40"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentTitleFrameLeft" relativePoint="RIGHT">
@@ -347,7 +402,7 @@
 					</Anchors>
 					<TexCoords left="0.1171875" right="0.828125" top="0.15625" bottom="0.828125"/>
 				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size x="11" y="40"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentTitleFrameCenter" relativePoint="RIGHT">

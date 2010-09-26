@@ -38,6 +38,7 @@ function MailFrame_OnLoad(self)
 	-- Set previous and next fields
 	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
+	MoneyFrame_SetMaxDisplayWidth(SendMailMoneyFrame, 160);
 end
 
 function MailFrame_OnEvent(self, event, ...)
@@ -483,8 +484,6 @@ function OpenMail_Update()
 				OpenMailInvoiceAmountReceived:SetText(AMOUNT_PAID_COLON);
 				-- Clear buymode
 				OpenMailInvoiceBuyMode:SetText("");
-				-- Position amount paid
-				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceSalePrice", "TOPRIGHT", 0, 0);
 				-- Update purchase price
 				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);	
 				-- Position buy line
@@ -508,10 +507,8 @@ function OpenMail_Update()
 				else
 					OpenMailInvoiceBuyMode:SetText("("..HIGH_BIDDER..")");
 				end
-				-- Position amount received
-				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, -18);
 				-- Position buy line
-				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", 0, 9);
+				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoiceHouseCut", "BOTTOMRIGHT", -114, -9);
 				MoneyFrame_Update("OpenMailSalePriceMoneyFrame", bid);
 				MoneyFrame_Update("OpenMailDepositMoneyFrame", deposit);
 				MoneyFrame_Update("OpenMailHouseCutMoneyFrame", consignment);
@@ -538,8 +535,6 @@ function OpenMail_Update()
 				OpenMailInvoiceAmountReceived:SetText(AUCTION_INVOICE_PENDING_FUNDS_COLON);
 				-- Clear buymode
 				OpenMailInvoiceBuyMode:SetText("");
-				-- Position amount to be received
-				OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", "OpenMailInvoiceSalePrice", "TOPRIGHT", 0, 0);
 				-- Update purchase price
 				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);	
 				-- Position buy line

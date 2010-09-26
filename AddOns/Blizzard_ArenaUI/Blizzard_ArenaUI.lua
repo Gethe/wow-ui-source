@@ -58,6 +58,7 @@ function ArenaEnemyFrames_OnShow(self)
 	ArenaEnemyFrames_UpdateWatchFrame();
 	
 	DurabilityFrame_SetAlerts();
+	StreamingIcon_UpdateVisibility();
 	UIParent_ManageFramePositions();
 end
 
@@ -89,6 +90,7 @@ function ArenaEnemyFrames_OnHide(self)
 	ArenaEnemyFrames_UpdateWatchFrame();
 	
 	DurabilityFrame_SetAlerts();
+	StreamingIcon_UpdateVisibility();
 	UIParent_ManageFramePositions();
 end
 

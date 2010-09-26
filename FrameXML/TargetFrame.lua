@@ -35,6 +35,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.pvpIcon = _G[thisName.."TextureFramePVPIcon"];
 	self.leaderIcon = _G[thisName.."TextureFrameLeaderIcon"];
 	self.raidTargetIcon = _G[thisName.."TextureFrameRaidTargetIcon"];
+	self.questIcon = _G[thisName.."TextureFrameQuestIcon"];
 	self.levelText = _G[thisName.."TextureFrameLevelText"];
 	self.deadText = _G[thisName.."TextureFrameDeadText"];
 	self.TOT_AURA_ROW_WIDTH = TOT_AURA_ROW_WIDTH;
@@ -98,7 +99,7 @@ function TargetFrame_Update (self)
 		self:Hide();
 	else
 		self:Show();
-
+		
 		-- Moved here to avoid taint from functions below
 		if ( self.totFrame ) then
 			TargetofTarget_Update(self.totFrame);
@@ -162,6 +163,11 @@ function TargetFrame_OnEvent (self, event, ...)
 		end
 		CloseDropDownMenus();
 		UIParent_ManageFramePositions();
+	elseif ( event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
+		TargetFrame_Update(self);
+		TargetFrame_UpdateRaidTargetIcon(self);
+		CloseDropDownMenus();
+		UIParent_ManageFramePositions();	
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == self.unit ) then
 			TargetFrame_CheckDead(self);
@@ -314,6 +320,14 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
 		end	
 	end
+	
+	if (self.questIcon) then
+		if (UnitIsQuestBoss(self.unit)) then
+			self.questIcon:Show();
+		else
+			self.questIcon:Hide();
+		end
+	end
 end
 
 function TargetFrame_CheckDead (self)
@@ -347,9 +361,15 @@ function TargetFrame_UpdateAuras (self)
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
 	local selfName = self:GetName();
-
+	local canAssist = UnitCanAssist("player", self.unit);
+	
+	local filter;
+	if ( SHOW_CASTABLE_BUFFS == "1" and canAssist ) then
+		filter = "RAID";
+	end
+		
 	for i = 1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff(self.unit, i);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff(self.unit, i, filter);
 		frameName = selfName.."Buff"..i;
 		frame = _G[frameName];
 		if ( not frame ) then
@@ -393,8 +413,8 @@ function TargetFrame_UpdateAuras (self)
 				frameStealable:Hide();
 			end
 
-			-- set the buff to be big if the target is not the player and the buff is cast by the player or his pet
-			largeBuffList[i] = (not playerIsTarget and PLAYER_UNITS[caster]);
+			-- set the buff to be big if the buff is cast by the player or his pet
+			largeBuffList[i] = PLAYER_UNITS[caster];
 
 			numBuffs = numBuffs + 1;
 
@@ -409,8 +429,14 @@ function TargetFrame_UpdateAuras (self)
 	local frameBorder;
 	local numDebuffs = 0;
 	local isEnemy = UnitCanAttack("player", self.unit);
+	
+	if ( SHOW_DISPELLABLE_DEBUFFS == "1" and canAssist ) then
+		filter = "RAID";
+	else
+		filter = nil;
+	end
 	for i = 1, MAX_TARGET_DEBUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, i);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, i, filter);
 		frameName = selfName.."Debuff"..i;
 		frame = _G[frameName];
 		if ( not frame ) then
@@ -659,7 +685,7 @@ function TargetFrameDropDown_Initialize (self)
 		id = UnitInRaid("target");
 		if ( id ) then
 			menu = "RAID_PLAYER";
-			name = GetRaidRosterInfo(id +1);
+			name = GetRaidRosterInfo(id);
 		elseif ( UnitInParty("target") ) then
 			menu = "PARTY";
 		else
@@ -748,7 +774,7 @@ function TargetofTarget_Update(self, elapsed)
 		UnitFrame_Update(self);
 		TargetofTarget_CheckDead(self);
 		TargetofTargetHealthCheck(self);
-		RefreshDebuffs(self, self.unit);
+		RefreshDebuffs(self, self.unit, nil, nil, true);
 	else
 		if ( self:IsShown() ) then
 			self:Hide();
@@ -930,7 +956,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT");
+	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
 	self.levelText:SetPoint("CENTER", 12, -16);
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);

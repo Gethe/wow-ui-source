@@ -17,7 +17,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentEventBackgroundTexture" file="Interface\Calendar\CalendarEventBackground" hidden="true">
+				<Texture name="$parentEventBackgroundTexture" urgency="5" file="Interface\Calendar\CalendarEventBackground" hidden="true">
 					<Size x="91" y="86"/>
 					<Anchors>
 						<Anchor point="BOTTOM"/>
@@ -98,14 +98,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="$parentTop" file="Interface\Calendar\CalendarShadows">
+						<Texture name="$parentTop" urgency="5" file="Interface\Calendar\CalendarShadows">
 							<Size x="91" y="45"/>
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>
 							<Color r="1.0" g="1.0" b="1.0" a="0.9"/>
 						</Texture>
-						<Texture name="$parentBottom" file="Interface\Calendar\CalendarShadows">
+						<Texture name="$parentBottom" urgency="5" file="Interface\Calendar\CalendarShadows">
 							<Size x="91" y="46"/>
 							<Anchors>
 								<Anchor point="BOTTOM"/>
@@ -135,7 +135,7 @@
 				CalendarDayButton_OnClick(self, button, down);
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\Calendar\CalendarBackground"/>
+		<NormalTexture urgency="5" file="Interface\Calendar\CalendarBackground"/>
 		<HighlightTexture file="Interface\Calendar\Highlights" alphaMode="ADD">
 			<Size x="88" y="88"/>
 			<Anchors>
@@ -216,21 +216,21 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundMiddle" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="$parentBackgroundMiddle" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size x="140" y="40"/>
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
 					<TexCoords left="0.28125" right="0.71484375" top="0.0" bottom="0.625"/>
 				</Texture>
-				<Texture name="$parentBackgroundLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="$parentBackgroundLeft" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size x="14" y="40"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentBackgroundMiddle" relativePoint="LEFT"/>
 					</Anchors>
 					<TexCoords left="0.2265625" right="0.28125" top="0.0" bottom="0.625"/>
 				</Texture>
-				<Texture name="$parentBackgroundRight" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="$parentBackgroundRight" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size x="14" y="40"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentBackgroundMiddle" relativePoint="RIGHT"/>
@@ -469,7 +469,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
 	</Button>
 
 	<!-- Calendar View Event Templates -->
@@ -601,7 +601,7 @@
 				CalendarEventPickerCloseButton_OnClick(self, button);
 			</OnDoubleClick>
 		</Scripts>
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
 	</Button>
 
 	<!-- Calendar Texture Picker Templates -->
@@ -640,7 +640,7 @@
 				CalendarTexturePickerButton_OnDoubleClick(self, button);
 			</OnDoubleClick>
 		</Scripts>
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
 	</Button>
 
 	<!-- Calendar Class Templates -->
@@ -648,7 +648,7 @@
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+				<Texture urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
 					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="LEFT">

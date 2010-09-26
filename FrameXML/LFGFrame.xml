@@ -37,11 +37,11 @@
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -155,11 +155,11 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="$parentLockedIndicator" relativePoint="CENTER"/>
 				</Anchors>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
 			</CheckButton>
 			<Button name="$parentExpandOrCollapseButton" parentKey="expandOrCollapseButton">
 				<Size>
@@ -175,7 +175,7 @@
 				<HitRectInsets>
 					<AbsInset left="1" right="-4" top="-2" bottom="-2"/>
 				</HitRectInsets>
-				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-MinusButton-UP">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>

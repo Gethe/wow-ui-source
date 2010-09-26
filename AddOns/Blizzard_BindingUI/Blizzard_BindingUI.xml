@@ -83,7 +83,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-TopLeft">
+				<Texture urgency="5" file="Interface\KeyBindingFrame\UI-KeyBindingFrame-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -91,7 +91,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-Top">
+				<Texture urgency="5" file="Interface\KeyBindingFrame\UI-KeyBindingFrame-Top">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -103,7 +103,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-TopRight">
+				<Texture urgency="5" file="Interface\KeyBindingFrame\UI-KeyBindingFrame-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -113,7 +113,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-BotLeft">
+				<Texture urgency="5" file="Interface\KeyBindingFrame\UI-KeyBindingFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -121,7 +121,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-Bot">
+				<Texture urgency="5" file="Interface\KeyBindingFrame\UI-KeyBindingFrame-Bot">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -133,7 +133,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\KeyBindingFrame\UI-KeyBindingFrame-BotRight">
+				<Texture urgency="5" file="Interface\KeyBindingFrame\UI-KeyBindingFrame-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -179,7 +179,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="KeyBindingFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="KeyBindingFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="400" y="64"/>
 					</Size>
@@ -419,7 +419,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
-			<Button name="KeyBindingFrameDefaultButton" inherits="UIPanelButtonGrayTemplate" text="RESET_TO_DEFAULT">
+			<Button name="KeyBindingFrameDefaultButton" inherits="UIPanelButtonTemplate" text="RESET_TO_DEFAULT">
 				<Size>
 					<AbsDimension x="130" y="22"/>
 				</Size>

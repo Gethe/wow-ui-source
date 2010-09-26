@@ -30,6 +30,8 @@ hash_SlashCmdList = {}
 hash_EmoteTokenList = {}
 hash_ChatTypeInfoList = {}
 
+local IsGMClient = IsGMClient;
+
 ChatTypeInfo = { };
 ChatTypeInfo["SYSTEM"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["SAY"]										= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
@@ -677,15 +679,19 @@ local function CreateCanonicalActions(entry, ...)
 	entry.spells = {};
 	entry.spellNames = {};
 	entry.items = {};
+	local count = 0;
 	for i=1, select("#", ...) do
 		local action = strlower(strtrim((select(i, ...))));
-		if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
-			entry.items[i] = action;
-			entry.spells[i] = strlower(GetItemSpell(action) or "");
-			entry.spellNames[i] = entry.spells[i];
-		else
-			entry.spells[i] = action;
-			entry.spellNames[i] = gsub(action, "!*(.*)", "%1");
+		if ( action and action ~="" ) then
+			count = count + 1;
+			if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
+				entry.items[count] = action;
+				entry.spells[count] = strlower(GetItemSpell(action) or "");
+				entry.spellNames[count] = entry.spells[count];
+			else
+				entry.spells[count] = action;
+				entry.spellNames[count] = gsub(action, "!*(.*)", "%1");
+			end
 		end
 	end
 end
@@ -1923,9 +1929,11 @@ end
 
 SlashCmdList["GUILD_ROSTER"] = function(msg)
 	if ( IsInGuild() ) then
-		PanelTemplates_SetTab(FriendsFrame, 3);
-		FriendsFrame_ShowSubFrame("GuildFrame");
-		ShowUIPanel(FriendsFrame);
+		GuildFrame_LoadUI();
+		if ( GuildFrame ) then
+			GuildFrameTab2:Click();
+			ShowUIPanel(GuildFrame);
+		end
 	end
 end
 
@@ -1993,7 +2001,9 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	RunScript(msg);
+	if ( IsGMClient() ) then
+		RunScript(msg);
+	end
 end
 
 SlashCmdList["LOOT_FFA"] = function(msg)
@@ -2258,12 +2268,26 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
-	DevTools_DumpCommand(msg);
+	if ( IsGMClient() ) then
+		UIParentLoadAddOn("Blizzard_DebugTools");
+		DevTools_DumpCommand(msg);
+	end
 end
 
 SlashCmdList["RELOAD"] = function(msg)
 	ConsoleExec("reloadui");
+end
+
+SlashCmdList["TRANSFORM"] = function(msg)
+	Transform();
+end
+
+SlashCmdList["RANDOMPET"] = function(msg)
+	local numCompanions = GetNumCompanions("CRITTER");
+	if ( numCompanions > 0  ) then
+		local index = random(1, numCompanions);
+		CallCompanion("CRITTER", index);
+	end
 end
 
 for index, value in pairs(ChatTypeInfo) do
@@ -2286,6 +2310,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("OLD_TITLE_LOST");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CHAT_SERVER_DISCONNECTED");
+	self:RegisterEvent("CHAT_SERVER_RECONNECTED");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2560,56 +2586,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
-		-- Level up
-		local info = ChatTypeInfo["SYSTEM"];
-
-		local string = format(LEVEL_UP, arg1);
-		self:AddMessage(string, info.r, info.g, info.b, info.id);
-
-		if ( arg3 > 0 ) then
-			string = format(LEVEL_UP_HEALTH_MANA, arg2, arg3);
-		else
-			string = format(LEVEL_UP_HEALTH, arg2);
-		end
-		self:AddMessage(string, info.r, info.g, info.b, info.id);
-
-		if ( arg4 > 0 ) then
-			string = format(LEVEL_UP_CHAR_POINTS, arg4);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-
-		if ( arg5 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT1_NAME, arg5);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg6 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT2_NAME, arg6);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg7 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT3_NAME, arg7);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg8 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT4_NAME, arg8);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
-		if ( arg9 > 0 ) then
-			string = format(LEVEL_UP_STAT, SPELL_STAT5_NAME, arg9);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
+		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
+		LevelUpDisplay_ChatPrint(self, level)
 		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
-		local arg1, arg2 = ...;
+		local arg1 = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		if ( arg2 > 0 ) then
-			local cp1, cp2 = UnitCharacterPoints("player");
-			if ( cp2 ) then
-				local string = format(LEVEL_UP_SKILL_POINTS, cp2);
-				self:AddMessage(string, info.r, info.g, info.b, info.id);
-			end
-		end
 		return true;
 	elseif ( event == "GUILD_MOTD" ) then
 		local arg1 = ...;
@@ -2643,6 +2625,15 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(format(OLD_TITLE_LOST, arg1), info.r, info.g, info.b, info.id);
 		return true;
+	elseif ( event == "CHAT_SERVER_DISCONNECTED" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		local isInitialMessage = ...;
+		self:AddMessage(CHAT_SERVER_DISCONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
+		return true;
+	elseif ( event == "CHAT_SERVER_RECONNECTED" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
+		return true;
 	end
 end
 
@@ -2671,26 +2662,30 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	return arg2;
 end
 
+function RemoveExtraSpaces(str)
+	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 = ...;
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13 = ...;
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 
 		local filter = false;
 		if ( chatFilters[event] ) then
-			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12;
+			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13;
 			for _, filterFunc in next, chatFilters[event] do
-				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
 				if ( filter ) then
 					return true;
 				elseif ( newarg1 ) then
-					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12;
+					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13;
 				end
 			end
 		end
 		
-		local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+		local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
 		
 		local channelLength = strlen(arg4);
 		local infoType = type;
@@ -2828,11 +2823,13 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
+				arg1 = RemoveExtraSpaces(arg1);
 				local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
 				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
 			if ( arg1 ~= "" ) then
+				arg1 = RemoveExtraSpaces(arg1);
 				self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_CONVERSATION" ) then
@@ -2890,6 +2887,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			end
 			
+			--Remove groups of many spaces
+			arg1 = RemoveExtraSpaces(arg1);
+			
 			local playerLink;
 
 			if ( type ~= "BN_WHISPER" and type ~= "BN_WHISPER_INFORM" and type ~= "BN_CONVERSATION" ) then
@@ -2907,7 +2907,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 			else
 				if ( not showLink or strlen(arg2) == 0 ) then
-					body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+					if ( type == "TEXT_EMOTE" ) then
+						body = arg1;
+					else
+						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+					end
 				else
 					if ( type == "EMOTE" ) then
 						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..playerLink..coloredName.."|h");
@@ -3290,6 +3294,10 @@ function ChatFrame_ChatPageDown()
 end
 
 function ChatFrame_DisplayUsageError(messageTag)
+	ChatFrame_DisplaySystemMessageInPrimary(messageTag);
+end
+
+function ChatFrame_DisplaySystemMessageInPrimary(messageTag)
 	local info = ChatTypeInfo["SYSTEM"];
 	DEFAULT_CHAT_FRAME:AddMessage(messageTag, info.r, info.g, info.b, info.id);
 end
@@ -3841,7 +3849,7 @@ end
 
 function ChatEdit_OnTabPressed(self)
 	if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
-		if ( securecall("ChatEdit_CustomTabPressed") ) then
+		if ( securecall("ChatEdit_CustomTabPressed", self) ) then
 			return;
 		end
 		ChatEdit_SecureTabPressed(self);

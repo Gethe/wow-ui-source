@@ -21,7 +21,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -33,7 +33,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -45,7 +45,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -57,7 +57,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -73,7 +73,7 @@
 			<Layer level="ARTWORK">
 				<Texture name="InspectTalentFrameBackgroundTopLeft">
 					<Size>
-						<AbsDimension x="256" y="256"/>
+						<AbsDimension x="272" y="256"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -85,7 +85,7 @@
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundTopRight">
 					<Size>
-						<AbsDimension x="64" y="256"/>
+						<AbsDimension x="68" y="256"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT">
@@ -97,7 +97,7 @@
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundBottomLeft">
 					<Size>
-						<AbsDimension x="256" y="128"/>
+						<AbsDimension x="272" y="128"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT">
@@ -109,7 +109,7 @@
 				</Texture>
 				<Texture name="InspectTalentFrameBackgroundBottomRight">
 					<Size>
-						<AbsDimension x="64" y="128"/>
+						<AbsDimension x="68" y="128"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT">
@@ -134,7 +134,6 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
-						TalentFrame_Update(InspectTalentFrame);
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
@@ -147,7 +146,6 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
-						TalentFrame_Update(InspectTalentFrame);
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
@@ -160,7 +158,6 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update();
-						TalentFrame_Update(InspectTalentFrame);
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
@@ -271,36 +268,6 @@
 						<Offset x="0" y="0"/>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="5"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="106"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<ScrollChild>
 					<Frame name="InspectTalentFrameScrollChildFrame">
 						<Size>
@@ -372,18 +339,6 @@
 							<Button name="InspectTalentFrameTalent26" inherits="TalentButtonTemplate" id="26"/>
 							<Button name="InspectTalentFrameTalent27" inherits="TalentButtonTemplate" id="27"/>
 							<Button name="InspectTalentFrameTalent28" inherits="TalentButtonTemplate" id="28"/>
-							<Button name="InspectTalentFrameTalent29" inherits="TalentButtonTemplate" id="29"/>
-							<Button name="InspectTalentFrameTalent30" inherits="TalentButtonTemplate" id="30"/>
-							<Button name="InspectTalentFrameTalent31" inherits="TalentButtonTemplate" id="31"/>
-							<Button name="InspectTalentFrameTalent32" inherits="TalentButtonTemplate" id="32"/>
-							<Button name="InspectTalentFrameTalent33" inherits="TalentButtonTemplate" id="33"/>
-							<Button name="InspectTalentFrameTalent34" inherits="TalentButtonTemplate" id="34"/>
-							<Button name="InspectTalentFrameTalent35" inherits="TalentButtonTemplate" id="35"/>
-							<Button name="InspectTalentFrameTalent36" inherits="TalentButtonTemplate" id="36"/>
-							<Button name="InspectTalentFrameTalent37" inherits="TalentButtonTemplate" id="37"/>
-							<Button name="InspectTalentFrameTalent38" inherits="TalentButtonTemplate" id="38"/>
-							<Button name="InspectTalentFrameTalent39" inherits="TalentButtonTemplate" id="39"/>
-							<Button name="InspectTalentFrameTalent40" inherits="TalentButtonTemplate" id="40"/>
 
 							<Frame name="InspectTalentFrameArrowFrame" setAllPoints="true">
 								<Layers>

@@ -155,7 +155,7 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 			if ( not chatFrame.minimized ) then
 				chatTab:Show();
 			end
-		else
+		elseif ( not chatFrame.isTemporary ) then
 			FCF_Close(chatFrame);
 		end
 	end
@@ -1936,13 +1936,13 @@ function FCFDock_SetPrimary(dock, chatFrame)
 	
 	chatFrame:SetScript("OnSizeChanged", function(self) FCFDock_OnPrimarySizeChanged(dock) end);
 	
+	FCFDock_AddChatFrame(dock, chatFrame, 1);
+	
 	if ( not FCFDock_GetSelectedWindow(dock) ) then
 		FCFDock_SelectWindow(dock, chatFrame);
 	end
 	
 	FCFDock_ForceReanchoring(dock);
-	
-	FCFDock_AddChatFrame(dock, chatFrame, 1);
 end
 
 function FCFDock_OnPrimarySizeChanged(dock)
@@ -1985,7 +1985,7 @@ function FCFDock_AddChatFrame(dock, chatFrame, position)
 	chatFrame.isDocked = 1;
 	
 	if ( position and position <= #dock.DOCKED_CHAT_FRAMES + 1 ) then
-		assert(position ~=1 or chatFrame == dock.primary);
+		assert(position ~= 1 or chatFrame == dock.primary);
 		tinsert(dock.DOCKED_CHAT_FRAMES, position, chatFrame);
 	else
 		tinsert(dock.DOCKED_CHAT_FRAMES, chatFrame);

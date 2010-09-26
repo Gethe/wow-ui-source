@@ -107,7 +107,7 @@
 			</Button>
 			<Frame name="$parentGlowFrame" setAllPoints="true">
 				<Layers>
-					<Layer level="OVERLAY`">
+					<Layer level="OVERLAY">
 						<Texture name="$parentGlow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" alpha="0" parentKey="glow">
 							<Size>
 								<AbsDimension x="252" y="56"/>

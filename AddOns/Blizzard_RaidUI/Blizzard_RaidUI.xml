@@ -1,13 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RaidUI.lua"/>
-	<Button name="RaidClassButtonTemplate" virtual="true">
+	<Button name="RaidClassButtonTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="18" y="18"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+				<Texture urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
 					<Size>
 						<AbsDimension x="40" y="40"/>
 					</Size>
@@ -55,7 +55,7 @@
 				RaidClassButton_OnLoad(self);
 			</OnLoad>
 			<OnDragStart>
-				RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.fileName, self.class));
+				--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.fileName, self.class));
 			</OnDragStart>
 			<OnDragStop>
 				--Do not pass self here. We want to stop the currently moving frame and not the class frame (which isn't actually moving)
@@ -252,14 +252,14 @@
 			<OnDragStart>
 				if ( IsRaidLeader() or IsRaidOfficer() ) then
 					if ( IsShiftKeyDown() ) then
-						self.keypressed = "1";
-						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
+						--self.keypressed = "1";
+						--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
 					else
 						RaidGroupButton_OnDragStart(self);
 						self.keypressed = nil;
 					end
 				else
-					RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
+					--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
 				end
 			</OnDragStart>
 			<OnDragStop>
@@ -346,20 +346,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self:GetParent():GetID()));
-					</OnDragStart>
-					<OnDragStop>
-						RaidPulloutStopMoving();
-					</OnDragStop>
-					<OnHide>
-						RaidPulloutStopMoving();
-					</OnHide>
-				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
 			</Button>
@@ -554,7 +540,7 @@
 						end
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
 				<Size x="68" y="6"/>
@@ -587,7 +573,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<StatusBar name="$parentTarget" drawLayer="ARTWORK" inherits="SecureFrameTemplate, TextStatusBar" enableMouse="false">
@@ -640,7 +626,7 @@
 						TargetUnit(self:GetParent().unit.."target");
 					</OnMouseUp> 
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="1.0" g="0" b="0"/>
 			</StatusBar>
 			<Frame name="$parentTargetTargetFrame" hidden="true">
@@ -747,7 +733,7 @@
 						TargetUnit(self:GetParent().unit.."targettarget");
 					</OnMouseUp> 
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<Button name="$parentClearButton" setAllPoints="true" inherits="SecureUnitButtonTemplate">
 				<Scripts>

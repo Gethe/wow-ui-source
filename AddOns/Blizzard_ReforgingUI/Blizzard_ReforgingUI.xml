@@ -1,0 +1,356 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ReforgingUI.lua"/>
+
+
+	<!--	size=512,256
+		<Texture name="Reforging-GreenBg.png" >
+			<Size x="143" y="31"/>
+			<TexCoords left="0.00195313" right="0.28125000" top="0.00390625" bottom="0.12500000"/>	
+		</Texture>
+		<Texture name="Reforging-RedBg.png" >
+			<Size x="143" y="31"/>
+			<TexCoords left="0.00195313" right="0.28125000" top="0.13281250" bottom="0.25390625"/>	
+		</Texture>
+		<Texture name="Reforging-Item-TitleBg.png" >
+			<Size x="320" y="50"/>
+			<TexCoords left="0.28515625" right="0.91015625" top="0.00390625" bottom="0.19921875"/>	
+		</Texture>
+		<Texture name="Reforging-CompleteBg.png" >
+			<Size x="330" y="53"/>
+			<TexCoords left="0.28515625" right="0.92968750" top="0.20703125" bottom="0.41406250"/>	
+		</Texture>
+		<Texture name="Reforge-Glow.png" >
+			<Size x="330" y="72"/>
+			<TexCoords left="0.28515625" right="0.92968750" top="0.42187500" bottom="0.70312500"/>	
+		</Texture>
+	-->
+
+	<Frame name="ReforgingStatTemplate" virtual="true">
+		<Size x="157" y="15"/> 
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="text" >
+					<Size x="140" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture  name="$parentBG" parentKey="Bg" >
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.03"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+
+
+	<Frame name="ReforgingFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture  name="$parentBottomBg" file="Interface\Reforging\ReforgingTextures">
+					<Size x="330" y="53"/>
+					<TexCoords left="0.28515625" right="0.92968750" top="0.20703125" bottom="0.41406250"/>
+					<Anchors>
+						<Anchor point="BOTTOM"  x="-1" y="28"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture  name="$parentBottomGreenBg" file="Interface\Reforging\ReforgingTextures">
+					<Size x="143" y="31"/>
+					<TexCoords left="0.00195313" right="0.28125000" top="0.00390625" bottom="0.12500000"/>
+					<Anchors>
+						<Anchor point="RIGHT"  relativeTo="$parentBottomBg" x="-20" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture  name="$parentBottomRedBg" file="Interface\Reforging\ReforgingTextures">
+					<Size x="143" y="31"/>
+					<TexCoords left="0.00195313" right="0.28125000" top="0.13281250" bottom="0.25390625"/>
+					<Anchors>
+						<Anchor point="LEFT"  relativeTo="$parentBottomBg" x="20" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMoneyBg" file="Interface\MoneyFrame\UI-MoneyFrame-Border">
+					<Size x="164" y="34"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"  x="5" y="-9"/>
+					</Anchors>
+				</Texture>
+				<Texture  name="$parentHorzBar">
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="6" y="-25"/>
+						<Anchor point="BOTTOMRIGHT"  relativeTo="$parentInset"  relativePoint="TOPRIGHT" x="-6" y="-26"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+				<FontString inherits="SystemFont_Shadow_Med3" justifyH="CENTER" parentKey="missingDescription" text="REFORGE_DESCRIPTION">
+					<Size x="250" y="80"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentBottomGreenText" inherits="SystemFont_Shadow_Med2" justifyH="CENTER">
+					<Size x="130" y="27"/>
+					<Anchors>
+						<Anchor point="CENTER"  relativeTo="$parentBottomGreenBg" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="1" b="0" a="1"/>
+				</FontString>
+				<FontString name="$parentBottomRedText" inherits="SystemFont_Shadow_Med2" justifyH="CENTER">
+					<Size x="130" y="27"/>
+					<Anchors>
+						<Anchor point="CENTER"  relativeTo="$parentBottomRedBg" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="0" b="0" a="1"/>
+				</FontString>
+				<FontString name="$parentTitleTextLeft" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE_CURRENT">
+					<Size x="130" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="15" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTitleTextRight" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE">
+					<Size x="130" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="175" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatHelpText" inherits="GameFontNormal" justifyH="CENTER" text="REFORGE_STAT_HELP">
+					<Size x="140" y="100"/>
+					<Anchors>
+						<Anchor point="CENTER"  relativeTo="$parentInset"  x="85" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentTopInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="topInset">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"  x="-6" y="-117" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture  name="$parentLableBg" file="Interface\Reforging\ReforgingTextures">
+								<Size x="320" y="50"/>
+								<TexCoords left="0.28515625" right="0.91015625" top="0.00390625" bottom="0.19921875"/>
+								<Anchors>
+									<Anchor point="CENTER" y="-1"/>
+								</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="ReforgingFrameItemButton">
+						<Size x="58" y="58"/>
+						<Anchors>
+							<Anchor point="LEFT"  x="5" y="-2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="$parentIconTexture"/>
+								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-5" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="name">
+									<Size x="250" y="12"/>
+									<Anchors>
+										<Anchor point="LEFT"  relativePoint="RIGHT" x="14" y="10"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentBoundStatus" inherits="GameFontNormal" justifyH="LEFT" parentKey="boundStatus">
+									<Size x="250" y="12"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" y="-5"/>
+									</Anchors>
+									<Color r="1" g="1" b="1" a="1"/>
+								</FontString>
+								<FontString name="$parentMissingText" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="missingText" text="REFORGE_MISSING_ITEM">
+									<Size x="250" y="12"/>
+									<Anchors>
+										<Anchor point="LEFT"  relativePoint="RIGHT" x="14" y="0"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentFrame" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+									<Size x="72" y="72"/>
+										<Anchors>
+											<Anchor point="CENTER" x="0" y="0" />
+										</Anchors>
+									<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForDrag("LeftButton");
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetReforgeItem();
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								ReforgingFrame_AddItemClick(self, button);
+							</OnClick>
+							<OnDragStart>
+								ReforgingFrame_AddItemClick(self, button);
+							</OnDragStart>
+							<OnReceiveDrag>
+								ReforgingFrame_AddItemClick(self, button);
+							</OnReceiveDrag>
+						</Scripts>
+					</Button>
+					<Button name="$parentInvisibleButton" parentKey="invisButton">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentFinishedGlow" setAllPoints="true" parentKey="glow">
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture  name="$parentFinishedGlow" file="Interface\Reforging\ReforgingTextures" alphaMode="ADD">
+											<Size x="330" y="72"/>
+											<TexCoords left="0.28515625" right="0.92968750" top="0.42187500" bottom="0.70312500"/>
+											<Anchors>
+												<Anchor point="CENTER" y="-1"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="reforgeAnim">
+										<Alpha change="1" duration="0.1" order="1" />
+										<Alpha startDelay="0.1" change="-1" duration="0.5" order="2" />
+										<Scripts>
+											<OnFinished>
+												ReforgingFrame_OnFinishedAnim(ReforgingFrame);
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.glow:SetAlpha(0);
+								self:RegisterForClicks("LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								ReforgingFrame_AddItemClick(self, button);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="bottomInset">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"  x="4" y="80" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentMoneyBg" x="8" y="6"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentReforgeButton" inherits="MagicButtonTemplate" text="REFORGE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" />
+				</Anchors>
+				<Scripts>
+					<OnClick function="ReforgingFrame_ReforgeClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentRestoreButton" inherits="MagicButtonTemplate" text="REFORGE_RESTORE">
+				<Anchors>
+					<Anchor point="RIGHT"  relativeTo="$parentReforgeButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ReforgingFrame_RestoreClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentFilterOldStat" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeTo="$parentTopInset" relativePoint="BOTTOMLEFT" x="-10" y="-15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="REFORGE_OLD_STAT_LABLE">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="24" y="10"/>
+								</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>	
+			<Frame name="$parentFilterNewStat" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT"  relativeTo="$parentTopInset" relativePoint="BOTTOMRIGHT" x="12" y="-15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="REFORGE_NEW_STAT_LABLE">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="24" y="10"/>
+								</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentLeftStat1" inherits="ReforgingStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="4" y="-30" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRightStat1" inherits="ReforgingStatTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"  relativeTo="$parentInset" x="-4" y="-30" />
+				</Anchors>
+			</Frame>
+		</Frames>	
+		<Scripts>
+			<OnLoad function="ReforgingFrame_OnLoad"/>
+			<OnShow function="ReforgingFrame_OnShow"/>
+			<OnHide function="ReforgingFrame_OnHide"/>
+			<OnEvent function="ReforgingFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,11 +1,21 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Button name="MoneyFrameButtonTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				MoneyFrame_OnEnter(self:GetParent());
+			</OnEnter>
+			<OnLeave>
+				MoneyFrame_OnLeave(self:GetParent());
+			</OnLeave>
+		</Scripts>
+	</Button>
 	<Frame name="MoneyFrameTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="192" y="28"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton">
+			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -18,12 +28,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(1, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="19" y="19"/>
 					</Size>
@@ -46,7 +54,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton">
+			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -59,12 +67,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_SILVER, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="19" y="19"/>
 					</Size>
@@ -87,7 +93,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton">
+			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -100,12 +106,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_GOLD, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="19" y="19"/>
 					</Size>
@@ -141,7 +145,7 @@
 			</OnShow>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
-					CoinPickupFrame:Hide();
+					MoneyInputFrame_ClosePopup();
 					self.hasPickup = 0;
 				end
 			</OnHide>
@@ -152,7 +156,7 @@
 			<AbsDimension x="128" y="13"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton">
+			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -165,12 +169,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(1, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
@@ -193,7 +195,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton">
+			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -206,12 +208,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_SILVER, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
@@ -234,7 +234,7 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton">
+			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -247,12 +247,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent();
-						OpenCoinPickupFrame(COPPER_PER_GOLD, MoneyTypeInfo[parent.moneyType].UpdateFunc(), parent);
-						parent.hasPickup = 1;
+						MoneyInputFrame_OpenPopup(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<NormalTexture urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>
@@ -288,7 +286,7 @@
 			</OnShow>
 			<OnHide>
 				if ( self.hasPickup == 1 ) then
-					CoinPickupFrame:Hide();
+					MoneyInputFrame_ClosePopup();
 					self.hasPickup = 0;
 				end
 			</OnHide>

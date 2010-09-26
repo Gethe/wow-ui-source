@@ -61,7 +61,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentDialogBG" file="Interface\Tooltips\UI-Tooltip-Background">
+				<Texture name="$parentDialogBG" urgency="5" file="Interface\Tooltips\UI-Tooltip-Background">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="8" y="-24"/>
@@ -168,7 +168,7 @@
 					<Frame name="$parentHighlight" setAllPoints="true" hidden="true">
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture file="Interface\Buttons\UI-ListBox-Highlight" setAllPoints="true">
+								<Texture urgency="5" file="Interface\Buttons\UI-ListBox-Highlight" setAllPoints="true">
 									<Color r="1" g="1" b="1" a="0.4"/>
 								</Texture>
 							</Layer>
@@ -215,7 +215,7 @@
 						self:SetValueStep(1);
 					</OnLoad>
 				</Scripts>
-				<ThumbTexture parentKey="thumb" file="Interface\Buttons\UI-ScrollBar-Knob">
+				<ThumbTexture parentKey="thumb" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob">
 					<Size x="16" y="16"/>
 					<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
 				</ThumbTexture>

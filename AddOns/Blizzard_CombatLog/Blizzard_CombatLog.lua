@@ -744,7 +744,9 @@ function Blizzard_CombatLog_RefilterUpdate()
 		-- Log to the window
 		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
 		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
-		COMBATLOG:AddMessage( text, r, g, b, nil, true );
+		if ( text ) then
+			COMBATLOG:AddMessage( text, r, g, b, nil, true );
+		end
 
 		-- count can be 
 		--  positive to advance from oldest to newest
@@ -2234,6 +2236,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	local environmentalType; -- Used for environmental damage
 	local message; -- Used for server spell messages
 	local originalEvent = event; -- Used for spell links
+	local remainingPoints;	--Used for absorbs with the correct flag set (like Power Word: Shield)
 
 	-- Generic disabling stuff
 	if ( not sourceName or CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) ) then
@@ -2263,7 +2266,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			resultEnabled = false;
 		end
 		
-		amount = amount - overkill;
+		if ( overkill > 0 ) then
+			amount = amount - overkill;
+		end
 
 	elseif ( event == "SWING_MISSED" ) then 
 		spellName = ACTION_SWING;
@@ -2302,7 +2307,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 				resultEnabled = false
 			end
 			
-			amount = amount - overkill;
+			if ( overkill > 0 ) then
+				amount = amount - overkill;
+			end
 		elseif ( event == "SPELL_MISSED" ) then 
 			-- Miss type
 			missType,  amountMissed = select(4, ...);
@@ -2395,7 +2402,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 					resultEnabled = false
 				end
 				
-				amount = amount - overkill;
+				if ( overkill > 0 ) then
+					amount = amount - overkill;
+				end
 			elseif ( event == "SPELL_PERIODIC_HEAL" ) then
 				-- Did the heal crit?
 				amount, overhealing, absorbed, critical = select(4, ...);
@@ -2652,7 +2661,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			resultEnabled = false;
 		elseif ( event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" or event == "SPELL_AURA_REFRESH") then		-- Aura Events
 			-- Aura standard
-			auraType = select(4, ...);
+			auraType, remainingPoints = select(4, ...);
 
 			-- Abort if buff/debuff is not set to true
 			if ( hideBuffs and auraType == AURA_TYPE_BUFF ) then
@@ -2665,6 +2674,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 
 			-- Event Type
 			event = format("%s_%s", event, auraType);
+			
+			if ( remainingPoints and settings.fullText ) then
+				event = event.."_WITH_POINTS"
+			end
 
 			resultEnabled = false;
 			valueEnabled = false;
@@ -2709,7 +2722,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			-- Disable appropriate sections
 			nameIsNotSpell = true;
 			
-			amount = amount - overkill;
+			if ( overkill > 0 ) then
+				amount = amount - overkill;
+			end
 		elseif ( event == "RANGE_MISSED" ) then 
 			spellName = ACTION_RANGED;
 
@@ -2745,7 +2760,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			resultEnabled = false
 		end
 		
-		amount = amount - overkill;
+		if ( overkill > 0 ) then
+			amount = amount - overkill;
+		end
 	elseif ( event == "DAMAGE_SHIELD_MISSED" ) then
 		-- Spell standard, Miss type
 		spellId, spellName, spellSchool, missType = ...;
@@ -2821,7 +2838,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			resultEnabled = false;
 		end
 		
-		amount = amount - overkill;
+		if ( overkill > 0 ) then
+			amount = amount - overkill;
+		end
 	elseif ( event == "DAMAGE_SPLIT" ) then
 		-- Spell Standard Arguments, Damage standard
 		spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...;
@@ -2833,7 +2852,9 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			resultEnabled = false
 		end
 		
-		amount = amount - overkill;
+		if ( overkill > 0 ) then
+			amount = amount - overkill;
+		end
 	end
 
 	-- Throw away all of the assembled strings and just grab a premade one
@@ -3226,6 +3247,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 	local destString = "";
 	local valueString = "";
 	local resultString = "";
+	local remainingPointsString = "";
 
 	if ( sourceEnabled and sourceName and falseSource ) then
 		sourceString = sourceName;
@@ -3294,7 +3316,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		destString = UNKNOWN;
 	end
 	
-	local finalString = format(formatString, sourceString, spellString, actionString, destString, valueString, resultString, schoolString, powerTypeString, amount, extraAmount);
+	if ( remainingPoints ) then
+		remainingPointsString = format(TEXT_MODE_A_STRING_REMAINING_POINTS, remainingPoints);
+	end
+	
+	local finalString = format(formatString, sourceString, spellString, actionString, destString, valueString, resultString, schoolString, powerTypeString, amount, extraAmount, remainingPointsString);
 	
 	finalString = gsub(finalString, " [ ]+", " " ); -- extra white spaces
 	finalString = gsub(finalString, " ([.,])", "%1" ); -- spaces before periods or comma
@@ -3327,7 +3353,10 @@ function CombatLog_AddEvent(...)
 		ChatFrame1:AddMessage(message, info.r, info.g, info.b);
 	end
 	-- Add the messages
-	COMBATLOG:AddMessage(CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, ... ));
+	local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, ... );
+	if ( text ) then
+		COMBATLOG:AddMessage(text, r, g, b, a);
+	end
 end
 
 --

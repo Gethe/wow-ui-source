@@ -5,16 +5,16 @@
 			<AbsDimension x="176" y="18"/>
 		</Size>
 		<Frames>
-			<EditBox parentKey="gold" name="$parentGold" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="gold" name="$parentGold" letters="6" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
-					<AbsDimension x="58" y="20"/>
+					<AbsDimension x="78" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -27,7 +27,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -40,7 +40,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="10" y="20"/>
 							</Size>
@@ -50,30 +50,35 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
+								<Anchor point="RIGHT">
 									<Offset>
-										<AbsDimension x="2" y="0"/>
+										<AbsDimension x="-4" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 						</Texture>
-						<FontString parentKey="label" font="GameFontHighlightLeft" text="GOLD_AMOUNT_SYMBOL" hidden="true">
+						<FontString parentKey="label" font="GameFontHighlightLeft" text="GOLD_AMOUNT_SYMBOL" hidden="true" justifyH="RIGHT">
 							<Size x="18" y="18"/>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset x="2" y="0"/>
+								<Anchor point="RIGHT">
+									<Offset x="-4" y="0"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						self.darkenOnDigits = 9;
+					</OnLoad>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() and self:GetParent().previousFocus ) then
 							self:GetParent().previousFocus:SetFocus();
@@ -101,18 +106,18 @@
 			</EditBox>
 			<EditBox parentKey="silver" name="$parentSilver" letters="2" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
-					<AbsDimension x="30" y="20"/>
+					<AbsDimension x="44" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentGold" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="26" y="0"/>
+							<AbsDimension x="10" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -125,7 +130,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -138,7 +143,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="10" y="20"/>
 							</Size>
@@ -148,24 +153,26 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
+								<Anchor point="RIGHT">
 									<Offset>
-										<AbsDimension x="-8" y="0"/>
+										<AbsDimension x="-14" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 						</Texture>
-						<FontString parentKey="label" font="GameFontHighlightLeft" text="SILVER_AMOUNT_SYMBOL" hidden="true">
+						<FontString parentKey="label" font="GameFontHighlightLeft" text="SILVER_AMOUNT_SYMBOL" hidden="true" justifyH="RIGHT">
 							<Size x="18" y="18"/>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset x="-8" y="0"/>
+								<Anchor point="RIGHT">
+									<Offset x="-14" y="0"/>
 								</Anchor>
 							</Anchors>
 						</FontString>						
@@ -199,18 +206,18 @@
 			</EditBox>
 			<EditBox parentKey="copper" name="$parentCopper" letters="2" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
-					<AbsDimension x="30" y="20"/>
+					<AbsDimension x="44" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSilver" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="16" y="0"/>
+							<AbsDimension x="0" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -223,7 +230,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -236,7 +243,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="10" y="20"/>
 							</Size>
@@ -246,24 +253,26 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
+								<Anchor point="RIGHT">
 									<Offset>
-										<AbsDimension x="-8" y="0"/>
+										<AbsDimension x="-14" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 							<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 						</Texture>
-						<FontString parentKey="label" font="GameFontHighlightLeft" text="COPPER_AMOUNT_SYMBOL" hidden="true">
+						<FontString parentKey="label" font="GameFontHighlightLeft" text="COPPER_AMOUNT_SYMBOL" hidden="true" justifyH="RIGHT">
 							<Size x="18" y="18"/>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset x="-8" y="0"/>
+								<Anchor point="RIGHT">
+									<Offset x="-14" y="0"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -309,5 +318,38 @@
 				MoneyInputFrame_OnShow(self);
 			</OnShow>
 		</Scripts>
+	</Frame>
+	<Frame name="FixedCoinFrameTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="32" y="13"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
+					<Size>
+						<AbsDimension x="13" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentAmount" parentKey="amount" inherits="NumberFontNormalRight">
+					<Size>
+						<AbsDimension x="0" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" x="-13" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLabel" parentKey="label" inherits="GameFontHighlightLeft">
+					<Size>
+						<AbsDimension x="0" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

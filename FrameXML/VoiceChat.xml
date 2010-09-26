@@ -167,13 +167,13 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="Minimap">
 				<Offset>
-					<AbsDimension x="-21" y="38"/>
+					<AbsDimension x="-25" y="38"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
+				<Texture name="$parentBackground" urgency="5" file="Interface\Minimap\UI-Minimap-Background">
 					<Size>
 						<AbsDimension x="19" y="19"/>
 					</Size>
@@ -187,7 +187,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+				<Texture name="$parentBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
 					<Size>
 						<AbsDimension x="52" y="52"/>
 					</Size>
@@ -197,7 +197,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="VoiceChatShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+				<Texture name="VoiceChatShine" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
 					<Size>
 						<AbsDimension x="32" y="32"/>
 					</Size>

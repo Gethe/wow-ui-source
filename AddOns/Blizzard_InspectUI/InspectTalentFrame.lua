@@ -33,7 +33,7 @@ function InspectTalentFrame_UpdateTabs()
 		if ( tab ) then
 			talentSpecInfoCache[i] = talentSpecInfoCache[i] or { };
 			if ( i <= numTabs ) then
-				local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+				local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 				if ( i == selectedTab ) then
 					-- If tab is the selected tab set the points spent info
 					local displayPointsSpent = pointsSpent + previewPointsSpent;
@@ -53,6 +53,10 @@ function InspectTalentFrame_UpdateTabs()
 end
 
 function InspectTalentFrame_Update()
+
+	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
+	InspectTalentFrame.unit = InspectFrame.unit;
+
 	-- update spec info first
 	TalentFrame_UpdateSpecInfoCache(talentSpecInfoCache, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 
@@ -71,20 +75,26 @@ function InspectTalentFrame_Update()
 
 	-- update parent tabs
 	PanelTemplates_UpdateTabs(InspectFrame);
-end
-
-function InspectTalentFrame_Refresh()
-	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
-	InspectTalentFrame.unit = InspectFrame.unit;
+	
+	-- Update talents
 	TalentFrame_Update(InspectTalentFrame);
+	
+	-- Update unspent talent point text
+	local unspentTalentPoints = TalentFrame_GetUnspentTalentPoints(InspectTalentFrame);
+	InspectTalentFrameTalentPointsText:SetFormattedText(UNSPENT_TALENT_POINTS, HIGHLIGHT_FONT_COLOR_CODE..unspentTalentPoints..FONT_COLOR_CODE_CLOSE);
 end
 
 function InspectTalentFrame_OnLoad(self)
-	self.updateFunction = InspectTalentFrame_Update;
 	self.inspect = true;
 	self.pet = false;
-	self.talentGroup = 1;
-
+	self.talentButtonSize = 30;
+	self.initialOffsetX = 62;
+	self.initialOffsetY = 12;
+	self.buttonSpacingX = 56;
+	self.buttonSpacingY = 46;
+	self.arrowInsetX = 2;
+	self.arrowInsetY = 2;
+	
 	TalentFrame_Load(self);
 
 	local button;
@@ -96,25 +106,26 @@ function InspectTalentFrame_OnLoad(self)
 			button:SetScript("OnEnter", InspectTalentFrameTalent_OnEnter);
 		end
 	end
-
+	
+	InspectTalentFrameScrollFrame.scrollBarHideable = 1;
 	-- setup tabs
 	PanelTemplates_SetNumTabs(self, MAX_TALENT_TABS);
 	PanelTemplates_UpdateTabs(self);
 end
 
 function InspectTalentFrame_OnShow()
-	InspectTalentFrame:RegisterEvent("INSPECT_TALENT_READY");
-	InspectTalentFrame_Refresh();
+	InspectTalentFrame:RegisterEvent("INSPECT_READY");
+	InspectTalentFrame_Update();
 end
 
 function InspectTalentFrame_OnHide()
-	InspectTalentFrame:UnregisterEvent("INSPECT_TALENT_READY");
+	InspectTalentFrame:UnregisterEvent("INSPECT_READY");
 	wipe(talentSpecInfoCache);
 end
 
 function InspectTalentFrame_OnEvent(self, event, ...)
-	if ( event == "INSPECT_TALENT_READY" ) then
-		InspectTalentFrame_Refresh();
+	if ( event == "INSPECT_READY" ) then
+		InspectTalentFrame_Update();
 	end
 end
 

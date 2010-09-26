@@ -1,5 +1,9 @@
 --[[-----------------------------------------------------------------------------------------------
-
+	For a hybrid scroll frame with buttons of varying size, set .dynamic on the scroll frame
+	to be a function which will take the offset and return:
+		1. how many buttons the offset is completely past
+		2. how many pixels the offset is into the topmost button
+	So with buttons of size 20, .dynamic(0) should return 0,0 and .dynamic(34) should return 1,14
 -----------------------------------------------------------------------------------------------]]--
 
 local round = function (num) return math.floor(num + .5); end
@@ -137,7 +141,15 @@ function HybridScrollFrame_SetOffset (self, offset)
 	local scrollHeight = 0;
 	
 	local largeButtonTop = self.largeButtonTop
-	if ( largeButtonTop and offset >= largeButtonTop ) then
+	if ( self.dynamic ) then
+		if ( offset < buttonHeight ) then
+			-- a little optimization
+			element = 0;
+			scrollHeight = offset;
+		else
+			element, scrollHeight = self.dynamic(offset);
+		end
+	elseif ( largeButtonTop and offset >= largeButtonTop ) then
 		local largeButtonHeight = self.largeButtonHeight;
 		-- Initial offset...
 		element = largeButtonTop / buttonHeight;

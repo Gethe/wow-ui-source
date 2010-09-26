@@ -1,4 +1,4 @@
-## Interface: 30300
+## Interface: 40000
 ## Title: Blizzard Trade Skill UI
 ## Secure: 1
 ## LoadOnDemand: 1

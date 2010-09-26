@@ -13,43 +13,47 @@ SHINES_TO_ANIMATE = {};
 
 -- Per panel settings
 UIPanelWindows = {};
-UIPanelWindows["GameMenuFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["VideoOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["AudioOptionsFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["InterfaceOptionsFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["CharacterFrame"] =		{ area = "left",	pushable = 3 ,	whileDead = 1 };
-UIPanelWindows["ItemTextFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["SpellBookFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["LootFrame"] =			{ area = "left",	pushable = 7 };
-UIPanelWindows["TaxiFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["QuestFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["QuestLogFrame"] =		{ area = "doublewide",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["QuestLogDetailFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
-UIPanelWindows["MerchantFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["TradeFrame"] =			{ area = "left",	pushable = 1 };
-UIPanelWindows["BankFrame"] =			{ area = "left",	pushable = 6,	width = 425 };
-UIPanelWindows["FriendsFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["WorldMapFrame"] =		{ area = "full",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["CinematicFrame"] =		{ area = "full",	pushable = 0 };
-UIPanelWindows["TabardFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["PVPBannerFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["GuildRegistrarFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["ArenaRegistrarFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["PetitionFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["HelpFrame"] =			{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["GossipFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["MailFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["BattlefieldFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["PetStableFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["WorldStateScoreFrame"] =	{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["DressUpFrame"] =		{ area = "left",	pushable = 2 };
-UIPanelWindows["MinigameFrame"] =		{ area = "left",	pushable = 0 };
-UIPanelWindows["LFGParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["LFDParentFrame"] =		{ area = "left",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["LFRParentFrame"] =		{ area = "left",	pushable = 1,	whileDead = 1 };
-UIPanelWindows["ArenaFrame"] =			{ area = "left",	pushable = 0 };
-UIPanelWindows["ChatConfigFrame"] =		{ area = "center",	pushable = 0,	whileDead = 1 };
-UIPanelWindows["PVPParentFrame"] =			{ area = "left",	pushable = 0,	whileDead = 1 };
+
+--Center Menu Frames
+UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["VideoOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["AudioOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["HelpFrame"] =						{ area = "center",		pushable = 0,	whileDead = 1 };
+
+-- Frames using the new Templates
+UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
+UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1, width = 575, height = 545 };
+UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, width = 605, height = 580 };
+UIPanelWindows["PVPFrame"] =					{ area = "left",			pushable = 1,	whileDead = 1};
+UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
+UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0 };
+
+-- Frames NOT using the new Templates
+UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 7, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["QuestLogFrame"] =				{ area = "doublewide",	pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["QuestLogDetailFrame"] =			{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6, 		xoffset = -16, 		yoffset = 12,	width = 425 };
+UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["WorldMapFrame"] =				{ area = "full",				pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["CinematicFrame"] =				{ area = "full",				pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["MinigameFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["LFGParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["LFRParentFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["ChatConfigFrame"] =				{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -71,11 +75,9 @@ end
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
 	"OpenMailFrame",
-	"GuildControlPopupFrame",
+	"GuildControlUI",
 	"GuildMemberDetailFrame",
 	"TokenFramePopup",
-	"GuildInfoFrame",
-	"PVPTeamDetails",
 	"GuildBankPopupFrame",
 	"GearManagerDialog",
 };
@@ -146,7 +148,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("BIND_ENCHANT");
 	self:RegisterEvent("REPLACE_ENCHANT");
 	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
-	self:RegisterEvent("END_REFUND");
 	self:RegisterEvent("END_BOUND_TRADEABLE");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("MACRO_ACTION_BLOCKED");
@@ -213,9 +214,6 @@ function UIParent_OnLoad(self)
 	-- Events for Achievements!
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 
-	-- Events for Glyphs!
-	self:RegisterEvent("USE_GLYPH");
-
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 	
@@ -224,6 +222,14 @@ function UIParent_OnLoad(self)
 	
 	-- Events for talent wipes
 	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
+	
+	
+	-- Events for reforging
+	self:RegisterEvent("FORGE_MASTER_OPENED");
+	self:RegisterEvent("FORGE_MASTER_CLOSED");
+	
+	-- Events for Archaeology
+	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
 end
 
 
@@ -321,6 +327,14 @@ function Calendar_LoadUI()
 	UIParentLoadAddOn("Blizzard_Calendar");
 end
 
+function Reforging_LoadUI()
+	UIParentLoadAddOn("Blizzard_ReforgingUI");
+end
+
+function ArchaeologyFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ArchaeologyUI");
+end
+
 function GMChatFrame_LoadUI(...)
 	if ( IsAddOnLoaded("Blizzard_GMChatUI") ) then
 		return;
@@ -334,6 +348,10 @@ end
 
 function Arena_LoadUI()
 	UIParentLoadAddOn("Blizzard_ArenaUI");
+end
+
+function GuildFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_GuildUI");
 end
 
 function ShowMacroFrame()
@@ -357,7 +375,7 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame()
-	if ( UnitLevel("player") < SHOW_TALENT_LEVEL ) then
+	if ( GetNumTalentPoints() == 0) then
 		return;
 	end
 
@@ -410,6 +428,15 @@ function ToggleCalendar()
 	end
 end
 
+function ToggleGuildFrame()
+	if ( IsInGuild() ) then
+		GuildFrame_LoadUI();
+		if ( GuildFrame_Toggle ) then
+			GuildFrame_Toggle();
+		end
+	end
+end
+
 function ToggleLFDParentFrame()
 	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
 		if ( LFDParentFrame:IsShown() ) then
@@ -450,7 +477,6 @@ end
 
 
 -- UIParent_OnEvent --
-
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "VARIABLES_LOADED" ) then
@@ -475,40 +501,28 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t "..
 			"|HplayerGM:"..lastTalkedToGM.."|h".."["..lastTalkedToGM.."]".."|h"), info.r, info.g, info.b, info.id);
 		end
-		return;
-	end
-	if ( event == "PLAYER_LOGIN" ) then
+	elseif ( event == "PLAYER_LOGIN" ) then
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
-		return;
-	end
-	if ( event == "PLAYER_DEAD" ) then
+	elseif ( event == "PLAYER_DEAD" ) then
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
 			if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 				StaticPopup_Show("DEATH");
 			end
 		end
-		return;
-	end	
-	if ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
+	elseif ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
-		return;
-	end
-	if ( event == "PLAYER_UNGHOST" ) then
+	elseif ( event == "PLAYER_UNGHOST" ) then
 		StaticPopup_Hide("RESURRECT");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("SKINNED");
 		StaticPopup_Hide("SKINNED_REPOP");
-		return;
-	end
-	if ( event == "RESURRECT_REQUEST" ) then
+	elseif ( event == "RESURRECT_REQUEST" ) then
 		ShowResurrectRequest(arg1);
-		return;
-	end
-	if ( event == "PLAYER_SKINNED" ) then
+	elseif ( event == "PLAYER_SKINNED" ) then
 		StaticPopup_Hide("RESURRECT");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
@@ -521,110 +535,72 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		]]
 		UIErrorsFrame:AddMessage(DEATH_CORPSE_SKINNED, 1.0, 0.1, 0.1, 1.0);
-		return;		
-	end
-	if ( event == "TRADE_REQUEST" ) then
+	elseif ( event == "TRADE_REQUEST" ) then
 		StaticPopup_Show("TRADE", arg1);
-		return;
-	end
-	if ( event == "CHANNEL_INVITE_REQUEST" ) then
+	elseif ( event == "CHANNEL_INVITE_REQUEST" ) then
 		local dialog = StaticPopup_Show("CHAT_CHANNEL_INVITE", arg1, arg2);
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-		return;
-	end
-	if ( event == "CHANNEL_PASSWORD_REQUEST" ) then
+	elseif ( event == "CHANNEL_PASSWORD_REQUEST" ) then
 		local dialog = StaticPopup_Show("CHAT_CHANNEL_PASSWORD", arg1);
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-		return;
-	end
-	if ( event == "PARTY_INVITE_REQUEST" ) then
+	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		StaticPopup_Show("PARTY_INVITE", arg1);
-		return;
-	end
-	if ( event == "PARTY_INVITE_CANCEL" ) then
+	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
-		return;
-	end
-	if ( event == "GUILD_INVITE_REQUEST" ) then
+	elseif ( event == "GUILD_INVITE_REQUEST" ) then
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
-		return;
-	end
-	if ( event == "GUILD_INVITE_CANCEL" ) then
+	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		StaticPopup_Hide("GUILD_INVITE");
-		return;
-	end
-	if ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
+	elseif ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
 		StaticPopup_Show("ARENA_TEAM_INVITE", arg1, arg2);
-		return;
-	end
-	if ( event == "ARENA_TEAM_INVITE_CANCEL" ) then
+	elseif ( event == "ARENA_TEAM_INVITE_CANCEL" ) then
 		StaticPopup_Hide("ARENA_TEAM_INVITE");
-		return;
-	end
-	if ( event == "PLAYER_CAMPING" ) then
+	elseif ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
-		return;
-	end
-	if ( event == "PLAYER_QUITING" ) then
+	elseif ( event == "PLAYER_QUITING" ) then
 		StaticPopup_Show("QUIT");
-		return;
-	end
-	if ( event == "LOGOUT_CANCEL" ) then
+	elseif ( event == "LOGOUT_CANCEL" ) then
 		StaticPopup_Hide("CAMP");
 		StaticPopup_Hide("QUIT");
-		return;
-	end
-	if ( event == "LOOT_BIND_CONFIRM" ) then
+	elseif ( event == "LOOT_BIND_CONFIRM" ) then
 		local texture, item, quantity, quality, locked = GetLootSlotInfo(arg1);
 		local dialog = StaticPopup_Show("LOOT_BIND", ITEM_QUALITY_COLORS[quality].hex..item.."|r");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-		return;
-	end
-	if ( event == "EQUIP_BIND_CONFIRM" ) then
+	elseif ( event == "EQUIP_BIND_CONFIRM" ) then
 		StaticPopup_Hide("AUTOEQUIP_BIND");
 		local dialog = StaticPopup_Show("EQUIP_BIND");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-		return;
-	end
-	if ( event == "AUTOEQUIP_BIND_CONFIRM" ) then
+	elseif ( event == "AUTOEQUIP_BIND_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND");
 		local dialog = StaticPopup_Show("AUTOEQUIP_BIND");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-		return;
-	end
-	if ( event == "USE_BIND_CONFIRM" ) then
+	elseif ( event == "USE_BIND_CONFIRM" ) then
 		StaticPopup_Show("USE_BIND");
-		return;
-	end
-	if ( event == "DELETE_ITEM_CONFIRM" ) then
+	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
 		-- Check quality
 		if ( arg2 >= 3 ) then
 			StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
 		else
 			StaticPopup_Show("DELETE_ITEM", arg1);
 		end
-		return;
-	end
-	if ( event == "QUEST_ACCEPT_CONFIRM" ) then
+	elseif ( event == "QUEST_ACCEPT_CONFIRM" ) then
 		local numEntries, numQuests = GetNumQuestLogEntries();
 		if( numQuests >= MAX_QUESTS) then
 			StaticPopup_Show("QUEST_ACCEPT_LOG_FULL", arg1, arg2);
 		else
 			StaticPopup_Show("QUEST_ACCEPT", arg1, arg2);
 		end
-		return;
-	end
-	if ( event =="QUEST_LOG_UPDATE" or event == "UNIT_QUEST_LOG_CHANGED" ) then
+	elseif ( event =="QUEST_LOG_UPDATE" or event == "UNIT_QUEST_LOG_CHANGED" ) then
 		local frameName = StaticPopup_Visible("QUEST_ACCEPT_LOG_FULL");
 		if( frameName ) then
 			local numEntries, numQuests = GetNumQuestLogEntries();
@@ -635,16 +611,12 @@ function UIParent_OnEvent(self, event, ...)
 				button:Disable();
 			end
 		end 
-	end
-
-	if ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_UPDATE" ) then
 		if ( not CursorHasItem() ) then
 			StaticPopup_Hide("EQUIP_BIND");
 			StaticPopup_Hide("AUTOEQUIP_BIND");
 		end
-		return;
-	end
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Get multi-actionbar states (before CloseAllWindows() since that may be hooked by AddOns)
 		-- We don't want to call this, as the values GetActionBarToggles() returns are incorrect if it's called before the client mirrors SetActionBarToggles values from the server.
 		-- SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
@@ -660,6 +632,8 @@ function UIParent_OnEvent(self, event, ...)
 
 		VoiceChat_Toggle();
 
+		UpdateMicroButtons();
+
 		-- Fix for Bug 124392
 		StaticPopup_Hide("LEVEL_GRANT_PROPOSED");
 		
@@ -667,38 +641,23 @@ function UIParent_OnEvent(self, event, ...)
 		if ( instanceType == "arena" ) then
 			Arena_LoadUI();
 		end
-		return;
-	end
-	if ( event == "RAID_ROSTER_UPDATE" ) then
+	elseif ( event == "RAID_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
-	end
-	if ( event == "MIRROR_TIMER_START" ) then
+	elseif ( event == "MIRROR_TIMER_START" ) then
 		MirrorTimer_Show(arg1, arg2, arg3, arg4, arg5, arg6);
-		return;
-	end
-	if ( event == "DUEL_REQUESTED" ) then
+	elseif ( event == "DUEL_REQUESTED" ) then
 		StaticPopup_Show("DUEL_REQUESTED", arg1);
-		return;
-	end
-	if ( event == "DUEL_OUTOFBOUNDS" ) then
+	elseif ( event == "DUEL_OUTOFBOUNDS" ) then
 		StaticPopup_Show("DUEL_OUTOFBOUNDS");
-		return;
-	end
-	if ( event == "DUEL_INBOUNDS" ) then
+	elseif ( event == "DUEL_INBOUNDS" ) then
 		StaticPopup_Hide("DUEL_OUTOFBOUNDS");
-		return;
-	end
-	if ( event == "DUEL_FINISHED" ) then
+	elseif ( event == "DUEL_FINISHED" ) then
 		StaticPopup_Hide("DUEL_REQUESTED");
 		StaticPopup_Hide("DUEL_OUTOFBOUNDS");
-		return;
-	end
-	if ( event == "TRADE_REQUEST_CANCEL" ) then
+	elseif ( event == "TRADE_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("TRADE");
-		return;
-	end
-	if ( event == "CONFIRM_XP_LOSS" ) then
+	elseif ( event == "CONFIRM_XP_LOSS" ) then
 		local resSicknessTime = GetResSicknessDuration();
 		if ( resSicknessTime ) then
 			local dialog = nil;
@@ -722,82 +681,46 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 		HideUIPanel(GossipFrame);
-		return;
-	end
-	if ( event == "CORPSE_IN_RANGE" ) then
+	elseif ( event == "CORPSE_IN_RANGE" ) then
 		StaticPopup_Show("RECOVER_CORPSE");
-		return;
-	end
-	if ( event == "CORPSE_IN_INSTANCE" ) then
+	elseif ( event == "CORPSE_IN_INSTANCE" ) then
 		StaticPopup_Show("RECOVER_CORPSE_INSTANCE");
-		return;
-	end
-	if ( event == "CORPSE_OUT_OF_RANGE" ) then
+	elseif ( event == "CORPSE_OUT_OF_RANGE" ) then
 		StaticPopup_Hide("RECOVER_CORPSE");
 		StaticPopup_Hide("RECOVER_CORPSE_INSTANCE");
 		StaticPopup_Hide("XP_LOSS");
-		return;
-	end
-	if ( event == "AREA_SPIRIT_HEALER_IN_RANGE" ) then
+	elseif ( event == "AREA_SPIRIT_HEALER_IN_RANGE" ) then
 		AcceptAreaSpiritHeal();
 		StaticPopup_Show("AREA_SPIRIT_HEAL");
-		return;
-	end
-	if ( event == "AREA_SPIRIT_HEALER_OUT_OF_RANGE" ) then
+	elseif ( event == "AREA_SPIRIT_HEALER_OUT_OF_RANGE" ) then
 		StaticPopup_Hide("AREA_SPIRIT_HEAL");
-		return;
-	end
-	if ( event == "BIND_ENCHANT" ) then
+	elseif ( event == "BIND_ENCHANT" ) then
 		StaticPopup_Show("BIND_ENCHANT");
-		return;
-	end
-	if ( event == "REPLACE_ENCHANT" ) then
+	elseif ( event == "REPLACE_ENCHANT" ) then
 		StaticPopup_Show("REPLACE_ENCHANT", arg1, arg2);
-		return;
-	end
-	if ( event == "TRADE_REPLACE_ENCHANT" ) then
+	elseif ( event == "TRADE_REPLACE_ENCHANT" ) then
 		StaticPopup_Show("TRADE_REPLACE_ENCHANT", arg1, arg2);
-		return;
-	end
-	if ( event == "END_REFUND" ) then
-		local dialog = StaticPopup_Show("END_REFUND");
-		if(dialog) then
-			dialog.data = arg1;
-		end
-		return;
-	end
-	if ( event == "END_BOUND_TRADEABLE" ) then
+	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
-		return;
-	end
-	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
+	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		StaticPopup_Hide("BIND_ENCHANT");
 		StaticPopup_Hide("REPLACE_ENCHANT");
 		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
-		StaticPopup_Hide("END_REFUND");
 		StaticPopup_Hide("END_BOUND_TRADEABLE");
-		return;
-	end
-	if ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
+	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
 		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 			INTERFACE_ACTION_BLOCKED_SHOWN = true;
 		end
-		return;
-	end
-	if ( event == "MACRO_ACTION_FORBIDDEN" ) then
+	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
-		return;
-	end
-	if ( event == "ADDON_ACTION_FORBIDDEN" ) then
+	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
 		local dialog = StaticPopup_Show("ADDON_ACTION_FORBIDDEN", arg1);
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-		return;
-	end
-	if ( event == "PLAYER_CONTROL_LOST" ) then
+	elseif ( event == "PLAYER_CONTROL_LOST" ) then
 		if ( UnitOnTaxi("player") ) then
 			return;
 		end
@@ -817,9 +740,7 @@ function UIParent_OnEvent(self, event, ...)
 		]]
 
 		UIParent.isOutOfControl = 1;
-		return;
-	end
-	if ( event == "PLAYER_CONTROL_GAINED" ) then
+	elseif ( event == "PLAYER_CONTROL_GAINED" ) then
 		--[[
 		-- Enable all microbuttons
 		SetDesaturation(MicroButtonPortrait, nil);
@@ -833,13 +754,9 @@ function UIParent_OnEvent(self, event, ...)
 		]]
 
 		UIParent.isOutOfControl = nil;
-		return;
-	end
-	if ( event == "START_LOOT_ROLL" ) then
+	elseif ( event == "START_LOOT_ROLL" ) then
 		GroupLootFrame_OpenNewFrame(arg1, arg2);
-		return;
-	end
-	if ( event == "CONFIRM_LOOT_ROLL" ) then
+	elseif ( event == "CONFIRM_LOOT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
 		if ( dialog ) then
@@ -848,9 +765,7 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 			dialog.data2 = arg2;
 		end
-		return;
-	end
-	if ( event == "CONFIRM_DISENCHANT_ROLL" ) then
+	elseif ( event == "CONFIRM_DISENCHANT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
 		if ( dialog ) then
@@ -859,25 +774,15 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 			dialog.data2 = arg2;
 		end
-		return;
-	end
-	if ( event == "INSTANCE_BOOT_START" ) then
+	elseif ( event == "INSTANCE_BOOT_START" ) then
 		StaticPopup_Show("INSTANCE_BOOT");
-		return;
-	end
-	if ( event == "INSTANCE_BOOT_STOP" ) then
+	elseif ( event == "INSTANCE_BOOT_STOP" ) then
 		StaticPopup_Hide("INSTANCE_BOOT");
-		return;
-	end
-	if ( event == "INSTANCE_LOCK_START" ) then
+	elseif ( event == "INSTANCE_LOCK_START" ) then
 		StaticPopup_Show("INSTANCE_LOCK");
-		return;
-	end
-	if ( event == "INSTANCE_LOCK_STOP" ) then
+	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
-		return;
-	end
-	if ( event == "CONFIRM_TALENT_WIPE" ) then
+	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
 			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
@@ -885,32 +790,20 @@ function UIParent_OnEvent(self, event, ...)
 			-- exactly which talent spec he is wiping
 			TalentFrame_LoadUI();
 			if ( PlayerTalentFrame_Open ) then
-				PlayerTalentFrame_Open(false, GetActiveTalentGroup());
+				PlayerTalentFrame_Open(GetActiveTalentGroup());
 			end
 		end
-		return;
-	end
-	if ( event == "CONFIRM_BINDER" ) then
+	elseif ( event == "CONFIRM_BINDER" ) then
 		StaticPopup_Show("CONFIRM_BINDER", arg1);
-		return;
-	end
-	if ( event == "CONFIRM_SUMMON" ) then
+	elseif ( event == "CONFIRM_SUMMON" ) then
 		StaticPopup_Show("CONFIRM_SUMMON");
-		return;
-	end
-	if ( event == "CANCEL_SUMMON" ) then
+	elseif ( event == "CANCEL_SUMMON" ) then
 		StaticPopup_Hide("CONFIRM_SUMMON");
-		return;
-	end
-	if ( event == "BILLING_NAG_DIALOG" ) then
+	elseif ( event == "BILLING_NAG_DIALOG" ) then
 		StaticPopup_Show("BILLING_NAG", arg1);
-		return;
-	end
-	if ( event == "IGR_BILLING_NAG_DIALOG" ) then
+	elseif ( event == "IGR_BILLING_NAG_DIALOG" ) then
 		StaticPopup_Show("IGR_BILLING_NAG");
-		return;
-	end
-	if ( event == "GOSSIP_CONFIRM" ) then
+	elseif ( event == "GOSSIP_CONFIRM" ) then
 		if ( arg3 > 0 ) then
 			StaticPopupDialogs["GOSSIP_CONFIRM"].hasMoneyFrame = 1;
 		else
@@ -923,94 +816,69 @@ function UIParent_OnEvent(self, event, ...)
 				MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg3);
 			end
 		end
-		return;
-	end
-	if ( event == "GOSSIP_ENTER_CODE" ) then
+	elseif ( event == "GOSSIP_ENTER_CODE" ) then
 		local dialog = StaticPopup_Show("GOSSIP_ENTER_CODE");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-		return;
-	end
-	if ( event == "GOSSIP_CONFIRM_CANCEL" or event == "GOSSIP_CLOSED" ) then
+	elseif ( event == "GOSSIP_CONFIRM_CANCEL" or event == "GOSSIP_CLOSED" ) then
 		StaticPopup_Hide("GOSSIP_CONFIRM");
 		StaticPopup_Hide("GOSSIP_ENTER_CODE");
-		return;
-	end
-
-	-- Events for auction UI handling
-	if ( event == "AUCTION_HOUSE_SHOW" ) then
+		
+	--Events for handling Auction UI
+	elseif ( event == "AUCTION_HOUSE_SHOW" ) then
 		AuctionFrame_LoadUI();
 		if ( AuctionFrame_Show ) then
 			AuctionFrame_Show();
 		end
-		return;
-	end
-	if ( event == "AUCTION_HOUSE_CLOSED" ) then
+	elseif ( event == "AUCTION_HOUSE_CLOSED" ) then
 		if ( AuctionFrame_Hide ) then
 			AuctionFrame_Hide();
 		end
-		return;
-	end
-	if ( event == "AUCTION_HOUSE_DISABLED" ) then
+	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
-	end
 
 	-- Events for trainer UI handling
-	if ( event == "TRAINER_SHOW" ) then
+	elseif ( event == "TRAINER_SHOW" ) then
 		ClassTrainerFrame_LoadUI();
 		if ( ClassTrainerFrame_Show ) then
 			ClassTrainerFrame_Show();
 		end
-		return;
-	end
-	if ( event == "TRAINER_CLOSED" ) then
+	elseif ( event == "TRAINER_CLOSED" ) then
 		if ( ClassTrainerFrame_Hide ) then
 			ClassTrainerFrame_Hide();
 		end
-		return;
-	end
 
 	-- Events for trade skill UI handling
-	if ( event == "TRADE_SKILL_SHOW" ) then
+	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		TradeSkillFrame_LoadUI();
 		if ( TradeSkillFrame_Show ) then
 			TradeSkillFrame_Show();						
 		end
-		return;
-	end
-	if ( event == "TRADE_SKILL_CLOSE" ) then
+	elseif ( event == "TRADE_SKILL_CLOSE" ) then
 		if ( TradeSkillFrame_Hide ) then
 			TradeSkillFrame_Hide();
 		end
-		return;
-	end
 
 	-- Event for item socketing handling
-	if ( event == "SOCKET_INFO_UPDATE" ) then
+	elseif ( event == "SOCKET_INFO_UPDATE" ) then
 		ItemSocketingFrame_LoadUI();
 		ItemSocketingFrame_Update();
 		ShowUIPanel(ItemSocketingFrame);
-		return;
-	end
 
 	-- Event for BarberShop handling
-	if ( event == "BARBER_SHOP_OPEN" ) then
+	elseif ( event == "BARBER_SHOP_OPEN" ) then
 		BarberShopFrame_LoadUI();
 		if ( BarberShopFrame ) then
 			ShowUIPanel(BarberShopFrame);
 		end
-		return;
-	end
-	if ( event == "BARBER_SHOP_CLOSE" ) then
+	elseif ( event == "BARBER_SHOP_CLOSE" ) then
 		if ( BarberShopFrame and BarberShopFrame:IsVisible() ) then
 			BarberShopFrame:Hide();
 		end
-		return;
-	end
 	
 	-- Event for guildbank handling
-	if ( event == "GUILDBANKFRAME_OPENED" ) then
+	elseif ( event == "GUILDBANKFRAME_OPENED" ) then
 		GuildBankFrame_LoadUI();
 		if ( GuildBankFrame ) then
 			ShowUIPanel(GuildBankFrame);
@@ -1018,17 +886,13 @@ function UIParent_OnEvent(self, event, ...)
 				CloseGuildBankFrame();
 			end
 		end
-		return;
-	end
-	if ( event == "GUILDBANKFRAME_CLOSED" ) then
+	elseif ( event == "GUILDBANKFRAME_CLOSED" ) then
 		if ( GuildBankFrame ) then
 			HideUIPanel(GuildBankFrame);
 		end
-		return;
-	end
 
 	-- Event for barbershop handling
-	if ( event == "BARBER_SHOP_OPEN" ) then
+	elseif ( event == "BARBER_SHOP_OPEN" ) then
 		BarberShopFrame_LoadUI();
 		if ( BarberShopFrame ) then
 			ShowUIPanel(BarberShopFrame);
@@ -1038,25 +902,17 @@ function UIParent_OnEvent(self, event, ...)
 		if ( BarberShopFrame ) then
 			HideUIPanel(BarberShopFrame);
 		end
-	end
 	
 	-- Events for achievement handling
-	if ( event == "ACHIEVEMENT_EARNED" ) then
+	elseif ( event == "ACHIEVEMENT_EARNED" ) then
 		-- if ( not AchievementFrame ) then
 			-- AchievementFrame_LoadUI();
 			-- AchievementAlertFrame_ShowAlert(...);
 		-- end
 		-- self:UnregisterEvent(event);
-	end
-	
-	-- Events for Glyphs
-	if ( event == "USE_GLYPH" ) then
-		OpenGlyphFrame();
-		return;
-	end
 
 	-- Display instance reset info
-	if ( event == "RAID_INSTANCE_WELCOME" ) then
+	elseif ( event == "RAID_INSTANCE_WELCOME" ) then
 		local dungeonName = arg1;
 		local lockExpireTime = arg2;
 		local locked = arg3;
@@ -1079,29 +935,23 @@ function UIParent_OnEvent(self, event, ...)
 
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
-		return;
-	end
 	
 	-- Events for taxi benchmarking
-	if ( event == "ENABLE_TAXI_BENCHMARK" ) then
+	elseif ( event == "ENABLE_TAXI_BENCHMARK" ) then
 		if ( not FramerateText:IsShown() ) then
 			ToggleFramerate(true);
 		end
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_ON, info.r, info.g, info.b, info.id);
-		return;
-	end
-	if ( event == "DISABLE_TAXI_BENCHMARK" ) then
+	elseif ( event == "DISABLE_TAXI_BENCHMARK" ) then
 		if ( FramerateText.benchmark ) then
 			ToggleFramerate();
 		end
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
-		return;
-	end
 	
 	-- Push to talk
-	if ( event == "VOICE_PUSH_TO_TALK_START" and GetVoiceCurrentSessionID() ) then
+	elseif ( event == "VOICE_PUSH_TO_TALK_START" and GetVoiceCurrentSessionID() ) then
 		if ( GetCVarBool("PushToTalkSound") ) then
 			PlaySound("VoiceChatOn");
 		end
@@ -1109,9 +959,7 @@ function UIParent_OnEvent(self, event, ...)
 		if  ( GetCVar("VoiceChatMode") == "0" ) then
 			UIFrameFadeIn(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 1);
 		end
-		return;
-	end
-	if ( event == "VOICE_PUSH_TO_TALK_STOP" ) then
+	elseif ( event == "VOICE_PUSH_TO_TALK_STOP" ) then
 		if ( GetCVarBool("PushToTalkSound") and GetVoiceCurrentSessionID() ) then
 			PlaySound("VoiceChatOff");
 		end
@@ -1119,26 +967,37 @@ function UIParent_OnEvent(self, event, ...)
 		if  ( GetCVar("VoiceChatMode") == "0" and PlayerSpeakerFrame:GetAlpha() > 0 ) then
 			UIFrameFadeOut(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 0);
 		end
-		return;
-	end
-	if ( event == "LEVEL_GRANT_PROPOSED" ) then
+	elseif ( event == "LEVEL_GRANT_PROPOSED" ) then
 		StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
-		return;
-	end
-	
-	if ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
+	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
 		GMChatFrame_LoadUI(event, ...);
-	end
-	
-	if ( event == "WOW_MOUSE_NOT_FOUND" ) then
+	elseif ( event == "WOW_MOUSE_NOT_FOUND" ) then
 		StaticPopup_Show("WOW_MOUSE_NOT_FOUND");
-	end
-	
-	if ( event == "TALENTS_INVOLUNTARILY_RESET" ) then
+	elseif ( event == "TALENTS_INVOLUNTARILY_RESET" ) then
 		if ( arg1 ) then
 			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET_PET");
 		else
 			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
+		end
+	
+	-- Events for Reforging UI handling
+	elseif ( event == "FORGE_MASTER_OPENED" ) then
+		Reforging_LoadUI();
+		if ( ReforgingFrame_Show ) then
+			ReforgingFrame_Show();
+		end
+	elseif ( event == "FORGE_MASTER_CLOSED" ) then
+		if ( ReforgingFrame_Hide ) then
+			ReforgingFrame_Hide();
+		end
+	
+		-- Events for Archaeology
+	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
+		ArchaeologyFrame_LoadUI();
+		if ( ArchaeologyFrame_Show and not ArchaeologyFrame:IsShown()) then
+			ArchaeologyFrame_Show();
+		elseif ( ArchaeologyFrame_Hide ) then
+			ArchaeologyFrame_Hide();
 		end
 	end
 end
@@ -1148,6 +1007,7 @@ end
 -- UIPARENT_MANAGED_FRAME_POSITIONS stores all the frames that have positioning dependencies based on other frames.  
 
 -- UIPARENT_MANAGED_FRAME_POSITIONS["FRAME"] = {
+	--Note: this is out of date and there are several more options now.
 	-- none = This value is used if no dependent frames are shown
 	-- reputation = This is the offset used if the reputation watch bar is shown
 	-- anchorTo = This is the object that the stored frame is anchored to
@@ -1183,13 +1043,15 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1};
-	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
+	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1};
+	["PlayerPowerBarAlt"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndShapeshift = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, vehicleMenuBar = vehicleMenuBarTop, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
+	--["StreamingIcon"] = {baseY = true, baseX = 230, yOffset = 0, bottomEither = actionBarOffset - 8, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1};
 	
 	-- Vars
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
@@ -1573,7 +1435,7 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 	end
 	
 	if ( not skipSetPoint ) then
-		securecall("UpdateUIPanelPositions");
+		securecall("UpdateUIPanelPositions", frame);
 	end
 	
 	if ( frame ) then
@@ -1661,14 +1523,16 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	local leftOffset = UIParent:GetAttribute("LEFT_OFFSET");
 	local centerOffset = UIParent:GetAttribute("CENTER_OFFSET");
 	local rightOffset = UIParent:GetAttribute("RIGHT_OFFSET");
+	local xSpacing = UIParent:GetAttribute("PANEl_SPACING_X");
 
 	local info;
 	local frame = self:GetUIPanel("left");
 	if ( frame ) then
 		local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 		local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+		local yPos = ClampUIPanelY(frame, yOff + topOffset);
 		frame:ClearAllPoints();
-		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, topOffset + yOff);
+		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 		centerOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
 		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
 		frame:Raise();
@@ -1677,8 +1541,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		if ( frame ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+			local yPos = ClampUIPanelY(frame, yOff + topOffset);
 			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, topOffset + yOff);
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 			rightOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
 			UIParent:SetAttribute("RIGHT_OFFSET", rightOffset);
 			frame:Raise();
@@ -1691,9 +1556,11 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local area = GetUIPanelWindowInfo(frame, "area");
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+			local yPos = ClampUIPanelY(frame, yOff + topOffset);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
-				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", centerOffset + xOff, topOffset + yOff);
+				xOff = xOff + xSpacing; -- add sperating space
+				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", centerOffset + xOff, yPos);
 			end
 			rightOffset = centerOffset + GetUIPanelWidth(frame) + xOff;
 		else
@@ -1724,8 +1591,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		if ( CanShowRightUIPanel(frame) ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
+			local yPos = ClampUIPanelY(frame, yOff + topOffset);
+			xOff = xOff + xSpacing; -- add sperating space
 			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, topOffset + yOff);
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
 		else
 			if ( frame == currentFrame ) then
 				frame = GetUIPanel("center") or GetUIPanel("left") or GetUIPanel("doublewide");
@@ -1793,6 +1662,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( TutorialFrameAlertButton:IsShown() ) then
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
+		if ( PlayerPowerBarAlt:IsShown() ) then
+			tinsert(yOffsetFrames, "playerPowerBarAlt");
+		end
 	end
 	
 	if ( menuBarTop == 55 ) then
@@ -1804,6 +1676,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	-- Iterate through frames and set anchors according to the flags set
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
+		if ( value.playerPowerBarAlt ) then
+			value.playerPowerBarAlt = PlayerPowerBarAlt:GetHeight() + 10;
+		end
 		securecall("UIParent_ManageFramePosition", index, value, yOffsetFrames, xOffsetFrames, hasBottomLeft, hasBottomRight, hasPetBar);
 	end
 	
@@ -1890,9 +1765,14 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 	
 	-- Boss frames
-	local numBossFrames = 0;
 	local durabilityXOffset = CONTAINER_OFFSET_X;
-	local durabilityYOffset = anchorY;
+
+	if ( StreamingIcon and StreamingIcon:IsShown() ) then
+		StreamingIcon:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY + 20);
+		anchorY = anchorY - StreamingIcon:GetHeight();
+	end
+
+	local numBossFrames = 0;
 	if ( Boss1TargetFrame ) then
 		for i = 1, MAX_BOSS_FRAMES do
 			if ( _G["Boss"..i.."TargetFrame"]:IsShown() ) then
@@ -1902,9 +1782,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end
 		if ( numBossFrames > 0 ) then
-			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY + 20);
+			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY);
 			anchorY = anchorY - 6 - numBossFrames * 66;
-			durabilityXOffset = durabilityXOffset + 135;
 		end
 	end
 	
@@ -1913,8 +1792,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
 			durabilityXOffset = durabilityXOffset + 20;
 		end
-		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -durabilityXOffset, durabilityYOffset);
-		if ( DurabilityFrame:IsShown() and numBossFrames == 0 ) then
+		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -durabilityXOffset, anchorY);
+		if ( DurabilityFrame:IsShown() ) then
 			anchorY = anchorY - DurabilityFrame:GetHeight() - 10;
 		end
 	end
@@ -1999,18 +1878,36 @@ function GetUIPanel(key)
 end
 
 function GetUIPanelWidth(frame)
-	return GetUIPanelWindowInfo(frame, "width") or frame:GetWidth();
+	return GetUIPanelWindowInfo(frame, "width") or frame:GetWidth() + (GetUIPanelWindowInfo(frame, "extraWidth") or 0);
 end
+
+function GetUIPanelHeight(frame)
+	return GetUIPanelWindowInfo(frame, "height") or frame:GetHeight() + (GetUIPanelWindowInfo(frame, "extraHeight") or 0);
+end
+
+--Allow a bit of overlap because there are built-in transparencies and buffers already
+local MINIMAP_OVERLAP_ALLOWED = 60;
 
 function GetMaxUIPanelsWidth()
 	local bufferBoundry = UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
 	if ( Minimap:IsShown() and not MinimapCluster:IsUserPlaced() ) then
 		-- If the Minimap is in the default place, make sure you wont overlap it either
-		return min(MinimapCluster:GetLeft(), bufferBoundry);
+		return min(MinimapCluster:GetLeft()+MINIMAP_OVERLAP_ALLOWED, bufferBoundry);
 	else
 		-- If the minimap has been moved, make sure not to overlap the right side bars
 		return bufferBoundry;
 	end
+end
+
+function ClampUIPanelY(frame, yOffset)
+	local bottomPos = UIParent:GetTop() + yOffset - GetUIPanelHeight(frame);
+	if (bottomPos < 140) then
+		yOffset = yOffset + (140 - bottomPos);
+	end	
+	if (yOffset > -10) then
+		yOffset = -10;
+	end
+	return yOffset;
 end
 
 function CanShowRightUIPanel(frame)
@@ -2215,6 +2112,10 @@ end
 
 function RaiseFrameLevel(frame)
 	frame:SetFrameLevel(frame:GetFrameLevel()+1);
+end
+
+function PassClickToParent(self, ...)
+	self:GetParent():Click(...);
 end
 
 -- Function to reposition frames if they get dragged off screen
@@ -2795,16 +2696,18 @@ function MouseIsOver(region, topOffset, bottomOffset, leftOffset, rightOffset)
 	return region:IsMouseOver(topOffset, bottomOffset, leftOffset, rightOffset);
 end
 
+-- replace the C functions with local lua versions
+function getglobal(varr)
+	return _G[varr];
+end
+
+function setglobal(varr,value)
+	_G[varr] = value;
+end
+
 -- Wrapper for the desaturation function
 function SetDesaturation(texture, desaturation)
-	local shaderSupported = texture:SetDesaturated(desaturation);
-	if ( not shaderSupported ) then
-		if ( desaturation ) then
-			texture:SetVertexColor(0.5, 0.5, 0.5);
-		else
-			texture:SetVertexColor(1.0, 1.0, 1.0);
-		end
-	end
+	texture:SetDesaturated(desaturation);
 end
 
 function GetMaterialTextColors(material)
@@ -2819,6 +2722,10 @@ end
 
 
 -- Model --
+
+MODELFRAME_DRAG_ROTATION_CONSTANT = 0.010;
+MODELFRAME_MAX_PLAYER_ZOOM = 0.8;
+MODELFRAME_MAX_PET_ZOOM = 0.7;
 
 -- Generic model rotation functions
 function Model_OnLoad (self)
@@ -2844,10 +2751,59 @@ function Model_RotateRight(model, rotationIncrement)
 	PlaySound("igInventoryRotateCharacter");
 end
 
+function Model_OnMouseDown(model, button)
+	if ( button == "LeftButton" ) then
+		model.mouseDown = true;
+		model.rotationCursorStart = GetCursorPosition();
+	end
+end
+
+function Model_OnMouseUp(model, button)
+	if ( button == "LeftButton" ) then
+		model.mouseDown = false;
+	end
+end
+
+function Model_OnMouseWheel(self, delta, maxZoom)
+	if (not maxZoom) then
+		maxZoom = MODELFRAME_MAX_PET_ZOOM;
+	end
+	if (not self.zoomLevel) then
+		self.zoomLevel = 0;
+	end
+	self.zoomLevel = self.zoomLevel + delta*0.15;
+	if (self.zoomLevel > maxZoom) then
+		self.zoomLevel = maxZoom;
+	end
+	if (0 > self.zoomLevel) then
+		self.zoomLevel = 0;
+	end
+	self:SetPortraitZoom(self.zoomLevel);
+end
+
 function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 	if ( not rotationsPerSecond ) then
 		rotationsPerSecond = ROTATIONS_PER_SECOND;
 	end
+	
+	-- Mouse drag rotation
+	if (self.mouseDown) then
+		if ( self.rotationCursorStart ) then
+			local x = GetCursorPosition();
+			local diff = (x - self.rotationCursorStart) * MODELFRAME_DRAG_ROTATION_CONSTANT;
+			self.rotationCursorStart = GetCursorPosition();
+			self.rotation = self.rotation + diff;
+			if ( self.rotation < 0 ) then
+				self.rotation = self.rotation + (2 * PI);
+			end
+			if ( self.rotation > (2 * PI) ) then
+				self.rotation = self.rotation - (2 * PI);
+			end
+			self:SetRotation(self.rotation, false);
+		end
+	end
+	
+	-- Rotate buttons
 	if ( _G[self:GetName().."RotateLeftButton"]:GetButtonState() == "PUSHED" ) then
 		self.rotation = self.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
 		if ( self.rotation < 0 ) then
@@ -2887,9 +2843,12 @@ function ToggleGameMenu()
 		TimeManagerCloseButton:Click();
 	elseif ( MultiCastFlyoutFrame:IsShown() ) then
 		MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
+	elseif (SpellFlyout:IsShown() ) then
+		SpellFlyout:Hide();
 	elseif ( securecall("FCFDockOverflow_CloseLists") ) then
 	elseif ( securecall("CloseMenus") ) then
 	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
+	elseif ( CloseGuildMenus and securecall("CloseGuildMenus") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
@@ -3260,11 +3219,13 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 	local unitStatus, statusColor;
 	local debuffTotal = 0;
 	local name, rank, icon, count, debuffType, duration, expirationTime;
+	
+	local filter;
+	if ( checkCVar and SHOW_CASTABLE_BUFFS == "1" and UnitCanAssist("player", unit) ) then
+		filter = "RAID";
+	end
+	
 	for i=1, numBuffs do
-		local filter;
-		if ( checkCVar and GetCVarBool("showCastableBuffs") ) then
-			filter = "RAID";
-		end
 		name, rank, icon, count, debuffType, duration, expirationTime = UnitBuff(unit, i, filter);
 
 		local buffName = frameName..suffix..i;
@@ -3302,15 +3263,17 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	local debuffTotal = 0;
 	local name, rank, icon, count, debuffType, duration, expirationTime, caster;
 	local isEnemy = UnitCanAttack("player", unit);	
+	
+	local filter;
+	if ( checkCVar and SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
+		filter = "RAID";
+	end
+		
 	for i=1, numDebuffs do
 		if ( unit == "party"..i ) then
 			unitStatus = _G[frameName.."Status"];
 		end
 
-		local filter;
-		if ( checkCVar and GetCVarBool("showDispelDebuffs") ) then
-			filter = "RAID";
-		end
 		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i, filter);
 
 		local debuffName = frameName..suffix..i;
@@ -3599,4 +3562,53 @@ function BetterDate(formatString, timeVal)
 	formatString = gsub(formatString, "([^%%])%%p", "%1"..amString); -- Replaces %p anywhere else in the string, but doesn't replace %%p (since the first % escapes the second)
 	
 	return date(formatString, timeVal);
+end
+
+function GMError(...)
+	if ( IsGMClient() ) then
+		error(...);
+	end
+end
+
+function SetGuildTabardTextures(leftEmblem, rightEmblem, background, border, hasMask)
+	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
+	if ( emblemFilename ) then
+		if ( background ) then
+			background:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
+		end
+		if ( border ) then
+			border:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
+		end
+		if ( leftEmblem and rightEmblem ) then
+			local iconR = emblemR / 255;
+			local iconG = emblemG / 255;
+			local iconB = emblemB / 255;
+			rightEmblem:SetTexture(emblemFilename);
+			rightEmblem:SetVertexColor(iconR, iconG, iconB);
+			if ( hasMask ) then
+				-- temporary hack - the guild emblem texture is the right half of the icon and we are flipping that texture to get the left half. But
+				-- the mask is applied when the texture is set, without considering texture coordinates, so we need to treat the left side as if it
+				-- was a duplicate of the right side until after the texture is set. This includes using the same mask instead of a mirror-image one.
+				local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = leftEmblem:GetTexCoord();
+				leftEmblem:SetTexCoord(URx,URy,LRx,LRy,ULx,ULy,LLx,LLy);
+				leftEmblem:SetTexture(emblemFilename);
+				leftEmblem:SetVertexColor(iconR, iconG, iconB);
+				leftEmblem:SetTexCoord(ULx,ULy,LLx,LLy,URx,URy,LRx,LRy);
+			else
+				leftEmblem:SetTexture(emblemFilename);
+				leftEmblem:SetVertexColor(iconR, iconG, iconB);
+			end
+		end
+	else
+		if ( background ) then
+			background:SetVertexColor(0.4745, 0.4588, 0.5294);
+		end
+		if ( border ) then
+			border:SetVertexColor(0.2, 0.2, 0.2);
+		end
+		if ( leftEmblem and rightEmblem ) then
+			leftEmblem:SetTexture("");
+			rightEmblem:SetTexture("");
+		end
+	end
 end

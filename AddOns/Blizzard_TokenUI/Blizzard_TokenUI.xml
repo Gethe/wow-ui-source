@@ -6,7 +6,11 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentStripe" setAllPoints="true">
+				<Texture name="$parentStripe">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
+					</Anchors>
 					<Color a=".08" r="1" g="1" b="1"/>
 				</Texture>
 			</Layer>
@@ -38,7 +42,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
+				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -48,31 +52,30 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentCategoryRight" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton">
-					<Size>
-						<AbsDimension x="37" y="18"/>
-					</Size>
+				
+				<Texture name="$parentCategoryLeft" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryLeft">
+					<Size x="76" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0" right="0.14453125" top="0.296875" bottom="0.578125"/>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>	
 				</Texture>
-				<Texture name="$parentCategoryLeft" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton">
-					<Size>
-						<AbsDimension x="256" y="18"/>
-					</Size>
+				<Texture name="$parentCategoryRight" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryRight">
+					<Size x="76" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
-						<Anchor point="RIGHT" relativeTo="$parentCategoryRight" relativePoint="LEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="0.28125"/>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>	
 				</Texture>
+				<Texture name="$parentCategoryMiddle" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryMiddle">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCategoryLeft" relativePoint="RIGHT" x="-20" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parentCategoryRight" relativePoint="LEFT" x="20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>	
+				</Texture>
+				
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentExpandIcon" file="Interface\Buttons\UI-PlusMinus-Buttons">
@@ -80,8 +83,8 @@
 						<AbsDimension x="7" y="7"/>
 					</Size>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-8" y="0"/>
+						<Anchor point="LEFT">
+							<Offset x="8" y="0"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -151,71 +154,12 @@
 			<TexCoords left="0" right="1" top="0.609375" bottom="0.796875"/>
 		</HighlightTexture>
 	</Button>
-	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" enableMouse="true" hidden="true" id="5">
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
-		</HitRectInsets>
-        <Layers>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-            </Layer>
-        </Layers>
+	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" useParentLevel="true" enableMouse="true" hidden="true" id="4">
         <Frames>
 			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
-				<Size x="299" y="330"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="26" y="-77"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-23" y="4"/>
 				</Anchors>
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
@@ -234,39 +178,6 @@
 					</Slider>
 				</Frames>
 			</ScrollFrame>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="TokenFrame" relativePoint="BOTTOMRIGHT">
-						<Offset x="-115" y="84"/>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="305" y="-421"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent():GetParent());
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button inherits="UIPanelCloseButton">
-                <Anchors>
-                    <Anchor point="CENTER" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
-                        <Offset>
-                            <AbsDimension x="-44" y="-25"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-            </Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="TokenFrame_OnLoad"/>
@@ -465,7 +376,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
+				<Texture urgency="5" file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
 					<Size>
 						<AbsDimension x="256" y="32"/>
 					</Size>

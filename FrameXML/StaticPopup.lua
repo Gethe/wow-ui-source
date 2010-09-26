@@ -543,11 +543,11 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE"] = {
 	text = WORLD_PVP_INVITED,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,1);
+	OnAccept = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,1);
 	end,
-	OnCancel = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,0);
+	OnCancel = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,0);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -559,11 +559,11 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE_WARMUP"] = {
 	text = WORLD_PVP_INVITED_WARMUP;
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,1);
+	OnAccept = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,1);
 	end,
-	OnCancel = function(self, data)
-		BattlefieldMgrQueueInviteResponse(1,0);
+	OnCancel = function(self, battleID)
+		BattlefieldMgrQueueInviteResponse(battleID,0);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -578,11 +578,11 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	OnShow = function(self)
 		self.timeleft = select(4, GetWorldPVPQueueStatus(1));
 	end,	
-	OnAccept = function(self, data)
-		BattlefieldMgrEntryInviteResponse(1,1);
+	OnAccept = function(self, battleID)
+		BattlefieldMgrEntryInviteResponse(battleID,1);
 	end,
-	OnCancel = function(self, data)
-		BattlefieldMgrEntryInviteResponse(1,0);
+	OnCancel = function(self, battleID)
+		BattlefieldMgrEntryInviteResponse(battleID,0);
 	end,
 	timeout = 0,
 	timeoutInformationalOnly = 1;
@@ -1626,7 +1626,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		MerchantFrame_ResetRefundItem();
 	end,
 	EditBoxOnEnterPressed = function(self)
-		if ( self:GetParent().button1:IsEnabled() == 1 ) then
+		if ( self:GetParent().button1:IsEnabled() ) then
 			DeleteCursorItem();
 			self:GetParent():Hide();
 		end
@@ -1879,8 +1879,8 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 	hasEditBox = 1,
 	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
 	maxLetters = 12,
-	OnAccept = function(self)
-		ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+	OnAccept = function(self, teamIndex)
+		ArenaTeamInviteByName(teamIndex, self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -1889,9 +1889,9 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 		ChatEdit_FocusActiveWindow();
 		self.editBox:SetText("");
 	end,
-	EditBoxOnEnterPressed = function(self)
+	EditBoxOnEnterPressed = function(self, teamIndex)
 		local parent = self:GetParent();
-		ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
+		ArenaTeamInviteByName(teamIndex, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -1977,47 +1977,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["ADD_GUILDRANK"] = {
-	text = ADD_GUILDRANK_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 15,
-	OnAccept = function(self)
-		GuildControlAddRank(self.editBox:GetText());
-		UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
-		CloseDropDownMenus();
-	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self)
-		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		GuildControlAddRank(parent.editBox:GetText());
-		UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
-		CloseDropDownMenus();
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-};
+
 StaticPopupDialogs["SET_GUILDMOTD"] = {
 	text = SET_GUILDMOTD_LABEL,
 	button1 = ACCEPT,
@@ -2177,6 +2137,9 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, index)
 		AbandonSkill(index);
+		if ( TradeSkillFrame_Hide ) then
+			TradeSkillFrame_Hide();
+		end
 	end,
 	timeout = 60,
 	exclusive = 1,
@@ -2380,18 +2343,6 @@ StaticPopupDialogs["TRADE_POTENTIAL_BIND_ENCHANT"] = {
 	showAlert = 1,
 	hideOnEscape = 1,
 	noCancelOnReuse = 1
-};
-StaticPopupDialogs["END_REFUND"] = {
-	text = END_REFUND,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		EndRefund(self.data);
-	end,
-	timeout = 0,
-	exclusive = 1,
-	showAlert = 1,
-	hideOnEscape = 1,
 };
 StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
 	text = END_BOUND_TRADEABLE,
@@ -2879,6 +2830,25 @@ StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["PICKUP_MONEY"] = {
+	text = AMOUNT_TO_PICKUP,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		MoneyInputFrame_PickupPlayerMoney(self.moneyInputFrame);
+	end,
+	OnHide = function(self)
+		MoneyInputFrame_ResetMoney(self.moneyInputFrame);
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent():GetParent();
+		MoneyInputFrame_PickupPlayerMoney(parent.moneyInputFrame);
+		parent:Hide();
+	end,
+	hasMoneyInputFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
@@ -3076,10 +3046,13 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local alertIcon = _G[dialog:GetName().."AlertIcon"];
 	if ( info.showAlert ) then
 		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERT);
+		alertIcon:Show();
 	elseif ( info.showAlertGear ) then
 		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERTGEAR);
+		alertIcon:Show();
 	else		
 		alertIcon:SetTexture();
+		alertIcon:Hide();
 	end
 
 	-- Show or hide the close button
@@ -3134,17 +3107,18 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		_G[dialog:GetName().."MoneyFrame"]:Show();
 		_G[dialog:GetName().."MoneyInputFrame"]:Hide();
 	elseif ( info.hasMoneyInputFrame ) then
-		_G[dialog:GetName().."MoneyInputFrame"]:Show();
+		moneyInputFrame = _G[dialog:GetName().."MoneyInputFrame"];
+		moneyInputFrame:Show();
 		_G[dialog:GetName().."MoneyFrame"]:Hide();
 		-- Set OnEnterPress for money input frames
 		if ( info.EditBoxOnEnterPressed ) then
-			_G[dialog:GetName().."MoneyInputFrameGold"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
-			_G[dialog:GetName().."MoneyInputFrameSilver"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
-			_G[dialog:GetName().."MoneyInputFrameCopper"]:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
+			moneyInputFrame.gold:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
+			moneyInputFrame.silver:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
+			moneyInputFrame.copper:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
 		else
-			_G[dialog:GetName().."MoneyInputFrameGold"]:SetScript("OnEnterPressed", nil);
-			_G[dialog:GetName().."MoneyInputFrameSilver"]:SetScript("OnEnterPressed", nil);
-			_G[dialog:GetName().."MoneyInputFrameCopper"]:SetScript("OnEnterPressed", nil);
+			moneyInputFrame.gold:SetScript("OnEnterPressed", nil);
+			moneyInputFrame.silver:SetScript("OnEnterPressed", nil);
+			moneyInputFrame.copper:SetScript("OnEnterPressed", nil);
 		end
 	else
 		_G[dialog:GetName().."MoneyFrame"]:Hide();
@@ -3330,6 +3304,12 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else
 					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), ceil(timeleft / 60), MINUTES);
+				end
+			elseif ( which == "BFMGR_INVITED_TO_ENTER") then
+				if ( timeleft < 60 ) then
+					text:SetFormattedText(StaticPopupDialogs[which].text, text.text_arg1, timeleft, SECONDS);
+				else
+					text:SetFormattedText(StaticPopupDialogs[which].text, text.text_arg1, ceil(timeleft / 60), MINUTES);
 				end
 			else
 				if ( timeleft < 60 ) then

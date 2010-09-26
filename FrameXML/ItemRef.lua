@@ -170,8 +170,24 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 6) == "GMChat" ) then
 		GMChatStatusFrame_OnClick();
 		return;
+	elseif ( strsub(link, 1, 7) == "levelup" ) then
+		local _, level = strsplit(":", link);
+		LevelUpDisplay_ShowSideDisplay(tonumber(level));
+		return;
+	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
+		TogglePVPFrame();
+		return;
+	elseif ( strsub(link, 1, 3) == "lfd" ) then
+		ToggleLFDParentFrame();
+		return;
+	elseif ( strsub(link, 1, 9) == "glyphpane" ) then
+		ToggleGlyphFrame();
+		return;
+	elseif ( strsub(link, 1, 10) == "talentpane" ) then
+		ToggleTalentFrame();
+		return;
 	end
-	
+    
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
 		HandleModifiedItemClick(fixedLink);

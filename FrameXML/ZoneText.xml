@@ -4,9 +4,9 @@
 	<!-- These frames are shown when the current zone or subzone changes -->
 	<Frame name="ZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
 		<Anchors>
-			<Anchor point="BOTTOM">
+			<Anchor point="TOP">
 				<Offset>
-					<AbsDimension x="0" y="512"/>
+					<AbsDimension x="0" y="-128"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

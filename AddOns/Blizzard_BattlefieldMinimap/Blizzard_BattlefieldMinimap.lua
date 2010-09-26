@@ -89,8 +89,10 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA") then
 		if ( BattlefieldMinimap:IsShown() ) then
-			SetMapToCurrentZone();
-			BattlefieldMinimap_Update();
+			if ( not WorldMapFrame:IsShown() ) then
+				SetMapToCurrentZone();
+				BattlefieldMinimap_Update();
+			end
 		end
 	elseif ( event == "PLAYER_LOGOUT" ) then
 		if ( BattlefieldMinimapTab:IsUserPlaced() ) then
@@ -117,10 +119,18 @@ function BattlefieldMinimap_Update()
 	-- Fill in map tiles
 	local mapFileName, textureHeight = GetMapInfo();
 	if ( not mapFileName ) then
-		return;
+		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
+			mapFileName = "Cosmic";
+		else
+			-- Temporary Hack (copy of a "temporary" 6 year hack)
+			mapFileName = "World";
+		end
 	end
 	local texName;
 	local dungeonLevel = GetCurrentMapDungeonLevel();
+	if (DungeonUsesTerrainMap()) then
+		dungeonLevel = dungeonLevel - 1;
+	end
 	local completeMapFileName;
 	if ( dungeonLevel > 0 ) then
 		completeMapFileName = mapFileName..dungeonLevel.."_";
@@ -257,7 +267,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	--Position player
 	UpdateWorldMapArrowFrames();
 	local playerX, playerY = GetPlayerMapPosition("player");
-	if ( playerX == 0 and playerY == 0 ) then
+	if ( playerX == 0 and playerY == 0 and not WorldMapFrame:IsShown() ) then
 		SetMapToCurrentZone();
 		playerX, playerY = GetPlayerMapPosition("player");
 	end

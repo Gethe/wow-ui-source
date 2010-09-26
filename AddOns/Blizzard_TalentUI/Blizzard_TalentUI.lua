@@ -13,11 +13,14 @@ StaticPopupDialogs["CONFIRM_LEARN_PREVIEW_TALENTS"] = {
 	exclusive = 1,
 }
 
-UIPanelWindows["PlayerTalentFrame"] = { area = "left", pushable = 6, whileDead = 1 };
+UIPanelWindows["PlayerTalentFrame"] = { area = "doublewide", pushable = 6, whileDead = 1, width = 666, height = 488 };
 
 
 -- global constants
-GLYPH_TALENT_TAB = 4;
+TALENTS_TAB = 1;
+PET_TALENTS_TAB = 2;
+GLYPH_TALENT_TAB = 3;
+NUM_TALENT_FRAME_TABS = 3;
 
 
 -- speed references
@@ -28,36 +31,210 @@ local ipairs = ipairs;
 local specs = {
 	["spec1"] = {
 		name = TALENT_SPEC_PRIMARY,
+		nameActive = TALENT_SPEC_PRIMARY_ACTIVE,
+		glyphName = TALENT_SPEC_PRIMARY_GLYPH,
+		glyphNameActive = TALENT_SPEC_PRIMARY_GLYPH_ACTIVE,
 		talentGroup = 1,
-		unit = "player",
-		pet = false,
 		tooltip = TALENT_SPEC_PRIMARY,
 		portraitUnit = "player",
 		defaultSpecTexture = "Interface\\Icons\\Ability_Marksmanship",
 		hasGlyphs = true,
-		glyphName = TALENT_SPEC_PRIMARY_GLYPH,
 	},
 	["spec2"] = {
 		name = TALENT_SPEC_SECONDARY,
+		nameActive = TALENT_SPEC_SECONDARY_ACTIVE,
+		glyphName = TALENT_SPEC_SECONDARY_GLYPH,
+		glyphNameActive = TALENT_SPEC_SECONDARY_GLYPH_ACTIVE,
 		talentGroup = 2,
-		unit = "player",
-		pet = false,
 		tooltip = TALENT_SPEC_SECONDARY,
 		portraitUnit = "player",
 		defaultSpecTexture = "Interface\\Icons\\Ability_Marksmanship",
 		hasGlyphs = true,
-		glyphName = TALENT_SPEC_SECONDARY_GLYPH,
 	},
-	["petspec1"] = {
-		name = TALENT_SPEC_PET_PRIMARY,
-		talentGroup = 1,
-		unit = "pet",
-		tooltip = TALENT_SPEC_PET_PRIMARY,
-		pet = true,
-		portraitUnit = "pet",
-		defaultSpecTexture = nil,
-		hasGlyphs = false,
-		glyphName = nil,
+};
+
+local TALENT_INFO = {
+	["default"] = {
+		[1] = {
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["DEATHKNIGHT"] = {
+		[1] = {
+			-- Blood
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[2] = {
+			-- Frost
+			color = {r=0.3, g=0.5, b=1.0},
+		},
+		[3] = {
+			-- Unholy
+			color = {r=0.8, g=0.0, b=1.0},
+		}
+	},
+	
+	["DRUID"] = {
+		[1] = {
+			-- Balance
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Feral
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Restoration
+			color = {r=0.3, g=0.5, b=1.0},
+		}	
+	},
+	
+	["HUNTER"] = {
+		[1] = {
+			-- Beast Mastery
+			color = {r=0.3, g=0.0, b=1.0},
+		},
+		[2] = {
+			-- Marksmanship
+			color = {r=0.8, g=0.2, b=0.8},
+		},
+		[3] = {
+			-- Survival
+			color = {r=0.0, g=1.0, b=0.6},
+		}
+	},
+	
+	["MAGE"] = {
+		[1] = {
+			-- Arcane
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Fire
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Frost
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["PALADIN"] = {
+		[1] = {
+			-- Holy
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Protection
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Retribution
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["PRIEST"] = {
+		[1] = {
+			-- Discipline
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Holy
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Shadow
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["ROGUE"] = {
+		[1] = {
+			-- Assassination
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Combat
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Subtlety
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["SHAMAN"] = {
+		[1] = {
+			-- Elemental
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Enhancement
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Restoration
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["WARLOCK"] = {
+		[1] = {
+			-- Affliction
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Demonology
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Destruction
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["WARRIOR"] = {
+		[1] = {
+			-- Arms
+			color = {r=1.0, g=0.72, b=0.1},
+		},
+		[2] = {
+			-- Fury
+			color = {r=1.0, g=0.0, b=0.0},
+		},
+		[3] = {
+			-- Protection
+			color = {r=0.3, g=0.5, b=1.0},
+		}
+	},
+	
+	["PET_409"] = {
+		-- Tenacity
+		[1] = {
+			color = {r=1.0, g=0.1, b=1.0},
+		}
+	},
+	
+	["PET_410"] = {
+		-- Ferocity
+		[1] = {
+			color = {r=1.0, g=0.0, b=0.0},
+		}
+	},
+	
+	["PET_411"] = {
+		-- Cunning
+		[1] = {
+			color = {r=0.0, g=0.6, b=1.0},
+		}
 	},
 };
 
@@ -71,12 +248,9 @@ local activeSpec = nil;
 local talentSpecInfoCache = {
 	["spec1"]		= { },
 	["spec2"]		= { },
-	["petspec1"]	= { },
 };
 -- cache talent tab widths so we can resize tabs to fit for localization
 local talentTabWidthCache = { };
-
-
 
 -- ACTIVESPEC_DISPLAYTYPE values:
 -- "BLUE", "GOLD_INSIDE", "GOLD_BACKGROUND"
@@ -97,13 +271,13 @@ end
 
 function PlayerTalentFrame_Toggle(pet, suggestedTalentGroup)
 	local hidden;
-	local talentTabSelected = PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= GLYPH_TALENT_TAB;
+	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 	if ( not PlayerTalentFrame:IsShown() ) then
 		ShowUIPanel(PlayerTalentFrame);
 		hidden = false;
 	else
 		local spec = selectedSpec and specs[selectedSpec];
-		if ( spec and talentTabSelected ) then
+		if ( spec and (selectedTab == TALENTS_TAB) and not pet ) then
 			-- if a talent tab is selected then toggle the frame off
 			HideUIPanel(PlayerTalentFrame);
 			hidden = true;
@@ -114,30 +288,35 @@ function PlayerTalentFrame_Toggle(pet, suggestedTalentGroup)
 	if ( not hidden ) then
 		-- open the spec with the requested talent group (or the current talent group if the selected
 		-- spec has one)
-		if ( selectedSpec ) then
-			local spec = specs[selectedSpec];
-			if ( spec.pet == pet ) then
-				suggestedTalentGroup = spec.talentGroup;
-			end
-		end
 		for _, index in ipairs(TALENT_SORT_ORDER) do
 			local spec = specs[index];
-			if ( spec.pet == pet and spec.talentGroup == suggestedTalentGroup ) then
+			if (spec.talentGroup == suggestedTalentGroup ) then
 				PlayerSpecTab_OnClick(specTabs[index]);
 				if ( not talentTabSelected ) then
-					PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PlayerTalentTab_GetBestDefaultTab(index)]);
+					PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 				end
 				break;
 			end
 		end
+		
+		-- Select either the Talents tab or the Pet Talents tab as appropriate
+		if (pet and selectedTab ~= PET_TALENTS_TAB) then
+			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PET_TALENTS_TAB]);
+		elseif (not pet and selectedTab ~= TALENTS_TAB) then
+			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+		end		
 	end
 end
 
-function PlayerTalentFrame_Open(pet, talentGroup)
+function PlayerTalentFrame_Open(talentGroup)
 	ShowUIPanel(PlayerTalentFrame);
+
+	-- Show the talents tab
+	PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+	
 	-- open the spec with the requested talent group
 	for index, spec in next, specs do
-		if ( spec.pet == pet and spec.talentGroup == talentGroup ) then
+		if ( spec.talentGroup == talentGroup ) then
 			PlayerSpecTab_OnClick(specTabs[index]);
 			break;
 		end
@@ -201,20 +380,12 @@ end
 function PlayerTalentFrame_ShowGlyphFrame()
 	GlyphFrame_LoadUI();
 	if ( GlyphFrame ) then
-		-- set the title text of the GlyphFrame
-		if ( selectedSpec and specs[selectedSpec].glyphName and GetNumTalentGroups() > 1 ) then
-			GlyphFrameTitleText:SetText(specs[selectedSpec].glyphName);
-		else
-			GlyphFrameTitleText:SetText(GLYPHS);
-		end
 		-- show/update the glyph frame
 		if ( GlyphFrame:IsShown() ) then
 			GlyphFrame_Update();
 		else
 			GlyphFrame:Show();
 		end
-		-- don't forget to hide the scroll button overlay or it may show up on top of the GlyphFrame!
-		UIFrameFlashStop(PlayerTalentFrameScrollButtonOverlay);
 	end
 end
 
@@ -229,43 +400,30 @@ function PlayerTalentFrame_HideGlyphFrame()
 	end
 end
 
-
 function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
 	self:RegisterEvent("PREVIEW_PET_TALENT_POINTS_CHANGED");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UNIT_PET");
-	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("UNIT_MODEL_CHANGED");
+	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-	self.unit = "player";
+	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
 	self.inspect = false;
 	self.pet = false;
 	self.talentGroup = 1;
-	self.updateFunction = PlayerTalentFrame_Update;
-
-	TalentFrame_Load(self);
-
-	-- setup talent buttons
-	local button;
-	for i = 1, MAX_NUM_TALENTS do
-		button = _G["PlayerTalentFrameTalent"..i];
-		if ( button ) then
-			button:SetScript("OnClick", PlayerTalentFrameTalent_OnClick);
-			button:SetScript("OnEvent", PlayerTalentFrameTalent_OnEvent);
-			button:SetScript("OnEnter", PlayerTalentFrameTalent_OnEnter);
-		end
-	end
 
 	-- setup tabs
-	PanelTemplates_SetNumTabs(self, MAX_TALENT_TABS + 1);	-- add one for the GLYPH_TALENT_TAB
-
-	-- initialize active spec as a fail safe
-	local activeTalentGroup = GetActiveTalentGroup();
-	local numTalentGroups = GetNumTalentGroups();
-	PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup, numTalentGroups);
+	PanelTemplates_SetNumTabs(self, NUM_TALENT_FRAME_TABS);
+	
+	-- setup portrait texture
+	SetPortraitToTexture(PlayerTalentFramePortrait, "Interface\\Icons\\Ability_Marksmanship");
+	
+	-- initialize active spec
+	PlayerTalentFrame_UpdateActiveSpec(GetActiveTalentGroup(false, false));
 
 	-- setup active spec highlight
 	if ( ACTIVESPEC_DISPLAYTYPE == "BLUE" ) then
@@ -290,6 +448,10 @@ function PlayerTalentFrame_OnShow(self)
 
 	PlaySound("TalentScreenOpen");
 	UpdateMicroButtons();
+	PlayerTalentFramePetModel:SetUnit("pet");
+	
+	PlayerTalentFrameTalents.summariesShownWhenNoPrimary = true;
+	PlayerTalentFrameLearnButtonTutorial.hasBeenClosed = false;
 
 	if ( not selectedSpec ) then
 		-- if no spec was selected, try to select the active one
@@ -301,14 +463,12 @@ function PlayerTalentFrame_OnShow(self)
 	-- Set flag
 	if ( not GetCVarBool("talentFrameShown") ) then
 		SetCVar("talentFrameShown", 1);
-		UIFrameFlash(PlayerTalentFrameScrollButtonOverlay, 0.5, 0.5, 60);
 	end
 end
 
-function  PlayerTalentFrame_OnHide()
+function PlayerTalentFrame_OnHide()
 	UpdateMicroButtons();
 	PlaySound("TalentScreenClose");
-	UIFrameFlashStop(PlayerTalentFrameScrollButtonOverlay);
 	-- clear caches
 	for _, info in next, talentSpecInfoCache do
 		wipe(info);
@@ -317,73 +477,112 @@ function  PlayerTalentFrame_OnHide()
 end
 
 function PlayerTalentFrame_OnEvent(self, event, ...)
+	local arg1 = ...;
 	if ( event == "PLAYER_TALENT_UPDATE" or event == "PET_TALENT_UPDATE" ) then
 		PlayerTalentFrame_Refresh();
 	elseif ( event == "PREVIEW_TALENT_POINTS_CHANGED" ) then
 		--local talentIndex, tabIndex, groupIndex, points = ...;
-		if ( selectedSpec and not specs[selectedSpec].pet ) then
-			PlayerTalentFrame_Refresh();
-		end
+		PlayerTalentFrame_Refresh();
 	elseif ( event == "PREVIEW_PET_TALENT_POINTS_CHANGED" ) then
-		--local talentIndex, tabIndex, groupIndex, points = ...;
-		if ( selectedSpec and specs[selectedSpec].pet ) then
-			PlayerTalentFrame_Refresh();
-		end
-	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		local unit = ...;
-		-- update the talent frame's portrait
-		if ( unit == PlayerTalentFramePortrait.unit ) then
-			SetPortraitTexture(PlayerTalentFramePortrait, unit);
-		end
-		-- update spec tabs' portraits
-		for _, frame in next, specTabs do
-			if ( frame.usingPortraitTexture ) then
-				local spec = specs[frame.specIndex];
-				if ( unit == spec.unit and spec.portraitUnit ) then
-					SetPortraitTexture(frame:GetNormalTexture(), unit);
-				end
+		PlayerTalentFrame_Refresh();
+	elseif ( event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" ) then
+		PlayerTalentFrame_Refresh();
+	elseif ( (event == "UNIT_PET" and arg1 == "player") or (event == "UNIT_MODEL_CHANGED" and arg1 == "pet") ) then
+		local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+		if ( selectedTab and selectedTab == PET_TALENTS_TAB ) then
+			local numTalentGroups = GetNumTalentGroups(false, true);
+			if ( numTalentGroups == 0 ) then
+				-- If the player has the Pet Talents, and a pet spec is not available, select the default talents tab
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+				return;
 			end
 		end
-	elseif ( event == "UNIT_PET" ) then
-		local summoner = ...;
-		if ( summoner == "player" ) then
-			if ( selectedSpec and specs[selectedSpec].pet ) then
-				-- if the selected spec is a pet spec...
-				local numTalentGroups = GetNumTalentGroups(false, true);
-				if ( numTalentGroups == 0 ) then
-					--...and a pet spec is not available, select the default spec
-					PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_TALENT_SPEC]);
-					return;
-				end
+		PlayerTalentFramePetModel:SetUnit("pet");
+		PlayerTalentFrame_Refresh();
+	elseif ( event == "UNIT_LEVEL") then
+		if ( selectedSpec ) then
+			local arg1 = ...;
+			if (arg1 == "player") then
+				PlayerTalentFrame_Update();
+				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
+				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel2);
+				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
 			end
-			PlayerTalentFrame_Refresh();
 		end
-	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		if ( selectedSpec and not specs[selectedSpec].pet ) then
-			local level = ...;
-			PlayerTalentFrame_Update(level);
+	elseif (event == "LEARNED_SPELL_IN_TAB") then
+		-- Must update the Mastery bonus if you just learned Mastery
+		if (PlayerTalentFramePanel1Summary:IsVisible()) then
+			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
+		end
+		if (PlayerTalentFramePanel2Summary:IsVisible()) then
+			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel2);
+		end
+		if (PlayerTalentFramePanel3Summary:IsVisible()) then
+			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
 		end
 	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
 	end
 end
 
+function PlayerTalentFrame_ShowTalentTab()
+	PlayerTalentFrameTalents:Show();
+end
+
+function PlayerTalentFrame_HideTalentTab()
+	PlayerTalentFrameTalents:Hide();
+end
+
+function PlayerTalentFrame_ShowPetTalentTab()
+	PlayerTalentFramePetTalents:Show();
+end
+
+function PlayerTalentFrame_HidePetTalentTab()
+	PlayerTalentFramePetTalents:Hide();
+end
+
 function PlayerTalentFrame_Refresh()
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 	if ( selectedTab == GLYPH_TALENT_TAB ) then
+		PlayerTalentFrame_HideTalentTab();
+		PlayerTalentFrame_HidePetTalentTab();
 		PlayerTalentFrame_ShowGlyphFrame();
+		PlayerTalentFrame.pet = false;
+	elseif (selectedTab == PET_TALENTS_TAB) then
+		PlayerTalentFrame_HideGlyphFrame();
+		PlayerTalentFrame_HideTalentTab();
+		PlayerTalentFrame_ShowPetTalentTab();
+		PlayerTalentFrame.pet = true;
 	else
 		PlayerTalentFrame_HideGlyphFrame();
+		PlayerTalentFrame_HidePetTalentTab();
+		PlayerTalentFrame_ShowTalentTab();
+		PlayerTalentFrame.pet = false;
 	end
-	TalentFrame_Update(PlayerTalentFrame);
+	
+	PlayerTalentFrame_Update();
+	
+	if (PlayerTalentFramePanel1:IsVisible()) then
+		PlayerTalentFramePanel_Update(PlayerTalentFramePanel1);
+	end
+	if (PlayerTalentFramePanel2:IsVisible()) then
+		PlayerTalentFramePanel_Update(PlayerTalentFramePanel2);
+	end
+	if (PlayerTalentFramePanel3:IsVisible()) then
+		PlayerTalentFramePanel_Update(PlayerTalentFramePanel3);
+	end
+	if (PlayerTalentFramePetPanel:IsVisible()) then
+		PlayerTalentFramePanel_Update(PlayerTalentFramePetPanel);
+	end
 end
 
 function PlayerTalentFrame_Update(playerLevel)
-	local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, false), GetNumTalentGroups(false, false);
-	local activePetTalentGroup, numPetTalentGroups = GetActiveTalentGroup(false, true), GetNumTalentGroups(false, true);
-
+	local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
+	PlayerTalentFrame.primaryTree = GetPreviewPrimaryTalentTree(PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup) 
+			or GetPrimaryTalentTree(PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+	
 	-- update specs
-	if ( not PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups) ) then
+	if ( not PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups) ) then
 		-- the current spec is not selectable any more, discontinue updates
 		return;
 	end
@@ -393,40 +592,548 @@ function PlayerTalentFrame_Update(playerLevel)
 		-- the current spec is not selectable any more, discontinue updates
 		return;
 	end
+	
+	-- set the active spec
+	PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup);
 
-	-- set the frame portrait
-	SetPortraitTexture(PlayerTalentFramePortrait, PlayerTalentFrame.unit);
-
-	-- update active talent group stuff
-	PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup, numTalentGroups);
-
+	-- update title text
+	PlayerTalentFrame_UpdateTitleText(numTalentGroups);
+	
 	-- update talent controls
 	PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups);
+	
+	-- update pet info
+	if (PlayerTalentFrame.pet) then
+		PlayerTalentFrame_UpdatePetInfo(PlayerTalentFrame);
+	end
+	
+	if (selectedSpec == activeSpec) then
+		PlayerTalentFrameTitleGlowLeft:Show();
+		PlayerTalentFrameTitleGlowRight:Show();
+		PlayerTalentFrameTitleGlowCenter:Show();
+	else
+		PlayerTalentFrameTitleGlowLeft:Hide();
+		PlayerTalentFrameTitleGlowRight:Hide();
+		PlayerTalentFrameTitleGlowCenter:Hide();
+	end
 end
 
-function PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup, numTalentGroups)
-	-- set the active spec
+function PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup)
 	activeSpec = DEFAULT_TALENT_SPEC;
 	for index, spec in next, specs do
-		if ( not spec.pet and spec.talentGroup == activeTalentGroup ) then
+		if (spec.talentGroup == activeTalentGroup ) then
 			activeSpec = index;
 			break;
 		end
 	end
-	-- make UI adjustments
+end
+
+function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
+
 	local spec = selectedSpec and specs[selectedSpec];
-
 	local hasMultipleTalentGroups = numTalentGroups > 1;
-	if ( spec and hasMultipleTalentGroups ) then
-		PlayerTalentFrameTitleText:SetText(spec.name);
-	else
-		PlayerTalentFrameTitleText:SetText(TALENTS);
+	local isActiveSpec = (selectedSpec == activeSpec);
+	
+	if (PanelTemplates_GetSelectedTab(PlayerTalentFrame) == GLYPH_TALENT_TAB) then
+		if ( spec and spec.glyphName and hasMultipleTalentGroups ) then
+			if (isActiveSpec and spec.glyphNameActive) then
+				PlayerTalentFrameTitleText:SetText(spec.glyphNameActive);
+			else
+				PlayerTalentFrameTitleText:SetText(spec.glyphName);
+			end
+		else
+			PlayerTalentFrameTitleText:SetText(GLYPHS);
+		end
+	elseif (PanelTemplates_GetSelectedTab(PlayerTalentFrame) == PET_TALENTS_TAB) then
+		PlayerTalentFrameTitleText:SetText(TALENT_SPEC_PET_PRIMARY);
+	else	
+		if ( spec and hasMultipleTalentGroups ) then
+			if (isActiveSpec and spec.nameActive) then
+				PlayerTalentFrameTitleText:SetText(spec.nameActive);
+			else
+				PlayerTalentFrameTitleText:SetText(spec.name);
+			end
+		else
+			PlayerTalentFrameTitleText:SetText(TALENTS);
+		end
 	end
+	
+end
 
-	if ( selectedSpec == activeSpec and hasMultipleTalentGroups ) then
-		--PlayerTalentFrameActiveTalentGroupFrame:Show();
+function PlayerTalentFrame_ShowOrHideSummaries()
+	local shouldShow;
+	if (PlayerTalentFrame.primaryTree or GetNumTalentPoints() == 0) then
+		shouldShow = PlayerTalentFrameTalents.summariesShownWhenPrimary;
 	else
-		PlayerTalentFrameActiveTalentGroupFrame:Hide();
+		shouldShow = PlayerTalentFrameTalents.summariesShownWhenNoPrimary;
+	end
+	
+	if (shouldShow) then
+		PlayerTalentFramePanel1Summary:Show();
+		PlayerTalentFramePanel2Summary:Show();
+		PlayerTalentFramePanel3Summary:Show();
+		PlayerTalentFrameToggleSummariesButton:SetText(TALENTS_HIDE_SUMMARIES);
+	else
+		PlayerTalentFramePanel1Summary:Hide();
+		PlayerTalentFramePanel2Summary:Hide();
+		PlayerTalentFramePanel3Summary:Hide();
+		PlayerTalentFrameToggleSummariesButton:SetText(TALENTS_SHOW_SUMMARIES);
+	end
+	PlayerTalentFramePanel_ShowOrHideHeaderIcon(PlayerTalentFramePanel1);
+	PlayerTalentFramePanel_ShowOrHideHeaderIcon(PlayerTalentFramePanel2);
+	PlayerTalentFramePanel_ShowOrHideHeaderIcon(PlayerTalentFramePanel3);
+	return shouldShow;
+end
+
+function PlayerTalentFrame_UpdatePetInfo(self)
+	if (self.pet) then
+		if ( UnitCreatureFamily("pet") ) then
+			PlayerTalentFramePetTypeText:SetText(UnitCreatureFamily("pet"));
+		else
+			PlayerTalentFramePetTypeText:SetText("");
+		end
+		
+		if (UnitLevel("pet")) then
+			PlayerTalentFramePetLevelText:SetFormattedText(UNIT_LEVEL_TEMPLATE, UnitLevel("pet"));
+		else
+			PlayerTalentFramePetLevelText:SetText("");
+		end
+		
+		if ( UnitName("pet") ) then
+			PlayerTalentFramePetNameText:SetText(UnitName("pet"));
+		else
+			PlayerTalentFramePetNameText:SetText("");
+		end
+		
+		PlayerTalentFramePetIcon:SetTexture(GetPetIcon());
+		
+		local happiness, damagePercentage = GetPetHappiness();
+		if ( happiness ) then
+			PlayerTalentFramePetHappiness:Show();
+			if ( happiness == 1 ) then
+				PlayerTalentFramePetHappinessTexture:SetTexCoord(0.375, 0.5625, 0, 0.359375);
+			elseif ( happiness == 2 ) then
+				PlayerTalentFramePetHappinessTexture:SetTexCoord(0.1875, 0.375, 0, 0.359375);
+			elseif ( happiness == 3 ) then
+				PlayerTalentFramePetHappinessTexture:SetTexCoord(0, 0.1875, 0, 0.359375);
+			end
+			PlayerTalentFramePetHappiness.tooltip = _G["PET_HAPPINESS"..happiness];
+			PlayerTalentFramePetHappiness.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage);
+		else
+			PlayerTalentFramePetHappiness:Hide();
+		end
+	end
+end
+
+-- PlayerTalentFramePanel
+
+function PlayerTalentFramePanel_OnLoad(self)
+	self.inspect = false;
+	self.talentGroup = 1;
+	self.talentButtonSize = 30;
+	self.initialOffsetX = 20;
+	self.initialOffsetY = 52;
+	self.buttonSpacingX = 46;
+	self.buttonSpacingY = 46;
+	self.arrowInsetX = 2;
+	self.arrowInsetY = 2;
+	
+	TalentFrame_Load(self);
+end
+
+local function PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, spellId, spellId2, formatString, desaturated)
+	local name, subname, icon = GetSpellInfo(spellId);
+	if (spellId2) then
+		local name2, _, _ = GetSpellInfo(spellId2);
+		if (name2) then
+			name = name .. "/"..name2;
+		end
+	end
+	bonusFrame.Icon:SetTexture(icon);
+	if (formatString) then
+		bonusFrame.Label:SetFormattedText(formatString, name);
+	else
+		bonusFrame.Label:SetText(name);
+	end
+	bonusFrame.spellId = spellId;
+	bonusFrame.spellId2 = spellId2;
+	bonusFrame.extraTooltip = nil;
+	bonusFrame.Icon:SetDesaturated(desaturated);
+	bonusFrame.IconBorder:SetDesaturated(desaturated);
+	if (desaturated) then
+		bonusFrame.Label:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	else
+		bonusFrame.Label:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	bonusFrame:Show();
+end
+
+function PlayerTalentFramePanel_UpdateSummary(self)
+
+	local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(self.talentTree, self.inspect, self.pet, self.talentGroup);
+	local role1, role2 = GetTalentTreeRoles(self.talentTree, self.inspect, self.pet);
+	
+	if (self.Summary and icon) then
+		local summary = self.Summary;
+		SetPortraitToTexture(self.Summary.Icon, icon);
+		if (PlayerTalentFrame.primaryTree or GetNumTalentPoints() == 0) then
+			self.Summary.TitleText:SetText(name);
+			self.Summary.TitleText:Show();
+		else
+			self.Summary.TitleText:Hide();
+		end
+		
+		-- Update roles
+		if ( role1 == "TANK" or role1 == "HEALER" or role1 == "DAMAGER") then
+			summary.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role1));
+			summary.RoleIcon:Show();
+		else
+			summary.RoleIcon:Hide();
+		end
+		
+		if ( role2 == "TANK" or role2 == "HEALER" or role2 == "DAMAGER") then
+			summary.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
+			summary.RoleIcon2:Show();
+			summary.RoleIcon:SetPoint("BOTTOMRIGHT", summary.IconBorder, -9, -1);
+		else
+			summary.RoleIcon2:Hide();
+			summary.RoleIcon:SetPoint("BOTTOMRIGHT", summary.IconBorder, -1, 3);
+		end
+		
+		local desaturateBonuses = nil;
+		if ((PlayerTalentFrame.primaryTree and self.talentTree ~= PlayerTalentFrame.primaryTree) or (selectedSpec ~= activeSpec) or GetNumTalentPoints() == 0) then
+			desaturateBonuses = 1;
+			if (selectedSpec ~= activeSpec) then
+				summary.Border:SetVertexColor(0.8, 0.8, 0.8);
+				summary.Icon:SetDesaturated(1);
+				summary.IconBorder:SetDesaturated(1);
+				summary.IconGlow:SetVertexColor(1, 1, 1);
+				summary.RoleIcon:SetDesaturated(1);
+				summary.RoleIcon2:SetDesaturated(1);
+			else
+				summary.Icon:SetDesaturated(0);
+				summary.IconBorder:SetDesaturated(0);
+				summary.RoleIcon:SetDesaturated(0);
+				summary.RoleIcon2:SetDesaturated(0);
+			end
+		else
+			summary.Icon:SetDesaturated(0);
+			summary.IconBorder:SetDesaturated(0);
+			summary.RoleIcon:SetDesaturated(0);
+			summary.RoleIcon2:SetDesaturated(0);
+		end
+		
+		-- Update border glow
+		if (PlayerTalentFrame.primaryTree and self.talentTree == PlayerTalentFrame.primaryTree) then
+			summary.GlowTopLeft:Show();
+			summary.GlowTop:Show();
+			summary.GlowTopRight:Show();
+			summary.GlowRight:Show();
+			summary.GlowBottomRight:Show();
+			summary.GlowBottom:Show();
+			summary.GlowBottomLeft:Show();
+			summary.GlowLeft:Show();
+			summary.Border:SetVertexColor(0, 0, 0);
+			
+			local desaturate = (selectedSpec ~= activeSpec);
+			summary.GlowTopLeft:SetDesaturated(desaturate);
+			summary.GlowTop:SetDesaturated(desaturate);
+			summary.GlowTopRight:SetDesaturated(desaturate);
+			summary.GlowRight:SetDesaturated(desaturate);
+			summary.GlowBottomRight:SetDesaturated(desaturate);
+			summary.GlowBottom:SetDesaturated(desaturate);
+			summary.GlowBottomLeft:SetDesaturated(desaturate);
+			summary.GlowLeft:SetDesaturated(desaturate);
+		else
+			summary.GlowTopLeft:Hide();
+			summary.GlowTop:Hide();
+			summary.GlowTopRight:Hide();
+			summary.GlowRight:Hide();
+			summary.GlowBottomRight:Hide();
+			summary.GlowBottom:Hide();
+			summary.GlowBottomLeft:Hide();
+			summary.GlowLeft:Hide();
+		end
+		
+		local bonuses;
+		
+		-- Update all Active bonuses
+		bonuses =  {GetMajorTalentTreeBonuses(self.talentTree, self.inspect, self.pet)};
+		for i=1, #bonuses do
+			local bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
+			if (bonusFrame) then
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, nil, desaturateBonuses);
+			end
+		end
+		
+		-- Hide unused bonus frames
+		local i = #bonuses+1;
+		local bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
+		while (bonusFrame) do
+			bonusFrame:Hide();
+			i = i + 1;
+			bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
+		end
+		
+		-- Update all Passive bonuses
+		bonuses = {GetMinorTalentTreeBonuses(self.talentTree, self.inspect, self.pet)};
+		local numSmallBonuses = 0;
+		for i=1, #bonuses do
+			numSmallBonuses = numSmallBonuses+1;
+			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
+			if (bonusFrame) then
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, nil, desaturateBonuses);
+			end
+		end	
+		
+		bonuses = {GetTalentTreeEarlySpells(self.talentTree, self.inspect, self.pet)};
+		for i=1, #bonuses do
+			numSmallBonuses = numSmallBonuses+1;
+			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
+			if (bonusFrame) then
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, TALENT_EARLY_SPELLS_LABEL, desaturateBonuses);
+			end
+		end	
+		
+		-- Update mastery
+		local masterySpell, masterySpell2 = GetTalentTreeMasterySpells(self.talentTree);
+		if (UnitLevel("player") >= SHOW_MASTERY_LEVEL and masterySpell) then
+			local _, class = UnitClass("player");
+			local masteryKnown = IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
+			numSmallBonuses = numSmallBonuses+1;
+			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
+			if (bonusFrame) then
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, masterySpell, masterySpell2, TALENT_MASTERY_LABEL, desaturateBonuses or not masteryKnown);
+				if (not masteryKnown) then
+					bonusFrame.extraTooltip = GRAY_FONT_COLOR_CODE..TALENT_MASTERY_TOOLTIP_NOT_KNOWN..FONT_COLOR_CODE_CLOSE;
+				end
+				--Override icon to Mastery icon
+				local _, _, masteryTexture = GetSpellInfo(CLASS_MASTERY_SPELLS[class]);
+				bonusFrame.Icon:SetTexture(masteryTexture);
+				bonusFrame.Icon:SetDesaturated(desaturateBonuses or not masteryKnown);
+			end
+		end
+		
+		-- Hide unused bonus frames
+		local i = numSmallBonuses+1;
+		local bonusFrame = _G[self.Summary:GetName().."Bonus"..i];
+		while (bonusFrame) do
+			bonusFrame:Hide();
+			i = i + 1;
+			bonusFrame = _G[self.Summary:GetName().."Bonus"..i];
+		end
+		
+		local descriptionFrame = self.Summary.Description;
+		
+		-- Update description height
+		if (numSmallBonuses > 4) then
+			descriptionFrame:SetHeight(64);
+			descriptionFrame:SetPoint("TOPLEFT", 10, -292);
+		else
+			descriptionFrame:SetHeight(88);
+			descriptionFrame:SetPoint("TOPLEFT", 10, -268);
+		end
+		
+		-- Update description text
+		descriptionFrame:SetWidth(178);
+		descriptionFrame.ScrollChild:SetWidth(descriptionFrame:GetWidth());
+		descriptionFrame.ScrollChild:SetHeight(descriptionFrame:GetHeight());
+		descriptionFrame.ScrollChild.Text:SetWidth(descriptionFrame:GetWidth());
+		descriptionFrame.ScrollChild.Text:SetHeight(0);
+		descriptionFrame.ScrollChild.Text:SetSpacing(4);
+		descriptionFrame.ScrollChild.Text:SetText(description);
+		if (descriptionFrame.ScrollChild.Text:GetHeight() > descriptionFrame.ScrollChild:GetHeight()) then
+			descriptionFrame:SetWidth(156);
+			descriptionFrame.ScrollChild:SetWidth(descriptionFrame:GetWidth());
+			descriptionFrame.ScrollChild.Text:SetWidth(descriptionFrame:GetWidth());
+			descriptionFrame.ScrollChild:SetHeight(descriptionFrame.ScrollChild.Text:GetHeight() + 20);
+		else
+			descriptionFrame.ScrollChild:SetHeight(descriptionFrame.ScrollChild.Text:GetHeight());
+		end
+		ScrollFrame_OnScrollRangeChanged(descriptionFrame);
+	end
+end
+
+function PlayerTalentFramePanel_ShowOrHideHeaderIcon(self)
+	if (self.SelectTreeButton:IsShown() or self.Summary:IsShown()) then
+		self.HeaderIcon:Hide();
+	else
+		self.HeaderIcon:Show();
+	end
+end
+
+function PlayerTalentFramePanel_Update(self)
+	local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(self.talentTree, self.inspect, self.pet, self.talentGroup);
+	local primaryTree = PlayerTalentFrame.primaryTree;
+	if (self.PointsSpent) then
+		self.PointsSpent:SetText(pointsSpent+previewPointsSpent);
+	end
+	if (self.HeaderIcon) then
+		self.HeaderIcon.Icon:SetTexture(icon);
+		self.HeaderIcon.PointsSpent:SetText(pointsSpent+previewPointsSpent);
+	end
+	self.Name:SetText(name);
+	if (self.NameLarge) then
+		self.NameLarge:SetText(name);
+	end
+	
+	local talentInfo;
+	if (self.pet) then
+		talentInfo = TALENT_INFO["PET_"..id];
+	else
+		local classDisplayName, class = UnitClass("player");
+		talentInfo = TALENT_INFO[class] or TALENT_INFO["default"];
+	end
+	
+	local color = talentInfo and talentInfo[self.talentTree] and talentInfo[self.talentTree].color;
+	if (color) then
+		self.HeaderBackground:SetVertexColor(color.r, color.g, color.b);
+		if (self.Summary) then
+			self.Summary.Border:SetVertexColor(color.r, color.g, color.b);
+			self.Summary.IconGlow:SetVertexColor(color.r, color.g, color.b);
+		end
+	else
+		self.HeaderBackground:SetVertexColor(1, 1, 1);
+	end
+	
+	TalentFrame_Update(self);
+	
+	PlayerTalentFramePanel_UpdateSummary(self);
+	
+	if (self.SelectTreeButton) then
+		if (not primaryTree and GetNumTalentPoints() > 0) then
+			self.SelectTreeButton:Show();
+			self.SelectTreeButton:SetText(name);
+			if (selectedSpec and (activeSpec == selectedSpec)) then
+				self.SelectTreeButton:Enable();
+			else
+				self.SelectTreeButton:Disable();
+			end
+		else
+			self.SelectTreeButton:Hide();
+		end
+	end
+	
+	-- Update appearance of the Header icon and surrounding art
+	if (self.HeaderIcon and not self.pet) then
+		PlayerTalentFramePanel_ShowOrHideHeaderIcon(self);
+		if (primaryTree == self.talentTree) then
+			self.HeaderIcon.PointsSpent:Show();
+			self.HeaderIcon.PrimaryBorder:Show();
+			self.HeaderIcon.PointsSpentBgGold:Show();
+			self.HeaderIcon.SecondaryBorder:Hide();
+			self.HeaderIcon.PointsSpentBgSilver:Hide();
+			self.HeaderIcon.LockIcon:Hide();
+		elseif (isUnlocked or GetNumTalentPoints() == 0) then
+			self.HeaderIcon.PointsSpent:Show();
+			self.HeaderIcon.PrimaryBorder:Hide();
+			self.HeaderIcon.PointsSpentBgGold:Hide();
+			self.HeaderIcon.SecondaryBorder:Show();
+			self.HeaderIcon.PointsSpentBgSilver:Show();
+			self.HeaderIcon.LockIcon:Hide();
+		else
+			self.HeaderIcon.PointsSpent:Hide();
+			self.HeaderIcon.PrimaryBorder:Hide();
+			self.HeaderIcon.PointsSpentBgGold:Hide();
+			self.HeaderIcon.SecondaryBorder:Show();
+			self.HeaderIcon.PointsSpentBgSilver:Hide();
+			self.HeaderIcon.LockIcon:Show();
+		end	
+	end
+	
+	if (self.RoleIcon) then
+		local role1, role2 = GetTalentTreeRoles(self.talentTree, self.inspect, self.pet);
+		
+		-- swap roles to match order on the summary screen
+		if (role2) then
+			role1, role2 = role2, role1;
+		end
+		
+		-- Update roles
+		if ( role1 == "TANK" or role1 == "HEALER" or role1 == "DAMAGER") then
+			self.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmall(role1));
+			self.RoleIcon:Show();
+		else
+			self.RoleIcon:Hide();
+		end
+		
+		if ( role2 == "TANK" or role2 == "HEALER" or role2 == "DAMAGER") then
+			self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmall(role2));
+			self.RoleIcon2:Show();
+		else
+			self.RoleIcon2:Hide();
+		end
+	end
+	
+	-- Update the glow on your primary spec
+	if (not self.pet and primaryTree and primaryTree == self.talentTree) then
+		self.GlowLeft:Show();
+		self.GlowBottomLeft:Show();
+		self.GlowBottom:Show();
+		self.GlowBottomRight:Show();
+		self.GlowRight:Show();
+	elseif (not self.pet) then
+		self.GlowLeft:Hide();
+		self.GlowBottomLeft:Hide();
+		self.GlowBottom:Hide();
+		self.GlowBottomRight:Hide();
+		self.GlowRight:Hide();
+	end
+	
+	
+	-- Set desaturation if the tree is not unlocked or the spec is not selected
+	if (not self.pet and ((not isUnlocked and primaryTree) or not(selectedSpec == activeSpec))) then
+		self.BgTopLeft:SetDesaturated(1);
+		self.BgTopRight:SetDesaturated(1);
+		self.BgBottomLeft:SetDesaturated(1);
+		self.BgBottomRight:SetDesaturated(1);
+		self.GlowLeft:SetDesaturated(1);
+		self.GlowBottomLeft:SetDesaturated(1);
+		self.GlowBottom:SetDesaturated(1);
+		self.GlowBottomRight:SetDesaturated(1);
+		self.GlowRight:SetDesaturated(1);
+		self.HeaderBackground:SetVertexColor(1, 1, 1);
+		self.HeaderIcon.Icon:SetDesaturated(1);
+		self.HeaderIcon.PrimaryBorder:SetDesaturated(1);
+		self.HeaderIcon.PointsSpentBgGold:SetDesaturated(1);
+		self.HeaderBorder:SetDesaturated(1);
+		self.Name:SetFontObject(GameFontDisable);
+		if (self.RoleIcon) then
+			self.RoleIcon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
+			self.RoleIcon2:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
+		end
+	elseif (not self.pet) then
+		self.GlowLeft:SetDesaturated(0);
+		self.GlowBottomLeft:SetDesaturated(0);
+		self.GlowBottom:SetDesaturated(0);
+		self.GlowBottomRight:SetDesaturated(0);
+		self.GlowRight:SetDesaturated(0);
+		self.HeaderIcon.Icon:SetDesaturated(0);
+		self.HeaderIcon.PrimaryBorder:SetDesaturated(0);
+		self.HeaderIcon.PointsSpentBgGold:SetDesaturated(0);
+		self.HeaderBorder:SetDesaturated(0);
+		self.Name:SetFontObject(GameFontNormal);
+		if (self.RoleIcon) then
+			self.RoleIcon:SetTexture("Interface\\LFGFrame\\LFGRole");
+			self.RoleIcon2:SetTexture("Interface\\LFGFrame\\LFGRole");
+		end
+	end
+	
+	-- Update the shadow cover
+	if (not self.pet) then
+		if (not isUnlocked and primaryTree) then
+			self.InactiveShadow:Show();
+			self.InactiveShadow.Gradient:Hide();
+			self.InactiveShadow.Cover:SetPoint("TOPLEFT", 0, 0);
+			self.InactiveShadow:SetAlpha(0.7);
+		elseif (primaryTree and primaryTree ~= self.talentTree) then
+			self.InactiveShadow:Show();
+			self.InactiveShadow.Gradient:Show();
+			self.InactiveShadow.Cover:SetPoint("TOPLEFT", self.InactiveShadow.Gradient, "BOTTOMLEFT", 0, 0);
+			self.InactiveShadow:SetAlpha(0.5);
+		else
+			self.InactiveShadow:Hide();
+		end
 	end
 end
 
@@ -435,22 +1142,22 @@ end
 
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
+		local link = GetTalentLink(self:GetParent().talentTree, self:GetID(),
 			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
-	elseif ( selectedSpec and (activeSpec == selectedSpec or specs[selectedSpec].pet) ) then
+	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
 		-- only allow functionality if an active spec is selected
 		if ( button == "LeftButton" ) then
 			if ( GetCVarBool("previewTalents") ) then
-				AddPreviewTalentPoints(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(), 1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+				AddPreviewTalentPoints(self:GetParent().talentTree, self:GetID(), 1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			else
-				LearnTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(), PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+				LearnTalent(self:GetParent().talentTree, self:GetID(), PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			end
 		elseif ( button == "RightButton" ) then
 			if ( GetCVarBool("previewTalents") ) then
-				AddPreviewTalentPoints(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(), -1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+				AddPreviewTalentPoints(self:GetParent().talentTree, self:GetID(), -1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			end
 		end
 	end
@@ -458,14 +1165,14 @@ end
 
 function PlayerTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
+		GameTooltip:SetTalent(self:GetParent().talentTree, self:GetID(),
 			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
 	end
 end
 
 function PlayerTalentFrameTalent_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
+	GameTooltip:SetTalent(self:GetParent().talentTree, self:GetID(),
 		PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
 end
 
@@ -474,46 +1181,114 @@ end
 
 function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 	local spec = selectedSpec and specs[selectedSpec];
-
 	local isActiveSpec = selectedSpec == activeSpec;
-
-	-- show the multi-spec status frame if this is not a pet spec or we have more than one talent group
-	local showStatusFrame = not spec.pet and numTalentGroups > 1;
-	-- show the activate button if we were going to show the status frame but this is not the active spec
-	local showActivateButton = showStatusFrame and not isActiveSpec;
-	if ( showActivateButton ) then
-		PlayerTalentFrameActivateButton:Show();
-		PlayerTalentFrameStatusFrame:Hide();
-	else
-		PlayerTalentFrameActivateButton:Hide();
-		if ( showStatusFrame ) then
-			PlayerTalentFrameStatusFrame:Show();
-		else
-			PlayerTalentFrameStatusFrame:Hide();
-		end
+	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+	local primaryTree = PlayerTalentFrame.primaryTree;
+	if (not activeTalentGroup or not numTalentGroups) then
+		activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
 	end
 
+	-- show the activate button if this is not the active spec
+	PlayerTalentFrameActivateButton_Update(numTalentGroups);
+
 	local preview = GetCVarBool("previewTalents");
+	
+	-- Show/Hide panel summaries
+	local summariesShown = PlayerTalentFrame_ShowOrHideSummaries();	
 
 	-- enable the control bar if this is the active spec, preview is enabled, and preview points were spent
-	local talentPoints = GetUnspentTalentPoints(false, spec.pet, spec.talentGroup);
-	if ( (spec.pet or isActiveSpec) and talentPoints > 0 and preview ) then
-		PlayerTalentFramePreviewBar:Show();
+	local talentTabSelected = PanelTemplates_GetSelectedTab(PlayerTalentFrame) == TALENTS_TAB;
+	local petTalentTabSelected = PanelTemplates_GetSelectedTab(PlayerTalentFrame) == PET_TALENTS_TAB;
+	local talentPoints = GetUnspentTalentPoints(false, PlayerTalentFrame.pet, spec.talentGroup);
+	local previewPrimaryTree = GetPreviewPrimaryTalentTree(PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+	if ( isActiveSpec and (talentPoints > 0 or previewPrimaryTree) and preview and ((talentTabSelected and primaryTree) or petTalentTabSelected)) then
+		
+		--ButtonFrameTemplate_ShowButtonBar(PlayerTalentFrame);
+		PlayerTalentFrameLearnButton:Show();
+		PlayerTalentFrameResetButton:Show();
+		
 		-- enable accept/cancel buttons if preview talent points were spent
-		if ( GetGroupPreviewTalentPointsSpent(spec.pet, spec.talentGroup) > 0 ) then
+		local previewPointsSpent = GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, spec.talentGroup);
+		if (previewPointsSpent > 0 or previewPrimaryTree) then
 			PlayerTalentFrameLearnButton:Enable();
 			PlayerTalentFrameResetButton:Enable();
+			if (previewPointsSpent > 0 and not PlayerTalentFrameLearnButtonTutorial.hasBeenClosed and not GetCVarBool("talentPointsSpent")) then
+				PlayerTalentFrameLearnButtonTutorial:Show();
+			else
+				PlayerTalentFrameLearnButtonTutorial:Hide();
+			end
 		else
 			PlayerTalentFrameLearnButton:Disable();
 			PlayerTalentFrameResetButton:Disable();
+			PlayerTalentFrameLearnButtonTutorial:Hide();
 		end
 		-- squish all frames to make room for this bar
-		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
+		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
 	else
-		PlayerTalentFramePreviewBar:Hide();
+		--ButtonFrameTemplate_HideButtonBar(PlayerTalentFrame);
+		PlayerTalentFrameLearnButton:Hide();
+		PlayerTalentFrameResetButton:Hide();
+		PlayerTalentFrameLearnButtonTutorial:Hide();
 		-- unsquish frames since the bar is now hidden
-		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
+		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
 	end
+	
+	-- Update header elements for the player talents
+	local headerY = -36;
+	if (selectedTab == TALENTS_TAB) then
+		if (not primaryTree and GetNumTalentPoints() > 0) then
+			-- Player has not selected a primary tree yet
+			PlayerTalentFrameHeaderText:SetFormattedText(TALENTS_CHOOSE_SPEC_HEADER, UnitClass("player"));
+			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlightLarge");
+			PlayerTalentFrameHeaderText:Show();
+			PlayerTalentFrameHeaderSubText:SetText(TALENTS_CHOOSE_SPEC_SUBHEADER);
+			PlayerTalentFrameHeaderSubText:Show();
+			headerY = headerY + 2;
+		elseif (talentPoints > 0) then
+			local unspentPreviewPoints = talentPoints - GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+			PlayerTalentFrameHeaderText:SetFormattedText(PLAYER_UNSPENT_TALENT_POINTS, NORMAL_FONT_COLOR_CODE..unspentPreviewPoints..FONT_COLOR_CODE_CLOSE);
+			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
+			PlayerTalentFrameHeaderText:Show();
+			PlayerTalentFrameHeaderSubText:Hide();
+		elseif (GetNextTalentLevel()) then
+			PlayerTalentFrameHeaderText:SetFormattedText(NEXT_TALENT_LEVEL, GetNextTalentLevel());
+			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
+			PlayerTalentFrameHeaderText:Show();
+			PlayerTalentFrameHeaderSubText:Hide();
+		else
+			PlayerTalentFrameHeaderText:Hide();
+			PlayerTalentFrameHeaderSubText:Hide();
+		end
+	elseif (selectedTab == PET_TALENTS_TAB) then
+		local nextPetTalentLevel = GetNextPetTalentLevel();
+		if (talentPoints > 0) then
+			local unspentPreviewPoints = talentPoints - GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+			PlayerTalentFrameHeaderText:SetFormattedText(PET_UNSPENT_TALENT_POINTS, NORMAL_FONT_COLOR_CODE..unspentPreviewPoints..FONT_COLOR_CODE_CLOSE);
+			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
+			PlayerTalentFrameHeaderText:Show();
+			PlayerTalentFrameHeaderSubText:Hide();
+		elseif (nextPetTalentLevel and nextPetTalentLevel <= MAX_PLAYER_LEVEL) then
+			PlayerTalentFrameHeaderText:SetFormattedText(NEXT_TALENT_LEVEL, nextPetTalentLevel);
+			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
+			PlayerTalentFrameHeaderText:Show();
+			PlayerTalentFrameHeaderSubText:Hide();
+		else
+			PlayerTalentFrameHeaderText:Hide();
+			PlayerTalentFrameHeaderSubText:Hide();
+		end
+	else
+		PlayerTalentFrameHeaderText:Hide();
+		PlayerTalentFrameHeaderSubText:Hide();
+	end
+	
+	if (PlayerTalentFrameHeaderSubText:IsShown()) then
+		headerY = headerY + 6;
+	end
+	
+	if (PlayerTalentFrameHeaderText:IsShown()) then
+		PlayerTalentFrameHeaderText:SetPoint("TOP", 0, headerY);
+	end
+	
 end
 
 function PlayerTalentFrameActivateButton_OnLoad(self)
@@ -531,7 +1306,6 @@ end
 
 function PlayerTalentFrameActivateButton_OnShow(self)
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
-	PlayerTalentFrameActivateButton_Update();
 end
 
 function PlayerTalentFrameActivateButton_OnHide(self)
@@ -539,18 +1313,24 @@ function PlayerTalentFrameActivateButton_OnHide(self)
 end
 
 function PlayerTalentFrameActivateButton_OnEvent(self, event, ...)
-	PlayerTalentFrameActivateButton_Update();
+	local numTalentGroups = GetNumTalentGroups(false, PlayerTalentFrame.pet);
+	PlayerTalentFrameActivateButton_Update(numTalentGroups);
 end
 
-function PlayerTalentFrameActivateButton_Update()
+function PlayerTalentFrameActivateButton_Update(numTalentGroups)
 	local spec = selectedSpec and specs[selectedSpec];
-	if ( spec and PlayerTalentFrameActivateButton:IsShown() ) then
-		-- if the activation spell is being cast currently, disable the activate button
-		if ( IsCurrentSpell(TALENT_ACTIVATION_SPELLS[spec.talentGroup]) ) then
+	if (numTalentGroups > 1) then
+		if (IsCurrentSpell(TALENT_ACTIVATION_SPELLS[spec.talentGroup])) then
+			PlayerTalentFrameActivateButton:Show();
 			PlayerTalentFrameActivateButton:Disable();
+		elseif (selectedSpec == activeSpec) then
+			PlayerTalentFrameActivateButton:Hide();
 		else
+			PlayerTalentFrameActivateButton:Show();
 			PlayerTalentFrameActivateButton:Enable();
 		end
+	else
+		PlayerTalentFrameActivateButton:Hide();
 	end
 end
 
@@ -560,6 +1340,9 @@ function PlayerTalentFrameResetButton_OnEnter(self)
 end
 
 function PlayerTalentFrameResetButton_OnClick(self)
+	PlayerTalentFrameTalents.summariesShownWhenNoPrimary = true;
+	PlayerTalentFrameTalents.summariesShownWhenPrimary = false;
+	PlayerTalentFrameLearnButtonTutorial.hasBeenClosed = false;
 	ResetGroupPreviewTalentPoints(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 end
 
@@ -573,61 +1356,44 @@ function PlayerTalentFrameLearnButton_OnClick(self)
 end
 
 
--- PlayerTalentFrameDownArrow
-
-function PlayerTalentFrameDownArrow_OnClick(self, button)
-	local parent = self:GetParent();
-	parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
-	PlaySound("UChatScrollButton");
-	UIFrameFlashStop(PlayerTalentFrameScrollButtonOverlay);
-end
-
-
 -- PlayerTalentFrameTab
 
 function PlayerTalentFrame_UpdateTabs(playerLevel)
 	local totalTabWidth = 0;
-
-	local firstShownTab;
-
-	-- setup talent tabs
-	local maxPointsSpent = 0;
+	local firstShownTab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
-	local numTabs = GetNumTalentTabs(PlayerTalentFrame.inspect, PlayerTalentFrame.pet);
-	local tab;
-	for i = 1, MAX_TALENT_TABS do
-		-- clear cached widths
-		talentTabWidthCache[i] = 0;
-		tab = _G["PlayerTalentFrameTab"..i];
-		if ( tab ) then
-			if ( i <= numTabs ) then
-				local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
-				if ( i == selectedTab ) then
-					-- If tab is the selected tab set the points spent info
-					local displayPointsSpent = pointsSpent + previewPointsSpent;
-					PlayerTalentFrameSpentPointsText:SetFormattedText(MASTERY_POINTS_SPENT, name, HIGHLIGHT_FONT_COLOR_CODE..displayPointsSpent..FONT_COLOR_CODE_CLOSE);
-					PlayerTalentFrame.pointsSpent = pointsSpent;
-					PlayerTalentFrame.previewPointsSpent = previewPointsSpent;
-				end
-				tab:SetText(name);
-				PanelTemplates_TabResize(tab, 0);
-				-- record the text width to see if we need to display a tooltip
-				tab.textWidth = tab:GetTextWidth();
-				-- record the tab widths for resizing later
-				talentTabWidthCache[i] = PanelTemplates_GetTabWidth(tab);
-				totalTabWidth = totalTabWidth + talentTabWidthCache[i];
-				tab:Show();
-				firstShownTab = firstShownTab or tab;
-			else
-				tab:Hide();
-				tab.textWidth = 0;
-			end
-		end
+	local numVisibleTabs = 0;
+
+	-- setup talent tab
+	talentTabWidthCache[TALENTS_TAB] = 0;
+	tab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
+	if ( tab ) then
+		tab:Show();
+		firstShownTab = firstShownTab or tab;
+		PanelTemplates_TabResize(tab, 0);
+		talentTabWidthCache[TALENTS_TAB] = PanelTemplates_GetTabWidth(tab);
+		totalTabWidth = totalTabWidth + talentTabWidthCache[TALENTS_TAB];
+		numVisibleTabs = numVisibleTabs+1;
+	end
+	
+	-- setup pet talents tab
+	talentTabWidthCache[PET_TALENTS_TAB] = 0;
+	tab = _G["PlayerTalentFrameTab"..PET_TALENTS_TAB];
+	local petTalentGroups = GetNumTalentGroups(false, true);
+	if ( tab and petTalentGroups > 0 and HasPetUI()) then
+		tab:Show();
+		firstShownTab = firstShownTab or tab;
+		PanelTemplates_TabResize(tab, 0);
+		talentTabWidthCache[PET_TALENTS_TAB] = PanelTemplates_GetTabWidth(tab);
+		totalTabWidth = totalTabWidth + talentTabWidthCache[PET_TALENTS_TAB];
+		numVisibleTabs = numVisibleTabs+1;
+	else
+		tab:Hide();
+		talentTabWidthCache[PET_TALENTS_TAB] = 0;
 	end
 
+	-- setup glyph tab
 	local spec = specs[selectedSpec];
-
-	-- setup glyph tabs, right now there is only one
 	playerLevel = playerLevel or UnitLevel("player");
 	local meetsGlyphLevel = playerLevel >= SHOW_INSCRIPTION_LEVEL;
 	tab = _G["PlayerTalentFrameTab"..GLYPH_TALENT_TAB];
@@ -637,11 +1403,11 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 		PanelTemplates_TabResize(tab, 0);
 		talentTabWidthCache[GLYPH_TALENT_TAB] = PanelTemplates_GetTabWidth(tab);
 		totalTabWidth = totalTabWidth + talentTabWidthCache[GLYPH_TALENT_TAB];
+		numVisibleTabs = numVisibleTabs+1;
 	else
 		tab:Hide();
 		talentTabWidthCache[GLYPH_TALENT_TAB] = 0;
 	end
-	local numGlyphTabs = 1;
 
 	-- select the first shown tab if the selected tab does not exist for the selected spec
 	tab = _G["PlayerTalentFrameTab"..selectedTab];
@@ -670,9 +1436,19 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 		-- now update the total width
 		totalTabWidth = totalTabWidth - 10;
 	end
-
+	
+	-- Reposition the visible tabs
+	local x = 15;
+	for i=1, NUM_TALENT_FRAME_TABS do
+		tab = _G["PlayerTalentFrameTab"..i];
+		if (tab:IsShown()) then
+			tab:ClearAllPoints();
+			tab:SetPoint("TOPLEFT", PlayerTalentFrame, "BOTTOMLEFT", x, 1);
+			x = x+talentTabWidthCache[i]-15;
+		end
+	end
+	
 	-- update the tabs
-	PanelTemplates_SetNumTabs(PlayerTalentFrame, numTabs + numGlyphTabs);
 	PanelTemplates_UpdateTabs(PlayerTalentFrame);
 
 	return true;
@@ -707,9 +1483,7 @@ end
 
 function PlayerTalentTab_OnClick(self)
 	PlayerTalentFrameTab_OnClick(self);
-	for i=1, MAX_TALENT_TABS do
-		SetButtonPulse(_G["PlayerTalentFrameTab"..i], 0, 0);
-	end
+	SetButtonPulse(self, 0, 0);
 end
 
 function PlayerTalentTab_OnEvent(self, event, ...)
@@ -717,26 +1491,6 @@ function PlayerTalentTab_OnEvent(self, event, ...)
 		SetButtonPulse(self, 60, 0.75);
 	end
 end
-
-function PlayerTalentTab_GetBestDefaultTab(specIndex)
-	if ( not specIndex ) then
-		return DEFAULT_TALENT_TAB;
-	end
-
-	local spec = specs[specIndex];
-	if ( not spec ) then
-		return DEFAULT_TALENT_TAB;
-	end
-
-	local specInfoCache = talentSpecInfoCache[specIndex];
-	TalentFrame_UpdateSpecInfoCache(specInfoCache, false, spec.pet, spec.talentGroup);
-	if ( specInfoCache.primaryTabIndex > 0 ) then
-		return talentSpecInfoCache[specIndex].primaryTabIndex;
-	else
-		return DEFAULT_TALENT_TAB;
-	end
-end
-
 
 -- PlayerGlyphTab
 
@@ -766,7 +1520,7 @@ end
 -- PlayerTalentFrame_UpdateSpecs is a helper function for PlayerTalentFrame_Update.
 -- Returns true on a successful update, false otherwise. An update may fail if the currently
 -- selected tab is no longer selectable. In this case, the first selectable tab will be selected.
-function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups)
+function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups)
 	-- set the active spec highlight to be hidden initially, if a spec is the active one then it will
 	-- be shown in PlayerSpecTab_Update
 	PlayerTalentFrameActiveSpecTabHighlight:Hide();
@@ -779,7 +1533,7 @@ function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, activ
 		local frame = _G["PlayerSpecTab"..i];
 		local specIndex = frame.specIndex;
 		local spec = specs[specIndex];
-		if ( PlayerSpecTab_Update(frame, activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups) ) then
+		if ( PlayerSpecTab_Update(frame, activeTalentGroup, numTalentGroups) ) then
 			firstShownTab = firstShownTab or frame;
 			numShown = numShown + 1;
 			frame:ClearAllPoints();
@@ -787,17 +1541,13 @@ function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, activ
 			offsetX = specIndex == selectedSpec and SELECTEDSPEC_OFFSETX or offsetX;
 			if ( numShown == 1 ) then
 				--...start the first tab off at a base location
-				frame:SetPoint("TOPLEFT", frame:GetParent(), "TOPRIGHT", -32 + offsetX, -65);
+				frame:SetPoint("TOPLEFT", frame:GetParent(), "TOPRIGHT", offsetX, -36);
 				-- we'll need to negate the offsetX after the first tab so all subsequent tabs offset
 				-- to their default positions
 				offsetX = -offsetX;
 			else
 				--...offset subsequent tabs from the previous one
-				if ( spec.pet ~= specs[lastShownTab.specIndex].pet ) then
-					frame:SetPoint("TOPLEFT", lastShownTab, "BOTTOMLEFT", 0 + offsetX, -39);
-				else
-					frame:SetPoint("TOPLEFT", lastShownTab, "BOTTOMLEFT", 0 + offsetX, -22);
-				end
+				frame:SetPoint("TOPLEFT", lastShownTab, "BOTTOMLEFT", 0 + offsetX, -22);
 			end
 			lastShownTab = frame;
 		else
@@ -823,26 +1573,20 @@ function PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups, activ
 	return true;
 end
 
-function PlayerSpecTab_Update(self, ...)
-	local activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups = ...;
-
+function PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups)
 	local specIndex = self.specIndex;
 	local spec = specs[specIndex];
 
 	-- determine whether or not we need to hide the tab
-	local canShow;
-	if ( spec.pet ) then
-		canShow = spec.talentGroup <= numPetTalentGroups;
-	else
-		canShow = spec.talentGroup <= numTalentGroups;
-	end
+	local canShow = spec.talentGroup <= numTalentGroups;
+
 	if ( not canShow ) then
 		self:Hide();
 		return false;
 	end
 
 	local isSelectedSpec = specIndex == selectedSpec;
-	local isActiveSpec = not spec.pet and spec.talentGroup == activeTalentGroup;
+	local isActiveSpec = spec.talentGroup == activeTalentGroup;
 	local normalTexture = self:GetNormalTexture();
 
 	-- set the background based on whether or not we're selected
@@ -885,37 +1629,27 @@ function PlayerSpecTab_Update(self, ...)
 		end
 	end
 
---[[
-	if ( not spec.pet ) then
-		SetDesaturation(normalTexture, not isActiveSpec);
-	end
---]]
-
 	-- update the spec info cache
-	TalentFrame_UpdateSpecInfoCache(talentSpecInfoCache[specIndex], false, spec.pet, spec.talentGroup);
+	TalentFrame_UpdateSpecInfoCache(talentSpecInfoCache[specIndex], false, PlayerTalentFrame.pet, spec.talentGroup);
 
 	-- update spec tab icon
 	self.usingPortraitTexture = false;
 	if ( hasMultipleTalentGroups ) then
+		local primaryTree = GetPreviewPrimaryTalentTree(false, false, spec.talentGroup) 
+				or GetPrimaryTalentTree(false, false, spec.talentGroup);
+		
 		local specInfoCache = talentSpecInfoCache[specIndex];
-		local primaryTabIndex = specInfoCache.primaryTabIndex;
-		if ( primaryTabIndex > 0 ) then
+		if ( primaryTree and primaryTree > 0 and specInfoCache) then
 			-- the spec had a primary tab, set the icon to that tab's icon
-			normalTexture:SetTexture(specInfoCache[primaryTabIndex].icon);
+			normalTexture:SetTexture(specInfoCache[primaryTree].icon);
 		else
-			if ( specInfoCache.numTabs > 1 and specInfoCache.totalPointsSpent > 0 ) then
-				-- the spec is only considered a hybrid if the spec had more than one tab and at least
-				-- one point was spent in one of the tabs
-				normalTexture:SetTexture(TALENT_HYBRID_ICON);
-			else
-				if ( spec.defaultSpecTexture ) then
-					-- the spec is probably untalented...set to the default spec texture if we have one
-					normalTexture:SetTexture(spec.defaultSpecTexture);
-				elseif ( spec.portraitUnit ) then
-					-- last check...if there is no default spec texture, try the portrait unit
-					SetPortraitTexture(normalTexture, spec.portraitUnit);
-					self.usingPortraitTexture = true;
-				end
+			if ( spec.defaultSpecTexture ) then
+				-- the spec is probably untalented...set to the default spec texture if we have one
+				normalTexture:SetTexture(spec.defaultSpecTexture);
+			elseif ( spec.portraitUnit ) then
+				-- last check...if there is no default spec texture, try the portrait unit
+				SetPortraitTexture(normalTexture, spec.portraitUnit);
+				self.usingPortraitTexture = true;
 			end
 		end
 	else
@@ -925,18 +1659,7 @@ function PlayerSpecTab_Update(self, ...)
 			self.usingPortraitTexture = true;
 		end
 	end
---[[
-	-- update overlay icon
-	local name = self:GetName();
-	local overlayIcon = _G[name.."OverlayIcon"];
-	if ( overlayIcon ) then
-		if ( hasMultipleTalentGroups ) then
-			overlayIcon:Show();
-		else
-			overlayIcon:Hide();
-		end
-	end
---]]
+
 	self:Show();
 	return true;
 end
@@ -969,8 +1692,7 @@ function PlayerSpecTab_Load(self, specIndex)
 	end
 
 	local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, false), GetNumTalentGroups(false, false);
-	local activePetTalentGroup, numPetTalentGroups = GetActiveTalentGroup(false, true), GetNumTalentGroups(false, true);
-	PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups, activePetTalentGroup, numPetTalentGroups);
+	PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups);
 end
 
 function PlayerSpecTab_OnClick(self)
@@ -988,13 +1710,14 @@ function PlayerSpecTab_OnClick(self)
 
 	-- set data on the talent frame
 	local spec = specs[specIndex];
-	PlayerTalentFrame.pet = spec.pet;
-	PlayerTalentFrame.unit = spec.unit;
 	PlayerTalentFrame.talentGroup = spec.talentGroup;
+	PlayerTalentFramePanel1.talentGroup = spec.talentGroup;
+	PlayerTalentFramePanel2.talentGroup = spec.talentGroup;
+	PlayerTalentFramePanel3.talentGroup = spec.talentGroup;
 
 	-- select a tab if one is not already selected
 	if ( not PanelTemplates_GetSelectedTab(PlayerTalentFrame) ) then
-		PanelTemplates_SetTab(PlayerTalentFrame, PlayerTalentTab_GetBestDefaultTab(specIndex));
+		PanelTemplates_SetTab(PlayerTalentFrame, TALENTS_TAB);
 	end
 
 	-- update the talent frame
@@ -1009,7 +1732,7 @@ function PlayerSpecTab_OnEnter(self)
 		-- name
 		if ( GetNumTalentGroups(false, true) <= 1 and GetNumTalentGroups(false, false) <= 1 ) then
 			-- set the tooltip to be the unit's name
-			GameTooltip:AddLine(UnitName(spec.unit), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			GameTooltip:AddLine(UnitName("player"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		else
 			-- set the tooltip to be the spec name
 			GameTooltip:AddLine(spec.tooltip);

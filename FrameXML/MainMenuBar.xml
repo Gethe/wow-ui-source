@@ -11,16 +11,35 @@
 		<Frames>
 			<StatusBar name="MainMenuExpBar" inherits="TextStatusBar">
 				<Size>
-					<AbsDimension x="1024" y="13"/>
+					<AbsDimension x="1024" y="11"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
 				<Layers>
+					
+					<!-- Patchwerk INFO
+					<Texture name="UI-VehicleXP-Divider.png" >
+						<Size x="9" y="10"/>	
+						<TexCoords left="0.01562500" right="0.15625000" top="0.01562500" bottom="0.17187500"/>	
+					</Texture>
+					<Texture name="UI-VehicleXP-Left.png" >
+						<Size x="16" y="16"/>	
+						<TexCoords left="0.18750000" right="0.43750000" top="0.01562500" bottom="0.26562500"/>	
+					</Texture>
+					<Texture name="UI-VehicleXP-Mid.png" >
+						<Size x="16" y="16"/>	
+						<TexCoords left="0.46875000" right="0.71875000" top="0.01562500" bottom="0.26562500"/>	
+					</Texture>
+					<Texture name="UI-VehicleXP-Right.png" >
+						<Size x="16" y="16"/>	
+						<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>	
+					</Texture-->
+
 					<Layer level="BORDER">
 						<Texture name="ExhaustionLevelFillBar">
 							<Size>
-								<AbsDimension x="0" y="13"/>
+								<AbsDimension x="0" y="10"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="MainMenuExpBar">
@@ -32,58 +51,33 @@
 							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="MainMenuXPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture name="MainMenuXPBarTextureLeftCap" file="Interface\MainMenuBar\UI-XP-Bar">
 							<Size>
-								<AbsDimension x="256" y="10"/>
+								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="-384" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT"  relativePoint="LEFT" x="-3" y="0"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
+							<TexCoords left="0.18750000" right="0.43750000" top="0.01562500" bottom="0.26562500"/>
 						</Texture>
-						<Texture name="MainMenuXPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="MainMenuXPBarTextureRightCap" file="Interface\MainMenuBar\UI-XP-Bar">
 							<Size>
-								<AbsDimension x="256" y="10"/>
+								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="-128" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="3" y="0"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
+							<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>
 						</Texture>
-						<Texture name="MainMenuXPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="MainMenuXPBarTextureMid" file="Interface\MainMenuBar\UI-XP-Mid" horizTile="true">
 							<Size>
-								<AbsDimension x="256" y="10"/>
+								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="128" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="MainMenuXPBarTextureLeftCap" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="MainMenuXPBarTextureRightCap" relativePoint="LEFT"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
-						</Texture>
-						<Texture name="MainMenuXPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size>
-								<AbsDimension x="256" y="10"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="384" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
@@ -96,7 +90,7 @@
 					<Frame name="MainMenuBarOverlayFrame" frameStrata="DIALOG">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="MainMenuBar"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -129,6 +123,7 @@
 						self.cvar = "xpBarText";
 						self.cvarLabel = "XP_BAR_TEXT";
 						self.alwaysPrefix = true;
+						MainMenuExpBar_SetWidth(1024);
 					</OnLoad>
 					<OnEvent>
 						if ( event == "CVAR_UPDATE" ) then
@@ -164,7 +159,7 @@
 						TextStatusBar_OnValueChanged(self);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>
 			</StatusBar>
 			<Frame name="MainMenuBarMaxLevelBar" enableMouse="true" hidden="true">
@@ -180,7 +175,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="MainMenuMaxLevelBar0" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+						<Texture name="MainMenuMaxLevelBar0" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
 							<Size>
 								<AbsDimension x="256" y="7"/>
 							</Size>
@@ -193,7 +188,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0" bottom="0.21875"/>
 						</Texture>
-						<Texture name="MainMenuMaxLevelBar1" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+						<Texture name="MainMenuMaxLevelBar1" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
 							<Size>
 								<AbsDimension x="256" y="7"/>
 							</Size>
@@ -202,7 +197,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.25" bottom="0.46875"/>
 						</Texture>
-						<Texture name="MainMenuMaxLevelBar2" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+						<Texture name="MainMenuMaxLevelBar2" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
 							<Size>
 								<AbsDimension x="256" y="7"/>
 							</Size>
@@ -211,7 +206,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.5" bottom="0.71875"/>
 						</Texture>
-						<Texture name="MainMenuMaxLevelBar3" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+						<Texture name="MainMenuMaxLevelBar3" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
 							<Size>
 								<AbsDimension x="256" y="7"/>
 							</Size>
@@ -234,7 +229,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="MainMenuBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="MainMenuBarTexture0" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="43"/>
 							</Size>
@@ -247,7 +242,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.83203125" bottom="1.0"/>
 						</Texture>
-						<Texture name="MainMenuBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="MainMenuBarTexture1" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="43"/>
 							</Size>
@@ -260,7 +255,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.58203125" bottom="0.75"/>
 						</Texture>
-						<Texture name="MainMenuBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="MainMenuBarTexture2" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="43"/>
 							</Size>
@@ -273,7 +268,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.33203125" bottom="0.5"/>
 						</Texture>
-						<Texture name="MainMenuBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="MainMenuBarTexture3" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="43"/>
 							</Size>
@@ -288,7 +283,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="MainMenuBarLeftEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+						<Texture name="MainMenuBarLeftEndCap" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
 							<Size>
 								<AbsDimension x="128" y="128"/>
 							</Size>
@@ -300,7 +295,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture name="MainMenuBarRightEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+						<Texture name="MainMenuBarRightEndCap" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
 							<Size>
 								<AbsDimension x="128" y="128"/>
 							</Size>
@@ -360,13 +355,26 @@
 				</HighlightTexture>
 			</Button>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="slideout">
+				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
+				<Scripts>
+					<OnPlay>
+						MainMenuBar:Show();
+					</OnPlay>
+					<OnFinished>
+						ActionBar_AnimTransitionFinished(MainMenuBar);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad>
 				RaiseFrameLevel(MainMenuBarArtFrame);
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Button name="ExhaustionTick" parent="MainMenuBar" hidden="false" frameStrata="DIALOG">
+	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="DIALOG">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>

@@ -93,8 +93,8 @@ function LootFrame_UpdateButton(index)
 	local button = _G["LootButton"..index];
 		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 		if ( slot <= numLootItems ) then	
-			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot)) and index <= numLootToShow ) then
-				local texture, item, quantity, quality, locked = GetLootSlotInfo(slot);
+			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot) or LootSlotIsCurrency(slot)) and index <= numLootToShow ) then
+				local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
 				local color = ITEM_QUALITY_COLORS[quality];
 				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
 				local text = _G["LootButton"..index.."Text"];
@@ -108,6 +108,18 @@ function LootFrame_UpdateButton(index)
 					SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
 					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 				end
+				
+				questTexture = _G["LootButton"..index.."IconQuestTexture"];
+				if ( questId and not isActive ) then
+					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
+					questTexture:Show();
+				elseif ( questId or isQuestItem ) then
+					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
+					questTexture:Show();		
+				else
+					questTexture:Hide();
+				end
+				
 				text:SetVertexColor(color.r, color.g, color.b);
 				local countString = _G["LootButton"..index.."Count"];
 				if ( quantity > 1 ) then
@@ -162,11 +174,11 @@ function LootFrame_PageUp()
 end
 
 function LootFrame_Show(self)
-	ShowUIPanel(self);
 	self.numLootItems = GetNumLootItems();
 	
 	if ( GetCVar("lootUnderMouse") == "1" ) then
-		-- position loot window under mouse cursor		
+		self:Show();
+		-- position loot window under mouse cursor
 		local x, y = GetCursorPosition();
 		x = x / self:GetEffectiveScale();
 		y = y / self:GetEffectiveScale();
@@ -188,6 +200,8 @@ function LootFrame_Show(self)
 		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY);
 		self:GetCenter();
 		self:Raise();
+	else
+		ShowUIPanel(self);
 	end
 	
 	LootFrame_Update();
@@ -226,6 +240,11 @@ function LootItem_OnEnter(self)
 	if ( LootSlotIsItem(slot) ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetLootItem(slot);
+		CursorUpdate(self);
+	end
+	if ( LootSlotIsCurrency(slot) ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetLootCurrency(slot);
 		CursorUpdate(self);
 	end
 end

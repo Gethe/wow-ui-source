@@ -243,7 +243,7 @@ function RaidGroupFrame_Update()
 			raid_groupFrames[i]:Show();
 		end
 		for i=1, MAX_RAID_CLASS_BUTTONS do
-			classes[i]:Show();
+			--classes[i]:Show();
 		end
 	end
 

@@ -26,7 +26,7 @@
 				AuctionFrameFilter_OnClick(self, button, down);
 			</OnClick>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+		<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
 			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
 		</NormalTexture>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
@@ -48,7 +48,7 @@
 	<Button name="AuctionSortButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="19"/>
 					</Size>
@@ -57,7 +57,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="19"/>
 					</Size>
@@ -66,7 +66,7 @@
 					</Anchors>
 					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="10" y="19"/>
 					</Size>
@@ -270,7 +270,7 @@
 						end
 					</OnUpdate>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -337,6 +337,7 @@
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
 						MoneyFrame_SetType(self, "AUCTION");
+						MoneyFrame_SetMaxDisplayWidth(self, 146);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -378,6 +379,7 @@
 								SmallMoneyFrame_OnLoad(self);
 								MoneyFrame_SetType(self, "AUCTION");
 								SetMoneyFrameColor(self:GetName(), "yellow")
+								MoneyFrame_SetMaxDisplayWidth(self, 146);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -447,7 +449,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="250" y="0"/>
+								<AbsDimension x="246" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -573,7 +575,7 @@
 						end
 					</OnUpdate>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -595,7 +597,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="295" y="0"/>
+							<AbsDimension x="291" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -632,7 +634,7 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="535" y="0"/>
+							<AbsDimension x="543" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -647,7 +649,7 @@
 				<Anchors>
 					<Anchor point="RIGHT">
 						<Offset>
-							<AbsDimension x="2" y="0"/>
+							<AbsDimension x="6" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -821,7 +823,7 @@
 						end
 					</OnUpdate>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -923,6 +925,7 @@
 							<OnLoad>
 								SmallMoneyFrame_OnLoad(self);
 								MoneyFrame_SetType(self, "AUCTION");
+								MoneyFrame_SetMaxDisplayWidth(self, 146);
 							</OnLoad>
 						</Scripts>
 					</Frame>

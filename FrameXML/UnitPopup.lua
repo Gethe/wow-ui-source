@@ -118,6 +118,13 @@ UnitPopupButtons["RAID_TARGET_7"] = { text = RAID_TARGET_7, dist = 0, checkable 
 UnitPopupButtons["RAID_TARGET_8"] = { text = RAID_TARGET_8, dist = 0, checkable = 1, color = {r = 0.98, g = 0.98, b = 0.98}, icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcons", tCoordLeft = 0.75, tCoordRight = 1, tCoordTop = 0.25, tCoordBottom = 0.5 };
 UnitPopupButtons["RAID_TARGET_NONE"] = { text = RAID_TARGET_NONE, dist = 0, checkable = 1 };
 
+--Role icons
+UnitPopupButtons["SELECT_ROLE"] = { text = SET_ROLE, dist = 0, nested = 1 };
+UnitPopupButtons["SET_ROLE_NONE"] = { text = NO_ROLE, dist = 0 };
+UnitPopupButtons["SET_ROLE_TANK"] = { text = INLINE_TANK_ICON.." "..TANK, dist = 0 };
+UnitPopupButtons["SET_ROLE_HEALER"] = { text = INLINE_HEALER_ICON.." "..HEALER, dist = 0 };
+UnitPopupButtons["SET_ROLE_DAMAGER"] = { text = INLINE_DAMAGER_ICON.." "..DAMAGER, dist = 0 };
+
 -- Chat Channel Player Commands
 UnitPopupButtons["CHAT_PROMOTE"] = { text = MAKE_MODERATOR, dist = 0 };
 UnitPopupButtons["CHAT_DEMOTE"] = { text = REMOVE_MODERATOR, dist = 0 };
@@ -135,11 +142,11 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "LEAVE", "CANCEL" };
+UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "CANCEL" };
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "CANCEL" };
-UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
+UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
-UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
+UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
 UnitPopupMenus["RAID"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "CANCEL" };
 UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET_NOTE", "IGNORE", "REPORT_SPAM", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
@@ -147,6 +154,7 @@ UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
+UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
 UnitPopupMenus["VEHICLE"] = { "SET_FOCUS", "RAID_TARGET_ICON", "VEHICLE_LEAVE", "CANCEL" };
 UnitPopupMenus["TARGET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
@@ -364,6 +372,10 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				if ( not GetOptOutOfLoot() ) then
 					info.checked = 1;
 				end
+			elseif ( strsub(value, 1, 9) == "SET_ROLE_" ) then
+				if ( UnitGroupRolesAssigned(unit) == strsub(value, 10) ) then
+					info.checked = 1;
+				end
 			end
 			
 			info.value = value;
@@ -485,7 +497,7 @@ function UnitPopup_HideButtons ()
 		canCoop = 1;
 	end
 	
-	for index, value in ipairs(UnitPopupMenus[dropdownMenu.which]) do
+	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE or dropdownMenu.which]) do
 		UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 1;
 		if ( value == "TRADE" ) then
 			if ( canCoop == 0 ) then
@@ -497,7 +509,7 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or UnitIsUnit("player", dropdownMenu.unit) or (server and server ~= "") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == PVPDropDown) and not PVPDropDown.online ) then
+			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( (dropdownMenu == ChannelRosterDropDown) ) then
 				if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
@@ -521,7 +533,7 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or dropdownMenu.name == UnitName("player") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == PVPDropDown) and not PVPDropDown.online ) then
+			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "CREATE_CONVERSATION_WITH" ) then
@@ -592,7 +604,7 @@ function UnitPopup_HideButtons ()
 			-- We don't want to show a menu option that will end up being blocked
 			if ( InCombatLockdown() or not issecure() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( (dropdownMenu == PVPDropDown) and not PVPDropDown.online ) then
+			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PROMOTE" ) then
@@ -604,27 +616,27 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GUILD_PROMOTE" ) then
-			if ( not IsGuildLeader() or not UnitIsInMyGuild(dropdownMenu.name) or dropdownMenu.name == UnitName("player") or not GuildFrame:IsShown() ) then
+			if ( not IsGuildLeader() or not UnitIsInMyGuild(dropdownMenu.name) or dropdownMenu.name == UnitName("player") or not GuildFrame or not GuildFrame:IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GUILD_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not GuildFrame:IsShown() ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not GuildFrame or not GuildFrame:IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_PROMOTE" ) then
-			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
+			if ( dropdownMenu.name == UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+			elseif ( PVP_ArenaTeamFrame():IsShown() and not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_KICK" ) then
-			if ( dropdownMenu.name == UnitName("player") or not PVPTeamDetails:IsShown() ) then
+			if ( dropdownMenu.name == UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( PVPTeamDetails:IsShown() and not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+			elseif ( PVP_ArenaTeamFrame():IsShown() and not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not PVPTeamDetails:IsShown() ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
@@ -810,7 +822,7 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
 			-- Task #30755. Let any party member mark targets
-			-- Task 34355 - But only raid leaders can mark targets.
+			-- Task 34335 - But only raid leaders can mark targets.
 			if ( inRaid == 1 and isLeader == 0 and isAssistant == 0 ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -982,6 +994,10 @@ function UnitPopup_HideButtons ()
 			if ( not FocusFrame_IsLocked() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
+		elseif ( value == "SELECT_ROLE" ) then
+			if ( not ( (GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0) and not HasLFGRestrictions() and (isLeader ~= 0 or isAssistant ~= 0 or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
 		end
 	end
 end
@@ -995,8 +1011,6 @@ function UnitPopup_OnUpdate (elapsed)
 	for index, value in ipairs(UnitPopupFrames) do
 		if ( UIDROPDOWNMENU_OPEN_MENU == _G[value] ) then
 			break;
-		elseif ( index == #UnitPopupFrames ) then
-			return;
 		end
 	end
 
@@ -1008,7 +1022,7 @@ function UnitPopup_OnUpdate (elapsed)
 	end
 
 	local isCaptain
-	if (PVPTeamDetails.team and IsArenaTeamCaptain(PVPTeamDetails.team) ) then
+	if (PVP_GetSelectedArenaTeam() and IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
 		isCaptain = 1;
 	end
 
@@ -1034,8 +1048,8 @@ function UnitPopup_OnUpdate (elapsed)
 	for level, dropdownFrame in pairs(OPEN_DROPDOWNMENUS) do
 		if ( dropdownFrame ) then
 			count = 0;
-			for index, value in ipairs(UnitPopupMenus[dropdownFrame.which]) do				
-				if ( UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] == 1 ) then
+			for index, value in ipairs(UnitPopupMenus[dropdownFrame.which]) do
+				if ( UnitPopupShown[level][index] == 1 ) then
 					count = count + 1;
 					local enable = 1;
 					if ( UnitPopupButtons[value].dist > 0 ) then
@@ -1140,6 +1154,21 @@ function UnitPopup_OnUpdate (elapsed)
 						end
 					elseif ( value == "RAF_GRANT_LEVEL" ) then
 						if( not CanGrantLevel(dropdownFrame.unit) ) then
+							enable = 0;
+						end
+					elseif ( value == "SET_ROLE_TANK" ) then
+						local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownFrame.unit);
+						if ( not canBeTank ) then
+							enable = 0;
+						end
+					elseif ( value == "SET_ROLE_HEALER" ) then
+						local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownFrame.unit);
+						if ( not canBeHealer ) then
+							enable = 0;
+						end
+					elseif ( value == "SET_ROLE_DAMAGER" ) then
+						local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownFrame.unit);
+						if ( not canBeDamager ) then
 							enable = 0;
 						end
 					end
@@ -1252,21 +1281,21 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "GUILD_LEAVE" ) then
 		StaticPopup_Show("CONFIRM_GUILD_LEAVE", GetGuildInfo("player"));
 	elseif ( button == "TEAM_PROMOTE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, GetArenaTeam(PVPTeamDetails.team));
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, GetArenaTeam(PVP_GetSelectedArenaTeam()));
 		if ( dialog ) then
-			dialog.data = PVPTeamDetails.team;
+			dialog.data = PVP_GetSelectedArenaTeam();
 			dialog.data2 = name;
 		end
 	elseif ( button == "TEAM_KICK" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, GetArenaTeam(PVPTeamDetails.team) );
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, GetArenaTeam(PVP_GetSelectedArenaTeam()) );
 		if ( dialog ) then
-			dialog.data = PVPTeamDetails.team;
+			dialog.data = PVP_GetSelectedArenaTeam();
 			dialog.data2 = name;
 		end
 	elseif ( button == "TEAM_LEAVE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVPTeamDetails.team) );
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVP_GetSelectedArenaTeam()) );
 		if ( dialog ) then
-			dialog.data = PVPTeamDetails.team;
+			dialog.data = PVP_GetSelectedArenaTeam();
 		end
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
@@ -1275,10 +1304,9 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "PET_ABANDON" ) then
 		StaticPopup_Show("ABANDON_PET");
 	elseif ( button == "PET_PAPERDOLL" ) then
-		if ( PetPaperDollFrame.selectedTab == 1 or (not PetPaperDollFrame:IsVisible()) ) then	--If the frame is already shown, but turned to a different tab (mounts or companions), just change tabs
+		if (not PetPaperDollFrame:IsVisible()) then
 			ToggleCharacter("PetPaperDollFrame");
 		end
-		PetPaperDollFrame_SetTab(1);
 	elseif ( button == "PET_RENAME" ) then
 		StaticPopup_Show("RENAME_PET");
 	elseif ( button == "FREE_FOR_ALL" ) then
@@ -1388,6 +1416,8 @@ function UnitPopup_OnClick (self)
 		FocusFrame_SetLock(false);
 	elseif ( strsub(button, 1, 10) == "BN_REPORT_" ) then
 		BNet_InitiateReport(dropdownFrame.presenceID, strsub(button, 11));
+	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then
+		UnitSetRole(dropdownFrame.unit, strsub(button, 10));
 	end
 	PlaySound("UChatScrollButton");
 end

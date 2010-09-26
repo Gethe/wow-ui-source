@@ -17,7 +17,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="PetFrameFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+				<Texture name="PetFrameFlash" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
@@ -153,7 +153,7 @@
 					</OnLoad>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar">
 				<Size>
@@ -174,7 +174,7 @@
 						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">

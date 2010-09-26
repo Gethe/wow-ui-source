@@ -17,6 +17,21 @@ function MicroButtonTooltipText(text, action)
 	
 end
 
+
+
+function UpdateMicroButtonsParent(parent)
+	CharacterMicroButton:SetParent(parent);
+	SpellbookMicroButton:SetParent(parent);
+	TalentMicroButton:SetParent(parent);
+	QuestLogMicroButton:SetParent(parent);
+	MainMenuMicroButton:SetParent(parent);
+	PVPMicroButton:SetParent(parent);
+	SocialsMicroButton:SetParent(parent);
+	LFDMicroButton:SetParent(parent);
+	HelpMicroButton:SetParent(parent);
+	AchievementMicroButton:SetParent(parent);
+end
+
 function UpdateMicroButtons()
 	local playerLevel = UnitLevel("player");
 	if ( CharacterFrame:IsShown() ) then
@@ -36,7 +51,7 @@ function UpdateMicroButtons()
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", 1);
 	else
-		if ( playerLevel < TalentMicroButton.minLevel ) then
+		if (GetNumTalentPoints() == 0) then
 			TalentMicroButton:Disable();
 		else
 			TalentMicroButton:Enable();
@@ -61,7 +76,7 @@ function UpdateMicroButtons()
 		MainMenuMicroButton_SetNormal();
 	end
 
-	if ( PVPParentFrame:IsShown() and (not PVPFrame_IsJustBG())) then
+	if ( PVPFrame:IsShown() ) then
 		PVPMicroButton:SetButtonState("PUSHED", 1);
 		PVPMicroButton_SetPushed();
 	else
@@ -73,13 +88,18 @@ function UpdateMicroButtons()
 			PVPMicroButton_SetNormal();
 		end
 	end
-	
-	if ( FriendsFrame:IsShown() ) then
+
+	if ( GuildFrame and GuildFrame:IsShown() ) then
 		SocialsMicroButton:SetButtonState("PUSHED", 1);
 	else
-		SocialsMicroButton:SetButtonState("NORMAL");
+		if ( IsInGuild() ) then
+			SocialsMicroButton:Enable();
+			SocialsMicroButton:SetButtonState("NORMAL");
+		else
+			SocialsMicroButton:Disable();
+		end
 	end
-
+	
 	if ( LFDParentFrame:IsShown() ) then
 		LFDMicroButton:SetButtonState("PUSHED", 1);
 	else
@@ -119,6 +139,14 @@ end
 function AchievementMicroButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BINDINGS" ) then
 		AchievementMicroButton.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
+	else
+		UpdateMicroButtons();
+	end
+end
+
+function SocialsMicroButton_OnEvent(self, event, ...)
+	if ( event == "UPDATE_BINDINGS" ) then
+		SocialsMicroButton.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLEGUILDTAB");
 	else
 		UpdateMicroButtons();
 	end
@@ -173,11 +201,10 @@ end
 function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
-		UpdateMicroButtons();
-		if ( not CharacterFrame:IsShown() and level >= SHOW_TALENT_LEVEL) then
+		if ( not (PlayerTalentFrame and PlayerTalentFrame:IsShown()) and GetNextTalentLevel() == level) then
 			SetButtonPulse(self, 60, 1);
 		end
-	elseif ( event == "UNIT_LEVEL" or event == "PLAYER_ENTERING_WORLD" ) then
+	elseif ( event == "PLAYER_TALENT_UPDATE") then
 		UpdateMicroButtons();
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText =  MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");

@@ -30,125 +30,18 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	<Frame name="TaxiFrame" toplevel="true" movable="true" hidden="true" parent="UIParent" enableMouse="true">
+	<Frame name="TaxiFrame" toplevel="true" movable="true" hidden="true" parent="UIParent" enableMouse="true" inherits="BasicFrameTemplateWithInset">
 		<Size>
-			<AbsDimension x="384" y="512"/>
+			<AbsDimension x="590" y="608"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="TaxiPortrait">
-					<Size>
-						<AbsDimension x="58" y="58"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="8" y="-9"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-256"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TaxiFrame\UI-TaxiFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="-256"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="TaxiMerchant" inherits="GameFontNormal">
-					<Size>
-						<AbsDimension x="250" y="14"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="5" y="-17"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="TaxiMap">
-					<Size>
-						<AbsDimension x="316" y="352"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="-13" y="-75"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Button name="TaxiCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="TaxiFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-29" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Frame name="TaxiRouteMap">
-				<Size>
-					<AbsDimension x="316" y="352"/>
-				</Size>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-13" y="-75"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TaxiFrameInsetBg"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TaxiFrameInsetBg"/>
 				</Anchors>
 			</Frame>
 		</Frames>

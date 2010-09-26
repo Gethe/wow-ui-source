@@ -1,0 +1,133 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GuildRewards.lua"/>
+<!--
+*******************************************************************************
+	Templates
+*******************************************************************************
+-->
+	<Button name="GuildRewardsButtonTemplate" virtual="true" inherits="UIServiceButtonTemplate">
+		<Size x="299" y="47"/>
+		<Frames>
+			<Frame name="$parentAchievement" parentKey="achievement" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentSubText"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentRequires" inherits="SystemFont_Shadow_Small" justifyH="LEFT" text="REQUIRES_LABEL">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentIcon" file="Interface\GuildFrame\GuildAchievements">
+							<Size x="20" y="18"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentRequires" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+							<TexCoords left="0.44726563" right="0.46679688" top="0.27734375" bottom="0.34765625"/>
+						</Texture>
+						<FontString name="$parentText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" parentKey="text">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="4" y="0"/>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter function="GuildRewardsButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+				GuildRewardsFrame.activeButton = nil;
+			</OnLeave>
+			<OnClick function="GuildRewardsButton_OnClick"/> 
+		</Scripts>
+	</Button>
+<!--
+*******************************************************************************
+	Rewards panel
+*******************************************************************************
+-->
+	<Frame name="GuildRewardsFrame" parent="GuildFrame" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" x="4" y="-65"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-7" y="26"/>
+		</Anchors>	
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" file="Interface\ClassTrainerFrame\TrainerTextures">
+					<Size x="299" y="308"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.58593750" top="0.00195313" bottom="0.65429688"/>
+				</Texture>
+				<FontString name="$parentVisitText" inherits="GameFontHighlight" text="GUILD_REWARDS_VISIT_VENDOR">
+					<Size x="232" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="72" y="40"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormalSmall" text="GUILD_MEMBERS_ONLINE">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="GuildFrameMembersCount" relativePoint="TOPRIGHT" x="0" y="6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="GuildRewardsContainer" inherits="HybridScrollFrameTemplate" hidden="false">
+				<Size x="302" y="306"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Frame name="GuildRewardsDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Scripts>
+					<OnLoad function="GuildRewardsDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildRewardsFrame_OnLoad"/>
+			<OnShow function="GuildRewardsFrame_OnShow"/>
+			<OnEvent function="GuildRewardsFrame_OnEvent"/>
+			<OnHide function="GuildRewardsFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -85,7 +85,7 @@ end
 
 -- Function for raid options
 function RaidOptionsFrame_UpdatePartyFrames()
-	if ( HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0) then
+	if ( GetCVarBool("useCompactPartyFrames") or GetNumRaidMembers() > 0) then
 		HidePartyFrame();
 	else
 		HidePartyFrame();
@@ -192,9 +192,7 @@ end
 
 function RaidInfoInstance_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(self.name:GetText());
-	GameTooltip:AddLine(self.difficulty:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	GameTooltip:AddLine(format(INSTANCE_ID, self.instanceID), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	GameTooltip:SetInstanceLockEncountersComplete(self:GetID());
 	GameTooltip:Show();
 end
 

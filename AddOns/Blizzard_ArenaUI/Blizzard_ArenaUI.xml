@@ -87,7 +87,7 @@
 				CastingBarFrame_OnShow(self);
 			</OnShow>
 		</Scripts>
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
 	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
@@ -103,7 +103,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+				<Texture name="$parentFlash" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
 					<Size>
 						<AbsDimension x="64" y="32"/>
 					</Size>
@@ -135,7 +135,7 @@
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
+								<Texture name="$parentTexture" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame">
 									<Size>
 										<AbsDimension x="77" y="39"/>
 									</Size>
@@ -181,7 +181,7 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
 				<Size>
@@ -199,7 +199,7 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true" parentKey="DropDown">
 				<Size>
@@ -238,7 +238,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+				<Texture name="$parentFlash" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
@@ -250,7 +250,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentClassPortrait" file="Interface\TargetingFrame\UI-Classes-Circles">
+				<Texture name="$parentClassPortrait" urgency="5" file="Interface\TargetingFrame\UI-Classes-Circles">
 					<Size>
 						<AbsDimension x="30" y="30"/>
 					</Size>
@@ -394,7 +394,7 @@
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
 				<Size>
@@ -418,7 +418,7 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate" parentKey="petFrame"/>

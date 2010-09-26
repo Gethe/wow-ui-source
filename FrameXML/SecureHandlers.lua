@@ -8,6 +8,7 @@
 ---------------------------------------------------------------------------
 
 -- Local references to things so that they can't be subverted
+local error = error;
 local forceinsecure = forceinsecure;
 local geterrorhandler = geterrorhandler;
 local issecure = issecure;
@@ -23,7 +24,6 @@ local type = type;
 local wipe = wipe;
 
 local GetCursorInfo = GetCursorInfo;
-local GetTime = GetTime;
 local InCombatLockdown = InCombatLockdown;
 
 local CallRestrictedClosure = CallRestrictedClosure;
@@ -45,20 +45,6 @@ end
 ---------------------------------------------------------------------------
 -- Working environments and control handles
 
-local LOCAL_Managed_Control_Frames = {};
-setmetatable(LOCAL_Managed_Control_Frames, { __mode = "v"; });
-
-local LOCAL_CTRL = {};
-local LOCAL_Managed_Control_Proto = newproxy(true);
-do
-    local mt = getmetatable(LOCAL_Managed_Control_Proto);
-    mt.__index = LOCAL_CTRL;
-    mt.__metatable = false;
-end
-
-local LOCAL_Managed_Controls = {};
-setmetatable(LOCAL_Managed_Controls, { __mode = "k"; });
-
 local function ManagedEnvironmentsIndex(t, k)
     if (not issecure() or type(k) ~= "table") then
         error("Invalid access of managed environments table");
@@ -79,10 +65,7 @@ local function ManagedEnvironmentsIndex(t, k)
     local e = RestrictedTable_create();
     e._G = e;
     e.owner = ownerHandle;
-    local control = newproxy(LOCAL_Managed_Control_Proto);
     t[k] = e;
-    LOCAL_Managed_Controls[e] = control;
-    LOCAL_Managed_Control_Frames[control] = k;
     return e;
 end
 
@@ -94,7 +77,11 @@ setmetatable(LOCAL_Managed_Environments,
              });
 
 function GetManagedEnvironment(envKey)
-    return rawget(LOCAL_Managed_Environments, envKey);
+    if ( issecure() ) then
+        return LOCAL_Managed_Environments[envKey];
+    else
+        return rawget(LOCAL_Managed_Environments, envKey);
+    end
 end
 
 ---------------------------------------------------------------------------
@@ -110,9 +97,8 @@ local function SecureHandler_Self_Execute(self, signature, body, ...)
     end
 
     local environment = LOCAL_Managed_Environments[self];
-    local controlHandle = LOCAL_Managed_Controls[environment];
 
-    return CallRestrictedClosure(signature, environment, controlHandle,
+    return CallRestrictedClosure(signature, environment, selfHandle,
                                  body, selfHandle, ...);
 end
 
@@ -123,8 +109,7 @@ local function SecureHandler_Other_Execute(header, self, signature, body, ...)
     if (not selfHandle) then return; end
 
     local environment = LOCAL_Managed_Environments[header];
-    local controlHandle = LOCAL_Managed_Controls[environment];
-    return CallRestrictedClosure(signature, environment, controlHandle,
+    return CallRestrictedClosure(signature, environment, selfHandle,
                                  body, selfHandle, ...);
 end
 
@@ -438,12 +423,11 @@ local function Wrapped_Drag(self, header, preBody, postBody, wrap, ...)
         local selfHandle = GetFrameHandle(self, true);
         if (selfHandle) then
             local environment = LOCAL_Managed_Environments[header];
-            local controlHandle = LOCAL_Managed_Controls[environment];
             local button = ...;
             local type, target, x1, x2, x3 =
                 CallRestrictedClosure("self,button,kind,value,...",
                                       environment,
-                                      controlHandle, preBody,
+                                      environment.owner, preBody,
                                       selfHandle, button,
                                       GetCursorInfo());
             if (type == false) then
@@ -765,146 +749,4 @@ function SecureHandler_OnLoad(self)
     self.WrapScript = SecureHandlerMethod_WrapScript;
     self.UnwrapScript = SecureHandlerMethod_UnwrapScript;
     self.SetFrameRef = SecureHandlerMethod_SetFrameRef;
-end
-
----------------------------------------------------------------------------
--- Control handle methods
-
-function LOCAL_CTRL:Run(body, ...)
-    local frame = LOCAL_Managed_Control_Frames[self];
-    if (not frame) then
-        error("Invalid control handle");
-        return;
-    end
-    if (type(body) ~= "string") then
-        error("Invalid function body");
-        return;
-    end
-    local env = LOCAL_Managed_Environments[frame];
-    local selfHandle = GetFrameHandle(frame, true);
-    if (not selfHandle) then
-        -- NOTE: This should never actually happen since the frame must
-        -- be protected to have an environment or control!
-        return;
-    end
-    return scrub(CallRestrictedClosure("self,...",
-                                       env, self, body, selfHandle, ...));
-end
-
-function LOCAL_CTRL:RunFor(otherHandle, body, ...)
-    local frame = LOCAL_Managed_Control_Frames[self];
-    if (not frame) then
-        error("Invalid control handle");
-        return;
-    end
-    if ((otherHandle ~= nil) and (not IsFrameHandle(otherHandle))) then
-        error("Invalid handle for other frame");
-        return;
-    end
-    if (type(body) ~= "string") then
-        error("Invalid function body");
-        return;
-    end
-    local env = LOCAL_Managed_Environments[frame];
-    return scrub(CallRestrictedClosure("self,...",
-                                       env, self, body, otherHandle, ...));
-end
-
-function LOCAL_CTRL:RunAttribute(snippetAttr, ...)
-    local frame = LOCAL_Managed_Control_Frames[self];
-    if (not frame) then
-        error("Invalid control handle");
-        return;
-    end
-    if (type(snippetAttr) ~= "string") then
-        error("Invalid snippet attribute");
-        return;
-    end
-    local body = frame:GetAttribute(snippetAttr);
-    if (type(body) ~= "string") then
-        error("Invalid snippet body");
-        return;
-    end
-    local env = LOCAL_Managed_Environments[frame];
-    local selfHandle = GetFrameHandle(frame, true);
-    if (not selfHandle) then
-        -- NOTE: This should never actually happen since the frame must
-        -- be protected to have an environment or control!
-        return
-    end
-    return scrub(CallRestrictedClosure("self,...",
-                                       env, self, body, selfHandle, ...));
-end
-
-local function ChildUpdate_Helper(environment, controlHandle,
-                                  scriptid, message, ...)
-    local scriptattr;
-    if (scriptid ~= nil) then
-        scriptid = tostring(scriptid);
-        scriptattr = "_childupdate-" .. scriptid;
-    end
-    for i = 1, select('#', ...) do
-        local child = select(i, ...);
-        local p = child:IsProtected();
-        if (p) then
-            local body;
-            if (scriptattr) then
-                body = child:GetAttribute(scriptattr);
-            end
-            if (body == nil) then
-                body = child:GetAttribute("_childupdate");
-            end
-            if (body and type(body) == "string") then
-                local selfHandle = GetFrameHandle(child, true);
-                if (selfHandle) then
-                    CallRestrictedClosure("self,scriptid,message",
-                                          environment, controlHandle, body,
-                                          selfHandle, scriptid, message);
-                end
-            end
-        end
-    end
-end
-
-function LOCAL_CTRL:ChildUpdate(snippetid, message)
-    local frame = LOCAL_Managed_Control_Frames[self];
-    if (not frame) then
-        error("Invalid control handle");
-        return;
-    end
-    local env = LOCAL_Managed_Environments[frame];
-    ChildUpdate_Helper(env, self, snippetid, message, frame:GetChildren());
-end
-
-local function CallMethod_inner(frame, methodName, ...)
-    local method = frame[methodName];
-    -- Ensure code isn't run securely
-    forceinsecure();
-    if (type(method) ~= "function") then
-        error("Invalid method '" .. methodName .. "'");
-        return;
-    end
-    method(frame, ...);
-end
-
--- This essentially supports already-possible functionality but without
--- the overhead of having to hook OnAttributeChanged scripts and create
--- temporary restricted tables.
-function LOCAL_CTRL:CallMethod(methodName, ...)
-    local frame = LOCAL_Managed_Control_Frames[self];
-    if (not frame) then
-        error("Invalid control handle");
-        return;
-    end
-    if (type(methodName) ~= "string") then
-        error("Method name must be a string");
-        return;
-    end
-    -- Use a pcall wrapper here to ensure that execution continues
-    -- regardless
-    local ok, err =
-        securecall(pcall, CallMethod_inner, frame, methodName, scrub(...));
-    if (err) then
-        SoftError(err);
-    end
 end

@@ -93,7 +93,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+				<Texture name="$parentFlash" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
 					<Size>
 						<AbsDimension x="64" y="32"/>
 					</Size>
@@ -125,7 +125,7 @@
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
+								<Texture name="$parentTexture" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame">
 									<Size>
 										<AbsDimension x="64" y="32"/>
 									</Size>
@@ -167,7 +167,7 @@
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<Button name="$parentDebuff1" inherits="PartyPetDebuffFrameTemplate" id="1">
 				<Anchors>
@@ -241,7 +241,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+				<Texture name="$parentFlash" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
@@ -298,12 +298,22 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame name="$parentPowerBarAlt" inherits="UnitPowerBarAltTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="13" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UnitPowerBarAlt_Initialize(self, "party"..self:GetParent():GetID(), 0.5, "PARTY_MEMBERS_CHANGED");
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
+								<Texture name="$parentTexture" urgency="5" file="Interface\TargetingFrame\UI-PartyFrame">
 									<Size>
 										<AbsDimension x="128" y="64"/>
 									</Size>
@@ -467,7 +477,7 @@
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
 				<Size>
@@ -491,7 +501,7 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate">
@@ -540,6 +550,31 @@
 					<OnLoad>
 						RaiseFrameLevelByTwo(self);
 					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentPhasingIcon" parentKey="phasingIcon">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-7" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\TargetingFrame\UI-PhasingIcon" setAllPoints="true">
+							<TexCoords left="0.15625" right="0.84375" top="0.15625" bottom="0.84375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetParent(UIParent);
+						self:Hide();
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PARTY_PHASED_MESSAGE, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
@@ -596,7 +631,11 @@
 			</OnLoad>
 			<OnShow>
 				self:SetFrameLevel(2);
+				PartyMemberFrame_UpdatePhasingDisplay(self);
 			</OnShow>
+			<OnHide>
+				self.phasingIcon:Hide();
+			</OnHide>
 			<OnEvent>
 				PartyMemberFrame_OnEvent(self, event, ...);
 			</OnEvent>

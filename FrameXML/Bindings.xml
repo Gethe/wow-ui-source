@@ -635,6 +635,9 @@
 	<Binding name="TOGGLESPELLBOOK">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
+	<Binding name="TOGGLEPROFESSIONBOOK">
+		ToggleSpellBook(BOOKTYPE_PROFESSION);
+	</Binding>
 	<Binding name="TOGGLEPETBOOK">
 		ToggleSpellBook(BOOKTYPE_PET);
 	</Binding>
@@ -652,9 +655,6 @@
 	</Binding>
 	<Binding name="TOGGLECHARACTER2">
 		ToggleCharacter("ReputationFrame");
-	</Binding>
-	<Binding name="TOGGLECHARACTER1">
-		ToggleCharacter("SkillFrame");
 	</Binding>
 	<Binding name="TOGGLEQUESTLOG">
 		ToggleFrame(QuestLogFrame);
@@ -683,13 +683,13 @@
 		ToggleFriendsFrame(2);
 	</Binding>
 	<Binding name="TOGGLEGUILDTAB">
-		ToggleFriendsFrame(3);
+		ToggleGuildFrame();
 	</Binding>
 	<Binding name="TOGGLECHATTAB">
-		ToggleFriendsFrame(4);
+		ToggleFriendsFrame(3);
 	</Binding>
 	<Binding name="TOGGLERAIDTAB">
-		ToggleFriendsFrame(5);
+		ToggleFriendsFrame(4);
 	</Binding>
 	<Binding name="TOGGLELFGPARENT"> <!--Keeping the name as the old LFG so that people's bindings aren't reset -->
 		ToggleLFDParentFrame();
@@ -803,6 +803,9 @@
 	</Binding>
 	<Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true">
 		ResetPerformanceValues();
+	</Binding>
+	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true">
+		ToggleAnimKitDisplay();
 	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true">
@@ -1338,4 +1341,5 @@
 	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
 	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>
+	<ModifiedClick action="TRADESEARCHADD" default="SHIFT"/>
 </Bindings>

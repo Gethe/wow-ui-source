@@ -1,10 +1,31 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<!-- if you change something here you probably want to change the glue version too -->
-
-	<Script file="GraphicsQualityLevels.lua"/>
+	<!-- this code is shared between the Frame and Glue -->
 	<Script file="OptionsPanelTemplates.lua"/>
-	<Script file="VideoOptionsPanels.lua"/>
+	<Script file="..\FrameXML\VideoOptionsPanels.lua"/>
+	<Script file="..\FrameXML\GraphicsQualityLevels.lua"/>
+
+	<Frame name="VideoOptionsDropDownMenuTemplate" inherits="DropDownMenuTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				if(self.tooltip ~= nil) then
+					VideoOptionsTooltip:SetOwner(self);
+					if(self.name == nil) then
+						self.name = " ";
+					end
+					VideoOptionsTooltip:SetText(self.name .. ":", nil, nil, nil, nil, 1);
+					VideoOptionsTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1.0, 1);
+					VideoOptionsTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				VideoOptionsTooltip:Hide();
+			</OnLeave>
+			<OnLoad>
+				VideoOptionsDropDown_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 
 	<CheckButton name="VideoOptionsSmallCheckButtonTemplate" inherits="OptionsSmallCheckButtonTemplate" virtual="true">
 		<Scripts>
@@ -14,18 +35,26 @@
 				else
 					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
-				BlizzardOptionsPanel_CheckButton_OnClick(self);			
+				BlizzardOptionsPanel_CheckButton_OnClick(self); 		
 				VideoOptionsFrameApply:Enable();
 			</OnClick>
 		</Scripts>
 	</CheckButton>
 	
-	<!-- Resolution Panel -->
+	<Texture name="videoUnderline" virtual="true">
+		<Size x="580" y="1"/>
+		<Color r="1" g="1" b="1" a="1"/>
+	</Texture>
+	<Texture name="videoSubUnderline" virtual="true">
+		<Size x="560" y="1"/>
+		<Color r="1" g="1" b="1" a="1"/>
+	</Texture>
 
-	<Frame name="VideoOptionsResolutionPanel" hidden="false" parent="VideoOptionsFramePanelContainer">
+	<!-- Graphics Panel. Delta_y is n*30 + 16 -->
+	<Frame name="Graphics_" hidden="false" parent="VideoOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="RESOLUTION_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentDisplayHeader" text="DISPLAY_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -34,351 +63,246 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="RESOLUTION_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension y="32" x="0"/>
-					</Size>
+				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-8"/>
+								<AbsDimension x="0" y="-3"/>
 							</Offset>
 						</Anchor>
-						<Anchor point="RIGHT">
+					</Anchors>
+				</Texture>
+
+				<FontString name="$parentGraphicsHeader" text="GRAPHICS_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="-32" y="0"/>
+								<AbsDimension x="0" y="-136"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentGraphicsHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+				<FontString name="$parentTexturesHeader" text="TEXTURES_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-46"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentTexturesHeaderUnderline" inherits="videoSubUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+				<FontString name="$parentEnvironmentHeader" text="ENVIRONMENT_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeaderUnderline" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-76"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentEnvironmentHeaderUnderline" inherits="videoSubUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentEffectsHeader" text="EFFECTS_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentHeaderUnderline" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-106"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentEffectsHeaderUnderline" inherits="videoSubUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentEffectsHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="VideoOptionsResolutionPanel_OnLoad"/>
-		</Scripts>	
+			<OnLoad>
+				Graphics_OnLoad(self);
+			</OnLoad>
+		</Scripts>  
 		<Frames>
-			<Frame name="$parentResolutionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<!-- Column A -->
+			<Frame name="$parentDisplayModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="0" y="-92"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="120" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="RESOLUTION">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="DISPLAY_MODE">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset x="21" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());					
-						VideoOptionsResolutionPanelResolutionDropDown_OnLoad(self);
-					</OnLoad>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
-			<Frame name="$parentRefreshDropDown" inherits="UIDropDownMenuTemplate" id="2">
+
+			<Frame name="$parentResolutionDropDown" inherits="VideoOptionsDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentResolutionDropDown" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-16"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayModeDropDown" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="REFRESH_RATE">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RESOLUTION" justifyH="RIGHT">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset x="21" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());						
-						VideoOptionsResolutionPanelRefreshDropDown_OnLoad(self);
-					</OnLoad>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
-			<Frame name="$parentMultiSampleDropDown" inherits="UIDropDownMenuTemplate" id="4">
+
+			<Frame name="$parentRefreshDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentResolutionDropDown" relativePoint="RIGHT">
-						<Offset x="0" y="0"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentResolutionDropDown" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MULTISAMPLE">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="REFRESH_RATE">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset x="21" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());	
-						VideoOptionsResolutionPanelMultiSampleDropDown_OnLoad(self);
-					</OnLoad>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
-			<CheckButton name="$parentUseUIScale" inherits="VideoOptionsSmallCheckButtonTemplate">
+
+
+			<!-- Column B -->
+			<Frame name="$parentPrimaryMonitorDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10" >
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMultiSampleDropDown" relativePoint="BOTTOMLEFT">
-						<Offset x="16" y="-2"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "useUiScale";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<Slider name="$parentUIScaleSlider" inherits="OptionsSliderTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentUseUIScale" relativePoint="BOTTOMLEFT">
-						<Offset x="5" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "uiscale";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsResolutionPanelUseUIScale, self);
-					</OnLoad>
-					<OnValueChanged>
-						self.newValue = value;
-						VideoOptionsFrameApply:Enable();
-					</OnValueChanged>
-				</Scripts>
-			</Slider>
-			<CheckButton name="$parentVSync" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRefreshDropDown" relativePoint="BOTTOMLEFT">
-						<Offset x="16" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "gxVSync";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>				
-			<CheckButton name="$parentTripleBuffer" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentVSync" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="16" y="-4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "gxTripleBuffer";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsResolutionPanelVSync, self);
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentHardwareCursor" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTripleBuffer" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-16" y="-4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "gxCursor";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentFixInputLag" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursor" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "gxFixLag";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentWindowed" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentVSync" relativePoint="RIGHT">
-						<Offset x="164" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "gxWindow";
-						self.restart = true;
-						self.setFunc = VideoOptionsResolutionPanel_SetWindowed;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>	
-			<CheckButton name="$parentMaximized" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentWindowed" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPRIGHT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMRIGHT">
 						<Offset x="16" y="-4"/>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "gxMaximize";
-						self.restart = true;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsResolutionPanelWindowed, self);
-					</OnLoad>
-				</Scripts>
-			</CheckButton>			
-			<CheckButton name="$parentDisableResize" inherits="VideoOptionsSmallCheckButtonTemplate">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PRIMARY_MONITOR">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentMultiSampleDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMaximized" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-4"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentPrimaryMonitorDropDown" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "windowResizeLock";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsResolutionPanelWindowed, self);
-						if ( IsMacClient() ) then
-							self:Hide();
-						end
-					</OnLoad>
-				</Scripts>
-			</CheckButton>		
-			<Frame name="$parentBrightness" inherits="OptionsBoxTemplate">
-				<Size x="380" y="96"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MULTISAMPLE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame name="$parentVerticalSyncDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentFixInputLag" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-20"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentMultiSampleDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="VERTICAL_SYNC">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentResizeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentVerticalSyncDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RESIZE_WINDOW">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Slider name="$parentGammaSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="1" defaultValue="1" valueStep=".1">
+				<Size x="10" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRefreshDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="25" y="-7"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentGrayScale" file="Interface\OptionsFrame\21stepgrayscale">
-							<Size x="356" y="32"/>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GAMMA">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset x="12" y="12"/>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="-25" y="0"/>
 								</Anchor>
 							</Anchors>
-						</Texture>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
-						_G[self:GetName().."Title"]:SetText(OPTIONS_BRIGHTNESS);
-					</OnLoad>
-				</Scripts>
-			</Frame>			
-			<CheckButton name="$parentDesktopGamma" inherits="OptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentBrightness" relativePoint="TOPLEFT">
-						<Offset x="12" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "desktopGamma";
-						self.setFunc = VideoOptionsResolutionPanel_SetGamma;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnClick>
-						BlizzardOptionsPanel_CheckButton_OnClick(self);
-						if ( self:GetParent():IsShown() ) then
-							local value;
-							if ( self:GetChecked() ) then
-								value = 1;
-							else
-								value = 0;
-								SetGamma(VideoOptionsResolutionPanelGammaSlider:GetValue());
-							end
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						VideoOptionsFrameApply:Enable();
-					</OnClick>
-				</Scripts>
-			</CheckButton>		
-			<Slider name="$parentGammaSlider" inherits="OptionsSliderTemplate">
-				<Size x="154" y="17"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentBrightness" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="-16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
+						self:SetWidth(_G[self:GetParent():GetName() .."VerticalSyncDropDown"]:GetWidth() - 25 - 25);
 						self.type = CONTROLTYPE_SLIDER;
-						self.label = "gamma";
+						self.label = GAMMA;
 						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:SetDisplayValue(value);
 							SetGamma(value);
 						end
 						self.GetCurrentValue = function (self) return GetGamma(); end;
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
+						_G[self:GetName().."Text"]:SetFontObject("OptionsFontSmall");
+						_G[self:GetName().."Low"]:SetText("-");
+						_G[self:GetName().."High"]:SetText("+");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
@@ -389,16 +313,286 @@
 						VideoOptionsFrameApply:Enable();
 					</OnValueChanged>
 				</Scripts>
-			</Slider>	
+			</Slider>   	
+
+			<!-- Display -->
+			<!-- Column A -->
+			<Frame name="$parentQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="0" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="120" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="OVERALL_QUALITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+
+			<!-- Textures -->
+			<!-- Column A -->
+			<Frame name="$parentTextureResolutionDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="100" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="TEXTURE_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentProjectedTexturesDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTextureResolutionDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PROJECTED_TEXTURES" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Column B -->
+			<Frame name="$parentFilteringDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentTexturesHeaderUnderline" relativePoint="BOTTOMRIGHT">
+						<Offset x="16" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANISOTROPIC">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentPlayerDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFilteringDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PLAYER_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Environment -->
+			<!-- Column A -->
+			<Frame name="$parentViewDistanceDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="100" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="FARCLIP">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentGroundClutterRadiusDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentViewDistanceDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GROUND_RADIUS">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentEnvironmentalDetailDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGroundClutterRadiusDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ENVIRONMENT_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<!-- Column B -->
+
+			<Frame name="$parentBlendingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentEnvironmentHeaderUnderline" relativePoint="BOTTOMRIGHT">
+						<Offset x="16" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="TERRAIN_MIP">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentGroundClutterDensityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBlendingDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GROUND_DENSITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentShadowsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGroundClutterDensityDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SHADOW_QUALITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Effects -->
+			<!-- Column A -->
+			<Frame name="$parentParticleDensityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEffectsHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="100" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PARTICLE_DENSITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentWeatherIntensityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentParticleDensityDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="WEATHER_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentFullScreenGlowDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWeatherIntensityDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="FULL_SCREEN_GLOW">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+		<!-- Column B -->
+			<Frame name="$parentLiquidDetailDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentEffectsHeaderUnderline" relativePoint="BOTTOMRIGHT">
+						<Offset x="16" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LIQUID_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+
+			<Frame name="$parentSunshaftsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SUNSHAFTS">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+
 		</Frames>
 	</Frame>	
-	
-	<!-- Effects Panel -->
 
-	<Frame name="VideoOptionsEffectsPanel" parent="VideoOptionsFramePanelContainer" hidden="true">
+	<!-- Advanced Panel -->
+
+	<Frame name="VideoOptionsEffectsPanel" parent="VideoOptionsFramePanelContainer" hidden="false">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="EFFECTS_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentTitle" text="EFFECTS_LABEL" inherits="OptionsFontLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -407,7 +601,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="EFFECTS_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentSubText" text="EFFECTS_SUBTEXT" inherits="OptionsFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -427,63 +621,92 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="VideoOptionsEffectsPanel_OnLoad"/>
-		</Scripts>	
+			<OnLoad function="VideoOptionsEffectsPanel_OnLoad" />
+		</Scripts>  
 		<Frames>
-			<Frame name="$parentQuality" inherits="OptionsBoxTemplate">
-				<Size x="380" y="88"/>
+			<Frame name="$parentBufferingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-72"/>
+					<Anchor point="TOP">
+						<Offset x="-100" y="-92"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentLabel" inherits="GameFontNormalLeft" text="LOW">
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="TRIPLE_BUFFER">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="16" y="-8"/>
-								</Anchor>
-								<Anchor point="RIGHT">
-									<Offset x="-16" y="0"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentSubText" inherits="GameFontHighlightExtraSmallLeftTop" text="This is a description of what happens when you set the quality slider to its Low setting.">
-							<Size x="350" y="42"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLabel" relativePoint="BOTTOMLEFT">
-									<Offset x="0" y="-2"/>
-								</Anchor>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
-						_G[self:GetName().."Title"]:Hide();
-					</OnLoad>
-				</Scripts>
-			</Frame>		
-			<Slider name="$parentQualitySlider" inherits="OptionsSliderTemplate">
-				<Size x="348" y="17"/>
+			</Frame>
+			<Frame name="$parentLagDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentQuality" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentBufferingDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="16" y="16"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentCustom" inherits="GameFontHighlightSmall" text="CUSTOM">
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="FIX_LAG">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="4" y="3"/>
-									</Offset>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentHardwareCursorDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLagDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="HARDWARE_CURSOR" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentUiScaleDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursorDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="UI_SCALE" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Slider name="$parentMaxFPSSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" defaultValue="0" valueStep="5" >
+				<Size x="10" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentUiScaleDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="25" y="-7"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MAXFPS">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="-25" y="0"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -491,355 +714,88 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						self:SetWidth(_G[self:GetParent():GetName() .."HardwareCursorDropDown"]:GetWidth() - 25 - 25);
 						local name = self:GetName();
-						_G[name.."High"]:SetPoint("TOPRIGHT", "$parent", "BOTTOMRIGHT", -65, 3);
-						_G[name.."High"]:SetText(VIDEO_QUALITY_LABEL5);
-						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
-
 						self.type = CONTROLTYPE_SLIDER;
-						self.label = "quality";
+						self.cvar = "maxfps";
+						self.SetDisplayValue = 
+							function(self, value)
+							end
+						self.SetValue = 
+							function (self, value)
+								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+							end
+						self.GetCurrentValue = 
+							function (self) 
+								return BlizzardOptionsPanel_SetCVarSafe(self.cvar);
+							end;
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						local minValue = "0";
+						local maxValue = "100";
+						_G[name.."Low"]:SetText(minValue);
+						_G[name.."High"]:SetText(maxValue);
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnValueChanged>
 						self.newValue = value;
-						if ( self:GetParent():IsShown() ) then
-							VideoOptionsEffectsPanel_SetVideoQuality(value);
-						end
+						VideoOptionsFrameApply:Enable();
 					</OnValueChanged>
 				</Scripts>
-			</Slider>	
-			<Slider name="$parentViewDistance" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
+			</Slider>   	
+			<Slider name="$parentMaxFPSBKSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" defaultValue="0" valueStep="5">
+				<Size x="10" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentQuality" relativePoint="BOTTOMLEFT">
-						<Offset x="2" y="-20"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSSlider" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MAXFPSBK">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="-25" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "farclip";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>		
-			<Slider name="$parentTerrainDetail" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentViewDistance" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.label = "TerrainMip";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							SetTerrainMip(value);
-						end
-						self.GetCurrentValue = function (self) return GetTerrainMip(); end;
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>			
-			<Slider name="$parentParticleDensity" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTerrainDetail" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
+						self:SetWidth(_G[self:GetParent():GetName() .."HardwareCursorDropDown"]:GetWidth() - 25 - 25);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "particleDensity";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						self.cvar = "maxfpsbk";
+						self.SetDisplayValue = 
+							function(self, value)
+							end
+						self.SetValue = 
+							function (self, value)
+								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+							end
+						self.GetCurrentValue = 
+							function (self) 
+								return BlizzardOptionsPanel_SetCVarSafe(self.cvar);
+							end;
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						local minValue = "0";
+						local maxValue = "100";
+						_G[name.."Low"]:SetText(minValue);
+						_G[name.."High"]:SetText(maxValue);
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
+					<OnValueChanged>
+						self.newValue = value;
+						VideoOptionsFrameApply:Enable();
+					</OnValueChanged>
 				</Scripts>
-			</Slider>		
-			<Slider name="$parentShadowQuality" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentParticleDensity" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						local name = self:GetName();
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "extShadowQuality";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>			
-			<Slider name="$parentEnvironmentDetail" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentViewDistance" relativePoint="TOPRIGHT">
-						<Offset x="20" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "environmentDetail";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>		
-			<Slider name="$parentClutterDensity" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentDetail" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "groundEffectDensity";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>		
-			<Slider name="$parentClutterRadius" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentClutterDensity" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "groundEffectDist";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>					
-			<Slider name="$parentTextureResolution" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentDetail" relativePoint="TOPRIGHT">
-						<Offset x="20" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "BaseMip";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							local min, max = self:GetMinMaxValues();
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, max - value + min); --With this cvar, lower is actually better quality.
-						end
-						self.GetCurrentValue = function (self)
-							local value = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-							local min, max = self:GetMinMaxValues();
-							return min - value + max;
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>	
-			<Slider name="$parentTextureFiltering" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTextureResolution" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "textureFilteringMode";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>				
-			<Slider name="$parentWeatherIntensity" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTextureFiltering" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "weatherDensity";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>	
-			<Slider name="$parentPlayerTexture" inherits="OptionsSliderTemplate">
-				<Size x="112" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentWeatherIntensity" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-24"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "componentTextureLevel";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						end
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged function="VideoOptionsEffectsPanelSlider_OnValueChanged"/>
-				</Scripts>
-			</Slider>	
-			<Frame name="$parentShaders" inherits="OptionsBoxTemplate">
-				<Size x="380" y="76"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset x="16" y="8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
-						self:SetBackdropColor(0.15, 0.15, 0.15);
-						_G[self:GetName().."Title"]:SetText("");
-					</OnLoad>
-				</Scripts>
-			</Frame>	
-			<CheckButton name="$parentSpecularLighting" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShaders" relativePoint="TOPLEFT">
-						<Offset x="12" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "specular";
-						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>	
-			<CheckButton name="$parentFullScreenGlow" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSpecularLighting" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "ffxGlow";
-						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>		
-			<CheckButton name="$parentDeathEffect" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShaders">
-						<Offset x="180" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "ffxDeath";
-						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentProjectedTextures" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDeathEffect" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "projectedTextures";
-						self.setFunc = VideoOptionsEffectsPanel_UpdateVideoQuality;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
+			</Slider>   
 		</Frames>
-	</Frame>	
-	<Frame name="VideoOptionsStereoPanel" parent="VideoOptionsFramePanelContainer" hidden="true">
+	</Frame>
+	<Frame name="VideoOptionsStereoPanel" parent="VideoOptionsFramePanelContainer" hidden="false">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="STEREO_VIDEO_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentTitle" text="STEREO_VIDEO_LABEL" inherits="OptionsFontLeft" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -848,7 +804,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="STEREO_VIDEO_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentSubText" text="STEREO_VIDEO_SUBTEXT" inherits="OptionsFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension y="32" x="0"/>
 					</Size>
@@ -871,7 +827,7 @@
 			<OnLoad>
 				VideoOptionsStereoPanel_OnLoad(self);
 			</OnLoad>
-		</Scripts>	
+		</Scripts>  
 		<Frames>		
 			<CheckButton name="$parentEnabled" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
@@ -908,10 +864,10 @@
 			<Slider name="$parentConvergence" inherits="OptionsSliderTemplate">
 				<Size x="270" y="17"/>
 				<Anchors>
-					<Anchor point="TOP" relativePoint="TOP">
-						<Offset x="0" y="-150"/>
-					</Anchor>
-				</Anchors>
+		  <Anchor point="TOP" relativePoint="TOP">
+			<Offset x="0" y="-150"/>
+		  </Anchor>
+		</Anchors>
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
@@ -922,7 +878,7 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsStereoPanelEnabled, self);
 					</OnLoad>
@@ -950,7 +906,7 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						_G[name.."Text"]:SetFontObject("GameFontNormalSmall");
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(VideoOptionsStereoPanelEnabled, self);
 					</OnLoad>
@@ -960,7 +916,7 @@
 						VideoOptionsFrameApply:Enable();
 					</OnValueChanged>
 				</Scripts>
-			</Slider>		
+			</Slider>   	
 		</Frames>
 	</Frame>
 </Ui>

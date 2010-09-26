@@ -98,6 +98,10 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("UNIT_HEALTH");
+	self:RegisterEvent("UNIT_CONNECTION");
+	self:RegisterEvent("PARTY_MEMBER_ENABLE");
+	self:RegisterEvent("PARTY_MEMBER_DISABLE");
+	self:RegisterEvent("UNIT_PHASE");
 
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
@@ -108,7 +112,7 @@ function PartyMemberFrame_OnLoad (self)
 end
 
 function PartyMemberFrame_UpdateMember (self)
-	if ( HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0 ) then
+	if ( GetCVarBool("useCompactPartyFrames") or (GetNumRaidMembers() > 0) ) then
 		self:Hide();
 		return;
 	end
@@ -132,10 +136,11 @@ function PartyMemberFrame_UpdateMember (self)
 	end
 	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdatePvPStatus(self);
-	RefreshDebuffs(self, "party"..id);
+	RefreshDebuffs(self, "party"..id, nil, nil, true);
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
 	PartyMemberFrame_UpdateOnlineStatus(self);
+	PartyMemberFrame_UpdatePhasingDisplay(self);
 	UpdatePartyMemberBackground();
 end
 
@@ -220,16 +225,10 @@ function PartyMemberFrame_UpdateAssignedRoles (self)
 	local id = self:GetID();
 	local unit = "party"..id;
 	local icon = _G["PartyMemberFrame"..id.."RoleIcon"];
-	local isTank, isHealer, isDamage = UnitGroupRolesAssigned(unit);
+	local role = UnitGroupRolesAssigned(unit);
 	
-	if ( isTank ) then
-		icon:SetTexCoord(0, 19/64, 22/64, 41/64);
-		icon:Show();
-	elseif ( isHealer ) then
-		icon:SetTexCoord(20/64, 39/64, 1/64, 20/64);
-		icon:Show();
-	elseif ( isDamage ) then
-		icon:SetTexCoord(20/64, 39/64, 22/64, 41/64);
+	if ( role == "TANK" or role == "HEALER" or role == "DAMAGER") then
+		icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
 		icon:Show();
 	else
 		icon:Hide();
@@ -300,6 +299,21 @@ function PartyMemberFrame_UpdateReadyCheck (self)
 	end
 end
 
+function PartyMemberFrame_UpdatePhasingDisplay(self)
+	local id = self:GetID();
+	local partyID = "party"..id;
+	
+	local inPhase = UnitInPhase(partyID);
+	
+	if ( inPhase or not UnitExists(partyID) ) then
+		self:SetAlpha(1);
+		self.phasingIcon:Hide();
+	else
+		self:SetAlpha(0.6);
+		self.phasingIcon:Show();
+	end
+end
+
 function PartyMemberFrame_OnEvent(self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 	
@@ -318,6 +332,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);
+		PartyMemberFrame_UpdatePhasingDisplay(self);
 		return;
 	end
 	
@@ -354,7 +369,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 
 	if ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
-			RefreshDebuffs(self, unit);
+			RefreshDebuffs(self, unit, nil, nil, true);
 			if ( PartyMemberBuffTooltip:IsShown() and
 				selfID == PartyMemberBuffTooltip:GetID() ) then
 				PartyMemberBuffTooltip_Update(self);
@@ -417,8 +432,12 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		if ( arg1 == "party"..selfID ) then
 			PartyMemberFrame_ToPlayerArt(self);
 		end
-	elseif ( event == "UNIT_HEALTH" ) and ( arg1 == "party"..selfID ) then
+	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
 		PartyMemberFrame_UpdateOnlineStatus(self);
+	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
+		if ( arg1 == unit ) then
+			PartyMemberFrame_UpdatePhasingDisplay(self);
+		end
 	end
 end
 
@@ -442,7 +461,7 @@ function PartyMemberFrame_RefreshPetDebuffs (self, id)
 	if ( not id ) then
 		id = self:GetID();
 	end
-	RefreshDebuffs(_G["PartyMemberFrame"..id.."PetFrame"], "partypet"..id)
+	RefreshDebuffs(_G["PartyMemberFrame"..id.."PetFrame"], "partypet"..id, nil, nil, true);
 end
 
 function PartyMemberBuffTooltip_Update (self)
@@ -450,11 +469,17 @@ function PartyMemberBuffTooltip_Update (self)
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
+	local filter;
 	
 	PartyMemberBuffTooltip:SetID(self:GetID());
-	
+
+	if ( SHOW_CASTABLE_BUFFS == "1" ) then
+		filter = "RAID";
+	else
+		filter = nil;
+	end
 	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
-		name, rank, icon = UnitBuff(self.unit, i);
+		name, rank, icon = UnitBuff(self.unit, i, filter);
 		if ( icon ) then
 			_G["PartyMemberBuffTooltipBuff"..index.."Icon"]:SetTexture(icon);
 			_G["PartyMemberBuffTooltipBuff"..index]:Show();
@@ -477,10 +502,15 @@ function PartyMemberBuffTooltip_Update (self)
 	index = 1;
 
 	local debuffButton, debuffStack, debuffType, color, countdown;
+	if ( SHOW_DISPELLABLE_DEBUFFS == "1" ) then
+		filter = "RAID";
+	else
+		filter = nil;
+	end
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
 		local debuffBorder = _G["PartyMemberBuffTooltipDebuff"..index.."Border"]
 		local partyDebuff = _G["PartyMemberBuffTooltipDebuff"..index.."Icon"];
-		name, rank, icon, debuffStack, debuffType = UnitDebuff(self.unit, i);		
+		name, rank, icon, debuffStack, debuffType = UnitDebuff(self.unit, i, filter);
 		if ( icon ) then
 			partyDebuff:SetTexture(icon);
 			if ( debuffType ) then
@@ -546,7 +576,7 @@ function UpdatePartyMemberBackground ()
 	if ( not PartyMemberBackground ) then
 		return;
 	end
-	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and not(HIDE_PARTY_INTERFACE == "1" and (GetNumRaidMembers() > 0)) ) then
+	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and not(GetCVarBool("useCompactPartyFrames") or (GetNumRaidMembers() > 0)) ) then
 		if ( _G["PartyMemberFrame"..GetNumPartyMembers().."PetFrame"]:IsShown() ) then
 			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -21);
 		else

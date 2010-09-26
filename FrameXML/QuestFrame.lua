@@ -22,20 +22,20 @@ function QuestFrame_OnEvent(self, event, ...)
 	if ( (event == "QUEST_ITEM_UPDATE") and not QuestFrame:IsShown() ) then
 		return;
 	end
-
-	QuestFrame_SetPortrait();
-	ShowUIPanel(QuestFrame);
-	if ( not QuestFrame:IsShown() ) then
-		CloseQuest();
-		return;
-	end
+		
 	if ( event == "QUEST_GREETING" ) then
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
-		HideUIPanel(QuestLogDetailFrame);
-		QuestFrameDetailPanel:Hide();
-		QuestFrameDetailPanel:Show();
+		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
+			WatchFrameAutoQuest_AddPopUp(GetQuestID(), "OFFER");
+			CloseQuest();
+			return;
+		else
+			HideUIPanel(QuestLogDetailFrame);
+			QuestFrameDetailPanel:Hide();
+			QuestFrameDetailPanel:Show();
+		end
 	elseif ( event == "QUEST_PROGRESS" ) then
 		HideUIPanel(QuestLogDetailFrame);
 		QuestFrameProgressPanel:Hide();
@@ -56,6 +56,17 @@ function QuestFrame_OnEvent(self, event, ...)
 			QuestInfo_ShowRewards();		
 			QuestRewardScrollFrameScrollBar:SetValue(0);
 		end
+	end
+	
+	QuestFrame_SetPortrait();
+	ShowUIPanel(QuestFrame);
+	if ( not QuestFrame:IsShown() ) then
+		QuestFrameGreetingPanel:Hide();
+		QuestFrameDetailPanel:Hide();
+		QuestFrameProgressPanel:Hide();
+		QuestFrameRewardPanel:Hide();
+		CloseQuest();
+		return;
 	end
 end
 
@@ -80,6 +91,12 @@ function QuestFrameRewardPanel_OnShow()
 	if ( QUEST_FADING_DISABLE == "0" ) then
 		QuestRewardScrollChildFrame:SetAlpha(0);
 		UIFrameFadeIn(QuestRewardScrollChildFrame, QUESTINFO_FADE_IN);
+	end
+	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
+	if (questPortrait ~= 0) then
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, questPortraitName, -33, -62);
+	else
+		QuestFrame_HideQuestPortrait();
 	end
 end
 
@@ -126,6 +143,7 @@ function QuestFrameProgressPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
+	QuestFrame_HideQuestPortrait();
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	QuestProgressTitleText:SetText(GetTitleText());
@@ -201,6 +219,7 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
+	QuestFrame_HideQuestPortrait();
 	if ( QUEST_FADING_DISABLE == "0" ) then
 		QuestGreetingScrollChildFrame:SetAlpha(0);
 		UIFrameFadeIn(QuestGreetingScrollChildFrame, QUESTINFO_FADE_IN);
@@ -299,6 +318,7 @@ function QuestFrame_OnHide()
 	QuestFrameDetailPanel:Hide();
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
+	QuestFrame_HideQuestPortrait();
 	if ( QuestFrame.dialog ) then
 		QuestFrame.dialog:Hide();
 		QuestFrame.dialog = nil;
@@ -309,6 +329,15 @@ function QuestFrame_OnHide()
 		QuestFrame.autoQuest = nil;
 	end
 	CloseQuest();
+	if (TUTORIAL_QUEST_ACCEPTED) then
+		if (not IsTutorialFlagged(2)) then
+			TriggerTutorial(2);
+--			TriggerTutorial(3);
+		else
+			TriggerTutorial(10);
+		end
+		TUTORIAL_QUEST_ACCEPTED = nil
+	end
 	PlaySound("igQuestListClose");
 end
 
@@ -319,6 +348,51 @@ function QuestTitleButton_OnClick(self)
 		SelectAvailableQuest(self:GetID());
 	end
 	PlaySound("igQuestListSelect");
+end
+
+function QuestFrame_UpdatePortraitText(text)
+	if (text and text ~= "") then
+		QuestNPCModelTextFrame:Show();
+		QuestNPCModelText:SetText(text);
+		QuestNPCModelText:SetWidth(178);
+		if (QuestNPCModelText:GetHeight() > QuestNPCModelTextScrollFrame:GetHeight()) then
+			QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight()+10);
+			QuestNPCModelText:SetWidth(162);
+		else
+			QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight());
+		end
+	else
+		QuestNPCModelTextFrame:Hide();
+	end
+end
+
+function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, name, x, y)
+	QuestNPCModel:SetParent(parentFrame);
+	QuestNPCModel:ClearAllPoints();
+	QuestNPCModel:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
+	QuestNPCModel:Show();
+	QuestFrame_UpdatePortraitText(text);
+	
+	if (name and name ~= "") then
+		QuestNPCModelNameplate:Show();
+		QuestNPCModelBlankNameplate:Hide();
+		QuestNPCModelNameText:Show();
+		QuestNPCModelNameText:SetText(name);
+	else
+		QuestNPCModelNameplate:Hide();
+		QuestNPCModelBlankNameplate:Show();
+		QuestNPCModelNameText:Hide();
+	end
+
+	if (portrait == -1) then
+		QuestNPCModel:SetUnit("player");
+	else
+		QuestNPCModel:SetDisplayInfo(portrait);
+	end
+end
+
+function QuestFrame_HideQuestPortrait()
+	QuestNPCModel:Hide();
 end
 
 function QuestFrameDetailPanel_OnShow()
@@ -335,6 +409,12 @@ function QuestFrameDetailPanel_OnShow()
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL1, QuestDetailScrollChildFrame, QuestFrameAcceptButton, nil, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL2, QuestInfoFadingFrame, QuestFrameAcceptButton, nil, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
+	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitGiver();
+	if (questPortrait ~= 0) then
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, questPortraitName, -33, -62);
+	else
+		QuestFrame_HideQuestPortrait();
+	end
 end
 
 function QuestDetailAcceptButton_OnClick()

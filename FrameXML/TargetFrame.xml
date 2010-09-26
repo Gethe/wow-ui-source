@@ -44,11 +44,12 @@
 				else
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				end
+				local unit = self:GetParent().unit;
 				local filter;
-				if ( GetCVarBool("showDispelDebuffs") ) then
+				if ( SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
 					filter = "RAID";
 				end
-				GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), filter);
+				GameTooltip:SetUnitDebuff(unit, self:GetID(), filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -212,7 +213,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentNameBackground" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground" parentKey="nameBackground">
+				<Texture name="$parentNameBackground" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground" parentKey="nameBackground">
 					<Size>
 						<AbsDimension x="119" y="19"/>
 					</Size>
@@ -242,7 +243,7 @@
 			<Frame name="$parentTextureFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
+						<Texture name="$parentTexture" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame">
 							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
 						</Texture>
 						<FontString name="$parentName" inherits="GameFontNormalSmall">
@@ -343,6 +344,12 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
+						<Texture name="$parentQuestIcon" file="Interface\TargetingFrame\PortraitQuestBadge" hidden="true">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-120" y="-12"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -382,7 +389,7 @@
 						TargetHealthCheck(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
 				<Size>
@@ -403,7 +410,7 @@
 						self.cvarLabel = "STATUS_TEXT_TARGET";
 					</OnLoad>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Frame name="$parentBuffs" parentKey="buffs" hidden="true">
@@ -434,7 +441,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentBG" file="Interface\TargetingFrame\UI-StatusBar" parentKey="bg">
+						<Texture name="$parentBG" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="bg">
 							<Size>
 								<AbsDimension x="37" y="14"/>
 							</Size>
@@ -462,6 +469,30 @@
 			<OnHide function="TargetFrame_OnHide"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
+		</Scripts>
+	</Button>
+	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" virtual="true">
+		<Frames>
+			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="0" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UnitPowerBarAlt_Initialize(self, "boss"..self:GetParent():GetID(), 0.5, "INSTANCE_ENCOUNTER_ENGAGE_UNIT");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				local id = self:GetID();
+				if ( id == 1 ) then
+					BossTargetFrame_OnLoad(self, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT");
+				else
+					BossTargetFrame_OnLoad(self, "boss"..id);
+				end
+			</OnLoad>
 		</Scripts>
 	</Button>
 	<Button name="TargetofTargetFrameTemplate" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
@@ -556,7 +587,7 @@
 						TargetofTargetHealthCheck(self:GetParent());
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="1.0" b="0"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
@@ -570,7 +601,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Frame name="$parentDebuff1" inherits="TargetofTargetDebuffFrameTemplate" id="1">
@@ -637,6 +668,18 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Frames>
+			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-25" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UnitPowerBarAlt_Initialize(self, "target", 0.5, "PLAYER_TARGET_CHANGED");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.noTextPrefix = true;
@@ -663,6 +706,18 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Frames>
+			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-25" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UnitPowerBarAlt_Initialize(self, "focus", 0.5, "PLAYER_FOCUS_CHANGED");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.noTextPrefix = true;
@@ -684,7 +739,7 @@
 			<OnDragStop function="FocusFrame_OnDragStop"/>			
 		</Scripts>
 	</Button>		
-	<Button name="Boss1TargetFrame" inherits="TargetFrameTemplate">
+	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
 		<Anchors>
 			<Anchor point="TOPRIGHT">
 				<Offset>
@@ -692,13 +747,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Scripts>
-			<OnLoad>
-				BossTargetFrame_OnLoad(self, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT");
-			</OnLoad>
-		</Scripts>
 	</Button>
-	<Button name="Boss2TargetFrame" inherits="TargetFrameTemplate">
+	<Button name="Boss2TargetFrame" inherits="BossTargetFrameTemplate" id="2">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss1TargetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
@@ -706,13 +756,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Scripts>
-			<OnLoad>
-				BossTargetFrame_OnLoad(self, "boss2");
-			</OnLoad>
-		</Scripts>
 	</Button>
-	<Button name="Boss3TargetFrame" inherits="TargetFrameTemplate">
+	<Button name="Boss3TargetFrame" inherits="BossTargetFrameTemplate" id="3">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss2TargetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
@@ -720,13 +765,8 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Scripts>
-			<OnLoad>
-				BossTargetFrame_OnLoad(self, "boss3");
-			</OnLoad>
-		</Scripts>
 	</Button>
-	<Button name="Boss4TargetFrame" inherits="TargetFrameTemplate">
+	<Button name="Boss4TargetFrame" inherits="BossTargetFrameTemplate" id="4">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss3TargetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
@@ -734,10 +774,5 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Scripts>
-			<OnLoad>
-				BossTargetFrame_OnLoad(self, "boss4");
-			</OnLoad>
-		</Scripts>
 	</Button>	
 </Ui>

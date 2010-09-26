@@ -14,6 +14,8 @@ function TabardFrame_OnLoad(self)
 	TabardFrameEmblemTopLeft:SetAlpha(backgroundAlpha);
 	TabardFrameEmblemBottomRight:SetAlpha(backgroundAlpha);
 	TabardFrameEmblemBottomLeft:SetAlpha(backgroundAlpha);
+	
+	MoneyFrame_SetMaxDisplayWidth(TabardFrameMoneyFrame, 160);
 end
 
 function TabardCharacterModelFrame_OnLoad(self)

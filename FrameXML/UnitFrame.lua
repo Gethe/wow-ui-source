@@ -296,21 +296,11 @@ function UnitFrameHealthBar_OnValueChanged(self, value)
 end
 
 function UnitFrameManaBar_UnregisterDefaultEvents(self)
-	self:UnregisterEvent("UNIT_MANA");
-	self:UnregisterEvent("UNIT_RAGE");
-	self:UnregisterEvent("UNIT_FOCUS");
-	self:UnregisterEvent("UNIT_ENERGY");
-	self:UnregisterEvent("UNIT_HAPPINESS");
-	self:UnregisterEvent("UNIT_RUNIC_POWER");
+	self:UnregisterEvent("UNIT_POWER");
 end
 
 function UnitFrameManaBar_RegisterDefaultEvents(self)
-	self:RegisterEvent("UNIT_MANA");
-	self:RegisterEvent("UNIT_RAGE");
-	self:RegisterEvent("UNIT_FOCUS");
-	self:RegisterEvent("UNIT_ENERGY");
-	self:RegisterEvent("UNIT_HAPPINESS");
-	self:RegisterEvent("UNIT_RUNIC_POWER");
+	self:RegisterEvent("UNIT_POWER");
 end
 
 function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdates)
@@ -329,12 +319,7 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	else
 		UnitFrameManaBar_RegisterDefaultEvents(statusbar);
 	end
-	statusbar:RegisterEvent("UNIT_MAXMANA");
-	statusbar:RegisterEvent("UNIT_MAXRAGE");
-	statusbar:RegisterEvent("UNIT_MAXFOCUS");
-	statusbar:RegisterEvent("UNIT_MAXENERGY");
-	statusbar:RegisterEvent("UNIT_MAXHAPPINESS");
-	statusbar:RegisterEvent("UNIT_MAXRUNIC_POWER");
+	statusbar:RegisterEvent("UNIT_MAXPOWER");
 	statusbar:RegisterEvent("UNIT_DISPLAYPOWER");
 	statusbar:SetScript("OnEvent", UnitFrameManaBar_OnEvent);
 end

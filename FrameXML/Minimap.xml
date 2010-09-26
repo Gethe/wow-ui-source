@@ -38,7 +38,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="MinimapBorderTop" file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="MinimapBorderTop" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
 					<Size>
 						<AbsDimension x="192" y="32"/>
 					</Size>
@@ -106,7 +106,7 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="21" y="-53"/>
+									<AbsDimension x="24" y="-37"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -126,7 +126,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture name="MiniMapMailBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapMailBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
@@ -169,7 +169,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-13"/>
+									<AbsDimension x="13" y="-19"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -203,7 +203,7 @@
 
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture name="MiniMapBattlefieldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapBattlefieldBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
@@ -213,7 +213,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="BORDER">
-								<Texture name="BattlegroundShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+								<Texture name="BattlegroundShine" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
 									<Size>
 										<AbsDimension x="32" y="32"/>
 									</Size>
@@ -231,9 +231,6 @@
 						</Layers>
 						<Frames>
 							<Frame name="MiniMapBattlefieldDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
-								<Scripts>
-									<OnLoad function="MiniMapBattlefieldDropDown_OnLoad"/>
-								</Scripts>
 							</Frame>
 						</Frames>
 						<Scripts>
@@ -270,39 +267,6 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="MinimapPing" hidden="true">
-						<Size>
-							<AbsDimension x="50" y="50"/>
-						</Size>
-						<Anchors>
-							<Anchor point="CENTER" relativeTo="Minimap"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentCenter" file="Interface\Minimap\UI-Minimap-Ping-Center">
-									<Size x="15" y="15"/>
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentExpander" file="Interface\Minimap\UI-Minimap-Ping-Expand">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentSpinner" file="Interface\Minimap\UI-Minimap-Ping-Rotate">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad function="MinimapPing_OnLoad"/>
-							<OnEvent function="MinimapPing_OnEvent"/>
-							<OnUpdate function="MinimapPing_OnUpdate"/>
-						</Scripts>
-					</Frame>
 					<Frame name="MinimapBackdrop">
 						<Size>
 							<AbsDimension x="192" y="192"/>
@@ -316,12 +280,12 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="MinimapBorder" file="Interface\Minimap\UI-Minimap-Border">
+								<Texture name="MinimapBorder" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
 									<TexCoords left="0.25" right="1.0" top="0.125" bottom="0.875"/>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture name="MinimapNorthTag" file="Interface\Minimap\CompassNorthTag">
+								<Texture name="MinimapNorthTag" urgency="5" file="Interface\Minimap\CompassNorthTag">
 									<Size>
 										<AbsDimension x="16" y="16"/>
 									</Size>
@@ -346,20 +310,20 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="MiniMapWorldMapButton" hidden="false" inherits="MiniMapButtonTemplate">
+							<Button name="MiniMapWorldMapButton" inherits="MiniMapButtonTemplate">
 								<Size>
 									<AbsDimension x="33" y="33"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPRIGHT">
 										<Offset>
-											<AbsDimension x="-21" y="-1"/>
+											<AbsDimension x="0" y="20"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 								<Layers>
 									<Layer level="BORDER">
-										<Texture name="$parentIcon" file="Interface\WorldMap\UI-World-Icon">
+										<Texture name="$parentIcon" urgency="5" file="Interface\WorldMap\UI-World-Icon">
 											<Size>
 												<AbsDimension x="20" y="20"/>
 											</Size>
@@ -373,7 +337,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<Texture name="MiniMapWorldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+										<Texture name="MiniMapWorldBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
 											<Size>
 												<AbsDimension x="52" y="52"/>
 											</Size>
@@ -407,12 +371,12 @@
 								<Size x="32" y="32"/>
 								<Anchors>
 									<Anchor point="TOPLEFT">
-										<Offset x="13" y="-40"/>
+										<Offset x="9" y="-45"/>
 									</Anchor>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
+										<Texture name="$parentBackground" urgency="5" file="Interface\Minimap\UI-Minimap-Background">
 											<Size x="25" y="25"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
@@ -423,7 +387,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<Texture name="$parentIcon">
+										<Texture name="$parentIcon" urgency="5" file="Interface\Minimap\Tracking\None">
 											<Size x="20" y="20"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
@@ -455,7 +419,7 @@
 										</Anchors>
 										<Layers>
 											<Layer level="BORDER">
-												<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+												<Texture name="$parentBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
 													<Size x="54" y="54"/>
 													<Anchors>
 														<Anchor point="TOPLEFT"/>
@@ -463,7 +427,7 @@
 												</Texture>
 											</Layer>
 											<Layer level="OVERLAY">
-												<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+												<Texture name="$parentShine" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
 													<Size x="27" y="27"/>
 													<Anchors>
 														<Anchor point="TOPLEFT">
@@ -492,11 +456,6 @@
 												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
 												MiniMapTrackingIconOverlay:Hide();
 											</OnMouseUp>
-											<OnEnter>
-												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-												GameTooltip:SetTracking();
-											</OnEnter>
-											<OnLeave function="GameTooltip_Hide"/>
 										</Scripts>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 									</Button>
@@ -509,13 +468,13 @@
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="25" y="-100"/>
+											<AbsDimension x="22" y="-100"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
-										<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+										<Texture name="$parentBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
 											<Size>
 												<AbsDimension x="52" y="52"/>
 											</Size>
@@ -550,6 +509,9 @@
 										self:RegisterEvent("PLAYER_ENTERING_WORLD");
 										self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
 										self:RegisterEvent("LFG_PROPOSAL_UPDATE");
+										self:RegisterEvent("LFG_PROPOSAL_FAILED");
+										self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
+										self:RegisterEvent("LFG_PROPOSAL_SHOW");
 										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>
@@ -567,7 +529,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="71" y="-20"/>
+											<AbsDimension x="72" y="-25"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -584,7 +546,7 @@
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
-								<NormalTexture file="Interface\Minimap\UI-Minimap-ZoomInButton-Up"/>
+								<NormalTexture urgency="5" file="Interface\Minimap\UI-Minimap-ZoomInButton-Up"/>
 								<PushedTexture file="Interface\Minimap\UI-Minimap-ZoomInButton-Down"/>
 								<DisabledTexture file="Interface\Minimap\UI-Minimap-ZoomInButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
@@ -596,7 +558,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="51" y="-39"/>
+											<AbsDimension x="50" y="-43"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -613,7 +575,7 @@
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
-								<NormalTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Up"/>
+								<NormalTexture urgency="5" file="Interface\Minimap\UI-Minimap-ZoomOutButton-Up"/>
 								<PushedTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Down"/>
 								<DisabledTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
@@ -645,7 +607,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<Texture name="MiniMapRecordingBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+										<Texture name="MiniMapRecordingBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
 											<Size>
 												<AbsDimension x="41" y="41"/>
 											</Size>
@@ -690,6 +652,8 @@
 				</Frames>
 				<Scripts>
 					<OnMouseUp function="Minimap_OnClick"/>
+					<OnLoad function="Minimap_OnLoad"/>
+					<OnEvent function="Minimap_OnEvent"/>
 				</Scripts>
 			</Minimap>
 			<Frame name="MiniMapInstanceDifficulty" hidden="true">

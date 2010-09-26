@@ -10,7 +10,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -18,7 +18,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>		
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -26,7 +26,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>

@@ -721,9 +721,15 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		CharacterMicroButton:ClearAllPoints();
 		CharacterMicroButton:SetPoint("BOTTOMLEFT", 552, 2);
 		SocialsMicroButton:ClearAllPoints();
-		SocialsMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);
-		
+		SocialsMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);		
 		UpdateMicroButtons();
+		
+		
+		MainMenuExpBar:SetParent(MainMenuBar);
+		MainMenuExpBar:ClearAllPoints();
+		MainMenuExpBar:SetPoint("TOP");
+		MainMenuExpBar_SetWidth(EXP_DEFAULT_WIDTH);
+		
 		
 	elseif ( skinName == "Mechanical" ) then
 	
@@ -734,9 +740,16 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		CharacterMicroButton:ClearAllPoints();
 		CharacterMicroButton:SetPoint("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -340, 41);
 		SocialsMicroButton:ClearAllPoints();
-		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
-		
+		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
 		UpdateMicroButtons();
+		
+		
+		MainMenuExpBar:ClearAllPoints();			
+		MainMenuExpBar:SetParent(VehicleMenuBar);
+		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 148, 50);
+		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -150, 50);
+		MainMenuExpBar_SetWidth(VehicleMenuBar:GetWidth() - 148 - 150);
+		MainMenuExpBar:SetFrameLevel(MainMenuExpBar:GetParent():GetFrameLevel());		
 	elseif ( skinName == "Natural" ) then
 	
 		for _, frame in pairs(MicroButtons) do
@@ -746,9 +759,15 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		CharacterMicroButton:ClearAllPoints();
 		CharacterMicroButton:SetPoint("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -365, 41);
 		SocialsMicroButton:ClearAllPoints();
-		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
-		
+		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
 		UpdateMicroButtons();
+		
+		MainMenuExpBar:ClearAllPoints();			
+		MainMenuExpBar:SetParent(VehicleMenuBar);
+		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 166, 53);
+		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -166, 53);
+		MainMenuExpBar_SetWidth(VehicleMenuBar:GetWidth() - 166 - 166);
+		MainMenuExpBar:SetFrameLevel(MainMenuExpBar:GetParent():GetFrameLevel());
 	end
 end
 
@@ -792,9 +811,9 @@ end
 
 function VehicleActionButton_OnClick(self, button, down)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local spellType, id, subType, spellID = GetActionInfo(self.action);
+		local spellType, id, subType = GetActionInfo(self.action);
 		if ( spellType == "spell" ) then
-			if ( HandleModifiedItemClick(GetSpellLink(spellID)) ) then
+			if ( HandleModifiedItemClick(GetSpellLink(id)) ) then
 				return;
 			end
 		end

@@ -6,7 +6,7 @@ NUM_ICONS_PER_ROW = 5;
 NUM_ICON_ROWS = 4;
 MACRO_ICON_ROW_HEIGHT = 36;
 
-UIPanelWindows["MacroFrame"] = { area = "left", pushable = 5, whileDead = 1 };
+UIPanelWindows["MacroFrame"] = { area = "left", pushable = 5, whileDead = 1, 	xoffset = -16, 		yoffset = 12 };
 
 function MacroFrame_Show()
 	ShowUIPanel(MacroFrame);

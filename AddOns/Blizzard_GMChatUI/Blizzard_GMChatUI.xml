@@ -33,7 +33,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="$parentLeft" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
 					<Size>
 						<AbsDimension x="14" y="27"/>
 					</Size>
@@ -42,7 +42,7 @@
 					</Anchors>
 					<TexCoords left="0.3164" right="0.371" top="0.0" bottom="0.07"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="$parentRight" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
 					<Size>
 						<AbsDimension x="14" y="27"/>
 					</Size>
@@ -51,7 +51,7 @@
 					</Anchors>
 					<TexCoords left="0.371" right="0.3164" top="0.0" bottom="0.07"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="$parentMiddle" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentLeft" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT"/>

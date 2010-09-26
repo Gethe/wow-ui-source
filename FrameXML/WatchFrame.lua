@@ -122,7 +122,13 @@ function WatchFrameLinkButtonTemplate_OnLeftClick (self, button)
 		else
 			ExpandQuestHeader( GetQuestSortIndex( GetQuestIndexForWatch(self.index) ) );
 			-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
-			QuestLog_OpenToQuest( GetQuestIndexForWatch(self.index) );
+			local questIndex = GetQuestIndexForWatch(self.index);
+			if (self.isComplete and GetQuestLogIsAutoComplete(questIndex)) then
+				ShowQuestComplete(questIndex);
+				WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex);
+			else
+				QuestLog_OpenToQuest( questIndex );
+			end
 		end
 		return;
 	elseif ( self.type == "ACHIEVEMENT" ) then
@@ -210,6 +216,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("QUEST_POI_UPDATE");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
@@ -221,6 +228,7 @@ function WatchFrame_OnLoad (self)
 	DASH_WIDTH = watchFrameTestLine.dash:GetWidth();
 	WATCHFRAMELINES_FONTHEIGHT = fontHeight;
 	WATCHFRAMELINES_FONTSPACING = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTHEIGHT) / 2
+	WatchFrame_AddObjectiveHandler(WatchFrameAutoQuest_DisplayAutoQuestPopUps);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayTrackedAchievements);
 	WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
@@ -278,6 +286,10 @@ function WatchFrame_OnEvent (self, event, ...)
 		WatchFrame_SetWidth(GetCVar("watchFrameWidth"));
 		WATCHFRAME_SORT_TYPE = tonumber(GetCVar("trackerSorting"));
 		WATCHFRAME_FILTER_TYPE = tonumber(GetCVar("trackerFilter"));
+	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
+		local questId = ...;
+		WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE");
+		PlaySound("ReadyCheck");
 	end
 end
 
@@ -359,8 +371,7 @@ function WatchFrame_Update (self)
 	self.updating = true;
 	self.watchMoney = false;
 	
-	local pixelsUsed = 0;
-	local totalOffset = WATCHFRAME_INITIAL_OFFSET;
+	local nextAnchor = nil;
 	local lineFrame = WatchFrameLines;
 	local maxHeight = (WatchFrame:GetTop() - WatchFrame:GetBottom()); -- Can't use lineFrame:GetHeight() because it could be an invalid rectangle (width of 0)
 	
@@ -373,13 +384,9 @@ function WatchFrame_Update (self)
 	WatchFrame_ResetLinkButtons();
 	
 	for i = 1, #WATCHFRAME_OBJECTIVEHANDLERS do
-		pixelsUsed, maxLineWidth, numObjectives = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, totalOffset, maxHeight, maxFrameWidth);
+		nextAnchor, maxLineWidth, numObjectives = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, nextAnchor, maxHeight, maxFrameWidth);
 		maxWidth = max(maxLineWidth, maxWidth);
 		totalObjectives = totalObjectives + numObjectives
-		
-		if ( pixelsUsed > 0 ) then
-			totalOffset = totalOffset - WATCHFRAME_TYPE_OFFSET - pixelsUsed;
-		end
 	end
 	--disabled for now, might make it an option
 	--lineFrame:SetWidth(min(maxWidth, maxFrameWidth));
@@ -390,7 +397,7 @@ function WatchFrame_Update (self)
 		WatchFrameTitle:SetText(OBJECTIVES_TRACKER_LABEL.." ("..totalObjectives..")");
 		WatchFrameHeader:SetWidth(WatchFrameTitle:GetWidth() + 4);
 		-- visible objectives?
-		if ( totalOffset < WATCHFRAME_INITIAL_OFFSET ) then
+		if ( nextAnchor ) then
 			if ( self.collapsed and not self.userCollapsed ) then
 				WatchFrame_Expand(self);
 			end
@@ -409,7 +416,6 @@ function WatchFrame_Update (self)
 	WatchFrame_ReleaseUnusedLinkButtons();
 	
 	self.updating = nil;
-	self.nextOffset = totalOffset;
 end
 
 function WatchFrame_AddObjectiveHandler (func)
@@ -434,8 +440,8 @@ function WatchFrame_RemoveObjectiveHandler (func)
 	end
 end
 
-function WatchFrame_HandleDisplayQuestTimers (lineFrame, initialOffset, maxHeight, frameWidth)
-	return WatchFrame_DisplayQuestTimers(lineFrame, initialOffset, maxHeight, frameWidth, GetQuestTimers());
+function WatchFrame_HandleDisplayQuestTimers (lineFrame, nextAnchor, maxHeight, frameWidth)
+	return WatchFrame_DisplayQuestTimers(lineFrame, nextAnchor, maxHeight, frameWidth, GetQuestTimers());
 end
 
 local timerLineIndex = 1;
@@ -468,7 +474,7 @@ local function WatchFrame_ReleaseUnusedTimerLines ()
 	end
 end
 
-function WatchFrame_DisplayQuestTimers (lineFrame, initialOffset, maxHeight, frameWidth, ...)
+function WatchFrame_DisplayQuestTimers (lineFrame, nextAnchor, maxHeight, frameWidth, ...)
 	local numTimers = select("#", ...);
 
 	if ( numTimers == 0 ) then
@@ -479,7 +485,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, initialOffset, maxHeight, fra
 			WatchFrameLines_RemoveUpdateFunction(WatchFrame_HandleQuestTimerUpdate);
 			WATCHFRAME_NUM_TIMERS = 0;
 		end
-		return 0, 0, 0;
+		return nextAnchor, 0, 0;
 	end
 	
 	WatchFrame_ResetTimerLines();
@@ -492,26 +498,33 @@ function WatchFrame_DisplayQuestTimers (lineFrame, initialOffset, maxHeight, fra
 	local line = WatchFrame_GetTimerLine();
 	line.text:SetText(NORMAL_FONT_COLOR_CODE .. QUEST_TIMERS);
 	line:Show();
-	line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
-	line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
+	line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
+	line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
+	if (nextAnchor) then
+		line:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+	else
+		line:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET)
+	end
 
 	heightUsed = heightUsed + line:GetHeight();
 	maxWidth = line.text:GetStringWidth();
 	
-	local lastLine = line;
+	nextAnchor = line;
 	
 	for i = 1, numTimers do
 		line = WatchFrame_GetTimerLine();
 		line.text:SetText(" - " .. SecondsToTime(select(i, ...)));
 		line:Show();
-		line:SetPoint("TOPRIGHT", lastLine, "BOTTOMRIGHT");
-		line:SetPoint("TOPLEFT", lastLine, "BOTTOMLEFT");
+		line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
+		line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
+		line:SetPoint("TOP", nextAnchor, "BOTTOM", 0, 0);
 		maxWidth = max(maxWidth, line.text:GetStringWidth());
 		line:SetWidth(maxWidth) -- FIXME
 		heightUsed = heightUsed + line:GetHeight();
 		line:SetScript("OnEnter", function (self) GameTooltip:SetOwner(self); GameTooltip:SetHyperlink(GetQuestLink(GetQuestIndexForTimer(i))); GameTooltip:Show(); end);
 		line:SetScript("OnLeave", GameTooltip_Hide);
 		line:EnableMouse(true);
+		nextAnchor = line;
 	end
 	
 	if ( WATCHFRAME_NUM_TIMERS ~= numTimers ) then
@@ -520,7 +533,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, initialOffset, maxHeight, fra
 	end
 	
 	WatchFrame_ReleaseUnusedTimerLines();
-	return heightUsed, maxWidth, 0;
+	return nextAnchor, maxWidth, 0;
 end
 
 function WatchFrame_HandleQuestTimerUpdate ()
@@ -542,8 +555,8 @@ function WatchFrame_QuestTimerUpdateFunction (...)
 	end
 end
 	
-function WatchFrame_HandleDisplayTrackedAchievements (lineFrame, initialOffset, maxHeight, frameWidth)
-	return WatchFrame_DisplayTrackedAchievements(lineFrame, initialOffset, maxHeight, frameWidth, GetTrackedAchievements());
+function WatchFrame_HandleDisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight, frameWidth)
+	return WatchFrame_DisplayTrackedAchievements(lineFrame, nextAnchor, maxHeight, frameWidth, GetTrackedAchievements());
 end
 
 function WatchFrame_UpdateTimedAchievements (elapsed)
@@ -572,11 +585,12 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 	end
 end
 
-function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, isComplete)
+function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, isComplete, eligible)
 	-- anchor
 	if ( anchor ) then
-		line:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, verticalOffset);
-		line:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, verticalOffset);
+		line:SetPoint("RIGHT", anchor, "RIGHT", 0, 0);
+		line:SetPoint("LEFT", anchor, "LEFT", 0, 0);
+		line:SetPoint("TOP", anchor, "BOTTOM", 0, verticalOffset);
 	end
 	-- text
 	line.text:SetText(text);
@@ -585,6 +599,13 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		line.text:SetTextColor(0.75, 0.61, 0);
 	else
 		--this should be the default, set in WatchFrameLineTemplate_Reset
+		if ( eligible ~= nil and eligible == false) then
+			line.text.eligible = eligible;
+			line.text:SetTextColor(DIM_RED_FONT_COLOR.r, DIM_RED_FONT_COLOR.g, DIM_RED_FONT_COLOR.b);
+		else
+			line.text.eligible = true;
+			line.text:SetTextColor(0.8, 0.8, 0.8);
+		end
 	end
 	-- dash
 	local usedWidth = 0;
@@ -615,7 +636,7 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 	tinsert(WATCHFRAME_SETLINES, line);	
 end
 
-function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHeight, frameWidth, ...)
+function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight, frameWidth, ...)
 	local _; -- Doing this here thanks to IBLJerry!
 	local numTrackedAchievements = select("#", ...);
 	local line;
@@ -625,7 +646,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 	
 	local numCriteria, criteriaDisplayed;
 	local achievementID, achievementName, completed, description, icon;
-	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, achievementCategory;
+	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, eligible, achievementCategory;
 	local displayOnlyArena = ArenaEnemyFrames and ArenaEnemyFrames:IsShown();
 
 	local lineWidth = 0;
@@ -646,8 +667,13 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 				achievementTitle = line;
 				WatchFrame_SetLine(line, previousLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, achievementName, DASH_NONE);
 				if ( not previousLine ) then
-					line:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
-					line:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
+					line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
+					line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
+					if (nextAnchor) then
+						line:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+					else
+						line:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET);
+					end
 					topEdge = line:GetTop();
 				end
 				previousLine = line;
@@ -657,7 +683,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 					criteriaDisplayed = 0;
 					for j = 1, numCriteria do
 						local dash = DASH_SHOW;		-- default since most will have this
-						criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
+						criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, eligible = GetAchievementCriteriaInfo(achievementID, j);
 						if ( criteriaCompleted or ( criteriaDisplayed > WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
 							-- Do not display this one
 							criteriaString = nil;
@@ -690,15 +716,16 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 						-- set up the line
 						if ( criteriaString ) then
 							line = WatchFrame_GetAchievementLine();
-							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, dash);
+							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, dash, nil, nil, eligible);
 							previousLine = line;
 							criteriaDisplayed = criteriaDisplayed + 1;
 						end
 					end
 				else
 					-- single criteria type of achievement
-					line = WatchFrame_GetAchievementLine();				
-					WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW);
+					eligible = IsAchievementEligible(achievementID);
+					line = WatchFrame_GetAchievementLine();
+					WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW, nil, nil, eligible);
 					previousLine = line;				
 					for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
 						if ( timedCriteria.achievementID == achievementID ) then
@@ -737,7 +764,8 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 					linkButton.index = achievementID;
 					linkButton.lines = WATCHFRAME_ACHIEVEMENTLINES;
 					linkButton.startLine = achievementLineIndex - numLines;
-					linkButton.lastLine = achievementLineIndex - 1;			
+					linkButton.lastLine = achievementLineIndex - 1;
+					linkButton.isComplete = nil;
 					linkButton:Show();
 					
 					if ( previousBottom ) then
@@ -751,10 +779,10 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, initialOffset, maxHei
 	end
 
 	WatchFrame_ReleaseUnusedAchievementLines();
-	return heightUsed, maxWidth, numTrackedAchievements;
+	return previousLine or nextAnchor, maxWidth, numTrackedAchievements;
 end
 
-function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, frameWidth)
+function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, frameWidth)
 	local _;
 	local questTitle;
 	local questIndex;	
@@ -775,14 +803,11 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 
 	local maxWidth = 0;
 	local lineWidth = 0;
-	local heightUsed = 0;	
 	local topEdge = 0;
 
 	local playerMoney = GetMoney();
-	local selectedQuestId;
-	if ( WorldMapFrame and WorldMapFrame:IsShown() ) then
-		selectedQuestId = WORLDMAP_SETTINGS.selectedQuestId;
-	else
+	local selectedQuestId = WORLDMAP_SETTINGS.selectedQuestId;
+	if ( not WorldMapFrame:IsShown() ) then
 		-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
 		-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
 		-- open to a different zone.
@@ -807,7 +832,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				isComplete = false;
 			elseif ( numObjectives == 0 and playerMoney >= requiredMoney ) then
 				isComplete = true;		
-			end			
+			end
 			-- check filters
 			local filterOK = true;
 			if ( isComplete and bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) ~= WATCHFRAME_FILTER_COMPLETED_QUESTS ) then
@@ -824,21 +849,37 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				questTitle = WatchFrame_GetQuestLine();
 				WatchFrame_SetLine(questTitle, lastLine, -WATCHFRAME_QUEST_OFFSET, IS_HEADER, title, DASH_NONE, item);
 				if ( not lastLine ) then -- First line
-					questTitle:SetPoint("TOPRIGHT", lineFrame, "TOPRIGHT", 0, initialOffset);
-					questTitle:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, initialOffset);
+					questTitle:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
+					questTitle:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
+					if (nextAnchor) then
+						questTitle:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+					else
+						questTitle:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET);
+					end
 					topEdge = questTitle:GetTop();
 				end
 				lastLine = questTitle;
 				
 				if ( isComplete ) then
-					line = WatchFrame_GetQuestLine();
-					WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
-					lastLine = line;
+					if (GetQuestLogIsAutoComplete(questIndex)) then
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_QUEST_COMPLETE, DASH_HIDE, nil, true);
+						lastLine = line;
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_CLICK_TO_COMPLETE, DASH_HIDE, nil, true);
+						lastLine = line;
+					else
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
+						lastLine = line;
+					end
 				else
 					for j = 1, numObjectives do
-						text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
+						text, objectiveType, finished = GetQuestLogLeaderBoard(j, questIndex);
 						if ( not finished ) then
-							text = WatchFrame_ReverseQuestObjective(text);
+							if (objectiveType ~= "spell") then
+								text = WatchFrame_ReverseQuestObjective(text);
+							end
 							line = WatchFrame_GetQuestLine();
 							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 							lastLine = line;
@@ -898,6 +939,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				linkButton.lines = WATCHFRAME_QUESTLINES;
 				linkButton.startLine = questLineIndex - numLines;
 				linkButton.lastLine = questLineIndex - 1;
+				linkButton.isComplete = isComplete;
 				linkButton:Show();				
 				-- quest POI icon
 				if ( WatchFrame.showObjectives ) then
@@ -919,11 +961,6 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 					end				
 				end
 				
-				if ( lastBottom ) then
-					heightUsed = topEdge - lastLine:GetBottom();
-				else
-					heightUsed = 1;
-				end
 			end
 		end
 	end
@@ -941,7 +978,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 		QuestPOI_SelectButtonByQuestId("WatchFrameLines", selectedQuestId, true);	
 	end
 	
-	return heightUsed, maxWidth, numQuestWatches;	
+	return lastLine or nextAnchor, maxWidth, numQuestWatches;	
 end
 
 function WatchFrameLines_OnUpdate (self, elapsed)
@@ -1290,10 +1327,18 @@ function WatchFrameLinkButtonTemplate_Highlight(self, onEnter)
 				end
 			else
 				if ( onEnter ) then
-					line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					if (line.text.eligible) then
+						line.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					else
+						line.text:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+					end
 					line.dash:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				else
-					line.text:SetTextColor(0.8, 0.8, 0.8);
+					if (line.text.eligible) then
+						line.text:SetTextColor(0.8, 0.8, 0.8);
+					else
+						line.text:SetTextColor(DIM_RED_FONT_COLOR.r, DIM_RED_FONT_COLOR.g, DIM_RED_FONT_COLOR.b);
+					end
 					line.dash:SetTextColor(0.8, 0.8, 0.8);
 				end
 			end
@@ -1310,15 +1355,22 @@ function WatchFrame_GetCurrentMapQuests()
 	end
 end
 
-function WatchFrameQuestPOI_OnClick(self)
-	if ( WorldMapFrame:IsShown() ) then
-		if ( WORLDMAP_SETTINGS.selectedQuestId == self.questId ) then
-			HideUIPanel(WorldMapFrame);
-			return;
-		end
+function WatchFrameQuestPOI_OnClick(self, button)
+	if ( button == "RightButton" ) then	
+		WORLDMAP_SETTINGS.selectedQuestId = self.questId;
+		QuestPOI_SelectButtonByQuestId("WatchFrameLines", self.questId, true);
+		SetSuperTrackedQuestID(self.questId);
 		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		if ( WorldMapFrame:IsShown() ) then
+			if ( WORLDMAP_SETTINGS.selectedQuestId == self.questId ) then
+				HideUIPanel(WorldMapFrame);
+				return;
+			end
+			PlaySound("igMainMenuOptionCheckBoxOn");
+		end
+		WorldMap_OpenToQuest(self.questId);
 	end
-	WorldMap_OpenToQuest(self.questId);
 end
 
 function WatchFrame_SetWidth(width)
@@ -1431,6 +1483,9 @@ function WatchFrame_SetSorting(button, arg1)
 		SortQuestWatches();
 		WatchFrame_Update();
 		WatchFrame.updateTimer = WATCHFRAME_UPDATE_RATE;
+		if ( WorldMapFrame:IsShown() ) then
+			WorldMapFrame_UpdateMap();
+		end
 	end
 end
 
@@ -1467,4 +1522,174 @@ function WatchFrame_MoveQuest(button, questLogIndex, numMoves)
 	end
 	ShiftQuestWatches(GetQuestWatchIndex(questLogIndex), GetQuestWatchIndex(VISIBLE_WATCHES[indexEnd]));
 	WatchFrame_Update();
+	if ( WorldMapFrame:IsShown() ) then
+		WorldMapFrame_UpdateMap();
+	end
+end
+
+
+-- AutoQuest pop-ups
+local numPopUpFrames = 0;
+
+function WatchFrameAutoQuest_GetOrCreateFrame(parent, index)
+	if (_G["WatchFrameAutoQuestPopUp"..index]) then
+		return _G["WatchFrameAutoQuestPopUp"..index];
+	end
+	local frame = CreateFrame("SCROLLFRAME", "WatchFrameAutoQuestPopUp"..index, parent, "WatchFrameAutoQuestPopUpTemplate");	
+	frame.index = index;
+	numPopUpFrames = numPopUpFrames+1;
+	return frame;
+end
+
+function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHeight, frameWidth)
+	local numPopUps = 0;
+	local maxWidth = 0;
+	local i;
+	local numAutoQuestPopUps = GetNumAutoQuestPopUps();
+	for i=1, numAutoQuestPopUps do
+		local questID, popUpType = GetAutoQuestPopUp(i);
+		local questTitle, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+				
+		if ( isComplete and isComplete > 0 ) then
+			isComplete = true;
+		else
+			isComplete = false;
+		end	
+			
+		if (questTitle and questTitle ~= "") then
+			local frame = WatchFrameAutoQuest_GetOrCreateFrame(lineFrame, numPopUps+1);
+			frame:Show();
+			frame:ClearAllPoints();
+			frame:SetParent(lineFrame);
+			
+			if (not frame.questId) then
+				-- Only show the animation for new notifications
+				frame.ScrollChild.Flash:Hide();
+				WatchFrameAutoQuest_SlideIn(frame, 0.4);
+			end
+			
+			if (isComplete and popUpType == "COMPLETE") then
+				frame.ScrollChild.QuestionMark:Show();
+				frame.ScrollChild.Exclamation:Hide();
+				frame.ScrollChild.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE);
+				frame.ScrollChild.BottomText:Hide();
+				frame.ScrollChild.TopText:SetPoint("TOP", 0, -12);
+				frame.ScrollChild.QuestName:SetPoint("TOP", 0, -32);
+				if (frame.questId and frame.type=="OFFER") then
+					frame.ScrollChild.Flash:Show();
+				end
+				frame.type="COMPLETED";
+			elseif (popUpType == "OFFER") then
+				frame.ScrollChild.QuestionMark:Hide();
+				frame.ScrollChild.Exclamation:Show();
+				frame.ScrollChild.TopText:SetText(QUEST_WATCH_POPUP_QUEST_DISCOVERED);
+				frame.ScrollChild.BottomText:Show();
+				frame.ScrollChild.BottomText:SetText(QUEST_WATCH_POPUP_CLICK_TO_VIEW);
+				frame.ScrollChild.TopText:SetPoint("TOP", 0, -4);
+				frame.ScrollChild.QuestName:SetPoint("TOP", 0, -24);
+				frame.ScrollChild.Flash:Hide();
+				frame.type="OFFER";
+			end
+			
+			frame:ClearAllPoints();
+			if (nextAnchor) then
+				if (i == 1) then
+					frame:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+				else
+					frame:SetPoint("TOP", nextAnchor, "BOTTOM", 0, 0);
+				end
+			else
+				-- Cancel out the WATCHFRAME_TYPE_OFFSET here, it will be added into the animation for the first pop-up.  Also add 1 for the initial height of the pop-up.
+				-- This prevents tracked quests from moving a bit initially while the background shadow is fading in.
+				frame:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET+WATCHFRAME_TYPE_OFFSET+1);
+			end
+			frame:SetPoint("LEFT", lineFrame, "LEFT", -30, 0);
+
+			frame.ScrollChild.QuestName:SetText(questTitle);
+			frame.questId = questID;
+			
+			maxWidth = max(maxWidth, frame:GetWidth());
+			nextAnchor = frame;
+			numPopUps = numPopUps+1;
+		end
+	end
+	
+	for i=numPopUps+1, numPopUpFrames do
+		_G["WatchFrameAutoQuestPopUp"..i].questId = nil;
+		_G["WatchFrameAutoQuestPopUp"..i]:Hide();
+	end
+	
+	if (numPopUps > 0) then
+		if (not lineFrame.AutoQuestShadow:IsShown()) then
+			lineFrame.AutoQuestShadow:Show();
+			lineFrame.AutoQuestShadow.FadeIn:Play();
+		end
+	else
+		lineFrame.AutoQuestShadow:Hide();
+	end
+	
+	return nextAnchor, maxWidth, 0;
+end
+
+function WatchFrameAutoQuest_OnUpdate(frame, timestep)
+	local height = 72;
+	local scrollStart = 65;
+	local scrollEnd = -9;
+	
+	-- Pause animation while the AutoQuestShadow is animating
+	if (WatchFrameLinesAutoQuestShadow.FadeIn:IsPlaying()) then
+		return;
+	end
+	
+	-- The first pop-up needs to include the WATCHFRAME_TYPE_OFFSET in the animation
+	if (frame.index == 1) then
+		height = height + WATCHFRAME_TYPE_OFFSET;
+		scrollEnd = scrollEnd - WATCHFRAME_TYPE_OFFSET;
+	end
+	
+	frame.totalTime = frame.totalTime+timestep;
+	if (frame.totalTime > frame.slideInTime) then
+		frame.totalTime = frame.slideInTime;
+	end
+	
+	local scrollPos = scrollEnd;
+	if (frame.slideInTime and frame.slideInTime > 0) then
+		height = height*(frame.totalTime/frame.slideInTime);
+		scrollPos = scrollStart + (scrollEnd-scrollStart)*(frame.totalTime/frame.slideInTime);
+	end
+	frame:SetHeight(height);
+	frame:UpdateScrollChildRect();
+	frame:SetVerticalScroll(floor(scrollPos+0.5));
+	
+	if (frame.totalTime >= frame.slideInTime) then
+		frame:SetScript("OnUpdate", nil);
+		WatchFrame_Update();
+		frame.ScrollChild.Shine:Show();
+		frame.ScrollChild.IconShine:Show();
+		frame.ScrollChild.Shine.Flash:Play();
+		frame.ScrollChild.IconShine.Flash:Play();
+	end
+end
+
+function WatchFrameAutoQuest_SlideIn(frame, slideInTime)
+	frame.totalTime = 0;
+	frame.slideInTime = slideInTime;
+	frame:SetHeight(1);
+	frame:SetScript("OnUpdate", WatchFrameAutoQuest_OnUpdate);
+end
+
+function WatchFrameAutoQuest_AddPopUp(questId, type)
+	AddAutoQuestPopUp(questId, type);
+	WatchFrame_Update(WatchFrame);
+	WatchFrame_Expand(WatchFrame);
+end
+
+function WatchFrameAutoQuest_ClearPopUp(questId)
+	RemoveAutoQuestPopUp(questId);
+	WatchFrame_Update(WatchFrame);
+end
+
+function WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex)
+	local questId = select(9, GetQuestLogTitle(questIndex));
+	WatchFrameAutoQuest_ClearPopUp(questId);
 end

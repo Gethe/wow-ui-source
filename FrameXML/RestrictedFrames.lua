@@ -45,6 +45,11 @@ local rawget = rawget;
 local securecall = securecall;
 local GetCursorPosition = GetCursorPosition;
 local InCombatLockdown = InCombatLockdown;
+local CallRestrictedClosure = CallRestrictedClosure;
+local GetManagedEnvironment = GetManagedEnvironment;
+local forceinsecure = forceinsecure;
+local scrub = scrub;
+local pcall = pcall;
 
 ---------------------------------------------------------------------------
 -- Frame Handles -- Userdata handles referencing explicitly protected frames
@@ -655,4 +660,145 @@ function HANDLE:Enable()
         return;
     end
     frame:Enable();
+end
+
+
+---------------------------------------------------------------------------
+-- Control handle methods
+
+-- SoftError(message)
+-- Report an error message without stopping execution
+local function SoftError_inner(message)
+    geterrorhandler()(message);
+end
+
+local function SoftError(message)
+    securecall(pcall, SoftError_inner, message);
+end
+
+function HANDLE:Run(body, ...)
+    local frame = GetHandleFrame(self);
+    if (not frame) then
+        error("Invalid control handle");
+        return;
+    end
+    if (type(body) ~= "string") then
+        error("Invalid function body");
+        return;
+    end
+    local env = GetManagedEnvironment(frame)
+    return scrub(CallRestrictedClosure("self,...",
+                                       env, self, body, self, ...));
+end
+
+function HANDLE:RunFor(otherHandle, body, ...)
+    local frame = GetHandleFrame(self);
+    if (not frame) then
+        error("Invalid control handle");
+        return;
+    end
+    if ((otherHandle ~= nil) and (not IsFrameHandle(otherHandle))) then
+        error("Invalid handle for other frame");
+        return;
+    end
+    if (type(body) ~= "string") then
+        error("Invalid function body");
+        return;
+    end
+    local env = GetManagedEnvironment(frame);
+    return scrub(CallRestrictedClosure("self,...",
+                                       env, self, body, otherHandle, ...));
+end
+
+function HANDLE:RunAttribute(snippetAttr, ...)
+    local frame = GetHandleFrame(self);
+    if (not frame) then
+        error("Invalid control handle");
+        return;
+    end
+    if (type(snippetAttr) ~= "string") then
+        error("Invalid snippet attribute");
+        return;
+    end
+    local body = frame:GetAttribute(snippetAttr);
+    if (type(body) ~= "string") then
+        error("Invalid snippet body");
+        return;
+    end
+    local env = GetManagedEnvironment(frame);
+    return scrub(CallRestrictedClosure("self,...",
+                                       env, self, body, self, ...));
+end
+
+local function ChildUpdate_Helper(environment, controlHandle,
+                                  scriptid, message, ...)
+    local scriptattr;
+    if (scriptid ~= nil) then
+        scriptid = tostring(scriptid);
+        scriptattr = "_childupdate-" .. scriptid;
+    end
+    for i = 1, select('#', ...) do
+        local child = select(i, ...);
+        local p = child:IsProtected();
+        if (p) then
+            local body;
+            if (scriptattr) then
+                body = child:GetAttribute(scriptattr);
+            end
+            if (body == nil) then
+                body = child:GetAttribute("_childupdate");
+            end
+            if (body and type(body) == "string") then
+                local selfHandle = GetFrameHandle(child, true);
+                if (selfHandle) then
+                    CallRestrictedClosure("self,scriptid,message",
+                                          environment, controlHandle, body,
+                                          selfHandle, scriptid, message);
+                end
+            end
+        end
+    end
+end
+
+function HANDLE:ChildUpdate(snippetid, message)
+    local frame = GetHandleFrame(self);
+    if (not frame) then
+        error("Invalid control handle");
+        return;
+    end
+    local env = GetManagedEnvironment(frame);
+    ChildUpdate_Helper(env, self, snippetid, message, frame:GetChildren());
+end
+
+local function CallMethod_inner(frame, methodName, ...)
+    -- Ensure code isn't run securely
+    forceinsecure();
+    local method = frame[methodName];
+    if (type(method) ~= "function") then
+        error("Invalid method '" .. methodName .. "'");
+        return;
+    end
+    method(frame, ...);
+end
+
+-- This essentially supports already-possible functionality but without
+-- the overhead of having to hook OnAttributeChanged scripts and create
+-- temporary restricted tables.
+function HANDLE:CallMethod(methodName, ...)
+    local frame = GetHandleFrame(self);
+    if (not frame) then
+        error("Invalid control handle");
+        return;
+    end
+    if (type(methodName) ~= "string") then
+        error("Method name must be a string");
+        return;
+    end
+    -- Use a pcall wrapper here to ensure that execution continues
+    -- regardless
+    local ok, err =
+        securecall(pcall, CallMethod_inner, frame, methodName, scrub(...));
+    if (err) then
+        SoftError(err);
+    end
 end

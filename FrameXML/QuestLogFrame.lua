@@ -198,26 +198,20 @@ function QuestLogTitleButton_Resize(questLogTitle)
 	-- The reason why is because SetWidth may be called on the questLogTitle button before we enter this function. The
 	-- results of a SetWidth are not calculated until the next update tick; so in order to get the most up-to-date
 	-- right edge, we call GetLeft() + GetWidth() instead of just GetRight()
-	local rightEdge;
-	if ( questTitleTag:IsShown() ) then
-		-- adjust the normal text to not overrun the title tag
-		if ( questCheck:IsShown() ) then
-			--rightEdge = questTitleTag:GetLeft() - questCheck:GetWidth() - 2;
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questTitleTag:GetWidth() - 4 - questCheck:GetWidth() - 2;
-		else
-			--rightEdge = questTitleTag:GetLeft();
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questTitleTag:GetWidth() - 4;
-		end
-	else
-		-- adjust the normal text to not overrun the button
-		if ( questCheck:IsShown() ) then
-			--rightEdge = questLogTitle:GetRight() - questCheck:GetWidth() - 2;
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questCheck:GetWidth() - 2;
-		else
-			--rightEdge = questLogTitle:GetRight();
-			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth();
-		end
+	local rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth();
+	-- adjust the normal text to not overrun the button
+	if ( questCheck:IsShown() ) then
+		rightEdge = rightEdge - questCheck:GetWidth() - 2;
 	end
+	-- adjust the normal text to not overrun the title tag
+	if ( questTitleTag:IsShown() ) then
+		rightEdge = rightEdge - questTitleTag:GetWidth() - 4;
+	end
+	
+	if (questLogTitle.QuestionMark:IsShown()) then
+		rightEdge = rightEdge - questLogTitle.QuestionMark:GetWidth();
+	end
+	
 	-- subtract from the text width the number of pixels that overrun the right edge
 	local questNormalTextWidth = questNormalText:GetWidth() - max(questNormalText:GetRight() - rightEdge, 0);
 	questNormalText:SetWidth(questNormalTextWidth);
@@ -257,12 +251,27 @@ function QuestLog_OnEvent(self, event, ...)
 			QuestLog_UpdateQuestDetails(false);
 			QuestLog_UpdateMap();
 		end
+		if ((GetNumQuestLogEntries() == 0) or (GetQuestLogIndexByID(GetSuperTrackedQuestID()) == 0)) then
+			SetSuperTrackedQuestID(0);
+			WORLDMAP_SETTINGS.selectedQuestId = 0;
+		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
+		TUTORIAL_QUEST_ACCEPTED = true;
+		QuestPOIUpdateIcons();
+		local questID = select(9, GetQuestLogTitle(arg1));
+		SetSuperTrackedQuestID(questID);
+		WORLDMAP_SETTINGS.selectedQuestId = questID;
 		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1);
 			QuestLog_Update();
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
+		if (not IsTutorialFlagged(11)) then
+			local questID = select(9, GetQuestLogTitle(arg1));
+			if (questID == TUTORIAL_QUEST_TO_WATCH) then
+				TriggerTutorial(11);
+			end
+		end
 		if ( AUTO_QUEST_PROGRESS == "1" and 
 			 GetNumQuestLeaderBoards(arg1) > 0 and 
 			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
@@ -300,8 +309,16 @@ function QuestLog_OnHide(self)
 	PlaySound("igQuestLogClose");
 	QuestLogShowMapPOI_UpdatePosition();
 	QuestLogControlPanel_UpdatePosition();
-	
 	QuestLogDetailFrame_DetachFromQuestLog();
+	if (TUTORIAL_QUEST_ACCEPTED) then
+		if (not IsTutorialFlagged(2)) then
+			TriggerTutorial(2);
+--			TriggerTutorial(3);
+		else
+			TriggerTutorial(10);
+		end
+		TUTORIAL_QUEST_ACCEPTED = nil
+	end
 end
 
 function QuestLog_OnUpdate(self, elapsed)
@@ -419,6 +436,7 @@ function QuestLog_Update()
 				questNumGroupMates:Hide();
 				questTitleTag:Hide();
 				questCheck:Hide();
+				questLogTitle.QuestionMark:Hide();
 			else
 				-- set the title
 				if ( ENABLE_COLORBLIND_MODE == "1" ) then
@@ -473,8 +491,15 @@ function QuestLog_Update()
 				else
 					questCheck:Hide();
 				end
+				
+				-- Show the question mark icon for auto-complete quests
+				if (isComplete and isComplete>0 and GetQuestLogIsAutoComplete(questIndex)) then
+					questLogTitle.QuestionMark:Show();
+				else
+					questLogTitle.QuestionMark:Hide();
+				end
 			end
-
+			
 			-- Save if its a header or not
 			questLogTitle.isHeader = isHeader;
 
@@ -507,13 +532,25 @@ function QuestLog_Update()
 		displayedHeight = displayedHeight + buttonHeight;
 	end
 	HybridScrollFrame_Update(QuestLogScrollFrame, numEntries * buttonHeight, displayedHeight);
-
+	
+	local selectedIsComplete = select(7, GetQuestLogTitle(questLogSelection));
+	if (selectedIsComplete and GetQuestLogIsAutoComplete()) then
+		QuestLogFrameCompleteButton:Show();
+	else
+		QuestLogFrameCompleteButton:Hide();
+	end
+	
 	-- update the control panel
 	QuestLogControlPanel_UpdateState();
 end
 
 function QuestLog_UpdateQuestCount(numQuests)
-	QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS);
+	if (numQuests > MAX_QUESTLOG_QUESTS) then
+		QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, RED_FONT_COLOR_CODE, numQuests, MAX_QUESTLOG_QUESTS);
+	else
+		QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, "|cffffffff", numQuests, MAX_QUESTLOG_QUESTS);
+	end
+	
 	local textHeight = 12;
 	local hPadding = 15;
 	local vPadding = 8;
@@ -608,6 +645,19 @@ function QuestLog_UpdatePartyInfoTooltip(questLogTitle)
 	end
 end
 
+function QuestLog_UpdatePortrait()
+	local questPortrait, questPortraitText, questPortraitName = GetQuestLogPortraitGiver();
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
+		if (QuestLogDetailFrame.attached) then
+			QuestFrame_ShowQuestPortrait(QuestLogFrame, questPortrait, questPortraitText, questPortraitName, -5, -62);
+		else
+			QuestFrame_ShowQuestPortrait(QuestLogDetailFrame, questPortrait, questPortraitText, questPortraitName, -3, -62);
+		end
+	else
+		QuestFrame_HideQuestPortrait();
+	end
+end
+
 function QuestLog_SetSelection(questIndex)
 	SelectQuestLogEntry(questIndex);
 	StaticPopup_Hide("ABANDON_QUEST");
@@ -620,10 +670,12 @@ function QuestLog_SetSelection(questIndex)
 		QuestLogFrame.selectedIndex = nil;
 		HideUIPanel(QuestLogDetailFrame);
 		QuestLogDetailScrollFrame:Hide();
+		QuestLogFrameCompleteButton:Hide();
+		QuestFrame_HideQuestPortrait();
 		return;
 	end
 
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(questIndex);
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questIndex);
 	if ( isHeader ) then
 		if ( isCollapsed ) then
 			ExpandQuestHeader(questIndex);
@@ -632,6 +684,14 @@ function QuestLog_SetSelection(questIndex)
 		end
 		return;
 	end
+	
+	if (isComplete and GetQuestLogIsAutoComplete(questIndex)) then
+		QuestLogFrameCompleteButton:Show();
+	else
+		QuestLogFrameCompleteButton:Hide();
+	end
+	
+	QuestLog_UpdatePortrait();
 
 	QuestLogFrame.selectedIndex = questIndex;
 
@@ -806,6 +866,12 @@ function QuestLogDetailFrame_OnHide(self)
 end
 
 function QuestLogDetailFrame_AttachToQuestLog()
+	QuestLogDetailFrame.attached = true;
+	if (QuestNPCModel:GetParent() == QuestLogDetailFrame) then
+		QuestNPCModel:SetParent(QuestLogFrame);
+		QuestNPCModel:ClearAllPoints();
+		QuestNPCModel:SetPoint("TOPLEFT", QuestLogFrame, "TOPRIGHT", -3, -34);
+	end
 	QuestLogDetailScrollFrame:SetParent(QuestLogFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -32, -77);
@@ -813,9 +879,16 @@ function QuestLogDetailFrame_AttachToQuestLog()
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -13);
 	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Hide();
 	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Hide();
+	QuestLog_UpdatePortrait();
 end
 
 function QuestLogDetailFrame_DetachFromQuestLog()
+	QuestLogDetailFrame.attached = false;
+	if (QuestNPCModel:GetParent() == QuestLogFrame) then
+		QuestNPCModel:SetParent(QuestLogDetailFrame);
+		QuestNPCModel:ClearAllPoints();
+		QuestNPCModel:SetPoint("TOPLEFT", QuestLogDetailFrame, "TOPRIGHT", -1, -34);
+	end
 	QuestLogDetailScrollFrame:SetParent(QuestLogDetailFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPLEFT", QuestLogDetailFrame, "TOPLEFT", 19, -76);
@@ -823,6 +896,7 @@ function QuestLogDetailFrame_DetachFromQuestLog()
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -16);
 	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Show();
 	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Show();
+	QuestLog_UpdatePortrait();
 end
 
 function QuestLogDetailFrame_OnLoad(self)

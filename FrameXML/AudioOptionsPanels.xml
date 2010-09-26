@@ -443,7 +443,22 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.label:SetText(tostring(ceil(value * 100)).."%");
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						end
 					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>	
 			</Slider>	
 			<Slider name="$parentSoundVolume" inherits="OptionsSliderTemplate">
@@ -483,7 +498,25 @@
 						self.cvar = "Sound_SFXVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "SFX");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>	
 			</Slider>				
 			<Slider name="$parentMusicVolume" inherits="OptionsSliderTemplate">
@@ -519,7 +552,25 @@
 						self.cvar = "Sound_MusicVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "Music");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelMusic:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>	
 			</Slider>
 			<Slider name="$parentAmbienceVolume" inherits="OptionsSliderTemplate">
@@ -555,7 +606,25 @@
 						self.cvar = "Sound_AmbienceVolume";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnValueChanged function="BlizzardOptionsPanel_Slider_OnValueChanged"/>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "Ambience");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+							end
+							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then								
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:Show();
+							end							
+						end
+					</OnEnter>
 				</Scripts>
 			</Slider>
 		</Frames>
@@ -872,7 +941,7 @@
 									<OnLoad function="LoopbackVUMeter_OnLoad"/>
 									<OnUpdate function="LoopbackVUMeter_OnUpdate"/>
 								</Scripts>
-								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+								<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 							</StatusBar>
 						</Frames>
 					</Frame>

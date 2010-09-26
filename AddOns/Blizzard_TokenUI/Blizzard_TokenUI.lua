@@ -13,8 +13,6 @@ function TokenButton_OnLoad(self)
 	self.icon = _G[name.."Icon"];
 	self.check = _G[name.."Check"];
 	self.expandIcon = _G[name.."ExpandIcon"];
-	self.categoryLeft = _G[name.."CategoryLeft"];
-	self.categoryRight = _G[name.."CategoryRight"];
 	self.highlight = _G[name.."Highlight"];
 	self.stripe = _G[name.."Stripe"];
 end
@@ -22,45 +20,63 @@ end
 function TokenFrame_OnLoad()
 	TokenFrameContainerScrollBar.Show = 
 		function (self)
-			TokenFrameContainer:SetWidth(299);
+			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -23, 4);
 			for _, button in next, _G["TokenFrameContainer"].buttons do
 				button:SetWidth(295);
 			end
+			TokenFrameContainer.scrollChild:SetWidth(295);
 			getmetatable(self).__index.Show(self);
 		end
 		
 	TokenFrameContainerScrollBar.Hide = 
 		function (self)
-			TokenFrameContainer:SetWidth(313);
+			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -4, 4);
 			for _, button in next, TokenFrameContainer.buttons do
-				button:SetWidth(313);
+				button:SetWidth(317);
 			end
+			TokenFrameContainer.scrollChild:SetWidth(317);
 			getmetatable(self).__index.Hide(self);
 		end
 	TokenFrameContainer.update = TokenFrame_Update;
-	HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 0, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
-	local buttons = TokenFrameContainer.buttons;
-	local numButtons = #buttons;
-	for i=1, numButtons do
-		if ( mod(i, 2) == 1 ) then
-			buttons[i].stripe:Hide();
-		end
-	end
 end
 
 function TokenFrame_OnShow(self)
-	SetButtonPulse(CharacterFrameTab5, 0, 1);	--Stop the button pulse
+
+	-- Create buttons if not created yet
+	if (not TokenFrameContainer.buttons) then
+		HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 1, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
+		local buttons = TokenFrameContainer.buttons;
+		local numButtons = #buttons;
+		for i=1, numButtons do
+			if ( mod(i, 2) == 1 ) then
+				buttons[i].stripe:Hide();
+			end
+		end
+	end
+
+	SetButtonPulse(CharacterFrameTab4, 0, 1);	--Stop the button pulse
+	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	TokenFrame_Update();
 end
 
 function TokenFrame_Update()
+	local numTokenTypes = GetCurrencyListSize();
+	
+	if ( numTokenTypes == 0 ) then
+		CharacterFrameTab4:Hide();
+	else
+		CharacterFrameTab4:Show();
+	end
+
+	if (not TokenFrameContainer.buttons) then
+		return;
+	end
 
 	-- Setup the buttons
 	local scrollFrame = TokenFrameContainer;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
-	local numTokenTypes = GetCurrencyListSize();
 	local name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon, itemID;
 	local button, index;
 	for i=1, numButtons do
@@ -75,6 +91,7 @@ function TokenFrame_Update()
 			if ( isHeader ) then
 				button.categoryLeft:Show();
 				button.categoryRight:Show();
+				button.categoryMiddle:Show();
 				button.expandIcon:Show();
 				button.count:SetText("");
 				button.icon:SetTexture("");
@@ -86,13 +103,15 @@ function TokenFrame_Update()
 				button.highlight:SetTexture("Interface\\TokenFrame\\UI-TokenFrame-CategoryButton");
 				button.highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 3, -2);
 				button.highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 2);
-				button:SetText(name);
-				button.name:SetText("");
+				button.name:SetText(name);
+				button.name:SetFontObject("GameFontNormal");
+				button.name:SetPoint("LEFT", 22, 0);
 				button.itemID = nil;
 				button.LinkButton:Hide();
 			else
 				button.categoryLeft:Hide();
 				button.categoryRight:Hide();
+				button.categoryMiddle:Hide();
 				button.expandIcon:Hide();
 				button.count:SetText(count);
 				button.extraCurrencyType = extraCurrencyType;
@@ -126,8 +145,8 @@ function TokenFrame_Update()
 					button.count:SetFontObject("GameFontHighlight");
 					button.name:SetFontObject("GameFontHighlight");
 				end
-				button:SetText("");
 				button.name:SetText(name);
+				button.name:SetPoint("LEFT", 11, 0);
 				button.itemID = itemID;
 				button.LinkButton:Show();
 			end
@@ -151,12 +170,6 @@ function TokenFrame_Update()
 	local displayedHeight = #buttons * (button:GetHeight()+TOKEN_BUTTON_OFFSET);
 
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-	
-	if ( numTokenTypes == 0 ) then
-		CharacterFrameTab5:Hide();
-	else
-		CharacterFrameTab5:Show();
-	end
 end
 
 function TokenFramePopup_CloseIfHidden()

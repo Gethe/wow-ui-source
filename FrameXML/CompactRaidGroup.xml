@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CompactRaidGroup.lua"/>
+	<Frame name="CompactRaidGroupTemplate" frameStrata="LOW" clampedToScreen="true" movable="true" virtual="true">
+		<Size x="72" y="199"/>
+		<Frames>
+			<Button name="$parentTitle" parentKey="title">
+				<Size x="50" y="14"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						--CompactRaidGroup_StartMoving(self:GetParent());
+					</OnDragStart>
+					<OnDragStop>
+						--CompactRaidGroup_StopMoving(self:GetParent());
+					</OnDragStop>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+			</Button>
+			<Button name="$parentMember1" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="-14"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember2" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember1" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember3" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember2" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember4" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember3" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember5" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember4" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CompactRaidGroup_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				CompactRaidGroup_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

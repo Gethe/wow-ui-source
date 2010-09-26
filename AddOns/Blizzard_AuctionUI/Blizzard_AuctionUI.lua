@@ -9,7 +9,7 @@ AUCTIONS_BUTTON_HEIGHT = 37;
 CLASS_FILTERS = {};
 OPEN_FILTER_LIST = {};
 AUCTION_TIMER_UPDATE_DELAY = 0.3;
-MAXIMUM_BID_PRICE = 2000000000;
+MAXIMUM_BID_PRICE = 99999999999999;
 
 -- keep last item sent to auction & it's price
 LAST_ITEM_AUCTIONED = "";
@@ -283,6 +283,8 @@ function AuctionFrame_OnLoad (self)
 	AuctionFrameAuctions.page = 0;
 	FauxScrollFrame_SetOffset(AuctionsScrollFrame,0);
 	GetOwnerAuctionItems(AuctionFrameAuctions.page);
+	
+	MoneyFrame_SetMaxDisplayWidth(AuctionFrameMoneyFrame, 160);
 end
 
 function AuctionFrame_Show()
@@ -326,7 +328,7 @@ function AuctionFrame_OnShow (self)
 	PlaySound("AuctionWindowOpen");
 end
 
-function AuctionFrameTab_OnClick(self, index)
+function AuctionFrameTab_OnClick(self, button, down, index)
 	local index = self:GetID();
 	PanelTemplates_SetTab(AuctionFrame, index);
 	AuctionFrameAuctions:Hide();
@@ -1136,6 +1138,7 @@ function AuctionFrameAuctions_OnEvent(self, event, ...)
 	if ( event == "AUCTION_OWNED_LIST_UPDATE" ) then
 		AuctionFrameAuctions_Update();
 	elseif ( event == "AUCTION_MULTISELL_START" ) then
+		local arg1 = ...;
 		AuctionsCreateAuctionButton:Disable();
 		MoneyInputFrame_ClearFocus(StartPrice);
 		MoneyInputFrame_ClearFocus(BuyoutPrice);
@@ -1149,6 +1152,7 @@ function AuctionFrameAuctions_OnEvent(self, event, ...)
 		AuctionProgressBarIcon:SetTexture(iconTexture);
 		AuctionProgressFrame:Show();
 	elseif ( event == "AUCTION_MULTISELL_UPDATE" ) then
+		local arg1, arg2 = ...;
 		AuctionProgressBar:SetValue(arg1);
 		AuctionProgressBarText:SetFormattedText(AUCTION_CREATING, arg1, arg2);
 		if ( arg1 == arg2 ) then
@@ -1397,18 +1401,20 @@ function PriceDropDown_Initialize()
 end
 
 function PriceDropDown_OnClick(self)
-	AuctionFrameAuctions.priceType = self.value;
-	UIDropDownMenu_SetSelectedValue(PriceDropDown, self.value);
-	local startPrice = MoneyInputFrame_GetCopper(StartPrice);
-	local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);	
-	local stackSize = AuctionsStackSizeEntry:GetNumber();	
-	if ( stackSize > 1 ) then
-		if ( self.value == PRICE_TYPE_UNIT ) then
-			MoneyInputFrame_SetCopper(StartPrice, math.floor(startPrice / stackSize));
-			MoneyInputFrame_SetCopper(BuyoutPrice, math.floor(buyoutPrice / stackSize));
-		else
-			MoneyInputFrame_SetCopper(StartPrice, startPrice * stackSize);
-			MoneyInputFrame_SetCopper(BuyoutPrice, buyoutPrice * stackSize);
+	if ( AuctionFrameAuctions.priceType ~= self.value ) then
+		AuctionFrameAuctions.priceType = self.value;
+		UIDropDownMenu_SetSelectedValue(PriceDropDown, self.value);
+		local startPrice = MoneyInputFrame_GetCopper(StartPrice);
+		local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);	
+		local stackSize = AuctionsStackSizeEntry:GetNumber();	
+		if ( stackSize > 1 ) then
+			if ( self.value == PRICE_TYPE_UNIT ) then
+				MoneyInputFrame_SetCopper(StartPrice, math.floor(startPrice / stackSize));
+				MoneyInputFrame_SetCopper(BuyoutPrice, math.floor(buyoutPrice / stackSize));
+			else
+				MoneyInputFrame_SetCopper(StartPrice, startPrice * stackSize);
+				MoneyInputFrame_SetCopper(BuyoutPrice, buyoutPrice * stackSize);
+			end
 		end
 	end
 end
@@ -1451,7 +1457,7 @@ function DurationDropDown_OnClick(self)
 end
 
 function UpdateDeposit()
-	MoneyFrame_Update("AuctionsDepositMoneyFrame", CalculateAuctionDeposit(AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber() * AuctionsNumStacksEntry:GetNumber()));
+	MoneyFrame_Update("AuctionsDepositMoneyFrame", CalculateAuctionDeposit(AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber()));
 end
 
 function AuctionSellItemButton_OnEvent(self, event, ...)

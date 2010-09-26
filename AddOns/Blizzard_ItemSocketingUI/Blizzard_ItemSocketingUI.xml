@@ -369,7 +369,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Texture name="$parentLeft" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up">
 							<Size>
 								<AbsDimension x="12" y="22"/>
 							</Size>
@@ -378,7 +378,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Texture name="$parentRight" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up">
 							<Size>
 								<AbsDimension x="12" y="22"/>
 							</Size>
@@ -387,7 +387,7 @@
 							</Anchors>
 							<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Texture name="$parentMiddle" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up">
 							<Size>
 								<AbsDimension x="12" y="22"/>
 							</Size>
@@ -401,20 +401,15 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-            if( ItemSocketingFrame.itemIsRefundable) then
-                local dialog = StaticPopup_Show("END_REFUND");
-                if(dialog) then
-                  dialog.data = 2;
-                 end
-            elseif ( ItemSocketingFrame.itemIsBoundTradeable ) then
-                local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, "gem");
-            elseif ( ItemSocketingFrame.destroyingGem ) then
-                StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
-            else
-                AcceptSockets();
-                PlaySound("JewelcraftingFinalize");
-            end
-          </OnClick>
+						if ( ItemSocketingFrame.itemIsBoundTradeable ) then
+							local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, "gem");
+						elseif ( ItemSocketingFrame.destroyingGem ) then
+							StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
+						else
+							AcceptSockets();
+							PlaySound("JewelcraftingFinalize");
+						end
+					</OnClick>
 					<OnMouseDown>
 						if ( not self.disabled ) then
 							_G[self:GetName().."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");

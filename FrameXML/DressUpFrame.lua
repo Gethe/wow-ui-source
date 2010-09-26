@@ -10,24 +10,19 @@ function DressUpItemLink(link)
 	DressUpModel:TryOn(link);
 end
 
-function DressUpTexturePath()
+function DressUpTexturePath(raceFileName)
 	-- HACK
-	local race, fileName = UnitRace("player");
-	if ( strupper(fileName) == "GNOME" ) then
-		fileName = "Dwarf";
-	elseif ( strupper(fileName) == "TROLL" ) then
-		fileName = "Orc";
-	end
-	if ( not fileName ) then
-		fileName = "Orc";
+	if ( not raceFileName ) then
+		raceFileName = "Orc";
 	end
 	-- END HACK
 
-	return "Interface\\DressUpFrame\\DressUpBackground-"..fileName;
+	return "Interface\\DressUpFrame\\DressUpBackground-"..raceFileName;
 end
 
 function SetDressUpBackground()
-	local texture = DressUpTexturePath();
+	local race, fileName = UnitRace("player");
+	local texture = DressUpTexturePath(fileName);
 	DressUpBackgroundTopLeft:SetTexture(texture..1);
 	DressUpBackgroundTopRight:SetTexture(texture..2);
 	DressUpBackgroundBotLeft:SetTexture(texture..3);

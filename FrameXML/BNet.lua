@@ -20,10 +20,9 @@ BN_TOAST_TOP_BUFFER = 20;	-- the minimum distance in pixels from the toast to th
 BN_TOAST_MAX_LINE_WIDTH = 196;
 	
 function BNet_OnLoad(self)
-	self:RegisterEvent("BN_TOON_NAME_UPDATED");
-	self:RegisterEvent("BN_NEW_PRESENCE");
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("BN_DISCONNECTED");
+	self:RegisterEvent("VARIABLES_LOADED");
 end
 
 function BNet_OnEvent(self, event, ...)
@@ -31,6 +30,21 @@ function BNet_OnEvent(self, event, ...)
 		SynchronizeBNetStatus();
 	elseif ( event == "BN_DISCONNECTED" ) then
 		table.wipe(BNToasts);
+	elseif ( event == "VARIABLES_LOADED" ) then
+		if ( GetCVar("conversationMode") == "popout" ) then
+			BNet_ReopenClosedConversations();
+		end
+		self:UnregisterEvent("VARIABLES_LOADED");
+	end
+end
+
+function BNet_ReopenClosedConversations()
+	for i=1, BNGetMaxNumConversations() do
+		if ( BNGetConversationInfo(i) == "conversation" ) then
+			if ( FCFManager_GetNumDedicatedFrames("BN_CONVERSATION", i) == 0 ) then
+				FCF_OpenTemporaryWindow("BN_CONVERSATION", i);
+			end
+		end
 	end
 end
 
@@ -286,7 +300,9 @@ function BNToastFrame_OnClick(self)
 		--ChatFrame_OpenChat("/"..(toastData + MAX_WOW_CHAT_CHANNELS), chatFrame);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(toastData);
-		ChatFrame_SendTell(string.format(BATTLENET_NAME_FORMAT, givenName, surname));
+		if ( givenName ) then	--This player may have been removed from our friends list, so we may not have a name.
+			ChatFrame_SendTell(string.format(BATTLENET_NAME_FORMAT, givenName, surname));
+		end
 	end
 end
 

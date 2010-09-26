@@ -99,6 +99,11 @@ local function InterfaceOptionsPanel_Default (self)
 			control.setFunc(control:GetValue());
 		end
 	end
+	if ( self.defaultFuncs ) then
+		for _, defaultFunc in SecureNext, self.defaultFuncs do
+			defaultFunc();
+		end
+	end
 end
 
 local function InterfaceOptionsPanel_Refresh (self)
@@ -115,6 +120,10 @@ function InterfaceOptionsPanel_OnLoad (self)
 	InterfaceOptions_AddCategory(self);
 end
 
+function InterfaceOptionsPanel_RegisterSetToDefaultFunc(func, self)
+	self.defaultFuncs = self.defaultFuncs or {};
+	tinsert(self.defaultFuncs, func);
+end
 
 -- [[ Controls Options Panel ]] --
 
@@ -551,6 +560,7 @@ DisplayPanelOptions = {
 	threatPlaySounds = { text = "PLAY_AGGRO_SOUNDS" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	showItemLevel = { text = "SHOW_ITEM_LEVEL" },
+	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -727,7 +737,6 @@ end
 function InterfaceOptionsDisplayPanelAggroWarningDisplay_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelAggroWarningDisplay);
 	local info = UIDropDownMenu_CreateInfo();
-	info.tooltipOnButton = 1;
 
 	info.text = ALWAYS;
 	info.func = InterfaceOptionsDisplayPanelAggroWarningDisplay_OnClick;
@@ -1202,6 +1211,7 @@ NamePanelOptions = {
 	UnitNameNPC = { text = "UNIT_NAME_NPC" },
 	UnitNameNonCombatCreatureName = { text = "UNIT_NAME_NONCOMBAT_CREATURE" },
 	UnitNamePlayerGuild = { text = "UNIT_NAME_GUILD" },
+	UnitNameGuildTitle = { text = "UNIT_NAME_GUILD_TITLE" },
 	UnitNamePlayerPVPTitle = { text = "UNIT_NAME_PLAYER_TITLE" },
 	
 	UnitNameFriendlyPlayerName = { text = "UNIT_NAME_FRIENDLY" },
@@ -1224,6 +1234,98 @@ NamePanelOptions = {
 	nameplateShowEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
 	nameplateAllowOverlap = { text = "UNIT_NAMEPLATES_ALLOW_OVERLAP" },
 }
+
+function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local value = "2";
+		if ( GetCVar("UnitNameNPC") == "1" ) then
+			value = "2";
+		elseif ( GetCVar("UnitNameFriendlySpecialNPCName") == "1" ) then
+			value = "1";
+		else
+			value = "3";
+		end
+		self.defaultValue = "2";
+		self.oldValue = value;
+		self.value = value;
+		self.tooltip = OPTION_TOOLTIP_UNIT_NAME_NPC;
+
+		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsNPCNamesDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				UIDropDownMenu_SetSelectedValue(self, value);
+				if ( value == "1" ) then
+					SetCVar("UnitNameFriendlySpecialNPCName", "1");
+					SetCVar("UnitNameNPC", "0");
+				elseif ( value == "2" ) then
+					SetCVar("UnitNameFriendlySpecialNPCName", "0");
+					SetCVar("UnitNameNPC", "1");
+				else
+					SetCVar("UnitNameFriendlySpecialNPCName", "0");
+					SetCVar("UnitNameNPC", "0");
+				end					
+			end;	
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsNPCNamesDropDown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsNPCNamesDropDown_OnClick(self)
+	InterfaceOptionsNamesPanelNPCNamesDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsNPCNamesDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = NPC_NAMES_DROPDOWN_TRACKED;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "1";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_TRACKED;
+	info.tooltipText = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NPC_NAMES_DROPDOWN_ALL;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_ALL;
+	info.tooltipText = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NPC_NAMES_DROPDOWN_NONE;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "3";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_NONE;
+	info.tooltipText = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+end
+
 
 -- [[ Combat Text Options Panel ]] --
 
@@ -1406,7 +1508,6 @@ StatusTextPanelOptions = {
 
 UnitFramePanelOptions = {
 	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
-	hidePartyInRaid = { text = "HIDE_PARTY_INTERFACE_TEXT" },
 	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
 	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
@@ -1427,6 +1528,248 @@ function BlizzardOptionsPanel_UpdateRaidPullouts ()
 			RaidPullout_Update(frame);
 		end
 	end
+end
+
+function BlizzardOptionsPanel_UpdateDebuffFrames()
+	local frame;
+	-- Target frame and its target-of-target
+	frame = TargetFrame;
+	TargetFrame_UpdateAuras(frame);
+	TargetofTarget_Update(frame.totFrame);
+	-- Focus frame and its target-of-target
+	frame = FocusFrame;
+	TargetFrame_UpdateAuras(frame);
+	TargetofTarget_Update(frame.totFrame);
+	-- Party frames and their pets
+	for i = 1, MAX_PARTY_MEMBERS do
+		if ( GetPartyMember(i) ) then
+			frame = _G["PartyMemberFrame"..i];
+			PartyMemberFrame_UpdateMember(frame);
+			PartyMemberFrame_UpdatePet(frame);
+		end
+	end
+	-- own pet
+	PetFrame_Update(PetFrame);
+end
+
+-- [[ RaidFrame Options Panel ]] --
+RaidFramePanelOptions = {
+	raidOptionKeepGroupsTogether = { text = "KEEP_GROUPS_TOGETHER" },
+	raidOptionDisplayPets = { text = "DISPLAY_RAID_PETS" },
+	raidOptionDisplayMainTankAndAssist = { text = "DISPLAY_MT_AND_MA" },
+	raidFramesDisplayIncomingHeals = { text = "DISPLAY_INCOMING_HEALS" },
+	raidFramesDisplayAggroHighlight = { text = "DISPLAY_RAID_AGGRO_HIGHLIGHT" },
+	raidFramesDisplayOnlyDispellableDebuffs = { text = "DISPLAY_ONLY_DISPELLABLE_DEBUFFS" },
+	raidFramesDisplayPowerBars = { text = "DISPLAY_POWER_BARS" },
+	raidFramesHeight = { text = "RAID_FRAMES_HEIGHT", minValue = 36, maxValue = 72, valueStep = 2 },
+	raidFramesWidth = { text = "RAID_FRAMES_WIDTH", minValue = 72, maxValue = 144, valueStep = 2 },
+}
+
+function InterfaceOptionsRaidFramePanelSortBy_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "raidOptionSortMode";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_RAID_SORT_BY_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 90);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelSortBy_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+		CompactRaidFrameManager_SetSetting("SortMode", value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				CompactRaidFrameManager_SetSetting("SortMode", value);
+				self.tooltip = _G["OPTION_RAID_SORT_BY_"..strupper(value)];
+				UIDropDownMenu_SetSelectedValue( InterfaceOptionsRaidFramePanelSortBy, value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelSortBy_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsRaidFramePanelSortBy_OnClick(self)
+	InterfaceOptionsRaidFramePanelSortBy:SetValue(self.value);
+end
+
+function InterfaceOptionsRaidFramePanelSortBy_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsRaidFramePanelSortBy);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = RAID_SORT_ROLE;
+	info.func = InterfaceOptionsRaidFramePanelSortBy_OnClick;
+	info.value = "role";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_SORT_ROLE;
+	info.tooltipText = OPTION_RAID_SORT_BY_ROLE;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = RAID_SORT_GROUP;
+	info.func = InterfaceOptionsRaidFramePanelSortBy_OnClick;
+	info.value = "group";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = RAID_SORT_GROUP;
+	info.tooltipText = OPTION_RAID_SORT_BY_GROUP;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = RAID_SORT_ALPHABETICAL;
+	info.func = InterfaceOptionsRaidFramePanelSortBy_OnClick;
+	info.value = "alphabetical";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = RAID_SORT_ALPHABETICAL;
+	info.tooltipText = OPTION_RAID_SORT_BY_ALPHABETICAL;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName)
+	return function(value)
+		local enabled;
+		if(value and value ~= "0") then
+			enabled = true;
+		end
+		DefaultCompactUnitFrameOptions[optionName] = enabled;
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+	end
+end
+
+function InterfaceOptionsRaidFramePanel_GenerateRaidSetUpOptionToggle(optionName)
+	return function(value)
+		local enabled;
+		if(value and value ~= "0") then
+			enabled = true;
+		end
+		DefaultCompactUnitFrameSetupOptions[optionName] = enabled;
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+	end
+end
+
+function InterfaceOptionsRaidFramePanelHealthTextOption_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "raidFramesHealthText";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_RAID_HEALTH_TEXT_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelHealthTextOption_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+		DefaultCompactUnitFrameOptions.healthText = value;
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				DefaultCompactUnitFrameOptions.healthText = value;
+				CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+				CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+				self.tooltip = _G["OPTION_RAID_HEALTH_TEXT_"..strupper(value)];
+				SetCVar(self.cvar, value);
+				UIDropDownMenu_SetSelectedValue( InterfaceOptionsRaidFramePanelHealthTextOption, value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsRaidFramePanelHealthTextOption_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsRaidFramePanelHealthTextOption_OnClick(self)
+	InterfaceOptionsRaidFramePanelHealthTextOption:SetValue(self.value);
+end
+
+function InterfaceOptionsRaidFramePanelHealthTextOption_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsRaidFramePanelHealthTextOption);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = RAID_HEALTH_TEXT_NONE;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "none";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_NONE;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_NONE;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = RAID_HEALTH_TEXT_HEALTH;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "health";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_HEALTH;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_HEALTH;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = RAID_HEALTH_TEXT_LOSTHEALTH;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "losthealth";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_LOSTHEALTH;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_LOSTHEALTH;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = RAID_HEALTH_TEXT_PERC;
+	info.func = InterfaceOptionsRaidFramePanelHealthTextOption_OnClick;
+	info.value = "perc";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = RAID_HEALTH_TEXT_PERC;
+	info.tooltipText = OPTION_RAID_HEALTH_TEXT_PERC;
+	UIDropDownMenu_AddButton(info);
 end
 
 -- [[ Camera Options Panel ]] --
@@ -1515,7 +1858,6 @@ end
 function InterfaceOptionsCameraPanelStyleDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
-	info.tooltipOnButton = 1;
 
 	info.text = CAMERA_SMART;
 	info.func = InterfaceOptionsCameraPanelStyleDropDown_OnClick;
@@ -1750,12 +2092,15 @@ LanguagesPanelOptions = {
 }
 
 function InterfaceOptionsLanguagesPanel_OnLoad (panel)
-	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
+-- turn off language changing in Beta until fixed
+return;
+
+	--[[-- Check and see if we have more than one locale. If we don't, then don't register this panel.
 	if ( #({GetExistingLocales()}) <= 1 ) then
 		return;
 	end
 
-	InterfaceOptionsPanel_OnLoad(panel);
+	InterfaceOptionsPanel_OnLoad(panel);]]
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent (self, event, ...)
@@ -1821,4 +2166,14 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 			UIDropDownMenu_AddButton(createInfo);
 		end
 	end
+end
+
+-- [[ Development Options Panel ]] --
+
+DevelopmentPanelOptions = {
+	useCompactPartyFrames = { text = "Use Compact Party Frames" },
+}
+
+function InterfaceOptionsDevelopmentPanel_OnLoad (panel)
+	InterfaceOptionsPanel_OnLoad(panel);
 end

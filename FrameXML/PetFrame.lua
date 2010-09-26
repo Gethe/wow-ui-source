@@ -20,7 +20,7 @@ function PetFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PET_ATTACK_START");
 	self:RegisterEvent("PET_ATTACK_STOP");
-	self:RegisterEvent("UNIT_HAPPINESS");
+	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PET_RENAMEABLE");
 	local showmenu = function()
@@ -29,10 +29,14 @@ function PetFrame_OnLoad (self)
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
 	
 	local _, class = UnitClass("player");
-	if ( class == "DEATHKNIGHT"  or class == "DRUID" ) then	--Death Knights need the Pet frame moved down for their Runes and Druids need it moved down for the secondary power bar.
+	if ( class == "DEATHKNIGHT") then	--Death Knights need the Pet frame moved down for their Runes and Druids need it moved down for the secondary power bar.
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
-	elseif ( class == "SHAMAN" ) then
+	elseif ( class == "SHAMAN" or class == "DRUID" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
+	elseif ( class == "WARLOCK" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -80);
+	elseif ( class == "PALADIN" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
 	end
 end
 
@@ -55,7 +59,7 @@ function PetFrame_Update (self, override)
 			PetAttackModeTexture:Hide();
 
 			PetFrame_SetHappiness(self);
-			RefreshDebuffs(self, self.unit);
+			RefreshDebuffs(self, self.unit, nil, nil, true);
 		else
 			self:Hide();
 		end
@@ -68,8 +72,12 @@ function PetFrame_OnEvent (self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( (event == "UNIT_PET" and arg1 == "player" ) or event == "PET_UI_UPDATE" ) then
 		local unit
-		if ( UnitInVehicle("player") and UnitHasVehicleUI("player") ) then
-			unit = "player";
+		if ( UnitInVehicle("player") ) then
+			if ( UnitHasVehiclePlayerFrameUI("player") ) then
+				unit = "player";
+			else
+				return;
+			end
 		else
 			unit = "pet";
 		end
@@ -81,15 +89,17 @@ function PetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
-			RefreshDebuffs(self, self.unit);
+			RefreshDebuffs(self, self.unit, nil, nil, true);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 		PetAttackModeTexture:Show();
 	elseif ( event == "PET_ATTACK_STOP" ) then
 		PetAttackModeTexture:Hide();
-	elseif ( event == "UNIT_HAPPINESS" ) then
-		PetFrame_SetHappiness(self);
+	elseif ( event == "UNIT_POWER" ) then
+		if ( arg2 == "HAPPINESS" ) then
+			PetFrame_SetHappiness(self);
+		end
 	elseif ( event == "PET_RENAMEABLE" ) then
 		StaticPopup_Show("RENAME_PET");
 	end

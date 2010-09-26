@@ -1,7 +1,7 @@
 
 INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectTalentFrame", "InspectTalentFrame", "InspectTalentFrame" };
 
-UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0 };
+UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, xoffset = -16, yoffset = 14 };
 
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
@@ -50,6 +50,7 @@ function InspectFrame_OnEvent(self, event, ...)
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
 			SetPortraitTexture(InspectFramePortrait, arg1);
+			SetPortraitTexture(InspectPVPFramePortrait, arg1);
 		end
 		return;
 	end
@@ -60,6 +61,7 @@ function InspectFrame_UnitChanged(self)
 	NotifyInspect(unit);
 	InspectPaperDollFrame_OnShow(self);
 	SetPortraitTexture(InspectFramePortrait, unit);
+	SetPortraitTexture(InspectPVPFramePortrait, unit);
 	InspectNameText:SetText(UnitName(unit));
 	InspectFrame_UpdateTalentTab();
 	if ( InspectPVPFrame:IsShown() ) then
@@ -73,6 +75,7 @@ function InspectFrame_OnShow(self)
 	end
 	PlaySound("igCharacterInfoOpen");	
 	SetPortraitTexture(InspectFramePortrait, self.unit);
+	SetPortraitTexture(InspectPVPFramePortrait, self.unit);
 	InspectNameText:SetText(UnitName(self.unit));
 end
 

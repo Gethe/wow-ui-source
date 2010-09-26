@@ -1,11 +1,15 @@
 # Do not delete the following line!
-## Interface: 30300
-##DebugHook.lua
+## Interface: 40000
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
 FontStyles.xml
 Localization.xml
+
+## add snippets independent of modules here
+Util.lua
+FlowContainer.lua
+
 ## add new modules below here
 
 BasicControls.xml
@@ -37,6 +41,7 @@ StaticPopup.xml
 Sound.lua
 OptionsFrameTemplates.xml
 OptionsPanelTemplates.xml
+UIOptions.xml
 VideoOptionsFrame.xml
 VideoOptionsPanels.xml
 AudioOptionsFrame.xml
@@ -49,7 +54,6 @@ CoinPickupFrame.xml
 StackSplitFrame.xml
 FadingFrame.xml
 ZoneText.xml
-BattlefieldFrame.xml
 MainMenuBar.xml
 MainMenuBarMicroButtons.xml
 TutorialFrame.xml
@@ -62,6 +66,7 @@ MultiActionBars.xml
 ##ActionWindow.xml
 BuffFrame.xml
 CombatFeedback.xml
+UnitPowerBarAlt.xml
 CastingBarFrame.xml
 UnitPopup.xml
 UnitFrame.xml
@@ -83,7 +88,6 @@ CharacterFrame.xml
 EquipmentManager.lua
 PaperDollFrame.xml
 PetPaperDollFrame.xml
-SkillFrame.xml
 ReputationFrame.xml
 HonorFrame.xml
 QuestFrame.xml
@@ -122,10 +126,8 @@ DurabilityFrame.xml
 WorldStateFrame.xml
 DressUpFrame.xml
 RaidWarning.xml
-ClassTrainerFrameTemplates.xml
+PVPFrameTemplates.xml
 PVPFrame.xml
-PVPBattlegroundFrame.xml
-ArenaFrame.xml
 ArenaRegistrarFrame.xml
 LFGFrame.xml
 LFDFrame.xml
@@ -136,12 +138,24 @@ RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
 RuneFrame.xml
+ShardBar.xml
+EclipseBarFrame.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 VehicleMenuBar.xml
 AlternatePowerBar.xml
+LevelUpDisplay.xml
 AnimationSystem.lua
+EquipmentManager.lua
+CompactUnitFrame.xml
+CompactRaidGroup.xml
+CompactPartyFrame.xml
+RolePoll.xml
+SpellFlyout.xml
+PaladinPowerBar.xml
+StreamingFrame.xml
+SpellActivationOverlay.xml
 
 ## add new modules above here
 LocalizationPost.xml

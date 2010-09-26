@@ -22,7 +22,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size x="172" y="240"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -33,7 +33,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.671875" top="0" bottom="0.937500"/>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 					<Size x="68" y="240"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -44,7 +44,7 @@
 					</Anchors>
 					<TexCoords left="0.46875" right="1" top="0" bottom="0.937500"/>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
 					<Size x="172" y="88"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -55,7 +55,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.671875" top="0.65625" bottom="1.0"/>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
 					<Size x="68" y="88"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -102,7 +102,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="TimeManagerStopwatchFrameBackground" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+						<Texture name="TimeManagerStopwatchFrameBackground" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 							<Size x="150" y="50"/>
 							<Anchors>
 								<Anchor point="RIGHT">
@@ -145,7 +145,7 @@
 							</Anchors>
 						</NormalTexture>
 						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+						<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
 					</CheckButton>
 				</Frames>
 			</Frame>
@@ -290,12 +290,12 @@
 		<Size x="60" y="28"/>
 		<Anchors>
 			<Anchor point="CENTER">
-				<Offset x="0" y="-68"/>
+				<Offset x="0" y="-75"/>
 			</Anchor>
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture file="Interface\TimeManager\ClockBackground" setAllPoints="true">
+				<Texture urgency="5" file="Interface\TimeManager\ClockBackground" setAllPoints="true">
 					<TexCoords left="0.015625" right="0.8125" top="0.015625" bottom="0.390625"/>
 				</Texture>
 			</Layer>
@@ -307,7 +307,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="TimeManagerAlarmFiredTexture" file="Interface\TimeManager\ClockBackground" alphaMode="ADD" hidden="true" setAllPoints="true">
+				<Texture name="TimeManagerAlarmFiredTexture" urgency="5" file="Interface\TimeManager\ClockBackground" alphaMode="ADD" hidden="true" setAllPoints="true">
 					<TexCoords left="0.015625" right="0.8125" top="0.51625" bottom="0.890625"/>
 				</Texture>
 			</Layer>
@@ -484,7 +484,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="StopwatchPlayPauseButton_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>

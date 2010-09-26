@@ -1,86 +1,6 @@
 MAX_TEAM_EMBLEMS = 102;
 MAX_TEAM_BORDERS = 6;
 
-local ARENA_TEAMSIZES = { 2, 3, 5 }
-
-function ArenaRegistrar_OnLoad (self)
-	self:RegisterEvent("PETITION_VENDOR_SHOW");
-	self:RegisterEvent("PETITION_VENDOR_CLOSED");
-	self:RegisterEvent("PETITION_VENDOR_UPDATE");
-end
-
-function ArenaRegistrar_OnEvent (self, event, ...)
-	if ( event == "PETITION_VENDOR_SHOW" ) then
-		ShowUIPanel(ArenaRegistrarFrame);
-		if ( not ArenaRegistrarFrame:IsShown() ) then
-			if ( not PVPBannerFrame:IsShown() ) then
-				ClosePetitionVendor();
-			end
-		end
-	elseif ( event == "PETITION_VENDOR_CLOSED" ) then
-		HideUIPanel(ArenaRegistrarFrame);
-		HideUIPanel(PVPBannerFrame);
-	elseif ( event == "PETITION_VENDOR_UPDATE" ) then
-		if ( HasFilledPetition() ) then
-			ArenaRegistrarButton4:Show();
-			ArenaRegistrarButton5:Show();
-			ArenaRegistrarButton6:Show();
-			RegistrationText:Show();
-		else
-			ArenaRegistrarButton4:Hide();
-			ArenaRegistrarButton5:Hide();
-			ArenaRegistrarButton6:Hide();
-			RegistrationText:Hide();
-		end
-		--If we clicked a button then show the appropriate purchase frame
-		if ( ArenaRegistrarPurchaseFrame.waitingForPetitionInfo ) then
-			ArenaRegistrar_UpdatePrice();
-			ArenaRegistrarPurchaseFrame.waitingForPetitionInfo = nil;
-		end
-	end
-end
-
-function ArenaRegistrar_OnShow (self)
-	self.dontClose = nil;
-	ArenaRegistrarFrame.bannerDesign = nil;
-	ArenaRegistrarGreetingFrame:Show();
-	ArenaRegistrarPurchaseFrame:Hide();
-	SetPortraitTexture(ArenaRegistrarFramePortrait, "NPC");
-	ArenaRegistrarFrameNpcNameText:SetText(UnitName("NPC"));
-	PlaySound("igQuestListOpen");
-end
-
-function ArenaRegistrar_ShowPurchaseFrame (self)
-	local id = self:GetID();
-	local teamSize = ARENA_TEAMSIZES[id];
-	ArenaRegistrarPurchaseFrame.id = id;
-	PVPBannerFrame.teamSize = teamSize;
-	if ( GetPetitionItemInfo(id) ) then
-		ArenaRegistrar_UpdatePrice();
-	else
-		-- Waiting for the callback
-		ArenaRegistrarPurchaseFrame.waitingForPetitionInfo = 1;
-	end
-end
-
-function ArenaRegistrar_UpdatePrice ()
-	local name, texture, price = GetPetitionItemInfo(ArenaRegistrarPurchaseFrame.id);
-	MoneyFrame_Update("ArenaRegistrarMoneyFrame", price);
-	ArenaRegistrarPurchaseFrame:Show();
-	ArenaRegistrarGreetingFrame:Hide();
-end
-
-function ArenaRegistrar_TurnInPetition (self)
-	local id = self:GetID();
-	local teamSize = ARENA_TEAMSIZES[id];
-
-	ArenaRegistrarFrame.bannerDesign = 1;
-	ArenaRegistrarFrame.dontClose = 1;
-	HideUIPanel(self:GetParent());
-	SetPortraitTexture(PVPBannerFramePortrait,"npc");
-	PVPBannerFrame.teamSize = teamSize;
-	ShowUIPanel(PVPBannerFrame);
-end
 
 function PVPBannerFrame_SetBannerColor ()
 	local r,g,b = ColorPickerFrame:GetColorRGB();
@@ -101,9 +21,11 @@ function PVPBannerFrame_SetBorderColor ()
 end
 
 function PVPBannerFrame_OnShow (self)
+	SetPortraitToTexture(PVPBannerFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	PVPBannerFrameStandardEmblem.id = random(MAX_TEAM_EMBLEMS);
 	PVPBannerFrameStandardBorder.id = random(MAX_TEAM_BORDERS);
-
+	self.teamName:SetText("");
+	
 	local bannerColor = {r  = 0, g = 0, b = 0};
 	local borderColor = {r  = 0, g = 0, b = 0};
 	local emblemColor = {r  = 0, g = 0, b = 0};
@@ -118,14 +40,20 @@ function PVPBannerFrame_OnShow (self)
 	end
 
 	PVPBannerFrameStandardEmblemWatermark:SetAlpha(0.4);
-	PVPBannerFrameStandardBanner:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize);
-	PVPBannerFrameStandardBorder:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize.."-Border-"..PVPBannerFrameStandardBorder.id);
+	PVPBannerFrameStandardBorder:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..PVPBannerFrameStandardBorder.id);
 	PVPBannerFrameStandardEmblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..PVPBannerFrameStandardEmblem.id);
 	PVPBannerFrameStandardEmblemWatermark:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..PVPBannerFrameStandardEmblem.id);
 end
 
+function PVPBannerFrame_ColorPickerCancel(prevValues)
+	if prevValues.tex then
+		prevValues.tex:SetVertexColor(prevValues.r, prevValues.g, prevValues.b);
+	end
+end
+
 function PVPBannerFrame_OpenColorPicker (button, texture)
-	local r,g,b = texture:GetVertexColor();
+	local prevR,prevG,prevB = texture:GetVertexColor();
+	ColorPickerFrame.previousValues = {r = prevR, g = prevG, b = prevB, tex = texture};
 	if ( texture == PVPBannerFrameStandardEmblem ) then
 		ColorPickerFrame.func = PVPBannerFrame_SetEmblemColor;
 	elseif ( texture == PVPBannerFrameStandardBanner ) then
@@ -133,7 +61,8 @@ function PVPBannerFrame_OpenColorPicker (button, texture)
 	elseif ( texture == PVPBannerFrameStandardBorder ) then
 		ColorPickerFrame.func = PVPBannerFrame_SetBorderColor;
 	end
-	ColorPickerFrame:SetColorRGB(r, g, b);
+	ColorPickerFrame.cancelFunc = PVPBannerFrame_ColorPickerCancel;
+	ColorPickerFrame:SetColorRGB(prevR,prevG,prevB);
 	ShowUIPanel(ColorPickerFrame);
 end
 
@@ -157,7 +86,7 @@ function PVPBannerCustomization_Left (self)
 		else 
 			texture.id = texture.id - 1;
 		end
-		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize.."-Border-"..texture.id);
+		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..texture.id);
 	end
 	PlaySound("gsCharacterCreationLook");
 end
@@ -182,7 +111,7 @@ function PVPBannerCustomization_Right (self)
 		else
 			texture.id = texture.id + 1;
 		end
-		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..PVPBannerFrame.teamSize.."-Border-"..texture.id);
+		texture:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..texture.id);
 	end
 	PlaySound("gsCharacterCreationLook");
 end
@@ -208,7 +137,9 @@ function PVPBannerFrame_SaveBanner (self)
 
 	-- Get emblem style
 	iconStyle = PVPBannerFrameStandardEmblem.id;
-	TurnInArenaPetition(teamSize, bgColor.r, bgColor.g, bgColor.b, iconStyle, iconColor.r, iconColor.g, iconColor.b, borderStyle, borderColor.r, borderColor.g, borderColor.b);
+	
+	local teamName = self:GetParent().teamName:GetText();
+	
+	CreateArenaTeam(teamSize, teamName, bgColor.r, bgColor.g, bgColor.b, iconStyle, iconColor.r, iconColor.g, iconColor.b, borderStyle, borderColor.r, borderColor.g, borderColor.b);
 	HideUIPanel(self:GetParent());
-	ClosePetitionVendor();
 end

@@ -13,7 +13,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_COMBAT");
 	self:RegisterEvent("UNIT_FACTION");
-	self:RegisterEvent("UNIT_MAXMANA");
+	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_ENTER_COMBAT");
 	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
@@ -203,8 +203,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateReadyCheck();
 	elseif ( event == "READY_CHECK_FINISHED" ) then
 		ReadyCheck_Finish(PlayerFrameReadyCheck);
-	elseif ( event == "UNIT_RUNIC_POWER" and arg1 == "player" ) then
-		PlayerFrame_SetRunicPower(UnitPower("player"));
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			if ( arg2 ) then
@@ -247,16 +245,10 @@ end
 function PlayerFrame_UpdateRolesAssigned()
 	local frame = PlayerFrame;
 	local icon = _G[frame:GetName().."RoleIcon"];
-	local isTank, isHealer, isDamage = UnitGroupRolesAssigned("player");
+	local role = UnitGroupRolesAssigned("player");
 	
-	if ( isTank ) then
-		icon:SetTexCoord(0, 19/64, 22/64, 41/64);
-		icon:Show();
-	elseif ( isHealer ) then
-		icon:SetTexCoord(20/64, 39/64, 1/64, 20/64);
-		icon:Show();
-	elseif ( isDamage ) then
-		icon:SetTexCoord(20/64, 39/64, 22/64, 41/64);
+	if ( role == "TANK" or role == "HEALER" or role == "DAMAGER") then
+		icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
 		icon:Show();
 	else
 		icon:Hide();
@@ -287,7 +279,7 @@ end
 function PlayerFrame_UpdateArt(self)
 	if ( self.animFinished and self.inSeat and self.inSequence) then
 		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
-		if ( UnitHasVehicleUI("player") ) then
+		if ( UnitHasVehiclePlayerFrameUI("player") ) then
 			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
 		else
 			PlayerFrame_ToPlayerArt(self);
@@ -326,7 +318,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 		PlayerFrameManaBar:SetWidth(100);
 		PlayerFrameManaBar:SetPoint("TOPLEFT",119,-52);
 	end
-	PlayerFrameVehicleTexture:Show();
+	PlayerFrame_ShowVehicleTexture();
 	
 	PlayerName:SetPoint("CENTER",50,23);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
@@ -350,7 +342,7 @@ function PlayerFrame_ToPlayerArt(self)
 	ComboFrame_Update();
 			
 	PlayerFrameTexture:Show();
-	PlayerFrameVehicleTexture:Hide();
+	PlayerFrame_HideVehicleTexture();
 	PlayerName:SetPoint("CENTER",50,19);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
 	PlayerMasterIcon:SetPoint("TOPLEFT",80,-10);
@@ -430,7 +422,7 @@ function PlayerFrame_OnReceiveDrag ()
 end
 
 function PlayerFrame_UpdateStatus()
-	if ( UnitHasVehicleUI("player") ) then
+	if ( UnitHasVehiclePlayerFrameUI("player") ) then
 		PlayerStatusTexture:Hide()
 		PlayerRestIcon:Hide()
 		PlayerAttackIcon:Hide()
@@ -519,69 +511,6 @@ end
 
 function PlayerFrame_SetupDeathKnniggetLayout ()
 	PlayerFrame:SetHitRectInsets(0,0,0,35);
-	
-	--[[ PlayerFrame:SetPoint("TOPLEFT", -11, -8);
-	PlayerFrame:RegisterEvent("UNIT_RUNIC_POWER");
-	PlayerPortrait:SetDrawLayer("BACKGROUND");
-	PlayerFrameTexture:ClearAllPoints();
-	PlayerFrameTexture:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight");
-	PlayerFrameTexture:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameTexture:SetTexCoord(0, 1, 0, 1)
-	PlayerFrameTexture:SetHeight(128);
-	PlayerFrameTexture:SetWidth(256)
-
-	PlayerFrame:CreateTexture("PlayerFrameBackgroundTexture", "BACKGROUND");
-	PlayerFrameBackgroundTexture:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Background");
-	PlayerFrameBackgroundTexture:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameBackgroundTexture:SetWidth(256);
-	PlayerFrameBackgroundTexture:SetHeight(128);
-	PlayerFrameBackgroundTexture:SetDrawLayer("BORDER");
-	PlayerFrameBackground:SetDrawLayer("ARTWORK");
-	PlayerFrameBackground:SetHeight(4);
-	PlayerFrameBackground:SetWidth(4);
-	PlayerFrameBackground:SetPoint("TOPLEFT", 108, -24);
-	
-	PlayerName:SetPoint("CENTER", 50, 18);
-	PlayerFrameHealthBar:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 113, -41);
-	PlayerFrameHealthBar:SetWidth(112);
-	PlayerFrameHealthBarText:SetPoint("CENTER", 53, 3);
-	
-	-- Death Knight Specific Border Frame
-	PlayerFrame:CreateTexture("PlayerFrameRunicPowerOverlay", "OVERLAY");
-	PlayerFrameRunicPowerOverlay:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameRunicPowerOverlay:SetWidth(256);
-	PlayerFrameRunicPowerOverlay:SetHeight(128);
-	PlayerFrameRunicPowerOverlay:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-GoldBorder");
-
-	-- Death Knight Runic Power Glow
-	local frame = CreateFrame("Frame");
-	frame:SetPoint("TOPLEFT", PlayerFrame);
-	frame:SetPoint("BOTTOMRIGHT", PlayerFrame);
-
-	frame:CreateTexture("PlayerFrameRunicPowerGlow", "BORDER");
-	PlayerFrameRunicPowerGlow:SetPoint("TOPLEFT", 15, 15);
-	PlayerFrameRunicPowerGlow:SetPoint("BOTTOMRIGHT", PlayerFrameBackgroundTexture);
-	PlayerFrameRunicPowerGlow:SetAlpha(0.050);
-	PlayerFrameRunicPowerGlow:SetWidth(256);
-	PlayerFrameRunicPowerGlow:SetHeight(128);
-	PlayerFrameRunicPowerGlow:Hide();
-	PlayerFrameRunicPowerGlow:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Sword-Glow");
-
-	--Hoorah for hacks!
-	PlayerFrameManaBar:UnregisterAllEvents();
-	PlayerFrameManaBar:Hide();
-	PlayerFrameManaBar:ClearAllPoints();
-	PlayerFrameManaBar:SetPoint("TOPLEFT", UIParent, "BOTTOMRIGHT");
-	PlayerFrameManaBarText:SetParent(PlayerFrameManaBar);
-	
-	local runicPowerBar = PlayerFrame:CreateTexture("$parentRunicPowerBar", "ARTWORK");
-	-- Mmmm, runic Power Bars, my favorite kind. Tastes like Death Knnigget.
-	runicPowerBar:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-RunicPower");
-	runicPowerBar:SetPoint("BOTTOMLEFT", "$parent", "BOTTOMLEFT", 70, 24);
-	runicPowerBar:SetWidth(64);
-	runicPowerBar:SetHeight(63);
-	
-	PlayerFrame_SetRunicPower(UnitPower("player"));--]]
 end
 
 CustomClassLayouts = {
@@ -681,3 +610,39 @@ function DeathKnniggetThrobFunction (self, elapsed)
 	end
 end
 
+
+
+function PlayerFrame_ShowVehicleTexture()
+	PlayerFrameVehicleTexture:Show();
+	
+	local _, class = UnitClass("player");	
+	if ( class == "WARLOCK" ) then
+		ShardBarFrame:Hide();
+	elseif ( class == "SHAMAN" ) then
+		TotemFrame:Hide();
+	elseif ( class == "DRUID" ) then
+		EclipseBarFrame:Hide();
+	elseif ( class == "PALADIN" ) then
+		PaladinPowerBar:Hide();
+	elseif ( class == "DEATHKNIGHT" ) then
+		RuneFrame:Hide();
+	end
+end
+
+
+function PlayerFrame_HideVehicleTexture()
+	PlayerFrameVehicleTexture:Hide();
+		
+	local _, class = UnitClass("player");	
+	if ( class == "WARLOCK" ) then
+		ShardBarFrame:Show();
+	elseif ( class == "SHAMAN" ) then
+		TotemFrame:Show();
+	elseif ( class == "DRUID" ) then
+		EclipseBar_UpdateShown(EclipseBarFrame);
+	elseif ( class == "PALADIN" ) then
+		PaladinPowerBar:Show();
+	elseif ( class == "DEATHKNIGHT" ) then
+		RuneFrame:Show();
+	end
+end

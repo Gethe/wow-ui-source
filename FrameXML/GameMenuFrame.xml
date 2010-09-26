@@ -20,7 +20,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="GameMenuFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -53,6 +53,13 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						if (tonumber(GetCVar("blizzcon")) == 1) then
+							self:Disable();
+						else
+							self:Enable();
+						end
+					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						ShowUIPanel(VideoOptionsFrame);
@@ -69,6 +76,13 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						if (tonumber(GetCVar("blizzcon")) == 1) then
+							self:Disable();
+						else
+							self:Enable();
+						end
+					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						ShowUIPanel(AudioOptionsFrame);

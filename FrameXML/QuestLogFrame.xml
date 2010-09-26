@@ -32,7 +32,12 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
+				<Texture name="$parentQuestionMark" inherits="AutoQuest-QuestLogIcon" parentKey="QuestionMark" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTag" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -59,7 +64,7 @@
 				QuestLogTitleButton_OnLeave(self);
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+		<NormalTexture urgency="5" file="Interface\Buttons\UI-MinusButton-UP">
 			<Size>
 				<AbsDimension x="16" y="16"/>
 			</Size>
@@ -98,28 +103,6 @@
 		<NormalFont style="GameFontNormalLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
 		<DisabledFont style="GameFontHighlightLeft"/>
-	</Button>
-	<Button name="QuestLogRewardItemTemplate" inherits="QuestItemTemplate" virtual="true">
-		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if ( self.rewardType == "item" ) then
-					GameTooltip:SetQuestLogItem(self.type, self:GetID());
-					GameTooltip_ShowCompareItem(GameTooltip);
-				elseif ( self.rewardType == "spell" ) then
-					GameTooltip:SetQuestLogRewardSpell();
-				end
-			</OnEnter>
-			<OnClick>
-				if ( self.rewardType == "spell" ) then
-					if ( IsModifiedClick("CHATLINK") ) then
-						ChatEdit_InsertLink(GetQuestLogSpellLink());
-					end
-				else
-					HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
-				end
-			</OnClick>
-		</Scripts>
 	</Button>
 
 	<Frame name="QuestLogControlPanel" enableMouse="true" hidden="true">
@@ -206,7 +189,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestLog-BookIcon">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -220,7 +203,7 @@
 				</Texture>		
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -228,7 +211,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>		
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 					<Size>
 						<AbsDimension x="94" y="256"/>
 					</Size>
@@ -237,7 +220,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="0.734375" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
 					<Size>
 						<AbsDimension x="256" y="184"/>
 					</Size>
@@ -246,7 +229,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
 				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+				<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
 					<Size>
 						<AbsDimension x="94" y="184"/>
 					</Size>
@@ -544,7 +527,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestLog-BookIcon">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -558,7 +541,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\QuestFrame\UI-QuestLogDualPane-Left">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestLogDualPane-Left">
 					<Size>
 						<AbsDimension x="512" y="445"/>
 					</Size>
@@ -567,7 +550,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.86914"/>
 				</Texture>		
-				<Texture file="Interface\QuestFrame\UI-QuestLogDualPane-RIGHT">
+				<Texture urgency="5" file="Interface\QuestFrame\UI-QuestLogDualPane-RIGHT">
 					<Size>
 						<AbsDimension x="170" y="445"/>
 					</Size>
@@ -609,7 +592,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-7" y="14"/>
+							<AbsDimension x="-7" y="13"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -617,6 +600,31 @@
 					<OnClick>
 						HideUIPanel(QuestLogFrame);
 					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="QuestLogFrameCompleteButton" inherits="MagicButtonTemplate" text="COMPLETE_QUEST" hidden="true">
+				<Size>
+					<AbsDimension x="160" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="QuestLogFrameCancelButton" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="QuestLogFrameCompleteButtonFlash" inherits="UIPanelButtonHighlightTexture" parentKey="Flash"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						ShowQuestComplete(GetQuestLogSelection());
+						WatchFrameAutoQuest_ClearPopUpByLogIndex(GetQuestLogSelection());
+					</OnClick>
+					<OnShow>
+						UIFrameFlash(self.Flash, 0.75, 0.75, -1, nil);
+					</OnShow>
+					<OnHide>
+						UIFrameFlashRemoveFrame(QuestLogFrameCompleteButton.Flash);
+					</OnHide>
 				</Scripts>
 			</Button>
 			<Button name="QuestLogFrameShowMapButton">
@@ -701,14 +709,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentBackgroundTopLeft" file="Interface\QuestFrame\UI-QuestLog-Empty-TopLeft">
+						<Texture name="$parentBackgroundTopLeft" urgency="5" file="Interface\QuestFrame\UI-QuestLog-Empty-TopLeft">
 							<Size x="256" y="256"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentBackgroundBottomLeft" file="Interface\QuestFrame\UI-QuestLog-Empty-BotLeft">
+						<Texture name="$parentBackgroundBottomLeft" urgency="5" file="Interface\QuestFrame\UI-QuestLog-Empty-BotLeft">
 							<Size x="256" y="106"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT"/>
@@ -716,7 +724,7 @@
 							</Anchors>
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.828125"/>
 						</Texture>
-						<Texture name="$parentBackgroundTopRight" file="Interface\QuestFrame\UI-QuestLog-Empty-TopRight">
+						<Texture name="$parentBackgroundTopRight" urgency="5" file="Interface\QuestFrame\UI-QuestLog-Empty-TopRight">
 							<Size x="46" y="256"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT"/>
@@ -724,7 +732,7 @@
 							</Anchors>
 							<TexCoords left="0.0" right="0.71875" top="0.0" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentBackgroundBottomRight" file="Interface\QuestFrame\UI-QuestLog-Empty-BotRight">
+						<Texture name="$parentBackgroundBottomRight" urgency="5" file="Interface\QuestFrame\UI-QuestLog-Empty-BotRight">
 							<Size x="46" y="106"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT"/>
@@ -756,7 +764,7 @@
 				<!-- anchors are set in QuestLog_UpdateQuestCount -->
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="QuestLogCountTopRight" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountTopRight" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="8"/>
 							</Size>
@@ -765,7 +773,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.25"/>
 						</Texture>
-						<Texture name="QuestLogCountBottomRight" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountBottomRight" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="8"/>
 							</Size>
@@ -774,7 +782,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0.375" bottom="0.625"/>
 						</Texture>
-						<Texture name="QuestLogCountRight" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountRight" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="0"/>
 							</Size>
@@ -784,7 +792,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0.25" bottom="0.375"/>
 						</Texture>
-						<Texture name="QuestLogCountTopLeft" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountTopLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="8"/>
 							</Size>
@@ -793,7 +801,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.25"/>
 						</Texture>
-						<Texture name="QuestLogCountBottomLeft" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountBottomLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="8"/>
 							</Size>
@@ -802,7 +810,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0.375" bottom="0.625"/>
 						</Texture>
-						<Texture name="QuestLogCountLeft" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="0"/>
 							</Size>
@@ -812,7 +820,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0.25" bottom="0.375"/>
 						</Texture>
-						<Texture name="QuestLogCountTopMiddle" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountTopMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="100" y="8"/>
 							</Size>
@@ -822,7 +830,7 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.25"/>
 						</Texture>
-						<Texture name="QuestLogCountMiddleMiddle" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountMiddleMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="100" y="4"/>
 							</Size>
@@ -832,7 +840,7 @@
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0.25" bottom="0.375"/>
 						</Texture>
-						<Texture name="QuestLogCountBottomMiddle" file="Interface\Common\Common-Input-Border">
+						<Texture name="QuestLogCountBottomMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="100" y="8"/>
 							</Size>

@@ -64,12 +64,12 @@
 				</FontString>
 				<Texture name="$parentAlertIcon">
 					<Size>
-						<AbsDimension x="48" y="48"/>
+						<AbsDimension x="36" y="36"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="24" y="0"/>
+								<AbsDimension x="24" y="10"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -258,7 +258,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+						<Texture name="$parentNameFrame" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 							<Size>
 								<AbsDimension x="140" y="62"/>
 							</Size>

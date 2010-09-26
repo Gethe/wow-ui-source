@@ -10,19 +10,8 @@ MAX_INVITE_MESSAGE_LINES = 10;
 MAX_INVITE_MESSAGE_HEIGHT = 0;		-- automatically set in FriendsFramePendingScrollFrame:OnLoad
 WHOS_TO_DISPLAY = 17;
 FRIENDS_FRAME_WHO_HEIGHT = 16;
-GUILDMEMBERS_TO_DISPLAY = 13;
-FRIENDS_FRAME_GUILD_HEIGHT = 14;
 MAX_WHOS_FROM_SERVER = 50;
-MAX_GUILDCONTROL_OPTIONS = 12;
-CURRENT_GUILD_MOTD = "";
-GUILD_DETAIL_NORM_HEIGHT = 195
-GUILD_DETAIL_OFFICER_HEIGHT = 255
-MAX_GUILDBANK_TABS = 6;
-MAX_GOLD_WITHDRAW = 1000;
-GUILDEVENT_TRANSACTION_HEIGHT = 13;
-MAX_EVENTS_SHOWN = 25;
-MAX_GOLD_WITHDRAW_DIGITS = 9;
-PENDING_GUILDBANK_PERMISSIONS = {};
+FRIENDS_SCROLLFRAME_HEIGHT = 307;
 FRIENDS_BUTTON_HEADER_HEIGHT = 16;
 FRIENDS_BUTTON_NORMAL_HEIGHT = 34;
 FRIENDS_BUTTON_LARGE_HEIGHT = 48;
@@ -58,7 +47,7 @@ FRIENDS_TOOLTIP_MAX_TOONS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 
-local FriendButtons = { };
+local FriendButtons = { count = 0 };
 local BNetBroadcasts = { };
 local totalScrollHeight = 0;
 local numOnlineBroadcasts = 0;
@@ -73,7 +62,7 @@ WHOFRAME_DROPDOWN_LIST = {
 	{name = RACE, sortType = "race"}
 };
 
-FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame", "PendingListFrame", "WhoFrame", "GuildFrame", "ChannelFrame", "RaidFrame" };
+FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame", "PendingListFrame", "WhoFrame", "ChannelFrame", "RaidFrame" };
 function FriendsFrame_ShowSubFrame(frameName)
 	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
@@ -191,7 +180,7 @@ function FriendsFrameBNOfflineDropDown_Initialize()
 end
 
 function FriendsFrame_OnLoad(self)
-	PanelTemplates_SetNumTabs(self, 5);
+	PanelTemplates_SetNumTabs(self, 4);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
 	self:RegisterEvent("FRIENDLIST_SHOW");
@@ -199,9 +188,6 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("IGNORELIST_UPDATE");
 	self:RegisterEvent("MUTELIST_UPDATE");
 	self:RegisterEvent("WHO_LIST_UPDATE");
-	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	self:RegisterEvent("PLAYER_GUILD_UPDATE");
-	self:RegisterEvent("GUILD_MOTD");
 	self:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
@@ -221,15 +207,14 @@ function FriendsFrame_OnLoad(self)
 	self.playerStatusFrame = 1;
 	self.selectedFriend = 1;
 	self.selectedIgnore = 1;
-	self.guildStatus = 0;
-	GuildFrame.notesToggle = 1;
-	GuildFrame.selectedGuildMember = 0;
-	SetGuildRosterSelection(0);
-	CURRENT_GUILD_MOTD = GetGuildRosterMOTD();
-	GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
-	GuildMemberDetailRankText:SetPoint("RIGHT", GuildFramePromoteButton, "LEFT");
 	-- friends list
-	DynamicScrollFrame_CreateButtons(FriendsFrameFriendsScrollFrame, "FriendsFrameButtonTemplate", FRIENDS_BUTTON_HEADER_HEIGHT, FriendsFrame_SetButton, FriendsFrame_GetTopButton);
+	local scrollFrame = FriendsFrameFriendsScrollFrame;
+	scrollFrame.update = FriendsFrame_UpdateFriends;
+	scrollFrame.dynamic = FriendsFrame_GetTopButton;
+	FriendsFrameFriendsScrollFrameScrollBarTrack:Hide();
+	FriendsFrameFriendsScrollFrameScrollBar.doNotHide = true;
+	HybridScrollFrame_CreateButtons(scrollFrame, "FriendsFrameButtonTemplate");
+
 	FriendsFrameOfflineHeader:SetParent(FriendsFrameFriendsScrollFrameScrollChild);
 	FriendsFrameBroadcastInputClearButton.icon:SetVertexColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);	
 	if ( not BNFeaturesEnabled() ) then
@@ -246,9 +231,6 @@ function FriendsFrame_OnShow()
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoTab");
-	GuildFrame.selectedGuildMember = 0;
-	SetGuildRosterSelection(0);
-	InGuildCheck();
 end
 
 function FriendsFrame_Update()
@@ -300,26 +282,13 @@ function FriendsFrame_Update()
 			FriendsFrame_ShowSubFrame("WhoFrame");
 			WhoList_Update();
 		elseif ( FriendsFrame.selectedTab == 3 ) then
-			FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
-			FriendsFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
-			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\GuildFrame-BotLeft");
-			FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\GuildFrame-BotRight");
-			local guildName, title, rank = GetGuildInfo("player");
-			if ( guildName ) then
-				FriendsFrameTitleText:SetFormattedText(GUILD_TITLE_TEMPLATE, title, guildName);
-			else 
-				FriendsFrameTitleText:SetText("");
-			end
-			GuildStatus_Update();
-			FriendsFrame_ShowSubFrame("GuildFrame");
-		elseif ( FriendsFrame.selectedTab == 4 ) then
 			FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
 			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-ChannelFrame-BotLeft");
 			FriendsFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-ChannelFrame-BotRight");
 			FriendsFrameTitleText:SetText(CHAT_CHANNELS);
 			FriendsFrame_ShowSubFrame("ChannelFrame");
-		elseif ( FriendsFrame.selectedTab == 5 ) then
+		elseif ( FriendsFrame.selectedTab == 4 ) then
 			FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
 			FriendsFrameBottomLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft");
@@ -333,9 +302,6 @@ end
 function FriendsFrame_OnHide()
 	UpdateMicroButtons();
 	PlaySound("igMainMenuClose");
-	SetGuildRosterSelection(0);
-	GuildFrame.selectedGuildMember = 0;
-	GuildFramePopup_HideAll();
 	RaidInfoFrame:Hide();
 	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		_G[value]:Hide();
@@ -405,6 +371,7 @@ function FriendsList_Update()
 		FriendButtons[index].buttonType = FRIENDS_BUTTON_TYPE_WOW;
 		FriendButtons[index].id = i + numWoWOnline;		
 	end
+	FriendButtons.count = index;
 
 	-- selection
 	local selectedFriend = 0;
@@ -442,8 +409,7 @@ function FriendsList_Update()
 		FriendsFrameSendMessageButton:Disable();
 	end
 	FriendsFrame.selectedFriend = selectedFriend;
-		
-	DynamicScrollFrame_Update(FriendsFrameFriendsScrollFrame);
+	FriendsFrame_UpdateFriends();
 end
 
 function IgnoreList_Update()
@@ -488,6 +454,7 @@ function IgnoreList_Update()
 	FriendsFrameBlockedInviteHeader:Hide();
 	FriendsFrameBlockedToonHeader:Hide();
 	FriendsFrameMutedHeader:Hide();
+	local numOnline = 0;
 	
 	-- selection stuff
 	local selectedSquelchType = FriendsFrame.selectedSquelchType;
@@ -569,6 +536,7 @@ function IgnoreList_Update()
 		end
 		if ( selectedSquelchType == button.type and selectedSquelchIndex == button.index ) then
 			button:LockHighlight();
+			numOnline = numOnline + 1;
 		else
 			button:UnlockHighlight();
 		end
@@ -649,6 +617,8 @@ function PendingList_Update(newInvite)
 		scrollBar:SetValue(0);
 	end
 	PendingList_Scroll(0);
+	-- Friend count
+	FriendsMicroButtonCount:SetText(numOnline);
 end
 
 function PendingList_Scroll(offset)
@@ -853,311 +823,6 @@ function WhoList_Update()
 	ShowUIPanel(FriendsFrame);
 end
 
-function GuildStatus_Update()
-	-- Set the tab
-	PanelTemplates_SetTab(FriendsFrame, 3);
-	-- Show the frame
-	ShowUIPanel(FriendsFrame);
-	-- Number of players in the lowest rank
-	FriendsFrame.playersInBotRank = 0;
-
-	local numGuildMembers = GetNumGuildMembers();
-	local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName;
-	local guildName, guildRankName, guildRankIndex = GetGuildInfo("player");
-	local maxRankIndex = GuildControlGetNumRanks() - 1;
-	local button, buttonText, classTextColor;
-	local onlinecount = 0;
-	local guildIndex;
-
-	-- Get selected guild member info
-	name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
-	GuildFrame.selectedName = name;
-	-- If there's a selected guildmember
-	if ( GetGuildRosterSelection() > 0 ) then
-		-- Update the guild member details frame
-		GuildMemberDetailName:SetText(GuildFrame.selectedName);
-		GuildMemberDetailLevel:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
-		GuildMemberDetailZoneText:SetText(zone);
-		GuildMemberDetailRankText:SetText(rank);
-		if ( online ) then
-			GuildMemberDetailOnlineText:SetText(GUILD_ONLINE_LABEL);
-		else
-			GuildMemberDetailOnlineText:SetText(GuildFrame_GetLastOnline(GetGuildRosterSelection()));
-		end
-		-- Update public note
-		if ( CanEditPublicNote() ) then
-			PersonalNoteText:SetTextColor(1.0, 1.0, 1.0);
-			if ( (not note) or (note == "") ) then
-				note = GUILD_NOTE_EDITLABEL;
-			end
-		else
-			PersonalNoteText:SetTextColor(0.65, 0.65, 0.65);
-		end
-		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
-		PersonalNoteText:SetText(note);
-		-- Update officer note
-		if ( CanViewOfficerNote() ) then
-			if ( CanEditOfficerNote() ) then
-				if ( (not officernote) or (officernote == "") ) then
-					officernote = GUILD_OFFICERNOTE_EDITLABEL;
-				end
-				OfficerNoteText:SetTextColor(1.0, 1.0, 1.0);
-			else
-				OfficerNoteText:SetTextColor(0.65, 0.65, 0.65);
-			end
-			GuildMemberOfficerNoteBackground:EnableMouse(CanEditOfficerNote());
-			OfficerNoteText:SetText(officernote);
-
-			-- Resize detail frame
-			GuildMemberDetailOfficerNoteLabel:Show();
-			GuildMemberOfficerNoteBackground:Show();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT);
-		else
-			GuildMemberDetailOfficerNoteLabel:Hide();
-			GuildMemberOfficerNoteBackground:Hide();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT);
-		end
-
-		-- Manage guild member related buttons
-		if ( CanGuildPromote() and ( rankIndex > 1 ) and ( rankIndex > (guildRankIndex + 1) ) ) then
-			GuildFramePromoteButton:Enable();
-		else 
-			GuildFramePromoteButton:Disable();
-		end
-		if ( CanGuildDemote() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) and ( rankIndex ~= maxRankIndex ) ) then
-			GuildFrameDemoteButton:Enable();
-		else
-			GuildFrameDemoteButton:Disable();
-		end
-		-- Hide promote/demote buttons if both disabled
-		if ( GuildFrameDemoteButton:IsEnabled() == 0 and GuildFramePromoteButton:IsEnabled() == 0 ) then
-			GuildFramePromoteButton:Hide();
-			GuildFrameDemoteButton:Hide();
-		else
-			GuildFramePromoteButton:Show();
-			GuildFrameDemoteButton:Show();
-		end
-		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then
-			GuildMemberRemoveButton:Enable();
-		else
-			GuildMemberRemoveButton:Disable();
-		end
-		if ( (UnitName("player") == name) or (not online) ) then
-			GuildMemberGroupInviteButton:Disable();
-		else
-			GuildMemberGroupInviteButton:Enable();
-		end
-
-		GuildFrame.selectedName = GetGuildRosterInfo(GetGuildRosterSelection()); 
-	else
-		GuildMemberDetailFrame:Hide();
-	end
-	
-	-- Message of the day stuff
-	local guildMOTD = GetGuildRosterMOTD();
-	if ( CanEditMOTD() ) then
-		if ( (not guildMOTD) or (guildMOTD == "") ) then
-			guildMOTD = GUILD_MOTD_EDITLABEL;
-		end
-		GuildFrameNotesText:SetTextColor(1.0, 1.0, 1.0);
-		GuildMOTDEditButton:Enable();
-	else
-		GuildFrameNotesText:SetTextColor(0.65, 0.65, 0.65);
-		GuildMOTDEditButton:Disable();
-	end
-	GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
-
-	-- Scrollbar stuff
-	local showScrollBar = nil;
-	if ( numGuildMembers > GUILDMEMBERS_TO_DISPLAY ) then
-		showScrollBar = 1;
-	end
-	
-	-- Get number of online members
-	for i=1, numGuildMembers, 1 do
-		name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(i);
-		if ( online ) then
-			onlinecount = onlinecount + 1;
-		end
-		if ( rankIndex == maxRankIndex ) then
-			FriendsFrame.playersInBotRank = FriendsFrame.playersInBotRank + 1;
-		end
-	end
-	GuildFrameTotals:SetFormattedText(GUILD_TOTAL, numGuildMembers);
-	GuildFrameOnlineTotals:SetFormattedText(GUILD_TOTALONLINE, onlinecount);
-
-	-- Update global guild frame buttons
-	if ( IsGuildLeader() ) then
-		GuildFrameControlButton:Enable();
-	else
-		GuildFrameControlButton:Disable();
-	end
-	if ( CanGuildInvite() ) then
-		GuildFrameAddMemberButton:Enable();
-	else
-		GuildFrameAddMemberButton:Disable();
-	end
-
-
-	if ( FriendsFrame.playerStatusFrame ) then
-		-- Player specific info
-		local guildOffset = FauxScrollFrame_GetOffset(GuildListScrollFrame);
-
-		for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
-			guildIndex = guildOffset + i;
-			button = _G["GuildFrameButton"..i];
-			button.guildIndex = guildIndex;
-			name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName = GetGuildRosterInfo(guildIndex);
-
-			if ( not online ) then
-				buttonText = _G["GuildFrameButton"..i.."Name"];
-				buttonText:SetText(name);
-				buttonText:SetTextColor(0.5, 0.5, 0.5);
-				buttonText = _G["GuildFrameButton"..i.."Zone"];
-				buttonText:SetText(zone);
-				buttonText:SetTextColor(0.5, 0.5, 0.5);
-				buttonText = _G["GuildFrameButton"..i.."Level"];
-				buttonText:SetText(level);
-				buttonText:SetTextColor(0.5, 0.5, 0.5);
-				buttonText = _G["GuildFrameButton"..i.."Class"];
-				buttonText:SetText(class);
-				buttonText:SetTextColor(0.5, 0.5, 0.5);
-			else
-				if ( classFileName ) then
-					classTextColor = RAID_CLASS_COLORS[classFileName];
-				else
-					classTextColor = NORMAL_FONT_COLOR;
-				end
-
-				buttonText = _G["GuildFrameButton"..i.."Name"];
-				buttonText:SetText(name);
-				buttonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				buttonText = _G["GuildFrameButton"..i.."Zone"];
-				buttonText:SetText(zone);
-				buttonText:SetTextColor(1.0, 1.0, 1.0);
-				buttonText = _G["GuildFrameButton"..i.."Level"];
-				buttonText:SetText(level);
-				buttonText:SetTextColor(1.0, 1.0, 1.0);
-				buttonText = _G["GuildFrameButton"..i.."Class"];
-				buttonText:SetText(class);
-				buttonText:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
-			end
-
-			-- If need scrollbar resize columns
-			if ( showScrollBar ) then
-				_G["GuildFrameButton"..i.."Zone"]:SetWidth(95);
-			else
-				_G["GuildFrameButton"..i.."Zone"]:SetWidth(110);
-			end
-
-			-- Highlight the correct who
-			if ( GetGuildRosterSelection() == guildIndex ) then
-				button:LockHighlight();
-			else
-				button:UnlockHighlight();
-			end
-			
-			if ( guildIndex > numGuildMembers ) then
-				button:Hide();
-			else
-				button:Show();
-			end
-		end
-		
-		GuildFrameGuildListToggleButton:SetText(PLAYER_STATUS);
-		-- If need scrollbar resize column headers
-		if ( showScrollBar ) then
-			WhoFrameColumn_SetWidth(GuildFrameColumnHeader2, 105);
-			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -67);
-		else
-			WhoFrameColumn_SetWidth(GuildFrameColumnHeader2, 120);
-			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -67);
-		end
-		-- ScrollFrame update
-		FauxScrollFrame_Update(GuildListScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
-		
-		GuildPlayerStatusFrame:Show();
-		GuildStatusFrame:Hide();
-	else
-		-- Guild specific info
-		local year, month, day, hour;
-		local yearlabel, monthlabel, daylabel, hourlabel;
-		local guildOffset = FauxScrollFrame_GetOffset(GuildListScrollFrame);
-		local classFileName;
-		
-		for i=1, GUILDMEMBERS_TO_DISPLAY, 1 do
-			guildIndex = guildOffset + i;
-			button = _G["GuildFrameGuildStatusButton"..i];
-			button.guildIndex = guildIndex;
-			name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName = GetGuildRosterInfo(guildIndex);
-
-			_G["GuildFrameGuildStatusButton"..i.."Name"]:SetText(name);
-			_G["GuildFrameGuildStatusButton"..i.."Rank"]:SetText(rank);
-			_G["GuildFrameGuildStatusButton"..i.."Note"]:SetText(note);
-
-			if ( online ) then
-				if ( status == "" ) then
-					_G["GuildFrameGuildStatusButton"..i.."Online"]:SetText(GUILD_ONLINE_LABEL);
-				else
-					_G["GuildFrameGuildStatusButton"..i.."Online"]:SetText(status);
-				end
-
-				if ( classFileName ) then
-					classTextColor = RAID_CLASS_COLORS[classFileName];
-				else
-					classTextColor = NORMAL_FONT_COLOR;
-				end
-				_G["GuildFrameGuildStatusButton"..i.."Name"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				_G["GuildFrameGuildStatusButton"..i.."Rank"]:SetTextColor(1.0, 1.0, 1.0);
-				_G["GuildFrameGuildStatusButton"..i.."Note"]:SetTextColor(1.0, 1.0, 1.0);
-				_G["GuildFrameGuildStatusButton"..i.."Online"]:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
-			else
-				_G["GuildFrameGuildStatusButton"..i.."Online"]:SetText(GuildFrame_GetLastOnline(guildIndex));
-				_G["GuildFrameGuildStatusButton"..i.."Name"]:SetTextColor(0.5, 0.5, 0.5);
-				_G["GuildFrameGuildStatusButton"..i.."Rank"]:SetTextColor(0.5, 0.5, 0.5);
-				_G["GuildFrameGuildStatusButton"..i.."Note"]:SetTextColor(0.5, 0.5, 0.5);
-				_G["GuildFrameGuildStatusButton"..i.."Online"]:SetTextColor(0.5, 0.5, 0.5);
-			end
-
-			-- If need scrollbar resize columns
-			if ( showScrollBar ) then
-				_G["GuildFrameGuildStatusButton"..i.."Note"]:SetWidth(70);
-			else
-				_G["GuildFrameGuildStatusButton"..i.."Note"]:SetWidth(85);
-			end
-
-			-- Highlight the correct who
-			if ( GetGuildRosterSelection() == guildIndex ) then
-				button:LockHighlight();
-			else
-				button:UnlockHighlight();
-			end
-
-			if ( guildIndex > numGuildMembers ) then
-				button:Hide();
-			else
-				button:Show();
-			end
-		end
-		
-		GuildFrameGuildListToggleButton:SetText(GUILD_STATUS);
-		-- If need scrollbar resize columns
-		if ( showScrollBar ) then
-			WhoFrameColumn_SetWidth(GuildFrameGuildStatusColumnHeader3, 75);
-			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 284, -67);
-		else
-			WhoFrameColumn_SetWidth(GuildFrameGuildStatusColumnHeader3, 90);
-			GuildFrameGuildListToggleButton:SetPoint("LEFT", "GuildFrame", "LEFT", 307, -67);
-		end
-		
-		-- ScrollFrame update
-		FauxScrollFrame_Update(GuildListScrollFrame, numGuildMembers, GUILDMEMBERS_TO_DISPLAY, FRIENDS_FRAME_GUILD_HEIGHT );
-
-		GuildPlayerStatusFrame:Hide();
-		GuildStatusFrame:Show();
-	end
-end
-
 function WhoFrameColumn_SetWidth(frame, width)
 	frame:SetWidth(width);
 	_G[frame:GetName().."Middle"]:SetWidth(width - 9);
@@ -1226,27 +891,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "WHO_LIST_UPDATE" ) then
 		WhoList_Update();
 		FriendsFrame_Update();
-	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
-		GuildInfoFrame.cachedText = nil;
-		if ( GuildFrame:IsShown() ) then
-			local arg1 = ...;
-			if ( arg1 ) then
-				GuildRoster();
-			end
-			GuildStatus_Update();
-			FriendsFrame_Update();
-			GuildControlPopupFrame_Initialize();
-		end
-	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
-		if ( FriendsFrame:IsVisible() ) then
-			InGuildCheck();
-		end
-		if ( not IsInGuild() ) then
-			GuildControlPopupFrame.initialized = false;
-		end
-	elseif ( event == "GUILD_MOTD") then
-		CURRENT_GUILD_MOTD = ...;
-		GuildFrameNotesText:SetText(CURRENT_GUILD_MOTD);
 	elseif ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
 		VoiceChat_Toggle();
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
@@ -1370,28 +1014,6 @@ function FriendsFrameWhoButton_OnClick(self, button)
 	end
 end
 
-function FriendsFrameGuildStatusButton_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		GuildFrame.previousSelectedGuildMember = GuildFrame.selectedGuildMember;
-		GuildFrame.selectedGuildMember = self.guildIndex;
-		GuildFrame.selectedName = _G[self:GetName().."Name"]:GetText();
-		SetGuildRosterSelection(GuildFrame.selectedGuildMember);
-		-- Toggle guild details frame
-		if ( GuildMemberDetailFrame:IsShown() and (GuildFrame.previousSelectedGuildMember and (GuildFrame.previousSelectedGuildMember == GuildFrame.selectedGuildMember)) ) then
-			GuildMemberDetailFrame:Hide();
-			GuildFrame.selectedGuildMember = 0;
-			SetGuildRosterSelection(0);
-		else
-			GuildFramePopup_Show(GuildMemberDetailFrame);
-		end
-		GuildStatus_Update();
-	else
-		local guildIndex = self.guildIndex;
-		local name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(guildIndex);
-		FriendsFrame_ShowDropdown(name, online);
-	end
-end
-
 function FriendsFrame_UnIgnore(button, name)
 	DelIgnore(name);
 end
@@ -1431,10 +1053,6 @@ function ToggleFriendsFrame(tab)
 			ShowUIPanel(FriendsFrame);
 		end
 	else
-		-- If not in a guild don't do anything when they try to toggle the guild tab
-		if ( tab == 3 and not IsInGuild() ) then
-			return;
-		end
 		if ( tab == PanelTemplates_GetSelectedTab(FriendsFrame) and FriendsFrame:IsShown() ) then
 			HideUIPanel(FriendsFrame);
 			return;
@@ -1503,382 +1121,6 @@ function WhoFrame_GetDefaultWhoCommand()
 	return command;
 end
 
-function GuildControlPopupFrame_OnLoad()
-	local buttonText;
-	for i=1, 17 do	
-		buttonText = _G["GuildControlPopupFrameCheckbox"..i.."Text"];
-		if ( buttonText ) then
-			buttonText:SetText(_G["GUILDCONTROL_OPTION"..i]);
-		end
-	end
-	GuildControlTabPermissionsViewTabText:SetText(GUILDCONTROL_VIEW_TAB);
-	GuildControlTabPermissionsDepositItemsText:SetText(GUILDCONTROL_DEPOSIT_ITEMS);
-	GuildControlTabPermissionsUpdateTextText:SetText(GUILDCONTROL_UPDATE_TEXT);
-	ClearPendingGuildBankPermissions();
-end
-
---Need to call this function on an event since the guildroster is not available during OnLoad()
-function GuildControlPopupFrame_Initialize()
-	if ( GuildControlPopupFrame.initialized ) then
-		return;
-	end
-	UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-	GuildControlSetRank(1);
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
-	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlGetRankName(1));
-	-- Select tab 1
-	GuildBankTabPermissionsTab_OnClick(1);
-
-	GuildControlPopupFrame:SetScript("OnEvent", GuildControlPopupFrame_OnEvent);
-	GuildControlPopupFrame.initialized = 1;
-	GuildControlPopupFrame.rank = GuildControlGetRankName(1);
-end
-
-function GuildControlPopupFrame_OnShow()
-	FriendsFrame:SetAttribute("UIPanelLayout-defined", nil);
-	FriendsFrame.guildControlShow = 1;
-	GuildControlPopupAcceptButton:Disable();
-	-- Update popup
-	GuildControlPopupframe_Update();
-	
-	UIPanelWindows["FriendsFrame"].width = FriendsFrame:GetWidth() + GuildControlPopupFrame:GetWidth();
-	UpdateUIPanelPositions(FriendsFrame);
-	--GuildControlPopupFrame:RegisterEvent("GUILD_ROSTER_UPDATE"); --It was decided that having a risk of conflict when two people are editing the guild permissions at once is better than resetting whenever someone joins the guild or changes ranks.
-end
-
-function GuildControlPopupFrame_OnEvent (self, event, ...)
-	if ( not IsGuildLeader(UnitName("player")) ) then
-		GuildControlPopupFrame:Hide();
-		return;
-	end
-	
-	local rank
-	for i = 1, GuildControlGetNumRanks() do
-		rank = GuildControlGetRankName(i);
-		if ( GuildControlPopupFrame.rank and rank == GuildControlPopupFrame.rank ) then
-			UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, i);
-			UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, rank);
-		end
-	end
-	
-	GuildControlPopupframe_Update()
-end
-
-function GuildControlPopupFrame_OnHide()
-	FriendsFrame:SetAttribute("UIPanelLayout-defined", nil);
-	FriendsFrame.guildControlShow = 0;
-
-	UIPanelWindows["FriendsFrame"].width = FriendsFrame:GetWidth();
-	UpdateUIPanelPositions();
-
-	GuildControlPopupFrame.goldChanged = nil;
-	GuildControlPopupFrame:UnregisterEvent("GUILD_ROSTER_UPDATE");
-end
-
-function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUpdate)
-	-- Skip non-tab specific updates to fix Bug  ID: 110210
-	if ( not skipCheckboxUpdate ) then
-		-- Update permission flags
-		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
-	end
-	
-	local rankID = UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown);
-	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(rankID));
-	if ( GuildControlPopupFrame.previousSelectedRank and GuildControlPopupFrame.previousSelectedRank ~= rankID ) then
-		ClearPendingGuildBankPermissions();
-	end
-	GuildControlPopupFrame.previousSelectedRank = rankID;
-
-	--If rank to modify is guild master then gray everything out
-	if ( IsGuildLeader() and rankID == 1 ) then
-		GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlTabPermissionsDepositItems:SetChecked(1);
-		GuildControlTabPermissionsViewTab:SetChecked(1);
-		GuildControlTabPermissionsUpdateText:SetChecked(1);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsViewTab);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
-		GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawItemsEditBox:SetNumeric(nil);
-		GuildControlWithdrawItemsEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawItemsEditBox:SetText(UNLIMITED);
-		GuildControlWithdrawItemsEditBox:ClearFocus();
-		GuildControlWithdrawItemsEditBoxMask:Show();
-		GuildControlWithdrawGoldText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetNumeric(nil);
-		GuildControlWithdrawGoldEditBox:SetMaxLetters(0);
-		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetText(UNLIMITED);
-		GuildControlWithdrawGoldEditBox:ClearFocus();
-		GuildControlWithdrawGoldEditBoxMask:Show();
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlPopupFrameCheckbox15);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlPopupFrameCheckbox16);
-	else
-		if ( GetNumGuildBankTabs() == 0 ) then
-			-- No tabs, no permissions! Disable the tab related doohickies
-			GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsViewTab);
-			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
-			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
-			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			GuildControlWithdrawItemsEditBox:SetText(UNLIMITED);
-			GuildControlWithdrawItemsEditBox:ClearFocus();
-			GuildControlWithdrawItemsEditBoxMask:Show();
-		else
-			GuildBankTabLabel:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsViewTab);
-			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			GuildControlWithdrawItemsEditBox:SetNumeric(1);
-			GuildControlWithdrawItemsEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			GuildControlWithdrawItemsEditBoxMask:Hide();
-		end
-		
-		GuildControlWithdrawGoldText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetNumeric(1);
-		GuildControlWithdrawGoldEditBox:SetMaxLetters(MAX_GOLD_WITHDRAW_DIGITS);
-		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBoxMask:Hide();
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlPopupFrameCheckbox15);
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlPopupFrameCheckbox16);
-
-		-- Update tab specific info
-		local viewTab, canDeposit, canUpdateText, numWithdrawals = GetGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab);
-		if ( rankID == 1 ) then
-			--If is guildmaster then force checkboxes to be selected
-			viewTab = 1;
-			canDeposit = 1;
-			canUpdateText = 1;
-		elseif ( loadPendingTabPermissions ) then
-			local permissions = PENDING_GUILDBANK_PERMISSIONS[GuildControlPopupFrameTabPermissions.selectedTab];
-			local value;
-			value = permissions[GuildControlTabPermissionsViewTab:GetID()];
-			if ( value ) then
-				viewTab = value;
-			end
-			value = permissions[GuildControlTabPermissionsDepositItems:GetID()];
-			if ( value ) then
-				canDeposit = value;
-			end
-			value = permissions[GuildControlTabPermissionsUpdateText:GetID()];
-			if ( value ) then
-				canUpdateText = value;
-			end
-			value = permissions["withdraw"];
-			if ( value ) then
-				numWithdrawals = value;
-			end
-		end
-		GuildControlTabPermissionsViewTab:SetChecked(viewTab);
-		GuildControlTabPermissionsDepositItems:SetChecked(canDeposit);
-		GuildControlTabPermissionsUpdateText:SetChecked(canUpdateText);
-		GuildControlWithdrawItemsEditBox:SetText(numWithdrawals);
-		local goldWithdrawLimit = GetGuildBankWithdrawLimit();
-		-- Only write to the editbox if the value hasn't been changed by the player
-		if ( not GuildControlPopupFrame.goldChanged ) then
-			if ( goldWithdrawLimit >= 0 ) then
-				GuildControlWithdrawGoldEditBox:SetText(goldWithdrawLimit);
-			else
-				-- This is for the guild leader who defaults to -1
-				GuildControlWithdrawGoldEditBox:SetText(MAX_GOLD_WITHDRAW);
-			end
-		end
-		GuildControlPopup_UpdateDepositCheckBox();
-	end
-	
-	--Only show available tabs
-	local tab;
-	local numTabs = GetNumGuildBankTabs();
-	local name, permissionsTabBackground, permissionsText;
-	for i=1, MAX_GUILDBANK_TABS do
-		name = GetGuildBankTabInfo(i);
-		tab = _G["GuildBankTabPermissionsTab"..i];
-		
-		if ( i <= numTabs ) then
-			tab:Show();
-			tab.tooltip = name;
-			permissionsTabBackground = _G["GuildBankTabPermissionsTab"..i.."Background"];
-			permissionsText = _G["GuildBankTabPermissionsTab"..i.."Text"];
-			if (  GuildControlPopupFrameTabPermissions.selectedTab == i ) then
-				tab:LockHighlight();
-				permissionsTabBackground:SetTexCoord(0, 1.0, 0, 1.0);
-				permissionsTabBackground:SetHeight(32);
-				permissionsText:SetPoint("CENTER", permissionsTabBackground, "CENTER", 0, -3);
-			else
-				tab:UnlockHighlight();
-				permissionsTabBackground:SetTexCoord(0, 1.0, 0, 0.875);
-				permissionsTabBackground:SetHeight(28);
-				permissionsText:SetPoint("CENTER", permissionsTabBackground, "CENTER", 0, -5);
-			end
-			if ( IsGuildLeader() and rankID == 1 ) then
-				tab:Disable();
-			else
-				tab:Enable();
-			end
-		else
-			tab:Hide();
-		end
-	end
-end
-
-function WithdrawGoldEditBox_Update()
-	if ( not GuildControlPopupFrameCheckbox15:GetChecked() and not GuildControlPopupFrameCheckbox16:GetChecked() ) then
-		GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:ClearFocus();
-		GuildControlWithdrawGoldEditBoxMask:Show();
-	else
-		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBoxMask:Hide();
-	end
-end
-
-function GuildControlPopupAcceptButton_OnClick()
-	local amount = GuildControlWithdrawGoldEditBox:GetText();
-	if(amount and amount ~= "" and amount ~= UNLIMITED and tonumber(amount) and tonumber(amount) > 0) then
-		SetGuildBankWithdrawLimit(amount);
-	else
-		SetGuildBankWithdrawLimit(0);
-	end
-	SavePendingGuildBankTabPermissions()
-	GuildControlSaveRank(GuildControlPopupFrameEditBox:GetText());
-	GuildStatus_Update();
-	GuildControlPopupAcceptButton:Disable();
-	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlPopupFrameEditBox:GetText());
-	GuildControlPopupFrame:Hide();
-	ClearPendingGuildBankPermissions();
-end
-
-function GuildControlPopupFrameDropDown_OnLoad(self)
-	UIDropDownMenu_SetWidth(self, 160);
-	UIDropDownMenu_SetButtonWidth(self, 54);
-	UIDropDownMenu_JustifyText(GuildControlPopupFrameDropDown, "LEFT");
-end
-
-function GuildControlPopupFrameDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	for i=1, GuildControlGetNumRanks() do
-		info.text = GuildControlGetRankName(i);
-		info.func = GuildControlPopupFrameDropDownButton_OnClick;
-		info.checked = nil;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function GuildControlPopupFrameDropDownButton_OnClick(self)
-	local rank = self:GetID();
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, rank);	
-	GuildControlSetRank(rank);
-	GuildControlPopupFrame.rank = GuildControlGetRankName(rank);
-	GuildControlPopupFrame.goldChanged = nil;
-	GuildControlPopupframe_Update();
-	GuildControlPopupFrameAddRankButton_OnUpdate(GuildControlPopupFrameAddRankButton);
-	GuildControlPopupFrameRemoveRankButton_OnUpdate(GuildControlPopupFrameRemoveRankButton);
-	GuildControlPopupAcceptButton:Disable();
-end
-
-function GuildControlCheckboxUpdate(...)
-	local checkbox;
-	for i=1, select("#", ...), 1 do
-		checkbox = _G["GuildControlPopupFrameCheckbox"..i]
-		if ( checkbox ) then
-			checkbox:SetChecked(select(i, ...));
-		else
-			--We need to skip checkbox 14 since it's a deprecated flag
-			--message("GuildControlPopupFrameCheckbox"..i.." does not exist!");
-		end
-	end
-end
-
-function GuildControlPopupFrameAddRankButton_OnUpdate(self)
-	if ( GuildControlGetNumRanks() >= 10 ) then
-		self:Disable();
-	else
-		self:Enable();
-	end
-end
-
-function GuildControlPopupFrameRemoveRankButton_OnClick()
-	GuildControlDelRank(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-	GuildControlPopupFrame.rank = GuildControlGetRankName(1);
-	GuildControlSetRank(1);
-	GuildStatus_Update();
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
-	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(1));
-	GuildControlCheckboxUpdate(GuildControlGetRankFlags());
-	CloseDropDownMenus();
-	-- Set this to call guildroster in the next frame
-	--GuildRoster();
-	--GuildControlPopupFrame.update = 1;
-end
-
-function GuildControlPopupFrameRemoveRankButton_OnUpdate(self)
-	local numRanks = GuildControlGetNumRanks()
-	if ( (UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown) == numRanks) and (numRanks > 5) ) then
-		self:Show();
-		if ( FriendsFrame.playersInBotRank > 0 ) then
-			self:Disable();
-		else
-			self:Enable();
-		end
-	else
-		self:Hide();
-	end
-end
-
-function GuildControlPopup_UpdateDepositCheckBox()
-	if(GuildControlTabPermissionsViewTab:GetChecked()) then
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsDepositItems);
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsUpdateText);
-	else
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
-	end
-end
-
-function InGuildCheck()
-	if ( not IsInGuild() ) then
-		PanelTemplates_DisableTab( FriendsFrame, 3 );
-		if ( FriendsFrame.selectedTab == 3 ) then
-			FriendsFrame.selectedTab = 1;
-			FriendsFrame_Update();
-		end
-	else
-		PanelTemplates_EnableTab( FriendsFrame, 3 );
-		FriendsFrame_Update();
-	end
-end
-
-function GuildFrameGuildListToggleButton_OnClick()
-	if ( FriendsFrame.playerStatusFrame ) then
-		FriendsFrame.playerStatusFrame = nil;
-	else
-		FriendsFrame.playerStatusFrame = 1;		
-	end
-	GuildStatus_Update();
-end
-
-function GuildFrameControlButton_OnUpdate()
-	if ( FriendsFrame.guildControlShow == 1 ) then
-		GuildFrameControlButton:LockHighlight();		
-	else
-		GuildFrameControlButton:UnlockHighlight();
-	end
-	-- Janky way to make sure a change made to the guildroster will reflect in the guildroster call
-	if ( GuildControlPopupFrame.update == 1 ) then
-		GuildControlPopupFrame.update = 2;
-	elseif ( GuildControlPopupFrame.update == 2 ) then
-		GuildRoster();
-		GuildControlPopupFrame.update = nil;
-	end
-end
-
-function GuildFrame_GetLastOnline(guildIndex)
-	return RecentTimeDate( GetGuildRosterLastOnline(guildIndex) );
-end
-
 function FriendsFrame_GetLastOnline(lastOnline)
 	local year, month, day, hour, minute;
 	local timeDifference = time() - lastOnline;
@@ -1901,124 +1143,6 @@ function FriendsFrame_GetLastOnline(lastOnline)
 		return format(LASTONLINE_MONTHS, floor(timeDifference / ONE_MONTH));
 	else
 		return format(LASTONLINE_YEARS, floor(timeDifference / ONE_YEAR));
-	end
-end
-
-function ToggleGuildInfoFrame()
-	if ( GuildInfoFrame:IsShown() ) then
-		GuildInfoFrame:Hide();
-	else
-		GuildFramePopup_Show(GuildInfoFrame);
-	end
-end
-
-function GuildBankTabPermissionsTab_OnClick(tab)
-	GuildControlPopupFrameTabPermissions.selectedTab = tab;
-	GuildControlPopupframe_Update(true, true);
-end
-
--- Functions to allow canceling
-function ClearPendingGuildBankPermissions()
-	for i=1, MAX_GUILDBANK_TABS do
-		PENDING_GUILDBANK_PERMISSIONS[i] = {};
-	end
-end
-
-function SetPendingGuildBankTabPermissions(tab, id, checked)
-	if ( not checked ) then
-		checked = 0;
-	end
-	PENDING_GUILDBANK_PERMISSIONS[tab][id] = checked;
-end
-
-function SetPendingGuildBankTabWithdraw(tab, amount)
-	PENDING_GUILDBANK_PERMISSIONS[tab]["withdraw"] = amount;
-end
-
-function SavePendingGuildBankTabPermissions()
-	for index, value in pairs(PENDING_GUILDBANK_PERMISSIONS) do
-		for i=1, 3 do
-			if ( value[i] ) then
-				SetGuildBankTabPermissions(index, i, value[i]);
-			end
-		end
-		if ( value["withdraw"] ) then
-			SetGuildBankTabWithdraw(index, value["withdraw"]);
-		end
-	end
-end
-
--- Guild event log functions
-function ToggleGuildEventLog()
-	if ( GuildEventLogFrame:IsShown() ) then
-		GuildEventLogFrame:Hide();
-	else
-		GuildFramePopup_Show(GuildEventLogFrame);
---		QueryGuildEventLog();
-	end
-end
-
-function GuildEventLog_Update()
-	local numEvents = GetNumGuildEvents();
-	local type, player1, player2, rank, year, month, day, hour;
-	local msg;
-	local buffer = "";
-	local max = GuildEventMessage:GetFieldSize()
-	local length = 0;
-	for i=numEvents, 1, -1 do
-		type, player1, player2, rank, year, month, day, hour = GetGuildEventInfo(i);
-		if ( not player1 ) then
-			player1 = UNKNOWN;
-		end
-		if ( not player2 ) then
-			player2 = UNKNOWN;
-		end
-		if ( type == "invite" ) then
-			msg = format(GUILDEVENT_TYPE_INVITE, player1, player2);
-		elseif ( type == "join" ) then
-			msg = format(GUILDEVENT_TYPE_JOIN, player1);
-		elseif ( type == "promote" ) then
-			msg = format(GUILDEVENT_TYPE_PROMOTE, player1, player2, rank);
-		elseif ( type == "demote" ) then
-			msg = format(GUILDEVENT_TYPE_DEMOTE, player1, player2, rank);
-		elseif ( type == "remove" ) then
-			msg = format(GUILDEVENT_TYPE_REMOVE, player1, player2);
-		elseif ( type == "quit" ) then
-			msg = format(GUILDEVENT_TYPE_QUIT, player1);
-		end
-		if ( msg ) then
-			msg = msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
-			length = length + msg:len();
-			if(length>max) then
-				i=0
-			else
-				buffer = buffer..msg
-			end
-		end
-	end
-	GuildEventMessage:SetText(buffer);
-end
-
-GUILDFRAME_POPUPS = {
-	"GuildEventLogFrame",
-	"GuildInfoFrame",
-	"GuildMemberDetailFrame",
-	"GuildControlPopupFrame",
-};
-
-function GuildFramePopup_Show(frame)
-	local name = frame:GetName();
-	for index, value in ipairs(GUILDFRAME_POPUPS) do
-		if ( name ~= value ) then
-			_G[value]:Hide();
-		end
-	end
-	frame:Show();
-end
-
-function GuildFramePopup_HideAll()
-	for index, value in ipairs(GUILDFRAME_POPUPS) do
-		_G[value]:Hide();
 	end
 end
 
@@ -2075,7 +1199,7 @@ function FriendsFrame_GetTopButton(offset)
 					buttonHeight = FRIENDS_BUTTON_NORMAL_HEIGHT;
 				end
 				if ( (heightLeft - buttonHeight) < 1 ) then
-					return i + buttonIndex, offset - heightLeft, totalScrollHeight;
+					return i + buttonIndex - 1, heightLeft;
 				else
 					heightLeft = heightLeft - buttonHeight;
 				end
@@ -2084,8 +1208,8 @@ function FriendsFrame_GetTopButton(offset)
 		heightLeft = heightLeft - totalBNOnlineHeight;
 		buttonIndex = buttonIndex + numBNetOnline;
 		if ( heightLeft < numWoWOnline * FRIENDS_BUTTON_NORMAL_HEIGHT ) then
-			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT) + 1;
-			return buttonIndex + index, offset - heightLeft + (index - 1) * FRIENDS_BUTTON_NORMAL_HEIGHT, totalScrollHeight;
+			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT);
+			return buttonIndex + index, heightLeft - (index * FRIENDS_BUTTON_NORMAL_HEIGHT);
 		end
 		heightLeft = heightLeft - numWoWOnline * FRIENDS_BUTTON_NORMAL_HEIGHT;
 		buttonIndex = buttonIndex + numWoWOnline;
@@ -2094,12 +1218,12 @@ function FriendsFrame_GetTopButton(offset)
 	if (  numBNetOffline + numWoWOffline > 0  ) then
 		-- check header first
 		if ( numBNetOnline + numWoWOnline > 0 ) then
-			buttonIndex = buttonIndex + 1;
 			if ( heightLeft < FRIENDS_BUTTON_HEADER_HEIGHT ) then
-				return buttonIndex, offset - heightLeft, totalScrollHeight;
+				return buttonIndex, heightLeft;
 			else
 				heightLeft = heightLeft - FRIENDS_BUTTON_HEADER_HEIGHT;
 			end
+			buttonIndex = buttonIndex + 1;
 		end
 		local totalBNOfflineHeight = numBNetOffline * FRIENDS_BUTTON_NORMAL_HEIGHT + numOfflineBroadcasts * (FRIENDS_BUTTON_LARGE_HEIGHT - FRIENDS_BUTTON_NORMAL_HEIGHT);
 		if ( heightLeft < totalBNOfflineHeight ) then
@@ -2110,7 +1234,7 @@ function FriendsFrame_GetTopButton(offset)
 					buttonHeight = FRIENDS_BUTTON_NORMAL_HEIGHT;
 				end
 				if ( (heightLeft - buttonHeight) < 1 ) then
-					return i + buttonIndex, offset - heightLeft, totalScrollHeight;
+					return i + buttonIndex - 1, heightLeft;
 				else
 					heightLeft = heightLeft - buttonHeight;
 				end
@@ -2119,129 +1243,157 @@ function FriendsFrame_GetTopButton(offset)
 		heightLeft = heightLeft - totalBNOfflineHeight;
 		buttonIndex = buttonIndex + numBNetOffline;
 		if ( heightLeft < numWoWOffline * FRIENDS_BUTTON_NORMAL_HEIGHT ) then
-			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT) + 1;
-			return buttonIndex + index, offset - heightLeft + (index - 1) * FRIENDS_BUTTON_NORMAL_HEIGHT, totalScrollHeight;
+			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT);
+			return buttonIndex + index, heightLeft - (index * FRIENDS_BUTTON_NORMAL_HEIGHT);
 		end
 	end
 end
 
-function FriendsFrame_SetButton(button, index, firstButton)
+function FriendsFrame_UpdateFriends()
+	local scrollFrame = FriendsFrameFriendsScrollFrame;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local numFriendButtons = FriendButtons.count;
+	
+	local nameText, nameColor, infoText, broadcastText;	
+
 	local height;
-	local nameText, nameColor, infoText, broadcastText;
-		
-	if ( firstButton ) then
-		FriendsFrameOfflineHeader:Hide();
-		DynamicScrollFrame_UnlockAllHighlights(FriendsFrameFriendsScrollFrame);	
-	end
-	button.buttonType = FriendButtons[index].buttonType;
-	button.id = FriendButtons[index].id;
-	if ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
-		local name, level, class, area, connected, status, note = GetFriendInfo(FriendButtons[index].id);
-		if ( connected ) then
-			button.background:SetTexture(FRIENDS_WOW_BACKGROUND_COLOR.r, FRIENDS_WOW_BACKGROUND_COLOR.g, FRIENDS_WOW_BACKGROUND_COLOR.b, FRIENDS_WOW_BACKGROUND_COLOR.a);
-			if ( status == "" ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
-			elseif ( status == CHAT_FLAG_AFK ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
-			elseif ( status == CHAT_FLAG_DND ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_DND);
-			end
-			nameText = name..", "..format(FRIENDS_LEVEL_TEMPLATE, level, class);
-			nameColor = FRIENDS_WOW_NAME_COLOR;
-		else
-			button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
-			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
-			nameText = name;
-			nameColor = FRIENDS_GRAY_COLOR;
-		end
-		infoText = area;
-		button.gameIcon:Hide();
-		FriendsFrame_SummonButton_Update(button.summonButton);
-	elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfo(FriendButtons[index].id);
-		broadcastText = messageText;
-		if ( isOnline ) then
-			local _, _, _, _, _, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
-			button.background:SetTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
-			if ( isAFK ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
-			elseif ( isDND ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_DND);
-			else
-				button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
-			end
-			if ( client == BNET_CLIENT_WOW ) then
-				if ( not zoneName or zoneName == "" ) then
-					infoText = UNKNOWN;
-				else
-					infoText = zoneName;
-				end
-				button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-WoWicon");
-			elseif ( client == BNET_CLIENT_SC2 ) then
-				button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Sc2icon");
-				infoText = gameText;
-			end
-			nameColor = FRIENDS_BNET_NAME_COLOR;
-			button.gameIcon:Show();
-		else
-			button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
-			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
-			nameColor = FRIENDS_GRAY_COLOR;
-			button.gameIcon:Hide();
-			if ( lastOnline == 0 ) then
-				infoText = FRIENDS_LIST_OFFLINE;
-			else
-				infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
-			end
-		end
-		if ( givenName and surname ) then
-			if ( toonName ) then
-				if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID) ) then
-					nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..toonName..")";
-				else
-					if ( ENABLE_COLORBLIND_MODE == "1" ) then
-						toonName = toonName..CANNOT_COOPERATE_LABEL;
+	local usedHeight = 0;
+
+	FriendsFrameOfflineHeader:Hide();
+	for i = 1, numButtons do
+		button = buttons[i];
+		index = offset + i;
+		if ( index <= numFriendButtons and usedHeight < FRIENDS_SCROLLFRAME_HEIGHT ) then
+			button.buttonType = FriendButtons[index].buttonType;
+			button.id = FriendButtons[index].id;
+			if ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
+				local name, level, class, area, connected, status, note = GetFriendInfo(FriendButtons[index].id);
+				broadcastText = nil;
+				if ( connected ) then
+					button.background:SetTexture(FRIENDS_WOW_BACKGROUND_COLOR.r, FRIENDS_WOW_BACKGROUND_COLOR.g, FRIENDS_WOW_BACKGROUND_COLOR.b, FRIENDS_WOW_BACKGROUND_COLOR.a);
+					if ( status == "" ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
+					elseif ( status == CHAT_FLAG_AFK ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
+					elseif ( status == CHAT_FLAG_DND ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_DND);
 					end
-					nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..toonName..")";
+					nameText = name..", "..format(FRIENDS_LEVEL_TEMPLATE, level, class);
+					nameColor = FRIENDS_WOW_NAME_COLOR;
+				else
+					button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
+					button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
+					nameText = name;
+					nameColor = FRIENDS_GRAY_COLOR;
 				end
+				infoText = area;
+				button.gameIcon:Hide();
+				FriendsFrame_SummonButton_Update(button.summonButton);
+			elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+				local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfo(FriendButtons[index].id);
+				broadcastText = messageText;
+				if ( isOnline ) then
+					local _, _, _, _, _, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
+					button.background:SetTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
+					if ( isAFK ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
+					elseif ( isDND ) then
+						button.status:SetTexture(FRIENDS_TEXTURE_DND);
+					else
+						button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
+					end
+					if ( client == BNET_CLIENT_WOW ) then
+						if ( not zoneName or zoneName == "" ) then
+							infoText = UNKNOWN;
+						else
+							infoText = zoneName;
+						end
+						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-WoWicon");
+					elseif ( client == BNET_CLIENT_SC2 ) then
+						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Sc2icon");
+						infoText = gameText;
+					end
+					nameColor = FRIENDS_BNET_NAME_COLOR;
+					button.gameIcon:Show();
+				else
+					button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
+					button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
+					nameColor = FRIENDS_GRAY_COLOR;
+					button.gameIcon:Hide();
+					if ( lastOnline == 0 ) then
+						infoText = FRIENDS_LIST_OFFLINE;
+					else
+						infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
+					end
+				end
+				if ( givenName and surname ) then
+					if ( toonName ) then
+						if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID) ) then
+							nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..toonName..")";
+						else
+							if ( ENABLE_COLORBLIND_MODE == "1" ) then
+								toonName = toonName..CANNOT_COOPERATE_LABEL;
+							end
+							nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..toonName..")";
+						end
+					else
+						nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname);
+					end
+				else
+					nameText = UNKNOWN;
+				end
+				FriendsFrame_SummonButton_Update(button.summonButton);
+			else	-- header
+				FriendsFrameOfflineHeader:Show();
+				FriendsFrameOfflineHeader:SetAllPoints(button);
+				height = FRIENDS_BUTTON_HEADER_HEIGHT;
+				nameText = nil;
+			end
+			-- selection
+			if ( FriendsFrame.selectedFriendType == FriendButtons[index].buttonType and FriendsFrame.selectedFriend == FriendButtons[index].id ) then
+				button:LockHighlight();
 			else
-				nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname);
+				button:UnlockHighlight();
+			end
+			-- finish setting up button if it's not a header
+			if ( nameText ) then
+				button.name:SetText(nameText);
+				button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
+				button.info:SetText(infoText);
+				-- don't display a broadcast if the BNetBroadcasts data is out of sync
+				if ( broadcastText and broadcastText ~= "" and BNetBroadcasts[FriendButtons[index].id] ) then
+					height = FRIENDS_BUTTON_LARGE_HEIGHT;
+					button.broadcastMessage:SetText(broadcastText);
+					button.broadcastMessage:Show();
+					button.broadcastIcon:Show();
+				else
+					height = FRIENDS_BUTTON_NORMAL_HEIGHT;
+					button.broadcastMessage:Hide();
+					button.broadcastIcon:Hide();
+				end
+				button:Show();
+			else
+				button:Hide();
+			end
+			-- update the tooltip if hovering over a button
+			if ( FriendsTooltip.button == button ) then
+				FriendsFrameTooltip_Show(button);
+			end
+			-- set heights
+			button:SetHeight(height);
+			-- Calculate the used height without using the first button. When scrolling down,
+			--  we're not going to get an update until the first button scrolls off,
+			-- and so the buttons coming into view at the bottom have to be set up.
+			if ( i > 1 ) then
+				usedHeight = usedHeight + height;
 			end
 		else
-			nameText = UNKNOWN;
+			button:Hide();
 		end
-		FriendsFrame_SummonButton_Update(button.summonButton);
-	else	-- header
-		button:Hide();
-		FriendsFrameOfflineHeader:Show();
-		FriendsFrameOfflineHeader:SetAllPoints(button);
-		return FRIENDS_BUTTON_HEADER_HEIGHT;
 	end
-	
-	if ( FriendsFrame.selectedFriendType == FriendButtons[index].buttonType and FriendsFrame.selectedFriend == FriendButtons[index].id ) then
-		button:LockHighlight();
-	end
-	
-	button.name:SetText(nameText);
-	button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
-	button.info:SetText(infoText);
-	-- don't display a broadcast if the BNetBroadcasts data is out of sync
-	if ( broadcastText and broadcastText ~= "" and BNetBroadcasts[FriendButtons[index].id] ) then
-		height = FRIENDS_BUTTON_LARGE_HEIGHT;
-		button.broadcastMessage:SetText(broadcastText);
-		button.broadcastMessage:Show();
-		button.broadcastIcon:Show();
-	else
-		height = FRIENDS_BUTTON_NORMAL_HEIGHT;
-		button.broadcastMessage:Hide();
-		button.broadcastIcon:Hide();
-	end
-	-- update the tooltip if hovering over a button
-	if ( FriendsTooltip.button == button ) then
-		FriendsFrameTooltip_Show(button);
-	end
-	button:Show();
-	return height;
+	HybridScrollFrame_Update(scrollFrame, totalScrollHeight, min(FRIENDS_SCROLLFRAME_HEIGHT, numButtons * scrollFrame.buttonHeight));	
 end
 
 function FriendsFrameStatusDropDown_OnLoad(self)

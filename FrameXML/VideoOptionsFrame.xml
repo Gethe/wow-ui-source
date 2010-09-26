@@ -23,7 +23,7 @@
 					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						VideoOptionsFrameOkay_OnClick(self, button, true);
+						VideoOptionsFrameOkay_OnClick(self, button, down, true);
 						self:Disable();
 					</OnClick>
 				</Scripts>
@@ -50,7 +50,7 @@
 					<OnClick function="VideoOptionsFrameOkay_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentDefaults" inherits="UIPanelButtonGrayTemplate" text="DEFAULTS">
+			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
 				<Size>
 					<AbsDimension x="96" y="22"/>
 				</Size>

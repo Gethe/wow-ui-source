@@ -15,8 +15,8 @@ function AlternatePowerBar_Initialize(self)
 		self.powerIndex = ADDITIONAL_POWER_BAR_INDEX;
 	end
 	
-	self:RegisterEvent("UNIT_"..self.powerName);
-	self:RegisterEvent("UNIT_MAX"..self.powerName);
+	self:RegisterEvent("UNIT_POWER");
+	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	
@@ -34,10 +34,10 @@ function AlternatePowerBar_OnEvent(self, event, arg1)
 		AlternatePowerBar_UpdateMaxValues(self);
 		AlternatePowerBar_UpdateValue(self);
 		AlternatePowerBar_UpdatePowerType(self);
-	elseif( (event == "UNIT_MAXMANA") and (arg1 == parent.unit) ) then
+	elseif( (event == "UNIT_MAXPOWER") and (arg1 == parent.unit) ) then
 		AlternatePowerBar_UpdateMaxValues(self);
 	elseif ( self:IsShown() ) then
-		if ( (event == "UNIT_MANA") and (arg1 == parent.unit) ) then
+		if ( (event == "UNIT_POWER") and (arg1 == parent.unit) ) then
 			AlternatePowerBar_UpdateValue(self);
 		end
 	end

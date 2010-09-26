@@ -15,7 +15,7 @@
 		<Layers>
 			<Layer level="BORDER">
 				<!-- top textures -->
-				<Texture name="$parentTopLeftTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
+				<Texture name="$parentTopLeftTexture" urgency="5" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="46"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -24,7 +24,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.00390625" bottom="0.16015625"/>
 				</Texture>
-				<Texture name="$parentTopMiddleTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
+				<Texture name="$parentTopMiddleTexture" urgency="5" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="46"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="TOPRIGHT">
@@ -33,7 +33,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.16796875" bottom="0.32421875"/>
 				</Texture>
-				<Texture name="$parentTopRightTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
+				<Texture name="$parentTopRightTexture" urgency="5" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="147" y="30"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTopMiddleTexture" relativePoint="TOPRIGHT">
@@ -43,7 +43,7 @@
 					<TexCoords left="0.0" right="0.57421875" top="0.328125" bottom="0.4296875"/>
 				</Texture>
 				<!-- left side textures -->
-				<Texture name="$parentLeftTopTexture" file="Interface\Calendar\CalendarFrame_Sides">
+				<Texture name="$parentLeftTopTexture" urgency="5" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="12" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="BOTTOMLEFT">
@@ -52,7 +52,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="0.09375" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentLeftMiddleTexture" file="Interface\Calendar\CalendarFrame_Sides">
+				<Texture name="$parentLeftMiddleTexture" urgency="5" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="12" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="BOTTOMLEFT">
@@ -61,7 +61,7 @@
 					</Anchors>
 					<TexCoords left="0.09375" right="0.1875" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentLeftBottomTexture" file="Interface\Calendar\CalendarFrame_Sides">
+				<Texture name="$parentLeftBottomTexture" urgency="5" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="11" y="62"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeftMiddleTexture" relativePoint="BOTTOMLEFT">
@@ -71,7 +71,7 @@
 					<TexCoords left="0.1953125" right="0.28125" top="0.0" bottom="0.2421875"/>
 				</Texture>
 				<!-- right side textures -->
-				<Texture name="$parentRightTopTexture" file="Interface\Calendar\CalendarFrame_Sides">
+				<Texture name="$parentRightTopTexture" urgency="5" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="13" y="256"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="BOTTOMRIGHT">
@@ -80,7 +80,7 @@
 					</Anchors>
 					<TexCoords left="0.296875" right="0.3984375" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentRightMiddleTexture" file="Interface\Calendar\CalendarFrame_Sides">
+				<Texture name="$parentRightMiddleTexture" urgency="5" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="11" y="256"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parentRightTopTexture" relativePoint="BOTTOMRIGHT">
@@ -89,7 +89,7 @@
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.484375" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentRightBottomTexture" file="Interface\Calendar\CalendarFrame_Sides">
+				<Texture name="$parentRightBottomTexture" urgency="5" file="Interface\Calendar\CalendarFrame_Sides">
 					<Size x="11" y="62"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parentRightMiddleTexture" relativePoint="BOTTOMRIGHT">
@@ -99,7 +99,7 @@
 					<TexCoords left="0.484375" right="0.5703125" top="0.0" bottom="0.2421875"/>
 				</Texture>
 				<!-- bottom textures -->
-				<Texture name="$parentBottomLeftTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
+				<Texture name="$parentBottomLeftTexture" urgency="5" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="9"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeftBottomTexture" relativePoint="BOTTOMLEFT">
@@ -108,7 +108,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.43359375" bottom="0.46875"/>
 				</Texture>
-				<Texture name="$parentBottomMiddleTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
+				<Texture name="$parentBottomMiddleTexture" urgency="5" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="256" y="9"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentBottomLeftTexture" relativePoint="RIGHT">
@@ -117,7 +117,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="0.46875" bottom="0.50390625"/>
 				</Texture>
-				<Texture name="$parentBottomRightTexture" file="Interface\Calendar\CalendarFrame_TopAndBottom">
+				<Texture name="$parentBottomRightTexture" urgency="5" file="Interface\Calendar\CalendarFrame_TopAndBottom">
 					<Size x="145" y="9"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentBottomMiddleTexture" relativePoint="RIGHT">
@@ -128,7 +128,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="CalendarWeekday1Background" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarWeekday1Background" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeftTopTexture" relativePoint="TOPRIGHT">
@@ -136,19 +136,19 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="CalendarWeekday2Background" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarWeekday2Background" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday1Background" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="CalendarWeekday3Background" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarWeekday3Background" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday2Background" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="CalendarWeekday4Background" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarWeekday4Background" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday3Background" relativePoint="RIGHT">
@@ -156,19 +156,19 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="CalendarWeekday5Background" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarWeekday5Background" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday4Background" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="CalendarWeekday6Background" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarWeekday6Background" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday5Background" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="CalendarWeekday7Background" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarWeekday7Background" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="91" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CalendarWeekday6Background" relativePoint="RIGHT"/>
@@ -218,7 +218,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="CalendarMonthBackground" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarMonthBackground" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="142" y="36"/>
 					<Anchors>
 						<Anchor point="TOP">
@@ -234,7 +234,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="CalendarYearBackground" file="Interface\Calendar\CalendarBackground">
+				<Texture name="CalendarYearBackground" urgency="5" file="Interface\Calendar\CalendarBackground">
 					<Size x="47" y="24"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CalendarMonthBackground" relativePoint="BOTTOM">
@@ -252,7 +252,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="CalendarLastDayDarkTexture" file="Interface\Calendar\CalendarShadows" hidden="true">
+				<Texture name="CalendarLastDayDarkTexture" urgency="5" file="Interface\Calendar\CalendarShadows" hidden="true">
 					<Size x="3" y="3"/>
 					<!-- HACK: 0.01 was subtracted from the right to prevent texture seams	-->
 					<TexCoords left="0.0" right="0.004859375" top="0.90234375" bottom="0.9140625"/>
@@ -271,7 +271,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="CalendarTodayTextureGlow" file="Interface\Calendar\CurrentDay" alphaMode="ADD">
+						<Texture name="CalendarTodayTextureGlow" urgency="5" file="Interface\Calendar\CurrentDay" alphaMode="ADD">
 							<Size x="112" y="130"/>
 							<Anchors>
 								<Anchor point="CENTER">
@@ -282,7 +282,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture name="CalendarTodayTexture" file="Interface\Calendar\CurrentDay">
+						<Texture name="CalendarTodayTexture" urgency="5" file="Interface\Calendar\CurrentDay">
 							<Size x="145" y="140"/>
 							<TexCoords left="0.0078125" right="0.57421875" top="0.0390625" bottom="0.5859375"/>
 						</Texture>
@@ -307,9 +307,9 @@
 				<Scripts>
 					<OnClick function="CalendarPrevMonthButton_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="CalendarNextMonthButton">
@@ -322,9 +322,9 @@
 				<Scripts>
 					<OnClick function="CalendarNextMonthButton_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Frame name="CalendarFilterFrame">
@@ -336,7 +336,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size x="8" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT">
@@ -345,7 +345,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size x="8" y="16"/>
 							<Anchors>
 								<Anchor point="RIGHT">
@@ -354,7 +354,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
 							<Size x="10" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
@@ -382,7 +382,7 @@
 						<Scripts>
 							<OnClick function="CalendarFilterButton_OnClick"/>
 						</Scripts>
-						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+						<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size x="20" y="20"/>
 							<Anchors>
 								<Anchor point="RIGHT">
@@ -398,7 +398,7 @@
 								</Anchor>
 							</Anchors>
 						</PushedTexture>
-						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+						<DisabledTexture name="$parentDisabledTexture" urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
 							<Size x="20" y="20"/>
 							<Anchors>
 								<Anchor point="RIGHT">
@@ -1763,7 +1763,7 @@
 				<Size x="20" y="10"/>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentBackgroundMiddle" file="Interface\SpellBook\SpellBook-SkillLineTab">
+						<Texture name="$parentBackgroundMiddle" urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
 							<Size x="26" y="8"/>
 							<Anchors>
 								<Anchor point="LEFT">
@@ -1772,14 +1772,14 @@
 							</Anchors>
 							<TexCoords left="0.0" right="0.625" top="0.21875" bottom="0.640625"/>
 						</Texture>
-						<Texture name="$parentBackgroundTop" file="Interface\SpellBook\SpellBook-SkillLineTab">
+						<Texture name="$parentBackgroundTop" urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
 							<Size x="26" y="11"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativeTo="$parentBackgroundMiddle" relativePoint="TOP"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.625" top="0.0" bottom="0.21875"/>
 						</Texture>
-						<Texture name="$parentBackgroundBottom" file="Interface\SpellBook\SpellBook-SkillLineTab">
+						<Texture name="$parentBackgroundBottom" urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
 							<Size x="26" y="15"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="$parentBackgroundMiddle" relativePoint="BOTTOM"/>
