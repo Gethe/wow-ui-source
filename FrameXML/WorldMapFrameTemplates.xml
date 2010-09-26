@@ -238,6 +238,5 @@
 				WorldMapFrame.maelstromZoneText = nil;
 			</OnLeave>
 		</Scripts>
-		<HighlightTexture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" alpha="0.1"/>						
 	</Button>
 </Ui>

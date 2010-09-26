@@ -70,8 +70,7 @@ function CharacterFrame_OnLoad (self)
 end
 
 function CharacterFrame_UpdatePortrait()
-	local currentSpec = GetActiveTalentGroup(false, false);
-	local masteryIndex = GetMasteryIndex(currentSpec);
+	local masteryIndex = GetPrimaryTalentTree();
 	if (masteryIndex == nil) then
 		local _, class = UnitClass("player");
 		CharacterFramePortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");

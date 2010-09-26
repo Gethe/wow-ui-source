@@ -601,7 +601,7 @@
 				</Texture>
 				<FontString name="$parentTitle" parentKey="title"  inherits="GameFontHighlight" justifyH="CENTER" text="ARENA_2V2">
 					<Size>
-						<AbsDimension x="74" y="25"/>
+						<AbsDimension x="74" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentHeader" y="0"/>

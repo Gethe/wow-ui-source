@@ -116,10 +116,10 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentMarker" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="marker" alphaMode="ADD">
-					<Size x="10" y="20"/>
-					<TexCoords left="0.91015625" right="0.94921875" top="0.00781250" bottom="0.16406250"/>
+					<Size x="20" y="20"/>
+					<TexCoords left="1.0" right="0.914" top="0.82" bottom="1.0"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" y="2"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="glow" >

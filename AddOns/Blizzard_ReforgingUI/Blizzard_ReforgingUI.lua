@@ -21,15 +21,13 @@ end
 function ReforgingFrame_OnLoad(self)
 	self:RegisterEvent("FORGE_MASTER_SET_ITEM");
 	self:RegisterEvent("FORGE_MASTER_ITEM_CHANGED");
-	SetPortraitToTexture(ReforgingFramePortrait, "Interface\\Icons\\Ability_ThunderClap");
+	SetPortraitToTexture(ReforgingFramePortrait, "Interface\\Reforging\\Reforge-Portrait");
 	UIDropDownMenu_SetWidth(ReforgingFrameFilterOldStat, 135);
 	UIDropDownMenu_SetWidth(ReforgingFrameFilterNewStat, 135);
 	UIDropDownMenu_JustifyText(ReforgingFrameFilterOldStat, "LEFT");
 	UIDropDownMenu_JustifyText(ReforgingFrameFilterNewStat, "LEFT");
 	ReforgingFrameInset:SetPoint("BOTTOMRIGHT", ReforgingFrameBottomInset, "TOPRIGHT", 0, 4);
 	
-	--ReforgingFrameItemButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	--ReforgingFrameItemButton:RegisterForDrag("LeftButton");
 	ReforgingFrameTitleText:SetText(REFORGE);	
 	
 	UIDropDownMenu_Initialize(ReforgingFrameFilterOldStat, ReforgeFrame_FilterOldStat_Initialize);

@@ -148,11 +148,11 @@ local TALENT_INFO = {
 		},
 		[2] = {
 			-- Holy
-			color = {r=0.8, g=0.8, b=1.0},
+			color = {r=0.6, g=0.6, b=1.0},
 		},
 		[3] = {
 			-- Shadow
-			color = {r=0.6, g=0.4, b=0.8},
+			color = {r=0.7, g=0.4, b=0.8},
 		}
 	},
 	

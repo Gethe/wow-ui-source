@@ -316,7 +316,7 @@ end
 
 function QuestFrame_OnShow()
 	PlaySound("igQuestListOpen");
-	if (TutorialFrame.id == 1 or TutorialFrame.id == 57 or TutorialFrame.id == 57) then
+	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
 		TutorialFrame_Hide();
 	end
 end
@@ -341,10 +341,7 @@ function QuestFrame_OnHide()
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
 			TriggerTutorial(2);
-			if (not CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond) then
-				TriggerTutorial(10);
-			end
-		elseif (CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond and  not IsTutorialFlagged(10)) then
+		elseif (not IsTutorialFlagged(10) and (TUTORIAL_QUEST_ACCEPTED == TUTORIAL_QUEST_TO_WATCH)) then
 			TriggerTutorial(10);
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil

@@ -215,13 +215,12 @@ function SpellBookFrame_Update()
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
 		local tab = _G["SpellBookFrameTabButton"..i];
-		if (tab.bookType == SpellBookFrame.bookType and SpellBookFrame.currentTab ~= tab and tab:IsShown()) then
-			if SpellBookFrame.currentTab then
-				SpellBookFrame.currentTab:Enable();
-			end
-			tab:Disable();
+		PanelTemplates_TabResize(tab, 0);
+		if ( tab.bookType == SpellBookFrame.bookType ) then
+			PanelTemplates_SelectTab(tab);
 			SpellBookFrame.currentTab = tab;
-			break;
+		else
+			PanelTemplates_DeselectTab(tab);
 		end
 	end
 	

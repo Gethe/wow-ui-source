@@ -40,15 +40,27 @@ local MOUSE_SIZE = { x = 76, y = 101}
 local TUTORIALFRAME_QUEUE = { };
 
 local TUTORIAL_QUEST_ARRAY = {
-	["HUMAN"] = {questID = 7, displayNPC = 197, killCreature = 49871},
+	["HUMANHUNTER"] = {questID = 28767, displayNPC = 197, killCreature = 49871},
+	["HUMANMAGE"] = {questID = 28757, displayNPC = 197, killCreature = 49871},
+	["HUMANPALADIN"] = {questID = 28762, displayNPC = 197, killCreature = 49871},
+	["HUMANPRIEST"] = {questID = 28763, displayNPC = 197, killCreature = 49871},
+	["HUMANROGUE"] = {questID = 28764, displayNPC = 197, killCreature = 49871},
+	["HUMANWARLOCK"] = {questID = 28765, displayNPC = 197, killCreature = 49871},
+	["HUMANWARRIOR"] = {questID = 28766, displayNPC = 197, killCreature = 49871},
 	["DWARF"] = {questID = 24469, displayNPC = 37081, killCreature = 37070},
 	["NIGHTELF"] = {questID = 456, displayNPC = 2079, killCreature = 2031},
-	["GNOME"] = {questID = 27670, displayNPC = 15744, killCreature = 46363},
-	["ORC"] = {questID = 25126, displayNPC = 3143, killCreature = 3098, killQuestSecond = true},
-	["SCOURGE"] = {questID = 26799, displayNPC = 1569, killCreature = 1501},
-	["TAUREN"] = {questID = 14452, displayNPC = 9937, killCreature = 36943, killQuestSecond = true},
-
-	["TROLLWARRIOR"] = nil,
+	["GNOME"] = {questID = 27670, displayNPC = 45966, killCreature = 46363},
+	["ORC"] = {questID = 25126, displayNPC = 3143, killCreature = 3098, showReminder = true},
+	["SCOURGE"] = {questID = 26799, displayNPC = 1568, killCreature = 1501, showReminder = true},
+	["TAUREN"] = {questID = 14452, displayNPC = 9937, killCreature = 36943, showReminder = true},
+	["TROLLDRUID"] = {questID = 24765, displayNPC = 38243, killCreature = 38038, showReminder = true},
+	["TROLLHUNTER"] = {questID = 24777, displayNPC = 38247, killCreature = 38038, showReminder = true},
+	["TROLLMAGE"] = {questID = 24751, displayNPC = 38246, killCreature = 38038, showReminder = true},
+	["TROLLPRIEST"] = {questID = 24783, displayNPC = 38245, killCreature = 38038, showReminder = true},
+	["TROLLROGUE"] = {questID = 24771, displayNPC = 38244, killCreature = 38038, showReminder = true},
+	["TROLLSHAMAN"] = {questID = 24759, displayNPC = 38242, killCreature = 38038, showReminder = true},
+	["TROLLWARLOCK"] = {questID = 26273, displayNPC = 42618, killCreature = 38038, showReminder = true},
+	["TROLLWARRIOR"] = {questID = 24639, displayNPC = 38037, killCreature = 38038, showReminder = true},
 
 	["DRAENEI"] = nil,
 	["BLOODELF"] = nil,
@@ -147,6 +159,7 @@ local DISPLAY_DATA = {
 	},
 	
 	[10] = { --TUTORIAL_SECOND_QUEST
+		raceRequired = true;
  		tileHeight = 24, 
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
 		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
@@ -441,14 +454,14 @@ local DISPLAY_DATA = {
 	[52] = { --TUTORIAL_CRITTER
 		tileHeight = 11, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
+		callOut	= {parent = "SpellbookMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	
 	[53] = { --TUTORIAL_MOUNT
 		tileHeight = 13, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
+		callOut	= {parent = "SpellbookMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	
@@ -789,8 +802,11 @@ function TutorialFrame_Update(currentTutorial)
 		return;
 	end
 	
-	local displayNPC = CURRENT_TUTORIAL_QUEST_INFO.displayNPC;
-	local killCreature = CURRENT_TUTORIAL_QUEST_INFO.killCreature;
+	local displayNPC, killCreature;
+	if ( CURRENT_TUTORIAL_QUEST_INFO ) then
+		local displayNPC = CURRENT_TUTORIAL_QUEST_INFO.displayNPC;
+		local killCreature = CURRENT_TUTORIAL_QUEST_INFO.killCreature;
+	end
 	if (displayData.displayNPC and displayNPC) then
 		TutorialNPCModel:SetCreature(displayNPC);
 		TutorialNPCModel:Show();
@@ -959,6 +975,13 @@ function TutorialFrame_ClearTextures()
 		rightTexture:ClearAllPoints();
 		leftTexture:Hide();
 		rightTexture:Hide();
+	end
+
+	for i = 1, MAX_TUTORIAL_IMAGES do
+		local imageTexture = _G["TutorialFrameImage"..i];
+		imageTexture:ClearAllPoints();
+		imageTexture:SetTexture("");
+		imageTexture:Hide();
 	end
 
 	for i = 1, MAX_TUTORIAL_KEYS do

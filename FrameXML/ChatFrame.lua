@@ -30,8 +30,6 @@ hash_SlashCmdList = {}
 hash_EmoteTokenList = {}
 hash_ChatTypeInfoList = {}
 
-local IsGMClient = IsGMClient;
-
 ChatTypeInfo = { };
 ChatTypeInfo["SYSTEM"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["SAY"]										= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
@@ -1078,6 +1076,35 @@ SecureCmdList["CANCELFORM"] = function(msg)
 	end
 end
 
+-- Allow friendly names for glyph slots (needs to be local)
+local GLYPH_SLOTS = {
+    minor1 = GLYPH_ID_MINOR_1;
+    minor2 = GLYPH_ID_MINOR_2;
+    minor3 = GLYPH_ID_MINOR_3;
+
+    major1 = GLYPH_ID_MAJOR_1;
+    major2 = GLYPH_ID_MAJOR_2;
+    major3 = GLYPH_ID_MAJOR_3;
+
+    prime1 = GLYPH_ID_PRIME_1;
+    prime2 = GLYPH_ID_PRIME_2;
+    prime3 = GLYPH_ID_PRIME_3;
+};
+
+SecureCmdList["CASTGLYPH"] = function(msg)
+	local action = SecureCmdOptionParse(msg);
+	if ( action ) then
+		local glyph, slot = strmatch(action, "^(%S+)%s+(%S+)$");
+		slot = (slot and GLYPH_SLOTS[slot]) or tonumber(slot);
+		local glyphID = tonumber(glyph);
+		if ( glyphID and slot ) then
+			CastGlyphByID(glyphID, slot);
+		elseif ( glyph and slot ) then
+			CastGlyphByName(glyph, slot);
+		end
+	end
+end
+
 SecureCmdList["EQUIP"] = function(msg)
 	local item = SecureCmdOptionParse(msg);
 	if ( item ) then
@@ -1990,9 +2017,7 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	if ( IsGMClient() ) then
-		RunScript(msg);
-	end
+	RunScript(msg);
 end
 
 SlashCmdList["LOOT_FFA"] = function(msg)
@@ -2257,10 +2282,8 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	if ( IsGMClient() ) then
-		UIParentLoadAddOn("Blizzard_DebugTools");
-		DevTools_DumpCommand(msg);
-	end
+	UIParentLoadAddOn("Blizzard_DebugTools");
+	DevTools_DumpCommand(msg);
 end
 
 SlashCmdList["RELOAD"] = function(msg)
@@ -2674,26 +2697,31 @@ function RemoveExtraSpaces(str)
 	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
 end
 
+function ChatFrame_GetMobileEmbeddedTexture(r, g, b)
+	r, g, b = floor(r * 255), floor(g * 255), floor(b * 255);
+	return format("|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat:14:14:0:0:16:16:0:16:0:16:%d:%d:%d|t", r, g, b);
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13 = ...;
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = ...;
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 
 		local filter = false;
 		if ( chatFilters[event] ) then
-			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13;
+			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14, newarg15;
 			for _, filterFunc in next, chatFilters[event] do
-				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14, newarg15 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
 				if ( filter ) then
 					return true;
 				elseif ( newarg1 ) then
-					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13;
+					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14, newarg15;
 				end
 			end
 		end
 		
-		local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+		local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
 		
 		local channelLength = strlen(arg4);
 		local infoType = type;
@@ -2732,7 +2760,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		if ( chatGroup == "CHANNEL" or chatGroup == "BN_CONVERSATION" ) then
 			chatTarget = tostring(arg8);
 		elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
-			chatTarget = strupper(arg2);
+			if(not(strsub(arg2, 1, 2) == "|K")) then
+				chatTarget = strupper(arg2);
+			else
+				chatTarget = arg2;
+			end
 		end
 		
 		if ( FCFManager_ShouldSuppressMessage(self, chatGroup, chatTarget) ) then
@@ -2906,27 +2938,32 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				playerLink = "|HBNplayer:"..arg2..":"..arg13..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h";
 			end
 			
+			local message = arg1;
+			if ( arg15 ) then	--isMobile
+				message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
+			end
+			
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..playerLink.."["..coloredName.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink.."["..coloredName.."]".."|h");
 				else
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..arg2);
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
 				end
 			else
 				if ( not showLink or strlen(arg2) == 0 ) then
 					if ( type == "TEXT_EMOTE" ) then
-						body = arg1;
+						body = message;
 					else
-						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
 					end
 				else
 					if ( type == "EMOTE" ) then
-						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..playerLink..coloredName.."|h");
+						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink..coloredName.."|h");
 					elseif ( type == "TEXT_EMOTE") then
-						body = string.gsub(arg1, arg2, pflag..playerLink..coloredName.."|h", 1);
+						body = string.gsub(message, arg2, pflag..playerLink..coloredName.."|h", 1);
 					else
-						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..playerLink.."["..coloredName.."]".."|h");
+						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink.."["..coloredName.."]".."|h");
 					end
 				end
 			end
@@ -4138,26 +4175,38 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	local target = strmatch(msg, "%s*(.*)");
 	
 	--If we haven't even finished one word, we aren't done.
-	if ( not target or not strfind(target, "%s") or (strsub(target, 1, 1) == "|") ) then
+	if ( not target or not strfind(target, "%s") ) then
 		return false;
 	end
 	
+	if((strsub(target, 1, 1) == "|") and not(strsub(target, 1, 2) == "|K")) then
+		return false;
+	end
+
 	if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) ) then
 		--Even if there's a space, we still want to let the person keep typing -- they may be trying to type whatever is in AutoComplete.
 		return false;
 	end
 	
-	--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
-	while ( strfind(target, "%s") ) do
-		--Pull off everything after the last space.
-		target = strmatch(target, "(.+)%s+[^%s]*");
-		if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true)  ) then
-			break;
+	if(strsub(target, 1, 2) == "|K") then
+		target, msg = BNTokenCombineGivenAndSurname(target);
+	else
+		local results = {};
+		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
+		while ( strfind(target, "%s") ) do
+			--Pull off everything after the last space.
+			target = strmatch(target, "(.+)%s+[^%s]*");
+			results = {GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true)};
+			if(#results > 0) then
+				break;
+			end
+		end
+		msg = strsub(msg, strlen(target) + 2);
+		if(#results == 1) then
+			target = results[1];
 		end
 	end
-
-	msg = strsub(msg, strlen(target) + 2);
-
+	
 	editBox:SetAttribute("tellTarget", target);
 	--BN_WHISPER FIXME
 	editBox:SetAttribute("chatType", "WHISPER");

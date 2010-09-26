@@ -338,7 +338,11 @@ function GuildNewsFiltersFrame_OnShow(self)
 		-- skip 8th flag - guild creation
 		local checkbox = _G["GuildNewsFilterButton"..i];
 		if ( checkbox ) then
-			checkbox:SetChecked(true);
+			if ( filters[i] ) then
+				checkbox:SetChecked(true);
+			else
+				checkbox:SetChecked(false);
+			end
 		end
 	end
 end

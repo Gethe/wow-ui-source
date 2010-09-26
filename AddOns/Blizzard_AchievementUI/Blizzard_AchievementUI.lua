@@ -3148,11 +3148,10 @@ function AchievementShield_OnEnter(self)
 	if ( func ) then
 		func(parent);
 	end
-	if ( parent.completed ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		AchievementFrameAchievements_CheckGuildMembersTooltip(self);
-		GameTooltip:Show();
-	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	AchievementFrameAchievements_CheckGuildMembersTooltip(self);
+	GameTooltip:Show();
 end
 
 function AchievementShield_OnLeave(self)
@@ -3169,9 +3168,9 @@ end
 function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)
 	if ( IN_GUILD_VIEW ) then
 		local achievementId = requestFrame.id;
-		local _, achievementName, points, completed, month, day, year, description, flags, iconpath = GetAchievementInfo(achievementId);
-		-- check if achievement has names
-		if ( bit.band(flags, ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS) == ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS ) then
+		local _, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(achievementId);
+		-- check if achievement has names, only if completed
+		if ( achievementCompleted and bit.band(flags, ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS) == ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS ) then
 			local numMembers = GetGuildAchievementNumMembers(achievementId);
 			if ( numMembers == 0 ) then
 				-- we may not have the members from the server yet
@@ -3205,7 +3204,11 @@ function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)
 				local criteriaString, _, completed, _, _, charName = GetAchievementCriteriaInfo(achievementId, i);
 				if ( completed and charName ) then
 					if ( firstName ) then
-						GameTooltip:AddLine(GUILD_ACHIEVEMENT_EARNED_BY, 1, 1, 1);
+						if ( achievementCompleted ) then
+							GameTooltip:AddLine(GUILD_ACHIEVEMENT_EARNED_BY, 1, 1, 1);
+						else
+							GameTooltip:AddLine(INCOMPLETE, 1, 1, 1);
+						end
 						firstName = false;
 					end
 					GameTooltip:AddDoubleLine(criteriaString, charName, 0, 1, 0);

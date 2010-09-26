@@ -55,7 +55,6 @@ function ClassTrainerFrame_Hide()
 end
 
 function ClassTrainerFrame_OnLoad(self)
-	SetPortraitTexture(ClassTrainerFramePortrait, "npc");
 	self:RegisterEvent("TRAINER_UPDATE");
 	self:RegisterEvent("TRAINER_DESCRIPTION_UPDATE");
 	MoneyFrame_SetMaxDisplayWidth(ClassTrainerFrameMoneyFrame, 152);
@@ -70,9 +69,10 @@ end
 
 
 function ClassTrainerFrame_OnShow(self)
+	SetPortraitTexture(ClassTrainerFramePortrait, "npc");
+	ClassTrainerFrameTitleText:SetText(UnitName("npc"));
 	PlaySound("igCharacterInfoOpen");
 	ClassTrainerTrainButton:Disable();
-	CloseGossip();
 
 	ClassTrainerFrame.selectedService = nil;
 	--Reset scrollbar
@@ -94,8 +94,6 @@ end
 
 
 function ClassTrainerFrame_Update()
-	ClassTrainerFrameTitleText:SetText(UnitName("npc"));
-	--ClassTrainerGreetingText:SetText(GetTrainerGreetingText());
 	local numTrainerServices = GetNumTrainerServices();
 	local selected = GetTrainerSelectionIndex();
 	local playerMoney = GetMoney();

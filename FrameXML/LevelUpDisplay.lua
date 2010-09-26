@@ -6,12 +6,9 @@ LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
 	[10] = {"TalentsUnlocked", "BGsUnlocked"},
 	[15] = {"LFDUnlocked",},
-	[20] = {"Riding75"},
 	[25] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
-	[40] = {"Riding150", "DuelSpec"},
+	[40] = {"DuelSpec"},
 	[50] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
-	[60] = {"Riding225"},
-	[70] = {"Riding300"},
 	[75] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
 }
 
@@ -98,45 +95,6 @@ LEVEL_UP_TYPES = {
 									},
 
 
-	["Riding75"] 				= {	icon="Interface\\Icons\\Spell_Nature_Swiftness",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GetSpellInfo(33388),
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2.." "..GetSpellLink(33388)
-									},
-
-
-	["Riding150"] 				= {	icon="Interface\\Icons\\Spell_Nature_Swiftness",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GetSpellInfo(33391),
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2.." "..GetSpellLink(33391)
-									},
-
-
-	["Riding225"] 				= {	icon="Interface\\Icons\\Ability_Rogue_Sprint",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GetSpellInfo(34090),
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2.." "..GetSpellLink(34090)
-									},
-
-
-	["Riding300"] 				= {	icon="Interface\\Icons\\Ability_Rogue_Sprint",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GetSpellInfo(34091),
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2.." "..GetSpellLink(34091)
-									},
-
-
-	["Riding375"] 				= {	icon="Interface\\Icons\\Spell_Frost_SummonWaterElemental",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GetSpellInfo(33391),
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2.." "..GetSpellLink(33388)
-									},
-
 	["DuelSpec"] 			= {	icon="Interface\\Icons\\INV_Misc_Coin_01",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=LEVEL_UP_DUALSPEC,
@@ -158,12 +116,17 @@ LEVEL_UP_TYPES = {
 									
  	["LockMount1"] 			= {	spellID=5784	},
  	["LockMount2"] 			= {	spellID=23161	},
- 	["PaliMount1"] 			= {	spellID=34768	},
+ 	["PaliMount1"] 			= {	spellID=34769	},
  	["PaliMount2"] 			= {	spellID=34767	},
  	["PaliMountTauren1"] 			= {	spellID=69820	},
  	["PaliMountTauren2"] 			= {	spellID=69826	},
  	["PaliMountDraenei1"] 			= {	spellID=73629	},
  	["PaliMountDraenei2"] 			= {	spellID=73630	},
+ 	
+	
+	
+	["Plate"] 			= {	spellID=750, feature=true},
+	["Mail"] 			= {	spellID=8737, feature=true	},
  
 
  ------ END HACKS
@@ -185,23 +148,40 @@ LEVEL_UP_CLASS_HACKS = {
 								[20] = {"LockMount1"},
 								[40] = {"LockMount2"},
 							},
+
+	["SHAMAN"] 		= {
+							--  Level  = {unlock}
+								[40] = {"Mail"},
+							},
+
+
+	["HUNTER"] 		= {
+							--  Level  = {unlock}
+								[40] = {"Mail"},
+							},
+
+
+	["WARRIOR"] 		= {
+							--  Level  = {unlock}
+								[40] = {"Plate"},
+							},
 							
 	["PALADIN"] 		= {
 							--  Level  = {unlock}
 								[20] = {"PaliMount1"},
-								[40] = {"PaliMount2"},
+								[40] = {"PaliMount2", "Plate"},
 							},
 							
 	["PALADINTauren"] 		= {
 							--  Level  = {unlock}
 								[20] = {"PaliMountTauren1"},
-								[40] = {"PaliMountTauren2"},
+								[40] = {"PaliMountTauren2", "Plate"},
 							},
 							
 	["PALADINDraenei"] 		= {
 							--  Level  = {unlock}
 								[20] = {"PaliMountDraenei1"},
-								[40] = {"PaliMountDraenei2"},
+								[40] = {"PaliMountDraenei2", "Plate"},
 							},
 }
 
@@ -247,23 +227,6 @@ function LevelUpDisplay_BuildCharacterList(self)
 	end
 	
 	
-	-- This loop is LEVEL_UP_CLASS_HACKS
-	local race, file = UnitRace("player");
-	local _, class = UnitClass("player");
-	local hackTable = LEVEL_UP_CLASS_HACKS[class..race] or LEVEL_UP_CLASS_HACKS[class];
-	if  hackTable and hackTable[self.level] then
-		hackTable = hackTable[self.level];
-		for _,spelltype in pairs(hackTable) do
-			if LEVEL_UP_TYPES[spelltype] and LEVEL_UP_TYPES[spelltype].spellID then 
-				name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
-				self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
-																		link=LEVEL_UP_ABILITY2.." "..GetSpellLink(LEVEL_UP_TYPES[spelltype].spellID)
-																	};
-			end
-		end	
-	end
-	
-	
 	local spells = {GetCurrentLevelSpells(self.level)};
 	for _,spell in pairs(spells) do		
 		name, _, icon = GetSpellInfo(spell);
@@ -271,6 +234,40 @@ function LevelUpDisplay_BuildCharacterList(self)
 																link=LEVEL_UP_ABILITY2.." "..GetSpellLink(spell)
 															};
 	end	
+	
+	
+		-- This loop is LEVEL_UP_CLASS_HACKS
+	local race, file = UnitRace("player");
+	local _, class = UnitClass("player");
+	local hackTable = LEVEL_UP_CLASS_HACKS[class..race] or LEVEL_UP_CLASS_HACKS[class];
+	if  hackTable and hackTable[self.level] then
+		hackTable = hackTable[self.level];
+		for _,spelltype in pairs(hackTable) do
+			if LEVEL_UP_TYPES[spelltype] and LEVEL_UP_TYPES[spelltype].spellID then 
+				if LEVEL_UP_TYPES[spelltype].feature then
+					name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
+					self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_FEATURE, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																			link=LEVEL_UP_FEATURE2.." "..GetSpellLink(LEVEL_UP_TYPES[spelltype].spellID)
+																		};
+				else
+					name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
+					self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
+																			link=LEVEL_UP_ABILITY2.." "..GetSpellLink(LEVEL_UP_TYPES[spelltype].spellID)
+																		};
+				end
+			end
+		end	
+	end
+	
+	
+	local features = {GetCurrentLevelFeatures(self.level)};
+	for _,feature in pairs(features) do		
+		name, _, icon = GetSpellInfo(feature);
+		self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_FEATURE, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																link=LEVEL_UP_FEATURE2.." "..GetSpellLink(feature)
+															};
+	end	
+	
 	
 	
 	if LEVEL_UP_EVENTS[self.level] then

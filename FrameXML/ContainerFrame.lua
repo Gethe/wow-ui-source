@@ -756,24 +756,23 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 		return;
 	end
 	if ( TradeSkillFrame and TradeSkillFrame:IsShown() and IsModifiedClick("TRADESEARCHADD") )  then
-			local name = GetItemInfo( GetContainerItemID( self:GetParent():GetID(), self:GetID()) );
-			TradeSkillFrameSearchBox:SetFontObject("ChatFontSmall");
-			TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
-			TradeSkillFrameSearchBox:SetText(name);
-			return;
+		local name = GetItemInfo( GetContainerItemID( self:GetParent():GetID(), self:GetID()) );
+		TradeSkillFrameSearchBox:SetFontObject("ChatFontSmall");
+		TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
+		TradeSkillFrameSearchBox:SetText(name);
+		return;
 	end
 	if ( IsModifiedClick("SOCKETITEM") ) then
 		SocketContainerItem(self:GetParent():GetID(), self:GetID());
 	end
 	if ( IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
-		if ( not locked and itemCount > 1) then
+		if ( not locked and itemCount and itemCount > 1) then
 			self.SplitStack = function(button, split)
 				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 			end
 			OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");
 		end
-		return;
 	end
 end
 

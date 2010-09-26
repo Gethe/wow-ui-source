@@ -14,6 +14,8 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
+	self:RegisterEvent("UNIT_POWER_BAR_SHOW");
+	self:RegisterEvent("UNIT_POWER_BAR_HIDE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -29,6 +31,8 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_FINISHED");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
+	self:RegisterEvent("PARTY_MEMBER_DISABLE");
+	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
@@ -53,6 +57,10 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateRoleIcon(self);
 	elseif ( event == "READY_CHECK" or event == "READY_CHECK_FINISHED" ) then
 		CompactUnitFrame_UpdateReadyCheck(self);
+	elseif ( event == "PARTY_MEMBER_DISABLE" or event == "PARTY_MEMBER_ENABLE" ) then	--Alternate power info may now be available.
+		CompactUnitFrame_UpdateMaxPower(self);
+		CompactUnitFrame_UpdatePower(self);
+		CompactUnitFrame_UpdatePowerColor(self);
 	elseif ( arg1 == self.unit or arg1 == self.displayedUnit ) then
 		if ( event == "UNIT_MAXHEALTH" ) then
 			CompactUnitFrame_UpdateMaxHealth(self);
@@ -67,7 +75,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdatePower(self);
 		elseif ( event == "UNIT_POWER" ) then
 			CompactUnitFrame_UpdatePower(self);
-		elseif ( event == "UNIT_DISPLAYPOWER" ) then
+		elseif ( event == "UNIT_DISPLAYPOWER" or event == "UNIT_POWER_BAR_SHOW" or event == "UNIT_POWER_BAR_HIDE" ) then
 			CompactUnitFrame_UpdateMaxPower(self);
 			CompactUnitFrame_UpdatePower(self);
 			CompactUnitFrame_UpdatePowerColor(self);
@@ -277,12 +285,21 @@ function CompactUnitFrame_UpdateHealth(frame)
 	frame.healthBar:SetValue(UnitHealth(frame.displayedUnit));
 end
 
-function CompactUnitFrame_UpdateMaxPower(frame)
-	frame.powerBar:SetMinMaxValues(0, UnitPowerMax(frame.displayedUnit));
+local function CompactUnitFrame_GetDisplayedPowerID(frame)
+	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(frame.displayedUnit);
+	if ( showOnRaid and (UnitInParty(frame.unit) or UnitInRaid(frame.unit)) ) then
+		return ALTERNATE_POWER_INDEX;
+	else
+		return (UnitPowerType(frame.displayedUnit));
+	end
+end
+
+function CompactUnitFrame_UpdateMaxPower(frame)	
+	frame.powerBar:SetMinMaxValues(0, UnitPowerMax(frame.displayedUnit, CompactUnitFrame_GetDisplayedPowerID(frame)));
 end
 
 function CompactUnitFrame_UpdatePower(frame)
-	frame.powerBar:SetValue(UnitPower(frame.displayedUnit));
+	frame.powerBar:SetValue(UnitPower(frame.displayedUnit, CompactUnitFrame_GetDisplayedPowerID(frame)));
 end
 
 function CompactUnitFrame_UpdatePowerColor(frame)
@@ -292,18 +309,23 @@ function CompactUnitFrame_UpdatePowerColor(frame)
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		--Set it to the proper power type color.
-		local powerType, powerToken, altR, altG, altB = UnitPowerType(frame.displayedUnit);
-		local prefix = _G[powerToken];
-		local info = PowerBarColor[powerToken];
-		if ( info ) then
-				r, g, b = info.r, info.g, info.b;
+		local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(frame.unit);
+		if ( showOnRaid ) then
+			r, g, b = 0.7, 0.7, 0.6;
 		else
-			if ( not altR) then
-				-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
-				info = PowerBarColor[powerType] or PowerBarColor["MANA"];
-				r, g, b = info.r, info.g, info.b;
+			local powerType, powerToken, altR, altG, altB = UnitPowerType(frame.displayedUnit);
+			local prefix = _G[powerToken];
+			local info = PowerBarColor[powerToken];
+			if ( info ) then
+					r, g, b = info.r, info.g, info.b;
 			else
-				r, g, b = altR, altG, altB;
+				if ( not altR) then
+					-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
+					info = PowerBarColor[powerType] or PowerBarColor["MANA"];
+					r, g, b = info.r, info.g, info.b;
+				else
+					r, g, b = altR, altG, altB;
+				end
 			end
 		end
 	end

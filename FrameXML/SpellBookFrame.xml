@@ -144,11 +144,7 @@
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
-	<Button name="SpellBookFrameTabButtonTemplate" virtual="true" hidden="true">
-		<Size x="125" y="64"/>
-		<HitRectInsets>
-			<AbsInset left="15" right="17" top="13" bottom="15"/>
-		</HitRectInsets>
+	<Button name="SpellBookFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true" hidden="true">
 		<Scripts>
 			<OnClick>
 				SpellBookFrameTabButton_OnClick(self, button, down);
@@ -167,21 +163,6 @@
 				self:GetFontString():SetPoint("CENTER", 0, 5);
 			</OnDisable>
 		</Scripts>
-		<ButtonText>
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="3"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GameFontNormalSmall"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontHighlightSmall"/>
-		<NormalTexture file="Interface\SpellBook\UI-SpellBook-Tab-Unselected"/>
-        <HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight" alphaMode="ADD"/>
-		<DisabledTexture urgency="5" file="Interface\SpellBook\UI-SpellBook-Tab1-Selected"/>
     </Button>
 	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
 		<Size>
@@ -832,7 +813,7 @@
                 <Anchors>
                     <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
                         <Offset>
-                            <AbsDimension x="0" y="18"/>
+                            <AbsDimension x="0" y="1"/>
                         </Offset>
                     </Anchor>
                 </Anchors>

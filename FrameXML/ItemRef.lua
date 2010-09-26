@@ -75,6 +75,9 @@ function SetItemRef(link, text, button, chatFrame)
 		local name, presenceID, lineid, chatType, chatTarget = strsplit(":", namelink);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
+				--[[
+				disable SHIFT-CLICK for battlenet friends, so we don't put an encoded presence id in chat
+
 				local staticPopup;
 				staticPopup = StaticPopup_Visible("ADD_IGNORE");
 				if ( staticPopup ) then
@@ -122,7 +125,7 @@ function SetItemRef(link, text, button, chatFrame)
 				elseif ( HelpFrameOpenTicketEditBox:IsVisible() ) then
 					HelpFrameOpenTicketEditBox:Insert(name);				
 				end
-				
+				]]
 			elseif ( button == "RightButton" ) then
 				if ( not BNIsSelf(presenceID) ) then
 					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetPresenceID(name));
@@ -221,7 +224,6 @@ function GetFixedLink(text)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff8000%1|r", 1));
 		end
 	end
-	
 	--Nothing to change.
 	return text;
 end

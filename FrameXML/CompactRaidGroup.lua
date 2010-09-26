@@ -1,4 +1,6 @@
 function CompactRaidGroup_OnLoad(self)
+	self.title:Disable();
+	
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
 end

@@ -94,7 +94,7 @@
 			</OnClick>
 			<OnDisable>
 				SetDesaturation(self:GetNormalTexture(), true);
-				self:GetNormalTexture():SetAlpha(0.4);
+				self:GetNormalTexture():SetAlpha(0.6);
 				self.raceName:SetText("");
 			</OnDisable>
 			<OnEnable>
@@ -685,10 +685,10 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentIconBG" file="Interface\Archeology\ArchaeologyParts">
-							<Size x="370" y="79"/>
+							<Size x="368" y="79"/>
 							<TexCoords left="0.00195313" right="0.72460938" top="0.00390625" bottom="0.31250000"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentIcon" x="-11" y="1"/>
+								<Anchor point="LEFT" relativeTo="$parentIcon" x="-10" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>

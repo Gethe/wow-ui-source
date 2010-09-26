@@ -410,7 +410,7 @@
 					self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
 					status = GetFileStreamingStatus();
 					if(status==0) then
-						status = GetBackgroundLoadingStatus() and 1 or 0;
+						status = (GetBackgroundLoadingStatus()~=0) and 1 or 0;
 					end
 					if(status == 0) then
 						MainMenuBarDownload:Hide();
@@ -535,7 +535,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="TalentMicroButtonAlert" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG">
+	<Frame name="TalentMicroButtonAlert" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2">
 		<Size x="220" y="100"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="TalentMicroButton" relativePoint="TOP" x="0" y="-8"/>

@@ -105,7 +105,7 @@ function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunction )
     if ( type(configCode) == "string" ) then
         local selfHandle = GetFrameHandle(newChild);
         if ( selfHandle ) then
-            CallRestrictedClosure("self", GetManagedEnvironment(header),
+            CallRestrictedClosure("self", GetManagedEnvironment(header, true),
                                   selfHandle, configCode, selfHandle);
         end
     end
@@ -201,7 +201,8 @@ local function configureChildren(self, unitTable)
         if ( type(configCode) == "string" ) then
             local selfHandle = GetFrameHandle(unitButton);
             if ( selfHandle ) then
-                CallRestrictedClosure("self", GetManagedEnvironment(unitButton),
+                CallRestrictedClosure("self",
+                                      GetManagedEnvironment(unitButton, true),
                                       selfHandle, configCode, selfHandle);
             end
         end

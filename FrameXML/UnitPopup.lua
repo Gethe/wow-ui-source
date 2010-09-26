@@ -517,6 +517,8 @@ function UnitPopup_HideButtons ()
 				if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
+			elseif ( dropdownMenu == FriendsDropDown and dropdownMenu.isMobile ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			else
 				if ( dropdownMenu.name == UnitName("party1") or
 					 dropdownMenu.name == UnitName("party2") or
@@ -525,6 +527,11 @@ function UnitPopup_HideButtons ()
 					 dropdownMenu.name == UnitName("player")) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
+			end
+		elseif ( value == "BN_INVITE" ) then
+			local presenceID, givenName, surname, toonName = BNGetFriendInfoByID(dropdownMenu.presenceID);
+			if ( CanCooperateWithToon(dropdownMenu.presenceID) and (UnitInParty(toonName) or UnitInRaid(toonName)) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FOLLOW" ) then
 			if ( canCoop == 0 ) then
@@ -607,6 +614,8 @@ function UnitPopup_HideButtons ()
 			if ( InCombatLockdown() or not issecure() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			elseif ( dropdownMenu.isMobile ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PROMOTE" ) then
@@ -1265,9 +1274,11 @@ function UnitPopup_OnClick (self)
 		PlaySound("igCharacterInfoClose");
 	elseif ( button == "BN_REMOVE_FRIEND" ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(dropdownFrame.presenceID);
-		local dialog = StaticPopup_Show("CONFIRM_REMOVE_FRIEND", string.format(BATTLENET_NAME_FORMAT, givenName, surname));
-		if ( dialog ) then
-			dialog.data = presenceID;
+		if ( presenceID ) then
+			local dialog = StaticPopup_Show("CONFIRM_REMOVE_FRIEND", string.format(BATTLENET_NAME_FORMAT, givenName, surname));
+			if ( dialog ) then
+				dialog.data = presenceID;
+			end
 		end
 	elseif ( button == "BN_SET_NOTE" ) then
 		FriendsFrame.NotesID = dropdownFrame.presenceID;

@@ -25,6 +25,7 @@
 					</OnDragStop>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontNormalSmall"/>
 			</Button>
 			<Button name="$parentMember1" inherits="CompactUnitFrameTemplate">
 				<Anchors>

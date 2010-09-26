@@ -77,7 +77,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	end
 	
 	-- need to do some polling for a few tutorials
-	if ( not IsTutorialFlagged(4) and TUTORIAL_QUEST_TO_WATCH ) then
+	if ( not IsTutorialFlagged(4) and IsTutorialFlagged(10) and not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH ) then
 		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;
 		local questIndex = GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH);
 		if ( (questIndex > 0) and (TUTORIAL_TIMER_CLOSE_TO_QUEST > 2)) then
@@ -88,7 +88,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 			end
 		end
 	end
-	if ( not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() and not QuestFrame:IsShown() ) then
+	if ( CURRENT_TUTORIAL_QUEST_INFO and CURRENT_TUTORIAL_QUEST_INFO.showReminder and not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() and not QuestFrame:IsShown() ) then
 		TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = TUTORIAL_TIMER_FIRST_QUEST_COMPLETE - elapsed;
 		if (TUTORIAL_TIMER_FIRST_QUEST_COMPLETE < 0) then
 			TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 30;

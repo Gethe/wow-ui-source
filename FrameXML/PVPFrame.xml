@@ -540,7 +540,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentWarGameButton" inherits="MagicButtonTemplate" text="WARGAME" motionScriptsWhileDisabled="true">
+					<Button name="$parentWarGameButton" inherits="MagicButtonTemplate" text="WARGAME" motionScriptsWhileDisabled="true" hidden="true">
 						<Size x="130" y="22"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="PVPFrameRightButton" relativePoint="TOPLEFT"/>

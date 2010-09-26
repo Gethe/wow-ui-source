@@ -46,7 +46,9 @@ local HANDLE = {};
 ---------------------------------------------------------------------------
 -- Action implementation support function
 --
--- GetHandleFrame -- Get the frame for a handle
+-- GetUnprotectedHandleFrame -- Get the frame for a handle (always)
+-- GetHandleFrame -- Get the frame for a handle that could accept a protected
+--                   action (i.e. is protected, or we're not in combat)
 
 local function GetUnprotectedHandleFrame(handle)
     local frame = GetFrameHandleFrame(handle);
@@ -95,6 +97,10 @@ function HANDLE:IsMouseEnabled()
     return GetHandleFrame(self):IsMouseEnabled();
 end
 
+function HANDLE:IsKeyboardEnabled()
+    return GetHandleFrame(self):IsKeyboardEnabled();
+end
+
 function HANDLE:GetObjectType()
     return GetUnprotectedHandleFrame(self):GetObjectType()
 end
@@ -106,7 +112,6 @@ end
 function HANDLE:IsProtected()
     return GetUnprotectedHandleFrame(self):IsProtected();
 end
-
 
 
 function HANDLE:GetAttribute(name)
@@ -535,6 +540,10 @@ end
 
 function HANDLE:EnableMouse(isEnabled)
     GetHandleFrame(self):EnableMouse((isEnabled and true) or false);
+end
+
+function HANDLE:EnableKeyboard(isEnabled)
+    GetHandleFrame(self):EnableKeyboard((isEnabled and true) or false);
 end
 
 function HANDLE:RegisterAutoHide(duration)

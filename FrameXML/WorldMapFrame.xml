@@ -843,13 +843,10 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString name="WorldMapFrameAreaLabel" inherits="WorldMapTextFont" text="BLAH!">
+								<FontString name="WorldMapFrameAreaLabel" inherits="WorldMapTextFont" text="BLAH!" justifyV="TOP">
+									<Size x="900" y="100"/>
 									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="20" y="-20"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" x="0" y="-20"/>
 									</Anchors>
 								</FontString>
 								<FontString name="WorldMapFrameAreaDescription" inherits="SubZoneTextFont">
@@ -918,17 +915,45 @@
 							</Anchors>
 						</HighlightTexture>
 					</Button>
-					<Button name="DeepholmButton" inherits="WorldMapMaelstromButtonTemplate" text="Deepholm">
+					<Button name="TheMaelstromButton" inherits="WorldMapMaelstromButtonTemplate" text="TheMaelstrom">
 						<Size>
-							<AbsDimension x="600" y="280"/>
+							<AbsDimension x="120" y="120"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="230" y="-60"/>
+									<AbsDimension x="305" y="-140"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\TheMaelstrom\TheMaelstromHighlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="128" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-2"/>
+							</Anchors>
+						</HighlightTexture>
+					</Button>
+					<Button name="DeepholmButton" inherits="WorldMapMaelstromButtonTemplate" text="Deepholm">
+						<Size>
+							<AbsDimension x="120" y="120"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="450" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Deepholm\DeepholmHighlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="160" y="160"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="-20"/>
+							</Anchors>
+						</HighlightTexture>	
 					</Button>
 					<Button name="KezanButton" inherits="WorldMapMaelstromButtonTemplate" text="Kezan">
 						<Size>
@@ -941,6 +966,14 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Kezan\KezanHighlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="360" y="360"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" x="-5" y="-65"/>
+							</Anchors>
+						</HighlightTexture>
 					</Button>
 					<Button name="LostIslesButton" inherits="WorldMapMaelstromButtonTemplate" text="TheLostIsles">
 						<Size>
@@ -953,6 +986,14 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\TheLostIsles\TheLostIslesHighlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="250" y="250"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="-40"/>
+							</Anchors>
+						</HighlightTexture>
 					</Button>
 				</Frames>
 <!-- This animation blanks the wall display in Wintergrasp. Remove for now, revisit later.

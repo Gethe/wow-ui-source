@@ -29,7 +29,7 @@ function TotemFrame_Update()
 	elseif ( class == "DRUID" ) then
 		local form  = GetShapeshiftFormID();
 		if ( form == MOONKIN_FORM or not form ) then
-			if ( GetMasteryIndex(GetActiveTalentGroup(false, false)) == 1 ) then
+			if ( GetPrimaryTalentTree() == 1 ) then
 				TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 115, -88);
 			else
 				TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);

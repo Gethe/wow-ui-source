@@ -869,7 +869,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentGammaSlider" inherits="VideoOptionsSliderTemplate" minValue="0" maxValue="1" defaultValue="1" valueStep=".1">
+			<Slider name="$parentGammaSlider" inherits="VideoOptionsSliderTemplate" minValue="-0.5" maxValue="0.5" defaultValue="0" valueStep=".1">
 				<Size x="10" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSBKSlider" relativePoint="BOTTOMLEFT">

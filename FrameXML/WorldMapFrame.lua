@@ -10,7 +10,7 @@ WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
 WORLDMAP_MAELSTROM_ID = 5;
-MAELSTROM_ZONES_ID = { TheMaelstrom = 0, Deepholm = 1, Kezan = 2, TheLostIsles = 3 };
+MAELSTROM_ZONES_ID = { TheMaelstrom = 4, Deepholm = 1, Kezan = 2, TheLostIsles = 3 };
 WORLDMAP_WINTERGRASP_ID = 501;
 WORLDMAP_WINTERGRASP_POI_AREAID = 4197;
 QUESTFRAME_MINHEIGHT = 34;
@@ -261,18 +261,16 @@ function WorldMapFrame_Update()
 			mapFileName = "Cosmic";
 			OutlandButton:Show();
 			AzerothButton:Show();
-			DeepholmButton:Hide();
-			KezanButton:Hide();
-			LostIslesButton:Hide();
 		else
 			-- Temporary Hack (Temporary meaning 6 yrs, haha)
 			mapFileName = "World";
 			OutlandButton:Hide();
 			AzerothButton:Hide();
-			DeepholmButton:Hide();
-			KezanButton:Hide();
-			LostIslesButton:Hide();
 		end
+		DeepholmButton:Hide();
+		KezanButton:Hide();
+		LostIslesButton:Hide();
+		TheMaelstromButton:Hide();
 	else
 		OutlandButton:Hide();
 		AzerothButton:Hide();
@@ -280,10 +278,12 @@ function WorldMapFrame_Update()
 			DeepholmButton:Show();
 			KezanButton:Show();
 			LostIslesButton:Show();
+			TheMaelstromButton:Show();
 		else
 			DeepholmButton:Hide();
 			KezanButton:Hide();
 			LostIslesButton:Hide();
+			TheMaelstromButton:Hide();
 		end
 	end
 
@@ -371,7 +371,7 @@ function WorldMapFrame_Update()
 	-- Setup the overlays
 	local textureCount = 0;
 	for i=1, GetNumMapOverlays() do
-		local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
+		local textureName, textureWidth, textureHeight, offsetX, offsetY = GetMapOverlayInfo(i);
 		if ( textureName and textureName ~= "" ) then
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);

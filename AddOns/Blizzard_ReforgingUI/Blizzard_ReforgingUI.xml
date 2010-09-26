@@ -182,7 +182,7 @@
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString name="$parentName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="name">
-									<Size x="250" y="12"/>
+									<Size x="240" y="12"/>
 									<Anchors>
 										<Anchor point="LEFT"  relativePoint="RIGHT" x="14" y="10"/>
 									</Anchors>

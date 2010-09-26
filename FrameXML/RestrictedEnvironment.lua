@@ -88,7 +88,7 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
 local OTHER_SAFE_FUNCTION_NAMES = {
     "GetBindingKey", "HasAction",
     "IsHarmfulSpell", "IsHarmfulItem", "IsHelpfulSpell", "IsHelpfulItem",
-    "GetMultiCastTotemSpells"
+    "GetMultiCastTotemSpells", "FindSpellBookSlotBySpellID"
 };
 
 -- Copy the direct functions into the table

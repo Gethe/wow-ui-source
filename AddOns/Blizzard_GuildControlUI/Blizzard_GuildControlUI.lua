@@ -70,68 +70,85 @@ end
 
 function GuildControlUI_BankTabPermissions_Update(self)
 	local currentRank = self:GetParent().currentRank;
+	-- if currentRank doesn't apply, reset to first available
+	if ( currentRank < 2 or currentRank > GuildControlGetNumRanks() ) then
+		currentRank = 2;
+		self:GetParent().currentRank = 2;
+	end
+	GuildControlSetRank(currentRank);
 	UIDropDownMenu_SetText(self.dropdown, GuildControlGetRankName(currentRank));
-	local offset = HybridScrollFrame_GetOffset(self.scrollFrame);	
-	local buttons = self.scrollFrame.buttons;	
-	local numButtons = #buttons;
+
 	local numTabs = GetNumGuildBankTabs();
-	local scrollHeight = numTabs*BANK_TAB_HEIGHT;
 	local canBuyTab = false;
 	local hasScrollBar = true;
-	
 	if numTabs < MAX_BUY_GUILDBANK_TABS then
-		scrollHeight = scrollHeight + BANK_TAB_HEIGHT;
 		canBuyTab = true;
-		hasScrollBar =  numTabs > 2;
+		numTabs = numTabs + 1;
+		hasScrollBar = numTabs > 3;
 	end	
 	
-	if hasScrollBar then
-		self.scrollFrame:SetPoint("BOTTOMRIGHT",-24 ,8);
+	local scrollFrame = self.scrollFrame;
+	local scrollFrameName = scrollFrame:GetName();
+	local buttonWidth;
+	if ( hasScrollBar ) then
+		scrollFrame:SetPoint("BOTTOMRIGHT",-28 ,8);
+		scrollFrame.ScrollBar:Show();
+		_G[scrollFrameName.."Top"]:Show();
+		_G[scrollFrameName.."Bottom"]:Show();
+		buttonWidth = scrollFrame:GetWidth() - 2;
 	else
-		self.scrollFrame:SetPoint("BOTTOMRIGHT",-2 ,8);
+		scrollFrame:SetPoint("BOTTOMRIGHT",-2 ,8);
+		scrollFrame.ScrollBar:Hide();
+		_G[scrollFrameName.."Top"]:Hide();
+		_G[scrollFrameName.."Bottom"]:Hide();
+		buttonWidth = scrollFrame:GetWidth() - 5;
 	end
 	
-	local buyindex = 1;
-	for i = 1, numButtons do
-		buttons[i]:SetWidth(self.scrollFrame:GetWidth()-7);		
-		if i+offset > numTabs then
-			buttons[i]:Hide();
-			buttons[i].tabIndex = nil;
-		else
-			buyindex = i+1;
-			buttons[i].tabIndex = i+offset;
-			local name, icon = GetGuildBankTabInfo(i+offset);												-- returns info and permissions for player's rank
-			local isViewable, canDeposit, editText, numWithdrawals = GetGuildBankTabPermissions(i+offset);	-- returns permissions for the selected rank
-			buttons[i]:Show();
-			buttons[i].owned.tabName:SetText(name);	
-			buttons[i].owned.tabIcon:SetTexture(icon);
-			buttons[i].owned.viewCB:SetChecked(isViewable);
-			buttons[i].owned.infoCB:SetChecked(editText);
-			buttons[i].owned.depositCB:SetChecked(canDeposit);
-			if ( GuildControlUIRankBankFrame.activeEditBox ~= buttons[i].owned.editBox ) then
-				buttons[i].owned.editBox:SetText(numWithdrawals);
+	for i = 1, numTabs do
+		local button = _G["GuildControlBankTab"..i];
+		if ( not button ) then
+			button = CreateFrame("Frame", "GuildControlBankTab"..i, scrollFrame:GetScrollChild(), "BankTabPermissionTemplate");
+			local prevButton = _G["GuildControlBankTab"..(i - 1)];
+			button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, -BANK_TAB_OFFSET);
+		end
+		button:SetWidth(buttonWidth);
+		local index = i;
+		if ( index == numTabs and canBuyTab ) then
+			button:Show();
+			button.buy:Show();
+			button.owned:Hide();
+			local tabCost = GetGuildBankTabCost();
+			if(  (GetMoney() + GetGuildBankMoney()) >= tabCost ) then
+				SetMoneyFrameColor(button.buy.money:GetName(), "white");
+				button.buy.button:Enable();
+			else
+				SetMoneyFrameColor(button.buy.money:GetName(), "red");
+				button.buy.button:Disable();
 			end
-			buttons[i].owned:Show();		
-			buttons[i].buy:Hide();
-		end
-	end
-	
-	if canBuyTab then
-		buttons[buyindex]:Show();
-		buttons[buyindex].buy:Show();		
-		buttons[buyindex].owned:Hide();
-		local tabCost = GetGuildBankTabCost();
-		if(  (GetMoney() + GetGuildBankMoney()) >= tabCost ) then
-			SetMoneyFrameColor(buttons[buyindex].buy.money:GetName(), "white");
-			buttons[buyindex].buy.button:Enable();
+			MoneyFrame_Update(button.buy.money:GetName(), tabCost);		
+		elseif index > numTabs then
+			button:Hide();
+			button.tabIndex = nil;
 		else
-			SetMoneyFrameColor(buttons[buyindex].buy.money:GetName(), "red");
-			buttons[buyindex].buy.button:Disable();
+			button.tabIndex = index;
+			local name, icon = GetGuildBankTabInfo(index);												-- returns info and permissions for player's rank
+			local isViewable, canDeposit, editText, numWithdrawals = GetGuildBankTabPermissions(index);	-- returns permissions for the selected rank
+			button:Show();
+			button.owned.tabName:SetText(name);	
+			button.owned.tabIcon:SetTexture(icon);
+			button.owned.viewCB:SetChecked(isViewable);
+			button.owned.infoCB:SetChecked(editText);
+			button.owned.depositCB:SetChecked(canDeposit);
+			-- do not update text if the user is typing
+			if ( button.owned.editBox:HasFocus() ) then
+				button.owned.editBox.startValue = numWithdrawals;
+			else
+				button.owned.editBox:SetText(numWithdrawals);
+			end
+			button.owned:Show();		
+			button.buy:Hide();
 		end
-		MoneyFrame_Update(buttons[buyindex].buy.money:GetName(), tabCost);
 	end
-	
-	HybridScrollFrame_Update(self.scrollFrame, scrollHeight, self.scrollFrame:GetHeight());
 end
 
 
@@ -139,7 +156,6 @@ function GuildControlUI_RankPermissions_Update(self)
 	local currentRank = self:GetParent().currentRank;
 	UIDropDownMenu_SetText(self.dropdown, GuildControlGetRankName(currentRank));
 	local flags = {GuildControlGetRankFlags()};
-	
 	local checkbox;
 	local prefix = self:GetName().."Checkbox";
 	for i=1, NUM_RANK_FLAGS do
@@ -148,7 +164,12 @@ function GuildControlUI_RankPermissions_Update(self)
 			checkbox:SetChecked(flags[i]);
 		end
 	end
-	self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
+	-- do not update text if the user is typing
+	if ( self.goldBox:HasFocus() ) then
+		self.goldBox.startValue = GetGuildBankWithdrawGoldLimit();
+	else
+		self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
+	end
 	
 	-- disable the Authenticate checkbox for the last rank or if a rank has members
 	checkbox = _G[prefix.."18"];
@@ -256,10 +277,7 @@ function GuildControlUI_BankFrame_OnLoad(self)
 	self:GetParent().scrollFrame = self.scrollFrame;
 	self.scrollFrame.update = function() GuildControlUI.rankUpdate(GuildControlUI.currFrame) end;
 	self.scrollFrame.stepSize = 8;
-	HybridScrollFrame_CreateButtons(self.scrollFrame, "BankTabPermissionTemplate", 3, 0, "TOPLEFT", "TOPLEFT", 0, -BANK_TAB_OFFSET);
 end
-
-
 
 
 -- function GuildControlUI_SubmitClicked()
@@ -308,12 +326,20 @@ end
 
 
 function GuildControlUI_ShiftRankDownButton_OnClick(self)
+	local activeEditBox = GuildControlUI.activeEditBox;
+	if ( activeEditBox ) then
+		activeEditBox:ClearFocus();
+	end
 	local index = self:GetParent():GetID();
 	GuildControlShiftRankDown(index);
 end
 
 
 function GuildControlUI_ShiftRankUpButton_OnClick(self)
+	local activeEditBox = GuildControlUI.activeEditBox;
+	if ( activeEditBox ) then
+		activeEditBox:ClearFocus();
+	end
 	local index = self:GetParent():GetID();
 	GuildControlShiftRankUp(index);
 end
@@ -381,8 +407,7 @@ end
 
 
 function GuildControlUIRankDropDown_OnClick(self)
-	-- save withdraw limit if needed
-	local activeEditBox = GuildControlUIRankBankFrame.activeEditBox;
+	local activeEditBox = GuildControlUI.activeEditBox;
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();
 	end

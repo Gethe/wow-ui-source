@@ -179,7 +179,7 @@ function BattlefieldMinimap_Update()
 	-- Use this value to scale the texture sizes and offsets
 	local battlefieldMinimapScale = BattlefieldMinimap1:GetWidth()/256;
 	for i=1, numOverlays do
-		local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
+		local textureName, textureWidth, textureHeight, offsetX, offsetY = GetMapOverlayInfo(i);
 		if (textureName ~= "" or textureWidth == 0 or textureHeight == 0) then
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);

@@ -497,6 +497,7 @@ function PaperDollFrame_SetLevel()
 	local primaryTalentTree = GetPrimaryTalentTree();
 	local classDisplayName, class = UnitClass("player"); 
 	local classColor = RAID_CLASS_COLORS[class];
+	local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
 	local specName;
 	
 	if (primaryTalentTree) then
@@ -504,14 +505,10 @@ function PaperDollFrame_SetLevel()
 	end
 	
 	if (specName and specName ~= "") then
-		classDisplayName = format("|cff%.2x%.2x%.2x%s %s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, specName, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), classColorString, specName, classDisplayName);
 	else
-		classDisplayName = format("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, UnitLevel("player"), classColorString, classDisplayName);
 	end
-	
-	CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), classDisplayName);
-	-- Set it for the honor frame while we at it
-	HonorLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), classDisplayName);
 end
 
 function PaperDollFrame_SetGuild()

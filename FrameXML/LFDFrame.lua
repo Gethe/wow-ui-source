@@ -133,6 +133,7 @@ function LFDFrame_UpdateBackfill(forceUpdate)
 	else
 		LFDQueueFramePartyBackfill:Hide();
 	end
+	LFDQueueFrameRandomCooldownFrame_Update();	--The cooldown frame won't show if the backfill is shown, so we need to update it.
 end
 
 --Role-related functions
@@ -715,8 +716,8 @@ function LFDQueueFrameTypeDropDown_Initialize()
 	
 	for i=1, GetNumRandomDungeons() do
 		local id, name = GetLFGRandomDungeonInfo(i);
-		local isAvailable = IsLFGDungeonJoinable(id);
 		if ( isRandomDungeonDisplayable(id) ) then
+			local isAvailable = IsLFGDungeonJoinable(id);
 			if ( isAvailable ) then		
 				info.text = name;
 				info.value = id;
@@ -1028,7 +1029,7 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 		cooldownFrame:SetScript("OnUpdate", nil);
 	end
 	
-	if ( shouldShow ) then
+	if ( shouldShow and not LFDQueueFramePartyBackfill:IsShown() ) then
 		cooldownFrame:Show();
 	else
 		cooldownFrame:Hide();

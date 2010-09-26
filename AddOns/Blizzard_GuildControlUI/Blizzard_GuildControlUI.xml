@@ -15,14 +15,9 @@
 				<Scripts>
 					<OnEditFocusGained>
 						self.startName = self:GetText();
+						GuildControlUI.activeEditBox = self;
 					</OnEditFocusGained>
 					<OnEnterPressed>
-						if self.startName ~= self:GetText() and self:GetText() ~= "" then
-							GuildControlSetRank(self:GetParent():GetID());
-							GuildControlSaveRank(self:GetText());
-						else
-							self:SetText(self.startName);
-						end
 						self:ClearFocus();
 					</OnEnterPressed>
 					<OnEscapePressed>
@@ -35,8 +30,16 @@
 						end
 					</OnTextChanged>
 					<OnEditFocusLost>
+						GuildControlUI.activeEditBox = nil;
+						local text = self:GetText();
+						if ( self.startName ~= text and text ~= "" ) then
+							GuildControlSetRank(self:GetParent():GetID());
+							GuildControlSaveRank(self:GetText());
+						else
+							self:SetText(self.startName);
+						end
 						self.startName = nil;
-						self:SetTextColor(1,1,1,1);
+						self:SetTextColor(1, 1, 1, 1);
 					</OnEditFocusLost>
 				</Scripts>
 			</EditBox>
@@ -239,19 +242,32 @@
 						</Frames>
 						<Scripts>
 							<OnTextChanged>
+								if ( self.startValue and self.startValue ~= tonumber(self:GetText()) ) then
+									self:SetTextColor(0,1,0,1);
+								end
 							</OnTextChanged>
 							<OnEditFocusGained>
-								GuildControlUIRankBankFrame.activeEditBox = self;
+								self.startValue = self:GetText();
+								GuildControlUI.activeEditBox = self;
 							</OnEditFocusGained>
 							<OnEditFocusLost>
-								GuildControlUI_SetBankTabWithdrawChange(self);
-								GuildControlUIRankBankFrame.activeEditBox = nil;
+								GuildControlUI.activeEditBox = nil;
+								local text = self:GetText();
+								if ( self.startValue ~= text and text ~= "" ) then
+									GuildControlUI_SetBankTabWithdrawChange(self);
+								else
+									self:SetText(self.startValue);
+								end
+								self.startValue = nil;
+								self:SetTextColor(1, 1, 1, 1);
 							</OnEditFocusLost>
 							<OnEnterPressed>
-								GuildControlUI_SetBankTabWithdrawChange(self)
 								self:ClearFocus();
 							</OnEnterPressed>
-							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnEscapePressed>
+								self:SetText(self.startValue);
+								self:ClearFocus();
+							</OnEscapePressed>
 						</Scripts>
 					</EditBox>
 				</Frames>
@@ -439,33 +455,22 @@
 							<Anchor point="TOP" x="0" y="-45"/>
 						</Anchors>
 						<Frames>
-							<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
+							<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate2" parentKey="scrollFrame">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="4" y="-8"/>
+									<Anchor point="TOPLEFT" x="8" y="-8"/>
 									<Anchor point="BOTTOMRIGHT" x="-24" y="8"/>
 								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+								<ScrollChild>
+									<Frame name="GuildControlBankTab1" inherits="BankTabPermissionTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-												<Offset>
-													<AbsDimension x="0" y="-12"/>
-												</Offset>
-											</Anchor>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-												<Offset>
-													<AbsDimension x="0" y="11"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPLEFT" x="0" y="0"/>
 										</Anchors>
-									</Slider>
-								</Frames>
+									</Frame>
+								</ScrollChild>
 							</ScrollFrame>
 						</Frames>
 						<Scripts>
-							<OnLoad>
-								GuildControlUI_BankFrame_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="GuildControlUI_BankFrame_OnLoad"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -657,13 +662,34 @@
 							<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true"/>
 						</Frames>
 						<Scripts>
+							<OnEditFocusGained>
+								self.startValue = self:GetText();
+								GuildControlUI.activeEditBox = self;
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								GuildControlUI.activeEditBox = nil;
+								local text = self:GetText();
+								if ( self.startValue ~= text and text ~= "" ) then
+									SetGuildBankWithdrawGoldLimit(self:GetText());
+									GuildControlSaveRank();
+								else
+									self:SetText(self.startValue);
+								end
+								self.startValue = nil;
+								self:SetTextColor(1, 1, 1);
+							</OnEditFocusLost>
 							<OnTextChanged>
-								--GuildControlUISubmitButton:Enable();
+								if ( self.startValue and self:GetText() ~= self.startValue ) then
+									self:SetTextColor(0, 1, 0);
+								end
 							</OnTextChanged>
 							<OnEnterPressed>
 								self:ClearFocus();
 							</OnEnterPressed>
-							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnEscapePressed>
+								self:SetText(self.startValue);
+								self:ClearFocus();
+							</OnEscapePressed>
 						</Scripts>
 					</EditBox>
 					

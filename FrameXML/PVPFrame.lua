@@ -57,7 +57,7 @@ local PVPWORLD_DESCRIPTIONS = {};
 PVPWORLD_DESCRIPTIONS[1] = WINTERGRASP_DESCRIPTION;
 PVPWORLD_DESCRIPTIONS[21] = TOL_BARAD_DESCRIPTION;
 
-
+ARENABANNER_SMALLFONT = "GameFontNormalSmall"
 
 
 ---- NEW PVP FRAME FUNCTIONS
@@ -102,6 +102,7 @@ function PVPFrame_OnShow(self)
 		PVPFrame_TabClicked(self.lastSelectedTab);	
 	end
 	RequestRatedBattlegroundInfo();
+	RequestPVPOptionsEnabled();
 end
 
 function PVPFrame_OnHide()
@@ -137,6 +138,7 @@ function PVPFrame_OnLoad(self)
 	
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
+	self:RegisterEvent("PVP_TYPES_ENABLED");
 	
 	PVPFrame.timerDelay = 0;
 	
@@ -278,6 +280,13 @@ function PVPFrame_OnEvent(self, event, ...)
 	elseif ( event == "BATTLEFIELDS_CLOSED" )  then
 		if self:IsShown() then
 			TogglePVPFrame();
+		end
+	elseif ( event == "PVP_TYPES_ENABLED" )  then
+		self.wargamesEnable, self.ratedBGsEnabled, self.ratedArenasEnabled = ...;
+		if not self.wargamesEnable then
+			PVPHonorFrameWarGameButton:Hide();
+		else
+			PVPHonorFrameWarGameButton:Show();
 		end
 	end
 end
@@ -955,8 +964,8 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 	flagbutton.Glow:Show();	
 	flagbutton.GlowHeader:Show();
 	flagbutton.NormalHeader:Hide();
-	flagbutton.title:SetFontObject("GameFontNormalSmall");
-	
+	flagbutton.title:SetFontObject(ARENABANNER_SMALLFONT);
+	flagbutton.title:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	self.selectedTeam = flagbutton;
 	local teamIndex = flagbutton:GetID();
 	ArenaTeamRoster(teamIndex);
@@ -1133,7 +1142,8 @@ function PVPTeamManagementFrame_FlagClicked(self)
 			self:GetParent().selectedTeam.Glow:Hide();		
 			self:GetParent().selectedTeam.GlowHeader:Hide();
 			self:GetParent().selectedTeam.NormalHeader:Show();			
-			self:GetParent().selectedTeam.title:SetFontObject("GameFontHighlightSmall");	
+			self:GetParent().selectedTeam.title:SetFontObject(ARENABANNER_SMALLFONT);
+			self:GetParent().selectedTeam.title:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			HideUIPanel(PVPBannerFrame);
 		end
 		PVPTeamManagementFrame_UpdateTeamInfo(self:GetParent(), self);	
@@ -1176,7 +1186,8 @@ function PVPTeamManagementFrame_UpdateTeams(self)
 				_G[bannerName.."Border"]:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );				
 				_G[bannerName.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
 				_G[bannerName.."Title"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."\n"..RATING..":  "..teamRating);
-				_G[bannerName.."Title"]:SetFontObject("GameFontHighlightSmall");
+				_G[bannerName.."Title"]:SetFontObject(ARENABANNER_SMALLFONT);
+				_G[bannerName.."Title"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				
 				if not self.defaultTeam then
 					self.defaultTeam =  _G[bannerName];	

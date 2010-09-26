@@ -244,7 +244,7 @@ function QuestLog_OnLoad(self)
 end
 
 function QuestLog_OnEvent(self, event, ...)
-	local arg1 = ...;
+	local arg1, arg2 = ...;
 	if ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		QuestLog_Update();
 		if ( QuestLogDetailScrollFrame:IsVisible() ) then
@@ -258,7 +258,7 @@ function QuestLog_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
-		TUTORIAL_QUEST_ACCEPTED = true;
+		TUTORIAL_QUEST_ACCEPTED = arg2;
 		QuestPOIUpdateIcons();
 		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1);
@@ -301,7 +301,7 @@ function QuestLog_OnShow(self)
 	QuestLog_Update();
 	
 	QuestLogDetailFrame_AttachToQuestLog();
-	if (TutorialFrame.id == 1 or TutorialFrame.id == 57 or TutorialFrame.id == 57) then
+	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
 		TutorialFrame_Hide();
 	end
 end
@@ -315,10 +315,7 @@ function QuestLog_OnHide(self)
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
 			TriggerTutorial(2);
-			if (not CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond) then
-				TriggerTutorial(10);
-			end
-		elseif (CURRENT_TUTORIAL_QUEST_INFO.killQuestSecond and  not IsTutorialFlagged(10)) then
+		elseif (not IsTutorialFlagged(10) and (TUTORIAL_QUEST_ACCEPTED == TUTORIAL_QUEST_TO_WATCH)) then
 			TriggerTutorial(10);
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil

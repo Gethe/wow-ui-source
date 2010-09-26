@@ -368,7 +368,9 @@ function CompactRaidFrameManager_ResetContainerPosition()
 	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
 end
 
-function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" instead of "SizeAndPosition". WHO NEEDS A THESAURUS NOW?!
+function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" instead of "SizeAndPosition". WHO NEEDS A THESAURUS NOW?!	
+	self.containerResizeFrame:SetMaxResize(self.containerResizeFrame:GetWidth(), GetScreenHeight() - 90);
+	
 	if ( self.dynamicContainerPosition ) then
 		--Should be below the TargetFrameSpellBar at its lowest height..
 		local top = GetScreenHeight() - 135;
