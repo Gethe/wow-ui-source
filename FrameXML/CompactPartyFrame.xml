@@ -1,68 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CompactPartyFrame.lua"/>
-	<Frame name="CompactPartyFrame" clampedToScreen="true" parent="UIParent" movable="true">
-		<Size x="72" y="110"/>
-		<Frames>
-			<Button name="$parentTitle" text="PARTY" parentKey="title">
-				<Size x="72" y="20"/>
-				<Anchors>
-					<Anchor point="TOP"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						CompactRaidGroup_StartMoving(self:GetParent());
-					</OnDragStart>
-					<OnDragStop>
-						CompactRaidGroup_StopMoving(self:GetParent());
-					</OnDragStop>
-					<OnEnter>
-						--DEBUG FIXME
-						GameTooltip_AddNewbieTip(self, "New Raid Frames", 1.0, 1.0, 1.0, "Pretend you're in a Raid! These are our new Raid Frames, currently enabled for 5-mans to get some extra testing. You can go back to the old Party Frames in the Development panel of the Interface Options.");
-					</OnEnter> 
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalFont style="GameFontNormalSmall"/>
-			</Button>
-			<Button name="$parentMemberSelf" inherits="CompactUnitFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentMember1" inherits="CompactUnitFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentMemberSelf" relativePoint="BOTTOM">
-						<Offset x="0" y="-2"/>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentMember2" inherits="CompactUnitFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentMember1" relativePoint="BOTTOM">
-						<Offset x="0" y="-2"/>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentMember3" inherits="CompactUnitFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentMember2" relativePoint="BOTTOM">
-						<Offset x="0" y="-2"/>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentMember4" inherits="CompactUnitFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentMember3" relativePoint="BOTTOM">
-						<Offset x="0" y="-2"/>
-					</Anchor>
-				</Anchors>
-			</Button>
-		</Frames>
+	<Frame name="CompactPartyFrame" clampedToScreen="true" inherits="CompactRaidGroupTemplate" parent="UIParent" movable="true">
 		<Scripts>
 			<OnLoad>
 				CompactPartyFrame_OnLoad(self);

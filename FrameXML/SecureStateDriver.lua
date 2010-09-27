@@ -91,6 +91,31 @@ end
 
 local pairs = pairs;
 
+-- consolidate duplicated code for footprint and maintainability
+local function resolveDriver(frame, attribute, values)
+	local newValue = SecureCmdOptionParse(values);
+
+	if ( attribute == "state-visibility" ) then
+		if ( newValue == "show" ) then
+			frame:Show();
+			frame:SetAttribute("statehidden", nil);
+		elseif ( newValue == "hide" ) then
+			frame:Hide();
+			frame:SetAttribute("statehidden", true);
+		end
+	elseif ( newValue ) then
+		if ( newValue == 'nil' ) then
+			newValue = nil;
+		else
+			newValue = tonumber(newValue) or newValue;
+		end
+		local oldValue = frame:GetAttribute(attribute);
+		if ( newValue ~= oldValue ) then
+			frame:SetAttribute(attribute, newValue);
+		end
+	end
+end
+
 local function SecureStateDriverManager_OnUpdate(self,elapsed)
     timer = timer - elapsed;
     if ( timer <= 0 ) then
@@ -99,27 +124,7 @@ local function SecureStateDriverManager_OnUpdate(self,elapsed)
         -- Handle state driver updates
         for frame,drivers in pairs(secureAttributeDrivers) do
             for attribute,values in pairs(drivers) do
-                local newValue = SecureCmdOptionParse(values);
-
-                if ( attribute == "state-visibility" ) then
-                    if ( newValue == "show" ) then
-                        frame:Show();
-                        frame:SetAttribute("statehidden", nil);
-                    elseif ( newValue == "hide" ) then
-                        frame:Hide();
-                        frame:SetAttribute("statehidden", true);
-                    end
-                elseif ( newValue ) then
-                    if ( newValue == 'nil' ) then
-                        newValue = nil;
-                    else
-                        newValue = tonumber(newValue) or newValue;
-                    end
-                    local oldValue = frame:GetAttribute(attribute);
-                    if ( newValue ~= oldValue ) then
-                        frame:SetAttribute(attribute, newValue);
-                    end
-                end
+                resolveDriver(frame, attribute, values);
             end
         end
 
@@ -156,25 +161,7 @@ local function SecureStateDriverManager_OnAttributeChanged(self, name, value)
             secureAttributeDrivers[frame][attribute] = nil;
         else
             secureAttributeDrivers[frame][attribute] = values;
-            local newValue = SecureCmdOptionParse(values);
-
-            if ( attribute == "state-visibility" ) then
-                if ( newValue == "show" ) then
-                    frame:Show();
-                elseif ( newValue == "hide" ) then
-                    frame:Hide();
-                end
-            elseif ( newValue ) then
-                if ( newValue == 'nil' ) then
-                    newValue = nil;
-                else
-                    newValue = tonumber(newValue) or newValue;
-                end
-                local oldValue = frame:GetAttribute(attribute);
-                if ( newValue ~= oldValue ) then
-                    frame:SetAttribute(attribute, newValue);
-                end
-            end
+            resolveDriver(frame, attribute, values);
         end
     elseif ( name == "addwatch" or name == "addwatchstate" ) then
         local doState = (name == "addwatchstate");

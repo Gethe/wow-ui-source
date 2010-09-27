@@ -319,7 +319,49 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontHighlightSmall"/>
     </Button>
-	<Frame name="AchievementFrameAchievementsObjectives"/>
+	<Frame name="AchievementFrameAchievementsObjectives">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentReputationCriteria" inherits="GameFontNormalSmall" parentKey="repCriteria">
+					<Anchors>
+						<Anchor point="TOP" x="8" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="AchievementGuildTabardTemplate" hidden="true" virtual="true">
+		<Size x="72" y="128"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\AchievementFrame\GuildTabard" parentKey="background">
+					<Size x="72" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.57031250" top="0.48437500" bottom="0.98437500"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\GuildTabard" parentKey="border">
+					<Size x="56" y="121"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.44531250" top="0.00390625" bottom="0.47656250"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentEmblem" urgency="5" file="Interface\GuildFrame\GuildEmblemsLG_01" parentKey="emblem">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="14"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 	<Frame name="MiniAchievementTemplate" virtual="true" parent="AchievementFrame">
 		<Size>
 			<AbsDimension x="42" y="42"/>
@@ -463,16 +505,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				if ( self.date ) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, 1);
-					GameTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<!-- This OnEnter might also be called from AchievementFrameAchievements_OnEvent -->
+			<OnEnter function="AchievementMeta_OnEnter"/>
+			<OnLeave function="AchievementMeta_OnLeave"/>
 			<OnClick>
 				if ( self.id ) then
 					AchievementFrame_SelectAchievement(self.id);
@@ -989,15 +1024,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true" justifyH="CENTER" parentKey="dateCompleted">
-					<Size>
-						<AbsDimension x="100" y="14"/>
-					</Size>
-					<Anchors>
-						<!-- This is a fake anchor. We don't want DateCompleted to be anchored to top. We reanchor it in AchievementButton_OnLoad so that it can be anchored to the shield, which is a frame, and not loaded at this point. -->
-						<Anchor point="TOP"/>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentReward" inherits="GameFontNormalSmall" hidden="true" parentKey="reward">
 					<Size>
 						<AbsDimension x="400" y="20"/>
@@ -1063,12 +1089,15 @@
 				AchievementButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
+				-- this is also called from the shield's OnClick
 				AchievementButton_OnClick(self);
 			</OnClick>
 			<OnEnter>
+				-- this is also called from the shield's OnEnter
 				self.highlight:Show();
 			</OnEnter>
 			<OnLeave>
+				-- this is also called from the shield's OnLeave
 				if ( not self.selected ) then
 					self.highlight:Hide();
 				end
@@ -1173,7 +1202,16 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentShield" parentKey="shield">
+			<Frame name="$parentTabard" inherits="AchievementGuildTabardTemplate" parentKey="tabard">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="$parentShield" parentKey="shield">
 				<Size>
 					<AbsDimension x="64" y="64"/>
 				</Size>
@@ -1209,14 +1247,29 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true" justifyH="CENTER" parentKey="dateCompleted">
+							<Size>
+								<AbsDimension x="100" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="6"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>				
 				<Scripts>
 					<OnLoad>
 						AchievementShield_OnLoad(self);
 					</OnLoad>
+					<OnClick>
+						local parent = self:GetParent();
+						AchievementButton_OnClick(parent);
+					</OnClick>
+					<!-- This OnEnter might also be called from AchievementFrameAchievements_OnEvent -->
+					<OnEnter function="AchievementShield_OnEnter"/>
+					<OnLeave function="AchievementShield_OnLeave"/>
 				</Scripts>
-			</Frame>
+			</Button>
 			<Frame name="$parentObjectives" parentKey="objectives">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">

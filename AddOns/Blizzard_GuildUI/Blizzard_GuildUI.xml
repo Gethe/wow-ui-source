@@ -6,32 +6,6 @@
 	Templates
 *******************************************************************************
 -->
-	<Button name="GuildInfoButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="306" y="18"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" parentKey="icon">
-					<Anchors>
-						<Anchor point="LEFT" x="4" y="0"/>
-					</Anchors>
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="CENTER" wordwrap="false" parentKey="text">
-					<Size>
-						<AbsDimension x="268" y="14"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" x="20" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" setAllPoints="true" alphaMode="ADD"/>
-	</Button>
 	<Button name="GuildPerksButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="284" y="44"/>
@@ -266,14 +240,14 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentHeader" file="Interface\GuildFrame\GuildFrame" parentKey="header" setAllPoints="true">
+				<Texture name="$parentHeader" file="Interface\GuildFrame\GuildFrame" parentKey="header" setAllPoints="true" hidden="true">
 					<TexCoords left="0.63183594" right="0.94531250" top="0.57617188" bottom="0.61523438"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="CENTER" wordwrap="false" parentKey="text">
 					<Anchors>
-						<Anchor point="LEFT" x="28" y="0"/>
+						<Anchor point="LEFT" x="24" y="0"/>
 						<Anchor point="RIGHT" x="-8" y="0"/>
 					</Anchors>
 				</FontString>
@@ -282,7 +256,7 @@
 						<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentIcon" file="Interface\GuildFrame\GuildFrame" hidden="true" parentKey="icon">
+				<Texture name="$parentIcon" file="Interface\GuildFrame\GuildFrame" parentKey="icon">
 					<Size x="13" y="11"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="-4" y="0"/>
@@ -294,16 +268,24 @@
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter>
-				GuildNewsButton_OnEnter(self);
+				if ( not self.isEvent ) then
+					GuildNewsButton_OnEnter(self);
+				end
 			</OnEnter>
 			<OnClick>
-				GuildNewsButton_OnClick(self, button);
+				if ( self.isEvent ) then
+					GuildInfoEventButton_OnClick(self, button);
+				else
+					GuildNewsButton_OnClick(self, button);
+				end
 			</OnClick>
 			<OnLeave>
-				GuildNewsButton_OnLeave(self);
+				if ( not self.isEvent ) then
+					GuildNewsButton_OnLeave(self);
+				end
 			</OnLeave>
 		</Scripts>
 	</Button>
@@ -334,34 +316,27 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTabardLeftIcon" mask="Interface\GuildFrame\GuildLogoMask_R">
-					<Size x="40" y="80"/>
+				<Texture name="$parentTabardEmblem" urgency="5" file="Interface\GuildFrame\GuildEmblemsLG_01">
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-16" y="15"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentTabardRightIcon" mask="Interface\GuildFrame\GuildLogoMask_R">
-					<Size x="40" y="80"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTabardLeftIcon" relativePoint="RIGHT"/>
+						<Anchor point="TOPLEFT" x="-8" y="9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture name="$parentTabardBorder" file="Interface\GuildFrame\GuildFrame">
-					<Size x="62" y="62"/>
+					<Size x="61" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-7" y="8"/>
+						<Anchor point="TOPLEFT" x="-6" y="7"/>
 					</Anchors>
 					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="GUILD_TAB_GUILD">
+			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="GUILD_TAB_GUILD_ABBR">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="11" y="-33"/>
+					<Anchor point="BOTTOMLEFT" x="11" y="-30"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -376,7 +351,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="GUILD_TAB_ROSTER">
+			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="GUILD_TAB_ROSTER_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -393,7 +368,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-            <Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="GUILD_TAB_NEWS">
+            <Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="GUILD_TAB_NEWS_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -410,7 +385,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="GUILD_TAB_REWARDS">
+			<Button name="$parentTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="GUILD_TAB_REWARDS_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -427,7 +402,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="GUILD_TAB_INFO">
+			<Button name="$parentTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="GUILD_TAB_INFO_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -511,6 +486,7 @@
 						if ( not GuildControlUI ) then
 							UIParentLoadAddOn("Blizzard_GuildControlUI");
 						end
+						CloseWindows(nil, GuildFrame);
 						GuildFramePopup_Toggle(GuildControlUI);
 					</OnClick>
 					<OnEnter>
@@ -637,7 +613,7 @@
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
 									</Anchors>
-									<Color r="0" g="0.745" b="0.094"/>
+									<Color r="0" g="0.245" b="0.094" a="0.5"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
@@ -769,7 +745,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontNormalSmall" text="GUILD_MEMBERS_ONLINE">
+				<FontString name="$parentMembersCountLabel" inherits="GameFontNormalSmall" text="GUILD_MEMBERS_ONLINE">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="GuildFrameMembersCount" relativePoint="TOPRIGHT" x="0" y="6"/>
 					</Anchors>
@@ -835,6 +811,30 @@
 							<Color r="0.973" g="0.937" b="0.580"/>
 						</FontString>
 					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture name="$parentHighlightLeft" file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
+							<Size x="16" y="24"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.125" top="0.03" bottom="0.7175"/>
+						</Texture>
+						<Texture name="$parentHighlightRight" file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
+							<Size x="16" y="24"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.875" right="1" top="0.03" bottom="0.7175"/>
+						</Texture>
+						<Texture name="$parentHighlightMiddle" file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
+							<Size x="0" y="24"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentHighlightLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentHighlightRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.125" right="0.875" top="0.03" bottom="0.7175"/>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnMouseDown>
@@ -887,9 +887,6 @@
 				</ButtonText>
 				<NormalFont style="GameFontNormal"/>
 				<HighlightFont style="GameFontNormal"/>
-				<HighlightTexture file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
-					<TexCoords left="0" right="1.0" top="0.03" bottom="0.7175"/>
-				</HighlightTexture>
 			</Button>
 			<Frame name="GuildNewPerksFrame" setAllPoints="true">
 				<Layers>
@@ -1072,9 +1069,10 @@
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="0" y="0"/>
 									</Anchors>
 								</Texture>
-								<FontString	name="$parentLabel" inherits="SystemFont_Shadow_Med2">
+								<FontString	name="$parentLabel" justifyH="LEFT" inherits="SystemFont_Shadow_Med2">
+									<Size x="144" y="38"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="12"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
 									</Anchors>
 									<Color r="1" g="0.82" b="0"/>
 								</FontString>

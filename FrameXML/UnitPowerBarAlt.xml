@@ -57,6 +57,12 @@
 			<OnUpdate>
 				UnitPowerBarAlt_OnUpdate(self, elapsed);
 			</OnUpdate>
+			<OnEnter>
+				UnitPowerBarAlt_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				UnitPowerBarAlt_OnLeave(self);
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Frame name="PlayerPowerBarAlt" parent="UIParent" inherits="UnitPowerBarAltTemplate">

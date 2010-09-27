@@ -15,7 +15,9 @@ end
 function SpellActivationOverlay_OnEvent(self, event, ...)
 	if ( event == "SPELL_ACTIVATION_OVERLAY_SHOW" ) then
 		local spellID, texture, positions, scale, r, g, b = ...;
-		SpellActivationOverlay_ShowAllOverlays(self, spellID, texture, positions, scale, r, g, b)
+		if ( GetCVarBool("displaySpellActivationOverlays") ) then 
+			SpellActivationOverlay_ShowAllOverlays(self, spellID, texture, positions, scale, r, g, b)
+		end
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_HIDE" ) then
 		local spellID = ...;
 		SpellActivationOverlay_HideOverlays(self, spellID);
@@ -105,6 +107,7 @@ function SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, position
 	overlay.texture:SetVertexColor(r / 255, g / 255, b / 255);
 	
 	overlay.animOut:Stop();	--In case we're in the process of animating this out.
+	PlaySoundKitID(23287);
 	overlay:Show();
 end
 

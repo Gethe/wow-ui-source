@@ -48,12 +48,14 @@ ACHIEVEMENT_FILTER_COMPLETE = 2;
 ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
 local FEAT_OF_STRENGTH_ID = 81;
+local GUILD_FEAT_OF_STRENGTH_ID = 15093;
 local GUILD_CATEGORY_ID = 15076;
 local IN_GUILD_VIEW;
 local TEXTURES_OFFSET = 0;		-- 0.5 when in guild view
 
 local displayStatCategories = {};
 
+local guildMemberRequestFrame;
 
 local trackedAchievements = {};
 local function updateTrackedAchievements (...) 
@@ -137,7 +139,7 @@ function AchievementFrame_ForceUpdate ()
 end
 
 function AchievementFrame_SetTabs()
-	if ( not IsInGuild() or AchievementFrameComparison:IsShown() ) then
+	if ( not IsInGuild() or AchievementFrameComparison:IsShown() or not GetGuildLevelEnabled() ) then
 		AchievementFrameTab2:Hide();
 		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab1, "RIGHT", -5, 0);
 	else
@@ -491,7 +493,7 @@ function AchievementFrameCategories_DisplayButton (button, element)
 	-- kind of janky
 	if ( id == "summary" ) then
 		categoryName = ACHIEVEMENT_SUMMARY_CATEGORY;
-		numAchievements, numCompleted = GetNumCompletedAchievements();
+		numAchievements, numCompleted = GetNumCompletedAchievements(IN_GUILD_VIEW);
 	else
 		categoryName, parentID, flags = GetCategoryInfo(id);
 		numAchievements, numCompleted = AchievementFrame_GetCategoryTotalNumAchievements(id, true);
@@ -507,7 +509,10 @@ function AchievementFrameCategories_DisplayButton (button, element)
 		-- This is the feat of strength category since it's sorted to the end of the list
 		button.text = FEAT_OF_STRENGTH_DESCRIPTION;
 		button.showTooltipFunc = AchievementFrameCategory_FeatOfStrengthTooltip;
-	elseif ( AchievementFrame.selectedTab == 1 ) then
+	elseif ( id == GUILD_FEAT_OF_STRENGTH_ID ) then
+		button.text = GUILD_FEAT_OF_STRENGTH_DESCRIPTION;
+		button.showTooltipFunc = AchievementFrameCategory_FeatOfStrengthTooltip;
+	elseif ( AchievementFrame.selectedTab == 1 or AchievementFrame.selectedTab == 2 ) then
 		button.text = nil;
 		button.numAchievements = numAchievements;
 		button.numCompleted = numCompleted;
@@ -612,7 +617,7 @@ function AchievementFrameCategories_SelectButton (button)
 			AchievementFrame_ShowSubFrame(AchievementFrameStats);
 		elseif ( achievementFunctions == ACHIEVEMENT_FUNCTIONS or achievementFunctions == GUILD_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
-			if ( id == FEAT_OF_STRENGTH_ID ) then
+			if ( id == FEAT_OF_STRENGTH_ID or id == GUILD_FEAT_OF_STRENGTH_ID ) then
 				AchievementFrameFilterDropDown:Hide();
 				AchievementFrameHeaderRightDDLInset:Hide();
 			else
@@ -633,16 +638,15 @@ function AchievementFrameCategories_SelectButton (button)
 	if ( achievementFunctions.clearFunc ) then
 		achievementFunctions.clearFunc();
 	end
-	achievementFunctions.updateFunc();
-	
 	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
+	achievementFunctions.updateFunc();
 end
 
 function AchievementFrameAchievements_OnShow()
 	if ( AchievementFrameAchievements.guildView ~= IN_GUILD_VIEW ) then
 		AchievementFrameAchievements_ToggleView();
 	end
-	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID ) then
+	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID or achievementFunctions.selectedCategory == GUILD_FEAT_OF_STRENGTH_ID ) then
 		AchievementFrameFilterDropDown:Hide();
 		AchievementFrameHeaderRightDDLInset:Hide();
 	else
@@ -733,6 +737,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		self:RegisterEvent("ACHIEVEMENT_EARNED");
 		self:RegisterEvent("CRITERIA_UPDATE");
 		self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+		self:RegisterEvent("RECEIVED_ACHIEVEMENT_MEMBER_LIST");
 		
 		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
@@ -763,6 +768,16 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		end
 		
 		updateTrackedAchievements(GetTrackedAchievements());
+	elseif ( event == "RECEIVED_ACHIEVEMENT_MEMBER_LIST" ) then
+		local achievementID = ...;
+		-- check if we initiated the request from a meta criteria and we're still over it
+		if ( guildMemberRequestFrame and guildMemberRequestFrame.id == achievementID ) then
+			-- update the tooltip
+			local func = guildMemberRequestFrame:GetScript("OnEnter");
+			if ( func ) then
+				func(guildMemberRequestFrame);
+			end
+		end
 	end
 	
 	if ( not AchievementMicroButton:IsShown() ) then
@@ -789,6 +804,11 @@ function AchievementFrameAchievements_Update ()
 	
 	-- If the current category is feats of strength and there are no entries then show the explanation text
 	if ( AchievementFrame_IsFeatOfStrength() and numAchievements == 0 ) then
+		if ( AchievementFrame.selectedTab == 1 ) then
+			AchievementFrameAchievementsFeatOfStrengthText:SetText(FEAT_OF_STRENGTH_DESCRIPTION);
+		else
+			AchievementFrameAchievementsFeatOfStrengthText:SetText(GUILD_FEAT_OF_STRENGTH_DESCRIPTION);
+		end	
 		AchievementFrameAchievementsFeatOfStrengthText:Show();
 	else
 		AchievementFrameAchievementsFeatOfStrengthText:Hide();
@@ -912,6 +932,8 @@ function AchievementFrameAchievements_ToggleView()
 			button.glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
 		end
 	end
+	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
+	AchievementFrameAchievements_Update();
 end
 
 -- [[ Achievement Icon ]] --
@@ -967,7 +989,9 @@ function AchievementButton_UpdatePlusMinusTexture (button)
 	local display = false;
 	if ( GetAchievementNumCriteria(id) ~= 0 ) then
 		display = true;
-	elseif ( GetPreviousAchievement(id) and button.completed ) then
+	elseif ( button.completed and GetPreviousAchievement(id) ) then
+		display = true;
+	elseif ( not button.completed and GetAchievementGuildRep(id) ) then
 		display = true;
 	end
 	
@@ -999,6 +1023,7 @@ function AchievementButton_Collapse (self)
 	if ( not self.tracked:GetChecked() ) then
 		self.tracked:Hide();
 	end
+	self.tabard:Hide();
 	self.guildCornerL:Hide();
 	self.guildCornerR:Hide();
 end
@@ -1013,6 +1038,10 @@ function AchievementButton_Expand (self, height)
 	if ( IN_GUILD_VIEW ) then
 		if ( height < GUILDACHIEVEMENTBUTTON_MINHEIGHT ) then
 			height = GUILDACHIEVEMENTBUTTON_MINHEIGHT;
+		end
+		if ( self.completed ) then
+			self.tabard:Show();
+			SetLargeGuildTabardTextures("player", self.tabard.emblem, self.tabard.background, self.tabard.border);
 		end
 		self.guildCornerL:Show();
 		self.guildCornerR:Show();
@@ -1065,8 +1094,7 @@ function AchievementButton_Desaturate (self)
 end
 
 function AchievementButton_OnLoad (self)
-	self.dateCompleted:ClearAllPoints();
-	self.dateCompleted:SetPoint("TOP", self.shield, "BOTTOM", -3, 6);
+	self.dateCompleted = self.shield.dateCompleted;
 	if ( not ACHIEVEMENTUI_FONTHEIGHT ) then
 		local _, fontHeight = self.description:GetFont();
 		ACHIEVEMENTUI_FONTHEIGHT = fontHeight;
@@ -1175,6 +1203,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		else
 			button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 		end
+		button.shield.id = id;
 		button.description:SetText(description);
 		button.hiddenDescription:SetText(description);
 		button.numLines = ceil(button.hiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
@@ -1266,24 +1295,22 @@ end
 
 function AchievementButton_DisplayObjectives (button, id, completed)
 	local objectives = AchievementFrameAchievementsObjectives;
-	
+	local topAnchor = button.hiddenDescription;
 	objectives:ClearAllPoints();
 	objectives:SetParent(button);
 	objectives:Show();
 	objectives.completed = completed;
-	local height = 0;
+	local height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
 	if ( objectives.id == id ) then
 		local ACHIEVEMENTMODE_CRITERIA = 1;
 		if ( objectives.mode == ACHIEVEMENTMODE_CRITERIA ) then
 			if ( objectives:GetHeight() > 0 ) then
-				objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
+				objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 				objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, 0);
 				objectives:SetPoint("RIGHT", "$parentShield", "LEFT", -10, 0);
 			end
-			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 		else
-			objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
-			height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
+			objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 		end
 	elseif ( completed and GetPreviousAchievement(id) ) then
 		objectives:SetHeight(0);
@@ -1292,8 +1319,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetMiniAchievements();
 		AchievementButton_ResetMetas();
 		AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
-		objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
-		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
+		objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 	else
 		objectives:SetHeight(0);	
 		AchievementButton_ResetCriteria();
@@ -1302,13 +1328,13 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetMetas();
 		AchievementObjectives_DisplayCriteria(objectives, id);
 		if ( objectives:GetHeight() > 0 ) then
-			objectives:SetPoint("TOP", "$parentHiddenDescription", "BOTTOM", 0, -8);
+			objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 			objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, -25);
 			objectives:SetPoint("RIGHT", "$parentShield", "LEFT", -10, 0);
 		end
-		height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT + objectives:GetHeight();
 	end
-
+	height = height + objectives:GetHeight();
+	
 	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT or button.numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED ) then		
 		button.hiddenDescription:Show();
 		button.description:Hide();
@@ -1577,10 +1603,31 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		return;
 	end
 
+	local initialOffset = 0;
 	local ACHIEVEMENTMODE_CRITERIA = 1;
-	local numCriteria = GetAchievementNumCriteria(id);
+	local numRows = 0;
 	
-	if ( numCriteria == 0 ) then
+	local requiresRep, hasRep, repLevel;
+	objectivesFrame.repCriteria:Hide();
+	if ( not objectivesFrame.completed ) then
+		requiresRep, hasRep, repLevel = GetAchievementGuildRep(id);
+		if ( requiresRep ) then
+			initialOffset = -ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT;
+			local gender = UnitSex("player");
+			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
+			objectivesFrame.repCriteria:SetFormattedText(ACHIEVEMENT_REQUIRES_GUILD_REPUTATION, factionStandingtext);
+			if ( hasRep ) then
+				objectivesFrame.repCriteria:SetTextColor(0, 1, 0);
+			else
+				objectivesFrame.repCriteria:SetTextColor(1, 0, 0);
+			end
+			objectivesFrame.repCriteria:Show();
+			numRows = 1;
+		end
+	end
+
+	local numCriteria = GetAchievementNumCriteria(id);	
+	if ( numCriteria == 0 and not requiresRep ) then
 		objectivesFrame.mode = ACHIEVEMENTMODE_CRITERIA;
 		objectivesFrame:SetHeight(0);
 		return;
@@ -1591,7 +1638,6 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	-- Why textStrings? You try naming anything just "string" and see how happy you are.
 	local textStrings, progressBars, metas = 0, 0, 0;
 	
-	local numRows = 0;
 	local maxCriteriaWidth = 0;
 	local yPos;
 	for i = 1, numCriteria do	
@@ -1602,14 +1648,14 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			local metaCriteria = AchievementButton_GetMeta(metas);
 			
 			if ( metas == 1 ) then
-				metaCriteria:SetPoint("TOP", objectivesFrame, "TOP", 0, -4);
+				metaCriteria:SetPoint("TOP", objectivesFrame, "TOP", 0, -4 + initialOffset);
 				numRows = numRows + 2;
 			elseif ( math.fmod(metas, 2) == 0 ) then
 				yPos = -((metas/2 - 1) * 28) - 8;
-				metaCriteriaTable[metas-1]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yPos);
-				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 210, yPos);
+				metaCriteriaTable[metas-1]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yPos + initialOffset);
+				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 210, yPos + initialOffset);
 			else
-				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, -(math.ceil(metas/2 - 1) * 28) - 8);
+				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, -(math.ceil(metas/2 - 1) * 28) - 8 + initialOffset);
 				numRows = numRows + 2;
 			end
 			
@@ -1655,7 +1701,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			local progressBar = AchievementButton_GetProgressBar(progressBars);
 			
 			if ( progressBars == 1 ) then
-				progressBar:SetPoint("TOP", objectivesFrame, "TOP", 4, -4);
+				progressBar:SetPoint("TOP", objectivesFrame, "TOP", 4, -4 + initialOffset);
 			else
 				progressBar:SetPoint("TOP", progressBarTable[progressBars-1], "BOTTOM", 0, 0);
 			end
@@ -1674,9 +1720,9 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			criteria:ClearAllPoints();
 			if ( textStrings == 1 ) then
 				if ( numCriteria == 1 ) then
-					criteria:SetPoint("TOP", objectivesFrame, "TOP", -14, 0);
+					criteria:SetPoint("TOP", objectivesFrame, "TOP", -14, initialOffset);
 				else
-					criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 0, 0);
+					criteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 0, initialOffset);
 				end
 				
 			else
@@ -1741,7 +1787,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				
 				if ( rows == 1 ) then
 					criteriaTable[i]:ClearAllPoints();
-					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns), 0);
+					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns), initialOffset);
 				else
 					criteriaTable[i]:ClearAllPoints();
 					criteriaTable[i]:SetPoint("TOPLEFT", criteriaTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
@@ -1751,7 +1797,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		end
 	end
 
-	if ( metas > 0 ) then
+	if ( metas > 0 or progressBars > 0 ) then
 		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_METAROWHEIGHT + 10);
 	else
 		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT);
@@ -2221,7 +2267,7 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 		return;
 	end
 	
-	local _, _, _, achCompleted = GetAchievementInfo(id);
+	local _, _, _, achCompleted, _, _, _, _, flags = GetAchievementInfo(id);
 	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
@@ -2230,8 +2276,7 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	
 	local tabIndex = 1;
 	local category = GetAchievementCategory(id);
-	local _, parentCategory = GetCategoryInfo(category);
-	if ( parentCategory == GUILD_CATEGORY_ID ) then
+	if ( bit.band(flags, ACHIEVEMENT_FLAGS_GUILD) == ACHIEVEMENT_FLAGS_GUILD ) then
 		tabIndex = 2;
 	end
 	
@@ -2982,7 +3027,7 @@ function AchievementFrame_IsComparison()
 end
 
 function AchievementFrame_IsFeatOfStrength()
-	if ( AchievementFrame.selectedTab == 1 and achievementFunctions.selectedCategory == displayCategories[#displayCategories].id ) then
+	if ( ( AchievementFrame.selectedTab == 1 or AchievementFrame.selectedTab == 2 ) and achievementFunctions.selectedCategory == displayCategories[#displayCategories].id ) then
 		return true;
 	end
 	return false;
@@ -3074,6 +3119,101 @@ function AchievementFrame_LoadTextures()
 	for k, v in pairs(ACHIEVEMENT_TEXTURES_TO_LOAD) do
 		if ( v.file ) then
 			_G[v.name]:SetTexture(v.file);
+		end
+	end
+end
+
+--
+-- Guild Members Display
+--
+
+function AchievementMeta_OnEnter(self)
+	if ( self.date ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, 1);
+		AchievementFrameAchievements_CheckGuildMembersTooltip(self);
+		GameTooltip:Show();
+	end
+end
+
+function AchievementMeta_OnLeave(self)
+	GameTooltip:Hide();
+	guildMemberRequestFrame = nil;
+end
+
+function AchievementShield_OnEnter(self)
+	-- pass-through to the achievement button
+	local parent = self:GetParent();
+	local func = parent:GetScript("OnEnter");
+	if ( func ) then
+		func(parent);
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	AchievementFrameAchievements_CheckGuildMembersTooltip(self);
+	GameTooltip:Show();
+end
+
+function AchievementShield_OnLeave(self)
+	-- pass-through to the achievement button
+	local parent = self:GetParent();
+	local func = parent:GetScript("OnLeave");
+	if ( func ) then
+		func(parent);
+	end
+	GameTooltip:Hide();
+	guildMemberRequestFrame = nil;
+end
+
+function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)
+	if ( IN_GUILD_VIEW ) then
+		local achievementId = requestFrame.id;
+		local _, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(achievementId);
+		-- check if achievement has names, only if completed
+		if ( achievementCompleted and bit.band(flags, ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS) == ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS ) then
+			local numMembers = GetGuildAchievementNumMembers(achievementId);
+			if ( numMembers == 0 ) then
+				-- we may not have the members from the server yet
+				guildMemberRequestFrame = requestFrame;
+				GetGuildAchievementMembers(achievementId);
+			else
+				-- add a line break if the tooltip shows completed date (meta tooltip)
+				if ( GameTooltip:NumLines() > 0 ) then
+					GameTooltip:AddLine(" ");
+				end	
+				GameTooltip:AddLine(GUILD_ACHIEVEMENT_EARNED_BY, 1, 1, 1);
+				local leftMemberName;
+				for i = 1, numMembers do
+					if ( leftMemberName ) then
+						GameTooltip:AddDoubleLine(leftMemberName, GetGuildAchievementMemberInfo(achievementId, i));
+						leftMemberName = nil;
+					else
+						leftMemberName = GetGuildAchievementMemberInfo(achievementId, i);
+					end	
+				end
+				-- check for leftover name
+				if ( leftMemberName ) then
+					GameTooltip:AddLine(leftMemberName);
+				end
+			end
+		-- otherwise check if criteria has names
+		elseif ( bit.band(flags, ACHIEVEMENT_FLAGS_SHOW_CRITERIA_MEMBERS) == ACHIEVEMENT_FLAGS_SHOW_CRITERIA_MEMBERS ) then
+			local numCriteria = GetAchievementNumCriteria(achievementId);
+			local firstName = true;
+			for i = 1, numCriteria do
+				local criteriaString, _, completed, _, _, charName = GetAchievementCriteriaInfo(achievementId, i);
+				if ( completed and charName ) then
+					if ( firstName ) then
+						if ( achievementCompleted ) then
+							GameTooltip:AddLine(GUILD_ACHIEVEMENT_EARNED_BY, 1, 1, 1);
+						else
+							GameTooltip:AddLine(INCOMPLETE, 1, 1, 1);
+						end
+						firstName = false;
+					end
+					GameTooltip:AddDoubleLine(criteriaString, charName, 0, 1, 0);
+				end
+			end
 		end
 	end
 end

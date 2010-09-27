@@ -1,5 +1,5 @@
-HOLY_POWER_INDEX = 9;
 MAX_HOLY_POWER = 3;
+PALADINPOWERBAR_SHOW_LEVEL = 9
 
 
 
@@ -13,26 +13,7 @@ end
 
 
 function PaladinPowerBar_Update(self)
-	
-	
-	-- Temp hack checking buffs
-	local unit = PlayerFrame.unit;
-	local j = 1;
-	local numHolyPowerTemp = 0;
-	local name, rank, texture, count = UnitAura(unit, j, "HELPFUL");
-	while name do 
-		if name == "Holy Power" then 
-			numHolyPowerTemp = count;
-			break;
-		end
-		j=j+1;
-		name, rank, texture, count = UnitAura(unit, j, "HELPFUL");
-	end
-
-
-
-	
-	local numHolyPower = max(numHolyPowerTemp, UnitPower( PaladinPowerBar:GetParent().unit, HOLY_POWER_INDEX ));
+	local numHolyPower = UnitPower( PaladinPowerBar:GetParent().unit, SPELL_POWER_HOLY_POWER );
 
 	for i=1,MAX_HOLY_POWER do
 		local holyRune = self["rune"..i];
@@ -59,12 +40,14 @@ function PaladinPowerBar_OnLoad (self)
 	if ( class ~= "PALADIN" ) then
 		self:Hide();
 		return;
+	elseif UnitLevel("player") < PALADINPOWERBAR_SHOW_LEVEL then
+		self:RegisterEvent("PLAYER_LEVEL_UP");
+		self:SetAlpha(0);
 	end
+
 	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	
-	self:RegisterEvent("UNIT_AURA");
 	
 	self.glow:SetAlpha(0);
 	self.rune1:SetAlpha(0);
@@ -77,6 +60,13 @@ end
 function PaladinPowerBar_OnEvent (self, event, arg1, arg2)
 	if ( (event == "UNIT_POWER") and (arg1 == self:GetParent().unit) ) then
 		if ( arg2 == "HOLY_POWER" ) then
+			PaladinPowerBar_Update(self);
+		end
+	elseif( event ==  "PLAYER_LEVEL_UP" ) then
+		local level = arg1;
+		if level >= PALADINPOWERBAR_SHOW_LEVEL then
+			self:UnregisterEvent("PLAYER_LEVEL_UP");
+			self.showAnim:Play();
 			PaladinPowerBar_Update(self);
 		end
 	else

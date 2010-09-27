@@ -636,7 +636,7 @@
 				</Layers>
 			</Frame>
 
-			<Button name="KnowledgeBaseFrameReportIssue" inherits="GameMenuButtonTemplate" text="KBASE_REPORTISSUE">
+			<Button name="KnowledgeBaseFrameOpenTicket" inherits="GameMenuButtonTemplate" text="KBASE_OPENTICKET">
 				<Size x="150" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
@@ -647,14 +647,14 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HelpFrame_ShowFrame("ReportIssue");
+						HelpFrame_ShowFrame("OpenTicketInstructions");
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="KnowledgeBaseFrameGMTalk" inherits="GameMenuButtonTemplate" text="KBASE_GMTALK">
+			<Button name="KnowledgeBaseFrameAccountSecurity" inherits="GameMenuButtonTemplate" text="KBASE_ACCOUNTSECURITY">
 				<Size x="150" y="20"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="KnowledgeBaseFrameReportIssue" relativePoint="TOP">
+					<Anchor point="BOTTOM" relativeTo="KnowledgeBaseFrameOpenTicket" relativePoint="TOP">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
@@ -662,32 +662,17 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HelpFrame_ShowFrame("GMTalk");
+						HelpFrame_ShowFrame("AccountSecurity");
 					</OnClick>
 				</Scripts>
 			</Button>
 
-			<Button name="KnowledgeBaseFrameAbandonTicket" inherits="GameMenuButtonTemplate" text="HELP_TICKET_ABANDON" hidden="true">
+			<Button name="KnowledgeBaseFrameEditTicket" inherits="GameMenuButtonTemplate" text="HELP_TICKET_EDIT" hidden="true">
 				<Size x="150" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="12" y="21"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						StaticPopup_Show("HELP_TICKET_ABANDON_CONFIRM");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="KnowledgeBaseFrameEditTicket" inherits="GameMenuButtonTemplate" text="HELP_TICKET_EDIT" hidden="true">
-				<Size x="150" y="20"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="KnowledgeBaseFrameAbandonTicket" relativePoint="TOP">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -703,7 +688,7 @@
 			<Button name="KnowledgeBaseFrameStuck" inherits="GameMenuButtonTemplate" text="KBASE_CHARSTUCK">
 				<Size x="150" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameReportIssue" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameOpenTicket" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
@@ -719,7 +704,7 @@
 			<Button name="KnowledgeBaseFrameLag" inherits="GameMenuButtonTemplate" text="KBASE_LAG">
 				<Size x="150" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameGMTalk" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="KnowledgeBaseFrameAccountSecurity" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>

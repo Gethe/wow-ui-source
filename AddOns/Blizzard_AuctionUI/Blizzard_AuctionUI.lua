@@ -1375,13 +1375,12 @@ function AuctionsButton_OnClick(button)
 	AuctionFrameAuctions_Update();
 end
 
-function PriceDropDown_OnLoad(self)
+function PriceDropDown_OnShow(self)
 	UIDropDownMenu_Initialize(self, PriceDropDown_Initialize);
 	if ( not AuctionFrameAuctions.priceType ) then
 		AuctionFrameAuctions.priceType = PRICE_TYPE_STACK;
 	end
 	UIDropDownMenu_SetSelectedValue(PriceDropDown, AuctionFrameAuctions.priceType);
-	UIDropDownMenu_SetWidth(PriceDropDown, 80);
 end
 
 function PriceDropDown_Initialize()
@@ -1419,13 +1418,12 @@ function PriceDropDown_OnClick(self)
 	end
 end
 
-function DurationDropDown_OnLoad(self)
+function DurationDropDown_OnShow(self)
 	UIDropDownMenu_Initialize(self, DurationDropDown_Initialize);
 	if ( not AuctionFrameAuctions.duration ) then
 		AuctionFrameAuctions.duration = 2;
 	end
 	UIDropDownMenu_SetSelectedValue(DurationDropDown, AuctionFrameAuctions.duration);
-	UIDropDownMenu_SetWidth(DurationDropDown, 80);
 end
 
 function DurationDropDown_Initialize()

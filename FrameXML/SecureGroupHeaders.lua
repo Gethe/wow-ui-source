@@ -3,6 +3,14 @@
 --
 
 local strsplit = strsplit;
+local select = select;
+local tonumber = tonumber;
+local type = type;
+local floor = math.floor;
+local ceil = math.ceil;
+local min = math.min;
+local max = math.max;
+local abs = math.abs;
 
 --[[
 List of the various configuration attributes
@@ -43,7 +51,7 @@ end
 
 function SecureGroupHeader_OnAttributeChanged(self, name, value)
     if ( name == "_ignore" or self:GetAttribute("_ignore" ) ) then
-    	return
+        return
     end
     if ( self:IsVisible() ) then
         SecureGroupHeader_Update(self);
@@ -77,11 +85,12 @@ local function getRelativePointAnchor( point )
 end
 
 local function setAttributesWithoutResponse(self, ...)
-	self:SetAttribute("_ignore", "attributeChanges");
-	for	i = 1, select('#', ...), 2 do
-		self:SetAttribute(select(i, ...));
-	end
-	self:SetAttribute("_ignore", nil);
+        local oldIgnore = self:GetAttribute("_ignore");
+        self:SetAttribute("_ignore", "attributeChanges");
+        for     i = 1, select('#', ...), 2 do
+                self:SetAttribute(select(i, ...));
+        end
+        self:SetAttribute("_ignore", oldIgnore);
 end
 
 local CallRestrictedClosure = CallRestrictedClosure;
@@ -92,11 +101,11 @@ local tinsert = table.insert;
 
 function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunction )
     local configCode = header:GetAttribute("initialConfigFunction") or defaultConfigFunction;
-    
-    if ( type(configCode) == "string" ) then 
+
+    if ( type(configCode) == "string" ) then
         local selfHandle = GetFrameHandle(newChild);
         if ( selfHandle ) then
-            CallRestrictedClosure("self", GetManagedEnvironment(header), 
+            CallRestrictedClosure("self", GetManagedEnvironment(header, true),
                                   selfHandle, configCode, selfHandle);
         end
     end
@@ -187,12 +196,13 @@ local function configureChildren(self, unitTable)
             unitButton:SetPoint(point, currentAnchor, relativePoint, xMultiplier * xOffset, yMultiplier * yOffset);
         end
         unitButton:SetAttribute("unit", unitTable[i]);
-        
-        local configCode = unitButton:GetAttribute("refreshUnitChange");        
-        if ( type(configCode) == "string" ) then 
+
+        local configCode = unitButton:GetAttribute("refreshUnitChange");
+        if ( type(configCode) == "string" ) then
             local selfHandle = GetFrameHandle(unitButton);
             if ( selfHandle ) then
-                CallRestrictedClosure("self", GetManagedEnvironment(unitButton), 
+                CallRestrictedClosure("self",
+                                      GetManagedEnvironment(unitButton, true),
                                       selfHandle, configCode, selfHandle);
             end
         end
@@ -348,7 +358,7 @@ local function sortOnGroupWithIDs(a, b)
             return true;
         else
             if ( order1 == order2 ) then
-                return tonumber(a:match("%d+")) < tonumber(b:match("%d+"));
+                return tonumber(a:match("%d+") or -1) < tonumber(b:match("%d+") or -1);
             else
                 return order1 < order2;
             end
@@ -357,7 +367,7 @@ local function sortOnGroupWithIDs(a, b)
         if ( order2 ) then
             return false;
         else
-            return tonumber(a:match("%d+")) < tonumber(b:match("%d+"));
+            return tonumber(a:match("%d+") or -1) < tonumber(b:match("%d+") or -1);
         end
     end
 end
@@ -465,7 +475,7 @@ end
 
 function SecureGroupPetHeader_OnAttributeChanged(self, name, value)
     if ( name == "_ignore" or self:GetAttribute("_ignore" ) ) then
-    	return
+        return
     end
     if ( self:IsVisible() ) then
         SecureGroupPetHeader_Update(self);
@@ -634,28 +644,28 @@ function SecureAuraHeader_OnLoad(self)
 end
 
 function SecureAuraHeader_OnUpdate(self)
-	local hasMainHandEnchant, hasOffHandEnchant, _;
-	hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = GetWeaponEnchantInfo();
-	if ( hasMainHandEnchant ~= self:GetAttribute("_mainEnchanted") ) then
-		self:SetAttribute("_mainEnchanted", hasMainHandEnchant);
-	end
-	if ( hasOffHandEnchant ~= self:GetAttribute("_secondaryEnchanted") ) then
-		self:SetAttribute("_secondaryEnchanted", hasOffHandEnchant);
-	end
+        local hasMainHandEnchant, hasOffHandEnchant, _;
+        hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = GetWeaponEnchantInfo();
+        if ( hasMainHandEnchant ~= self:GetAttribute("_mainEnchanted") ) then
+                self:SetAttribute("_mainEnchanted", hasMainHandEnchant);
+        end
+        if ( hasOffHandEnchant ~= self:GetAttribute("_secondaryEnchanted") ) then
+                self:SetAttribute("_secondaryEnchanted", hasOffHandEnchant);
+        end
 end
 
 function SecureAuraHeader_OnEvent(self, event, ...)
     if ( self:IsVisible() ) then
-    	local unit = SecureButton_GetUnit(self);
-    	if ( event == "UNIT_AURA" and ... == unit ) then
-        	SecureAuraHeader_Update(self);
+        local unit = SecureButton_GetUnit(self);
+        if ( event == "UNIT_AURA" and ... == unit ) then
+                SecureAuraHeader_Update(self);
         end
     end
 end
 
 function SecureAuraHeader_OnAttributeChanged(self, name, value)
     if ( name == "_ignore" or self:GetAttribute("_ignore") ) then
-    	return;
+        return;
     end
     if ( self:IsVisible() ) then
         SecureAuraHeader_Update(self);
@@ -665,363 +675,364 @@ end
 local buttons = {};
 
 local function extractTemplateInfo(template, defaultWidget)
-	local widgetType;
+        local widgetType;
 
-	if ( template ) then
-		template, widgetType = strsplit(",", tostring(template):trim():gsub("%s*,%s*", ","));
-		if ( template ~= "" ) then
-			if ( not widgetType or widgetType == "" ) then
-				widgetType = defaultWidget;
-			end
-			return template, widgetType;
-		end
-	end
-	return nil;
+        if ( template ) then
+                template, widgetType = strsplit(",", tostring(template):trim():gsub("%s*,%s*", ","));
+                if ( template ~= "" ) then
+                        if ( not widgetType or widgetType == "" ) then
+                                widgetType = defaultWidget;
+                        end
+                        return template, widgetType;
+                end
+        end
+        return nil;
 end
 
 local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
-	local point = self:GetAttribute("point") or "TOPRIGHT";
-	local xOffset = tonumber(self:GetAttribute("xOffset")) or 0;
-	local yOffset = tonumber(self:GetAttribute("yOffset")) or 0;
-	local wrapXOffset = tonumber(self:GetAttribute("wrapXOffset")) or 0;
-	local wrapYOffset = tonumber(self:GetAttribute("wrapYOffset")) or 0;
-	local wrapAfter = tonumber(self:GetAttribute("wrapAfter"));
-	if ( wrapAfter == 0 ) then wrapAfter = nil; end
-	local maxWraps = self:GetAttribute("maxWraps");
-	local minWidth = tonumber(self:GetAttribute("minWidth")) or 0;
-	local minHeight = tonumber(self:GetAttribute("minHeight")) or 0;
-	
-	if ( consolidateTable and #consolidateTable == 0 ) then
-		consolidateTable = nil;
-	end
-	local name = self:GetName();
+        local point = self:GetAttribute("point") or "TOPRIGHT";
+        local xOffset = tonumber(self:GetAttribute("xOffset")) or 0;
+        local yOffset = tonumber(self:GetAttribute("yOffset")) or 0;
+        local wrapXOffset = tonumber(self:GetAttribute("wrapXOffset")) or 0;
+        local wrapYOffset = tonumber(self:GetAttribute("wrapYOffset")) or 0;
+        local wrapAfter = tonumber(self:GetAttribute("wrapAfter"));
+        if ( wrapAfter == 0 ) then wrapAfter = nil; end
+        local maxWraps = self:GetAttribute("maxWraps");
+        local minWidth = tonumber(self:GetAttribute("minWidth")) or 0;
+        local minHeight = tonumber(self:GetAttribute("minHeight")) or 0;
 
-	wipe(buttons);
-	local buffTemplate, buffWidget = extractTemplateInfo(self:GetAttribute("template"), "Button");
-	if ( buffTemplate ) then
-		for i=1, #auraTable do
-			local childAttr = "child"..i;
-			local button = self:GetAttribute("child"..i);
-			if ( button ) then 
-				button:ClearAllPoints();
-			else
-				button = CreateFrame(buffWidget, name and name.."AuraButton"..i, self, buffTemplate);
-				setAttributesWithoutResponse(self, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button));
-			end
-			local buffInfo = auraTable[i];
-			button:SetID(buffInfo.index);
-			button:SetAttribute("index", buffInfo.index);
-			button:SetAttribute("filter", buffInfo.filter);
-			buttons[i] = button;
-		end
-	end
-	local deadIndex = #buttons + 1;
-	local button = self:GetAttribute("child"..deadIndex);
-	while ( button ) do
-		button:Hide();
-		deadIndex = deadIndex + 1;
-		button = self:GetAttribute("child"..deadIndex)
-	end
+        if ( consolidateTable and #consolidateTable == 0 ) then
+                consolidateTable = nil;
+        end
+        local name = self:GetName();
 
-	if ( consolidateTable ) then
-		local consolidateProxy = self:GetAttribute("consolidateProxy");
-		if ( type(consolidateProxy) == 'STRING' ) then
-			local template, widgetType = extractTemplateInfo(consolidateProxy, "Button");
-			if ( template ) then
-				consolidateProxy = CreateFrame(widgetType, name and name.."ProxyButton", self, template);
-				setAttributesWithoutResponse(self, "consolidateProxy", consolidateProxy, "frameref-proxy", GetFrameHandle(consolidateProxy));
-			else
-				consolidateProxy = nil;
-			end
-		end
-		if ( consolidateProxy ) then
-			if ( consolidateTable.position ) then
-				tinsert(buttons, consolidateTable.position, consolidateProxy);
-			else
-				tinsert(buttons, consolidateProxy);
-			end
-			consolidateProxy:ClearAllPoints();
-		end
-	else
-		local consolidateProxy = self:GetAttribute("consolidateProxy");
-		if ( consolidateProxy and type(consolidateProxy.Hide) == 'function' ) then
-			consolidateProxy:Hide();
-		end
-	end
-	if ( weaponPosition ) then
-		local hasMainHandEnchant, hasOffHandEnchant, _;
-		hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = GetWeaponEnchantInfo();
-		
-		if ( hasOffHandEnchant ) then
-			tempEnchant2 = self:GetAttribute("tempEnchant2");
-			if ( not tempEnchant2 ) then
-				local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
-				if ( template ) then
-					tempEnchant1 = CreateFrame(widgetType, name and name.."TempEnchant2", self, template);
-					setAttributesWithoutResponse(self, "tempEnchant2", tempEnchant2);
-				end
-			end
-			if ( tempEnchant2 ) then
-				tempEnchant2:ClearAllPoints();
-				local slot = GetInventorySlotInfo("MainHandSlot");
-				tempEnchant2:SetAttribute("target-slot", slot);
-				tempEnchant2:SetID(slot);
-				if ( weaponPosition == 0 ) then
-					tinsert(buttons, tempEnchant1);
-				else
-					tinsert(buttons, weaponPosition, tempEnchant1);
-				end
-			end
-		else
-			local tempEnchant2 = self:GetAttribute("tempEnchant2");
-			if ( tempEnchant2 and type(tempEnchant2.Hide) == 'function' ) then
-				tempEnchant2:Hide();
-			end
-		end
+        wipe(buttons);
+        local buffTemplate, buffWidget = extractTemplateInfo(self:GetAttribute("template"), "Button");
+        if ( buffTemplate ) then
+                for i=1, #auraTable do
+                        local childAttr = "child"..i;
+                        local button = self:GetAttribute("child"..i);
+                        if ( button ) then
+                                button:ClearAllPoints();
+                        else
+                                button = CreateFrame(buffWidget, name and name.."AuraButton"..i, self, buffTemplate);
+                                setAttributesWithoutResponse(self, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button));
+                        end
+                        local buffInfo = auraTable[i];
+                        button:SetID(buffInfo.index);
+                        button:SetAttribute("index", buffInfo.index);
+                        button:SetAttribute("filter", buffInfo.filter);
+                        buttons[i] = button;
+                end
+        end
+        local deadIndex = #buttons + 1;
+        local button = self:GetAttribute("child"..deadIndex);
+        while ( button ) do
+                button:Hide();
+                deadIndex = deadIndex + 1;
+                button = self:GetAttribute("child"..deadIndex)
+        end
 
-		if ( hasMainHandEnchant ) then
-			tempEnchant1 = self:GetAttribute("tempEnchant1");
-			if ( not tempEnchant1 ) then
-				local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
-				if ( template ) then
-					tempEnchant1 = CreateFrame(widgetType, name and name.."TempEnchant1", self, template);
-					setAttributesWithoutResponse(self, "tempEnchant1", tempEnchant1);
-				end
-			end
-			if ( tempEnchant1 ) then
-				tempEnchant1:ClearAllPoints();
-				local slot = GetInventorySlotInfo("MainHandSlot");
-				tempEnchant1:SetAttribute("target-slot", slot);
-				tempEnchant1:SetID(slot);
-				if ( weaponPosition == 0 ) then
-					tinsert(buttons, tempEnchant1);
-				else
-					tinsert(buttons, weaponPosition, tempEnchant1);
-				end
-			end
-		else
-			local tempEnchant1 = self:GetAttribute("tempEnchant1");
-			if ( tempEnchant1 and type(tempEnchant1.Hide) == 'function' ) then
-				tempEnchant1:Hide();
-			end
-		end
-	end
+        local consolidateProxy = nil;
+        if ( consolidateTable ) then
+                consolidateProxy = self:GetAttribute("consolidateProxy");
+                if ( type(consolidateProxy) == 'STRING' ) then
+                        local template, widgetType = extractTemplateInfo(consolidateProxy, "Button");
+                        if ( template ) then
+                                consolidateProxy = CreateFrame(widgetType, name and name.."ProxyButton", self, template);
+                                setAttributesWithoutResponse(self, "consolidateProxy", consolidateProxy, "frameref-proxy", GetFrameHandle(consolidateProxy));
+                        else
+                                consolidateProxy = nil;
+                        end
+                end
+                if ( consolidateProxy ) then
+                        if ( consolidateTable.position ) then
+                                tinsert(buttons, consolidateTable.position, consolidateProxy);
+                        else
+                                tinsert(buttons, consolidateProxy);
+                        end
+                        consolidateProxy:ClearAllPoints();
+                end
+        else
+                local consolidateProxy = self:GetAttribute("consolidateProxy");
+                if ( consolidateProxy and type(consolidateProxy.Hide) == 'function' ) then
+                        consolidateProxy:Hide();
+                end
+        end
+        if ( weaponPosition ) then
+                local hasMainHandEnchant, hasOffHandEnchant, _, tempEnchant1, tempEnchant2;
+                hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = GetWeaponEnchantInfo();
 
-	local display = #buttons
-	if ( wrapAfter and maxWraps ) then
-		display = math.min(display, wrapAfter * maxWraps);
-	end
+                if ( hasOffHandEnchant ) then
+                        tempEnchant2 = self:GetAttribute("tempEnchant2");
+                        if ( not tempEnchant2 ) then
+                                local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
+                                if ( template ) then
+                                        tempEnchant2 = CreateFrame(widgetType, name and name.."TempEnchant2", self, template);
+                                        setAttributesWithoutResponse(self, "tempEnchant2", tempEnchant2);
+                                end
+                        end
+                        if ( tempEnchant2 ) then
+                                tempEnchant2:ClearAllPoints();
+                                local slot = GetInventorySlotInfo("MainHandSlot");
+                                tempEnchant2:SetAttribute("target-slot", slot);
+                                tempEnchant2:SetID(slot);
+                                if ( weaponPosition == 0 ) then
+                                        tinsert(buttons, tempEnchant2);
+                                else
+                                        tinsert(buttons, weaponPosition, tempEnchant2);
+                                end
+                        end
+                else
+                        tempEnchant2 = self:GetAttribute("tempEnchant2");
+                        if ( tempEnchant2 and type(tempEnchant2.Hide) == 'function' ) then
+                                tempEnchant2:Hide();
+                        end
+                end
 
-	local left, right, top, bottom = math.huge, 0, 0, math.huge;
-	for index=1,display do
-		local button = buttons[index];
-		local tick, cycle = math.floor((index - 1) % wrapAfter), math.floor((index - 1) / wrapAfter);
-		button:SetPoint(point, self, cycle * wrapXOffset + tick * xOffset, cycle * wrapYOffset + tick * yOffset);
-		button:Show();
-		left = math.min(left, button:GetLeft() or math.huge);
-		right = math.max(right, button:GetRight() or 0);
-		top = math.max(top, button:GetTop() or 0);
-		bottom = math.min(bottom, button:GetBottom() or math.huge);
-	end
-	if ( display >= 1 ) then
-		self:SetWidth(math.max(right - left, minWidth));
-		self:SetHeight(math.max(top - bottom, minHeight));
-	else
-		self:SetWidth(minWidth);
-		self:SetHeight(minHeight);
-	end
-	if ( consolidateTable ) then
-		local header = self:GetAttribute("consolidateHeader");
-		if ( type(header) == 'STRING' ) then
-			local template, widgetType = extractTemplateInfo(header, "Frame");
-			if ( template ) then
-				header = CreateFrame(widgetType, name and name.."ProxyHeader", consolidateProxy, template);
-				setAttributesWithoutResponse(self, "consolidateHeader", header);
-				consolidateProxy:SetAttribute("header", header);
-				consolidateProxy:SetAttribute("frameref-header", GetFrameHandle(header))
-			end
-		end
-		if ( header ) then
-			configureAuras(header, consolidateTable);
-		end
-	end
+                if ( hasMainHandEnchant ) then
+                        tempEnchant1 = self:GetAttribute("tempEnchant1");
+                        if ( not tempEnchant1 ) then
+                                local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
+                                if ( template ) then
+                                        tempEnchant1 = CreateFrame(widgetType, name and name.."TempEnchant1", self, template);
+                                        setAttributesWithoutResponse(self, "tempEnchant1", tempEnchant1);
+                                end
+                        end
+                        if ( tempEnchant1 ) then
+                                tempEnchant1:ClearAllPoints();
+                                local slot = GetInventorySlotInfo("MainHandSlot");
+                                tempEnchant1:SetAttribute("target-slot", slot);
+                                tempEnchant1:SetID(slot);
+                                if ( weaponPosition == 0 ) then
+                                        tinsert(buttons, tempEnchant1);
+                                else
+                                        tinsert(buttons, weaponPosition, tempEnchant1);
+                                end
+                        end
+                else
+                        tempEnchant1 = self:GetAttribute("tempEnchant1");
+                        if ( tempEnchant1 and type(tempEnchant1.Hide) == 'function' ) then
+                                tempEnchant1:Hide();
+                        end
+                end
+        end
+
+        local display = #buttons
+        if ( wrapAfter and maxWraps ) then
+                display = min(display, wrapAfter * maxWraps);
+        end
+
+        local left, right, top, bottom = math.huge, 0, 0, math.huge;
+        for index=1,display do
+                local button = buttons[index];
+                local tick, cycle = floor((index - 1) % wrapAfter), floor((index - 1) / wrapAfter);
+                button:SetPoint(point, self, cycle * wrapXOffset + tick * xOffset, cycle * wrapYOffset + tick * yOffset);
+                button:Show();
+                left = min(left, button:GetLeft() or math.huge);
+                right = max(right, button:GetRight() or 0);
+                top = max(top, button:GetTop() or 0);
+                bottom = min(bottom, button:GetBottom() or math.huge);
+        end
+        if ( display >= 1 ) then
+                self:SetWidth(max(right - left, minWidth));
+                self:SetHeight(max(top - bottom, minHeight));
+        else
+                self:SetWidth(minWidth);
+                self:SetHeight(minHeight);
+        end
+        if ( consolidateTable ) then
+                local header = self:GetAttribute("consolidateHeader");
+                if ( type(header) == 'STRING' ) then
+                        local template, widgetType = extractTemplateInfo(header, "Frame");
+                        if ( template ) then
+                                header = CreateFrame(widgetType, name and name.."ProxyHeader", consolidateProxy, template);
+                                setAttributesWithoutResponse(self, "consolidateHeader", header);
+                                consolidateProxy:SetAttribute("header", header);
+                                consolidateProxy:SetAttribute("frameref-header", GetFrameHandle(header))
+                        end
+                end
+                if ( header ) then
+                        configureAuras(header, consolidateTable);
+                end
+        end
 end
 
 local tremove = table.remove;
 
 local function stripRAID(filter)
-	return filter and tostring(filter):upper():gsub("RAID", ""):gsub("|+", "|"):match("^|?(.+[^|])|?$");
+        return filter and tostring(filter):upper():gsub("RAID", ""):gsub("|+", "|"):match("^|?(.+[^|])|?$");
 end
 
 local freshTable;
 local releaseTable;
-do 
-	local tableReserve = {};
-	freshTable = function ()
-		local t = next(tableReserve) or {};
-		tableReserve[t] = nil;
-		return t;
-	end
-	releaseTable = function (t)
-		tableReserve[t] = wipe(t);
-	end
+do
+        local tableReserve = {};
+        freshTable = function ()
+                local t = next(tableReserve) or {};
+                tableReserve[t] = nil;
+                return t;
+        end
+        releaseTable = function (t)
+                tableReserve[t] = wipe(t);
+        end
 end
 
 local sorters = {};
 
 local function sortFactory(key, separateOwn, reverse)
-	if ( separateOwn ) then
-		if ( reverse ) then
-			return function (a, b)
-				if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
-					local ownA, ownB = a.caster == "player", b.caster == "player";
-					if ( ownA ~= ownB ) then
-						return ownA == (separateOwn > 0)
-					end
-					return a[key] > b[key];
-				else
-					return groupingTable[a.filter] < groupingTable[b.filter];
-				end
-			end;
-		else
-			return function (a, b)
-				if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
-					local ownA, ownB = a.caster == "player", b.caster == "player";
-					if ( ownA ~= ownB ) then
-						return ownA == (separateOwn > 0)
-					end
-					return a[key] < b[key];
-				else
-					return groupingTable[a.filter] < groupingTable[b.filter];
-				end
-			end;
-		end
-	else
-		if ( reverse ) then
-			return function (a, b)
-				if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
-					return a[key] > b[key];
-				else
-					return groupingTable[a.filter] < groupingTable[b.filter];
-				end
-			end;
-		else
-			return function (a, b)
-				if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
-					return a[key] < b[key];
-				else
-					return groupingTable[a.filter] < groupingTable[b.filter];
-				end
-			end;
-		end
-	end
+        if ( separateOwn ) then
+                if ( reverse ) then
+                        return function (a, b)
+                                if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
+                                        local ownA, ownB = a.caster == "player", b.caster == "player";
+                                        if ( ownA ~= ownB ) then
+                                                return ownA == (separateOwn > 0)
+                                        end
+                                        return a[key] > b[key];
+                                else
+                                        return groupingTable[a.filter] < groupingTable[b.filter];
+                                end
+                        end;
+                else
+                        return function (a, b)
+                                if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
+                                        local ownA, ownB = a.caster == "player", b.caster == "player";
+                                        if ( ownA ~= ownB ) then
+                                                return ownA == (separateOwn > 0)
+                                        end
+                                        return a[key] < b[key];
+                                else
+                                        return groupingTable[a.filter] < groupingTable[b.filter];
+                                end
+                        end;
+                end
+        else
+                if ( reverse ) then
+                        return function (a, b)
+                                if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
+                                        return a[key] > b[key];
+                                else
+                                        return groupingTable[a.filter] < groupingTable[b.filter];
+                                end
+                        end;
+                else
+                        return function (a, b)
+                                if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
+                                        return a[key] < b[key];
+                                else
+                                        return groupingTable[a.filter] < groupingTable[b.filter];
+                                end
+                        end;
+                end
+        end
 end
 
 for i, key in ipairs{"index", "name", "expires"} do
-	local label = key:upper();
-	sorters[label] = {};
-	for bool in pairs{[true] = true, [false] = false} do
-		sorters[label][bool] = {}
-		for sep=-1,1 do
-			sorters[label][bool][sep] = sortFactory(key, sep, bool);
-		end
-	end
+        local label = key:upper();
+        sorters[label] = {};
+        for bool in pairs{[true] = true, [false] = false} do
+                sorters[label][bool] = {}
+                for sep=-1,1 do
+                        sorters[label][bool][sep] = sortFactory(key, sep, bool);
+                end
+        end
 end
 sorters.TIME = sorters.EXPIRES;
 
 function SecureAuraHeader_Update(self)
-	local filter = self:GetAttribute("filter");
-	local groupBy = self:GetAttribute("groupBy");
-	local unit = SecureButton_GetUnit(self) or "player";
-	local includeWeapons = tonumber(self:GetAttribute("includeWeapons"));
-	local consolidateTo = tonumber(self:GetAttribute("consolidateTo"));
-	local consolidateDuration, consolidateThreshold, consolidateFraction;
-	if ( consolidateTo ) then
-		consolidateDuration = tonumber(self:GetAttribute("consolidateDuration")) or 30;
-		consolidateThreshold = tonumber(self:GetAttribute("consolidateThreshold")) or 10;
-		consolidateFraction = tonumber(self:GetAttribute("consolidateFraction")) or 0.1;
-	end
-	local sortDirection = self:GetAttribute("sortDirection");
-	local separateOwn = tonumber(self:GetAttribute("separateOwn")) or 0;
-	if ( separateOwn > 0 ) then
-		separateOwn = 1;
-	elseif (separateOwn < 0 ) then
-		separateOwn = -1;
-	end
-	local sortMethod = (sorters[tostring(self:GetAttribute("sortMethod")):upper()] or sorters["INDEX"])[sortDirection == "-"][separateOwn];
-	
-	local time = GetTime();
-	
-	local consolidateTable;
-	if ( consolidateTo and consolidateTo ~= 0 ) then
-		consolidateTable = wipe(tokenTable);	
-	end
-	
-	wipe(sortingTable);
-	wipe(groupingTable);
-	
-	if ( groupBy ) then
-		local i = 1;
-		for subFilter in groupBy:gmatch("[^,]+") do
-			if ( filter ) then
-				subFilter = stripRAID(filter.."|"..subFilter);
-			else
-				subFilter = stripRAID(subFilter);
-			end
-			groupingTable[subFilter], groupingTable[i] = i, subFilter;
-		end
-	else
-		filter = stripRAID(filter);
-		groupingTable[filter], groupingTable[1] = 1, filter;
-	end
-	if ( consolidateTable and consolidateTo < 0 ) then
-		consolidateTo = #groupingTable + consolidateTo + 1;
-	end
-	if ( includeWeapons and includeWeapons < 0 ) then
-		includeWeapons = #groupingTable + includeWeapons + 1;
-	end
-	local weaponPosition;
-	for filterIndex, fullFilter in ipairs(groupingTable) do
-		if ( consolidateTable and not consolidateTable.position and filterIndex >= consolidateTo ) then
-			consolidateTable.position = #sortingTable + 1;
-		end
-		if ( includeWeapons and not weaponPosition and filterIndex >= includeWeapons ) then
-			weaponPosition = #sortingTable + 1;
-		end
-		
-		local i = 1;
-		repeat
-			local aura, _, duration = freshTable();
-			aura.name, _, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = UnitAura(unit, i, fullFilter);
-			if ( aura.name ) then
-				aura.filter = fullFilter;
-				aura.index = i;
-				local targetList = sortingTable;
-				if ( consolidateTable and aura.shouldConsolidate ) then
-					if ( not aura.expires or duration <= 30 or (aura.expires - time < math.max(consolidateThreshold, duration * consolidateFraction)) ) then
-						targetList = consolidateTable;
-					end
-				end
-				tinsert(targetList, aura);
-			else
-				releaseTable(aura);
-			end
-			i = i + 1;
-		until ( not aura.name );
-	end
-	if ( includeWeapons and not weaponPosition ) then
-		weaponPosition = 0;
-	end
-	table.sort(sortingTable, sortMethod);
-	if ( consolidateTable ) then
-		table.sort(consolidateTable, sortMethod);
-	end
-	
-	configureAuras(self, sortingTable, consolidateTable, weaponPosition);
-	while ( sortingTable[1] ) do
-		releaseTable(tremove(sortingTable));
-	end
-	while ( consolidateTable and consolidateTable[1] ) do
-		releaseTable(tremove(consolidateTable));
-	end
+        local filter = self:GetAttribute("filter");
+        local groupBy = self:GetAttribute("groupBy");
+        local unit = SecureButton_GetUnit(self) or "player";
+        local includeWeapons = tonumber(self:GetAttribute("includeWeapons"));
+        local consolidateTo = tonumber(self:GetAttribute("consolidateTo"));
+        local consolidateDuration, consolidateThreshold, consolidateFraction;
+        if ( consolidateTo ) then
+                consolidateDuration = tonumber(self:GetAttribute("consolidateDuration")) or 30;
+                consolidateThreshold = tonumber(self:GetAttribute("consolidateThreshold")) or 10;
+                consolidateFraction = tonumber(self:GetAttribute("consolidateFraction")) or 0.1;
+        end
+        local sortDirection = self:GetAttribute("sortDirection");
+        local separateOwn = tonumber(self:GetAttribute("separateOwn")) or 0;
+        if ( separateOwn > 0 ) then
+                separateOwn = 1;
+        elseif (separateOwn < 0 ) then
+                separateOwn = -1;
+        end
+        local sortMethod = (sorters[tostring(self:GetAttribute("sortMethod")):upper()] or sorters["INDEX"])[sortDirection == "-"][separateOwn];
+
+        local time = GetTime();
+
+        local consolidateTable;
+        if ( consolidateTo and consolidateTo ~= 0 ) then
+                consolidateTable = wipe(tokenTable);
+        end
+
+        wipe(sortingTable);
+        wipe(groupingTable);
+
+        if ( groupBy ) then
+                local i = 1;
+                for subFilter in groupBy:gmatch("[^,]+") do
+                        if ( filter ) then
+                                subFilter = stripRAID(filter.."|"..subFilter);
+                        else
+                                subFilter = stripRAID(subFilter);
+                        end
+                        groupingTable[subFilter], groupingTable[i] = i, subFilter;
+                end
+        else
+                filter = stripRAID(filter);
+                groupingTable[filter], groupingTable[1] = 1, filter;
+        end
+        if ( consolidateTable and consolidateTo < 0 ) then
+                consolidateTo = #groupingTable + consolidateTo + 1;
+        end
+        if ( includeWeapons and includeWeapons < 0 ) then
+                includeWeapons = #groupingTable + includeWeapons + 1;
+        end
+        local weaponPosition;
+        for filterIndex, fullFilter in ipairs(groupingTable) do
+                if ( consolidateTable and not consolidateTable.position and filterIndex >= consolidateTo ) then
+                        consolidateTable.position = #sortingTable + 1;
+                end
+                if ( includeWeapons and not weaponPosition and filterIndex >= includeWeapons ) then
+                        weaponPosition = #sortingTable + 1;
+                end
+
+                local i = 1;
+                repeat
+                        local aura, _, duration = freshTable();
+                        aura.name, _, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = UnitAura(unit, i, fullFilter);
+                        if ( aura.name ) then
+                                aura.filter = fullFilter;
+                                aura.index = i;
+                                local targetList = sortingTable;
+                                if ( consolidateTable and aura.shouldConsolidate ) then
+                                        if ( not aura.expires or duration <= 30 or (aura.expires - time < max(consolidateThreshold, duration * consolidateFraction)) ) then
+                                                targetList = consolidateTable;
+                                        end
+                                end
+                                tinsert(targetList, aura);
+                        else
+                                releaseTable(aura);
+                        end
+                        i = i + 1;
+                until ( not aura.name );
+        end
+        if ( includeWeapons and not weaponPosition ) then
+                weaponPosition = 0;
+        end
+        table.sort(sortingTable, sortMethod);
+        if ( consolidateTable ) then
+                table.sort(consolidateTable, sortMethod);
+        end
+
+        configureAuras(self, sortingTable, consolidateTable, weaponPosition);
+        while ( sortingTable[1] ) do
+                releaseTable(tremove(sortingTable));
+        end
+        while ( consolidateTable and consolidateTable[1] ) do
+                releaseTable(tremove(consolidateTable));
+        end
 end

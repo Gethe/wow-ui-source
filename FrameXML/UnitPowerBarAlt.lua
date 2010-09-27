@@ -39,6 +39,17 @@ function UnitPowerBarAlt_Initialize(self, unit, scale, updateAllEvent)
 	self.pillFrames = {};
 end
 
+function UnitPowerBarAlt_OnEnter(self)
+	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	GameTooltip:SetText(self.powerName, 1, 1, 1);
+	GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1);
+	GameTooltip:Show();
+end
+
+function UnitPowerBarAlt_OnLeave(self)
+	GameTooltip:Hide();
+end
+
 function UnitPowerBarAlt_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	
@@ -118,10 +129,12 @@ function UnitPowerBarAlt_HidePills(self)
 end
 
 function UnitPowerBarAlt_SetUp(self)
-	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid = UnitAlternatePowerInfo(self.unit);
+	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(self.unit);
 	self.startInset = startInset;
 	self.endInset = endInset;
 	self.smooth = smooth;
+	self.powerName = powerName;
+	self.powerTooltip = powerTooltip;
 	
 	local sizeInfo = ALT_POWER_BAR_PLAYER_SIZES[barType];
 	self:SetSize(sizeInfo.x * self.scale, sizeInfo.y * self.scale);
@@ -139,6 +152,18 @@ function UnitPowerBarAlt_SetUp(self)
 		UnitPowerBarAlt_Pill_SetUp(self);
 	else
 		error("Currently unhandled bar type: "..(barType or "nil"));
+	end
+	
+	if ( opaqueSpark ) then
+		self.spark:SetBlendMode("BLEND");
+	else
+		self.spark:SetBlendMode("ADD");
+	end
+	
+	if ( opaqueFlash ) then
+		self.flash:SetBlendMode("BLEND");
+	else
+		self.flash:SetBlendMode("ADD");
 	end
 	
 	self:RegisterEvent("UNIT_POWER");

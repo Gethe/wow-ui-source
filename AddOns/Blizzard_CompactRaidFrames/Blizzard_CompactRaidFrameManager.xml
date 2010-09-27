@@ -1,8 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CompactRaidFrameManager.lua"/>
-	<Button name="CRFManagerFilterButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
-		
+	<Button name="CRFManagerFilterButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSelectedHighlight" file="Interface\Buttons\UI-Panel-Button-YellowHighlight" alphaMode="ADD" parentKey="selectedHighlight" alpha="0.7">
+					<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 	<Button name="CRFManagerFilterRoleButtonTemplate" inherits="CRFManagerFilterButtonTemplate" virtual="true">
 		<Size x="58" y="24"/>
@@ -118,7 +124,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentContainerResizeFrame" resizable="true" dontSavePosition="true" parentKey="containerResizeFrame">
+			<Frame name="$parentContainerResizeFrame" frameStrata="LOW" resizable="true" movable="true" dontSavePosition="true" clampedToScreen="true"  parentKey="containerResizeFrame">
 				<Size x="300" y="200"/>
 				<Layers>
 					<Layer level="BORDER">
@@ -342,8 +348,9 @@
 								_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
 							</OnMouseUp>
 							<OnClick>
-								--InterfaceOptionsFrame_OpenToCategory(RAID_FRAMES_LABEL);
-								ToggleFriendsFrame(4);
+								InterfaceOptionsFrame_OpenToCategory(RAID_FRAMES_LABEL);
+								PlaySound("igMainMenuOption");
+								--ToggleFriendsFrame(4);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -354,7 +361,7 @@
 						<Scripts>
 							<OnLoad>
 								self.role = "TANK";
-								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:-1:64:16:32:48:0:16|t";
+								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:32:48:0:16|t";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -365,7 +372,7 @@
 						<Scripts>
 							<OnLoad>
 								self.role = "HEALER";
-								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:-1:64:16:48:64:0:16|t";
+								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:48:64:0:16|t";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -376,7 +383,7 @@
 						<Scripts>
 							<OnLoad>
 								self.role = "DAMAGER";
-								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:-1:64:16:16:32:0:16|t";
+								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:16:32:0:16|t";
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -420,7 +427,7 @@
 							<Anchor point="LEFT" relativeTo="$parentFilterGroup7" relativePoint="RIGHT" x="2" y="0"/>
 						</Anchors>
 					</Button>
-					<Button name="$parentLockedModeToggle" inherits="UIPanelButtonTemplate">
+					<Button name="$parentLockedModeToggle" inherits="UIMenuButtonStretchTemplate">
 						<Size x="83" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="10" y="10"/>
@@ -431,7 +438,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentHiddenModeToggle" inherits="UIPanelButtonTemplate">
+					<Button name="$parentHiddenModeToggle" inherits="UIMenuButtonStretchTemplate">
 						<Size x="83" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentLockedModeToggle" relativePoint="RIGHT" x="3" y="0"/>
@@ -449,7 +456,7 @@
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentHiddenModeToggle" relativePoint="TOPRIGHT"/>
 						</Anchors>
 						<Frames>
-							<Button name="$parentRaidWorldMarkerButton" inherits="UIPanelButtonTemplate2">
+							<Button name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
 								<Size x="40" y="20"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
@@ -466,20 +473,20 @@
 								<Scripts>
 									<OnMouseDown>
 										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", -1, -2);
+											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 1, -2);
 											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
 										end
 									</OnMouseDown>
 									<OnMouseUp>
 										if ( self:IsEnabled() ) then
 											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1);
 											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
 										end
 									</OnMouseUp>
 									<OnClick>
@@ -493,7 +500,7 @@
 									</Anchors>
 								</NormalTexture>
 							</Button>
-							<Button name="$parentInitiateReadyCheck" inherits="UIPanelButtonTemplate2" text="READY_CHECK">
+							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK">
 								<Size x="0" y="20"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -505,7 +512,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentInitiateRolePoll" inherits="UIPanelButtonTemplate2" text="ROLE_POLL">
+							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL">
 								<Size x="0" y="20"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPLEFT" x="0" y="0"/>

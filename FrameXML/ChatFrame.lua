@@ -30,8 +30,6 @@ hash_SlashCmdList = {}
 hash_EmoteTokenList = {}
 hash_ChatTypeInfoList = {}
 
-local IsGMClient = IsGMClient;
-
 ChatTypeInfo = { };
 ChatTypeInfo["SYSTEM"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["SAY"]										= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
@@ -106,12 +104,16 @@ ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flash
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_CONVERSATION"]			= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["COMBAT_GUILD_XP_GAIN"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+
+--NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
 ChatTypeGroup["SYSTEM"] = {
 	"CHAT_MSG_SYSTEM",
 	"TIME_PLAYED_MSG",
 	"PLAYER_LEVEL_UP",
+	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 };
 ChatTypeGroup["SAY"] = {
@@ -155,6 +157,7 @@ ChatTypeGroup["BATTLEGROUND_LEADER"] = {
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
 	"GUILD_MOTD",
+	"UNIT_GUILD_LEVEL",
 };
 ChatTypeGroup["OFFICER"] = {
 	"CHAT_MSG_OFFICER",
@@ -260,6 +263,11 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
 	"CHAT_MSG_BN_INLINE_TOAST_CONVERSATION",
 };
+ChatTypeGroup["COMBAT_GUILD_XP_GAIN"] = {
+	"CHAT_MSG_COMBAT_GUILD_XP_GAIN",
+};
+--NEW_CHAT_TYPE - Add the chat type above.
+
 ChatTypeGroupInverted = {};
 for group, values in pairs(ChatTypeGroup) do
 	for _, value in pairs(values) do
@@ -288,27 +296,6 @@ end
 function Chat_GetChatCategory(chatType)
 	return CHAT_INVERTED_CATEGORY_LIST[chatType] or chatType;
 end
-
-ChannelMenuChatTypeGroups = {};
-ChannelMenuChatTypeGroups[1] = "SAY";
-ChannelMenuChatTypeGroups[2] = "YELL";
-ChannelMenuChatTypeGroups[3] = "GUILD";
-ChannelMenuChatTypeGroups[4] = "WHISPER";
-ChannelMenuChatTypeGroups[5] = "PARTY";
-
-CombatLogMenuChatTypeGroups = {};
-CombatLogMenuChatTypeGroups[1] = "OPENING";
-CombatLogMenuChatTypeGroups[2] = "TRADESKILLS";
-CombatLogMenuChatTypeGroups[3] = "PET_INFO";
-CombatLogMenuChatTypeGroups[4] = "COMBAT_MISC_INFO";
-CombatLogMenuChatTypeGroups[5] = "COMBAT_XP_GAIN";
-CombatLogMenuChatTypeGroups[6] = "COMBAT_HONOR_GAIN";
-CombatLogMenuChatTypeGroups[7] = "COMBAT_FACTION_CHANGE";
-
-OtherMenuChatTypeGroups = {};
-OtherMenuChatTypeGroups[1] = "CREATURE";
-OtherMenuChatTypeGroups[2] = "SKILL";
-OtherMenuChatTypeGroups[3] = "LOOT";
 
 -- list of text emotes that we want to show on the Emote submenu (these have anims)
 EmoteList = {
@@ -1086,6 +1073,35 @@ end
 SecureCmdList["CANCELFORM"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		CancelShapeshiftForm();
+	end
+end
+
+-- Allow friendly names for glyph slots (needs to be local)
+local GLYPH_SLOTS = {
+    minor1 = GLYPH_ID_MINOR_1;
+    minor2 = GLYPH_ID_MINOR_2;
+    minor3 = GLYPH_ID_MINOR_3;
+
+    major1 = GLYPH_ID_MAJOR_1;
+    major2 = GLYPH_ID_MAJOR_2;
+    major3 = GLYPH_ID_MAJOR_3;
+
+    prime1 = GLYPH_ID_PRIME_1;
+    prime2 = GLYPH_ID_PRIME_2;
+    prime3 = GLYPH_ID_PRIME_3;
+};
+
+SecureCmdList["CASTGLYPH"] = function(msg)
+	local action = SecureCmdOptionParse(msg);
+	if ( action ) then
+		local glyph, slot = strmatch(action, "^(%S+)%s+(%S+)$");
+		slot = (slot and GLYPH_SLOTS[slot]) or tonumber(slot);
+		local glyphID = tonumber(glyph);
+		if ( glyphID and slot ) then
+			CastGlyphByID(glyphID, slot);
+		elseif ( glyph and slot ) then
+			CastGlyphByName(glyph, slot);
+		end
 	end
 end
 
@@ -2001,9 +2017,7 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	if ( IsGMClient() ) then
-		RunScript(msg);
-	end
+	RunScript(msg);
 end
 
 SlashCmdList["LOOT_FFA"] = function(msg)
@@ -2092,10 +2106,10 @@ end
 SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
 	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:IsShown() ) then
-		ToggleFriendsFrame(5);
+		ToggleFriendsFrame(4);
 		RaidInfoFrame:Show();
 	elseif ( not RaidFrame:IsShown() ) then
-		ToggleFriendsFrame(5);
+		ToggleFriendsFrame(4);
 	end
 end
 
@@ -2268,10 +2282,8 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	if ( IsGMClient() ) then
-		UIParentLoadAddOn("Blizzard_DebugTools");
-		DevTools_DumpCommand(msg);
-	end
+	UIParentLoadAddOn("Blizzard_DebugTools");
+	DevTools_DumpCommand(msg);
 end
 
 SlashCmdList["RELOAD"] = function(msg)
@@ -2287,6 +2299,15 @@ SlashCmdList["RANDOMPET"] = function(msg)
 	if ( numCompanions > 0  ) then
 		local index = random(1, numCompanions);
 		CallCompanion("CRITTER", index);
+	end
+end
+
+
+SlashCmdList["WARGAME"] = function(msg)
+	local target, area = strmatch(msg, "%s*(%a+)%s*([%a%s]*)");
+	if ( target and target ~= "" ) then
+		if area and area == "" then area = nil end 
+		StartWarGame(target, area );
 	end
 end
 
@@ -2587,8 +2608,13 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		return true;
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
-		LevelUpDisplay_ChatPrint(self, level)
+		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
 		return true;
+	elseif (event == "UNIT_LEVEL" ) then
+		local arg1 = ...;
+		if (arg1 == "pet") then
+			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
+		end
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;
 		local info = ChatTypeInfo["SYSTEM"];
@@ -2634,6 +2660,11 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
 		return true;
+	elseif ( event == "UNIT_GUILD_LEVEL" ) then
+		local unit, level = ...;
+		if ( unit == "player" ) then
+			LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_GUILD);
+		end
 	end
 end
 
@@ -2666,26 +2697,31 @@ function RemoveExtraSpaces(str)
 	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
 end
 
+function ChatFrame_GetMobileEmbeddedTexture(r, g, b)
+	r, g, b = floor(r * 255), floor(g * 255), floor(b * 255);
+	return format("|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat:14:14:0:0:16:16:0:16:0:16:%d:%d:%d|t", r, g, b);
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13 = ...;
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = ...;
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 
 		local filter = false;
 		if ( chatFilters[event] ) then
-			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13;
+			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14, newarg15;
 			for _, filterFunc in next, chatFilters[event] do
-				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+				filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14, newarg15 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
 				if ( filter ) then
 					return true;
 				elseif ( newarg1 ) then
-					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13;
+					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14, newarg15;
 				end
 			end
 		end
 		
-		local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+		local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
 		
 		local channelLength = strlen(arg4);
 		local infoType = type;
@@ -2724,7 +2760,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		if ( chatGroup == "CHANNEL" or chatGroup == "BN_CONVERSATION" ) then
 			chatTarget = tostring(arg8);
 		elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
-			chatTarget = strupper(arg2);
+			if(not(strsub(arg2, 1, 2) == "|K")) then
+				chatTarget = strupper(arg2);
+			else
+				chatTarget = arg2;
+			end
 		end
 		
 		if ( FCFManager_ShouldSuppressMessage(self, chatGroup, chatTarget) ) then
@@ -2898,27 +2938,32 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				playerLink = "|HBNplayer:"..arg2..":"..arg13..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h";
 			end
 			
+			local message = arg1;
+			if ( arg15 ) then	--isMobile
+				message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
+			end
+			
 			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..playerLink.."["..coloredName.."]".."|h");
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink.."["..coloredName.."]".."|h");
 				else
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..arg1, pflag..arg2);
+					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
 				end
 			else
 				if ( not showLink or strlen(arg2) == 0 ) then
 					if ( type == "TEXT_EMOTE" ) then
-						body = arg1;
+						body = message;
 					else
-						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..arg2, arg2);
+						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
 					end
 				else
 					if ( type == "EMOTE" ) then
-						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..playerLink..coloredName.."|h");
+						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink..coloredName.."|h");
 					elseif ( type == "TEXT_EMOTE") then
-						body = string.gsub(arg1, arg2, pflag..playerLink..coloredName.."|h", 1);
+						body = string.gsub(message, arg2, pflag..playerLink..coloredName.."|h", 1);
 					else
-						body = format(_G["CHAT_"..type.."_GET"]..arg1, pflag..playerLink.."["..coloredName.."]".."|h");
+						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink.."["..coloredName.."]".."|h");
 					end
 				end
 			end
@@ -3327,7 +3372,7 @@ end
 function ChatEdit_OnEvent(self, event, ...)
 	if ( event == "UPDATE_CHAT_COLOR" ) then
 		local chatType = ...;
-		if ( chatType == self:GetAttribute("chatType") ) then
+		if ( self:IsShown() ) then
 			ChatEdit_UpdateHeader(self);
 		end
 	end
@@ -3610,7 +3655,11 @@ function ChatEdit_UpdateHeader(editBox)
 		
 		header:SetFormattedText(CHAT_WHISPER_SEND, editBox:GetAttribute("tellTarget"));
 	elseif ( type == "BN_WHISPER" ) then
-		header:SetFormattedText(CHAT_BN_WHISPER_SEND, editBox:GetAttribute("tellTarget"));
+		local name = editBox:GetAttribute("tellTarget");
+		if ( strlenutf8(name) > 30 ) then	--We only show the first 30 letters of a name (bug 205388)
+			name = strsub(name, 1, 30).."...";
+		end
+		header:SetFormattedText(CHAT_BN_WHISPER_SEND, name);
 	elseif ( type == "EMOTE" ) then
 		header:SetFormattedText(CHAT_EMOTE_SEND, UnitName("player"));
 	elseif ( type == "CHANNEL" ) then
@@ -4126,26 +4175,38 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	local target = strmatch(msg, "%s*(.*)");
 	
 	--If we haven't even finished one word, we aren't done.
-	if ( not target or not strfind(target, "%s") or (strsub(target, 1, 1) == "|") ) then
+	if ( not target or not strfind(target, "%s") ) then
 		return false;
 	end
 	
+	if((strsub(target, 1, 1) == "|") and not(strsub(target, 1, 2) == "|K")) then
+		return false;
+	end
+
 	if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) ) then
 		--Even if there's a space, we still want to let the person keep typing -- they may be trying to type whatever is in AutoComplete.
 		return false;
 	end
 	
-	--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
-	while ( strfind(target, "%s") ) do
-		--Pull off everything after the last space.
-		target = strmatch(target, "(.+)%s+[^%s]*");
-		if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true)  ) then
-			break;
+	if(strsub(target, 1, 2) == "|K") then
+		target, msg = BNTokenCombineGivenAndSurname(target);
+	else
+		local results = {};
+		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
+		while ( strfind(target, "%s") ) do
+			--Pull off everything after the last space.
+			target = strmatch(target, "(.+)%s+[^%s]*");
+			results = {GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true)};
+			if(#results > 0) then
+				break;
+			end
+		end
+		msg = strsub(msg, strlen(target) + 2);
+		if(#results == 1) then
+			target = results[1];
 		end
 	end
-
-	msg = strsub(msg, strlen(target) + 2);
-
+	
 	editBox:SetAttribute("tellTarget", target);
 	--BN_WHISPER FIXME
 	editBox:SetAttribute("chatType", "WHISPER");
@@ -4387,6 +4448,7 @@ function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "PET_INFO");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_MISC_INFO");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_XP_GAIN");
+	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_GUILD_XP_GAIN");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_HONOR_GAIN");
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FACTION_CHANGE");
 end

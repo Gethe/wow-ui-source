@@ -60,8 +60,12 @@ function BlizzardOptionsPanel_Slider_Refresh (slider)
 end
 
 function BlizzardOptionsPanel_Slider_OnValueChanged (self, value)
+	if(self.onvaluechanged) then
+		self:onvaluechanged(value);
+	else
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+	end
 	self.value = value;
-	BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 end
 
 -- [[ CheckButton functions ]] --
@@ -176,9 +180,6 @@ end
 -- [[ DropDown functions ]] --
 
 function BlizzardOptionsPanel_DropDown_Refresh (dropDown)
-	if ( dropDown.RefreshValue ) then
-		dropDown:RefreshValue();
-	end
 end
 
 
@@ -212,18 +213,6 @@ end
 
 function BlizzardOptionsPanel_GetCVarDefaultSafe (cvar)
 	local value = GetCVarDefault(cvar);
-	value = tonumber(value) or value;
-	return value;
-end
-
-function BlizzardOptionsPanel_GetCVarMinSafe (cvar)
-	local value = GetCVarMin(cvar);
-	value = tonumber(value) or value;
-	return value;
-end
-
-function BlizzardOptionsPanel_GetCVarMaxSafe (cvar)
-	local value = GetCVarMax(cvar);
 	value = tonumber(value) or value;
 	return value;
 end
@@ -265,6 +254,9 @@ function BlizzardOptionsPanel_DefaultControl (control)
 end
 
 function BlizzardOptionsPanel_RefreshControl (control)
+	if ( control.RefreshValue ) then
+		control:RefreshValue();
+	end
 	if ( control.type == CONTROLTYPE_CHECKBOX ) then
 		BlizzardOptionsPanel_CheckButton_Refresh(control);
 	elseif ( control.type == CONTROLTYPE_DROPDOWN ) then
@@ -335,8 +327,8 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 							control.defaultValue = GetCVarDefault(control.cvar);
 						else
 							control.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(control.cvar);
-							minValue = BlizzardOptionsPanel_GetCVarMinSafe(control.cvar) or entry.minValue;
-							maxValue = BlizzardOptionsPanel_GetCVarMaxSafe(control.cvar) or entry.maxValue;
+							minValue = entry.minValue;
+							maxValue = entry.maxValue;
 						end
 					else
 						control.defaultValue = control.defaultValue or entry.default;

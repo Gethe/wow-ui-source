@@ -623,7 +623,7 @@
 						UIFrameFlash(self.Flash, 0.75, 0.75, -1, nil);
 					</OnShow>
 					<OnHide>
-						UIFrameFlashRemoveFrame(QuestLogFrameCompleteButton.Flash);
+						UIFrameFlashStop(QuestLogFrameCompleteButton.Flash);
 					</OnHide>
 				</Scripts>
 			</Button>

@@ -3,7 +3,7 @@ NUM_PET_STATS = 5;
 
 PETPAPERDOLL_STATCATEGORY_DEFAULTORDER = {
 	"GENERAL",
-	"ATTRIBUTES",
+	--"ATTRIBUTES",  --Not shown as Pet Attributes are now meaningless
 	"MELEE",
 	"SPELL",
 	"DEFENSE",
@@ -142,6 +142,12 @@ function PetPaperDollFrame_Update()
 	elseif (playerClass == "WARLOCK") then
 		PetPaperDollPetModelBg:Show();
 		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-Warlock");
+	elseif (playerClass == "MAGE") then
+		PetPaperDollPetModelBg:Show();
+		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-Mage");
+	elseif (playerClass == "DEATHKNIGHT") then
+		PetPaperDollPetModelBg:Show();
+		PetPaperDollPetModelBg:SetTexture("Interface\\PetPaperDollFrame\\PetStatsBG-DeathKnight");
 	else
 		PetPaperDollPetModelBg:Hide();
 	end

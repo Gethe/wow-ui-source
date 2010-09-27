@@ -1,80 +1,97 @@
 
---/script StreamingMessage_OnEvent(StreamingDialog, "STREAMING_IDLE")
---/script StreamingMessage_OnEvent(StreamingDialog, "STREAMING_ADDL_FILES")	
---/script StreamingMessage_OnEvent(StreamingDialog, "STREAMING_MAJOR_FILES")
---/script StreamingMessage_OnEvent(StreamingDialog, "STREAMING_CORE_FILES")
+STREAMING_CURRENT_STATUS = 0;
+STREAMING_ICON_ALPHA = 0;
+STREAMING_ICON_FADEIN_TIME = 2;
+STREAMING_ICON_FADEOUT_TIME = 10;
 
-local state = "STREAMING_IDLE";
-local hidden = false;
 
-function UpdateIcon()
-	if(hidden) then
-		StreamingIcon:Hide();
-		StreamingIconSpinAnimate:Stop();
-	elseif(state ~= STREAMING_IDLE) then
-		StreamingIcon:Show();
-		StreamingIconSpinAnimate:Play();
-	end
+function StreamingIcon_OnLoad(self)
+	self:RegisterEvent("STREAMING_ICON");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
-function StreamingDialog_OnEvent(self, event, ...)
+function StreamingIcon_OnEvent(self, event, ...)
 	if(GetCVarBool("streamStatusMessage")) then
-		if(event == state) then
-			return;
+		if event ==  "STREAMING_ICON" then
+			local status = ...;
+			StreamingIcon_UpdateIcon(status);
+		elseif event == "PLAYER_ENTERING_WORLD" then
+			StreamingIcon_UpdateIcon(GetFileStreamingStatus());
 		end
-		state = event;
-		self.grow:Stop();
-		self.event = event;
-		if event ==  "STREAMING_IDLE" then
-			self:Hide();
-			UpdateIcon();
-		elseif event == "STREAMING_ADDL_FILES" then
-			self.Text.Status:SetVertexColor(0, 1, 0, 1);
---			self.Text.Status:SetText(STATUS_ADDL_FILE1);
---			self.Text.Detail:SetText(STATUS_ADDL_FILE2);
-			StreamingIconSpinSpinner:SetVertexColor(0,1,0,1);
-			StreamingIconFrameBackground:SetVertexColor(0,1,0,1);
+	end
+end
+
+function StreamingIcon_UpdateIcon(status)
+	if(status > 0) then
+		if (status == 1) then
+			StreamingIconSpinSpinner:SetVertexColor(0,1,0);
+			StreamingIconFrameBackground:SetVertexColor(0,1,0);
 			StreamingIcon.tooltip = STATUS_ADDL_FILE_TOOLTIP;
-			UpdateIcon();
-		elseif event == "STREAMING_MAJOR_FILES" then
-			self.Text.Status:SetVertexColor(1, .82, 0, 1);
---			self.Text.Status:SetText(STATUS_MAJOR_FILE1);
---			self.Text.Detail:SetText(STATUS_MAJOR_FILE2);
-			StreamingIconSpinSpinner:SetVertexColor(1,.82,0,1);
-			StreamingIconFrameBackground:SetVertexColor(1,0.82,0,1);
+		elseif (status == 2) then
+			StreamingIconSpinSpinner:SetVertexColor(1,.82,0);
+			StreamingIconFrameBackground:SetVertexColor(1,0.82,0);
 			StreamingIcon.tooltip = STATUS_MAJOR_FILE_TOOLTIP;
-			UpdateIcon();
-		elseif event == "STREAMING_CORE_FILES" then
-			self.Text.Status:SetVertexColor(1, 0, 0, 1);
---			self.Text.Status:SetText(STATUS_CORE_FILE1);
---			self.Text.Detail:SetText(STATUS_CORE_FILE2);
-			StreamingIconSpinSpinner:SetVertexColor(1,0,0,1);
-			StreamingIconFrameBackground:SetVertexColor(1,0,0,1);
+		elseif (status == 3) then
+			StreamingIconSpinSpinner:SetVertexColor(1,0,0);
+			StreamingIconFrameBackground:SetVertexColor(1,0,0);
 			StreamingIcon.tooltip = STATUS_CORE_FILE_TOOLTIP;
-			UpdateIcon();
 		end
-		--[[
-		if event ~=  "STREAMING_IDLE" then
-			self.grow:Play();
-		end
-		]]
-		UIParent_ManageFramePositions();
+		StreamingIcon_FadeIn(StreamingIcon);
+	elseif(STREAMING_CURRENT_STATUS > 0) then
+		StreamingIconSpinSpinner:SetVertexColor(0,1,0);
+		StreamingIconFrameBackground:SetVertexColor(0,1,0);
+		StreamingIcon.tooltip = STATUS_ADDL_FILE_TOOLTIP;
+		StreamingIcon_FadeOut(StreamingIcon);
 	end
+	STREAMING_CURRENT_STATUS = status;
 end
 
-function StreamingIcon_OnLoad()
-	local status = GetFileStreamingStatus();
-	local eventtable={
-		"STREAMING_IDLE", "STREAMING_ADDL_FILES", "STREAMING_MAJOR_FILES", "STREAMING_CORE_FILES"
-	}
-	StreamingDialog_OnEvent(StreamingDialog, eventtable[1+status]);
+function StreamingIcon_OnShow()
+	StreamingIcon.Loop:Play();
 end
 
-function StreamingIcon_UpdateVisibility()
-	if ( (not VehicleSeatIndicator:IsShown()) and ((not ArenaEnemyFrames) or (not ArenaEnemyFrames:IsShown())) ) then
-		hidden = false;
+function StreamingIcon_OnHide()
+	StreamingIcon.Loop:Stop();
+end
+
+function StreamingIcon_FadeIn(self)
+	if( not self:IsShown()) then
+		self:Show()
+		STREAMING_ICON_ALPHA = 0;
+		self:SetAlpha(0.0);
+		self:SetScript("OnUpdate", StreamingIcon_OnUpdate_FadeIn);
+	elseif(STREAMING_CURRENT_STATUS == 0) then
+		STREAMING_ICON_ALPHA = self:GetAlpha() * STREAMING_ICON_FADEIN_TIME;
+		self:SetScript("OnUpdate", StreamingIcon_OnUpdate_FadeIn);
 	else
-		hidden = true;	
+		self:SetAlpha(1.0);
+		self:SetScript("OnUpdate", nil);
 	end
-	UpdateIcon();
 end
+
+function StreamingIcon_FadeOut(self)
+	STREAMING_ICON_ALPHA = self:GetAlpha() * STREAMING_ICON_FADEOUT_TIME;
+	self:SetScript("OnUpdate", StreamingIcon_OnUpdate_FadeOut);
+end
+
+function StreamingIcon_OnUpdate_FadeIn(self, elapsed)
+	STREAMING_ICON_ALPHA = STREAMING_ICON_ALPHA + elapsed;
+	if (STREAMING_ICON_ALPHA >= STREAMING_ICON_FADEIN_TIME) then
+		self:SetAlpha(1.0);
+		self:SetScript("OnUpdate", nil);
+	else
+		self:SetAlpha( STREAMING_ICON_ALPHA / STREAMING_ICON_FADEIN_TIME );
+	end
+end
+
+function StreamingIcon_OnUpdate_FadeOut(self, elapsed)
+	STREAMING_ICON_ALPHA = STREAMING_ICON_ALPHA - elapsed;
+	if (STREAMING_ICON_ALPHA <= 0) then
+		self:SetAlpha(0.0);
+		self:SetScript("OnUpdate", nil);
+		self:Hide();
+	else
+		self:SetAlpha( sqrt( (STREAMING_ICON_ALPHA * STREAMING_ICON_ALPHA) / (STREAMING_ICON_FADEOUT_TIME * STREAMING_ICON_FADEOUT_TIME)) );
+	end
+end
+

@@ -244,37 +244,36 @@ function QuestLog_OnLoad(self)
 end
 
 function QuestLog_OnEvent(self, event, ...)
-	local arg1 = ...;
+	local arg1, arg2 = ...;
 	if ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		QuestLog_Update();
 		if ( QuestLogDetailScrollFrame:IsVisible() ) then
 			QuestLog_UpdateQuestDetails(false);
 			QuestLog_UpdateMap();
 		end
-		if ((GetNumQuestLogEntries() == 0) or (GetQuestLogIndexByID(GetSuperTrackedQuestID()) == 0)) then
-			SetSuperTrackedQuestID(0);
-			WORLDMAP_SETTINGS.selectedQuestId = 0;
+		if (not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH) then
+			local isComplete = select(7, GetQuestLogTitle(GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH)));
+			if (isComplete) then
+				TriggerTutorial(55);
+			end
 		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
-		TUTORIAL_QUEST_ACCEPTED = true;
+		TUTORIAL_QUEST_ACCEPTED = arg2;
 		QuestPOIUpdateIcons();
-		local questID = select(9, GetQuestLogTitle(arg1));
-		SetSuperTrackedQuestID(questID);
-		WORLDMAP_SETTINGS.selectedQuestId = questID;
 		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1);
 			QuestLog_Update();
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
-		if (not IsTutorialFlagged(11)) then
+		if (not IsTutorialFlagged(11) and TUTORIAL_QUEST_TO_WATCH) then
 			local questID = select(9, GetQuestLogTitle(arg1));
 			if (questID == TUTORIAL_QUEST_TO_WATCH) then
 				TriggerTutorial(11);
 			end
 		end
 		if ( AUTO_QUEST_PROGRESS == "1" and 
-			 GetNumQuestLeaderBoards(arg1) > 0 and 
-			 GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
+			GetNumQuestLeaderBoards(arg1) > 0 and 
+			GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 			AddQuestWatch(arg1,MAX_QUEST_WATCH_TIME);
 			QuestLog_Update();
 		end
@@ -302,6 +301,9 @@ function QuestLog_OnShow(self)
 	QuestLog_Update();
 	
 	QuestLogDetailFrame_AttachToQuestLog();
+	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
+		TutorialFrame_Hide();
+	end
 end
 
 function QuestLog_OnHide(self)
@@ -313,8 +315,7 @@ function QuestLog_OnHide(self)
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
 			TriggerTutorial(2);
---			TriggerTutorial(3);
-		else
+		elseif (not IsTutorialFlagged(10) and (TUTORIAL_QUEST_ACCEPTED == TUTORIAL_QUEST_TO_WATCH)) then
 			TriggerTutorial(10);
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil

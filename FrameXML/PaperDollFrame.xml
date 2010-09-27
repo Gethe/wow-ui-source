@@ -389,9 +389,7 @@
 				</Frames>
 			</Frame>			
 			<PlayerModel name="CharacterModelFrame">
-                <Size>
-					<AbsDimension x="231" y="320"/>
-                </Size>
+                <Size x="231" y="320"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" x="52" y="-66"/>
                 </Anchors>
@@ -489,13 +487,8 @@
 					</Layer>
 				</Layers>
                 <Scripts>
-                    <OnLoad>
-                        Model_OnLoad(self);
-						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-                    </OnLoad>
-					<OnEvent>
-						self:RefreshUnit();
-					</OnEvent>
+                    <OnLoad function="Model_OnLoad"/>
+					<OnEvent function="Model_OnEvent"/>
                     <OnUpdate function="Model_OnUpdate"/>
 					<OnMouseUp function="CharacterModelFrame_OnMouseUp"/>
 					<OnMouseDown function="Model_OnMouseDown"/>
@@ -512,7 +505,7 @@
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="0"/>
+							<Anchor point="TOPLEFT" x="4" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -664,7 +657,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Button name="GearManagerToggleButton" hidden="true">
+			<Button name="GearManagerToggleButton">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT">

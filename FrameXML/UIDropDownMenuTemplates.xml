@@ -257,7 +257,7 @@
 				if (not self.noResize) then
 					self:SetWidth(self.maxWidth+25);
 				end
-				self.showTime = nil;
+				self.showTimer = nil;
 				if ( self:GetID() > 1 ) then
 					self.parent = _G["DropDownList"..(self:GetID() - 1)];
 				end
@@ -304,7 +304,7 @@
 					</Anchors>
 					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
 				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
 					<Size>
 						<AbsDimension x="0" y="10"/>
 					</Size>
@@ -319,7 +319,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentButton">
+			<Button name="$parentButton"  motionScriptsWhileDisabled="true" >
 				<Size>
 					<AbsDimension x="24" y="24"/>
 				</Size>
@@ -331,6 +331,20 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnEnter>
+						local parent = self:GetParent();
+						local myscript = parent:GetScript("OnEnter");
+						if(myscript ~= nil) then
+							myscript(parent);
+						end
+					</OnEnter>
+					<OnLeave>
+						local parent = self:GetParent();
+						local myscript = parent:GetScript("OnLeave");
+						if(myscript ~= nil) then
+							myscript(parent);
+						end
+					</OnLeave>
 					<OnClick>
 						ToggleDropDownMenu(nil, nil, self:GetParent());
 						PlaySound("igMainMenuOptionCheckBoxOn");

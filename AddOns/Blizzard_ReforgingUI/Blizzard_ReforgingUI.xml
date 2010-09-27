@@ -182,7 +182,7 @@
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString name="$parentName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" parentKey="name">
-									<Size x="250" y="12"/>
+									<Size x="240" y="12"/>
 									<Anchors>
 										<Anchor point="LEFT"  relativePoint="RIGHT" x="14" y="10"/>
 									</Anchors>
@@ -291,7 +291,7 @@
 					<Anchor point="RIGHT" relativeTo="$parentMoneyBg" x="8" y="6"/>
 				</Anchors>
 			</Frame>
-			<Button name="$parentReforgeButton" inherits="MagicButtonTemplate" text="REFORGE">
+			<Button name="$parentReforgeButton" inherits="MagicButtonTemplate, TruncatedButtonTemplate" text="REFORGE">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" />
 				</Anchors>
@@ -299,7 +299,7 @@
 					<OnClick function="ReforgingFrame_ReforgeClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentRestoreButton" inherits="MagicButtonTemplate" text="REFORGE_RESTORE">
+			<Button name="$parentRestoreButton" inherits="MagicButtonTemplate, TruncatedButtonTemplate" text="REFORGE_RESTORE">
 				<Anchors>
 					<Anchor point="RIGHT"  relativeTo="$parentReforgeButton" relativePoint="LEFT"/>
 				</Anchors>

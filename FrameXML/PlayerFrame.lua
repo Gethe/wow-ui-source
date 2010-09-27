@@ -307,12 +307,16 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrameTexture:Hide();
 	if ( vehicleType == "Natural" ) then
 		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic");
+		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic-Flash");
+		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(103);
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",116,-41);
 		PlayerFrameManaBar:SetWidth(103);
 		PlayerFrameManaBar:SetPoint("TOPLEFT",116,-52);
 	else
 		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame");
+		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Flash");
+		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(100);
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",119,-41);
 		PlayerFrameManaBar:SetWidth(100);
@@ -353,6 +357,8 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrameManaBar:SetPoint("TOPLEFT",106,-52);
 	PlayerFrameBackground:SetWidth(119);
 	PlayerLevelText:Show();
+	PlayerFrameFlash:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
+	PlayerFrameFlash:SetTexCoord(0.9453125, 0, 0, 0.181640625);
 end
 
 function PlayerFrame_UpdateVoiceStatus (status)

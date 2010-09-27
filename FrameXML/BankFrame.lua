@@ -76,7 +76,14 @@ end
 
 function BankFrame_UpdateCooldown(container, button)
 	local cooldown = _G[button:GetName().."Cooldown"];
-	local start, duration, enable = GetContainerItemCooldown(container, button:GetID());
+	local start, duration, enable;
+	if ( button.isBag ) then
+		-- in case we ever have a bag with a cooldown...
+		local inventoryID = ContainerIDToInventoryID(button:GetID());
+		start, duration, enable = GetInventoryItemCooldown("player", inventoryID);
+	else
+		start, duration, enable = GetContainerItemCooldown(container, button:GetID());
+	end
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 	if ( duration > 0 and enable == 0 ) then
 		SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
@@ -228,7 +235,7 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	end
 	if ( IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(BANK_CONTAINER, self:GetID());
-		if ( not locked ) then
+		if ( not locked and itemCount > 1) then
 			OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
 		return;

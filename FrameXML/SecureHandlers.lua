@@ -1,4 +1,4 @@
--- SecureHandlers.lua (Part of the new Secure Headers implementation)
+-- SecureHandlers.lua (Part of the Secure Handlers implementation)
 --
 -- Lua code to support the various handlers and templates which can execute
 -- code in a secure, but restricted, environment.
@@ -13,10 +13,7 @@ local forceinsecure = forceinsecure;
 local geterrorhandler = geterrorhandler;
 local issecure = issecure;
 local newproxy = newproxy;
-local pairs = pairs;
 local pcall = pcall;
-local rawget = rawget;
-local scrub = scrub;
 local securecall = securecall;
 local select = select;
 local tostring = tostring;
@@ -28,8 +25,7 @@ local InCombatLockdown = InCombatLockdown;
 
 local CallRestrictedClosure = CallRestrictedClosure;
 local GetFrameHandle = GetFrameHandle;
-local IsFrameHandle = IsFrameHandle;
-local RestrictedTable_create = rtable.newtable;
+local GetManagedEnvironment = GetManagedEnvironment;
 
 -- SoftError(message)
 -- Report an error message without stopping execution
@@ -40,48 +36,6 @@ end
 
 local function SoftError(message)
     securecall(pcall, SoftError_inner, message);
-end
-
----------------------------------------------------------------------------
--- Working environments and control handles
-
-local function ManagedEnvironmentsIndex(t, k)
-    if (not issecure() or type(k) ~= "table") then
-        error("Invalid access of managed environments table");
-        return;
-    end;
-
-    local ownerHandle = GetFrameHandle(k, true);
-    if (not ownerHandle) then
-        error("Invalid access of managed environments table (bad frame)");
-        return;
-    end
-    local _, explicitProtected = ownerHandle:IsProtected();
-    if (not explicitProtected) then
-        error("Invalid access of managed environments table (not protected)");
-        return;
-    end
-
-    local e = RestrictedTable_create();
-    e._G = e;
-    e.owner = ownerHandle;
-    t[k] = e;
-    return e;
-end
-
-local LOCAL_Managed_Environments = {};
-setmetatable(LOCAL_Managed_Environments,
-             {
-                 __index = ManagedEnvironmentsIndex,
-                 __mode = "k",
-             });
-
-function GetManagedEnvironment(envKey)
-    if ( issecure() ) then
-        return LOCAL_Managed_Environments[envKey];
-    else
-        return rawget(LOCAL_Managed_Environments, envKey);
-    end
 end
 
 ---------------------------------------------------------------------------
@@ -96,7 +50,7 @@ local function SecureHandler_Self_Execute(self, signature, body, ...)
         return;
     end
 
-    local environment = LOCAL_Managed_Environments[self];
+    local environment = GetManagedEnvironment(self, true);
 
     return CallRestrictedClosure(signature, environment, selfHandle,
                                  body, selfHandle, ...);
@@ -108,8 +62,14 @@ local function SecureHandler_Other_Execute(header, self, signature, body, ...)
     local selfHandle = GetFrameHandle(self, true);
     if (not selfHandle) then return; end
 
-    local environment = LOCAL_Managed_Environments[header];
-    return CallRestrictedClosure(signature, environment, selfHandle,
+    local controlHandle = GetFrameHandle(header, true, true);
+    if (not controlHandle) then
+        error("Invalid 'header' frame handle");
+        return;
+    end
+
+    local environment = GetManagedEnvironment(header, true);
+    return CallRestrictedClosure(signature, environment, controlHandle,
                                  body, selfHandle, ...);
 end
 
@@ -422,20 +382,21 @@ local function Wrapped_Drag(self, header, preBody, postBody, wrap, ...)
     if ( IsWrapEligible(self) ) then
         local selfHandle = GetFrameHandle(self, true);
         if (selfHandle) then
-            local environment = LOCAL_Managed_Environments[header];
+            local environment = GetManagedEnvironment(header, true);
+            local controlHandle = GetFrameHandle(header, true, true);
             local button = ...;
-            local type, target, x1, x2, x3 =
+            local pickupType, target, x1, x2, x3 =
                 CallRestrictedClosure("self,button,kind,value,...",
                                       environment,
-                                      environment.owner, preBody,
+                                      controlHandle, preBody,
                                       selfHandle, button,
                                       GetCursorInfo());
-            if (type == false) then
+            if (pickupType == false) then
                 return;
-            elseif (type == "message") then
+            elseif (pickupType == "message") then
                 message = target;
-            elseif (type) then
-                PickupAny(type, target, x1, x2, x3);
+            elseif (pickupType) then
+                PickupAny(pickupType, target, x1, x2, x3);
                 return;
             end
         end
@@ -539,32 +500,41 @@ local function API_OnAttributeChanged(self, name, value)
         self:SetAttribute("_wrap", nil);
         if (type(value) ~= "string") then
             error("Invalid wrap script id");
+            return;
         end
         if (not IsValidFrame(frame)) then
             error("Invalid wrap frame");
+            return;
         end
         if (not IsValidFrame(header)) then
             error("Invalid header frame");
+            return;
         end
         if (type(preBody) ~= "string") then
             error("Invalid pre-handler body");
+            return;
         end
         if (postBody ~= nil and type(postBody) ~= "string") then
             error("Invalid post-handler body");
+            return;
         end
         if (not select(2, header:IsProtected())) then
             error("Header frame must be explicitly protected");
+            return;
         end
         local script = value;
         if (not frame:HasScript(script)) then
             error("Frame does not support script '" .. script .. "'");
+            return;
         end
         if (not issecure()) then
             error("Wrap frame cannot be used");
+            return;
         end
         local handler = LOCAL_Wrap_Handlers[value];
         if (not handler) then
             error("Unsupported script type '" .. value .. "'");
+            return;
         end
         local wrapper = CreateWrapper(frame, value, header,
                                       handler, preBody, postBody);
@@ -582,13 +552,16 @@ local function API_OnAttributeChanged(self, name, value)
         self:SetAttribute("_unwrap", nil);
         if (type(value) ~= "string") then
             error("Invalid unwrap script id");
+            return;
         end
         if (not IsValidFrame(frame)) then
             error("Invalid unwrap frame");
+            return;
         end
         local script = value;
         if (not frame:HasScript(script)) then
             error("Frame does not support script '" .. script .. "'");
+            return;
         end
         local header, preBody, postBody = RemoveWrapper(frame, script);
         if (type(data) == "table") then
@@ -635,21 +608,27 @@ LOCAL_API_Frame:SetScript("OnAttributeChanged", API_OnAttributeChanged);
 function SecureHandlerWrapScript(frame, script, header, preBody, postBody)
     if (not IsValidFrame(frame)) then
         error("Invalid frame");
+        return;
     end
     if (type(script) ~= "string") then
         error("Invalid script id");
+        return;
     end
     if (header and not IsValidFrame(header)) then
         error("Invalid header frame");
+        return;
     end
     if (not select(2, header:IsProtected())) then
         error("Header frame must be explicitly protected");
+        return;
     end
     if (type(preBody) ~= "string") then
         error("Invalid pre-handler body");
+        return;
     end
     if (postBody ~= nil and type(postBody) ~= "string") then
         error("Invalid post-handler body");
+        return;
     end
     LOCAL_API_Frame:SetAttribute("_apiframe", frame);
     LOCAL_API_Frame:SetAttribute("_apiheader", header);
@@ -664,9 +643,11 @@ local UNWRAP_TEMP_TABLE = {};
 function SecureHandlerUnwrapScript(frame, script)
     if (not IsValidFrame(frame)) then
         error("Invalid frame");
+        return;
     end
     if (type(script) ~= "string") then
         error("Invalid script id");
+        return;
     end
     wipe(UNWRAP_TEMP_TABLE);
     UNWRAP_TEMP_TABLE[1] = false;
@@ -692,12 +673,15 @@ end
 function SecureHandlerExecute(frame, body)
     if (not IsValidFrame(frame)) then
         error("Invalid header frame");
+        return;
     end
     if (not select(2, frame:IsProtected())) then
         error("Header frame must be explicitly protected");
+        return;
     end
     if (type(body) ~= "string") then
         error("Invalid body");
+        return;
     end
     LOCAL_API_Frame:SetAttribute("_apiframe", frame);
     LOCAL_API_Frame:SetAttribute("_execute", body);
@@ -707,12 +691,15 @@ end
 function SecureHandlerSetFrameRef(frame, label, refFrame)
     if (not IsValidFrame(frame)) then
         error("Invalid frame");
+        return;
     end
     if (type(label) ~= "string") then
         error("Invalid body");
+        return;
     end
     if (not IsValidFrame(refFrame)) then
         error("Invalid reference frame");
+        return;
     end
     LOCAL_API_Frame:SetAttribute("_apiframe", frame);
     LOCAL_API_Frame:SetAttribute("_frame-" .. label, refFrame);
@@ -750,3 +737,4 @@ function SecureHandler_OnLoad(self)
     self.UnwrapScript = SecureHandlerMethod_UnwrapScript;
     self.SetFrameRef = SecureHandlerMethod_SetFrameRef;
 end
+

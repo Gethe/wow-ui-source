@@ -7,6 +7,9 @@ PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00 };
 PowerBarColor["HAPPINESS"] = { r = 0.00, g = 1.00, b = 1.00 };
 PowerBarColor["RUNES"] = { r = 0.50, g = 0.50, b = 0.50 };
 PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00 };
+PowerBarColor["SOUL_SHARDS"] = { r = 0.50, g = 0.32, b = 0.55 };
+PowerBarColor["ECLIPSE"] = { negative = { r = 0.30, g = 0.52, b = 0.90 },  positive = { r = 0.80, g = 0.82, b = 0.60 }};
+PowerBarColor["HOLY_POWER"] = { r = 0.95, g = 0.90, b = 0.60 };
 -- vehicle colors
 PowerBarColor["AMMOSLOT"] = { r = 0.80, g = 0.60, b = 0.00 };
 PowerBarColor["FUEL"] = { r = 0.0, g = 0.55, b = 0.5 };
@@ -20,6 +23,9 @@ PowerBarColor[3] = PowerBarColor["ENERGY"];
 PowerBarColor[4] = PowerBarColor["HAPPINESS"];
 PowerBarColor[5] = PowerBarColor["RUNES"];
 PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
+PowerBarColor[7] = PowerBarColor["SOUL_SHARDS"];
+PowerBarColor[8] = PowerBarColor["ECLIPSE"];
+PowerBarColor[9] = PowerBarColor["HOLY_POWER"];
 
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
@@ -239,7 +245,9 @@ function UnitFrameHealthBar_OnEvent(self, event, ...)
 			self:SetScript("OnUpdate", nil);
 		end
 	else
-		UnitFrameHealthBar_Update(self, ...);
+		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+			UnitFrameHealthBar_Update(self, ...);
+		end
 	end
 end
 
@@ -247,9 +255,11 @@ function UnitFrameHealthBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues) then
 		local currValue = UnitHealth(self.unit);
 		if ( currValue ~= self.currValue ) then
-			self:SetValue(currValue);
-			self.currValue = currValue;
-			TextStatusBar_UpdateTextString(self);
+			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+				self:SetValue(currValue);
+				self.currValue = currValue;
+				TextStatusBar_UpdateTextString(self);
+			end
 		end
 	end
 end
@@ -337,7 +347,9 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 			self:SetScript("OnUpdate", nil);
 		end
 	else
-		UnitFrameManaBar_Update(self, ...);
+		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+			UnitFrameManaBar_Update(self, ...);
+		end
 	end
 end
 
@@ -345,9 +357,11 @@ function UnitFrameManaBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues ) then
 		local currValue = UnitPower(self.unit, self.powerType);
 		if ( currValue ~= self.currValue ) then
-			self:SetValue(currValue);
-			self.currValue = currValue;
-			TextStatusBar_UpdateTextString(self);
+			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+				self:SetValue(currValue);
+				self.currValue = currValue;
+				TextStatusBar_UpdateTextString(self);
+			end
 		end
 	end
 end

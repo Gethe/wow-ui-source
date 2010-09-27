@@ -214,7 +214,7 @@ function LowHealthFrame_OnUpdate(self, elapsed)
 		end
 	end
 
-	if ( not GetUIPanel("fullscreen") ) then
+	if ( not GetUIPanel("fullscreen") or CinematicFrame:IsShown() ) then
 		-- this feature is only supposed to be seen when the screen is covered
 		-- also, alpha is set to 0 so OnUpdate can be called
 		self:SetAlpha(0.0);

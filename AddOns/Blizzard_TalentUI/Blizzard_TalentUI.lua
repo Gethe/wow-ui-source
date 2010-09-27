@@ -77,14 +77,14 @@ local TALENT_INFO = {
 		},
 		[3] = {
 			-- Unholy
-			color = {r=0.8, g=0.0, b=1.0},
+			color = {r=0.2, g=0.8, b=0.2},
 		}
 	},
 	
 	["DRUID"] = {
 		[1] = {
 			-- Balance
-			color = {r=1.0, g=0.72, b=0.1},
+			color = {r=0.8, g=0.3, b=0.8},
 		},
 		[2] = {
 			-- Feral
@@ -92,78 +92,78 @@ local TALENT_INFO = {
 		},
 		[3] = {
 			-- Restoration
-			color = {r=0.3, g=0.5, b=1.0},
+			color = {r=0.4, g=0.8, b=0.2},
 		}	
 	},
 	
 	["HUNTER"] = {
 		[1] = {
 			-- Beast Mastery
-			color = {r=0.3, g=0.0, b=1.0},
+			color = {r=1.0, g=0.0, b=0.3},
 		},
 		[2] = {
 			-- Marksmanship
-			color = {r=0.8, g=0.2, b=0.8},
+			color = {r=0.3, g=0.6, b=1.0},
 		},
 		[3] = {
 			-- Survival
-			color = {r=0.0, g=1.0, b=0.6},
+			color = {r=1.0, g=0.6, b=0.0},
 		}
 	},
 	
 	["MAGE"] = {
 		[1] = {
 			-- Arcane
-			color = {r=1.0, g=0.72, b=0.1},
+			color = {r=0.7, g=0.2, b=1.0},
 		},
 		[2] = {
 			-- Fire
-			color = {r=1.0, g=0.0, b=0.0},
+			color = {r=1.0, g=0.5, b=0.0},
 		},
 		[3] = {
 			-- Frost
-			color = {r=0.3, g=0.5, b=1.0},
+			color = {r=0.3, g=0.6, b=1.0},
 		}
 	},
 	
 	["PALADIN"] = {
 		[1] = {
 			-- Holy
-			color = {r=1.0, g=0.72, b=0.1},
+			color = {r=1.0, g=0.5, b=0.0},
 		},
 		[2] = {
 			-- Protection
-			color = {r=1.0, g=0.0, b=0.0},
+			color = {r=0.3, g=0.5, b=1.0},
 		},
 		[3] = {
 			-- Retribution
-			color = {r=0.3, g=0.5, b=1.0},
+			color = {r=1.0, g=0.0, b=0.0},
 		}
 	},
 	
 	["PRIEST"] = {
 		[1] = {
 			-- Discipline
-			color = {r=1.0, g=0.72, b=0.1},
+			color = {r=1.0, g=0.5, b=0.0},
 		},
 		[2] = {
 			-- Holy
-			color = {r=1.0, g=0.0, b=0.0},
+			color = {r=0.6, g=0.6, b=1.0},
 		},
 		[3] = {
 			-- Shadow
-			color = {r=0.3, g=0.5, b=1.0},
+			color = {r=0.7, g=0.4, b=0.8},
 		}
 	},
 	
 	["ROGUE"] = {
 		[1] = {
 			-- Assassination
-			color = {r=1.0, g=0.72, b=0.1},
+			color = {r=0.5, g=0.8, b=0.5},
 		},
 		[2] = {
 			-- Combat
-			color = {r=1.0, g=0.0, b=0.0},
+			color = {r=1.0, g=0.5, b=0.0},
 		},
 		[3] = {
 			-- Subtlety
@@ -174,22 +174,22 @@ local TALENT_INFO = {
 	["SHAMAN"] = {
 		[1] = {
 			-- Elemental
-			color = {r=1.0, g=0.72, b=0.1},
+			color = {r=0.8, g=0.2, b=0.8},
 		},
 		[2] = {
 			-- Enhancement
-			color = {r=1.0, g=0.0, b=0.0},
+			color = {r=0.3, g=0.5, b=1.0},
 		},
 		[3] = {
 			-- Restoration
-			color = {r=0.3, g=0.5, b=1.0},
+			color = {r=0.2, g=0.8, b=0.4},
 		}
 	},
 	
 	["WARLOCK"] = {
 		[1] = {
 			-- Affliction
-			color = {r=1.0, g=0.72, b=0.1},
+			color = {r=0.0, g=1.0, b=0.6},
 		},
 		[2] = {
 			-- Demonology
@@ -197,7 +197,7 @@ local TALENT_INFO = {
 		},
 		[3] = {
 			-- Destruction
-			color = {r=0.3, g=0.5, b=1.0},
+			color = {r=1.0, g=0.5, b=0.0},
 		}
 	},
 	
@@ -275,10 +275,14 @@ function PlayerTalentFrame_Toggle(pet, suggestedTalentGroup)
 	if ( not PlayerTalentFrame:IsShown() ) then
 		ShowUIPanel(PlayerTalentFrame);
 		hidden = false;
+		TalentMicroButtonAlert:Hide();
 	else
 		local spec = selectedSpec and specs[selectedSpec];
 		if ( spec and (selectedTab == TALENTS_TAB) and not pet ) then
 			-- if a talent tab is selected then toggle the frame off
+			HideUIPanel(PlayerTalentFrame);
+			hidden = true;
+		elseif (selectedTab == PET_TALENTS_TAB and pet) then
 			HideUIPanel(PlayerTalentFrame);
 			hidden = true;
 		else
@@ -382,7 +386,7 @@ function PlayerTalentFrame_ShowGlyphFrame()
 	if ( GlyphFrame ) then
 		-- show/update the glyph frame
 		if ( GlyphFrame:IsShown() ) then
-			GlyphFrame_Update();
+			GlyphFrame_Update(GlyphFrame);
 		else
 			GlyphFrame:Show();
 		end
@@ -444,9 +448,9 @@ end
 
 function PlayerTalentFrame_OnShow(self)
 	-- Stop buttons from flashing after skill up
-	SetButtonPulse(TalentMicroButton, 0, 1);
+	MicroButtonPulseStop(TalentMicroButton);
 
-	PlaySound("TalentScreenOpen");
+	PlaySound("igCharacterInfoOpen");
 	UpdateMicroButtons();
 	PlayerTalentFramePetModel:SetUnit("pet");
 	
@@ -468,12 +472,40 @@ end
 
 function PlayerTalentFrame_OnHide()
 	UpdateMicroButtons();
-	PlaySound("TalentScreenClose");
+	PlaySound("igCharacterInfoClose");
 	-- clear caches
 	for _, info in next, talentSpecInfoCache do
 		wipe(info);
 	end
 	wipe(talentTabWidthCache);
+	
+	-- If the player has unsaved talent choices, display a warning
+	local unsavedChanges = false;
+
+	local numTalentGroups = GetNumTalentGroups(false, false);	
+	for i = 1, numTalentGroups do
+		if (GetPreviewPrimaryTalentTree(false, false, i) or GetGroupPreviewTalentPointsSpent(false, i) > 0) then
+			unsavedChanges = true;
+			break;
+		end
+	end
+	
+	-- Check pet as well
+	if (not unsavedChanges) then
+		numTalentGroups = GetNumTalentGroups(false, true);
+		for i = 1, numTalentGroups do
+			if (GetPreviewPrimaryTalentTree(false, true, i) or GetGroupPreviewTalentPointsSpent(true, i) > 0) then
+				unsavedChanges = true;
+				break;
+			end
+		end
+	end
+	
+	if (unsavedChanges) then
+		TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
+		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+		TalentMicroButtonAlert:Show();
+	end	
 end
 
 function PlayerTalentFrame_OnEvent(self, event, ...)
@@ -546,8 +578,8 @@ function PlayerTalentFrame_Refresh()
 	if ( selectedTab == GLYPH_TALENT_TAB ) then
 		PlayerTalentFrame_HideTalentTab();
 		PlayerTalentFrame_HidePetTalentTab();
-		PlayerTalentFrame_ShowGlyphFrame();
 		PlayerTalentFrame.pet = false;
+		PlayerTalentFrame_ShowGlyphFrame();
 	elseif (selectedTab == PET_TALENTS_TAB) then
 		PlayerTalentFrame_HideGlyphFrame();
 		PlayerTalentFrame_HideTalentTab();
@@ -607,7 +639,7 @@ function PlayerTalentFrame_Update(playerLevel)
 		PlayerTalentFrame_UpdatePetInfo(PlayerTalentFrame);
 	end
 	
-	if (selectedSpec == activeSpec) then
+	if (not PlayerTalentFrame.pet and selectedSpec == activeSpec and numTalentGroups > 1) then
 		PlayerTalentFrameTitleGlowLeft:Show();
 		PlayerTalentFrameTitleGlowRight:Show();
 		PlayerTalentFrameTitleGlowCenter:Show();
@@ -785,15 +817,17 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 		
 		-- Update roles
 		if ( role1 == "TANK" or role1 == "HEALER" or role1 == "DAMAGER") then
-			summary.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role1));
+			summary.RoleIcon.Icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role1));
 			summary.RoleIcon:Show();
+			summary.RoleIcon.role = role1;
 		else
 			summary.RoleIcon:Hide();
 		end
 		
 		if ( role2 == "TANK" or role2 == "HEALER" or role2 == "DAMAGER") then
-			summary.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
+			summary.RoleIcon2.Icon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
 			summary.RoleIcon2:Show();
+			summary.RoleIcon2.role = role2;
 			summary.RoleIcon:SetPoint("BOTTOMRIGHT", summary.IconBorder, -9, -1);
 		else
 			summary.RoleIcon2:Hide();
@@ -808,19 +842,19 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 				summary.Icon:SetDesaturated(1);
 				summary.IconBorder:SetDesaturated(1);
 				summary.IconGlow:SetVertexColor(1, 1, 1);
-				summary.RoleIcon:SetDesaturated(1);
-				summary.RoleIcon2:SetDesaturated(1);
+				summary.RoleIcon.Icon:SetDesaturated(1);
+				summary.RoleIcon2.Icon:SetDesaturated(1);
 			else
 				summary.Icon:SetDesaturated(0);
 				summary.IconBorder:SetDesaturated(0);
-				summary.RoleIcon:SetDesaturated(0);
-				summary.RoleIcon2:SetDesaturated(0);
+				summary.RoleIcon.Icon:SetDesaturated(0);
+				summary.RoleIcon2.Icon:SetDesaturated(0);
 			end
 		else
 			summary.Icon:SetDesaturated(0);
 			summary.IconBorder:SetDesaturated(0);
-			summary.RoleIcon:SetDesaturated(0);
-			summary.RoleIcon2:SetDesaturated(0);
+			summary.RoleIcon.Icon:SetDesaturated(0);
+			summary.RoleIcon2.Icon:SetDesaturated(0);
 		end
 		
 		-- Update border glow
@@ -1051,15 +1085,17 @@ function PlayerTalentFramePanel_Update(self)
 		
 		-- Update roles
 		if ( role1 == "TANK" or role1 == "HEALER" or role1 == "DAMAGER") then
-			self.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmall(role1));
+			self.RoleIcon.Icon:SetTexCoord(GetTexCoordsForRoleSmall(role1));
 			self.RoleIcon:Show();
+			self.RoleIcon.role = role1;
 		else
 			self.RoleIcon:Hide();
 		end
 		
 		if ( role2 == "TANK" or role2 == "HEALER" or role2 == "DAMAGER") then
-			self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmall(role2));
+			self.RoleIcon2.Icon:SetTexCoord(GetTexCoordsForRoleSmall(role2));
 			self.RoleIcon2:Show();
+			self.RoleIcon2.role = role2;
 		else
 			self.RoleIcon2:Hide();
 		end
@@ -1067,17 +1103,23 @@ function PlayerTalentFramePanel_Update(self)
 	
 	-- Update the glow on your primary spec
 	if (not self.pet and primaryTree and primaryTree == self.talentTree) then
+		self.GlowTop:Show();
+		self.GlowTopLeft:Show();
 		self.GlowLeft:Show();
 		self.GlowBottomLeft:Show();
 		self.GlowBottom:Show();
 		self.GlowBottomRight:Show();
 		self.GlowRight:Show();
+		self.GlowTopRight:Show();
 	elseif (not self.pet) then
+		self.GlowTop:Hide();
+		self.GlowTopLeft:Hide();
 		self.GlowLeft:Hide();
 		self.GlowBottomLeft:Hide();
 		self.GlowBottom:Hide();
 		self.GlowBottomRight:Hide();
 		self.GlowRight:Hide();
+		self.GlowTopRight:Hide();
 	end
 	
 	
@@ -1087,11 +1129,14 @@ function PlayerTalentFramePanel_Update(self)
 		self.BgTopRight:SetDesaturated(1);
 		self.BgBottomLeft:SetDesaturated(1);
 		self.BgBottomRight:SetDesaturated(1);
+		self.GlowTop:SetDesaturated(1);
+		self.GlowTopLeft:SetDesaturated(1);
 		self.GlowLeft:SetDesaturated(1);
 		self.GlowBottomLeft:SetDesaturated(1);
 		self.GlowBottom:SetDesaturated(1);
 		self.GlowBottomRight:SetDesaturated(1);
 		self.GlowRight:SetDesaturated(1);
+		self.GlowTopRight:SetDesaturated(1);
 		self.HeaderBackground:SetVertexColor(1, 1, 1);
 		self.HeaderIcon.Icon:SetDesaturated(1);
 		self.HeaderIcon.PrimaryBorder:SetDesaturated(1);
@@ -1099,23 +1144,26 @@ function PlayerTalentFramePanel_Update(self)
 		self.HeaderBorder:SetDesaturated(1);
 		self.Name:SetFontObject(GameFontDisable);
 		if (self.RoleIcon) then
-			self.RoleIcon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
-			self.RoleIcon2:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
+			self.RoleIcon.Icon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
+			self.RoleIcon2.Icon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
 		end
 	elseif (not self.pet) then
+		self.GlowTop:SetDesaturated(0);
+		self.GlowTopLeft:SetDesaturated(0);
 		self.GlowLeft:SetDesaturated(0);
 		self.GlowBottomLeft:SetDesaturated(0);
 		self.GlowBottom:SetDesaturated(0);
 		self.GlowBottomRight:SetDesaturated(0);
 		self.GlowRight:SetDesaturated(0);
+		self.GlowTopRight:SetDesaturated(0);
 		self.HeaderIcon.Icon:SetDesaturated(0);
 		self.HeaderIcon.PrimaryBorder:SetDesaturated(0);
 		self.HeaderIcon.PointsSpentBgGold:SetDesaturated(0);
 		self.HeaderBorder:SetDesaturated(0);
 		self.Name:SetFontObject(GameFontNormal);
 		if (self.RoleIcon) then
-			self.RoleIcon:SetTexture("Interface\\LFGFrame\\LFGRole");
-			self.RoleIcon2:SetTexture("Interface\\LFGFrame\\LFGRole");
+			self.RoleIcon.Icon:SetTexture("Interface\\LFGFrame\\LFGRole");
+			self.RoleIcon2.Icon:SetTexture("Interface\\LFGFrame\\LFGRole");
 		end
 	end
 	
@@ -1143,20 +1191,20 @@ end
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local link = GetTalentLink(self:GetParent().talentTree, self:GetID(),
-			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
 	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
 		-- only allow functionality if an active spec is selected
 		if ( button == "LeftButton" ) then
-			if ( GetCVarBool("previewTalents") ) then
+			if ( GetCVarBool("previewTalentsOption") ) then
 				AddPreviewTalentPoints(self:GetParent().talentTree, self:GetID(), 1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			else
 				LearnTalent(self:GetParent().talentTree, self:GetID(), PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			end
 		elseif ( button == "RightButton" ) then
-			if ( GetCVarBool("previewTalents") ) then
+			if ( GetCVarBool("previewTalentsOption") ) then
 				AddPreviewTalentPoints(self:GetParent().talentTree, self:GetID(), -1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			end
 		end
@@ -1166,14 +1214,14 @@ end
 function PlayerTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
 		GameTooltip:SetTalent(self:GetParent().talentTree, self:GetID(),
-			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 	end
 end
 
 function PlayerTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
 	GameTooltip:SetTalent(self:GetParent().talentTree, self:GetID(),
-		PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+		PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 end
 
 
@@ -1191,7 +1239,7 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 	-- show the activate button if this is not the active spec
 	PlayerTalentFrameActivateButton_Update(numTalentGroups);
 
-	local preview = GetCVarBool("previewTalents");
+	local preview = GetCVarBool("previewTalentsOption");
 	
 	-- Show/Hide panel summaries
 	local summariesShown = PlayerTalentFrame_ShowOrHideSummaries();	
@@ -1217,10 +1265,20 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			else
 				PlayerTalentFrameLearnButtonTutorial:Hide();
 			end
+			
+			if (previewPointsSpent > 0) then
+				UIFrameFlash(PlayerTalentFrameLearnButton.Flash, 0.75, 0.75, -1, nil);
+			else
+				UIFrameFlashStop(PlayerTalentFrameLearnButton.Flash);
+				PlayerTalentFrameLearnButton.Flash:Hide();
+			end
+			
 		else
 			PlayerTalentFrameLearnButton:Disable();
 			PlayerTalentFrameResetButton:Disable();
 			PlayerTalentFrameLearnButtonTutorial:Hide();
+			UIFrameFlashStop(PlayerTalentFrameLearnButton.Flash);
+			PlayerTalentFrameLearnButton.Flash:Hide();
 		end
 		-- squish all frames to make room for this bar
 		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
@@ -1229,6 +1287,9 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 		PlayerTalentFrameLearnButton:Hide();
 		PlayerTalentFrameResetButton:Hide();
 		PlayerTalentFrameLearnButtonTutorial:Hide();
+		UIFrameFlashStop(PlayerTalentFrameLearnButton.Flash);
+		PlayerTalentFrameLearnButton.Flash:Hide();
+
 		-- unsquish frames since the bar is now hidden
 		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
 	end
@@ -1244,20 +1305,35 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			PlayerTalentFrameHeaderSubText:SetText(TALENTS_CHOOSE_SPEC_SUBHEADER);
 			PlayerTalentFrameHeaderSubText:Show();
 			headerY = headerY + 2;
+			PlayerTalentFrameHeaderHelpBox:Show();
+			for i = 1, 3 do
+				_G["PlayerTalentFrameHeaderHelpBoxArrow"..i]:Show();
+			end
 		elseif (talentPoints > 0) then
 			local unspentPreviewPoints = talentPoints - GetGroupPreviewTalentPointsSpent(PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			PlayerTalentFrameHeaderText:SetFormattedText(PLAYER_UNSPENT_TALENT_POINTS, NORMAL_FONT_COLOR_CODE..unspentPreviewPoints..FONT_COLOR_CODE_CLOSE);
 			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
 			PlayerTalentFrameHeaderText:Show();
 			PlayerTalentFrameHeaderSubText:Hide();
+			PlayerTalentFrameHeaderHelpBox:Show();
+			for i = 1, 3 do
+				local _, _, _, _, _, _, _, isUnlocked = GetTalentTabInfo(i, false, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+				if (isUnlocked) then
+					_G["PlayerTalentFrameHeaderHelpBoxArrow"..i]:Show();
+				else
+					_G["PlayerTalentFrameHeaderHelpBoxArrow"..i]:Hide();
+				end
+			end
 		elseif (GetNextTalentLevel()) then
 			PlayerTalentFrameHeaderText:SetFormattedText(NEXT_TALENT_LEVEL, GetNextTalentLevel());
 			PlayerTalentFrameHeaderText:SetFontObject("GameFontHighlight");
 			PlayerTalentFrameHeaderText:Show();
 			PlayerTalentFrameHeaderSubText:Hide();
+			PlayerTalentFrameHeaderHelpBox:Hide();
 		else
 			PlayerTalentFrameHeaderText:Hide();
 			PlayerTalentFrameHeaderSubText:Hide();
+			PlayerTalentFrameHeaderHelpBox:Hide();
 		end
 	elseif (selectedTab == PET_TALENTS_TAB) then
 		local nextPetTalentLevel = GetNextPetTalentLevel();
@@ -1276,13 +1352,22 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			PlayerTalentFrameHeaderText:Hide();
 			PlayerTalentFrameHeaderSubText:Hide();
 		end
+		PlayerTalentFrameHeaderHelpBox:Hide();
 	else
 		PlayerTalentFrameHeaderText:Hide();
 		PlayerTalentFrameHeaderSubText:Hide();
+		PlayerTalentFrameHeaderHelpBox:Hide();
+	end
+	
+	if (not isActiveSpec) then
+		PlayerTalentFrameHeaderHelpBox:Hide();
 	end
 	
 	if (PlayerTalentFrameHeaderSubText:IsShown()) then
 		headerY = headerY + 6;
+		PlayerTalentFrameHeaderHelpBox:SetHeight(38);
+	else
+		PlayerTalentFrameHeaderHelpBox:SetHeight(28);
 	end
 	
 	if (PlayerTalentFrameHeaderText:IsShown()) then

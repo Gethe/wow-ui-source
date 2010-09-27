@@ -25,11 +25,12 @@ function CompactRaidFrameManager_OnLoad(self)
 	CompactRaidFrameContainer_SetFlowFilterFunction(self.container, CRFFlowFilterFunc)
 	CompactRaidFrameContainer_SetGroupFilterFunction(self.container, CRFGroupFilterFunc)
 	CompactRaidFrameManager_UpdateContainerBounds(self);
+	CompactRaidFrameManager_ResizeFrame_Reanchor(self);
 	
 	CompactRaidFrameManager_Collapse(self);
 end
 
-local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", "DisplayPets", "DisplayMainTankAndAssist", "IsShown" };
+local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", "DisplayPets", "DisplayMainTankAndAssist", "IsShown", "ShowBorders" };
 function CompactRaidFrameManager_OnEvent(self, event, ...)
 	if ( event == "VARIABLES_LOADED" ) then
 		for _, setting in pairs(settings) do
@@ -110,7 +111,7 @@ function CRFManager_RaidWorldMarkerDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 	
 	for i=1, NUM_WORLD_RAID_MARKERS do
-		info.text = format(WORLD_MARKER, i);
+		info.text = _G["WORLD_MARKER"..i];
 		info.func = RaidWorldMarker_OnClick;
 		info.arg1 = i;
 		UIDropDownMenu_AddButton(info);
@@ -146,19 +147,21 @@ end
 
 function CompactRaidFrameManager_UpdateRoleFilterButton(button)
 	local totalAlive, totalCount = RaidInfoCounts["aliveRole"..button.role], RaidInfoCounts["totalRole"..button.role]
-	button:SetFormattedText("%s%d/%d", button.roleTexture, totalAlive, totalCount);
+	button:SetFormattedText("%s %d/%d", button.roleTexture, totalAlive, totalCount);
 	local keepGroupsTogether = CompactRaidFrameManager_GetSetting("KeepGroupsTogether");
 	keepGroupsTogether = keepGroupsTogether and keepGroupsTogether ~= "0";
 	if ( totalCount == 0 or keepGroupsTogether ) then
-		button:UnlockHighlight();
+		button.selectedHighlight:Hide();
 		button:Disable();
+		button:SetAlpha(0.5);
 	else
 		button:Enable();
+		button:SetAlpha(1);
 		local isFiltered = CRF_GetFilterRole(button.role)
 		if ( isFiltered ) then
-			button:LockHighlight();
+			button.selectedHighlight:Show();
 		else
-			button:UnlockHighlight();
+			button.selectedHighlight:Hide();
 		end
 	end
 end
@@ -173,15 +176,17 @@ function CompactRaidFrameManager_UpdateGroupFilterButton(button, usedGroups)
 	local group = button:GetID();
 	if ( usedGroups[group] ) then
 		button:Enable();
+		button:SetAlpha(1);
 		local isFiltered = CRF_GetFilterGroup(group);
 		if ( isFiltered ) then
-			button:LockHighlight();
+			button.selectedHighlight:Show();
 		else
-			button:UnlockHighlight();
+			button.selectedHighlight:Hide();
 		end
 	else
-		button:UnlockHighlight();
+		button.selectedHighlight:Hide();
 		button:Disable();
+		button:SetAlpha(0.5);
 	end
 end
 
@@ -319,6 +324,15 @@ do	--Enclosure to make sure people go through SetSetting
 		end
 	end
 	
+	local function CompactRaidFrameManager_SetBorderShown(value)
+		local manager = CompactRaidFrameManager;
+		local showBorder;
+		if ( value and value ~= "0" ) then
+			showBorder = true;
+		end
+		CompactRaidFrameContainer_SetBorderShown(manager.container, showBorder);
+	end
+	
 	function CompactRaidFrameManager_SetSetting(settingName, value)
 		SetCVar("raidOption"..settingName, value);
 		cachedSettings[settingName] = value;
@@ -339,6 +353,8 @@ do	--Enclosure to make sure people go through SetSetting
 			CompactRaidFrameManager_SetDisplayMainTankAndAssist(value);
 		elseif ( settingName == "IsShown" ) then
 			CompactRaidFrameManager_SetIsShown(value);
+		elseif ( settingName == "ShowBorders" ) then
+			CompactRaidFrameManager_SetBorderShown(value);
 		else
 			GMError("Unknown setting "..tostring(settingName));
 		end
@@ -352,7 +368,9 @@ function CompactRaidFrameManager_ResetContainerPosition()
 	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
 end
 
-function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" instead of "SizeAndPosition". WHO NEEDS A THESAURUS NOW?!
+function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" instead of "SizeAndPosition". WHO NEEDS A THESAURUS NOW?!	
+	self.containerResizeFrame:SetMaxResize(self.containerResizeFrame:GetWidth(), GetScreenHeight() - 90);
+	
 	if ( self.dynamicContainerPosition ) then
 		--Should be below the TargetFrameSpellBar at its lowest height..
 		local top = GetScreenHeight() - 135;
@@ -361,9 +379,11 @@ function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" ins
 		
 		local managerTop = self:GetTop();
 		
-		self.container:ClearAllPoints();
-		self.container:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, top - managerTop);
-		self.container:SetHeight(top - bottom);
+		self.containerResizeFrame:ClearAllPoints();
+		self.containerResizeFrame:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, top - managerTop);
+		self.containerResizeFrame:SetHeight(top - bottom);
+		
+		CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(self);
 	end
 end
 
@@ -372,27 +392,22 @@ function CompactRaidFrameManager_LockContainer(self)
 end
 
 function CompactRaidFrameManager_UnlockContainer(self)
-	--Anchor the resizer to the current position.
-	CompactRaidFrameManager_ResizeFrame_Reanchor(self);
-	
 	self.containerResizeFrame:Show();
 end
 
 --ResizeFrame related functions
 function CompactRaidFrameManager_ResizeFrame_Reanchor(manager)
-	manager.containerResizeFrame:ClearAllPoints();
-	manager.containerResizeFrame:SetPoint("TOPLEFT", manager.container, "TOPLEFT", -RESIZE_HORIZONTAL_OUTSETS, RESIZE_VERTICAL_OUTSETS);
-	manager.containerResizeFrame:SetPoint("BOTTOMLEFT", manager.container, "BOTTOMLEFT", -RESIZE_HORIZONTAL_OUTSETS, -RESIZE_VERTICAL_OUTSETS);
+	manager.container:SetPoint("TOPLEFT", manager.containerResizeFrame, "TOPLEFT", RESIZE_HORIZONTAL_OUTSETS, -RESIZE_VERTICAL_OUTSETS);
 end
 
 function CompactRaidFrameManager_ResizeFrame_OnDragStart(manager)
 	manager.dynamicContainerPosition = false;
 	
-	manager.container:StartMoving();
+	manager.containerResizeFrame:StartMoving();
 end
 
 function CompactRaidFrameManager_ResizeFrame_OnDragStop(manager)
-	manager.container:StopMovingOrSizing();
+	manager.containerResizeFrame:StopMovingOrSizing();
 	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
 	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
 end
@@ -408,38 +423,44 @@ function CompactRaidFrameManager_ResizeFrame_OnResizeStop(manager)
 	manager.containerResizeFrame:StopMovingOrSizing();
 	manager.containerResizeFrame:SetScript("OnUpdate", nil);
 	CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager);
+	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
+	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
 end
 
 local RESIZE_UPDATE_INTERVAL = 0.5;
 function CompactRaidFrameManager_ResizeFrame_OnUpdate(self, elapsed)
 	self.timeSinceUpdate = (self.timeSinceUpdate or 0) + elapsed;
 	if ( self.timeSinceUpdate >= RESIZE_UPDATE_INTERVAL ) then
-		CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(self:GetParent());
+		local manager = self:GetParent();
+		CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager);
+		CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
+		CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
 	end
 end
 
 function CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager)
-	--Re-anchor the frame by the topleft
-	local top, left = manager.container:GetTop(), manager.container:GetLeft();
-	manager.container:ClearAllPoints();
-	manager.container:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top);
-	
-	manager.container:SetHeight(manager.containerResizeFrame:GetHeight() - RESIZE_VERTICAL_OUTSETS * 2);
-	CompactRaidFrameManager_ResizeFrame_Reanchor(manager);
-	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
-	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
+	--If we're flow style, we want to make sure we exactly fit N frames.
+	local keepGroupsTogether = CompactRaidFrameManager_GetSetting("KeepGroupsTogether");
+	if ( keepGroupsTogether ~= "1" ) then
+		local unitFrameHeight = DefaultCompactUnitFrameSetupOptions.height;
+		local resizerHeight = manager.containerResizeFrame:GetHeight() - RESIZE_VERTICAL_OUTSETS * 2;
+		local newHeight = unitFrameHeight * floor(resizerHeight / unitFrameHeight);
+		manager.container:SetHeight(newHeight);
+	else
+		manager.container:SetHeight(manager.containerResizeFrame:GetHeight() - RESIZE_VERTICAL_OUTSETS * 2);
+	end
 end
 
 local MAGNETIC_FIELD_RANGE = 10;
 function CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager)
-	if ( abs(manager.container:GetLeft() - manager:GetRight()) < MAGNETIC_FIELD_RANGE and
-		manager.container:GetTop() > manager:GetBottom() and manager.container:GetBottom() < manager:GetTop() ) then
-		manager.container:ClearAllPoints();
-		manager.container:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, manager.container:GetTop() - manager:GetTop());
+	if ( abs(manager.containerResizeFrame:GetLeft() - manager:GetRight()) < MAGNETIC_FIELD_RANGE and
+		manager.containerResizeFrame:GetTop() > manager:GetBottom() and manager.containerResizeFrame:GetBottom() < manager:GetTop() ) then
+		manager.containerResizeFrame:ClearAllPoints();
+		manager.containerResizeFrame:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, manager.containerResizeFrame:GetTop() - manager:GetTop());
 	end
 end
 
-local POSITION_CVAR_VERSION = 1;	--In case we ever change the format of this save.
+local POSITION_CVAR_VERSION = 2;	--In case we ever change the format of this save.
 function CompactRaidFrameManager_ResizeFrame_SavePosition(manager)
 	local cvar = "raidFramesPosition";
 	if ( manager.dynamicContainerPosition ) then
@@ -453,7 +474,7 @@ function CompactRaidFrameManager_ResizeFrame_SavePosition(manager)
 	local leftPoint, leftOffset;
 	
 	local screenHeight = GetScreenHeight();
-	local top = manager.container:GetTop();
+	local top = manager.containerResizeFrame:GetTop();
 	if ( top > screenHeight / 2 ) then
 		topPoint = "TOP";
 		topOffset = screenHeight - top;
@@ -462,7 +483,7 @@ function CompactRaidFrameManager_ResizeFrame_SavePosition(manager)
 		topOffset = top;
 	end
 	
-	local bottom = manager.container:GetBottom();
+	local bottom = manager.containerResizeFrame:GetBottom();
 	if ( bottom > screenHeight / 2 ) then
 		bottomPoint = "TOP";
 		bottomOffset = screenHeight - bottom;
@@ -471,13 +492,13 @@ function CompactRaidFrameManager_ResizeFrame_SavePosition(manager)
 		bottomOffset = bottom;
 	end
 	
-	local isAttached = select(2, manager.container:GetPoint(1)) == manager;
+	local isAttached = (select(2, manager.containerResizeFrame:GetPoint(1)) == manager);
 	if ( isAttached ) then
 		leftPoint = "ATTACHED";
 		leftOffset = 0;
 	else
 		local screenWidth = GetScreenWidth();
-		local left = manager.container:GetLeft();
+		local left = manager.containerResizeFrame:GetLeft();
 		if ( left > screenWidth / 2 ) then
 			leftPoint = "RIGHT";
 			leftOffset = screenWidth - left;
@@ -495,7 +516,7 @@ function CompactRaidFrameManager_ResizeFrame_LoadPosition(manager)
 	
 	local version, topPoint, topOffset, bottomPoint, bottomOffset, leftPoint, leftOffset = strsplit(",", GetCVar(cvar));
 	
-	if ( version == "" ) then	--We are automatically placed.
+	if ( version == "" or version == "1" ) then	--We are automatically placed.
 		manager.dynamicContainerPosition = true;
 		CompactRaidFrameManager_UpdateContainerBounds(manager);
 		return;
@@ -504,7 +525,7 @@ function CompactRaidFrameManager_ResizeFrame_LoadPosition(manager)
 	end
 	
 	--First, let's clear the container's current anchors.
-	manager.container:ClearAllPoints();
+	manager.containerResizeFrame:ClearAllPoints();
 	
 	local top;
 	if ( topPoint == "TOP" ) then
@@ -524,10 +545,10 @@ function CompactRaidFrameManager_ResizeFrame_LoadPosition(manager)
 	height = max(height, MINIMUM_RAID_CONTAINER_HEIGHT);
 	top = max(top, height);
 	
-	manager.container:SetHeight(height);
+	manager.containerResizeFrame:SetHeight(height);
 	
 	if ( leftPoint == "ATTACHED" ) then
-		manager.container:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, top - manager:GetTop());
+		manager.containerResizeFrame:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, top - manager:GetTop());
 	else
 		local left;
 		if ( leftPoint == "RIGHT" ) then
@@ -536,8 +557,10 @@ function CompactRaidFrameManager_ResizeFrame_LoadPosition(manager)
 			left = leftOffset;
 		end
 		
-		manager.container:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", left, top);
+		manager.containerResizeFrame:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", left, top);
 	end
+	
+	CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager);
 end
 
 -------------Utility functions-------------

@@ -1,139 +1,35 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="StreamingFrame.lua"/>
-	<Frame name="StreamingMessageTemplate" toplevel="true" parent="UIParent" hidden="true" virtual="true">
-		<Size x="418" y="72"/>
+	<Frame name="StreamingIcon" toplevel="true" alpha="0" parent="UIParent" hidden="true">
 		<Anchors>
-			<Anchor point="TOP" x="0" y="-100"/>
+			<Anchor point="LEFT" relativeTo="GhostFrame" relativePoint="RIGHT" >
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
 		</Anchors>
-		<Frames>
-            <Frame name="$parentBorder" parentKey="Border" setAllPoints="true" >
-        		<Layers>
-        			<Layer level="BACKGROUND">
-        				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentBlackBg">
-        					<Anchors>
-        						<Anchor point="BOTTOM" x="0" y="0"/>
-        					</Anchors>
-        					<Size x="326" y="103"/>	
-        					<TexCoords left="0.00195313" right="0.63867188" top="0.03710938" bottom="0.23828125"/>
-        					<Color r="1.0" g="1.0" b="1.0" a="0.6"/>
-        				</Texture>
-        			</Layer>
-        			<Layer level="BACKGROUND" textureSubLevel="2">
-        				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine2">
-        					<Anchors>
-        						<Anchor point="TOP" x="0" y="0"/>
-        					</Anchors>
-        					<Size x="418" y="7"/>
-        					<TexCoords left="0.00195313" right="0.81835938" top="0.01953125" bottom="0.03320313"/>
-        				</Texture>
-        				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine">
-        					<Anchors>
-        						<Anchor point="BOTTOM" x="0" y="0"/>
-        					</Anchors>
-        					<Size x="418" y="7"/>
-        					<TexCoords left="0.00195313" right="0.81835938" top="0.01953125" bottom="0.03320313"/>
-        				</Texture>
-        			</Layer>
-        		</Layers>
-            </Frame>
-			<Frame name="$parentText" parentKey="Text" setAllPoints="true" >
-				<Size x="418" y="72"/>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString inherits="GameFontNormalLarge" justifyH="CENTER" name="$parentStatus" parentKey="Status" text="STATUS_CORE_FILE1">
-							<Color r="1.0" g="0" b="0"/>
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="15"/>
-							</Anchors>
-						</FontString>
-						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" text="STATUS_CORE_FILE2" parentKey="Detail">
-							<Color r="1.0" g="0.82" b="0"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentStatus" relativePoint="TOP" x="0" y="5"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-        <Animations>
-            <AnimationGroup parentKey="fade">
-                <Alpha change="-1" duration="2.0" order="1" />
-                <Scripts>
-                    <OnFinished>
-                        self:GetParent():Hide();
-                    </OnFinished>
-                </Scripts>
-            </AnimationGroup>
-            <AnimationGroup parentKey="grow">
-                <Scale target="$parentBorder" scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1"/>
-                <Scale target="$parentBorder" scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
-                <Alpha target="$parentText" change="1.0" duration="0.7" order="3" endDelay="4.0" />
-                <Scripts>
-                    <OnStop>
-                        self:GetParent():Hide();
-                    </OnStop>
-                    <OnPlay>
-                        self:GetParent().Text:SetAlpha(0.0);
-                        self:GetParent():Show();
-                    </OnPlay>
-                    <OnFinished>
-                        self:GetParent().Text:SetAlpha(1.0);
-                        if(self:GetParent().event ~= "STREAMING_CORE_FILES") then
-                            self:GetParent().fade:Play()                      
-                        end
-                    </OnFinished>
-                </Scripts>
-            </AnimationGroup>
-        </Animations>
-		<Scripts>
-			<OnEvent function="StreamingDialog_OnEvent"/>
-            <OnLoad>
-                self:RegisterEvent("STREAMING_IDLE");
-                self:RegisterEvent("STREAMING_ADDL_FILES");
-                self:RegisterEvent("STREAMING_MAJOR_FILES");
-                self:RegisterEvent("STREAMING_CORE_FILES");
-            </OnLoad>
-		</Scripts>
-	</Frame>
-    <Frame name="StreamingDialog" inherits="StreamingMessageTemplate"/>
-	<Frame name="StreamingIcon" toplevel="true" parent="UIParent" hidden="true" >
-		<Size x="64" y="64"/>
+		<Size x="48" y="48"/>
 		<Frames>
             <Frame name="$parentFrame" setAllPoints="true" >
 				<Layers>
 					<Layer level="BACKGROUND" sublevel="1">
-						<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="0"/>
-							</Anchors>
-						</Texture>
+						<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" />
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\COMMON\StreamFrame" name="$parenAlpha" hidden="false">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="0"/>
-							</Anchors>
-						</Texture>
+						<Texture file="Interface\COMMON\StreamFrame" name="$parenAlpha" setAllPoints="true" />
 					</Layer>
 				</Layers>
 			</Frame>
 			<Frame name="$parentSpin" setAllPoints="true" >
 				<Layers>
-					<Layer level="BACKGROUND" sublevel="2"  >
-						<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" hidden="false">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="0"/>
-							</Anchors>
-						</Texture>
+					<Layer level="BACKGROUND" sublevel="2" >
+						<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" />
+					</Layer>
+					<Layer level="OVERLAY" >
+						<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
 					</Layer>
 				</Layers>
-				<Animations>
-					<AnimationGroup name="$parentAnimate" looping="repeat">
-						<Rotation order="1" duration="8" degrees="360" />
-					</AnimationGroup>
-				</Animations>
 			</Frame>
 		</Frames>
         <Scripts>
@@ -145,8 +41,18 @@
             </OnEnter>
             <OnLeave function="GameTooltip_Hide"/>
 			<OnLoad function="StreamingIcon_OnLoad"/>
-        </Scripts>
+ 			<OnEvent function="StreamingIcon_OnEvent"/>
+			<OnShow function="StreamingIcon_OnShow"/>
+			<OnHide function="StreamingIcon_OnHide"/>
+		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="Loop" looping="REPEAT" >
+				<Rotation target="StreamingIconSpin" order="1" duration="8" degrees="-360" />
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 </Ui>
+
+
 
 

@@ -7,3 +7,4 @@ Blizzard_GuildRoster.xml
 Blizzard_GuildNews.xml
 Blizzard_GuildRewards.xml
 Blizzard_GuildInfo.xml
+Localization.lua

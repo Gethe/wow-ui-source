@@ -309,9 +309,12 @@ function PetActionButton_OnDragStart (self)
 end
 
 function PetActionButton_OnReceiveDrag (self)
-	self:SetChecked(0);
-	PickupPetAction(self:GetID());
-	PetActionBar_Update();
+	local cursorType = GetCursorInfo();
+	if (cursorType == "petaction") then
+		self:SetChecked(0);
+		PickupPetAction(self:GetID());
+		PetActionBar_Update();
+	end
 end
 
 function PetActionButton_OnEnter (self)

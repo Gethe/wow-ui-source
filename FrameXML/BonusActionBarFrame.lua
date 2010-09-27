@@ -4,17 +4,18 @@ NUM_SHAPESHIFT_SLOTS = 10;
 NUM_POSSESS_SLOTS = 2;
 POSSESS_CANCEL_SLOT = 2;
 
-BONUSACTIONBAR_NUM_TEXTURES = 3;
+BONUSACTIONBAR_NUM_TEXTURES = 4;
 
 BonusActionBarTypes =  {
 
 	["default"] = 	{
 								showDefaultBar = true,
-								width = 505, height = 43,
+								width = 506, height = 43,
 								buttonX = 5, buttonY = 3, 
 								buttonSize = 36,
+								buttonSpace = 6,
 								numButtons = 12,
-								anchorPoint = "BOTTOMLEFT", anchorX = 4, anchorY = 0,
+								anchorPoint = "BOTTOMLEFT", anchorX = 3, anchorY = 0,
 								Texture1 = 	{ 
 														width = 253, height = 43, 
 														file ="Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf",
@@ -34,6 +35,7 @@ BonusActionBarTypes =  {
 								microBarX = 380, microBarY = 12,
 								buttonX = 59, buttonY = 15, 
 								buttonSize = 44,
+								buttonSpace = 6,
 								numButtons = 6,
 								anchorPoint = "BOTTOM", anchorX = 0, anchorY = 0,
 								Texture1 = 	{ 
@@ -50,6 +52,23 @@ BonusActionBarTypes =  {
 														width = 230, height = 83, 
 														file ="Interface\\PlayerActionBarAlt\\PlayerActionBarAlt_RIGHT",
 														texLeft=0.0, texRight=0.8984375, texTop=0.3515625, texBottom=1.0,
+													},
+							},
+							
+	["SingleBarLayout"]= 	{
+								width = 686, height = 93,
+								xpWidth = 620,
+								microBarX = 466, microBarY = 43,
+								microTwoRows = true,
+								buttonX = 83, buttonY = 20, 
+								buttonSize = 42,
+								buttonSpace = 18,
+								numButtons = 6,
+								anchorPoint = "BOTTOM", anchorX = 0, anchorY = 0,
+								buttonBg = true,
+								Texture4 = 	{ 
+														width = 1024, height = 128, 
+														texLeft=0.0, texRight=1.0, texTop=0.0, texBottom=1.0,
 													},
 							}
 }
@@ -84,14 +103,21 @@ end
 
 function SetupBonusActionBar()
 	local barType = GetBonusBarOverrideBarType() or "default";
-	local barInfo = BonusActionBarTypes[barType];
-
+	local barInfo = BonusActionBarGetBarInfo(barType);
+	if not barInfo then
+		return;
+	end
+	
 	local texture, textureInfo;
 	for i=1,BONUSACTIONBAR_NUM_TEXTURES do
 		texture = _G["BonusActionBarFrameTexture"..i];
 		textureInfo = barInfo["Texture"..i];
 		if textureInfo then
-			texture:SetTexture(textureInfo.file);
+			if textureInfo.file then
+				texture:SetTexture(textureInfo.file);
+			else
+				texture:SetTexture("Interface\\PlayerActionBarAlt\\"..barType);
+			end
 			texture:SetSize(textureInfo.width, textureInfo.height);
 			texture:SetTexCoord(textureInfo.texLeft, textureInfo.texRight, textureInfo.texTop, textureInfo.texBottom);
 			texture:Show();
@@ -101,11 +127,23 @@ function SetupBonusActionBar()
 	end
 	
 	for i=1,NUM_BONUS_ACTION_SLOTS do
+		local button = _G["BonusActionButton"..i];
 		if  i > barInfo.numButtons then
-			_G["BonusActionButton"..i]:SetAttribute("statehidden", true);
+			button:SetAttribute("statehidden", true);
 		else
-			_G["BonusActionButton"..i]:SetAttribute("statehidden", false);
-			_G["BonusActionButton"..i]:SetSize(barInfo.buttonSize, barInfo.buttonSize);
+			button:SetAttribute("statehidden", false);
+			button:SetSize(barInfo.buttonSize, barInfo.buttonSize);
+		end
+		
+		if barInfo.buttonBg then
+			button.bg:SetTexture("Interface\\PlayerActionBarAlt\\"..barType.."Btn");
+			button.bg:Show();
+		else
+			button.bg:Hide();
+		end
+		
+		if i > 1 and barInfo.buttonSpace then
+			button:SetPoint("LEFT", _G["BonusActionButton"..(i-1)], "RIGHT", barInfo.buttonSpace, 0);
 		end
 	end
 			
@@ -123,11 +161,20 @@ function SetupBonusActionBar()
 end
 
 
+function BonusActionBarGetBarInfo(barType)
+	if BonusActionBarTypes[barType] then
+		return BonusActionBarTypes[barType];
+	elseif barType then
+		return BonusActionBarTypes["SingleBarLayout"];
+	end
+end
+
+
 function ShowBonusActionBar (force)
 	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 
 		local barType = GetBonusBarOverrideBarType() or "default";
-		local barInfo = BonusActionBarTypes[barType];
+		local barInfo = BonusActionBarGetBarInfo(barType);
 	
 		local shownFrame = MainMenuBar;
 		if not BonusActionBarFrame:IsShown() then
@@ -144,13 +191,16 @@ function ShowBonusActionBar (force)
 			BonusActionBarFrame.microBarParent = BonusActionBarFrame;
 			BonusActionBarFrame.microBarX = barInfo.microBarX;
 			BonusActionBarFrame.microBarY = barInfo.microBarY;
+			BonusActionBarFrame.microTwoRows = barInfo.microTwoRows;
 			shownFrame.slideout:Play(); -- Slide bar out
 		else
 			if shownFrame == MainMenuBar then --Bar only
 				BonusActionBarFrame.nextAnimBar = nil;
 				BonusActionBarFrame.animOut = false;
 				shownFrame.barToShow = nil;
-				BonusActionBarFrame.slideout:Play(true); -- Slide bar in
+				if ( not BonusActionBarFrame:IsShown() ) then
+					BonusActionBarFrame.slideout:Play(true); -- Slide bar in
+				end
 			else
 				shownFrame.nextAnimBar = MainMenuBar;
 				shownFrame.barToShow = BonusActionBarFrame;
@@ -168,7 +218,7 @@ end
 function HideBonusActionBar (force)
 	if ( BonusActionBarFrame:IsShown() and (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		
-		local oldbarInfo = BonusActionBarTypes[BonusActionBarFrame.currentType];
+		local oldbarInfo = BonusActionBarGetBarInfo(BonusActionBarFrame.currentType);
 		if not oldbarInfo then return end
 		
 		if not oldbarInfo.showDefaultBar then
@@ -215,6 +265,12 @@ function ActionBar_AnimTransitionFinished(self)
 					CharacterMicroButton:ClearAllPoints();
 					UpdateMicroButtonsParent(self.nextAnimBar.microBarParent);
 					CharacterMicroButton:SetPoint("BOTTOMLEFT", self.nextAnimBar.microBarX, self.nextAnimBar.microBarY);
+					GuildMicroButton:ClearAllPoints();
+					if self.nextAnimBar.microTwoRows then
+						GuildMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 22);
+					else
+						GuildMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);
+					end
 					UpdateMicroButtons();
 				end
 			end

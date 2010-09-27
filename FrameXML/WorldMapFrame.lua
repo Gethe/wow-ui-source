@@ -10,9 +10,9 @@ WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
 WORLDMAP_MAELSTROM_ID = 5;
-MAELSTROM_ZONES_ID = { TheMaelstrom = 0, Deepholm = 1, Kezan = 2, TheLostIsles = 3 };
+MAELSTROM_ZONES_ID = { TheMaelstrom = 4, Deepholm = 1, Kezan = 2, TheLostIsles = 3 };
 WORLDMAP_WINTERGRASP_ID = 501;
-
+WORLDMAP_WINTERGRASP_POI_AREAID = 4197;
 QUESTFRAME_MINHEIGHT = 34;
 QUESTFRAME_PADDING = 19;
 WORLDMAP_POI_FRAMELEVEL = 100;		-- needs to be one the highest frames in the MEDIUM strata
@@ -188,6 +188,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "VARIABLES_LOADED" ) then
 		WorldMapZoneMinimapDropDown_Update();
 		WORLDMAP_SETTINGS.advanced = GetCVarBool("advancedWorldMap");
+		WORLDMAP_SETTINGS.locked = GetCVarBool("lockedWorldMap");
 		WORLDMAP_SETTINGS.opacity = (tonumber(GetCVar("worldMapOpacity")));
 		if ( GetCVarBool("miniWorldMap") ) then
 			WorldMap_ToggleSizeDown();
@@ -260,18 +261,16 @@ function WorldMapFrame_Update()
 			mapFileName = "Cosmic";
 			OutlandButton:Show();
 			AzerothButton:Show();
-			DeepholmButton:Hide();
-			KezanButton:Hide();
-			LostIslesButton:Hide();
 		else
 			-- Temporary Hack (Temporary meaning 6 yrs, haha)
 			mapFileName = "World";
 			OutlandButton:Hide();
 			AzerothButton:Hide();
-			DeepholmButton:Hide();
-			KezanButton:Hide();
-			LostIslesButton:Hide();
 		end
+		DeepholmButton:Hide();
+		KezanButton:Hide();
+		LostIslesButton:Hide();
+		TheMaelstromButton:Hide();
 	else
 		OutlandButton:Hide();
 		AzerothButton:Hide();
@@ -279,10 +278,12 @@ function WorldMapFrame_Update()
 			DeepholmButton:Show();
 			KezanButton:Show();
 			LostIslesButton:Show();
+			TheMaelstromButton:Show();
 		else
 			DeepholmButton:Hide();
 			KezanButton:Hide();
 			LostIslesButton:Hide();
+			TheMaelstromButton:Hide();
 		end
 	end
 
@@ -324,32 +325,36 @@ function WorldMapFrame_Update()
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
 		if ( i <= numPOIs ) then
-			local name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID = GetMapLandmarkInfo(i);
-			local x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
-			_G[worldMapPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-			x = x * WorldMapButton:GetWidth();
-			y = -y * WorldMapButton:GetHeight();
-			worldMapPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
-			worldMapPOI.name = name;
-			worldMapPOI.description = description;
-			worldMapPOI.mapLinkID = mapLinkID;
-			if ( graveyardID and graveyardID > 0 ) then
-				worldMapPOI.graveyard = graveyardID;
-				numGraveyards = numGraveyards + 1;
-				local graveyard = WorldMap_GetGraveyardButton(numGraveyards);
-				graveyard:SetPoint("CENTER", worldMapPOI);
-				graveyard:SetFrameLevel(worldMapPOI:GetFrameLevel() - 1);
-				graveyard:Show();
-				if ( currentGraveyard == graveyardID ) then
-					graveyard.texture:SetTexture(0, 1, 0, 0.5);
-				else
-					graveyard.texture:SetTexture(1, 1, 0, 0.5);
-				end
-				worldMapPOI:Hide();		-- lame way to force tooltip redraw
+			local name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID = GetMapLandmarkInfo(i);
+			if( (GetCurrentMapAreaID() ~= WORLDMAP_WINTERGRASP_ID) and (areaID == WORLDMAP_WINTERGRASP_POI_AREAID) ) then
+				worldMapPOI:Hide();
 			else
-				worldMapPOI.graveyard = nil;
+				local x1, x2, y1, y2 = WorldMap_GetPOITextureCoords(textureIndex);
+				_G[worldMapPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+				x = x * WorldMapButton:GetWidth();
+				y = -y * WorldMapButton:GetHeight();
+				worldMapPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
+				worldMapPOI.name = name;
+				worldMapPOI.description = description;
+				worldMapPOI.mapLinkID = mapLinkID;
+				if ( graveyardID and graveyardID > 0 ) then
+					worldMapPOI.graveyard = graveyardID;
+					numGraveyards = numGraveyards + 1;
+					local graveyard = WorldMap_GetGraveyardButton(numGraveyards);
+					graveyard:SetPoint("CENTER", worldMapPOI);
+					graveyard:SetFrameLevel(worldMapPOI:GetFrameLevel() - 1);
+					graveyard:Show();
+					if ( currentGraveyard == graveyardID ) then
+						graveyard.texture:SetTexture(0, 1, 0, 0.5);
+					else
+						graveyard.texture:SetTexture(1, 1, 0, 0.5);
+					end
+					worldMapPOI:Hide();		-- lame way to force tooltip redraw
+				else
+					worldMapPOI.graveyard = nil;
+				end
+				worldMapPOI:Show();	
 			end
-			worldMapPOI:Show();	
 		else
 			worldMapPOI:Hide();
 		end
@@ -366,7 +371,7 @@ function WorldMapFrame_Update()
 	-- Setup the overlays
 	local textureCount = 0;
 	for i=1, GetNumMapOverlays() do
-		local textureName, textureWidth, textureHeight, offsetX, offsetY, mapPointX, mapPointY = GetMapOverlayInfo(i);
+		local textureName, textureWidth, textureHeight, offsetX, offsetY = GetMapOverlayInfo(i);
 		if ( textureName and textureName ~= "" ) then
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);
@@ -852,7 +857,7 @@ local BLIP_TEX_COORDS = {
 ["SHAMAN"] = { 0.75, 0.875, 0, 0.25 },
 ["MAGE"] = { 0.875, 1, 0, 0.25 },
 ["WARLOCK"] = { 0, 0.125, 0.25, 0.5 },
-["DRUID"] = { 0.125, 0.25, 0.25, 0.5 }
+["DRUID"] = { 0.25, 0.375, 0.25, 0.5 }
 }
 
 local BLIP_RAID_Y_OFFSET = 0.5;
@@ -2254,7 +2259,8 @@ end
 function WorldMapTitleDropDown_Initialize()
 	local checked;
 	local info = UIDropDownMenu_CreateInfo();
-
+	info.isNotRadio = true;
+	
 	-- Lock/Unlock
 	if ( WORLDMAP_SETTINGS.advanced ) then
 		info.text = LOCK_WINDOW;
@@ -2272,6 +2278,11 @@ end
 
 function WorldMapTitleDropDown_ToggleLock()
 	WORLDMAP_SETTINGS.locked = not WORLDMAP_SETTINGS.locked;
+	if ( WORLDMAP_SETTINGS.locked ) then
+		SetCVar("lockedWorldMap", 1);
+	else
+		SetCVar("lockedWorldMap", 0);
+	end
 end
 
 function WorldMapTitleDropDown_ToggleOpacity()

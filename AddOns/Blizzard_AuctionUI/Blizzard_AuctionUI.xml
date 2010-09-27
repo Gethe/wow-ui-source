@@ -60,7 +60,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="15" y="11"/>
+							<AbsDimension x="15" y="12"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1650,8 +1650,10 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="PriceDropDown_OnLoad"/>
-							<OnShow function="PriceDropDown_OnLoad"/>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 80);
+							</OnLoad>
+							<OnShow function="PriceDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame name="StartPrice" inherits="MoneyInputFrameTemplate">
@@ -1737,8 +1739,10 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="DurationDropDown_OnLoad"/>
-							<OnShow function="DurationDropDown_OnLoad"/>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(DurationDropDown, 80);
+							</OnLoad>
+							<OnShow function="DurationDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame name="AuctionsDepositMoneyFrame" inherits="SmallMoneyFrameTemplate">

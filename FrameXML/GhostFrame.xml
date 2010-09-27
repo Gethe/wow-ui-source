@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Button name="GhostFrame" inherits="UIPanelLargeSilverButton" parent="UIParent" hidden="true">
+		<Size x="1" y="46"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="WorldStateAlwaysUpFrame" relativePoint="BOTTOM" x="0" y="-4"/>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentContentsFrame">
+				<Size x="130" y="46"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" text="RETURN_TO_GRAVEYARD">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="46" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentIcon" file="Interface\Icons\spell_holy_guardianspirit">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				self:SetWidth(130);
+			</OnShow>
+			<OnHide>
+				self:SetWidth(1);
+			</OnHide>
+			<OnClick>
+				PlaySound("igMainMenuOpen");
+				PortGraveyard();
+			</OnClick>
+		</Scripts>
+	</Button>
+</Ui>

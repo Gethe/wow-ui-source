@@ -7,10 +7,10 @@ function RaidNotice_FadeInit( slotFrame )
 end
 
 function RaidNotice_AddMessage( noticeFrame, textString, colorInfo )
-	if ( not noticeFrame or not noticeFrame.slot1 or not noticeFrame.slot2 or not textString ) then
+	if ( not textString ) then
 		return;
 	end
-
+	
 	noticeFrame:Show();
 	if ( not noticeFrame.slot1:IsShown() ) then
 		noticeFrame.slot1_text = textString;
@@ -36,26 +36,31 @@ function RaidNotice_SetSlot( slotFrame, textString, colorInfo, minHeight )
 	FadingFrame_Show( slotFrame );
 end
 
-local RaidNotice_unused = false;
 function RaidNotice_OnUpdate( noticeFrame, elapsedTime )
-	if ( not noticeFrame or not noticeFrame.slot1 or not noticeFrame.slot2 ) then
-		return;
-	end
-
-	RaidNotice_unused = true;
+	local inUse = false;
 	if ( noticeFrame.slot1:IsShown() ) then
 		RaidNotice_UpdateSlot( noticeFrame.slot1, noticeFrame.timings, elapsedTime );
-		RaidNotice_unused = false;
+		inUse = true;
 	end
 
 	if ( noticeFrame.slot2:IsShown() ) then
 		RaidNotice_UpdateSlot( noticeFrame.slot2, noticeFrame.timings, elapsedTime );
-		RaidNotice_unused = false;
+		inUse = true;
 	end
 	
-	if ( RaidNotice_unused ) then
+	if ( not inUse ) then
 		noticeFrame:Hide();
 	end
+end
+
+function RaidNotice_Clear( noticeFrame )
+	RaidNotice_ClearSlot(noticeFrame.slot1);
+	RaidNotice_ClearSlot(noticeFrame.slot2);
+end
+
+function RaidNotice_ClearSlot( slotFrame )
+	slotFrame.scrollTime = nil;
+	slotFrame:Hide();
 end
 
 function RaidNotice_UpdateSlot( slotFrame, timings, elapsedTime )
@@ -112,8 +117,6 @@ end
 
 -----------  BOSS EMOTE 
 function RaidBossEmoteFrame_OnLoad(self)
-	self.slot1 = RaidBossEmoteFrameSlot1;
-	self.slot2 = RaidBossEmoteFrameSlot2;
 	RaidNotice_FadeInit(self.slot1);
 	RaidNotice_FadeInit(self.slot2);
 	self.timings = { };
@@ -132,7 +135,7 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 		local mtype = strsub(event,10);
 		local body = format(_G["CHAT_"..mtype.."_GET"]..arg1, arg2, arg2);	--No need for pflag, monsters can't be afk, dnd, or GMs.
 		local info = ChatTypeInfo[mtype];
-		RaidNotice_AddMessage( RaidBossEmoteFrame, body, info );
+		RaidNotice_AddMessage( self, body, info );
 --		RaidNotice_AddMessage( RaidBossEmoteFrame, "This is a TEST of the MESSAGE!", ChatTypeInfo["RAID_BOSS_EMOTE"] );
 		if ( enableRaidBossEmoteWarningSound ) then
 			PlaySound("RaidBossEmoteWarning");

@@ -1,4 +1,6 @@
 function CompactRaidGroup_OnLoad(self)
+	self.title:Disable();
+	
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
 end
@@ -26,7 +28,8 @@ function CompactRaidGroup_GenerateForGroup(groupIndex)
 	if (  not frame ) then
 		frame = CreateFrame("Frame", "CompactRaidGroup"..groupIndex, UIParent, "CompactRaidGroupTemplate");
 		CompactRaidGroup_InitializeForGroup(frame, groupIndex);
-		CompactRaidGroup_UpdateLayout(frame);
+		--CompactRaidGroup_UpdateLayout(frame);	--Update border calls UpdateLayout.
+		CompactRaidGroup_UpdateBorder(frame);
 		didCreate = true;
 	end
 	return frame, didCreate;
@@ -64,8 +67,24 @@ function CompactRaidGroup_UpdateLayout(frame)
 	local totalHeight = frame.title:GetHeight();
 	totalHeight = totalHeight + _G[frame:GetName().."Member1"]:GetHeight() * MEMBERS_PER_RAID_GROUP;
 	
-	frame:SetHeight(totalHeight);
-	frame:SetWidth(_G[frame:GetName().."Member1"]:GetWidth());
+	local totalWidth = _G[frame:GetName().."Member1"]:GetWidth();
+	if ( frame.borderFrame:IsShown() ) then
+		totalWidth = totalWidth + 12;
+		totalHeight = totalHeight + 4;
+	end
+	
+	frame:SetSize(totalWidth, totalHeight);
+end
+
+function CompactRaidGroup_UpdateBorder(frame)
+	local showBorder = GetCVarBool("raidOptionShowBorders");
+	
+	if ( showBorder ) then
+		frame.borderFrame:Show();
+	else
+		frame.borderFrame:Hide();
+	end
+	CompactRaidGroup_UpdateLayout(frame);
 end
 
 function CompactRaidGroup_StartMoving(frame)

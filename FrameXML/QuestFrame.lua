@@ -86,12 +86,9 @@ function QuestFrameRewardPanel_OnShow()
 	QuestFrameProgressPanel:Hide();
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameRewardPanel, material);
-	QuestInfo_Display(QUEST_TEMPLATE_REWARD, QuestRewardScrollChildFrame, QuestFrameCompleteQuestButton, QuestFrameCancelButton, material);
+	QuestFrameRewardPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight-blank");
+	QuestInfo_Display(QUEST_TEMPLATE_REWARD, QuestRewardScrollChildFrame, QuestFrameCompleteQuestButton, material);
 	QuestRewardScrollFrameScrollBar:SetValue(0);
-	if ( QUEST_FADING_DISABLE == "0" ) then
-		QuestRewardScrollChildFrame:SetAlpha(0);
-		UIFrameFadeIn(QuestRewardScrollChildFrame, QUESTINFO_FADE_IN);
-	end
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
 		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, questPortraitName, -33, -62);
@@ -156,16 +153,14 @@ function QuestFrameProgressPanel_OnShow()
 		QuestFrameCompleteButton:Disable();
 	end
 	QuestFrameProgressItems_Update();
-	if ( QUEST_FADING_DISABLE == "0" ) then
-		QuestProgressScrollChildFrame:SetAlpha(0);
-		UIFrameFadeIn(QuestProgressScrollChildFrame, QUESTINFO_FADE_IN);
-	end
 end
 
 function QuestFrameProgressItems_Update()
 	local numRequiredItems = GetNumQuestItems();
+	local numRequiredCurrencies = GetNumQuestCurrencies();
 	local questItemName = "QuestProgressItem";
-	if ( numRequiredItems > 0 or GetQuestMoneyToGet() > 0 ) then
+	local buttonIndex = 1;
+	if ( numRequiredItems > 0 or GetQuestMoneyToGet() > 0 or numRequiredCurrencies > 0) then
 		QuestProgressRequiredItemsText:Show();
 		
 		-- If there's money required then anchor and display it
@@ -192,24 +187,38 @@ function QuestFrameProgressItems_Update()
 			_G[questItemName..1]:SetPoint("TOPLEFT", "QuestProgressRequiredItemsText", "BOTTOMLEFT", -3, -5);
 		end
 
-
-		
-		for i=1, numRequiredItems, 1 do	
-			local requiredItem = _G[questItemName..i];
+		for i=1, numRequiredItems do	
+			local requiredItem = _G[questItemName..buttonIndex];
 			requiredItem.type = "required";
+			requiredItem.rewardType = "item";
+			requiredItem:SetID(i);
 			local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
 			SetItemButtonCount(requiredItem, numItems);
 			SetItemButtonTexture(requiredItem, texture);
 			requiredItem:Show();
-			_G[questItemName..i.."Name"]:SetText(name);
-			
+			_G[questItemName..buttonIndex.."Name"]:SetText(name);
+			buttonIndex = buttonIndex+1;
 		end
+		
+		for i=1, numRequiredCurrencies do	
+			local requiredItem = _G[questItemName..buttonIndex];
+			requiredItem.type = "required";
+			requiredItem.rewardType = "currency";
+			requiredItem:SetID(i);
+			local name, texture, numItems = GetQuestCurrencyInfo(requiredItem.type, i);
+			SetItemButtonCount(requiredItem, numItems);
+			SetItemButtonTexture(requiredItem, texture);
+			requiredItem:Show();
+			_G[questItemName..buttonIndex.."Name"]:SetText(name);
+			buttonIndex = buttonIndex+1;
+		end
+		
 	else
 		QuestProgressRequiredMoneyText:Hide();
 		QuestProgressRequiredMoneyFrame:Hide();
 		QuestProgressRequiredItemsText:Hide();
 	end
-	for i=numRequiredItems + 1, MAX_REQUIRED_ITEMS, 1 do
+	for i=buttonIndex, MAX_REQUIRED_ITEMS do
 		_G[questItemName..i]:Hide();
 	end
 	QuestProgressScrollFrameScrollBar:SetValue(0);
@@ -220,10 +229,6 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrame_HideQuestPortrait();
-	if ( QUEST_FADING_DISABLE == "0" ) then
-		QuestGreetingScrollChildFrame:SetAlpha(0);
-		UIFrameFadeIn(QuestGreetingScrollChildFrame, QUESTINFO_FADE_IN);
-	end
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameGreetingPanel, material);
 	GreetingText:SetText(GetGreetingText());
@@ -311,6 +316,9 @@ end
 
 function QuestFrame_OnShow()
 	PlaySound("igQuestListOpen");
+	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
+		TutorialFrame_Hide();
+	end
 end
 
 function QuestFrame_OnHide()
@@ -323,17 +331,17 @@ function QuestFrame_OnHide()
 		QuestFrame.dialog:Hide();
 		QuestFrame.dialog = nil;
 	end
+	QuestFrameDetailPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight");
 	if ( QuestFrame.autoQuest ) then
-		QuestFrameDetailPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight");
 		QuestFrameDeclineButton:Show();
+		QuestFrameCloseButton:Enable();
 		QuestFrame.autoQuest = nil;
 	end
 	CloseQuest();
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
 			TriggerTutorial(2);
---			TriggerTutorial(3);
-		else
+		elseif (not IsTutorialFlagged(10) and (TUTORIAL_QUEST_ACCEPTED == TUTORIAL_QUEST_TO_WATCH)) then
 			TriggerTutorial(10);
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil
@@ -402,12 +410,13 @@ function QuestFrameDetailPanel_OnShow()
 	if ( QuestGetAutoAccept() ) then
 		QuestFrameDetailPanelBotRight:SetTexture("Interface\\QuestFrame\\UI-QuestGreeting-BotRight-blank");
 		QuestFrameDeclineButton:Hide();
+		QuestFrameCloseButton:Disable();
 		QuestFrame.autoQuest = true;
 	end		
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
-	QuestInfo_Display(QUEST_TEMPLATE_DETAIL1, QuestDetailScrollChildFrame, QuestFrameAcceptButton, nil, material);
-	QuestInfo_Display(QUEST_TEMPLATE_DETAIL2, QuestInfoFadingFrame, QuestFrameAcceptButton, nil, material);
+	QuestInfo_Display(QUEST_TEMPLATE_DETAIL1, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
+	QuestInfo_Display(QUEST_TEMPLATE_DETAIL2, QuestInfoFadingFrame, QuestFrameAcceptButton, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then

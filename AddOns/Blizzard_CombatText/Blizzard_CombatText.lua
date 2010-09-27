@@ -96,7 +96,7 @@ function CombatText_OnEvent(self, event, ...)
 		return;
 	end
 	
-	local arg1, data, arg3 = ...;
+	local arg1, data, arg3, arg4 = ...;
 
 	-- Set up the messageType
 	local messageType, message;
@@ -244,16 +244,27 @@ function CombatText_OnEvent(self, event, ...)
 			message = "+"..arg3.." "..format(ABSORB_TRAILER, arg4);
 		end
 	elseif ( messageType == "ENERGIZE" or messageType == "PERIODIC_ENERGIZE") then
-		if ( tonumber(data) > 0 ) then
+		local count =  tonumber(data) 
+		if (count > 0 ) then
 			data = "+"..data;
 		end
 		if( arg3 == "MANA"
 			or arg3 == "RAGE"
 			or arg3 == "FOCUS"
 			or arg3 == "ENERGY"
-			or arg3 == "RUNIC_POWER") then
+			or arg3 == "RUNIC_POWER"
+			or arg3 == "SOUL_SHARDS" 
+			or arg3 == "HOLY_POWER") then
 			message = data.." ".._G[arg3];
 			info = PowerBarColor[arg3];
+		elseif ( arg3 == "ECLIPSE" ) then
+			if ( count < 0 ) then
+				message = "+"..abs(count).." "..BALANCE_NEGATIVE_ENERGY;
+				info = PowerBarColor[arg3].negative;
+			else
+				message = data.." "..BALANCE_POSITIVE_ENERGY;
+				info = PowerBarColor[arg3].positive;
+			end
 		end
 	elseif ( messageType == "FACTION" ) then
 		if ( tonumber(arg3) > 0 ) then
@@ -296,7 +307,12 @@ function CombatText_OnEvent(self, event, ...)
 			message = COMBAT_TEXT_RESIST;
 		end
 	elseif ( messageType == "HONOR_GAINED" ) then
-		if ( tonumber(data) > 0 ) then
+		data = tonumber(data);
+		if ( not data or abs(data) < 1 ) then
+			return;
+		end
+		data = floor(data);
+		if ( data > 0 ) then
 			data = "+"..data;
 		end
 		message = format(COMBAT_TEXT_HONOR_GAINED, data);

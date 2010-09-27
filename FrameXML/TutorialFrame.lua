@@ -40,19 +40,35 @@ local MOUSE_SIZE = { x = 76, y = 101}
 local TUTORIALFRAME_QUEUE = { };
 
 local TUTORIAL_QUEST_ARRAY = {
-	["HUMAN"] = {questID = 7, displayNPC = 197},
-	["DWARF"] = {questID = 7},
-	["NIGHTELF"] = {questID = 7},
-	["GNOME"] = {questID = 7},
-	["DRAENEI"] = {questID = 7},
-	["WORGEN"] = {questID = 7},
-	["ORC"] = {questID = 7},
-	["SCOURGE"] = {questID = 7},
-	["TAUREN"] = {questID = 7},
-	["TROLL"] = {questID = 7},
-	["BLOODELF"] = {questID = 7},
-	["GOBLIN"] = {questID = 7},
+	["HUMANHUNTER"] = {questID = 28767, displayNPC = 197, killCreature = 49871},
+	["HUMANMAGE"] = {questID = 28757, displayNPC = 197, killCreature = 49871},
+	["HUMANPALADIN"] = {questID = 28762, displayNPC = 197, killCreature = 49871},
+	["HUMANPRIEST"] = {questID = 28763, displayNPC = 197, killCreature = 49871},
+	["HUMANROGUE"] = {questID = 28764, displayNPC = 197, killCreature = 49871},
+	["HUMANWARLOCK"] = {questID = 28765, displayNPC = 197, killCreature = 49871},
+	["HUMANWARRIOR"] = {questID = 28766, displayNPC = 197, killCreature = 49871},
+	["DWARF"] = {questID = 24469, displayNPC = 37081, killCreature = 37070},
+	["NIGHTELF"] = {questID = 456, displayNPC = 2079, killCreature = 2031},
+	["GNOME"] = {questID = 27670, displayNPC = 45966, killCreature = 46363},
+	["ORC"] = {questID = 25126, displayNPC = 3143, killCreature = 3098, showReminder = true},
+	["SCOURGE"] = {questID = 26799, displayNPC = 1568, killCreature = 1501, showReminder = true},
+	["TAUREN"] = {questID = 14452, displayNPC = 9937, killCreature = 36943, showReminder = true},
+	["TROLLDRUID"] = {questID = 24765, displayNPC = 38243, killCreature = 38038, showReminder = true},
+	["TROLLHUNTER"] = {questID = 24777, displayNPC = 38247, killCreature = 38038, showReminder = true},
+	["TROLLMAGE"] = {questID = 24751, displayNPC = 38246, killCreature = 38038, showReminder = true},
+	["TROLLPRIEST"] = {questID = 24783, displayNPC = 38245, killCreature = 38038, showReminder = true},
+	["TROLLROGUE"] = {questID = 24771, displayNPC = 38244, killCreature = 38038, showReminder = true},
+	["TROLLSHAMAN"] = {questID = 24759, displayNPC = 38242, killCreature = 38038, showReminder = true},
+	["TROLLWARLOCK"] = {questID = 26273, displayNPC = 42618, killCreature = 38038, showReminder = true},
+	["TROLLWARRIOR"] = {questID = 24639, displayNPC = 38037, killCreature = 38038, showReminder = true},
+
+	["DRAENEI"] = nil,
+	["BLOODELF"] = nil,
+	["WORGEN"] = nil,
+	["GOBLIN"] = nil,
 };
+CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY["HUMAN"];
+
 
 local DISPLAY_DATA = {
 	-- layers can be BACKGROUND, BORDER, ARTWORK, OVERLAY, HIGHLIGHT
@@ -60,7 +76,7 @@ local DISPLAY_DATA = {
 
 	[1] = { --TUTORIAL_QUESTGIVERS
 		tileHeight = 21, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 0},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestCursor", align = "TOP", xOff = 0, yOff = -110},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGiver", align = "TOP", xOff = -40, yOff = -50},
@@ -68,17 +84,18 @@ local DISPLAY_DATA = {
 	},
 	
 	[2] = {	--TUTORIAL_MOVEMENT
-		tileHeight = 0, 
-		anchorData = {align = "BOTTOM", xOff = 0, yOff = 100},
-		textBox = {topLeft_xOff = 400, topLeft_yOff = -300, bottomRight_xOff = 250, bottomRight_yOff = -600},
-		keyData1 = {command = "TURNLEFT", layer = "OVERLAY", align = "BOTTOM", xOff = -55, yOff = 150, linkedTexture = "TutorialFrameArrowLeft"},
-		keyData2 = {command = "MOVEBACKWARD", layer = "OVERLAY", align = "BOTTOM", xOff = 0, yOff = 150, linkedTexture = "TutorialFrameArrowDown"},
-		keyData3 = {command = "TURNRIGHT", layer = "OVERLAY", align = "BOTTOM", xOff = 55, yOff = 150, linkedTexture = "TutorialFrameArrowRight"},
-		keyData4 = {command = "MOVEFORWARD", align = "BOTTOM", xOff = 0, yOff = 190, linkedTexture = "TutorialFrameArrowUp"},
-		ArrowUp = {layer = "BORDER", align = "BOTTOM", xOff = 0, yOff = 240, scale = 0.5},
-		ArrowDown = {layer = "ARTWORK", align = "BOTTOM", xOff = 0, yOff = 120, scale = 0.5},
-		ArrowRight = {layer = "ARTWORK", align = "BOTTOM", xOff = 100, yOff = 170, scale = 0.5},
-		ArrowLeft = {layer = "ARTWORK", align = "BOTTOM", xOff = -100, yOff = 170, scale = 0.5},
+		tileHeight = 0,
+		background = {width = 350, height = 300, alpha = 0.4},
+		anchorData = {align = "BOTTOM", xOff = -275, yOff = 275},
+		textBox = {font = GameFontNormalLarge, topLeft_xOff = 20, topLeft_yOff = -230, bottomRight_xOff = 0, bottomRight_yOff = 0},
+		keyData1 = {command = "TURNLEFT", layer = "OVERLAY", align = "BOTTOM", xOff = -55, yOff = 110, linkedTexture = "TutorialFrameArrowLeft"},
+		keyData2 = {command = "MOVEBACKWARD", layer = "OVERLAY", align = "BOTTOM", xOff = 0, yOff = 110, linkedTexture = "TutorialFrameArrowDown"},
+		keyData3 = {command = "TURNRIGHT", layer = "OVERLAY", align = "BOTTOM", xOff = 55, yOff = 110, linkedTexture = "TutorialFrameArrowRight"},
+		keyData4 = {command = "MOVEFORWARD", align = "BOTTOM", xOff = 0, yOff = 150, linkedTexture = "TutorialFrameArrowUp"},
+		ArrowUp = {layer = "BORDER", align = "BOTTOM", xOff = 0, yOff = 205, scale = 0.5},
+		ArrowDown = {layer = "ARTWORK", align = "BOTTOM", xOff = 0, yOff = 80, scale = 0.5},
+		ArrowRight = {layer = "ARTWORK", align = "BOTTOM", xOff = 100, yOff = 130, scale = 0.5},
+		ArrowLeft = {layer = "ARTWORK", align = "BOTTOM", xOff = -100, yOff = 130, scale = 0.5},
 	},
 	
 	[3] = {	--TUTORIAL_CAMERA
@@ -91,14 +108,16 @@ local DISPLAY_DATA = {
 	},
 	
 	[4] = {	--TUTORIAL_NEAR_QUEST_KILL
-		tileHeight = 8, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 0},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		raceRequired = true;
+ 		tileHeight = 24, 
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -260, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		killCreature = true;
 	},
 	
 	[5] = {	--TUTORIAL_TARGETING_ENEMY
 		tileHeight = 19, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 0},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
 		callOut	= {parent = "MainMenuBar", align = "TOPLEFT", xOff = -5, yOff = -5, width = 525, height = 50},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -145, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-AttackCursor", align = "TOP", xOff = -60, yOff = -60},
@@ -107,7 +126,7 @@ local DISPLAY_DATA = {
 
 	[6] = {	--TUTORIAL_COMBAT
 		tileHeight = 15, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = -200},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = -200},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -120, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell01", align = "TOP", xOff = -60, yOff = -50},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell02", align = "TOP", xOff = 10, yOff = -50},
@@ -140,13 +159,16 @@ local DISPLAY_DATA = {
 	},
 	
 	[10] = { --TUTORIAL_SECOND_QUEST
-		tileHeight = 13,
+		raceRequired = true;
+ 		tileHeight = 24, 
 		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 50},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -125, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -260, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		killCreature = true;
     },
 	
 	[11] = { --TUTORIAL_FIRST_QUEST_KILL
+		raceRequired = true;
 		raidwarning = true,
 		tileHeight = 0, 
     },
@@ -222,7 +244,7 @@ local DISPLAY_DATA = {
 	[22] = { --TUTORIAL_FRIENDS
 		tileHeight = 10, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "SocialsMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
+		callOut	= {parent = "FriendsMicroButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	
@@ -371,7 +393,7 @@ local DISPLAY_DATA = {
 	
 	[43] = { --TUTORIAL_FUTURE_QUEST
 		tileHeight = 18, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -195, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-QuestGray", align = "TOP", xOff = 30, yOff = -50},
 	},
@@ -432,14 +454,14 @@ local DISPLAY_DATA = {
 	[52] = { --TUTORIAL_CRITTER
 		tileHeight = 11, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
+		callOut	= {parent = "SpellbookMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	
 	[53] = { --TUTORIAL_MOUNT
 		tileHeight = 13, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
+		callOut	= {parent = "SpellbookMicroButton", align = "TOPLEFT", xOff = -5, yOff = -17, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 	
@@ -450,7 +472,12 @@ local DISPLAY_DATA = {
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Threat", align = "TOP", xOff = 10, yOff = -50},
 	},
 	
-	[55] = { --TUTORIAL_NOT_USED_5
+	[55] = { --TUTORIAL_SECOND_QUEST_COMPLETE
+		raceRequired = true;
+ 		tileHeight = 24, 
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -260, bottomRight_xOff = -29, bottomRight_yOff = 35},
+		displayNPC = true,
 	},
 	
 	[56] = { --TUTORIAL_PLAYER_HEALTH_MANA
@@ -462,8 +489,9 @@ local DISPLAY_DATA = {
 	},
 	
     [57] = { --TUTORIAL_FIRST_QUEST_NOT_COMPLETE
+		raceRequired = true;
  		tileHeight = 24, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
+		anchorData = {align = "RIGHT", xOff = -50, yOff = 0},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -260, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		displayNPC = true,
    },
@@ -494,11 +522,43 @@ local DISPLAY_DATA = {
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell02", align = "TOP", xOff = 10, yOff = -50},
 		imageData3 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Spell03", align = "TOP", xOff = 80, yOff = -50},
 	},
+	
+	[61] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[62] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[63] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[64] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
+	[65] = { --TUTORIAL_LEARN_SPELL_1
+		spellTutorial = true;
+		tileHeight = 21, 
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
+		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	},
 };
 
 function TutorialFrame_OnLoad(self)
 	self:RegisterEvent("TUTORIAL_TRIGGER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");	
 
 	for i = 1, MAX_TUTORIAL_VERTICAL_TILE do
 		local texture = self:CreateTexture("TutorialFrameLeft"..i, "BORDER");
@@ -531,14 +591,35 @@ end
 
 function TutorialFrame_OnEvent(self, event, ...)
 	if ( event == "TUTORIAL_TRIGGER" ) then
-		local tutorialID, alwaysShow = ...;
-		TutorialFrame_NewTutorial(tutorialID, alwaysShow);
+		local tutorialID, forceShow = ...;
+		TutorialFrame_NewTutorial(tutorialID, forceShow);
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		TutorialFrame_Update(TutorialFrame.id);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		local _, className = UnitClass("player");
 		local _, raceName  = UnitRace("player");
+		className = strupper(className);
 		raceName = strupper(raceName);
-		TUTORIAL_QUEST_TO_WATCH = TUTORIAL_QUEST_ARRAY[raceName].questID;
+		if (TUTORIAL_QUEST_ARRAY[raceName..className]) then
+			CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY[raceName..className];
+			TUTORIAL_QUEST_TO_WATCH = CURRENT_TUTORIAL_QUEST_INFO.questID;
+		elseif (TUTORIAL_QUEST_ARRAY[raceName]) then
+			CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY[raceName];
+			TUTORIAL_QUEST_TO_WATCH = CURRENT_TUTORIAL_QUEST_INFO.questID;
+		end
+	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+		local spellID = ...;
+		for index, value in pairs(DISPLAY_DATA) do
+			if (value.spellTutorial) then
+				local spellID = ...;
+				local _, className = UnitClass("player");
+				className = strupper(className);
+				local tutorialSpellID = tonumber(_G["TUTORIAL"..index.."_SPELLID_"..className]);
+				if (tutorialSpellID == spellID) then
+					TutorialFrame_NewTutorial(index, true);
+				end
+			end
+		end
 	end
 end
 
@@ -565,7 +646,8 @@ function TutorialFrame_OnKeyDown(self, key)
 			local keyString = _G["TutorialFrameKeyString"..i];
 			local keyData = displayData["keyData"..i];
 			if(keyTexture and keyString and keyData) then
-				if (key == GetBindingKey(keyData.command)) then
+				local key1, key2 = GetBindingKey(keyData.command);
+				if (key == key1 or key == key2) then
 					if (keyData.linkedTexture) then
 						_G[keyData.linkedTexture]:Hide();
 					end
@@ -630,15 +712,24 @@ end
 
 function TutorialFrame_Update(currentTutorial)
 	FlagTutorial(currentTutorial);
+	TutorialFrame_ClearTextures();
 	TutorialFrame.id = currentTutorial;
 
 	local displayData = DISPLAY_DATA[ currentTutorial ];
 	if ( not displayData ) then
-		displayData = DISPLAY_DATA["Base"];
+		return;
 	end
+
+	local _, className = UnitClass("player");
+	local _, raceName  = UnitRace("player");
+	className = strupper(className);
+	raceName = strupper(raceName);
 	
+	if ( displayData.raceRequired and not CURRENT_TUTORIAL_QUEST_INFO) then
+		return;
+	end
+
 	-- setup the frame
-	TutorialFrame_ClearTextures();
 	if (displayData.anchorData) then
 		local anchorData = displayData.anchorData;
 		TutorialFrame:SetPoint( anchorData.align, UIParent, anchorData.align, anchorData.xOff, anchorData.yOff );
@@ -654,7 +745,14 @@ function TutorialFrame_Update(currentTutorial)
 		TutorialFrameOkayButton:Hide();
 		TutorialFramePrevButton:Hide();
 		TutorialFrameNextButton:Hide();
-		TutorialFrame:SetSize(1024, 768);
+		if (displayData.background) then
+			local background = displayData.background;
+			TutorialFrame:SetSize(background.width,background.height);
+			TutorialFrameBackground:SetAlpha(background.alpha);
+			TutorialFrameBackground:Show();
+		else
+			TutorialFrame:SetSize(1024, 768);
+		end
 	else
 		TutorialFrameTop:Show();
 		TutorialFrameLeft1:Show();
@@ -684,43 +782,65 @@ function TutorialFrame_Update(currentTutorial)
 		TutorialFrame:SetSize(TUTORIALFRAME_WIDTH, height);
 	end
 
-	local _, className = UnitClass("player");
-	local _, raceName  = UnitRace("player");
-	className = strupper(className);
-	raceName = strupper(raceName);
-	
-	if (displayData.displayNPC and TUTORIAL_QUEST_ARRAY[raceName].displayNPC) then
-		TutorialNPCModel:SetCreature(TUTORIAL_QUEST_ARRAY[raceName].displayNPC);
-		TutorialNPCModel:Show();
-	end
-
 	-- setup the text
-	-- check for class specific first, then race specific, then normal
-	local title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..className];
-	if ( not title ) then
-		title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName];
-		if ( not title ) then
-			title = _G["TUTORIAL_TITLE"..currentTutorial];
-		end
-	end
-	local text = _G["TUTORIAL"..currentTutorial.."_"..className];
+	-- check for race-class specific first, then race specific, then class, then normal
+	local text = _G["TUTORIAL"..currentTutorial.."_"..raceName.."_"..className];
 	if ( not text ) then
 		text = _G["TUTORIAL"..currentTutorial.."_"..raceName];
 		if ( not text ) then
-			text = _G["TUTORIAL"..currentTutorial];
+			if ( displayData.raceRequired ) then
+				return;
+			end
+			text = _G["TUTORIAL"..currentTutorial.."_"..className];
+			if ( not text ) then
+				text = _G["TUTORIAL"..currentTutorial];
+			end
 		end
 	end
-	
 	if (displayData.raidwarning) then
-		RaidNotice_AddMessage(RaidWarningFrame, text, ChatTypeInfo["RAID_WARNING"]);
+		RaidNotice_AddMessage(RaidWarningFrame, text, HIGHLIGHT_FONT_COLOR);
 		return;
 	end
+	
+	local displayNPC, killCreature;
+	if ( CURRENT_TUTORIAL_QUEST_INFO ) then
+		local displayNPC = CURRENT_TUTORIAL_QUEST_INFO.displayNPC;
+		local killCreature = CURRENT_TUTORIAL_QUEST_INFO.killCreature;
+	end
+	if (displayData.displayNPC and displayNPC) then
+		TutorialNPCModel:SetCreature(displayNPC);
+		TutorialNPCModel:Show();
+	elseif (displayData.killCreature and killCreature) then
+		TutorialNPCModel:SetCreature(killCreature);
+		TutorialNPCModel:Show();
+	end
 
-	if ( title and text) then
-		TutorialFrameTitle:SetText(title);
+	-- setup the title
+	-- check for race-class specific first, then race specific, then class, then normal
+	if (displayData.tileHeight > 0) then
+		local title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName.."_"..className];
+		if ( not title ) then
+			title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName];
+			if ( not title ) then
+				title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..className];
+				if ( not title ) then
+					title = _G["TUTORIAL_TITLE"..currentTutorial];
+				end
+			end
+		end
+	end
+
+	if (text) then
 		TutorialFrameText:SetText(text);
 	end
-	if ( displayData.textBox) then
+	
+	if (title) then
+		TutorialFrameTitle:SetText(title);
+	end
+	if (displayData.textBox) then
+		if(displayData.textBox.font) then
+			TutorialFrameText:SetFontObject(displayData.textBox.font);
+		end
 		TutorialFrameTextScrollFrame:SetPoint("TOPLEFT", TutorialFrame, "TOPLEFT", displayData.textBox.topLeft_xOff, displayData.textBox.topLeft_yOff);
 		TutorialFrameTextScrollFrame:SetPoint("BOTTOMRIGHT", TutorialFrame, "BOTTOMRIGHT", displayData.textBox.bottomRight_xOff, displayData.textBox.bottomRight_yOff);
 	end
@@ -731,7 +851,7 @@ function TutorialFrame_Update(currentTutorial)
 		TutorialFrameCallOut:SetSize(callOut.width, callOut.height);
 		TutorialFrameCallOut:SetPoint( callOut.align, callOut.parent, callOut.align, callOut.xOff, callOut.yOff );
 		TutorialFrameCallOut:Show();
-		TutorialFrameCallOutPulser:Play();
+		AnimateCallout:Play();
 	end
 
 	-- setup images
@@ -757,18 +877,21 @@ function TutorialFrame_Update(currentTutorial)
 	if(mouseData) then
 		local mouseTexture = _G["TutorialFrameMouse"..mouseData.image];
 		mouseTexture:SetPoint( mouseData.align, TutorialFrame, mouseData.align, mouseData.xOff, mouseData.yOff );
+		TutorialFrameMouse:SetPoint( mouseData.align, TutorialFrame, mouseData.align, mouseData.xOff, mouseData.yOff );
 		
 		local scale = 1.0;
 		if ( mouseData.scale ) then
 			scale = mouseData.scale;
 		end
-		mouseTexture:SetWidth( MOUSE_SIZE.x * scale );
-		mouseTexture:SetHeight( MOUSE_SIZE.y * scale );
+		mouseTexture:SetSize( MOUSE_SIZE.x * scale, MOUSE_SIZE.y * scale );
+		TutorialFrameMouse:SetSize( MOUSE_SIZE.x * scale, MOUSE_SIZE.y * scale );
 		
 		if ( mouseData.layer ) then
 			mouseTexture:SetDrawLayer(mouseData.layer);
 		end
 		mouseTexture:Show();
+		TutorialFrameMouse:Show();
+		AnimateMouse:Play();
 	end
 
 	-- setup keys
@@ -823,21 +946,26 @@ function TutorialFrame_ClearTextures()
 	TutorialFrame:ClearAllPoints();
 	TutorialFrameBottom:ClearAllPoints();
 	TutorialFrameTextScrollFrame:ClearAllPoints();
-	
+	TutorialFrameText:SetFontObject(GameFontNormal);
+	TutorialFrameBackground:SetAlpha(1.0);
+
 	TutorialNPCModel:Hide();
 
-	TutorialFrameCallOutPulser:Stop();
+	AnimateCallout:Stop();
 	TutorialFrameCallOut:ClearAllPoints();
 	TutorialFrameCallOut:Hide();
 	
+	TutorialFrameMouse:ClearAllPoints();
 	TutorialFrameMouseRightClick:ClearAllPoints();
 	TutorialFrameMouseLeftClick:ClearAllPoints();
 	TutorialFrameMouseBothClick:ClearAllPoints();
 	TutorialFrameMouseWheel:ClearAllPoints();
+	TutorialFrameMouse:Hide();
 	TutorialFrameMouseRightClick:Hide();
 	TutorialFrameMouseLeftClick:Hide();
 	TutorialFrameMouseBothClick:Hide();
 	TutorialFrameMouseWheel:Hide();
+	AnimateMouse:Stop();
 
 	-- top & left1 & right1 never have thier anchors changed; or are independantly hidden
 	for i = 2, MAX_TUTORIAL_VERTICAL_TILE do
@@ -847,6 +975,13 @@ function TutorialFrame_ClearTextures()
 		rightTexture:ClearAllPoints();
 		leftTexture:Hide();
 		rightTexture:Hide();
+	end
+
+	for i = 1, MAX_TUTORIAL_IMAGES do
+		local imageTexture = _G["TutorialFrameImage"..i];
+		imageTexture:ClearAllPoints();
+		imageTexture:SetTexture("");
+		imageTexture:Hide();
 	end
 
 	for i = 1, MAX_TUTORIAL_KEYS do
@@ -864,11 +999,9 @@ function TutorialFrame_ClearTextures()
 	end
 end
 
-function TutorialFrame_NewTutorial(tutorialID, alwaysShow)
-	if(alwaysShow) then
-		if (not TutorialFrame:IsShown()) then
-			TutorialFrame_Update(tutorialID);
-		end
+function TutorialFrame_NewTutorial(tutorialID, forceShow)
+	if(forceShow) then
+		TutorialFrame_Update(tutorialID);
 		return;
 	end
 	
@@ -904,6 +1037,9 @@ end
 function TutorialFramePrevButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	local prevTutorial = GetPrevCompleatedTutorial(TutorialFrame.id);
+	while ( prevTutorial and DISPLAY_DATA[prevTutorial].tileHeight == 0) do
+		prevTutorial = GetPrevCompleatedTutorial(prevTutorial);
+	end
 	if ( prevTutorial ) then
 		TutorialFrame_Update(prevTutorial);
 	end
@@ -912,6 +1048,9 @@ end
 function TutorialFrameNextButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	local nextTutorial = GetNextCompleatedTutorial(TutorialFrame.id);
+	while ( nextTutorial and DISPLAY_DATA[nextTutorial].tileHeight == 0) do
+		nextTutorial = GetNextCompleatedTutorial(nextTutorial);
+	end
 	if ( nextTutorial ) then
 		TutorialFrame_Update(nextTutorial);
 	elseif (getn(TUTORIALFRAME_QUEUE) > 0) then

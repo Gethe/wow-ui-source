@@ -22,6 +22,7 @@
 		<OnLoad>
 			WorldMapUnit_OnLoad(self);
 			self.unit = "party"..self:GetID();
+			self.icon:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 		</OnLoad>
 	</Scripts>
 </Frame>
@@ -30,6 +31,7 @@
 		<OnLoad>
 			WorldMapUnit_OnLoad(self);
 			self.unit = "raid"..self:GetID();
+			self.icon:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 		</OnLoad>
 	</Scripts>
 </Frame>

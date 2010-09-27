@@ -25,26 +25,26 @@ function InspectPaperDollFrame_SetLevel()
 	
 	local classDisplayName, class = UnitClass(InspectFrame.unit); 
 	local classColor = RAID_CLASS_COLORS[class];
+	local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
 	local specName;
 	
 	if (primaryTalentTree) then
 		_, specName = GetTalentTabInfo(primaryTalentTree, true);
 	end
 	
-	if (specName and specName ~= "") then
-		classDisplayName = format("|cff%.2x%.2x%.2x%s %s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, specName, classDisplayName);
-	else
-		classDisplayName = format("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, classDisplayName);
-	end
-	
 	if ( level == -1 ) then
 		level = "??";
 	end
-		
-	InspectLevelText:SetFormattedText(PLAYER_LEVEL,level, UnitRace(unit), classDisplayName);
+	
+	if (specName and specName ~= "") then
+		InspectLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
+	else
+		InspectLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, level, classColorString, classDisplayName);
+	end
 end
 
 function InspectPaperDollFrame_OnShow()
+	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 	InspectModelFrame:SetUnit(InspectFrame.unit);
 	InspectPaperDollFrame_SetLevel();
 	InspectPaperDollItemSlotButton_Update(InspectHeadSlot);

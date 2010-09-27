@@ -1,7 +1,7 @@
 
 FRAMERATE_FREQUENCY = 0.25;
 local TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
-local TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
+local TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 20;
 
 function ToggleFramerate(benchmark)
 	FramerateText.benchmark = benchmark;
@@ -29,7 +29,7 @@ end
 function WorldFrame_OnLoad(self)
 	self:IgnoreDepth(true);
 	TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
-	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
+	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
 end
 
 function WorldFrame_OnUpdate(self, elapsed)
@@ -77,7 +77,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	end
 	
 	-- need to do some polling for a few tutorials
-	if ( not IsTutorialFlagged(4) and TUTORIAL_QUEST_TO_WATCH ) then
+	if ( not IsTutorialFlagged(4) and IsTutorialFlagged(10) and not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH ) then
 		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;
 		local questIndex = GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH);
 		if ( (questIndex > 0) and (TUTORIAL_TIMER_CLOSE_TO_QUEST > 2)) then
@@ -88,10 +88,10 @@ function WorldFrame_OnUpdate(self, elapsed)
 			end
 		end
 	end
-	if ( not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() ) then
-		TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = TUTORIAL_TIMER_FIRST_QUEST_COMPLETE + elapsed;
-		if (TUTORIAL_TIMER_FIRST_QUEST_COMPLETE > 10) then
-			TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 0;
+	if ( CURRENT_TUTORIAL_QUEST_INFO and CURRENT_TUTORIAL_QUEST_INFO.showReminder and not IsTutorialFlagged(34) and IsTutorialFlagged(2) and not TutorialFrame:IsShown() and not QuestFrame:IsShown() ) then
+		TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = TUTORIAL_TIMER_FIRST_QUEST_COMPLETE - elapsed;
+		if (TUTORIAL_TIMER_FIRST_QUEST_COMPLETE < 0) then
+			TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 30;
 			TriggerTutorial(57);
 		end
 	end

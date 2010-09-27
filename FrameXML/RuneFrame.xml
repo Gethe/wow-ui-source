@@ -51,10 +51,30 @@
 				</Layer>
 			</Layers>
 		</Frame>
+		<Frame frameStrata="HIGH" setAllPoints="true">
+			<Layers>
+				<Layer level="OVERLAY" textureSublevel = "-1">
+					<Texture name="$parentRuneWhiteGlow" file="Interface\PlayerFrame\Deathknight-Energize-White" alpha="0">
+						<Size x="8" y="8"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="-1"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture name="$parentRuneColorGlow" file="Interface\PlayerFrame\Deathknight-Energize-Blood" alpha="0">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="-1"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+		</Frame>
     </Frames>
     <Layers>
 		<Layer level="ARTWORK">
-			<Texture name="$parentRune" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Blood">
+			<Texture name="$parentRune" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Blood" parentKey="rune">
 				<Size>
 					<AbsDimension x="24" y="24"/>
 				</Size>
@@ -68,6 +88,15 @@
 			</Texture>
 		</Layer>
     </Layers>
+	<Animations>
+		<AnimationGroup parentKey="energize">
+			<Scale target="$parentRuneWhiteGlow" endDelay="1" duration="0.15"  scaleX="4" scaleY="4" order="1"/>
+			<Alpha target="$parentRuneWhiteGlow" endDelay="1" change="1.0" duration="0.2" order="1" />
+			<Alpha target="$parentRuneColorGlow" startDelay="0.3" endDelay="4" change="1.0" duration="0.1" order="1" smoothing="IN_OUT"/>
+			<Alpha target="$parentRuneWhiteGlow" change="-1.0" duration="0.1" order="2" smoothing="IN_OUT"/>
+			<Alpha target="$parentRuneColorGlow" change="-1.0" duration="0.1" order="2" smoothing="IN_OUT"/>
+		</AnimationGroup>
+	</Animations>
     <Scripts>
 		<OnLoad>
 			RuneButton_OnLoad(self);

@@ -1,0 +1,160 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GuildInviteFrame.lua"/>
+	<Frame name="GuildInviteFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size>
+			<AbsDimension x="310" y="188"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\GuildFrame\GuildExtra">
+					<Size x="287" y="116"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-12"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.56250000" top="0.00781250" bottom="0.91406250"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTabardBackground" file="Interface\GuildFrame\GuildFrame">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentBackground" x="-1" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentTabardBackground" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString	name="$parentInviteText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-28"/>
+					</Anchors>
+				</FontString>
+				<FontString	name="$parentGuildName" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-46"/>
+					</Anchors>
+				</FontString>
+				<FontString	name="$parentWarningText" inherits="GameFontHighlight">
+					<Size x="0" y="50"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="BOTTOMLEFT" x="12" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBackground" relativePoint="BOTTOMRIGHT" x="-12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentTabardBorder" file="Interface\GuildFrame\GuildFrame">
+					<Size x="61" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTabardBackground" x="1" y="-1"/>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>	
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTabardRing" file="Interface\GuildFrame\GuildExtra">
+					<Size x="118" y="76"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentBackground" x="0" y="-12"/>
+					</Anchors>
+					<TexCoords left="0.56640625" right="0.79687500" top="0.00781250" bottom="0.60156250"/>	
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentLevel">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="54" y="-76"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentRingBackground" file="Interface\Minimap\UI-Minimap-Background">
+							<Size x="25" y="25"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="7" y="-6"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="0.6"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentRing" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="65" y="65"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString	name="$parentText" inherits="GameFontHighlightSmall" text="LEVEL">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentRing" relativePoint="TOP" x="-13" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString	name="$parentNumber" inherits="GameFontHighlight" text="24">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentRing" x="-13" y="14"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentJoinButton" inherits="UIPanelButtonTemplate2" text="Join Guild">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="24" y="24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AcceptGuild();
+						GuildInviteFrame.accepted = true;
+						GuildInviteFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="Decline Invitation">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GuildInviteFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.hideOnEscape = true;
+				self:RegisterEvent("GUILD_INVITE_REQUEST");
+				self:RegisterEvent("GUILD_INVITE_CANCEL");
+			</OnLoad>
+			<OnEvent function="GuildInviteFrame_OnEvent"/>
+			<OnUpdate>
+				self.elapsed = self.elapsed + elapsed;
+				if ( self.elapsed > 60 ) then
+					self:Hide();
+				end
+			</OnUpdate>
+			<OnHide>
+				if ( not self.accepted ) then
+					DeclineGuild();
+				end
+				PlaySound("igMainMenuClose");
+				StaticPopupSpecial_Hide(GuildInviteFrame);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -70,8 +70,7 @@ function CharacterFrame_OnLoad (self)
 end
 
 function CharacterFrame_UpdatePortrait()
-	local currentSpec = GetActiveTalentGroup(false, false);
-	local masteryIndex = GetMasteryIndex(currentSpec);
+	local masteryIndex = GetPrimaryTalentTree();
 	if (masteryIndex == nil) then
 		local _, class = UnitClass("player");
 		CharacterFramePortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
@@ -123,7 +122,7 @@ function CharacterFrame_OnShow (self)
 	ShowTextStatusBarText(PetFrameManaBar);
 	ShowWatchedReputationBarText();
 	
-	SetButtonPulse(CharacterMicroButton, 0, 1);	--Stop the button pulse
+	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
 end
 
 function CharacterFrame_OnHide (self)

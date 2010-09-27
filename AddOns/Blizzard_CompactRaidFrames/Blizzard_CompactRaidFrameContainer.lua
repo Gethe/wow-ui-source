@@ -59,6 +59,7 @@ end
 
 function CompactRaidFrameContainer_OnSizeChanged(self)
 	FlowContainer_DoLayout(self);
+	CompactRaidFrameContainer_UpdateBorder(self);
 end
 
 --Externally used functions
@@ -100,6 +101,11 @@ function CompactRaidFrameContainer_SetDisplayMainTankAndAssist(self, displayFlag
 	end
 end
 
+function CompactRaidFrameContainer_SetBorderShown(self, showBorder)
+	self.showBorder = showBorder;
+	CompactRaidFrameContainer_UpdateBorder(self);
+end
+
 function CompactRaidFrameContainer_ApplyToFrames(self, updateSpecifier, func, ...)
 	for specifier, list in pairs(self.frameUpdateList) do
 		if ( updateSpecifier == "all" or specifier == updateSpecifier ) then
@@ -107,6 +113,11 @@ function CompactRaidFrameContainer_ApplyToFrames(self, updateSpecifier, func, ..
 				list[i]:applyFunc(updateSpecifier, func, ...);
 			end
 		end
+	end
+	
+	--A little hacky, but not too bad.
+	if ( updateSpecifier == "all" or updateSpecifier == "group" or updateSpecifier == "normal" ) then
+		CompactPartyFrame:applyFunc(updateSpecifier, func, ...);
 	end
 end
 
@@ -162,7 +173,19 @@ function CompactRaidFrameContainer_LayoutFrames(self)
 	
 	FlowContainer_ResumeUpdates(self);
 	
+	CompactRaidFrameContainer_UpdateBorder(self);
+	
 	CompactRaidFrameContainer_ReleaseAllReservedFrames(self);
+end
+
+function CompactRaidFrameContainer_UpdateBorder(self)
+	local usedX, usedY = FlowContainer_GetUsedBounds(self);
+	if ( self.showBorder and self.groupMode ~= "discrete" and usedX > 0 and usedY > 0 ) then
+		self.borderFrame:SetSize(usedX + 11, usedY + 13);
+		self.borderFrame:Show();
+	else
+		self.borderFrame:Hide();
+	end
 end
 
 do

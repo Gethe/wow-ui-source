@@ -102,21 +102,6 @@
 			</Button>
  			<Frame name="QuestFrameRewardPanel" inherits="QuestFramePanelTemplate" hidden="true">
  				<Frames>
- 					<Button name="QuestFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-						<Size>
-							<AbsDimension x="78" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-39" y="73"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick function="QuestRewardCancelButton_OnClick"/>
-						</Scripts>
-					</Button>
 					<Button name="QuestFrameCompleteQuestButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
 						<Size>
 							<AbsDimension x="120" y="22"/>
@@ -867,11 +852,8 @@
 				Model_OnLoad(self);
 				self:SetPortraitZoom(0.6);
 				self:SetRotation(0);
-				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 			</OnLoad>
-			<OnEvent>
-				self:RefreshUnit();
-			</OnEvent>
+			<OnEvent function="Model_OnEvent"/>
 		</Scripts>
 	</PlayerModel>
  </Ui>

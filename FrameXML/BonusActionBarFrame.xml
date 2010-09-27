@@ -5,6 +5,16 @@
 		<Size>
 			<AbsDimension x="36" y="36"/>
 		</Size>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Size x="64" y="64"/>
+				<Texture name="$parentBG" parentKey="bg">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad>
 				self.isBonus = 1;
@@ -72,6 +82,11 @@
 				<Texture name="$parentTexture3">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentTexture2" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTexture4">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</Texture>
 			</Layer>

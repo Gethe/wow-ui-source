@@ -25,24 +25,29 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentSlot" inherits="Talent-SingleBorder">
+				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-1" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentSlotShadow" inherits="Talent-SingleBorder-Shadow">
+				<Texture name="$parentSlotShadow" inherits="Talent-SingleBorder-Shadow" parentKey="SlotShadow">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4" y="3"/>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentGoldBorder" inherits="Talent-GoldMedal-Border" parentKey="GoldBorder" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentRankBorder" inherits="Talent-PointBg">
+				<Texture name="$parentRankBorder" inherits="Talent-PointBg" parentKey="RankBorder">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 				</Texture>
-				<FontString name="$parentRank" inherits="GameFontNormalSmall">
+				<FontString name="$parentRank" inherits="GameFontNormalSmall" parentKey="Rank">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentRankBorder">
 							<Offset>

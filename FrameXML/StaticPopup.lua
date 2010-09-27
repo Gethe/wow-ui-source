@@ -18,6 +18,19 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["ERROR_CINEMATIC"] = {
+	text = ERROR_CINEMATIC,
+	button1 = OKAY,
+	button2 = nil,
+	timeout = 0,
+	OnAccept = function()
+	end,
+	OnCancel = function()
+	end,
+	whileDead = 1,
+	hideOnEscape = 1,
+}
+
 StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	text = CONFIRM_DELETE_EQUIPMENT_SET,
 	button1 = YES,
@@ -31,13 +44,22 @@ StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 }
 
 StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
-	text = CONFIRM_REMOVE_GLYPH,
+	text = "",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function (self)
 		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 		if ( talentGroup == GetActiveTalentGroup() ) then
 			RemoveGlyphFromSocket(self.data);
+		end
+	end,
+	OnShow = function(self)
+		local name, count, _, _, cost = GetGlyphClearInfo();
+		if count >= cost then
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data, GREEN_FONT_COLOR_CODE, cost, name);
+		else
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data, RED_FONT_COLOR_CODE, cost, name);
+			self.button1:Disable();
 		end
 	end,
 	OnCancel = function (self)
@@ -48,11 +70,21 @@ StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 }
 
 StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
-	text = CONFIRM_GLYPH_PLACEMENT,
+	text = "",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function (self) PlaceGlyphInSocket(self.data); end,
-	OnCancel = function (self) end,
+	OnCancel = function (self)
+	end,
+	OnShow = function(self)
+		local name, count, _, _, cost = GetGlyphClearInfo();
+		if count >= cost then
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, GREEN_FONT_COLOR_CODE, cost, name);
+		else
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, RED_FONT_COLOR_CODE, cost, name);
+			self.button1:Disable();
+		end
+	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
@@ -140,10 +172,10 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		local currentHonor, maxHonor = GetHonorCurrency();
-		local currentArenaPoints, maxArenaPoints = GetArenaCurrency();
-		local overflowHonor = MerchantFrame.honorPoints and ( MerchantFrame.honorPoints + currentHonor > maxHonor );
-		local overflowArena = MerchantFrame.arenaPoints and ( MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints );
+		local _, currentHonor, _, _, _, maxHonor = GetCurrencyInfo(392);
+		local _, currentArenaPoints, _, _, _, maxArenaPoints = GetCurrencyInfo(390);
+		local overflowHonor = maxHonor > 0 and MerchantFrame.honorPoints and ( MerchantFrame.honorPoints + currentHonor > maxHonor );
+		local overflowArena = maxArenaPoints > 0 and MerchantFrame.arenaPoints and ( MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints );
 		if ( overflowHonor and overflowArena ) then
 			StaticPopup_Show("CONFIRM_REFUND_MAX_HONOR_AND_ARENA", (MerchantFrame.honorPoints + currentHonor - maxHonor), (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints) )
 		elseif ( overflowHonor ) then
@@ -269,10 +301,6 @@ StaticPopupDialogs["CONFIRM_COMPLETE_EXPENSIVE_QUEST"] = {
 	end,
 	OnShow = function()
 		QuestInfoFrame.acceptButton:Disable();
-		QuestInfoFrame.cancelButton:Disable();
-	end,
-	OnHide = function()
-		QuestInfoFrame.cancelButton:Enable();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -1326,20 +1354,6 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["GUILD_INVITE"] = {
-	text = GUILD_INVITATION,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	OnAccept = function(self)
-		AcceptGuild();
-	end,
-	OnCancel = function(self)
-		DeclineGuild();
-	end,
-	timeout = 60,
-	whileDead = 1,
-	hideOnEscape = 1
-};
 StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	text = CHAT_INVITE_NOTICE_POPUP,
 	button1 = ACCEPT,
@@ -1752,24 +1766,25 @@ StaticPopupDialogs["SET_FRIENDNOTE"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 48,
-	hasWideEditBox = 1,
+	countInvisibleLetters = true,
+	editBoxWidth = 350,
 	OnAccept = function(self)
-		SetFriendNotes(FriendsFrame.NotesID, self.wideEditBox:GetText());
+		SetFriendNotes(FriendsFrame.NotesID, self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		local name, level, class, area, connected, status, note = GetFriendInfo(FriendsFrame.NotesID);
 		if ( note ) then
-			self.wideEditBox:SetText(note);
+			self.editBox:SetText(note);
 		end
-		self.wideEditBox:SetFocus();
+		self.editBox:SetFocus();
 	end,
 	OnHide = function(self)
 		ChatEdit_FocusActiveWindow();
-		self.wideEditBox:SetText("");
+		self.editBox:SetText("");
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		SetFriendNotes(FriendsFrame.NotesID, parent.wideEditBox:GetText());
+		SetFriendNotes(FriendsFrame.NotesID, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -1786,24 +1801,25 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 127,
-	hasWideEditBox = 1,
+	countInvisibleLetters = true,
+	editBoxWidth = 350,
 	OnAccept = function(self)
-		BNSetFriendNote(FriendsFrame.NotesID, self.wideEditBox:GetText());
+		BNSetFriendNote(FriendsFrame.NotesID, self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
 		if ( noteText ) then
-			self.wideEditBox:SetText(noteText);
+			self.editBox:SetText(noteText);
 		end
-		self.wideEditBox:SetFocus();
+		self.editBox:SetFocus();
 	end,
 	OnHide = function(self)
 		ChatEdit_FocusActiveWindow();
-		self.wideEditBox:SetText("");
+		self.editBox:SetText("");
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		BNSetFriendNote(FriendsFrame.NotesID, parent.wideEditBox:GetText());
+		BNSetFriendNote(FriendsFrame.NotesID, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -1977,60 +1993,28 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-
-StaticPopupDialogs["SET_GUILDMOTD"] = {
-	text = SET_GUILDMOTD_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 128,
-	hasWideEditBox = 1,
-	OnAccept = function(self)
-		GuildSetMOTD(self.wideEditBox:GetText());
-	end,
-	OnShow = function(self)
-		self.wideEditBox:SetText(CURRENT_GUILD_MOTD);
-		self.wideEditBox:SetFocus();
-	end,
-	OnHide = function(self)
-		ChatEdit_FocusActiveWindow();
-		self.wideEditBox:SetText("");
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		GuildSetMOTD(parent.wideEditBox:GetText());
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-};
 StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 	text = SET_GUILDPLAYERNOTE_LABEL,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 31,
-	hasWideEditBox = 1,
+	editBoxWidth = 260,
 	OnAccept = function(self)
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), self.wideEditBox:GetText());
+		GuildRosterSetPublicNote(GetGuildRosterSelection(), self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		--Sets the text to the 7th return from GetGuildRosterInfo(GetGuildRosterSelection());
-		self.wideEditBox:SetText(select(7, GetGuildRosterInfo(GetGuildRosterSelection())));
-		self.wideEditBox:SetFocus();
+		self.editBox:SetText(select(7, GetGuildRosterInfo(GetGuildRosterSelection())));
+		self.editBox:SetFocus();
 	end,
 	OnHide = function(self)
 		ChatEdit_FocusActiveWindow();
-		self.wideEditBox:SetText("");
+		self.editBox:SetText("");
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		GuildRosterSetPublicNote(GetGuildRosterSelection(), parent.wideEditBox:GetText());
+		GuildRosterSetPublicNote(GetGuildRosterSelection(), parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2047,24 +2031,24 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 31,
-	hasWideEditBox = 1,
+	editBoxWidth = 260,
 	OnAccept = function(self)
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), self.wideEditBox:GetText());
+		GuildRosterSetOfficerNote(GetGuildRosterSelection(), self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		local name, rank, rankIndex, level, class, zone, note, officernote, online;
 		name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
 
-		self.wideEditBox:SetText(select(8, GetGuildRosterInfo(GetGuildRosterSelection())));
-		self.wideEditBox:SetFocus();
+		self.editBox:SetText(select(8, GetGuildRosterInfo(GetGuildRosterSelection())));
+		self.editBox:SetFocus();
 	end,
 	OnHide = function(self)
 		ChatEdit_FocusActiveWindow();
-		self.wideEditBox:SetText("");
+		self.editBox:SetText("");
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		GuildRosterSetOfficerNote(GetGuildRosterSelection(), parent.wideEditBox:GetText());
+		GuildRosterSetOfficerNote(GetGuildRosterSelection(), parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2277,19 +2261,29 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	text = AREA_SPIRIT_HEAL,
-	button1 = CANCEL,
+	button1 = CHOOSE_LOCATION,
+	button2 = CANCEL,
 	OnShow = function(self)
 		self.timeleft = GetAreaSpiritHealerTime();
 	end,
 	OnAccept = function(self)
+		ShowUIPanel(WorldMapFrame);
+		return true;	--Don't close this popup.
+	end,
+	OnCancel = function(self)
 		CancelAreaSpiritHeal();
+	end,
+	DisplayButton1 = function(self)
+		return IsCemeterySelectionAvailable();
 	end,
 	timeout = 0,
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	timeoutInformationalOnly = 1,
 };
+
 StaticPopupDialogs["BIND_ENCHANT"] = {
 	text = BIND_ENCHANT,
 	button1 = OKAY,
@@ -2378,8 +2372,9 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 	button1 = ACCEPT,
 	button2 = INSTANCE_LEAVE,
 	OnShow = function(self)
+		local enforceTime = self.data;
 		local lockTimeleft, isPreviousInstance = GetInstanceLockTimeRemaining();
-		if ( lockTimeleft <= 0 ) then
+		if ( enforceTime and lockTimeleft <= 0 ) then
 			self:Hide();
 			return;
 		end
@@ -2394,35 +2389,49 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		self.extraFrame:SetScript("OnEnter", InstanceLock_OnEnter)
 		self.extraFrame:SetScript("OnLeave", GameTooltip_Hide)
 		
+		if ( not enforceTime ) then
+			local name = GetDungeonNameWithDifficulty(self.name, self.difficultyName);
+			local text = _G[self:GetName().."Text"];
+			local lockstring = string.format((self.isPreviousInstance and INSTANCE_LOCK_WARNING_PREVIOUSLY_SAVED or INSTANCE_LOCK_WARNING), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
+			local time, extending;
+			time, extending, self.extraFrame.encountersTotal, self.extraFrame.encountersComplete = GetInstanceLockTimeRemaining();
+			local bosses = string.format(BOSSES_KILLED, self.extraFrame.encountersComplete, self.extraFrame.encountersTotal);
+			text:SetFormattedText(INSTANCE_LOCK_SEPARATOR, lockstring, bosses);
+			StaticPopup_Resize(self, "INSTANCE_LOCK");
+		end
+		
 	end,
 	OnHide = function(self)
 		self.extraFrame:SetScript("OnEnter", nil)
 		self.extraFrame:SetScript("OnLeave", nil)
 	end,
 	OnUpdate = function(self, elapsed)
-		local lockTimeleft = self.lockTimeleft - elapsed;
-		if ( lockTimeleft <= 0 ) then
-			local OnCancel = StaticPopupDialogs["INSTANCE_LOCK"].OnCancel;
-			if ( OnCancel ) then
-				OnCancel(self, nil, "timeout");
+		local enforceTime = self.data;
+		if ( enforceTime ) then
+			local lockTimeleft = self.lockTimeleft - elapsed;
+			if ( lockTimeleft <= 0 ) then
+				local OnCancel = StaticPopupDialogs["INSTANCE_LOCK"].OnCancel;
+				if ( OnCancel ) then
+					OnCancel(self, nil, "timeout");
+				end
+				self:Hide();
+				return;
 			end
-			self:Hide();
-			return;
+			self.lockTimeleft = lockTimeleft;
+
+			local name = GetDungeonNameWithDifficulty(self.name, self.difficultyName);
+
+			-- Set dialog message using information that describes which bosses are still around
+			local text = _G[self:GetName().."Text"];
+			local lockstring = string.format((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
+			local time, extending;
+			time, extending, self.extraFrame.encountersTotal, self.extraFrame.encountersComplete = GetInstanceLockTimeRemaining();
+			local bosses = string.format(BOSSES_KILLED, self.extraFrame.encountersComplete, self.extraFrame.encountersTotal);
+			text:SetFormattedText(INSTANCE_LOCK_SEPARATOR, lockstring, bosses);
+
+			-- make sure the dialog fits the text
+			StaticPopup_Resize(self, "INSTANCE_LOCK");
 		end
-		self.lockTimeleft = lockTimeleft;
-
-		local name = GetDungeonNameWithDifficulty(self.name, self.difficultyName);
-
-		-- Set dialog message using information that describes which bosses are still around
-		local text = _G[self:GetName().."Text"];
-		local lockstring = string.format((self.isPreviousInstance and INSTANCE_LOCK_TIMER_PREVIOUSLY_SAVED or INSTANCE_LOCK_TIMER), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
-		local time, extending;
-		time, extending, self.extraFrame.encountersTotal, self.extraFrame.encountersComplete = GetInstanceLockTimeRemaining();
-		local bosses = string.format(BOSSES_KILLED, self.extraFrame.encountersComplete, self.extraFrame.encountersTotal);
-		text:SetFormattedText(INSTANCE_LOCK_SEPARATOR, lockstring, bosses);
-
-		-- make sure the dialog fits the text
-		StaticPopup_Resize(self, "INSTANCE_LOCK");
 	end,
 	OnAccept = function(self)
 		RespondInstanceLock(true);
@@ -2437,6 +2446,9 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		RespondInstanceLock(false);
 		self.name, self.difficultyName = nil, nil;
 		self.lockTimeleft = nil;
+	end,
+	DisplayButton2 = function(self)
+		return self.data;
 	end,
 	timeout = 0,
 	showAlert = 1,
@@ -2849,6 +2861,48 @@ StaticPopupDialogs["PICKUP_MONEY"] = {
 	timeout = 0,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["CONFIRM_GUILD_CHARTER_SIGNATURE"] = {
+	text = GUILD_REPUTATION_WARNING_GENERIC.."\n"..CONFIRM_CONTINUE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		SignPetition();
+	end,
+	timeout = 0,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["CONFIRM_GUILD_CHARTER_PURCHASE"] = {
+	text = GUILD_REPUTATION_WARNING_GENERIC.."\n"..CONFIRM_CONTINUE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		GuildRegistrar_PurchaseCharter(true);
+	end,
+	timeout = 0,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["GUILD_DEMOTE_CONFIRM"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		GuildDemote(self.data);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["GUILD_PROMOTE_CONFIRM"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		GuildPromote(self.data);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
@@ -2876,11 +2930,14 @@ function StaticPopup_Resize(dialog, which)
 	
 	local maxHeightSoFar, maxWidthSoFar = (dialog.maxHeightSoFar or 0), (dialog.maxWidthSoFar or 0);
 	local width = 320;
-	if ( info.button3 ) then
+	
+	if ( dialog.numButtons == 3 ) then
 		width = 440;
-	elseif (info.hasWideEditBox or info.showAlert or info.showAlertGear or info.closeButton) then
+	elseif (info.showAlert or info.showAlertGear or info.closeButton) then
 		-- Widen
 		width = 420;
+	elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
+		width = width + (info.editBoxWidth - 260);
 	elseif ( which == "HELP_TICKET" ) then
 		width = 350;
 	end
@@ -2891,9 +2948,6 @@ function StaticPopup_Resize(dialog, which)
 	
 	local height = 32 + text:GetHeight() + 8 + button1:GetHeight();
 	if ( info.hasEditBox ) then
-		if ( info.hasWideEditBox  ) then
-		
-		end
 		height = height + 8 + editBox:GetHeight();
 	elseif ( info.hasMoneyFrame ) then
 		height = height + 16;
@@ -2910,6 +2964,7 @@ function StaticPopup_Resize(dialog, which)
 	end
 end
 
+local tempButtonLocs = {};	--So we don't make a new table each time.
 function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3042,19 +3097,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		text:SetFormattedText(info.text, text_arg1, text_arg2);
 	end
 
-	-- Show or hide the alert icon
-	local alertIcon = _G[dialog:GetName().."AlertIcon"];
-	if ( info.showAlert ) then
-		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERT);
-		alertIcon:Show();
-	elseif ( info.showAlertGear ) then
-		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERTGEAR);
-		alertIcon:Show();
-	else		
-		alertIcon:SetTexture();
-		alertIcon:Hide();
-	end
-
 	-- Show or hide the close button
 	if ( info.closeButton ) then
 		local closeButton = _G[dialog:GetName().."CloseButton"];
@@ -3071,34 +3113,24 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	end
 
 	-- Set the editbox of the dialog
-	local wideEditBox = _G[dialog:GetName().."WideEditBox"];
 	local editBox = _G[dialog:GetName().."EditBox"];
 	if ( info.hasEditBox ) then
-		if ( info.hasWideEditBox ) then
-			wideEditBox:Show();
-			editBox:Hide();
+		editBox:Show();
 
-			if ( info.maxLetters ) then
-				wideEditBox:SetMaxLetters(info.maxLetters);
-			end
-			if ( info.maxBytes ) then
-				wideEditBox:SetMaxBytes(info.maxBytes);
-			end
-			wideEditBox:SetText("");
+		if ( info.maxLetters ) then
+			editBox:SetMaxLetters(info.maxLetters);
+			editBox:SetCountInvisibleLetters(info.countInvisibleLetters);
+		end
+		if ( info.maxBytes ) then
+			editBox:SetMaxBytes(info.maxBytes);
+		end
+		editBox:SetText("");
+		if ( info.editBoxWidth ) then
+			editBox:SetWidth(info.editBoxWidth);
 		else
-			wideEditBox:Hide();
-			editBox:Show();
-
-			if ( info.maxLetters ) then
-				editBox:SetMaxLetters(info.maxLetters);
-			end
-			if ( info.maxBytes ) then
-				editBox:SetMaxBytes(info.maxBytes);
-			end
-			editBox:SetText("");
+			editBox:SetWidth(130);
 		end
 	else
-		wideEditBox:Hide();
 		editBox:Hide();
 	end
 
@@ -3145,72 +3177,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		_G[dialog:GetName().."ItemFrame"]:Hide();
 	end
 
-	-- Set the buttons of the dialog
-	local button1 = _G[dialog:GetName().."Button1"];
-	local button2 = _G[dialog:GetName().."Button2"];
-	local button3 = _G[dialog:GetName().."Button3"];
-	if ( info.button3 and ( not info.DisplayButton3 or info.DisplayButton3() ) ) then
-		button1:ClearAllPoints();
-		button2:ClearAllPoints();
-		button3:ClearAllPoints();
-		button1:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
-		button3:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		button2:SetPoint("LEFT", button3, "RIGHT", 13, 0);
-		button2:SetText(info.button2);
-		button3:SetText(info.button3);
-		local width = button2:GetTextWidth();
-		if ( width > 110 ) then
-			button2:SetWidth(width + 20);
-		else
-			button2:SetWidth(120);
-		end
-		button2:Enable();
-		button2:Show();
-
-		width = button3:GetTextWidth();
-		if ( width > 110 ) then
-			button3:SetWidth(width + 20);
-		else
-			button3:SetWidth(120);
-		end
-		button3:Enable();
-		button3:Show();
-	elseif ( info.button2 and
-	   ( not info.DisplayButton2 or info.DisplayButton2() ) ) then
-		button1:ClearAllPoints();
-		button2:ClearAllPoints();
-		button1:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
-		button2:SetPoint("LEFT", button1, "RIGHT", 13, 0);
-		button2:SetText(info.button2);
-		local width = button2:GetTextWidth();
-		if ( width > 110 ) then
-			button2:SetWidth(width + 20);
-		else
-			button2:SetWidth(120);
-		end
-		button2:Enable();
-		button2:Show();
-		button3:Hide();
-	else
-		button1:ClearAllPoints();
-		button1:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
-		button2:Hide();
-		button3:Hide();
-	end
-	if ( info.button1 ) then
-		button1:SetText(info.button1);
-		local width = button1:GetTextWidth();
-		if ( width > 120 ) then
-			button1:SetWidth(width + 20);
-		else
-			button1:SetWidth(120);
-		end
-		button1:Enable();
-		button1:Show();
-	else
-		button1:Hide();
-	end
-
 	-- Set the miscellaneous variables for the dialog
 	dialog.which = which;
 	dialog.timeleft = info.timeout;
@@ -3219,6 +3185,82 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
 	-- Clear out data
 	dialog.data = data;
+	
+	-- Set the buttons of the dialog
+	local button1 = _G[dialog:GetName().."Button1"];
+	local button2 = _G[dialog:GetName().."Button2"];
+	local button3 = _G[dialog:GetName().."Button3"];
+	
+	do	--If there is any recursion in this block, we may get errors (tempButtonLocs is static). If you have to recurse, we'll have to create a new table each time.
+		assert(#tempButtonLocs == 0);	--If this fails, we're recursing. (See the table.wipe at the end of the block)
+		
+		tinsert(tempButtonLocs, button1);
+		tinsert(tempButtonLocs, button2);
+		tinsert(tempButtonLocs, button3);
+		
+		for i=#tempButtonLocs, 1, -1 do
+			--Do this stuff before we move it. (This is why we go back-to-front)
+			tempButtonLocs[i]:SetText(info["button"..i]);
+			tempButtonLocs[i]:Hide();
+			tempButtonLocs[i]:ClearAllPoints();
+			--Now we possibly remove it.
+			if ( not (info["button"..i] and ( not info["DisplayButton"..i] or info["DisplayButton"..i](dialog))) ) then
+				tremove(tempButtonLocs, i);
+			end
+		end
+		
+		local numButtons = #tempButtonLocs;
+		--Save off the number of buttons.
+		dialog.numButtons = numButtons;
+		
+		if ( numButtons == 3 ) then
+			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
+		elseif ( numButtons == 2 ) then
+			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
+		elseif ( numButtons == 1 ) then
+			tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+		end
+		
+		for i=1, numButtons do
+			if ( i > 1 ) then
+				tempButtonLocs[i]:SetPoint("LEFT", tempButtonLocs[i-1], "RIGHT", 13, 0);
+			end
+			
+			local width = tempButtonLocs[i]:GetTextWidth();
+			if ( width > 110 ) then
+				tempButtonLocs[i]:SetWidth(width + 20);
+			else
+				tempButtonLocs[i]:SetWidth(120);
+			end
+			tempButtonLocs[i]:Enable();
+			tempButtonLocs[i]:Show();
+		end
+		
+		table.wipe(tempButtonLocs);
+	end
+
+	-- Show or hide the alert icon
+	local alertIcon = _G[dialog:GetName().."AlertIcon"];
+	if ( info.showAlert ) then
+		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERT);
+		if ( button3:IsShown() )then
+			alertIcon:SetPoint("LEFT", 24, 10);
+		else
+			alertIcon:SetPoint("LEFT", 24, 0);
+		end
+		alertIcon:Show();
+	elseif ( info.showAlertGear ) then
+		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERTGEAR);
+		if ( button3:IsShown() )then
+			alertIcon:SetPoint("LEFT", 24, 0);
+		else
+			alertIcon:SetPoint("LEFT", 24, 0);
+		end
+		alertIcon:Show();
+	else
+		alertIcon:SetTexture();
+		alertIcon:Hide();
+	end
 
 	if ( info.StartDelay ) then
 		dialog.startDelay = info.StartDelay();
@@ -3229,16 +3271,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	end
 
 	editBox.autoCompleteParams = info.autoCompleteParams;
-	wideEditBox.autoCompleteParams = info.autoCompleteParams;
-	
 	editBox.autoCompleteRegex = info.autoCompleteRegex;
-	wideEditBox.autoCompleteRegex = info.autoCompleteRegex;
-	
 	editBox.autoCompleteFormatRegex = info.autoCompleteFormatRegex;
-	wideEditBox.autoCompleteFormatRegex = info.autoCompleteFormatRegex;
 	
 	editBox.addHighlightedText = true;
-	wideEditBox.autoCompleteFormatRegex = true;
 	
 	-- Finally size and show the dialog
 	StaticPopup_SetUpPosition(dialog);

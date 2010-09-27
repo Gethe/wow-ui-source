@@ -186,8 +186,12 @@ function RaidInfoInstance_OnMouseUp(self)
 end
 
 function RaidInfoInstance_OnClick(self)
-	RaidInfoFrame.selectedRaidID = self.longInstanceID;
-	RaidInfoFrame_Update();
+	if ( IsModifiedClick("CHATLINK") ) then
+		ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetID()));
+	else
+		RaidInfoFrame.selectedRaidID = self.longInstanceID;
+		RaidInfoFrame_Update();
+	end
 end
 
 function RaidInfoInstance_OnEnter(self)

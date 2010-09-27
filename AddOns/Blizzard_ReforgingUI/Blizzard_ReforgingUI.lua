@@ -21,20 +21,19 @@ end
 function ReforgingFrame_OnLoad(self)
 	self:RegisterEvent("FORGE_MASTER_SET_ITEM");
 	self:RegisterEvent("FORGE_MASTER_ITEM_CHANGED");
-	SetPortraitToTexture(ReforgingFramePortrait, "Interface\\Icons\\Ability_ThunderClap");
+	SetPortraitToTexture(ReforgingFramePortrait, "Interface\\Reforging\\Reforge-Portrait");
 	UIDropDownMenu_SetWidth(ReforgingFrameFilterOldStat, 135);
 	UIDropDownMenu_SetWidth(ReforgingFrameFilterNewStat, 135);
 	UIDropDownMenu_JustifyText(ReforgingFrameFilterOldStat, "LEFT");
 	UIDropDownMenu_JustifyText(ReforgingFrameFilterNewStat, "LEFT");
 	ReforgingFrameInset:SetPoint("BOTTOMRIGHT", ReforgingFrameBottomInset, "TOPRIGHT", 0, 4);
 	
-	--ReforgingFrameItemButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	--ReforgingFrameItemButton:RegisterForDrag("LeftButton");
 	ReforgingFrameTitleText:SetText(REFORGE);	
 	
 	UIDropDownMenu_Initialize(ReforgingFrameFilterOldStat, ReforgeFrame_FilterOldStat_Initialize);
 	UIDropDownMenu_Initialize(ReforgingFrameFilterNewStat, ReforgeFrame_FilterNewStat_Initialize);
 	MoneyFrame_SetMaxDisplayWidth(ReforgingFrameMoneyFrame, 168);
+	MoneyFrame_SetType(ReforgingFrameMoneyFrame, "REFORGE");
 end
 
 
@@ -64,7 +63,18 @@ function ReforgingFrame_OnEvent(self, event, ...)
 		
 		ReforgingFrame_Update(self);
 	elseif event == "FORGE_MASTER_ITEM_CHANGED" then
-		self.topInset.invisButton.glow.reforgeAnim:Play();
+		-- this event can trigger from other item changes, like
+		-- a temporary enchant expiring
+		local reforged = GetReforgeItemInfo();
+		if ( reforged ==  ReforgingFrame.reforgeEvent ) then
+			ReforgingFrame.reforgeEvent = nil;
+			if ( reforged == 0 ) then
+				PlaySoundKitID(23292);
+			else
+				PlaySoundKitID(23291);
+			end
+			self.topInset.invisButton.glow.reforgeAnim:Play();
+		end
 	end
 end
 
@@ -225,11 +235,13 @@ end
 
 
 function ReforgingFrame_RestoreClick(self)
-	ReforgeItem(0);
+	ReforgingFrame.reforgeEvent = 0;
+	ReforgeItem(0);	
 end
 
 
 function ReforgingFrame_ReforgeClick(self)
+	ReforgingFrame.reforgeEvent = ReforgingFrame.reforgeID;
 	ReforgeItem(ReforgingFrame.reforgeID);
 end
 

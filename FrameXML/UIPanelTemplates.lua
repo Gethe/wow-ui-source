@@ -118,6 +118,8 @@ function PanelTemplates_DeselectTab(tab)
 	_G[name.."Right"]:Show();
 	--tab:UnlockHighlight();
 	tab:Enable();
+	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", 0, 2);
+		
 	_G[name.."LeftDisabled"]:Hide();
 	_G[name.."MiddleDisabled"]:Hide();
 	_G[name.."RightDisabled"]:Hide();
@@ -131,6 +133,8 @@ function PanelTemplates_SelectTab(tab)
 	--tab:LockHighlight();
 	tab:Disable();
 	tab:SetDisabledFontObject(GameFontHighlightSmall);
+	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", 0, -3);
+	
 	_G[name.."LeftDisabled"]:Show();
 	_G[name.."MiddleDisabled"]:Show();
 	_G[name.."RightDisabled"]:Show();
@@ -500,6 +504,23 @@ function UIFrameCache:ReleaseFrame (frame)
 	end	
 end
 
+-- Truncated Button code
+
+function TruncatedButton_OnEnter(self)
+	local text = _G[self:GetName().."Text"];
+	if ( text:IsTruncated() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(text:GetText());
+		GameTooltip:Show();
+	end
+end
+
+function TruncatedButton_OnLeave(self)
+	if ( GameTooltip:GetOwner() == self ) then
+		GameTooltip:Hide();
+	end
+end
+
 -- Magic Button code
 function MagicButton_OnLoad(self)
 	local leftHandled = false;
@@ -639,6 +660,25 @@ function ButtonFrameTemplate_ShowAttic(self)
 	end
 	self.TopTileStreaks:Show();
 end
+
+
+function ButtonFrameTemplate_HidePortrait(self)
+	self.portrait:Hide();
+	self.portraitFrame:Hide();
+	self.topLeftCorner:Show();
+	self.topBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "TOPRIGHT",  0, 0);
+	self.leftBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "BOTTOMLEFT",  0, 0);
+end
+
+
+function ButtonFrameTemplate_ShowPortrait(self)
+	self.portrait:Show();
+	self.portraitFrame:Show();
+	self.topLeftCorner:Hide();
+	self.topBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "TOPRIGHT",  0, -10);
+	self.leftBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT",  8, 0);
+end
+
 
 -- SquareButton template code
 SQUARE_BUTTON_TEXCOORDS = {

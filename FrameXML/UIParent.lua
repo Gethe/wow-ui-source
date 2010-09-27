@@ -163,6 +163,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("INSTANCE_BOOT_STOP");
 	self:RegisterEvent("INSTANCE_LOCK_START");
 	self:RegisterEvent("INSTANCE_LOCK_STOP");
+	self:RegisterEvent("INSTANCE_LOCK_WARNING");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
@@ -367,11 +368,10 @@ function InspectAchievements (unit)
 end
 
 function ToggleAchievementFrame(stats)
-	if ( not CanShowAchievementUI() or not HasCompletedAnyAchievement() ) then
-		return;
+	if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
+		AchievementFrame_LoadUI();
+		AchievementFrame_ToggleAchievementFrame(stats);
 	end
-	AchievementFrame_LoadUI();
-	AchievementFrame_ToggleAchievementFrame(stats);
 end
 
 function ToggleTalentFrame()
@@ -393,6 +393,18 @@ function ToggleGlyphFrame()
 	GlyphFrame_LoadUI();
 	if ( GlyphFrame_Toggle ) then
 		GlyphFrame_Toggle();
+	end
+end
+
+function TogglePetTalentFrame()
+	if ( not UnitExists("pet")) then
+		ToggleTalentFrame();
+		return;
+	end
+
+	TalentFrame_LoadUI();
+	if ( PlayerTalentFrame_Toggle ) then
+		PlayerTalentFrame_Toggle(true);
 	end
 end
 
@@ -502,6 +514,7 @@ function UIParent_OnEvent(self, event, ...)
 			"|HplayerGM:"..lastTalkedToGM.."|h".."["..lastTalkedToGM.."]".."|h"), info.r, info.g, info.b, info.id);
 		end
 	elseif ( event == "PLAYER_LOGIN" ) then
+		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
 	elseif ( event == "PLAYER_DEAD" ) then
@@ -514,12 +527,18 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		if ( UnitIsGhost("player") ) then
+			GhostFrame:Show();
+		else
+			GhostFrame:Hide();
+		end
 	elseif ( event == "PLAYER_UNGHOST" ) then
 		StaticPopup_Hide("RESURRECT");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("SKINNED");
 		StaticPopup_Hide("SKINNED_REPOP");
+		GhostFrame:Hide();
 	elseif ( event == "RESURRECT_REQUEST" ) then
 		ShowResurrectRequest(arg1);
 	elseif ( event == "PLAYER_SKINNED" ) then
@@ -641,6 +660,11 @@ function UIParent_OnEvent(self, event, ...)
 		if ( instanceType == "arena" ) then
 			Arena_LoadUI();
 		end
+		if ( UnitIsGhost("player") ) then
+			GhostFrame:Show();
+		else
+			GhostFrame:Hide();
+		end
 	elseif ( event == "RAID_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -735,7 +759,7 @@ function UIParent_OnEvent(self, event, ...)
 		SpellbookMicroButton:Disable();
 		TalentMicroButton:Disable();
 		QuestLogMicroButton:Disable();
-		SocialsMicroButton:Disable();
+		GuildMicroButton:Disable();
 		WorldMapMicroButton:Disable();
 		]]
 
@@ -749,7 +773,7 @@ function UIParent_OnEvent(self, event, ...)
 		SpellbookMicroButton:Enable();
 		TalentMicroButton:Enable();
 		QuestLogMicroButton:Enable();
-		SocialsMicroButton:Enable();
+		GuildMicroButton:Enable();
 		WorldMapMicroButton:Enable();
 		]]
 
@@ -779,9 +803,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "INSTANCE_BOOT_STOP" ) then
 		StaticPopup_Hide("INSTANCE_BOOT");
 	elseif ( event == "INSTANCE_LOCK_START" ) then
-		StaticPopup_Show("INSTANCE_LOCK");
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, true);
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
+	elseif ( event == "INSTANCE_LOCK_WARNING" ) then
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, false);
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
@@ -1051,7 +1077,6 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, tutorialAlert = 1};
-	--["StreamingIcon"] = {baseY = true, baseX = 230, yOffset = 0, bottomEither = actionBarOffset - 8, vehicleMenuBar = vehicleMenuBarTop, pet = 1, reputation = 1, maxLevel = 1};
 	
 	-- Vars
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
@@ -1767,11 +1792,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- Boss frames
 	local durabilityXOffset = CONTAINER_OFFSET_X;
 
-	if ( StreamingIcon and StreamingIcon:IsShown() ) then
-		StreamingIcon:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY + 20);
-		anchorY = anchorY - StreamingIcon:GetHeight();
-	end
-
 	local numBossFrames = 0;
 	if ( Boss1TargetFrame ) then
 		for i = 1, MAX_BOSS_FRAMES do
@@ -2336,10 +2356,6 @@ function UIFrameFadeRemoveFrame(frame)
 	tDeleteItem(FADEFRAMES, frame);
 end
 
-function UIFrameFlashRemoveFrame(frame)
-	tDeleteItem(FLASHFRAMES, frame);
-end
-
 -- Function that actually performs the alpha change
 --[[
 Fading frame attribute listing
@@ -2408,6 +2424,7 @@ end
 local frameFlashManager = CreateFrame("FRAME");
 
 local UIFrameFlashTimers = {};
+local UIFrameFlashTimerRefCount = {};
 
 -- Function to start a frame flashing
 function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDone, flashInHoldTime, flashOutHoldTime, syncId)
@@ -2425,7 +2442,9 @@ function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDon
 			frame.syncId = syncId;
 			if (UIFrameFlashTimers[syncId] == nil) then
 				UIFrameFlashTimers[syncId] = 0;
+				UIFrameFlashTimerRefCount[syncId] = 0;
 			end
+			UIFrameFlashTimerRefCount[syncId] = UIFrameFlashTimerRefCount[syncId]+1;
 		else
 			frame.syncId = nil;
 		end
@@ -2511,9 +2530,17 @@ end
 
 -- Function to stop flashing
 function UIFrameFlashStop(frame)
-	UIFrameFlashRemoveFrame(frame);
+	tDeleteItem(FLASHFRAMES, frame);
 	frame:SetAlpha(1.0);
 	frame.flashTimer = nil;
+	if (frame.syncId) then
+		UIFrameFlashTimerRefCount[frame.syncId] = UIFrameFlashTimerRefCount[frame.syncId]-1;
+		if (UIFrameFlashTimerRefCount[frame.syncId] == 0) then
+			UIFrameFlashTimers[frame.syncId] = nil;
+			UIFrameFlashTimerRefCount[frame.syncId] = nil;
+		end
+		frame.syncId = nil;
+	end
 	if ( frame.showWhenDone ) then
 		frame:Show();
 	else
@@ -2731,6 +2758,12 @@ MODELFRAME_MAX_PET_ZOOM = 0.7;
 function Model_OnLoad (self)
 	self.rotation = 0.61;
 	self:SetRotation(self.rotation);
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function Model_OnEvent(self, event, ...)
+	self:RefreshUnit();
 end
 
 function Model_RotateLeft(model, rotationIncrement)
@@ -2892,28 +2925,31 @@ function CursorOnUpdate(self)
 	end
 end
 
-function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed)
+function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed, throttle)
 	if ( not texture.frame ) then
 		-- initialize everything
 		texture.frame = 1;
-		texture.numColumns = textureWidth/frameWidth;
-		texture.numRows = textureHeight/frameHeight;
+		texture.throttle = throttle;
+		texture.numColumns = floor(textureWidth/frameWidth);
+		texture.numRows = floor(textureHeight/frameHeight);
 		texture.columnWidth = frameWidth/textureWidth;
 		texture.rowHeight = frameHeight/textureHeight;
 	end
 	local frame = texture.frame;
-	if ( not texture.throttle or texture.throttle > 0.1 ) then
-		texture.throttle = 0;
-		if ( frame > numFrames ) then
-			frame = 1;
+	if ( not texture.throttle or texture.throttle > throttle ) then
+		local framesToAdvance = floor(texture.throttle / throttle);
+		while ( frame + framesToAdvance > numFrames ) do
+			frame = frame - numFrames;
 		end
+		frame = frame + framesToAdvance;
+		texture.throttle = 0;
 		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
 		local right = left + texture.columnWidth;
 		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
 		local top = bottom - texture.rowHeight;
 		texture:SetTexCoord(left, right, top, bottom);
 
-		texture.frame = frame + 1;
+		texture.frame = frame;
 	else
 		texture.throttle = texture.throttle + elapsed;
 	end
@@ -3178,8 +3214,7 @@ function CanGroupInvite()
 end
 
 function UnitHasMana(unit)
-	local powerType, powerToken = UnitPowerType(unit);
-	if ( powerToken == "MANA" and UnitPowerMax(unit, powerType) > 0 ) then
+	if ( UnitPowerMax(unit, SPELL_POWER_MANA) > 0 ) then
 		return 1;
 	end
 	return nil;
@@ -3570,45 +3605,93 @@ function GMError(...)
 	end
 end
 
-function SetGuildTabardTextures(leftEmblem, rightEmblem, background, border, hasMask)
-	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
+function SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	-- texure dimensions are 1024x1024, icon dimensions are 64x64
+	local emblemSize, columns, offset;
+	if ( emblemTexture ) then
+		emblemSize = 64 / 1024;
+		columns = 16
+		offset = 0;
+		emblemTexture:SetTexture("Interface\\GuildFrame\\GuildEmblemsLG_01");
+	end
+	SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+end
+
+function SetSmallGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	-- texure dimensions are 256x256, icon dimensions are 16x16, centered in 18x18 cells
+	local emblemSize, columns, offset;
+	if ( emblemTexture ) then
+		emblemSize = 18 / 256;
+		columns = 14;
+		offset = 1 / 256;
+		emblemTexture:SetTexture("Interface\\GuildFrame\\GuildEmblems_01");
+	end
+	SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+end
+
+function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTexture, backgroundTexture, borderTexture, tabardData)
+	if ( leftEmblemTexture and rightEmblemTexture ) then
+		SetGuildTabardTextures(nil, nil, nil, unit, leftEmblemTexture, backgroundTexture, borderTexture, tabardData);
+		rightEmblemTexture:SetTexture(leftEmblemTexture:GetTexture());
+		rightEmblemTexture:SetVertexColor(leftEmblemTexture:GetVertexColor());
+	end
+end
+
+function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename;
+	if ( tabardData ) then
+		bkgR = tabardData[1];
+		bkgG = tabardData[2];
+		bkgB = tabardData[3];
+		borderR = tabardData[4];
+		borderG = tabardData[5];
+		borderB = tabardData[6];
+		emblemR = tabardData[7];
+		emblemG = tabardData[8];
+		emblemB = tabardData[9];
+		emblemFilename = tabardData[10];
+	else
+		bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo(unit);
+	end
 	if ( emblemFilename ) then
-		if ( background ) then
-			background:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
+		if ( backgroundTexture ) then
+			backgroundTexture:SetVertexColor(bkgR / 255, bkgG / 255, bkgB / 255);
 		end
-		if ( border ) then
-			border:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
+		if ( borderTexture ) then
+			borderTexture:SetVertexColor(borderR / 255, borderG / 255, borderB / 255);
 		end
-		if ( leftEmblem and rightEmblem ) then
-			local iconR = emblemR / 255;
-			local iconG = emblemG / 255;
-			local iconB = emblemB / 255;
-			rightEmblem:SetTexture(emblemFilename);
-			rightEmblem:SetVertexColor(iconR, iconG, iconB);
-			if ( hasMask ) then
-				-- temporary hack - the guild emblem texture is the right half of the icon and we are flipping that texture to get the left half. But
-				-- the mask is applied when the texture is set, without considering texture coordinates, so we need to treat the left side as if it
-				-- was a duplicate of the right side until after the texture is set. This includes using the same mask instead of a mirror-image one.
-				local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = leftEmblem:GetTexCoord();
-				leftEmblem:SetTexCoord(URx,URy,LRx,LRy,ULx,ULy,LLx,LLy);
-				leftEmblem:SetTexture(emblemFilename);
-				leftEmblem:SetVertexColor(iconR, iconG, iconB);
-				leftEmblem:SetTexCoord(ULx,ULy,LLx,LLy,URx,URy,LRx,LRy);
-			else
-				leftEmblem:SetTexture(emblemFilename);
-				leftEmblem:SetVertexColor(iconR, iconG, iconB);
+		if ( emblemSize ) then
+			local index = emblemFilename:match("([%d]+)");
+			if ( index) then
+				index = tonumber(index);
+				xCoord = mod(index, columns) * emblemSize;
+				yCoord = floor(index / columns) * emblemSize;
+				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
 			end
+			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
+		elseif ( emblemTexture ) then
+			emblemTexture:SetTexture(emblemFilename);
+			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
 		end
 	else
-		if ( background ) then
-			background:SetVertexColor(0.4745, 0.4588, 0.5294);
+		-- tabard lacks design
+		if ( backgroundTexture ) then
+			backgroundTexture:SetVertexColor(0.2245, 0.2088, 0.1794);
 		end
-		if ( border ) then
-			border:SetVertexColor(0.2, 0.2, 0.2);
+		if ( borderTexture ) then
+			borderTexture:SetVertexColor(0.2, 0.2, 0.2);
 		end
-		if ( leftEmblem and rightEmblem ) then
-			leftEmblem:SetTexture("");
-			rightEmblem:SetTexture("");
+		if ( emblemTexture ) then
+			if ( emblemSize ) then
+				if ( emblemSize == 18 / 256 ) then
+					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogoSm");
+				else
+					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogo");
+				end
+				emblemTexture:SetTexCoord(0, 1, 0, 1);
+			else
+				emblemTexture:SetTexture("");
+			end
 		end
 	end
 end

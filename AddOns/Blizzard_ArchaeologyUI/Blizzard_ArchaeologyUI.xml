@@ -94,7 +94,7 @@
 			</OnClick>
 			<OnDisable>
 				SetDesaturation(self:GetNormalTexture(), true);
-				self:GetNormalTexture():SetAlpha(0.4);
+				self:GetNormalTexture():SetAlpha(0.6);
 				self.raceName:SetText("");
 			</OnDisable>
 			<OnEnable>
@@ -271,15 +271,25 @@
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentInset" x="1" y="-1"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-1" y="3"/>
+								<Anchor point="TOPLEFT" x="1" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" x="-1" y="3"/>
 							</Anchors>
 							<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 						</Texture>
 					</Layer>
 				</Layers>
 				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r="0.25" g="0.25" b="0.75" />
+				<BarColor r="0.03125" g="0.85" b="0.0" />
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+						GameTooltip:AddLine(ARCHAEOLOGY_RANK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 			</StatusBar>
 			<Button name="$parentSummarytButton" parentKey="tab1" id="1">
 				<Size x="63" y="57"/>
@@ -639,12 +649,6 @@
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<FontString name="$parentHistoryText" inherits="SystemFont_Med1" justifyH="LEFT" justifyV="TOP" text="HISTORY" parentKey="historyText">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentHistoryTitle" relativePoint="BOTTOM" y="-12"/>
-							</Anchors>
-							<Color r="0.25" g="0.13" b="0"/>
-						</FontString>
 						<Texture file="Interface\Archeology\ArchaeologyParts">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentHistoryTitle" relativePoint="LEFT" x="-10"/>
@@ -681,10 +685,10 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentIconBG" file="Interface\Archeology\ArchaeologyParts">
-							<Size x="370" y="79"/>
+							<Size x="368" y="79"/>
 							<TexCoords left="0.00195313" right="0.72460938" top="0.00390625" bottom="0.31250000"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentIcon" x="-11" y="1"/>
+								<Anchor point="LEFT" relativeTo="$parentIcon" x="-10" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -723,7 +727,7 @@
 					<Frame name="$parentSolveFrame" parentKey="solveFrame">
 						<Size x="420" y="100"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="-8" y="45"/>
+							<Anchor point="BOTTOM" x="-8" y="30"/>
 						</Anchors>
 						<Frames>
 							<Button name="$parentKeystone1" inherits="KeystoneTemplate" id="1" parentKey="keystone1">
@@ -763,7 +767,7 @@
 								</Scripts>
 							</Button>
 							<StatusBar name="$parentStatusBar" inherits="TextStatusBar"  parentKey="statusBar">
-								<Size x="415" y="25"/>
+								<Size x="415" y="26"/>
 								<Anchors>
 									<Anchor point="TOP"  x="0" y="-11"/>
 								</Anchors>
@@ -773,7 +777,7 @@
 											<Size x="436" y="46"/>
 											<TexCoords left="0" right="0.84765625" top="0" bottom="0.65625"/>
 											<Anchors>
-												<Anchor point="CENTER"  x="0" y="1"/>
+												<Anchor point="CENTER"  x="0" y="2"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -790,11 +794,181 @@
 									</Layer>
 								</Layers>
 								<BarTexture file="Interface\Archeology\Arch-Progress-Fill">
-									<TexCoords left="0" right="0.810546875" top="0" bottom="0.78125"/>
+									<TexCoords left="0" right="0.810546875" top="0" bottom="0.77525"/>
 								</BarTexture>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+										GameTooltip:AddLine(ARCHAEOLOGY_POJECTBAR_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
 							</StatusBar>
 						</Frames>
 					</Frame>
+					<ScrollFrame name="$parentHistoryScroll" inherits="MinimalScrollFrameTemplate" parentKey="historyScroll">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentHistoryTitle" relativePoint="BOTTOM" y="-12"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="$parentChild" parentKey="child" >
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentText" inherits="SystemFont_Med1" justifyH="LEFT" justifyV="TOP" parentKey="text">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="0" y="-2"/>
+											</Anchors>
+											<Color r="0.25" g="0.13" b="0"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad>
+								self.scrollBarHideable = true;
+								local name = self:GetName();
+								_G[name.."ScrollBar"]:Hide();
+								_G[name.."ScrollBarTrack"]:Hide();
+							</OnLoad>
+						</Scripts>
+					</ScrollFrame>
+					<Frame name="$parentFinishedGlow" parentKey="glow">
+						<Size x="512" y="512"/>
+						<Anchors>
+							<Anchor point="CENTER" x="9" y="-6"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture  name="$parentFinishedGlow" file="Interface\Archeology\Arch-FlareEffect" alphaMode="ADD">
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="completeAnim">
+								<Alpha change="1.0" duration="0.1" order="1" />
+								<Alpha startDelay="0.1" change="-1.0" duration="0.5" order="2" />
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button name="$parentInfoButton" parentKey="infoButton" id="0">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>	
+				<Anchors>
+					<Anchor point="TOPLEFT"  x="60" y="-3" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnMouseDown>
+						_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 1, -1);
+					</OnMouseDown>
+					<OnMouseUp>
+						_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnClick>
+						ArchaeologyFrame_OnTabClick(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentHelpPage" parentKey="helpPage" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="45" y="-15"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitle" inherits="SystemFont_Med3" justifyH="CENTER" parentKey="titleText">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-35"/>
+							</Anchors>
+							<Color r="0.25" g="0.13" b="0"/>
+						</FontString>
+						<Texture file="Interface\Archeology\ArchaeologyParts">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentTitle" relativePoint="LEFT" x="-10"/>
+							</Anchors>
+							<Size x="54" y="34"/>
+							<TexCoords left="0.00195313" right="0.10742188" top="0.70312500" bottom="0.83593750"/>
+						</Texture>
+						<Texture file="Interface\Archeology\ArchaeologyParts">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="10"/>
+							</Anchors>
+							<Size x="54" y="34"/>
+							<TexCoords left="0.00195313" right="0.10742188" top="0.56250000" bottom="0.69531250"/>
+						</Texture>
+						
+						<Texture name="$parentDigTex" file="Interface\Archeology\Arch-Help">
+							<Size x="480" y="243"/>
+							<Anchors>
+								<Anchor point="BOTTOM" y="40"/>
+							</Anchors>
+							<TexCoords left="0" right="0.9375" top="0" bottom="0.94921875"/>
+						</Texture>
+						<FontString name="$parentDigTitle" inherits="SystemFont_Med3" justifyH="CENTER" text="ARCHAEOLOGY_DIG_HELP">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentDigTex" relativePoint="TOP" x="0" y="-25"/>
+							</Anchors>
+							<Color r="0.25" g="0.13" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame name="$parentHelpScroll" inherits="MinimalScrollFrameTemplate">
+						<Size x="400" y="120"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame>
+								<Size x="400" y="120"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentHelpText" inherits="SystemFont_Med1" justifyH="LEFT" nonspacewrap="true" justifyV="TOP" text="ARCHAEOLOGY_HELP">
+											<Size x="400" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="0" y="-4"/>
+											</Anchors>
+											<Color r="0.25" g="0.13" b="0"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad>
+								self.scrollBarHideable = true;
+								local name = self:GetName();
+								_G[name.."ScrollBar"]:Hide();
+								_G[name.."ScrollBarTrack"]:Hide();
+							</OnLoad>
+						</Scripts>
+					</ScrollFrame>
 				</Frames>
 			</Frame>
 		</Frames>

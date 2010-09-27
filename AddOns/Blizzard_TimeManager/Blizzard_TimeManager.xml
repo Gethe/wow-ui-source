@@ -286,7 +286,7 @@
 		</Scripts>
 	</Frame>
 	<!-- Minimap button to access the TimeManagerButton -->
-	<Button name="TimeManagerClockButton" parent="Minimap" hidden="true">
+	<Button name="TimeManagerClockButton" parent="Minimap">
 		<Size x="60" y="28"/>
 		<Anchors>
 			<Anchor point="CENTER">
@@ -303,7 +303,7 @@
 				<FontString name="TimeManagerClockTicker" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
+							<Offset x="3" y="1"/>
 						</Anchor>
 					</Anchors>
 				</FontString>

@@ -371,18 +371,16 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentNameText" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="88" y="14"/>
+					<Size x="98" y="14"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="25" y="-1"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentClassIcon"  relativePoint="RIGHT" x="1" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentPlayedText" inherits="GameFontNormalSmall" justifyH="CENTER">
 					<Size x="45" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentNameText" relativePoint="RIGHT">
-							<Offset x="4" y="0"/>
+							<Offset x="20" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
@@ -408,7 +406,7 @@
 					<Color r="1" g="1" b="1"/>
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentNameText"  x="-2" y="-1"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentNameText"  relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -603,7 +601,7 @@
 				</Texture>
 				<FontString name="$parentTitle" parentKey="title"  inherits="GameFontHighlight" justifyH="CENTER" text="ARENA_2V2">
 					<Size>
-						<AbsDimension x="74" y="25"/>
+						<AbsDimension x="74" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentHeader" y="0"/>

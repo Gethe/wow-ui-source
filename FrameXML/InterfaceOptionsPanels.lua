@@ -249,13 +249,14 @@ end
 
 CombatPanelOptions = {
 	assistAttack = { text = "ASSIST_ATTACK" },
-	autoRangedCombat = { text = "AUTO_RANGED_COMBAT_TEXT" },
 	autoSelfCast = { text = "AUTO_SELF_CAST_TEXT" },
 	stopAutoAttackOnTargetChange = { text = "STOP_AUTO_ATTACK" },
 	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
 	showTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
 	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
+	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
+	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.05 },
 }
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
@@ -554,13 +555,12 @@ DisplayPanelOptions = {
 	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT" },
 	showLootSpam = { text = "SHOW_LOOT_SPAM" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
-	showClock = { text = "SHOW_CLOCK" },
 	movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
 	threatShowNumeric = { text = "SHOW_NUMERIC_THREAT" },
 	threatPlaySounds = { text = "PLAY_AGGRO_SOUNDS" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
-	showItemLevel = { text = "SHOW_ITEM_LEVEL" },
 	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
+	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -577,24 +577,8 @@ function InterfaceOptionsDisplayPanel_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local control;
 
-		control = InterfaceOptionsDisplayPanelShowClock;
-		control.setFunc(GetCVar(control.cvar));
-
 		control = InterfaceOptionsDisplayPanelRotateMinimap;
 		control.setFunc(GetCVar(control.cvar));
-	end
-end
-
-function InterfaceOptionsDisplayPanelShowClock_SetFunc(value)
-	if ( value == "1" ) then
-		TimeManager_LoadUI();
-		if ( TimeManagerClockButton_Show ) then
-			TimeManagerClockButton_Show();
-		end
-	else
-		if ( TimeManagerClockButton_Hide ) then
-			TimeManagerClockButton_Hide();
-		end
 	end
 end
 
@@ -790,7 +774,6 @@ end
 -- [[ Objectives Options Panel ]] --
 
 ObjectivesPanelOptions = {
-	questFadingDisable = { text = "SHOW_QUEST_FADING_TEXT" },
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
 	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
@@ -816,7 +799,7 @@ SocialPanelOptions = {
 	profanityFilter = { text = "PROFANITY_FILTER" },	--The tooltip text is also directly set in InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay
 	chatBubbles = { text="CHAT_BUBBLES_TEXT" },
 	chatBubblesParty = { text="PARTY_CHAT_BUBBLES_TEXT" },
-	spamFilter = { text="DISABLE_SPAM_FILTER" },
+	spamFilter = { text="SPAM_FILTER" },
 	removeChatDelay = { text="REMOVE_CHAT_DELAY_TEXT" },
 	guildMemberNotify = { text="GUILDMEMBER_ALERT" },
 	guildRecruitmentChannel = { text="AUTO_JOIN_GUILD_CHANNEL" },
@@ -1232,7 +1215,6 @@ NamePanelOptions = {
 	nameplateShowEnemyPets = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_PETS" },
 	nameplateShowEnemyGuardians = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_GUARDIANS" },
 	nameplateShowEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
-	nameplateAllowOverlap = { text = "UNIT_NAMEPLATES_ALLOW_OVERLAP" },
 }
 
 function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
@@ -1360,7 +1342,7 @@ function BlizzardOptionsPanel_UpdateCombatText ()
 end
 
 function InterfaceOptionsCombatTextPanel_OnLoad (self)
-	self.name = COMBATTEXT_LABEL;
+	self.name = FLOATING_COMBATTEXT_LABEL;
 	self.options = FCTPanelOptions;
 	InterfaceOptionsPanel_OnLoad(self);
 
@@ -1509,11 +1491,11 @@ StatusTextPanelOptions = {
 UnitFramePanelOptions = {
 	showPartyBackground = { text = "SHOW_PARTY_BACKGROUND_TEXT" },
 	showPartyPets = { text = "SHOW_PARTY_PETS_TEXT" },
-	showRaidRange = { text = "SHOW_RAID_RANGE_TEXT" },
 	showArenaEnemyFrames = { text = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 	showArenaEnemyCastbar = { text = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
 	showArenaEnemyPets = { text = "SHOW_ARENA_ENEMY_PETS_TEXT" },
 	fullSizeFocusFrame = { text = "FULL_SIZE_FOCUS_FRAME_TEXT" },
+	useCompactPartyFrames = { text = "USE_RAID_STYLE_PARTY_FRAMES" },
 }
 
 function BlizzardOptionsPanel_UpdateRaidPullouts ()
@@ -1561,8 +1543,10 @@ RaidFramePanelOptions = {
 	raidFramesDisplayAggroHighlight = { text = "DISPLAY_RAID_AGGRO_HIGHLIGHT" },
 	raidFramesDisplayOnlyDispellableDebuffs = { text = "DISPLAY_ONLY_DISPELLABLE_DEBUFFS" },
 	raidFramesDisplayPowerBars = { text = "DISPLAY_POWER_BARS" },
+	raidOptionShowBorders = { text = "DISPLAY_BORDERS" },
 	raidFramesHeight = { text = "RAID_FRAMES_HEIGHT", minValue = 36, maxValue = 72, valueStep = 2 },
 	raidFramesWidth = { text = "RAID_FRAMES_WIDTH", minValue = 72, maxValue = 144, valueStep = 2 },
+	raidFramesDisplayClassColor = { text = "RAID_USE_CLASS_COLORS" },
 }
 
 function InterfaceOptionsRaidFramePanelSortBy_OnEvent (self, event, ...)
@@ -1647,14 +1631,20 @@ function InterfaceOptionsRaidFramePanelSortBy_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName)
+function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName, optionTarget)
 	return function(value)
 		local enabled;
 		if(value and value ~= "0") then
 			enabled = true;
 		end
-		DefaultCompactUnitFrameOptions[optionName] = enabled;
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		if ( optionTarget == "normal" or optionTarget == "all" ) then
+			DefaultCompactUnitFrameOptions[optionName] = enabled;
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		end
+		if ( optionTarget == "mini" or optionTarget == "all" ) then
+			DefaultCompactMiniFrameOptions[optionName] = enabled;
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", CompactUnitFrame_UpdateAll);
+		end
 	end
 end
 
@@ -2068,13 +2058,6 @@ function InterfaceOptionsMousePanelClickMoveStyleDropDown_Initialize(self)
 	UIDropDownMenu_AddButton(info);
 end
 
--- [[ Features Panel ]] --
-
-FeaturesPanelOptions = {
-	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },
-	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
-}
-
 -- [[ Help Options Panel ]] --
 
 HelpPanelOptions = {
@@ -2092,15 +2075,12 @@ LanguagesPanelOptions = {
 }
 
 function InterfaceOptionsLanguagesPanel_OnLoad (panel)
--- turn off language changing in Beta until fixed
-return;
-
-	--[[-- Check and see if we have more than one locale. If we don't, then don't register this panel.
+	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
 	if ( #({GetExistingLocales()}) <= 1 ) then
 		return;
 	end
 
-	InterfaceOptionsPanel_OnLoad(panel);]]
+	InterfaceOptionsPanel_OnLoad(panel);
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent (self, event, ...)
@@ -2166,14 +2146,4 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 			UIDropDownMenu_AddButton(createInfo);
 		end
 	end
-end
-
--- [[ Development Options Panel ]] --
-
-DevelopmentPanelOptions = {
-	useCompactPartyFrames = { text = "Use Compact Party Frames" },
-}
-
-function InterfaceOptionsDevelopmentPanel_OnLoad (panel)
-	InterfaceOptionsPanel_OnLoad(panel);
 end

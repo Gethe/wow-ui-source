@@ -619,11 +619,7 @@
 					<AbsInset left="6" right="6" top="7" bottom="7"/>
 				</HitRectInsets>
 				<Scripts>
-					<OnClick>
-						GuildPromote(GuildFrame.selectedName);
-						PlaySound("UChatScrollButton");
-						GuildFramePromoteButton:Disable();
-					</OnClick>
+					<OnClick function="GuildFramePromoteButton_OnClick"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
 					</OnEnter>
@@ -649,11 +645,7 @@
 					<AbsInset left="6" right="6" top="7" bottom="7"/>
 				</HitRectInsets>
 				<Scripts>
-					<OnClick>
-						GuildDemote(GuildFrame.selectedName);
-						PlaySound("UChatScrollButton");
-						GuildFrameDemoteButton:Disable();
-					</OnClick>
+					<OnClick function="GuildFrameDemoteButton_OnClick"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
 					</OnEnter>

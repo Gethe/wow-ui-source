@@ -1,6 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-    <!-- A frame used for managing group members -->
+	<Script file="SecureGroupHeaders.lua"/>
+  
+  <!-- A frame used for managing group members -->
     <Frame name="SecureGroupHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
         <Scripts>
             <OnLoad function="SecureGroupHeader_OnLoad"/>

@@ -250,7 +250,7 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 			frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
 		end
 		guildName:SetText(GetGuildInfo("player"));
-		SetGuildTabardTextures(nil, nil, guildBanner, guildBorder);
+		SetSmallGuildTabardTextures("player", nil, guildBanner, guildBorder);
 	else
 		if ( frame.guildDisplay ) then
 			frame.guildDisplay = nil;

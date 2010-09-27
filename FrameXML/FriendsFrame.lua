@@ -123,7 +123,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile)
 	HideDropDownMenu(1);
 	if ( connected or friendsList ) then
 		if ( connected ) then
@@ -140,6 +140,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		FriendsDropDown.chatTarget = name;
 		FriendsDropDown.chatFrame = chatFrame;
 		FriendsDropDown.presenceID = nil;
+		FriendsDropDown.isMobile = isMobile;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end
@@ -159,6 +160,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 		FriendsDropDown.chatTarget = name;
 		FriendsDropDown.chatFrame = chatFrame;
 		FriendsDropDown.presenceID = presenceID;
+		FriendsDropDown.isMobile = nil;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end
@@ -617,8 +619,6 @@ function PendingList_Update(newInvite)
 		scrollBar:SetValue(0);
 	end
 	PendingList_Scroll(0);
-	-- Friend count
-	FriendsMicroButtonCount:SetText(numOnline);
 end
 
 function PendingList_Scroll(offset)
@@ -862,6 +862,14 @@ function FriendsFrame_OnEvent(self, event, ...)
 			BNetBroadcasts = { };
 		end
 		FriendsList_Update();
+		-- update Friends of Friends
+		local presenceID = ...;
+		if ( event == "BN_FRIEND_LIST_SIZE_CHANGED" and presenceID ) then
+			FriendsFriendsFrame.requested[presenceID] = nil;
+			if ( FriendsFriendsFrame:IsShown() ) then
+				FriendsFriendsList_Update();
+			end
+		end
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		local arg1 = ...;
 		if ( arg1 ) then	--There is no presenceID given if this is ourself.
@@ -1960,6 +1968,10 @@ end
 
 function FriendsFriendsFrame_Show(presenceID)
 	local presenceID, givenName, surname = BNGetFriendInfoByID(presenceID);
+	-- bail if that presenceID is not valid anymore
+	if ( not presenceID ) then
+		return;
+	end
 	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..string.format(BATTLENET_NAME_FORMAT, givenName, surname));
 	FriendsFriendsFrame.presenceID = presenceID;
 	UIDropDownMenu_DisableDropDown(FriendsFriendsFrameDropDown);

@@ -414,15 +414,6 @@ function TimeManager_ToggleLocalTime()
 end
 
 -- TimeManagerClockButton
-
-function TimeManagerClockButton_Show()
-	TimeManagerClockButton:Show();
-end
-
-function TimeManagerClockButton_Hide()
-	TimeManagerClockButton:Hide();
-end
-
 function TimeManagerClockButton_OnLoad(self)
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	TimeManagerClockButton_Update();

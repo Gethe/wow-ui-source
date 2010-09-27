@@ -164,6 +164,16 @@
 				</Animations>
 			</Frame>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha change="1" duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad function="PaladinPowerBar_OnLoad"/>
 			<OnEvent function="PaladinPowerBar_OnEvent"/>

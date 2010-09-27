@@ -335,6 +335,9 @@ local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
 local SPELL_POWER_HAPPINESS = SPELL_POWER_HAPPINESS
 local SPELL_POWER_RUNES = SPELL_POWER_RUNES
 local SPELL_POWER_RUNIC_POWER = SPELL_POWER_RUNIC_POWER
+local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS;
+local SPELL_POWER_ECLIPSE = SPELL_POWER_ECLIPSE;
+local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER;
 local SCHOOL_MASK_NONE = SCHOOL_MASK_NONE
 local SCHOOL_MASK_PHYSICAL = SCHOOL_MASK_PHYSICAL
 local SCHOOL_MASK_HOLY = SCHOOL_MASK_HOLY
@@ -1866,7 +1869,7 @@ _G.CombatLog_Color_HighlightColorArray = CombatLog_Color_HighlightColorArray
 --
 -- Returns a string associated with a numeric power type
 --
-local function CombatLog_String_PowerType(powerType)
+local function CombatLog_String_PowerType(powerType, amount)
 	if ( not powerType ) then
 		return "";
 	elseif ( powerType == SPELL_POWER_MANA ) then
@@ -1883,6 +1886,16 @@ local function CombatLog_String_PowerType(powerType)
 		return RUNES;
 	elseif ( powerType == SPELL_POWER_RUNIC_POWER ) then
 		return RUNIC_POWER;
+	elseif ( powerType == SPELL_POWER_SOUL_SHARDS ) then
+		return SOUL_SHARDS;
+	elseif ( powerType == SPELL_POWER_ECLIPSE ) then
+		if amount and  amount > 0 then
+			return BALANCE_POSITIVE_ENERGY;
+		else
+			return BALANCE_NEGATIVE_ENERGY;
+		end
+	elseif ( powerType == SPELL_POWER_HOLY_POWER ) then
+		return HOLY_POWER;
 	end
 end
 _G.CombatLog_String_PowerType = CombatLog_String_PowerType
@@ -2998,6 +3011,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 		end
 	end
 
+	-- Power Type
+	if ( powerType ) then
+		powerTypeString =  CombatLog_String_PowerType(powerType, amount);
+		if powerTypeString == BALANCE_NEGATIVE_ENERGY then
+			amount = abs(amount);
+		end
+	end
+	
 	-- Only replace if there's an amount
 	if ( amount ) then
 		local amountColor;
@@ -3065,11 +3086,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, sourceGUID, sourceN
 			schoolString = format("|c%s%s|r", schoolNameColor, schoolString);
 		end
 
-	end
-
-	-- Power Type
-	if ( powerType ) then
-		powerTypeString =  CombatLog_String_PowerType(powerType);
 	end
 
 	-- Color source names

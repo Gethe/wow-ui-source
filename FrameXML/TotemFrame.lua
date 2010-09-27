@@ -2,6 +2,8 @@
 function TotemFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");	
 
 	local _, class = UnitClass("player");
 	if ( class == "DEATHKNIGHT" ) then
@@ -20,8 +22,23 @@ function TotemFrame_Update()
 			TotemFrame:Hide();
 			return;
 		end
+	elseif ( class == "PALADIN" ) then
+		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 67, -63);
 	elseif ( class == "DEATHKNIGHT" ) then
 		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 65, -55);
+	elseif ( class == "DRUID" ) then
+		local form  = GetShapeshiftFormID();
+		if ( form == MOONKIN_FORM or not form ) then
+			if ( GetPrimaryTalentTree() == 1 ) then
+				TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 115, -88);
+			else
+				TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);
+			end
+		elseif ( form == BEAR_FORM or form == CAT_FORM ) then
+			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 99, -78);
+		else
+			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);
+		end
 	end
 
 	local haveTotem, name, startTime, duration, icon;
@@ -56,9 +73,7 @@ function TotemFrame_Update()
 end
 
 function TotemFrame_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		TotemFrame_Update();
-	elseif ( event == "PLAYER_TOTEM_UPDATE" ) then
+	if ( event == "PLAYER_TOTEM_UPDATE" ) then
 		local slot = ...;
 		local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
 		local button;
@@ -85,12 +100,8 @@ function TotemFrame_OnEvent(self, event, ...)
 				return;
 			end
 		end
-
-		-- The assumption is that we have gained a totem that we did not previously have
-		-- so the totem buttons have to be reordered. It's easier to just do a full update
-		-- rather than sorting the buttons since there aren't that many.
-		TotemFrame_Update();
 	end
+	TotemFrame_Update();
 end
 
 function TotemButton_OnClick(self, mouseButton)

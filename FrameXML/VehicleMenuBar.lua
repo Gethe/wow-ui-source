@@ -704,7 +704,7 @@ local MicroButtons = {
 	TalentMicroButton,
 	AchievementMicroButton,
 	QuestLogMicroButton,
-	SocialsMicroButton,
+	GuildMicroButton,
 	PVPMicroButton,
 	LFDMicroButton,
 	MainMenuMicroButton,
@@ -720,8 +720,8 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		
 		CharacterMicroButton:ClearAllPoints();
 		CharacterMicroButton:SetPoint("BOTTOMLEFT", 552, 2);
-		SocialsMicroButton:ClearAllPoints();
-		SocialsMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);		
+		GuildMicroButton:ClearAllPoints();
+		GuildMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);		
 		UpdateMicroButtons();
 		
 		
@@ -739,8 +739,8 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		end
 		CharacterMicroButton:ClearAllPoints();
 		CharacterMicroButton:SetPoint("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -340, 41);
-		SocialsMicroButton:ClearAllPoints();
-		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
+		GuildMicroButton:ClearAllPoints();
+		GuildMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
 		UpdateMicroButtons();
 		
 		
@@ -758,8 +758,8 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		end
 		CharacterMicroButton:ClearAllPoints();
 		CharacterMicroButton:SetPoint("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -365, 41);
-		SocialsMicroButton:ClearAllPoints();
-		SocialsMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
+		GuildMicroButton:ClearAllPoints();
+		GuildMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
 		UpdateMicroButtons();
 		
 		MainMenuExpBar:ClearAllPoints();			
@@ -829,8 +829,12 @@ end
 
 function VehicleMenuBar_OnEvent(self, event, ...)
 	if ( event == "UNIT_ENTERED_VEHICLE" ) then
-		UnitFrameHealthBar_Update(VehicleMenuBarHealthBar, "vehicle");
-		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
+		local unit, showVehicleFrame, skinName, enterSoundName, isControlSeat, seatIndicator, vehicleGUID = ...;
+		if ( unit == "player" ) then
+			UnitFrameHealthBar_Update(VehicleMenuBarHealthBar, "vehicle");
+			UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
+			self.vehicleGUID = vehicleGUID;
+		end
 	elseif ( event == "UNIT_DISPLAYPOWER" ) then	--For those crazy helicopter-cats that turn into bears
 		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, "vehicle");
 	end

@@ -27,6 +27,7 @@ UIPanelTemplates.lua
 UIPanelTemplates.xml
 SecureTemplates.xml
 SecureHandlerTemplates.xml
+SecureGroupHeaders.xml
 ItemButtonTemplate.xml
 SparkleFrame.xml
 HybridScrollFrame.lua
@@ -110,6 +111,7 @@ MultiCastActionBarFrame.xml
 BonusActionBarFrame.xml
 MainMenuBarBagButtons.xml
 WorldMapFrame.xml
+RaidWarning.xml
 CinematicFrame.xml
 ItemRef.xml
 ComboFrame.xml
@@ -125,7 +127,6 @@ PetStable.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
 DressUpFrame.xml
-RaidWarning.xml
 PVPFrameTemplates.xml
 PVPFrame.xml
 ArenaRegistrarFrame.xml
@@ -154,8 +155,10 @@ CompactPartyFrame.xml
 RolePoll.xml
 SpellFlyout.xml
 PaladinPowerBar.xml
-StreamingFrame.xml
 SpellActivationOverlay.xml
+GuildInviteFrame.xml
+GhostFrame.xml
+StreamingFrame.xml
 
 ## add new modules above here
 LocalizationPost.xml

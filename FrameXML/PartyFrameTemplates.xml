@@ -552,7 +552,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentPhasingIcon" parentKey="phasingIcon">
+			<Frame name="$parentPhasingIcon" parentKey="phasingIcon" forceAlpha="true" hidden="true">
 				<Size x="25" y="25"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-7" y="5"/>
@@ -565,10 +565,6 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetParent(UIParent);
-						self:Hide();
-					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(PARTY_PHASED_MESSAGE, nil, nil, nil, nil, true);
@@ -633,9 +629,6 @@
 				self:SetFrameLevel(2);
 				PartyMemberFrame_UpdatePhasingDisplay(self);
 			</OnShow>
-			<OnHide>
-				self.phasingIcon:Hide();
-			</OnHide>
 			<OnEvent>
 				PartyMemberFrame_OnEvent(self, event, ...);
 			</OnEvent>

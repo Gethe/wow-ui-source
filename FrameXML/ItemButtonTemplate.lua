@@ -95,7 +95,17 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 end
 
 function HandleModifiedItemClick(link)
+	if ( not link ) then
+		return;
+	end
 	if ( IsModifiedClick("CHATLINK") ) then
+		local linkType = string.match(link, "|H([^:]+)");
+		if ( linkType == "instancelock" ) then	--People can't re-link instances that aren't their own.
+			local guid = string.match(link, "|Hinstancelock:([^:]+)");
+			if ( not string.find(UnitGUID("player"), guid) ) then
+				return true;
+			end
+		end
 		if ( ChatEdit_InsertLink(link) ) then
 			return true;
 		end

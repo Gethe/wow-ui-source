@@ -1,26 +1,10 @@
 -- RestrictedFrames.lua (Part of the new Secure Headers implementation)
 --
--- Handle objects to access frames during restricted execution in order to
--- allow safe manipulation of frame properties. These handles can be passed
--- around safely without allowing their destinations or functions to be
--- tampered with.
+-- Provides the method definitions for restricted frames.
+-- See RestrictedInfrastructure.lua for more details.
 --
 -- Daniel Stephens (iriel@vigilance-committee.org)
 -- Nevin Flanagan (alestane@comcast.net)
---
--- The design consists of several components...
---
--- HANDLES: These are lightweight userdata objects with a shared metatable
---          that stand in for frames. They're persistent once created (i.e.
---          a given frame always has the same handle). Internally these map
---          to a 'copied' frame object. Only explcitly protected frames can
---          be assigned handles.
---
--- METHODS: The handler methods are contained in a table which is then set
---          as the __index on the handlers. These are in two groups, there
---          are 'read' methods that may be blocked in some situations, and
---          there are 'write' methods which simply require that an execution
---          is active.
 --
 -- Various methods (SetPoint/SetParent) take frame handles as relative
 -- frame arguments also. You can safely obtain frame handles (out of combat)
@@ -30,133 +14,57 @@
 -- This handle can then be retrieved using a GetAttribute call.
 ---------------------------------------------------------------------------
 
-local issecure = issecure;
 local select = select;
 local type = type;
-local unpack = unpack;
-local wipe = wipe;
-local pairs = pairs;
-local newproxy = newproxy;
 local error = error;
 local tostring = tostring;
 local tonumber = tonumber;
-local string = string;
-local rawget = rawget;
 local securecall = securecall;
+
 local GetCursorPosition = GetCursorPosition;
 local InCombatLockdown = InCombatLockdown;
-local CallRestrictedClosure = CallRestrictedClosure;
+
+local IsFrameHandle = IsFrameHandle;
+local GetFrameHandle = GetFrameHandle;
+local GetFrameHandleFrame = GetFrameHandleFrame;
+
 local GetManagedEnvironment = GetManagedEnvironment;
+
+local CallRestrictedClosure = CallRestrictedClosure;
+
 local forceinsecure = forceinsecure;
 local scrub = scrub;
 local pcall = pcall;
 
 ---------------------------------------------------------------------------
 -- Frame Handles -- Userdata handles referencing explicitly protected frames
---
--- LOCAL_FrameHandle_Protected_Frames -- handle keys, frame surrogate values
---                                       (explicitly protected)
--- LOCAL_FrameHandle_Other_Frames -- handle keys, frame surrogate values
---                                   (possibly protected)
--- LOCAL_FrameHandle_Lookup -- frame keys, handle values
---
--- The lookup table auto-populates via an __index metamethod
+-- Handle support is in RestrictedInfrastructure
 
-local LOCAL_FrameHandle_Protected_Frames = {};
-local LOCAL_FrameHandle_Other_Frames = {};
-local LOCAL_FrameHandle_Lookup = {};
-setmetatable(LOCAL_FrameHandle_Protected_Frames, { __mode = "k" });
-setmetatable(LOCAL_FrameHandle_Other_Frames, { __mode = "k" });
-
--- Setup metatable for prototype object
-local LOCAL_FrameHandle_Prototype = newproxy(true);
 -- HANDLE is the frame handle method namespace (populated below)
 local HANDLE = {};
-do
-    local meta = getmetatable(LOCAL_FrameHandle_Prototype);
-    meta.__index = HANDLE;
-    meta.__metatable = false;
-end
-
-function IsFrameHandle(handle, protected)
-    local surrogate = LOCAL_FrameHandle_Protected_Frames[handle];
-    if ((surrogate == nil) and not protected) then
-        surrogate = LOCAL_FrameHandle_Other_Frames[handle];
-    end
-    return (surrogate ~= nil);
-end
-
-function GetFrameHandleFrame(handle, protected)
-    local surrogate = LOCAL_FrameHandle_Protected_Frames[handle];
-    if ((surrogate == nil) and (not protected or not InCombatLockdown())) then
-        surrogate = LOCAL_FrameHandle_Other_Frames[handle];
-    end
-    if (surrogate ~= nil) then
-        return surrogate[1];
-    end
-end
-
-local function FrameHandleLookup_index(t, frame)
-    -- Create a 'surrogate' frame object
-    local surrogate = { [0] = frame[0], [1] = frame };
-    setmetatable(surrogate, getmetatable(frame));
-    -- Test whether the frame is explcitly protected
-    local _, protected = surrogate:IsProtected();
-    if (not issecure()) then
-        return;
-    end
-    local handle = newproxy(LOCAL_FrameHandle_Prototype);
-    LOCAL_FrameHandle_Lookup[frame] = handle;
-    if (protected) then
-        LOCAL_FrameHandle_Protected_Frames[handle] = surrogate;
-    else
-        LOCAL_FrameHandle_Other_Frames[handle] = surrogate;
-    end
-    return handle;
-end
-setmetatable(LOCAL_FrameHandle_Lookup, { __index = FrameHandleLookup_index; });
-
--- Gets the handle for a frame (if available)
-function GetFrameHandle(frame, protected)
-    local handle = LOCAL_FrameHandle_Lookup[frame];
-    if (protected and (frame ~= nil)) then
-        if (not LOCAL_FrameHandle_Protected_Frames[handle]) then
-            return nil;
-        end
-    end
-    return handle;
-end
 
 ---------------------------------------------------------------------------
 -- Action implementation support function
 --
--- GetHandleFrame -- Get the frame for a handle
+-- GetUnprotectedHandleFrame -- Get the frame for a handle (always)
+-- GetHandleFrame -- Get the frame for a handle that could accept a protected
+--                   action (i.e. is protected, or we're not in combat)
 
 local function GetUnprotectedHandleFrame(handle)
-    local frame = LOCAL_FrameHandle_Protected_Frames[handle];
-    if (not frame) then
-        frame = LOCAL_FrameHandle_Other_Frames[handle];
-        if (not frame) then
-            error("Invalid frame handle");
-            return;
-        end
+    local frame = GetFrameHandleFrame(handle);
+    if (frame) then
+        return frame;
     end
-    return frame;
+    error("Invalid frame handle");
 end
 
 local function GetHandleFrame(handle)
-    local frame = LOCAL_FrameHandle_Protected_Frames[handle];
-    if (not frame) then
-        frame = LOCAL_FrameHandle_Other_Frames[handle];
-        if (frame) then
-            if (frame:IsProtected() or not InCombatLockdown()) then
-                return frame;
-            end
-        end
-        error("Invalid frame handle");
-        return;
+    local frame, isProtected = GetFrameHandleFrame(handle);
+    if (frame and (isProtected
+                   or (frame:IsProtected() or not InCombatLockdown()))) then
+        return frame;
     end
-    return frame;
+    error("Invalid frame handle");
 end
 
 ---------------------------------------------------------------------------
@@ -178,13 +86,29 @@ end
 -- Cannot expose GetAlpha since alpha is not protected
 
 function HANDLE:GetFrameLevel()
-    return GetHandleFrame(self):GetFrameLevel()  end
+    return GetHandleFrame(self):GetFrameLevel()
+end
+
+function HANDLE:GetFrameStrata()
+    return GetHandleFrame(self):GetFrameStrata()
+end
+
+function HANDLE:IsMouseEnabled()
+    return GetHandleFrame(self):IsMouseEnabled();
+end
+
+function HANDLE:IsKeyboardEnabled()
+    return GetHandleFrame(self):IsKeyboardEnabled();
+end
+
 function HANDLE:GetObjectType()
     return GetUnprotectedHandleFrame(self):GetObjectType()
 end
+
 function HANDLE:IsObjectType(ot)
     return GetUnprotectedHandleFrame(self):IsObjectType(tostring(ot))
 end
+
 function HANDLE:IsProtected()
     return GetUnprotectedHandleFrame(self):IsProtected();
 end
@@ -199,9 +123,7 @@ function HANDLE:GetAttribute(name)
     if (tv == "string" or tv == "number" or tv == "boolean" or val == nil) then
         return val;
     end
-    if (tv == "userdata" and
-        (LOCAL_FrameHandle_Protected_Frames[val]
-         or LOCAL_FrameHandle_Other_Frames[val])) then
+    if (tv == "userdata" and IsFrameHandle(val)) then
         return val;
     end
     return nil;
@@ -213,9 +135,7 @@ function HANDLE:GetFrameRef(label)
     end
     local val = GetHandleFrame(self):GetAttribute("frameref-" .. label);
     local tv = type(val);
-    if (tv == "userdata" and
-        (LOCAL_FrameHandle_Protected_Frames[val]
-         or LOCAL_FrameHandle_Other_Frames[val])) then
+    if (tv == "userdata" and IsFrameHandle(val)) then
         return val;
     end
     return nil;
@@ -240,9 +160,7 @@ function HANDLE:GetEffectiveAttribute(name, button, prefix, suffix)
     if (tv == "string" or tv == "number" or tv == "boolean" or val == nil) then
         return val;
     end
-    if (tv == "userdata" and
-        (LOCAL_FrameHandle_Protected_Frames[val]
-         or LOCAL_FrameHandle_Other_Frames[val])) then
+    if (tv == "userdata" and IsFrameHandle(val)) then
         return val;
     end
     return nil;
@@ -260,7 +178,7 @@ local function FrameHandleMapper(nolockdown, frame, nextFrame, ...)
         p = frame:IsProtected();
     end
     if (p) then
-        frame = LOCAL_FrameHandle_Lookup[frame];
+        frame = GetFrameHandle(frame);
         if (frame) then
             if (nextFrame) then
                 return frame, FrameHandleMapper(nolockdown, nextFrame, ...);
@@ -286,7 +204,7 @@ local function FrameHandleInserter(result, ...)
             p = frame:IsProtected();
         end
         if (p) then
-            frame = LOCAL_FrameHandle_Lookup[frame];
+            frame = GetFrameHandle(frame);
             if (frame) then
                 idx = idx + 1;
                 result[idx] = frame;
@@ -463,7 +381,8 @@ function HANDLE:SetPoint(point, relframe, relpoint, xofs, yofs)
 
     local realrelframe = nil;
     if (type(relframe) == "userdata") then
-        realrelframe = LOCAL_FrameHandle_Protected_Frames[relframe];
+        -- **MUST** be protected
+        realrelframe = GetFrameHandleFrame(relframe, true, true);
         if (not realrelframe) then
             error("Invalid relative frame handle");
             return;
@@ -492,7 +411,7 @@ function HANDLE:SetAllPoints(relframe)
 
     local realrelframe = nil;
     if (type(relframe) == "userdata") then
-        realrelframe = LOCAL_FrameHandle_Protected_Frames[relframe];
+        realrelframe = GetFrameHandleFrame(relframe, true, true);
         if (not realrelframe) then
             error("Invalid relative frame handle");
             return;
@@ -517,9 +436,7 @@ function HANDLE:SetAttribute(name, value)
     local tv = type(value);
     if (tv ~= "string" and tv ~= "nil" and tv ~= "number"
         and tv ~= "boolean") then
-        if (not (tv == "userdata" and
-                 (LOCAL_FrameHandle_Protected_Frames[value]
-                  or LOCAL_FrameHandle_Other_Frames[value]))) then
+        if (not (tv == "userdata" and IsFrameHandle(value))) then
             error("Invalid attribute value");
             return;
         end
@@ -538,8 +455,7 @@ end
 function HANDLE:SetBindingClick(priority, key, name, button)
     local tn = type(name);
     if (tn == "userdata") then
-        if (LOCAL_FrameHandle_Protected_Frames[name]
-            or LOCAL_FrameHandle_Other_Frames[name]) then
+        if (IsFrameHandle(name)) then
             name = name:GetName();
             tn = type(name);
         end
@@ -601,6 +517,10 @@ function HANDLE:SetFrameLevel(level)
     GetHandleFrame(self):SetFrameLevel(tonumber(level));
 end
 
+function HANDLE:SetFrameStrata(strata)
+    GetHandleFrame(self):SetFrameStrata(tostring(strata));
+end
+
 function HANDLE:SetParent(handle)
     local parent = nil;
     if (handle ~= nil) then
@@ -608,7 +528,7 @@ function HANDLE:SetParent(handle)
             error("Invalid frame handle for SetParent");
             return;
         end
-        parent = LOCAL_FrameHandle_Protected_Frames[handle];
+        parent = GetFrameHandleFrame(handle, true, true);
         if (not parent) then
             error("Invalid frame handle for SetParent");
             return;
@@ -616,6 +536,14 @@ function HANDLE:SetParent(handle)
     end
 
     GetHandleFrame(self):SetParent(parent);
+end
+
+function HANDLE:EnableMouse(isEnabled)
+    GetHandleFrame(self):EnableMouse((isEnabled and true) or false);
+end
+
+function HANDLE:EnableKeyboard(isEnabled)
+    GetHandleFrame(self):EnableKeyboard((isEnabled and true) or false);
 end
 
 function HANDLE:RegisterAutoHide(duration)
@@ -632,7 +560,7 @@ function HANDLE:AddToAutoHide(handle)
         return;
     end
 
-    local child = LOCAL_FrameHandle_Protected_Frames[handle];
+    local child = GetFrameHandleFrame(handle, true, true);
     if (not child) then
         error("Invalid frame handle for AddToAutoHide");
         return;
@@ -662,14 +590,14 @@ function HANDLE:Enable()
     frame:Enable();
 end
 
-
 ---------------------------------------------------------------------------
 -- Control handle methods
 
 -- SoftError(message)
 -- Report an error message without stopping execution
 local function SoftError_inner(message)
-    geterrorhandler()(message);
+    local func = geterrorhandler();
+    func(message);
 end
 
 local function SoftError(message)
@@ -686,7 +614,13 @@ function HANDLE:Run(body, ...)
         error("Invalid function body");
         return;
     end
-    local env = GetManagedEnvironment(frame)
+    local env = GetManagedEnvironment(frame, true);
+    local selfHandle = GetFrameHandle(frame, true);
+    if (not selfHandle) then
+        -- NOTE: This should never actually happen since the frame must
+        -- be protected to have an environment or control!
+        return;
+    end
     return scrub(CallRestrictedClosure("self,...",
                                        env, self, body, self, ...));
 end
@@ -705,7 +639,7 @@ function HANDLE:RunFor(otherHandle, body, ...)
         error("Invalid function body");
         return;
     end
-    local env = GetManagedEnvironment(frame);
+    local env = GetManagedEnvironment(frame, true);
     return scrub(CallRestrictedClosure("self,...",
                                        env, self, body, otherHandle, ...));
 end
@@ -725,7 +659,13 @@ function HANDLE:RunAttribute(snippetAttr, ...)
         error("Invalid snippet body");
         return;
     end
-    local env = GetManagedEnvironment(frame);
+    local env = GetManagedEnvironment(frame, true);
+    local selfHandle = GetFrameHandle(frame, true);
+    if (not selfHandle) then
+        -- NOTE: This should never actually happen since the frame must
+        -- be protected to have an environment or control!
+        return
+    end
     return scrub(CallRestrictedClosure("self,...",
                                        env, self, body, self, ...));
 end
@@ -766,14 +706,14 @@ function HANDLE:ChildUpdate(snippetid, message)
         error("Invalid control handle");
         return;
     end
-    local env = GetManagedEnvironment(frame);
+    local env = GetManagedEnvironment(frame, true);
     ChildUpdate_Helper(env, self, snippetid, message, frame:GetChildren());
 end
 
 local function CallMethod_inner(frame, methodName, ...)
+    local method = frame[methodName];
     -- Ensure code isn't run securely
     forceinsecure();
-    local method = frame[methodName];
     if (type(method) ~= "function") then
         error("Invalid method '" .. methodName .. "'");
         return;
@@ -802,3 +742,9 @@ function HANDLE:CallMethod(methodName, ...)
         SoftError(err);
     end
 end
+
+---------------------------------------------------------------------------
+-- Callback to initialize handle, discard initializer once used
+
+InitFrameHandleNamespace(HANDLE)
+InitFrameHandleNamespace = nil;

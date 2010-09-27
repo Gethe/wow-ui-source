@@ -195,6 +195,7 @@
 			</Anchors>
 			<Scripts>
                 <OnLoad function="Model_OnLoad"/>
+				<OnEvent function="Model_OnEvent"/>
                 <OnUpdate function="Model_OnUpdate"/>
 				<OnMouseUp function="Model_OnMouseUp"/>
 				<OnMouseDown function="Model_OnMouseDown"/>

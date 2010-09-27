@@ -260,9 +260,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								BuyGuildCharter(GuildRegistrarFrameEditBox:GetText());
-								HideUIPanel(GuildRegistrarFrame);
-								ChatEdit_FocusActiveWindow();
+								GuildRegistrar_PurchaseCharter();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -309,9 +307,7 @@
 						</Layers>
 						<Scripts>
 							<OnEnterPressed>
-								BuyGuildCharter(self:GetText());
-								HideUIPanel(GuildRegistrarFrame);
-								ChatEdit_FocusActiveWindow();
+								GuildRegistrar_PurchaseCharter();
 							</OnEnterPressed>
 							<OnEscapePressed>
 								ChatEdit_FocusActiveWindow();
@@ -343,6 +339,7 @@
 			</OnShow>
 			<OnHide>
 				PlaySound("igQuestListClose");
+				StaticPopup_Hide("CONFIRM_GUILD_CHARTER_PURCHASE");
 				CloseGuildRegistrar();
 			</OnHide>
 		</Scripts>

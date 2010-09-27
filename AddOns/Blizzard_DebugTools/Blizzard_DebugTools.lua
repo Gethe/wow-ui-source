@@ -302,7 +302,7 @@ local function EventTrace_FormatArgValue (val)
 		return string.format('"%s"', val);
 	elseif ( type(val) == "number" ) then
 		return tostring(val);
-	elseif ( type(val) == "bool" ) then
+	elseif ( type(val) == "boolean" ) then
 		return string.format('|cffaaaaff%s|r', tostring(val));
 	elseif ( type(val) == "table" or type(val) == "bool" ) then
 		return string.format('|cffffaaaa%s|r', tostring(val));

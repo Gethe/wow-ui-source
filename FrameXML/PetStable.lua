@@ -2,6 +2,14 @@ NUM_PET_STABLE_SLOTS = 10;
 NUM_PET_STABLE_PAGES = 2;
 NUM_PET_ACTIVE_SLOTS = 5;
 
+local CALL_PET_SPELL_IDS = {
+	0883,
+	83242,
+	83243,
+	83244,
+	83245,
+};
+
 function PetStable_OnLoad(self)
 	self:RegisterEvent("PET_STABLE_SHOW");
 	self:RegisterEvent("PET_STABLE_UPDATE");
@@ -9,6 +17,7 @@ function PetStable_OnLoad(self)
 	self:RegisterEvent("PET_STABLE_CLOSED");
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
+	self:RegisterEvent("SPELLS_CHANGED");
 	
 	-- Set portrait
 	SetPortraitToTexture(PetStableFramePortrait, "Interface\\Icons\\ability_physical_taunt");
@@ -38,7 +47,7 @@ function PetStable_OnEvent(self, event, ...)
 		end
 
 		PetStable_Update(true);
-	elseif ( event == "PET_STABLE_UPDATE") then
+	elseif ( event == "PET_STABLE_UPDATE" or event == "SPELLS_CHANGED") then
 		PetStable_Update(true);
 	elseif (event == "UNIT_NAME_UPDATE" and arg1 == "pet") then
 		PetStable_Update(false);
@@ -135,7 +144,11 @@ function PetStable_Update(updateModel)
 	end
 	
 	-- If no selected pet, try to set one
-	if ( not PetStableFrame.selectedPet or not GetStablePetInfo(PetStableFrame.selectedPet)) then
+	if (PetStableFrame.selectedPet and not GetStablePetInfo(PetStableFrame.selectedPet)) then
+		PetStableFrame.selectedPet = nil;
+	end
+	
+	if ( not PetStableFrame.selectedPet ) then
 		for i=1, NUM_PET_ACTIVE_SLOTS do
 			local petSlot = PetStable_GetPetSlot(i, true);
 			if ( GetStablePetInfo(petSlot) ) then
@@ -169,6 +182,17 @@ function PetStable_Update(updateModel)
 		local button = _G["PetStableActivePet"..i];
 		local petSlot = PetStable_GetPetSlot(i, true);
 		PetStable_UpdateSlot(button, petSlot);
+		if (IsSpellKnown(CALL_PET_SPELL_IDS[i]) or GetStablePetInfo(petSlot)) then
+			button:Enable();
+			button.Background:SetDesaturated(nil);
+			button.Border:SetDesaturated(nil);
+			button.LockIcon:Hide();
+		else
+			button:Disable();
+			button.Background:SetDesaturated(1);
+			button.Border:SetDesaturated(1);
+			button.LockIcon:Show();
+		end
 	end
 	
  	if ( PetStableFrame.selectedPet ) then
@@ -241,4 +265,14 @@ function PetStable_NoPetsAllowed()
 	
 	PetStable_SetSelectedPetInfo();
 	PetStableModel:Hide();
+end
+
+function PetStableSlot_Lock_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(LOCKED);
+	local spellName = GetSpellInfo(CALL_PET_SPELL_IDS[self:GetParent():GetID()]);
+	if (spellName and spellName ~= "") then
+		GameTooltip:AddLine(format(PET_STABLE_SLOT_LOCKED_TOOLTIP, spellName), 1.0, 1.0, 1.0);
+	end
+	GameTooltip:Show();
 end

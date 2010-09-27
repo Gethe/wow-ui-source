@@ -39,6 +39,7 @@ function SetZoneText(showZone)
 		ZoneTextString:SetTextColor(1.0, 0.7, 0);
 		SubZoneTextString:SetTextColor(1.0, 0.7, 0);
 	elseif ( pvpType == "combat" ) then
+		pvpTextString = PVPArenaTextString;
 		pvpTextString:SetText(COMBAT_ZONE);
 		pvpTextString:SetTextColor(1.0, 0.1, 0.1);
 		ZoneTextString:SetTextColor(1.0, 0.1, 0.1);

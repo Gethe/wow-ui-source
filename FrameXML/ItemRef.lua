@@ -75,6 +75,9 @@ function SetItemRef(link, text, button, chatFrame)
 		local name, presenceID, lineid, chatType, chatTarget = strsplit(":", namelink);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
+				--[[
+				disable SHIFT-CLICK for battlenet friends, so we don't put an encoded presence id in chat
+
 				local staticPopup;
 				staticPopup = StaticPopup_Visible("ADD_IGNORE");
 				if ( staticPopup ) then
@@ -122,7 +125,7 @@ function SetItemRef(link, text, button, chatFrame)
 				elseif ( HelpFrameOpenTicketEditBox:IsVisible() ) then
 					HelpFrameOpenTicketEditBox:Insert(name);				
 				end
-				
+				]]
 			elseif ( button == "RightButton" ) then
 				if ( not BNIsSelf(presenceID) ) then
 					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetPresenceID(name));
@@ -141,7 +144,7 @@ function SetItemRef(link, text, button, chatFrame)
 			if ( strupper(chatType) == "BN_CONVERSATION" ) then
 				BNListConversation(chatTarget);
 			else
-				ToggleFriendsFrame(4);
+				ToggleFriendsFrame(3);
 			end
 		elseif ( button == "LeftButton" ) then
 			local chanLink = strsub(link, 9);
@@ -171,8 +174,8 @@ function SetItemRef(link, text, button, chatFrame)
 		GMChatStatusFrame_OnClick();
 		return;
 	elseif ( strsub(link, 1, 7) == "levelup" ) then
-		local _, level = strsplit(":", link);
-		LevelUpDisplay_ShowSideDisplay(tonumber(level));
+		local _, level, levelUpType, arg1 = strsplit(":", link);
+		LevelUpDisplay_ShowSideDisplay(tonumber(level), _G[levelUpType], arg1);
 		return;
 	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
 		TogglePVPFrame();
@@ -185,6 +188,9 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
 		ToggleTalentFrame();
+		return;
+	elseif ( strsub(link, 1, 13) == "pettalentpane" ) then
+		TogglePetTalentFrame();
 		return;
 	end
     
@@ -214,9 +220,10 @@ function GetFixedLink(text)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffd000%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 8) == "enchant" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffd000%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 13) == "instancelock" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff8000%1|r", 1));
 		end
 	end
-	
 	--Nothing to change.
 	return text;
 end

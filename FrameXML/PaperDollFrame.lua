@@ -139,6 +139,9 @@ PAPERDOLL_STATINFO = {
 	["MASTERY"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetMastery(statFrame, unit); end
 	},
+	["ITEMLEVEL"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetItemLevel(statFrame, unit); end
+	},
 	
 	-- Base stats
 	["STRENGTH"] = {
@@ -207,8 +210,11 @@ PAPERDOLL_STATINFO = {
 	},
 	
 	-- Spell
-	["SPELLPOWER"] = {
+	["SPELLDAMAGE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellBonusDamage(statFrame, unit); end
+	},
+	["SPELLHEALING"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellBonusHealing(statFrame, unit); end
 	},
 	["SPELL_HASTE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellHaste(statFrame, unit); end
@@ -276,6 +282,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"HEALTH",
 				"DRUIDMANA",  -- Only appears for Druids when in bear/cat form
 				"POWER",
+				"ITEMLEVEL",
 			}
 	},
 						
@@ -322,7 +329,8 @@ PAPERDOLL_STATCATEGORIES = {
 	["SPELL"] = {
 			id = 5,
 			stats = {
-				"SPELLPOWER", 
+				"SPELLDAMAGE",    -- If Damage and Healing are the same, this changes to Spell Power
+				"SPELLHEALING",    -- If Damage and Healing are the same, this is hidden
 				"SPELL_HASTE", 
 				"SPELL_HITCHANCE",
 				"SPELL_PENETRATION",
@@ -418,6 +426,11 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
+	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
+	self:RegisterEvent("PLAYER_BANKSLOTS_CHANGED");
+	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_READY");
+	self:RegisterEvent("PLAYER_DAMAGE_DONE_MODS");
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -465,7 +478,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		end
 	end
 	
-	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" ) then
+	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" or event == "BAG_UPDATE" or event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_BANKSLOTS_CHANGED" or event == "PLAYER_AVG_ITEM_LEVEL_READY" or event == "PLAYER_DAMAGE_DONE_MODS") then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	elseif (event == "VARIABLES_LOADED") then
 		if (GetCVar("characterFrameCollapsed") ~= "0") then
@@ -476,6 +489,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		PaperDoll_InitStatCategories(PAPERDOLL_STATCATEGORY_DEFAULTORDER, "statCategoryOrder", "statCategoriesCollapsed", "player");
 	elseif (event == "PLAYER_TALENT_UPDATE") then
 		PaperDollFrame_SetLevel();
+		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	end
 end
 
@@ -483,6 +497,7 @@ function PaperDollFrame_SetLevel()
 	local primaryTalentTree = GetPrimaryTalentTree();
 	local classDisplayName, class = UnitClass("player"); 
 	local classColor = RAID_CLASS_COLORS[class];
+	local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
 	local specName;
 	
 	if (primaryTalentTree) then
@@ -490,14 +505,10 @@ function PaperDollFrame_SetLevel()
 	end
 	
 	if (specName and specName ~= "") then
-		classDisplayName = format("|cff%.2x%.2x%.2x%s %s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, specName, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), classColorString, specName, classDisplayName);
 	else
-		classDisplayName = format("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, UnitLevel("player"), classColorString, classDisplayName);
 	end
-	
-	CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), classDisplayName);
-	-- Set it for the honor frame while we at it
-	HonorLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), classDisplayName);
 end
 
 function PaperDollFrame_SetGuild()
@@ -703,20 +714,11 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		local _, unitClass = UnitClass("player");
 		unitClass = strupper(unitClass);
 		
+		-- Strength
 		if ( statIndex == 1 ) then
 			local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
 			statFrame.tooltip2 = format(statFrame.tooltip2, attackPower);
-			if ( unitClass == "WARRIOR" or unitClass == "SHAMAN" or unitClass == "PALADIN" ) then
-				statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format( STAT_BLOCK_TOOLTIP, max(0, effectiveStat*BLOCK_PER_STRENGTH-10) );
-			end
-		elseif ( statIndex == 3 ) then
-			local baseStam = min(20, effectiveStat);
-			local moreStam = effectiveStat - baseStam;
-			statFrame.tooltip2 = format(statFrame.tooltip2, (baseStam + (moreStam*HEALTH_PER_STAMINA))*GetUnitMaxHealthModifier("player"));
-			local petStam = ComputePetBonus("PET_BONUS_STAM", effectiveStat );
-			if( petStam > 0 ) then
-				statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_STAMINA,petStam);
-			end
+		-- Agility
 		elseif ( statIndex == 2 ) then
 			local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
 			if ( attackPower > 0 ) then
@@ -724,29 +726,29 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			else
 				statFrame.tooltip2 = format(statFrame.tooltip2, GetCritChanceFromAgility("player"));
 			end
+		-- Stamina
+		elseif ( statIndex == 3 ) then
+			local baseStam = min(20, effectiveStat);
+			local moreStam = effectiveStat - baseStam;
+			statFrame.tooltip2 = format(statFrame.tooltip2, (baseStam + (moreStam*HEALTH_PER_STAMINA))*GetUnitMaxHealthModifier("player"));
+		-- Intellect
 		elseif ( statIndex == 4 ) then
-			local baseInt = min(20, effectiveStat);
-			local moreInt = effectiveStat - baseInt
 			if ( UnitHasMana("player") ) then
-				statFrame.tooltip2 = format(statFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, GetSpellCritChanceFromIntellect("player"));
+				local baseInt = min(20, effectiveStat);
+				local moreInt = effectiveStat - baseInt
+				statFrame.tooltip2 = format(statFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
 			else
-				statFrame.tooltip2 = nil;
+				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
 			end
-			local petInt = ComputePetBonus("PET_BONUS_INT", effectiveStat );
-			if( petInt > 0 ) then
-				if ( not statFrame.tooltip2 ) then
-					statFrame.tooltip2 = "";
-				end
-				statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_INTELLECT,petInt);
-			end
+		-- Spirit
 		elseif ( statIndex == 5 ) then
 			-- All mana regen stats are displayed as mana/5 sec.
-			-- statFrame.tooltip2 = format(statFrame.tooltip2, GetUnitHealthRegenRateFromSpirit("player"));
 			if ( UnitHasMana("player") ) then
 				local regen = GetUnitManaRegenRateFromSpirit("player");
 				regen = floor( regen * 5.0 );
-				--statFrame.tooltip2 = statFrame.tooltip2.."\n"..format(MANA_REGEN_FROM_SPIRIT, regen);
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, regen);
+			else
+				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
 			end
 		end
 	elseif (unit == "pet") then
@@ -763,17 +765,13 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		elseif ( statIndex == 4 ) then
 			if ( UnitHasMana("pet") ) then
 				local manaGain = ((effectiveStat-20)*15+20)*GetUnitPowerModifier("pet");
-				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain, GetSpellCritChanceFromIntellect("pet"));
+				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("pet"));
 			else
-				local newLineIndex = strfind(statFrame.tooltip2, "|n")+2;
-				statFrame.tooltip2 = strsub(statFrame.tooltip2, newLineIndex);
-				statFrame.tooltip2 = format(statFrame.tooltip2, GetSpellCritChanceFromIntellect("pet"));
+				statFrame.tooltip2 = nil;
 			end
 		elseif ( statIndex == 5 ) then
 			statFrame.tooltip2 = "";
-			-- statFrame.tooltip2 = format(statFrame.tooltip2, GetUnitHealthRegenRateFromSpirit("pet"));
 			if ( UnitHasMana("pet") ) then
-				--statFrame.tooltip2 = statFrame.tooltip2.."\n"..format(MANA_REGEN_FROM_SPIRIT, GetUnitManaRegenRateFromSpirit("pet"));
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, GetUnitManaRegenRateFromSpirit("pet"));
 			end
 		end
@@ -802,7 +800,7 @@ function PaperDollFrame_SetResistance(statFrame, unit, resistanceIndex)
 		statFrame.tooltip = statFrame.tooltip..FONT_COLOR_CODE_CLOSE.." )";
 	end
 	
-	statFrame.tooltip2 = format(RESISTANCE_TOOLTIP_SUBTEXT, _G["RESISTANCE_TYPE"..resistanceIndex]);
+	statFrame.tooltip2 = format(RESISTANCE_TOOLTIP_SUBTEXT, _G["SPELL_SCHOOL"..resistanceIndex.."_CAP"], ResistancePercent(resistance, UnitLevel(unit)));
 	
 	-- TODO: Put this in the tooltip?
 	--local petBonus = ComputePetBonus( "PET_BONUS_RES", resistance );
@@ -872,19 +870,12 @@ function PaperDollFrame_SetResilience(statFrame, unit)
 		return;
 	end
 
-	--local critResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
 	local damageResilience = GetCombatRating(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	
-	local critMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
-	local critRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_CRIT_TAKEN);
-	
-	--local damageMaxRatingBonus = GetMaxCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
 	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageResilience);
+	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..damageResilience..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, 
-								min(critRatingBonus, critMaxRatingBonus), 
 								damageRatingBonus 
 								);
 	statFrame:Show();
@@ -1373,7 +1364,6 @@ function PaperDollFrame_SetRangedAttackPower(statFrame, unit)
 end
 
 function PaperDollFrame_SetSpellBonusDamage(statFrame, unit)
-	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLPOWER));
 	local text = _G[statFrame:GetName().."StatText"];
 	local minModifier = 0;
 	
@@ -1398,8 +1388,51 @@ function PaperDollFrame_SetSpellBonusDamage(statFrame, unit)
 		statFrame.bonusDamage = nil;
 	end
 	
+	local spellHealing = GetSpellBonusHealing();
+	if (spellHealing == minModifier) then
+		_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLPOWER));
+		statFrame.tooltip = STAT_SPELLPOWER;
+		statFrame.tooltip2 = STAT_SPELLPOWER_TOOLTIP;
+	else
+		_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLDAMAGE));
+		statFrame.tooltip = STAT_SPELLDAMAGE;
+		statFrame.tooltip2 = STAT_SPELLDAMAGE_TOOLTIP;
+	end
+	
 	text:SetText(minModifier);
 	statFrame.minModifier = minModifier;
+	statFrame.unit = unit;
+	statFrame:SetScript("OnEnter", CharacterSpellBonusDamage_OnEnter);
+	statFrame:Show();
+end
+
+function PaperDollFrame_SetSpellBonusHealing(statFrame, unit)
+	local text = _G[statFrame:GetName().."StatText"];
+	local minDamage = 0;
+	
+	if (unit == "player") then
+		local holySchool = 2;
+		-- Start at 2 to skip physical damage
+		minDamage = GetSpellBonusDamage(holySchool);		
+		for i=(holySchool+1), MAX_SPELL_SCHOOLS do
+			minDamage = min(minDamage, GetSpellBonusDamage(i));
+		end
+	elseif (unit == "pet") then
+		minDamage = GetPetSpellBonusDamage();
+	end
+	statFrame.bonusDamage = nil;
+	
+	local spellHealing = GetSpellBonusHealing();
+	if (spellHealing == minDamage) then
+		statFrame:Hide();
+		return;
+	end
+	
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_SPELLHEALING));
+	statFrame.tooltip = STAT_SPELLHEALING;
+	statFrame.tooltip2 = STAT_SPELLHEALING_TOOLTIP;
+	text:SetText(spellHealing);
+	statFrame.minModifier = spellHealing;
 	statFrame.unit = unit;
 	statFrame:SetScript("OnEnter", CharacterSpellBonusDamage_OnEnter);
 	statFrame:Show();
@@ -1424,8 +1457,6 @@ function PaperDollFrame_SetSpellCritChance(statFrame, unit)
 		minCrit = min(minCrit, spellCrit);
 		statFrame.spellCrit[i] = spellCrit;
 	end
-	-- Add agility contribution
-	--minCrit = minCrit + GetSpellCritChanceFromIntellect();
 	minCrit = format("%.2f%%", minCrit);
 	text:SetText(minCrit);
 	statFrame.minCrit = minCrit;
@@ -1838,10 +1869,24 @@ function PaperDollFrame_SetMastery(statFrame, unit)
 	statFrame:Show();
 end
 
+function PaperDollFrame_SetItemLevel(statFrame, unit)
+	if ( unit ~= "player" ) then
+		statFrame:Hide();
+		return;
+	end
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_AVERAGE_ITEM_LEVEL));
+	local text = _G[statFrame:GetName().."StatText"];
+	local avgItemLevel = GetAverageItemLevel();
+	avgItemLevel = floor(avgItemLevel);
+	text:SetText(avgItemLevel);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = STAT_AVERAGE_ITEM_LEVEL_TOOLTIP;
+end
+
 function CharacterSpellBonusDamage_OnEnter (self)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_SPELLPOWER).." "..self.minModifier..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, self.tooltip).." "..self.minModifier..FONT_COLOR_CODE_CLOSE);
 
 	for i=2, MAX_SPELL_SCHOOLS do
 		if (self.bonusDamage and self.bonusDamage[i] ~= self.minModifier) then
@@ -1850,9 +1895,9 @@ function CharacterSpellBonusDamage_OnEnter (self)
 		end
 	end
 	
-	GameTooltip:AddLine(STAT_SPELLPOWER_TOOLTIP);
+	GameTooltip:AddLine(self.tooltip2);
 	
-	if (self.unit == "player") then
+	if (self.bonusDamage and self.unit == "player") then
 		local petStr, damage;
 		if (self.bonusDamage[6] == self.minModifier and self.bonusDamage[3] == self.minModifier) then
 			petStr = PET_BONUS_TOOLTIP_WARLOCK_SPELLDMG;
@@ -1877,14 +1922,16 @@ end
 function CharacterSpellCritChance_OnEnter (self)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, COMBAT_RATING_NAME11).." "..GetCombatRating(11)..FONT_COLOR_CODE_CLOSE);
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, SPELL_CRIT_CHANCE).." "..self.minCrit..FONT_COLOR_CODE_CLOSE);
 	local spellCrit;
 	for i=2, MAX_SPELL_SCHOOLS do
-		spellCrit = format("%.2f", self.spellCrit[i]);
-		spellCrit = spellCrit.."%";
-		GameTooltip:AddDoubleLine(_G["DAMAGE_SCHOOL"..i], spellCrit, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GameTooltip:AddTexture("Interface\\PaperDollInfoFrame\\SpellSchoolIcon"..i);
+		spellCrit = format("%.2f%%", self.spellCrit[i]);
+		if (spellCrit ~= self.minCrit) then
+			GameTooltip:AddDoubleLine(_G["DAMAGE_SCHOOL"..i], spellCrit, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			GameTooltip:AddTexture("Interface\\PaperDollInfoFrame\\SpellSchoolIcon"..i);
+		end
 	end
+	GameTooltip:AddLine(format(CR_CRIT_SPELL_TOOLTIP, GetCombatRating(CR_CRIT_SPELL), GetCombatRatingBonus(CR_CRIT_SPELL)));
 	GameTooltip:Show();
 end
 
@@ -3233,7 +3280,6 @@ function GearManagerDialog_OnLoad (self)
 		button.text = _G["GearSetButton" .. i .. "Name"];
 		tinsert(self.buttons, button);
 	end
-	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("EQUIPMENT_SWAP_FINISHED");
 end
 
@@ -3268,10 +3314,6 @@ end
 function GearManagerDialog_OnEvent (self, event, ...)
 	if ( event == "EQUIPMENT_SETS_CHANGED" ) then
 		GearManagerDialog_Update();
-	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVarBool("equipmentManager") ) then
-			GearManagerToggleButton:Show();
-		end		
 	elseif ( event == "EQUIPMENT_SWAP_FINISHED" ) then
 		local completed, setName = ...;
 		if ( completed ) then

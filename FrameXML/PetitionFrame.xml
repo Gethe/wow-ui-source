@@ -309,7 +309,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="SignPetition"/>
+					<OnClick function="PetitionFrameSignButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="PetitionFrameRequestButton" inherits="UIPanelButtonTemplate" text="REQUEST_SIGNATURE">
@@ -386,6 +386,7 @@
 			</OnShow>
 			<OnHide>
 				PlaySound("igQuestListClose");
+				StaticPopup_Hide("CONFIRM_GUILD_CHARTER_SIGNATURE");
 				ClosePetition();
 			</OnHide>
 		</Scripts>
