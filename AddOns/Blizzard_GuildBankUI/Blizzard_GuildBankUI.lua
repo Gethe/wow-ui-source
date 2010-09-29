@@ -120,9 +120,10 @@ function GuildBankFrame_OnEvent(self, event, ...)
 		GuildBankFrame_UpdateTabs();
 		GuildBankFrame_Update();
 	elseif ( event == "GUILDBANK_UPDATE_TABS" or event == "GUILD_ROSTER_UPDATE" ) then
+		local tab = GetCurrentGuildBankTab();
 		if ( event == "GUILD_ROSTER_UPDATE" and not select(1, ...) and GuildBankFrame.noViewableTabs and GuildBankFrame.mode == "bank" ) then
 			-- if rank changed while at the bank tab and not having any viewable tabs, query for new item data 
-			QueryGuildBankTab(GetCurrentGuildBankTab());
+			QueryGuildBankTab(tab);
 		end
 		
 		GuildBankFrame_SelectAvailableTab();
@@ -130,7 +131,8 @@ function GuildBankFrame_OnEvent(self, event, ...)
 		if ( GuildBankFrameBuyInfo:IsShown() ) then
 			GuildBankFrame_UpdateTabBuyingInfo();
 		end
-		if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
+		local _, _, canView, canDeposit, numWithdrawals = GetGuildBankTabInfo(tab);
+		if ( canView and CanEditGuildTabInfo(GetCurrentGuildBankTab(tab)) ) then
 			GuildBankInfoSaveButton:Show();
 		else
 			GuildBankInfoSaveButton:Hide();

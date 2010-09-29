@@ -986,7 +986,7 @@ function SpellBookCompanionButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	end
 
-	if ( GameTooltip:SetHyperlink("spell:"..self.spellID) ) then
+	if ( GameTooltip:SetSpellByID(self.spellID) ) then
 		self.UpdateTooltip = CompanionButton_OnEnter;
 	else
 		self.UpdateTooltip = nil;

@@ -499,7 +499,7 @@ function UnitPopup_HideButtons ()
 		canCoop = 1;
 	end
 	
-	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE or dropdownMenu.which]) do
+	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
 		UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 1;
 		if ( value == "TRADE" ) then
 			if ( canCoop == 0 ) then
@@ -798,12 +798,12 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PVP_REPORT_AFK" ) then
-			if ( inBattleground == 0 or GetCVar("enablePVPNotifyAFK") == "0" ) then
+			if ( not IsInActiveWorldPVP() and (inBattleground == 0 or GetCVar("enablePVPNotifyAFK") == "0") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( dropdownMenu.unit ) then
 				if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				elseif ( not UnitInBattleground(dropdownMenu.unit) ) then
+				elseif ( not UnitInBattleground(dropdownMenu.unit) and not IsInActiveWorldPVP() ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				elseif ( (PlayerIsPVPInactive(dropdownMenu.unit)) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -832,7 +832,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PET_ABANDON" ) then
-			if( not PetCanBeAbandoned() ) then
+			if( not PetCanBeAbandoned() or not PetHasActionBar() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PET_DISMISS" ) then

@@ -760,7 +760,7 @@ function WorldStateScoreFrame_Update()
 					end
 					scoreButton.honorGained:SetText(bgRating);
 				else 
-					scoreButton.honorGained:SetText(honorGained);
+					scoreButton.honorGained:SetText(floor(honorGained));
 					scoreButton.honorableKills:SetText(honorableKills);
 					scoreButton.honorableKills:Show();
 				end

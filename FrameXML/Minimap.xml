@@ -260,6 +260,11 @@
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 								self:SetFrameLevel(self:GetFrameLevel()+1);
 								MiniMapBattlefieldFrame.timeInQueue = 0;
+								MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
+								MiniMapBattlefieldIcon:SetTexCoord(0, 1, 0, 1);
+								MiniMapBattlefieldIcon:SetWidth(32);
+								MiniMapBattlefieldIcon:SetHeight(32);
+								MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 0);
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");

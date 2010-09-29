@@ -822,7 +822,7 @@
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton1" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-20" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -831,7 +831,7 @@
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton2" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-20" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -840,7 +840,7 @@
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton3" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-20" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -849,7 +849,7 @@
                 <Anchors>
                     <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton4" relativePoint="RIGHT">
                         <Offset>
-                            <AbsDimension x="-20" y="0"/>
+                            <AbsDimension x="-15" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>

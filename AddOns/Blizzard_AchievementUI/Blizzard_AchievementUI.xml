@@ -3310,9 +3310,6 @@
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
-						self.text:SetPoint("CENTER", self, "CENTER", 0, -5);
-						AchievementFrameTab2.text:SetPoint("CENTER", AchievementFrameTab2, "CENTER", 0, -3);
-						AchievementFrameTab3.text:SetPoint("CENTER", AchievementFrameTab3, "CENTER", 0, -3);
 						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>
@@ -3328,9 +3325,6 @@
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
-						self.text:SetPoint("CENTER", self, "CENTER", 0, -5);
-						AchievementFrameTab1.text:SetPoint("CENTER", AchievementFrameTab1, "CENTER", 0, -3);
-						AchievementFrameTab3.text:SetPoint("CENTER", AchievementFrameTab3, "CENTER", 0, -3);
 						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>				
@@ -3346,9 +3340,6 @@
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
-						self.text:SetPoint("CENTER", self, "CENTER", 0, -5);
-						AchievementFrameTab1.text:SetPoint("CENTER", AchievementFrameTab1, "CENTER", 0, -3);
-						AchievementFrameTab2.text:SetPoint("CENTER", AchievementFrameTab2, "CENTER", 0, -3);
 						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>

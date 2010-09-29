@@ -183,7 +183,7 @@ function TradeSkillFrame_Update()
 		if ( skillIndex <= numTradeSkills ) then	
 		
 			--turn on the multiskill icon
-			if numSkillUps > 1 and skillType=="optimal" then
+			if not isTradeSkillGuild and numSkillUps > 1 and skillType=="optimal" then
 				skillButtonNumSkillUps:Show();
 				skillButtonNumSkillUpsIcon:Show();
 				skillButtonNumSkillUps:SetText(numSkillUps);

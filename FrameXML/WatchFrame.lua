@@ -806,7 +806,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local topEdge = 0;
 
 	local playerMoney = GetMoney();
-	if ( not WorldMapFrame:IsShown() ) then
+	if ( not WorldMapFrame or not WorldMapFrame:IsShown() ) then
 		-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
 		-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
 		-- open to a different zone.
@@ -830,7 +830,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 		if ( questIndex ) then
 			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
 			
-			if (GetSuperTrackedQuestID() == 0) then
+			if (WORLDMAP_SETTINGS and GetSuperTrackedQuestID() == 0) then
 				SetSuperTrackedQuestID(questID);
 				WORLDMAP_SETTINGS.selectedQuestId = questID;
 			end
@@ -989,7 +989,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	
 	WatchFrame_ReleaseUnusedQuestLines();
 
-	if ( WORLDMAP_SETTINGS.selectedQuestId ) then
+	if ( WORLDMAP_SETTINGS and WORLDMAP_SETTINGS.selectedQuestId ) then
 		QuestPOIUpdateIcons();
 		QuestPOI_SelectButtonByQuestId("WatchFrameLines", WORLDMAP_SETTINGS.selectedQuestId, true);	
 	end
@@ -1244,11 +1244,13 @@ end
 function WatchFrameItem_UpdateCooldown (self)
 	local itemCooldown = _G[self:GetName().."Cooldown"];
 	local start, duration, enable = GetQuestLogSpecialItemCooldown(self:GetID());
-	CooldownFrame_SetTimer(itemCooldown, start, duration, enable);
-	if ( duration > 0 and enable == 0 ) then
-		SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
-	else
-		SetItemButtonTextureVertexColor(self, 1, 1, 1);
+	if ( start ) then
+		CooldownFrame_SetTimer(itemCooldown, start, duration, enable);
+		if ( duration > 0 and enable == 0 ) then
+			SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
+		else
+			SetItemButtonTextureVertexColor(self, 1, 1, 1);
+		end
 	end
 end
 		

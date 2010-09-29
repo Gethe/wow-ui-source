@@ -315,6 +315,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 	info = UIDropDownMenu_CreateInfo();
 	info.text = BACKGROUND;
 	info.hasColorSwatch = 1;
+	info.notCheckable = 1;
 	info.r = r;
 	info.g = g;
 	info.b = b;
@@ -1940,13 +1941,13 @@ function FCFDock_SetPrimary(dock, chatFrame)
 	
 	chatFrame:SetScript("OnSizeChanged", function(self) FCFDock_OnPrimarySizeChanged(dock) end);
 	
-	FCFDock_AddChatFrame(dock, chatFrame, 1);
-	
 	if ( not FCFDock_GetSelectedWindow(dock) ) then
 		FCFDock_SelectWindow(dock, chatFrame);
 	end
 	
 	FCFDock_ForceReanchoring(dock);
+	
+	FCFDock_AddChatFrame(dock, chatFrame, 1);
 end
 
 function FCFDock_OnPrimarySizeChanged(dock)

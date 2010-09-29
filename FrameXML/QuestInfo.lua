@@ -54,8 +54,6 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material)
 		QuestInfoItemChooseText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoItemReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoSpellLearnText:SetTextColor(textColor[1], textColor[2], textColor[3]);		
-		QuestInfoHonorFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-		QuestInfoArenaPointsFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoXPFrameReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 	end
 	
@@ -313,8 +311,6 @@ function QuestInfo_ShowRewards()
 	local numQuestCurrencies;
 	local numQuestSpellRewards = 0;
 	local money;
-	local honor;
-	local arenaPoints;
 	local talents;
 	local skillName;
 	local skillPoints;
@@ -330,8 +326,6 @@ function QuestInfo_ShowRewards()
 			numQuestSpellRewards = 1;
 		end
 		money = GetQuestLogRewardMoney();
-		honor = GetQuestLogRewardHonor();
-		arenaPoints = GetQuestLogRewardArenaPoints();
 		talents = GetQuestLogRewardTalents();
 		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
 		xp = GetQuestLogRewardXP();
@@ -345,8 +339,6 @@ function QuestInfo_ShowRewards()
 			numQuestSpellRewards = 1;
 		end
 		money = GetRewardMoney();
-		honor = GetRewardHonor();
-		arenaPoints = GetRewardArenaPoints();
 		talents = GetRewardTalents();
 		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
 		xp = GetRewardXP();
@@ -354,7 +346,7 @@ function QuestInfo_ShowRewards()
 	end
 
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
-	if ( totalRewards == 0 and money == 0 and honor == 0 and arenaPoints == 0 and talents == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 ) then
+	if ( totalRewards == 0 and money == 0 and talents == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 ) then
 		QuestInfoRewardsFrame:Hide();
 		return nil;
 	end
@@ -365,8 +357,6 @@ function QuestInfo_ShowRewards()
 	end
 	-- Hide non-icon rewards (for now)
 	QuestInfoMoneyFrame:Hide();
-	QuestInfoHonorFrame:Hide();
-	QuestInfoArenaPointsFrame:Hide();	
 	QuestInfoTalentFrame:Hide();
 	QuestInfoSkillPointFrame:Hide();
 	QuestInfoXPFrame:Hide();
@@ -466,7 +456,7 @@ function QuestInfo_ShowRewards()
 	end
 	
 	-- Setup mandatory rewards
-	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or honor > 0 or arenaPoints > 0 or talents > 0 or xp > 0 or playerTitle ) then
+	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or talents > 0 or xp > 0 or playerTitle ) then
 		questItemReceiveText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 3, -5);
 		questItemReceiveText:Show();		
 		lastFrame = questItemReceiveText;
@@ -477,10 +467,6 @@ function QuestInfo_ShowRewards()
 		end
 		-- XP rewards
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoXPFrame", xp, "Points", lastFrame);		
-		-- Honor rewards
-		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoHonorFrame", honor, "Points", lastFrame);
-		-- Arena point rewards
-		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoArenaPointsFrame", arenaPoints, "Points", lastFrame);		
 		-- Talent rewards
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoTalentFrame", talents, "Points", lastFrame);
 		if (QuestInfoTalentFrame:IsShown()) then

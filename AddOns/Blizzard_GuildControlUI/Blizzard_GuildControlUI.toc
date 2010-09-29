@@ -3,3 +3,4 @@
 ## Secure: 1
 ## LoadOnDemand: 1
 Blizzard_GuildControlUI.xml
+Localization.lua

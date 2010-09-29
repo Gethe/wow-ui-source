@@ -245,8 +245,8 @@
 												</Anchor>
 											</Anchors>
 										</FontString>
-										<Texture name="$parentHonorSymbol" file="Interface\PVPFrame\PVP-Currency-Horde" parentKey="honorSymbol">
-											<Size x="32" y="32"/>
+										<Texture name="$parentHonorSymbol" parentKey="honorSymbol">
+											<Size x="48" y="48"/>
 											<Anchors>
 												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
 													<Offset>
@@ -256,7 +256,7 @@
 											</Anchors>
 										</Texture>
 										<FontString name="$parentHonorAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="honorAmount">
-											<Size x="65" y="12"/>
+											<Size x="55" y="12"/>
 											<Anchors>
 												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT">
 													<Offset>
@@ -265,8 +265,8 @@
 												</Anchor>
 											</Anchors>
 										</FontString>
-										<Texture name="$parentArenaSymbol" file="Interface\PVPFrame\PVP-ArenaPoints-Icon" parentKey="arenaSymbol">
-											<Size x="32" y="32"/>
+										<Texture name="$parentArenaSymbol" parentKey="arenaSymbol">
+											<Size x="48" y="48"/>
 											<Anchors>
 												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT">
 													<Offset>
@@ -316,8 +316,8 @@
 												</Anchor>
 											</Anchors>
 										</FontString>
-										<Texture name="$parentHonorSymbol" file="Interface\PVPFrame\PVP-Currency-Horde" parentKey="honorSymbol">
-											<Size x="32" y="32"/>
+										<Texture name="$parentHonorSymbol" parentKey="honorSymbol">
+											<Size x="48" y="48"/>
 											<Anchors>
 												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
 													<Offset>
@@ -327,7 +327,7 @@
 											</Anchors>
 										</Texture>
 										<FontString name="$parentHonorAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="honorAmount">
-											<Size x="65" y="12"/>
+											<Size x="55" y="12"/>
 											<Anchors>
 												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT">
 													<Offset>
@@ -336,8 +336,8 @@
 												</Anchor>
 											</Anchors>
 										</FontString>
-										<Texture name="$parentArenaSymbol" file="Interface\PVPFrame\PVP-ArenaPoints-Icon" parentKey="arenaSymbol">
-											<Size x="32" y="32"/>
+										<Texture name="$parentArenaSymbol" parentKey="arenaSymbol">
+											<Size x="48" y="48"/>
 											<Anchors>
 												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT">
 													<Offset>
@@ -369,22 +369,20 @@
 	<Frame name="PVPFrame" inherits="ButtonFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString name="$parentTypeLable" inherits="GameFontNormal" text="BATTLEGROUNDS">
+				<FontString name="$parentTypeLabel" inherits="GameFontNormal" text="BATTLEGROUNDS" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-180" y="-38"/>
 					</Anchors>
 				</FontString>
 				<Texture  name="$parentTypeIcon">
-					<Size>
-						<AbsDimension x="24" y="24"/>
-					</Size>
+					<Size x="48" y="48"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTypeLable" relativePoint="RIGHT" x="4"/>
+						<Anchor point="LEFT" relativeTo="$parentTypeLabel" relativePoint="RIGHT" x="-2"/>
 					</Anchors>	
 				</Texture>
 				<FontString name="$parentTypeValue" inherits="GameFontHighlight" text="0">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTypeIcon" relativePoint="RIGHT" x="10"/>
+						<Anchor point="LEFT" relativeTo="$parentTypeIcon" relativePoint="RIGHT" x="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -757,7 +755,7 @@
 						</FontString>
 						<FontString name="$parentDescription" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" parentKey="description" text="PVP_ARENA_EXPLANATION">
 							<Size>
-								<AbsDimension x="290" y="50"/>
+								<AbsDimension x="290" y="0"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
@@ -769,9 +767,9 @@
 						</FontString>
 						<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="0" y="-27"/>
+										<AbsDimension x="0" y="-85"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -841,8 +839,8 @@
 										<Anchor point="RIGHT"  x="-25" y="0"/>
 									</Anchors>
 								</FontString>
-								<Texture name="$parentArenaSymbol" file="Interface\PVPFrame\PVP-ArenaPoints-Icon" parentKey="arenaSymbol">
-									<Size x="32" y="32"/>
+								<Texture name="$parentArenaSymbol" parentKey="arenaSymbol">
+									<Size x="48" y="48"/>
 									<Anchors>
 										<Anchor point="RIGHT" relativeTo="$parentArenaAmount" relativePoint="LEFT" x="-5" y="0"/>
 									</Anchors>

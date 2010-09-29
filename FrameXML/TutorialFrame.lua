@@ -48,11 +48,11 @@ local TUTORIAL_QUEST_ARRAY = {
 	["HUMANWARLOCK"] = {questID = 28765, displayNPC = 197, killCreature = 49871},
 	["HUMANWARRIOR"] = {questID = 28766, displayNPC = 197, killCreature = 49871},
 	["DWARF"] = {questID = 24469, displayNPC = 37081, killCreature = 37070},
-	["NIGHTELF"] = {questID = 456, displayNPC = 2079, killCreature = 2031},
+	["NIGHTELF"] = {questID = 28713, displayNPC = 2079, killCreature = 2031},
 	["GNOME"] = {questID = 27670, displayNPC = 45966, killCreature = 46363},
 	["ORC"] = {questID = 25126, displayNPC = 3143, killCreature = 3098, showReminder = true},
 	["SCOURGE"] = {questID = 26799, displayNPC = 1568, killCreature = 1501, showReminder = true},
-	["TAUREN"] = {questID = 14452, displayNPC = 9937, killCreature = 36943, showReminder = true},
+	["TAUREN"] = {questID = 14452, displayNPC = 2980, killCreature = 36943, showReminder = true},
 	["TROLLDRUID"] = {questID = 24765, displayNPC = 38243, killCreature = 38038, showReminder = true},
 	["TROLLHUNTER"] = {questID = 24777, displayNPC = 38247, killCreature = 38038, showReminder = true},
 	["TROLLMAGE"] = {questID = 24751, displayNPC = 38246, killCreature = 38038, showReminder = true},
@@ -67,7 +67,7 @@ local TUTORIAL_QUEST_ARRAY = {
 	["WORGEN"] = nil,
 	["GOBLIN"] = nil,
 };
-CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY["HUMAN"];
+CURRENT_TUTORIAL_QUEST_INFO = nil;
 
 
 local DISPLAY_DATA = {
@@ -804,8 +804,8 @@ function TutorialFrame_Update(currentTutorial)
 	
 	local displayNPC, killCreature;
 	if ( CURRENT_TUTORIAL_QUEST_INFO ) then
-		local displayNPC = CURRENT_TUTORIAL_QUEST_INFO.displayNPC;
-		local killCreature = CURRENT_TUTORIAL_QUEST_INFO.killCreature;
+		displayNPC = CURRENT_TUTORIAL_QUEST_INFO.displayNPC;
+		killCreature = CURRENT_TUTORIAL_QUEST_INFO.killCreature;
 	end
 	if (displayData.displayNPC and displayNPC) then
 		TutorialNPCModel:SetCreature(displayNPC);
@@ -947,6 +947,7 @@ function TutorialFrame_ClearTextures()
 	TutorialFrameBottom:ClearAllPoints();
 	TutorialFrameTextScrollFrame:ClearAllPoints();
 	TutorialFrameText:SetFontObject(GameFontNormal);
+	TutorialFrameText:SetText("");
 	TutorialFrameBackground:SetAlpha(1.0);
 
 	TutorialNPCModel:Hide();

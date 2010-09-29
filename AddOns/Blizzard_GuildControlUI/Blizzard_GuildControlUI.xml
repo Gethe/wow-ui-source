@@ -238,7 +238,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true"/>
+							<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true" parentKey="mask"/>
 						</Frames>
 						<Scripts>
 							<OnTextChanged>
@@ -461,10 +461,8 @@
 									<Anchor point="BOTTOMRIGHT" x="-24" y="8"/>
 								</Anchors>
 								<ScrollChild>
-									<Frame name="GuildControlBankTab1" inherits="BankTabPermissionTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="0" y="0"/>
-										</Anchors>
+									<Frame>
+										<Size x="10" y="10"/>
 									</Frame>
 								</ScrollChild>
 							</ScrollFrame>
@@ -659,7 +657,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true"/>
+							<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true" parentKey="mask"/>
 						</Frames>
 						<Scripts>
 							<OnEditFocusGained>

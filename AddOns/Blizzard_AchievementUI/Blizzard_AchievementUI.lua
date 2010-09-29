@@ -106,7 +106,7 @@ function AchievementFrame_OnLoad (self)
 	PanelTemplates_SetNumTabs(self, 3);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
-	
+
 	AchievementFrameSummary.forceOnShow = AchievementFrameSummary_OnShow;
 	AchievementFrameAchievements.forceOnShow = AchievementFrameAchievements_OnShow;
 end
@@ -145,6 +145,19 @@ function AchievementFrame_SetTabs()
 	else
 		AchievementFrameTab2:Show();
 		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab2, "RIGHT", -5, 0);
+	end
+end
+
+function AchievementFrame_UpdateTabs(clickedTab)
+	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..clickedTab], AchievementFrame);
+	local tab;
+	for i = 1, 3 do
+		tab = _G["AchievementFrameTab"..i];
+		if ( i == clickedTab ) then
+			tab.text:SetPoint("CENTER", 0, -5);
+		else
+			tab.text:SetPoint("CENTER", 0, -3);
+		end
 	end
 end
 
@@ -189,7 +202,7 @@ function AchievementFrame_ToggleView()
 end
 
 function AchievementFrameBaseTab_OnClick (id)
-	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..id], AchievementFrame);
+	AchievementFrame_UpdateTabs(id);
 	
 	local isSummary = false;
 	local swappedView = false;
@@ -268,7 +281,7 @@ function AchievementFrameComparisonTab_OnClick (id)
 	AchievementFrameCategoriesBG:SetTexCoord(0, 0.5, 0, 1);
 	AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 	AchievementFrameCategories_Update();
-	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..id], AchievementFrame);
+	AchievementFrame_UpdateTabs(id);
 	
 	achievementFunctions.updateFunc();
 end

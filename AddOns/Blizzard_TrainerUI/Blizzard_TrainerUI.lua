@@ -13,9 +13,6 @@ TRAINER_FILTER_UNAVAILABLE = 1;
 TRAINER_FILTER_USED = 0;
 
 
-TRADESKILL_SERVICE_STEP_LUA = 1;
-
-
 UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0};
 
 StaticPopupDialogs["CONFIRM_PROFESSION"] = {
@@ -103,35 +100,35 @@ function ClassTrainerFrame_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local displayHeight = CLASS_TRAINER_SCROLL_HEIGHT;
+	local buttonSize = CLASS_TRAINER_SKILL_BARBUTTON_WIDTH;
 	
 	
-	local _, _, _, _, _, topServiceLine = GetTrainerServiceInfo(1);
-	local tradeSkillDisplay = (topServiceLine == TRADESKILL_SERVICE_STEP_LUA) and isTradeSkill and numTrainerServices >  CLASS_TRAINER_SKILLS_DISPLAYED;
-	if tradeSkillDisplay then
-		ClassTrainerFrame.tradeSkillDisplay = true;
+	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
+	if tradeSkillStepIndex then
 		scrollFrame:ClearAllPoints();
 		scrollFrame:SetPoint("TOPLEFT", ClassTrainerFrame.bottomInset, "TOPLEFT", 5, -5);
 		displayHeight = CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5;
 		scrollFrame:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5);
 		ClassTrainerFrame.bottomInset:Show();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "TOPRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_ATTIC_OFFSET-47);
-		ClassTrainerFrame_SetServiceButton( ClassTrainerFrame.skillStepButton, 1, playerMoney, selected, isTradeSkill ); -- 1 will be the next skill step
-		offset = offset + 1;
+		ClassTrainerFrame_SetServiceButton( ClassTrainerFrame.skillStepButton, tradeSkillStepIndex, playerMoney, selected, isTradeSkill );
+		if numTrainerServices <=  CLASS_TRAINER_SKILLS_DISPLAYED-1 then
+			buttonSize = CLASS_TRAINER_SKILL_BUTTON_WIDTH;
+		end
 	else
-		ClassTrainerFrame.tradeSkillDisplay = false;
 		scrollFrame:ClearAllPoints();
 		scrollFrame:SetPoint("TOPLEFT", ClassTrainerFrame.Inset, "TOPLEFT", 5, -5);
 		scrollFrame:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT);
 		ClassTrainerFrame.bottomInset:Hide();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
 		ClassTrainerFrame.skillStepButton:Hide();
+		if numTrainerServices <=  CLASS_TRAINER_SKILLS_DISPLAYED then
+			buttonSize = CLASS_TRAINER_SKILL_BUTTON_WIDTH;
+		end
 	end
 
 
-	local buttonSize = CLASS_TRAINER_SKILL_BARBUTTON_WIDTH;
-	if numTrainerServices <=  CLASS_TRAINER_SKILLS_DISPLAYED then
-		buttonSize = CLASS_TRAINER_SKILL_BUTTON_WIDTH;
-	end
+
 	scrollFrame:SetWidth(buttonSize+2);
 
 	-- Fill in the skill buttons
@@ -146,9 +143,7 @@ function ClassTrainerFrame_Update()
 		end
 	end
 	
-	if (tradeSkillDisplay) then
-		numTrainerServices = numTrainerServices -1;
-	end
+
 	local totalHeight = CLASS_TRAINER_SKILL_HEIGHT * numTrainerServices ;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayHeight);
 end
@@ -221,6 +216,7 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 		skillButton.money:Hide();
 	else
 		requirements = "";
+		skillButton.money:Show();
 	end
 	skillButton.name:SetText(serviceName);
 	skillButton.subText:SetText(requirements);
@@ -296,11 +292,7 @@ function ClassTrainer_SelectNearestLearnableSkill()
 		ClassTrainer_SetSelection( ClassTrainerFrame.selectedService);
 		local offset = HybridScrollFrame_GetOffset(ClassTrainerFrame.scrollFrame);
 		if ClassTrainerFrame.selectedService > offset + CLASS_TRAINER_SKILLS_DISPLAYED then
-			if ClassTrainerFrame.tradeSkillDisplay then
-				ClassTrainerFrame.scrollFrame.scrollBar:SetValue( (ClassTrainerFrame.selectedService-2)*CLASS_TRAINER_SKILL_HEIGHT);
-			else
-				ClassTrainerFrame.scrollFrame.scrollBar:SetValue( (ClassTrainerFrame.selectedService-1)*CLASS_TRAINER_SKILL_HEIGHT);
-			end
+			ClassTrainerFrame.scrollFrame.scrollBar:SetValue( (ClassTrainerFrame.selectedService-1)*CLASS_TRAINER_SKILL_HEIGHT);
 		end
 		ClassTrainerFrame_Update();
 	end

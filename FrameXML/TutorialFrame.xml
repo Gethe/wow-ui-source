@@ -246,7 +246,7 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<PlayerModel name="TutorialNPCModel" hidden="true">
-				<Size x="200" y="220"/>
+				<Size x="300" y="220"/>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-35"/>
 				</Anchors>

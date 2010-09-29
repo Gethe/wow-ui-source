@@ -77,11 +77,11 @@ function TokenFrame_Update()
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
-	local name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon, itemID;
+	local name, isHeader, isExpanded, isUnused, isWatched, count, icon;
 	local button, index;
 	for i=1, numButtons do
 		index = offset+i;
-		name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon, itemID = GetCurrencyListInfo(index);
+		name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
 
 		button = buttons[i];
 		button.check:Hide();
@@ -114,23 +114,7 @@ function TokenFrame_Update()
 				button.categoryMiddle:Hide();
 				button.expandIcon:Hide();
 				button.count:SetText(count);
-				button.extraCurrencyType = extraCurrencyType;
-				if ( extraCurrencyType == 1 ) then	--Arena points
-					button.icon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-					button.icon:SetTexCoord(0, 1, 0, 1);
-				elseif ( extraCurrencyType == 2 ) then --Honor points
-					local factionGroup = UnitFactionGroup("player");
-					if ( factionGroup ) then
-						button.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-						button.icon:SetTexCoord( 0.03125, 0.59375, 0.03125, 0.59375 );
-					else
-						button.icon:Hide() --We don't know their faction yet!
-						button.icon:SetTexCoord(0, 1, 0, 1);
-					end
-				else
-					button.icon:SetTexture(icon);
-					button.icon:SetTexCoord(0, 1, 0, 1);
-				end
+				button.icon:SetTexture(icon);
 				if ( isWatched ) then
 					button.check:Show();
 				end
@@ -188,28 +172,13 @@ end
 
 function BackpackTokenFrame_Update()
 	local watchButton;
-	local name, count, extraCurrencyType, icon;
+	local name, count, icon;
 	for i=1, MAX_WATCHED_TOKENS do
-		name, count, extraCurrencyType, icon, itemID = GetBackpackCurrencyInfo(i);
+		name, count, icon, itemID = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
 		if ( name ) then
 			watchButton = _G["BackpackTokenFrameToken"..i];
-			watchButton.extraCurrencyType = extraCurrencyType;
-			if ( extraCurrencyType == 1 ) then	--Arena points
-				watchButton.icon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-				watchButton.icon:SetTexCoord(0, 1, 0, 1);
-			elseif ( extraCurrencyType == 2 ) then --Honor points
-				local factionGroup = UnitFactionGroup("player");
-				if ( factionGroup ) then
-					watchButton.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-					watchButton.icon:SetTexCoord( 0.03125, 0.59375, 0.03125, 0.59375 );
-				else
-					watchButton.icon:SetTexCoord(0, 1, 0, 1);
-				end
-			else
-				watchButton.icon:SetTexture(icon);
-				watchButton.icon:SetTexCoord(0, 1, 0, 1);
-			end
+			watchButton.icon:SetTexture(icon);
 			if ( count <= 99999 ) then
 				watchButton.count:SetText(count);
 			else

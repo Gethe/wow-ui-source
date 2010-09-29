@@ -25,10 +25,7 @@ function GuildControlUI_OnLoad(self)
 	self.currentRank = 2;
 	GuildControlSetRank(2);
 	GuildControlUINavigationDropDown_OnSelect(nil, 1, GUILDCONTROL_GUILDRANKS);
-	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GUILDBANK_UPDATE_TABS");
-	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
-	self:RegisterEvent("GUILDBANK_UPDATE_WITHDRAWMONEY");
 end
 
 
@@ -108,8 +105,13 @@ function GuildControlUI_BankTabPermissions_Update(self)
 		local button = _G["GuildControlBankTab"..i];
 		if ( not button ) then
 			button = CreateFrame("Frame", "GuildControlBankTab"..i, scrollFrame:GetScrollChild(), "BankTabPermissionTemplate");
-			local prevButton = _G["GuildControlBankTab"..(i - 1)];
-			button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, -BANK_TAB_OFFSET);
+			GuildControlUI_LocalizeBankTab(button);
+			if ( i == 1 ) then
+				button:SetPoint("TOPLEFT", 0, 0);
+			else
+				local prevButton = _G["GuildControlBankTab"..(i - 1)];
+				button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, -BANK_TAB_OFFSET);
+			end
 		end
 		button:SetWidth(buttonWidth);
 		local index = i;
@@ -134,18 +136,37 @@ function GuildControlUI_BankTabPermissions_Update(self)
 			local name, icon = GetGuildBankTabInfo(index);												-- returns info and permissions for player's rank
 			local isViewable, canDeposit, editText, numWithdrawals = GetGuildBankTabPermissions(index);	-- returns permissions for the selected rank
 			button:Show();
-			button.owned.tabName:SetText(name);	
-			button.owned.tabIcon:SetTexture(icon);
-			button.owned.viewCB:SetChecked(isViewable);
-			button.owned.infoCB:SetChecked(editText);
-			button.owned.depositCB:SetChecked(canDeposit);
-			-- do not update text if the user is typing
-			if ( button.owned.editBox:HasFocus() ) then
-				button.owned.editBox.startValue = numWithdrawals;
+			local ownedTab = button.owned;
+			ownedTab.tabName:SetText(name);	
+			ownedTab.tabIcon:SetTexture(icon);
+			ownedTab.viewCB:SetChecked(isViewable);
+			ownedTab.infoCB:SetChecked(editText);
+			ownedTab.depositCB:SetChecked(canDeposit);
+			if ( isViewable ) then
+				ownedTab.infoCB:Enable();
+				ownedTab.infoCB.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				ownedTab.depositCB:Enable();
+				ownedTab.depositCB.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				ownedTab.editBox.mask:Hide();
+				-- do not update text if the user is typing
+				if ( ownedTab.editBox:HasFocus() ) then
+					ownedTab.editBox.startValue = numWithdrawals;
+				else
+					ownedTab.editBox:SetText(numWithdrawals);
+					ownedTab.editBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
 			else
-				button.owned.editBox:SetText(numWithdrawals);
+				ownedTab.infoCB:Disable();
+				ownedTab.infoCB.text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				ownedTab.depositCB:Disable();
+				ownedTab.depositCB.text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				if ( ownedTab.editBox:HasFocus() ) then
+					ownedTab.editBox:ClearFocus();
+				end
+				ownedTab.editBox.mask:Show();
+				ownedTab.editBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			end
-			button.owned:Show();		
+			ownedTab:Show();
 			button.buy:Hide();
 		end
 	end
@@ -164,11 +185,23 @@ function GuildControlUI_RankPermissions_Update(self)
 			checkbox:SetChecked(flags[i]);
 		end
 	end
-	-- do not update text if the user is typing
-	if ( self.goldBox:HasFocus() ) then
-		self.goldBox.startValue = GetGuildBankWithdrawGoldLimit();
+	
+	-- enable the gold/day editbox if at least one of Guild Bank Repair and Withdraw Gold are unchecked
+	if ( flags[15] or flags[16] ) then
+		self.goldBox.mask:Hide();
+		-- do not update text if the user is typing
+		if ( self.goldBox:HasFocus() ) then
+			self.goldBox.startValue = GetGuildBankWithdrawGoldLimit();
+		else
+			self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
+			self.goldBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		end
 	else
-		self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
+		if ( self.goldBox:HasFocus() ) then
+			self.goldBox:ClearFocus();
+		end	
+		self.goldBox.mask:Show();
+		self.goldBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
 	
 	-- disable the Authenticate checkbox for the last rank or if a rank has members
@@ -185,7 +218,9 @@ function GuildControlUI_RankPermissions_Update(self)
 		checkbox.text:SetFontObject("GameFontHighlightSmall");
 		checkbox:Enable();
 		checkbox.tooltipFrame.tooltip = nil;
-	end	
+	end
+	
+	
 end
 
 

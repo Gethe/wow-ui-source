@@ -234,9 +234,8 @@ end
 
 function MerchantFrame_UpdateAltCurrency(index, i)
 	local itemTexture, itemValue, button;
-	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
+	local itemCount = GetMerchantItemCostInfo(index);
 	local frameName = "MerchantItem"..i.."AltCurrencyFrame";
-	local frameAnchor = AltCurrencyFrame_PointsUpdate( frameName, honorPoints, arenaPoints );
 
 	-- update Alt Currency Frame with itemValues
 	if ( itemCount > 0 ) then
@@ -252,10 +251,6 @@ function MerchantFrame_UpdateAltCurrency(index, i)
 
 			if ( i > 1 ) then
 				button:SetPoint("LEFT", frameName.."Item"..i-1, "RIGHT", 4, 0);
-			elseif ( i == 1 and ( arenaPoints and honorPoints == 0 ) ) then
-				button:SetPoint("LEFT", frameAnchor, "LEFT", 0, 0);	
-			else
-				button:SetPoint("LEFT", frameAnchor, "RIGHT", 4, 0);
 			end
 			if ( not itemTexture ) then
 				button:Hide();
@@ -457,34 +452,19 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 	local index = itemButton:GetID();
 	local itemTexture, itemLink, itemsString;
 	local pointsTexture, button;
-	local honorPoints, arenaPoints, itemCount = GetMerchantItemCostInfo(index);
-	if ( (honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) ) then
+	local itemCount = GetMerchantItemCostInfo(index);
+	if ( (itemCount == 0) ) then
 		BuyMerchantItem( itemButton:GetID(), quantity );
 		return;
 	end
 	
 	local count = itemButton.count or 1;
-	honorPoints, arenaPoints, itemCount = (honorPoints or 0) * quantity, (arenaPoints or 0) * quantity, (itemCount or 0) * quantity;
-	
-	if ( honorPoints and honorPoints ~= 0 ) then
-		local factionGroup = UnitFactionGroup("player");
-		if ( factionGroup ) then	
-			pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
-			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" .. format(MERCHANT_HONOR_POINTS, honorPoints);
-		end
-	end
-	if ( arenaPoints and arenaPoints ~= 0 ) then
-		if ( itemsString ) then
-			-- adding an extra space here because it looks nicer
-			itemsString = itemsString .. "  |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. format(MERCHANT_ARENA_POINTS, arenaPoints);
-		else
-			itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. format(MERCHANT_ARENA_POINTS, arenaPoints);
-		end
-	end
+	itemCount = (itemCount or 0) * quantity;
 	
 	local maxQuality = 0;
+	local usingCurrency = false;
 	for i=1, MAX_ITEM_COST, 1 do
-		itemTexture, itemCount, itemLink = GetMerchantItemCostItem(index, i);
+		itemTexture, itemCount, itemLink, currencyName = GetMerchantItemCostItem(index, i);
 		if ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
@@ -493,10 +473,17 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 			else
 				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
 			end
+		elseif ( currencyName ) then
+			usingCurrency = true;
+			if ( itemsString ) then
+				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(ITEM_QUANTITY_TEMPLATE, itemCount, currencyName);
+			else
+				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(ITEM_QUANTITY_TEMPLATE, itemCount, currencyName);
+			end
 		end
 	end
 	
-	if ( honorPoints == 0 and arenaPoints == 0 and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
+	if ( not usingCurrency and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
 		BuyMerchantItem( itemButton:GetID(), quantity );
 		return;
 	end

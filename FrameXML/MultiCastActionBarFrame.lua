@@ -309,7 +309,7 @@ function MultiCastActionBarFrame_Update(self)
 	local pageOffset;
 	local actionId;
 	for i = 1, NUM_MULTI_CAST_BUTTONS_PER_PAGE do
-		slot = TOTEM_PRIORITIES[i];
+		slot = SHAMAN_TOTEM_PRIORITIES[i];
 		if ( GetTotemInfo(slot) and GetMultiCastTotemSpells(slot) ) then
 			-- update the slot button
 			slotButton = _G["MultiCastSlotButton"..slotIndex];
