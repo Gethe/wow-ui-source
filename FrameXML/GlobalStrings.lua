@@ -6576,6 +6576,7 @@ RECOVER_CORPSE_TIMER = "%d %s until resurrection";
 RED_GEM = "Red";
 REFLECT = "Reflect";
 REFORGE = "Reforge";
+REFORGED = "Reforged";
 REFORGE_CURRENT = "Current";
 REFORGE_DESCRIPTION = "Reforging allows you to shift stats on a weapon or piece of armor that is level 200 or higher.";
 REFORGE_MISSING_ITEM = "Drag an item here to Reforge it.";

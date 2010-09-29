@@ -237,11 +237,7 @@
 							</OnReceiveDrag>
 						</Scripts>
 					</Button>
-					<Button name="$parentInvisibleButton" parentKey="invisButton">
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT"/>
-						</Anchors>
+					<Button name="$parentInvisibleButton" setAllPoints="true" parentKey="invisButton">
 						<Frames>
 							<Frame name="$parentFinishedGlow" setAllPoints="true" parentKey="glow">
 								<Layers>
@@ -252,6 +248,13 @@
 											<Anchors>
 												<Anchor point="CENTER" y="-1"/>
 											</Anchors>
+										</Texture>
+										<Texture name="$parentFinishedFlare" file="Interface\Reforging\Reforging-Flare" alpha="0.5" alphaMode="ADD">
+											<Size x="350" y="350"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-63"/>
+											</Anchors>
+											<Color r="0.4" g="0.3" b="0.1"/>
 										</Texture>
 									</Layer>
 								</Layers>

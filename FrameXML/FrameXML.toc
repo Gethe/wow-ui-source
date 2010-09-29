@@ -86,7 +86,6 @@ PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
 CharacterFrame.xml
-EquipmentManager.lua
 PaperDollFrame.xml
 PetPaperDollFrame.xml
 ReputationFrame.xml

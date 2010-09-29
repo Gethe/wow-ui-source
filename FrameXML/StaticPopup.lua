@@ -1890,7 +1890,7 @@ StaticPopupDialogs["ADD_MUTE"] = {
 };
 StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 	text = ADD_TEAMMEMBER_LABEL,
-	button1 = ACCEPT,
+	button1 = INVITE,
 	button2 = CANCEL,
 	hasEditBox = 1,
 	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,

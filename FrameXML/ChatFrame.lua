@@ -4191,20 +4191,15 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	if(strsub(target, 1, 2) == "|K") then
 		target, msg = BNTokenCombineGivenAndSurname(target);
 	else
-		local results = {};
 		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
 		while ( strfind(target, "%s") ) do
 			--Pull off everything after the last space.
 			target = strmatch(target, "(.+)%s+[^%s]*");
-			results = {GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true)};
-			if(#results > 0) then
+			if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) ) then
 				break;
 			end
 		end
 		msg = strsub(msg, strlen(target) + 2);
-		if(#results == 1) then
-			target = results[1];
-		end
 	end
 	
 	editBox:SetAttribute("tellTarget", target);

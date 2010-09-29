@@ -13,6 +13,11 @@ end
 
 function TotemFrame_Update()
 	local _, class = UnitClass("player");
+	local priorities = STANDARD_TOTEM_PRIORITIES;
+	if (class == "SHAMAN") then
+		priorities = SHAMAN_TOTEM_PRIORITIES;
+	end
+	
 	if ( PetFrame and PetFrame:IsShown() ) then
 		if ( class == "DEATHKNIGHT" ) then
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
@@ -47,7 +52,7 @@ function TotemFrame_Update()
 	local buttonIndex = 1;
 	TotemFrame.activeTotems = 0;
 	for i=1, MAX_TOTEMS do
-		slot = TOTEM_PRIORITIES[i];
+		slot = priorities[i];
 		haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
 		if ( haveTotem ) then
 			button = _G["TotemFrameTotem"..buttonIndex];

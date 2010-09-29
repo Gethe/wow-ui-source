@@ -369,7 +369,7 @@
 	<Frame name="PVPFrame" inherits="ButtonFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString name="$parentTypeLable" inherits="GameFontNormal" text="BATTLEGROUNDS" justifyH="RIGHT">
+				<FontString name="$parentTypeLabel" inherits="GameFontNormal" text="BATTLEGROUNDS" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-180" y="-38"/>
 					</Anchors>
@@ -377,7 +377,7 @@
 				<Texture  name="$parentTypeIcon">
 					<Size x="48" y="48"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTypeLable" relativePoint="RIGHT" x="-2"/>
+						<Anchor point="LEFT" relativeTo="$parentTypeLabel" relativePoint="RIGHT" x="-2"/>
 					</Anchors>	
 				</Texture>
 				<FontString name="$parentTypeValue" inherits="GameFontHighlight" text="0">

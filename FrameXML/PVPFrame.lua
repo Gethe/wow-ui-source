@@ -97,7 +97,9 @@ function PVPFrame_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
 	if (self.lastSelectedTab) then
-		PVPFrame_TabClicked(self.lastSelectedTab);	
+		PVPFrame_TabClicked(self.lastSelectedTab);
+	else
+		PVPFrame_TabClicked(PVPFrameTab1);
 	end
 	RequestRatedBattlegroundInfo();
 	RequestPVPOptionsEnabled();
@@ -118,7 +120,7 @@ function PVPFrame_OnLoad(self)
 	
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	
+	self:RegisterEvent("UNIT_LEVEL");
 	
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
@@ -286,17 +288,22 @@ function PVPFrame_OnEvent(self, event, ...)
 		else
 			PVPHonorFrameWarGameButton:Show();
 		end
+	elseif ( event == "UNIT_LEVEL" ) then
+		local unit = ...;
+		if ( unit == "player" and UnitLevel(unit) == SHOW_CONQUEST_LEVEL ) then
+			if ( PVPFrameTab2:IsShown() ) then
+				PVPFrame_TabClicked(PVPFrameTab2);
+			elseif ( PVPFrameTab3:IsShown() ) then
+				PVPFrame_TabClicked(PVPFrameTab3);
+			end
+		end
 	end
 end
 
 
 
-function PVPFrame_UpdateCurrency(self, value)
-	local currency = 0;
-	
-	if value then
-		currency = value
-	elseif self.lastSelectedTab then
+function PVPFrame_UpdateCurrency(self, currency)
+	if ( not currency and self.lastSelectedTab ) then
 		local index = self.lastSelectedTab:GetID()	
 		if index == 1 then -- Honor Page	
 			_, currency = GetCurrencyInfo(HONOR_CURRENCY);
@@ -305,15 +312,22 @@ function PVPFrame_UpdateCurrency(self, value)
 		elseif index == 3 then -- Arena Management
 			_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 		end
-	else
-		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 	end
 	
-	local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
-	PVPFrameConquestBar:SetMinMaxValues(0, maxPointsThisWeek);
-	PVPFrameConquestBar:SetValue(pointsThisWeek);
-	PVPFrameConquestBar.pointText:SetText(pointsThisWeek.."/"..maxPointsThisWeek);
-	PVPFrameTypeValue:SetText(currency);
+	if ( currency ) then
+		local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
+		PVPFrameConquestBar:SetMinMaxValues(0, maxPointsThisWeek);
+		PVPFrameConquestBar:SetValue(pointsThisWeek);
+		PVPFrameConquestBar.pointText:SetText(pointsThisWeek.."/"..maxPointsThisWeek);
+		PVPFrameTypeValue:SetText(currency);
+		PVPFrameTypeLabel:Show();
+		PVPFrameTypeIcon:Show();
+		PVPFrameTypeValue:Show();
+	else
+		PVPFrameTypeLabel:Hide();
+		PVPFrameTypeIcon:Hide();
+		PVPFrameTypeValue:Hide();
+	end
 end
 
 
@@ -360,25 +374,25 @@ function PVPFrame_TabClicked(self)
 	PVPFrame.topInset:Hide();
 	local currency = 0;
 	local factionGroup = UnitFactionGroup("player");
-		
+	
 	if index == 1 then -- Honor Page
 		PVPFrame.panel1:Show();
 		PVPFrameRightButton:Show();
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
 		PVPFrameLeftButton:Enable();
-		PVPFrameTypeLable:SetText(HONOR);
-		PVPFrameTypeLable:SetPoint("TOPRIGHT", -180, -38);
+		PVPFrameTypeLabel:SetText(HONOR);
+		PVPFrameTypeLabel:SetPoint("TOPRIGHT", -180, -38);
 		PVPFrameConquestBar:Hide();
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
 		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
-	elseif UnitLevel("player") < 70 then
+	elseif UnitLevel("player") < SHOW_CONQUEST_LEVEL then
 		self:GetParent().lastSelectedTab = nil;
 		PVPFrameLeftButton:Hide();
 		PVPFrame.lowLevelFrame.title:SetText(self:GetText());
 		PVPFrame.lowLevelFrame.error:SetFormattedText(PVP_CONQUEST_LOWLEVEL, self:GetText());
 		PVPFrame.lowLevelFrame.description:SetText(self.info);
 		PVPFrame.lowLevelFrame:Show();
-		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
+		currency = nil;
 	elseif GetCurrentArenaSeason() == NO_ARENA_SEASON then
 		self:GetParent().lastSelectedTab = nil;
 		PVPFrameLeftButton:Hide();
@@ -386,12 +400,14 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.lowLevelFrame.error:SetText("");
 		PVPFrame.lowLevelFrame.description:SetText(ARENA_MASTER_NO_SEASON_TEXT);
 		PVPFrame.lowLevelFrame:Show();
-		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
+		PVPFrameConquestBar:Show();
+		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);		
+		currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
-		PVPFrameTypeLable:SetText(PVP_CONQUEST);
-		PVPFrameTypeLable:SetPoint("TOPRIGHT", -195, -38);
+		PVPFrameTypeLabel:SetText(PVP_CONQUEST);
+		PVPFrameTypeLabel:SetPoint("TOPRIGHT", -195, -38);
 		PVPFrameConquestBar:Show();
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
@@ -399,8 +415,8 @@ function PVPFrame_TabClicked(self)
 		PVPFrameLeftButton:SetText(ADDMEMBER_TEAM);
 		PVPFrameLeftButton:Disable();
 		PVPFrame.panel3:Show();	
-		PVPFrameTypeLable:SetText(PVP_CONQUEST);
-		PVPFrameTypeLable:SetPoint("TOPRIGHT", -195, -38);
+		PVPFrameTypeLabel:SetText(PVP_CONQUEST);
+		PVPFrameTypeLabel:SetPoint("TOPRIGHT", -195, -38);
 		PVPFrameConquestBar:Show();		
 		PVPFrame.topInset:Show();
 		PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -281);
@@ -613,7 +629,7 @@ function PVPHonor_UpdateInfo()
 end
 
 function PVPHonor_GetRandomBattlegroundInfo()
-	return GetBattlegroundInfo(1);
+	return GetBattlegroundInfo(PVPHonorFrame.selectedPvpID);
 end
 
 function PVPHonor_UpdateRandomInfo()
