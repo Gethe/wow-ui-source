@@ -54,6 +54,12 @@ VEHICLE_TEXTURES["Airship Alliance"] = {
 	width=64,
 	height=64,
 };
+VEHICLE_TEXTURES["Carriage"] = {
+	"Interface\\Minimap\\Vehicle-Carriage",
+	"Interface\\Minimap\\Vehicle-Carriage",
+	width=64,
+	height=64,
+};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
@@ -2272,7 +2278,7 @@ function WorldMapTitleDropDown_Initialize()
 	-- Opacity
 	info.text = CHANGE_OPACITY;
 	info.func = WorldMapTitleDropDown_ToggleOpacity;
-	info.checked = nil;
+	info.notCheckable = true;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);	
 end
 

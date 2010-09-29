@@ -435,7 +435,7 @@ function ScriptErrorsFrame_Update ()
 		_ScriptErrorsFrame.times[index], 
 		_ScriptErrorsFrame.count[index], 
 		_ScriptErrorsFrame.order[index],
-		_ScriptErrorsFrame.locals[index]
+		_ScriptErrorsFrame.locals[index] or "<none>"
 		);
 
 	local parent = editBox:GetParent();

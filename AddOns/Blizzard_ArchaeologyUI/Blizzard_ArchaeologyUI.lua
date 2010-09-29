@@ -9,7 +9,7 @@ ARCHAEOLOGY_MID_TITLE_YOFFSET = -110;
 
 
 ARCHAEOLOGY_MAX_RACES = 12;
-ARCHAEOLOGY_MAX_STONES = 5;
+ARCHAEOLOGY_MAX_STONES = 4;
 ARCHAEOLOGY_MAX_COMPLETED_SHOWN = 12;
 
 ARCHAEOLOGY_HELP_TAB = 0;
@@ -70,6 +70,7 @@ function ArchaeologyFrame_OnLoad(self)
 	self:RegisterEvent("ARTIFACT_DIG_SITE_UPDATED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("BAG_UPDATE");
 	
 	
 	local factionGroup = UnitFactionGroup("player");
@@ -153,6 +154,10 @@ function ArchaeologyFrame_OnEvent(self, event, ...)
 		end
 	elseif event == "ARTIFACT_HISTORY_READY" then
 		self.currentFrame:UpdateFrame();
+	elseif event == "BAG_UPDATE" then
+		if self:IsShown() and self.artifactPage:IsShown() then
+			ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
+		end
 	elseif event == "SKILL_LINES_CHANGED" then
 		local _, _, arch = GetProfessions();
 		if arch then
@@ -212,7 +217,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 		self.solveFrame.statusBar:SetMinMaxValues(0, totalCost);
 		self.solveFrame.statusBar:SetValue(min(base+adjust, totalCost));
 		if adjust > 0 then
-			self.solveFrame.statusBar.text:SetText((base+adjust).." "..ORANGE_FONT_COLOR_CODE.."(+"..adjust.." "..ARCHAEOLOGY_RUNE_STONES..")|r /"..totalCost);
+			self.solveFrame.statusBar.text:SetText((base+adjust).." "..GREEN_FONT_COLOR_CODE.."(+"..adjust.." "..ARCHAEOLOGY_RUNE_STONES..")|r /"..totalCost);
 		else
 			self.solveFrame.statusBar.text:SetText(base.."/"..totalCost);
 		end	
@@ -230,7 +235,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	
 	self.historyTitle:ClearAllPoints();
 	local runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = GetItemInfo(RaceitemID);
-	
+	local endFound = false;
 	for i=1,ARCHAEOLOGY_MAX_STONES do
 		if i > numSockets or not runeName then
 			self.solveFrame["keystone"..i]:Hide();
@@ -238,10 +243,16 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 			self.solveFrame["keystone"..i].icon:SetTexture(runeStoneIconPath);
 			if ItemAddedToArtifact(i) then
 				self.solveFrame["keystone"..i].icon:Show();
-				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_ADD_TOOLTIP, runeName);
+				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_REMOVE_TOOLTIP, runeName);
+				self.solveFrame["keystone"..i]:Enable();
 			else
 				self.solveFrame["keystone"..i].icon:Hide();
-				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_REMOVE_TOOLTIP, runeName);
+				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_ADD_TOOLTIP, runeName);
+				self.solveFrame["keystone"..i]:Enable();
+				if endFound then
+					self.solveFrame["keystone"..i]:Disable();
+				end
+				endFound = true;
 			end
 			self.solveFrame["keystone"..i]:Show();
 		end
@@ -477,9 +488,6 @@ function ArchaeologyFrame_ShowArtifact(RaceID, ArtifactID)
 	ArchaeologyFrame.artifactPage.isFinished = ArtifactID ~= nil;
 	ArchaeologyFrame.currentFrame = ArchaeologyFrame.artifactPage;
 	ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
-	for i=1,5 do
-		ArchaeologyFrame.artifactPage.solveFrame["keystone"..i].hasKeystone = false;
-	end
 	ArchaeologyFrame.artifactPage:Show();
 end
 
@@ -573,13 +581,12 @@ end
 
 
 function ArchaeologyFrame_KeyStoneClick(self)
-	if self.hasKeystone then
-		self.hasKeystone = false;
-		RemoveItemFromArtifact(self:GetID());
+	if ItemAddedToArtifact(self:GetID()) then
+		RemoveItemFromArtifact();
 	else
-		SocketItemToArtifact(self:GetID());
-		self.hasKeystone = true;
+		SocketItemToArtifact();
 	end
+	ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
 end
 
 function ArchaeologyFrame_PageClick(self, nextPage)

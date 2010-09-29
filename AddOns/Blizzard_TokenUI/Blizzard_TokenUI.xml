@@ -103,17 +103,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						if ( self:GetParent().extraCurrencyType == 1 ) then
-							GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-							GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
-							GameTooltip:Show();
-						elseif ( self:GetParent().extraCurrencyType == 2 ) then
-							GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-							GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
-							GameTooltip:Show();
-						else
-							GameTooltip:SetCurrencyToken(self:GetParent().index);
-						end
+						GameTooltip:SetCurrencyToken(self:GetParent().index);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -193,7 +183,7 @@
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="TokenFrame" relativePoint="TOPRIGHT">
-				<Offset x="-33" y="-28"/>
+				<Offset x="3" y="-28"/>
 			</Anchor>
 		</Anchors>
 		<Layers>
@@ -350,17 +340,7 @@
 			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if ( self.extraCurrencyType == 1 ) then
-					GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
-					GameTooltip:Show();
-				elseif ( self.extraCurrencyType == 2 ) then
-					GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
-					GameTooltip:Show();
-				else
-					GameTooltip:SetBackpackToken(self:GetID());
-				end
+				GameTooltip:SetBackpackToken(self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

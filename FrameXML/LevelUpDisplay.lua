@@ -127,6 +127,20 @@ LEVEL_UP_TYPES = {
 	
 	["Plate"] 			= {	spellID=750, feature=true},
 	["Mail"] 			= {	spellID=8737, feature=true	},
+	
+	
+	
+	
+	
+	["TrackBeast"] 			= {	spellID=1494  },
+	["TrackHumanoid"] 			= {	spellID=19883  },
+	["TrackUndead"] 			= {	spellID=19884  },
+	["TrackHidden"] 			= {	spellID=19885  },
+	["TrackElemental"] 			= {	spellID=19880  },
+	["TrackDemons"] 			= {	spellID=19878 },
+	["TrackGiants"] 			= {	spellID=19882  },
+	["TrackDragonkin"] 			= {	spellID=19879  },
+	
  
 
  ------ END HACKS
@@ -157,9 +171,17 @@ LEVEL_UP_CLASS_HACKS = {
 
 	["HUNTER"] 		= {
 							--  Level  = {unlock}
+								[4] = {"TrackBeast"},
+								[12] = {"TrackHumanoid"},
+								[18] = {"TrackUndead"},
+								[26] = {"TrackHidden"},
+								[34] = {"TrackElemental"},
+								[36] = {"TrackDemons"},
 								[40] = {"Mail"},
+								[46] = {"TrackGiants"},
+								[52] = {"TrackDragonkin"},
 							},
-
+							
 
 	["WARRIOR"] 		= {
 							--  Level  = {unlock}

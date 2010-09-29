@@ -319,6 +319,7 @@ function ReforgeFrame_FilterOldStat_Initialize()
 		local name, stat, value = stats[i], stats[i+1], stats[i+2];
 		info.text = name.."("..value..")";
 		info.arg1 = {name, stat, value};
+		info.checked = (stat == ReforgingFrame.srcStat);
 		info.func = ReforgeFrame_FilterOldStat_Set;
 		UIDropDownMenu_AddButton(info);
 	end
@@ -338,6 +339,7 @@ function ReforgeFrame_FilterNewStat_Initialize()
 		local name, stat, value, reforgeID = stats[i], stats[i+1], stats[i+2], stats[i+3];
 		info.text = name.."("..value..")";
 		info.arg1 = {name, stat, value, reforgeID};
+		info.checked = (stat == ReforgingFrame.destStat);
 		info.func = 	ReforgeFrame_FilterNewStat_Set;
 		UIDropDownMenu_AddButton(info);
 	end

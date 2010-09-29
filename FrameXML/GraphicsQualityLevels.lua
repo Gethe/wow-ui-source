@@ -529,14 +529,14 @@ VideoData["Graphics_GroundClutterDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				groundEffectDist = 220,
+				groundEffectDist = 200,
 				groundEffectDensity = 96,
 			},
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				groundEffectDist = 300,
+				groundEffectDist = 260,
 				groundEffectDensity = 128,
 			},
 		},

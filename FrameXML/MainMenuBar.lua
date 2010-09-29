@@ -193,13 +193,11 @@ function MainMenuBar_OnEvent(self, event, ...)
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
 		local showTokenFrame, showTokenFrameHonor = GetCVarBool("showTokenFrame"), GetCVarBool("showTokenFrameHonor");
 		if ( not showTokenFrame or not showTokenFrameHonor ) then
-			local name, isHeader, isExpanded, isUnused, isWatched, count, icon, extraCurrencyType;
-			local hasPVPTokens, hasNormalTokens;
+			local name, isHeader, isExpanded, isUnused, isWatched, count, icon;
+			local hasNormalTokens;
 			for index=1, GetCurrencyListSize() do
-				name, isHeader, isExpanded, isUnused, isWatched, count, extraCurrencyType, icon = GetCurrencyListInfo(index);
-				if ( (not isHeader) and (extraCurrencyType > 0) and (count>0) ) then
-					hasPVPTokens = true;
-				elseif ( (not isHeader) and (extraCurrencyType <= 0) and (count>0) ) then
+				name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
+				if ( (not isHeader) and (count>0) ) then
 					hasNormalTokens = true;
 				end
 			end
@@ -212,16 +210,8 @@ function MainMenuBar_OnEvent(self, event, ...)
 					SetButtonPulse(CharacterFrameTab4, 60, 1);
 				end
 			end
-			if ( (not showTokenFrameHonor) and (hasPVPTokens) ) then
-				SetCVar("showTokenFrameHonor", 1);
-				if ( not CharacterFrame:IsVisible() ) then
-					MicroButtonPulse(CharacterMicroButton, 60);
-				end
-				if ( not TokenFrame:IsVisible() ) then
-					SetButtonPulse(CharacterFrameTab4, 60, 1);
-				end
-			end
-			if ( hasNormalTokens or hasPVPTokens or showTokenFrame or showTokenFrameHonor ) then
+			
+			if ( hasNormalTokens or showTokenFrame or showTokenFrameHonor ) then
 				TokenFrame_LoadUI();
 				TokenFrame_Update();
 				BackpackTokenFrame_Update();

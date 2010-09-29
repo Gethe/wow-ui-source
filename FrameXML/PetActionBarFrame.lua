@@ -10,7 +10,7 @@ PET_ATTACK_TEXTURE = "Interface\\Icons\\Ability_GhoulFrenzy";
 PET_FOLLOW_TEXTURE = "Interface\\Icons\\Ability_Tracking";
 PET_WAIT_TEXTURE = "Interface\\Icons\\Spell_Nature_TimeStop";
 PET_DISMISS_TEXTURE = "Interface\\Icons\\Spell_Shadow_Teleport";
-PET_MOVE_TO_TEXTURE = "Interface\\Icons\\Spell_Holy_Stoicism";
+PET_MOVE_TO_TEXTURE = "Interface\\Icons\\Ability_Hunter_Pet_Goto";
 
 function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_CONTROL_LOST");

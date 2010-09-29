@@ -45,7 +45,7 @@ function GuildRosterFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GUILD_RECIPE_KNOWN_BY_MEMBERS");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	GuildRoster_SetView("playerStatus");
+	GuildRoster_SetView(GetCVar("guildRosterView"));
 	SetGuildRosterSelection(0);
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
 	self.doRecipeQuery = true;
@@ -57,10 +57,7 @@ function GuildRosterFrame_OnEvent(self, event, ...)
 	end
 	if ( event == "GUILD_TRADESKILL_UPDATE" ) then
 		if ( currentGuildView == "tradeskill" ) then
-			QueryGuildRecipes();
 			GuildRoster_Update();
-		else
-			GuildRosterFrame.doRecipeQuery = true;
 		end
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 		if ( currentGuildView ~= "tradeskill" ) then
@@ -335,7 +332,9 @@ function GuildRosterButton_OnClick(self, button)
 	if ( currentGuildView == "tradeskill" ) then
 		local skillID, isCollapsed, iconTexture, headerName, numOnline, numPlayers, playerName, class, online, zone, skill, classFileName, isMobile = GetGuildTradeSkillInfo(self.guildIndex);
 		if ( button == "LeftButton" ) then
-			GetGuildMemberRecipes(playerName, skillID);
+			if ( CanViewGuildRecipes(skillID) ) then
+				GetGuildMemberRecipes(playerName, skillID);
+			end
 		else
 			FriendsFrame_ShowDropdown(playerName, online, nil, nil, nil, nil, isMobile);
 		end
@@ -395,7 +394,11 @@ function GuildRoster_UpdateTradeSkills()
 				else
 					button.header:Enable();
 					button.header.icon:SetDesaturated(false);
-					button.header.allRecipes:Show();
+					if ( CanViewGuildRecipes(skillID) ) then
+						button.header.allRecipes:Show();
+					else
+						button.header.allRecipes:Hide();
+					end
 					button.header.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 					button.header.leftEdge:SetVertexColor(1, 1, 1);
 					button.header.rightEdge:SetVertexColor(1, 1, 1);
@@ -442,6 +445,10 @@ end
 --****** Dropdown ***************************************************************
 
 function GuildRoster_SetView(view)
+	if ( not view or not GUILD_ROSTER_COLUMNS[view] ) then
+		view = "playerStatus";
+	end
+
 	local numColumns = #GUILD_ROSTER_COLUMNS[view];
 	local stringsInfo = { };
 	local stringOffset = 0;
@@ -552,6 +559,7 @@ function GuildRosterViewDropdown_OnClick(self)
 	GuildRoster_SetView(self.value);
 	GuildRoster();
 	GuildRoster_Update();
+	SetCVar("guildRosterView", currentGuildView);
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
 end
 

@@ -798,12 +798,12 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PVP_REPORT_AFK" ) then
-			if ( inBattleground == 0 or GetCVar("enablePVPNotifyAFK") == "0" ) then
+			if ( not IsInActiveWorldPVP() and (inBattleground == 0 or GetCVar("enablePVPNotifyAFK") == "0") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( dropdownMenu.unit ) then
 				if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				elseif ( not UnitInBattleground(dropdownMenu.unit) ) then
+				elseif ( not UnitInBattleground(dropdownMenu.unit) and not IsInActiveWorldPVP() ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				elseif ( (PlayerIsPVPInactive(dropdownMenu.unit)) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;

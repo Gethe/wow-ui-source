@@ -629,30 +629,14 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	local slot = itemButton:GetID();
 	local bag = itemButton:GetParent():GetID();
 
-	local money, honorPoints, arenaPoints, itemCount, refundSec, currencyCount, hasEnchants = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
+	local money, itemCount, refundSec, currencyCount, hasEnchants = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
 	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) and (money == 0) and (currencyCount == 0)) ) then
 		return false;
 	end
 	
 	local count = itemButton.count or 1;
-	honorPoints, arenaPoints, itemCount = (honorPoints or 0) * quantity, (arenaPoints or 0) * quantity, (itemCount or 0) * quantity;
+	itemCount =  (itemCount or 0) * quantity;
 	local itemsString;
-
-	if ( honorPoints and honorPoints ~= 0 ) then
-		local factionGroup = UnitFactionGroup("player");
-		if ( factionGroup ) then	
-			local pointsTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
-			itemsString = " |T" .. pointsTexture .. ":0:0:0:-1|t" ..  format(MERCHANT_HONOR_POINTS, honorPoints);
-		end
-	end
-	if ( arenaPoints and arenaPoints ~= 0 ) then
-		if ( itemsString ) then
-			-- adding an extra space here because it looks nicer
-			itemsString = itemsString .. "  |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. format(MERCHANT_ARENA_POINTS, arenaPoints);
-		else
-			itemsString = " |TInterface\\PVPFrame\\PVP-ArenaPoints-Icon:0:0:0:-1|t" .. format(MERCHANT_ARENA_POINTS, arenaPoints);
-		end
-	end
 	
 	local maxQuality = 0;
 	for i=1, itemCount, 1 do
@@ -672,9 +656,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		local currencyTexture, currencyQuantity, currencyName = GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
 		if ( currencyName ) then
 			if ( itemsString ) then
-				itemsString = itemsString .. ", " .. format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = itemsString .. ", |TInterface\\Icons\\"..currencyTexture..":0:0:0:-1|t ".. format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			else
-				itemsString = format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = " |TInterface\\Icons\\"..currencyTexture..":0:0:0:-1|t "..format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			end
 		end
 	end

@@ -1,6 +1,4 @@
 -- PVP Global Lua Constants
-CONQUEST_CURRENCY = 390;
-HONOR_CURRENCY = 392;
 
 WORLD_PVP_TIME_UPDATE_IINTERVAL = 1;
 MAX_BATTLEFIELD_QUEUES = 2;
@@ -361,18 +359,17 @@ function PVPFrame_TabClicked(self)
 	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
 	PVPFrame.topInset:Hide();
 	local currency = 0;
-	
-	if index == 1 then -- Honor Page	
+	local factionGroup = UnitFactionGroup("player");
+		
+	if index == 1 then -- Honor Page
 		PVPFrame.panel1:Show();
 		PVPFrameRightButton:Show();
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
 		PVPFrameLeftButton:Enable();
-		local factionGroup = UnitFactionGroup("player");
 		PVPFrameTypeLable:SetText(HONOR);
 		PVPFrameTypeLable:SetPoint("TOPRIGHT", -180, -38);
 		PVPFrameConquestBar:Hide();
-		PVPFrameTypeIcon:SetTexCoord(0.0, 0.58, 0, 0.58);
-		PVPFrameTypeIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
 		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 	elseif UnitLevel("player") < 70 then
 		self:GetParent().lastSelectedTab = nil;
@@ -396,8 +393,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameTypeLable:SetText(PVP_CONQUEST);
 		PVPFrameTypeLable:SetPoint("TOPRIGHT", -195, -38);
 		PVPFrameConquestBar:Show();
-		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
-		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
+		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 3 then -- Arena Management
 		PVPFrameLeftButton:SetText(ADDMEMBER_TEAM);
@@ -408,8 +404,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameConquestBar:Show();		
 		PVPFrame.topInset:Show();
 		PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -281);
-		PVPFrameTypeIcon:SetTexCoord(0.0, 1.0, 0, 1.0);
-		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
+		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	end
 	
@@ -729,6 +724,7 @@ function PVPConquestFrame_OnLoad(self)
 	local factionGroup = UnitFactionGroup("player");
 	self.infoButton.factionIcon = _G["PVPConquestFrameInfoButtonInfoIcon"..factionGroup];
 	self.infoButton.factionIcon:Show();
+	self.winReward.arenaSymbol:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 end
 
 
@@ -1450,8 +1446,10 @@ function PVPQueue_UpdateRandomInfo(base, infoFunc)
 	end
 		
 	local englishFaction = UnitFactionGroup("player");
-	base.winReward.honorSymbol:SetTexture("Interface\\PVPFrame\\PVP-Currency-"..englishFaction);
-	base.lossReward.honorSymbol:SetTexture("Interface\\PVPFrame\\PVP-Currency-"..englishFaction);
+	base.winReward.honorSymbol:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
+	base.lossReward.honorSymbol:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
+	base.winReward.arenaSymbol:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
+	base.lossReward.arenaSymbol:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
 end
 
 
@@ -1659,25 +1657,6 @@ end
 
 
 
-
-function MiniMapBattlefieldFrame_isArena()
-	-- Set minimap icon here since it bugs out on login
-	local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(1);
-	local isArena, isRegistered = IsActiveBattlefieldArena();
-	if ( registeredMatch or isRegistered ) then
-		MiniMapBattlefieldIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-		MiniMapBattlefieldIcon:SetWidth(19);
-		MiniMapBattlefieldIcon:SetHeight(19);
-		MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 2);
-	elseif ( UnitFactionGroup("player") ) then
-		MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
-		MiniMapBattlefieldIcon:SetTexCoord(0, 1, 0, 1);
-		MiniMapBattlefieldIcon:SetWidth(32);
-		MiniMapBattlefieldIcon:SetHeight(32);
-		MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 0);
-	end
-end
-
 function BattlegroundShineFadeIn()
 	-- Fade in the shine and then fade it out with the ComboPointShineFadeOut function
 	local fadeInfo = {};
@@ -1741,7 +1720,6 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 			end
 		end
 		tooltip = nil;
-		MiniMapBattlefieldFrame_isArena();
 		if ( not tooltipOnly and (status ~= "confirm") ) then
 			StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY", i);
 		end
@@ -1840,12 +1818,9 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 	-- See if should add right click message
 	if ( MiniMapBattlefieldFrame.tooltip and showRightClickText ) then
 		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
-	elseif ( MiniMapBattlefieldFrame_isArena() ) then
-		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip;
 	end
 	
 	if ( not tooltipOnly ) then
-		MiniMapBattlefieldFrame_isArena();
 		if ( numberQueues == 0 and (not CanHearthAndResurrectFromArea()) ) then
 			-- Clear everything out
 			MiniMapBattlefieldFrame:Hide();

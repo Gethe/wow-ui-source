@@ -500,22 +500,25 @@ end
 function BattlefieldMinimapTabDropDown_Initialize()
 	local checked;
 	local info = UIDropDownMenu_CreateInfo();
+
 	-- Show battlefield players
 	info.text = SHOW_BATTLEFIELDMINIMAP_PLAYERS;
 	info.func = BattlefieldMinimapTabDropDown_TogglePlayers;
 	info.checked = BattlefieldMinimapOptions.showPlayers;
+	info.isNotRadio = true;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 
 	-- Battlefield minimap lock
 	info.text = LOCK_BATTLEFIELDMINIMAP;
 	info.func = BattlefieldMinimapTabDropDown_ToggleLock;
 	info.checked = BattlefieldMinimapOptions.locked;
+	info.isNotRadio = true;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 
 	-- Opacity
 	info.text = BATTLEFIELDMINIMAP_OPACITY_LABEL;
 	info.func = BattlefieldMinimapTabDropDown_ShowOpacity;
-	info.checked = nil;
+	info.notCheckable = true;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 end
 

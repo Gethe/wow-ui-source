@@ -183,6 +183,8 @@
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_KeyStoneClick(self);
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+				GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -191,6 +193,12 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnEnable>
+				self:SetAlpha(1.0);
+			</OnEnable>
+			<OnDisable>
+				self:SetAlpha(0.3);
+			</OnDisable>
 		</Scripts>
 	</Button>
 	
@@ -732,7 +740,7 @@
 						<Frames>
 							<Button name="$parentKeystone1" inherits="KeystoneTemplate" id="1" parentKey="keystone1">
 								<Anchors>
-									<Anchor point="BOTTOMLEFT"/>
+									<Anchor point="BOTTOMLEFT" x="30"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentKeystone2" inherits="KeystoneTemplate" id="2" parentKey="keystone2">
@@ -748,11 +756,6 @@
 							<Button name="$parentKeystone4" inherits="KeystoneTemplate" id="4" parentKey="keystone4">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentKeystone3" relativePoint="RIGHT" x="10"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentKeystone5" inherits="KeystoneTemplate" id="5" parentKey="keystone5">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentKeystone4" relativePoint="RIGHT" x="10"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentSolveButton" inherits="UIPanelButtonTemplate2" text="SOLVE" parentKey="solveButton">

@@ -333,49 +333,11 @@
 			<AbsDimension x="128" y="13"/>
 		</Size>
 		<Frames>
-			<Button name="$parentHonor" inherits="SmallDenominationTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(HONOR_POINTS);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-						ResetCursor();
-					</OnLeave>
-				</Scripts>
-			</Button>
-			<Button name="$parentArena" inherits="SmallDenominationTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="13" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(ARENA_POINTS);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-						ResetCursor();
-					</OnLeave>
-				</Scripts>
-			</Button>
 			<Button name="$parentItem1" inherits="SmallDenominationTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentArena" relativePoint="RIGHT">
+					<Anchor point="LEFT">
 						<Offset>
-							<AbsDimension x="0" y="0"/>
+							<AbsDimension x="13" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

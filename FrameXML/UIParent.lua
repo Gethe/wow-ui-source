@@ -3689,6 +3689,7 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogo");
 				end
 				emblemTexture:SetTexCoord(0, 1, 0, 1);
+				emblemTexture:SetVertexColor(1, 1, 1, 1);
 			else
 				emblemTexture:SetTexture("");
 			end

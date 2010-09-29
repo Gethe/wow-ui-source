@@ -1,6 +1,5 @@
 ﻿
-
-**World of Warcraft: Cataclysm Beta Patch Notes (version 12942)**
+**World of Warcraft: Cataclysm Beta Patch Notes (version 12984)**
 
 Welcome to the World of Warcraft: Cataclysm beta test! Patch notes listed here
 are not comprehensive and will be changed throughout the testing process.
@@ -12,8 +11,11 @@ of our [live forums][2] in order to view the beta forums.
 **General**
 
   * The Alliance starting experience for worgen is available. Venture through
-the cursed lands of Gilneas to discover your true path! Currently the female
-worgen character is not available for testing.
+the cursed lands of Gilneas to discover your true path!
+
+    * Running Wild is a new racial ability for worgen. In place of a mount,
+this ability has a 1.5 second cast time and allows the worgen to run on all
+fours at their fastest mounted ground speed.
 
   * The Horde starting experience for goblins is available. Beginning on the
 Isle of Kezan in a goblin paradise, players will face a treacherous road
@@ -21,27 +23,23 @@ ahead!
 
   * The level cap for all characters is 85.
 
-  * Elements of the guild leveling, perks, and roster page are now functional.
-Players should once again be able to buy and register guild charters, which
-now only require five signatures. See the Known Issues section for issues
-associated with this new system.
-
-    * The amount of experience required to reach new guild levels has been
-substantially reduced.
+  * The Guild Advancement feature is now fully implemented. You can discuss
+the elements of this feature and leave feedback for us on the [Guild
+Advancement forum][3].
 
   * Creature damage output has been increased from roughly level 65 and up.
 These increases scale upward with level. Creatures in exterior zones at level
 80 now have 2.5 times the damage output they did previously in beta, 3.2 times
 at level 81, and 4 times at level 82 and up. To leave feedback about how this
 change feels with regard to creature spawns in level 80-85 exterior zones,
-visit our forums [here][3].
+visit our forums [here][4].
 
   * Cataclysm Launcher Update
 
     * The new Cataclysm Launcher allows you to stream game data while you
 play. This will reduce the time you spend downloading, installing, and
 patching World of Warcraft. We'd like to get your feedback on the toolset and
-gameplay experience. Please head to the forums [here][4] for additional
+gameplay experience. Please head to the forums [here][5] for additional
 information.
 
   * Flight Master's License is a new flight skill required for flying around
@@ -65,7 +63,7 @@ speaking to NPCs in the capital cities.
 
     * Battleground queues should once again be functional.
 
-    * [Twin Peaks][5] is now available for testing.
+    * [Twin Peaks][6] is now available for testing.
 
     * The Battle for Gilneas is now available for testing.
 
@@ -143,7 +141,7 @@ will result in the unlocking of a spell or ability unique to that
 specialization, as well as one or more passive bonuses.
 
     * More information regarding our plans for talent trees can be found
-[here][6].
+[here][7].
 
 **Death Knights**
 
@@ -212,6 +210,18 @@ dig site before you need to move to a new dig site. Once you have enough
 fragments, you can solve an artifact to learn a little more about Azeroth's
 past. Happy hunting!
 
+      * Research sites that are too high a level (60-85 zones and continents)
+will no longer show up if a player's Archaeology skill isn't yet high enough.
+
+      * All kinds of artifacts will grant 5 points of skill. Previously,
+lower-level artifacts wouldn't grant any skill.
+
+      * Keystones now count as 12 fragments.
+
+      * Players now gain experience when collecting fragments.
+
+      * Many bugs have been fixed with keystones and dig sites.
+
   * The updated glyph system is now functional.
 
   * The Reforging interface has been implemented and the NPCs should now be
@@ -221,7 +231,7 @@ functional for testing this feature.
 
   * The ability to use third-party addons has been enabled.
 
-  * Leave feedback about the latest user interface changes [ here][7].
+  * Leave feedback about the latest user interface changes [ here][8].
 
   * Spell Alerts have been added to notify players when procs on select spells
 and abilities occur. A visual notification will display around the character
@@ -282,18 +292,24 @@ line or adding SET gxApi "d3d11" to the Config.WTF file)
 
   * General Issues
 
-    * The Swift Spectral Gryphon does not increase movement speed.
+    * Tailoring cloth PvP gear has no resilience.
+
+    * Characters can become visually stuck in an animation pose.
+
+    * Sending a whisper to players from different realms will show the wrong
+name in the chat logs.
+
+    * Players are unable to see the corpses of players from other realms
+inside of an instance or Battleground.
+
+    * Players are unable to Party chat with players from other realms inside
+instances of Battlegrounds.
 
     * Several helmet models appear as error cubes on goblin male and female
 characters.
 
-    * One of the Worgen skin textures is appearing on the human form on the
+    * One of the worgen skin textures is appearing on the human form on the
 face.
-
-    * Pyrite Deposits, Elementium Veins, and Rich Elementium Veins cannot be
-mined from.
-
-    * First Aid recipes are not showing up in the Spellbook once learned.
 
     * Mounts (both flying and ground) cannot be used in several parts of the
 world.
@@ -302,59 +318,136 @@ world.
 
     * Robes do not have durability.
 
-    * You are not able to learn a second profession.
-
-    * Removing a member from an Arena team will crash your client.
-
     * The Abyssal Seahorse requires Artisan Riding to use, but the Subdued
 Abyssal Seahorse only requires Expert Riding to learn.
 
     * The portal from the Deepholm Temple of Earth to Orgrimmar currently
 spawns players underneath the world.
 
-    * Worgen are playing their idle sound effect every time they stop moving.
+    * Player portraits are incorrectly lit.
 
-    * There is a large section of terrain that is blocking the entrance to
-Night Web's Hollow.
+    * Trainers are not displaying portraits.
 
-    * Several cloaks are displayed incorrectly on draenei females.
+    * Worgen cannot train from Herbalism trainers.
 
-    * Players are currently unable to create new worgen characters.
+    * Random Battleground queues do not work for players below level 80.
+
+    * Pet health is not being correctly restored after dismounting.
+
+    * Hair and facial color for the worgen Character Creation screen is not
+correctly working.
+
+    * The worgen new-player cinematic may not play when logging in.
+
+    * Launching the client with a sound card disabled may assert the client.
+
+    * War Games are causing several issues when inside of a Battleground that
+may prevent the game from being correctly played.
+
+    * New Battleground level brackets are not yet implemented.
+
+  * User Interface
+
+    * Modifying guild news filters that do not apply to current news items
+causes the news items to swap positions in the list.
+
+    * Player names show up as "Unknown" in guild news if they are offline.
+
+    * Guild Achievements with individual player criteria are not displaying
+the character name of the character who flags the criteria.
+
+    * There is a LUA error when scrolling through bank tab permissions with
+over 5 bank tabs.
+
+    * The 7th bank tab cost is incorrect.
+
+    * Filtering a profession prevents players from seeing the bottom recipe.
 
   * Combat
 
-    * Experience gained from completing Battleground objectives is very low.
+    * Rank 2 of Killing Streak is triggering the effect of rank 1.
 
-    * Players are unable to have more than 40 honor at once.
+    * Some priest talents can be selected before fulfilling their talent
+prerequisites.
 
-    * The client may lock up after finishing an Alterac Valley or Isle of
-Conquest game.
+    * Some Hunter talents can be selected before fulfilling their talent
+prerequisites.
 
-    * Ritual of Summoning does not actually create a Summoning Stone.
+    * Conflagrate is doing less damage than it should.
 
     * Strand of the Ancients is not working correctly for the attacking or
 defending teams.
 
-    * Heart of the Phoenix does not revive a hunter's pet after it dies.
-
-    * Bane of Doom does not summon a Demon Guardian.
-
-    * Wild Mushroom does not scale with spell power.
-
     * Players are unable to get the Veteran buff when joining a Tol Barad
 battle after it has started.
-
-    * Floating Combat Text is not functioning.
 
     * The spell effect visuals for Healing Rain and Earthquake look awkward
 when cast on a staircase or a steep incline.
 
+    * Dreamstate is not correctly enhancing Innervate.
+
+    * Demon Soul removes Metamorphosis.
+
+    * Entangling Roots spell visual is persisting in the ground after it wears
+off of a target.
+
+    * Burning Embers is not functioning correctly.
+
+    * Rank 2 of Jinx: Curse of the Elements is drastically reducing damage
+taken by the target.
+
+    * Glyph of Renew is reducing healing output.
+
+    * Glyph of Holy Nova is not working.
+
+    * Runic Corruption can cause the visual cooldown of runes to become
+incorrect.
+
+    * Glyph of Spirit Tap does not work.
+
+    * Spiritual Focus only increases hit rating for spells, not melee attacks.
+
+    * The healing value from Devour Magic by a felhunter is not correct.
+
+    * Several periodic abilities are not benefiting from haste.
+
+    * Glyph of Shadowburn is not functioning.
+
+    * Rank 1 of Improved Tracking has an "NNF" tag.
+
+    * The final heal of Lifebloom does not benefit from Gift of Nature.
+
+    * Drain Life is not restoring the correct amount of health.
+
+    * Archangel Wings are incorrectly placed on some character models.
+
+    * Rank 1 of Impending Doom causes Bane of Doom to fall off early.
+
+    * Psychic Scream is only causing one target to flee.
+
+    * Attack is not placed on the warlock pet bars.
+
+    * Thunderstruck is not stacking its buff and is returning an error
+message.
+
+    * The Glyph of Lifebloom increase to critical strike chance is not
+working.
+
+    * The spell effect for Solar Beam is not consistent with its radius of
+effect.
+
+    * Anaimiss the Hive Queen and Harakiss the Infestor do not scale down
+properly when tamed.
+
+    * Owl's Focus is not functioning.
+
+    * Culling the Herd is not proccing.
+
+    * Ritual of Refreshment is not functioning.
+
+    * Shaman totems cannot be recalled.
+
   * Quests
-
-    * Lord Darius Crowley is sporting a placeholder cube on his head.
-
-    * Corpses are not tapped on the quest "Free Your Mind" allowing other
-players to use the Sovereign Rod on targets they did not kill.
 
     * The quest giver item Tattered Treasure Map can drop again after the
 quest "The Horde's Hoard" has been completed.
@@ -373,91 +466,163 @@ of Onyxia."
     * While on the quest "Blood and Thunder!" NPCs will despawn prior to the
 event and the quest cannot be completed.
 
-  * Reputation
+    * Coldlight murlocs are not dropping Enormous Eel Eggs.
 
-    * It is possible to mark yourself At War with your guild in the reputation
-window.
+    * The "Defending the Rift" quest cannot be turned in.
+
+    * The "Camel Tow" quest cannot be completed.
+
+    * Your client may crash when looting the quest item: What does 'The end of
+all things' mean for me.
+
+    * Characters may die while performing the Rocket Boot Boost quest.
+
+    * It is not possible to finish Thunderdrome: Grudge Match.
+
+    * Players may not be able to interact with Sentinel's Pawns and Warden's
+Pawns for "The Warden's Game" and "The Sentinel's Game".
+
+    * A part of the "Recover the Cargo" quest chain is 2 levels higher than
+the quest before it.
+
+    * The Alliance quest "The Angerfang Menace" is not available for Alliance
+players.
+
+    * Players cannot obtain the Grimtotem Battle Plan for the quest
+"Confirming the Suspicion".
+
+    * Cassa Crimsonwing does not offer players an option to take a gryphon to
+complete the quest "Survey Alcaz Island".
+
+    * Orno Grimtotem can become stuck in an evade state.
+
+    * Some Hyjal NPCs are not visible after completing some quests in Hyjal.
+
+    * Players cannot see Ysondre if they die or leave her AOI after completing
+"Ysondre's Call".
+
+    * Ysondre can become stuck during "Taerar's Fall".
+
+    * Players cannot obtain the quest "Nothing a Couple of Melons Won't Fix"
+after abandoning it.
+
+    * Players cannot accept the quest "Perfect Yeti Hide".
+
+    * Mountainfoot Miners cannot be interacted with after trying to be picked
+up by a shapeshifted druid.
+
+  * Dungeons & Raids
+
+    * Algalon's platform is no longer transparent.
+
+    * Dynamically changing the difficulty in the Halion encounter will break
+the Twilight Orbs.
+
+    * Some trash pulls in Icecrown Citadel are under the world.
+
+    * Several raid and dungeon bosses are despawning immediately when dying.
+
+    * Several bosses are not correctly rewarding Justice Points when killed.
+
+    * Harvested Soul does not show up on the Lich King's buff bar.
+
+    * Players may be stuck in combat after killing Neptulon the Tidehunter.
+
+    * It is possible to be dropped under the world after being released from
+Commander Ulthok's Squeeze.
+
+  * Tradeskills
+
+    * Several tradeskill items are incorrectly requiring some specialized
+professions to learn.
+
+    * Some Leatherworking recipes disappear from the trainer window after you
+close the training window.
+
+    * Fishing is unlearned when you log out.
+
+    * Several Cataclysm recipes are missing from trainers.
+
+  * Environment
+
+    * Players may suddenly die while running around Thunder Bluff.
+
+    * There is a collision wall in Greymane Court in Gilneas city that players
+can get stuck behind.
+
+    * Twin Peaks Battleground: There is a section of missing water in the tube
+near the Horde base.
 
 **Bug Fixes**
 
+  * UI windows from interacting with NPCs should correctly close when moving
+away from the NPC.
+
+  * The worgen sit animation was not correctly playing and caused the
+character to stand up.
+
+  * The transport in Orgrimmar from Thunder Bluff should no longer be
+appearing and disappearing.
+
+  * Insect Swarm should be trainable and usable now.
+
+  * The Mage talent Cauterize can no longer cause players to die in a duel.
+
+  * It is no longer possible to mark yourself At War with your guild in the
+reputation window.
+
+  * Lord Darius Crowley is no longer sporting a placeholder cube on his head.
+
+  * Floating Combat Text is functional.
+
+  * Wild Mushroom scales with spell power.
+
+  * Bane of Doom summons a Demon Guardian.
+
+  * Heart of the Phoenix revives a hunter's pet after it dies.
+
+  * Ritual of Summoning again creates a Summoning Stone.
+
+  * The client should no longer lock up after finishing an Alterac Valley or
+Isle of Conquest game.
+
+  * Players can again have more than 40 honor at once.
+
+  * Experience gained from completing Battleground objectives has been
+correctly increased.
+
+  * Cloaks should display correctly on draenei females.
+
+  * Players are able to create new worgen characters again.
+
+  * There is no longer a large section of terrain that is blocking the
+entrance to Night Web's Hollow.
+
+  * Pyrite Deposits, Elementium Veins, and Rich Elementium Veins should now
+work.
+
+  * Worgen are no longer playing their idle sound effect every time they stop
+moving.
+
+  * Removing a member from an Arena team should not crash your client.
+
+  * First Aid recipes are correctly showing up in the Spellbook once learned.
+
   * Players should no longer die upon taking the portal to the Maelstrom
-during 'The Maelstrom.'
-
-  * The male troll shoulder geometry has been realigned.
-
-  * The quest giver Toshe Chaosrender is should no longer spawn underground.
-
-  * Players can eat in Vashj'ir.
-
-  * Gaining a talent point no longer displays every time a level is gained.
-
-  * Crafted mounts no longer producing errors when used.
-
-  * Guild controls, banks, and experience should now be working properly.
-
-  * Ground mounts can no longer be used when underwater in Vashj'ir.
-
-  * Players should no longer get stuck at the loading screen when teleporting
-to Moonglade en route to Hyjal.
-
-  * Characters with two professions learned should again be able to train new
-spells.
-
-  * There is no longer a section of geometry missing from where the floor and
-wall meet in Fireland Hatchery.
-
-  * Gnome and troll character no longer have a broken background displayed as
-well as a LUA error at the character selection and creation screens.
-
-  * Sudden Death procs should now reset the cooldown of Colossus Smash.
-
-  * Hairstyles should no longer cause the male worgen face to disappear.
-
-  * Shadow Protection is now functioning correctly.
-
-  * Entering a phase with phased terrain (i.e. Rim of the World) no longer
-boots players from flying mounts.
-
-  * Players are now able to receive Stoneskin Totem from shaman trainers.
-
-  * The quest "Up the Volcano" can now be completed.
-
-  * Characters now ride the Swift Seahorse for the quest "Waking the Beast."
-
-  * The mob Tendril from Below should no longer fall below the world when
-killed.
-
-  * Globe of Boiling Water should now drop from Scalding Water Lords for the
-quest "Full of Hot Water."
-
-  * The quest "Blackfin's Booty" can be completed.
-
-  * The quest "Offering to Azshara" can be completed.
-
-  * The quest "Seeds of Discord" should reset properly.
-
-  * The rug in Stormglen Inn is should no longer be experiencing z-fighting
-with the floor beneath it.
-
-  * The fire damage from lava should no longer hit players at any height.
-
-  * Trainers are functioning properly.
-
-  * Selecting a character on the character select screen after creating a new
-one will no longer cause the game to display and act on the character two
-slots above the selected one.
+during "The Maelstrom".
 
    [1]: http://forums.worldofwarcraft.com/index.html?sid=2000
 
    [2]: http://forums.worldofwarcraft.com/board.html?forumId=10001
 
-   [3]: http://forums.worldofwarcraft.com/thread.html?topicId=26435496423&sid=2000
+   [3]: http://forums.worldofwarcraft.com/board.html?sid=2000&forumId=8945398
 
-   [4]: http://forums.worldofwarcraft.com/thread.html?topicId=26262801168&sid=2000
+   [4]: http://forums.worldofwarcraft.com/thread.html?topicId=26435496423&sid=2000
 
-   [5]: http://www.worldofwarcraft.com/cataclysm/features/twinpeaks.html
+   [5]: http://forums.worldofwarcraft.com/thread.html?topicId=26262801168&sid=2000
 
-   [6]: http://www.worldofwarcraft.com/info/underdev/4p0/classandmastery.xml
+   [6]: http://www.worldofwarcraft.com/cataclysm/features/twinpeaks.html
 
-   [7]: http://forums.worldofwarcraft.com/thread.html?topicId=26560766722&sid=2000&pageNo=1
+   [7]: http://www.worldofwarcraft.com/info/underdev/4p0/classandmastery.xml
 
+   [8]: http://forums.worldofwarcraft.com/thread.html?topicId=26560766722&sid=2000&pageNo=1
