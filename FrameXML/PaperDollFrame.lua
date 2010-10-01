@@ -3790,7 +3790,8 @@ function SetTitleByName(name)
 	name = strlower(name);
 	for i = 1, GetNumTitles() do
 		if ( IsTitleKnown(i) ~= 0 ) then
-			local title = strlower(strtrim(GetTitleName(i)));
+			local title = GetTitleName(i);
+			title = strlower(strtrim(title));
 			if(title:find(name) == 1) then
 				SetCurrentTitle(i);
 				return true;

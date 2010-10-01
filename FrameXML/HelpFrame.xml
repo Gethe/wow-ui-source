@@ -660,9 +660,6 @@
 					</Button>
 					<Button name="$parentCancel" inherits="HelpFrameCancelButtonTemplate"/>
 				</Frames>
-				<Scripts>
-					<OnShow function="HelpFrameStuck_OnShow"/>
-				</Scripts>
 			</Frame>
 			<!-- Open Ticket Frame -->
 			<Frame name="HelpFrameOpenTicket" setAllPoints="true" hidden="true">

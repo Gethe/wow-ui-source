@@ -89,12 +89,18 @@ function BuffFrame_Update()
 		end
 	end
 	BuffFrame.numConsolidated = #consolidatedBuffs;
-	if ( BuffFrame.numConsolidated > 0 ) then
+	if ( BuffFrame.numConsolidated >= 3 or (BuffFrame.numConsolidated > 0 and BUFF_ACTUAL_DISPLAY >= 5) ) then
 		ConsolidatedBuffsCount:SetText(BuffFrame.numConsolidated);
 		if ( not ConsolidatedBuffs:IsShown() ) then
 			ConsolidatedBuffs:Show();
 		end
 	else
+		if( BuffFrame.numConsolidated > 0 ) then
+			for _, buff in pairs(consolidatedBuffs) do
+				buff.consolidated = false;
+			end
+		end
+		table.wipe(consolidatedBuffs);
 		BuffFrame.numConsolidated = 0;
 		ConsolidatedBuffs:Hide();	
 	end
