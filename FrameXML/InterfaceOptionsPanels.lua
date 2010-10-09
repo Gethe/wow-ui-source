@@ -139,7 +139,7 @@ ControlsPanelOptions = {
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.defaultValue = "NONE";
+		self.defaultValue = "SHIFT";
 		self.oldValue = GetModifiedClick("AUTOLOOTTOGGLE");
 		self.value = self.oldValue or self.defaultValue;
 		self.tooltip = _G["OPTION_TOOLTIP_AUTO_LOOT_"..self.value.."_KEY"];
@@ -368,7 +368,7 @@ end
 -- [[ Self Cast key dropdown ]] --
 function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.defaultValue = "NONE";
+		self.defaultValue = "ALT";
 		self.oldValue = GetModifiedClick("SELFCAST");
 		self.value = self.oldValue or self.defaultValue;
 		self.tooltip = _G["OPTION_TOOLTIP_AUTO_SELF_CAST_"..self.value.."_KEY"];
@@ -1227,7 +1227,7 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 		else
 			value = "3";
 		end
-		self.defaultValue = "2";
+		self.defaultValue = "1";
 		self.oldValue = value;
 		self.value = value;
 		self.tooltip = OPTION_TOOLTIP_UNIT_NAME_NPC;

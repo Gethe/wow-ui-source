@@ -616,7 +616,7 @@ function CompactUnitFrame_UpdateDispellableDebuffs(frame)
 		index = index + 1;
 	end
 	for i=frameNum, frame.maxDispelDebuffs do
-		local dispellDebuffFrame = frame.dispelDebuffFrames[frameNum];
+		local dispellDebuffFrame = frame.dispelDebuffFrames[i];
 		dispellDebuffFrame:Hide();
 	end
 end

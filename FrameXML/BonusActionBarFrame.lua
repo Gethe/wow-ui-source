@@ -130,9 +130,11 @@ function SetupBonusActionBar()
 		local button = _G["BonusActionButton"..i];
 		if  i > barInfo.numButtons then
 			button:SetAttribute("statehidden", true);
+			button:Hide();
 		else
 			button:SetAttribute("statehidden", false);
 			button:SetSize(barInfo.buttonSize, barInfo.buttonSize);
+			button:Show();
 		end
 		
 		if barInfo.buttonBg then
