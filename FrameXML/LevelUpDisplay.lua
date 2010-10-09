@@ -193,18 +193,6 @@ LEVEL_UP_CLASS_HACKS = {
 								[20] = {"PaliMount1"},
 								[40] = {"PaliMount2", "Plate"},
 							},
-							
-	["PALADINTauren"] 		= {
-							--  Level  = {unlock}
-								[20] = {"PaliMountTauren1"},
-								[40] = {"PaliMountTauren2", "Plate"},
-							},
-							
-	["PALADINDraenei"] 		= {
-							--  Level  = {unlock}
-								[20] = {"PaliMountDraenei1"},
-								[40] = {"PaliMountDraenei2", "Plate"},
-							},
 }
 
 

@@ -402,7 +402,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.lowLevelFrame:Show();
 		PVPFrameConquestBar:Show();
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);		
-		currency = GetCurrencyInfo(CONQUEST_CURRENCY);
+		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
@@ -592,8 +592,8 @@ end
 
 function PVPHonor_UpdateInfo()
 	if PVPHonorFrame.selectedIsWorldPvp then
-		pvpID, _, _, _, _, _, mapDescription = GetWorldPVPAreaInfo(PVPHonorFrame.selectedPvpID);
-		mapDescription = PVPWORLD_DESCRIPTIONS[pvpID]
+		local pvpID = GetWorldPVPAreaInfo(PVPHonorFrame.selectedPvpID);
+		local mapDescription = PVPWORLD_DESCRIPTIONS[pvpID]
 		if not mapDescription or mapDescription == "" then
 			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText("Missing Map Description");
 		else

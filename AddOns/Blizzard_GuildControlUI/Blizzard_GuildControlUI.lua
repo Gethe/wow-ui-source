@@ -164,6 +164,7 @@ function GuildControlUI_BankTabPermissions_Update(self)
 					ownedTab.editBox:ClearFocus();
 				end
 				ownedTab.editBox.mask:Show();
+				ownedTab.editBox:SetText(numWithdrawals);
 				ownedTab.editBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			end
 			ownedTab:Show();
@@ -175,6 +176,12 @@ end
 
 function GuildControlUI_RankPermissions_Update(self)	
 	local currentRank = self:GetParent().currentRank;
+	-- if currentRank doesn't apply, reset to first available
+	if ( currentRank < 2 or currentRank > GuildControlGetNumRanks() ) then
+		currentRank = 2;
+		self:GetParent().currentRank = 2;
+	end
+	GuildControlSetRank(currentRank);
 	UIDropDownMenu_SetText(self.dropdown, GuildControlGetRankName(currentRank));
 	local flags = {GuildControlGetRankFlags()};
 	local checkbox;
@@ -201,6 +208,7 @@ function GuildControlUI_RankPermissions_Update(self)
 			self.goldBox:ClearFocus();
 		end	
 		self.goldBox.mask:Show();
+		self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
 		self.goldBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
 	
