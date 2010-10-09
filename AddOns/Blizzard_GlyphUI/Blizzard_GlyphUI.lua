@@ -280,11 +280,6 @@ function GlyphFrame_UpdateGlyphList ()
 					button.typeName:SetText(GRAY_FONT_COLOR_CODE..GLYPH_STRING[glyphType]);
 					button.disabledBG:Show();
 				end
-				
-				if button.showingTooltip then
-					GameTooltip:SetSpellByID(button.castSpellID);
-				end
-				
 				button:Show();
 			end
 		else

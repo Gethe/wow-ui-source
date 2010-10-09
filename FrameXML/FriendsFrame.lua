@@ -308,7 +308,6 @@ function FriendsFrame_OnHide()
 	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		_G[value]:Hide();
 	end
-	FriendsFriendsFrame:Hide();
 end
 
 function FriendsList_Update()

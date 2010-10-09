@@ -368,7 +368,7 @@ end
 -- [[ Self Cast key dropdown ]] --
 function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.defaultValue = "ALT";
+		self.defaultValue = "NONE";
 		self.oldValue = GetModifiedClick("SELFCAST");
 		self.value = self.oldValue or self.defaultValue;
 		self.tooltip = _G["OPTION_TOOLTIP_AUTO_SELF_CAST_"..self.value.."_KEY"];

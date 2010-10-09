@@ -592,8 +592,8 @@ end
 
 function PVPHonor_UpdateInfo()
 	if PVPHonorFrame.selectedIsWorldPvp then
-		pvpID, _, _, _, _, _, mapDescription = GetWorldPVPAreaInfo(PVPHonorFrame.selectedPvpID);
-		mapDescription = PVPWORLD_DESCRIPTIONS[pvpID]
+		local pvpID = GetWorldPVPAreaInfo(PVPHonorFrame.selectedPvpID);
+		local mapDescription = PVPWORLD_DESCRIPTIONS[pvpID]
 		if not mapDescription or mapDescription == "" then
 			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText("Missing Map Description");
 		else
