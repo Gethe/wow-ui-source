@@ -28,6 +28,59 @@ stat at a time, though the Reforging of an item can be undone and changed.
   * Copied Test Realm characters are not copied with their achievement history
 in order to better facilitate the character copy process.
 
+**Dungeons & Raids**
+
+  * Flexible Raid Lock System
+
+    * All Wrath of the Lich King raids now use the new Flexible Raid Lock
+system. This system provides the opportunity for a character to defeat each
+raid zone's encounters once a week. A character may now complete the
+encounters during the week with different raids of either 10 or 25 players.
+
+  * Icecrown Citadel
+
+    * The Chill of the Throne effect has been removed.
+
+  * Trial of the Crusader now uses the Dynamic Difficulty system found in
+Icecrown Citadel and The Ruby Sanctum.
+
+**Currency**
+
+  * PvE Currency Changes
+
+    * All Emblems of Frost and Emblems of Triumph have been converted to new
+Justice Points.
+
+    * Any dungeon or raid which awarded these emblems will reward Justice
+Points instead. Anything below Emblems of Triumph, including badges from The
+Burning Crusade dungeon and raid content, have been converted into gold and
+sent to players via the in-game mail system.
+
+    * Any bosses players defeat that are level-appropriate to them award
+Justice Points.
+
+    * All items that previously cost emblems or badges of any type now cost
+Justice Points.
+
+    * Higher-tier Valor Points will be awarded to players who kill dungeon and
+raid bosses in the latest tier of PvE content after the launch of Cataclysm.
+
+  * PvP Currency Changes
+
+    * All Arena Points, Honor Points, Battleground Marks of Honor, Stone
+Keeper's Shards, Venture Coins, and Spirit Shards have been converted into new
+Honor Points.
+
+    * Honor Points will be awarded instead of these currencies, with the
+exception of Arena Points.
+
+    * Higher-tier Conquest Points will be awarded to players competing in each
+of the latest Arena or Rated Battleground seasons after the launch of
+Cataclysm.
+
+  * For more information on the changes to the currencies and conversion rates
+for each type, please visit our [Cataclysm forum][4].
+
 **Classes: General**
 
   * Many class talents, spells, and abilities have been overhauled, added, or
@@ -69,7 +122,7 @@ specialization, as well as one or more passive bonuses.
 points in the primary tree until at least 31 points have been spent there.
 
     * The initial announcement regarding these talent tree changes can be
-found on our [Cataclysm forum][4].
+found on our [Cataclysm forum][5].
 
 **Death Knights**
 
@@ -164,7 +217,22 @@ display available and upcoming purchases.
 visual appeal.
 
   * For additional notes on Lua and XML changes please visit the [UI & Macros
-forum.][5]
+forum.][6]
+
+**Graphics**
+
+  * Improved water and lava rendering system (Video Options - Liquid Detail on
+the Graphics Panel)
+
+  * Dynamic Sunshafts effect (Video Options - Sunshafts on the Graphics Panel)
+
+  * Multi-monitor support (Video Options - Monitor on the Graphics Panel)
+
+  * OpenGL Hardware Cursor support for Windows (Video Options - Hardware
+Cursor on the Advanced Panel)
+
+  * Experimental support for DX11 (enabled by passing '-d3d11' on the command
+line or adding SET gxApi "d3d11" to the Config.WTF file)
 
    [1]: http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
 
@@ -172,6 +240,9 @@ forum.][5]
 
    [3]: http://forums.worldofwarcraft.com/thread.html?topicId=26726066731
 
-   [4]: http://forums.worldofwarcraft.com/thread.html?topicId=25626290449&sid=1
+   [4]: http://forums.worldofwarcraft.com/thread.html?sid=1&topicId=26850245012
 
-   [5]: http://forums.worldofwarcraft.com/board.html?sid=1&forumId=11114
+   [5]: http://forums.worldofwarcraft.com/thread.html?topicId=25626290449&sid=1
+
+   [6]: http://forums.worldofwarcraft.com/board.html?sid=1&forumId=11114
+
