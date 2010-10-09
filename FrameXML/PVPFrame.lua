@@ -402,7 +402,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.lowLevelFrame:Show();
 		PVPFrameConquestBar:Show();
 		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);		
-		currency = GetCurrencyInfo(CONQUEST_CURRENCY);
+		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
