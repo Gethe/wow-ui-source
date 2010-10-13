@@ -1,11 +1,19 @@
-﻿
-**World of Warcraft PTR Patch 4.0.1**
+
+**World of Warcraft Client Patch 4.0.1**
 
 The latest test realm patch notes can always be found at
 [http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html][1]
 
 The latest patch notes can always be found at
 [http://www.worldofwarcraft.com/patchnotes/][2]
+
+**Cataclysm Systems Patch**
+
+World of Warcraft: Cataclysm will be in stores on December 7, 2010 and the
+time has come to prep for the official launch by implementing its first major
+patch. Players can experience many major game and user interface systems
+updates in the first official patch for the upcoming third expansion, patch
+4.0.1.
 
 **General**
 
@@ -25,24 +33,20 @@ be allocated to add a new secondary stat to the item. The stat being added
 cannot already exist on the item. An item cannot have more than one reforged
 stat at a time, though the Reforging of an item can be undone and changed.
 
-  * Copied Test Realm characters are not copied with their achievement history
-in order to better facilitate the character copy process.
-
 **Dungeons & Raids**
 
   * Flexible Raid Lock System
 
-    * All Wrath of the Lich King raids now use the new Flexible Raid Lock
+    * Icecrown Citadel and Ruby Sanctum now use the new Flexible Raid Lock
 system. This system provides the opportunity for a character to defeat each
 raid zone's encounters once a week. A character may now complete the
 encounters during the week with different raids of either 10 or 25 players.
 
+    * Learn more about this feature by visiting our official forums [here][4].
+
   * Icecrown Citadel
 
     * The Chill of the Throne effect has been removed.
-
-  * Trial of the Crusader now uses the Dynamic Difficulty system found in
-Icecrown Citadel and The Ruby Sanctum.
 
 **Currency**
 
@@ -79,7 +83,7 @@ of the latest Arena or Rated Battleground seasons after the launch of
 Cataclysm.
 
   * For more information on the changes to the currencies and conversion rates
-for each type, please visit our [Cataclysm forum][4].
+for each type, please visit our [Cataclysm forum][5].
 
 **Classes: General**
 
@@ -122,7 +126,7 @@ specialization, as well as one or more passive bonuses.
 points in the primary tree until at least 31 points have been spent there.
 
     * The initial announcement regarding these talent tree changes can be
-found on our [Cataclysm forum][5].
+found on our [Cataclysm forum][6].
 
 **Death Knights**
 
@@ -187,6 +191,9 @@ glyph types.
 and abilities occur. A visual notification will display around the character
 and the activated ability will be highlighted on the action bar.
 
+  * The Guild Interface has been redesigned to incorporate additional
+functionality, including new sorting and organizational options.
+
   * The Arena Teams pane has been improved.
 
   * The Character pane has been redesigned. Character stats can now be shown
@@ -210,14 +217,14 @@ information on when new talents, spells and abilities are available.
   * Professions and Class Trainers windows have been altered to more clearly
 display available and upcoming purchases.
 
-  * New Raid frames are now. They can also be used in place of the standard
-5-player party interface via the User Interface options.
+  * New Raid frames are now available. They can also be used in place of the
+standard 5-player party interface via the User Interface options.
 
   * The Spellbook interface has been improved for greater ease-of-use and
 visual appeal.
 
   * For additional notes on Lua and XML changes please visit the [UI & Macros
-forum.][6]
+forum.][7]
 
 **Graphics**
 
@@ -240,9 +247,10 @@ line or adding SET gxApi "d3d11" to the Config.WTF file)
 
    [3]: http://forums.worldofwarcraft.com/thread.html?topicId=26726066731
 
-   [4]: http://forums.worldofwarcraft.com/thread.html?sid=1&topicId=26850245012
+   [4]: http://forums.worldofwarcraft.com/thread.html?topicId=27026324753&sid=1
 
-   [5]: http://forums.worldofwarcraft.com/thread.html?topicId=25626290449&sid=1
+   [5]: http://forums.worldofwarcraft.com/thread.html?sid=1&topicId=26850245012
 
-   [6]: http://forums.worldofwarcraft.com/board.html?sid=1&forumId=11114
+   [6]: http://forums.worldofwarcraft.com/thread.html?topicId=25626290449&sid=1
 
+   [7]: http://forums.worldofwarcraft.com/board.html?sid=1&forumId=11114
