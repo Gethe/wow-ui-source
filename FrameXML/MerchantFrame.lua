@@ -376,6 +376,7 @@ MERCHANT_HIGH_PRICE_COST = 1500000;
 
 function MerchantItemButton_OnClick(self, button)
 	MerchantFrame.extendedCost = nil;
+	MerchantFrame.highPrice = nil;
 	
 	if ( MerchantFrame.selectedTab == 1 ) then
 		-- Is merchant frame
@@ -390,6 +391,8 @@ function MerchantItemButton_OnClick(self, button)
 			PickupMerchantItem(self:GetID());
 			if ( self.extendedCost ) then
 				MerchantFrame.extendedCost = self;
+			elseif ( self.price and self.price >= MERCHANT_HIGH_PRICE_COST ) then
+				MerchantFrame.highPrice = self;
 			end
 		else
 			if ( self.extendedCost ) then
@@ -513,7 +516,6 @@ function MerchantFrame_ConfirmHighCostItem(itemButton, quantity)
 	MerchantFrame.itemIndex = index;
 	MerchantFrame.count = quantity;
 	MerchantFrame.price = itemButton.price;
-	
 	StaticPopup_Show("CONFIRM_HIGH_COST_ITEM", itemButton.link);
 end
 

@@ -707,8 +707,8 @@ function ContainerFrameItemButton_OnClick(self, button)
 		elseif ( type == "merchant" ) then
 			if ( MerchantFrame.extendedCost ) then
 				MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
-			elseif ( MerchantFrame.price and MerchantFrame.price >= MERCHANT_HIGH_PRICE_COST ) then
-				MerchantFrame_ConfirmHighCostItem(self);
+			elseif ( MerchantFrame.highPrice ) then
+				MerchantFrame_ConfirmHighCostItem(MerchantFrame.highPrice);
 			else
 				PickupContainerItem(self:GetParent():GetID(), self:GetID());
 			end
