@@ -106,7 +106,6 @@ function TokenFrame_Update()
 				button.name:SetText(name);
 				button.name:SetFontObject("GameFontNormal");
 				button.name:SetPoint("LEFT", 22, 0);
-				button.itemID = nil;
 				button.LinkButton:Hide();
 			else
 				button.categoryLeft:Hide();
@@ -131,7 +130,6 @@ function TokenFrame_Update()
 				end
 				button.name:SetText(name);
 				button.name:SetPoint("LEFT", 11, 0);
-				button.itemID = itemID;
 				button.LinkButton:Show();
 			end
 			--Manage highlight
@@ -174,7 +172,7 @@ function BackpackTokenFrame_Update()
 	local watchButton;
 	local name, count, icon;
 	for i=1, MAX_WATCHED_TOKENS do
-		name, count, icon, itemID = GetBackpackCurrencyInfo(i);
+		name, count, icon = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
 		if ( name ) then
 			watchButton = _G["BackpackTokenFrameToken"..i];
@@ -187,13 +185,11 @@ function BackpackTokenFrame_Update()
 			watchButton:Show();
 			BackpackTokenFrame.shouldShow = 1;
 			BackpackTokenFrame.numWatchedTokens = i;
-			watchButton.itemID = itemID;
 		else
 			_G["BackpackTokenFrameToken"..i]:Hide();
 			if ( i == 1 ) then
 				BackpackTokenFrame.shouldShow = nil;
 			end
-			_G["BackpackTokenFrameToken"..i].itemID = nil;
 		end
 	end
 end
@@ -280,16 +276,4 @@ end
 function TokenFrame_UpdatePopup(button)
 	TokenFramePopupInactiveCheckBox:SetChecked(button.isUnused);
 	TokenFramePopupBackpackCheckBox:SetChecked(button.isWatched);
-end
-
-function TokenButtonLinkButton_OnClick(self, button)
-	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink(select(2, GetItemInfo(self:GetParent().itemID)));
-	end
-end
-
-function BackpackTokenButton_OnClick(self, button)
-	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink(select(2, GetItemInfo(self.itemID)));
-	end
 end

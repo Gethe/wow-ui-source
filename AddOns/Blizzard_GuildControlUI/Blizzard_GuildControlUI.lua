@@ -4,7 +4,6 @@ BANK_TAB_HEIGHT = BANK_TAB_OFFSET + 73;
 NUM_RANK_FLAGS = 18;
 MAX_GUILDRANKS = 10;
 
-
 function GuildControlUI_OnLoad(self)
 	GuildFrame_RegisterPopup(self);
 	self:RegisterEvent("GUILD_RANKS_UPDATE");
@@ -30,7 +29,13 @@ end
 
 
 function GuildControlUI_OnEvent(self, event)
-	GuildControlUI.rankUpdate(GuildControlUI.currFrame);
+	-- if the user clicks a checkbox while the results of a previous click still hasn't been
+	-- received back from the server, that checkbox will flicker unless we skip updates.
+	GuildControlUI.numSkipUpdates = GuildControlUI.numSkipUpdates - 1;
+	if ( GuildControlUI.numSkipUpdates < 1 ) then
+		GuildControlUI.numSkipUpdates = 0;
+		GuildControlUI.rankUpdate(GuildControlUI.currFrame);
+	end
 end
 
 
@@ -100,7 +105,7 @@ function GuildControlUI_BankTabPermissions_Update(self)
 		_G[scrollFrameName.."Bottom"]:Hide();
 		buttonWidth = scrollFrame:GetWidth() - 5;
 	end
-	
+
 	for i = 1, numTabs do
 		local button = _G["GuildControlBankTab"..i];
 		if ( not button ) then
@@ -127,10 +132,7 @@ function GuildControlUI_BankTabPermissions_Update(self)
 				SetMoneyFrameColor(button.buy.money:GetName(), "red");
 				button.buy.button:Disable();
 			end
-			MoneyFrame_Update(button.buy.money:GetName(), tabCost);		
-		elseif index > numTabs then
-			button:Hide();
-			button.tabIndex = nil;
+			MoneyFrame_Update(button.buy.money:GetName(), tabCost);
 		else
 			button.tabIndex = index;
 			local name, icon = GetGuildBankTabInfo(index);												-- returns info and permissions for player's rank
@@ -169,6 +171,15 @@ function GuildControlUI_BankTabPermissions_Update(self)
 			end
 			ownedTab:Show();
 			button.buy:Hide();
+		end
+	end
+	-- hide unused buttons (only for people who go from gm of one guild to gm of another guild in the same session)
+	for i =  numTabs + 1, MAX_GUILDBANK_TABS do
+		local button = _G["GuildControlBankTab"..i];
+		if ( button ) then
+			button:Hide();
+		else
+			break;
 		end
 	end
 end
@@ -349,6 +360,7 @@ function GuildControlUI_CheckClicked(self)
 	else
 		PlaySound("igMainMenuOptionCheckBoxOn");
 	end
+	GuildControlUI.numSkipUpdates = GuildControlUI.numSkipUpdates + 1;
 	GuildControlSetRankFlag(self:GetID(), self:GetChecked());
 	--WithdrawGoldEditBox_Update();
 end
@@ -395,6 +407,7 @@ function GuildControlUINavigationDropDown_OnSelect(self, arg1, arg2)
 	GuildControlUIRankOrderFrame:Hide();
 	GuildControlUIRankBankFrame:Hide();
 	GuildControlUI.selectedTab = arg1;
+	GuildControlUI.numSkipUpdates = 0;
 	if arg1 == 1 then	
 		GuildControlUIRankOrderFrame:Show();		
 		GuildControlUI.currFrame = GuildControlUI.orderFrame;
@@ -454,7 +467,8 @@ function GuildControlUIRankDropDown_OnClick(self)
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();
 	end
-	
+
+	GuildControlUI.numSkipUpdates = 0;
 	GuildControlUI.currentRank = self:GetID()+1; --igonre officer
 	GuildControlSetRank(GuildControlUI.currentRank);
 	GuildControlUI.rankUpdate(GuildControlUI.currFrame);

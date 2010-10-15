@@ -77,7 +77,6 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 			HideUIPanel(AchievementFrame);
 		else
 			ShowUIPanel(AchievementFrame);
-			AchievementFrame_SetTabs();
 			AchievementFrameTab_OnClick(1);
 		end
 		return;
@@ -86,7 +85,6 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 		HideUIPanel(AchievementFrame);
 	else
 		ShowUIPanel(AchievementFrame);
-		AchievementFrame_SetTabs();
 		AchievementFrameTab_OnClick(3);
 	end
 end
@@ -96,7 +94,6 @@ function AchievementFrame_DisplayComparison (unit)
 	AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
 	AchievementFrameTab_OnClick(1);
 	ShowUIPanel(AchievementFrame);
-	AchievementFrame_SetTabs();
 	--AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameSummary);
 	AchievementFrameComparison_SetUnit(unit);
 	AchievementFrameComparison_ForceUpdate();
@@ -113,6 +110,7 @@ end
 
 function AchievementFrame_OnShow (self)
 	PlaySound("AchievementMenuOpen");
+	AchievementFrame_SetTabs();
 	AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 	if ( not AchievementFrame.wasShown ) then
 		AchievementFrame.wasShown = true;

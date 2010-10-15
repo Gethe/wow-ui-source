@@ -6,7 +6,7 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentScore" inherits="GameFontHighlightSmall">
 					<Size>
-						<AbsDimension x="90" y="0"/>
+						<AbsDimension x="80" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP">
@@ -71,22 +71,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentNetPromoterLow" inherits="GameFontHighlight" text="NET_PROMOTER_LOW" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="100" y="40"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="-20" y="-20"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</CheckButton>
 			<CheckButton name="$parentRadioButton2" inherits="GMSurveyRadioButtonTemplate" id="2">
 				<Anchors>
@@ -177,22 +161,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentNetPromoterHigh" inherits="GameFontHighlight" text="NET_PROMOTER_HIGH" justifyH="RIGHT" hidden="true">
-							<Size>
-								<AbsDimension x="100" y="40"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="20" y="-20"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -486,51 +454,60 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame name="InstructionsBlock" >
+								<Size x="541" y="50"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="BOTTOM" text="GMSURVEY_BLOCK_TEXT2">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-5"/>
+												<Anchor point="BOTTOMRIGHT" x="-10" y="5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
 							<Frame name="GMSurveyQuestion1" inherits="GMSurveyQuestionTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT"/>
-									<Anchor point="TOPRIGHT"/>
+									<Anchor point="TOPLEFT" relativeTo="InstructionsBlock" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="InstructionsBlock" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
 								</Anchors>
 							</Frame>
 							<Frame name="GMSurveyQuestion2" inherits="GMSurveyQuestionTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion1" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion1" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
-							</Frame>
-							<Frame name="GMBlock" >
-								<Size x="541" y="60"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="10" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<FontString name="GMBlockText" inherits="GameFontHighlight" justifyH="LEFT" text="GMSURVEY_BLOCK_TEXT"/>
-									</Layer>
-								</Layers>
 							</Frame>
 							<Frame name="GMSurveyQuestion3" inherits="GMSurveyQuestionTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="-40"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion2" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="-40"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -539,26 +516,51 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion3" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion3" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 							</Frame>
-							<Frame name="GMSurveyQuestion5" inherits="GMSurveyQuestionTemplate">
+							<Frame name="GMBlock" >
+								<Size x="541" y="60"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion4" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion4" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="BOTTOM" text="GMSURVEY_BLOCK_TEXT3">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-5"/>
+												<Anchor point="BOTTOMRIGHT" x="-10" y="5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame name="GMSurveyQuestion5" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMBlock" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMBlock" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -567,12 +569,12 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion5" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion5" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -581,12 +583,12 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion6" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion6" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -595,12 +597,12 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion7" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion7" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -609,12 +611,12 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion8" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion8" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -623,12 +625,12 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion9" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion9" relativePoint="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="0" y="4"/>
+											<AbsDimension x="0" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

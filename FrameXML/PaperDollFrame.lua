@@ -1630,7 +1630,14 @@ function PaperDollFrame_SetMeleeHaste(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 	text:SetText(format("%.2f%%", GetCombatRatingBonus(CR_HASTE_MELEE)));
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. STAT_HASTE .. FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_HASTE_MELEE_TOOLTIP, GetCombatRating(CR_HASTE_MELEE), GetCombatRatingBonus(CR_HASTE_MELEE));
+	
+	local _, class = UnitClass(unit);	
+	statFrame.tooltip2 = _G["STAT_HASTE_MELEE_"..class.."_TOOLTIP"];
+	if (not statFrame.tooltip2) then
+		statFrame.tooltip2 = STAT_HASTE_MELEE_TOOLTIP;
+	end
+	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, GetCombatRating(CR_HASTE_MELEE), GetCombatRatingBonus(CR_HASTE_MELEE));
+	
 	statFrame:Show();
 end
 
@@ -1644,7 +1651,14 @@ function PaperDollFrame_SetRangedHaste(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 	text:SetText(format("%.2f%%", GetCombatRatingBonus(CR_HASTE_RANGED)));
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. STAT_HASTE .. FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_HASTE_RANGED_TOOLTIP, GetCombatRating(CR_HASTE_RANGED), GetCombatRatingBonus(CR_HASTE_RANGED));
+
+	local _, class = UnitClass(unit);	
+	statFrame.tooltip2 = _G["STAT_HASTE_RANGED_"..class.."_TOOLTIP"];
+	if (not statFrame.tooltip2) then
+		statFrame.tooltip2 = STAT_HASTE_RANGED_TOOLTIP;
+	end
+	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, GetCombatRating(CR_HASTE_RANGED), GetCombatRatingBonus(CR_HASTE_RANGED));
+
 	statFrame:Show();
 end
 
@@ -1673,7 +1687,14 @@ function PaperDollFrame_SetSpellHaste(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 	text:SetText(format("%.2f%%", GetCombatRatingBonus(CR_HASTE_SPELL)));
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. SPELL_HASTE .. FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_HASTE_SPELL_TOOLTIP, GetCombatRating(CR_HASTE_SPELL), GetCombatRatingBonus(CR_HASTE_SPELL));
+	
+	local _, class = UnitClass(unit);	
+	statFrame.tooltip2 = _G["STAT_HASTE_SPELL_"..class.."_TOOLTIP"];
+	if (not statFrame.tooltip2) then
+		statFrame.tooltip2 = STAT_HASTE_SPELL_TOOLTIP;
+	end
+	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, GetCombatRating(CR_HASTE_SPELL), GetCombatRatingBonus(CR_HASTE_SPELL));
+
 	statFrame:Show();
 end
 
@@ -3790,7 +3811,8 @@ function SetTitleByName(name)
 	name = strlower(name);
 	for i = 1, GetNumTitles() do
 		if ( IsTitleKnown(i) ~= 0 ) then
-			local title = strlower(strtrim(GetTitleName(i)));
+			local title = GetTitleName(i);
+			title = strlower(strtrim(title));
 			if(title:find(name) == 1) then
 				SetCurrentTitle(i);
 				return true;

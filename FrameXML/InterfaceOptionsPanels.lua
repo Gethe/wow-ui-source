@@ -257,7 +257,16 @@ CombatPanelOptions = {
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
 	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.05 },
+	reducedLagTolerance = { text = "REDUCED_LAG_TOLERANCE" },
+	MaxSpellStartRecoveryOffset = { text = "LAG_TOLERANCE", minValue = 0, maxValue = 400, valueStep = 10 },
 }
+
+function InterfaceOptionsCombatPanelReducedLagTolerance_UpdateText()
+	local checkBox = InterfaceOptionsCombatPanelReducedLagTolerance;
+	local checkBoxText = InterfaceOptionsCombatPanelReducedLagToleranceText;
+	
+	checkBoxText:SetFormattedText(_G[CombatPanelOptions[checkBox.cvar].text], GetMaxSpellStartRecoveryOffset());
+end
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
@@ -368,7 +377,7 @@ end
 -- [[ Self Cast key dropdown ]] --
 function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.defaultValue = "NONE";
+		self.defaultValue = "ALT";
 		self.oldValue = GetModifiedClick("SELFCAST");
 		self.value = self.oldValue or self.defaultValue;
 		self.tooltip = _G["OPTION_TOOLTIP_AUTO_SELF_CAST_"..self.value.."_KEY"];

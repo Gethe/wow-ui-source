@@ -1372,6 +1372,12 @@ SecureCmdList["PET_FOLLOW"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_MOVE_TO"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		PetMoveTo();
+	end
+end
+
 SecureCmdList["PET_STAY"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		PetWait();
@@ -1420,6 +1426,12 @@ end
 SecureCmdList["STOPMACRO"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		StopMacro();
+	end
+end
+
+SecureCmdList["CANCELQUEUEDSPELL"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		SpellCancelQueuedSpell();
 	end
 end
 
@@ -2612,7 +2624,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		return true;
 	elseif (event == "UNIT_LEVEL" ) then
 		local arg1 = ...;
-		if (arg1 == "pet") then
+		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
 			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
 		end
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then

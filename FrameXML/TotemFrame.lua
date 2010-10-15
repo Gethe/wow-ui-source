@@ -18,19 +18,13 @@ function TotemFrame_Update()
 		priorities = SHAMAN_TOTEM_PRIORITIES;
 	end
 	
-	if ( PetFrame and PetFrame:IsShown() ) then
-		if ( class == "DEATHKNIGHT" ) then
+	local hasPet = PetFrame and PetFrame:IsShown();
+	if ( class == "PALADIN" or class == "WARLOCK" or class == "DEATHKNIGHT"  ) then
+		if ( hasPet ) then
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
-		elseif ( class == "SHAMAN" ) then
-			--Nothing!
 		else
-			TotemFrame:Hide();
-			return;
+			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 67, -63);
 		end
-	elseif ( class == "PALADIN" ) then
-		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 67, -63);
-	elseif ( class == "DEATHKNIGHT" ) then
-		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 65, -55);
 	elseif ( class == "DRUID" ) then
 		local form  = GetShapeshiftFormID();
 		if ( form == MOONKIN_FORM or not form ) then
@@ -44,6 +38,9 @@ function TotemFrame_Update()
 		else
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);
 		end
+	elseif ( hasPet  and class ~= "SHAMAN" ) then
+		TotemFrame:Hide();
+		return;
 	end
 
 	local haveTotem, name, startTime, duration, icon;

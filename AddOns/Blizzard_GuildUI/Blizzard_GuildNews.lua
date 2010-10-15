@@ -81,10 +81,6 @@ function GuildNews_Update(frontPage, numButtons)
 		elseif ( index <= numGuildNews ) then
 			local isSticky, isHeader, newsType, text1, text2, id, data, data2, weekday, day, month, year = GetGuildNewsInfo(index);
 			if ( isHeader ) then
-				-- TODO: remove once cheats are not needed
-				if ( weekday == 0 ) then
-					weekday = 7;
-				end
 				button.text:SetPoint("LEFT", 14, 0);
 				button.text:SetFormattedText(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday + 1], day + 1, month + 1);
 				button.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);

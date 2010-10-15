@@ -277,11 +277,11 @@ function ClassTrainer_SelectNearestLearnableSkill()
 			startIndex = 1;
 		end
 	end
-	
+	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 	if ( numServices > 0 ) then
 		for i=startIndex, numServices do 
 			local _, _, serviceType = GetTrainerServiceInfo(i);
-			if ( serviceType == "available" ) then
+			if ( serviceType == "available" and i ~= tradeSkillStepIndex ) then
 				ClassTrainerFrame.selectedService = i;
 				break;
 			end

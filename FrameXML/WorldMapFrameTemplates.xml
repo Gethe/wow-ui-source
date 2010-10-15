@@ -226,13 +226,13 @@
 			</OnLoad>
 			<OnClick>
 				if ( button == "LeftButton" ) then
-					SetMapZoom(WORLDMAP_MAELSTROM_ID, self.zoneID);
+					SetMapByID(self.zoneID);
 				else
 					WorldMapZoomOutButton_OnClick();
 				end
 			</OnClick>
 			<OnEnter>
-				WorldMapFrame.maelstromZoneText = select(self.zoneID, GetMapZones(GetCurrentMapContinent()));
+				WorldMapFrame.maelstromZoneText = GetMapNameByID(self.zoneID);
 			</OnEnter>
 			<OnLeave>
 				WorldMapFrame.maelstromZoneText = nil;

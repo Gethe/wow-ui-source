@@ -765,7 +765,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
+						<FontString name="$parentRewardLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardLabel" text="LFD_REWARDS">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 									<Offset>
@@ -779,7 +779,7 @@
 								<AbsDimension x="290" y="12"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT">
+								<Anchor point="TOPLEFT" relativeTo="$parentRewardLabel" relativePoint="BOTTOMLEFT">
 									<Offset>
 										<AbsDimension x="0" y="-5"/>
 									</Offset>
@@ -848,6 +848,22 @@
 							</Layer>
 						</Layers>
 					</Frame>	
+					<Frame name="$parentNoWeekly" inherits="GlowBoxTemplate"  parentKey="noWeeklyFrame" hidden="true" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="8" y="-174"/>
+							<Anchor point="BOTTOMRIGHT" x="-11" y="7"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentError" inherits="GameFontRedLarge" text="PVP_NO_WEEKLY_RATED_BG"  justifyH="CENTER">
+									<Size x="280" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame name="$parentInfoButton" parentKey="infoButton">
 						<Size>
 							<AbsDimension x="314" y="60"/>
@@ -913,9 +929,9 @@
 									</Anchors>
 								</FontString>
 								<FontString name="$parentTopLeftText" inherits="GameFontNormal" justifyH="CENTER" parentKey="topLeftText" text="ARENA_THIS_WEEK">
-									<Size x="80" y="12"/>
+									<Size x="84" y="12"/>
 									<Anchors>
-										<Anchor point="TOPRIGHT" x="-6" y="-13"/>
+										<Anchor point="TOPRIGHT" x="-4" y="-13"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentBottomLeftText" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="bottomLeftText" text="ARENA_5V5">
@@ -924,9 +940,9 @@
 									</Anchors>
 								</FontString>
 								<FontString name="$parentArenaError" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="arenaError" text="PVP_ARENA_PARTY_ERROR">
-									<Size x="230" y="24"/>
+									<Size x="253" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="3" y="-1"/>
+										<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 									</Anchors>
 								</FontString>
 							</Layer>
