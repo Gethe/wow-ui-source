@@ -625,7 +625,11 @@ function PaperDollFrame_SetHealth(statFrame, unit)
 	local health = UnitHealthMax(unit);
 	PaperDollFrame_SetLabelAndText(statFrame, HEALTH, health, false);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, HEALTH).." "..health..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = STAT_HEALTH_TOOLTIP;
+	if (unit == "player") then
+		statFrame.tooltip2 = STAT_HEALTH_TOOLTIP;
+	elseif (unit == "pet") then
+		-- TODO - Add Pet-specific tooltip
+	end
 	statFrame:Show();
 end
 
@@ -638,7 +642,11 @@ function PaperDollFrame_SetPower(statFrame, unit)
 	if (powerToken and _G[powerToken]) then
 		PaperDollFrame_SetLabelAndText(statFrame, _G[powerToken], power, false);
 		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, _G[powerToken]).." "..power..FONT_COLOR_CODE_CLOSE;
-		statFrame.tooltip2 = _G["STAT_"..powerToken.."_TOOLTIP"];
+		if (unit == "player") then
+			statFrame.tooltip2 = _G["STAT_"..powerToken.."_TOOLTIP"];
+		elseif (unit == "pet") then
+			-- TODO - Add Pet-specific tooltip
+		end
 		statFrame:Show();
 	else
 		statFrame:Hide();

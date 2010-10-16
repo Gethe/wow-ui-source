@@ -1206,24 +1206,29 @@ function FormatProfession(frame, index)
 		
 		frame.professionName:SetText(name);
 		frame.statusBar.rankText:SetText(rank.."/"..maxRank);
+
 		
-					
-		
-		
-		
-		if numSpells == 1 then		
+		if numSpells <= 0 then		
+			frame.button1:Hide();
+			frame.button2:Hide();
+		elseif numSpells == 1 then		
 			frame.button2:Hide();
 			frame.button1:Show();
 			UpdateProfessionButton(frame.button1);		
-		elseif numSpells == 2 then	
+		else -- if numSpells >= 2 then	
 			frame.button1:Show();
 			frame.button2:Show();
 			UpdateProfessionButton(frame.button1);			
-			UpdateProfessionButton(frame.button2);	
-		else
-			frame.button1:Hide();
-			frame.button2:Hide();		
-		end		
+			UpdateProfessionButton(frame.button2);
+		end
+		
+		if numSpells >  2 then
+			local errorStr = "Found "..numSpells.." skills for "..name.." the max is 2:"
+			for i=1,numSpells do
+				errorStr = errorStr.." ("..GetSpellBookItemName(i + spelloffset, SpellBookFrame.bookType)..")";
+			end
+			assert(false, errorStr)
+		end
 	else		
 		frame.missingHeader:Show();
 		frame.missingText:Show();

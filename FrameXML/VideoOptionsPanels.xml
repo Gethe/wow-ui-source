@@ -963,12 +963,15 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						local name = self:GetName();
-						self.cvar = "gxStereoEnabled";
-						self.restart = true;
-						_G[name.."Text"]:SetText(ENABLE_STEREO_VIDEO);
-						VideoOptionsCheckbox_OnLoad(self);
-					</OnLoad>
+            local name = self:GetName();
+            self.cvar = "gxStereoEnabled";
+            self.SetValue = function (self, value)
+              BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+            end
+            self.restart = true;
+            _G[name.."Text"]:SetText(ENABLE_STEREO_VIDEO);
+            VideoOptionsCheckbox_OnLoad(self);
+          </OnLoad>
 				</Scripts>
 			</CheckButton>
 			<Slider name="$parentConvergence" inherits="VideoOptionsSliderTemplate" minValue="0.2" maxValue="50" valueStep="0.1">
