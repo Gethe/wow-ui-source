@@ -2282,6 +2282,7 @@ StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	notClosableByLogout = 1,
 	hideOnEscape = 1,
 	timeoutInformationalOnly = 1,
+	noCancelOnReuse = 1
 };
 
 StaticPopupDialogs["BIND_ENCHANT"] = {

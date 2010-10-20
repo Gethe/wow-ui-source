@@ -25,6 +25,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_HIDEGRID");
 	self:RegisterEvent("PET_BAR_HIDE");
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
+	self:RegisterEvent("PET_UI_UPDATE");
 	self.showgrid = 0;
 	PetActionBar_Update(self);
 	if ( PetHasActionBar() ) then
@@ -36,7 +37,7 @@ end
 function PetActionBar_OnEvent (self, event, ...)
 	local arg1 = ...;
 	
-	if ( event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") ) then
+	if ( event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") or event == "PET_UI_UPDATE") then
 		PetActionBar_Update(self);
 		if ( PetHasActionBar() and UnitIsVisible("pet") ) then
 			ShowPetActionBar();

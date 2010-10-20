@@ -56,7 +56,7 @@ BonusActionBarTypes =  {
 							},
 							
 	["SingleBarLayout"]= 	{
-								width = 686, height = 93,
+								width = 686, height = 105,
 								xpWidth = 620,
 								microBarX = 466, microBarY = 43,
 								microTwoRows = true,
@@ -128,12 +128,13 @@ function SetupBonusActionBar()
 	
 	for i=1,NUM_BONUS_ACTION_SLOTS do
 		local button = _G["BonusActionButton"..i];
-		if  i > barInfo.numButtons then
+		local actionType, id, subType = GetActionInfo(button.action);
+		button:SetSize(barInfo.buttonSize, barInfo.buttonSize);
+		if ( i > barInfo.numButtons or (actionType == "spell" and id == 0) ) then
 			button:SetAttribute("statehidden", true);
 			button:Hide();
 		else
 			button:SetAttribute("statehidden", false);
-			button:SetSize(barInfo.buttonSize, barInfo.buttonSize);
 			button:Show();
 		end
 		
