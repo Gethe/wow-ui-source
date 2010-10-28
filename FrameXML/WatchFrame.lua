@@ -749,6 +749,11 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 				if ( previousBottom and previousBottom < WatchFrame:GetBottom() ) then				
 					achievementLineIndex = achievementLineIndex - numLines;
 					table.wipe(WATCHFRAME_SETLINES);
+					if ( achievementLineIndex > 1 ) then
+						previousLine = WATCHFRAME_ACHIEVEMENTLINES[achievementLineIndex - 1];
+					else
+						previousLine = nil;
+					end
 					break;
 				else
 					-- turn on all lines

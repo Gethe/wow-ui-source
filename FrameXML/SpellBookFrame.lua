@@ -1174,7 +1174,7 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 		
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier = GetProfessionInfo(index);
 		frame.skillName = name;
 		frame.spellOffset = spelloffset;
 		frame.skillLine = skillLine;
@@ -1205,7 +1205,12 @@ function FormatProfession(frame, index)
 		end
 		
 		frame.professionName:SetText(name);
-		frame.statusBar.rankText:SetText(rank.."/"..maxRank);
+		
+		if ( rankModifier > 0 ) then
+			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK_WITH_MODIFIER, rank, rankModifier, maxRank);
+		else
+			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
+		end
 
 		
 		if numSpells <= 0 then		

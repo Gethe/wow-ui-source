@@ -1405,7 +1405,7 @@
 			</EdgeSize>
 		</Backdrop>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="BORDER">
 				<Texture name="$parentBackground" file="Interface\PVPFrame\PVP-Conquest-Misc" >
 					<Size x="293" y="128"/>
 					<TexCoords left="0.63867188" right="0.92480469" top="0.12304688" bottom="0.37304688"/>
@@ -1413,6 +1413,8 @@
 						<Anchor point="TOP" x="0" y="-11"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
 				<Texture name="$parentRingIcon" parentKey="ringIcon">
 					<Size x="60" y="60"/>
 					<Anchors>

@@ -415,7 +415,7 @@ function MerchantItemButton_OnModifiedClick(self, button)
 		if ( HandleModifiedItemClick(GetMerchantItemLink(self:GetID())) ) then
 			return;
 		end
-		if ( IsModifiedClick("SPLITSTACK") ) then
+		if ( IsModifiedClick("SPLITSTACK") and not self.extendedCost) then
 			local maxStack = GetMerchantItemMaxStack(self:GetID());
 			local _, _, price, stackCount = GetMerchantItemInfo(self:GetID());
 			if ( maxStack > 1 and price and (price > 0) ) then
@@ -451,7 +451,6 @@ end
 LIST_DELIMITER = ", "
 
 function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
-	quantity = (quantity or 1);
 	local index = itemButton:GetID();
 	local itemTexture, itemLink, itemsString;
 	local pointsTexture, button;
@@ -461,7 +460,11 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 		return;
 	end
 	
+	MerchantFrame.itemIndex = index;
+	MerchantFrame.count = quantity;
+	
 	local count = itemButton.count or 1;
+	quantity = quantity or 1;
 	itemCount = (itemCount or 0) * quantity;
 	
 	local maxQuality = 0;
@@ -472,9 +475,9 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
-				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
+				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, itemLink);
 			else
-				itemsString = format(ITEM_QUANTITY_TEMPLATE, (itemCount or 0) * quantity, itemLink);
+				itemsString = format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, itemLink);
 			end
 		elseif ( currencyName ) then
 			usingCurrency = true;
@@ -490,9 +493,6 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 		BuyMerchantItem( itemButton:GetID(), quantity );
 		return;
 	end
-	
-	MerchantFrame.itemIndex = index;
-	MerchantFrame.count = quantity;
 	
 	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
 	local r, g, b = GetItemQualityColor(itemQuality);

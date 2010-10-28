@@ -351,9 +351,9 @@ function WorldMapFrame_Update()
 					graveyard:SetFrameLevel(worldMapPOI:GetFrameLevel() - 1);
 					graveyard:Show();
 					if ( currentGraveyard == graveyardID ) then
-						graveyard.texture:SetTexture(0, 1, 0, 0.5);
+						graveyard.texture:SetTexture("Interface\\WorldMap\\GravePicker-Selected");
 					else
-						graveyard.texture:SetTexture(1, 1, 0, 0.5);
+						graveyard.texture:SetTexture("Interface\\WorldMap\\GravePicker-Unselected");
 					end
 					worldMapPOI:Hide();		-- lame way to force tooltip redraw
 				else
@@ -599,8 +599,8 @@ function WorldMap_GetGraveyardButton(index)
 		button:SetScript("OnClick", nil);
 		
 		local texture = button:CreateTexture(button:GetName().."Texture", "ARTWORK");
-		texture:SetWidth(24);
-		texture:SetHeight(24);
+		texture:SetWidth(48);
+		texture:SetHeight(48);
 		texture:SetPoint("CENTER", 0, 0);
 		button.texture = texture;
 	end
@@ -1717,6 +1717,8 @@ function WorldMapFrame_UpdateQuests()
 		WorldMapQuestScrollFrame.highlightedFrame.ownPOI:UnlockHighlight();
 	end
 	QuestPOI_HideAllButtons("WorldMapQuestScrollChildFrame");
+	-- clear blobs
+	WorldMapBlobFrame:DrawNone();
 	-- populate quest frames
 	for i = 1, numEntries do
 		questId, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(i);
@@ -1741,9 +1743,8 @@ function WorldMapFrame_UpdateQuests()
 			questFrame.questLogIndex = questLogIndex;
 			questFrame.completed = isComplete;
 			questFrame.level = level;		-- for difficulty color
-			-- display map POI and turn off blob
+			-- display map POI
 			WorldMapFrame_DisplayQuestPOI(questFrame, isComplete);
-			WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
 			-- set quest text
 			questFrame.title:SetText(title);
 			if ( IsQuestWatched(questLogIndex) ) then
@@ -1803,7 +1804,6 @@ function WorldMapFrame_UpdateQuests()
 			break;
 		end		
 		questFrame:Hide();
-		WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
 		questFrame.questId = 0;
 	end
 	QuestPOI_HideButtons("WorldMapPOIFrame", QUEST_POI_NUMERIC, numPOINumeric + 1);

@@ -117,9 +117,9 @@
 	
 	<Button name="ConsolidatedBuffs" parent="UIParent" inherits="AuraButtonTemplate" hidden="true">
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="TOPRIGHT">
 				<Offset>
-					<AbsDimension x="-180" y="-13"/>
+					<AbsDimension x="0" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

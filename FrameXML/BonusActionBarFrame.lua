@@ -161,6 +161,7 @@ function SetupBonusActionBar()
 	BonusActionBarFrame:SetPoint(barInfo.anchorPoint, barInfo.anchorX, barInfo.anchorY);
 	BonusActionButton1:SetPoint("BOTTOMLEFT",  barInfo.buttonX, barInfo.buttonY);
 	BonusActionBarFrame.currentType = barType;
+	UIParent_ManageFramePositions();
 end
 
 

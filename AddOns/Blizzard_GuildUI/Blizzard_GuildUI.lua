@@ -385,6 +385,7 @@ function GuildMainFrame_OnLoad(self)
 	HybridScrollFrame_CreateButtons(GuildPerksContainer, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");	
 	self:RegisterEvent("GUILD_PERK_UPDATE");
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GUILD_MOTD");
 	-- faction icon
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
@@ -420,7 +421,7 @@ function GuildMainFrame_OnEvent(self, event, ...)
 	end
 	if ( event == "GUILD_PERK_UPDATE" ) then
 		GuildMainFrame_UpdatePerks();
-	elseif ( event == "GUILD_NEWS_UPDATE" or event == "GUILD_MOTD" ) then
+	elseif ( event == "GUILD_NEWS_UPDATE" or event == "GUILD_ROSTER_UPDATE" or event == "GUILD_MOTD" ) then
 		GuildMainFrame_UpdateNewsEvents();
 	end
 end

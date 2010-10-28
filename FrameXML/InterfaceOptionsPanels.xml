@@ -2993,7 +2993,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "raidFramesDisplayPowerBars";
-						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateRaidSetUpOptionToggle("displayPowerBar");
+						self.setFunc = InterfaceOptionsRaidFramePanel_GenerateSetUpOptionToggle("displayPowerBar", "normal");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
@@ -3010,7 +3010,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "raidOptionShowBorders";
-						local unitFrameFunc = InterfaceOptionsRaidFramePanel_GenerateRaidSetUpOptionToggle("displayBorder");
+						local unitFrameFunc = InterfaceOptionsRaidFramePanel_GenerateSetUpOptionToggle("displayBorder", "all");
 						self.setFunc = function(value)
 							unitFrameFunc(value);
 							CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "group", CompactRaidGroup_UpdateBorder);

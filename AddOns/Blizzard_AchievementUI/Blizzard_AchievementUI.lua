@@ -906,6 +906,7 @@ function AchievementFrameAchievements_ToggleView()
 			-- icon frame
 			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
 			button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
+			button.icon.frame:SetPoint("CENTER", -1, 2);
 			-- tsunami
 			local tsunami = _G[name.."BottomTsunami1"];
 			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
@@ -930,6 +931,7 @@ function AchievementFrameAchievements_ToggleView()
 			-- icon frame
 			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
 			button.icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
+			button.icon.frame:SetPoint("CENTER", 2, 2);
 			-- tsunami
 			local tsunami = _G[name.."BottomTsunami1"];
 			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");

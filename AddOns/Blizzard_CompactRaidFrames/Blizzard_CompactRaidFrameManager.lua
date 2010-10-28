@@ -299,6 +299,11 @@ do	--Enclosure to make sure people go through SetSetting
 		end
 		
 		CompactRaidFrameContainer_SetDisplayPets(container, displayPets);
+		if ( displayPets ) then
+			CompactPartyFrame_EnablePets(CompactPartyFrame);
+		else
+			CompactPartyFrame_DisablePets(CompactPartyFrame);
+		end
 	end
 
 	local function CompactRaidFrameManager_SetDisplayMainTankAndAssist(value)
