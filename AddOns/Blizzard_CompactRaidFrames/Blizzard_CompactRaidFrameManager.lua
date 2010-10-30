@@ -110,6 +110,8 @@ end
 function CRFManager_RaidWorldMarkerDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 	
+	info.notCheckable = 1;
+	
 	for i=1, NUM_WORLD_RAID_MARKERS do
 		info.text = _G["WORLD_MARKER"..i];
 		info.func = RaidWorldMarker_OnClick;

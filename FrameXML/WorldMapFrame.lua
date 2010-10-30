@@ -539,14 +539,14 @@ function WorldMapPOI_OnEnter(self)
 		if ( self.graveyard ) then
 			WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			if ( self.graveyard == GetCemeteryPreference() ) then
-				WorldMapTooltip:SetText("Selected Graveyard");
-				WorldMapTooltip:AddLine("You will appear at this graveyard when you respawn.", 1, 1, 1, 1);
+				WorldMapTooltip:SetText(GRAVEYARD_SELECTED);
+				WorldMapTooltip:AddLine(GRAVEYARD_SELECTED_TOOLTIP, 1, 1, 1, 1);
 				WorldMapTooltip:Show();
 			else
-				WorldMapTooltip:SetText("Eligible Graveyard");
-				WorldMapTooltip:AddLine("Click here to set your respawn point at this graveyard.", 1, 1, 1, 1);
+				WorldMapTooltip:SetText(GRAVEYARD_ELIGIBLE);
+				WorldMapTooltip:AddLine(GRAVEYARD_ELIGIBLE_TOOLTIP, 1, 1, 1, 1);
 				WorldMapTooltip:Show();
-			end			
+			end
 		end
 	end
 end

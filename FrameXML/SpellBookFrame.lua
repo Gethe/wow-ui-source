@@ -344,9 +344,11 @@ function SpellButton_OnLoad(self)
 end
 
 function SpellButton_OnEvent(self, event, ...)
-	if ( event == "SPELLS_CHANGED" or event == "SPELL_UPDATE_COOLDOWN" or event == "UPDATE_SHAPESHIFT_FORM" ) then
+	if ( event == "SPELLS_CHANGED" or event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		SpellButton_UpdateButton(self);
+	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		SpellButton_UpdateCooldown(self);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		SpellButton_UpdateSelection(self);
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" or event == "ARCHAEOLOGY_CLOSED" ) then
@@ -466,12 +468,20 @@ function SpellButton_UpdateSelection(self)
 	end
 end
 
+function SpellButton_UpdateCooldown(self)
+	local cooldown = _G[self:GetName().."Cooldown"];
+	local slot, slotType = SpellBook_GetSpellBookSlot(self);
+	if (slot) then
+		local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
+		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	end
+end
+
 function SpellButton_UpdateButton(self)
 	if SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
 		UpdateProfessionButton(self);
 		return;
 	end
-
 
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 1;
@@ -550,8 +560,7 @@ function SpellButton_UpdateButton(self)
 		self:Enable();
 	end
 
-	local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	SpellButton_UpdateCooldown(self);
 
 	local autoCastAllowed, autoCastEnabled = GetSpellAutocast(slot, SpellBookFrame.bookType);
 	if ( autoCastAllowed ) then
@@ -610,13 +619,14 @@ function SpellButton_UpdateButton(self)
 		self.SpellName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
 		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 4);
-		
+
 		-- For spells that are on cooldown.  This must be done here because otherwise "SetDesaturated(0)" above will override this on low-end video cards.
-		if ( enable == 1 ) then
-			iconTexture:SetVertexColor(1.0, 1.0, 1.0);
-		else
-			iconTexture:SetVertexColor(0.4, 0.4, 0.4);
-		end
+		--local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
+		--if ( enable == 1 ) then
+		--	iconTexture:SetVertexColor(1.0, 1.0, 1.0);
+		--else
+		--	iconTexture:SetVertexColor(0.4, 0.4, 0.4);
+		--end
 	else
 		local level = GetSpellAvailableLevel(slot, SpellBookFrame.bookType);
 		slotFrame:Hide();
