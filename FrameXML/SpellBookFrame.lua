@@ -344,9 +344,11 @@ function SpellButton_OnLoad(self)
 end
 
 function SpellButton_OnEvent(self, event, ...)
-	if ( event == "SPELLS_CHANGED" or event == "SPELL_UPDATE_COOLDOWN" or event == "UPDATE_SHAPESHIFT_FORM" ) then
+	if ( event == "SPELLS_CHANGED" or event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		SpellButton_UpdateButton(self);
+	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		SpellButton_UpdateCooldown(self);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		SpellButton_UpdateSelection(self);
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" or event == "ARCHAEOLOGY_CLOSED" ) then
@@ -466,12 +468,20 @@ function SpellButton_UpdateSelection(self)
 	end
 end
 
+function SpellButton_UpdateCooldown(self)
+	local cooldown = _G[self:GetName().."Cooldown"];
+	local slot, slotType = SpellBook_GetSpellBookSlot(self);
+	if (slot) then
+		local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
+		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	end
+end
+
 function SpellButton_UpdateButton(self)
 	if SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
 		UpdateProfessionButton(self);
 		return;
 	end
-
 
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 1;
@@ -550,8 +560,7 @@ function SpellButton_UpdateButton(self)
 		self:Enable();
 	end
 
-	local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	SpellButton_UpdateCooldown(self);
 
 	local autoCastAllowed, autoCastEnabled = GetSpellAutocast(slot, SpellBookFrame.bookType);
 	if ( autoCastAllowed ) then
@@ -610,13 +619,14 @@ function SpellButton_UpdateButton(self)
 		self.SpellName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
 		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 4);
-		
+
 		-- For spells that are on cooldown.  This must be done here because otherwise "SetDesaturated(0)" above will override this on low-end video cards.
-		if ( enable == 1 ) then
-			iconTexture:SetVertexColor(1.0, 1.0, 1.0);
-		else
-			iconTexture:SetVertexColor(0.4, 0.4, 0.4);
-		end
+		--local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
+		--if ( enable == 1 ) then
+		--	iconTexture:SetVertexColor(1.0, 1.0, 1.0);
+		--else
+		--	iconTexture:SetVertexColor(0.4, 0.4, 0.4);
+		--end
 	else
 		local level = GetSpellAvailableLevel(slot, SpellBookFrame.bookType);
 		slotFrame:Hide();
@@ -1174,7 +1184,7 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 		
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier = GetProfessionInfo(index);
 		frame.skillName = name;
 		frame.spellOffset = spelloffset;
 		frame.skillLine = skillLine;
@@ -1205,25 +1215,35 @@ function FormatProfession(frame, index)
 		end
 		
 		frame.professionName:SetText(name);
-		frame.statusBar.rankText:SetText(rank.."/"..maxRank);
 		
-					
+		if ( rankModifier > 0 ) then
+			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK_WITH_MODIFIER, rank, rankModifier, maxRank);
+		else
+			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
+		end
+
 		
-		
-		
-		if numSpells == 1 then		
+		if numSpells <= 0 then		
+			frame.button1:Hide();
+			frame.button2:Hide();
+		elseif numSpells == 1 then		
 			frame.button2:Hide();
 			frame.button1:Show();
 			UpdateProfessionButton(frame.button1);		
-		elseif numSpells == 2 then	
+		else -- if numSpells >= 2 then	
 			frame.button1:Show();
 			frame.button2:Show();
 			UpdateProfessionButton(frame.button1);			
-			UpdateProfessionButton(frame.button2);	
-		else
-			frame.button1:Hide();
-			frame.button2:Hide();		
-		end		
+			UpdateProfessionButton(frame.button2);
+		end
+		
+		if numSpells >  2 then
+			local errorStr = "Found "..numSpells.." skills for "..name.." the max is 2:"
+			for i=1,numSpells do
+				errorStr = errorStr.." ("..GetSpellBookItemName(i + spelloffset, SpellBookFrame.bookType)..")";
+			end
+			assert(false, errorStr)
+		end
 	else		
 		frame.missingHeader:Show();
 		frame.missingText:Show();

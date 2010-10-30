@@ -8,39 +8,6 @@
 -->
 	<Button name="GuildRewardsButtonTemplate" virtual="true" inherits="UIServiceButtonTemplate">
 		<Size x="299" y="47"/>
-		<Frames>
-			<Frame name="$parentAchievement" parentKey="achievement" hidden="true">
-				<Size x="246" y="12"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentRequires" inherits="SystemFont_Shadow_Small" justifyH="LEFT" text="REQUIRES_LABEL">
-							<Size x="0" y="12"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parent"/>
-							</Anchors>
-						</FontString>
-						<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Guild">
-							<Size x="20" y="18"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentRequires" relativePoint="RIGHT" x="4" y="0"/>
-							</Anchors>
-							<TexCoords left="0.63281250" right="0.67187500" top="0.13085938" bottom="0.16601563"/>
-						</Texture>
-						<FontString name="$parentText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" parentKey="text">
-							<Size x="0" y="12"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="4" y="0"/>
-								<Anchor point="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<Color r="1" g="1" b="0"/>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

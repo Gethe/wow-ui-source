@@ -10,7 +10,7 @@ WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_WORLD_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
 WORLDMAP_MAELSTROM_ID = 5;
-MAELSTROM_ZONES_ID = { TheMaelstrom = 4, Deepholm = 1, Kezan = 2, TheLostIsles = 3 };
+MAELSTROM_ZONES_ID = { TheMaelstrom = 737, Deepholm = 640, Kezan = 605, TheLostIsles = 544 };
 WORLDMAP_WINTERGRASP_ID = 501;
 WORLDMAP_WINTERGRASP_POI_AREAID = 4197;
 QUESTFRAME_MINHEIGHT = 34;
@@ -351,9 +351,9 @@ function WorldMapFrame_Update()
 					graveyard:SetFrameLevel(worldMapPOI:GetFrameLevel() - 1);
 					graveyard:Show();
 					if ( currentGraveyard == graveyardID ) then
-						graveyard.texture:SetTexture(0, 1, 0, 0.5);
+						graveyard.texture:SetTexture("Interface\\WorldMap\\GravePicker-Selected");
 					else
-						graveyard.texture:SetTexture(1, 1, 0, 0.5);
+						graveyard.texture:SetTexture("Interface\\WorldMap\\GravePicker-Unselected");
 					end
 					worldMapPOI:Hide();		-- lame way to force tooltip redraw
 				else
@@ -539,14 +539,14 @@ function WorldMapPOI_OnEnter(self)
 		if ( self.graveyard ) then
 			WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			if ( self.graveyard == GetCemeteryPreference() ) then
-				WorldMapTooltip:SetText("Selected Graveyard");
-				WorldMapTooltip:AddLine("You will appear at this graveyard when you respawn.", 1, 1, 1, 1);
+				WorldMapTooltip:SetText(GRAVEYARD_SELECTED);
+				WorldMapTooltip:AddLine(GRAVEYARD_SELECTED_TOOLTIP, 1, 1, 1, 1);
 				WorldMapTooltip:Show();
 			else
-				WorldMapTooltip:SetText("Eligible Graveyard");
-				WorldMapTooltip:AddLine("Click here to set your respawn point at this graveyard.", 1, 1, 1, 1);
+				WorldMapTooltip:SetText(GRAVEYARD_ELIGIBLE);
+				WorldMapTooltip:AddLine(GRAVEYARD_ELIGIBLE_TOOLTIP, 1, 1, 1, 1);
 				WorldMapTooltip:Show();
-			end			
+			end
 		end
 	end
 end
@@ -599,8 +599,8 @@ function WorldMap_GetGraveyardButton(index)
 		button:SetScript("OnClick", nil);
 		
 		local texture = button:CreateTexture(button:GetName().."Texture", "ARTWORK");
-		texture:SetWidth(24);
-		texture:SetHeight(24);
+		texture:SetWidth(48);
+		texture:SetHeight(48);
 		texture:SetPoint("CENTER", 0, 0);
 		button.texture = texture;
 	end
@@ -1717,6 +1717,8 @@ function WorldMapFrame_UpdateQuests()
 		WorldMapQuestScrollFrame.highlightedFrame.ownPOI:UnlockHighlight();
 	end
 	QuestPOI_HideAllButtons("WorldMapQuestScrollChildFrame");
+	-- clear blobs
+	WorldMapBlobFrame:DrawNone();
 	-- populate quest frames
 	for i = 1, numEntries do
 		questId, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(i);
@@ -1741,9 +1743,8 @@ function WorldMapFrame_UpdateQuests()
 			questFrame.questLogIndex = questLogIndex;
 			questFrame.completed = isComplete;
 			questFrame.level = level;		-- for difficulty color
-			-- display map POI and turn off blob
+			-- display map POI
 			WorldMapFrame_DisplayQuestPOI(questFrame, isComplete);
-			WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
 			-- set quest text
 			questFrame.title:SetText(title);
 			if ( IsQuestWatched(questLogIndex) ) then
@@ -1803,7 +1804,6 @@ function WorldMapFrame_UpdateQuests()
 			break;
 		end		
 		questFrame:Hide();
-		WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
 		questFrame.questId = 0;
 	end
 	QuestPOI_HideButtons("WorldMapPOIFrame", QUEST_POI_NUMERIC, numPOINumeric + 1);

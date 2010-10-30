@@ -77,7 +77,6 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 			HideUIPanel(AchievementFrame);
 		else
 			ShowUIPanel(AchievementFrame);
-			AchievementFrame_SetTabs();
 			AchievementFrameTab_OnClick(1);
 		end
 		return;
@@ -86,7 +85,6 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 		HideUIPanel(AchievementFrame);
 	else
 		ShowUIPanel(AchievementFrame);
-		AchievementFrame_SetTabs();
 		AchievementFrameTab_OnClick(3);
 	end
 end
@@ -96,7 +94,6 @@ function AchievementFrame_DisplayComparison (unit)
 	AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
 	AchievementFrameTab_OnClick(1);
 	ShowUIPanel(AchievementFrame);
-	AchievementFrame_SetTabs();
 	--AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameSummary);
 	AchievementFrameComparison_SetUnit(unit);
 	AchievementFrameComparison_ForceUpdate();
@@ -113,6 +110,7 @@ end
 
 function AchievementFrame_OnShow (self)
 	PlaySound("AchievementMenuOpen");
+	AchievementFrame_SetTabs();
 	AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 	if ( not AchievementFrame.wasShown ) then
 		AchievementFrame.wasShown = true;
@@ -908,6 +906,7 @@ function AchievementFrameAchievements_ToggleView()
 			-- icon frame
 			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
 			button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
+			button.icon.frame:SetPoint("CENTER", -1, 2);
 			-- tsunami
 			local tsunami = _G[name.."BottomTsunami1"];
 			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
@@ -932,6 +931,7 @@ function AchievementFrameAchievements_ToggleView()
 			-- icon frame
 			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
 			button.icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
+			button.icon.frame:SetPoint("CENTER", 2, 2);
 			-- tsunami
 			local tsunami = _G[name.."BottomTsunami1"];
 			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
@@ -2042,7 +2042,7 @@ function AchievementFrameSummary_ToggleView()
 		AchievementFrameSummary.guildView = nil;
 		tCategories = ACHIEVEMENTUI_SUMMARYCATEGORIES;
 		-- recent achievements
-		for i = 1, 4 do
+		for i = 1, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
 			local button = _G["AchievementFrameSummaryAchievement"..i];
 			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
 			button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
@@ -2054,13 +2054,11 @@ function AchievementFrameSummary_ToggleView()
 		AchievementFrameSummary.guildView = true;
 		tCategories = ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES;
 		-- recent achievements
-		for i = 1, 4 do
+		for i = 1, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
 			local button = _G["AchievementFrameSummaryAchievement"..i];	
-			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			button.icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
-			button.icon.frame:SetPoint("CENTER", 0, 2);
-			button.glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
-			button.titleBar:SetAlpha(1);
+			if ( button ) then
+				AchievementFrameSummaryAchievement_SetGuildTextures(button)
+			end
 		end
 	end
 	-- categories
@@ -2091,7 +2089,6 @@ function AchievementFrameSummary_UpdateAchievements(...)
 		end
 		if ( not button ) then
 			button = CreateFrame("Button", "AchievementFrameSummaryAchievement"..i, AchievementFrameSummaryAchievements, "SummaryAchievementTemplate");
-			
 			if ( i == 1 ) then
 				button:SetPoint("TOPLEFT",AchievementFrameSummaryAchievementsHeader, "BOTTOMLEFT", 18, 2 );
 				button:SetPoint("TOPRIGHT",AchievementFrameSummaryAchievementsHeader, "BOTTOMRIGHT", -18, 2 );
@@ -2100,7 +2097,9 @@ function AchievementFrameSummary_UpdateAchievements(...)
 				button:SetPoint("TOPLEFT",anchorTo, "BOTTOMLEFT", 0, 3 );
 				button:SetPoint("TOPRIGHT",anchorTo, "BOTTOMRIGHT", 0, 3 );
 			end
-			
+			if ( AchievementFrameSummary.guildView ) then
+				AchievementFrameSummaryAchievement_SetGuildTextures(button);
+			end
 			if ( not buttons ) then
 				buttons = AchievementFrameSummaryAchievements.buttons;
 			end
@@ -2194,6 +2193,14 @@ function AchievementFrameSummaryAchievement_OnLoad(self)
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, 0.5);
 	self.titleBar:SetVertexColor(1,1,1,0.5);
 	self.dateCompleted:Show();
+end
+
+function AchievementFrameSummaryAchievement_SetGuildTextures(button)
+	button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+	button.icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
+	button.icon.frame:SetPoint("CENTER", 0, 2);
+	button.glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
+	button.titleBar:SetAlpha(1);
 end
 
 function AchievementFrameSummaryAchievement_OnClick(self)

@@ -2,6 +2,33 @@
 ..\FrameXML\UI.xsd">
 	<Script file="CompactPartyFrame.lua"/>
 	<Frame name="CompactPartyFrame" clampedToScreen="true" inherits="CompactRaidGroupTemplate" parent="UIParent" movable="true">
+		<Frames>
+			<Button name="$parentPet1" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMember1" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet2" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMember2" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet3" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMember3" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet4" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMember4" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet5" inherits="CompactUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMember5" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				CompactPartyFrame_OnLoad(self);

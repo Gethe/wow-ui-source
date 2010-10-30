@@ -108,9 +108,6 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
-					<OnClick>
-						TokenButtonLinkButton_OnClick(self, button, down);
-					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -345,9 +342,6 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
-			<OnClick>
-				BackpackTokenButton_OnClick(self, button, down);
-			</OnClick>
 		</Scripts>
 	</Button>
 	<Frame name="BackpackTokenFrame" parent="UIParent">

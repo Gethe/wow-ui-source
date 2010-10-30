@@ -643,7 +643,7 @@ function PlayerFrame_HideVehicleTexture()
 	if ( class == "WARLOCK" ) then
 		ShardBarFrame:Show();
 	elseif ( class == "SHAMAN" ) then
-		TotemFrame:Show();
+		TotemFrame_Update();
 	elseif ( class == "DRUID" ) then
 		EclipseBar_UpdateShown(EclipseBarFrame);
 	elseif ( class == "PALADIN" ) then

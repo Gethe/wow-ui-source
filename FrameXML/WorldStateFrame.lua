@@ -285,7 +285,6 @@ function WorldStateAlwaysUpFrame_StartBGChatFilter (self)
 	WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = 0;
 	
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", WorldStateAlwaysUpFrame_FilterChatMsgSystem);
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", WorldStateAlwaysUpFrame_FilterChatMsgLoot);
 	
 	self:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
 end
@@ -294,7 +293,6 @@ function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
 	inBattleground = false;
 	
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", WorldStateAlwaysUpFrame_FilterChatMsgSystem);
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_LOOT", WorldStateAlwaysUpFrame_FilterChatMsgLoot);
 	
 	for i in next, ADDED_PLAYERS do
 		ADDED_PLAYERS[i] = nil;
@@ -344,19 +342,6 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (self, event, ...)
 	return false;
 end
 
-local matchString = string.gsub(LOOT_ITEM_CREATED_SELF, "%%s%.", ".+")
-
-function WorldStateAlwaysUpFrame_FilterChatMsgLoot (self, event, ...)
-	if ( GetBattlefieldWinner() ) then
-		local message = ...;
-		-- Suppress loot messages for other players at the end of battlefields and arenas
-		if ( not string.match(message, matchString) ) then
-			return true;
-		end
-	end
-	
-	return false;
-end
 
 function WorldStateFrame_ToggleBattlefieldMinimap()
 	local _, instanceType = IsInInstance();
@@ -992,7 +977,7 @@ function ToggleWorldStateScoreFrame()
 	if ( WorldStateScoreFrame:IsShown() ) then
 		HideUIPanel(WorldStateScoreFrame);
 	else
-		if ( not IsActiveBattlefieldArena() and MiniMapBattlefieldFrame.status == "active" ) then
+		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() ) and MiniMapBattlefieldFrame.status == "active" ) then
 			ShowUIPanel(WorldStateScoreFrame);
 		end
 	end

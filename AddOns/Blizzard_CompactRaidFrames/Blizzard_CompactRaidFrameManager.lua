@@ -110,6 +110,8 @@ end
 function CRFManager_RaidWorldMarkerDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 	
+	info.notCheckable = 1;
+	
 	for i=1, NUM_WORLD_RAID_MARKERS do
 		info.text = _G["WORLD_MARKER"..i];
 		info.func = RaidWorldMarker_OnClick;
@@ -299,6 +301,11 @@ do	--Enclosure to make sure people go through SetSetting
 		end
 		
 		CompactRaidFrameContainer_SetDisplayPets(container, displayPets);
+		if ( displayPets ) then
+			CompactPartyFrame_EnablePets(CompactPartyFrame);
+		else
+			CompactPartyFrame_DisablePets(CompactPartyFrame);
+		end
 	end
 
 	local function CompactRaidFrameManager_SetDisplayMainTankAndAssist(value)

@@ -1,0 +1,550 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+
+<Script file="Blizzard_FeedbackUIStrings.lua"/>
+<Script file="Blizzard_FeedbackUI.lua"/>
+
+<Button name="FeedbackUIButton" parent="Minimap" frameStrata="MEDIUM" movable="true">
+	<Size>
+		<AbsDimension x="21" y="21"/>
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER" relativeTo="Minimap" relativePoint="CENTER">
+			<Offset>
+				<AbsDimension x="-76" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Layers>
+		<Layer level="OVERLAY">
+			<Texture file="Interface\MINIMAP\MiniMap-TrackingBorder">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-5" y="4"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="26" y="-26"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	<NormalTexture file="Interface\Addons\Blizzard_FeedbackUI\UI-Icon-Blizzard-Up.blp"/>
+	<PushedTexture file="Interface\Addons\Blizzard_FeedbackUI\UI-Icon-Blizzard-Pushed.blp"/>
+	<HighlightTexture file="Interface\Addons\Blizzard_FeedbackUI\UI-Icon-Blizzard-Highlight.blp" alphaMode="ADD"/>
+	<Scripts>
+		<OnLoad>
+			self.tooltipText = MicroButtonTooltipText(TEXT(BUG_BUTTON), "TOGGLEBUG");
+			self.newbieText = NEWBIE_TOOLTIP_BUG;
+			self.name="hide";
+            self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+            self:RegisterForDrag("RightButton");
+		</OnLoad>
+		<OnClick>
+            if ( button == "LeftButton" ) then
+                FeedbackUITab4:Click();
+                FeedbackUI_Show();
+            else
+                ToggleDropDownMenu(1, nil, getglobal(self:GetName() .. "DDL"), self:GetName(), 0, 0);
+            end
+		</OnClick>
+		<OnEnter>
+			GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+		</OnLeave>
+        <OnUpdate>
+            FeedbackUI_OnUpdate(elapsed)
+        </OnUpdate>
+        <OnDragStart>
+            self:SetScript("OnUpdate", FeedbackUI_MoveButton);
+        </OnDragStart>
+        <OnDragStop>
+            self:SetScript("OnUpdate", function(self, elapsed) FeedbackUI_OnUpdate(elapsed) end);
+        </OnDragStop>
+	</Scripts>
+    <Frames>
+        <Frame name="$parentDDL" inherits="FeedbackDropDownMenuTemplate" id="1" hidden="true">
+            <Anchors>
+                <Anchor point="TOP" relativeto="$parent" relativepoint="BOTTOM">
+                    <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+            <Scripts>
+                <OnLoad>
+					UIDropDownMenu_Initialize(self, FeedbackUI_OptionsInit, "MENU");
+                    self:RegisterEvent("VARIABLES_LOADED");
+                </OnLoad>
+                <OnEvent>
+                    UIDropDownMenu_Initialize(self, FeedbackUI_OptionsInit, "MENU");
+                </OnEvent>
+            </Scripts>
+        </Frame>
+    </Frames>
+</Button>
+
+
+
+
+    
+<Frame name="FeedbackUI" toplevel="true" frameStrata="DIALOG" enableMouse="true" movable="true" inherits="FeedbackUITemplate" parent="UIParent" hidden="true">
+	<Scripts>
+		<OnLoad>
+			self.button = getglobal("FeedbackUIButton");
+			FeedbackUI_OnLoad(self)
+			self:SetClampedToScreen(1)
+            self:RegisterEvent("ADDON_LOADED");
+		</OnLoad>
+        <OnEvent>
+            FeedbackUI_OnEvent(self, event, ...)
+        </OnEvent>
+		<OnShow>
+			FeedbackUI_ParseModifiedClick();
+		</OnShow>
+	</Scripts>
+	<Frames>
+		<Frame name="$parentBugFrame" hidden="true" inherits="FeedbackBugSuggestFrameTemplate">
+			<Scripts>
+				<OnLoad>
+					tinsert(feedbackFrames, self)
+					self.label = FEEDBACKUIFEEDBACKFRMTITLE_TEXT
+				</OnLoad>
+				<OnShow>
+					getglobal(self:GetParent():GetName() .. "TitleFrmTitleText"):SetText(self.label);
+				</OnShow>
+			</Scripts>
+		</Frame>
+		<Frame name="$parentSuggestFrame" hidden="true" inherits="FeedbackBugSuggestFrameTemplate">
+			<Scripts>
+				<OnLoad>
+					tinsert(feedbackFrames, self)
+					self.label = FEEDBACKUIFEEDBACKFRMTITLE_TEXT
+				</OnLoad>
+				<OnShow>
+					getglobal(self:GetParent():GetName() .. "TitleFrmTitleText"):SetText(self.label);
+				</OnShow>
+			</Scripts>
+		</Frame>
+		<Frame name="$parentSurveyFrame" hidden="true" inherits="FeedbackSurveyFrameTemplate">
+			<Scripts>
+				<OnLoad>
+					tinsert(feedbackFrames, self)
+					self.label = FEEDBACKUIFEEDBACKFRMTITLE_TEXT
+				</OnLoad>
+				<OnShow>
+					getglobal(self:GetParent():GetName() .. "TitleFrmTitleText"):SetText(self.label);
+				</OnShow>
+			</Scripts>
+		</Frame>
+        <Frame name="$parentWelcomeFrame" hidden="false" inherits="FeedbackFrameTemplate">
+            <Scripts>
+                <OnLoad>
+                    tinsert(feedbackFrames, self)
+                    self.label = FEEDBACKUIFEEDBACKFRMTITLE_TEXT
+                </OnLoad>
+                <OnShow>
+                    getglobal(self:GetParent():GetName() .. "TitleFrmTitleText"):SetText(self.label);
+                </OnShow>
+                <OnHide>
+<!--                    FeedbackUI_SetupWelcome() -->
+                </OnHide>
+            </Scripts>
+            <Frames>
+                <Frame name="$parentBanner" hidden="false">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeto="$parent" relativepoint="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-12"/>
+                            </Offset>
+                        </Anchor>
+                        <Anchor point="BOTTOMRIGHT" relativeto="$parent" relativepoint="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="-130"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <Layers>
+                        <Layer level="OVERLAY">
+                            <FontString name="$parentText" inherits="GameFontHighlight" justifyv="TOP" justifyh="LEFT" multiline="TRUE" text="FEEDBACKUI_GENERALWELCOME">
+                                <Anchors>
+                                    <Anchor point="TOPLEFT" relativeto="$parent" relativepoint="TOPLEFT">
+                                        <Offset>
+                                            <AbsDimension x="8" y="-8"/>
+                                        </Offset>
+                                    </Anchor>
+                                    <Anchor point="BOTTOMRIGHT" relativeto="$parent" relativepoint="BOTTOMRIGHT">
+                                        <Offset>
+                                            <AbsDimension x="-8" y="8"/>
+                                        </Offset>
+                                    </Anchor>
+                                </Anchors>
+                            </FontString>
+                            <FontString name="$parentBottomText" inherits="GameFontHighlight" justifyv="TOP" justifyh="LEFT" multiline="TRUE" text="">
+                                <Size>
+                                    <AbsDimension x="5" y="45"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="BOTTOMLEFT" relativeto="$parent" relativepoint="BOTTOMLEFT">
+                                        <Offset>
+                                            <AbsDimension x="8" y="-8"/>
+                                        </Offset>
+                                    </Anchor>
+                                    <Anchor point="BOTTOMRIGHT" relativeto="$parent" relativepoint="BOTTOMRIGHT">
+                                        <Offset>
+                                            <AbsDimension x="-8" y="8"/>
+                                        </Offset>
+                                    </Anchor>
+                                </Anchors>
+                            </FontString>
+                            <FontString name="$parentTargetName" inherits="GameFontNormalLarge" justifyv="MIDDLE" justifyh="LEFT" multiline="FALSE" text="">
+                                <Anchors>
+                                    <Anchor point="TOPLEFT" relativeto="$parentText" relativepoint="LEFT">
+                                        <Offset>
+                                            <AbsDimension x="8" y="20"/>
+                                        </Offset>
+                                    </Anchor>
+                                    <Anchor point="BOTTOMRIGHT" relativeto="$parentBottomText" relativepoint="TOPRIGHT">
+                                        <Offset>
+                                            <AbsDimension x="-8" y="8"/>
+                                        </Offset>
+                                    </Anchor>
+                                </Anchors>
+                            </FontString>
+                        </Layer>
+                    </Layers>
+                </Frame>
+				
+				<Frame name="$parentClickOptions">
+                    <Size>
+                        <AbsDimension x="250" y="54"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeto="$parent" relativepoint="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                        <Anchor point="BOTTOMRIGHT" relativeto="$parent" relativepoint="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-4" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>                    
+                </Frame>
+				
+                <Frame name="$parentBugs" inherits="FeedbackPortalFrame">
+                    <Size>
+                        <AbsDimension x="250" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeto="$parentClickOptions" relativepoint="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                        <Anchor point="BOTTOMRIGHT" relativeto="$parentClickOptions" relativepoint="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="-4" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>                    
+
+                    <Scripts>
+                        <OnLoad>
+                            self.button = getglobal(self:GetName() .. "Btn");
+                            getglobal(self:GetName() .. "Tint"):SetVertexColor(.33, 0, 0, .6);
+                            getglobal(self:GetName() .. "Label"):SetText(FEEDBACKUI_WELCOMEBUGHEADER);
+                            getglobal(self:GetName() .. "Description"):SetText(FEEDBACKUI_WELCOMEBUGTEXT);
+                            getglobal(self:GetName() .. "Icon"):SetTexture("Interface\\AddOns\\Blizzard_FeedbackUI\\UI-Icon-Bug");
+                            self.button:SetText(FEEDBACKUI_STARTBUG);
+                            self.button:SetScript("OnClick", function() FeedbackUI_SlashBug(true) end);
+                        </OnLoad>
+                    </Scripts>
+                </Frame>
+    
+                <Frame name="$parentSuggestions" inherits="FeedbackPortalFrame">
+                    <Size>
+                        <AbsDimension x="250" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeto="$parentBugs" relativepoint="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                        <Anchor point="BOTTOMRIGHT" relativeto="$parentBugs" relativepoint="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <Scripts>
+                        <OnLoad>
+                            self.button = getglobal(self:GetName() .. "Btn");
+                            getglobal(self:GetName() .. "Tint"):SetVertexColor(.8, .1, .8, .2);
+                            getglobal(self:GetName() .. "Label"):SetText(FEEDBACKUI_WELCOMESUGGESTHEADER);
+                            getglobal(self:GetName() .. "Description"):SetText(FEEDBACKUI_WELCOMESUGGESTTEXT);
+                            getglobal(self:GetName() .. "Icon"):SetTexture("Interface\\AddOns\\Blizzard_FeedbackUI\\UI-Icon-Suggestion");
+                            self.button:SetText(FEEDBACKUI_STARTSUGGESTION);
+                            self.button:SetScript("OnClick", function() FeedbackUI_SlashSuggest(true) end);
+                        </OnLoad>
+                    </Scripts>
+                </Frame>                
+                <Frame name="$parentSurveys" inherits="FeedbackPortalFrame">
+                    <Size>
+                        <AbsDimension x="250" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeto="$parentSuggestions" relativepoint="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                        <Anchor point="BOTTOMRIGHT" relativeto="$parentSuggestions" relativepoint="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <Scripts>
+                        <OnLoad>
+                            self.button = getglobal(self:GetName() .. "Btn");
+                            getglobal(self:GetName() .. "Tint"):SetVertexColor(0, 0, .33, .6);
+                            getglobal(self:GetName() .. "Label"):SetText(FEEDBACKUI_WELCOMESURVEYHEADER);
+                            getglobal(self:GetName() .. "Description"):SetText(FEEDBACKUI_WELCOMESURVEYTEXT);
+                            getglobal(self:GetName() .. "Icon"):SetTexture("Interface\\AddOns\\Blizzard_FeedbackUI\\UI-Icon-Survey");
+                            self.button:SetText(FEEDBACKUI_STARTSURVEY);
+                            self.button:SetScript("OnClick", function() FeedbackUI_SlashSurvey(true) end);
+                        </OnLoad>
+                    </Scripts>
+                </Frame>  
+            </Frames>
+        </Frame>
+		<Frame name="$parentTabs">
+			<Size>
+				<AbsDimension y="40"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativeto="$parent" relativepoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-29"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT" relativeto="$parent" relativepoint="CENTER">
+					<Offset>
+						<AbsDimension x="-25"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Frames>
+				<Button name="FeedbackUITab1" inherits="FeedbackFrameTabButtonTemplate" id="1" text="FEEDBACKUITYPEBUG_TEXT">
+					<Anchors>
+						<Anchor point="LEFT" relativeto="$parent" relativepoint="LEFT">
+							<Offset>
+								<AbsDimension x="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self.frame=getglobal("FeedbackUIBugFrame");
+						</OnLoad>		
+                        <OnShow>
+                            self:Hide();
+                        </OnShow>
+					</Scripts>			
+				</Button>
+				<Button name="FeedbackUITab2" inherits="FeedbackFrameTabButtonTemplate" id="2" text="FEEDBACKUITYPESUGGEST_TEXT">
+					<Anchors>
+						<Anchor point="LEFT" relativeto="FeedbackUITab1" relativepoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self.frame=getglobal("FeedbackUISuggestFrame");
+						</OnLoad>
+                        <OnShow>
+                            self:Hide();
+                        </OnShow>
+					</Scripts>
+				</Button>
+				<Button name="FeedbackUITab3" inherits="FeedbackFrameTabButtonTemplate" id="3" text="FEEDBACKUITYPESURVEY_TEXT">
+					<Anchors>
+						<Anchor point="LEFT" relativeto="FeedbackUITab2" relativepoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self.frame=getglobal("FeedbackUISurveyFrame");
+						</OnLoad>
+                        <OnShow>
+                            self:Hide();
+                        </OnShow>
+					</Scripts>
+				</Button>
+				<Button name="FeedbackUITab4" inherits="FeedbackFrameTabButtonTemplate" id="4" text="Start">
+					<Anchors>
+						<Anchor point="LEFT" relativeto="FeedbackUITab3" relativepoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self.frame=getglobal("FeedbackUIWelcomeFrame");
+						</OnLoad>
+                        <OnShow>
+                            self:Hide();
+                        </OnShow>
+					</Scripts>
+				</Button>                
+			</Frames>
+		</Frame>
+	</Frames>
+</Frame>
+
+<Frame name="FeedbackUIQuestLogTip" hidden="false" parent="QuestLogDetailScrollChildFrame">
+    <Size>
+        <AbsDimension x="260" y="14"/>
+    </Size>
+    <Layers>
+        <Layer level="OVERLAY">
+            <Texture name="$parentIcon" file="Interface\Addons\Blizzard_FeedbackUI\UI-Icon-Blizzard-QuestLog">
+                <TexCoords left=".18" right=".82" top=".18" bottom=".82"/>
+                <Size>
+                    <AbsDimension x="14" y="14"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent" relativepoint="TOPLEFT"/>
+                </Anchors>
+            </Texture>
+            <FontString name="$parentLabel" justifyh="LEFT" justifyv="TOP" text="" inherits="QuestFontNormalSmall">
+                <Color r="0" g="0" b="0"/>
+                <Size>
+                    <AbsDimension x="235"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parentIcon" relativepoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="4" y="-2"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="BOTTOMLEFT" relativeto="$parentIcon" relativepoint="BOTTOMRIGHT"/>
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+    <Frames>
+        <Button name="$parentBtn">
+            <Anchors>
+                <Anchor point="TOPLEFT" relativeto="$parent" relativepoint="TOPLEFT"/>
+                <Anchor point="BOTTOMRIGHT" relativeto="$parent" relativepoint="BOTTOMRIGHT"/>
+            </Anchors>
+            <Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				</OnLoad>
+                <OnClick>
+                    if ( IsModifiedClick("GENERATEFEEDBACK") ) then
+                        FeedbackUI_SetupQuest(GetQuestLink(GetQuestLogSelection()));
+                    end
+                </OnClick>
+            </Scripts>
+        </Button>
+    </Frames>
+</Frame>
+
+<Frame name="FeedbackUIMapTip" hidden="false" parent="WorldMapFrame">
+    <Size>
+        <AbsDimension x="260" y="14"/>
+    </Size>
+    <Anchors>
+        <Anchor point="TOPLEFT" relativeto="WorldMapMagnifyingGlassButton" relativepoint="BOTTOMLEFT">
+            <Offset>
+                <AbsDimension x="2" y="0"/>
+            </Offset>
+        </Anchor>
+    </Anchors>
+    <Layers>
+        <Layer level="OVERLAY">
+            <Texture name="$parentIcon" file="Interface\Addons\Blizzard_FeedbackUI\UI-Icon-Blizzard-Map">
+                <Size>
+                    <AbsDimension x="25" y="25"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parent" relativepoint="TOPLEFT"/>
+                </Anchors>
+            </Texture>
+            <FontString name="$parentLabel" justifyh="LEFT" justifyv="TOP" text="FEEDBACKUI_MAP_MESSAGE" inherits="GameFontHighlightSmall">
+                <Size>
+                    <AbsDimension x="235"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeto="$parentIcon" relativepoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="4" y="8"/>
+                        </Offset>
+                    </Anchor>
+                    <Anchor point="BOTTOMLEFT" relativeto="$parentIcon" relativepoint="BOTTOMRIGHT"/>
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+    <Frames>
+        <Button name="$parentBtn">
+            <Anchors>
+                <Anchor point="TOPLEFT" relativeto="$parent" relativepoint="TOPLEFT"/>
+                <Anchor point="BOTTOMRIGHT" relativeto="$parent" relativepoint="BOTTOMRIGHT"/>
+            </Anchors>
+            <Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				</OnLoad>
+                <OnClick>
+                    if ( IsModifiedClick("GENERATEFEEDBACK") ) then
+                        FeedbackUI_WorldMapButton_OnClick(button);
+                    end
+                </OnClick>
+            </Scripts>
+        </Button>
+    </Frames>
+    <Scripts>
+        <OnLoad>
+            WorldMapMagnifyingGlassButton:SetHeight(24);
+        </OnLoad>
+    </Scripts>
+</Frame>
+
+<Button name="FeedbackUIItemRefCue" hidden="false" parent="">
+    <Scripts>
+		<OnLoad>
+			self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		</OnLoad>
+        <OnClick>
+            if ( IsModifiedClick("GENERATEFEEDBACK") ) then
+                if ( self:GetParent().link or ItemRefTooltip.link ) then
+                    local link = self:GetParent().link or ItemRefTooltip.link;
+					if ( string.match(link, "item:") ) then
+						FeedbackUI_SetupItem(link);
+					elseif ( string.match(link, "spell:") ) then
+						FeedbackUI_SetupSpell(link);
+					end
+                end
+            end
+        </OnClick>
+    </Scripts>
+</Button>
+</Ui>

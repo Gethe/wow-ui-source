@@ -117,7 +117,6 @@ SoundPanelOptions = {
 	Sound_MusicVolume = { text = "MUSIC_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_AmbienceVolume = { text = "AMBIENCE_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_MasterVolume = { text = "MASTER_VOLUME", minValue = 0, maxValue = 1, valueStep = SOUND_MASTERVOLUME_STEP, },
-	Sound_NumChannels = { text = "SOUND_CHANNELS", minValue = 32, maxValue = 64, valueStep = 32, },
 	Sound_OutputQuality = { text = "SOUND_QUALITY", minValue = 0, maxValue = 2, valueStep = 1 },
 }
 
@@ -186,6 +185,72 @@ end
 function AudioOptionsSoundPanelHardwareDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsSoundPanelHardwareDropDown;
+	UIDropDownMenu_SetSelectedValue(dropdown, value);
+
+	local prevValue = dropdown:GetValue();
+	dropdown:SetValue(value);
+	if ( dropdown.restart and prevValue ~= value ) then
+		AudioOptionsFrame_AudioRestart();
+	end
+end
+
+function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
+	self.cvar = "Sound_NumChannels";
+
+	local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
+	self.value = selected;
+	self.newValue = selected;
+	self.restart = true;
+
+	UIDropDownMenu_SetWidth(self, 136);
+	UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, selected);
+
+	self.SetValue = 
+		function (self, value)
+			self.value = value;
+			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
+		end
+	self.GetValue =
+		function (self)
+			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		end
+	self.RefreshValue =
+		function (self)
+			local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+			self.value = selected;
+			self.newValue = selected;
+
+			UIDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, selected);
+		end
+end
+
+local soundChannelValues = { 24, 32, 64 };
+local soundChannelText = { "SOUND_CHANNELS_LOW", "SOUND_CHANNELS_MEDIUM", "SOUND_CHANNELS_HIGH" };
+function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+	
+	for i=1, #soundChannelValues do
+		info.text = format(_G[soundChannelText[i]], soundChannelValues[i]);
+		info.value = soundChannelValues[i];
+		if ( selectedValue and info.value == selectedValue ) then
+			info.checked = 1;
+		else
+			info.checked = nil;
+		end
+		info.func = AudioOptionsSoundPanelSoundChannelsDropDown_OnClick;
+		
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function AudioOptionsSoundPanelSoundChannelsDropDown_OnClick(self)
+	local value = self.value;
+	local dropdown = AudioOptionsSoundPanelSoundChannelsDropDown;
 	UIDropDownMenu_SetSelectedValue(dropdown, value);
 
 	local prevValue = dropdown:GetValue();

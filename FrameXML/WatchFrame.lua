@@ -217,6 +217,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
+	self:RegisterEvent("QUEST_AUTOCOMPLETE_SOUND");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
@@ -289,6 +290,7 @@ function WatchFrame_OnEvent (self, event, ...)
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
 		local questId = ...;
 		WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE");
+	elseif ( event == "QUEST_AUTOCOMPLETE_SOUND") then
 		PlaySound("UI_AutoQuestComplete");
 	end
 end
@@ -747,6 +749,11 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 				if ( previousBottom and previousBottom < WatchFrame:GetBottom() ) then				
 					achievementLineIndex = achievementLineIndex - numLines;
 					table.wipe(WATCHFRAME_SETLINES);
+					if ( achievementLineIndex > 1 ) then
+						previousLine = WATCHFRAME_ACHIEVEMENTLINES[achievementLineIndex - 1];
+					else
+						previousLine = nil;
+					end
 					break;
 				else
 					-- turn on all lines

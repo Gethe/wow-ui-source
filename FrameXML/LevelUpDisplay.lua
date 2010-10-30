@@ -222,10 +222,12 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			LevelUpDisplaySide:Hide();
 		end
 	elseif event == "UNIT_LEVEL" and arg1 == "pet" then
-		self.level = UnitLevel("pet");
-		self.type = LEVEL_UP_TYPE_PET;
-		self:Show();
-		LevelUpDisplaySide:Hide();
+		if (UnitName("pet") ~= UNKNOWNOBJECT) then
+			self.level = UnitLevel("pet");
+			self.type = LEVEL_UP_TYPE_PET;
+			self:Show();
+			LevelUpDisplaySide:Hide();
+		end
 	end
 end
 

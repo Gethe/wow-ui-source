@@ -71,6 +71,8 @@ function ArchaeologyFrame_OnLoad(self)
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+	
 	
 	
 	local factionGroup = UnitFactionGroup("player");
@@ -141,6 +143,7 @@ end
 
 function ArchaeologyFrame_OnHide(self)
 	CloseResearch();
+	CloseDropDownMenus();
 	PlaySound("igSpellBookClose");
 end
 
@@ -155,6 +158,10 @@ function ArchaeologyFrame_OnEvent(self, event, ...)
 	elseif event == "ARTIFACT_HISTORY_READY" then
 		self.currentFrame:UpdateFrame();
 	elseif event == "BAG_UPDATE" then
+		if self:IsShown() and self.artifactPage:IsShown() then
+			ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
+		end
+	elseif event == "GET_ITEM_INFO_RECEIVED" then
 		if self:IsShown() and self.artifactPage:IsShown() then
 			ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
 		end
@@ -382,6 +389,9 @@ function ArchaeologyFrame_UpdateComplete(self)
 					else
 						projectButton.spellDescription = description;
 					end
+					projectButton.firstComletionTime = firstComletionTime;
+					projectButton.completionCount = completionCount;
+					
 					if rarity == 0 then
 						numCommon = numCommon +1;
 						projectButton.artifactSubText:SetText(raceName.." - "..ITEM_QUALITY1_DESC);

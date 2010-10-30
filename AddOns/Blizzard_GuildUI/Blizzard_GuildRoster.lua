@@ -412,13 +412,16 @@ function GuildRoster_UpdateTradeSkills()
 					end
 				end
 				button.header.skillID = skillID;
-			else
+				button:Show();
+			elseif ( playerName ) then
 				GuildRosterButton_SetStringText(button.string1, playerName, online, classFileName);
 				GuildRosterButton_SetStringText(button.string2, zone, online);
 				GuildRosterButton_SetStringText(button.string3, "["..skill.."]", online);
 				button.header:Hide();
+				button:Show();
+			else
+				button:Hide();
 			end
-			button:Show();
 			if ( mod(index, 2) == 0 ) then
 				button.stripe:SetTexCoord(0.36230469, 0.38183594, 0.95898438, 0.99804688);
 			else

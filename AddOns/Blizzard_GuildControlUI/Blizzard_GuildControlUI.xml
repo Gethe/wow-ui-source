@@ -728,6 +728,7 @@
 		<Scripts>
 			<OnEvent function="GuildControlUI_OnEvent"/>
 			<OnShow>
+				self.numSkipUpdates = 0;
 				GuildControlButton:LockHighlight();
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnShow>

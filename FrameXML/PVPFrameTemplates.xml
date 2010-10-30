@@ -225,14 +225,14 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="-45" y="-15"/>
+								<AbsDimension x="-53" y="-15"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentRating" inherits="GameFontNormalSmall" justifyH="RIGHT">
 					<Size>
-						<AbsDimension x="30" y="12"/>
+						<AbsDimension x="40" y="12"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRatingLabel" relativePoint="RIGHT">
@@ -601,12 +601,12 @@
 				</Texture>
 				<FontString name="$parentTitle" parentKey="title"  inherits="GameFontHighlight" justifyH="CENTER" text="ARENA_2V2">
 					<Size>
-						<AbsDimension x="74" y="0"/>
+						<AbsDimension x="0" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentHeader" y="0"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 			</Layer>
 		</Layers>
 		<HighlightTexture file="Interface\PVPFrame\PVP-Banner-2" alphaMode="ADD">

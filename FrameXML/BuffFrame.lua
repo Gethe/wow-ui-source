@@ -395,7 +395,6 @@ function TemporaryEnchantFrame_Hide()
 	TempEnchant1Duration:Hide();
 	TempEnchant2:Hide();
 	TempEnchant2Duration:Hide();
-	BuffFrame:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPRIGHT", 0, 0);
 end
 
 function TemporaryEnchantFrame_OnUpdate(self, elapsed)

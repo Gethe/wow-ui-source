@@ -116,9 +116,7 @@ function CompactRaidFrameContainer_ApplyToFrames(self, updateSpecifier, func, ..
 	end
 	
 	--A little hacky, but not too bad.
-	if ( updateSpecifier == "all" or updateSpecifier == "group" or updateSpecifier == "normal" ) then
-		CompactPartyFrame:applyFunc(updateSpecifier, func, ...);
-	end
+	CompactPartyFrame:applyFunc(updateSpecifier, func, ...);
 end
 
 --Internally used functions

@@ -10,7 +10,7 @@
 		<Animations>
 			<AnimationGroup name="AnimTimerFrameCountdownAnimGroup">
 				<!-- if you have logic that you want to fire once after a countdown, then add an animation to the end of this group -->
-				<Animation name="AutoCompleteInfoDelayer" duration="15.0" order="1">
+				<Animation name="AutoCompleteInfoDelayer" duration="5.0" order="1">
 					<!--
 						We need the guild roster to be able to use guildies' names. But we don't want to request it on login when we're requesting everything
 						else from the server, so we'll wait a bit.

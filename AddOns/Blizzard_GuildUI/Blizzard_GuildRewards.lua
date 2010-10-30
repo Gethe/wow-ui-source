@@ -52,17 +52,15 @@ function GuildRewards_Update()
 			end
 			if ( achievementID and achievementID > 0 ) then
 				local id, name = GetAchievementInfo(achievementID)
-				button.achievement:Show();
 				button.achievementID = achievementID;
-				button.achievement.text:SetText(name);
+				button.subText:SetText(REQUIRES_LABEL.." |TInterface\\AchievementFrame\\UI-Achievement-Guild:18:16:0:1:512:512:324:344:67:85|t "..YELLOW_FONT_COLOR_CODE..name);
+				button.subText:Show();
 				button.disabledBG:Show();
 				button.icon:SetVertexColor(1, 1, 1);
 				button.icon:SetDesaturated(1);
 				button.name:SetFontObject(GameFontNormalLeftGrey);
 				button.lock:Show();
-				button.subText:Hide();
 			else
-				button.achievement:Hide();
 				button.achievementID = nil;
 				button.disabledBG:Hide();
 				button.icon:SetDesaturated(0);

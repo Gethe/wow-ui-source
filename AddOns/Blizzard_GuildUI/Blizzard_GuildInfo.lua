@@ -150,7 +150,10 @@ function GuildInfoEventButton_OnClick(self, button)
 		CalendarSetMonth(monthOffset);
 		-- need to highlight the proper day/event in calendar
 		local _, _, _, firstDay = CalendarGetMonth();
-		local buttonIndex = day + firstDay - 1;
+		local buttonIndex = day + firstDay - CALENDAR_FIRST_WEEKDAY;
+		if ( firstDay < CALENDAR_FIRST_WEEKDAY ) then
+			buttonIndex = buttonIndex + 7;
+		end
 		local dayButton = _G["CalendarDayButton"..buttonIndex];
 		CalendarDayButton_Click(dayButton);
 		if ( eventIndex <= 4 ) then -- can only see 4 events per day
@@ -160,7 +163,6 @@ function GuildInfoEventButton_OnClick(self, button)
 			CalendarFrame_SetSelectedEvent();	-- clears any event highlights
 			CalendarOpenEvent(0, day, eventIndex);
 		end
-		
 	end
 end
 

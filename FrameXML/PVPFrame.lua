@@ -759,6 +759,7 @@ function PVPConquestFrame_Update(self)
 		
 	if self.mode == "Arena" then
 		self.winReward.winAmount:SetText(0);
+		self.noWeeklyFrame:Hide();
 	
 		local teamName, teamSize, teamRating, teamPlayed, teamWins;
 		for i=1,MAX_ARENA_TEAMS do
@@ -842,6 +843,10 @@ function PVPConquestFrame_Update(self)
 		if name then
 			self.infoButton.title:SetText(prefixColorCode..name);
 			self.infoButton.bottomLeftText:SetFormattedText(PVP_TEAMTYPE, size, size);
+			self.noWeeklyFrame:Hide();
+		else
+			self.noWeeklyFrame:Show();
+			self.noWeeklyFrame:SetFrameLevel(self:GetFrameLevel()+2);
 		end
 		
 		
@@ -850,6 +855,9 @@ function PVPConquestFrame_Update(self)
 		self.infoButton.topLeftText:SetText(prefixColorCode..ARENA_THIS_WEEK);
 		
 		self.infoButton.arenaError:Hide();
+		self.infoButton.bgOff:Hide();
+		
+		
 		self.infoButton.wins:Show();
 		self.infoButton.winsValue:Show();
 		self.infoButton.losses:Show();
@@ -857,7 +865,6 @@ function PVPConquestFrame_Update(self)
 		self.infoButton.topLeftText:Show();
 		self.infoButton.bottomLeftText:Show();
 		self.infoButton.bgNorm:Show();
-		self.infoButton.bgOff:Hide();
 	end
 	
 	
@@ -1197,7 +1204,7 @@ function PVPTeamManagementFrame_UpdateTeams(self)
 				_G[bannerName.."Border"]:Show();
 				_G[bannerName.."Border"]:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );				
 				_G[bannerName.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
-				_G[bannerName.."Title"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."\n"..RATING..":  "..teamRating);
+				_G[bannerName.."Title"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."\n"..PVP_RATING.."  "..teamRating);
 				_G[bannerName.."Title"]:SetFontObject(ARENABANNER_SMALLFONT);
 				_G[bannerName.."Title"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				
@@ -1420,7 +1427,7 @@ function PVPQueue_UpdateRandomInfo(base, infoFunc)
 		base.title:SetText(RANDOM_BATTLEGROUND);
 		base.description:SetText(RANDOM_BATTLEGROUND_EXPLANATION);
 	else
-		base.title:SetText(BATTLEGROUND_HOLIDAY);
+		base.title:SetText(BATTLEGROUND_HOLIDAY_LONG);
 		base.description:SetText(BATTLEGROUND_HOLIDAY_EXPLANATION);
 		hasWin, winHonor, winArena, lossHonor, lossArena = GetHolidayBGHonorCurrencyBonuses();
 	end

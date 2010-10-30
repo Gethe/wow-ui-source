@@ -348,37 +348,43 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<Slider name="$parentSoundChannels" inherits="OptionsSliderTemplate">
-				<Size x="138" y="17"/>
+			<Frame name="$parentSoundChannelsDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="24" y="-12"/>
-						</Offset>
+						<Offset x="0" y="-12"/>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="SOUND_CHANNELS">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "Sound_NumChannels";
-						self.restart = true;
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
+						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad(self);
 					</OnLoad>
-					<OnValueChanged>
-						local prevValue = self.value;
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						if (self:GetParent():IsShown() and self.restart and prevValue and prevValue ~= value) then
-							AudioOptionsFrame_AudioRestart();
-						end
-					</OnValueChanged>
-				</Scripts>	
-			</Slider>			
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>	
 			<CheckButton name="$parentUseHardware" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannels" relativePoint="BOTTOMLEFT">
-						<Offset x="-4" y="-16"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannelsDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="22" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>

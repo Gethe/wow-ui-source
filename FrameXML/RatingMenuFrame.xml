@@ -81,6 +81,16 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<Texture name="RatingMenuCrime">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="RatingMenuViolence" relativePoint="LEFT">
+							<Offset x="-5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -108,6 +118,7 @@
 				RatingMenuAge:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-1");
 				RatingMenuViolence:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-2");
 				RatingMenuDrugs:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-3");
+				RatingMenuCrime:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-4");
 			</OnShow>
 			<OnHide>
 				ShowUIPanel(GameMenuFrame);
@@ -115,6 +126,7 @@
 				RatingMenuAge:SetTexture(nil);
 				RatingMenuViolence:SetTexture(nil);
 				RatingMenuDrugs:SetTexture(nil);
+				RatingMenuCrime:SetTexture(nil);
 			</OnHide>
 			<OnKeyDown>
 				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then

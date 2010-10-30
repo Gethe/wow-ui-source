@@ -257,7 +257,16 @@ CombatPanelOptions = {
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
 	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.05 },
+	reducedLagTolerance = { text = "REDUCED_LAG_TOLERANCE" },
+	MaxSpellStartRecoveryOffset = { text = "LAG_TOLERANCE", minValue = 0, maxValue = 400, valueStep = 10 },
 }
+
+function InterfaceOptionsCombatPanelReducedLagTolerance_UpdateText()
+	local checkBox = InterfaceOptionsCombatPanelReducedLagTolerance;
+	local checkBoxText = InterfaceOptionsCombatPanelReducedLagToleranceText;
+	
+	checkBoxText:SetFormattedText(_G[CombatPanelOptions[checkBox.cvar].text], GetMaxSpellStartRecoveryOffset());
+end
 
 function InterfaceOptionsCombatPanelTOTDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
@@ -368,7 +377,7 @@ end
 -- [[ Self Cast key dropdown ]] --
 function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.defaultValue = "NONE";
+		self.defaultValue = "ALT";
 		self.oldValue = GetModifiedClick("SELFCAST");
 		self.value = self.oldValue or self.defaultValue;
 		self.tooltip = _G["OPTION_TOOLTIP_AUTO_SELF_CAST_"..self.value.."_KEY"];
@@ -1648,15 +1657,22 @@ function InterfaceOptionsRaidFramePanel_GenerateOptionToggle(optionName, optionT
 	end
 end
 
-function InterfaceOptionsRaidFramePanel_GenerateRaidSetUpOptionToggle(optionName)
+function InterfaceOptionsRaidFramePanel_GenerateSetUpOptionToggle(optionName, optionTarget)
 	return function(value)
 		local enabled;
 		if(value and value ~= "0") then
 			enabled = true;
 		end
-		DefaultCompactUnitFrameSetupOptions[optionName] = enabled;
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
-		CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		if ( optionTarget == "normal" or optionTarget == "all" ) then
+			DefaultCompactUnitFrameSetupOptions[optionName] = enabled;
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
+		end
+		if ( optionTarget == "mini" or optionTarget == "all" ) then
+			DefaultCompactMiniFrameSetUpOptions[optionName] = enabled;
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", DefaultCompactMiniFrameSetup);
+			CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", CompactUnitFrame_UpdateAll);
+		end
 	end
 end
 

@@ -103,6 +103,7 @@ size=1024,1024
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetSpellByID(self.castSpellID);
+				self.showingTooltip = true;
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>

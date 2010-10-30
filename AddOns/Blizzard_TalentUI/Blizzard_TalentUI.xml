@@ -457,7 +457,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground">
 							<Offset x="47" y="-9"/>
 						</Anchor>
-						<Anchor point="RIGHT" x="-45"/>
+						<Anchor point="RIGHT" x="-32"/>
 					</Anchors>
 				</FontString>
 			</Layer>

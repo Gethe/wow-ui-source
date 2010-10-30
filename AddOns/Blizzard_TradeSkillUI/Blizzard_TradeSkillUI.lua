@@ -423,7 +423,7 @@ function TradeSkillFrame_SetSelection(id)
 	TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
 
 
-	local skillLineName, skillLineRank, skillLineMaxRank = GetTradeSkillLine();
+	local skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier = GetTradeSkillLine();
 	local color;
 	
 	--Hide inapplicable buttons if we are inspecting. Otherwise show them
@@ -459,7 +459,12 @@ function TradeSkillFrame_SetSelection(id)
 		TradeSkillRankFrameBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
 		TradeSkillRankFrame:SetMinMaxValues(0, skillLineMaxRank);
 		TradeSkillRankFrame:SetValue(skillLineRank);
-		TradeSkillRankFrameSkillRank:SetText(skillLineRank.."/"..skillLineMaxRank);
+		if ( skillLineModifier > 0 ) then
+			TradeSkillRankFrameSkillRank:SetFormattedText(TRADESKILL_RANK_WITH_MODIFIER, skillLineRank, skillLineModifier, skillLineMaxRank);
+		else
+			TradeSkillRankFrameSkillRank:SetFormattedText(TRADESKILL_RANK, skillLineRank, skillLineMaxRank);
+		end
+
 		TradeSkillRankFrame:Show();
 		
 		local linked = IsTradeSkillLinked();
