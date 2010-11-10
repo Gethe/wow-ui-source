@@ -91,6 +91,7 @@
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_ShowArtifact(self:GetID());
+				PlaySound("igSpellBookOpen");
 			</OnClick>
 			<OnDisable>
 				SetDesaturation(self:GetNormalTexture(), true);
@@ -125,17 +126,17 @@
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentArtifactName" inherits="SystemFont_Med1" justifyH="LEFT" text="RACES" parentKey="artifactName">
-					<Size x="130" y="12"/>
+				<FontString name="$parentArtifactName" inherits="SystemFont_Med1" justifyH="LEFT" justifyV="CENTER" text="RACES" parentKey="artifactName">
+					<Size x="130" y="30"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIcon"  relativePoint="RIGHT" x="12" y="8"/>
+						<Anchor point="LEFT" relativeTo="$parentIcon"  relativePoint="RIGHT" x="12" y="6"/>
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0"/>
 				</FontString>
 				<FontString name="$parentArtifactSubText" inherits="SystemFont_Med1" justifyH="LEFT" text="RACES" parentKey="artifactSubText">
 					<Size x="130" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentArtifactName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentArtifactName" relativePoint="BOTTOMLEFT" x="0" y="4"/>
 					</Anchors>
 					<Color r="0.25" g="0.13" b="0" a="0.7"/>
 				</FontString>
@@ -147,6 +148,7 @@
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_ShowArtifact(self.raceIndex, self.projectIndex);
+				PlaySound("igSpellBookOpen");
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -192,6 +194,7 @@
 				ArchaeologyFrame_KeyStoneClick(self);
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -339,6 +342,7 @@
 				<Scripts>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self)
+						PlaySound("igSpellBookOpen");
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -372,6 +376,7 @@
 				<Scripts>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self)
+						PlaySound("igSpellBookOpen");
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -633,6 +638,7 @@
 							</OnLoad>
 							<OnClick>
 								ArchaeologyFrame_PageClick(self, false);
+								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -646,6 +652,7 @@
 							</OnLoad>
 							<OnClick>
 								ArchaeologyFrame_PageClick(self, true);
+								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -685,15 +692,15 @@
 							</Anchors>
 						</Texture>
 						<FontString name="$parentArtifactName" inherits="GameFontNormalLarge" justifyH="LEFT" text="RACES" parentKey="artifactName">
-							<Size x="330" y="12"/>
+							<Size x="330" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentIcon"  relativePoint="RIGHT" x="12" y="8"/>
+								<Anchor point="LEFT" relativeTo="$parentIcon"  relativePoint="RIGHT" x="12" y="10"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentArtifactSubText" inherits="GameFontNormal" justifyH="LEFT" text="RACES" parentKey="raceRarity">
-							<Size x="130" y="12"/>
+							<Size x="330" y="12"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentArtifactName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentArtifactName" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
@@ -736,6 +743,7 @@
 								ArchaeologyFrame.artifactPage:Hide();
 								ArchaeologyFrame.completedPage:Show();
 								ArchaeologyFrame.raceFilterDropDown:Show();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -899,6 +907,7 @@
 					</OnMouseUp>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self);
+						PlaySound("igSpellBookOpen");
 					</OnClick>
 				</Scripts>
 			</Button>

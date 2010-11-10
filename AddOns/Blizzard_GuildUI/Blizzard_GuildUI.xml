@@ -336,6 +336,7 @@
 		<Frames>
 			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="GUILD_TAB_GUILD_ABBR">
 				<Anchors>
+					<!--This position is changed in some Localization files.-->
 					<Anchor point="BOTTOMLEFT" x="11" y="-30"/>
 				</Anchors>
 				<Scripts>

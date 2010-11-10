@@ -199,6 +199,7 @@ function ArchaeologyFrame_UpdateSummary(self)
 			local name, currency, texture, itemID =  GetArchaeologyRaceInfo(i);
 			if texture and texture ~= "" then
 				raceButton:GetNormalTexture():SetTexture(texture);
+				raceButton:GetHighlightTexture():SetTexture(texture);
 			end
 			
 			local numProjects = GetNumArtifactsByRace(i);
@@ -266,7 +267,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	end
 	
 	if rarity == 0 then --Common Item
-		self.historyTitle:SetPoint("RIGHT", -110, 140);
+		self.historyTitle:SetPoint("RIGHT", -110, 126);
 		self.historyScroll:SetSize(190, 200);
 		self.historyScroll.child:SetSize(190, 200);
 		self.historyScroll.child.text:SetWidth(190);
@@ -655,6 +656,9 @@ function ArchaeologyFrame_InitRaceFilter()
 			info.arg1 = i;
 			info.func = ArchaeologyFrame_RaceFilterSet;
 			info.checked = ArchaeologyFrame.currentFrame.raceFilter == i;
+			if ArchaeologyFrame.currentFrame == ArchaeologyFrame.completedPage  then
+				info.disabled = numProjects <= 1;
+			end
 			UIDropDownMenu_AddButton(info);
 		end
 	end

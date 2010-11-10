@@ -58,7 +58,7 @@ function CompactRaidGroup_UpdateUnits(frame)
 	end
 	
 	for i=frameIndex, MEMBERS_PER_RAID_GROUP do
-		local unitFrame = _G[frame:GetName().."Member"..frameIndex];
+		local unitFrame = _G[frame:GetName().."Member"..i];
 		CompactUnitFrame_SetUnit(unitFrame, nil);
 	end
 end

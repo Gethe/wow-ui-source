@@ -381,7 +381,8 @@ SECURE_ACTIONS.macro =
 
 local CANCELABLE_ITEMS = {
     [GetInventorySlotInfo("MainHandSlot")] = 1, -- main hand slot
-    [GetInventorySlotInfo("SecondaryHandSlot")] = 2 -- off-hand slot
+    [GetInventorySlotInfo("SecondaryHandSlot")] = 2, -- off-hand slot
+	[GetInventorySlotInfo("RangedSlot")] = 3 -- ranged slot
 };
 
 SECURE_ACTIONS.cancelaura =
@@ -392,7 +393,7 @@ SECURE_ACTIONS.cancelaura =
         else
             local slot = tonumber(SecureButton_GetModifiedAttribute(self, "target-slot", button));
             if ( slot and CANCELABLE_ITEMS[slot] ) then
-                CancelItemTempEnchant(CANCELABLE_ITEMS[slot]);
+                CancelItemTempEnchantment(CANCELABLE_ITEMS[slot]);
             else
                 local index = SecureButton_GetModifiedAttribute(self, "index", button) or self:GetID();
                 if ( index ) then

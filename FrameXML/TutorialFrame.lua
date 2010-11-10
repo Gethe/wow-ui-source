@@ -724,6 +724,9 @@ function TutorialFrame_Update(currentTutorial)
 	local _, raceName  = UnitRace("player");
 	className = strupper(className);
 	raceName = strupper(raceName);
+	if ( className == "DEATHKNIGHT") then
+		raceName = "DEATHKNIGHT";
+	end
 	
 	if ( displayData.raceRequired and not CURRENT_TUTORIAL_QUEST_INFO) then
 		return;

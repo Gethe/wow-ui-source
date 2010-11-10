@@ -415,15 +415,26 @@ function MerchantItemButton_OnModifiedClick(self, button)
 		if ( HandleModifiedItemClick(GetMerchantItemLink(self:GetID())) ) then
 			return;
 		end
-		if ( IsModifiedClick("SPLITSTACK") and not self.extendedCost) then
+		if ( IsModifiedClick("SPLITSTACK")) then
 			local maxStack = GetMerchantItemMaxStack(self:GetID());
-			local _, _, price, stackCount = GetMerchantItemInfo(self:GetID());
-			if ( maxStack > 1 and price and (price > 0) ) then
-				local canAfford = floor(GetMoney() / (price / stackCount));
-				if ( canAfford > 0 ) then
-					local maxPurchasable = min(maxStack, canAfford);
-					OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT");
-				end
+			local _, _, price, stackCount, _, _, extendedCost = GetMerchantItemInfo(self:GetID());
+			
+			-- TODO: Support shift-click for stacks of extended cost items
+			if (stackCount > 1 and extendedCost) then
+				MerchantItemButton_OnClick(self, button);
+				return;
+			end
+			
+			local canAfford;
+			if (price and price > 0) then
+				canAfford = floor(GetMoney() / (price / stackCount));
+			else
+				canAfford = maxStack;
+			end
+			
+			if ( maxStack > 1 ) then
+				local maxPurchasable = min(maxStack, canAfford);
+				OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT");
 			end
 			return;
 		end

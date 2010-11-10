@@ -477,6 +477,13 @@
 				</Layers>
 				<BarTexture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 				<BarColor r="1.0" g="0.11" b=".15"/>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PVP_CONQUEST_TOOLTIP, 1.0,1.0,1.0, 1, true );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
 			</StatusBar>
 		
 			
