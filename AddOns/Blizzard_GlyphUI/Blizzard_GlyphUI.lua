@@ -259,11 +259,7 @@ function GlyphFrame_UpdateGlyphList ()
 					button.typeName:SetText(GLYPH_STRING[glyphType]);
 					button.disabledBG:Hide();
 					if selectedIndex and selectedIndex == index then
-						if GlyphFrame.selectedButton then
-							GlyphFrame.selectedButton.selectedTex:Hide();
-						end
 						button.selectedTex:Show();
-						GlyphFrame.selectedButton = button;
 					else
 						button.selectedTex:Hide();
 					end
@@ -582,14 +578,6 @@ function GlyphFrameSpell_OnClick (self, button)
 	end
 	
 	CastGlyph(self.glyphIndex);
-	
-	if GlyphFrame.selectedButton then
-		GlyphFrame.selectedButton.selectedTex:Hide();
-	end
-	
-	SetCursor(nil);
-	GlyphFrame.selectedButton = self;
-	GlyphFrame.selectedButton.selectedTex:Show();
 end
 
 

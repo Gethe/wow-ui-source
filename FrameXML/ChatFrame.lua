@@ -2568,6 +2568,11 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		-- Do more stuff!!!
 		ChatFrame_RegisterForMessages(self, GetChatWindowMessages(self:GetID()));
 		ChatFrame_RegisterForChannels(self, GetChatWindowChannels(self:GetID()));
+		-- GMOTD may have arrived before this frame registered for the event
+		if ( not self.checkedGMOTD and self:IsEventRegistered("GUILD_MOTD") ) then
+			self.checkedGMOTD = true;
+			ChatFrame_DisplayGMOTD(self, GetGuildRosterMOTD());
+		end
 		return true;
 	end
 	
@@ -2632,12 +2637,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		return true;
 	elseif ( event == "GUILD_MOTD" ) then
-		local arg1 = ...;
-		if ( arg1 and (strlen(arg1) > 0) ) then
-			local info = ChatTypeInfo["GUILD"];
-			local string = format(GUILD_MOTD_TEMPLATE, arg1);
-			self:AddMessage(string, info.r, info.g, info.b, info.id);
-		end
+		ChatFrame_DisplayGMOTD(self, ...);
 		return true;
 	elseif ( event == "ZONE_UNDER_ATTACK" ) then
 		local arg1 = ...;
@@ -2707,6 +2707,14 @@ end
 
 function RemoveExtraSpaces(str)
 	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
+end
+
+function ChatFrame_DisplayGMOTD(frame, gmotd)
+	if ( gmotd and (strlen(gmotd) > 0) ) then
+		local info = ChatTypeInfo["GUILD"];
+		local string = format(GUILD_MOTD_TEMPLATE, gmotd);
+		frame:AddMessage(string, info.r, info.g, info.b, info.id);
+	end
 end
 
 function ChatFrame_GetMobileEmbeddedTexture(r, g, b)

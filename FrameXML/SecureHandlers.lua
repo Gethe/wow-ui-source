@@ -51,7 +51,7 @@ local function SecureHandler_Self_Execute(self, signature, body, ...)
 		return;
 	end
 
-	local environment = GetManagedEnvironment(self);
+	local environment = GetManagedEnvironment(self, true);
 
 	return CallRestrictedClosure(signature, environment, selfHandle,
 								 body, selfHandle, ...);
@@ -68,7 +68,7 @@ local function SecureHandler_Other_Execute(header, self, signature, body, ...)
 	local selfHandle = GetFrameHandle(self, true);
 	if (not selfHandle) then return; end
 
-	local environment = GetManagedEnvironment(header);
+	local environment = GetManagedEnvironment(header, true);
 	return CallRestrictedClosure(signature, environment, controlHandle,
 								 body, selfHandle, ...);
 end
@@ -382,12 +382,13 @@ local function Wrapped_Drag(self, header, preBody, postBody, wrap, ...)
 	if ( IsWrapEligible(self) ) then
 		local selfHandle = GetFrameHandle(self, true);
 		if (selfHandle) then
-			local environment = GetManagedEnvironment(header);
+			local environment = GetManagedEnvironment(header, true);
+			local controlHandle = GetFrameHandle(header, true, true);
 			local button = ...;
 			local pickupType, target, x1, x2, x3 =
 				CallRestrictedClosure("self,button,kind,value,...",
 									  environment,
-									  environment.owner, preBody,
+									  control, preBody,
 									  selfHandle, button,
 									  GetCursorInfo());
 			if (pickupType == false) then
@@ -492,8 +493,8 @@ local function API_OnAttributeChanged(self, name, value)
 
 	-- _wrap wraps a script handler in a secure wrapper
 	if (name == "_wrap") then
-		local frame =  self:GetAttribute("_apiframe");
-		local header =	self:GetAttribute("_apiheader");
+		local frame = self:GetAttribute("_apiframe");
+		local header = self:GetAttribute("_apiheader");
 		local preBody = self:GetAttribute("_apiprebody");
 		local postBody = self:GetAttribute("_apipostbody");
 		self:SetAttribute("_wrap", nil);
@@ -595,21 +596,27 @@ LOCAL_API_Frame:SetScript("OnAttributeChanged", API_OnAttributeChanged);
 function SecureHandlerWrapScript(frame, script, header, preBody, postBody)
 	if (not IsValidFrame(frame)) then
 		error("Invalid frame");
+		return;
 	end
 	if (type(script) ~= "string") then
 		error("Invalid script id");
+		return;
 	end
 	if (header and not IsValidFrame(header)) then
 		error("Invalid header frame");
+		return;
 	end
 	if (not select(2, header:IsProtected())) then
 		error("Header frame must be explicitly protected");
+		return;
 	end
 	if (type(preBody) ~= "string") then
 		error("Invalid pre-handler body");
+		return;
 	end
 	if (postBody ~= nil and type(postBody) ~= "string") then
 		error("Invalid post-handler body");
+		return;
 	end
 	LOCAL_API_Frame:SetAttribute("_apiframe", frame);
 	LOCAL_API_Frame:SetAttribute("_apiheader", header);
@@ -652,12 +659,15 @@ end
 function SecureHandlerExecute(frame, body)
 	if (not IsValidFrame(frame)) then
 		error("Invalid header frame");
+		return;
 	end
 	if (not select(2, frame:IsProtected())) then
 		error("Header frame must be explicitly protected");
+		return;
 	end
 	if (type(body) ~= "string") then
 		error("Invalid body");
+		return;
 	end
 	LOCAL_API_Frame:SetAttribute("_apiframe", frame);
 	LOCAL_API_Frame:SetAttribute("_execute", body);
@@ -667,12 +677,15 @@ end
 function SecureHandlerSetFrameRef(frame, label, refFrame)
 	if (not IsValidFrame(frame)) then
 		error("Invalid frame");
+		return;
 	end
 	if (type(label) ~= "string") then
 		error("Invalid body");
+		return;
 	end
 	if (not IsValidFrame(refFrame)) then
 		error("Invalid reference frame");
+		return;
 	end
 	LOCAL_API_Frame:SetAttribute("_apiframe", frame);
 	LOCAL_API_Frame:SetAttribute("_frame-" .. label, refFrame);

@@ -38,6 +38,15 @@ BLOCK_PER_STRENGTH = 0.5;
 HEALTH_PER_STAMINA = 10;
 MANA_PER_INTELLECT = 15;
 
+HEALTH_PER_STAMINA = {	--By level
+	default = 10,
+	[81] = 10.8,
+	[82] = 11.6,
+	[83] = 12.4,
+	[84] = 13.2,
+	[85] = 14,
+}
+
 --Pet scaling:
 HUNTER_PET_BONUS = {};
 HUNTER_PET_BONUS["PET_BONUS_RAP_TO_AP"] = 0.22;
@@ -671,6 +680,11 @@ function PaperDollFrame_SetDruidMana(statFrame, unit)
 	statFrame:Show();
 end
 
+function PaperDollFrame_HealthPerStamina()
+	local level = UnitLevel("player");
+	return HEALTH_PER_STAMINA[level] or HEALTH_PER_STAMINA.default;
+end
+
 function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 	local label = _G[statFrame:GetName().."Label"];
 	local text = _G[statFrame:GetName().."StatText"];
@@ -734,7 +748,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		elseif ( statIndex == 3 ) then
 			local baseStam = min(20, effectiveStat);
 			local moreStam = effectiveStat - baseStam;
-			statFrame.tooltip2 = format(statFrame.tooltip2, (baseStam + (moreStam*HEALTH_PER_STAMINA))*GetUnitMaxHealthModifier("player"));
+			statFrame.tooltip2 = format(statFrame.tooltip2, (baseStam + (moreStam*PaperDollFrame_HealthPerStamina()))*GetUnitMaxHealthModifier("player"));
 		-- Intellect
 		elseif ( statIndex == 4 ) then
 			if ( UnitHasMana("player") ) then

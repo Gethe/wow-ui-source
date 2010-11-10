@@ -64,6 +64,11 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.duration:SetPoint("TOP", self, "BOTTOM", 0, -1);
+			</OnLoad>
+		</Scripts>
 	</Button>
 	<Button name="TempEnchantButtonTemplate" inherits="AuraButtonTemplate" virtual="true">
 		<Layers>
