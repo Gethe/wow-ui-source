@@ -1,0 +1,53 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MovieFrame.lua"/>
+	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" parent="GlueParent" enableKeyboard="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<!-- This quad is needed to prevent stutter in movie playback in the Mac version.  -->
+				<!-- Please do not delete it from here.  It will be hidden on Windows in MovieFrame_OnLoad(). -->
+				<Texture name="MovieFrameSubtitleArea">
+					<Size x="800" y="138"/>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-630"/>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0"/>
+				</Texture>
+				<FontString name="MovieFrameSubtitleString" inherits="GlueFontNormalHuge" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="MovieFrameSubtitleArea"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="MovieFrameSubtitleArea"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				MovieFrame_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				MovieFrame_OnShow(self);
+			</OnShow>
+			<OnHide>
+				MovieFrame_OnHide(self);
+			</OnHide>
+			<OnUpdate>
+				MovieFrame_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnKeyUp>
+				MovieFrame_OnKeyUp(self, key);
+			</OnKeyUp>
+			<OnMovieFinished>
+				MovieFrame_OnMovieFinished(self);
+			</OnMovieFinished>
+			<OnMovieShowSubtitle>
+				MovieFrame_OnMovieShowSubtitle(self, text);
+			</OnMovieShowSubtitle>
+			<OnMovieHideSubtitle>
+				MovieFrame_OnMovieHideSubtitle(self);
+			</OnMovieHideSubtitle>
+		</Scripts>
+	</MovieFrame>
+</Ui>
