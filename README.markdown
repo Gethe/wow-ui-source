@@ -1,12 +1,11 @@
 ﻿
-**World of Warcraft: Cataclysm Beta Patch Notes (version 13117)**
+**World of Warcraft PTR Patch 4.0.3a**
 
-Welcome to the World of Warcraft: Cataclysm beta test! Patch notes listed here
-are not comprehensive and will be changed throughout the testing process.
+The latest test realm patch notes can always be found at [
+http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html ][1]
 
-To leave feedback about your test experience, please visit our [Cataclysm Beta
-forums][1]. You may need to clear your browser cookies and cache and log out
-of our [live forums][2] in order to view the beta forums.
+The latest patch notes can always be found at [
+http://www.worldofwarcraft.com/patchnotes/ ][2]
 
 **General**
 
@@ -661,9 +660,9 @@ it's closed.
   * Twin Peaks Battleground: There is no longer a section of missing water in
 the tube near the Horde base.
 
-   [1]: http://forums.worldofwarcraft.com/index.html?sid=2000
+   [1]: http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
 
-   [2]: http://forums.worldofwarcraft.com/board.html?forumId=10001
+   [2]: http://www.worldofwarcraft.com/patchnotes/
 
    [3]: http://forums.worldofwarcraft.com/board.html?sid=2000&forumId=8945398
 
