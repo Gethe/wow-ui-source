@@ -1436,7 +1436,10 @@ function PaperDollFrame_SetSpellBonusHealing(statFrame, unit)
 			minDamage = min(minDamage, GetSpellBonusDamage(i));
 		end
 	elseif (unit == "pet") then
-		minDamage = GetPetSpellBonusDamage();
+		--Healing is not needed for pets (see bug  238141)
+		--minDamage = GetPetSpellBonusDamage();
+		statFrame:Hide();
+		return;
 	end
 	statFrame.bonusDamage = nil;
 	

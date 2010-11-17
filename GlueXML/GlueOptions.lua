@@ -1,0 +1,16 @@
+VideoOptionsTooltip = OptionsTooltip;
+VideoOptionsDropDownMenu_Initialize = GlueDropDownMenu_Initialize;
+VideoOptionsDropDownMenu_GetSelectedID = GlueDropDownMenu_GetSelectedID;
+VideoOptionsDropDownMenu_SetSelectedID = GlueDropDownMenu_SetSelectedID;
+VideoOptionsDropDownMenu_SetWidth = GlueDropDownMenu_SetWidth;
+VideoOptionsDropDownMenu_CreateInfo = GlueDropDownMenu_CreateInfo;
+VideoOptionsDropDownMenu_AddButton = GlueDropDownMenu_AddButton;
+VideoOptionsDropDownMenu_SetSelectedValue = GlueDropDownMenu_SetSelectedValue;
+VideoOptionsDropDownMenu_SetText = GlueDropDownMenu_SetText
+VideoOptionsDropDownMenu_DisableDropDown = GlueDropDownMenu_DisableDropDown;
+VideoOptionsDropDownMenu_EnableDropDown = GlueDropDownMenu_EnableDropDown;
+
+function InGlue()
+	return true;
+end
+

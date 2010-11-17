@@ -1,0 +1,59 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- if you change something here you probably want to change the frame version too -->
+
+	<Script file="AudioOptionsFrame.lua"/>
+
+	<Frame name="AudioOptionsFrame" inherits="OptionsFrameTemplate">
+		<Frames>
+			<Button name="$parentCancel" inherits="GlueButtonSmallTemplateBlue" text="CANCEL">
+				<Size>
+					<AbsDimension x="110" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="AudioOptionsFrameCancel_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkay" inherits="GlueButtonSmallTemplateBlue" text="OKAY">
+				<Size>
+					<AbsDimension x="110" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="AudioOptionsFrameOkay_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDefault" inherits="GlueButtonSmallTemplateBlue" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="110" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						AudioOptionsFrameDefault_OnClick(self, button);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AudioOptionsFrame_OnLoad"/>
+			<OnHide function="AudioOptionsFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

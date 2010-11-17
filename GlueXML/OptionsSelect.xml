@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="OptionsSelect.lua"/>
+
+	<Frame name="OptionsSelectFrame" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="HIGH">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color a="0.75" r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentBackground">
+				<Size x="360" y="185"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="-20"/>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+							<Size>
+								<AbsDimension x="300" y="68"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentHeaderText" inherits="GlueFontNormal" text="OPTIONS">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentHeader">
+									<Offset>
+										<AbsDimension x="0" y="-14"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentContainer">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="12" y="-36"/>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset x="-16" y="50"/>
+							</Anchor>
+						</Anchors>
+						
+						<Frames>
+							<Button name="$parentVideoOptionsButton" inherits="GlueButtonTemplateBlue" text="VIDEOOPTIONS_MENU">
+								<Size x="220" y="45"/>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset x="0" y="-10"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("igMainMenuOption");
+										VideoOptionsFrame.lastFrame = OptionsSelectFrame;
+										VideoOptionsFrame:Show();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentAudioOptionsButton" inherits="GlueButtonTemplateBlue" text="SOUNDOPTIONS_MENU">
+								<Size x="220" y="45"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentVideoOptionsButton" relativePoint="BOTTOM">
+										<Offset x="0" y="10"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("igMainMenuOption");
+										AudioOptionsFrame.lastFrame = OptionsSelectFrame;
+										AudioOptionsFrame:Show();
+									</OnClick>
+								</Scripts>
+							</Button>
+							
+						</Frames>
+					</Frame>
+					<Button name="OptionsSelectResetSettingsButton" inherits="GlueButtonSmallTemplateBlue" text="RESET_SETTINGS">
+						<Size x="220" y="38"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset x="8" y="6"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								OptionsSelectResetSettingsButton_OnClick_Reset(self);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentOkayButton" inherits="GlueButtonSmallTemplateBlue" text="CLOSE">
+						<Size x="125" y="38"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset x="-8" y="6"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								OptionsSelectFrame_Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnKeyDown>
+				if ( key == "ESCAPE" ) then
+					OptionsSelectFrame_Hide();
+				elseif ( key == "PRINTSCREEN" ) then
+					Screenshot();
+				end
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+</Ui>

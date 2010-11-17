@@ -6,7 +6,7 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentScore" inherits="GameFontHighlightSmall">
 					<Size>
-						<AbsDimension x="80" y="0"/>
+						<AbsDimension x="75" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP">

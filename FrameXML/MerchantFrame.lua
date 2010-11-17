@@ -493,9 +493,9 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
 		elseif ( currencyName ) then
 			usingCurrency = true;
 			if ( itemsString ) then
-				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(ITEM_QUANTITY_TEMPLATE, itemCount, currencyName);
+				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, currencyName);
 			else
-				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(ITEM_QUANTITY_TEMPLATE, itemCount, currencyName);
+				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, currencyName);
 			end
 		end
 	end

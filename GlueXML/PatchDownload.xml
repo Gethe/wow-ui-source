@@ -1,0 +1,120 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PatchDownload.lua"/>
+	<ModelFFX name="PatchDownload" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" file="Interface\Glues\Models\UI_CharacterSelect\UI_CharacterSelect.mdx" fogNear="0" fogFar="1200">
+		<Frames>
+			<Frame name="PatchDownloadUI" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+
+					<FontString name="DownloadingUpdateTitle" inherits="GlueFontNormalHuge" text="DOWNLOADING_UPDATE">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="450"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+
+					<FontString name="PatchSuccessfulTitle" inherits="GlueFontNormalHuge" text="DOWNLOAD_SUCCESSFUL">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="450"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+
+					<FontString name="PatchSuccessfulText" inherits="GlueFontNormalLarge" text="DOWNLOAD_SUCCESSFUL_TEXT">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="400"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+
+					<FontString name="PatchProgressText" inherits="GlueFontNormalLarge">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="400"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="PatchDownloadLogo" file="Interface\Glues\Common\Glues-WoW-CCLogo">
+							<Size>
+								<AbsDimension x="256" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="13" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+
+					<Button name="PatchDownloadCancelButton" inherits="GlueButtonTemplate" hidden="true" text="CANCEL">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="8" y="300"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PatchDownload_Cancel();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="PatchDownloadRestartButton" inherits="GlueButtonTemplate" hidden="true" text="RESTART">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="8" y="300"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PatchDownload_Restart();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						<!-- GlueFrameFadeIn(self, LOGIN_FADE_IN); -->
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PatchDownload_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				PatchDownload_OnShow();
+			</OnShow>
+			<OnKeyDown>
+				PatchDownload_OnKeyDown(key);
+			</OnKeyDown>
+			<OnEvent>
+				PatchDownload_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+		<FogColor r="0.25" g="0.06" b="0.015"/>
+	</ModelFFX>
+</Ui>

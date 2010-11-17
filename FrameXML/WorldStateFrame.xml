@@ -412,7 +412,7 @@
 					<Layer level="BACKGROUND">
 						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="text">
 							<Size>
-								<AbsDimension x="190" y="16"/>
+								<AbsDimension x="175" y="16"/>
 							</Size>
 						</FontString>
 					</Layer>

@@ -1344,7 +1344,7 @@ function WorldMapUnit_OnMouseUp(self, mouseButton, raidUnitPrefix, partyUnitPref
 		BAD_BOY_COUNT = 0;
 
 		local inInstance, instanceType = IsInInstance();
-		if ( instanceType == "pvp" ) then
+		if ( instanceType == "pvp" or  IsInActiveWorldPVP() ) then
 			--Check Raid
 			local unitButton;
 			for i=1, MAX_RAID_MEMBERS do
@@ -1399,6 +1399,7 @@ function WorldMapUnitDropDown_Initialize()
 	info.text = PVP_REPORT_AFK;
 	info.notClickable = 1;
 	info.isTitle = 1;
+	info.notCheckable = true;
 	UIDropDownMenu_AddButton(info);
 
 	if ( BAD_BOY_COUNT > 0 ) then
@@ -1407,6 +1408,7 @@ function WorldMapUnitDropDown_Initialize()
 			info.func = WorldMapUnitDropDown_OnClick;
 			info.arg1 = BAD_BOY_UNITS[i];
 			info.text = UnitName( BAD_BOY_UNITS[i] );
+			info.notCheckable = true;
 			UIDropDownMenu_AddButton(info);
 		end
 		
@@ -1414,12 +1416,14 @@ function WorldMapUnitDropDown_Initialize()
 			info = UIDropDownMenu_CreateInfo();
 			info.func = WorldMapUnitDropDown_ReportAll_OnClick;
 			info.text = PVP_REPORT_AFK_ALL;
+			info.notCheckable = true;
 			UIDropDownMenu_AddButton(info);
 		end
 	end
 
 	info = UIDropDownMenu_CreateInfo();
 	info.text = CANCEL;
+	info.notCheckable = true;
 	UIDropDownMenu_AddButton(info);
 end
 

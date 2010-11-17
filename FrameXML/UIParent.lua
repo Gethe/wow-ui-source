@@ -1652,7 +1652,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	if ( VehicleMenuBar and VehicleMenuBar:IsShown() ) then
 		tinsert(yOffsetFrames, "vehicleMenuBar");
-	elseif ( GetBonusBarOverrideBarType() and not BonusActionBarGetBarInfo(GetBonusBarOverrideBarType()).showDefaultBar ) then 
+	elseif ( GetBonusBarOverrideBarType() and BonusActionBarGetBarInfo and not BonusActionBarGetBarInfo(GetBonusBarOverrideBarType()).showDefaultBar ) then 
 		tinsert(yOffsetFrames, "bonusActionBar");
 	else	
 		if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then
@@ -1706,7 +1706,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( value.playerPowerBarAlt ) then
 			value.playerPowerBarAlt = PlayerPowerBarAlt:GetHeight() + 10;
 		end
-		if ( value.bonusActionBar ) then
+		if ( value.bonusActionBar and BonusActionBarFrame ) then
 			value.bonusActionBar = BonusActionBarFrame:GetHeight() - MainMenuBar:GetHeight();
 		end
 		securecall("UIParent_ManageFramePosition", index, value, yOffsetFrames, xOffsetFrames, hasBottomLeft, hasBottomRight, hasPetBar);

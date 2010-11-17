@@ -1,0 +1,439 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="SecurityMatrix.lua"></Script> <!--My XML editor doesn't like <Script .../>.-->
+	
+	<!--Template for the matrix elements-->
+	<Font name="GlueFontNormalGargantuan" inherits="SystemFont_Shadow_Outline_Huge" virtual="true">
+		<!--12 is good for 32x32 buttons and 22 is good for 64x64 buttons-->
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Frame name="SecurityMatrixElementFrameTemplate" virtual="true">
+		<Size x="64" y="64"/>
+		<Backdrop bgFile="Interface\Buttons\UI-EmptySlot.blp" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="-4" right="-4" top="-4" bottom="-4"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="13"/>
+			</EdgeSize>
+		</Backdrop>
+<!--		Alternative Backdrop
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="13"/>
+			</EdgeSize>
+		</Backdrop>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="13"/>
+			</EdgeSize>
+		</Backdrop>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="13"/>
+			</EdgeSize>
+		</Backdrop>
+-->
+	</Frame>
+	<Frame name="SecurityMatrixElementSparkleFrameTemplate" frameLevel="200" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTexture" file="Interface\Icons\INV_Misc_Key_05.blp" hidden="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="SecurityMatrixHeaderElementTextFrameTemplate" frameLevel="200" virtual="true">
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GlueFontNormal"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="SecurityMatrixKeypadButtonTemplate" inherits="GlueMenuButtonTemplate" virtual="true">
+		<Size x="50" y="50"/>
+		<Scripts>
+			<OnClick>
+				SecurityMatrix_ButtonClick(self);
+				PlaySound("UChatScrollButton");
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="SecurityMatrixPinwheelButtonTemplate" inherits="GlueMenuButtonTemplate" virtual="true">
+		<Size x="30" y="40"/>
+		<Scripts>
+			<OnClick>
+				SecurityMatrix_ButtonClick(self);
+				PlaySound("UChatScrollButton");
+			</OnClick>
+			<OnLoad>
+				SecurityMatrixPinwheel_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				SecurityMatrixPinwheel_OnShow(self);
+			</OnShow>
+			<OnHide>
+				SecurityMatrixPinwheel_OnHide(self);
+			</OnHide>
+			<OnUpdate>
+				SecurityMatrixPinwheel_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnEnter>
+				SecurityMatrixPinwheel_HideNumbers();
+			</OnEnter>
+			<OnLeave>
+				SecurityMatrixPinwheel_ShowNumbers();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<!--Top Level Frame-->
+	<Frame name="SecurityMatrixLoginFrame" toplevel="true" parent="GlueParent" frameStrata="HIGH" hidden="true">
+		<Size x="512" y="512"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="64"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="13"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="SecurityMatrixDirectons" inherits="GlueFontNormal" text="SECURITYMATRIX_DIRECTIONS" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-12" y="-12"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="12" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="SecurityMatrixKeypadDirections" inherits="GlueFontNormalSmall" justifyH="LEFT" justifyV="BOTTOM"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="SecurityMatrixFrame">
+				<Size x="512" y="512"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="64"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="13"/>
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<Frame name="$parentHorizontalHighlightSlider" frameLevel="111">
+						<Size x="478" y="72"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="64"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="13"/>
+							</EdgeSize>
+						</Backdrop>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="4" y="4"/>
+											</Offset>
+										</Anchor>
+										<Anchor point="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="-4" y="-4"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.0" g="0.0" b="0.25" a="0.5"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="$parentVerticalHighlightSlider" frameLevel="110">
+						<Size x="72" y="478"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="64"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="13"/>
+							</EdgeSize>
+						</Backdrop>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="4" y="4"/>
+											</Offset>
+										</Anchor>
+										<Anchor point="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="-4" y="-4"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.0" g="0.0" b="0.25" a="0.5"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SecurityMatrix_OnLoad();
+					</OnLoad>
+					<OnUpdate>
+						SecurityMatrix_OnUpdateSlide(self, elapsed);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+			<Frame name="SecurityMatrixKeypadFrame">
+				<!--Keypad
+				<Size x="180" y="180"/>
+				-->
+				<Size x="180" y="212"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="SecurityMatrixLoginFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="64"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="13"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="SecurityMatrixKeypadEntryDigits" inherits="GlueFontNormalGargantuan" text="">
+							<Shadow>
+								<Offset>
+									<AbsDimension x="1" y="1"/>
+								</Offset>
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+						</FontString>
+					</Layer>
+					<!--<Layer level="OVERLAY">
+						<FontString name="SecurityMatrixKeypadEntryLeftDigit" inherits="GlueFontNormalGargantuan" text="*" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="SecurityMatrixKeypadEntryRightDigit" inherits="GlueFontNormalGargantuan" text="*" justifyH="LEFT" hidden="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SecurityMatrixKeypadEntryLeftDigit" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer> -->
+				</Layers>
+				<Frames>
+					<!--Keypad
+					<Button name="SecurityMatrixKeypadButton1" inherits="SecurityMatrixKeyPadButtonTemplate" text="1" id="1">
+						<Anchors>
+							<Anchor point ="TOPLEFT">
+								<Offset>
+									<AbsDimension x="8" y="-32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton2" inherits="SecurityMatrixKeypadButtonTemplate" text="2" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SecurityMatrixKeypadButton1" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton3" inherits="SecurityMatrixKeypadButtonTemplate" text="3" id="3">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SecurityMatrixKeypadButton2" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton4" inherits="SecurityMatrixKeypadButtonTemplate" text="4" id="4">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SecurityMatrixKeypadButton1" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton5" inherits="SecurityMatrixKeypadButtonTemplate" text="5" id="5">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SecurityMatrixKeypadButton4" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton6" inherits="SecurityMatrixKeypadButtonTemplate" text="6" id="6">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SecurityMatrixKeypadButton5" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton7" inherits="SecurityMatrixKeypadButtonTemplate" text="7" id="7">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SecurityMatrixKeypadButton4" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton8" inherits="SecurityMatrixKeypadButtonTemplate" text="8" id="8">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SecurityMatrixKeypadButton7" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton9" inherits="SecurityMatrixKeypadButtonTemplate" text="9" id="9">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SecurityMatrixKeypadButton8" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="SecurityMatrixKeypadButton0" inherits="SecurityMatrixKeypadButtonTemplate" text="0" id="0">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SecurityMatrixKeypadButton8" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Button>
+					-->
+					<Button name="SecurityMatrixKeypadButtonClear" inherits="SecurityMatrixKeypadButtonTemplate" text="CLEARMATRIX">
+						<Size x="80" y="32"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="8" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SecurityMatrix_ClearClick();
+								PlaySound("igSpellBookOpen");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="SecurityMatrixKeypadButtonOK" inherits="SecurityMatrixKeypadButtonTemplate" text="OKAY">
+						<Size x="80" y="32"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								SecurityMatrixKeypadFrame.superSpin = true;
+							</OnEnter>
+							<OnLeave>
+								SecurityMatrixKeypadFrame.superSpin = false;
+							</OnLeave>
+							<OnClick>
+								SecurityMatrix_OKClick();
+								PlaySound("igSpellBookClose");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="SecurityMatrixPinwheelButton1" inherits="SecurityMatrixPinwheelButtonTemplate" text="1" id="1"/>
+					<Button name="SecurityMatrixPinwheelButton2" inherits="SecurityMatrixPinwheelButtonTemplate" text="2" id="2"/>
+					<Button name="SecurityMatrixPinwheelButton3" inherits="SecurityMatrixPinwheelButtonTemplate" text="3" id="3"/>
+					<Button name="SecurityMatrixPinwheelButton4" inherits="SecurityMatrixPinwheelButtonTemplate" text="4" id="4"/>
+					<Button name="SecurityMatrixPinwheelButton5" inherits="SecurityMatrixPinwheelButtonTemplate" text="5" id="5"/>
+					<Button name="SecurityMatrixPinwheelButton6" inherits="SecurityMatrixPinwheelButtonTemplate" text="6" id="6"/>
+					<Button name="SecurityMatrixPinwheelButton7" inherits="SecurityMatrixPinwheelButtonTemplate" text="7" id="7"/>
+					<Button name="SecurityMatrixPinwheelButton8" inherits="SecurityMatrixPinwheelButtonTemplate" text="8" id="8"/>
+					<Button name="SecurityMatrixPinwheelButton9" inherits="SecurityMatrixPinwheelButtonTemplate" text="9" id="9"/>
+					<Button name="SecurityMatrixPinwheelButton0" inherits="SecurityMatrixPinwheelButtonTemplate" text="0" id="0"/>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SecurityMatrixLoginFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				AccountLoginUI:Hide();
+			</OnShow>
+			<OnHide>
+				AccountLoginUI:Show();
+			</OnHide>
+			<OnEvent>
+				SecurityMatrixLoginFrame_OnEvent(event, ...);
+			</OnEvent>
+			<OnKeyDown>
+				if(key == "ESCAPE") then
+					SecurityMatrix_SetShownLength(0);
+					StatusDialogClick();
+					SecurityMatrixLoginFrame:Hide();
+				end
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+</Ui>

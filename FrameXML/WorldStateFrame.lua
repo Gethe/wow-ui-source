@@ -707,6 +707,7 @@ function WorldStateScoreFrame_Update()
 			end
 
 			if ( isArena ) then
+				scoreButton.name.text:SetWidth(150);
 				if ( isRegistered ) then
 					scoreButton.team:SetText(teamName);
 					scoreButton.team:Show();
@@ -726,6 +727,7 @@ function WorldStateScoreFrame_Update()
 				scoreButton.honorableKills:Hide();
 				scoreButton.deaths:Hide();
 			else
+				scoreButton.name.text:SetWidth(175);
 				scoreButton.honorableKills:SetText(honorableKills);
 				scoreButton.deaths:SetText(deaths);
 				scoreButton.team:Hide();

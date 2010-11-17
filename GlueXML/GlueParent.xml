@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GlueParent.lua"/>
+	<Frame name="GlueParent" setAllPoints="true">
+		<Scripts>
+			<!-- Register here for any events you want to monitor globally -->
+			<OnLoad>
+				GlueParent_OnLoad(self);
+			</OnLoad>
+			<!-- Respond here to any events you want to monitor globally -->
+			<OnEvent>
+				GlueParent_OnEvent(event, ...);
+			</OnEvent>
+			<OnUpdate>
+				GlueFrameFadeUpdate(elapsed);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>
