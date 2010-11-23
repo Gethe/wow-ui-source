@@ -1,677 +1,641 @@
 ﻿
-**World of Warcraft PTR Patch 4.0.3a**
+**World of Warcraft Client Patch 4.0.3**
 
-The latest test realm patch notes can always be found at [
-http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html ][1]
+The latest test realm patch notes can always be found at
+<http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html>
 
 The latest patch notes can always be found at [
-http://www.worldofwarcraft.com/patchnotes/ ][2]
+<http://www.worldofwarcraft.com/patchnotes/>
+
+**The Shattering of Azeroth**
+
+In the frigid wastes of Northrend, the final battle against the merciless Lich
+King ended in victory for Azeroth's defenders. Upon returning home, veterans
+of the unforgiving conflict against the Scourge were showered with praise for
+their valiant sacrifices, while the honorable dead were mourned. Yet as hope
+flared anew in the wake of the Lich King's fall, Azeroth's native elemental
+spirits grew confused and erratic, setting off a series of deadly natural
+disasters. Horde and Alliance leaders scrambled for clues about the troubling
+state of the world, but nothing could have prepared them for what was to come.
+
+Without warning, the corrupted Dragon Aspect, Deathwing, erupted from the
+stone heart of Deepholm, the domain of earth within the Elemental Plane.
+Jagged fissures were torn across the earth, and monstrous waves pummeled
+coastal regions. From Thousand Needles to the Blasted Lands, the surface of
+Azeroth was reforged through violent upheavals. Now, the Horde and the
+Alliance must defend their homes against Deathwing and his minions, burdened
+by the unsettling fact that the world as they know it has changed... forever.
 
 **General**
 
-  * The Alliance starting experience for worgen is available. Venture through
-the cursed lands of Gilneas to discover your true path!
+  * Azeroth Shattered
 
-    * Running Wild is a new racial ability for worgen. In place of a mount,
-this ability has a 1.5 second cast time and allows the worgen to run on all
-fours at their fastest mounted ground speed.
+    * Deathwing's return has had an immeasurable impact throughout the Eastern
+Kingdoms and Kalimdor. Players will notice drastically altered terrain,
+thousands of new quests from levels 1-55, and updated level ranges for some
+zones to improve the questing flow.
 
-  * The Horde starting experience for goblins is available. Beginning on the
-Isle of Kezan in a goblin paradise, players will face a treacherous road
-ahead!
+  * New Race/Class Combinations
 
-  * The level cap for all characters is 85.
+    * In the wake of a world on the brink of destruction, members of the Horde
+and Alliance have taken to new cultures and studies, mastering crafts
+previously foreign to them. Many existing playable races now have new class
+combinations. Check the official World of Warcraft: Cataclysm [website][1] for
+a breakdown of the new combinations.
 
-  * The Guild Advancement feature is now fully implemented. You can discuss
-the elements of this feature and leave feedback for us on the [Guild
-Advancement forum][3].
+  * The World of Warcraft: Cataclysm cinematic trailer and login screen have
+been added to the game.
 
-  * Creature damage output has been increased from roughly level 65 and up.
-These increases scale upward with level. Creatures in exterior zones at level
-80 now have 2.5 times the damage output they did previously in beta, 3.2 times
-at level 81, and 4 times at level 82 and up. To leave feedback about how this
-change feels with regard to creature spawns in level 80-85 exterior zones,
-visit our forums [here][4].
-
-  * Cataclysm Launcher Update
-
-    * The new Cataclysm Launcher allows you to stream game data while you
-play. This will reduce the time you spend downloading, installing, and
-patching World of Warcraft. We'd like to get your feedback on the toolset and
-gameplay experience. Please head to the forums [here][5] for additional
-information.
-
-  * Flight Master's License is a new flight skill required for flying around
-Kalimdor and Eastern Kingdoms, available to characters levels 60 and higher
-for 250 gold.
-
-  * Players may use our Character Copy feature for copying existing characters
-to beta realms, or may choose from high-level pre-made template characters.
-
-  * Level 85 pre-made template characters are now available for copy.
-
-**PvP**
-
-  * Honor has been adjusted completely. Any activity which yields Honor will
-now award much less. The Honor cost of items has been reduced to compensate.
-
-  * Tol Barad is now available for testing. Players can reach the zone by
-speaking to NPCs in the capital cities.
-
-  * Battlegrounds
-
-    * Battleground queues should once again be functional.
-
-    * [Twin Peaks][6] is now available for testing.
-
-    * The Battle for Gilneas is now available for testing.
-
-**Zones**
-
-  * Mount Hyjal and Vashj'ir are available for testing.
-
-  * Deepholm is available for testing.
-
-  * Uldum is partially available for testing.
-
-  * Twilight Highlands is partially available for testing.
-
-  * The level ranges of Gilneas and the Lost Isles are in the process of being
-adjusted slightly. Creature, quest, and quest reward levels are all being
-altered so that players finish questing in these zones roughly by level 12.
-Further fine tuning will continue in future content updates.
-
-  * Several zones have had quest maps integrated.
-
-  * Eastern Kingdoms
-
-    * Arathi Highlands, Badlands, Blasted Lands, Burning Steppes, The Cape of
-Stranglethorn, Dun Morogh, Duskwood, Eastern Plaguelands, Elwynn Forest,
-Hillsbrad Foothills, Hinterlands, Loch Modan, Northern Stranglethorn,
-Northshire, Redridge Mountains, Searing Gorge, Silverpine Forest, Swamp of
-Sorrows, Tirisfal Glades, Western Plaguelands and Westfall are ready for
-testing.
-
-  * Kalimdor
-
-    * Most zones in Kalimdor are available for testing, though work continues
-on polishing the quest experience and flow, as well as zone aesthetics.
-
-**Dungeons & Raids**
-
-  * Flexible Raid Lock System
-
-    * All Wrath of the Lich King raids now use the new Flexible Raid Lock
-system. This system provides the opportunity for a character to defeat each
-raid zone's encounters once a week. A character may now complete the
-encounters during the week with different raids of either 10 or 25 players.
-
-  * Trial of the Crusader now uses the Dynamic Difficulty system found in
-Icecrown Citadel and The Ruby Sanctum.
-
-  * Hero Points have been renamed Justice Points.
-
-  * All 5-player Cataclysm dungeons are now available for testing.
-
-  * Players no longer need to discover pre-Cataclysm dungeons in order to
-access them via the Looking For Dungeon system. All Cataclysm level 80-85
-dungeons still need to be discovered before being unlocked in the system.
+  * Experience required to gain levels 71 through 80 has been reduced by 20%,
+which increases leveling rate by 25%.
 
 **Classes: General**
 
-  * All spell and ability tooltips will now display damage averages rather
-than minimum and maximum damage potential. This feature is on by default but
-can be changed via the Display settings under User Interface options. Note:
-this change has not yet been implemented for the mage class.
+  * Due to several talent revisions for select classes, druids, paladins,
+priests, and shaman have had their talent trees reset.
 
-  * Ammo has been removed from the game.
+  * The damage and healing done by players from levels 1-79 has been retuned,
+with the base points of almost all spells and abilities reduced. This was done
+to bring combat times at low levels to a more reasonable length. For most
+abilities that deal weapon damage, the weapon damage percent now rises per
+level until level 80, and starts at a lower percent.
 
-  * The character levels at which classes gain new spells and abilities have
-changed.
+  * Healing Rain, Efflorescence, Holy Radiance, Holy Word: Sanctuary now have
+a diminished effect when healing more than 6 players at once.
 
-  * Many item and class stats have been changed or removed.
+  * Mortal Strike, Furious Attacks, Wound Poison, Widow Venom, Permafrost,
+Improved Mind Blast, Monstrous Bite, and Legion Strike now reduce healing by
+10%, down from 25%.
 
-  * Rage has been normalized.
-
-  * Spells and abilities no longer have multiple ranks and now scale with
-character level.
-
-  * New talent trees have been implemented.
-
-    * Each specialization has been reduced to a 31-point talent tree.
-
-    * Players will now get a total of 41 talent points to spend.
-
-    * 31 points must be spent in the primary specialization tree before any
-points can be placed in additional trees.
-
-    * Players will be asked to choose a specialization at level 10. Doing so
-will result in the unlocking of a spell or ability unique to that
-specialization, as well as one or more passive bonuses.
-
-    * More information regarding our plans for talent trees can be found
-[here][7].
+  * Effects which are broken from taking too much damage (Fear, Frost Nova,
+Entangling Roots, etc.) now break automatically from about half as much damage
+taken as before.
 
 **Death Knights**
 
-  * A dedicated tanking tree has been implemented.
+  * Death Pact now heals for 25% of maximum health, down from 40%.
 
-  * The way in which runes recharge has changed.
+  * Death Strike now heals for 25% of damage taken in the last 5 seconds, down
+from 30%, and will heal for a minimum of 7% of maximum health, down from 10%.
+The tooltip may not yet be updated to reflect this change.
+
+  * Icebound Fortitude now provides 20% damage reduction, down from 30% (now
+50%, down from 60% when talented), and has a 3-minute cooldown, up from 2
+minutes.
+
+  * Talent Specializations
+
+    * Blood
+
+      * Rune Tap now heals for 10% of maximum health, down from 15%. The
+tooltip may not yet be updated to reflect this change.
+
+  * Glyphs
+
+    * Glyph of Rune Tap now heals for 5% of maximum health, down from 10%.
+
+  * Bug Fixes
+
+    * Frost Fever critical strikes now apply the correct amount of bonus
+damage.
 
 **Druids**
 
-  * A new Eclipse mechanic has been added for druids. The feature is
-functional, but the interface art is still a work in-progress.
+  * Bear Form now provides 10% bonus health, down from 20%.
+
+  * Nourish no longer consumes Omen of Clarity.
+
+  * Rejuvenation has had its mana cost increased by 30%.
+
+  * Soothe now has a 1.5-second cast time.
+
+  * Swipe (Cat Form) can now be used even if the druid does not have a primary
+target selected.
+
+  * Thorns: beginner tooltip revised to no longer imply the spell could be
+kept up at all times. In addition, Thorns damage has been reduced by 60%.
+
+  * Talent Specializations
+
+    * Balance
+
+      * PvP set bonus redesigned. While not in an Eclipse state, critical
+attacks against the druid restore 5 Solar or 7 Lunar energy, whichever is more
+beneficial. This effect can only occur once every 6 seconds.
+
+    * Feral
+
+      * Brutal Impact now increases the mana cost of spells on the victim by
+5/10% for 10 seconds, down from 15/30%.
+
+      * Leader of the Pack now heals for 4%, down from 8%.
+
+      * Survival Instincts now provides 50% damage reduction, down from 60%,
+and its cooldown has been lowered from 5 minutes to 3 minutes.
+
+      * Swipe (Bear Form) damage has been reduced by 20%.
+
+      * Vengeance is no longer cleared on exiting Bear Form, and instead is
+cleared upon entering Cat Form.
+
+    * Restoration
+
+      * Empowered Touch now procs from Healing Touch as well as Nourish.
+
+      * Heart of the Wild: the Bear Form Stamina bonus from this talent is now
+2/4/6%, down from 3/7/10%.
+
+      * Malfurion's Gift no longer has Fury of Stormrage as a prerequisite
+talent.
+
+      * Natural Shapeshifter now also increases Tree of Life duration by 5/10
+seconds.
+
+      * Revitalize is now a 2-point talent, down from 3. It provides a 20%
+chance to return 1/2% of the druid's total mana on periodic heals from
+Lifebloom or Rejuvenation. This effect cannot occur more than once every 12
+seconds.
+
+      * Swift Rejuvenation is now a 1-point talent, down from 2. The global
+cooldown reduction this talent provides to Rejuvenation remains 0.5 seconds.
+
+      * Symbiosis: heal-over-time spells (Rejuvenation, Regrowth, Lifebloom)
+can no longer benefit from this Mastery merely by refreshing themselves. A
+different heal-over-time spell must be present.
+
+  * Glyphs
+
+    * Glyph of Healing Touch now reduces the cooldown on Nature's Swiftness by
+10 seconds after using Healing Touch, up from 5 seconds.
+
+    * Glyph of the Treant (new) allows druids to keep the original treant Tree
+of Life look... if they must. Must they?
+
+  * Bug Fixes
+
+    * Blood in the Water now refreshes Rip to the correct value.
+
+    * Flight Form now properly appears in the trainer window before Expert
+Riding is learned.
 
 **Hunters**
 
-  * Five pets can now be stored with the hunter at all times. Any one of these
-five pets can be summoned via the Call Pet ability.
+  * All special attacks based on weapon damage (except Scattershot) are now
+normalized.
 
-  * Focus has replaced mana as a new resource.
+  * Scare Beast is now available at level 36, up from level 14, and has had
+its training cost updated.
 
-  * Hunters now start with a pet at level 1.
+  * Deterrence is now available at level 78, up from level 36, and has had its
+training cost updated.
 
-  * The Stable will now store 20 pets. If a pet is moved into the Stable, its
-talents are wiped.
+  * Disengage is now available at level 14, down from level 78, and has had
+its training cost updated.
+
+  * Glyphs
+
+    * The level requirements for glyphs that affect Scare Beast, Deterrence,
+and Disengage have been altered to correspond with the level changes of these
+abilities.
+
+  * Bug Fixes
+
+    * The Core Hound pet ability Ancient Hysteria now places its own unique
+debuff on affected players that has the same effect as Sated and Exhaustion.
+
+    * Certain pets should no longer forget how to Dash.
 
 **Mages**
 
-  * There is now a new spell fly-out UI feature for mage portals. Clicking on
-the Teleport or Portal buttons will expand the list of choices available.
+  * Arcane Blast now increases damage of the next Arcane Blast by 10% per
+stack, down from 20%, reduces cast time by 0.1 seconds per stack, and
+increases the mana cost by 150%, down from 175%. In addition, the base cast
+time of Arcane Blast has been lowered to 2.35 seconds.
+
+  * Arcane Explosion now costs 15% of base mana, down from 18%.
+
+  * Arcane Missiles damage has been increased by 5%.
+
+  * PvP set 4-piece bonus changed to increase damage by 5% instead of
+providing 5% Haste.
+
+  * Talent Specializations
+
+    * Arcane
+
+      * Arcane Barrage damage has been increased by 5% and its cooldown is now
+4 seconds, down from 5 seconds.
+
+      * Arcane Concentration: Now has a much higher chance (13/27/40%) of
+entering a Clearcasting state. This effect cannot occur more than once every
+15 seconds. The tooltip still states that there is a 3/6/10% chance, as it
+averages out to approximately the same chance with the internal cooldown
+applied.
+
+      * Arcane Specialization again increases arcane damage by 25%.
+
+    * Fire
+
+      * Blazing Speed no longer dispels movement slowing effects (it still
+dispels effects that totally stop movement).
+
+      * Fire Specialization again increases periodic fire damage effects by
+25%.
+
+      * Molten Shields now also causes Blazing Speed to dispel movement
+slowing effects in addition to its current functionality.
+
+      * Pyroblast base mana cost is now 17%, down from 22%.
+
+    * Frost
+
+      * Deep Freeze: the cooldown on this ability is no longer reduced by
+Haste.
+
+      * Early Frost now reduces Frostbolt cast time by 0.3/0.6 seconds, down
+from 0.35/0.70 seconds.
+
+      * Fingers of Frost proc chance is now 7/14/20%, down from 10/20/30%.
+
+      * Frost Specialization again increases all damage against frozen target
+by 25%.
+
+      * Reactive Barrier is now triggered by any damage which causes the
+mage's health to be below 50%, even if the mage was already below 50%.
+
+      * Shatter now also increases Frostbolt damage by 10/20% against frozen
+targets.
+
+      * Shattered Barrier duration is now 2/4 seconds, down from 3/6 seconds.
+
+  * Glyphs
+
+    * Glyph of Evocation now heals for 40%, down from 60%.
+
+    * Glyph of Deep Freeze now increases damage done by Deep Freeze by 20% (no
+longer increases Frostbolt damage against Deep Frozen targets).
+
+  * Bug Fixes
+
+    * Improved Polymorph now correctly shares diminishing returns with
+controlled stuns.
 
 **Paladins**
 
-  * Paladins now have a new resource bar.
+  * Exorcism damage has been increased by approximately 50%.
 
-  * We are in the process of overhauling many paladin talents, spells and
-abilities. Expect updates in upcoming patches.
+  * Holy Radiance now has reduced effectiveness on targets over 8 yards away
+from the paladin.
 
-**Warlocks**
+  * Seal of Truth: periodic damage from Censure reduced by 25%.
 
-  * There is now a new spell fly-out UI feature for warlock pets. Clicking on
-this single button will open up the list of available pets to summon.
+  * Talent Specializations
 
-  * Soul Shards have been removed from the game as items. Instead, they now
-exist as a resource system necessary for using, or altering the mechanics of
-certain spells.
+    * Holy
+
+      * Beacon of Light now lasts 5 minutes, up from 60 seconds.
+
+      * Blessed Life: the effects of this talent cannot occur more than once
+every 8 seconds, up from every 2 seconds.
+
+      * Illuminated Healing absorb shield now absorbs 10% of the total amount
+healed, up from 8%. Each point of Mastery increases the effect by an
+additional 1.25%, up from 1%.
+
+      * Light of dawn has been redesigned. It no longer has an enforced
+cooldown, now costs Holy Power instead of mana, and scale in direct proportion
+to the amount of Holy Power used. In addition, it now heals the 5 most injured
+group targets (including self) in a 30-yard frontal cone.
+
+      * Protector of the Innocent no longer triggers from self-heals.
+
+    * Protection
+
+      * Divine Bulwark now grants 2.25% less block chance per point of
+Mastery, up from 2%.
+
+      * Holy shield no longer increases chance to block. Instead, it increases
+the amount blocked by an additional 10%, for a total of 40% damage blocked.
+
+      * Shield of the Righteous: Contribution of attack power halved (now 60%
+with full Holy Power) and base damage brought up so that a level 85 paladin in
+Heroic dungeon gear deals the same damage with no Vengeance, but Vengeance has
+less impact.
+
+      * Shield of the Templar now reduces the cooldown of Guardian of Ancient
+Kings by 40/80/120 seconds, down from 1/2/3 minutes.
+
+      * Wrath of the Lightbringer now increases Crusader Strike and Judgement
+damage by 50/100%, up from 30/60%.
+
+    * Retribution
+
+      * Crusade now also has a proc on kill to increase the healing done by
+the paladin's next Holy Light by 100/200/300% for 15 seconds, in addition to
+its current effects.
+
+      * Divine Storm: This ability has been redesigned. It no longer consumes
+Holy Power and instead costs 5% of base mana. It shares a cooldown with
+Crusader Strike and hits all nearby enemies for 60% weapon damage.
+
+      * Pursuit of Justice now has an 8-second internal cooldown, shared with
+Blessed Life.
+
+      * Rebuke no longer initiates Auto Attack.
+
+      * Sanctity of Battle now also causes Divine Storm's cooldown to be
+reduced by Haste effects.
+
+      * Zealotry no longer consumes 3 Holy Power, but still requires 3 Holy
+Power to use.
+
+  * Glyphs
+
+    * Glyph of Beacon of Light now makes Beacon of Light free, instead of
+increasing the duration by 30 seconds.
+
+    * Glyph of Divinity has been redesigned. It now grants the paladin 10% of
+maximum mana upon use.
+
+    * Glyph of Light of Dawn now increases the total number of most injured
+targets healed by 1.
+
+**Priests**
+
+  * Binding Heal now provides roughly double the amount of healing.
+
+  * Prayer of Healing has had its mana cost reduced by nearly 30%, and its
+base points and Spell Power coefficient increased by 20%.
+
+  * Talent Specializations
+
+    * Discipline
+
+      * Divine Aegis is now always triggered by Prayer of Healing, in addition
+to critical heals from all other spells.
+
+      * Grace has been increased to 4/8% stacking 3 times, up from 2/4%
+stacking.
+
+      * Inner Focus now works with Binding Heal, but no longer works with
+Heal.
+
+      * Power Word: Barrier has been redesigned. It no longer acts as a shared
+absorb shield. Instead, all affected friendly targets take 30% reduced damage
+for the duration of the shield, which is now 10 seconds, down from 25 seconds.
+
+    * Shadow
+
+      * Shadow Orbs: redesigned slightly. The Shadow Orbs continue to increase
+damage done by Mind Blast and Mind Spike and stack up to 3 times, but now when
+the priest casts Mind Blast or Mind Spike (consuming the orbs), the priest
+gains a 15-second duration buff (Empowered Shadow), which increases the damage
+done by all Shadow periodic spells. Empowered Shadow does not stack. Mastery
+increases the damage bonus of Shadow Orbs and Empowered Shadow by the same
+amount, 10% with the base 8 Mastery, and an additional 1.25% per Mastery.
+
+      * Vampiric Embrace healing to the caster has been reduced to 6%, down
+from 12% (there was a tooltip error which stated that the self-healing amount
+was 15%). Party members still receive 3% healing.
+
+  * Bug Fixes
+
+    * Dark Archangel now correctly increases the damage done of certain
+abilities by 4%.
+
+**Rogues**
+
+  * Deadly Poison base damage and attack power coefficient have been increased
+by 30%.
+
+  * Recuperate now restores 2% of maximum health, down from 3%.
+
+  * Venomous Wounds base damage and attack power coefficient have been
+increased by 30%.
+
+  * Talent Specializations
+
+    * Combat
+
+      * Aggression now increases damage of Sinister Strike, Backstab, and
+Eviscerate by 7/14/20%, up from 5/10/15%.
+
+      * Bandit's Guile now gives 10/20/30% increased damage as the rogue gains
+greater insight, up from 5/10/15%.
+
+    * Subtlety
+
+      * Executioner no longer affects Recuperate.
+
+  * Bug Fixes
+
+    * Bandit's Guile now applies more consistently to all of the abilities
+it's supposed to modify.
+
+    * Player guardians and temporary pets now stop attacking when a rogue uses
+Vanish, but city guards will not.
+
+**Shaman**
+
+  * Chain Heal mana cost increased from 17% to 20% of base mana.
+
+  * Earthliving Weapon now only has 25% of its full chance to proc from a
+single hop of Chain Heal.
+
+  * Talent Specializations
+
+    * Elemental
+
+      * Elemental Reach now also increases Searing Totem range by 7/15 yards.
+
+      * Fulmination now has a Spell Alert visual associated with it, which
+appears when the shaman gets to 9 Lightning Shield charges.
+
+**Warlock**
+
+  * Bane of Agony damage has been reduced by approximately 12%.
+
+  * Bane of Doom damage has been reduced by approximately 12%.
+
+  * Corruption damage has been reduced by approximately 12%.
+
+  * Death Coil damage has been reduced by approximately 12%.
+
+  * Drain Life damage has been reduced by approximately 12%.
+
+  * Drain Soul damage has been reduced by approximately 12%.
+
+  * Immolate damage has been reduced by approximately 12%.
+
+  * Incinerate damage has been reduced by approximately 12%.
+
+  * Rain of Fire damage has been increased to be more comparable to other
+area-of-effect abilities.
+
+  * Searing Pain damage has been reduced by approximately 12%.
+
+  * Seed of Corruption damage has been reduced to be more comparable to other
+area-of-effect abilities.
+
+  * Shadowbolt damage has been reduced by approximately 12%.
+
+  * Soul Fire damage has been reduced by approximately 12%.
+
+  * Talent Specializations
+
+    * Demonology
+
+      * Hand of Gul'dan damage has been reduced by approximately 12%.
+
+    * Destruction
+
+      * Chaos Bolt damage has been reduced by approximately 12%.
+
+      * Conflagrate damage has been reduced by approximately 12%.
+
+      * Shadowburn damage has been reduced by approximately 12%.
+
+  * Bug Fixes
+
+    * Drain Life: The Soulburn version of this was charging 17% of base mana
+instead of 12% like the normal version. This has been corrected.
+
+**Warriors**
+
+  * Cleave damage has been reduced by approximately 17%.
+
+  * Execute damage has been reduced by approximately 17%.
+
+  * Heroic Strike damage has been reduced by approximately 17%.
+
+  * Overpower now does 125% weapon damage, down from 150%.
+
+  * Rend base damage has been reduced by approximately 17% and percent of
+weapon damage per tick lowered to 25%, from 30%.
+
+  * Shield Block now only increases block chance by 25%, but excess block that
+pushes avoidance plus block to over 100% is now converted to critical block
+chance.
+
+  * Slam now costs 15 rage, down from 20, and now does 125% weapon damage,
+down from 150%.
+
+  * Victory Rush damage has been reduced by approximately 17%.
+
+  * Whirlwind now does 65% weapon damage, down from 75%.
+
+  * Talent Specializations
+
+    * Arms
+
+      * Mortal Strike now does 150% weapon damage, down from 185%.
+
+      * Second Wind now heals for 2/5% of total health, down from 5/10%.
+
+      * Strikes of Opportunity now does 100% weapon damage, down from 115%.
+
+    * Fury
+
+      * Blood Craze now heals for 1/2/3% of total health, down from
+2.5/5/7.5%.
+
+      * Bloodthirst damage has been reduced by approximately 17%.
+
+      * Raging Blow now does 110% weapon damage, down from 150%.
+
+      * Unshackled Fury now gains approximately 50% more benefit per point of
+Mastery.
+
+    * Protection
+
+      * Critical Block now grants an equal amount of block chance and critical
+block chance (1.5% each per point of Mastery).
+
+      * Devastate no longer provides bonus threat.
+
+      * Shield Slam: Contribution of attack power reduced to 60%, down from
+75%, and base damage brought up so that a level 85 warrior in Heroic dungeon
+gear deals the same damage with no Vengeance, but Vengeance has less impact.
+In addition, Shield Slam no longer generates 30% bonus threat from its damage.
+
+      * Vigilance no longer provides 3% damage reduction, but still refreshes
+Taunt and provides Vengeance.
+
+  * Glyphs
+
+    * Glyph of Bloody Healing increases the healing received from Bloodthirst
+by 40%, down from 100%.
+
+    * Glyph of Intimidating Shout no longer causes targets to flee slowly, but
+roots them instead.
+
+    * Glyph of Shield Wall increases damage reduction to 60%, but increases
+the cooldown from 2 minutes to 4 minutes (talented).
+
+  * Bug Fixes
+
+    * Taste for Blood should once again proc on every other tick of Rend.
+
+**Achievements**
+
+  * The Gladiator reward mounts now award Master Riding.
+
+  * What A Long, Strange Trip It's Been now awards Master Riding.
 
 **Items**
 
-  * Resilience no longer reduces the chance a player will be critically hit by
-an opponent.
+  * Mysterious Egg now takes only 3 days to turn into a Cracked Egg and has a
+slightly greater chance of awarding the Reins of the Green Proto-Drake.
 
-  * Durability: cloth, leather, and mail now have as many points of durability
-as plate, making the repair cost on death much closer to equal for all
-classes.
+  * PvP set bonuses now provide 70 of stats such as Agility, Intellect, and
+Strength (down from 100) at 2 pieces, and 180 of these stats (down from 300)
+at 4 pieces.
 
 **Professions**
 
-  * Archaeology, a new secondary profession, has been added. Players can learn
-this profession in order to search for ancient artifacts around the world to
-advance their Archaeology skill and create unique new items.
+  * Perfect Gem Cutting and Mixology have been removed as trainable skills and
+are instead passives profession abilities. When players reach the appropriate
+skill levels, they will start getting bonuses from Mixology (they must know
+the recipe to gain the benefit) and/or cutting perfect gems (depending on
+their profession, of course).
 
-    * To recover artifacts, you need to collect artifact fragments. Fragments
-are found in dig sites visible on your map. When you reach a dig site, use the
-Survey ability. Your survey tool will indicate the approximate direction and
-distance to the cache of fragments. You can collect fragments three times in a
-dig site before you need to move to a new dig site. Once you have enough
-fragments, you can solve an artifact to learn a little more about Azeroth's
-past. Happy hunting!
+  * Alchemy
 
-      * Research sites that are too high a level (60-85 zones and continents)
-will no longer show up if a player's Archaeology skill isn't yet high enough.
+    * Alchemy recipes now require Crystal Vials. Deathwing broke all the
+others because he's mean (or because he didn't want alchemists to carry 5
+different vials around with them).
 
-      * All kinds of artifacts will grant 5 points of skill. Previously,
-lower-level artifacts wouldn't grant any skill.
+  * Engineering
 
-      * Keystones now count as 12 fragments.
+    * The Engineering Tinkering enchants will no longer provide their bonus
+stats, but the activated effects will stack with other enchants. In 4.0.1 the
+stats were there (but hidden) and are now removed.
 
-      * Players now gain experience when collecting fragments.
+  * Bug Fixes
 
-      * Many bugs have been fixed with keystones and dig sites.
+    * Several epic gem transmutes that were missing from the trainer have been
+added back.
 
-  * The updated glyph system is now functional.
+**Bug Fixes**
 
-  * The Reforging interface has been implemented and the NPCs should now be
-functional for testing this feature.
+  * Certain area-of-effect abilities are no longer ignoring the area-of-effect
+damage cap.
 
-**User Interface**
+  * Mobs and NPCs should no longer appear to randomly gain or lose health
+during combat.
 
-  * Several default User Interface options have been altered. Be sure to
-browse through the new settings and leave feedback about any potential issues
-or bugs.
-
-  * The ability to use third-party addons has been enabled.
-
-  * Leave feedback about the latest user interface changes [ here][8].
-
-  * Spell Alerts have been added to notify players when procs on select spells
-and abilities occur. A visual notification will display around the character
-and the activated ability will be highlighted on the action bar.
-
-  * The Arena Teams pane has been improved.
-
-  * Auto-quests have been added to the game. Players will automatically be
-given an auto-quest by entering specific areas in the game world. This alert
-will appear distinctly in the Objectives pane via the Advanced Quest Tracking
-feature. These quests will still be given to players with full Quest Logs, but
-will count toward the 25 total allotted quests if the log is not full.
-
-  * The Character pane has been redesigned. Character stats can now be shown
-or hidden via the Show All Details/Hide All Details button on the bottom left.
-When shown, all character stats will be visible in a window to the right of
-the pane. Stat sections can be reorganized by clicking and dragging them up or
-down the pane.
-
-  * The Professions panes now have more filtering and search functionality, as
-well as buttons to easily link recipes in the chat frame.
-
-  * A Professions screen has been added to the Spellbook to better display the
-details of a character's primary and secondary professions.
-
-  * Many of the yellow System Messages that would display in the chat frame
-when leveling up have been removed.
-
-  * New text animations now alert players as they level up, also providing
-information on when new talents, spells and abilities are available.
-
-  * Professions and Class Trainers windows have been altered to more clearly
-display available and upcoming purchases.
-
-  * Raid frames are now available and have temporarily replaced the standard
-party frames so that players can test them.
-
-  * The Spellbook interface has been improved for greater ease-of-use and
-visual appeal.
-
-**Graphics**
-
-  * Improved water and lava rendering system (Video Options - Liquid Detail on
-the Graphics Panel)
-
-  * Dynamic Sunshafts effect (Video Options - Sunshafts on the Graphics Panel)
-
-  * Multi-monitor support (Video Options - Monitor on the Graphics Panel)
-
-  * OpenGL Hardware Cursor support for Windows (Video Options - Hardware
-Cursor on the Advanced Panel)
-
-  * Experimental support for DX11 (enabled by passing '-d3d11' on the command
-line or adding SET gxApi "d3d11" to the Config.WTF file)
+  * Re-summoning pets in Battlegrounds should no longer count towards a
+player's total healing done.
 
 **Known Issues**
 
-  * General Issues
+  * Some tooltips may not reflect the most recent changes to certain
+abilities.
 
-    * Sending a whisper to players from different realms will show the wrong
-name in the chat logs.
+  * Worgen hunters are currently unable to learn Dual Wield.
 
-    * Players are unable to see the corpses of characters from other realms
-inside of an instance or Battleground.
+  * The achievement Explore Tol Barad will not be possible to complete upon
+release of World of Warcraft: Cataclysm.
 
-    * Several helmet models appear as error cubes on goblin male characters.
-
-    * Mounts (both flying and ground) cannot be used in several parts of the
-world.
-
-    * Pet health is not being correctly restored after dismounting.
-
-    * Hair and facial color for the worgen Character Creation screen is not
-correctly working.
-
-    * War Games are causing several issues when inside of a Battleground that
-may prevent the game from being correctly played.
-
-    * New Battleground level brackets are not yet implemented.
-
-    * Training higher levels of riding skill may cause lower levels to become
-trainable again.
-
-    * Random Battleground rewards may show up incorrectly or not at all on the
-queue window.
-
-    * Female tauren point their guns and crossbows into the air while
-shooting.
-
-    * Several worgen female and male death knight faces are distorted.
-
-    * Players do not remount Swift Spectral Gryphons if they dismount them.
-
-    * Battleground experience gains are too low.
-
-    * Professions are having issues when logging out.
-
-    * Goblins and worgen cannot use the Dungeon Finder after changing
-factions.
-
-    * The client may lock up when trying to connect to a realm from the Realm
-Selection window.
-
-  * User Interface
-
-    * The /settitle command causes a LUA error.
-
-    * Some Runeforging abilities do not show up in the Runeforging interface.
-
-    * The display for Conquest points shows a maximum of 13 points.
-
-  * Combat
-
-    * Players are unable to get the Veteran buff when joining a Tol Barad
-battle after it has started.
-
-    * The spell effect visuals for Healing Rain and Earthquake look awkward
-when cast on a staircase or a steep incline.
-
-    * Pyroblast cannot be used with a /cast Pyroblast macro.
-
-    * Druids are unable to correctly train Insect Swarm.
-
-    * Entangling roots is putting a buff on the caster.
-
-  * Quests
-
-    * Chip Endale cannot path causing him to evade if pulled during combat.
-
-    * Mountainfoot Miners cannot be interacted with after trying to be picked
-up by a Shapeshifted Druid.
-
-    * The quest "Small Comforts" is not updated when quest items are looted.
-
-    * Lord Geoffery Wildwolf will teleport around while players fight him.
-
-    * Players are unable to interact with Fallen Stonard Warriors after
-placing a banner in them while on "Marking the Fallen".
-
-    * Lady Jaina Proudmoore does not offer to teleport players to Stormwind
-during "Proof of Treachery".
-
-    * The quest "Fortune and Glory" cannot be completed.
-
-    * The Pimento vehicle for the quest "The Ballad of Maximillian" will not
-mount the player after using the gossip options.
-
-    * Turning in "Abuse of Power" deletes a quest item required for further
-parts of the quest chain.
-
-    * The gnome quest "Decontamination" cannot be completed.
-
-    * The quest "Unlimited Potential" cannot be completed.
-
-    * "Hyena Harvest" cannot be completed because the item does not properly
-work.
-
-    * "Samophlange" cannot be completed.
-
-  * Dungeons & Raids
-
-    * Algalon's platform is no longer transparent.
-
-    * Harvested Soul does not show up on the Lich King's buff bar.
-
-    * Players may become stuck in combat after killing Neptulon.
-
-    * It is possible to be dropped under the world after being released from
-Commander Ulthok's Squeeze.
-
-    * Several bosses respawn after a soft instance reset.
-
-    * Several doors do not reopen after an instance soft reset.
-
-    * The exit portal from The Stonecore does not remove players from the
-instance.
-
-    * There is no corpse arrow indicator on where to go if one dies and
-releases from The Stonecore.
-
-  * Tradeskills
-
-    * Several Cataclysm recipes are missing from trainers.
-
-    * Players are unable to solve the Highborne Soul Mirror item.
-
-    * Spinal Healing Injector and Z50 Mana Gulper place potions on permanent
-cooldowns.
-
-    * It is not possible to learn Illustrious Grand Master Engineering.
-
-    * Several leatherworking recipes require 530 skill to learn.
-
-    * If you abandon both professions, one of them may repeatedly come back at
-1 skill level after logging back into the game.
-
-    * Trainers sometimes display no money or level requirements to train some
-profession ranks.
-
-  * Environment
-
-    * There is a collision wall in Greymane Court in Gilneas City that players
-can be stuck behind.
-
-    * There are pathing issues where mobs may go under the terrain on Nespirah
-and L'ghorek.
-
-    * There is a wall of collision in Shadowfang Keep that may prevent player
-progression.
-
-**Bug Fixes **
-
-  * Quitting a guild will no longer cause a client crash for all other online
-guild members.
-
-  * Characters should no longer become visually stuck in an animation pose.
-
-  * Players are again able to Party chat with players from other realms inside
-instances and Battlegrounds.
-
-  * Many helmet models have been fixed for goblin male characters that
-previously displayed error cubes.
-
-  * Robes now have durability.
-
-  * The Subdued Abyssal Seahorse correctly requires Artisan Riding to learn.
-
-  * The portal from the Deepholm Temple of Earth to Orgrimmar no longer spawns
-players underneath the world.
-
-  * Player portraits are correctly lit.
-
-  * Trainers are now displaying portraits.
-
-  * Worgen can now train from Herbalism trainers.
-
-  * Random Battleground queues now work for players below level 80.
-
-  * The worgen new player cinematic should play upon logging in.
-
-  * Launching the client with the sound card disabled no longer asserts the
-client.
-
-  * Modifying guild news filters that do not apply to current news items no
-longer causes the news items to swap positions in the list.
-
-  * Player names should not show up as "Unknown" in guild news if they are
-offline.
-
-  * Guild achievements with individual player criteria are now displaying the
-character name of the character who flags the criteria.
-
-  * There is no longer a LUA error when scrolling through bank tab permissions
-with over 5 bank tabs.
-
-  * The 7th bank tab cost is correct.
-
-  * Filtering a profession does not prevent players from seeing the bottom
-recipe.
-
-  * Rank 2 of Killing Streak is no longer triggering the effect of rank 1.
-
-  * Priest talents can no longer be chosen before the prerequisites are met.
-
-  * Some hunter talents can no longer be chosen before the prerequisites are
-met.
-
-  * Conflagrate is doing its intended damage.
-
-  * Strand of the Ancients is now working correctly for the attacking and
-defending teams.
-
-  * Dreamstate is now correctly enhancing Innervate.
-
-  * Demon Soul will not remove Metamorphosis.
-
-  * Entangling Roots spell visual is no longer persisting in the ground after
-it wears off of a target.
-
-  * Burning Embers is now functioning correctly.
-
-  * Rank 2 of Jinx: Curse of the Elements is no longer drastically reducing
-damage taken by the target.
-
-  * Glyph of Renew is no longer reducing healing output.
-
-  * Glyph of Holy Nova is working.
-
-  * Runic Corruption can no longer cause the visual cooldown on runes to
-display incorrectly.
-
-  * Glyph of Spirit Tap works.
-
-  * Spiritual Focus now increases hit rating for spells, not melee attacks.
-
-  * The healing value from Devour Magic by a felhunter is correct.
-
-  * Periodic abilities should all correctly benefit from haste.
-
-  * Glyph of Shadowburn is functioning.
-
-  * Rank 1 of Improved Tracking no longer has a "NNF" tag.
-
-  * The final heal of Lifebloom benefits from Gift of Nature.
-
-  * Drain Life is now restoring the correct amount of health.
-
-  * Archangel Wings are correctly placed on character models.
-
-  * Rank 1 of Impending Doom no longer causes Bane of Doom to fall off early.
-
-  * Psychic Scream no longer only causes one target to flee.
-
-  * Attack is now placed on the warlock pet bars.
-
-  * Thunderstruck is now stacking its buff and no longer returns an error
-message.
-
-  * The glyph of Lifebloom critical strike chance increase is now working.
-
-  * The spell effect for Solar Beam is now consistent with its radius of
-effect.
-
-  * Anaimiss the Hive Queen and Harakiss the Infestor now scale down properly
-when tamed.
-
-  * Owl's Focus is functioning.
-
-  * Culling the Herd is proccing correctly.
-
-  * Ritual of Refreshment is functioning.
-
-  * Shaman totems can be recalled.
-
-  * The quest giver item Tattered Treasure Map cannot drop again after the
-quest "The Horde's Hoard" has been completed.
-
-  * Sound is no longer cutting in and out during two segments of Mor'norokk's
-voice over during the quest, "Some Spraining to Do".
-
-  * The bones for the quest "Spirits of Stonemaul Hold" can again be
-interacted with.
-
-  * Characters can again interact with Egg of Onyxia for the quest "The Brood
-of Onyxia".
-
-  * While on the quest "Blood and Thunder!" NPCs should no longer despawn
-prior to the event.
-
-  * Coldlight Murlocs are now dropping Enormous Eel Eggs.
-
-  * The "Defending the Rift" quest can be turned in.
-
-  * The "Camel Tow" quest can be completed.
-
-  * Your client should no longer crash when looting the quest item: What does
-'The end of all things' mean for me.
-
-  * Characters should no longer die while performing the Rocket Boot Boost
-quest.
-
-  * It is now possible to finish "Thunderdrome: Grudge Match".
-
-  * Sentinel's Pawns and Warden's Pawns for "The Warden's Game" and "The
-Sentinel's Game" can be interacted with.
-
-  * The "Recover the Cargo" quest chain no longer has a quest 2 levels higher
-than the quest before it.
-
-  * The Alliance quest "The Angerfang Menace" is now available for Alliance
-players.
-
-  * Players can obtain the Grimtotem Battle Plan for the quest "Confirming the
-Suspicion".
-
-  * Cassa Crimsonwing now offers players an option to take a gryphon to
-complete the quest "Survey Alcaz Island".
-
-  * Orno Grimtotem no longer becomes stuck in an Evade state.
-
-  * Hyjal NPCs should remain appropriately visible after completing specific
-quests in Hyjal.
-
-  * Players can see Ysondre if they die or leave her area of interest after
-completing "Ysondre's Call".
-
-  * Ysondre no longer becomes stuck during "Taerar's Fall".
-
-  * Players can re-obtain the quest "Nothing a Couple of Melons Won't Fix" if
-it's abandoned.
-
-  * Players can accept the quest "Perfect Yeti Hide".
-
-  * Dynamically changing the difficulty in the Halion encounter will no longer
-break the Twilight Orbs.
-
-  * No trash pulls in Icecrown citadel are under the world anymore.
-
-  * Several raid and dungeon bosses are no longer despawning immediately when
-dying.
-
-  * Bosses are correctly rewarding Justice Points when killed.
-
-  * Tradeskill items correctly require some specialized professions to learn.
-
-  * Leatherworking recipes no longer disappear from the trainer window after
-it's closed.
-
-  * Fishing is no longer unlearned when logging out.
-
-  * Players no longer suddenly die while running around Thunder Bluff.
-
-  * Twin Peaks Battleground: There is no longer a section of missing water in
-the tube near the Horde base.
-
-   [1]: http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
-
-   [2]: http://www.worldofwarcraft.com/patchnotes/
-
-   [3]: http://forums.worldofwarcraft.com/board.html?sid=2000&forumId=8945398
-
-   [4]: http://forums.worldofwarcraft.com/thread.html?topicId=26435496423&sid=2000
-
-   [5]: http://forums.worldofwarcraft.com/thread.html?topicId=26262801168&sid=2000
-
-   [6]: http://www.worldofwarcraft.com/cataclysm/features/twinpeaks.html
-
-   [7]: http://www.worldofwarcraft.com/info/underdev/4p0/classandmastery.xml
-
-   [8]: http://forums.worldofwarcraft.com/thread.html?topicId=26560766722&sid=2000&pageNo=1
+   [1]: http://www.worldofwarcraft.com/cataclysm/_images/features/raceclassmat
+rix_en_US.jpg
