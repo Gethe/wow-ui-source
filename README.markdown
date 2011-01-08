@@ -1,641 +1,542 @@
-﻿
-**World of Warcraft Client Patch 4.0.3**
+﻿**General**
 
-The latest test realm patch notes can always be found at
-<http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html>
+  * Many tooltips have been updated to reflect any changes made via recent
+[hotfixes][1].
 
-The latest patch notes can always be found at [
-<http://www.worldofwarcraft.com/patchnotes/>
+  * The guild reward Armadillo Pup now requires revered faction instead of
+exalted.
 
-**The Shattering of Azeroth**
+**PvP**
 
-In the frigid wastes of Northrend, the final battle against the merciless Lich
-King ended in victory for Azeroth's defenders. Upon returning home, veterans
-of the unforgiving conflict against the Scourge were showered with praise for
-their valiant sacrifices, while the honorable dead were mourned. Yet as hope
-flared anew in the wake of the Lich King's fall, Azeroth's native elemental
-spirits grew confused and erratic, setting off a series of deadly natural
-disasters. Horde and Alliance leaders scrambled for clues about the troubling
-state of the world, but nothing could have prepared them for what was to come.
+  * Arenas
 
-Without warning, the corrupted Dragon Aspect, Deathwing, erupted from the
-stone heart of Deepholm, the domain of earth within the Elemental Plane.
-Jagged fissures were torn across the earth, and monstrous waves pummeled
-coastal regions. From Thousand Needles to the Blasted Lands, the surface of
-Azeroth was reforged through violent upheavals. Now, the Horde and the
-Alliance must defend their homes against Deathwing and his minions, burdened
-by the unsettling fact that the world as they know it has changed... forever.
+    * Bloodlust, Heroism, Time Warp and Ancient Hysteria can no longer be cast
+while in Arenas.
 
-**General**
+  * Battlegrounds
 
-  * Azeroth Shattered
+    * The Battle for Gilneas
 
-    * Deathwing's return has had an immeasurable impact throughout the Eastern
-Kingdoms and Kalimdor. Players will notice drastically altered terrain,
-thousands of new quests from levels 1-55, and updated level ranges for some
-zones to improve the questing flow.
+      * The time it takes to capture a flag has been reduced to 5 seconds,
+down from 8.
 
-  * New Race/Class Combinations
+    * Strand of the Ancients
 
-    * In the wake of a world on the brink of destruction, members of the Horde
-and Alliance have taken to new cultures and studies, mastering crafts
-previously foreign to them. Many existing playable races now have new class
-combinations. Check the official World of Warcraft: Cataclysm [website][1] for
-a breakdown of the new combinations.
+      * The damage done by Antipersonnel Cannons has been doubled.
 
-  * The World of Warcraft: Cataclysm cinematic trailer and login screen have
-been added to the game.
+      * The missile speed of Rocket Blast (Antipersonnel Cannons) has been
+increased by roughly 50%.
 
-  * Experience required to gain levels 71 through 80 has been reduced by 20%,
-which increases leveling rate by 25%.
+      * Some Antipersonnel Cannons could shoot the platform they were spawned
+on. These spawn locations have been fixed.
 
-**Classes: General**
+      * The Battleground Demolisher no longer has two additional seats and now
+only has room for the driver.
 
-  * Due to several talent revisions for select classes, druids, paladins,
-priests, and shaman have had their talent trees reset.
+      * A PvP duration flag has been added to Battleground Demolishers. This
+should make it so crowd control effects cast on unmanned demolishers does not
+last an extended amount of time.
 
-  * The damage and healing done by players from levels 1-79 has been retuned,
-with the base points of almost all spells and abilities reduced. This was done
-to bring combat times at low levels to a more reasonable length. For most
-abilities that deal weapon damage, the weapon damage percent now rises per
-level until level 80, and starts at a lower percent.
+      * There should no longer be a discrepancy in time when the Battleground
+Demolishers spawn at the start of each round.
 
-  * Healing Rain, Efflorescence, Holy Radiance, Holy Word: Sanctuary now have
-a diminished effect when healing more than 6 players at once.
+      * The Battleground Demolishers spawned on the docks no longer despawn
+when the north graveyard is taken by the offense.
 
-  * Mortal Strike, Furious Attacks, Wound Poison, Widow Venom, Permafrost,
-Improved Mind Blast, Monstrous Bite, and Legion Strike now reduce healing by
-10%, down from 25%.
+      * Massive Seaforium Charges should now be useable in rated Battleground
+matches.
 
-  * Effects which are broken from taking too much damage (Fear, Frost Nova,
-Entangling Roots, etc.) now break automatically from about half as much damage
-taken as before.
+      * The duration of the Teleport debuff has been lowered to 10 seconds,
+down from 20.
 
-**Death Knights**
+      * The radius of the Seaforium Blast has been lowered to 10 yards, down
+from 20.
 
-  * Death Pact now heals for 25% of maximum health, down from 40%.
+**[Races][2]**
 
-  * Death Strike now heals for 25% of damage taken in the last 5 seconds, down
-from 30%, and will heal for a minimum of 7% of maximum health, down from 10%.
-The tooltip may not yet be updated to reflect this change.
+  * The draenei racial trait Gift of the Naaru now heals 20% of the target's
+health over 15 seconds, rather than a scaling value.
 
-  * Icebound Fortitude now provides 20% damage reduction, down from 30% (now
-50%, down from 60% when talented), and has a 3-minute cooldown, up from 2
-minutes.
+  * The dwarven racial trait Stoneform now reduces all damage taken by 10%,
+rather than increasing armor by 10%. It also increases the dwarf's size when
+used.
+
+  * The gnomish racial trait Escape Artist now has a 1.5-minute cooldown, down
+from 1.75.
+
+  * The human racial trait Every Man for Himself has been reverted back to a
+2-minute cooldown, down from 3 minutes.
+
+  * The night elf racial trait Shadowmeld can now be used while shapeshifted.
+
+  * The tauren racial trait War Stomp can now be used while shapeshifted.
+
+  * The worgen racial trait Darkflight now has a 2-minute cooldown, down from
+3, and is no longer on the global cooldown. In addition, the movement speed
+bonus now stacks with existing bonuses, but cannot be activated while Sprint
+or Dash is active (and they cannot be activated while Darkflight is active).
+
+**[Death Knights][3]**
+
+  * Icebound Fortitude now breaks stuns when used, in addition to providing
+immunity to them.
+
+  * Necrotic Strike's absorption effect is now reduced by the target's
+resilience.
 
   * Talent Specializations
 
     * Blood
 
-      * Rune Tap now heals for 10% of maximum health, down from 15%. The
-tooltip may not yet be updated to reflect this change.
+      * Crimson Scourge has been redesigned slightly. Instead of a 50/100%
+chance to make the next Blood Boil free when Plague Strike is used on a target
+with Blood Plague, the talent now gives a 5/10% chance to provide a free Blood
+Boil when the death knight lands any melee attack on a Blood Plagued target.
+
+      * Will of the Necropolis no longer refunds a Blood Rune when it resets
+Rune Tap's cooldown. Instead it makes the next Rune Tap free while Will of the
+Necropolis is active.
+
+    * Frost
+
+      * Howling Blast now deals 40% less damage to all targets other than the
+primary target of the spell.
+
+      * Might of the Frozen Wastes now also increases all melee damage by
+4/8/12% while wielding a two-handed weapon.
+
+    * Unholy
+
+      * Desecration is now also triggered by Necrotic Strike.
+
+      * Runic Corruption procs while the aura is already active now add 3
+seconds to the existing aura duration, instead of simply
+refreshing/overwriting the existing aura.
+
+      * Unholy Might (passive) has been reduced to a 5% Strength increase,
+down from 10%.
 
   * Glyphs
 
-    * Glyph of Rune Tap now heals for 5% of maximum health, down from 10%.
+    * Glyph of Death's Embrace no longer refunds Runic Power when self-healing
+via Lichborne.
 
-  * Bug Fixes
+**[Druids][4]**
 
-    * Frost Fever critical strikes now apply the correct amount of bonus
-damage.
+  * Barkskin is no longer dispellable.
 
-**Druids**
+  * Healing Touch is now trained at level 78, up from level 3.
 
-  * Bear Form now provides 10% bonus health, down from 20%.
+  * Lacerate damage has been reduced by approximately 20%.
 
-  * Nourish no longer consumes Omen of Clarity.
+  * Mangle (Bear Form) weapon damage (at level 80+) has been reduced to 235%,
+down from 300%.
 
-  * Rejuvenation has had its mana cost increased by 30%.
+  * Mangle (Cat Form) weapon damage percent (at level 80+) has been increased
+to 460%, up from 360%.
 
-  * Soothe now has a 1.5-second cast time.
+  * Maul damage has been reduced by approximately 20%.
 
-  * Swipe (Cat Form) can now be used even if the druid does not have a primary
-target selected.
+  * Mount Up: This guild perk now applies to Flight Form and Swift Flight Form
+as well.
 
-  * Thorns: beginner tooltip revised to no longer imply the spell could be
-kept up at all times. In addition, Thorns damage has been reduced by 60%.
+  * Nourish is now trained at level 8, down from level 78.
+
+  * Omen of Clarity can no longer trigger from helpful spells (aka heals),
+unless the Restoration talent Malfurion's Gift is chosen.
+
+  * Rake damage has been reduced by 10%.
+
+  * Rejuvenation is now trained at level 3, down from level 8. In addition,
+its mana cost has been reduced from 26% to 16%.
+
+  * Rip damage has been reduced by 10%.
+
+  * Shred weapon damage percent (at level 80+) has been increased to 450%, up
+from 350%.
 
   * Talent Specializations
 
     * Balance
 
-      * PvP set bonus redesigned. While not in an Eclipse state, critical
-attacks against the druid restore 5 Solar or 7 Lunar energy, whichever is more
-beneficial. This effect can only occur once every 6 seconds.
+      * The Shooting Stars buff duration has been increased to 12 seconds, up
+from 8 seconds.
+
+      * Wild Mushroom is now instant cast, down from 0.5 seconds. In addition,
+the radius of detonation has been increased to 6 yards, up from 3, and damage
+done increased by 15%.
 
     * Feral
 
-      * Brutal Impact now increases the mana cost of spells on the victim by
-5/10% for 10 seconds, down from 15/30%.
+      * Berserk (instant Mangle proc) now has a new Spell Alert identifier. In
+addition, Berserk no longer breaks Fear or makes the druid immune to Fear.
 
-      * Leader of the Pack now heals for 4%, down from 8%.
-
-      * Survival Instincts now provides 50% damage reduction, down from 60%,
-and its cooldown has been lowered from 5 minutes to 3 minutes.
-
-      * Swipe (Bear Form) damage has been reduced by 20%.
-
-      * Vengeance is no longer cleared on exiting Bear Form, and instead is
-cleared upon entering Cat Form.
+      * Pulverize weapon damage percent has been reduced to 80%, down from
+100%.
 
     * Restoration
 
-      * Empowered Touch now procs from Healing Touch as well as Nourish.
+      * Empowered Touch now also affects Regrowth.
 
-      * Heart of the Wild: the Bear Form Stamina bonus from this talent is now
-2/4/6%, down from 3/7/10%.
-
-      * Malfurion's Gift no longer has Fury of Stormrage as a prerequisite
-talent.
-
-      * Natural Shapeshifter now also increases Tree of Life duration by 5/10
-seconds.
-
-      * Revitalize is now a 2-point talent, down from 3. It provides a 20%
-chance to return 1/2% of the druid's total mana on periodic heals from
-Lifebloom or Rejuvenation. This effect cannot occur more than once every 12
-seconds.
-
-      * Swift Rejuvenation is now a 1-point talent, down from 2. The global
-cooldown reduction this talent provides to Rejuvenation remains 0.5 seconds.
-
-      * Symbiosis: heal-over-time spells (Rejuvenation, Regrowth, Lifebloom)
-can no longer benefit from this Mastery merely by refreshing themselves. A
-different heal-over-time spell must be present.
+      * Nature's Bounty no longer affects Swiftmend, but now has a new effect.
+When the druid has Rejuvenation on 3 or more targets, the cast time of Nourish
+is reduced by 10/20/30%.
 
   * Glyphs
 
-    * Glyph of Healing Touch now reduces the cooldown on Nature's Swiftness by
-10 seconds after using Healing Touch, up from 5 seconds.
+    * Glyph of Regrowth now causes the heal-over-time effect to refresh itself
+on targets at or below 50% health, up from 25%.
 
-    * Glyph of the Treant (new) allows druids to keep the original treant Tree
-of Life look... if they must. Must they?
+    * Glyph of Wrath now increases damage done by Wrath by 10% and no longer
+requires Insect Swarm on the target.
 
-  * Bug Fixes
+**[Hunters][5]**
 
-    * Blood in the Water now refreshes Rip to the correct value.
+  * Aimed Shot! weapon damage has been increased to 200%.
 
-    * Flight Form now properly appears in the trainer window before Expert
-Riding is learned.
+  * Aspect of the Wild, Aspect of the Hawk, and Aspect of the Fox can now be
+cast while mounted.
 
-**Hunters**
+  * Deterrence now provides 100% chance for melee attacks to miss instead of
+100% parry chance. This means that attacks that cannot be parried, notably
+some rogue abilities, can now be prevented by Deterrence, and the hunter will
+gain the benefit of Deterrence even if disarmed.
 
-  * All special attacks based on weapon damage (except Scattershot) are now
-normalized.
+  * Dust Cloud's cooldown and duration have been modified to make it closer
+aligned with Tailspin (same effect, different pet).
 
-  * Scare Beast is now available at level 36, up from level 14, and has had
-its training cost updated.
+  * Kill Command's damage has been increased by 20%.
 
-  * Deterrence is now available at level 78, up from level 36, and has had its
-training cost updated.
+  * Kill Shot's attack power scaling has been increased by 50%.
 
-  * Disengage is now available at level 14, down from level 78, and has had
-its training cost updated.
-
-  * Glyphs
-
-    * The level requirements for glyphs that affect Scare Beast, Deterrence,
-and Disengage have been altered to correspond with the level changes of these
-abilities.
-
-  * Bug Fixes
-
-    * The Core Hound pet ability Ancient Hysteria now places its own unique
-debuff on affected players that has the same effect as Sated and Exhaustion.
-
-    * Certain pets should no longer forget how to Dash.
-
-**Mages**
-
-  * Arcane Blast now increases damage of the next Arcane Blast by 10% per
-stack, down from 20%, reduces cast time by 0.1 seconds per stack, and
-increases the mana cost by 150%, down from 175%. In addition, the base cast
-time of Arcane Blast has been lowered to 2.35 seconds.
-
-  * Arcane Explosion now costs 15% of base mana, down from 18%.
-
-  * Arcane Missiles damage has been increased by 5%.
-
-  * PvP set 4-piece bonus changed to increase damage by 5% instead of
-providing 5% Haste.
+  * Master's Call now has a 35-second cooldown, down from 1 minute. In
+addition, the visual effect is more obvious.
 
   * Talent Specializations
 
-    * Arcane
+    * Marksmanship
 
-      * Arcane Barrage damage has been increased by 5% and its cooldown is now
-4 seconds, down from 5 seconds.
+      * Chimera Shot's attack power scaling has been increased by 20%.
 
-      * Arcane Concentration: Now has a much higher chance (13/27/40%) of
-entering a Clearcasting state. This effect cannot occur more than once every
-15 seconds. The tooltip still states that there is a 3/6/10% chance, as it
-averages out to approximately the same chance with the internal cooldown
-applied.
+    * Survival
 
-      * Arcane Specialization again increases arcane damage by 25%.
+      * Into the Wilderness (passive) has been reduced to a 10% Agility
+increase, down from 15%.
 
-    * Fire
+  * Pets
 
-      * Blazing Speed no longer dispels movement slowing effects (it still
-dispels effects that totally stop movement).
+    * Pets now have 70% of the master's armor, rather than a different value
+based on which type of pet they are.
 
-      * Fire Specialization again increases periodic fire damage effects by
-25%.
+    * Shale Spiders now correctly have a special ability (Web Wrap).
 
-      * Molten Shields now also causes Blazing Speed to dispel movement
-slowing effects in addition to its current functionality.
+    * Bad Manner (monkey) now properly breaks from damage.
 
-      * Pyroblast base mana cost is now 17%, down from 22%.
+**[Mages][6]**
 
-    * Frost
+  * Flame Orb now ignores critters.
 
-      * Deep Freeze: the cooldown on this ability is no longer reduced by
-Haste.
+  * The mana costs of Arcane Brilliance and Dalaran Brilliance have been
+reduced by approximately 16%, making them roughly equal to the cost of Mark of
+the Wild.
 
-      * Early Frost now reduces Frostbolt cast time by 0.3/0.6 seconds, down
-from 0.35/0.70 seconds.
-
-      * Fingers of Frost proc chance is now 7/14/20%, down from 10/20/30%.
-
-      * Frost Specialization again increases all damage against frozen target
-by 25%.
-
-      * Reactive Barrier is now triggered by any damage which causes the
-mage's health to be below 50%, even if the mage was already below 50%.
-
-      * Shatter now also increases Frostbolt damage by 10/20% against frozen
-targets.
-
-      * Shattered Barrier duration is now 2/4 seconds, down from 3/6 seconds.
-
-  * Glyphs
-
-    * Glyph of Evocation now heals for 40%, down from 60%.
-
-    * Glyph of Deep Freeze now increases damage done by Deep Freeze by 20% (no
-longer increases Frostbolt damage against Deep Frozen targets).
+  * Ring of Frost: Radius shrunk to 8 yards, and inner "safe" radius is now
+4.7 yards (exactly matching graphic). Dispelling the effect of Ring of Frost
+will now make the target immune to being refrozen for 3 seconds. If a second
+Ring of Frost is cast by the same mage while the first is still active (via
+Cold Snap), the first will now disappear and cease functioning.
 
   * Bug Fixes
 
-    * Improved Polymorph now correctly shares diminishing returns with
-controlled stuns.
+    * Ring of Frost can now be cast, and works properly, on transports (this
+includes elevators, trapdoors, etc.).
 
-**Paladins**
+**[Paladins][7]**
 
-  * Exorcism damage has been increased by approximately 50%.
+  * The mana costs of Blessing of Might and Blessing of Kings have been
+increased by approximately 217%, making them roughly equal to the cost of Mark
+of the Wild.
 
-  * Holy Radiance now has reduced effectiveness on targets over 8 yards away
-from the paladin.
+  * Crusader Strike weapon damage percent has been increased to 135%, up from
+115%.
 
-  * Seal of Truth: periodic damage from Censure reduced by 25%.
+  * Divine Plea now lasts for 9 seconds, down from 15. It grants 4% mana per
+tick, instead of 2%, for a total of 12% mana, up from 10%.
 
   * Talent Specializations
-
-    * Holy
-
-      * Beacon of Light now lasts 5 minutes, up from 60 seconds.
-
-      * Blessed Life: the effects of this talent cannot occur more than once
-every 8 seconds, up from every 2 seconds.
-
-      * Illuminated Healing absorb shield now absorbs 10% of the total amount
-healed, up from 8%. Each point of Mastery increases the effect by an
-additional 1.25%, up from 1%.
-
-      * Light of dawn has been redesigned. It no longer has an enforced
-cooldown, now costs Holy Power instead of mana, and scale in direct proportion
-to the amount of Holy Power used. In addition, it now heals the 5 most injured
-group targets (including self) in a 30-yard frontal cone.
-
-      * Protector of the Innocent no longer triggers from self-heals.
-
-    * Protection
-
-      * Divine Bulwark now grants 2.25% less block chance per point of
-Mastery, up from 2%.
-
-      * Holy shield no longer increases chance to block. Instead, it increases
-the amount blocked by an additional 10%, for a total of 40% damage blocked.
-
-      * Shield of the Righteous: Contribution of attack power halved (now 60%
-with full Holy Power) and base damage brought up so that a level 85 paladin in
-Heroic dungeon gear deals the same damage with no Vengeance, but Vengeance has
-less impact.
-
-      * Shield of the Templar now reduces the cooldown of Guardian of Ancient
-Kings by 40/80/120 seconds, down from 1/2/3 minutes.
-
-      * Wrath of the Lightbringer now increases Crusader Strike and Judgement
-damage by 50/100%, up from 30/60%.
 
     * Retribution
 
-      * Crusade now also has a proc on kill to increase the healing done by
-the paladin's next Holy Light by 100/200/300% for 15 seconds, in addition to
-its current effects.
+      * Divine Purpose: The chance for applicable abilities to generate Holy
+Power has been reduced to 7/15%, down from 20/40%, but instead of generating 1
+Holy Power, the next applicable ability used consumes no Holy Power and acts
+as if the paladin has 3 Holy Power.
 
-      * Divine Storm: This ability has been redesigned. It no longer consumes
-Holy Power and instead costs 5% of base mana. It shares a cooldown with
-Crusader Strike and hits all nearby enemies for 60% weapon damage.
+      * Hand of Light (Mastery): A percentage of the damage done by Templar's
+Verdict, Crusader Strike, and Divine Storm is done as additional Holy damage.
 
-      * Pursuit of Justice now has an 8-second internal cooldown, shared with
-Blessed Life.
-
-      * Rebuke no longer initiates Auto Attack.
-
-      * Sanctity of Battle now also causes Divine Storm's cooldown to be
-reduced by Haste effects.
-
-      * Zealotry no longer consumes 3 Holy Power, but still requires 3 Holy
-Power to use.
+      * Repentance is no longer broken from damage done by Censure (Seal of
+Truth).
 
   * Glyphs
 
-    * Glyph of Beacon of Light now makes Beacon of Light free, instead of
-increasing the duration by 30 seconds.
+    * Glyph of Divine Plea now adds 6% mana, for a total of 18% over 9
+seconds.
 
-    * Glyph of Divinity has been redesigned. It now grants the paladin 10% of
-maximum mana upon use.
+**[Priests][8]**
 
-    * Glyph of Light of Dawn now increases the total number of most injured
-targets healed by 1.
+  * The duration of Levitate has been increased to 10 minutes, up from 2.
 
-**Priests**
+  * The mana cost of Power Word: Fortitude has been reduced by approximately
+68%, making it roughly equal to the cost of Mark of the Wild.
 
-  * Binding Heal now provides roughly double the amount of healing.
+  * The mana cost of Power Word: Shield has been increased by approximately
+31%, but its effect has been increased by 208%.
 
-  * Prayer of Healing has had its mana cost reduced by nearly 30%, and its
-base points and Spell Power coefficient increased by 20%.
+  * The mana cost of Renew has been reduced by 24%.
+
+  * The mana cost of Shadow Protection has been reduced by approximately 65%,
+making it roughly equal to the cost of Mark of the Wild.
 
   * Talent Specializations
 
     * Discipline
 
-      * Divine Aegis is now always triggered by Prayer of Healing, in addition
-to critical heals from all other spells.
+      * Focused Will now procs when the priest is critically hit, in addition
+to its current effect.
 
-      * Grace has been increased to 4/8% stacking 3 times, up from 2/4%
-stacking.
+      * Improved Power Word: Shield now also increases the amount absorbed by
+an additional 15/30% when cast on oneself.
 
-      * Inner Focus now works with Binding Heal, but no longer works with
-Heal.
+      * Pain Suppression is no longer dispellable.
 
-      * Power Word: Barrier has been redesigned. It no longer acts as a shared
-absorb shield. Instead, all affected friendly targets take 30% reduced damage
-for the duration of the shield, which is now 10 seconds, down from 25 seconds.
+    * Holy
 
-    * Shadow
+      * Blessed Resilience will now proc when the priest is critically hit, in
+addition to its current effect.
 
-      * Shadow Orbs: redesigned slightly. The Shadow Orbs continue to increase
-damage done by Mind Blast and Mind Spike and stack up to 3 times, but now when
-the priest casts Mind Blast or Mind Spike (consuming the orbs), the priest
-gains a 15-second duration buff (Empowered Shadow), which increases the damage
-done by all Shadow periodic spells. Empowered Shadow does not stack. Mastery
-increases the damage bonus of Shadow Orbs and Empowered Shadow by the same
-amount, 10% with the base 8 Mastery, and an additional 1.25% per Mastery.
+      * Chakra states now last 1 minute, up from 30 seconds.
 
-      * Vampiric Embrace healing to the caster has been reduced to 6%, down
-from 12% (there was a tooltip error which stated that the self-healing amount
-was 15%). Party members still receive 3% healing.
+      * Desperate Prayer now heals the priest for 30% of their total health,
+up from a very subpar value.
 
-  * Bug Fixes
+      * Holy Concentration now increases the amount of mana regeneration from
+Spirit while in combat by an additional 15/30%, down from 20/40%.
 
-    * Dark Archangel now correctly increases the damage done of certain
-abilities by 4%.
+      * Holy Word: Chastise now has a 30-second cooldown, up from 25. In
+addition, it properly breaks from damage.
 
-**Rogues**
+      * Lightwell's health has been increased by 50% (for PvP purposes).
 
-  * Deadly Poison base damage and attack power coefficient have been increased
-by 30%.
+      * Serendipity now has Spell Alert and Floating Combat Text feedback
+support.
 
-  * Recuperate now restores 2% of maximum health, down from 3%.
+      * Surge of Light can now also proc from Flash Heal and Greater Heal, and
+can now also critically hit.
 
-  * Venomous Wounds base damage and attack power coefficient have been
-increased by 30%.
+  * Glyphs
+
+    * Glyph of Mind Flay no longer requires Shadow Word: Pain to be on the
+target.
+
+    * Glyph of Pain Suppression has been renamed Glyph of Desperation and now
+allows Guardian Spirit to be cast while stunned, in addition to Pain
+Suppression.
+
+    * Glyph of Psychic Horror now reduces the cooldown of Psychic Horror by 30
+seconds, down from 60.
+
+    * Glyph of Spirit of Redemption has been converted into Glyph of Prayer of
+Mending, which increases the healing done by the first charge of Prayer of
+Mending by 60%.
+
+**[Rogues][9]**
+
+  * Combat Readiness now lasts for 20 seconds, down from 30 seconds, but the
+Combat Insight stacking buff lasts 10 seconds, up from 6 seconds.
+
+  * Smoke Bomb now lasts for 5 seconds, down from 10 seconds.
 
   * Talent Specializations
 
     * Combat
 
-      * Aggression now increases damage of Sinister Strike, Backstab, and
-Eviscerate by 7/14/20%, up from 5/10/15%.
+      * Main Gauche (Mastery) now provides a chance to deal an attack for 75%
+of main-hand damage. This attack can trigger Combat Potency.
 
-      * Bandit's Guile now gives 10/20/30% increased damage as the rogue gains
-greater insight, up from 5/10/15%.
+      * Revealing Strike now increases finisher effectiveness by 35% (45%
+glyphed), up from 20% (30% glyphed).
 
-    * Subtlety
+**[Warlocks][10]**
 
-      * Executioner no longer affects Recuperate.
+  * Curse of Exhaustion now reduces movement speed by 30%, down from 50%.
 
-  * Bug Fixes
-
-    * Bandit's Guile now applies more consistently to all of the abilities
-it's supposed to modify.
-
-    * Player guardians and temporary pets now stop attacking when a rogue uses
-Vanish, but city guards will not.
-
-**Shaman**
-
-  * Chain Heal mana cost increased from 17% to 20% of base mana.
-
-  * Earthliving Weapon now only has 25% of its full chance to proc from a
-single hop of Chain Heal.
+  * Drain Mana has been removed from the game.
 
   * Talent Specializations
 
-    * Elemental
+    * Affliction
 
-      * Elemental Reach now also increases Searing Totem range by 7/15 yards.
-
-      * Fulmination now has a Spell Alert visual associated with it, which
-appears when the shaman gets to 9 Lightning Shield charges.
-
-**Warlock**
-
-  * Bane of Agony damage has been reduced by approximately 12%.
-
-  * Bane of Doom damage has been reduced by approximately 12%.
-
-  * Corruption damage has been reduced by approximately 12%.
-
-  * Death Coil damage has been reduced by approximately 12%.
-
-  * Drain Life damage has been reduced by approximately 12%.
-
-  * Drain Soul damage has been reduced by approximately 12%.
-
-  * Immolate damage has been reduced by approximately 12%.
-
-  * Incinerate damage has been reduced by approximately 12%.
-
-  * Rain of Fire damage has been increased to be more comparable to other
-area-of-effect abilities.
-
-  * Searing Pain damage has been reduced by approximately 12%.
-
-  * Seed of Corruption damage has been reduced to be more comparable to other
-area-of-effect abilities.
-
-  * Shadowbolt damage has been reduced by approximately 12%.
-
-  * Soul Fire damage has been reduced by approximately 12%.
-
-  * Talent Specializations
+      * Unstable Affliction's silence effect has been reduced to 3 seconds,
+down from 5.
 
     * Demonology
 
-      * Hand of Gul'dan damage has been reduced by approximately 12%.
+      * Demonic Rebirth now highlights summoning spells when active.
+
+      * Inferno no longer increases the radius of Hellfire.
 
     * Destruction
 
-      * Chaos Bolt damage has been reduced by approximately 12%.
+      * Shadow and Flame can now proc from Incinerate in addition to Shadow
+Bolt.
 
-      * Conflagrate damage has been reduced by approximately 12%.
+  * Glyphs
 
-      * Shadowburn damage has been reduced by approximately 12%.
+    * Glyph of Soul Swap cooldown has been increased to 15 seconds, up from 10
+seconds.
 
-  * Bug Fixes
+**[Warriors][11]**
 
-    * Drain Life: The Soulburn version of this was charging 17% of base mana
-instead of 12% like the normal version. This has been corrected.
+  * Charge now shares diminishing returns with stun effects.
 
-**Warriors**
+  * Cleave damage has been reduced by 20%.
 
-  * Cleave damage has been reduced by approximately 17%.
-
-  * Execute damage has been reduced by approximately 17%.
-
-  * Heroic Strike damage has been reduced by approximately 17%.
-
-  * Overpower now does 125% weapon damage, down from 150%.
-
-  * Rend base damage has been reduced by approximately 17% and percent of
-weapon damage per tick lowered to 25%, from 30%.
-
-  * Shield Block now only increases block chance by 25%, but excess block that
-pushes avoidance plus block to over 100% is now converted to critical block
-chance.
-
-  * Slam now costs 15 rage, down from 20, and now does 125% weapon damage,
-down from 150%.
-
-  * Victory Rush damage has been reduced by approximately 17%.
-
-  * Whirlwind now does 65% weapon damage, down from 75%.
+  * Heroic Strike damage has been reduced by 20%.
 
   * Talent Specializations
 
     * Arms
 
-      * Mortal Strike now does 150% weapon damage, down from 185%.
+      * Juggernaut no longer increases the cooldown on Charge, but instead
+increases the duration of the Charge stun by 2 seconds. In addition, Charge is
+usable in all stances, however, the talent now causes Charge and Intercept to
+share a cooldown.
 
-      * Second Wind now heals for 2/5% of total health, down from 5/10%.
+      * Lambs to the Slaughter: Instead of granting 10/20/30% damage to the
+next Mortal Strike, Overpower, or Execute, it now grants a 10% buff to any
+Mortal Strike, Overpower, Slam, or Execute that stacks 1/2/3 times.
 
-      * Strikes of Opportunity now does 100% weapon damage, down from 115%.
+      * War Academy no longer buffs Heroic Strike or Cleave. It now buffs
+Mortal Strike, Raging Blow, Devastate, Victory Rush and Slam.
 
     * Fury
 
-      * Blood Craze now heals for 1/2/3% of total health, down from
-2.5/5/7.5%.
-
-      * Bloodthirst damage has been reduced by approximately 17%.
-
-      * Raging Blow now does 110% weapon damage, down from 150%.
-
-      * Unshackled Fury now gains approximately 50% more benefit per point of
-Mastery.
-
-    * Protection
-
-      * Critical Block now grants an equal amount of block chance and critical
-block chance (1.5% each per point of Mastery).
-
-      * Devastate no longer provides bonus threat.
-
-      * Shield Slam: Contribution of attack power reduced to 60%, down from
-75%, and base damage brought up so that a level 85 warrior in Heroic dungeon
-gear deals the same damage with no Vengeance, but Vengeance has less impact.
-In addition, Shield Slam no longer generates 30% bonus threat from its damage.
-
-      * Vigilance no longer provides 3% damage reduction, but still refreshes
-Taunt and provides Vengeance.
+      * Unshackled Fury (Mastery) now grants 5.6% benefit per mastery point,
+up from 4.7%.
 
   * Glyphs
 
-    * Glyph of Bloody Healing increases the healing received from Bloodthirst
-by 40%, down from 100%.
-
-    * Glyph of Intimidating Shout no longer causes targets to flee slowly, but
-roots them instead.
-
-    * Glyph of Shield Wall increases damage reduction to 60%, but increases
-the cooldown from 2 minutes to 4 minutes (talented).
-
-  * Bug Fixes
-
-    * Taste for Blood should once again proc on every other tick of Rend.
-
-**Achievements**
-
-  * The Gladiator reward mounts now award Master Riding.
-
-  * What A Long, Strange Trip It's Been now awards Master Riding.
-
-**Items**
-
-  * Mysterious Egg now takes only 3 days to turn into a Cracked Egg and has a
-slightly greater chance of awarding the Reins of the Green Proto-Drake.
-
-  * PvP set bonuses now provide 70 of stats such as Agility, Intellect, and
-Strength (down from 100) at 2 pieces, and 180 of these stats (down from 300)
-at 4 pieces.
+    * Glyph of Rapid Charge has been changed from a 7% reduction to Charge's
+cooldown, to 1 second off of the cooldown. This change is primarily to clarify
+the exact cooldown reduction this glyph provides.
 
 **Professions**
 
-  * Perfect Gem Cutting and Mixology have been removed as trainable skills and
-are instead passives profession abilities. When players reach the appropriate
-skill levels, they will start getting bonuses from Mixology (they must know
-the recipe to gain the benefit) and/or cutting perfect gems (depending on
-their profession, of course).
+  * Cooking
 
-  * Alchemy
+    * Multiple spawn locations now exist for the Confectioner's Sugar (daily
+quest item) in Stormwind.
 
-    * Alchemy recipes now require Crystal Vials. Deathwing broke all the
-others because he's mean (or because he didn't want alchemists to carry 5
-different vials around with them).
+**[Items][12]**
 
-  * Engineering
+  * Bell of Enraging Resonance can now trigger from any damage spell instead
+of only critical strikes.
 
-    * The Engineering Tinkering enchants will no longer provide their bonus
-stats, but the activated effects will stack with other enchants. In 4.0.1 the
-stats were there (but hidden) and are now removed.
+  * The Fury of Angerforge internal cooldown has been drastically reduced so
+this trinket will build up charges much faster.
+
+  * Mandala of Stirring Patterns now grants Intellect instead of Mastery.
+
+  * The PvP Priest 4-piece set bonus has been redesigned. When Power Word:
+Shield is cast on the priest, movement speed reduction effects are temporally
+suppressed for 4 seconds.
+
+**User Interface**
+
+  * For opening cinematics there is now a streaming option interface in the
+login screen for play-on-demand.
+
+  * The Character Info window (C) now saves for each specialization how stat
+categories are ordered by players, as well as whether categories are
+expanded/collapsed.
+
+  * Character movement speed is now displayed on the Character Info window (C)
+with all other stats.
+
+  * Archaeology
+
+    * There are now number displays on the summary page and dropdown menu.
+
+    * Ready Flash has been added to the race icons.
+
+  * Guild Interface
+
+    * A View All button has been added to the profession display regardless of
+whether Show Offline Members is checked.
+
+    * Online members can now be sorted to the top of the View Crafters list.
+
+    * The guild reputation cap is now displayed in the tooltip.
+
+  * Real ID & Chat
+
+    * Real ID login notifications now include character and game icons.
+
+    * Players can now right-click close a chat window tab even if it's not the
+current tab.
+
+    * There is now an option to auto-pop whispers into a new tab.
+
+    * Popped out whisper windows now show online/offline status messages.
 
   * Bug Fixes
 
-    * Several epic gem transmutes that were missing from the trainer have been
-added back.
+    * Many bugs... handled them!
+
+**Quests & Creatures**
+
+  * Tol Barad Peninsula
+
+    * A new achievement, Just Another Day in Tol Barad, has been added for
+completing all of the Tol Barad daily quests.
+
+    * Crazed Guards now drop Rusty Rifles.
+
+    * The spawn rate of Alliance and Horde Infantry for the quest "The
+Leftovers" has been increased.
+
+    * The Magnetized Scrap Collector for the quest "Magnets, How Do They
+Work?" will now be correctly removed from players' bags upon completing the
+quest.
+
+    * Both the Baradin's Wardens and Hellscream's Reach Commendations are now
+Bound to Account items.
 
 **Bug Fixes**
 
-  * Certain area-of-effect abilities are no longer ignoring the area-of-effect
-damage cap.
+  * Worgen now work properly in the Barbershop.
 
-  * Mobs and NPCs should no longer appear to randomly gain or lose health
-during combat.
+   [1]: http://us.battle.net/wow/en/blog/1232869#blog
 
-  * Re-summoning pets in Battlegrounds should no longer count towards a
-player's total healing done.
+   [2]: http://us.battle.net/wow/en/game/race/
 
-**Known Issues**
+   [3]: http://us.battle.net/wow/en/game/class/death-knight
 
-  * Some tooltips may not reflect the most recent changes to certain
-abilities.
+   [4]: http://us.battle.net/wow/en/game/class/druid
 
-  * Worgen hunters are currently unable to learn Dual Wield.
+   [5]: http://us.battle.net/wow/en/game/class/hunter
 
-  * The achievement Explore Tol Barad will not be possible to complete upon
-release of World of Warcraft: Cataclysm.
+   [6]: http://us.battle.net/wow/en/game/class/mage
 
-   [1]: http://www.worldofwarcraft.com/cataclysm/_images/features/raceclassmat
-rix_en_US.jpg
+   [7]: http://us.battle.net/wow/en/game/class/paladin
+
+   [8]: http://us.battle.net/wow/en/game/class/priest
+
+   [9]: http://us.battle.net/wow/en/game/class/rogue
+
+   [10]: http://us.battle.net/wow/en/game/class/warlock
+
+   [11]: http://us.battle.net/wow/en/game/class/warrior
+
+   [12]: http://us.battle.net/wow/en/item/
