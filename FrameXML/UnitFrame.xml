@@ -1,4 +1,31 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="UnitFrame.lua"/>
+	<StatusBar name="MyHealPredictionBarTemplate" virtual="true" enableMouse="false">
+		<Scripts>
+			<OnLoad>
+				local healthBar = _G[self:GetParent():GetName().."HealthBar"];
+				self:SetSize(healthBar:GetSize());
+				self:SetPoint("TOPLEFT", healthBar:GetStatusBarTexture(), "TOPRIGHT");
+				self:SetPoint("BOTTOMLEFT", healthBar:GetStatusBarTexture(), "BOTTOMRIGHT");
+			</OnLoad>
+		</Scripts>
+		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="0.0" g="0.827" b="0.765"/>
+	</StatusBar>
+	<StatusBar name="OtherHealPredictionBarTemplate" virtual="true" enableMouse="false">
+		<Size>
+			<AbsDimension x="70" y="8"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				local myHealPredictionBar = _G[self:GetParent():GetName().."MyHealPredictionBar"];
+				self:SetSize(_G[self:GetParent():GetName().."HealthBar"]:GetSize());
+				self:SetPoint("TOPLEFT", myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT");
+				self:SetPoint("BOTTOMLEFT", myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT");
+			</OnLoad>
+		</Scripts>
+		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="0.0" g="0.631" b="0.557"/>
+	</StatusBar>
 </Ui>

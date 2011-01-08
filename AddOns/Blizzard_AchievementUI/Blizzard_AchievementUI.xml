@@ -1240,10 +1240,10 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentPoints" inherits="AchievementPointsFont" parentKey="points">
-							<Size x="32" y="16"/>
+							<Size x="42" y="16"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT">
-									<Offset x="-18" y="-26"/>
+									<Offset x="-13" y="-26"/>
 								</Anchor>
 							</Anchors>
 						</FontString>

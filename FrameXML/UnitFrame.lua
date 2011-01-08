@@ -37,7 +37,8 @@ PowerBarColor[9] = PowerBarColor["HOLY_POWER"];
 	I needed a seperate OnUpdate and OnEvent handlers. And needed to parse the event.
 ]]--
 
-function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator)
+function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator,
+											myHealPredictionBar, otherHealPredictionBar)
 	self.unit = unit;
 	self.name = name;
 	self.portrait = portrait;
@@ -45,6 +46,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.manabar = manabar;
 	self.threatIndicator = threatIndicator;
 	self.threatNumericIndicator = threatNumericIndicator;
+	self.myHealPredictionBar = myHealPredictionBar;
+	self.otherHealPredictionBar = otherHealPredictionBar
 	if (self.healthbar) then
 		self.healthbar.capNumericDisplay = true;
 	end
@@ -59,6 +62,10 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
+	if ( self.myHealPredictionBar ) then
+		self:RegisterEvent("UNIT_MAXHEALTH");
+		self:RegisterEvent("UNIT_HEAL_PREDICTION");
+	end
 end
 
 function UnitFrame_SetUnit (self, unit, healthbar, manabar)
@@ -96,6 +103,8 @@ function UnitFrame_Update (self)
 	UnitFrameHealthBar_Update(self.healthbar, self.unit);
 	UnitFrameManaBar_Update(self.manabar, self.unit);
 	UnitFrame_UpdateThreatIndicator(self.threatIndicator, self.threatNumericIndicator);
+	UnitFrameHealPredictionBars_UpdateMax(self);
+	UnitFrameHealPredictionBars_Update(self);
 end
 
 function UnitFramePortrait_Update (self)
@@ -108,19 +117,76 @@ function UnitFrame_OnEvent(self, event, ...)
 	local arg1 = ...
 	
 	local unit = self.unit;
-	if ( event == "UNIT_NAME_UPDATE" ) then
-		if ( arg1 == unit ) then
+	if ( arg1 == unit ) then
+		if ( event == "UNIT_NAME_UPDATE" ) then
 			self.name:SetText(GetUnitName(unit));
-		end
-	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		if ( arg1 == unit ) then
+		elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 			UnitFramePortrait_Update(self);
-		end
-	elseif ( event == "UNIT_DISPLAYPOWER" ) then
-		if ( arg1 == unit and self.manabar ) then
-			UnitFrameManaBar_UpdateType(self.manabar);
+		elseif ( event == "UNIT_DISPLAYPOWER" ) then
+			if ( self.manabar ) then
+				UnitFrameManaBar_UpdateType(self.manabar);
+			end
+		elseif ( event == "UNIT_MAXHEALTH" ) then
+			UnitFrameHealPredictionBars_UpdateMax(self);
+		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
+			UnitFrameHealPredictionBars_Update(self);
 		end
 	end
+end
+
+function UnitFrameHealPredictionBars_UpdateMax(self)
+	if ( not self.myHealPredictionBar or not self.otherHealPredictionBar ) then
+		return;
+	end
+	
+	local maxHealth = UnitHealthMax(self.unit);
+	self.myHealPredictionBar:SetMinMaxValues(0, maxHealth);
+	self.otherHealPredictionBar:SetMinMaxValues(0, maxHealth);
+end
+
+function UnitFrameHealPredictionBars_UpdateSize(self)
+	if ( not self.myHealPredictionBar or not self.otherHealPredictionBar ) then
+		return;
+	end
+	
+	local healthBarWidth, healthBarHeight = self.healthbar:GetSize();
+	self.myHealPredictionBar:SetSize(healthBarWidth, healthBarHeight);
+	self.otherHealPredictionBar:SetSize(healthBarWidth, healthBarHeight);
+end
+
+local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
+function UnitFrameHealPredictionBars_Update(self)
+	if ( not self.myHealPredictionBar or not self.otherHealPredictionBar ) then
+		return;
+	end
+	if ( not GetCVarBool("raidFramesDisplayIncomingHeals") ) then
+		self.myHealPredictionBar:SetValue(0);
+		self.otherHealPredictionBar:SetValue(0);
+		return;
+	end
+	
+	local myIncomingHeal = UnitGetIncomingHeals(self.unit, "player") or 0;
+	local allIncomingHeal = UnitGetIncomingHeals(self.unit) or 0;
+	
+	--Make sure we don't go too far out of the frame.
+	local health = self.healthbar:GetValue();
+	local _, maxHealth = self.myHealPredictionBar:GetMinMaxValues();
+	
+	--See how far we're going over.
+	if ( health + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
+		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health;
+	end
+	
+	--Transfer my incoming heals out of the allIncomingHeal
+	if ( allIncomingHeal < myIncomingHeal ) then
+		myIncomingHeal = allIncomingHeal;
+		allIncomingHeal = 0;
+	else
+		allIncomingHeal = allIncomingHeal - myIncomingHeal;
+	end
+		
+	self.myHealPredictionBar:SetValue(myIncomingHeal);
+	self.otherHealPredictionBar:SetValue(allIncomingHeal);
 end
 
 function UnitFrame_OnEnter (self)
@@ -259,6 +325,7 @@ function UnitFrameHealthBar_OnUpdate(self)
 				self:SetValue(currValue);
 				self.currValue = currValue;
 				TextStatusBar_UpdateTextString(self);
+				UnitFrameHealPredictionBars_Update(self:GetParent());
 			end
 		end
 	end
@@ -298,6 +365,7 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 		end
 	end
 	TextStatusBar_UpdateTextString(statusbar);
+	UnitFrameHealPredictionBars_Update(statusbar:GetParent());
 end
 
 function UnitFrameHealthBar_OnValueChanged(self, value)

@@ -40,6 +40,11 @@ function UnitPowerBarAlt_Initialize(self, unit, scale, updateAllEvent)
 end
 
 function UnitPowerBarAlt_OnEnter(self)
+	local statusFrame = self.statusFrame;
+	if ( statusFrame.enabled ) then
+		statusFrame:Show();
+		UnitPowerBarAltStatus_UpdateText(statusFrame);
+	end
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	GameTooltip:SetText(self.powerName, 1, 1, 1);
 	GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1);
@@ -47,6 +52,7 @@ function UnitPowerBarAlt_OnEnter(self)
 end
 
 function UnitPowerBarAlt_OnLeave(self)
+	UnitPowerBarAltStatus_ToggleFrame(self.statusFrame);
 	GameTooltip:Hide();
 end
 
@@ -141,7 +147,15 @@ function UnitPowerBarAlt_SetUp(self)
 	
 	UnitPowerBarAlt_HideTextures(self);	--It's up to the SetUp functions to show textures they need.
 	UnitPowerBarAlt_HidePills(self);
-	
+
+	if ( barType == ALT_POWER_TYPE_PILL ) then
+		self.statusFrame:Hide();
+		self.statusFrame.enabled = false;
+	else
+		self.statusFrame.enabled = true;
+		UnitPowerBarAltStatus_ToggleFrame(self.statusFrame);
+	end
+
 	if ( barType == ALT_POWER_TYPE_HORIZONTAL ) then
 		UnitPowerBarAlt_Horizontal_SetUp(self);
 	elseif ( barType == ALT_POWER_TYPE_VERTICAL ) then
@@ -240,6 +254,7 @@ end
 
 function UnitPowerBarAlt_SetDisplayedPower(self, value)
 	self.displayedValue = value;
+	UnitPowerBarAltStatus_UpdateText(self.statusFrame);
 	self:UpdateFill();
 end
 
@@ -425,4 +440,34 @@ end
 function UnitPowerBarAlt_Pill_OnFlashAwayFinished(self)
 	local pill = self:GetParent();
 	pill.fill:Hide();
+end
+
+-- status text functions
+-- self = statusFrame
+function UnitPowerBarAltStatus_UpdateText(self)
+	local powerBar = self:GetParent();
+	if ( powerBar.displayedValue and self:IsShown() ) then
+		TextStatusBar_UpdateTextStringWithValues(self, self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower);
+	end
+end
+
+function UnitPowerBarAltStatus_OnEvent(self, event, ...)
+	-- self = status frame
+	local cvar, value = ...;
+	local doUpdate = false;
+	if ( self.cvar and cvar == self.cvarLabel ) then
+		UnitPowerBarAltStatus_ToggleFrame(self);
+	elseif ( cvar == "STATUS_TEXT_PERCENT" ) then
+		UnitPowerBarAltStatus_UpdateText(self);
+	end
+end
+
+function UnitPowerBarAltStatus_ToggleFrame(self)
+	-- self = status frame
+	if ( self.enabled and GetCVarBool(self.cvar) ) then
+		self:Show();
+		UnitPowerBarAltStatus_UpdateText(self);
+	else
+		self:Hide();
+	end
 end

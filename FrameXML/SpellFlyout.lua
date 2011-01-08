@@ -147,12 +147,8 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		return;
 	end
 	
-	if (not direction and actionBar) then
-		if ( actionBar == MultiBarRight or actionBar == MultiBarLeft ) then
-			direction = "LEFT";
-		else
-			direction = "UP";
-		end
+	if (not direction) then
+		direction = "UP";
 	end
 	
 	-- Update all spell buttons for this flyout

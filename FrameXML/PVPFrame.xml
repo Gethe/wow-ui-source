@@ -66,7 +66,7 @@
 	
 	<ScrollFrame name="PVPQueueInfoScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="298" y="232"/>
+			<AbsDimension x="298" y="230"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
@@ -367,27 +367,41 @@
 	</ScrollFrame>
 	
 	<Frame name="PVPFrame" inherits="ButtonFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="$parentTypeLabel" inherits="GameFontNormal" text="BATTLEGROUNDS" justifyH="RIGHT">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-180" y="-38"/>
-					</Anchors>
-				</FontString>
-				<Texture  name="$parentTypeIcon">
-					<Size x="48" y="48"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTypeLabel" relativePoint="RIGHT" x="-2"/>
-					</Anchors>	
-				</Texture>
-				<FontString name="$parentTypeValue" inherits="GameFontHighlight" text="0">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTypeIcon" relativePoint="RIGHT" x="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame name="$parentCurrency">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="TOP" x="-20" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture  name="$parentIcon">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>	
+						</Texture>
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="BATTLEGROUNDS" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentIcon" relativePoint="LEFT" x="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentValue" inherits="GameFontHighlight" text="0" justifyH="Right">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyByID(self.currencyID);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+			</Frame>
+		
 			<!-- Tabs  Honor, Conquest, Arena Teams	-->
 			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="HONOR">
                 <Anchors>
@@ -445,7 +459,7 @@
 					<AbsDimension x="90" y="12"/>
 				</Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTypeValue" relativePoint="RIGHT" x="14" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentCurrencyValue" relativePoint="RIGHT" x="14" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -495,7 +509,7 @@
 			</Frame>
 			
 			<!-- Magic Buttons  -->
-			<Button name="$parentLeftButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN">
+			<Button name="$parentLeftButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN"  motionScriptsWhileDisabled="true" >
 				<Size x="108" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" />
@@ -504,6 +518,19 @@
 					<OnClick>
 						PVPFrame_JoinClicked(self);
 					</OnClick>
+					<OnEnter>
+						if not self:IsEnabled() and PVPConquestFrame:IsShown() then
+							local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
+							if IsPartyLeader() or groupSize == 1 then
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(PVP_NO_QUEUE_GROUP, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+							else
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(PVP_NOT_LEADER, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+							end
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentRightButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_GROUP_JOIN">
@@ -556,8 +583,20 @@
 								PVPFrame_JoinClicked(self, true, true);
 							</OnClick>
 							<OnEnter>
+								GameTooltip:ClearLines();
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(WARGAME_TOOLTIP, nil, nil, nil, nil, true );
+								GameTooltip:AddLine(WARGAME_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+								GameTooltip:AddLine(" ");
+								
+								local _,minSize,maxSize = CanInitiateWarGame(PVPHonorFrame.selectedPvpID);
+								local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
+								if groupSize >= minSize and maxSize >= groupSize then
+									GameTooltip:AddLine(string.format(WARGAME_REQ, GetBattlegroundInfo(PVPHonorFrame.selectedPvpID), GREEN_FONT_COLOR_CODE, minSize, maxSize), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+								else
+									GameTooltip:AddLine(string.format(WARGAME_REQ, GetBattlegroundInfo(PVPHonorFrame.selectedPvpID), RED_FONT_COLOR_CODE, minSize, maxSize), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+								end
+								
+								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -783,7 +822,7 @@
 						</FontString>
 						<FontString name="$parentRewardDescription" inherits="GameFontHighlight" justifyH="LEFT" parentKey="rewardDescription" text="PVP_REWARD_EXPLANATION">
 							<Size>
-								<AbsDimension x="290" y="12"/>
+								<AbsDimension x="290" y="0"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentRewardLabel" relativePoint="BOTTOMLEFT">
@@ -796,6 +835,19 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame name="$parentInfoRollOver" parentKey="partyInfoRollOver">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentPartyStatusBG"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentPartyStatusBG"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(PVP_NO_QUEUE_GROUP, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
 					<Button name="$parentConquestButtonArena" inherits="PVPBattlegroundButtonTemplate" parentKey="arenaButton" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -821,7 +873,7 @@
 							<AbsDimension x="316" y="40"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentRewardDescription" relativePoint="BOTTOMLEFT" x="-8" y="-10"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentRewardDescription" relativePoint="TOPLEFT" x="-8" y="-22"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">

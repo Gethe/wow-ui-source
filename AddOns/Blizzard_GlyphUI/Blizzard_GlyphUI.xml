@@ -102,7 +102,7 @@ size=1024,1024
 			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetSpellByID(self.castSpellID);
+				GameTooltip:SetGlyphByID(self.glyphID);
 				self.showingTooltip = true;
 				GameTooltip:Show();
 			</OnEnter>

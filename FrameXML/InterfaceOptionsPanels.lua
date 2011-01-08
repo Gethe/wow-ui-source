@@ -820,11 +820,14 @@ SocialPanelOptions = {
 function InterfaceOptionsSocialPanel_OnLoad (self)
 	if ( not BNFeaturesEnabled() ) then
 		local conversationCheckBox = InterfaceOptionsSocialPanelConversationMode;
+		local bnWhisperCheckBox = InterfaceOptionsSocialPanelBnWhisperMode;
 		local timestampCheckBox = InterfaceOptionsSocialPanelTimestamps;
 		conversationCheckBox:UnregisterEvent("VARIABLES_LOADED");
 		conversationCheckBox:Hide();
+		bnWhisperCheckBox:UnregisterEvent("VARIABLES_LOADED");
+		bnWhisperCheckBox:Hide();
 		timestampCheckBox:ClearAllPoints();
-		timestampCheckBox:SetPoint("TOPLEFT", conversationCheckBox);
+		timestampCheckBox:SetPoint("TOPLEFT", bnWhisperCheckBox);
 	end
 	self.name = SOCIAL_LABEL;
 	self.options = SocialPanelOptions;
@@ -991,6 +994,7 @@ function InterfaceOptionsSocialPanelConversationMode_OnEvent (self, event, ...)
 		self.value = value;
 		self.oldValue = value;
 		self.tooltip = _G["OPTION_CONVERSATION_MODE_"..strupper(value)];
+		self.conversationType = "CONVERSATION";
 
 		UIDropDownMenu_SetWidth(self, 90);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelConversationMode_Initialize);
@@ -1018,11 +1022,11 @@ function InterfaceOptionsSocialPanelConversationMode_OnEvent (self, event, ...)
 end
 
 function InterfaceOptionsSocialPanelConversationMode_OnClick(self)
-	InterfaceOptionsSocialPanelConversationMode:SetValue(self.value);
+	self:GetParent().dropdown:SetValue(self.value);
 end
 
-function InterfaceOptionsSocialPanelConversationMode_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsSocialPanelConversationMode);
+function InterfaceOptionsSocialPanelConversationMode_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = CONVERSATION_MODE_POPOUT;
@@ -1035,7 +1039,7 @@ function InterfaceOptionsSocialPanelConversationMode_Initialize()
 	end
 	
 	info.tooltipTitle = CONVERSATION_MODE_POPOUT;
-	info.tooltipText = OPTION_CONVERSATION_MODE_POPOUT;
+	info.tooltipText = _G["OPTION_"..self.conversationType.."_MODE_POPOUT"];
 	UIDropDownMenu_AddButton(info);
 
 	info.text = CONVERSATION_MODE_INLINE;
@@ -1047,9 +1051,94 @@ function InterfaceOptionsSocialPanelConversationMode_Initialize()
 		info.checked = nil;
 	end
 	info.tooltipTitle = CONVERSATION_MODE_INLINE;
-	info.tooltipText = OPTION_CONVERSATION_MODE_INLINE;
+	info.tooltipText = _G["OPTION_"..self.conversationType.."_MODE_INLINE"];
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = CONVERSATION_MODE_POPOUT_AND_INLINE;
+	info.func = InterfaceOptionsSocialPanelConversationMode_OnClick;
+	info.value = "popout_and_inline";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CONVERSATION_MODE_POPOUT_AND_INLINE;
+	info.tooltipText = _G["OPTION_"..self.conversationType.."_MODE_POPOUT_AND_INLINE"];
 	UIDropDownMenu_AddButton(info);
 end
+
+function InterfaceOptionsSocialPanelWhisperMode_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "whisperMode";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_WHISPER_MODE_"..strupper(value)];
+		self.conversationType = "WHISPER";
+
+		UIDropDownMenu_SetWidth(self, 90);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelConversationMode_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				SetCVar(self.cvar, self.value);
+				self.tooltip = _G["OPTION_WHISPER_MODE_"..strupper(value)];
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelConversationMode_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsSocialPanelBnWhisperMode_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "bnWhisperMode";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_BN_WHISPER_MODE_"..strupper(value)];
+		self.conversationType = "BN_WHISPER";
+
+		UIDropDownMenu_SetWidth(self, 90);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelConversationMode_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				SetCVar(self.cvar, self.value);
+				self.tooltip = _G["OPTION_BN_WHISPER_MODE_"..strupper(value)];
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsSocialPanelConversationMode_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
 
 function InterfaceOptionsSocialPanelTimestamps_OnEvent (self, event, ...)
 	if ( event == "VARIABLES_LOADED" ) then
@@ -1492,6 +1581,7 @@ StatusTextPanelOptions = {
 	petStatusText = { text = "STATUS_TEXT_PET" },
 	partyStatusText = { text = "STATUS_TEXT_PARTY" },
 	targetStatusText = { text = "STATUS_TEXT_TARGET" },
+	alternateResourceText = { text = "ALTERNATE_RESOURCE_TEXT" },
 	statusTextPercentage = { text = "STATUS_TEXT_PERCENT" },
 }
 

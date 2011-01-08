@@ -62,13 +62,10 @@
 				<AbsDimension x="172" y="400"/>
 			</Size>
 			<Anchors>
-				<Anchor point="BOTTOM">
-					<Offset>
-						<AbsDimension x="-3" y="-20"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" x="5" y="-13"/>
+				<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
 			</Anchors>
-                <Scripts>
+			<Scripts>
                 <OnLoad function="Model_OnLoad"/>
 				<OnEvent function="Model_OnEvent"/>
 				<OnMouseUp function="Model_OnMouseUp"/>

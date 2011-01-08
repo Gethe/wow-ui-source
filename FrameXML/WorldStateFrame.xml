@@ -1121,6 +1121,7 @@
 				end
 				if ( event == "PLAYER_ENTERING_WORLD" ) then
 					HideUIPanel(WorldStateScoreFrame);
+					WorldStateScoreFrame.firstOpen = false;
 					BATTLEFIELD_SHUTDOWN_TIMER = 0;
 				end
 			</OnEvent>

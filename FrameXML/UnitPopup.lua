@@ -39,6 +39,7 @@ UnitPopupButtons["GUILD_LEAVE"] = { text = GUILD_LEAVE, dist = 0 };
 UnitPopupButtons["TEAM_PROMOTE"] = { text = TEAM_PROMOTE, dist = 0 };
 UnitPopupButtons["TEAM_KICK"] = { text = TEAM_KICK, dist = 0 };
 UnitPopupButtons["TEAM_LEAVE"] = { text = TEAM_LEAVE, dist = 0 };
+UnitPopupButtons["TEAM_DISBAND"] = { text = TEAM_DISBAND, dist = 0 };
 UnitPopupButtons["LEAVE"] = { text = PARTY_LEAVE, dist = 0 };
 UnitPopupButtons["FOLLOW"] = { text = FOLLOW, dist = 4 };
 UnitPopupButtons["PET_DISMISS"] = { text = PET_DISMISS, dist = 0 };
@@ -154,7 +155,7 @@ UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_WITH", "BN_INVITE", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BLOCK_COMMUNICATION", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
-UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "CANCEL" };
+UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "TEAM_DISBAND", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
@@ -647,11 +648,15 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not PVP_ArenaTeamFrame():IsShown() or IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "TEAM_DISBAND" ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not PVP_ArenaTeamFrame():IsShown() or not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
-			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or HasLFGRestrictions() ) then
+			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or HasLFGRestrictions() or IsInFakeRaid() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "VOTE_TO_KICK" ) then
@@ -659,7 +664,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
-			if ( (inParty == 0) ) then
+			if ( inParty == 0 or IsInFakeRaid() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FREE_FOR_ALL" ) then
@@ -790,7 +795,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_REMOVE" ) then
-			if ( ( isLeader == 0 and isAssistant == 0 ) or not dropdownMenu.name ) then			
+			if ( ( isLeader == 0 and isAssistant == 0 ) or not dropdownMenu.name or IsInFakeRaid() ) then			
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( isLeader == 0 and isAssistant == 1 and UnitIsRaidOfficer(dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -803,7 +808,7 @@ function UnitPopup_HideButtons ()
 			elseif ( dropdownMenu.unit ) then
 				if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				elseif ( not UnitInBattleground(dropdownMenu.unit) and not IsInActiveWorldPVP() ) then
+				elseif ( not UnitInBattleground(dropdownMenu.unit) and not IsInActiveWorldPVP(dropdownMenu.unit) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				elseif ( (PlayerIsPVPInactive(dropdownMenu.unit)) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -811,7 +816,7 @@ function UnitPopup_HideButtons ()
 			elseif ( dropdownMenu.name ) then
 				if ( dropdownMenu.name == UnitName("player") ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				elseif ( not UnitInBattleground(dropdownMenu.name) ) then
+				elseif ( not UnitInBattleground(dropdownMenu.name) and not IsInActiveWorldPVP(dropdownMenu.name) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			end
@@ -1090,7 +1095,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "UNINVITE" ) then
-						if ( inParty == 0 or (isLeader == 0) or HasLFGRestrictions() ) then
+						if ( inParty == 0 or (isLeader == 0) or HasLFGRestrictions() or IsInFakeRaid() ) then
 							enable = 0;
 						end
 					elseif ( value == "BN_INVITE" or value == "BN_TARGET" ) then
@@ -1319,6 +1324,11 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "TEAM_LEAVE" ) then
 		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVP_GetSelectedArenaTeam()) );
+		if ( dialog ) then
+			dialog.data = PVP_GetSelectedArenaTeam();
+		end
+	elseif ( button == "TEAM_DISBAND" ) then
+		local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", GetArenaTeam(PVP_GetSelectedArenaTeam()) );
 		if ( dialog ) then
 			dialog.data = PVP_GetSelectedArenaTeam();
 		end

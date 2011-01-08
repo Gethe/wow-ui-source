@@ -19,6 +19,17 @@ function BarberShop_OnShow(self)
 	end
 	self:ClearAllPoints();
 	self:SetPoint("RIGHT", min(-50, -CONTAINER_OFFSET_X), -50);
+	if ( HasAlternateForm() ) then
+		local model = BarberShopAltFormFrame;
+		model:Show();
+		model:SetRotation(-0.4);
+		model.rotation = -0.4;
+		model:SetPosition(0, 0, -0.05);
+		model:SetPortraitZoom(0.9);
+		SetBarberShopAlternateFormFrame("BarberShopAltFormFrame");
+	else
+		BarberShopAltFormFrame:Hide();
+	end
 
 	PlaySound("BarberShop_Sit");
 	

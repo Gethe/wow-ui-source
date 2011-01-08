@@ -97,7 +97,6 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("READY_CHECK_FINISHED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
-	self:RegisterEvent("UNIT_HEALTH");
 	self:RegisterEvent("UNIT_CONNECTION");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
@@ -112,7 +111,7 @@ function PartyMemberFrame_OnLoad (self)
 end
 
 function PartyMemberFrame_UpdateMember (self)
-	if ( GetCVarBool("useCompactPartyFrames") or (GetNumRaidMembers() > 0) ) then
+	if ( GetDisplayedAllyFrames() ~= "party" ) then
 		self:Hide();
 		return;
 	end
@@ -320,28 +319,24 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	local arg1, arg2, arg3 = ...;
 	local selfID = self:GetID();
 	
+	
+	local unit = "party"..selfID;
+	local unitPet = "partypet"..selfID;
+	local speaker = _G[self:GetName().."SpeakerFrame"];
+	
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		if ( GetPartyMember(self:GetID()) ) then
 			PartyMemberFrame_UpdateMember(self);
 			PartyMemberFrame_UpdateOnlineStatus(self);
-			return;
 		end
-	end
-
-	if ( event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);
-		PartyMemberFrame_UpdatePhasingDisplay(self);
 		return;
-	end
-	
-	if ( event == "PARTY_LEADER_CHANGED" ) then
+	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		PartyMemberFrame_UpdateLeader(self);
-		return;
-	end
-
-	if ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
+	elseif ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
 		local lootMethod;
 		local lootMaster;
 		lootMethod, lootMaster = GetLootMethod();
@@ -350,24 +345,13 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		else
 			_G[self:GetName().."MasterIcon"]:Hide();
 		end
-		return;
-	end
-
-	if ( event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" ) then
+	elseif ( event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" ) then
 		PartyMemberFrame_UpdateVoiceStatus(self);
-	end
-
-	local unit = "party"..self:GetID();
-	local unitPet = "partypet"..self:GetID();
-
-	if ( event == "UNIT_FACTION" ) then
+	elseif ( event == "UNIT_FACTION" ) then
 		if ( arg1 == unit ) then
 			PartyMemberFrame_UpdatePvPStatus(self);
 		end
-		return;
-	end
-
-	if ( event =="UNIT_AURA" ) then
+	elseif ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
 			RefreshDebuffs(self, unit, nil, nil, true);
 			if ( PartyMemberBuffTooltip:IsShown() and
@@ -379,32 +363,21 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 				PartyMemberFrame_RefreshPetDebuffs(self);
 			end
 		end
-		return;
-	end
-
-	if ( event =="UNIT_PET" ) then
+	elseif ( event =="UNIT_PET" ) then
 		if ( arg1 == unit ) then
 			PartyMemberFrame_UpdatePet(self);
 		end
 		if ( UnitHasVehicleUI("party"..selfID) and UnitIsConnected("party"..selfID)) then
 			PartyMemberFrame_ToVehicleArt(self, UnitVehicleSkin("party"..selfID));
 		end
-		return;
-	end
-
-	if ( event == "READY_CHECK" or
+	elseif ( event == "READY_CHECK" or
 		 event == "READY_CHECK_CONFIRM" ) then
 		PartyMemberFrame_UpdateReadyCheck(self);
-		return;
 	elseif ( event == "READY_CHECK_FINISHED" ) then
 		if (GetPartyMember(self:GetID())) then
 			ReadyCheck_Finish(_G["PartyMemberFrame"..self:GetID().."ReadyCheck"]);
 		end
-		return;
-	end
-
-	local speaker = _G[self:GetName().."SpeakerFrame"];
-	if ( event == "VOICE_START") then
+	elseif ( event == "VOICE_START") then
 		if ( arg1 == unit ) then
 			speaker.timer = nil;
 			UIFrameFadeIn(speaker, 0.2, speaker:GetAlpha(), 1);
@@ -576,7 +549,7 @@ function UpdatePartyMemberBackground ()
 	if ( not PartyMemberBackground ) then
 		return;
 	end
-	if ( SHOW_PARTY_BACKGROUND == "1" and GetNumPartyMembers() > 0 and not(GetCVarBool("useCompactPartyFrames") or (GetNumRaidMembers() > 0)) ) then
+	if ( SHOW_PARTY_BACKGROUND == "1" and GetDisplayedAllyFrames() == "party" ) then
 		if ( _G["PartyMemberFrame"..GetNumPartyMembers().."PetFrame"]:IsShown() ) then
 			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -21);
 		else

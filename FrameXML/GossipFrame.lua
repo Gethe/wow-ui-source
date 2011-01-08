@@ -49,9 +49,8 @@ function GossipFrameUpdate()
 	-- Set Spacer
 	if ( GossipFrame.buttonIndex > 1 ) then
 		GossipSpacerFrame:SetPoint("TOP", "GossipTitleButton"..GossipFrame.buttonIndex-1, "BOTTOM", 0, 0);
-		GossipSpacerFrame:Show();
 	else
-		GossipSpacerFrame:Hide();
+		GossipSpacerFrame:SetPoint("TOP", GossipGreetingText, "BOTTOM", 0, 0);
 	end
 
 	-- Update scrollframe

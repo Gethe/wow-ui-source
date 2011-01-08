@@ -1,5 +1,23 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
+<!-- AltForm
+<Texture name="BarbershopPortrait-Frame.png" >
+	<Size x="165" y="162"/>
+	<TexCoords left="0.00390625" right="0.64843750" top="0.00195313" bottom="0.31835938"/>	
+</Texture>
+<Texture name="BarbershopPortrait-LeftButton.png" >
+	<Size x="40" y="67"/>
+	<TexCoords left="0.65625000" right="0.81250000" top="0.00195313" bottom="0.13281250"/>	
+</Texture>
+<Texture name="BarbershopPortrait-RightButton.png" >
+	<Size x="41" y="61"/>
+	<TexCoords left="0.82031250" right="0.98046875" top="0.00195313" bottom="0.12109375"/>	
+</Texture>
+<Texture name="BarbershopPortrait-BG.png" >
+	<Size x="103" y="118"/>
+	<TexCoords left="0.00390625" right="0.40625000" top="0.32226563" bottom="0.55273438"/>	
+</Texture>
+-->
 	<Frame name="BarberShopSelectorTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="175" y="32"/>
@@ -224,6 +242,49 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<PlayerModel name="BarberShopAltFormFrame" hidden="true">
+				<Size>
+					<AbsDimension x="100" y="116"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="2" y="-37"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" file="Interface\BarberShop\Barbershop-AltForm">
+							<Size x="103" y="118"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00390625" right="0.40625000" top="0.32226563" bottom="0.55273438"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentBorder">
+						<Size x="165" y="162"/>	
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTexture" file="Interface\BarberShop\Barbershop-AltForm" setAllPoints="true">
+									<TexCoords left="0.00390625" right="0.64843750" top="0.00195313" bottom="0.31835938"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						Model_OnLoad(self);
+					</OnLoad>
+					<OnEvent function="Model_OnEvent"/>
+					<OnUpdate function="Model_OnUpdate"/>
+					<OnMouseUp function="Model_OnMouseUp"/>
+					<OnMouseDown function="Model_OnMouseDown"/>
+				</Scripts>
+			</PlayerModel>
 		</Frames>
 		<Scripts>
 			<OnLoad function="BarberShop_OnLoad"/>

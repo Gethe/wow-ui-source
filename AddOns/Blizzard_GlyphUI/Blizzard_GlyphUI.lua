@@ -223,7 +223,7 @@ function GlyphFrame_UpdateGlyphList ()
 		local button = buttons[i];
 		local index = offset + i;
 		if index <= numGlyphs  then
-			local name, glyphType, isKnown, icon, castSpell = GetGlyphInfo(index);
+			local name, glyphType, isKnown, icon, glyphID = GetGlyphInfo(index);
 			if name == "header" then
 				button:Hide();
 				header = _G["GlyphFrameHeader"..currentHeader];
@@ -252,7 +252,7 @@ function GlyphFrame_UpdateGlyphList ()
 				button.glyphIndex = index;
 				button.icon:SetTexture(icon);
 				button.tooltipName = name;
-				button.castSpellID = castSpell;
+				button.glyphID = glyphID;
 				if isKnown then
 					button.icon:SetDesaturated(0);
 					button.name:SetText(name);
@@ -272,7 +272,7 @@ function GlyphFrame_UpdateGlyphList ()
 				end
 				
 				if button.showingTooltip then
-					GameTooltip:SetSpellByID(button.castSpellID);
+					GameTooltip:SetGlyphByID(button.glyphID);
 				end
 				
 				button:Show();
@@ -306,7 +306,7 @@ function GlyphFrame_CalculateScroll(offset)
 	local numGlyphs = GetNumGlyphs();
 
 	for i = 1, numGlyphs do
-		local name, glyphType, isKnown, icon, castSpell = GetGlyphInfo(i);
+		local name = GetGlyphInfo(i);
 		if name == "header" then
 			buttonHeight = GLYPH_HEADER_BUTTON_HEIGHT;
 		else
@@ -536,14 +536,12 @@ function GlyphFrameGlyph_OnClick (self, button)
 				local glyphName;
 				if ( glyphSpell ) then
 					glyphName = GetSpellInfo(glyphSpell);
-					local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, glyphName);
-					dialog.data = id;
+					local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = id});
 				end
 			end
 		elseif  GlyphMatchesSocket(id)  then
 			if glyphSpell then
-				local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT");
-				dialog.data = id;
+				local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, id);
 			else
 				PlaceGlyphInSocket(id);
 			end
@@ -573,11 +571,17 @@ end
 
 
 function GlyphFrameSpell_OnClick (self, button)
-	if self.disabledBG:IsShown() then
-		return;
+	if ( IsModifiedClick("CHATLINK") ) then
+		local _, _, _, _, _, link = GetGlyphInfo(self.glyphIndex);
+		if ( link ) then
+			ChatEdit_InsertLink(link);
+		end
+	else
+		if self.disabledBG:IsShown() then
+			return;
+		end
+		CastGlyph(self.glyphIndex);
 	end
-	
-	CastGlyph(self.glyphIndex);
 end
 
 

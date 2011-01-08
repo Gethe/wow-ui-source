@@ -50,15 +50,15 @@ StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	OnAccept = function (self)
 		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 		if ( talentGroup == GetActiveTalentGroup() ) then
-			RemoveGlyphFromSocket(self.data);
+			RemoveGlyphFromSocket(self.data.id);
 		end
 	end,
 	OnShow = function(self)
 		local name, count, _, _, cost = GetGlyphClearInfo();
 		if count >= cost then
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data, GREEN_FONT_COLOR_CODE, cost, name);
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, GREEN_FONT_COLOR_CODE, cost, name);
 		else
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data, RED_FONT_COLOR_CODE, cost, name);
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, RED_FONT_COLOR_CODE, cost, name);
 			self.button1:Disable();
 		end
 	end,
@@ -2905,6 +2905,21 @@ StaticPopupDialogs["GUILD_PROMOTE_CONFIRM"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CONFIRM_RANK_AUTHENTICATOR_REMOVE"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		local checkbox = self.data;
+		checkbox:SetChecked(false);
+		GuildControlUI_CheckClicked(checkbox);
+	end,
+	timeout = 0,
+	showAlert = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3140,7 +3155,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		_G[dialog:GetName().."MoneyFrame"]:Show();
 		_G[dialog:GetName().."MoneyInputFrame"]:Hide();
 	elseif ( info.hasMoneyInputFrame ) then
-		moneyInputFrame = _G[dialog:GetName().."MoneyInputFrame"];
+		local moneyInputFrame = _G[dialog:GetName().."MoneyInputFrame"];
 		moneyInputFrame:Show();
 		_G[dialog:GetName().."MoneyFrame"]:Hide();
 		-- Set OnEnterPress for money input frames

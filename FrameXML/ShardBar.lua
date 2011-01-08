@@ -2,34 +2,11 @@ SHARD_BAR_NUM_SHARDS = 3;
 SHARDBAR_SHOW_LEVEL = 10;
 
 
-
-function ShardBar_OnRecharge(self)
-	UIFrameFadeOut(self.shardGlow, 0.05);
-end
-
-local shardFadeInfo={
-				mode = "IN",
-				timeToFade = 0.2,
-				finishedFunc = ShardBar_OnRecharge,
-				finishedArg1 = "",
-			}
-
 function ShardBar_ToggleShard(self, visible)
 	if visible then
-		self.shardFill:Hide();
-		self.shardGlow:Hide();
-		self.shardSmoke1.animUsed:Play();
-		self.shardSmoke2.animUsed:Play();
+		self.animOut:Play();
 	else
-		for a,b in pairs(shardFadeInfo) do 
-			shardFadeInfo[a] = nil;
-		end
-		shardFadeInfo.mode = "IN";
-		shardFadeInfo.timeToFade = 0.2;
-		shardFadeInfo.finishedFunc = ShardBar_OnRecharge;
-		shardFadeInfo.finishedArg1 = self;
-		UIFrameFade(self.shardGlow, shardFadeInfo);	
-		UIFrameFadeIn(self.shardFill, 0.2);		
+		self.animIn:Play();
 	end
 end
 
@@ -47,7 +24,6 @@ function ShardBar_Update()
 end
 
 
-
 function ShardBar_OnLoad (self)
 	-- Disable rune frame if not a Warlock.
 	local _, class = UnitClass("player");	
@@ -61,14 +37,7 @@ function ShardBar_OnLoad (self)
 	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self.shard1.shardSmoke1:SetAlpha(0.0);
-	self.shard1.shardSmoke2:SetAlpha(0.0);
-	self.shard2.shardSmoke1:SetAlpha(0.0);
-	self.shard2.shardSmoke2:SetAlpha(0.0);
-	self.shard3.shardSmoke1:SetAlpha(0.0);
-	self.shard3.shardSmoke2:SetAlpha(0.0);
 end
-
 
 
 function ShardBar_OnEvent (self, event, arg1, arg2)

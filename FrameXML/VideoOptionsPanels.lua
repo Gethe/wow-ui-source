@@ -124,7 +124,7 @@ function Graphics_PrepareTooltip(self)
 				recommendedValue = value.text;
 			end
 			if (value.tooltip ~= nil) then
-				tooltip = tooltip .. "|n" .. "|cffffd200" .. value.text .. ":|r ";
+				tooltip = tooltip .. "|n" .. "|cffffd200" .. value.text .. HEADER_COLON .."|r ";
 				if(invalid) then
 					tooltip = tooltip .. GREYCOLORCODE;
 				elseif(recommended) then
@@ -137,7 +137,7 @@ function Graphics_PrepareTooltip(self)
 				tooltip = tooltip .. "|n";
 			else
 				if(invalid) then
-					tooltip = tooltip .. "|n" .. "|cffffd200" .. value.text .. ":|r " .. "|cff7f7f7f";
+					tooltip = tooltip .. "|n" .. "|cffffd200" .. value.text .. HEADER_COLON .. "|r " .. "|cff7f7f7f";
 				end
 			end
 			if(errorValue ~= nil) then
@@ -148,7 +148,7 @@ function Graphics_PrepareTooltip(self)
 			-- end
 		end
 		if(recommendedValue ~= nil) then
-			tooltip = tooltip .. "|n" .. VIDEO_OPTIONS_RECOMMENDED .. ": " .. GREENCOLORCODE .. recommendedValue .. "|r|n";
+			tooltip = tooltip .. "|n" .. VIDEO_OPTIONS_RECOMMENDED .. HEADER_COLON .. " " .. GREENCOLORCODE .. recommendedValue .. "|r|n";
 		end
 	end
 	if(self.clientRestart == true) then

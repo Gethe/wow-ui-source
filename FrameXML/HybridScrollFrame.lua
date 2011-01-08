@@ -205,7 +205,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 		tinsert(buttons, button);
 	end
 	
-	self.buttonHeight = round(buttonHeight);
+	self.buttonHeight = round(buttonHeight) - offsetY;
 	
 	local numButtons = math.ceil(self:GetHeight() / buttonHeight) + 1;
 	

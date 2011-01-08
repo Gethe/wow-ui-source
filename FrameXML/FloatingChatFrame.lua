@@ -258,7 +258,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 	end
 
 	-- Close current chat window
-	if ( chatFrame and shown and (chatFrame ~= DEFAULT_CHAT_FRAME and not IsCombatLog(chatFrame)) ) then
+	if ( chatFrame and (chatFrame ~= DEFAULT_CHAT_FRAME and not IsCombatLog(chatFrame)) ) then
 		if ( not chatFrame.isTemporary ) then
 			info = UIDropDownMenu_CreateInfo();
 			info.text = CLOSE_CHAT_WINDOW;
@@ -274,7 +274,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 			info.notCheckable = 1;
 			UIDropDownMenu_AddButton(info);
 		elseif ( chatFrame.isTemporary and (chatFrame.chatType == "BN_CONVERSATION" ) ) then
-			if ( GetCVar("conversationMode") == "popout" ) then
+			if ( GetCVar("conversationMode") == "popout" or GetCVar("conversationMode") == "popout_and_inline" ) then
 				info = UIDropDownMenu_CreateInfo();
 				info.text = CLOSE_AND_LEAVE_CHAT_CONVERSATION_WINDOW;
 				info.func = FCF_LeaveConversation;
@@ -621,6 +621,14 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	
 	ChatFrame_AddMessageGroup(chatFrame, chatType);
 	
+	-- This is to display "friend is online"/"friend is offline" messages
+	if ( chatType == "BN_WHISPER" ) then
+		ChatFrame_AddSingleMessageType(chatFrame, "CHAT_MSG_BN_INLINE_TOAST_ALERT");
+		ChatFrame_AddSingleMessageType(chatFrame, "CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE");
+	elseif ( chatType == "WHISPER" ) then
+		ChatFrame_AddSingleMessageType(chatFrame, "CHAT_MSG_SYSTEM");
+	end
+	
 	chatFrame.editBox:SetAttribute("chatType", chatType);
 	chatFrame.editBox:SetAttribute("stickyType", chatType);
 	
@@ -735,13 +743,6 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 	chatFrame.editBox:ClearHistory();
 	
 	if ( sourceChatFrame ) then
-		--Stop displaying this type of chat in the old chat frame.
-		if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
-			ChatFrame_ExcludePrivateMessageTarget(sourceChatFrame, chatTarget);
-		elseif ( chatType == "BN_CONVERSATION" ) then
-			ChatFrame_ExcludeBNConversationTarget(sourceChatFrame, chatTarget);
-		end
-	
 		--Copy over messages
 		local accessID = ChatHistory_GetAccessID(chatType, chatTarget);
 		for i = 1, sourceChatFrame:GetNumMessages(accessID) do
@@ -751,8 +752,21 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 			local info = ChatTypeInfo[cType];
 			chatFrame:AddMessage(text, info.r, info.g, info.b, lineID, false, accessID, extraData);
 		end
+
+		--Stop displaying this type of chat in the old chat frame.
 		--Remove the messages from the old frame.
-		sourceChatFrame:RemoveMessagesByAccessID(accessID);
+		if (not (chatType == "WHISPER" and GetCVar("whisperMode") == "popout_and_inline")
+			and not (chatType == "BN_WHISPER" and GetCVar("bnWhisperMode") == "popout_and_inline")
+			and not (chatType == "BN_CONVERSATION" and GetCVar("conversationMode") == "popout_and_inline") ) then
+
+			if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
+				ChatFrame_ExcludePrivateMessageTarget(sourceChatFrame, chatTarget);
+			elseif ( chatType == "BN_CONVERSATION" ) then
+				ChatFrame_ExcludeBNConversationTarget(sourceChatFrame, chatTarget);
+			end
+
+			sourceChatFrame:RemoveMessagesByAccessID(accessID);
+		end
 	end
 	
 	--Close the Editbox
@@ -1383,7 +1397,7 @@ end
 		-- We need to use this as an absolute measure of the text's width is altered when the chat dock gets too small
 		-- If the text is shrunken the original width is lost, unless we save it and use it in the following manner
 		-- This is a fix for Bug ID: 71180
-		PanelTemplates_TabResize(chatTab, 5, nil, nil, chatTab.textWidth);
+		PanelTemplates_TabResize(chatTab, 5, nil, nil, nil, chatTab.textWidth);
 		if ( value == SELECTED_DOCK_FRAME ) then
 			value:Show();
 			if ( chatTab:IsShown() ) then
@@ -1749,7 +1763,7 @@ function FCF_ResetChatWindows()
 		if ( chatFrameName ~= "ChatFrame1" ) then
 			local chatFrame = _G[chatFrameName];
 			if ( chatFrame.isTemporary and chatFrame.chatType == "BN_CONVERSATION" and
-				BNGetConversationInfo(tonumber(chatFrame.chatTarget)) and GetCVar("conversationMode") == "popout" ) then
+				BNGetConversationInfo(tonumber(chatFrame.chatTarget)) and (GetCVar("conversationMode") == "popout" or GetCVar("conversationMode") == "popout_and_inline") ) then
 				--We're still in this conversation, so we just want to reset the position, not remove the frame.
 				FCF_DockFrame(chatFrame, 3);	--Put it after General and Combat Log
 			else
@@ -2027,7 +2041,7 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 	chatFrame:SetMovable(true);
 	chatFrame:SetResizable(true);
 	FCFTab_UpdateColors(chatTab, true);
-	PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, nil, nil, chatTab.textWidth);
+	PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0, nil, nil, nil, chatTab.textWidth);
 	if ( FCFDock_GetSelectedWindow(dock) == chatFrame ) then
 		FCFDock_SelectWindow(dock, dock.DOCKED_CHAT_FRAMES[1]);
 	end
@@ -2488,16 +2502,50 @@ function FCFManager_ShouldSuppressMessage(chatFrame, chatType, chatTarget)
 		return false;
 	end
 	
-	if ( chatType == "BN_CONVERSATION" and GetCVar("conversationMode") == "popout" ) then
+	if ( (chatType == "BN_CONVERSATION" and GetCVar("conversationMode") == "popout")
+		or (chatType == "BN_WHISPER" and GetCVar("bnWhisperMode") == "popout")
+		or (chatType == "WHISPER" and GetCVar("whisperMode") == "popout") ) then
 		return true;
 	end
 	
 	return false;
 end
 
+function FCFManager_ShouldSuppressMessageFlash(chatFrame, chatType, chatTarget)
+	--Using GetToken probably isn't the best way to do this due to the string concatenation, but it's the easiest to get in quickly.
+	if ( chatFrame.chatType and FCFManager_GetToken(chatType, chatTarget) == FCFManager_GetToken(chatFrame.chatType, chatFrame.chatTarget) ) then
+		--This frame is a dedicated frame of this type, so we should always display.
+		return false;
+	end
+	
+	if ( (chatType == "BN_CONVERSATION" and GetCVar("conversationMode") == "popout_and_inline")
+		or (chatType == "BN_WHISPER" and GetCVar("bnWhisperMode") == "popout_and_inline") 
+		or (chatType == "WHISPER" and GetCVar("whisperMode") == "popout_and_inline") ) then
+		return true;
+	end
+	
+	return false;
+end
+
+function FCFManager_StopFlashOnDedicatedWindows(chatType, chatTarget)
+	local token = FCFManager_GetToken(chatType, chatTarget);
+	local windowList = dedicatedWindows[token];
+	if (windowList) then
+		for i, frame in pairs(windowList) do
+			FCF_StopAlertFlash(frame);
+		end
+	end
+end
+
 function FloatingChatFrameManager_OnLoad(self)
 	--Register for BN_CONVERSATION related messages to be able to spawn off new windows as needed
 	for _, event in pairs(ChatTypeGroup["BN_CONVERSATION"]) do
+		self:RegisterEvent(event);
+	end
+	for _, event in pairs(ChatTypeGroup["BN_WHISPER"]) do
+		self:RegisterEvent(event);
+	end
+	for _, event in pairs(ChatTypeGroup["WHISPER"]) do
 		self:RegisterEvent(event);
 	end
 end
@@ -2509,13 +2557,38 @@ function FloatingChatFrameManager_OnEvent(self, event, ...)
 		local chatGroup = Chat_GetChatCategory(chatType);
 		
 		if ( chatGroup == "BN_CONVERSATION" ) then
-			if ( GetCVar("conversationMode") == "popout" ) then
+			if ( GetCVar("conversationMode") == "popout" or GetCVar("conversationMode") == "popout_and_inline" ) then
 				if( not (event == "CHAT_MSG_BN_CONVERSATION_NOTICE" and arg1 == "YOU_LEFT_CONVERSATION") ) then
 					local chatTarget = tostring(select(8, ...));
 					if ( FCFManager_GetNumDedicatedFrames(chatGroup, chatTarget) == 0 ) then
 						local chatFrame = FCF_OpenTemporaryWindow(chatGroup, chatTarget);
 						chatFrame:GetScript("OnEvent")(chatFrame, event, ...);	--Re-fire the event for the frame.
+					elseif (GetCVar("conversationMode") == "popout_and_inline" and BNIsSelf(select(13, ...))) then
+						FCFManager_StopFlashOnDedicatedWindows(chatGroup, chatTarget);
 					end
+				end
+			end
+		end
+		
+		if ( (chatGroup == "BN_WHISPER" and (GetCVar("bnWhisperMode") == "popout" or GetCVar("bnWhisperMode") == "popout_and_inline"))
+			or (chatGroup == "WHISPER" and (GetCVar("whisperMode") == "popout" or GetCVar("whisperMode") == "popout_and_inline"))) then
+			local chatTarget = tostring(select(2, ...));
+			
+			if ( FCFManager_GetNumDedicatedFrames(chatGroup, chatTarget) == 0 ) then
+				local chatFrame = FCF_OpenTemporaryWindow(chatGroup, chatTarget);
+				chatFrame:GetScript("OnEvent")(chatFrame, event, ...);	--Re-fire the event for the frame.
+
+				-- If you started the whisper, immediately select the tab
+				if ((event == "CHAT_MSG_WHISPER_INFORM" and GetCVar("whisperMode") == "popout")
+					or (event == "CHAT_MSG_BN_WHISPER_INFORM" and GetCVar("bnWhisperMode") == "popout") ) then
+					FCF_SelectDockFrame(chatFrame);
+					FCF_FadeInChatFrame(chatFrame);
+				end
+			else
+				-- While in "Both" mode, if you reply to a whisper, stop the flash on that dedicated whisper tab
+				if ( (chatType == "WHISPER_INFORM" and GetCVar("whisperMode") == "popout_and_inline")
+				or (chatType == "BN_WHISPER_INFORM" and GetCVar("bnWhisperMode") == "popout_and_inline")) then
+					FCFManager_StopFlashOnDedicatedWindows(chatGroup, chatTarget);
 				end
 			end
 		end

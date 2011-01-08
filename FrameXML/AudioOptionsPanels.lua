@@ -332,6 +332,9 @@ function AudioOptionsVoicePanel_OnHide (self)
 	if ( VoiceChatTalkers_CanHide() ) then
 		VoiceChatTalkers_FadeOut();
 	end
+
+	VoiceChat_StopPlayingLoopbackSound();
+	VoiceChat_StopRecordingLoopbackSound();
 end
 
 function AudioOptionsVoicePanelEnableVoice_UpdateControls (value)

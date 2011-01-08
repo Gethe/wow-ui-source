@@ -247,7 +247,6 @@ function AutoCompleteEditBox_AddHighlightedText(editBox, text)
 		AutoComplete_Update(editBox, editBoxText, utf8Position);
 		
 		local newText = string.gsub(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX,
-			--DEBUG FIXME - This likely won't work with X-server whispers.
 			string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, nameToShow,
 				string.match(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX)),
 				1)
@@ -285,7 +284,7 @@ function AutoCompleteButton_OnClick(self)
 	local newText = string.gsub(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX,
 		string.format(editBox.autoCompleteFormatRegex or AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self:GetText(),
 			string.match(editBoxText, editBox.autoCompleteRegex or AUTOCOMPLETE_SIMPLE_REGEX)),
-			1)
+			1);
 	
 	if ( editBox.addSpaceToAutoComplete ) then
 		newText = newText.." ";

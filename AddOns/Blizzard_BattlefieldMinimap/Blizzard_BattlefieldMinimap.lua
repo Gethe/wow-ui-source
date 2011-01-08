@@ -55,6 +55,7 @@ function BattlefieldMinimap_OnLoad (self)
 end
 
 function BattlefieldMinimap_OnShow(self)
+	PlaySound("igQuestLogOpen");
 	SetMapToCurrentZone();
 	BattlefieldMinimap_Update();
 	BattlefieldMinimap_UpdateOpacity(BattlefieldMinimapOptions.opacity);
@@ -63,8 +64,10 @@ function BattlefieldMinimap_OnShow(self)
 end
 
 function BattlefieldMinimap_OnHide(self)
+	PlaySound("igQuestLogClose");
 	BattlefieldMinimapTab:Hide();
 	BattlefieldMinimap_ClearTextures();
+	CloseDropDownMenus();
 end
 
 function BattlefieldMinimap_OnEvent(self, event, ...)

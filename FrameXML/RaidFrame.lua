@@ -85,7 +85,7 @@ end
 
 -- Function for raid options
 function RaidOptionsFrame_UpdatePartyFrames()
-	if ( GetCVarBool("useCompactPartyFrames") or GetNumRaidMembers() > 0) then
+	if ( GetDisplayedAllyFrames() ~= "party" ) then
 		HidePartyFrame();
 	else
 		HidePartyFrame();

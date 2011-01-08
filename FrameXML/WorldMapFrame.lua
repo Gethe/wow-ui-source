@@ -235,8 +235,8 @@ end
 function WorldMapFrame_OnUpdate(self)
 	RequestBattlefieldPositions();
 
-	local nextBattleTime = GetWintergraspWaitTime();
-	if ( nextBattleTime and (GetCurrentMapAreaID() == WORLDMAP_WINTERGRASP_ID) and not IsInInstance()) then
+	local nextBattleTime = GetOutdoorPVPWaitTime();
+	if ( nextBattleTime and not IsInInstance()) then
 		local battleSec = mod(nextBattleTime, 60);
 		local battleMin = mod(floor(nextBattleTime / 60), 60);
 		local battleHour = floor(nextBattleTime / 3600);
@@ -1882,7 +1882,7 @@ function WorldMapFrame_DisplayQuestPOI(questFrame, isComplete)
 	local index = questFrame.index;
 	local poiButton;
 	if ( isComplete ) then
-		poiButton = QuestPOI_DisplayButton("WorldMapPOIFrame", QUEST_POI_COMPLETE_SWAP, index, questFrame.questId);
+		poiButton = QuestPOI_DisplayButton("WorldMapPOIFrame", QUEST_POI_COMPLETE_SWAP, questFrame.completedIndex, questFrame.questId);
 	else
 		poiButton = QuestPOI_DisplayButton("WorldMapPOIFrame", QUEST_POI_NUMERIC, index - numCompletedQuests, questFrame.questId);
 	end
@@ -1929,6 +1929,7 @@ function WorldMapFrame_GetQuestFrame(index, isComplete)
 	if ( isComplete ) then
 		numCompletedQuests = numCompletedQuests + 1;
 		poiButton = QuestPOI_DisplayButton("WorldMapQuestScrollChildFrame", QUEST_POI_COMPLETE_IN, numCompletedQuests, 0);
+		frame.completedIndex = numCompletedQuests;
 	else
 		poiButton = QuestPOI_DisplayButton("WorldMapQuestScrollChildFrame", QUEST_POI_NUMERIC, index - numCompletedQuests, 0);
 	end
@@ -2009,7 +2010,7 @@ end
 function WorldMapQuestFrame_UpdateMouseOver()
 	if ( WorldMapQuestScrollFrame:IsMouseOver() ) then
 		for i = 1, WorldMapFrame.numQuests do
-			questFrame = _G["WorldMapQuestFrame"..i];
+			local questFrame = _G["WorldMapQuestFrame"..i];
 			if ( questFrame:IsMouseOver() ) then
 				WorldMapQuestFrame_OnEnter(questFrame);
 				break;
@@ -2059,7 +2060,7 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 			end
 		end
 	else
-		local text, finished;
+		local text, finished, _;
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
 		if(numItemDropTooltips and numItemDropTooltips > 0) then
 			for i = 1, numItemDropTooltips do

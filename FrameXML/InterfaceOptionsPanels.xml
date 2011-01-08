@@ -19,11 +19,11 @@
 	<CheckButton name="InterfaceOptionsCheckButtonTemplate" virtual="true" inherits="InterfaceOptionsBaseCheckButtonTemplate">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlight">
+				<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="Text">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="0" y="1"/>
+								<AbsDimension x="2" y="1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1196,7 +1196,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1212,7 +1212,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSpamFilter" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1228,7 +1228,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentChatBubbles" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1244,7 +1244,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPartyChat" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1262,7 +1262,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentChatHoverDelay" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1278,7 +1278,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGuildMemberAlert" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1287,6 +1287,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "guildRecruitmentChannel";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self.Text:SetWidth(180);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1294,7 +1295,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGuildRecruitment" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1304,6 +1305,7 @@
 						self.cvar = "chatMouseScroll";
 						self.setFunc = function (value) InterfaceOptionsSocialPanelChatMouseScroll_SetScrolling(value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self.Text:SetWidth(180);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1358,11 +1360,81 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<Frame name="$parentConversationMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentWhisperMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentWholeChatWindowClickable" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-30" y="-16"/>
+							<AbsDimension x="-30" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="WHISPER_MODE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsSocialPanelWhisperMode_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentBnWhisperMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWhisperMode" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="BN_WHISPER_MODE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsSocialPanelBnWhisperMode_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentConversationMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBnWhisperMode" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2607,9 +2679,25 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentPercentages" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentAlternateResource" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTarget" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "alternateResourceText";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentPercentages" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAlternateResource" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -2828,6 +2916,7 @@
 						self.setFunc = function (value)
 							RaidOptionsFrame_UpdatePartyFrames()
 							CompactPartyFrame_UpdateShown(CompactPartyFrame);
+							CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
 							if ( value == "1" ) then
 								_G[self:GetParent():GetName().."ResetPartyPosition"]:Show();
 							else

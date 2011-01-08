@@ -365,7 +365,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" useParentLevel="true">
 				<Size>
 					<AbsDimension x="119" y="12"/>
 				</Size>
@@ -388,10 +388,15 @@
 						UnitFrameHealthBar_OnValueChanged(self, value);
 						TargetHealthCheck(self, value);
 					</OnValueChanged>
+					<OnSizeChanged>
+						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+					</OnSizeChanged>
 				</Scripts>
 				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
+			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate" useParentLevel="true"/>
+			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate" useParentLevel="true"/>
+			<StatusBar name="$parentManaBar" inherits="TextStatusBar" useParentLevel="true">
 				<Size>
 					<AbsDimension x="119" y="12"/>
 				</Size>

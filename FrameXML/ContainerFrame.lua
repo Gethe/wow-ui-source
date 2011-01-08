@@ -44,9 +44,8 @@ function ContainerFrame_OnEvent(self, event, ...)
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
 		ContainerFrame_UpdateCooldowns(self);
 	elseif ( event == "QUEST_ACCEPTED" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
-		for i = 1, ContainerFrame1.bagsShown do
-			local bag = _G[ContainerFrame1.bags[i]];
-			ContainerFrame_Update(bag);
+		if (self:IsShown()) then
+			ContainerFrame_Update(self);
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		updateContainerFrameAnchors();
@@ -161,6 +160,7 @@ function ContainerFrame_OnShow(self)
 	else
 		UpdateBagButtonHighlight(self:GetID());
 	end
+	ContainerFrame1.bags[ContainerFrame1.bagsShown + 1] = self:GetName();
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown + 1;
 	if ( self:GetID() == KEYRING_CONTAINER ) then
 		UpdateMicroButtons();
@@ -539,9 +539,9 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	_G[frame:GetName().."PortraitButton"]:SetID(id);
 
 	-- Add the bag to the baglist
-	ContainerFrame1.bags[ContainerFrame1.bagsShown + 1] = frame:GetName();
-	updateContainerFrameAnchors();
 	frame:Show();
+	updateContainerFrameAnchors();
+	frame:Raise();
 end
 
 function updateContainerFrameAnchors()
@@ -656,9 +656,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		local currencyTexture, currencyQuantity, currencyName = GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
 		if ( currencyName ) then
 			if ( itemsString ) then
-				itemsString = itemsString .. ", |TInterface\\Icons\\"..currencyTexture..":0:0:0:-1|t ".. format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = itemsString .. ", |TInterface\\Icons\\"..currencyTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			else
-				itemsString = " |TInterface\\Icons\\"..currencyTexture..":0:0:0:-1|t "..format(ITEM_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
+				itemsString = " |TInterface\\Icons\\"..currencyTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
 			end
 		end
 	end
@@ -672,7 +672,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	MerchantFrame.honorPoints = honorPoints;
 	MerchantFrame.arenaPoints = arenaPoints;
 
-	local refundItemTexture, refundItemLink;
+	local refundItemTexture, refundItemLink, _;
 	if ( isEquipped ) then
 		refundItemTexture = GetInventoryItemTexture("player", slot);
 		refundItemLink = GetInventoryItemLink("player", slot);

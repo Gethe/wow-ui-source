@@ -1012,34 +1012,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentInfoButton">
-								<Size>
-									<AbsDimension x="16" y="16"/>
-								</Size>	
+							<Button name="$parentInfoButton" inherits="UIPanelInfoButton">
 								<Anchors>
 									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentText" x="4" y="0"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
-									</Anchors>
-								</HighlightTexture>
 								<Scripts>
-									<OnMouseDown>
-										_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 1, -1);
-									</OnMouseDown>
-									<OnMouseUp>
-										_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
-									</OnMouseUp>
 									<OnClick>
 										StaticPopup_Show("BATTLENET_UNAVAILABLE");
 									</OnClick>
@@ -2779,34 +2756,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentInfoButton">
-						<Size>
-							<AbsDimension x="16" y="16"/>
-						</Size>	
+					<Button name="$parentInfoButton" inherits="UIPanelInfoButton">
 						<Anchors>
 							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTopTitle" x="8" y="0" />
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</HighlightTexture>
 						<Scripts>
-							<OnMouseDown>
-								_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 1, -1);
-							</OnMouseDown>
-							<OnMouseUp>
-								_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
-							</OnMouseUp>
 							<OnClick>
 								if ( AddFriendNameEditBox:HasFocus() ) then
 									AddFriendFrame.editFocus = AddFriendNameEditBox;
@@ -2881,7 +2835,7 @@
 								self.autoCompleteParams = AUTOCOMPLETE_LIST.ADDFRIEND;
 							</OnLoad>
 							<OnEnterPressed>
-								if ( not AutoCompleteEditBox_OnEnterPressed(self) ) then
+								if ( not AutoCompleteEditBox_OnEnterPressed(self) and AddFriendEntryFrameAcceptButton:IsEnabled() ) then
 									AddFriendFrame_Accept();
 								end
 							</OnEnterPressed>

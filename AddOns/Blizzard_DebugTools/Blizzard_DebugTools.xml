@@ -13,7 +13,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
-							<Offset x="62" y="0"/>
+							<Offset x="72" y="0"/>
 						</Anchor>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
@@ -22,13 +22,32 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 						<Anchor point="TOPLEFT">
-							<Offset x="70" y="0"/>
+							<Offset x="80" y="0"/>
 						</Anchor>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentHideButton" hidden="true" parentKey="HideButton">
+				<Size x="16" y="8"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<ButtonText text="X" inherits="GameFontRedSmall">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</ButtonText>
+				<Scripts>
+					<OnClick function="EventTraceFrameEventHideButton_OnClick"/>
+					<OnLeave>
+						EventTraceFrameEvent_OnLeave(self:GetParent());
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self:GetHighlightTexture():SetAlpha(.15);
@@ -43,7 +62,7 @@
 	</Button>
 
 	<Frame name="EventTraceFrame" parent="UIParent" movable="true" clampedToScreen="true" hidden="true" frameStrata="MEDIUM" toplevel="true">
-		<Size x="306" y="505"/>
+		<Size x="326" y="505"/>
 		<Anchors>
 			<Anchor point="LEFT">
 				<Offset x="64" y="0"/>
@@ -223,6 +242,7 @@
 		</Frames>		
 		<Scripts>
 			<OnLoad function="EventTraceFrame_OnLoad"/>
+			<OnShow function="EventTraceFrame_OnShow"/>
 			<OnEvent function="EventTraceFrame_OnEvent"/>
 			<OnUpdate function="EventTraceFrame_OnUpdate"/>
 			<OnKeyUp function="EventTraceFrame_OnKeyUp"/>

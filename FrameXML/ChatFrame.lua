@@ -60,6 +60,7 @@ ChatTypeInfo["DND"]										= { sticky = 0, flashTab = false, flashTabOnGeneral
 ChatTypeInfo["IGNORED"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["SKILL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["LOOT"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CURRENCY"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["MONEY"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["OPENING"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["TRADESKILLS"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -104,6 +105,7 @@ ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flash
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_CONVERSATION"]			= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
+ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMBAT_GUILD_XP_GAIN"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
@@ -115,6 +117,7 @@ ChatTypeGroup["SYSTEM"] = {
 	"PLAYER_LEVEL_UP",
 	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
+	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -216,6 +219,9 @@ ChatTypeGroup["SKILL"] = {
 };
 ChatTypeGroup["LOOT"] = {
 	"CHAT_MSG_LOOT",
+};
+ChatTypeGroup["CURRENCY"] = {
+	"CHAT_MSG_CURRENCY",
 };
 ChatTypeGroup["MONEY"] = {
 	"CHAT_MSG_MONEY",
@@ -1872,7 +1878,7 @@ SlashCmdList["TEAM_DISBAND"] = function(msg)
 				if ( teamsizeID ) then
 					local teamName, teamSize = GetArenaTeam(teamsizeID);
 					for i = 1, teamSize * 2 do
-						name, rank = GetArenaTeamRosterInfo(teamsizeID, i);
+						local name, rank = GetArenaTeamRosterInfo(teamsizeID, i);
 						if ( rank == 0 ) then
 							if ( name == UnitName("player") ) then
 								local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", teamName);
@@ -2345,6 +2351,8 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CHAT_SERVER_DISCONNECTED");
 	self:RegisterEvent("CHAT_SERVER_RECONNECTED");
+	self:RegisterEvent("BN_CONNECTED");
+	self:RegisterEvent("BN_DISCONNECTED");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2379,15 +2387,26 @@ end
 function ChatFrame_AddMessageGroup(chatFrame, group)
 	local info = ChatTypeGroup[group];
 	if ( info ) then
-		local i = 1;
-		while ( chatFrame.messageTypeList[i] ) do
-			i = i + 1;
-		end
-		chatFrame.messageTypeList[i] = group;
+		tinsert(chatFrame.messageTypeList, group);
 		for index, value in pairs(info) do
 			chatFrame:RegisterEvent(value);
 		end
 		AddChatWindowMessages(chatFrame:GetID(), group);
+	end
+end
+
+function ChatFrame_AddSingleMessageType(chatFrame, messageType)
+	local group = ChatTypeGroupInverted[messageType];
+	local info = ChatTypeGroup[group];
+	if ( info ) then
+		if (not tContains(chatFrame.messageTypeList, group)) then
+			tinsert(chatFrame.messageTypeList, group);
+		end
+		for index, value in pairs(info) do
+			if (value == messageType) then
+				chatFrame:RegisterEvent(value);
+			end
+		end
 	end
 end
 
@@ -2672,6 +2691,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(CHAT_SERVER_RECONNECTED_MESSAGE, info.r, info.g, info.b, info.id);
 		return true;
+	elseif ( event == "BN_CONNECTED" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(BN_CHAT_CONNECTED, info.r, info.g, info.b, info.id);
+	elseif ( event == "BN_DISCONNECTED" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
 	elseif ( event == "UNIT_GUILD_LEVEL" ) then
 		local unit, level = ...;
 		if ( unit == "player" ) then
@@ -2794,19 +2819,46 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		if ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
 			if ( self.privateMessageList and not self.privateMessageList[strlower(arg2)] ) then
 				return true;
-			elseif ( self.excludePrivateMessageList and self.excludePrivateMessageList[strlower(arg2)] ) then
+			elseif ( self.excludePrivateMessageList and self.excludePrivateMessageList[strlower(arg2)] 
+				and ( (chatGroup == "WHISPER" and GetCVar("whisperMode") ~= "popout_and_inline") or (chatGroup == "BN_WHISPER" and GetCVar("bnWhisperMode") ~= "popout_and_inline") ) ) then
 				return true;
 			end
 		elseif ( chatGroup == "BN_CONVERSATION" ) then
 			if ( self.bnConversationList and not self.bnConversationList[arg8] ) then
 				return true;
-			elseif ( self.excludeBNConversationList and self.excludeBNConversationList[arg8] ) then
+			elseif ( self.excludeBNConversationList and self.excludeBNConversationList[arg8] and GetCVar("conversationMode") ~= "popout_and_inline") then
 				return true;
 			end
 		end
+		
+		if (self.privateMessageList) then
+			-- Dedicated BN whisper windows need online/offline messages for only that player
+			if ( (chatGroup == "BN_INLINE_TOAST_ALERT" or chatGroup == "BN_WHISPER_PLAYER_OFFLINE") and not self.privateMessageList[strlower(arg2)] ) then
+				return true;
+			end
+			
+			-- HACK to put certain system messages into dedicated whisper windows
+			if ( chatGroup == "SYSTEM") then
+				local matchFound = false;
+				local message = strlower(arg1);
+				for playerName, _ in pairs(self.privateMessageList) do
+					local playerNotFoundMsg = strlower(format(ERR_CHAT_PLAYER_NOT_FOUND_S, playerName));
+					local charOnlineMsg = strlower(format(ERR_FRIEND_ONLINE_SS, playerName, playerName));
+					local charOfflineMsg = strlower(format(ERR_FRIEND_OFFLINE_S, playerName));
+					if ( message == playerNotFoundMsg or message == charOnlineMsg or message == charOfflineMsg) then
+						matchFound = true;
+						break;
+					end
+				end
+
+				if (not matchFound) then
+					return true;
+				end
+			end
+		end
 	
-		if ( type == "SYSTEM" or type == "SKILL" or type == "LOOT" or type == "MONEY" or
-		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS") then
+		if ( type == "SYSTEM" or type == "SKILL" or type == "LOOT" or type == "CURRENCY" or type == "MONEY" or
+		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -2876,6 +2928,23 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				message = format(BN_INLINE_TOAST_FRIEND_PENDING, BNGetNumFriendInvites());
 			elseif ( arg1 == "FRIEND_REMOVED" ) then
 				message = format(globalstring, arg2);
+			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
+				local hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(arg13);
+				if (toonName and toonName ~= "" and client and client ~= "") then
+					local toonNameText = toonName;
+					
+					if ( client == BNET_CLIENT_WOW ) then
+						toonNameText = "|TInterface\\FriendsFrame\\Battlenet-WoWicon:20|t".." "..toonNameText;
+					elseif ( client == BNET_CLIENT_SC2 ) then
+						toonNameText = "|TInterface\\FriendsFrame\\Battlenet-Sc2icon:20|t".." "..toonNameText;
+					end
+					
+					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s] (%s)|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2, toonNameText);
+					message = format(globalstring, playerLink);
+				else
+					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
+					message = format(globalstring, playerLink);
+				end
 			else
 				local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
 				message = format(globalstring, playerLink);
@@ -3015,11 +3084,15 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self.tellTimer = GetTime() + CHAT_TELL_ALERT_TIME;
 			--FCF_FlashTab(self);
 		end
-
+		
 		if ( not self:IsShown() ) then
 			if ( (self == DEFAULT_CHAT_FRAME and info.flashTabOnGeneral) or (self ~= DEFAULT_CHAT_FRAME and info.flashTab) ) then
 				if ( not CHAT_OPTIONS.HIDE_FRAME_ALERTS or type == "WHISPER" or type == "BN_WHISPER" ) then	--BN_WHISPER FIXME
-					FCF_StartAlertFlash(self);
+					if (not (type == "BN_CONVERSATION" and BNIsSelf(arg13))) then
+						if (not FCFManager_ShouldSuppressMessageFlash(self, chatGroup, chatTarget) ) then
+							FCF_StartAlertFlash(self);
+						end
+					end
 				end
 			end
 		end
@@ -3660,10 +3733,12 @@ function ChatEdit_UpdateHeader(editBox)
 
 	local info = ChatTypeInfo[type];
 	local header = _G[editBox:GetName().."Header"];
+	local headerSuffix = _G[editBox:GetName().."HeaderSuffix"];
 	if ( not header ) then
 		return;
 	end
 
+	header:SetWidth(0);
 	--BN_WHISPER FIXME
 	if ( type == "WHISPER" ) then
 		--If we have a BN presence ID for this name, it's a BN whisper.
@@ -3676,9 +3751,6 @@ function ChatEdit_UpdateHeader(editBox)
 		header:SetFormattedText(CHAT_WHISPER_SEND, editBox:GetAttribute("tellTarget"));
 	elseif ( type == "BN_WHISPER" ) then
 		local name = editBox:GetAttribute("tellTarget");
-		if ( strlenutf8(name) > 30 ) then	--We only show the first 30 letters of a name (bug 205388)
-			name = strsub(name, 1, 30).."...";
-		end
 		header:SetFormattedText(CHAT_BN_WHISPER_SEND, name);
 	elseif ( type == "EMOTE" ) then
 		header:SetFormattedText(CHAT_EMOTE_SEND, UnitName("player"));
@@ -3698,10 +3770,21 @@ function ChatEdit_UpdateHeader(editBox)
 	else
 		header:SetText(_G["CHAT_"..type.."_SEND"]);
 	end
+	
+	local headerWidth = header:GetRight() - header:GetLeft();
+	local editBoxWidth = editBox:GetRight() - editBox:GetLeft();
+	
+	if ( headerWidth > editBoxWidth / 2 ) then
+		header:SetWidth(editBoxWidth / 2);
+		headerSuffix:Show();
+	else
+		headerSuffix:Hide();
+	end
 
 	header:SetTextColor(info.r, info.g, info.b);
+	headerSuffix:SetTextColor(info.r, info.g, info.b);
 
-	editBox:SetTextInsets(15 + header:GetWidth(), 13, 0, 0);
+	editBox:SetTextInsets(15 + header:GetWidth() + (headerSuffix:IsShown() and headerSuffix:GetWidth() or 0), 13, 0, 0);
 	editBox:SetTextColor(info.r, info.g, info.b);
 	
 	editBox.focusLeft:SetVertexColor(info.r, info.g, info.b);
@@ -4210,6 +4293,10 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	
 	if(strsub(target, 1, 2) == "|K") then
 		target, msg = BNTokenCombineGivenAndSurname(target);
+		--If there is a space just after the name (to trigger a parse), remove it.
+		if ( strsub(msg, 1, 1) == " " ) then
+			msg = strsub(msg, 2);
+		end
 	else
 		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or only a single word is left.
 		while ( strfind(target, "%s") ) do
@@ -4223,7 +4310,6 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 	end
 	
 	editBox:SetAttribute("tellTarget", target);
-	--BN_WHISPER FIXME
 	editBox:SetAttribute("chatType", "WHISPER");
 	editBox:SetText(msg);
 	ChatEdit_UpdateHeader(editBox);

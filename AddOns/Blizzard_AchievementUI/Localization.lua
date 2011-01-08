@@ -19,3 +19,7 @@ end
 function AchievementFrame_LocalizeCriteria (frame)
 
 end
+
+function AchievementCategoryButton_Localize(button)
+
+end

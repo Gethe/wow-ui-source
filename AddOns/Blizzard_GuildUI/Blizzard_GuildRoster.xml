@@ -470,23 +470,29 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-8"/>
+								<AbsDimension x="0" y="-6"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight" justifyH="LEFT">
+				<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight" nonspacewrap="true" justifyH="LEFT" justifyV="TOP">
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="2" y="0"/>
+								<AbsDimension x="2" y="1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailOnlineLabel" inherits="GameFontNormalSmall" text="LAST_ONLINE_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="BOTTOMLEFT">
+						<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="TOP" relativeTo="GuildMemberDetailRankText" relativePoint="BOTTOM">
 							<Offset>
 								<AbsDimension x="0" y="-8"/>
 							</Offset>
@@ -613,6 +619,9 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="GuildMemberDetailFrame" relativePoint="RIGHT">
 						<Offset x="-60" y="50"/>
+					</Anchor>
+					<Anchor point="TOP" relativeTo="GuildMemberDetailRankLabel" relativePoint="TOP">
+						<Offset x="0" y="8"/>
 					</Anchor>
 				</Anchors>
 				<HitRectInsets>

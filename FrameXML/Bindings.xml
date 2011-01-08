@@ -238,73 +238,93 @@
 	</Binding>
 
 	<Binding name="BONUSACTIONBUTTON1" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(1);
-		else
-			BonusActionButtonUp(1);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(1);
+			else
+				BonusActionButtonUp(1);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON2" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(2);
-		else
-			BonusActionButtonUp(2);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(2);
+			else
+				BonusActionButtonUp(2);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON3" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(3);
-		else
-			BonusActionButtonUp(3);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(3);
+			else
+				BonusActionButtonUp(3);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON4" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(4);
-		else
-			BonusActionButtonUp(4);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(4);
+			else
+				BonusActionButtonUp(4);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON5" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(5);
-		else
-			BonusActionButtonUp(5);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(5);
+			else
+				BonusActionButtonUp(5);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON6" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(6);
-		else
-			BonusActionButtonUp(6);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(6);
+			else
+				BonusActionButtonUp(6);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON7" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(7);
-		else
-			BonusActionButtonUp(7);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(7);
+			else
+				BonusActionButtonUp(7);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON8" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(8);
-		else
-			BonusActionButtonUp(8);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(8);
+			else
+				BonusActionButtonUp(8);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON9" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(9);
-		else
-			BonusActionButtonUp(9);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(9);
+			else
+				BonusActionButtonUp(9);
+			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON10" runOnUp="true">
-		if ( keystate == "down" ) then
-			BonusActionButtonDown(10);
-		else
-			BonusActionButtonUp(10);
+		if (PetHasActionBar()) then
+			if ( keystate == "down" ) then
+				BonusActionButtonDown(10);
+			else
+				BonusActionButtonUp(10);
+			end
 		end
 	</Binding>
 

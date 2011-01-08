@@ -1,4 +1,5 @@
 
+
 TRADE_SKILLS_DISPLAYED = 8;
 TRADE_SKILL_GUILD_CRAFTERS_DISPLAYED = 10;
 MAX_TRADE_SKILL_REAGENTS = 8;
@@ -71,6 +72,28 @@ function TradeSkillFrame_ShowFailed(self)
 end
 
 
+
+function TradeSkillFrameButton_OnEnter(self)
+	self.count:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	self.skillup.icon:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	self.skillup.countText:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	
+	self.text:SetFontObject(GameFontHighlightLeft);
+	self.text:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
+
+function TradeSkillFrameButton_OnLeave(self)
+	if ( not self.isHighlighted ) then
+		self.count:SetVertexColor(self.r, self.g, self.b);
+		self.skillup.icon:SetVertexColor(self.r, self.g, self.b);
+		self.skillup.countText:SetVertexColor(self.r, self.g, self.b);
+		
+		self.text:SetFontObject(self.font);
+		self.text:SetVertexColor(self.r, self.g, self.b);
+	end
+end
+
 function TradeSkillFrame_OnEvent(self, event, ...)
 	if ( not TradeSkillFrame:IsShown() ) then
 		return;
@@ -142,8 +165,8 @@ function TradeSkillFrame_Update()
 
 	
 	TradeSkillHighlightFrame:Hide();
-	local skillName, skillType, numAvailable, isExpanded, altVerb;
-	local skillIndex, skillButton, skillButtonText, skillButtonCount;
+	local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps;
+	local skillIndex, skillButton, skillButtonText, skillButtonCount, skillButtonNumSkillUps, skillButtonNumSkillUpsIcon;
 	local nameWidth, countWidth;
 	
 	local skillNamePrefix = " ";
@@ -179,17 +202,16 @@ function TradeSkillFrame_Update()
 		skillButtonText = _G["TradeSkillSkill"..buttonIndex.."Text"];
 		skillButtonCount = _G["TradeSkillSkill"..buttonIndex.."Count"];
 		skillButtonNumSkillUps = _G["TradeSkillSkill"..buttonIndex.."NumSkillUps"];
+		skillButtonNumSkillUpsText = _G["TradeSkillSkill"..buttonIndex.."NumSkillUpsText"];
 		skillButtonNumSkillUpsIcon = _G["TradeSkillSkill"..buttonIndex.."NumSkillUpsIcon"];
 		if ( skillIndex <= numTradeSkills ) then	
 		
 			--turn on the multiskill icon
 			if not isTradeSkillGuild and numSkillUps > 1 and skillType=="optimal" then
 				skillButtonNumSkillUps:Show();
-				skillButtonNumSkillUpsIcon:Show();
-				skillButtonNumSkillUps:SetText(numSkillUps);
+				skillButtonNumSkillUpsText:SetText(numSkillUps);
 			else 
 				skillButtonNumSkillUps:Hide();
-				skillButtonNumSkillUpsIcon:Hide();			
 			end
 		
 		
@@ -209,11 +231,13 @@ function TradeSkillFrame_Update()
 			end
 			if ( color ) then
 				skillButton:SetNormalFontObject(color.font);
+				skillButtonText:SetVertexColor(color.r, color.g, color.b);
 				skillButtonCount:SetVertexColor(color.r, color.g, color.b);
 				skillButton.r = color.r;
 				skillButton.g = color.g;
-				skillButton.b = color.b;			
-				skillButtonNumSkillUps:SetVertexColor(color.r, color.g, color.b);
+				skillButton.b = color.b;
+				skillButton.font = color.font;
+				skillButtonNumSkillUpsText:SetVertexColor(color.r, color.g, color.b);
 				skillButtonNumSkillUpsIcon:SetVertexColor(color.r, color.g, color.b);
 			end
 			
@@ -263,9 +287,10 @@ function TradeSkillFrame_Update()
 				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
 					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..buttonIndex, "TOPLEFT", 0, 0);
 					TradeSkillHighlightFrame:Show();
+					skillButtonText:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					skillButtonCount:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					
-					skillButtonNumSkillUps:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					skillButtonNumSkillUpsText:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					skillButtonNumSkillUpsIcon:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					skillButton:LockHighlight();
 					skillButton.isHighlighted = true;

@@ -75,6 +75,8 @@
 		<Scripts>
 			<OnLoad>
 				self:SetFrameLevel(self:GetFrameLevel() + 4);
+				self.deselectedTextY = -3;
+				self.selectedTextY = -2;
 			</OnLoad>
 			<OnShow>
 				PanelTemplates_TabResize(self, 0);

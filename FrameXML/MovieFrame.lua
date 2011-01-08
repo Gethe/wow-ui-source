@@ -15,7 +15,6 @@ function MovieFrame_OnEvent(self, event, ...)
 end
 
 function MovieFrame_PlayMovie(self, movieID)
-	volume = volume or 150;
 	self:Show();
 	local playSuccess, errorCode = self:StartMovie(movieID);
 	if ( not playSuccess ) then

@@ -354,19 +354,19 @@
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="5" y="5"/>
+								<AbsDimension x="5" y="7"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubSpellName" inherits="SubSpellFont" justifyH="LEFT" parentKey="subSpellString">
+				<FontString name="$parentSubSpellName" inherits="SubSpellFont" justifyH="LEFT" justifyV="TOP" parentKey="subSpellString">
 					<Size>
-						<AbsDimension x="79" y="18"/>
+						<AbsDimension x="95" y="28"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="4"/>
+								<AbsDimension x="0" y="-1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -790,7 +790,7 @@
 		</Frames>			
 	</Frame>
 	
-	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" framestrata="HIGH">
+	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" framestrata="MEDIUM">
 		<Size>
 			<AbsDimension x="550" y="525"/>
 		</Size>

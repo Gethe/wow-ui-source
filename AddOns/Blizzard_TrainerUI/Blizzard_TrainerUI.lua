@@ -185,7 +185,7 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 	
 	-- Ability Requirements
 	local numRequirements = GetTrainerServiceNumAbilityReq(skillIndex);
-	local ability;
+	local ability, hasReq;
 	if ( numRequirements > 0 ) then
 		for i=1, numRequirements, 1 do
 			ability, hasReq = GetTrainerServiceAbilityReq(skillIndex, i);

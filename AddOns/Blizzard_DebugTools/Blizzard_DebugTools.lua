@@ -25,6 +25,8 @@ function EventTraceFrame_OnLoad (self)
 	self.events = {};
 	self.times = {};
 	self.rawtimes = {};
+	self.timeSinceLast = {};
+	self.framesSinceLast = {};
 	self.args = { {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} };
 	self.ignoredEvents = {};
 	self.lastIndex = 0;
@@ -52,6 +54,8 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			self.events[staleIndex] = nil;
 			self.times[staleIndex] = nil;
 			self.rawtimes[staleIndex] = nil;
+			self.timeSinceLast[staleIndex] = nil;
+			self.framesSinceLast[staleIndex] = nil;
 			for k, v in next, self.args do
 				self.args[k][staleIndex] = nil;
 			end
@@ -64,9 +68,13 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			else
 				self.events[nextIndex] = event;
 			end
+			self.timeSinceLast[nextIndex] = 0;
+			self.framesSinceLast[nextIndex] = 0;
 		elseif ( event == "On Update" ) then
 			self.times[nextIndex] = "Elapsed";
 			self.events[nextIndex] = string.format(string.format("%.3f sec", _timeSinceLast) .. " - %d frame(s)", _framesSinceLast);
+			self.timeSinceLast[nextIndex] = _timeSinceLast;
+			self.framesSinceLast[nextIndex] = _framesSinceLast;
 			_timeSinceLast = 0;
 			_framesSinceLast = 0;
 		else
@@ -78,6 +86,8 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			minutes = minutes - 60 * hours;
 			hours = hours % 1000;
 			self.times[nextIndex] = string.format("%.2d:%.2d:%06.3f", hours, minutes, seconds);
+			self.timeSinceLast[nextIndex] = 0;
+			self.framesSinceLast[nextIndex] = 0;
 
 			local numArgs = select("#", ...);
 			for i=1, numArgs do
@@ -100,6 +110,10 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			EventTraceFrame_StopEventCapture();
 		end
 	end
+end
+
+function EventTraceFrame_OnShow(self)
+	wipe(self.ignoredEvents);
 end
 
 function EventTraceFrame_OnUpdate (self, elapsed)
@@ -200,9 +214,11 @@ function EventTraceFrame_Update ()
 						button:GetHighlightTexture():SetVertexColor(.8, .8, 1, .15);
 						button:UnlockHighlight();
 					end
-					if ( button:IsMouseOver() ) then
-						EventTraceFrameEvent_OnEnter(button);
-					end
+				end
+				if ( button:IsMouseOver() ) then
+					EventTraceFrameEvent_OnEnter(button);
+				else
+					button.HideButton:Hide();
 				end
 			else
 				button.index = index;
@@ -293,6 +309,23 @@ function EventTraceFrame_OnKeyUp (self, key)
 	end
 end
 
+function EventTraceFrame_RemoveEvent(i)
+	if (i >= 1 and i <= EventTraceFrame.lastIndex) then
+		tremove(EventTraceFrame.events, i);
+		tremove(EventTraceFrame.times, i);
+		tremove(EventTraceFrame.rawtimes, i);
+		tremove(EventTraceFrame.timeSinceLast, i);
+		tremove(EventTraceFrame.framesSinceLast, i);
+		for k, v in next, EventTraceFrame.args do
+			-- can't use tremove because some of these are nil
+			for j = i, EventTraceFrame.lastIndex do
+				EventTraceFrame.args[k][j] = EventTraceFrame.args[k][j+1];
+			end
+		end
+		EventTraceFrame.lastIndex = EventTraceFrame.lastIndex-1;
+	end
+end
+
 local TIME_ENTRY_FORMAT = "Time:";
 local DETAILS_ENTRY_FORMAT = "Details:";
 local ARGUMENT_ENTRY_FORMAT = "arg %d:";
@@ -336,6 +369,11 @@ function EventTraceFrameEvent_DisplayTooltip (eventButton)
 end
 
 function EventTraceFrameEvent_OnEnter (self)
+	if (not EVENT_TRACE_SYSTEM_TIMES[EventTraceFrame.times[self.index]]) then
+		self.HideButton:Show();
+	else
+		self.HideButton:Hide();
+	end
 	if ( _EventTraceFrame.selectedEvent ) then
 		return;
 	else
@@ -344,6 +382,9 @@ function EventTraceFrameEvent_OnEnter (self)
 end
 
 function EventTraceFrameEvent_OnLeave (self)
+	if ( not self.HideButton:IsMouseOver()) then
+		self.HideButton:Hide();
+	end
 	if ( not _EventTraceFrame.selectedEvent ) then
 		EventTraceTooltip:Hide();
 	end
@@ -355,6 +396,37 @@ function EventTraceFrameEvent_OnClick (self)
 	else
 		_EventTraceFrame.selectedEvent = self.index;
 	end
+	EventTraceFrame_Update();
+end
+
+function EventTraceFrameEventHideButton_OnClick (button)
+	local eventName = button:GetParent().event:GetText();
+	EventTraceFrame.ignoredEvents[eventName] = 1;
+	EventTraceFrame.selectedEvent = nil;
+
+	-- Remove matching all events of this type
+	for i = EventTraceFrame.lastIndex, 1, -1  do
+		if (EventTraceFrame.events[i] == eventName) then
+			EventTraceFrame_RemoveEvent(i);
+		end
+	end
+
+	-- Consolidate "Elapsed" lines
+	local lastWasElapsed = false;
+	for i = EventTraceFrame.lastIndex, 1, -1  do
+		if (EventTraceFrame.times[i] == "Elapsed") then
+			if (lastWasElapsed) then
+				EventTraceFrame.timeSinceLast[i] = EventTraceFrame.timeSinceLast[i] + EventTraceFrame.timeSinceLast[i+1];
+				EventTraceFrame.framesSinceLast[i] = EventTraceFrame.framesSinceLast[i] + EventTraceFrame.framesSinceLast[i+1];
+				EventTraceFrame.events[i] = string.format(string.format("%.3f sec", EventTraceFrame.timeSinceLast[i]) .. " - %d frame(s)", EventTraceFrame.framesSinceLast[i]);
+				EventTraceFrame_RemoveEvent(i+1);
+			end
+			lastWasElapsed = true;
+		else
+			lastWasElapsed = false;
+		end
+	end
+	
 	EventTraceFrame_Update();
 end
 

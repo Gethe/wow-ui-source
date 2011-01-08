@@ -95,8 +95,10 @@ UIMenus = {
 	"DropDownList2",
 };
 
+NUM_ITEM_QUALITIES = 7;
+
 ITEM_QUALITY_COLORS = { };
-for i = -1, 6 do
+for i = -1, NUM_ITEM_QUALITIES do
 	ITEM_QUALITY_COLORS[i] = { };
 	ITEM_QUALITY_COLORS[i].r,
 	ITEM_QUALITY_COLORS[i].g,
@@ -1722,9 +1724,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			ShapeshiftBarLeft:Hide();
 			ShapeshiftBarRight:Hide();
 			ShapeshiftBarMiddle:Hide();
-			for i=1, GetNumShapeshiftForms() do
-				_G["ShapeshiftButton"..i.."NormalTexture"]:SetWidth(50);
-				_G["ShapeshiftButton"..i.."NormalTexture"]:SetHeight(50);
+			for i=1, NUM_SHAPESHIFT_SLOTS do
+				_G["ShapeshiftButton"..i]:GetNormalTexture():SetWidth(52);
+				_G["ShapeshiftButton"..i]:GetNormalTexture():SetHeight(52);
 			end
 		end
 	else
@@ -1741,9 +1743,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 			ShapeshiftBarLeft:Show();
 			ShapeshiftBarRight:Show();
-			for i=1, GetNumShapeshiftForms() do
-				_G["ShapeshiftButton"..i.."NormalTexture"]:SetWidth(64);
-				_G["ShapeshiftButton"..i.."NormalTexture"]:SetHeight(64);
+			for i=1, NUM_SHAPESHIFT_SLOTS do
+				_G["ShapeshiftButton"..i]:GetNormalTexture():SetWidth(64);
+				_G["ShapeshiftButton"..i]:GetNormalTexture():SetHeight(64);
 			end
 		end
 	end
@@ -2768,7 +2770,7 @@ function Model_OnLoad (self)
 end
 
 function Model_OnEvent(self, event, ...)
-	self:RefreshUnit();
+	self:RefreshCamera();
 end
 
 function Model_RotateLeft(model, rotationIncrement)
@@ -2842,14 +2844,16 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 	end
 	
 	-- Rotate buttons
-	if ( _G[self:GetName().."RotateLeftButton"]:GetButtonState() == "PUSHED" ) then
+	local button = _G[self:GetName().."RotateLeftButton"];
+	if ( button and button:GetButtonState() == "PUSHED" ) then
 		self.rotation = self.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
 		if ( self.rotation < 0 ) then
 			self.rotation = self.rotation + (2 * PI);
 		end
 		self:SetRotation(self.rotation);
 	end
-	if ( _G[self:GetName().."RotateRightButton"]:GetButtonState() == "PUSHED" ) then
+	button = _G[self:GetName().."RotateRightButton"];
+	if ( button and button:GetButtonState() == "PUSHED" ) then
 		self.rotation = self.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
 		if ( self.rotation > (2 * PI) ) then
 			self.rotation = self.rotation - (2 * PI);
@@ -3669,8 +3673,8 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 			local index = emblemFilename:match("([%d]+)");
 			if ( index) then
 				index = tonumber(index);
-				xCoord = mod(index, columns) * emblemSize;
-				yCoord = floor(index / columns) * emblemSize;
+				local xCoord = mod(index, columns) * emblemSize;
+				local yCoord = floor(index / columns) * emblemSize;
 				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
 			end
 			emblemTexture:SetVertexColor(emblemR / 255, emblemG / 255, emblemB / 255);
@@ -3699,5 +3703,16 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 				emblemTexture:SetTexture("");
 			end
 		end
+	end
+end
+
+function GetDisplayedAllyFrames()
+	local useCompact = GetCVarBool("useCompactPartyFrames")
+	if ( GetNumRaidMembers() > 0 and (not IsActiveBattlefieldArena() or useCompact) ) then
+		return "raid";
+	elseif ( useCompact ) then
+		return "compact-party";
+	else
+		return "party";
 	end
 end

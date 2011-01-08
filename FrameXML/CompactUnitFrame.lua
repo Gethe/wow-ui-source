@@ -33,6 +33,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT");
 	
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
@@ -66,7 +67,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateMaxHealth(self);
 			CompactUnitFrame_UpdateHealth(self);
 			CompactUnitFrame_UpdateHealPrediction(self);
-		elseif ( event == "UNIT_HEALTH" ) then
+		elseif ( event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" ) then
 			CompactUnitFrame_UpdateHealth(self);
 			CompactUnitFrame_UpdateStatusText(self);
 			CompactUnitFrame_UpdateHealPrediction(self);

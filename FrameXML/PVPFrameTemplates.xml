@@ -282,9 +282,9 @@
 				</FontString>
 				<FontString name="$parentGames" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentGamesLabel" relativePoint="BOTTOM">
+						<Anchor point="TOP" relativeTo="$parentGamesLabel">
 							<Offset>
-								<AbsDimension x="0" y="-6"/>
+								<AbsDimension x="0" y="-18"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -303,9 +303,9 @@
 				</FontString>
 				<FontString name="$parent-" inherits="GameFontHighlightSmall" text=" - ">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentWinLossLabel" relativePoint="BOTTOM">
+						<Anchor point="TOP" relativeTo="$parentWinLossLabel">
 							<Offset>
-								<AbsDimension x="-2" y="-6"/>
+								<AbsDimension x="-2" y="-18"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -342,9 +342,9 @@
 				</FontString>
 				<FontString name="$parentPlayed" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentPlayedLabel" relativePoint="BOTTOM">
+						<Anchor point="TOP" relativeTo="$parentPlayedLabel">
 							<Offset>
-								<AbsDimension x="0" y="-6"/>
+								<AbsDimension x="0" y="-18"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

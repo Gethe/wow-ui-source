@@ -838,7 +838,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="PlayerTalentFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH" inherits="ButtonFrameTemplate">
+	<Frame name="PlayerTalentFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="MEDIUM" inherits="ButtonFrameTemplate">
 		<Size>
 			<AbsDimension x="646" y="468"/>
 		</Size>

@@ -208,7 +208,6 @@
 					<OnClick>
 						PlaySound("igCharacterInfoTab");
 						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
-						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
 				</Scripts>
@@ -242,7 +241,6 @@
 					<OnClick>
 						PlaySound("igCharacterInfoTab");
 						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
-						PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
 				</Scripts>				

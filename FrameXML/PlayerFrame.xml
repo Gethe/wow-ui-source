@@ -395,9 +395,14 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
+					<OnSizeChanged>
+						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+					</OnSizeChanged>
 				</Scripts>
 				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
+			<StatusBar name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+			<StatusBar name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
 				<Size>
 					<AbsDimension x="119" y="12"/>

@@ -391,7 +391,7 @@
 					<OnLoad>
 						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
-						PanelTemplates_TabResize(self, -15, nil, 150);
+						PanelTemplates_TabResize(self, -15, nil, nil, 150);
 					</OnLoad>
 					<OnClick>
 						PanelTemplates_SetTab(MacroFrame, self:GetID());

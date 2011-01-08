@@ -1336,6 +1336,34 @@
 			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
 		</HighlightTexture>
 	</Button>
+	<Button name="UIPanelInfoButton" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
+			</Anchors>
+			<Color r="1" g="1" b="1" a="0.4"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnMouseDown>
+				_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
 	
 	<!-- size=64,64
 	<Texture name="UI-SilverButton-Delete.png" >

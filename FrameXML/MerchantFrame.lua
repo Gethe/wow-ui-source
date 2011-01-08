@@ -461,53 +461,51 @@ end
 
 LIST_DELIMITER = ", "
 
-function MerchantFrame_ConfirmExtendedItemCost(itemButton, quantity)
+function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local index = itemButton:GetID();
-	local itemTexture, itemLink, itemsString;
-	local pointsTexture, button;
-	local itemCount = GetMerchantItemCostInfo(index);
-	if ( (itemCount == 0) ) then
-		BuyMerchantItem( itemButton:GetID(), quantity );
+	local itemsString;
+	if ( GetMerchantItemCostInfo(index) == 0 ) then
+		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
 	
 	MerchantFrame.itemIndex = index;
-	MerchantFrame.count = quantity;
+	MerchantFrame.count = numToPurchase;
 	
-	local count = itemButton.count or 1;
-	quantity = quantity or 1;
-	itemCount = (itemCount or 0) * quantity;
+	local stackCount = itemButton.count or 1;
+	numToPurchase = numToPurchase or stackCount;
 	
 	local maxQuality = 0;
 	local usingCurrency = false;
 	for i=1, MAX_ITEM_COST, 1 do
-		itemTexture, itemCount, itemLink, currencyName = GetMerchantItemCostItem(index, i);
+		local itemTexture, costItemCount, itemLink, currencyName = GetMerchantItemCostItem(index, i);
+		costItemCount = costItemCount * (numToPurchase / stackCount); -- cost per stack times number of stacks
 		if ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
-				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, itemLink);
+				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, costItemCount, itemLink);
 			else
-				itemsString = format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, itemLink);
+				itemsString = format(ITEM_QUANTITY_TEMPLATE, costItemCount, itemLink);
 			end
 		elseif ( currencyName ) then
 			usingCurrency = true;
 			if ( itemsString ) then
-				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, currencyName);
+				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			else
-				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(ITEM_QUANTITY_TEMPLATE, itemCount * quantity, currencyName);
+				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
 		end
 	end
 	
 	if ( not usingCurrency and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
-		BuyMerchantItem( itemButton:GetID(), quantity );
+		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
 	
 	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
 	local r, g, b = GetItemQualityColor(itemQuality);
-	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = count * quantity});
+	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
 end
 
 function MerchantFrame_ResetRefundItem()

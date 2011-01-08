@@ -503,7 +503,6 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameTeam:Hide();
 		WorldStateScoreFrameTeamSkill:Hide();
 		WorldStateScoreFrameDeaths:Show();
-		WorldStateScoreFrameHonorGained.sortType = "cp";
 		WorldStateScoreFrameHonorGained:Show();
 		WorldStateScoreFrameHKText:SetText(SCORE_HONORABLE_KILLS);
 		-- Reanchor some columns.
@@ -513,7 +512,10 @@ function WorldStateScoreFrame_Update()
 			WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameDeaths", "RIGHT", -5, 0);	
 			WorldStateScoreFrameHonorGainedText:SetText(BATTLEGROUND_RATING);
 			WorldStateScoreFrameHonorGained.tooltip = BATTLEGROUND_RATING;
+			WorldStateScoreFrameHonorGained.sortType = "bgrating";
+		
 			if battlefieldWinner then
+				WorldStateScoreFrameHK.sortType = "bgratingChange";
 				WorldStateScoreFrameHK:ClearAllPoints();
 				WorldStateScoreFrameHK:SetPoint("LEFT", "WorldStateScoreFrameHonorGained", "RIGHT", -5, 0);
 				WorldStateScoreFrameHKText:SetText(RATING_CHANGE);
@@ -526,7 +528,8 @@ function WorldStateScoreFrame_Update()
 			WorldStateScoreFrameHK:Show();
 			WorldStateScoreFrameHK:SetPoint("LEFT", "WorldStateScoreFrameDeaths", "RIGHT", -5, 0);
 			WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameHK", "RIGHT", -5, 0);
-			
+			WorldStateScoreFrameHonorGained.sortType = "cp";
+			WorldStateScoreFrameHK.sortType = "hk";
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_HONOR_GAINED);
 			WorldStateScoreFrameHonorGained.tooltip = HONOR_GAINED_TOOLTIP;
 			WorldStateScoreFrameHKText:SetText(SCORE_HONORABLE_KILLS);
@@ -537,7 +540,12 @@ function WorldStateScoreFrame_Update()
 	--Show the frame if its hidden and there is a victor
 	if ( battlefieldWinner ) then
 		-- Show the final score frame, set textures etc.
-		ShowUIPanel(WorldStateScoreFrame);
+		
+		if  not WorldStateScoreFrame.firstOpen then
+			ShowUIPanel(WorldStateScoreFrame);
+			WorldStateScoreFrame.firstOpen = true;
+		end
+		
 		if ( isArena ) then
 			WorldStateScoreFrameLeaveButton:SetText(LEAVE_ARENA);
 			WorldStateScoreFrameTimerLabel:SetText(TIME_TO_PORT_ARENA);
@@ -824,8 +832,9 @@ function WorldStateScoreFrame_Update()
 	-- Count number of players on each side
 	local numHorde = 0;
 	local numAlliance = 0;
-	local averageHorde = 0
-	local averageAlliance = 0
+	local averageHorde = 0;
+	local averageAlliance = 0;
+	local _
 	for i=1, numScores do
 		_, _, _, _, _, faction, _, _, _, _, _, bgRating = GetBattlefieldScore(i);	
 		if ( faction ) then

@@ -1121,11 +1121,13 @@
 									</OnUpdate>
 									<OnEscapePressed function="EditBox_ClearFocus"/>
 									<OnEditFocusGained>
+										CalendarCreateEventDescriptionScrollFrameFocusButton:Hide();
 										if ( self:GetText() == CALENDAR_EVENT_DESCRIPTION ) then
 											self:HighlightText();
 										end
 									</OnEditFocusGained>
 									<OnEditFocusLost>
+										CalendarCreateEventDescriptionScrollFrameFocusButton:Show();
 										self:HighlightText(0, 0);
 										if ( self:GetText() == "" ) then
 											self:SetText(CALENDAR_EVENT_DESCRIPTION);

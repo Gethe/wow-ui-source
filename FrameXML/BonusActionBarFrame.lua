@@ -176,7 +176,6 @@ end
 
 function ShowBonusActionBar (force)
 	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
-
 		local barType = GetBonusBarOverrideBarType() or "default";
 		local barInfo = BonusActionBarGetBarInfo(barType);
 	
@@ -197,6 +196,10 @@ function ShowBonusActionBar (force)
 			BonusActionBarFrame.microBarY = barInfo.microBarY;
 			BonusActionBarFrame.microTwoRows = barInfo.microTwoRows;
 			shownFrame.slideout:Play(); -- Slide bar out
+			if MultiBarRight:IsShown() then
+				MultiBarRight.slideout:Play(); -- Slide bar out
+			end
+			MainMenuBar.state = "bonus";
 		else
 			if shownFrame == MainMenuBar then --Bar only
 				BonusActionBarFrame.nextAnimBar = nil;
@@ -221,7 +224,8 @@ end
 
 function HideBonusActionBar (force)
 	if ( BonusActionBarFrame:IsShown() and (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
-		
+		MainMenuBar.state = "player";
+		MultiActionBar_Update();
 		local oldbarInfo = BonusActionBarGetBarInfo(BonusActionBarFrame.currentType);
 		if not oldbarInfo then return end
 		
@@ -236,6 +240,9 @@ function HideBonusActionBar (force)
 			MainMenuBar.microBarY = 2;
 			
 			BonusActionBarFrame.slideout:Play(); -- Slide main bar out
+			if MultiBarRight:IsShown() then
+				MultiBarRight.slideout:Play(true); -- Slide bar in
+			end
 		else
 			--Bar only
 			BonusActionBarFrame.nextAnimBar = nil;

@@ -269,7 +269,7 @@ end
 
 function PetStableSlot_Lock_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(LOCKED);
+	GameTooltip:SetText(PET_STABLE_SLOT_LOCKED);
 	local spellName = GetSpellInfo(CALL_PET_SPELL_IDS[self:GetParent():GetID()]);
 	if (spellName and spellName ~= "") then
 		GameTooltip:AddLine(format(PET_STABLE_SLOT_LOCKED_TOOLTIP, spellName), 1.0, 1.0, 1.0);

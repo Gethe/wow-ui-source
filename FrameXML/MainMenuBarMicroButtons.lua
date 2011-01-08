@@ -258,7 +258,8 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		-- Small hack: GetNumTalentTabs should return 0 if talents haven't been initialized yet
 		if (not self.receivedUpdate and GetNumTalentTabs(false, false) > 0) then
 			self.receivedUpdate = true;
-			if (GetUnspentTalentPoints(false, false, 1) > 0 or GetUnspentTalentPoints(false, false, 2) > 0) then
+			local activeSpec = GetActiveTalentGroup(false, false);
+			if (GetUnspentTalentPoints(false, false, activeSpec) > 0) then
 				MicroButtonPulse(self);
 			end
 		end

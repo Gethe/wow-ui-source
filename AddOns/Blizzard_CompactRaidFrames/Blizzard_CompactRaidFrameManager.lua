@@ -8,6 +8,7 @@ local RESIZE_VERTICAL_OUTSETS = 7;
 function CompactRaidFrameManager_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	self.container = CompactRaidFrameContainer;
+	self.container:SetParent(self);
 	
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
@@ -40,15 +41,12 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
 		CompactRaidFrameManager_UpdateContainerBounds(self);
 	elseif ( event == "RAID_ROSTER_UPDATE" ) then
-		if ( GetNumRaidMembers() > 0 ) then
-			self:Show();
-		else
-			self:Hide();
-		end
+		CompactRaidFrameManager_UpdateShown(self);
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 	elseif ( event == "UNIT_FLAGS" ) then
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		CompactRaidFrameManager_UpdateShown(self);
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 		CompactRaidFrameManager_UpdateLeaderButtonsShown(self);
 		CompactRaidFrameManager_UpdateRaidIcons();
@@ -58,6 +56,14 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		CompactRaidFrameManager_UpdateRaidIcons();
+	end
+end
+
+function CompactRaidFrameManager_UpdateShown(self)
+	if ( GetDisplayedAllyFrames() == "raid" ) then
+		self:Show();
+	else
+		self:Hide();
 	end
 end
 
@@ -100,25 +106,32 @@ function CompactRaidFrameManager_UpdateLeaderButtonsShown(self)
 end
 
 local function RaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	PlaceRaidMarker(arg1, arg2);
+	if ( checked ) then
+		ClearRaidMarker(arg1);
+	else
+		PlaceRaidMarker(arg1);
+	end
 end
 
 local function ClearRaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	ClearRaidMarker(arg1);
+	ClearRaidMarker();
 end
 
 function CRFManager_RaidWorldMarkerDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 	
-	info.notCheckable = 1;
+	info.isNotRadio = true;
 	
 	for i=1, NUM_WORLD_RAID_MARKERS do
 		info.text = _G["WORLD_MARKER"..i];
 		info.func = RaidWorldMarker_OnClick;
+		info.checked = IsRaidMarkerActive(i);
 		info.arg1 = i;
 		UIDropDownMenu_AddButton(info);
 	end
 
+		
+	info.notCheckable = 1;
 	info.text = REMOVE_WORLD_MARKERS;
 	info.func = ClearRaidWorldMarker_OnClick;
 	info.arg1 = nil;	--Remove everything

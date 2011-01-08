@@ -69,18 +69,34 @@
 	
 	
 	
-	<Button name="ArchaeologyRaceTemplate" id="" virtual="true">
+	<Button name="ArchaeologyRaceTemplate" id="" virtual="true" alpha="0.83">
 		<Size x="82" y="93"/>
 		<Layers>
 			<Layer>
 				<FontString inherits="SystemFont_Med1" justifyH="CENTER" text="RACES" parentKey="raceName">
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-15"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="6"/>
 					</Anchors>
 					<Color r="0.25" g="0.13" b="0"/>
 				</FontString>
+				<Texture name="$parentGlow" parentKey="glow" file="Interface\Archeology\Arch-TempLogo" alphaMode="ADD" alpha="0">
+					<Size x="82" y="93"/>
+					<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
+					<Color r="0.5" g="0.5" b="0.7" a="0.1"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
+		
+		<Animations>
+			<AnimationGroup parentKey="readyAnim" looping="REPEAT">
+				<Alpha target="$parentGlow" change="1.0" duration="0.9" order="1"/>
+				<Alpha target="$parentGlow" change="-1.0" duration="0.9" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		
 		<NormalTexture file="Interface\Archeology\Arch-TempLogo">
 			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
 		</NormalTexture>
@@ -95,12 +111,12 @@
 			</OnClick>
 			<OnDisable>
 				SetDesaturation(self:GetNormalTexture(), true);
-				self:GetNormalTexture():SetAlpha(0.6);
+				self:SetAlpha(0.5);
 				self.raceName:SetText("");
 			</OnDisable>
 			<OnEnable>
 				SetDesaturation(self:GetNormalTexture(), false);
-				self:GetNormalTexture():SetAlpha(1.0);
+				self:SetAlpha(0.83);
 			</OnEnable>
 		</Scripts>
 	</Button>	
@@ -216,7 +232,7 @@
 	
 	
 
-	<Frame name="ArchaeologyFrame" toplevel="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" framestrata="HIGH">
+	<Frame name="ArchaeologyFrame" toplevel="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" framestrata="MEDIUM">
 		<Size x="550" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -877,34 +893,11 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Button name="$parentInfoButton" parentKey="infoButton" id="0">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>	
+			<Button name="$parentInfoButton" inherits="UIPanelInfoButton" parentKey="infoButton" id="0">
 				<Anchors>
 					<Anchor point="TOPLEFT"  x="60" y="-3" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</HighlightTexture>
 				<Scripts>
-					<OnMouseDown>
-						_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 1, -1);
-					</OnMouseDown>
-					<OnMouseUp>
-						_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
-					</OnMouseUp>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self);
 						PlaySound("igSpellBookOpen");

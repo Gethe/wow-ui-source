@@ -174,14 +174,12 @@ function CharacterFrame_TabBoundsCheck(self)
 		return;
 	end
 	
-	local totalSize = 60;
 	for i=1, NUM_CHARACTERFRAME_TABS do
 		_G["CharacterFrameTab"..i.."Text"]:SetWidth(0);
-		PanelTemplates_TabResize(_G["CharacterFrameTab"..i], 0);
-		totalSize = totalSize + _G["CharacterFrameTab"..i]:GetWidth();
+		PanelTemplates_TabResize(_G["CharacterFrameTab"..i], 0, nil, 36, 88);
 	end
 	
-	local diff = totalSize - 465
+	local diff = _G["CharacterFrameTab"..NUM_CHARACTERFRAME_TABS]:GetRight() - CharacterFrame:GetRight();
 	
 	if ( diff > 0 and CharacterFrameTab4:IsShown() and CharacterFrameTab2:IsShown()) then
 		--Find the biggest tab
@@ -194,9 +192,9 @@ function CharacterFrame_TabBoundsCheck(self)
 		while ( diff > 0 and i <= NUM_CHARACTERFRAME_TABS) do
 			local tabText = _G[CharTabtable[i]:GetName().."Text"]
 			local change = min(10, diff);
-			tabText:SetWidth(tabText:GetWidth() - change);
 			diff = diff - change;
-			PanelTemplates_TabResize(CharTabtable[i], 0);
+			tabText:SetWidth(0);
+			PanelTemplates_TabResize(CharTabtable[i], -change, nil, 36-change, 88);
 			i = i+1;
 		end
 	end

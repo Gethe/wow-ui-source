@@ -213,7 +213,8 @@ function TalentFrame_Update(TalentFrame)
 					GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
 				if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
 					SetItemButtonDesaturated(button, nil);
-					
+					button:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
+					button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD");
 					button.RankBorder:Show();
 					button.RankBorder:SetVertexColor(1, 1, 1);
 					button.Rank:Show();
@@ -262,6 +263,8 @@ function TalentFrame_Update(TalentFrame)
 					end
 				else
 					SetItemButtonDesaturated(button, 1);
+					button:SetPushedTexture(nil);
+					button:SetHighlightTexture(nil);
 					button.GoldBorder:SetDesaturated(1);
 					button.Slot:SetVertexColor(0.5, 0.5, 0.5);
 					if ( rank == 0 ) then

@@ -17,7 +17,6 @@ function GuildInfoFrame_OnLoad(self)
 	end
 	self:RegisterEvent("GUILD_MOTD");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	GuildInfoFrame_UpdateText();
 
 	local fontString = GuildInfoEditMOTDButton:GetFontString();
 	GuildInfoEditMOTDButton:SetHeight(fontString:GetHeight() + 4);
@@ -41,35 +40,44 @@ function GuildInfoFrame_OnEvent(self, event, arg1)
 	if ( event == "GUILD_MOTD" ) then
 		GuildInfoMOTD:SetText(arg1);
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
-		if ( CanEditMOTD() ) then
-			GuildInfoEditMOTDButton:Show();
-		else
-			GuildInfoEditMOTDButton:Hide();
-		end
-		if ( CanEditGuildInfo() ) then
-			GuildInfoEditDetailsButton:Show();
-		else
-			GuildInfoEditDetailsButton:Hide();
-		end
-		if ( CanEditGuildEvent() ) then
-			GuildInfoEditEventButton:Show();
-		else
-			GuildInfoEditEventButton:Hide();
-		end
+		GuildInfoFrame_UpdatePermissions();
 		GuildInfoFrame_UpdateText();
 	end
 end
 
 function GuildInfoFrame_OnShow()
 	GuildInfoEvents_Update();
+	GuildInfoFrame_UpdatePermissions();	
+	GuildInfoFrame_UpdateText();
+end
+
+function GuildInfoFrame_UpdatePermissions()
+	if ( CanEditMOTD() ) then
+		GuildInfoEditMOTDButton:Show();
+	else
+		GuildInfoEditMOTDButton:Hide();
+	end
+	if ( CanEditGuildInfo() ) then
+		GuildInfoEditDetailsButton:Show();
+	else
+		GuildInfoEditDetailsButton:Hide();
+	end
+	if ( CanEditGuildEvent() ) then
+		GuildInfoEditEventButton:Show();
+	else
+		GuildInfoEditEventButton:Hide();
+	end
 end
 
 function GuildInfoFrame_UpdateText(infoText)
 	GuildInfoMOTD:SetText(GetGuildRosterMOTD());
 	if ( infoText ) then
 		GuildInfoFrame.cachedInfoText = infoText;
+		GuildInfoFrame.cacheExpiry = GetTime() + 10;
 	else
-		GuildInfoFrame.cachedInfoText = GetGuildInfoText();
+		if ( not GuildInfoFrame.cacheExpiry or GetTime() > GuildInfoFrame.cacheExpiry ) then 
+			GuildInfoFrame.cachedInfoText = GetGuildInfoText();
+		end
 	end
 	GuildInfoDetails:SetText(GuildInfoFrame.cachedInfoText);
 	GuildInfoDetailsFrame:SetVerticalScroll(0);

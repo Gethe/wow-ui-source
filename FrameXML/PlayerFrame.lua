@@ -4,7 +4,8 @@ function PlayerFrame_OnLoad(self)
 	UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
 						 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
 						 PlayerFrameManaBar, PlayerFrameManaBarText,
-						 PlayerFrameFlash);
+						 PlayerFrameFlash, nil, nil,
+						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar);
 						 
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -135,6 +136,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerFrame_UpdatePvPStatus();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		PlayerFrame_ResetPosition(self);
 		PlayerFrame_ToPlayerArt(self);
 --		if ( UnitHasVehicleUI("player") ) then
 --			UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
@@ -257,6 +259,13 @@ end
 
 local function PlayerFrame_AnimPos(self, fraction)
 	return "TOPLEFT", UIParent, "TOPLEFT", -19, fraction*140-4;
+end
+
+function PlayerFrame_ResetPosition(self)
+	CancelAnimations(PlayerFrame);
+	self:SetPoint(PlayerFrame_AnimPos(self, 0));
+	self.inSequence = false;
+	PetFrame_Update(PetFrame);
 end
 
 local PlayerFrameAnimTable = {

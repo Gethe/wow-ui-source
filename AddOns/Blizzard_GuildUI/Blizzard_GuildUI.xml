@@ -6,6 +6,86 @@
 	Templates
 *******************************************************************************
 -->
+	<Frame name="GuildProgressBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="264" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBG" file="Interface\GuildFrame\GuildFrame">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="0" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.39843750" right="0.41210938" top="0.96875000" bottom="0.99609375"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="progress">
+					<Size x="1" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
+					</Anchors>
+					<Color r="0.224" g="0.396" b="0.839"/>
+				</Texture>
+				<Texture name="$parentShadow" file="Interface\GuildFrame\GuildFrame" parentKey="shadow">
+					<Size x="9" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
+				</Texture>
+				<Texture name="$parentCap" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" hidden="true" parentKey="cap">
+					<Size x="20" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="0.245" b="0.094" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentCapMarker" file="Interface\GuildFrame\GuildFrame" hidden="true" parentKey="capMarker">
+					<Size x="9" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCap" relativePoint="RIGHT" x="-4" y="0"/>
+					</Anchors>
+					<TexCoords left="0.38378906" right="0.39257813" top="0.95898438" bottom="0.99804688"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<Button name="GuildPerksButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="284" y="44"/>
@@ -525,7 +605,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="GuildXPBar">
+					<Frame name="GuildXPBar" inherits="GuildProgressBarTemplate">
 						<Size>
 							<AbsDimension x="264" y="20"/>
 						</Size>
@@ -534,27 +614,6 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
-									<Size x="18" y="18"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
-								</Texture>
-								<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
-									<Size x="18" y="18"/>
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
-								</Texture>
-								<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
-								</Texture>
 								<Texture name="$parentDivider1" file="Interface\GuildFrame\GuildFrame">
 									<Size x="7" y="14"/>
 									<Anchors>
@@ -584,55 +643,6 @@
 									<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
 								</Texture>
 							</Layer>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBG" file="Interface\GuildFrame\GuildFrame">
-									<Size x="0" y="14"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="0" y="0"/>
-										<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="RIGHT" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.39843750" right="0.41210938" top="0.96875000" bottom="0.99609375"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="1">
-								<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar">
-									<Size x="1" y="14"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
-									</Anchors>
-									<Color r="0.224" g="0.396" b="0.839"/>
-								</Texture>
-								<Texture name="$parentShadow" file="Interface\GuildFrame\GuildFrame">
-									<Size x="9" y="14"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
-								</Texture>
-								<Texture name="$parentCap" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" hidden="true">
-									<Size x="20" y="14"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
-									</Anchors>
-									<Color r="0" g="0.245" b="0.094" a="0.5"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name="$parentCapMarker" file="Interface\GuildFrame\GuildFrame" hidden="true">
-									<Size x="9" y="20"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentCap" relativePoint="RIGHT" x="-4" y="0"/>
-									</Anchors>
-									<TexCoords left="0.38378906" right="0.39257813" top="0.95898438" bottom="0.99804688"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK" textureSubLevel="1">
-								<FontString name="$parentText" inherits="GameFontHighlightSmall">
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="4"/>
-									</Anchors>
-								</FontString>
-							</Layer>
 						</Layers>
 						<Scripts>
 							<OnLoad function="GuildXPBar_OnLoad"/>
@@ -644,7 +654,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<StatusBar name="GuildFactionBar" drawLayer="BORDER">
+			<Frame name="GuildFactionFrame">
 				<Size>
 					<AbsDimension x="170" y="16"/>
 				</Size>
@@ -652,38 +662,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentBottomInset" relativePoint="BOTTOMLEFT" x="6" y="-21"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBG" file="Interface\GuildFrame\GuildFrame">
-							<Size x="0" y="12"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="0" y="0"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.39843750" right="0.41210938" top="0.96875000" bottom="0.99609375"/>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-1" y="0"/>
-							</Anchors>
-							<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="1" y="0"/>
-							</Anchors>
-							<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
-						</Texture>
 						<FontString name="$parentLabel" inherits="GameFontHighlightSmall" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="1"/>
@@ -701,31 +680,36 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="0.224" g="0.396" b="0.839"/>
 				<Frames>
-					<Button name="$parentButton">
+					<Frame name="GuildFactionBar" inherits="GuildProgressBarTemplate">
+						<Size>
+							<AbsDimension x="184" y="20"/>
+						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT"/>
+							<Anchor point="TOPLEFT" x="-1" y="2"/>
 						</Anchors>
-						<Scripts>
-							<OnEnter>
-								GuildFactionBarLabel:Show();
-								local name, description = GetGuildFactionInfo();
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(GUILD_REPUTATION);
-								GameTooltip:AddLine(description, 1, 1, 1, 1, 1);
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GuildFactionBarLabel:Hide();
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</Button>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentLabel" inherits="GameFontHighlightSmall" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
-			</StatusBar>
+				<Scripts>
+					<OnLoad>
+						GuildFactionBar:SetScale(0.92);
+					</OnLoad>
+					<OnEnter function="GuildFactionBar_OnEnter"/>
+					<OnLeave>
+						GuildFactionBarLabel:Hide();
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="GuildFrame_OnLoad"/>

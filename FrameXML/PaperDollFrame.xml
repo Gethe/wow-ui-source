@@ -202,9 +202,6 @@
 	</CheckButton>	
 	
     <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
-        <HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
-		</HitRectInsets>
 		<Layers>
             <Layer level="ARTWORK">
                 <FontString name="CharacterLevelText" inherits="GameFontNormalSmall" text="Level level race class">
@@ -212,24 +209,6 @@
                         <Anchor point="TOP">
                             <Offset>
                                 <AbsDimension x="0" y="-27"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </FontString>
-                <FontString name="CharacterTitleText" inherits="GameFontNormalSmall" text="title of the player" hidden="true">
-                    <Anchors>
-                        <Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
-                            <Offset>
-                                <AbsDimension x="0" y="-1"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </FontString>
-                <FontString name="CharacterGuildText" inherits="GameFontNormalSmall">
-                    <Anchors>
-                        <Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
-                            <Offset>
-                                <AbsDimension x="0" y="-1"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -832,14 +811,14 @@
 						</Texture>
 					</Layer>	
 					<Layer level="ARTWORK">
-						<FontString inherits="GameFontHighlightSmall" text="GEARSETS_POPUP_TEXT">
+						<FontString inherits="GameFontHighlightSmall" text="GEARSETS_POPUP_TEXT" name="$parentNameText">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="24" y="-21"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON" name="$parentChooseIconText">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="24" y="-69"/>

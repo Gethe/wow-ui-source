@@ -62,14 +62,14 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate" text="YES">
+					<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate2" text="READY">
 						<Size>
-							<AbsDimension x="109" y="24"/>
+							<AbsDimension x="119" y="24"/>
 						</Size>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
+							<Anchor point="TOPRIGHT" relativePoint="TOP">
 								<Offset>
-									<AbsDimension x="55" y="18"/>
+									<AbsDimension x="13" y="-55"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -80,14 +80,14 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate" text="NO">
+					<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate2" text="NOT_READY">
 						<Size>
-							<AbsDimension x="109" y="24"/>
+							<AbsDimension x="119" y="24"/>
 						</Size>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="ReadyCheckFrameYesButton" relativePoint="RIGHT">
+							<Anchor point="TOPLEFT" relativePoint="TOP">
 								<Offset>
-									<AbsDimension x="0" y="0"/>
+									<AbsDimension x="17" y="-55"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

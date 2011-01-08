@@ -281,7 +281,7 @@ function BuffButton_OnClick(self)
 end
 
 function BuffFrame_UpdateAllBuffAnchors()
-	local buff, previousBuff, aboveBuff;
+	local buff, previousBuff, aboveBuff, index;
 	local numBuffs = 0;
 	local slack = BuffFrame.numEnchants
 	if ( BuffFrame.numConsolidated > 0 ) then

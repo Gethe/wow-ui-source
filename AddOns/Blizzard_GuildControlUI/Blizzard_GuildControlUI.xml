@@ -690,12 +690,24 @@
 							</OnEscapePressed>
 						</Scripts>
 					</EditBox>
-					
+					<!-- authenticator checkbox -->
 					<CheckButton name="$parentCheckbox18" inherits="GuildPermissionCheckBoxTemplate" id="18">
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-37"/>
 							<Anchor point="LEFT" relativeTo="$parentCheckbox1"/>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( not self:GetChecked() and GetNumMembersInRank(GuildControlUI.currentRank) > 0 ) then
+									self:SetChecked(true);
+									local dialog = StaticPopup_Show("CONFIRM_RANK_AUTHENTICATOR_REMOVE", 
+										string.format(REMOVE_AUTHENTICATOR_FROM_RANK, GuildControlGetRankName(GuildControlUI.currentRank)));
+									dialog.data = self;
+								else
+									GuildControlUI_CheckClicked(self);
+								end
+							</OnClick>
+						</Scripts>
 					</CheckButton>
 					<Frame name="$parentCheckbox18Tooltip" enableMouse="true">
 						<Size x="0" y="20"/>
@@ -722,6 +734,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
+					<!-- authenticator checkbox -->
 				</Frames>
 			</Frame>
 		</Frames>  
@@ -733,6 +746,7 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnShow>
 			<OnHide>
+				StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
 				GuildControlButton:UnlockHighlight();
 				PlaySound("igMainMenuOptionCheckBoxOff");
 			</OnHide>

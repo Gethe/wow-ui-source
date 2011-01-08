@@ -217,7 +217,6 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
-	self:RegisterEvent("QUEST_AUTOCOMPLETE_SOUND");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
@@ -289,9 +288,9 @@ function WatchFrame_OnEvent (self, event, ...)
 		WATCHFRAME_FILTER_TYPE = tonumber(GetCVar("trackerFilter"));
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
 		local questId = ...;
-		WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE");
-	elseif ( event == "QUEST_AUTOCOMPLETE_SOUND") then
-		PlaySound("UI_AutoQuestComplete");
+		if (WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE")) then
+			PlaySound("UI_AutoQuestComplete");
+		end
 	end
 end
 
@@ -709,7 +708,12 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 							end
 							if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
 								-- progress bar
-								criteriaString = quantityString;
+								if ( string.find(strlower(quantityString), "interface\\moneyframe") ) then	-- no easy way of telling it's a money progress bar
+									criteriaString = quantityString.."\n"..description;
+								else
+									-- remove spaces so it matches the quest look, x/y
+									criteriaString = string.gsub(quantityString, " / ", "/").." "..description;
+								end
 							else
 								-- regular criteria
 								-- no need to do anything, criteriaString and dash are already set				
@@ -803,7 +807,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local numPOICompleteIn = 0;
 	local numPOICompleteOut = 0;
 	
-	local text, finished;
+	local text, finished, objectiveType;
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID;
@@ -879,16 +883,17 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 				lastLine = questTitle;
 				
 				if ( isComplete ) then
+					local showItem = item and showItemWhenComplete;
 					if (GetQuestLogIsAutoComplete(questIndex)) then
 						line = WatchFrame_GetQuestLine();
-						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_QUEST_COMPLETE, DASH_HIDE, nil, true);
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_QUEST_COMPLETE, DASH_HIDE, showItem, true);
 						lastLine = line;
 						line = WatchFrame_GetQuestLine();
-						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_CLICK_TO_COMPLETE, DASH_HIDE, nil, true);
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, QUEST_WATCH_CLICK_TO_COMPLETE, DASH_HIDE, showItem, true);
 						lastLine = line;
 					else
 						line = WatchFrame_GetQuestLine();
-						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, showItem, true);
 						lastLine = line;
 					end
 				elseif ( questFailed ) then
@@ -1707,9 +1712,12 @@ function WatchFrameAutoQuest_SlideIn(frame, slideInTime)
 end
 
 function WatchFrameAutoQuest_AddPopUp(questId, type)
-	AddAutoQuestPopUp(questId, type);
-	WatchFrame_Update(WatchFrame);
-	WatchFrame_Expand(WatchFrame);
+	if (AddAutoQuestPopUp(questId, type)) then
+		WatchFrame_Update(WatchFrame);
+		WatchFrame_Expand(WatchFrame);
+		return true;
+	end
+	return false;
 end
 
 function WatchFrameAutoQuest_ClearPopUp(questId)

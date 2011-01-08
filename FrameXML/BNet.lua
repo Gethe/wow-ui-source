@@ -31,7 +31,7 @@ function BNet_OnEvent(self, event, ...)
 	elseif ( event == "BN_DISCONNECTED" ) then
 		table.wipe(BNToasts);
 	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVar("conversationMode") == "popout" ) then
+		if ( GetCVar("conversationMode") == "popout" or GetCVar("conversationMode") == "popout_and_inline" ) then
 			BNet_ReopenClosedConversations();
 		end
 		self:UnregisterEvent("VARIABLES_LOADED");
@@ -119,16 +119,19 @@ function BNToastFrame_Show()
 	local toastData = BNToasts[1].toastData;
 	tremove(BNToasts, 1);
 	local topLine = BNToastFrameTopLine;
+	local middleLine = BNToastFrameMiddleLine;
 	local bottomLine = BNToastFrameBottomLine;
 	if ( toastType == BN_TOAST_TYPE_NEW_INVITE ) then
 		BNToastFrameIconTexture:SetTexCoord(0.75, 1, 0, 0.5);
 		topLine:Hide();
+		middleLine:Hide();
 		bottomLine:Hide();
 		BNToastFrameDoubleLine:Show();
 		BNToastFrameDoubleLine:SetText(BN_TOAST_NEW_INVITE);
 	elseif ( toastType == BN_TOAST_TYPE_PENDING_INVITES ) then
 		BNToastFrameIconTexture:SetTexCoord(0.75, 1, 0, 0.5);
 		topLine:Hide();
+		middleLine:Hide();
 		bottomLine:Hide();
 		BNToastFrameDoubleLine:Show();
 		BNToastFrameDoubleLine:SetFormattedText(BN_TOAST_PENDING_INVITES, toastData);
@@ -138,6 +141,21 @@ function BNToastFrame_Show()
 		if ( not givenName or not surname ) then
 			return;
 		end
+		
+		local _, toonName, client = BNGetToonInfo(presenceID);
+		if (toonName and toonName ~= "") then
+			if ( client == BNET_CLIENT_WOW ) then
+				toonName = "|TInterface\\FriendsFrame\\Battlenet-WoWicon:0|t"..toonName;
+			elseif ( client == BNET_CLIENT_SC2 ) then
+				toonName = "|TInterface\\FriendsFrame\\Battlenet-Sc2icon:0|t"..toonName;
+			end
+			middleLine:SetFormattedText(toonName);
+			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+			middleLine:Show();
+		else
+			middleLine:Hide();
+		end
+		
 		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
 		topLine:SetFormattedText(BATTLENET_NAME_FORMAT, givenName, surname);
@@ -160,6 +178,7 @@ function BNToastFrame_Show()
 		bottomLine:SetText(BN_TOAST_OFFLINE);
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 		BNToastFrameDoubleLine:Hide();
+		middleLine:Hide();
 	elseif ( toastType == BN_TOAST_TYPE_CONVERSATION ) then
 		BNToastFrameIconTexture:SetTexCoord(0.5, 0.75, 0, 0.5);
 		topLine:Show();
@@ -169,6 +188,7 @@ function BNToastFrame_Show()
 		bottomLine:SetText("["..string.format(CONVERSATION_NAME, MAX_WOW_CHAT_CHANNELS + toastData).."]");
 		bottomLine:SetTextColor(ChatTypeInfo["BN_CONVERSATION"].r, ChatTypeInfo["BN_CONVERSATION"].g, ChatTypeInfo["BN_CONVERSATION"].b);
 		BNToastFrameDoubleLine:Hide();
+		middleLine:Hide();
 	elseif ( toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText = BNGetFriendInfoByID(toastData);
 		if ( not messageText or messageText == "" ) then
@@ -187,6 +207,15 @@ function BNToastFrame_Show()
 		end
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 		BNToastFrameDoubleLine:Hide();
+		middleLine:Hide();
+	end
+	
+	if (middleLine:IsShown() and bottomLine:IsShown()) then
+		bottomLine:SetPoint("TOPLEFT", middleLine, "BOTTOMLEFT", 0, -4);
+		BNToastFrame:SetHeight(63);
+	else
+		bottomLine:SetPoint("TOPLEFT", topLine, "BOTTOMLEFT", 0, -4);
+		BNToastFrame:SetHeight(50);
 	end
 
 	local frame = BNToastFrame;
@@ -308,8 +337,8 @@ end
 
 function SynchronizeBNetStatus()
 	if ( BNFeaturesEnabledAndConnected() ) then
-		local wowAFK = (UnitIsAFK("player") == 1);
-		local wowDND = (UnitIsDND("player") == 1);
+		local wowAFK = (IsChatAFK());
+		local wowDND = (IsChatDND());
 		local _, _, _, bnetAFK, bnetDND = BNGetInfo();
 		if ( wowAFK ~= bnetAFK ) then
 			BNSetAFK(wowAFK);
@@ -327,7 +356,7 @@ function BNet_InitiateReport(presenceID, reportType)
 	end
 	CloseDropDownMenus();
 	-- set up
-	local fullName;
+	local fullName, givenName, surname;
 	if ( not presenceID ) then
 		-- invite
 		presenceID, givenName, surname = BNGetFriendInviteInfo(UIDROPDOWNMENU_MENU_VALUE);

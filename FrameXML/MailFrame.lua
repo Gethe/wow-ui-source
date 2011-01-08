@@ -89,7 +89,7 @@ function MailFrame_OnEvent(self, event, ...)
 	elseif ( event == "MAIL_LOCK_SEND_ITEMS" ) then
 		local slotNum, itemLink = ...;
 		SendMailFrameLockSendMail:Show();
-		itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
+		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
 		local r, g, b = GetItemQualityColor(itemRarity)
 		StaticPopup_Show("CONFIRM_MAIL_ITEM_UNREFUNDABLE", nil, nil, {["texture"] = itemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["slot"] = slotNum});
 	elseif ( event == "MAIL_UNLOCK_SEND_ITEMS") then

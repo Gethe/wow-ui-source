@@ -79,10 +79,15 @@ function GuildFrame_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_FACTION" ) then
 		GuildFrame_UpdateFaction();
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
-		GuildFrame_CheckPermissions();
-		GuildFrame_UpdateTabard();
-		if ( not IsInGuild() and self:IsShown() ) then
-			HideUIPanel(self);
+		if ( IsInGuild() ) then
+			local guildName = GetGuildInfo("player");
+			GuildFrameTitleText:SetText(guildName);
+			GuildFrame_CheckPermissions();
+			GuildFrame_UpdateTabard();
+		else
+			if ( self:IsShown() ) then
+				HideUIPanel(self);
+			end
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		QueryGuildXP();
@@ -111,22 +116,20 @@ end
 
 function GuildFrame_UpdateXP()
 	local currentXP, nextLevelXP, dailyXP, maxDailyXP = UnitGetGuildXP("player");
-	GuildXPBar_SetProgress(currentXP, nextLevelXP + currentXP, maxDailyXP - dailyXP);
+	GuildBar_SetProgress(GuildXPBar, currentXP, nextLevelXP + currentXP, maxDailyXP - dailyXP);
 end
 
 function GuildFrame_UpdateFaction()
-	local factionBar = GuildFactionBar;
+	local factionBar = GuildFactionFrame;
 	local gender = UnitSex("player");
-	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	local name, description, standingID, barMin, barMax, barValue, _, _, _, _, _, _, _, repToCap, weeklyCap = GetGuildFactionInfo();
 	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
 	--Normalize Values
 	barMax = barMax - barMin;
 	barValue = barValue - barMin;
-	barMin = 0;
 	GuildFactionBarLabel:SetText(barValue.." / "..barMax);
-	GuildFactionBarStanding:SetText(factionStandingtext);
-	factionBar:SetMinMaxValues(0, barMax);
-	factionBar:SetValue(barValue);
+	GuildFactionFrameStanding:SetText(factionStandingtext);
+	GuildBar_SetProgress(GuildFactionBar, barValue, barMax, repToCap);
 end
 
 function GuildFrame_UpdateTabard()
@@ -159,6 +162,7 @@ function GuildFrame_OpenAchievement(button, achievementID)
 end
 
 function GuildFrame_LinkItem(button, itemID, itemLink)
+	local _;
 	if ( not itemLink ) then
 		_, itemLink = GetItemInfo(itemID);
 	end
@@ -259,7 +263,7 @@ function GuildFrame_TabClicked(self)
 		-- inset changes are in GuildMainFrame_OnShow()
 		GuildFrameBottomInset:Show();
 		GuildXPFrame:Show();
-		GuildFactionBar:Show();
+		GuildFactionFrame:Show();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
@@ -272,7 +276,7 @@ function GuildFrame_TabClicked(self)
 		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Hide();
-		GuildFactionBar:Hide();
+		GuildFactionFrame:Hide();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
@@ -285,7 +289,7 @@ function GuildFrame_TabClicked(self)
 		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Show();
-		GuildFactionBar:Hide();
+		GuildFactionFrame:Hide();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
@@ -298,7 +302,7 @@ function GuildFrame_TabClicked(self)
 		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 44);
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Hide();
-		GuildFactionBar:Show();
+		GuildFactionFrame:Show();
 		GuildAddMemberButton:Hide();
 		GuildControlButton:Hide();
 		GuildViewLogButton:Hide();
@@ -311,7 +315,7 @@ function GuildFrame_TabClicked(self)
 		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Hide();
-		GuildFactionBar:Hide();
+		GuildFactionFrame:Hide();
 		GuildAddMemberButton:Show();
 		GuildControlButton:Show();
 		GuildViewLogButton:Show();
@@ -325,7 +329,7 @@ function GuildFrame_TabClicked(self)
 	end
 end
 
---****** XP Bar *****************************************************************
+--****** Progress Bars **********************************************************
 
 function GuildXPBar_OnLoad()
 	local MAX_BAR = GuildXPBar:GetWidth();
@@ -353,26 +357,58 @@ function GuildXPBar_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function GuildXPBar_SetProgress(currentValue, maxValue, capValue)
-	local MAX_BAR = GuildXPBar:GetWidth() - 4;
-	local progress = min(MAX_BAR * currentValue / maxValue, MAX_BAR);
+function GuildFactionBar_OnEnter(self)
+	local name, description, standingID, barMin, barMax, barValue, _, _, _, _, _, _, _, repToCap, weeklyCap = GetGuildFactionInfo();
+	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	--Normalize Values
+	barMax = barMax - barMin;
+	barValue = barValue - barMin;
 	
-	GuildXPBarProgress:SetWidth(progress + 1);
-	if ( capValue + currentValue > maxValue ) then
+	GuildFactionBarLabel:Show();
+	local name, description = GetGuildFactionInfo();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(GUILD_REPUTATION);
+	GameTooltip:AddLine(description, 1, 1, 1, 1, 1);
+	GameTooltip:AddLine("\n"..GUILD_REPUTATION_CAP, 1, 1, 1, 1, 1);
+	local percentTotal = tostring(math.ceil((barValue / barMax) * 100));
+	GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_CURRENT, TextStatusBar_CapDisplayOfNumericValue(barValue), TextStatusBar_CapDisplayOfNumericValue(barMax), percentTotal));
+	local weeklyRep = weeklyCap - repToCap;
+	local percentWeekly = tostring(math.ceil((weeklyRep / weeklyCap) * 100));
+	GameTooltip:AddLine(string.format(GUILD_REPUTATION_WEEKLY, TextStatusBar_CapDisplayOfNumericValue(weeklyRep), TextStatusBar_CapDisplayOfNumericValue(weeklyCap), percentWeekly));	
+	GameTooltip:Show();
+end
+
+function GuildBar_SetProgress(bar, currentValue, maxValue, capValue)
+	local MAX_BAR = bar:GetWidth() - 4;
+	local progress = min(MAX_BAR * currentValue / maxValue, MAX_BAR);
+	local capAtEdge;
+	bar.progress:SetWidth(progress + 1);
+	if ( capValue + currentValue >= maxValue ) then
 		capValue = maxValue - currentValue;
+		capAtEdge = true;
 	end
 	local capWidth = MAX_BAR * capValue / maxValue;
 	if ( capWidth > 0 ) then
-		GuildXPBarCap:SetWidth(capWidth);
-		GuildXPBarCap:Show();
-		GuildXPBarCapMarker:Show();
+		bar.cap:SetWidth(capWidth);
+		bar.cap:Show();
+		-- don't show cap marker if cap goes all the way to the end
+		if ( capAtEdge ) then
+			bar.capMarker:Hide();
+		else
+			bar.capMarker:Show();
+		end
 	else
-		GuildXPBarCap:Hide();
-		GuildXPBarCapMarker:Hide();
+		bar.cap:Hide();
+		bar.capMarker:Hide();
+	end
+	-- hide shadow on progress bar near the right edge
+	if ( progress > MAX_BAR - 4 ) then
+		bar.shadow:Hide();
+	else
+		bar.shadow:Show();
 	end
 	currentValue = TextStatusBar_CapDisplayOfNumericValue(currentValue);
 	maxValue = TextStatusBar_CapDisplayOfNumericValue(maxValue);
-	--GuildXPBarText:SetText(currentValue.."/"..maxValue);
 end
 
 --*******************************************************************************
@@ -529,6 +565,7 @@ function GuildMainFrame_UpdatePerks()
 		GuildNextPerkButtonName:SetText(name);
 		GuildNextPerkButtonLabel:SetFormattedText(GUILD_NEXT_PERK_LEVEL, guildLevel + 1);
 		GuildNextPerkButton.spellID = spellID;
+		GuildNextPerkButton:Show();
 	end
 	GuildPerks_Update();
 end

@@ -460,7 +460,7 @@ function UIDropDownMenu_AddButton(info, level)
 end
 
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
-	local button, checked, checkImage, normalText, width;
+	local button, checked, checkImage, uncheckImage, normalText, width;
 	local maxWidth = 0;
 	local somethingChecked = nil; 
 	if ( not dropdownLevel ) then
@@ -927,7 +927,7 @@ function UIDropDownMenu_ClearAll(frame)
 	frame.selectedValue = nil;
 	UIDropDownMenu_SetText(frame, "");
 
-	local button, checkImage;
+	local button, checkImage, uncheckImage;
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
 		button = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i];
 		button:UnlockHighlight();

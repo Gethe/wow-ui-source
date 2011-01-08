@@ -669,6 +669,11 @@ function GuildBankFrame_UpdateWithdrawMoney()
 			amount = GetGuildBankMoney();
 		end
 		withdrawLimit = min(withdrawLimit, amount);
+		if ( withdrawLimit == 0 ) then
+			GuildBankFrameWithdrawButton:Disable();
+		else
+			GuildBankFrameWithdrawButton:Enable();
+		end
 		MoneyFrame_Update("GuildBankWithdrawMoneyFrame", withdrawLimit);
 		GuildBankMoneyUnlimitedLabel:Hide();
 		GuildBankWithdrawMoneyFrame:Show();

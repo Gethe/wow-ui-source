@@ -7,7 +7,7 @@ LEVEL_UP_EVENTS = {
 	[10] = {"TalentsUnlocked", "BGsUnlocked"},
 	[15] = {"LFDUnlocked",},
 	[25] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
-	[40] = {"DuelSpec"},
+	[30] = {"DuelSpec"},
 	[50] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
 	[75] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
 }

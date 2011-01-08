@@ -76,6 +76,7 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 		if ( AchievementFrame:IsShown() and AchievementFrame.selectedTab == 1 ) then
 			HideUIPanel(AchievementFrame);
 		else
+			AchievementFrame_SetTabs();
 			ShowUIPanel(AchievementFrame);
 			AchievementFrameTab_OnClick(1);
 		end
@@ -85,6 +86,7 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 		HideUIPanel(AchievementFrame);
 	else
 		ShowUIPanel(AchievementFrame);
+		AchievementFrame_SetTabs();
 		AchievementFrameTab_OnClick(3);
 	end
 end
@@ -93,6 +95,7 @@ function AchievementFrame_DisplayComparison (unit)
 	AchievementFrame.wasShown = nil;
 	AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
 	AchievementFrameTab_OnClick(1);
+	AchievementFrame_SetTabs();
 	ShowUIPanel(AchievementFrame);
 	--AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameSummary);
 	AchievementFrameComparison_SetUnit(unit);
@@ -110,7 +113,6 @@ end
 
 function AchievementFrame_OnShow (self)
 	PlaySound("AchievementMenuOpen");
-	AchievementFrame_SetTabs();
 	AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 	if ( not AchievementFrame.wasShown ) then
 		AchievementFrame.wasShown = true;
@@ -709,6 +711,7 @@ end
 function AchievementCategoryButton_OnLoad (button)
 	button:EnableMouse(true);
 	button:EnableMouseWheel(true);
+	AchievementCategoryButton_Localize(button);
 end
 
 function AchievementCategoryButton_OnClick (button)
@@ -1348,7 +1351,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 	end
 	height = height + objectives:GetHeight();
 	
-	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT or button.numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED ) then		
+	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT or button.numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED ) then
 		button.hiddenDescription:Show();
 		button.description:Hide();
 		local descriptionHeight = button.hiddenDescription:GetHeight();
@@ -1619,6 +1622,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	local initialOffset = 0;
 	local ACHIEVEMENTMODE_CRITERIA = 1;
 	local numRows = 0;
+	local extraRows = 0;
 	
 	local requiresRep, hasRep, repLevel;
 	objectivesFrame.repCriteria:Hide();
@@ -1635,7 +1639,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				objectivesFrame.repCriteria:SetTextColor(1, 0, 0);
 			end
 			objectivesFrame.repCriteria:Show();
-			numRows = 1;
+			extraRows = 1;
 		end
 	end
 
@@ -1810,6 +1814,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		end
 	end
 
+	numRows = numRows + extraRows;
 	if ( metas > 0 or progressBars > 0 ) then
 		objectivesFrame:SetHeight(numRows * ACHIEVEMENTBUTTON_METAROWHEIGHT + 10);
 	else

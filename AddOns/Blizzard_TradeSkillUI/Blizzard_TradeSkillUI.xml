@@ -10,7 +10,7 @@
 				<FontString name="$parentSubText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="$parentCount" inherits="GameFontNormal">
+				<FontString name="$parentCount" inherits="GameFontNormal" parentKey="count">
 					<Size x="0" y="13"/>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -18,28 +18,59 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentNumSkillUpsIcon" file="Interface\TradeSkillFrame\UI-TradeSkill-Multiskill">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentNumSkillUps" inherits="GameFontNormal">
-					<Size x="0" y="13"/>
-					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-18" y="0"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentNumSkillUps" parentKey="skillup">
+				<Size x="26" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIcon" file="Interface\TradeSkillFrame\UI-TradeSkill-Multiskill" parentKey="icon">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentText" inherits="GameFontNormal" parentKey="countText">
+							<Size x="0" y="13"/>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset x="0" y="2"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Click(button);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:AddLine(string.format(SKILLUP_TOOLTIP, self.countText:GetText()), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+						GameTooltip:Show();
+						TradeSkillFrameButton_OnEnter(self:GetParent());
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						TradeSkillFrameButton_OnLeave(self:GetParent());
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
@@ -52,12 +83,10 @@
 				_G[self:GetName().."Count"]:SetPoint("LEFT", self:GetName().."Text", "RIGHT", 2, 0);
 			</OnLoad>
 			<OnEnter>
-				_G[self:GetName().."Count"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				TradeSkillFrameButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				if ( not self.isHighlighted ) then
-					_G[self:GetName().."Count"]:SetVertexColor(self.r, self.g, self.b);
-				end
+				TradeSkillFrameButton_OnLeave(self);
 			</OnLeave>
 		</Scripts>
 		<NormalTexture urgency="5" file="Interface\Buttons\UI-MinusButton-UP">
@@ -96,7 +125,7 @@
 				</Anchor>
 			</Anchors>
 		</DisabledTexture>
-		<ButtonText name="$parentText">
+		<ButtonText name="$parentText" parentKey="text">
 			<Size x="270" y="13"/>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
@@ -106,9 +135,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont style="GameFontNormalLeft"/>
-		<HighlightFont style="GameFontHighlightLeft"/>
-		<DisabledFont style="GameFontDisableLeft"/>
+		<NormalFont style="GameFontHighlightLeft"/>
 	</Button>
 	<Button name="TradeSkillItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
@@ -1222,7 +1249,13 @@
 						<Scripts>
 							<OnClick>
 								local activeEditBox =  ChatEdit_GetActiveWindow();
-								if activeEditBox then
+								if MacroFrameText:IsShown() and MacroFrameText:HasFocus() then
+									local link = GetTradeSkillListLink();
+									local text = MacroFrameText:GetText()..link;
+									if 255 >= strlenutf8(text) then
+										MacroFrameText:Insert(link);
+									end
+								elseif activeEditBox then
 									local link=GetTradeSkillListLink();
 									if (not ChatEdit_InsertLink(link) ) then
 										assert(activeEditBox:GetName(), "Failed to add tradeskill link")
@@ -1265,7 +1298,7 @@
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						if self.linkedName then 
-							ChatFrame_OpenChat(SLASH_WHISPER1.." "..self.linkedName, DEFAULT_CHAT_FRAME);
+							ChatFrame_OpenChat(SLASH_WHISPER1.." "..self.linkedName.." ", DEFAULT_CHAT_FRAME);
 						end
 					</OnClick>
 				</Scripts>

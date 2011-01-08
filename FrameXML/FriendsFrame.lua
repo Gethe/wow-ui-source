@@ -624,7 +624,7 @@ end
 
 function PendingList_Scroll(offset)
 	local button, buttonHeight;
-	local name, surname, message;
+	local name;
 	local heightUsed = 0;
 	local scrollFrame = FriendsFramePendingScrollFrame;
 	local scrollHeight = scrollFrame.scrollHeight;
@@ -645,7 +645,7 @@ function PendingList_Scroll(offset)
 		if ( offset > numPending or heightUsed > scrollHeight ) then
 			button:Hide();
 		else
-			inviteID, givenName, surname, message, timeSent, days = BNGetFriendInviteInfo(offset);
+			local inviteID, givenName, surname, message, timeSent, days = BNGetFriendInviteInfo(offset);
 			button.index = offset;
 			button.inviteID = inviteID;
 			buttonHeight = PENDING_BUTTON_MIN_HEIGHT;
@@ -1272,8 +1272,8 @@ function FriendsFrame_UpdateFriends()
 
 	FriendsFrameOfflineHeader:Hide();
 	for i = 1, numButtons do
-		button = buttons[i];
-		index = offset + i;
+		local button = buttons[i];
+		local index = offset + i;
 		if ( index <= numFriendButtons and usedHeight < FRIENDS_SCROLLFRAME_HEIGHT ) then
 			button.buttonType = FriendButtons[index].buttonType;
 			button.id = FriendButtons[index].id;
@@ -1398,6 +1398,9 @@ function FriendsFrame_UpdateFriends()
 			if ( i > 1 ) then
 				usedHeight = usedHeight + height;
 			end
+			if ( GetMouseFocus() == button ) then
+				FriendsFrameTooltip_Show(button);
+			end
 		else
 			button:Hide();
 		end
@@ -1454,10 +1457,10 @@ end
 function FriendsFrameStatusDropDown_Update(self)
 	local status;
 	self = self or FriendsFrameStatusDropDown;
-	if ( UnitIsAFK("player") ) then
+	if ( IsChatAFK() ) then
 		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_AFK);
 		status = 2;
-	elseif ( UnitIsDND("player") ) then
+	elseif ( IsChatDND() ) then
 		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_DND);
 		status = 3;
 	else
@@ -1473,15 +1476,19 @@ function FriendsFrame_SetOnlineStatus(button, status)
 		return;
 	end
 	if ( status == 1 ) then
-		if ( UnitIsAFK("player") ) then
+		if ( IsChatAFK() ) then
 			SendChatMessage("", "AFK");
-		elseif ( UnitIsDND("player") ) then
+		elseif ( IsChatDND() ) then
 			SendChatMessage("", "DND");
 		end
 	elseif ( status == 2 ) then
-		SendChatMessage("", "AFK");
+		if ( not IsChatAFK() ) then
+			SendChatMessage("", "AFK");
+		end
 	else
-		SendChatMessage("", "DND");
+		if ( not IsChatDND() ) then
+			SendChatMessage("", "DND");
+		end
 	end
 end
 
@@ -1750,9 +1757,11 @@ function AddFriendNameEditBox_OnTextChanged(self, userInput)
 					AddFriendEntryFrame_Collapse();
 				end
 			end
+			AddFriendEntryFrameAcceptButton:Enable();
 		else
 			AddFriendEntryFrame_Collapse();
 			AddFriendNameEditBoxFill:Show();
+			AddFriendEntryFrameAcceptButton:Disable();
 		end
 	end
 end

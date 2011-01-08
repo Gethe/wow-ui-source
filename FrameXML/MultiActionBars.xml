@@ -22,6 +22,7 @@
 			<OnLoad>
 				self.buttonType = "MULTIACTIONBAR3BUTTON"
 				ActionButton_OnLoad(self);
+				self:SetAttribute("flyoutDirection", "LEFT");
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
@@ -30,6 +31,7 @@
 			<OnLoad>
 				self.buttonType = "MULTIACTIONBAR4BUTTON"
 				ActionButton_OnLoad(self);
+				self:SetAttribute("flyoutDirection", "LEFT");
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
@@ -531,8 +533,22 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="slideout">
+				<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
+				<Scripts>
+					<OnPlay>
+					</OnPlay>
+					<OnFinished>
+						if BonusActionBarFrame:IsShown() then
+							MultiBarRight:Hide();
+						end
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
-	<Frame name="MultiBarLeft" inherits="VerticalMultiBar4" parent="UIParent">
+	<Frame name="MultiBarLeft" inherits="VerticalMultiBar4" parent="MultiBarRight">
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MultiBarRight" relativePoint="TOPLEFT">
 				<Offset>

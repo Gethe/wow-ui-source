@@ -62,3 +62,12 @@ function SetUpAnimation(frame, animTable, postFunc, reverse)
 	
 	AnimUpdateFrame:SetScript("OnUpdate", Animation_OnUpdate);
 end
+
+function CancelAnimations(frame)
+	local anims = AnimatingFrames[frame];
+	if ( anims ) then
+		for k, v in pairs(anims) do
+			anims[k] = 0;
+		end
+	end
+end

@@ -74,6 +74,19 @@ function ArchaeologyFrame_OnLoad(self)
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 	
 	
+	local numRaces = GetNumArchaeologyRaces();
+	local raceButton;
+	for i=1,ARCHAEOLOGY_MAX_RACES do
+		raceButton = self.summaryPage["race"..i];
+		if i <= numRaces then		
+			local _, texture =  GetArchaeologyRaceInfo(i);
+			if texture and texture ~= "" then
+				raceButton:GetNormalTexture():SetTexture(texture);
+				raceButton:GetHighlightTexture():SetTexture(texture);
+				raceButton.glow:SetTexture(texture);
+			end
+		end
+	end	
 	
 	local factionGroup = UnitFactionGroup("player");
 	if ( factionGroup ) then
@@ -196,18 +209,19 @@ function ArchaeologyFrame_UpdateSummary(self)
 	for i=1,ARCHAEOLOGY_MAX_RACES do
 		raceButton = self["race"..i];
 		if i <= numRaces then
-			local name, currency, texture, itemID =  GetArchaeologyRaceInfo(i);
-			if texture and texture ~= "" then
-				raceButton:GetNormalTexture():SetTexture(texture);
-				raceButton:GetHighlightTexture():SetTexture(texture);
-			end
+			local name, _, _, currencyAmount, projectAmount =  GetArchaeologyRaceInfo(i);
 			
 			local numProjects = GetNumArtifactsByRace(i);
 			if numProjects==0 then
 				raceButton:Disable();
 			else
 				raceButton:Enable();
-				raceButton.raceName:SetText(name);
+				if currencyAmount >= projectAmount then
+					raceButton.readyAnim:Play();
+				else
+					raceButton.readyAnim:Stop();
+				end
+				raceButton.raceName:SetText(name.."|n"..currencyAmount.."/"..projectAmount);
 			end
 		else
 			self["race"..i]:Hide();
@@ -217,7 +231,7 @@ end
 
 
 function ArchaeologyFrame_CurrentArtifactUpdate(self)
-	local RaceName, RaceCurrency, RaceTexture, RaceitemID	= GetArchaeologyRaceInfo(self.raceID);
+	local RaceName, RaceTexture, RaceitemID	= GetArchaeologyRaceInfo(self.raceID);
 	local name, description, rarity, icon, spellDescription, numSockets, bgTexture =  GetSelectedArtifactInfo();
 	self.currentName = name;
 	if 	self.solveFrame:IsShown() then
@@ -306,8 +320,8 @@ end
 
 
 function ArchaeologyFrame_UpdateComplete(self)
-	local name, rarity, icon, completionCount, completionCount;
-	local raceName;
+	local name, description, rarity, icon, spellDescription, completionCount, firstComletionTime, completionCount;
+	local raceName, _;
 	local numRaces = GetNumArchaeologyRaces();
 	local outOfArtifacts = false;
 	local numRare = 0;
@@ -650,7 +664,11 @@ function ArchaeologyFrame_InitRaceFilter()
 	for i=1,numRaces do
 		local numProjects = GetNumArtifactsByRace(i);
 		if numProjects > 0 then
-			local name =  GetArchaeologyRaceInfo(i);
+			local name, _, _,  currencyAmount, projectAmount =  GetArchaeologyRaceInfo(i);
+			if ArchaeologyFrame.currentFrame == ArchaeologyFrame.artifactPage  then
+				name = name.." ("..currencyAmount.."/"..projectAmount..")";
+			end
+			
 			info = UIDropDownMenu_CreateInfo();
 			info.text = name;
 			info.arg1 = i;

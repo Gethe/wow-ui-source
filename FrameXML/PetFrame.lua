@@ -7,7 +7,8 @@ function PetFrame_OnLoad (self)
 	UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
 						 PetFrameHealthBar, PetFrameHealthBarText, 
 						 PetFrameManaBar, PetFrameManaBarText,
-						 PetFrameFlash);
+						 PetFrameFlash, nil, nil,
+						 PetFrameMyHealPredictionBar, PetFrameOtherHealPredictionBar);
 
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;

@@ -481,6 +481,42 @@ for i=1, NUM_ADDONS_TO_DISPLAY do
 	topAddOns[i] = { value = 0, name = "" };
 end
 
+-- These are movieID from the MOVIE database file.
+local MovieList = {
+  -- Movie sequence 1 = Wow Classic
+  { 1, 2 },
+  -- Movie sequence 2 = BC
+  { 27 },
+  -- Movie sequence 3 = LK
+  { 18 },
+  -- Movie sequence 4 = CC
+  { 23 },
+}
+
+function MainMenu_GetMovieDownloadProgress(id)
+	local movieList = MovieList[id];
+	if (not movieList) then return; end
+	
+	local anyInProgress = false;
+	local allDownloaded = 0;
+	local allTotal = 0;
+	for _, movieId in ipairs(movieList) do
+		local inProgress, downloaded, total = GetMovieDownloadProgress(movieId);
+		anyInProgress = anyInProgress or inProgress;
+		allDownloaded = allDownloaded + downloaded;
+		allTotal = allTotal + total;
+	end
+	
+	return anyInProgress, allDownloaded, allTotal;
+end
+
+-- We want to save which movies were downloading when the player logged in so that we can continue to show
+-- those movies after the download finishes
+for i, movieList in next, MovieList do
+	local inProgress = MainMenu_GetMovieDownloadProgress(i);
+	movieList.inProgress = inProgress;
+end
+
 function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local string = "";
 	local i, j, k = 0, 0, 0;
@@ -488,16 +524,16 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	
 	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-
+	
 	-- latency
 	local bandwidthIn, bandwidthOut, latency = GetNetStats();
 	string = format(MAINMENUBAR_LATENCY_LABEL, latency);
-	GameTooltip:AddLine("\n");
+	GameTooltip:AddLine(" ");
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:AddLine(NEWBIE_TOOLTIP_LATENCY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 	end
-	GameTooltip:AddLine("\n");
+	GameTooltip:AddLine(" ");
 
 	-- framerate
 	string = format(MAINMENUBAR_FPS_LABEL, GetFramerate());
@@ -505,20 +541,41 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:AddLine(NEWBIE_TOOLTIP_FRAMERATE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 	end
-	GameTooltip:AddLine("\n");
+	GameTooltip:AddLine(" ");
 
 	string = format(MAINMENUBAR_BANDWIDTH_LABEL, GetAvailableBandwidth());
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:AddLine(NEWBIE_TOOLTIP_BANDWIDTH, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 	end
-	GameTooltip:AddLine("\n");
+	GameTooltip:AddLine(" ");
 
 	local percent = floor(GetDownloadedPercentage()*100+0.5);
 	string = format(MAINMENUBAR_DOWNLOAD_PERCENT_LABEL, percent);
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:AddLine(NEWBIE_TOOLTIP_DOWNLOAD_PERCENT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+	end
+	
+	-- Downloaded cinematics
+	local firstMovie = true;
+	for i, movieList in next, MovieList do
+		if (movieList.inProgress) then
+			if (firstMovie) then
+				if ( SHOW_NEWBIE_TIPS == "1" ) then
+					-- The "Cinematics" header looks bad when it's next to the newbie tooltip text, so add an extra line break
+					GameTooltip:AddLine(" ");
+				end
+				GameTooltip:AddLine("   "..CINEMATICS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				firstMovie = false;
+			end
+			local inProgress, downloaded, total = MainMenu_GetMovieDownloadProgress(i);
+			if (inProgress) then
+				GameTooltip:AddLine("   "..format(CINEMATIC_DOWNLOAD_FORMAT, _G["CINEMATIC_NAME_"..i], downloaded/total*100), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+			else
+				GameTooltip:AddLine("   "..format(CINEMATIC_DOWNLOAD_FORMAT, _G["CINEMATIC_NAME_"..i], downloaded/total*100), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			end
+		end
 	end
 
 	-- AddOn mem usage
@@ -606,4 +663,3 @@ function MainMenuExpBar_SetWidth(width)
 		ExhaustionTick_OnEvent(ExhaustionTick, "UPDATE_EXHAUSTION");
 	end
 end
-

@@ -64,7 +64,7 @@ function CompactPartyFrame_DisablePets(self)
 end
 
 function CompactPartyFrame_UpdateShown(self)
-	if ( GetCVarBool("useCompactPartyFrames") and GetNumPartyMembers() > 0 and GetNumRaidMembers() == 0 ) then
+	if ( GetNumPartyMembers() > 0 and GetDisplayedAllyFrames() == "compact-party" ) then
 		self:Show();
 	else
 		self:Hide();

@@ -172,11 +172,16 @@ function PetActionBar_Update (self)
 end
 
 function PetActionBar_UpdateCooldowns()
-	local cooldown;
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
-		cooldown = _G["PetActionButton"..i.."Cooldown"];
+		local cooldown = _G["PetActionButton"..i.."Cooldown"];
 		local start, duration, enable = GetPetActionCooldown(i);
 		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+		
+		-- Update tooltip
+		local actionButton = _G["PetActionButton"..i];
+		if ( GameTooltip:GetOwner() == actionButton ) then
+			PetActionButton_OnEnter(actionButton);
+		end
 	end
 end
 
@@ -335,9 +340,14 @@ function PetActionButton_OnEnter (self)
 			GameTooltip:AddLine(self.tooltipSubtext, "", 0.5, 0.5, 0.5);
 		end
 		GameTooltip:Show();
+		self.UpdateTooltip = nil;
 	else
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
-		GameTooltip:SetPetAction(self:GetID());
+		if (GameTooltip:SetPetAction(self:GetID())) then
+			self.UpdateTooltip = PetActionButton_OnEnter;
+		else
+			self.UpdateTooltip = nil;
+		end
 	end
 end
 

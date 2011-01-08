@@ -35,6 +35,36 @@
 		</Animations>
 	</Frame>
 	<Frame name="UnitPowerBarAltTemplate" hidden="true" inherits="UnitPowerBarAltTexturableTemplate" virtual="true">
+		<Frames>
+			<Frame name="$parentStatusFrame" parentKey="statusFrame">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$Text" inherits="TextStatusBarText" parentKey="text">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.textLockable = 1;
+						self.lockShow = 1;
+						self.alwaysShow = 1;
+						self.cvar = "alternateResourceText";
+						self.cvarLabel = "ALTERNATE_RESOURCE_TEXT";
+						self:RegisterEvent("CVAR_UPDATE");
+					</OnLoad>
+					<OnEvent function="UnitPowerBarAltStatus_OnEvent"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
 				<Alpha change="1" duration="0.6" order="1" target="$parentFlash"/>

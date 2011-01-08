@@ -30,53 +30,35 @@
 	<Size x="52" y="29"/>
     <Layers>
 		<Layer level="OVERLAY">
-			<Texture file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardGlow" alphaMode="ADD" hidden="true">
+			<Texture name="$parentGlow"  file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardGlow" alphaMode="ADD">
 				<Size x="26" y="23"/>	
 				<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>	
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-2" y="1"/>
-				</Anchors>				
+				</Anchors>
 			</Texture>
-			<Texture name="$parentSmoke" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmoke1">
+			<Texture name="$parentSmokeA" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmokeA">
 				<Size x="32" y="32"/>	
 				<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>	
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-8" y="5"/>
 				</Anchors>
-				<Animations>
-					<AnimationGroup parentKey="animUsed">
-						<Alpha change="1" duration="0.1" order="1"/>
-						<Rotation radians="1.1" duration="0.3" order="1"/>
-						<Scale scaleX="1.2" scaleY="1.8" duration="0.3" order="1"/>						
-						<Alpha change="-1" duration="0.25" order="2"/>
-						<Scale scaleX="0.4" scaleY="0.4" duration="0.3" order="2"/>	
-					</AnimationGroup>
-				</Animations>
 			</Texture>			
-			<Texture file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmoke2">
+			<Texture name="$parentSmokeB" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmokeB">
 				<Size x="32" y="32"/>	
 				<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>	
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSmoke"/>
-				</Anchors>	
-				<Animations>
-					<AnimationGroup parentKey="animUsed">
-						<Alpha change="1" duration="0.1" order="1"/>
-						<Rotation radians="-0.9" duration="0.4" order="1"/>
-						<Scale scaleX="2.5" scaleY="2.5" duration="0.4" order="1"/>						
-						<Alpha change="-1" duration="0.25" order="2"/>
-						<Scale scaleX="0.4" scaleY="0.4" duration="0.25" order="2"/>	
-					</AnimationGroup>
-				</Animations>			
+				</Anchors>
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
-			<Texture file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardFill">
+			<Texture name="$parentFill" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardFill">
 				<Size x="17" y="16"/>	
 				<TexCoords left="0.01562500" right="0.28125000" top="0.00781250" bottom="0.13281250"/>	
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-2"/>
-				</Anchors>				
+				</Anchors>
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
@@ -85,10 +67,53 @@
 				<TexCoords left="0.01562500" right="0.82812500" top="0.60937500" bottom="0.83593750"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-5" y="3"/>
-				</Anchors>				
+				</Anchors>
 			</Texture>
 		</Layer>
 	</Layers>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha target="$parentFill" change="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" change="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" change="1" duration="0.1" order="2"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().shardFill:SetAlpha(0.0);
+						self:GetParent().shardFill:Show();
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().shardFill:SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="animOut">
+				<Alpha		target="$parentFill" change="-1" duration="0.2" order="1"/>
+				<Alpha		target="$parentSmokeA" change="1" duration="0.1" order="1"/>
+				<Alpha		target="$parentSmokeB" change="1" duration="0.1" order="1"/>
+				<Rotation 	target="$parentSmokeA" radians="1.1" duration="0.3" order="1"/>
+				<Rotation	target="$parentSmokeB" radians="-0.9" duration="0.4" order="1"/>
+				<Scale 		target="$parentSmokeA" scaleX="1.2" scaleY="1.2" duration="0.3" order="1"/>
+				<Scale		target="$parentSmokeB" scaleX="2.5" scaleY="2.5" duration="0.4" order="1"/>
+				<Alpha		target="$parentSmokeA" change="-1" duration="0.25" order="2"/>
+				<Alpha		target="$parentSmokeB" change="-1" duration="0.25" order="2"/>
+				<Scale		target="$parentSmokeA" scaleX="0.4" scaleY="0.4" duration="0.25" order="2"/>
+				<Scale		target="$parentSmokeB" scaleX="0.4" scaleY="0.4" duration="0.25" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent().shardFill:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		
+		<Scripts>
+			<OnLoad>
+				self.shardFill:Hide();
+				self.shardGlow:SetAlpha(0.0);
+				self.shardSmokeA:SetAlpha(0.0);
+				self.shardSmokeB:SetAlpha(0.0);
+			</OnLoad>
+		</Scripts>
   </Frame>
 
 	<Frame name="ShardBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false">

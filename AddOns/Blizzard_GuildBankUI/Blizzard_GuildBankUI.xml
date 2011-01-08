@@ -1154,7 +1154,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<EditBox name="GuildBankPopupEditBox" autoFocus="false" letters="16" historyLines="0">
+			<EditBox name="GuildBankPopupEditBox" autoFocus="false" letters="15" historyLines="0">
 				<Size>
 					<AbsDimension x="180" y="20"/>
 				</Size>

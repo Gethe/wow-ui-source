@@ -3,7 +3,6 @@ MAX_REPUTATIONS = 10;
 function QuestInfoFadingFrame_OnUpdate(self, elapsed)
 	if ( self.fading ) then
 		self.fadingProgress = self.fadingProgress + (elapsed * QUEST_DESCRIPTION_GRADIENT_CPS);
-		PlaySound("WriteQuest");
 		if ( not QuestInfoDescriptionText:SetAlphaGradient(self.fadingProgress, QUEST_DESCRIPTION_GRADIENT_LENGTH) ) then
 			self.fading = nil;
 			self:SetAlpha(1);
@@ -28,9 +27,9 @@ function QuestInfoItem_OnClick(self)
 end
 
 function QuestInfo_Display(template, parentFrame, acceptButton, material)
-	local lastFrame = nil;
-	local shownFrame = nil;	
+	local lastFrame, shownFrame, bottomShownFrame;	
 	local elementsTable = template.elements;
+	local bottomShownFrame;
 	
 	QuestInfoFrame.questLog = template.questLog;
 	QuestInfoFrame.chooseItems = template.chooseItems;
@@ -191,7 +190,7 @@ end
 
 function QuestInfo_DoReputations(anchor)
 	local numReputations = GetNumQuestLogRewardFactions();
-	local factionName, amount, factionId, isHeader;
+	local factionName, amount, factionId, isHeader, hasRep, _;
 	local index = 0;
 	for i = 1, numReputations do		
 		factionId, amount = GetQuestLogRewardFactionInfo(i);
@@ -282,7 +281,7 @@ function QuestInfo_ShowObjectivesHeader()
 end
 
 function QuestInfo_ShowObjectivesText()
-	local questObjectives;
+	local questObjectives, _;
 	if ( QuestInfoFrame.questLog ) then
 		_, questObjectives = GetQuestLogQuestText();
 	else

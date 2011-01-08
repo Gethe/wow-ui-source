@@ -6,27 +6,33 @@ function InspectPaperDollFrame_OnLoad(self)
 end
 
 function InspectPaperDollFrame_OnEvent(self, event, unit)
-	if ( unit and unit == InspectFrame.unit ) then
-		if ( event == "UNIT_MODEL_CHANGED" ) then
-			InspectModelFrame:RefreshUnit();
-		elseif ( event == "UNIT_LEVEL" ) then
+	if (InspectFrame:IsShown()) then
+		if ( unit and unit == InspectFrame.unit ) then
+			if ( event == "UNIT_MODEL_CHANGED" ) then
+				InspectModelFrame:RefreshUnit();
+			elseif ( event == "UNIT_LEVEL" ) then
+				InspectPaperDollFrame_SetLevel();
+			end
+			return;
+		end
+		if (event == "INSPECT_READY") then
 			InspectPaperDollFrame_SetLevel();
 		end
-		return;
-	end
-	if (event == "INSPECT_READY") then
-		InspectPaperDollFrame_SetLevel();
 	end
 end
 
 function InspectPaperDollFrame_SetLevel()
+	if (not InspectFrame.unit) then
+		return;
+	end
+
 	local unit, level = InspectFrame.unit, UnitLevel(InspectFrame.unit);
 	local primaryTalentTree = GetPrimaryTalentTree(true);
 	
 	local classDisplayName, class = UnitClass(InspectFrame.unit); 
 	local classColor = RAID_CLASS_COLORS[class];
 	local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
-	local specName;
+	local specName, _;
 	
 	if (primaryTalentTree) then
 		_, specName = GetTalentTabInfo(primaryTalentTree, true);

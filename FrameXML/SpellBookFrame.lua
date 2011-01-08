@@ -135,7 +135,13 @@ function SpellBookFrame_OnEvent(self, event, ...)
 	elseif (event == "SKILL_LINES_CHANGED") then
 		SpellBook_UpdateProfTab();
 	elseif (event == "PLAYER_GUILD_UPDATE") then
-		SpellBookFrame_UpdateSkillLineTabs();
+		-- default to first tab if the selected one is gone - happens if you leave a guild with perks 
+		if ( GetNumSpellTabs() < SpellBookFrame.selectedSkillLine ) then
+			SpellBookFrame.selectedSkillLine = 1;
+			SpellBookFrame_Update();
+		else
+			SpellBookFrame_UpdateSkillLineTabs();
+		end
 	end
 end
 
@@ -215,7 +221,7 @@ function SpellBookFrame_Update()
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
 		local tab = _G["SpellBookFrameTabButton"..i];
-		PanelTemplates_TabResize(tab, 0);
+		PanelTemplates_TabResize(tab, 0, nil, 40);
 		if ( tab.bookType == SpellBookFrame.bookType ) then
 			PanelTemplates_SelectTab(tab);
 			SpellBookFrame.currentTab = tab;
@@ -349,6 +355,10 @@ function SpellButton_OnEvent(self, event, ...)
 		SpellButton_UpdateButton(self);
 	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
 		SpellButton_UpdateCooldown(self);
+		-- Update tooltip
+		if ( GameTooltip:GetOwner() == self ) then
+			SpellButton_OnEnter(self);
+		end
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		SpellButton_UpdateSelection(self);
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" or event == "ARCHAEOLOGY_CLOSED" ) then
@@ -1019,7 +1029,7 @@ function SpellBookCompanionButton_OnClick(self, button)
 			currentPage = currentPage - 1;
 		end
 		
-		offset = (currentPage or 0)*NUM_COMPANIONS_PER_PAGE;
+		local offset = (currentPage or 0)*NUM_COMPANIONS_PER_PAGE;
 		local index = self:GetID() + offset;
 		if ( self.active ) then
 			DismissCompanion(SpellBookCompanionsFrame.mode);

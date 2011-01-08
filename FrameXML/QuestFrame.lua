@@ -28,7 +28,9 @@ function QuestFrame_OnEvent(self, event, ...)
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
-			WatchFrameAutoQuest_AddPopUp(GetQuestID(), "OFFER");
+			if (WatchFrameAutoQuest_AddPopUp(GetQuestID(), "OFFER")) then
+				PlayAutoAcceptQuestSound();
+			end
 			CloseQuest();
 			return;
 		else
@@ -120,7 +122,7 @@ end
 
 function QuestProgressCompleteButton_OnClick()
 	CompleteQuest();
-	--PlaySound("igQuestListComplete");
+	PlaySound("igQuestListOpen");
 end
 
 function QuestGoodbyeButton_OnClick()
@@ -335,6 +337,7 @@ function QuestFrame_OnHide()
 	if ( QuestFrame.autoQuest ) then
 		QuestFrameDeclineButton:Show();
 		QuestFrameCloseButton:Enable();
+		PlayAutoAcceptQuestSound();
 		QuestFrame.autoQuest = nil;
 	end
 	CloseQuest();
@@ -434,7 +437,7 @@ function QuestDetailAcceptButton_OnClick()
 		if ( QuestFrame.autoQuest ) then
 			HideUIPanel(QuestFrame);
 		else
-			AcceptQuest();		
+			AcceptQuest();
 		end
 	end
 end

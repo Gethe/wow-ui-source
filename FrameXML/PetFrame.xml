@@ -152,9 +152,14 @@
 						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
+					<OnSizeChanged>
+						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+					</OnSizeChanged>
 				</Scripts>
 				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
+			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar">
 				<Size>
 					<AbsDimension x="69" y="8"/>

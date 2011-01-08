@@ -58,7 +58,8 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	UnitFrame_Initialize(self, unit, _G[thisName.."TextureFrameName"], portraitFrame,
 						 _G[thisName.."HealthBar"], _G[thisName.."TextureFrameHealthBarText"],
 						 _G[thisName.."ManaBar"], _G[thisName.."TextureFrameManaBarText"],
-	                     threatFrame, "player", _G[thisName.."NumericalThreat"]);
+	                     threatFrame, "player", _G[thisName.."NumericalThreat"],
+						 _G[thisName.."MyHealPredictionBar"], _G[thisName.."OtherHealPredictionBar"]);
 						
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -79,8 +80,6 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	
 	local frameLevel = _G[thisName.."TextureFrame"]:GetFrameLevel();
-	self.healthbar:SetFrameLevel(frameLevel-1);
-	self.manabar:SetFrameLevel(frameLevel-1);
 
 	local showmenu;
 	if ( menuFunc ) then

@@ -476,9 +476,14 @@
 						PartyMemberHealthCheck(self, value);
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
+					<OnSizeChanged>
+						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+					</OnSizeChanged>
 				</Scripts>
 				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
+			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
 				<Size>
 					<AbsDimension x="70" y="8"/>
@@ -621,7 +626,7 @@
 				UnitFrame_Initialize(self, "party"..id,  _G[prefix.."Name"], _G[prefix.."Portrait"],
 					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
 					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
-				       _G[prefix.."Flash"]);
+				       _G[prefix.."Flash"], nil, nil, _G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"]);
 				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				PartyMemberFrame_OnLoad(self);
 			</OnLoad>

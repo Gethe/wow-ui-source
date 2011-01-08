@@ -75,7 +75,7 @@
 				CharacterFrameTab_OnClick(self, button);
 			</OnClick>
 			<OnShow>
-				PanelTemplates_TabResize(self, 0);
+				PanelTemplates_TabResize(self, 0, nil, 36, 88);
 				CharacterFrame_TabBoundsCheck(self);
 			</OnShow>
 		</Scripts>

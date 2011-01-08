@@ -1,5 +1,5 @@
-GUILD_DETAIL_NORM_HEIGHT = 195
-GUILD_DETAIL_OFFICER_HEIGHT = 255
+GUILD_DETAIL_NORM_HEIGHT = 185
+GUILD_DETAIL_OFFICER_HEIGHT = 235
 local GUILD_ROSTER_MAX_COLUMNS = 5;
 local GUILD_ROSTER_MAX_STRINGS = 4;
 local GUILD_ROSTER_BAR_MAX = 239;
@@ -177,11 +177,11 @@ function GuildRoster_Update()
 			-- Resize detail frame
 			GuildMemberDetailOfficerNoteLabel:Show();
 			GuildMemberOfficerNoteBackground:Show();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT);
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT + GuildMemberDetailRankText:GetHeight());
 		else
 			GuildMemberDetailOfficerNoteLabel:Hide();
 			GuildMemberOfficerNoteBackground:Hide();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT);
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT + GuildMemberDetailRankText:GetHeight());
 		end
 
 		-- Manage guild member related buttons
@@ -214,7 +214,7 @@ function GuildRoster_Update()
 			GuildMemberGroupInviteButton:Enable();
 		end
 
-		GuildFrame.selectedName = GetGuildRosterInfo(GetGuildRosterSelection()); 
+		GuildFrame.selectedName = GetGuildRosterInfo(GetGuildRosterSelection());
 	else
 		GuildMemberDetailFrame:Hide();
 	end
@@ -330,7 +330,8 @@ end
 
 function GuildRosterButton_OnClick(self, button)
 	if ( currentGuildView == "tradeskill" ) then
-		local skillID, isCollapsed, iconTexture, headerName, numOnline, numPlayers, playerName, class, online, zone, skill, classFileName, isMobile = GetGuildTradeSkillInfo(self.guildIndex);
+		local skillID, isCollapsed, iconTexture, headerName, numOnline, numVisible, numPlayers,
+			playerName, class, online, zone, skill, classFileName, isMobile = GetGuildTradeSkillInfo(self.guildIndex);
 		if ( button == "LeftButton" ) then
 			if ( CanViewGuildRecipes(skillID) ) then
 				GetGuildMemberRecipes(playerName, skillID);
@@ -370,7 +371,7 @@ function GuildRoster_UpdateTradeSkills()
 		index = offset + i;
 		if ( index <= numTradeSkill ) then
 			button.guildIndex = index;
-			local skillID, isCollapsed, iconTexture, headerName, numOnline, numPlayers, playerName, class, online, zone, skill, classFileName = GetGuildTradeSkillInfo(index);
+			local skillID, isCollapsed, iconTexture, headerName, numOnline, numVisible, numPlayers, playerName, class, online, zone, skill, classFileName = GetGuildTradeSkillInfo(index);
 			button.online = online;
 			if ( headerName ) then
 				GuildRosterButton_SetStringText(button.string1, headerName, 1);
@@ -381,12 +382,16 @@ function GuildRoster_UpdateTradeSkills()
 				button.header.icon:SetTexture(iconTexture);
 				button.header.name:SetText(headerName);
 				button.header.collapsed = isCollapsed;
-				if ( numPlayers == 0 ) then
+				if ( numVisible == 0 ) then
 					button.header:Disable();
 					button.header.icon:SetDesaturated(true);
 					button.header.collapsedIcon:Hide();
 					button.header.expandedIcon:Hide();
-					button.header.allRecipes:Hide();
+					if ( numPlayers > 0 ) then
+						button.header.allRecipes:Show();
+					else
+						button.header.allRecipes:Hide();
+					end
 					button.header.name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					button.header.leftEdge:SetVertexColor(0.75, 0.75, 0.75);
 					button.header.rightEdge:SetVertexColor(0.75, 0.75, 0.75);

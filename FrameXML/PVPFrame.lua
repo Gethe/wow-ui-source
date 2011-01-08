@@ -283,11 +283,6 @@ function PVPFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PVP_TYPES_ENABLED" )  then
 		self.wargamesEnable, self.ratedBGsEnabled, self.ratedArenasEnabled = ...;
-		if not self.wargamesEnable then
-			PVPHonorFrameWarGameButton:Hide();
-		else
-			PVPHonorFrameWarGameButton:Show();
-		end
 	elseif ( event == "UNIT_LEVEL" ) then
 		local unit = ...;
 		if ( unit == "player" and UnitLevel(unit) == SHOW_CONQUEST_LEVEL ) then
@@ -304,12 +299,16 @@ end
 
 function PVPFrame_UpdateCurrency(self, currency)
 	if ( not currency and self.lastSelectedTab ) then
-		local index = self.lastSelectedTab:GetID()	
+		local index = self.lastSelectedTab:GetID();
+		local _;
 		if index == 1 then -- Honor Page	
+			PVPFrameCurrency.currencyID = HONOR_CURRENCY;
 			_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 		elseif index == 2 then -- Conquest 
+			PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
 			_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 		elseif index == 3 then -- Arena Management
+			PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
 			_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 		end
 	end
@@ -319,14 +318,19 @@ function PVPFrame_UpdateCurrency(self, currency)
 		PVPFrameConquestBar:SetMinMaxValues(0, maxPointsThisWeek);
 		PVPFrameConquestBar:SetValue(pointsThisWeek);
 		PVPFrameConquestBar.pointText:SetText(pointsThisWeek.."/"..maxPointsThisWeek);
-		PVPFrameTypeValue:SetText(currency);
-		PVPFrameTypeLabel:Show();
-		PVPFrameTypeIcon:Show();
-		PVPFrameTypeValue:Show();
+		PVPFrameCurrencyValue:SetText(currency);
+		PVPFrameCurrencyLabel:Show();
+		PVPFrameCurrencyIcon:Show();
+		PVPFrameCurrencyValue:Show();
 	else
-		PVPFrameTypeLabel:Hide();
-		PVPFrameTypeIcon:Hide();
-		PVPFrameTypeValue:Hide();
+		PVPFrameCurrencyLabel:Hide();
+		PVPFrameCurrencyIcon:Hide();
+		PVPFrameCurrencyValue:Hide();
+	end
+	
+	if GetMaxPlayerLevel() ~= UnitLevel("player") then
+		PVPFrameConquestBar:Hide();
+		PVPFrameCurrency:SetPoint("TOP", 0, -20);
 	end
 end
 
@@ -372,7 +376,7 @@ function PVPFrame_TabClicked(self)
 	PVPFrameTitleText:SetText(self:GetText());	
 	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
 	PVPFrame.topInset:Hide();
-	local currency = 0;
+	local _, currency = 0;
 	local factionGroup = UnitFactionGroup("player");
 	
 	if index == 1 then -- Honor Page
@@ -380,10 +384,11 @@ function PVPFrame_TabClicked(self)
 		PVPFrameRightButton:Show();
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
 		PVPFrameLeftButton:Enable();
-		PVPFrameTypeLabel:SetText(HONOR);
-		PVPFrameTypeLabel:SetPoint("TOPRIGHT", -180, -38);
+		PVPFrameCurrencyLabel:SetText(HONOR);
+		PVPFrameCurrency:SetPoint("TOP", 0, -20);
 		PVPFrameConquestBar:Hide();
-		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
+		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
+		PVPFrameCurrency.currencyID = HONOR_CURRENCY;
 		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 	elseif UnitLevel("player") < SHOW_CONQUEST_LEVEL then
 		self:GetParent().lastSelectedTab = nil;
@@ -400,27 +405,30 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.lowLevelFrame.error:SetText("");
 		PVPFrame.lowLevelFrame.description:SetText(ARENA_MASTER_NO_SEASON_TEXT);
 		PVPFrame.lowLevelFrame:Show();
-		PVPFrameConquestBar:Show();
-		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);		
+		PVPFrameConquestBar:Hide();
+		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);		
+		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
 		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
-		PVPFrameTypeLabel:SetText(PVP_CONQUEST);
-		PVPFrameTypeLabel:SetPoint("TOPRIGHT", -195, -38);
+		PVPFrameCurrencyLabel:SetText(PVP_CONQUEST);
+		PVPFrameCurrency:SetPoint("TOP", -15, -20);
 		PVPFrameConquestBar:Show();
-		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
 		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 3 then -- Arena Management
 		PVPFrameLeftButton:SetText(ADDMEMBER_TEAM);
 		PVPFrameLeftButton:Disable();
 		PVPFrame.panel3:Show();	
-		PVPFrameTypeLabel:SetText(PVP_CONQUEST);
-		PVPFrameTypeLabel:SetPoint("TOPRIGHT", -195, -38);
+		PVPFrameCurrencyLabel:SetText(PVP_CONQUEST);
+		PVPFrameCurrency:SetPoint("TOP", -15, -20);
 		PVPFrameConquestBar:Show();		
 		PVPFrame.topInset:Show();
 		PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -281);
-		PVPFrameTypeIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
 		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	end
 	
@@ -454,7 +462,7 @@ end
 
 
 function PVPHonor_UpdateBattlegrounds()
-	local frame;
+	local frame, _;
 	local localizedName, canEnter, isHoliday;
 	local pvpID, isActive, canQueue, startTime;
 	local tempString, isBig, isWorldPVP;
@@ -578,6 +586,18 @@ function PVPHonor_ButtonClicked(self)
 	self:GetParent().selectedPvpID = self.pvpID;
 	PVPHonorFrame_ResetInfo();
 	PVPHonorFrame_UpdateGroupAvailable();
+	
+	
+	if PVPFrame.wargamesEnable and not self.isWorldPVP then
+		PVPHonorFrameWarGameButton:Show();
+		if CanInitiateWarGame(self.pvpID) then
+			PVPHonorFrameWarGameButton:Enable();
+		else
+			PVPHonorFrameWarGameButton:Disable();
+		end
+	else
+		PVPHonorFrameWarGameButton:Hide();
+	end
 end
 
 
@@ -704,7 +724,7 @@ function PVPHonorFrame_UpdateGroupAvailable()
 	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
 		-- If this is true then can join as a group
 		PVPFrameRightButton:Enable();
-		if not PVPHonorFrame.selectedIsWorldPvp then
+		if not PVPHonorFrame.selectedIsWorldPvp and CanInitiateWarGame(PVPHonorFrame.selectedPvpID) then
 			PVPHonorFrameWarGameButton:Enable();
 		else
 			PVPHonorFrameWarGameButton:Disable();
@@ -756,7 +776,9 @@ end
 function PVPConquestFrame_Update(self)
 	local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
 	local validGroup = false;
-		
+	local reward = 0;
+	local _;
+
 	if self.mode == "Arena" then
 		self.winReward.winAmount:SetText(0);
 		self.noWeeklyFrame:Hide();
@@ -805,9 +827,9 @@ function PVPConquestFrame_Update(self)
 			ArenaSizesToIndex[2] = 1;
 			ArenaSizesToIndex[3] = 2;
 			ArenaSizesToIndex[5] = 3;
-			_, ratedArenaReward = GetPersonalRatedArenaInfo(ArenaSizesToIndex[teamSize]);
-			self.winReward.winAmount:SetText(ratedArenaReward)
-			if ratedArenaReward == 0 then
+			_, reward = GetPersonalRatedArenaInfo(ArenaSizesToIndex[teamSize]);
+			self.winReward.winAmount:SetText(reward)
+			if reward == 0 then
 				RequestRatedArenaInfo(ArenaSizesToIndex[teamSize]);
 			end
 		
@@ -827,6 +849,7 @@ function PVPConquestFrame_Update(self)
 		end
 	else -- Rated BG
 		local personalBGRating, ratedBGreward, _, _, weeklyWins, weeklyPlayed = GetPersonalRatedBGInfo();
+		reward = ratedBGreward;
 		self.topRatingText:SetText(RATING..": "..personalBGRating);
 		self.winReward.winAmount:SetText(ratedBGreward);
 		
@@ -870,6 +893,7 @@ function PVPConquestFrame_Update(self)
 	
 	if validGroup then
 		self.partyStatusBG:SetVertexColor(0,1,0);
+		self.partyInfoRollOver:Hide();
 		self.partyNum:SetFormattedText(GREEN_FONT_COLOR_CODE..PVP_PARTY_SIZE, groupSize);
 		self.infoButton.bgNorm:Show();
 		self.infoButton.bgOff:Hide();
@@ -879,9 +903,12 @@ function PVPConquestFrame_Update(self)
 		self.infoButton.losses:SetText(LOSSES);
 		if IsPartyLeader() then
 			PVPFrameLeftButton:Enable();
+		else
+			PVPFrameLeftButton:Disable();
 		end
 	else
 		self.partyStatusBG:SetVertexColor(1,0,0);
+		self.partyInfoRollOver:Show();
 		self.partyNum:SetFormattedText(RED_FONT_COLOR_CODE..PVP_PARTY_SIZE, groupSize);
 		self.infoButton.bgNorm:Hide();
 		self.infoButton.bgOff:Show();
@@ -892,6 +919,15 @@ function PVPConquestFrame_Update(self)
 		PVPFrameLeftButton:Disable();
 	end
 
+	
+	if reward > 0 then
+		self.rewardDescription:SetText(PVP_REWARD_EXPLANATION);
+		self.winReward:Show();
+	else
+		self.rewardDescription:SetText(PVP_REWARD_FAILURE);
+		self.winReward:Hide();
+	end
+	
 	self.validGroup = validGroup;
 end
 
@@ -902,6 +938,11 @@ function PVPConquestFrame_OnShow(self)
 	end
 	self.clickedButton:Click();
 	PVPConquestFrame_Update(self);
+	
+	
+	if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
+	--		ToggleFrame(PVPFrame);
+	end
 end
 
 
@@ -1001,7 +1042,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 
 	self.TeamData:Show()
 	local TeamDataName = self.TeamData:GetName();
-
+	local played, wins;
 	if ( self.seasonStats ) then
 		_G[TeamDataName.."TypeLabel"]:SetText(ARENA_THIS_SEASON);
 		played = seasonTeamPlayed;
@@ -1016,7 +1057,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 		PvP_WeeklyText:SetText(ARENA_WEEKLY_STATS);
 	end
 
-	loss = played - wins;
+	local loss = played - wins;
 	-- Populate Data
 	_G[TeamDataName.."Name"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."  "..teamName);
 	_G[TeamDataName.."Rating"]:SetText(teamRating);
@@ -1046,11 +1087,11 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 		self.invalidTeam:Hide();
 	end
 	
-	local nameText, classText, playedText, winLossWin, winLossLoss, ratingText;
+	local nameText, classText, playedText, winLossWin, winLossLoss, winLossText, ratingText;
 	-- Display Team Member Specific Info
 	local playedValue, winValue, lossValue;
 	for i=1, MAX_ARENA_TEAM_MEMBERS_SHOWN, 1 do
-		button = _G[TeammateButtonName..i];		
+		local button = _G[TeammateButtonName..i];		
 		if  scrollTeammates then
 			button:SetWidth(MAX_ARENA_TEAM_MEMBER_SCROLL_WIDTH);
 		else
@@ -1073,7 +1114,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 			-- Get Data
 			local name, rank, level, class, online, played, win, seasonPlayed, seasonWin, rating = GetArenaTeamRosterInfo(teamIndex, i+scrollOffset);
 			loss = played - win;
-			seasonLoss = seasonPlayed - seasonWin;
+			local seasonLoss = seasonPlayed - seasonWin;
 
 			-- Populate Data into the display, season or this week
 			if ( self.seasonStats ) then
@@ -1180,7 +1221,7 @@ function PVPTeamManagementFrame_UpdateTeams(self)
 		flagsList[3] = false;
 		flagsList[5] = false;	
 		
-		local teamName, teamSize, teamRating, emblem, border;
+		local teamName, teamSize, teamRating, emblem, border, _;
 		local background = {}; 
 		local emblemColor = {} ;
 		local borderColor = {}; 		
@@ -1241,7 +1282,7 @@ function PVPTeamManagementFrame_UpdateTeams(self)
 		elseif  self.defaultTeam then 
 			PVPTeamManagementFrame_UpdateTeamInfo(self, self.defaultTeam)
 		else
-			--We have not arena teams
+			--We have no arena teams
 			self.noTeams:Show();
 			PVPFrameLeftButton:Disable();
 			self.weeklyToggleLeft:Disable();

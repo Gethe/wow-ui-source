@@ -176,27 +176,33 @@ CHAT_CONFIG_OTHER_COMBAT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "LOOT"); end;
 	},
 	[7] = {
+		text = CURRENCY,
+		type = "CURRENCY",
+		checked = function () return IsListeningForMessageType("CURRENCY"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "CURRENCY"); end;
+	},
+	[8] = {
 		text = MONEY_LOOT,
 		type = "MONEY",
 		checked = function () return IsListeningForMessageType("MONEY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "MONEY"); end;
 	},
-	[8] = {
+	[9] = {
 		type = "TRADESKILLS",
 		checked = function () return IsListeningForMessageType("TRADESKILLS"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "TRADESKILLS"); end;
 	},
-	[9] = {
+	[10] = {
 		type = "OPENING",
 		checked = function () return IsListeningForMessageType("OPENING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "OPENING"); end;
 	},
-	[10] = {
+	[11] = {
 		type = "PET_INFO",
 		checked = function () return IsListeningForMessageType("PET_INFO"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PET_INFO"); end;
 	},
-	[11] = {
+	[12] = {
 		type = "COMBAT_MISC_INFO",
 		checked = function () return IsListeningForMessageType("COMBAT_MISC_INFO"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_MISC_INFO"); end;

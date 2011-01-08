@@ -368,12 +368,20 @@ end
 
 
 function GuildControlUI_RemoveRankButton_OnClick(self)
+	local activeEditBox = GuildControlUI.activeEditBox;
+	if ( activeEditBox ) then
+		activeEditBox:ClearFocus();
+	end
 	local index = self:GetParent():GetID();
 	GuildControlDelRank(index);
 end
 
 
 function GuildControlUI_AddRankButton_OnClick()
+	local activeEditBox = GuildControlUI.activeEditBox;
+	if ( activeEditBox ) then
+		activeEditBox:ClearFocus();
+	end
 	PlaySound("igMainMenuOpen");
 	GuildControlAddRank(GUILD_NEW_RANK);
 	CloseDropDownMenus();
@@ -403,6 +411,7 @@ end
 
 function GuildControlUINavigationDropDown_OnSelect(self, arg1, arg2)
 	UIDropDownMenu_SetText(GuildControlUINavigationDropDown, arg2);
+	StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
 	GuildControlUIRankSettingsFrame:Hide();
 	GuildControlUIRankOrderFrame:Hide();
 	GuildControlUIRankBankFrame:Hide();
@@ -467,7 +476,7 @@ function GuildControlUIRankDropDown_OnClick(self)
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();
 	end
-
+	StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
 	GuildControlUI.numSkipUpdates = 0;
 	GuildControlUI.currentRank = self:GetID()+1; --igonre officer
 	GuildControlSetRank(GuildControlUI.currentRank);

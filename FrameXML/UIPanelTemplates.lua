@@ -35,7 +35,7 @@ function PanelTemplates_GetTabWidth(tab)
 	return tab:GetTextWidth() + sideWidths;
 end
 
-function PanelTemplates_TabResize(tab, padding, absoluteSize, maxWidth, absoluteTextSize)
+function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
 	local tabName = tab:GetName();
 	
 	local buttonMiddle = _G[tabName.."Middle"];
@@ -76,6 +76,9 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, maxWidth, absolute
 			tabText:SetWidth(width);
 		else
 			tabText:SetWidth(0);
+		end
+		if (minWidth and width < minWidth) then
+			width = minWidth;
 		end
 		tabWidth = width + sideWidths;
 	end
@@ -118,7 +121,7 @@ function PanelTemplates_DeselectTab(tab)
 	_G[name.."Right"]:Show();
 	--tab:UnlockHighlight();
 	tab:Enable();
-	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", 0, 2);
+	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), (tab.deselectedTextY or 2));
 		
 	_G[name.."LeftDisabled"]:Hide();
 	_G[name.."MiddleDisabled"]:Hide();
@@ -133,7 +136,7 @@ function PanelTemplates_SelectTab(tab)
 	--tab:LockHighlight();
 	tab:Disable();
 	tab:SetDisabledFontObject(GameFontHighlightSmall);
-	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", 0, -3);
+	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), (tab.selectedTextY or -3));
 	
 	_G[name.."LeftDisabled"]:Show();
 	_G[name.."MiddleDisabled"]:Show();

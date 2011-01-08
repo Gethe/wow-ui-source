@@ -319,34 +319,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentOptionsButton">
-						<Size>
-							<AbsDimension x="16" y="16"/>
-						</Size>	
+					<Button name="$parentOptionsButton" inherits="UIPanelInfoButton">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-9" y="-7"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</HighlightTexture>
 						<Scripts>
-							<OnMouseDown>
-								_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 1, -1);
-							</OnMouseDown>
-							<OnMouseUp>
-								_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
-							</OnMouseUp>
 							<OnClick>
 								InterfaceOptionsFrame_OpenToCategory(RAID_FRAMES_LABEL);
 								PlaySound("igMainMenuOption");
