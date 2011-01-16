@@ -85,12 +85,12 @@ local function getRelativePointAnchor( point )
 end
 
 local function setAttributesWithoutResponse(self, ...)
-		local oldIgnore = self:GetAttribute("_ignore");
-		self:SetAttribute("_ignore", "attributeChanges");
-		for	i = 1, select('#', ...), 2 do
-			self:SetAttribute(select(i, ...));
-		end
-		self:SetAttribute("_ignore", oldIgnore);
+	local oldIgnore = self:GetAttribute("_ignore");
+	self:SetAttribute("_ignore", "attributeChanges");
+	for i = 1, select('#', ...), 2 do
+		self:SetAttribute(select(i, ...));
+	end
+	self:SetAttribute("_ignore", oldIgnore);
 end
 
 local CallRestrictedClosure = CallRestrictedClosure;
@@ -106,7 +106,7 @@ function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunction )
 		local selfHandle = GetFrameHandle(newChild);
 		if ( selfHandle ) then
 			CallRestrictedClosure("self", GetManagedEnvironment(header, true),
-								  selfHandle, configCode, selfHandle);
+			                      selfHandle, configCode, selfHandle);
 		end
 	end
 end
@@ -189,7 +189,6 @@ local function configureChildren(self, unitTable)
 		elseif ( columnUnitCount == 1 ) then
 			local columnAnchor = self:GetAttribute("child"..(buttonNum - unitsPerColumn));
 			unitButton:SetPoint(columnAnchorPoint, columnAnchor, columnRelPoint, colxMulti * columnSpacing, colyMulti * columnSpacing);
-
 		else
 			unitButton:SetPoint(point, currentAnchor, relativePoint, xMultiplier * xOffset, yMultiplier * yOffset);
 		end
@@ -244,23 +243,23 @@ local function configureChildren(self, unitTable)
 end
 
 local function GetGroupHeaderType(self)
-	local type, start, stop;
+	local kind, start, stop;
 
 	local nRaid = GetNumRaidMembers();
 	local nParty = GetNumPartyMembers();
 	if ( nRaid > 0 and self:GetAttribute("showRaid") ) then
-		type = "RAID";
+		kind = "RAID";
 	elseif ( (nRaid > 0 or nParty > 0) and self:GetAttribute("showParty") ) then
-		type = "PARTY";
+		kind = "PARTY";
 	elseif ( self:GetAttribute("showSolo") ) then
-		type = "SOLO";
+		kind = "SOLO";
 	end
-	if ( type ) then
-		if ( type == "RAID" ) then
+	if ( kind ) then
+		if ( kind == "RAID" ) then
 			start = 1;
 			stop = nRaid;
 		else
-			if ( type == "SOLO" or self:GetAttribute("showPlayer") ) then
+			if ( kind == "SOLO" or self:GetAttribute("showPlayer") ) then
 				start = 0;
 			else
 				start = 1;
@@ -268,12 +267,12 @@ local function GetGroupHeaderType(self)
 			stop = nParty;
 		end
 	end
-	return type, start, stop;
+	return kind, start, stop;
 end
 
-local function GetGroupRosterInfo(type, index)
+local function GetGroupRosterInfo(kind, index)
 	local _, unit, name, subgroup, className, role, server;
-	if ( type == "RAID" ) then
+	if ( kind == "RAID" ) then
 		unit = "raid"..index;
 		name, _, subgroup, _, _, className, _, _, _, role = GetRaidRosterInfo(index);
 	else
@@ -388,8 +387,8 @@ function SecureGroupHeader_Update(self)
 	wipe(sortingTable);
 
 	-- See if this header should be shown
-	local type, start, stop = GetGroupHeaderType(self);
-	if ( not type ) then
+	local kind, start, stop = GetGroupHeaderType(self);
+	if ( not kind ) then
 		configureChildren(self, sortingTable);
 		return;
 	end
@@ -403,7 +402,7 @@ function SecureGroupHeader_Update(self)
 		fillTable(wipe(tokenTable), strsplit(",", groupFilter));
 		local strictFiltering = self:GetAttribute("strictFiltering"); -- non-strict by default
 		for i = start, stop, 1 do
-			local unit, name, subgroup, className, role = GetGroupRosterInfo(type, i);
+			local unit, name, subgroup, className, role = GetGroupRosterInfo(kind, i);
 			if ( name and
 				((not strictFiltering) and
 					(tokenTable[subgroup] or tokenTable[className] or (role and tokenTable[role])) -- non-strict filtering
@@ -441,7 +440,7 @@ function SecureGroupHeader_Update(self)
 		-- filtering via a list of names
 		doubleFillTable(wipe(tokenTable), strsplit(",", nameList));
 		for i = start, stop, 1 do
-			local unit, name = GetGroupRosterInfo(type, i);
+			local unit, name = GetGroupRosterInfo(kind, i);
 			if ( tokenTable[name] ) then
 				tinsert(sortingTable, unit);
 				sortingTable[unit] = name;
@@ -487,8 +486,8 @@ function SecureGroupPetHeader_OnAttributeChanged(self, name, value)
 	end
 end
 
-local function GetPetUnit(type, index)
-	if ( type == "RAID" ) then
+local function GetPetUnit(kind, index)
+	if ( kind == "RAID" ) then
 		return "raidpet"..index;
 	elseif ( index > 0 ) then
 		return "partypet"..index;
@@ -508,8 +507,8 @@ function SecureGroupPetHeader_Update(self)
 	wipe(sortingTable);
 
 	-- See if this header should be shown
-	local type, start, stop = GetGroupHeaderType(self);
-	if ( not type ) then
+	local kind, start, stop = GetGroupHeaderType(self);
+	if ( not kind ) then
 		configureChildren(self, sortingTable);
 		return;
 	end
@@ -523,8 +522,8 @@ function SecureGroupPetHeader_Update(self)
 		fillTable(wipe(tokenTable), strsplit(",", groupFilter));
 		local strictFiltering = self:GetAttribute("strictFiltering"); -- non-strict by default
 		for i = start, stop, 1 do
-			local unit, name, subgroup, className, role = GetGroupRosterInfo(type, i);
-			local petUnit = GetPetUnit(type, i);
+			local unit, name, subgroup, className, role = GetGroupRosterInfo(kind, i);
+			local petUnit = GetPetUnit(kind, i);
 			if ( filterOnPet ) then
 				name = UnitName(petUnit);
 			end
@@ -571,8 +570,8 @@ function SecureGroupPetHeader_Update(self)
 		-- filtering via a list of names
 		doubleFillTable(tokenTable, strsplit(",", nameList));
 		for i = start, stop, 1 do
-			local unit, name = GetGroupRosterInfo(type, i);
-			local petUnit = GetPetUnit(type, i);
+			local unit, name = GetGroupRosterInfo(kind, i);
+			local petUnit = GetPetUnit(kind, i);
 			if ( filterOnPet ) then
 				name = UnitName(petUnit);
 			end
@@ -590,30 +589,10 @@ function SecureGroupPetHeader_Update(self)
 
 	end
 
-	if ( useOwnerUnit and filterOnPet ) then
-		-- sorting table currently contains pet unit strings and needs to contain owner unit strings
-		for i, unit in ipairs(sortingTable) do
-			local name = sortingTable[unit];
-			sortingTable[unit] = nil; -- not strictly needed
-			unit = unit:gsub("pet", "");
-			sortingTable[unit] = name;
-			sortingTable[i] = unit;
-		end
-
-	elseif ( not useOwnerUnit and not filterOnPet ) then
-		-- sorting table currently contains owner unit strings and needs to contain pet unit strings
-		for i, unit in ipairs(sortingTable) do
-			local name = sortingTable[unit];
-			sortingTable[unit] = nil; -- not strictly needed
-			unit = unit:gsub("(%d+)", "pet%1");
-			sortingTable[unit] = name;
-			sortingTable[i] = unit;
-		end
-
-	end
-
 	configureChildren(self, sortingTable);
 end
+
+-- SecureAuraHeader contributed by alestane@comcast.net
 
 --[[
 filter = [STRING] -- a pipe-separated list of aura filter options ("RAID" will be ignored)
@@ -684,10 +663,10 @@ local function extractTemplateInfo(template, defaultWidget)
 	if ( template ) then
 		template, widgetType = strsplit(",", tostring(template):trim():gsub("%s*,%s*", ","));
 		if ( template ~= "" ) then
-				if ( not widgetType or widgetType == "" ) then
-						widgetType = defaultWidget;
-				end
-				return template, widgetType;
+			if ( not widgetType or widgetType == "" ) then
+				widgetType = defaultWidget;
+			end
+			return template, widgetType;
 		end
 	end
 	return nil;

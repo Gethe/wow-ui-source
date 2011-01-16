@@ -1429,6 +1429,22 @@ StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["BN_BLOCK_FAILED_TOO_MANY_RID"] = {
+	text = BN_BLOCK_FAILED_TOO_MANY_RID,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["BN_BLOCK_FAILED_TOO_MANY_CID"] = {
+	text = BN_BLOCK_FAILED_TOO_MANY_CID,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
 function ChatChannelPasswordHandler(self, data)
 	local password = _G[self:GetName().."EditBox"]:GetText();
 	local name = data;

@@ -1,10 +1,4 @@
-USE_CC_LOGIN_ART = UseCCArt();
-
-if (USE_CC_LOGIN_ART) then
-	CurrentGlueMusic = "GS_Cataclysm";
-else
-	CurrentGlueMusic = "GS_LichKing";
-end
+CurrentGlueMusic = "GS_Cataclysm";
 
 GlueCreditsSoundKits = { };
 GlueCreditsSoundKits[1] = "Menu-Credits01";
@@ -354,7 +348,7 @@ function GlueFrameFadeRemoveFrame(frame)
 end
 
 function SetLighting(model, race)
-	model:SetSequence(0);
+	--model:SetSequence(0);
 	model:SetCamera(0);
 	local fogInfo = CharModelFogInfo[race];
 	if ( fogInfo ) then
@@ -457,19 +451,19 @@ function MinutesToTime(mins, hideDays)
 	-- only show days if hideDays is false
 	if ( mins > 1440 and not hideDays ) then
 		tempTime = floor(mins / 1440);
-		time = tempTime.." "..DAYS_ABBR.." ";
+		time = tempTime..TIME_UNIT_DELIMITER..DAYS_ABBR..TIME_UNIT_DELIMITER;
 		mins = mod(mins, 1440);
 		count = count + 1;
 	end
 	if ( mins > 60  ) then
 		tempTime = floor(mins / 60);
-		time = time..tempTime.." "..HOURS_ABBR.." ";
+		time = time..tempTime..TIME_UNIT_DELIMITER..HOURS_ABBR..TIME_UNIT_DELIMITER;
 		mins = mod(mins, 60);
 		count = count + 1;
 	end
 	if ( count < 2 ) then
 		tempTime = mins;
-		time = time..tempTime.." "..MINUTES_ABBR.." ";
+		time = time..tempTime..TIME_UNIT_DELIMITER..MINUTES_ABBR..TIME_UNIT_DELIMITER;
 		count = count + 1;
 	end
 	return time;
@@ -517,15 +511,7 @@ function SetLoginScreenModel(model)
 	model:SetSequence(0);
 	if (IsStreamingTrial()) then
 		model:SetModel("Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2");
-	elseif (USE_CC_LOGIN_ART) then
-		model:SetModel("Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2");
 	else
-		model:SetModel("Interface\\Glues\\MODELS\\UI_MAINMENU_NORTHREND\\UI_MainMenu_Northrend.m2");
-	end
-end
-
-function SetWoWLogo(texture)
-	if (not USE_CC_LOGIN_ART and WOW_LOGO_FILE) then
-		texture:SetTexture(WOW_LOGO_FILE);
+		model:SetModel("Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2");
 	end
 end

@@ -243,7 +243,6 @@ CreditsArtInfo[4][57] = { file="Tol Barad Gun01", w=1024, h=512, offsetx=0, offs
 
 
 function CreditsFrame_OnShow(self)
-	SetWoWLogo(CreditsLogo);
 	CreditsFrame_Update(self);
 end
 

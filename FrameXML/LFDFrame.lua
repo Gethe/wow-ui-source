@@ -934,7 +934,7 @@ function LFDQueueFrameRandom_UpdateFrame()
 end
 
 function LFDQueueFrameRandomCooldownFrame_OnLoad(self)
-	self:SetFrameLevel(11);	--This value also needs to be set when SetParent is called in LFDQueueFrameRandomCooldownFrame_Update.
+	self:SetFrameLevel(LFDQueueFrame:GetFrameLevel() + 9);	--This value also needs to be set when SetParent is called in LFDQueueFrameRandomCooldownFrame_Update.
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
 	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
@@ -975,15 +975,17 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 		local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
 		nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName("party"..i));
 		
+		local gender = UnitSex("party"..i);
+		
 		if ( UnitHasLFGDeserter("party"..i) ) then
-			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", DESERTER);
+			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", GetText("DESERTER", gender));
 			shouldShow = true;
 			hasDeserter = true;
 		elseif ( UnitHasLFGRandomCooldown("party"..i) ) then
-			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", ON_COOLDOWN);
+			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", GetText("ON_COOLDOWN", gender));
 			shouldShow = true;
 		else
-			statusLabel:SetFormattedText(GREEN_FONT_COLOR_CODE.."%s|r", READY);
+			statusLabel:SetFormattedText(GREEN_FONT_COLOR_CODE.."%s|r", GetText("READY", gender));
 		end
 	end
 	for i = GetNumPartyMembers() + 1, MAX_PARTY_MEMBERS do
@@ -1001,10 +1003,10 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 	
 	if ( hasDeserter ) then
 		cooldownFrame:SetParent(LFDQueueFrame);
-		cooldownFrame:SetFrameLevel(11);	--Setting a new parent changes the frame level, so we need to move it back to what we set in OnLoad.
+		cooldownFrame:SetFrameLevel(LFDQueueFrame:GetFrameLevel() + 9);	--Setting a new parent changes the frame level, so we need to move it back to what we set in OnLoad.
 	else
 		cooldownFrame:SetParent(LFDQueueFrameRandom);	--If nobody has deserter, the dungeon cooldown only prevents us from queueing for random.
-		cooldownFrame:SetFrameLevel(11);
+		cooldownFrame:SetFrameLevel(LFDQueueFrame:GetFrameLevel() + 9);
 	end
 	
 	if ( myExpireTime and GetTime() < myExpireTime ) then

@@ -4,9 +4,12 @@
 	<Frame name="CharacterCreateTooltip" frameStrata="TOOLTIP" hidden="true" parent="GlueParent" inherits="GlueTooltipTemplate">
 		<Scripts>
 			<OnLoad>
-				GlueTooltip_SetFont(self, CharacterCreateTooltipFont);
-				self:SetBackdropBorderColor(1.0, 1.0, 1.0);
-				self:SetBackdropColor(0.09, 0.09, 0.19 );
+				GlueTooltip_OnLoad(self);
+				self:SetFont(CharacterCreateTooltipFont);
+				self.defaultColor = HIGHLIGHT_FONT_COLOR;
+				for i = 1, GLUETOOLTIP_NUM_LINES do
+					_G[self:GetName().."TextLeft"..i]:SetJustifyH("CENTER");
+				end
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -75,8 +78,8 @@
 				CharacterRace_OnClick(self, self:GetID());
 			</OnClick>
 			<OnEnter>
-				GlueTooltip_SetOwner(self, CharacterCreateTooltip, -3, -5);
-				GlueTooltip_SetText(self.tooltip, CharacterCreateTooltip);
+				CharacterCreateTooltip:SetOwner(self, -3, -5);
+				CharacterCreateTooltip:SetText(self.tooltip);
 			</OnEnter>
 			<OnLeave>
 				CharacterCreateTooltip:Hide();
@@ -96,8 +99,8 @@
 				CharacterClass_OnClick(self, self:GetID());	
 			</OnClick>
 			<OnEnter>
-				GlueTooltip_SetOwner(self, CharacterCreateTooltip, -3, -5);
-				GlueTooltip_SetText(self.tooltip, CharacterCreateTooltip);
+				CharacterCreateTooltip:SetOwner(self, -3, -5);
+				CharacterCreateTooltip:SetText(self.tooltip);
 			</OnEnter>
 			<OnLeave>
 				CharacterCreateTooltip:Hide();
@@ -514,8 +517,8 @@
 										end
 									</OnClick>
 									<OnEnter>
-										GlueTooltip_SetOwner(self, CharacterCreateTooltip, -3, -5);
-										GlueTooltip_SetText(MALE, CharacterCreateTooltip);
+										CharacterCreateTooltip:SetOwner(self, -3, -5);
+										CharacterCreateTooltip:SetText(MALE);
 									</OnEnter>
 								</Scripts>
 							</CheckButton>
@@ -537,8 +540,8 @@
 										end
 									</OnClick>
 									<OnEnter>
-										GlueTooltip_SetOwner(self, CharacterCreateTooltip, -3, -5);
-										GlueTooltip_SetText(FEMALE, CharacterCreateTooltip);
+										CharacterCreateTooltip:SetOwner(self, -3, -5);
+										CharacterCreateTooltip:SetText(FEMALE);
 									</OnEnter>
 								</Scripts>
 							</CheckButton>
@@ -810,8 +813,8 @@
 							</OnClick>
 <!--
 							<OnEnter>
-								GlueTooltip_SetOwner(self, CharacterCreateTooltip, -3, -5);
-								GlueTooltip_SetText(self.tooltip, CharacterCreateTooltip);
+								CharacterCreateTooltip:SetOwner(self, -3, -5);
+								CharacterCreateTooltip:SetText(self.tooltip);
 							</OnEnter>
 							<OnLeave>
 								CharacterCreateTooltip:Hide();
@@ -862,8 +865,8 @@
 							</OnClick>
 <!--
 							<OnEnter>
-								GlueTooltip_SetOwner(self, CharacterCreateTooltip, -3, -5);
-								GlueTooltip_SetText(self.tooltip, CharacterCreateTooltip);
+								CharacterCreateTooltip:SetOwner(self, -3, -5);
+								CharacterCreateTooltip:SetText(self.tooltip);
 							</OnEnter>
 							<OnLeave>
 								CharacterCreateTooltip:Hide();

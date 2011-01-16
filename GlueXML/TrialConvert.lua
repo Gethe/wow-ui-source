@@ -10,7 +10,6 @@ function TrialConvert_OnShow(self)
 	TrialConvertText:Show();
 	TrialConvertRestartButton:Show();
 	TrialConvertRestartButton:Enable();
-	SetWoWLogo(TrialConvertLogo);
 end
 
 function TrialConvert_OnKeyDown(self, key)

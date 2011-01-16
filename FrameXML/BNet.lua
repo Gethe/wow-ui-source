@@ -23,6 +23,7 @@ function BNet_OnLoad(self)
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("BN_BLOCK_FAILED_TOO_MANY");
 end
 
 function BNet_OnEvent(self, event, ...)
@@ -35,6 +36,13 @@ function BNet_OnEvent(self, event, ...)
 			BNet_ReopenClosedConversations();
 		end
 		self:UnregisterEvent("VARIABLES_LOADED");
+	elseif ( event == "BN_BLOCK_FAILED_TOO_MANY" ) then
+		local blockType = ...;
+		if ( blockType == "RID" ) then
+			StaticPopup_Show("BN_BLOCK_FAILED_TOO_MANY_RID");
+		elseif ( blockType == "CID" ) then
+			StaticPopup_Show("BN_BLOCK_FAILED_TOO_MANY_CID");
+		end
 	end
 end
 

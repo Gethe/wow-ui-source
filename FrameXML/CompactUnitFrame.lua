@@ -560,6 +560,23 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 		index = index + 1;
 	end
 	
+	--Now we go through the debuffs with a priority (e.g. Weakened Soul and Forbearance)
+	index = 1;
+	while ( frameNum <= maxDebuffs ) do
+		local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
+		if ( debuffName ) then
+			if ( CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter) ) then
+				local debuffFrame = frame.debuffFrames[frameNum];
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
+				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
+				frameNum = frameNum + 1;
+			end
+		else
+			break;
+		end
+		index = index + 1;
+	end
+	
 	if ( frame.optionTable.displayOnlyDispellableDebuffs ) then
 		filter = "RAID";
 	end
@@ -569,7 +586,8 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 	while ( frameNum <= maxDebuffs ) do
 		local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
 		if ( debuffName ) then
-			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter)) then
+			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter) and
+				not CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter)) then
 				local debuffFrame = frame.debuffFrames[frameNum];
 				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
 				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
@@ -670,6 +688,23 @@ end
 function CompactUnitFrame_UtilIsBossDebuff(unit, index, filter)
 	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId, canApplyAura, isBossDebuff = UnitDebuff(unit, index, filter);
 	return isBossDebuff;
+end
+
+function CompactUnitFrame_UtilIsPriorityDebuff(unit, index, filter)
+	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId, canApplyAura, isBossDebuff = UnitDebuff(unit, index, filter);
+	
+	local _, classFilename = UnitClass("player");
+	if ( classFilename == "PALADIN" ) then
+		if ( spellId == 25771 ) then	--Forbearance
+			return true;
+		end
+	elseif ( classFilename == "PRIEST" ) then
+		if ( spellId == 6788 ) then	--Weakened Soul
+			return true;
+		end
+	end
+	
+	return false;
 end
 
 function CompactUnitFrame_HideAllDebuffs(frame)

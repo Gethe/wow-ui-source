@@ -6,33 +6,30 @@
 			<Frame name="TrialConvertUI" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-
-					<FontString name="TrialConvertTitle" inherits="GlueFontNormalHuge" text="CLIENT_CONVERTED_TITLE">
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="500"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-
-					<FontString name="TrialConvertText" inherits="GlueFontNormalLarge" text="CLIENT_CONVERTED_TEXT">
-						<Size>
-							<AbsDimension x="440" y="0"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="400"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-
+						<FontString name="TrialConvertTitle" inherits="GlueFontNormalHuge" text="CLIENT_CONVERTED_TITLE">
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="500"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="TrialConvertText" inherits="GlueFontNormalLarge" text="CLIENT_CONVERTED_TEXT">
+							<Size>
+								<AbsDimension x="440" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="400"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="TrialConvertLogo" file="Interface\Glues\Common\Glues-WoW-Logo">
+						<Texture name="TrialConvertLogo" file="Interface\Glues\Common\Glues-WoW-CCLogo">
 							<Size>
 								<AbsDimension x="256" y="128"/>
 							</Size>
@@ -47,7 +44,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-
 					<Button name="TrialConvertRestartButton" inherits="GlueButtonTemplate" hidden="true" text="RESTART">
 						<Anchors>
 							<Anchor point="BOTTOM">
@@ -63,11 +59,6 @@
 						</Scripts>
 					</Button>
 				</Frames>
-				<Scripts>
-					<OnShow>
-						<!-- GlueFrameFadeIn(this, LOGIN_FADE_IN); -->
-					</OnShow>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

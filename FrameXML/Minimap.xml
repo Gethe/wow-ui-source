@@ -464,6 +464,15 @@
 												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
 												MiniMapTrackingIconOverlay:Hide();
 											</OnMouseUp>
+											<OnEnter>
+												GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+												GameTooltip:SetText(TRACKING, 1, 1, 1);
+												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, 1);
+												GameTooltip:Show();
+											</OnEnter>
+											<OnLeave>
+												GameTooltip:Hide();
+											</OnLeave>
 										</Scripts>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 									</Button>

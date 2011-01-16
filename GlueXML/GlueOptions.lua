@@ -1,4 +1,4 @@
-VideoOptionsTooltip = OptionsTooltip;
+VideoOptionsTooltip = GlueTooltip;
 VideoOptionsDropDownMenu_Initialize = GlueDropDownMenu_Initialize;
 VideoOptionsDropDownMenu_GetSelectedID = GlueDropDownMenu_GetSelectedID;
 VideoOptionsDropDownMenu_SetSelectedID = GlueDropDownMenu_SetSelectedID;

@@ -771,8 +771,10 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 			local id = AchievementFrameAchievementsObjectives.id;
 			local button = AchievementFrameAchievementsObjectives:GetParent();
 			AchievementFrameAchievementsObjectives.id = nil;
-			AchievementButton_DisplayObjectives(button, id, button.completed);
-			AchievementFrameAchievements_Update();
+			if ( self:IsVisible() ) then
+				AchievementButton_DisplayObjectives(button, id, button.completed);
+				AchievementFrameAchievements_Update();
+			end
 		else
 			AchievementFrameAchievementsObjectives.id = nil; -- Force redraw
 		end

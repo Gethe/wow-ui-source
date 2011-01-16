@@ -1,55 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script>
-		function GlueTooltip_SetOwner(self, tooltip, xOffset, yOffset, myPoint, ownerPoint)
-			if ( not self ) then
-				return;
-			end
-			if ( not tooltip ) then
-				tooltip = GlueTooltip;
-			end
-			if ( not xOffset ) then
-				xOffset = 0;
-			end
-			if ( not yOffset ) then
-				yOffset = 0;
-			end
-			if ( not myPoint ) then
-				myPoint = "BOTTOMLEFT";
-			end
-			if ( not ownerPoint ) then
-				ownerPoint = "TOPRIGHT";
-			end
-			tooltip:SetPoint(myPoint, self, ownerPoint, xOffset, yOffset);
-			tooltip:Show();
-		end
-		function GlueTooltip_SetText(text, tooltip, r, g, b)
-			if ( not tooltip ) then
-				tooltip = GlueTooltip;
-			end
-			local textString = _G[tooltip:GetName().."TextLeft1"];
-			textString:SetText(text);
-			if ( r ) then
-				textString:SetTextColor(r, g, b);
-			end
-			textString:Show();
-			tooltip:SetWidth(textString:GetWidth()+25);
-			tooltip:SetHeight(textString:GetHeight()+20);
-		end
-		function GlueTooltip_SetFont(tooltip, font)
-			if ( not tooltip ) then
-				tooltip = GlueTooltip;
-			end
-			local textString = _G[tooltip:GetName().."TextLeft1"];
-			textString:SetFontObject(font);
-			local textString = _G[tooltip:GetName().."TextRight1"];
-			textString:SetFontObject(font);
-			local textString = _G[tooltip:GetName().."TextLeft2"];
-			textString:SetFontObject(font);
-			local textString = _G[tooltip:GetName().."TextRight2"];
-			textString:SetFontObject(font);
-		end
-	</Script>
+	<Script file="GlueTooltip.lua"/>
 	<Frame name="GlueTooltipTemplate" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" virtual="true">
 		<Size>
 			<AbsDimension x="50" y="50"/>
@@ -67,7 +18,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTextLeft1" inherits="GlueFontNormalSmall" hidden="true">
+				<FontString name="$parentTextLeft1" inherits="GlueFontNormal" justifyH="LEFT" hidden="true" parentKey="TextLeft1">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -76,7 +27,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight1" inherits="GlueFontNormalSmall" hidden="true">
+				<FontString name="$parentTextRight1" inherits="GlueFontNormal" justifyH="RIGHT" hidden="true" parentKey="TextRight1">
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentTextLeft1" relativePoint="LEFT">
 							<Offset>
@@ -85,7 +36,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft2" inherits="GlueFontNormalSmall" hidden="true">
+				<FontString name="$parentTextLeft2" inherits="GlueFontNormalSmall" justifyH="LEFT" hidden="true" parentKey="TextLeft2">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft1" relativePoint="BOTTOMLEFT">
 							<Offset>
@@ -94,9 +45,45 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight2" inherits="GlueFontNormalSmall" hidden="true">
+				<FontString name="$parentTextRight2" inherits="GlueFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="TextRight2">
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentTextLeft2" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="40" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextLeft3" inherits="GlueFontNormalSmall" justifyH="LEFT" hidden="true" parentKey="TextLeft3">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft2" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextRight3" inherits="GlueFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="TextRight3">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTextLeft3" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="40" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextLeft4" inherits="GlueFontNormalSmall" justifyH="LEFT" hidden="true" parentKey="TextLeft4">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft3" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextRight4" inherits="GlueFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="TextRight4">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTextLeft4" relativePoint="LEFT">
 							<Offset>
 								<AbsDimension x="40" y="0"/>
 							</Offset>
@@ -107,9 +94,12 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropBorderColor(1.0, 1.0, 1.0);
-				self:SetBackdropColor(0.09, 0.09, 0.19 );
+				GlueTooltip_OnLoad(self);
 			</OnLoad>
+			<OnHide>
+				self:Clear();
+				self.owner = nil;
+			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="GlueTooltip" frameStrata="TOOLTIP" hidden="true" parent="GlueParent" inherits="GlueTooltipTemplate">

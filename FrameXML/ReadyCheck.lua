@@ -25,6 +25,9 @@ end
 function ReadyCheckFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_FINISHED");
+	
+	ReadyCheckFrameYesButton:SetText(GetText("READY", UnitSex("player")));
+	ReadyCheckFrameNoButton:SetText(GetText("NOT_READY", UnitSex("player")));
 end
 
 function ReadyCheckFrame_OnEvent(self, event, ...)

@@ -418,7 +418,8 @@
 						self:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up");
 						self:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down");
 						self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled");
-						local bandwidthIn, bandwidthOut, latency = GetNetStats();
+						local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+						local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
 						if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
 							MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);									
 						elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then

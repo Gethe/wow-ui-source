@@ -81,8 +81,8 @@
 				CharacterSelect_PaidServiceOnClick(self, button, down, PAID_CHARACTER_CUSTOMIZATION);
 			</OnClick>
 			<OnEnter>
-				GlueTooltip_SetOwner(self);
-				GlueTooltip_SetText(PAID_CHARACTER_CUSTOMIZE_TOOLTIP, nil, 1.0, 1.0, 1.0);
+				GlueTooltip:SetOwner(self);
+				GlueTooltip:SetText(PAID_CHARACTER_CUSTOMIZE_TOOLTIP, 1.0, 1.0, 1.0);
 			</OnEnter>
 			<OnLeave>
 				GlueTooltip:Hide();
@@ -107,11 +107,11 @@
 				CharacterSelect_PaidServiceOnClick(self, button, down, PAID_RACE_CHANGE);
 			</OnClick>
 			<OnEnter>
-				GlueTooltip_SetOwner(self);
+				GlueTooltip:SetOwner(self);
 				if (self:IsEnabled()) then
-					GlueTooltip_SetText(PAID_RACE_CHANGE_TOOLTIP, nil, 1.0, 1.0, 1.0);
+					GlueTooltip:SetText(PAID_RACE_CHANGE_TOOLTIP, 1.0, 1.0, 1.0);
 				else
-					GlueTooltip_SetText(PAID_RACE_CHANGE_DISABLED_TOOLTIP, nil, 1.0, 1.0, 1.0);
+					GlueTooltip:SetText(PAID_RACE_CHANGE_DISABLED_TOOLTIP, 1.0, 1.0, 1.0);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -137,8 +137,8 @@
 				CharacterSelect_PaidServiceOnClick(self, button, down, PAID_FACTION_CHANGE);
 			</OnClick>
 			<OnEnter>
-				GlueTooltip_SetOwner(self);
-				GlueTooltip_SetText(PAID_FACTION_CHANGE_TOOLTIP, nil, 1.0, 1.0, 1.0);
+				GlueTooltip:SetOwner(self);
+				GlueTooltip:SetText(PAID_FACTION_CHANGE_TOOLTIP, 1.0, 1.0, 1.0);
 			</OnEnter>
 			<OnLeave>
 				GlueTooltip:Hide();

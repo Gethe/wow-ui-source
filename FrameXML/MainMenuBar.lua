@@ -526,8 +526,8 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 	
 	-- latency
-	local bandwidthIn, bandwidthOut, latency = GetNetStats();
-	string = format(MAINMENUBAR_LATENCY_LABEL, latency);
+	local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+	string = format(MAINMENUBAR_LATENCY_LABEL, latencyHome, latencyWorld);
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
 	if ( SHOW_NEWBIE_TIPS == "1" ) then

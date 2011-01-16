@@ -6,7 +6,6 @@ function PatchDownload_OnLoad(self)
 
 	self:RegisterEvent("PATCH_UPDATE_PROGRESS");
 	self:RegisterEvent("PATCH_DOWNLOADED");
-	SetWoWLogo(PatchDownloadLogo);
 end
 
 function PatchDownload_OnShow()

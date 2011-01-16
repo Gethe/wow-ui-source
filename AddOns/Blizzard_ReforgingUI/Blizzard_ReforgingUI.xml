@@ -48,6 +48,20 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( self.text:IsTruncated() ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.text:GetText());
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( GameTooltip:GetOwner() == self ) then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+		</Scripts>
 	</Frame>
 
 

@@ -5,7 +5,6 @@ function RealmWizard_OnLoad(self)
 		AccountLoginCinematicsButton:Disable();
 	end
 	SetLoginScreenModel(RealmWizard);
-	SetWoWLogo(RealmWizardLogo);
 end
 
 function RealmWizard_OnShow(self)

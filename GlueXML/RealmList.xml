@@ -222,8 +222,8 @@
 			</OnLoad>
 			<OnEnter>
 				if (self.major) then
-					GlueTooltip_SetOwner(self, nil, -50, 0);
-					GlueTooltip_SetText(self.major.."."..self.minor.."."..self.revision.."  "..self.build.." Type: "..self.type);
+					GlueTooltip:SetOwner(self, -50, 0);
+					GlueTooltip:SetText(self.major.."."..self.minor.."."..self.revision.."  "..self.build.." Type: "..self.type);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -379,8 +379,8 @@
 										SortRealms("name");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip_SetOwner(self, nil, -325, 0);
-										GlueTooltip_SetText(REALMLIST_REALMNAME_TOOLTIP);
+										GlueTooltip:SetOwner(self, -325, 0);
+										GlueTooltip:SetText(REALMLIST_REALMNAME_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();
@@ -403,8 +403,8 @@
 										SortRealms("mode");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip_SetOwner(self, nil, -200, 0);
-										GlueTooltip_SetText(REALMLIST_TYPE_TOOLTIP);
+										GlueTooltip:SetOwner(self, -200, 0);
+										GlueTooltip:SetText(REALMLIST_TYPE_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();
@@ -427,8 +427,8 @@
 										SortRealms("characters");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip_SetOwner(self, nil, -165, 0);
-										GlueTooltip_SetText(REALMLIST_NUMCHARACTERS_TOOLTIP);
+										GlueTooltip:SetOwner(self, -165, 0);
+										GlueTooltip:SetText(REALMLIST_NUMCHARACTERS_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();
@@ -451,8 +451,8 @@
 										SortRealms("load");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip_SetOwner(self, nil, -280, 0);
-										GlueTooltip_SetText(REALMLIST_POPULATION_TOOLTIP);
+										GlueTooltip:SetOwner(self, -280, 0);
+										GlueTooltip:SetText(REALMLIST_POPULATION_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();

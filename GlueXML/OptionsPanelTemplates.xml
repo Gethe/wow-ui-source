@@ -20,16 +20,16 @@
 			</OnClick>
 			<OnEnter>
 				if ( self.tooltipText ) then
-					OptionsTooltip:SetOwner(self);
-					OptionsTooltip:SetText(self.tooltipText, nil, nil, nil, nil);
+					GlueTooltip:SetOwner(self);
+					GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 				end
 				if ( self.tooltipRequirement ) then
-					OptionsTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0);
-					OptionsTooltip:Show();
+					GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, 1);
+					GlueTooltip:Show();
 				end
 			</OnEnter>
 			<OnLeave>
-				OptionsTooltip:Hide();
+				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -117,17 +117,17 @@
 			<OnEnter>
 				if ( self:IsEnabled() ) then
 					if ( self.tooltipText ) then
-						OptionsTooltip:SetOwner(self, self.tooltipOwnerPoint, self.tooltipPoint);
-						OptionsTooltip:SetText(self.tooltipText, nil, nil, nil, nil);
+						GlueTooltip:SetOwner(self, 0, 0, self.tooltipPoint, self.tooltipOwnerPoint);
+						GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 					end
 					if ( self.tooltipRequirement ) then
-						OptionsTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0);
-						OptionsTooltip:Show();
+						GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, 1);
+						GlueTooltip:Show();
 					end
 				end
 			</OnEnter>
 			<OnLeave>
-				OptionsTooltip:Hide();
+				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">

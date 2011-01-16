@@ -83,11 +83,11 @@
 						VideoOptionsResolutionPanelResolutionDropDown_OnLoad(self);
 					</OnLoad>
 					<OnEnter>
-						OptionsTooltip:SetOwner(self);
-						OptionsTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(OPTION_TOOLTIP_USE_RESOLUTION);
 					</OnEnter>
 					<OnLeave>
-						OptionsTooltip:Hide();
+						GlueTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Frame>
@@ -115,11 +115,11 @@
 						VideoOptionsResolutionPanelRefreshDropDown_OnLoad(self);
 					</OnLoad>
 					<OnEnter>
-						OptionsTooltip:SetOwner(self);
-						OptionsTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(OPTION_TOOLTIP_USE_REFRESH);
 					</OnEnter>
 					<OnLeave>
-						OptionsTooltip:Hide();
+						GlueTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Frame>
@@ -147,11 +147,11 @@
 						VideoOptionsResolutionPanelMultiSampleDropDown_OnLoad(self);
 					</OnLoad>
 					<OnEnter>
-						OptionsTooltip:SetOwner(self);
-						OptionsTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(OPTION_TOOLTIP_MULTISAMPLING);
 					</OnEnter>
 					<OnLeave>
-						OptionsTooltip:Hide();
+						GlueTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Frame>

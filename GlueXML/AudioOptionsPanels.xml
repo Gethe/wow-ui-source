@@ -342,11 +342,11 @@
 						AudioOptionsSoundPanelHardwareDropDown_OnLoad(self);
 					</OnLoad>
 					<OnEnter>
-						OptionsTooltip:SetOwner(self);
-						OptionsTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
-						OptionsTooltip:Hide();
+						GlueTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Frame>
@@ -376,11 +376,11 @@
 						AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad(self);
 					</OnLoad>
 					<OnEnter>
-						OptionsTooltip:SetOwner(self);
-						OptionsTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, 1);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
-						OptionsTooltip:Hide();
+						GlueTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Frame>		
@@ -459,13 +459,13 @@
 					<OnEnter>
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
-								OptionsTooltip:SetOwner(self);
-								OptionsTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetOwner(self);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 							end
-							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then								
-								OptionsTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
-								OptionsTooltip:Show();
-							end							
+							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:Show();
+							end
 						end
 					</OnEnter>
 				</Scripts>	
@@ -520,17 +520,17 @@
 					<OnEnter>
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
-								OptionsTooltip:SetOwner(self);
-								OptionsTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetOwner(self);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 							end
-							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then								
-								OptionsTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
-								OptionsTooltip:Show();
-							end							
+							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:Show();
+							end	
 						end
 					</OnEnter>
-				</Scripts>	
-			</Slider>				
+				</Scripts>
+			</Slider>
 			<Slider name="$parentMusicVolume" inherits="OptionsSliderTemplate">
 				<Size x="100" y="17"/>
 				<Anchors>
@@ -574,13 +574,13 @@
 					<OnEnter>
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
-								OptionsTooltip:SetOwner(self);
-								OptionsTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetOwner(self);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 							end
-							if (not AudioOptionsSoundPanelMusic:GetChecked()) then								
-								OptionsTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
-								OptionsTooltip:Show();
-							end							
+							if (not AudioOptionsSoundPanelMusic:GetChecked()) then
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:Show();
+							end	
 						end
 					</OnEnter>
 				</Scripts>	
@@ -628,13 +628,13 @@
 					<OnEnter>
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
-								OptionsTooltip:SetOwner(self);
-								OptionsTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetOwner(self);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
 							end
-							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then								
-								OptionsTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
-								OptionsTooltip:Show();
-							end							
+							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:Show();
+							end
 						end
 					</OnEnter>
 				</Scripts>

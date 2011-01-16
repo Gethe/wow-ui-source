@@ -178,4 +178,9 @@
 			<AbsValue val="18"/>
 		</FontHeight>
 	</Font>
+	<Font name="QuestFont_Large" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
 </Ui>

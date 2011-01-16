@@ -495,8 +495,7 @@
 								end
 							</OnShow>
 							<OnClick>
-								PlaySound("gsTitleOptions");
-								OptionsSelectFrame:Show();
+								AccountLogin_Options();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -2479,110 +2478,237 @@
 		</Scripts>
 		<FogColor r="0.25" g="0.06" b="0.015"/>
 	</ModelFFX>
-
-	<Frame name="CinematicsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+	
+	<Button name="CinematicsButtonTemplate" virtual="true">
+		<Size x="176" y="78"/>
+		
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentPlayButton" file="Interface\Glues\Common\cinematicbuttons" parentKey="PlayButton">
+					<Size x="43" y="43"/>
+					<TexCoords left="0.78515625" right="0.86914063" top="0.00781250" bottom="0.09179688"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentDownloadIcon" file="Interface\Glues\Common\cinematicbuttons" parentKey="DownloadIcon">
+					<Size x="43" y="43"/>
+					<TexCoords left="0.69726563" right="0.78125000" top="0.00781250" bottom="0.09179688"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
 		<Frames>
-			<Frame name="CinematicsBackground">
-				<Size>
-					<AbsDimension x="272" y="256"/>
-				</Size>
+			<Frame name="$parentStreamingIcon" hidden="true" parentKey="StreamingIcon">
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" x="-2" y="5"/>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
+				<Size x="48" y="48"/>
+				<Frames>
+					<Frame name="$parentFrame" setAllPoints="true" parentKey="Frame" >
+						<Layers>
+							<Layer level="BACKGROUND" sublevel="1">
+								<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" parentKey="Background"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\COMMON\StreamFrame" name="$parenAlpha" setAllPoints="true" />
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="$parentSpin" setAllPoints="true" parentKey="Spin">
+						<Layers>
+							<Layer level="BACKGROUND" sublevel="2" >
+								<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" parentKey="Spinner"/>
+							</Layer>
+							<Layer level="OVERLAY" >
+								<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Spin.Spinner:SetVertexColor(0,1,0);
+						self.Frame.Background:SetVertexColor(0,1,0);
+					</OnLoad>
+				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="Loop" looping="REPEAT" >
+						<Rotation target="StreamingIconSpin" order="1" duration="8" degrees="-360" />
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<StatusBar name="$parentStatusBar" hidden="true" parentKey="StatusBar">
+				<Size x="168" y="2"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="17"/>
+				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString inherits="GlueFontNormalLarge" text="CINEMATICS">
-							<Size>
-								<AbsDimension x="450" y="0"/>
-							</Size>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBg" file="Interface\Glues\Common\cinematicbuttons">
+							<Size x="8" y="4"/>
+							<TexCoords left="0.69726563" right="0.71289063" top="0.09570313" bottom="0.10351563"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="-16"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" y="1"/>
+								<Anchor point="TOPRIGHT" y="1"/>
 							</Anchors>
-						</FontString>
+						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Button name="CinematicsButton1" inherits="GlueButtonTemplateBlue" text="WORLD_OF_WARCRAFT" hidden="true" id="1">
-						<Size>
-							<AbsDimension x="240" y="45"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-50"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick function="Cinematics_PlayMovie"/>
-						</Scripts>
-					</Button>
-					<Button name="CinematicsButton2" inherits="GlueButtonTemplateBlue" text="BURNING_CRUSADE" hidden="true" id="2">
-						<Size>
-							<AbsDimension x="240" y="45"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick function="Cinematics_PlayMovie"/>
-						</Scripts>						
-					</Button>
-					<Button name="CinematicsButton3" inherits="GlueButtonTemplateBlue" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
-						<Size>
-							<AbsDimension x="240" y="45"/>
-						</Size>
-						<Anchors>				
-							<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>	
-						<Scripts>
-							<OnClick function="Cinematics_PlayMovie"/>
-						</Scripts>						
-					</Button>
-					<Button name="CinematicsButton4" inherits="GlueButtonTemplateBlue" text="CATACLYSM" hidden="true" id="4">
-						<Size>
-							<AbsDimension x="240" y="45"/>
-						</Size>
-						<Anchors>				
-							<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>	
-						<Scripts>
-							<OnClick function="Cinematics_PlayMovie"/>
-						</Scripts>						
-					</Button>
-				</Frames>
-			</Frame>
+				<BarTexture name="$parentBar" parentKey="Bar">
+					<Color r="1" g="1" b="1"/>
+				</BarTexture>
+			</StatusBar>
+		</Frames>
+		
+		<NormalFont style="GlueFontNormalExtraSmall"/>
+		<HighlightFont style="GlueFontHighlightExtraSmall"/>
+		<DisabledFont style="GlueFontDisableExtraSmall"/>
+		<HighlightTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.34570313" top="0.63281250" bottom="0.78515625"/>
+		</HighlightTexture>
+		<ButtonText>
+			<Size x="176" y="0"/>
+			<Anchors>
+				<Anchor point="BOTTOM" y="5"/>
+			</Anchors>
+		</ButtonText>
+		<PushedTextOffset x="-3" y="-3"/> 
+		
+		<Scripts>
+			<OnClick function="CinematicsButton_OnClick"/>
+			<OnMouseDown>
+				self.PlayButton:SetPoint("RIGHT", -8, -2);
+				self.DownloadIcon:SetPoint("RIGHT", -8, -2);
+				self.StreamingIcon:SetPoint("RIGHT", -5, 2);
+				self.StatusBar:SetPoint("BOTTOMLEFT", 4, 14);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.PlayButton:SetPoint("RIGHT", -5, 1);
+				self.DownloadIcon:SetPoint("RIGHT", -5, 1);
+				self.StreamingIcon:SetPoint("RIGHT", -2, 5);
+				self.StatusBar:SetPoint("BOTTOMLEFT", 4, 17);
+			</OnMouseUp>
+			<OnEnter function="CinematicsButton_OnEnter"/>
+			<OnLeave>
+				GlueTooltip:Hide();
+				self.mouseIsOverMe = false;
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Frame name="CinematicsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+		<Size x="262" y="512"/>
+		<Anchors>
+			<Anchor point="CENTER" y="-58"/>
+		</Anchors>
+		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="CinematicsFrameBg" alpha="0.8">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-11"/>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="QuestFontNormalLarge" text="CINEMATICS">
+					<Size x="450" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString name="CinematicSubtitlesLabel" inherits="GlueFontNormalExtraSmall" text="CINEMATICS_SHOW_SUBTITLES">
+					<Anchors>
+						<Anchor point="BOTTOM" x="12" y="18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="CinematicsFrameCloseButton" inherits="GlueCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOff");
+						CinematicsFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CinematicsButton1" inherits="CinematicsButtonTemplate" text="CATACLYSM" hidden="true" id="4">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-44"/>
+				</Anchors>
+				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.34960938" right="0.69335938" top="0.16406250" bottom="0.31640625"/>
+				</NormalTexture>
+				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.00195313" right="0.34570313" top="0.16406250" bottom="0.31640625"/>
+				</PushedTexture>
+			</Button>
+			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.34960938" right="0.69335938" top="0.32031250" bottom="0.47265625"/>
+				</NormalTexture>
+				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.00195313" right="0.34570313" top="0.78906250" bottom="0.94140625"/>
+				</PushedTexture>
+			</Button>
+			<Button name="CinematicsButton3" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.34960938" right="0.69335938" top="0.00781250" bottom="0.16015625"/>	
+				</NormalTexture>
+				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.00195313" right="0.34570313" top="0.00781250" bottom="0.16015625"/>
+				</PushedTexture>
+			</Button>
+			<Button name="CinematicsButton4" inherits="CinematicsButtonTemplate" text="WORLD_OF_WARCRAFT" hidden="true" id="1">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.00195313" right="0.34570313" top="0.47656250" bottom="0.62890625"/>
+				</NormalTexture>
+				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.00195313" right="0.34570313" top="0.32031250" bottom="0.47265625"/>
+				</PushedTexture>
+			</Button>
+			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CinematicSubtitlesLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetChecked(GetCVarBool("movieSubtitle"));
+					</OnShow>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						SetCVar("movieSubtitle", self:GetChecked());
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -2590,6 +2716,7 @@
 			</OnLoad>
 			<OnShow>
 				self:Raise();
+				CinematicsFrame_OnShow(self);
 			</OnShow>
 			<OnKeyDown>
 				CinematicsFrame_OnKeyDown(key);

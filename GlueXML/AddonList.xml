@@ -69,8 +69,8 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GlueTooltip_SetOwner(self);
-						GlueTooltip_SetText(self.tooltip);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(self.tooltip);
 					</OnEnter>
 					<OnLeave>
 						GlueTooltip:Hide();
@@ -98,8 +98,8 @@
 					</OnClick>
 					<OnEnter>
 						if ( self.tooltip ) then
-							GlueTooltip_SetOwner(self);
-							GlueTooltip_SetText(self.tooltip);
+							GlueTooltip:SetOwner(self);
+							GlueTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
 					<OnLeave>
@@ -129,8 +129,8 @@
 						AddonDialog_Show("CONFIRM_LAUNCH_ADDON_URL", self.url);
 					</OnClick>
 					<OnEnter>
-						GlueTooltip_SetOwner(self);
-						GlueTooltip_SetText(self.tooltip);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(self.tooltip);
 					</OnEnter>
 					<OnLeave>
 						GlueTooltip:Hide();
@@ -156,8 +156,8 @@
 						AddonDialog_Show("CONFIRM_LAUNCH_ADDON_URL", self.url);
 					</OnClick>
 					<OnEnter>
-						GlueTooltip_SetOwner(self);
-						GlueTooltip_SetText(self.tooltip);
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(self.tooltip);
 					</OnEnter>
 					<OnLeave>
 						GlueTooltip:Hide();

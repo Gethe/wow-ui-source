@@ -45,8 +45,16 @@ end
 
 function MovieFrame_OnShow(self)
 	self:EnableSubtitles(GetCVarBool("movieSubtitle"));
+
 	HideCursor();
 	MovieFrame_PlayMovie(self, 1);
+	
+	-- formula empirically determined to provide acceptable subtitles positioning for all resolutions
+	-- at 4/3 resolutions this will put the point at -630, the previous default
+	-- at wider resolutions the point will be lower
+	local y = 497 + 100 * self:GetWidth() / self:GetHeight();
+	MovieFrameSubtitleArea:SetPoint("TOP", 0, -y);
+	MovieFrameSubtitleArea:SetHeight(768 - y);
 end
 
 function MovieFrame_OnHide(self)

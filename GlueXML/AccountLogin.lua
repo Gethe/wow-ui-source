@@ -30,7 +30,6 @@ function AccountLogin_OnLoad(self)
 		AccountLoginCinematicsButton:Disable();
 	end
 	SetLoginScreenModel(AccountLogin);
-	SetWoWLogo(AccountLoginLogo);
 end
 
 function AccountLogin_OnShow(self)
@@ -188,6 +187,7 @@ function AccountLogin_TOS()
 		TOSScrollFrame:Show();
 		TOSFrameTitle:SetText(TOS_FRAME_TITLE);
 		TOSText:Show();
+		CinematicsFrame:Hide();
 	end
 end
 
@@ -210,6 +210,7 @@ function AccountLogin_Credits()
 	CreditsFrame.creditsType = 4;
 	PlaySound("gsTitleCredits");
 	SetGlueScreen("credits");
+	CinematicsFrame:Hide();
 end
 
 function AccountLogin_Cinematics()
@@ -226,6 +227,8 @@ end
 
 function AccountLogin_Options()
 	PlaySound("gsTitleOptions");
+	OptionsSelectFrame:Show();
+	CinematicsFrame:Hide();
 end
 
 function AccountLogin_Exit()
@@ -720,16 +723,132 @@ end
 function CinematicsFrame_OnLoad(self)
 	CinematicsFrame.numMovies = 4;
 	local button;
-	local height = 70;
+	local height = 80;
 	for i = 1, CinematicsFrame.numMovies do
 		button = _G["CinematicsButton"..i];
 		if ( not button ) then
 			break;
 		end
-		button:Show();		
-		height = height + 40;
+		button:Show();
+		height = height + button:GetHeight() + 8;
 	end
-	CinematicsBackground:SetHeight(height);
+	CinematicsFrame:SetHeight(height);
+end
+
+function CinematicsFrame_IsMovieListLocal(id)
+	local movieList = MovieList[id];
+	if (not movieList) then return false; end
+	for _, movieId in ipairs(movieList) do
+		if (not IsMovieLocal(movieId)) then 
+			return false;
+		end
+	end
+	return true;
+end
+
+function CinematicsFrame_IsMovieListPlayable(id)
+	local movieList = MovieList[id];
+	if (not movieList) then return false; end
+	for _, movieId in ipairs(movieList) do
+		if (not IsMoviePlayable(movieId)) then 
+			return false;
+		end
+	end
+	return true;
+end
+
+function CinematicsFrame_GetMovieDownloadProgress(id)
+	local movieList = MovieList[id];
+	if (not movieList) then return; end
+	
+	local anyInProgress = false;
+	local allDownloaded = 0;
+	local allTotal = 0;
+	for _, movieId in ipairs(movieList) do
+		local inProgress, downloaded, total = GetMovieDownloadProgress(movieId);
+		anyInProgress = anyInProgress or inProgress;
+		allDownloaded = allDownloaded + downloaded;
+		allTotal = allTotal + total;
+	end
+	
+	return anyInProgress, allDownloaded, allTotal;
+end
+
+function CinematicsButton_Update(self)
+	local movieId = self:GetID();
+	if (CinematicsFrame_IsMovieListLocal(movieId)) then
+		self:GetNormalTexture():SetDesaturated(nil);
+		self:GetPushedTexture():SetDesaturated(nil);
+		self.PlayButton:Show();
+		self.DownloadIcon:Hide();
+		self.StreamingIcon:Hide();
+		self.StatusBar:Hide();
+		self:SetScript("OnUpdate", nil);
+		self.isLocal = true;
+	else
+		local inProgress, downloaded, total = CinematicsFrame_GetMovieDownloadProgress(movieId);
+		local isPlayable = CinematicsFrame_IsMovieListPlayable(movieId);
+		
+		-- HACK - When you pause the download, sometimes the progress will appear to rewind temporarily (bug with the API?)
+		-- This ensures that the progress bar never goes backwards
+		downloaded = max(downloaded, self.downloaded or 0);
+		
+		self.inProgress = inProgress;
+		self.downloaded = downloaded;
+		self.total = total;
+		self.isLocal = false;
+		self.isPlayable = isPlayable;
+		
+		if (inProgress or (downloaded/total) > 0.1) then
+			self.StatusBar:SetMinMaxValues(0, total);
+			self.StatusBar:SetValue(downloaded);
+			self.StatusBar:Show();
+		else 
+			self.StatusBar:Hide();
+		end
+
+		if (isPlayable and inProgress) then
+			self:GetNormalTexture():SetDesaturated(nil);
+			self:GetPushedTexture():SetDesaturated(nil);
+			self.PlayButton:Show();
+			self.DownloadIcon:Hide();
+			self.StreamingIcon:Hide();
+			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
+			self:SetScript("OnUpdate", CinematicsButton_Update);
+		elseif (inProgress) then
+			self:GetNormalTexture():SetDesaturated(1);
+			self:GetPushedTexture():SetDesaturated(1);
+			self.PlayButton:Hide();
+			self.DownloadIcon:Hide();
+			self.StreamingIcon:Show();
+			self.StreamingIcon.Loop:Play();
+			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
+			self:SetScript("OnUpdate", CinematicsButton_Update);
+		else
+			self:GetNormalTexture():SetDesaturated(1);
+			self:GetPushedTexture():SetDesaturated(1);
+			self.PlayButton:Hide();
+			self.DownloadIcon:Show();
+			self.StreamingIcon:Hide();
+			self.StatusBar:SetStatusBarColor(0.6, 0.6, 0.6);
+			self:SetScript("OnUpdate", nil);
+		end
+	end
+	
+	if (self.mouseIsOverMe) then
+		CinematicsButton_OnEnter(self);
+	end
+end
+
+function CinematicsFrame_OnShow(self)
+	for i = 1, CinematicsFrame.numMovies do
+		button = _G["CinematicsButton"..i];
+		if ( not button ) then
+			break;
+		end
+		button:Show();
+		CinematicsButton_Update(button);
+	end
 end
 
 function CinematicsFrame_OnKeyDown(key)
@@ -741,14 +860,57 @@ function CinematicsFrame_OnKeyDown(key)
 	end	
 end
 
-function Cinematics_PlayMovie(self)
-	CinematicsFrame:Hide();
-	PlaySound("gsTitleOptionOK");
-	MovieFrame.version = self:GetID();
-	MovieFrame.showError = true;
-	SetGlueScreen("movie");
+function CinematicsButton_OnClick(self)
+	if (self.isLocal or (self.inProgress and self.isPlayable)) then
+		CinematicsFrame:Hide();
+		PlaySound("gsTitleOptionOK");
+		MovieFrame.version = self:GetID();
+		MovieFrame.showError = true;
+		SetGlueScreen("movie");
+	else
+		local inProgress, downloaded, total = CinematicsFrame_GetMovieDownloadProgress(self:GetID());
+		if (inProgress) then
+			local movieList = MovieList[self:GetID()];
+			if (movieList) then
+				for _, movieId in ipairs(movieList) do
+					if (not IsMovieLocal(movieId)) then 
+						CancelPreloadingMovie(movieId);
+					end
+				end
+			end
+		else
+			local movieList = MovieList[self:GetID()];
+			if (movieList) then
+				for _, movieId in ipairs(movieList) do
+					if (not IsMovieLocal(movieId)) then 
+						PreloadMovie(movieId);
+					end
+				end
+			end
+		end
+		CinematicsButton_Update(self);
+	end
 end
 
+function CinematicsButton_OnEnter(self)
+	self.mouseIsOverMe = true;
+	if (self.isLocal or (self.inProgress and self.isPlayable)) then
+		GlueTooltip:Hide();
+	else
+		if (self.inProgress) then
+			GlueTooltip:SetText(format(CINEMATIC_DOWNLOADING, self.downloaded/self.total*100));
+			GlueTooltip:AddLine(CINEMATIC_DOWNLOADING_DETAILS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, true);
+			GlueTooltip:AddLine(CINEMATIC_CLICK_TO_PAUSE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		else
+			GlueTooltip:SetText(CINEMATIC_UNAVAILABLE);
+			GlueTooltip:AddLine(CINEMATIC_UNAVAILABLE_DETAILS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, true);
+			GlueTooltip:AddLine(CINEMATIC_CLICK_TO_DOWNLOAD, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		end
+		
+		GlueTooltip:SetOwner(self);
+		GlueTooltip:Show();
+	end
+end
 
 KOREAN_RATINGS_TIMER = 3; -- seconds it needs to display
 function KoreanRatings_OnShow(self)

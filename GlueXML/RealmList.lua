@@ -4,7 +4,7 @@ local MAX_REALM_CATEGORY_TABS = 8;
 
 function RealmList_OnLoad(self)
 	self:RegisterEvent("OPEN_REALM_LIST");
-	self.currentRealm = 0;
+	self.currentRealm = nil;
 	self.offset = 0;
 end
 
@@ -140,9 +140,8 @@ function RealmListUpdate()
 					button:Enable();
 				end
 				
-				if ( RealmList.selectedName ) then
-					if ( name == RealmList.selectedName ) then
-						RealmList.currentRealm = realmIndex;
+				if ( RealmList.currentRealm ) then
+					if ( RealmList.currentRealm == realmIndex ) then
 						button:LockHighlight();
 						RealmListOkButton:Enable();
 						RealmListHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
@@ -206,8 +205,6 @@ function RealmListUpdate()
 		end
 	end
 
-	RealmList.selectedName = nil;
-
 	-- ScrollFrame stuff
 	GlueScrollFrame_Update(RealmListScrollFrame, numRealms, MAX_REALMS_DISPLAYED, REALM_BUTTON_HEIGHT, RealmListHighlight, 557,  587);
 end
@@ -262,7 +259,7 @@ function RealmList_OnOk()
 		GlueDialog_Show("REALM_IS_FULL");
 		return;
 	end
-	if ( RealmList.currentRealm > 0 ) then
+	if ( RealmList.currentRealm ) then
 		ChangeRealm(RealmList.selectedCategory , RealmList.currentRealm);
 	end
 end
@@ -271,8 +268,9 @@ function RealmList_OnCancel()
 	RealmListDialogCancelled();
 	local serverName, isPVP, isRP, isDown = GetServerName();
 
-	if ( (GetNumRealms(RealmList.selectedCategory) == 0) or (isDown) ) then
-		SetGlueScreen("realmwizard");
+	if ( (GetNumRealms(RealmList.selectedCategory) == 0) or (isDown) or not(IsConnectedToServer())) then
+		DisconnectFromServer();
+		SetGlueScreen("login");
 	else
 		SetGlueScreen("charselect");
 	end
@@ -285,7 +283,6 @@ function RealmSelectButton_OnClick(self, id)
 	else
 		RealmList.refreshTime = RealmListUpdateRate();
 		RealmList.currentRealm = id;
-		RealmList.selectedName = self.name;
 		RealmListUpdate();
 	end
 end
@@ -296,7 +293,6 @@ function RealmSelectButton_OnDoubleClick(self, id)
 		GlueDialog_Show("REALM_LOCALE_WARNING");
 	else
 		RealmList.currentRealm = id;
-		RealmList.selectedName = self.name;
 		RealmList_OnOk();
 	end
 end
@@ -310,6 +306,7 @@ function RealmListScrollFrame_OnVerticalScroll(self, offset)
 end
 
 function RealmList_OnShow(self)
+	RealmList.currentRealm = nil;
 	RealmListUpdate();
 	self.refreshTime = RealmListUpdateRate();
 	local selectedCategory = GetSelectedCategory();
@@ -362,6 +359,7 @@ function RealmListTab_OnClick(tab)
 		return;
 	end
 	RealmList.selectedCategory = tab:GetID();
+	RealmList.currentRealm = nil;
 	RealmListUpdate();
 end
 

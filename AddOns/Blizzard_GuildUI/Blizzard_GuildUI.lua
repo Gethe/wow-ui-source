@@ -129,7 +129,7 @@ function GuildFrame_UpdateFaction()
 	barValue = barValue - barMin;
 	GuildFactionBarLabel:SetText(barValue.." / "..barMax);
 	GuildFactionFrameStanding:SetText(factionStandingtext);
-	GuildBar_SetProgress(GuildFactionBar, barValue, barMax, repToCap);
+	GuildBar_SetProgress(GuildFactionBar, barValue, barMax, repToCap or 0);
 end
 
 function GuildFrame_UpdateTabard()

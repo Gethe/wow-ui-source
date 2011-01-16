@@ -46,7 +46,6 @@ function CharacterSelect_OnLoad(self)
 	if (not IsGMClient()) then
 		MAX_CHARACTERS_PER_REALM = 10;
 	end
-	SetWoWLogo(CharacterSelectLogo);
 end
 
 function CharacterSelect_OnShow()
@@ -560,7 +559,7 @@ function RealmSplit_SetChoiceText()
 end
 
 function CharacterSelect_PaidServiceOnClick(self, button, down, service)
-	PAID_SERVICE_CHARACTER_ID = self:GetID();
+	PAID_SERVICE_CHARACTER_ID = self:GetID() + CHARACTER_LIST_OFFSET;
 	PAID_SERVICE_TYPE = service;
 	PlaySound("gsCharacterSelectionCreateNew");
 	SetGlueScreen("charcreate");

@@ -88,7 +88,6 @@ function CharacterCreate_OnLoad(self)
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE["Alliance"];
 	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
 	CharacterCreateNameEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
-	SetWoWLogo(CharacterCreateLogo);
 end
 
 function CharacterCreate_OnShow()
