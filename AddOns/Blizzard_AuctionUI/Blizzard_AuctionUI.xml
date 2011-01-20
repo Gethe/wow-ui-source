@@ -1716,7 +1716,7 @@
 								<Scripts>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(AUCTION_BUYOUT_ERROR, 1.0, 0.0, 0.0);
+										GameTooltip:SetText(AUCTION_BUYOUT_ERROR, 1.0, 0.0, 0.0, 1, 1);
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();

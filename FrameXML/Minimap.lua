@@ -106,7 +106,7 @@ function MiniMapBattlefieldFrame_OnUpdate (self, elapsed)
 	if ( GameTooltip:IsOwned(self) ) then
 		PVP_UpdateStatus(1);
 		if ( self.tooltip ) then
-			GameTooltip:SetText(self.tooltip);
+			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
 		end
 	end
 end
@@ -536,4 +536,24 @@ end
 
 function _GetPlayerDifficultyMenuOptions()
 	return selectedRaidDifficulty, allowedRaidDifficulty;
+end
+
+function GuildInstanceDifficulty_OnEnter(self)
+	local guildName = GetGuildInfo("player");
+	local _, instanceType, _, _, maxPlayers = GetInstanceInfo();
+	local _, numGuildPresent, numGuildRequired, xpMultiplier = InGuildParty();
+	-- hack alert
+	if ( instanceType == "arena" ) then
+		maxPlayers = numGuildRequired;
+	end
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
+	GameTooltip:SetText(GUILD_GROUP, 1, 1, 1);
+	if ( xpMultiplier < 1 ) then
+		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP, numGuildRequired, maxPlayers, guildName, xpMultiplier * 100), nil, nil, nil, 1);
+	elseif ( xpMultiplier > 1 ) then
+		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP, guildName, xpMultiplier * 100), nil, nil, nil, 1);
+	else
+		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE, numGuildRequired, maxPlayers, guildName), nil, nil, nil, 1);
+	end
+	GameTooltip:Show();
 end

@@ -777,7 +777,7 @@ function PVPConquestFrame_Update(self)
 	local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
 	local validGroup = false;
 	local reward = 0;
-	local _;
+	local _, size;
 
 	if self.mode == "Arena" then
 		self.winReward.winAmount:SetText(0);
@@ -854,7 +854,8 @@ function PVPConquestFrame_Update(self)
 		self.winReward.winAmount:SetText(ratedBGreward);
 		
 		
-		local name, size = GetRatedBattleGroundInfo();
+		local name;
+		name, size = GetRatedBattleGroundInfo();
 		
 		validGroup = groupSize==size;
 		local prefixColorCode = "|cff808080";
@@ -890,7 +891,7 @@ function PVPConquestFrame_Update(self)
 		self.infoButton.bgNorm:Show();
 	end
 	
-	
+	self.partyInfoRollOver.tooltip = nil;
 	if validGroup then
 		self.partyStatusBG:SetVertexColor(0,1,0);
 		self.partyInfoRollOver:Hide();
@@ -917,6 +918,14 @@ function PVPConquestFrame_Update(self)
 		self.infoButton.wins:SetText("|cff808080"..WINS);
 		self.infoButton.losses:SetText("|cff808080"..LOSSES);
 		PVPFrameLeftButton:Disable();
+		
+		if PVPConquestFrame.mode == "RatedBg" then
+			if  size > groupSize then
+				self.partyInfoRollOver.tooltip = string.format(PVP_RATEDBG_NEED_MORE, size - groupSize);
+			else
+				self.partyInfoRollOver.tooltip = string.format(PVP_RATEDBG_NEED_LESS, groupSize -  size);
+			end
+		end
 	end
 
 	
@@ -1770,7 +1779,7 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 	end
 	
 	for i=1, MAX_BATTLEFIELD_QUEUES do
-		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(i);
+		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue = GetBattlefieldStatus(i);
 		if ( mapName ) then
 			if (  instanceID ~= 0 ) then
 				mapName = mapName.." "..instanceID;
@@ -1854,6 +1863,10 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 					MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..tooltip;
 				else
 					MiniMapBattlefieldFrame.tooltip = tooltip;
+				end
+				
+				if ( not eligibleInQueue ) then
+					MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..PVP_INVALID_QUEUE_STATUS;
 				end
 			end
 		end

@@ -5,6 +5,8 @@ local GUILD_ROSTER_MAX_STRINGS = 4;
 local GUILD_ROSTER_BAR_MAX = 239;
 local GUILD_ROSTER_BUTTON_OFFSET = 2;
 local GUILD_ROSTER_BUTTON_HEIGHT = 20;
+GUILD_ROSTER_STRING_OFFSET = 6;
+GUILD_ROSTER_STRING_WIDTH_ADJ =  14;
 local currentGuildView;
 
 local GUILD_ROSTER_COLUMNS = {
@@ -387,7 +389,7 @@ function GuildRoster_UpdateTradeSkills()
 					button.header.icon:SetDesaturated(true);
 					button.header.collapsedIcon:Hide();
 					button.header.expandedIcon:Hide();
-					if ( numPlayers > 0 ) then
+					if ( numPlayers > 0 and CanViewGuildRecipes(skillID) ) then
 						button.header.allRecipes:Show();
 					else
 						button.header.allRecipes:Hide();
@@ -501,8 +503,8 @@ function GuildRoster_SetView(view)
 			local stringData = stringsInfo[stringIndex];
 			if ( stringData ) then
 				-- want strings a little inside the columns, 6 pixels from the left and 8 from the right
-				fontString:SetPoint("LEFT", stringData.stringOffset + 6, 0);
-				fontString:SetWidth(stringData.width - 14);
+				fontString:SetPoint("LEFT", stringData.stringOffset + GUILD_ROSTER_STRING_OFFSET, 0);
+				fontString:SetWidth(stringData.width - GUILD_ROSTER_STRING_WIDTH_ADJ);
 				fontString:SetJustifyH(stringData.stringJustify);
 				fontString:Show();
 			else

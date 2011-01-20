@@ -154,6 +154,12 @@
 			<OnClick>
 				HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 			</OnClick>
+			<OnLoad>
+				-- Uses in Korean to fix Bug ID: 244689
+				if TRADESKILL_REAGENT_FONT then
+					_G[self:GetName().."Count"]:SetFontObject(TRADESKILL_REAGENT_FONT);
+				end
+			</OnLoad>
 		</Scripts>
 	</Button>
 	<Button name="TradeSkillGuildCrafterButtonTemplate" hidden="false" virtual="true">

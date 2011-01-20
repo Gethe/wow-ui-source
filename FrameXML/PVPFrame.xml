@@ -843,7 +843,13 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(PVP_NO_QUEUE_GROUP, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+								GameTooltip:AddLine(self:GetParent().partyNum:GetText());
+								if self.tooltip then
+									GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+								else
+									GameTooltip:AddLine(PVP_NO_QUEUE_GROUP, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1);
+								end
+								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

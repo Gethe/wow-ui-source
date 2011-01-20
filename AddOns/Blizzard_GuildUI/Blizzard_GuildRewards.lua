@@ -1,5 +1,6 @@
 local GUILD_REWARDS_BUTTON_OFFSET = 0;
 local GUILD_REWARDS_BUTTON_HEIGHT = 47;
+GUILD_REWARDS_ACHIEVEMENT_ICON = " |TInterface\\AchievementFrame\\UI-Achievement-Guild:18:16:0:1:512:512:324:344:67:85|t ";
 
 function GuildRewardsFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
@@ -53,7 +54,7 @@ function GuildRewards_Update()
 			if ( achievementID and achievementID > 0 ) then
 				local id, name = GetAchievementInfo(achievementID)
 				button.achievementID = achievementID;
-				button.subText:SetText(REQUIRES_LABEL.." |TInterface\\AchievementFrame\\UI-Achievement-Guild:18:16:0:1:512:512:324:344:67:85|t "..YELLOW_FONT_COLOR_CODE..name);
+				button.subText:SetText(REQUIRES_LABEL..GUILD_REWARDS_ACHIEVEMENT_ICON..YELLOW_FONT_COLOR_CODE..name);
 				button.subText:Show();
 				button.disabledBG:Show();
 				button.icon:SetVertexColor(1, 1, 1);

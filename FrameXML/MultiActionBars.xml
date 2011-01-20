@@ -538,9 +538,10 @@
 				<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
 				<Scripts>
 					<OnPlay>
+						MultiBarRight:Show();
 					</OnPlay>
 					<OnFinished>
-						if BonusActionBarFrame:IsShown() then
+						if not MainMenuBar:IsShown() then
 							MultiBarRight:Hide();
 						end
 					</OnFinished>

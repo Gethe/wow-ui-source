@@ -87,6 +87,7 @@ local AnimDataTable = {
 }
 
 function MainMenuBar_ToVehicleArt(self)
+	HideBonusActionBar();
 	MainMenuBar.state = "vehicle";
 	
 	SetUpAnimation(VehicleMenuBar, AnimDataTable.MenuBar_Slide, nil, true);
@@ -100,7 +101,6 @@ function MainMenuBar_ToVehicleArt(self)
 	VehicleMenuBar:SetPoint(MainMenuBar_GetAnimPos(VehicleMenuBar, 1))
 	VehicleMenuBar:Show();
 	PossessBar_Update(true);
-	ShowBonusActionBar(true);	--Now, when we are switching to vehicle art we will ALWAYS be using the BonusActionBar
 	UIParent_ManageFramePositions();	--This is called in PossessBar_Update, but it doesn't actually do anything but change an attribute, so it is worth keeping	
 	
 	VehicleMenuBar_SetSkin(VehicleMenuBar.skin, IsVehicleAimAngleAdjustable());

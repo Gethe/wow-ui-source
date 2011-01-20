@@ -917,7 +917,6 @@
 			<OnEvent function="CalendarViewEventFrame_OnEvent"/>
 			<OnShow function="CalendarViewEventFrame_OnShow"/>
 			<OnHide function="CalendarViewEventFrame_OnHide"/>
-			<OnUpdate function="CalendarViewEventFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 

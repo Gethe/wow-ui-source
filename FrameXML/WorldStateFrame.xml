@@ -1058,11 +1058,11 @@
 			</Button>
 			<Frame name="WorldStateScoreWinnerFrame" hidden="true" useParentLevel="true">
 				<Size>
-					<AbsDimension x="10" y="16"/>
+					<AbsDimension x="10" y="17"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="2" y="-4"/>
-					<Anchor point="TOPRIGHT" x="-2" y="-4"/>
+					<Anchor point="TOPLEFT" x="2" y="-3"/>
+					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER" textureSubLevel="-2">
@@ -1101,7 +1101,7 @@
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="0" y="0"/>
+										<AbsDimension x="0" y="1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

@@ -48,7 +48,7 @@
 				<Size x="32" y="32"/>	
 				<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>	
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSmoke"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentSmokeA"/>
 				</Anchors>
 			</Texture>
 		</Layer>

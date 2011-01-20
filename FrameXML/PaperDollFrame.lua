@@ -3445,6 +3445,7 @@ function GearManagerDialog_OnEvent (self, event, ...)
 	elseif ( event == "EQUIPMENT_SWAP_FINISHED" ) then
 		local completed, setName = ...;
 		if ( completed ) then
+			PlaySoundKitID(1212); -- plays the equip sound for plate mail
 			self.selectedSetName = setName;
 			GearManagerDialog_Update();
 			if ( self:IsShown() ) then
@@ -3478,6 +3479,9 @@ function GearManagerDialog_Update ()
 		if (selectedName and button.name == selectedName) then
 			button:SetChecked(true);
 			dialog.selectedSet = button;
+			-- mark the ingonored slots
+			PaperDollFrame_ClearIgnoredSlots();
+			PaperDollFrame_IgnoreSlotsForSet(selectedName);
 		else
 			button:SetChecked(false);
 		end

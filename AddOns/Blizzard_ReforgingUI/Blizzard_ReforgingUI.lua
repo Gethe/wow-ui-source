@@ -276,7 +276,7 @@ end
 
 
 -----------------------------------------------------------
--- Dropdown menu action ----------------------------------
+------------- Dropdown menu action ---------------
 -----------------------------------------------------------
 
 function ReforgeFrame_FilterOldStat_Set(self, arg1)
@@ -285,7 +285,7 @@ function ReforgeFrame_FilterOldStat_Set(self, arg1)
 	ReforgingFrame.srcStat = stat;
 	ReforgingFrame.srcValue = value;
 	UIDropDownMenu_EnableDropDown(ReforgingFrameFilterNewStat);
-	UIDropDownMenu_SetText(ReforgingFrameFilterOldStat, name.."(-"..value..")");
+	UIDropDownMenu_SetText(ReforgingFrameFilterOldStat, "-"..value.." "..name);
 	ReforgingFrame.destStat = nil;
 	ReforgingFrame.destValue = nil;
 	UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, REFORGE_NEW_FILTER_TEXT);
@@ -303,7 +303,7 @@ function ReforgeFrame_FilterNewStat_Set(self, arg1)
 	ReforgingFrame.destValue = value;
 	ReforgingFrame.destName = name;
 	ReforgingFrame.reforgeID = reforgeID;
-	UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, name.."(+"..value..")");
+	UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, "+"..value.." "..name);
 	ReforgingFrameBottomGreenText:SetText("+"..value.." "..name);		
 	ReforgingFrameBottomGreenBg:Show();
 	ReforgingFrame_Update(ReforgingFrame);
@@ -317,7 +317,7 @@ function ReforgeFrame_FilterOldStat_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
 	for i=1,#stats,3 do
 		local name, stat, value = stats[i], stats[i+1], stats[i+2];
-		info.text = name.."("..value..")";
+		info.text = "-"..value.." "..name;
 		info.arg1 = {name, stat, value};
 		info.checked = (stat == ReforgingFrame.srcStat);
 		info.func = ReforgeFrame_FilterOldStat_Set;
@@ -337,7 +337,7 @@ function ReforgeFrame_FilterNewStat_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
 	for i=1,#stats,4 do
 		local name, stat, value, reforgeID = stats[i], stats[i+1], stats[i+2], stats[i+3];
-		info.text = name.."("..value..")";
+		info.text = "+"..value.." "..name;
 		info.arg1 = {name, stat, value, reforgeID};
 		info.checked = (stat == ReforgingFrame.destStat);
 		info.func = 	ReforgeFrame_FilterNewStat_Set;

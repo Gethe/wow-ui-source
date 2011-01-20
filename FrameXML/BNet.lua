@@ -153,9 +153,9 @@ function BNToastFrame_Show()
 		local _, toonName, client = BNGetToonInfo(presenceID);
 		if (toonName and toonName ~= "") then
 			if ( client == BNET_CLIENT_WOW ) then
-				toonName = "|TInterface\\FriendsFrame\\Battlenet-WoWicon:0|t"..toonName;
+				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-WOW:14:14:0:-1|t"..toonName;
 			elseif ( client == BNET_CLIENT_SC2 ) then
-				toonName = "|TInterface\\FriendsFrame\\Battlenet-Sc2icon:0|t"..toonName;
+				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:14:14:0:-1|t"..toonName;
 			end
 			middleLine:SetFormattedText(toonName);
 			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);

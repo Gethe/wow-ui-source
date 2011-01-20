@@ -1320,15 +1320,17 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 		local value = "2";
 		if ( GetCVar("UnitNameNPC") == "1" ) then
 			value = "2";
+			self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
 		elseif ( GetCVar("UnitNameFriendlySpecialNPCName") == "1" ) then
 			value = "1";
+			self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 		else
 			value = "3";
+			self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 		end
 		self.defaultValue = "1";
 		self.oldValue = value;
 		self.value = value;
-		self.tooltip = OPTION_TOOLTIP_UNIT_NAME_NPC;
 
 		UIDropDownMenu_SetWidth(self, 110);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsNPCNamesDropDown_Initialize);
@@ -1341,12 +1343,15 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 				if ( value == "1" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameNPC", "0");
+					self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 				elseif ( value == "2" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
 					SetCVar("UnitNameNPC", "1");
+					self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
 				else
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
 					SetCVar("UnitNameNPC", "0");
+					self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 				end					
 			end;	
 		self.GetValue =

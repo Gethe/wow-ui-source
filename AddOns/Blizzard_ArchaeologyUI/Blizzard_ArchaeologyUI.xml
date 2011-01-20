@@ -281,7 +281,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="text">
+						<FontString name="$parentSkillRank" inherits="TextStatusBarText" justifyH="CENTER" parentKey="text">
 							<Size>
 								<AbsDimension x="0" y="9"/>
 							</Size>

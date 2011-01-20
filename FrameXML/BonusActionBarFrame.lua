@@ -130,12 +130,16 @@ function SetupBonusActionBar()
 		local button = _G["BonusActionButton"..i];
 		local actionType, id, subType = GetActionInfo(button.action);
 		button:SetSize(barInfo.buttonSize, barInfo.buttonSize);
-		if ( i > barInfo.numButtons or (actionType == "spell" and id == 0) ) then
-			button:SetAttribute("statehidden", true);
-			button:Hide();
-		else
+		if (id and id ~= 0 and i <= barInfo.numButtons) then
 			button:SetAttribute("statehidden", false);
 			button:Show();
+		else
+			if (barType == "default") then
+				button:SetAttribute("statehidden", false);
+			else
+				button:SetAttribute("statehidden", true);
+			end
+			button:Hide();
 		end
 		
 		if barInfo.buttonBg then
@@ -175,7 +179,11 @@ end
 
 
 function ShowBonusActionBar (force)
-	if (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+	if (MainMenuBar.state ==  "vehicle") then
+		if ( BonusActionBarFrame:IsShown() and not MainMenuBar:IsShown() ) then
+			HideBonusActionBar ();
+		end
+	elseif (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		local barType = GetBonusBarOverrideBarType() or "default";
 		local barInfo = BonusActionBarGetBarInfo(barType);
 	
@@ -197,9 +205,8 @@ function ShowBonusActionBar (force)
 			BonusActionBarFrame.microTwoRows = barInfo.microTwoRows;
 			shownFrame.slideout:Play(); -- Slide bar out
 			if MultiBarRight:IsShown() then
-				MultiBarRight.slideout:Play(); -- Slide bar out
+				MultiBarRight.slideout:Play(); -- Slide side bars out
 			end
-			MainMenuBar.state = "bonus";
 		else
 			if shownFrame == MainMenuBar then --Bar only
 				BonusActionBarFrame.nextAnimBar = nil;
@@ -217,38 +224,50 @@ function ShowBonusActionBar (force)
 				MainMenuBar.microBarX = 552;
 				MainMenuBar.microBarY = 2;
 				shownFrame.slideout:Play(); -- Slide bar out
+				if not MultiBarRight:IsShown() then
+					MultiBarRight.slideout:Play(true); -- Slide side bars in
+				end
 			end
-		end		
+		end
+		
+		MainMenuBar.state = "bonus";
 	end
 end
 
 function HideBonusActionBar (force)
-	if ( BonusActionBarFrame:IsShown() and (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
-		MainMenuBar.state = "player";
-		MultiActionBar_Update();
-		local oldbarInfo = BonusActionBarGetBarInfo(BonusActionBarFrame.currentType);
-		if not oldbarInfo then return end
-		
-		if not oldbarInfo.showDefaultBar then
-			BonusActionBarFrame.nextAnimBar = MainMenuBar;
-			BonusActionBarFrame.barToShow = MainMenuBar;
-			BonusActionBarFrame.animOut = true;
+	if ( BonusActionBarFrame:IsShown() ) then
+		if (  force or (MainMenuBar.state == "bonus" and not MainMenuBar.busy and not UnitHasVehicleUI("player") ) ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+			MainMenuBar.state = "player";
+			MultiActionBar_Update();
+			local oldbarInfo = BonusActionBarGetBarInfo(BonusActionBarFrame.currentType);
+			if not oldbarInfo then return end
 			
-			MainMenuBar.xpWidth = EXP_DEFAULT_WIDTH;
-			MainMenuBar.microBarParent = MainMenuBarArtFrame;
-			MainMenuBar.microBarX = 552;
-			MainMenuBar.microBarY = 2;
-			
-			BonusActionBarFrame.slideout:Play(); -- Slide main bar out
-			if MultiBarRight:IsShown() then
-				MultiBarRight.slideout:Play(true); -- Slide bar in
+			if not oldbarInfo.showDefaultBar then
+				BonusActionBarFrame.nextAnimBar = MainMenuBar;
+				BonusActionBarFrame.barToShow = MainMenuBar;
+				BonusActionBarFrame.animOut = true;
+				
+				MainMenuBar.xpWidth = EXP_DEFAULT_WIDTH;
+				MainMenuBar.microBarParent = MainMenuBarArtFrame;
+				MainMenuBar.microBarX = 552;
+				MainMenuBar.microBarY = 2;
+				
+				BonusActionBarFrame.slideout:Play(); -- Slide main bar out
+				if MultiBarRight:IsShown() then
+					MultiBarRight.slideout:Play(true); -- Slide side bars in
+				end
+			else
+				--Bar only
+				BonusActionBarFrame.nextAnimBar = nil;
+				BonusActionBarFrame.barToShow = nil;
+				BonusActionBarFrame.animOut = true;
+				BonusActionBarFrame.slideout:Play(); -- Slide main bar out
 			end
-		else
-			--Bar only
-			BonusActionBarFrame.nextAnimBar = nil;
-			BonusActionBarFrame.barToShow = nil;
-			BonusActionBarFrame.animOut = true;
-			BonusActionBarFrame.slideout:Play(); -- Slide main bar out
+		elseif (not BonusActionBarFrame.slideout:IsPlaying() and not MainMenuBar:IsShown() ) then
+				BonusActionBarFrame.nextAnimBar = nil;
+				BonusActionBarFrame.barToShow = nil;
+				BonusActionBarFrame.animOut = true;
+				BonusActionBarFrame.slideout:Play(); -- Slide main bar outBonusActionBarFrame.slideout:Play(); -- Slide main bar out
 		end
 	end
 end
@@ -286,10 +305,12 @@ function ActionBar_AnimTransitionFinished(self)
 				end
 			end
 			
-			local barType = GetBonusBarOverrideBarType() or "default";
-			if BonusActionBarFrame.currentType ~= barType then
-				SetupBonusActionBar();
-			end;
+			if ( GetBonusBarOffset()  > 0 ) then
+				local barType = GetBonusBarOverrideBarType() or "default";
+				if BonusActionBarFrame.currentType ~= barType then
+					SetupBonusActionBar();
+				end
+			end
 			self.nextAnimBar.slideout:Play(true); -- Slide bar in
 			if self.barToShow then
 				self.barToShow:Show();

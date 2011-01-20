@@ -341,13 +341,6 @@
 									<Size>
 										<AbsDimension x="36" y="36"/>
 									</Size>
-									<Anchors>
-										<Anchor point="CENTER" relativeTo="$parentPortrait">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
 									<TexCoords left="0.0" right="0.2734375" top="0.0" bottom="0.5625"/>
 								</Texture>
 							</Layer>

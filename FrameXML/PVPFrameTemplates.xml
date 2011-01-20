@@ -230,9 +230,9 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentRating" inherits="GameFontNormalSmall" justifyH="RIGHT">
+				<FontString name="$parentRating" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="40" y="12"/>
+						<AbsDimension x="50" y="12"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRatingLabel" relativePoint="RIGHT">
@@ -256,21 +256,9 @@
 					</Anchors>
 					<TexCoords left="0" right="0.4140625" top="0.76171875" bottom="0.765625"/>
 				</Texture>
-				<FontString name="$parentTypeLabel" inherits="GameFontHighlightSmall" text="ARENA_THIS_WEEK" justifyH="LEFT" justifyV="BOTTOM">
-					<Size>
-						<AbsDimension x="63" y="24"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-38"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentGamesLabel" inherits="GameFontDisableSmall" text="GAMES" justifyH="CENTER">
 					<Size>
-						<AbsDimension x="55" y="12"/>
+						<AbsDimension x="55" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
@@ -280,18 +268,30 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentTypeLabel" inherits="GameFontHighlightSmall" text="ARENA_THIS_WEEK" justifyH="LEFT" justifyV="BOTTOM">
+					<Size>
+						<AbsDimension x="60``h`" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentGamesLabel" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-68" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentGames" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentGamesLabel">
 							<Offset>
-								<AbsDimension x="0" y="-18"/>
+								<AbsDimension x="0" y="-15"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentWinLossLabel" inherits="GameFontDisableSmall" text="WIN_LOSS" justifyH="CENTER">
 					<Size>
-						<AbsDimension x="75" y="12"/>
+						<AbsDimension x="75" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentGamesLabel" relativePoint="RIGHT">
@@ -305,7 +305,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentWinLossLabel">
 							<Offset>
-								<AbsDimension x="-2" y="-18"/>
+								<AbsDimension x="-2" y="-15"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -330,7 +330,7 @@
 				</FontString>
 				<FontString name="$parentPlayedLabel" inherits="GameFontDisableSmall" text="PLAYED" justifyH="CENTER">
 					<Size>
-						<AbsDimension x="67" y="12"/>
+						<AbsDimension x="67" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentWinLossLabel" relativePoint="RIGHT">
@@ -344,7 +344,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentPlayedLabel">
 							<Offset>
-								<AbsDimension x="0" y="-18"/>
+								<AbsDimension x="0" y="-15"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

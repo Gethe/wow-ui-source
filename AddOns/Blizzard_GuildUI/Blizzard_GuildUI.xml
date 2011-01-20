@@ -369,6 +369,19 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="GuildFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				GuildFrame_TabClicked(self);
+				PanelTemplates_Tab_OnClick(self, GuildFrame);
+				PlaySound("igCharacterInfoTab");
+			</OnClick>
+			<OnShow>
+				PanelTemplates_TabResize(self, 0);
+			</OnShow>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
 <!--
 *******************************************************************************
 	Guild Frame
@@ -414,7 +427,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="GUILD_TAB_GUILD_ABBR">
+			<Button name="$parentTab1" inherits="GuildFrameTabButtonTemplate" id="1" text="GUILD_TAB_GUILD_ABBR">
 				<Anchors>
 					<!--This position is changed in some Localization files.-->
 					<Anchor point="BOTTOMLEFT" x="11" y="-30"/>
@@ -424,15 +437,9 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GUILD_TAB_GUILD, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnClick>
-						GuildFrame_TabClicked(self);
-						PanelTemplates_Tab_OnClick(self, GuildFrame);
-						PlaySound("igCharacterInfoTab");
-					</OnClick>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="GUILD_TAB_ROSTER_ABBR">
+			<Button name="$parentTab2" inherits="GuildFrameTabButtonTemplate" id="2" text="GUILD_TAB_ROSTER_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -441,15 +448,9 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GUILD_TAB_ROSTER, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnClick>
-						GuildFrame_TabClicked(self);
-						PanelTemplates_Tab_OnClick(self, GuildFrame);
-						PlaySound("igCharacterInfoTab");
-					</OnClick>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-            <Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="GUILD_TAB_NEWS_ABBR">
+            <Button name="$parentTab3" inherits="GuildFrameTabButtonTemplate" id="3" text="GUILD_TAB_NEWS_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -458,15 +459,9 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GUILD_TAB_NEWS, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnClick>
-						GuildFrame_TabClicked(self);
-						PanelTemplates_Tab_OnClick(self, GuildFrame);
-						PlaySound("igCharacterInfoTab");
-					</OnClick>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="GUILD_TAB_REWARDS_ABBR">
+			<Button name="$parentTab4" inherits="GuildFrameTabButtonTemplate" id="4" text="GUILD_TAB_REWARDS_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -475,15 +470,9 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GUILD_TAB_REWARDS, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnClick>
-						GuildFrame_TabClicked(self);
-						PanelTemplates_Tab_OnClick(self, GuildFrame);
-						PlaySound("igCharacterInfoTab");
-					</OnClick>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="GUILD_TAB_INFO_ABBR">
+			<Button name="$parentTab5" inherits="GuildFrameTabButtonTemplate" id="5" text="GUILD_TAB_INFO_ABBR">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
@@ -492,12 +481,6 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GUILD_TAB_INFO, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnClick>
-						GuildFrame_TabClicked(self);
-						PanelTemplates_Tab_OnClick(self, GuildFrame);
-						PlaySound("igCharacterInfoTab");
-					</OnClick>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate">

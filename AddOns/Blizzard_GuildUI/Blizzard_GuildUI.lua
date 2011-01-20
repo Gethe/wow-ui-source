@@ -111,12 +111,17 @@ function GuildFrame_UpdateLevel()
 	else
 		GuildXPBar:Show();
 		GuildXPFrameLevelText:SetPoint("BOTTOM", GuildXPFrame, "TOP", 0, 2);
+		GuildFrame_UpdateXP();
 	end
 end
 
 function GuildFrame_UpdateXP()
-	local currentXP, nextLevelXP, dailyXP, maxDailyXP = UnitGetGuildXP("player");
-	GuildBar_SetProgress(GuildXPBar, currentXP, nextLevelXP + currentXP, maxDailyXP - dailyXP);
+	local currentXP, nextLevelXP, dailyXP, maxDailyXP, _, _, isUncapped = UnitGetGuildXP("player");
+	local capXP = maxDailyXP - dailyXP;
+	if ( isUncapped ) then
+		capXP = 0;
+	end
+	GuildBar_SetProgress(GuildXPBar, currentXP, nextLevelXP + currentXP, capXP);
 end
 
 function GuildFrame_UpdateFaction()
@@ -345,15 +350,21 @@ function GuildXPBar_OnLoad()
 end
 
 function GuildXPBar_OnEnter(self)
-	local currentXP, remainingXP, dailyXP, maxDailyXP = UnitGetGuildXP("player");
+	local currentXP, remainingXP, dailyXP, maxDailyXP, _, _, isUncapped = UnitGetGuildXP("player");
 	local nextLevelXP = currentXP + remainingXP;
 	local percentTotal = tostring(math.ceil((currentXP / nextLevelXP) * 100));
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(GUILD_EXPERIENCE);
 	GameTooltip:AddLine(GUILD_EXPERIENCE_TOOLTIP, 1, 1, 1, 1);
-	GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_CURRENT, TextStatusBar_CapDisplayOfNumericValue(currentXP), TextStatusBar_CapDisplayOfNumericValue(nextLevelXP), percentTotal));
-	local percentDaily = tostring(math.ceil((dailyXP / maxDailyXP) * 100));
-	GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_DAILY, TextStatusBar_CapDisplayOfNumericValue(dailyXP), TextStatusBar_CapDisplayOfNumericValue(maxDailyXP), percentDaily));
+	GameTooltip:AddLine(" ");
+	if ( isUncapped ) then
+		GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_NO_CAP, UNCAPPED_GUILD_LEVEL), 1, 1, 1, 1);
+	else
+		GameTooltip:AddLine(GUILD_EXPERIENCE_CAP, 1, 1, 1, 1);
+		GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_CURRENT, TextStatusBar_CapDisplayOfNumericValue(currentXP), TextStatusBar_CapDisplayOfNumericValue(nextLevelXP), percentTotal));
+		local percentDaily = tostring(math.ceil((dailyXP / maxDailyXP) * 100));
+		GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_DAILY, TextStatusBar_CapDisplayOfNumericValue(dailyXP), TextStatusBar_CapDisplayOfNumericValue(maxDailyXP), percentDaily));	
+	end
 	GameTooltip:Show();
 end
 

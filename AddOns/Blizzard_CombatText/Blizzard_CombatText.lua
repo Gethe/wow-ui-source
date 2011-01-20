@@ -64,7 +64,7 @@ COMBAT_TEXT_TYPE_INFO["SPELL_ACTIVE"] = {r = 1, g = 0.82, b = 0, var = "COMBAT_T
 COMBAT_TEXT_TYPE_INFO["FACTION"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_REPUTATION"};
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
-COMBAT_TEXT_TYPE_INFO["DAMAGE_SHIELD"] = {r = 1, g = 1, b = 1};
+COMBAT_TEXT_TYPE_INFO["DAMAGE_SHIELD"] = {r = 0.79, g = 0.3, b = 0.85, show = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_DISPELLED"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["EXTRA_ATTACKS"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["SPLIT_DAMAGE"] = {r = 1, g = 1, b = 1, show = 1};
@@ -204,7 +204,7 @@ function CombatText_OnEvent(self, event, ...)
 	elseif ( messageType == "DAMAGE_CRIT" or messageType == "SPELL_DAMAGE_CRIT" ) then
 		displayType = "crit";
 		message = "-"..data;
-	elseif ( messageType == "DAMAGE" or messageType == "SPELL_DAMAGE" ) then
+	elseif ( messageType == "DAMAGE" or messageType == "SPELL_DAMAGE" or messageType == "DAMAGE_SHIELD" ) then
 		if (data == 0) then
 			return
 		end

@@ -724,7 +724,12 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 	     event == "UNIT_SPELLCAST_INTERRUPTED" or
 	     event == "UNIT_SPELLCAST_FAILED" or
 	     event == "UNIT_SPELLCAST_FAILED_QUIET" ) then
-		local unit, name, rank = ...;
+		local unit, name, rank, castID, _;
+		if ( event == "UNIT_SPELLCAST_SENT" ) then
+			unit, name, rank, _, castID = ...;
+		else
+			unit, name, rank, castID = ...;
+		end
 
 		if ( not name ) then
 			-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
@@ -739,8 +744,8 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 				local entryName = entry.spellNames[entry.index];
 				if ( entryName == name or entryName == nameplus or entryName == fullname ) then
 					if ( event == "UNIT_SPELLCAST_SENT" ) then
-						entry.pending = 1;
-					else
+						entry.pending = castID;
+					elseif ( entry.pending == castID ) then
 						entry.pending = nil;
 						if ( event == "UNIT_SPELLCAST_SUCCEEDED" ) then
 							SetNextCastSequence(sequence, entry);
@@ -2934,9 +2939,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					local toonNameText = toonName;
 					
 					if ( client == BNET_CLIENT_WOW ) then
-						toonNameText = "|TInterface\\FriendsFrame\\Battlenet-WoWicon:20|t".." "..toonNameText;
+						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-WOW:14|t"..toonNameText;
 					elseif ( client == BNET_CLIENT_SC2 ) then
-						toonNameText = "|TInterface\\FriendsFrame\\Battlenet-Sc2icon:20|t".." "..toonNameText;
+						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:14|t"..toonNameText;
 					end
 					
 					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s] (%s)|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2, toonNameText);

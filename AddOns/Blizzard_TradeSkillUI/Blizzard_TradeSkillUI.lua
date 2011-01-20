@@ -357,11 +357,18 @@ function TradeSkillFrame_SetSelection(id)
 	end
 	
 	TradeSkillSkillName:SetText(skillName);
-	if ( GetTradeSkillCooldown(id) ) then
-		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(GetTradeSkillCooldown(id)));
-	else
+	local cooldown, isDayCooldown = GetTradeSkillCooldown(id);
+	
+	if ( not cooldown ) then
 		TradeSkillSkillCooldown:SetText("");
+	elseif ( not isDayCooldown ) then
+		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(cooldown));
+	elseif ( cooldown > 60 * 60 * 24 ) then	--Cooldown is greater than 1 day.
+		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(cooldown, true, false, 1, true));
+	else
+		TradeSkillSkillCooldown:SetText(COOLDOWN_EXPIRES_AT_MIDNIGHT);
 	end
+
 	TradeSkillSkillIcon:SetNormalTexture(GetTradeSkillIcon(id));
 	local minMade,maxMade = GetTradeSkillNumMade(id);
 	if ( maxMade > 1 ) then

@@ -24,7 +24,11 @@ function BarberShop_OnShow(self)
 		model:Show();
 		model:SetRotation(-0.4);
 		model.rotation = -0.4;
-		model:SetPosition(0, 0, -0.05);
+		if (UnitSex("player") == 2) then
+			model:SetPosition(0, 0.05, -0.03);
+		else
+			model:SetPosition(0, 0, -0.05);
+		end
 		model:SetPortraitZoom(0.9);
 		SetBarberShopAlternateFormFrame("BarberShopAltFormFrame");
 	else

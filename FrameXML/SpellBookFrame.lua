@@ -611,7 +611,7 @@ function SpellButton_UpdateButton(self)
 	if ( subSpellName == "" ) then
 		self.SpellSubName:SetHeight(6);
 	else
-		self.SpellSubName:SetHeight(18);
+		self.SpellSubName:SetHeight(0);
 	end
 
 	iconTexture:Show();

@@ -1130,8 +1130,6 @@ function AuctionFrameAuctions_OnLoad(self)
 	self:RegisterEvent("AUCTION_MULTISELL_FAILURE");
 	-- set default sort
 	AuctionFrame_SetSort("owner", "duration", false);
-
-	UIDropDownMenu_DisableDropDown(PriceDropDown);
 end
 
 function AuctionFrameAuctions_OnEvent(self, event, ...)
@@ -1475,7 +1473,7 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			AuctionsStackSizeMaxButton:Show();
 			AuctionsNumStacksEntry:Show();
 			AuctionsNumStacksMaxButton:Show();
-			UIDropDownMenu_EnableDropDown(PriceDropDown);
+			PriceDropDown:Show();
 			UpdateMaximumButtons();
 		else	
 			AuctionsItemButtonCount:Hide();
@@ -1486,11 +1484,10 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			-- checking for count of 1 so when a stack of 2 or more is removed by the user, we don't reset to "per item"
 			-- totalCount will be 0 when the sell item is removed
 			if ( totalCount == 1 ) then
-				AuctionFrameAuctions.priceType = PRICE_TYPE_UNIT;
-				UIDropDownMenu_SetSelectedValue(PriceDropDown, PRICE_TYPE_UNIT);
-				UIDropDownMenu_SetText(PriceDropDown, AUCTION_PRICE_PER_ITEM);
+				PriceDropDown:Hide();
+			else
+				PriceDropDown:Show();
 			end
-			UIDropDownMenu_DisableDropDown(PriceDropDown);
 		end
 		AuctionsStackSizeEntry:SetNumber(count);
 		AuctionsNumStacksEntry:SetNumber(1);

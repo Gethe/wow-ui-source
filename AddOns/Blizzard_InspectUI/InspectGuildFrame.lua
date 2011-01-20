@@ -1,9 +1,9 @@
 
-function InspectPVPFrame_OnLoad(self)
+function InspectGuildFrame_OnLoad(self)
 	self:RegisterEvent("INSPECT_READY");
 end
 
-function InspectPVPFrame_OnEvent(self, event, ...)
+function InspectGuildFrame_OnEvent(self, event, ...)
 	if ( event == "INSPECT_READY" ) then
 		InspectGuildFrame_Update();
 	end

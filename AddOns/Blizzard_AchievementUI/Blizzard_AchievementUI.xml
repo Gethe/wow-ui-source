@@ -3003,6 +3003,15 @@
 									<TexCoords left="0.05" right=".95" top="0" bottom=".9"/>
 								</Texture>
 							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="-1">
+								<Texture name="$parentPortraitBg">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentPortrait"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentPortrait"/>
+									</Anchors>
+									<Color r="0" g="0" b="0"/>
+								</Texture>
+							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentName" text="PLAYER" inherits="GameFontNormalLeft">
 									<Size x="78" y="12"/>

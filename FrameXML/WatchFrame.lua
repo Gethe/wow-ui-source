@@ -715,8 +715,11 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 									criteriaString = string.gsub(quantityString, " / ", "/").." "..description;
 								end
 							else
-								-- regular criteria
-								-- no need to do anything, criteriaString and dash are already set				
+								-- criteriaString and dash are already set for regular criteria
+								-- for meta criteria look up the achievement name
+								if ( criteriaType == CRITERIA_TYPE_ACHIEVEMENT and assetID ) then
+									_, criteriaString = GetAchievementInfo(assetID);
+								end
 							end
 						end
 						-- set up the line

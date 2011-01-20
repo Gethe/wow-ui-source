@@ -21,8 +21,13 @@ function MultiActionButtonUp (bar, id)
 	end
 end
 
+
+function IsNormalActionBarState()
+	return MainMenuBar.state == "player" or (MainMenuBar.state=="bonus" and MainMenuBar:IsShown());
+end
+
 function MultiActionBar_Update ()
-	if ( SHOW_MULTI_ACTIONBAR_1 and MainMenuBar.state=="player" ) then
+	if ( SHOW_MULTI_ACTIONBAR_1 and IsNormalActionBarState()) then
 		MultiBarBottomLeft:Show();
 		MultiBarBottomLeft.isShowing = 1;
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMLEFT_ACTIONBAR_PAGE] = nil;
@@ -31,21 +36,21 @@ function MultiActionBar_Update ()
 		MultiBarBottomLeft.isShowing = nil;
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMLEFT_ACTIONBAR_PAGE] = 1;
 	end
-	if ( SHOW_MULTI_ACTIONBAR_2 and MainMenuBar.state=="player") then
+	if ( SHOW_MULTI_ACTIONBAR_2 and IsNormalActionBarState()) then
 		MultiBarBottomRight:Show();
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMRIGHT_ACTIONBAR_PAGE] = nil;
 	else
 		MultiBarBottomRight:Hide();
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMRIGHT_ACTIONBAR_PAGE] = 1;
 	end
-	if ( SHOW_MULTI_ACTIONBAR_3 and MainMenuBar.state=="player") then
+	if ( SHOW_MULTI_ACTIONBAR_3 and IsNormalActionBarState()) then
 		MultiBarRight:Show();
 		VIEWABLE_ACTION_BAR_PAGES[RIGHT_ACTIONBAR_PAGE] = nil;
 	else
 		MultiBarRight:Hide();
 		VIEWABLE_ACTION_BAR_PAGES[RIGHT_ACTIONBAR_PAGE] = 1;
 	end
-	if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 and MainMenuBar.state=="player") then
+	if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 and IsNormalActionBarState()) then
 		MultiBarLeft:Show();
 		VIEWABLE_ACTION_BAR_PAGES[LEFT_ACTIONBAR_PAGE] = nil;
 	else

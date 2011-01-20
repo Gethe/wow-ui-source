@@ -202,7 +202,7 @@
 				</FontString>
 				<FontString name="$parentSubSpellName" inherits="SubSpellFont" hidden="true" justifyH="LEFT" parentKey="SpellSubName">
 					<Size>
-						<AbsDimension x="145" y="18"/>
+						<AbsDimension x="145" y="0"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
@@ -523,7 +523,7 @@
 		</Size>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString name="$parentRank" inherits="GameFontHighlightSmall" parentKey ="rankText" text="0/0">
+				<FontString name="$parentRank" inherits="TextStatusBarText" parentKey ="rankText" text="0/0">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
@@ -1299,7 +1299,6 @@
 						<Scripts>
 							<OnLoad>
 								Model_OnLoad(self);
-								self:SetPosition(0, 0, 0.2); -- Small offset to position pets above the text
 							</OnLoad>
 							<OnEvent function="Model_OnEvent"/>
 							<OnUpdate function="Model_OnUpdate"/>
