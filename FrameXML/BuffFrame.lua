@@ -225,7 +225,7 @@ function AuraButton_Update(buttonName, index, filter)
 			GameTooltip:SetUnitAura(PlayerFrame.unit, index, filter);
 		end
 
-		if ( CONSOLIDATE_BUFFS == "1" and shouldConsolidate ) then
+		if ( GetCVarBool("consolidateBuffs") and shouldConsolidate ) then
 			if ( buff.timeLeft and duration > 30 ) then
 				buff.exitTime = expirationTime - max(10, duration / 10);
 			end

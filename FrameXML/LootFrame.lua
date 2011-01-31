@@ -105,10 +105,10 @@ function LootFrame_UpdateButton(index)
 		if ( slot <= numLootItems ) then	
 			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot) or LootSlotIsCurrency(slot)) and index <= numLootToShow ) then
 				local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
+				local text = _G["LootButton"..index.."Text"];
 				if ( texture ) then
 					local color = ITEM_QUALITY_COLORS[quality];
 					_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
-					local text = _G["LootButton"..index.."Text"];
 					text:SetText(item);
 					if( locked ) then
 						SetItemButtonNameFrameVertexColor(button, 1.0, 0, 0);
@@ -141,11 +141,15 @@ function LootFrame_UpdateButton(index)
 					end
 					button.slot = slot;
 					button.quality = quality;
-					button:Show();
+					button:Enable();
 				else
-					button:Hide();
+					text:SetText("");
+					_G["LootButton"..index.."IconTexture"]:SetTexture(nil);
+					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 					LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
+					button:Disable();
 				end
+				button:Show();
 			else
 				button:Hide();
 			end

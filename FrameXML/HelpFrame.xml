@@ -631,7 +631,7 @@
 								end
 							</OnEvent>
 							<OnClick>
-								if (UseItemID(HEARTHSTONE_ITEM_ID)) then
+								if (UseHearthstone()) then
 									HideUIPanel(HelpFrame);
 								end
 							</OnClick>

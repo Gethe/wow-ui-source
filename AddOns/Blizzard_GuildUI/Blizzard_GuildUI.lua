@@ -359,6 +359,7 @@ function GuildXPBar_OnEnter(self)
 	GameTooltip:AddLine(" ");
 	if ( isUncapped ) then
 		GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_NO_CAP, UNCAPPED_GUILD_LEVEL), 1, 1, 1, 1);
+		GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_CURRENT, TextStatusBar_CapDisplayOfNumericValue(currentXP), TextStatusBar_CapDisplayOfNumericValue(nextLevelXP), percentTotal));
 	else
 		GameTooltip:AddLine(GUILD_EXPERIENCE_CAP, 1, 1, 1, 1);
 		GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_CURRENT, TextStatusBar_CapDisplayOfNumericValue(currentXP), TextStatusBar_CapDisplayOfNumericValue(nextLevelXP), percentTotal));

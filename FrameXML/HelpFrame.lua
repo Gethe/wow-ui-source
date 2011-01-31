@@ -94,7 +94,7 @@ function HelpFrame_OnEvent(self, event, ...)
 		haveTicket = false;
 		UIFrameFlash(TicketStatusFrameIcon, 0.75, 0.75, 20);
 	elseif ( event == "UPDATE_TICKET" ) then
-		local category, ticketDescription, ticketAge, oldestTicketTime, updateTime, assignedToGM, openedByGM = ...;
+		local category, ticketDescription, ticketAge, oldestTicketTime, updateTime, assignedToGM, openedByGM, waitTimeOverrideMessage, waitTimeOverrideMinutes = ...;
 		-- If there are args then the player has a ticket
 		if ( category ) then
 			-- Has an open ticket
@@ -109,6 +109,8 @@ function HelpFrame_OnEvent(self, event, ...)
 				How recent is the data for oldest ticket time, measured in days.  If this number 1 hour, we have bad data.
 			assignedToGM - see GMTICKET_ASSIGNEDTOGM_STATUS_* constants
 			openedByGM - see GMTICKET_OPENEDBYGM_STATUS_* constants
+			waitTimeOverrideMessage - server is specifying the estimated wait time message
+			waitTimeOverrideMinutes - server is specifying the wait time
 			]]
 			local statusText;
 			TicketStatusFrame.ticketTimer = nil;
@@ -126,7 +128,15 @@ function HelpFrame_OnEvent(self, event, ...)
 					estimatedWaitTime = 0;
 				end
 
-				if ( oldestTicketTime < 0 or updateTime < 0 or updateTime > 0.042 ) then
+				if ( #waitTimeOverrideMessage > 0 ) then
+					-- the server is specifing the full message to display to the user
+					if (waitTimeOverrideMinutes) then
+						statusText = format(waitTimeOverrideMessage, SecondsToTime(waitTimeOverrideMinutes*60,1));
+					else
+						statusText = waitTimeOverrideMessage;
+					end
+					estimatedWaitTime = waitTimeOverrideMinutes*60;
+				elseif ( oldestTicketTime < 0 or updateTime < 0 or updateTime > 0.042 ) then
 					statusText = GM_TICKET_UNAVAILABLE;
 				elseif ( estimatedWaitTime > 7200 ) then
 					-- if wait is over 2 hrs
