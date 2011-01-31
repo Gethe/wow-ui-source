@@ -919,7 +919,7 @@ function PVPConquestFrame_Update(self)
 		self.infoButton.losses:SetText("|cff808080"..LOSSES);
 		PVPFrameLeftButton:Disable();
 		
-		if PVPConquestFrame.mode == "RatedBg" then
+		if PVPConquestFrame.mode == "RatedBg" and  size and groupSize then
 			if  size > groupSize then
 				self.partyInfoRollOver.tooltip = string.format(PVP_RATEDBG_NEED_MORE, size - groupSize);
 			else

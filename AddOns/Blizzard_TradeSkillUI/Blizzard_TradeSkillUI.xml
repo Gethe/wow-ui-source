@@ -1255,7 +1255,7 @@
 						<Scripts>
 							<OnClick>
 								local activeEditBox =  ChatEdit_GetActiveWindow();
-								if MacroFrameText:IsShown() and MacroFrameText:HasFocus() then
+								if MacroFrameText and MacroFrameText:IsShown() and MacroFrameText:HasFocus() then
 									local link = GetTradeSkillListLink();
 									local text = MacroFrameText:GetText()..link;
 									if 255 >= strlenutf8(text) then
