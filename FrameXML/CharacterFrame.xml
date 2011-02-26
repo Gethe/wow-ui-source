@@ -75,7 +75,7 @@
 		<Size x="5" y="32"/>	
 		<TexCoords left="0.50000000" right="0.81250000" top="0.00000000" bottom="1.00000000"/>	
 	</Texture>
-	
+
 	<Frame name="StatFrameTemplate" virtual="true">
 		<Size x="104" y="13"/>
 		<Layers>
@@ -228,7 +228,7 @@
 								end
 							</OnLeave>
 							<OnClick>
-								Paperdoll_MoveCategoryUp(self:GetParent():GetParent());
+								PaperDoll_MoveCategoryUp(self:GetParent():GetParent());
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -258,7 +258,7 @@
 								end
 							</OnLeave>
 							<OnClick>
-								Paperdoll_MoveCategoryDown(self:GetParent():GetParent());
+								PaperDoll_MoveCategoryDown(self:GetParent():GetParent());
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -410,7 +410,6 @@
 				</ScrollChild>
 				<Scripts>
 					<OnLoad>
-						--self.scrollBarHideable = 1;
 						self.ScrollBar.scrollStep = 50;
 						ScrollFrame_OnLoad(self);
 						ScrollFrame_OnScrollRangeChanged(self);

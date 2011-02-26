@@ -237,9 +237,8 @@
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Socials");
-				self.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
-				self.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
-				self.disabledTooltip = GUILD_BECOMES_AVAILABLE;
+				self.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
+				self.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
 				GuildMicroButton_UpdateTabard(true);

@@ -688,8 +688,8 @@
 								self:SetWidth(self:GetTextWidth() + 50);
 							</OnLoad>
 							<OnClick>
-								CharacterCreateNameEdit:SetText(GetRandomName());
-								PlaySound("gsCharacterCreationLook");
+								CharacterCreate_GenerateRandomName(self);
+								CharCreateOkayButton:Disable();
 							</OnClick>
 							<OnUpdate>
 								CharacterCreate_DeathKnightSwap(self);
@@ -762,6 +762,9 @@
 							<Anchor point="TOP" relativeTo="CharacterCreateCharacterClass" relativePoint="BOTTOM" x="4" y="-3"/>
 						</Anchors>
 						<Scripts>
+							<OnShow>
+								self:Enable();
+							</OnShow>
 							<OnClick>
 								CharacterCreate_Okay();
 							</OnClick>
@@ -912,6 +915,9 @@
 			<OnHide>
 				CharacterCreate_OnHide();
 			</OnHide>
+			<OnEvent>
+				CharacterCreate_OnEvent(event, ...);
+			</OnEvent>
 			<OnChar>
 				CharacterCreate_OnChar();
 			</OnChar>

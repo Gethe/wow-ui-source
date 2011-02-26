@@ -791,8 +791,8 @@ function AuctionFrameBrowse_Update()
 			button:Show();
 
 			buttonName = "BrowseButton"..i;
-			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("list", offset + i);
-			if ( not name ) then	--Bug  145328
+			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", offset + i);
+			if ( not hasAllInfo ) then	--Bug  145328
 				button:Hide();
 				-- If the last button is empty then set isLastSlotEmpty var
 				isLastSlotEmpty = (i == NUM_BROWSE_TO_DISPLAY);
@@ -1175,6 +1175,15 @@ function AuctionFrameAuctions_OnShow()
 	AuctionFrameAuctions_Update();
 end
 
+local AUCTIONS_UPDATE_INTERVAL = 0.5;
+function AuctionFrameAuctions_OnUpdate(self, elapsed)
+	self.timeSinceUpdate = (self.timeSinceUpdate or 0) + elapsed;
+	if ( self.timeSinceUpdate >= AUCTIONS_UPDATE_INTERVAL ) then
+		AuctionFrameAuctions_Update();
+		self.timeSinceUpdate = 0;
+	end
+end
+
 function AuctionFrameAuctions_Update()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("owner");
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame);
@@ -1186,7 +1195,8 @@ function AuctionFrameAuctions_Update()
 	local buttonBuyoutFrame, buttonBuyoutMoney;
 	local bidAmountMoneyFrame, bidAmountMoneyFrameLabel;
 	local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus;
-
+	local pendingDeliveries = false;
+	
 	-- Update sort arrows
 	SortButton_UpdateArrow(AuctionsQualitySort, "owner", "quality");
 	SortButton_UpdateArrow(AuctionsHighBidderSort, "owner", "status");
@@ -1242,6 +1252,7 @@ function AuctionFrameAuctions_Update()
 			buttonBuyoutFrame = _G[buttonName.."BuyoutFrame"];
 			if ( saleStatus == 1 ) then
 				-- Sold item
+				pendingDeliveries = true;
 				itemName:SetFormattedText(AUCTION_ITEM_SOLD, name);
 				itemName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 
@@ -1250,7 +1261,7 @@ function AuctionFrameAuctions_Update()
 					highBidderFrame:SetText(highBidder);
 				end
 
-				closingTimeText:SetFormattedText(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(duration));
+				closingTimeText:SetFormattedText(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(max(duration, 1)));
 				closingTimeFrame.tooltip = closingTimeText:GetText();
 
 				iconTexture:SetVertexColor(0.5, 0.5, 0.5);
@@ -1356,6 +1367,12 @@ function AuctionFrameAuctions_Update()
 		AuctionsCancelAuctionButton:Disable();
 	end
 
+	if ( pendingDeliveries ) then
+		AuctionFrameAuctions:SetScript("OnUpdate", AuctionFrameAuctions_OnUpdate);
+	else
+		AuctionFrameAuctions:SetScript("OnUpdate", nil);
+	end
+	
 	-- Update scrollFrame
 	FauxScrollFrame_Update(AuctionsScrollFrame, numBatchAuctions, NUM_AUCTIONS_TO_DISPLAY, AUCTIONS_BUTTON_HEIGHT);
 end

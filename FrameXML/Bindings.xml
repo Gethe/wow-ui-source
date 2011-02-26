@@ -1355,6 +1355,7 @@
 	<ModifiedClick action="SOCKETITEM" default="SHIFT-BUTTON2"/>
 	<ModifiedClick action="SPLITSTACK" default="SHIFT"/>
 	<ModifiedClick action="PICKUPACTION" default="SHIFT"/>
+	<ModifiedClick action="PICKUPITEM" default="SHIFT"/>
 	<ModifiedClick action="COMPAREITEMS" default="SHIFT"/>
 	<ModifiedClick action="OPENALLBAGS" default="SHIFT"/>
 	<ModifiedClick action="QUESTWATCHTOGGLE" default="SHIFT"/>

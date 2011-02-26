@@ -18,6 +18,20 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["CONFIRM_SAVE_EQUIPMENT_SET"] = {
+	text = CONFIRM_SAVE_EQUIPMENT_SET,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) SaveEquipmentSet(self.data); end,
+	OnCancel = function (self) end,
+	OnHide = function (self) self.data = nil; end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+}
+
+
 StaticPopupDialogs["ERROR_CINEMATIC"] = {
 	text = ERROR_CINEMATIC,
 	button1 = OKAY,

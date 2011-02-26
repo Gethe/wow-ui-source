@@ -118,6 +118,17 @@ function SpellFlyout_OnEvent(self, event, ...)
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
+	elseif (event == "SPELL_FLYOUT_UPDATE") then
+		local i = 1;
+		local button = _G["SpellFlyoutButton"..i];
+		while (button and button:IsShown()) do
+			SpellFlyoutButton_UpdateCooldown(button);
+			SpellFlyoutButton_UpdateState(button);
+			SpellFlyoutButton_UpdateUsable(button);
+			SpellFlyoutButton_UpdateCount(button);
+			i = i+1;
+			button = _G["SpellFlyoutButton"..i];
+		end
 	elseif (event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
 		self:Hide();
 	elseif (event == "ACTIONBAR_PAGE_CHANGED") then
@@ -296,6 +307,7 @@ function SpellFlyout_OnShow(self)
 		self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 		self:RegisterEvent("PET_STABLE_UPDATE");
 		self:RegisterEvent("PET_STABLE_SHOW");
+		self:RegisterEvent("SPELL_FLYOUT_UPDATE");
 		self.eventsRegistered = true;
 	end
 	if (self.isActionBar) then
@@ -312,6 +324,7 @@ function SpellFlyout_OnHide(self)
 		self:UnregisterEvent("ACTIONBAR_PAGE_CHANGED");
 		self:UnregisterEvent("PET_STABLE_UPDATE");
 		self:UnregisterEvent("PET_STABLE_SHOW");
+		self:UnregisterEvent("SPELL_FLYOUT_UPDATE");
 		self.eventsRegistered = false;
 	end
 	if (self:IsShown()) then

@@ -410,6 +410,8 @@ function PlayerTalentFrame_OnLoad(self)
 	self.inspect = false;
 	self.pet = false;
 	self.talentGroup = 1;
+	self.hasBeenShown = false;
+	self.selectedPlayerSpec = DEFAULT_TALENT_SPEC;
 
 	-- setup tabs
 	PanelTemplates_SetNumTabs(self, NUM_TALENT_FRAME_TABS);
@@ -448,9 +450,10 @@ function PlayerTalentFrame_OnShow(self)
 	PlayerTalentFrameTalents.summariesShownWhenNoPrimary = true;
 	PlayerTalentFrameLearnButtonTutorial.hasBeenClosed = false;
 
-	if ( not selectedSpec ) then
-		-- if no spec was selected, try to select the active one
+	if ( not self.hasBeenShown ) then
+		-- The first time the frame is shown, select your active spec
 		PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_TALENT_SPEC]);
+		self.hasBeenShown = true;
 	else
 		PlayerTalentFrame_Refresh();
 	end
@@ -501,49 +504,53 @@ end
 
 function PlayerTalentFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
-	if ( event == "PLAYER_TALENT_UPDATE" or event == "PET_TALENT_UPDATE" ) then
-		PlayerTalentFrame_Refresh();
-	elseif ( event == "PREVIEW_TALENT_POINTS_CHANGED" ) then
-		--local talentIndex, tabIndex, groupIndex, points = ...;
-		PlayerTalentFrame_Refresh();
-	elseif ( event == "PREVIEW_PET_TALENT_POINTS_CHANGED" ) then
-		PlayerTalentFrame_Refresh();
-	elseif ( event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" ) then
-		PlayerTalentFrame_Refresh();
-	elseif ( (event == "UNIT_PET" and arg1 == "player") or (event == "UNIT_MODEL_CHANGED" and arg1 == "pet") ) then
-		local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
-		if ( selectedTab and selectedTab == PET_TALENTS_TAB ) then
-			local numTalentGroups = GetNumTalentGroups(false, true);
-			if ( numTalentGroups == 0 ) then
-				-- If the player has the Pet Talents, and a pet spec is not available, select the default talents tab
-				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
-				return;
+	if (self:IsShown()) then
+		if ( event == "PLAYER_TALENT_UPDATE" or event == "PET_TALENT_UPDATE" ) then
+			PlayerTalentFrame_Refresh();
+		elseif ( event == "PREVIEW_TALENT_POINTS_CHANGED" ) then
+			--local talentIndex, tabIndex, groupIndex, points = ...;
+			PlayerTalentFrame_Refresh();
+		elseif ( event == "PREVIEW_PET_TALENT_POINTS_CHANGED" ) then
+			PlayerTalentFrame_Refresh();
+		elseif ( event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" ) then
+			PlayerTalentFrame_Refresh();
+		elseif ( (event == "UNIT_PET" and arg1 == "player") or (event == "UNIT_MODEL_CHANGED" and arg1 == "pet") ) then
+			local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+			if ( selectedTab and selectedTab == PET_TALENTS_TAB ) then
+				local numTalentGroups = GetNumTalentGroups(false, true);
+				if ( numTalentGroups == 0 ) then
+					-- If the player has the Pet Talents, and a pet spec is not available, select the default talents tab
+					PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+					return;
+				end
 			end
-		end
-		PlayerTalentFramePetModel:SetUnit("pet");
-		PlayerTalentFrame_Refresh();
-	elseif ( event == "UNIT_LEVEL") then
-		if ( selectedSpec ) then
-			local arg1 = ...;
-			if (arg1 == "player") then
-				PlayerTalentFrame_Update();
+			PlayerTalentFramePetModel:SetUnit("pet");
+			PlayerTalentFrame_Refresh();
+		elseif ( event == "UNIT_LEVEL") then
+			if ( selectedSpec ) then
+				local arg1 = ...;
+				if (arg1 == "player") then
+					PlayerTalentFrame_Update();
+					PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
+					PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel2);
+					PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
+				end
+			end
+		elseif (event == "LEARNED_SPELL_IN_TAB") then
+			-- Must update the Mastery bonus if you just learned Mastery
+			if (PlayerTalentFramePanel1Summary:IsVisible()) then
 				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
+			end
+			if (PlayerTalentFramePanel2Summary:IsVisible()) then
 				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel2);
+			end
+			if (PlayerTalentFramePanel3Summary:IsVisible()) then
 				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
 			end
 		end
-	elseif (event == "LEARNED_SPELL_IN_TAB") then
-		-- Must update the Mastery bonus if you just learned Mastery
-		if (PlayerTalentFramePanel1Summary:IsVisible()) then
-			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
-		end
-		if (PlayerTalentFramePanel2Summary:IsVisible()) then
-			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel2);
-		end
-		if (PlayerTalentFramePanel3Summary:IsVisible()) then
-			PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
-		end
-	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
+	end
+	
+	if ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
 	end
 end
@@ -1454,7 +1461,7 @@ end
 function PlayerTalentFrame_UpdateTabs(playerLevel)
 	local totalTabWidth = 0;
 	local firstShownTab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
-	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame) or TALENTS_TAB;
 	local numVisibleTabs = 0;
 	local tab;
 

@@ -1,9 +1,5 @@
 
 STREAMING_CURRENT_STATUS = 0;
-STREAMING_ICON_ALPHA = 0;
-STREAMING_ICON_FADEIN_TIME = 2;
-STREAMING_ICON_FADEOUT_TIME = 10;
-
 
 function StreamingIcon_OnLoad(self)
 	self:RegisterEvent("STREAMING_ICON");
@@ -36,62 +32,33 @@ function StreamingIcon_UpdateIcon(status)
 			StreamingIconFrameBackground:SetVertexColor(1,0,0);
 			StreamingIcon.tooltip = STATUS_CORE_FILE_TOOLTIP;
 		end
-		StreamingIcon_FadeIn(StreamingIcon);
+		if (StreamingIcon.FadeOUT:IsPlaying()) then
+			local alpha = StreamingIcon:GetAlpha();
+			StreamingIcon.FadeOUT:Stop();
+			StreamingIcon:SetAlpha(alpha);
+		end
+		StreamingIcon.FadeIN:Play();
+		StreamingIcon.Loop:Play();
+		StreamingIcon:Show();
 	elseif(STREAMING_CURRENT_STATUS > 0) then
 		StreamingIconSpinSpinner:SetVertexColor(0,1,0);
 		StreamingIconFrameBackground:SetVertexColor(0,1,0);
 		StreamingIcon.tooltip = STATUS_ADDL_FILE_TOOLTIP;
-		StreamingIcon_FadeOut(StreamingIcon);
+		if (StreamingIcon.FadeIN:IsPlaying()) then
+			local alpha = StreamingIcon:GetAlpha();
+			StreamingIcon.FadeIN:Stop();
+			StreamingIcon:SetAlpha(alpha);
+		end
+		StreamingIcon.FadeOUT:Play();
 	end
 	STREAMING_CURRENT_STATUS = status;
 end
 
-function StreamingIcon_OnShow()
-	StreamingIcon.Loop:Play();
+function StreamingFrame_FadeIN_OnFinished()
+	StreamingIcon:SetAlpha(1);
 end
 
-function StreamingIcon_OnHide()
-	StreamingIcon.Loop:Stop();
+function StreamingFrame_FadeOUT_OnFinished()
+	StreamingIcon:SetAlpha(0)
+	StreamingIcon:Hide();
 end
-
-function StreamingIcon_FadeIn(self)
-	if( not self:IsShown()) then
-		self:Show()
-		STREAMING_ICON_ALPHA = 0;
-		self:SetAlpha(0.0);
-		self:SetScript("OnUpdate", StreamingIcon_OnUpdate_FadeIn);
-	elseif(STREAMING_CURRENT_STATUS == 0) then
-		STREAMING_ICON_ALPHA = self:GetAlpha() * STREAMING_ICON_FADEIN_TIME;
-		self:SetScript("OnUpdate", StreamingIcon_OnUpdate_FadeIn);
-	else
-		self:SetAlpha(1.0);
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
-function StreamingIcon_FadeOut(self)
-	STREAMING_ICON_ALPHA = self:GetAlpha() * STREAMING_ICON_FADEOUT_TIME;
-	self:SetScript("OnUpdate", StreamingIcon_OnUpdate_FadeOut);
-end
-
-function StreamingIcon_OnUpdate_FadeIn(self, elapsed)
-	STREAMING_ICON_ALPHA = STREAMING_ICON_ALPHA + elapsed;
-	if (STREAMING_ICON_ALPHA >= STREAMING_ICON_FADEIN_TIME) then
-		self:SetAlpha(1.0);
-		self:SetScript("OnUpdate", nil);
-	else
-		self:SetAlpha( STREAMING_ICON_ALPHA / STREAMING_ICON_FADEIN_TIME );
-	end
-end
-
-function StreamingIcon_OnUpdate_FadeOut(self, elapsed)
-	STREAMING_ICON_ALPHA = STREAMING_ICON_ALPHA - elapsed;
-	if (STREAMING_ICON_ALPHA <= 0) then
-		self:SetAlpha(0.0);
-		self:SetScript("OnUpdate", nil);
-		self:Hide();
-	else
-		self:SetAlpha( sqrt( (STREAMING_ICON_ALPHA * STREAMING_ICON_ALPHA) / (STREAMING_ICON_FADEOUT_TIME * STREAMING_ICON_FADEOUT_TIME)) );
-	end
-end
-

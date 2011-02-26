@@ -495,14 +495,20 @@ function MultiCastActionButtonDown(id)
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
+	if (GetCVarBool("ActionButtonUseKeyDown")) then
+		SecureActionButton_OnClick(button, "LeftButton");
+		ActionButton_UpdateState(button);
+	end
 end
 
 function MultiCastActionButtonUp(id)
 	local button = _G["MultiCastActionButton"..id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		SecureActionButton_OnClick(button, "LeftButton");
-		ActionButton_UpdateState(button);
+		if (not GetCVarBool("ActionButtonUseKeyDown")) then
+			SecureActionButton_OnClick(button, "LeftButton");
+			ActionButton_UpdateState(button);
+		end
 	end
 	MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
 end

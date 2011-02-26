@@ -607,7 +607,7 @@ function QuestLog_UpdateMap()
 	-- to account for these extra pixels
 	local tileHeight = (mapFrameHeight) / NUM_WORLDMAP_DETAIL_TILE_ROWS;
 	local tile;
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+	for i=1, GetNumberOfDetailTiles() do
 		tile = _G["QuestLogMapFrame"..i];
 		tile:SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i);
 --[[

@@ -1,5 +1,5 @@
-GUILD_DETAIL_NORM_HEIGHT = 185
-GUILD_DETAIL_OFFICER_HEIGHT = 235
+GUILD_DETAIL_NORM_HEIGHT = 187;
+GUILD_DETAIL_OFFICER_HEIGHT = 240;
 local GUILD_ROSTER_MAX_COLUMNS = 5;
 local GUILD_ROSTER_MAX_STRINGS = 4;
 local GUILD_ROSTER_BAR_MAX = 239;
@@ -163,6 +163,18 @@ function GuildRoster_Update()
 		end
 		GuildMemberNoteBackground:EnableMouse(CanEditPublicNote());
 		PersonalNoteText:SetText(note);
+
+		-- Manage guild member related buttons
+		-- check if you can promote and the member is at least 2 ranks below you, or if you can demote and the member is not in the last rank, as well as below your rank
+		if ( ( CanGuildPromote() and rankIndex > guildRankIndex + 1 ) or ( CanGuildDemote() and rankIndex < maxRankIndex and rankIndex > guildRankIndex ) ) then
+			GuildMemberDetailRankLabel:SetHeight(20);
+			GuildMemberRankDropdown:Show();
+			UIDropDownMenu_SetText(GuildMemberRankDropdown, rank);
+		else
+			GuildMemberDetailRankLabel:SetHeight(0);
+			GuildMemberRankDropdown:Hide();
+		end
+		
 		-- Update officer note
 		if ( CanViewOfficerNote() ) then
 			if ( CanEditOfficerNote() ) then
@@ -179,32 +191,13 @@ function GuildRoster_Update()
 			-- Resize detail frame
 			GuildMemberDetailOfficerNoteLabel:Show();
 			GuildMemberOfficerNoteBackground:Show();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT + GuildMemberDetailRankText:GetHeight());
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT + GuildMemberDetailRankLabel:GetHeight());
 		else
 			GuildMemberDetailOfficerNoteLabel:Hide();
 			GuildMemberOfficerNoteBackground:Hide();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT + GuildMemberDetailRankText:GetHeight());
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT + GuildMemberDetailRankLabel:GetHeight());
 		end
 
-		-- Manage guild member related buttons
-		if ( CanGuildPromote() and ( rankIndex > 1 ) and ( rankIndex > (guildRankIndex + 1) )  and GetPromotionRank(selectedGuildMember) ) then
-			GuildFramePromoteButton:Enable();
-		else 
-			GuildFramePromoteButton:Disable();
-		end
-		if ( CanGuildDemote() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) and ( rankIndex ~= maxRankIndex ) and GetDemotionRank(selectedGuildMember) ) then
-			GuildFrameDemoteButton:Enable();
-		else
-			GuildFrameDemoteButton:Disable();
-		end
-		-- Hide promote/demote buttons if both disabled
-		if ( not GuildFrameDemoteButton:IsEnabled() and not GuildFramePromoteButton:IsEnabled() ) then
-			GuildFramePromoteButton:Hide();
-			GuildFrameDemoteButton:Hide();
-		else
-			GuildFramePromoteButton:Show();
-			GuildFrameDemoteButton:Show();
-		end
 		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then
 			GuildMemberRemoveButton:Enable();
 		else
@@ -351,6 +344,7 @@ function GuildRosterButton_OnClick(self, button)
 				SetGuildRosterSelection(self.guildIndex);
 				GuildFrame.selectedGuildMember = self.guildIndex;
 				GuildFramePopup_Show(GuildMemberDetailFrame);
+				CloseDropDownMenus();
 			end
 			GuildRoster_Update();
 		else
@@ -607,4 +601,54 @@ function GuildFramePromoteButton_OnClick(self)
 		PlaySound("UChatScrollButton");
 		GuildFramePromoteButton:Disable();
 	end
+end
+
+function GuildMemberRankDropdown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, GuildMemberRankDropdown_Initialize);
+	UIDropDownMenu_SetWidth(GuildMemberRankDropdown, 159 - GuildMemberDetailRankLabel:GetWidth());
+	UIDropDownMenu_JustifyText(GuildMemberRankDropdown, "LEFT");
+end
+
+function GuildMemberRankDropdown_Initialize(self)
+	local numRanks = GuildControlGetNumRanks();
+	local memberIndex = GetGuildRosterSelection();
+	local _, _, memberRankIndex = GetGuildRosterInfo(GetGuildRosterSelection());
+	memberRankIndex = memberRankIndex + 1;  -- adjust to 1-based
+	local _, _, userRankIndex = GetGuildInfo("player");
+	userRankIndex = userRankIndex + 1;	-- adjust to 1-based
+	
+	local highestRank = userRankIndex + 1;
+	if not ( CanGuildPromote() ) then
+		highestRank = memberRankIndex;
+	end
+	local lowestRank = numRanks;
+	if not ( CanGuildDemote() ) then
+		lowestRank = memberRankIndex;
+	end
+	
+	for listRank = highestRank, lowestRank do
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = GuildControlGetRankName(listRank);
+		info.func = GuildMemberRankDropdown_OnClick;
+		info.checked = listRank == memberRankIndex;
+		info.value = listRank;
+		info.arg1 = listRank;
+		-- check
+		if ( not info.checked ) then
+			local allowed, reason = IsGuildRankAssignmentAllowed(memberIndex, listRank);
+			if ( not allowed and reason == "authenticator" ) then
+				info.disabled = true;
+				info.tooltipWhileDisabled = 1;
+				info.tooltipTitle = GUILD_RANK_UNAVAILABLE;
+				info.tooltipText = GUILD_RANK_UNAVAILABLE_AUTHENTICATOR;
+				info.tooltipOnButton = 1;
+			end
+		end
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function GuildMemberRankDropdown_OnClick(self, newRankIndex)
+	local name, rank, rankIndex = GetGuildRosterInfo(GetGuildRosterSelection());
+	SetGuildMemberRank(GetGuildRosterSelection(), newRankIndex);
 end

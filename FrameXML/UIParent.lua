@@ -357,6 +357,10 @@ function GuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GuildUI");
 end
 
+function LookingForGuildFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_LookingForGuildUI");
+end
+
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
@@ -447,6 +451,11 @@ function ToggleGuildFrame()
 		GuildFrame_LoadUI();
 		if ( GuildFrame_Toggle ) then
 			GuildFrame_Toggle();
+		end
+	else
+		LookingForGuildFrame_LoadUI();
+		if ( LookingForGuildFrame_Toggle ) then
+			LookingForGuildFrame_Toggle();
 		end
 	end
 end
@@ -1546,6 +1555,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	end
 	self.updatingPanels = true;
 	
+	if (currentFrame) then
+		currentFrame:SetAttribute("UIPanelLayout-defined", false); -- This is needed to clear the cache'd layout values, see GetUIPanelWindowInfo()
+	end
+	
 	local topOffset = UIParent:GetAttribute("TOP_OFFSET");
 	local leftOffset = UIParent:GetAttribute("LEFT_OFFSET");
 	local centerOffset = UIParent:GetAttribute("CENTER_OFFSET");
@@ -1774,31 +1787,51 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- Setup y anchors
-	local anchorY = 0;
-	-- Capture bars
+	local anchorY = 0
+	local buffsAnchorY = min(0, MINIMAP_BOTTOM_EDGE_EXTENT - BuffFrame.bottomEdgeExtent);
+	-- Count right action bars
+	local rightActionBars = 0;
+	if ( IsNormalActionBarState() ) then
+		if ( SHOW_MULTI_ACTIONBAR_3 ) then
+			rightActionBars = 1;
+			if ( SHOW_MULTI_ACTIONBAR_4 ) then
+				rightActionBars = 2;
+			end
+		end
+	end
+	
+	-- Capture bars - need to move below buffs/debuffs if at least 1 right action bar is showing
 	if ( NUM_EXTENDED_UI_FRAMES ) then
 		local captureBar;
 		local numCaptureBars = 0;
 		for i=1, NUM_EXTENDED_UI_FRAMES do
 			captureBar = _G["WorldStateCaptureBar"..i];
 			if ( captureBar and captureBar:IsShown() ) then
+				numCaptureBars = numCaptureBars + 1
+				if ( numCaptureBars == 1 and rightActionBars > 0 ) then
+					anchorY = min(anchorY, buffsAnchorY);
+				end
 				captureBar:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-				anchorY = anchorY - captureBar:GetHeight();
+				anchorY = anchorY - captureBar:GetHeight() - 4;
 			end
-		end	
-	end
-	
-	--Setup Vehicle seat indicator offset
-	if ( VehicleSeatIndicator ) then
-		if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
-			anchorY = anchorY - VehicleSeatIndicator:GetHeight() - 18;	--The -18 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
 		end
-		
 	end
 	
-	-- Boss frames
+	--Setup Vehicle seat indicator offset - needs to move below buffs/debuffs if both right action bars are showing
+	if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
+		if ( rightActionBars == 2 ) then
+			anchorY = min(anchorY, buffsAnchorY);
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -100, anchorY);
+		elseif ( rightActionBars == 1 ) then
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, anchorY);
+		else
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, anchorY);
+		end
+		anchorY = anchorY - VehicleSeatIndicator:GetHeight() - 4;	--The -4 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
+	end
+	
+	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
 	local durabilityXOffset = CONTAINER_OFFSET_X;
-
 	local numBossFrames = 0;
 	if ( Boss1TargetFrame ) then
 		for i = 1, MAX_BOSS_FRAMES do
@@ -1809,8 +1842,11 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			end
 		end
 		if ( numBossFrames > 0 ) then
-			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY);
-			anchorY = anchorY - 6 - numBossFrames * 66;
+			if ( rightActionBars > 1 ) then
+				anchorY = min(anchorY, buffsAnchorY);
+			end
+			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY * 1.333);	-- by 1.333 because it's 0.75 scale
+			anchorY = anchorY - numBossFrames * 68 + 4;
 		end
 	end
 	
@@ -1830,6 +1866,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ArenaEnemyFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
 
+	-- Watch frame - needs to move below buffs/debuffs if at least 1 right action bar is showing
+	if ( rightActionBars > 0 ) then
+		anchorY = min(anchorY, buffsAnchorY);
+	end
 	local numArenaOpponents = GetNumArenaOpponents();
 	if ( not WatchFrame:IsUserPlaced() and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
 		WatchFrame:ClearAllPoints();
@@ -1837,9 +1877,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	elseif ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
 		WatchFrame:ClearAllPoints();
 		-- move up if only the minimap cluster is above, move down a little otherwise
-		if ( anchorY == 0 ) then
-			anchorY = 20;
-		end
 		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 		-- OnSizeChanged for WatchFrame handles its redraw
 	end

@@ -232,16 +232,11 @@ function EclipseBar_OnEvent(self, event, ...)
 			EclipseBar_CheckBuffs(self);
 		end
 	elseif event == "ECLIPSE_DIRECTION_CHANGE" then
-		local isLunar = ...;
-		if isLunar then
-			self.marker:SetTexCoord( unpack(ECLIPSE_MARKER_COORDS["sun"]));
-		else
-			self.marker:SetTexCoord( unpack(ECLIPSE_MARKER_COORDS["moon"]));
-		end
+		local status = ...;
+		self.marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[status]));
 	else
 		EclipseBar_UpdateShown(self);
 	end
 end
-
 
 

@@ -12,6 +12,8 @@ BUFF_ROW_SPACING = 0;
 CONSOLIDATED_BUFFS_PER_ROW = 4;
 CONSOLIDATED_BUFF_ROW_HEIGHT = 0;
 NUM_TEMP_ENCHANT_FRAMES = 3;
+BUFF_BUTTON_HEIGHT = 30;
+BUFF_FRAME_BASE_EXTENT = 13;	-- pixels from the top of the screen to the top edge of the buff frame, needed to calculate extent for UIParentManageFramePositions
 
 DebuffTypeColor = { };
 DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
@@ -37,6 +39,7 @@ function BuffFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_AURA");
 	self.numEnchants = 0;
 	self.numConsolidated = 0;
+	self.bottomEdgeExtent = 0;
 end
 
 function BuffFrame_OnEvent(self, event, ...)
@@ -104,7 +107,6 @@ function BuffFrame_Update()
 		BuffFrame.numConsolidated = 0;
 		ConsolidatedBuffs:Hide();	
 	end
-	BuffFrame_UpdateAllBuffAnchors();
 	ConsolidatedBuffs.pauseUpdate = false;
 	
 	-- Handle debuffs
@@ -114,6 +116,8 @@ function BuffFrame_Update()
 			DEBUFF_ACTUAL_DISPLAY = DEBUFF_ACTUAL_DISPLAY + 1;
 		end
 	end
+	
+	BuffFrame_UpdateAllBuffAnchors();
 end
 
 function BuffFrame_UpdatePositions()
@@ -283,7 +287,8 @@ end
 function BuffFrame_UpdateAllBuffAnchors()
 	local buff, previousBuff, aboveBuff, index;
 	local numBuffs = 0;
-	local slack = BuffFrame.numEnchants
+	local numAuraRows = 0;
+	local slack = BuffFrame.numEnchants;
 	if ( BuffFrame.numConsolidated > 0 ) then
 		slack = slack + 1;	-- one icon for all consolidated buffs
 	end
@@ -306,6 +311,7 @@ function BuffFrame_UpdateAllBuffAnchors()
 			buff:ClearAllPoints();
 			if ( (index > 1) and (mod(index, BUFFS_PER_ROW) == 1) ) then
 				-- New row
+				numAuraRows = numAuraRows + 1;
 				if ( index == BUFFS_PER_ROW+1 ) then
 					buff:SetPoint("TOP", ConsolidatedBuffs, "BOTTOM", 0, -BUFF_ROW_SPACING);
 				else
@@ -313,6 +319,7 @@ function BuffFrame_UpdateAllBuffAnchors()
 				end
 				aboveBuff = buff;
 			elseif ( index == 1 ) then
+				numAuraRows = 1;
 				buff:SetPoint("TOPRIGHT", BuffFrame, "TOPRIGHT", 0, 0);
 			else
 				if ( numBuffs == 1 ) then
@@ -327,6 +334,18 @@ function BuffFrame_UpdateAllBuffAnchors()
 			end
 			previousBuff = buff;
 		end
+	end
+
+	-- check if we need to manage frames
+	local bottomEdgeExtent = BUFF_FRAME_BASE_EXTENT;
+	if ( DEBUFF_ACTUAL_DISPLAY > 0 ) then
+		bottomEdgeExtent = bottomEdgeExtent + DebuffButton1.offsetY + BUFF_BUTTON_HEIGHT + ceil(DEBUFF_ACTUAL_DISPLAY / BUFFS_PER_ROW) * (BUFF_BUTTON_HEIGHT + BUFF_ROW_SPACING);
+	else
+		bottomEdgeExtent = bottomEdgeExtent + numAuraRows * (BUFF_BUTTON_HEIGHT + BUFF_ROW_SPACING);
+	end
+	if ( BuffFrame.bottomEdgeExtent ~= bottomEdgeExtent ) then
+		BuffFrame.bottomEdgeExtent = bottomEdgeExtent;
+		UIParent_ManageFramePositions();
 	end
 
 	if ( ConsolidatedBuffsTooltip:IsShown() ) then
@@ -368,7 +387,6 @@ function DebuffButton_UpdateAnchors(buttonName, index)
 	end
 	local rows = ceil(numBuffs/BUFFS_PER_ROW);
 	local buff = _G[buttonName..index];
-	local buffHeight = TempEnchant1:GetHeight();
 
 	-- Position debuffs
 	if ( (index > 1) and (mod(index, BUFFS_PER_ROW) == 1) ) then
@@ -376,10 +394,11 @@ function DebuffButton_UpdateAnchors(buttonName, index)
 		buff:SetPoint("TOP", _G[buttonName..(index-BUFFS_PER_ROW)], "BOTTOM", 0, -BUFF_ROW_SPACING);
 	elseif ( index == 1 ) then
 		if ( rows < 2 ) then
-			buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "BOTTOMRIGHT", 0, -1*((2*BUFF_ROW_SPACING)+buffHeight));
+			DebuffButton1.offsetY = 1*((2*BUFF_ROW_SPACING)+BUFF_BUTTON_HEIGHT);
 		else
-			buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "BOTTOMRIGHT", 0, -rows*(BUFF_ROW_SPACING+buffHeight));
+			DebuffButton1.offsetY = rows*(BUFF_ROW_SPACING+BUFF_BUTTON_HEIGHT);
 		end
+		buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "BOTTOMRIGHT", 0, -DebuffButton1.offsetY);
 	else
 		buff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", -5, 0);
 	end

@@ -1,6 +1,6 @@
 MINIMAPPING_TIMER = 5.5;
 MINIMAPPING_FADE_TIMER = 0.5;
-
+MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bottom edge of the minimap, needed for UIParentManageFramePositions
 
 MINIMAP_RECORDING_INDICATOR_ON = false;
 
@@ -379,10 +379,33 @@ function MiniMapTrackingDropDownButton_IsActive(button)
 	return active;
 end
 
+function MiniMapTrackingDropDown_IsNoTrackingActive()
+	local name, texture, active, category;
+	local count = GetNumTrackingTypes();
+	for id=1, count do
+		name, texture, active, category  = GetTrackingInfo(id);
+		if (active) then
+			return false;
+		end
+	end
+	return true;
+end
+
 function MiniMapTrackingDropDown_Initialize()
 	local name, texture, active, category;
 	local count = GetNumTrackingTypes();
 	local info;
+	
+	info = UIDropDownMenu_CreateInfo();
+	info.text=MINIMAP_TRACKING_NONE;
+	info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
+	info.func = ClearAllTracking;
+	info.icon = nil;
+	info.arg1 = nil;
+	info.isNotRadio = true;
+	info.keepShownOnClick = true;
+	UIDropDownMenu_AddButton(info);
+	
 	for id=1, count do
 		name, texture, active, category  = GetTrackingInfo(id);
 

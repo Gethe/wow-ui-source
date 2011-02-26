@@ -1035,6 +1035,8 @@ function UnitPopup_OnUpdate (elapsed)
 	for index, value in ipairs(UnitPopupFrames) do
 		if ( UIDROPDOWNMENU_OPEN_MENU == _G[value] ) then
 			break;
+		elseif ( index == #UnitPopupFrames ) then
+			return;
 		end
 	end
 

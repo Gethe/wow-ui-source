@@ -637,6 +637,11 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentBankLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 						</Anchors>
 					</CheckButton>
+					<CheckButton name="$parentCheckbox19" inherits="GuildPermissionCheckBoxTemplate" id="19">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentCheckbox15" relativePoint="RIGHT" x="128" y="0"/>
+						</Anchors>
+					</CheckButton>
 					<CheckButton name="$parentCheckbox16" inherits="GuildPermissionCheckBoxTemplate" id="16">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox15" relativePoint="BOTTOMLEFT" x="0" y="1"/>
@@ -645,7 +650,7 @@
 					<EditBox name="$parentGoldBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true" parentKey="goldBox">
 						<Size x="60" y="28"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentCheckbox16" relativePoint="RIGHT" x="120" y="2"/>
+							<Anchor point="LEFT" relativeTo="$parentCheckbox16" relativePoint="RIGHT" x="120" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">

@@ -37,7 +37,8 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 
 -- UIParent integration
 tinsert(UIMenus, "CalendarContextMenu");
-UIPanelWindows["CalendarFrame"] = { area = "doublewide", pushable = 0, width = 840,	whileDead = 1, yOffset = 20 };
+CALENDAR_FRAME_EXTRA_WIDTH = 20;
+UIPanelWindows["CalendarFrame"] = { area = "doublewide", pushable = 0, whileDead = 1, yOffset = 20, extraWidth = CALENDAR_FRAME_EXTRA_WIDTH };
 
 -- CalendarMenus is an ORDERED table of frames, one of which will close when you press Escape.
 local CalendarMenus = {
@@ -2102,7 +2103,9 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 			modStatus, inviteStatus, invitedBy, difficulty, inviteType = CalendarGetDayEvent(monthOffset, day, eventIndex);
 		-- add context items for the selected event
 		if ( _CalendarFrame_IsPlayerCreatedEvent(calendarType) ) then
-			if ( CalendarContextEventCanEdit(monthOffset, day, eventIndex) ) then
+			local canEdit = CalendarContextEventCanEdit(monthOffset, day, eventIndex);
+			local canRemove = CalendarContextEventCanRemove(monthOffset, day, eventIndex);
+			if ( canEdit ) then
 				-- spacer
 				if ( needSpacer ) then
 					UIMenu_AddButton(self, "");
@@ -2113,15 +2116,17 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 				if ( canPaste ) then
 					UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
 				end
-				-- delete
-				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
-				needSpacer = true;
 			elseif ( canPaste ) then
 				if ( needSpacer ) then
 					UIMenu_AddButton(self, "");
 				end
 				-- paste
 				UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
+				needSpacer = true;
+			end
+			if ( canRemove ) then
+				-- delete
+				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
 				needSpacer = true;
 			end
 			if ( calendarType ~= "GUILD_ANNOUNCEMENT" ) then
@@ -3535,6 +3540,8 @@ end
 
 function CalendarCreateEventFrame_OnShow(self)
 	CalendarCreateEventFrame_Update();
+	UIPanelWindows["CalendarFrame"].extraWidth = self:GetWidth() + CALENDAR_FRAME_EXTRA_WIDTH;
+	UpdateUIPanelPositions(CalendarFrame);
 end
 
 function CalendarCreateEventFrame_OnHide(self)
@@ -3543,6 +3550,8 @@ function CalendarCreateEventFrame_OnHide(self)
 	CalendarCreateEventRaidInviteButton.inviteLostMembers = false;
 	CalendarCreateEventRaidInviteButton.inviteCount = 0;
 	CalendarMassInviteFrame:Hide();
+	UIPanelWindows["CalendarFrame"].extraWidth = CALENDAR_FRAME_EXTRA_WIDTH;
+	UpdateUIPanelPositions(CalendarFrame);
 end
 
 function CalendarCreateEventFrame_Update()

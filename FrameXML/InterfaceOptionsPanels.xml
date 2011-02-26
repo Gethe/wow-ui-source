@@ -499,6 +499,22 @@
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
+			<CheckButton name="$parentActionButtonUseKeyDown" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMaxSpellStartRecoveryOffset" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-24" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "ActionButtonUseKeyDown";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<Frame name="$parentEnemyCastBars">
 				<Size>
 					<AbsDimension x="100" y="75"/>
@@ -1636,9 +1652,47 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentAlwaysShowActionBars" inherits="InterfaceOptionsCheckButtonTemplate">
+			<Frame name="$parentPickupActionKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLockActionBars" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="PICKUP_ACTION_KEY_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelLockActionBars, self);						
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						end
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentAlwaysShowActionBars" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPickupActionKeyDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>

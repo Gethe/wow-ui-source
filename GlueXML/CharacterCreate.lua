@@ -69,6 +69,8 @@ CLASS_ICON_TCOORDS = {
 };
 
 function CharacterCreate_OnLoad(self)
+	self:RegisterEvent("RANDOM_CHARACTER_NAME_RESULT");
+
 	self:SetSequence(0);
 	self:SetCamera(0);
 
@@ -137,6 +139,21 @@ end
 function CharacterCreate_OnHide()
 	PAID_SERVICE_CHARACTER_ID = nil;
 	PAID_SERVICE_TYPE = nil;
+end
+
+function CharacterCreate_OnEvent(event, arg1, arg2, arg3)
+	if ( event == "RANDOM_CHARACTER_NAME_RESULT" ) then
+		if ( arg1 == 0 ) then
+			-- Failed.  Generate a random name locally.
+			CharacterCreateNameEdit:SetText(GenerateRandomName());
+		else
+			-- Succeeded.  Use what the server sent.
+			CharacterCreateNameEdit:SetText(arg2);
+		end
+		CharacterCreateRandomName:Enable();
+		CharCreateOkayButton:Enable();
+		PlaySound("gsCharacterCreationLook");
+	end
 end
 
 function CharacterCreateFrame_OnMouseDown(button)
@@ -361,6 +378,12 @@ function CharacterCreate_UpdateModel(self)
 end
 
 function CharacterCreate_Okay()
+	-- If something disabled this button, ignore this message.
+	-- This can happen if you press enter while it's disabled, for example.
+	if ( not CharCreateOkayButton:IsEnabled() ) then
+		return;
+	end
+
 	if ( PAID_SERVICE_TYPE ) then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
 	else
@@ -468,6 +491,12 @@ end
 function CharacterCustomization_Right(id)
 	PlaySound("gsCharacterCreationLook");
 	CycleCharCustomization(id, 1);
+end
+
+function CharacterCreate_GenerateRandomName(button)
+	button:Disable();
+	CharacterCreateNameEdit:SetText("...");
+	RequestRandomName();
 end
 
 function CharacterCreate_Randomize()

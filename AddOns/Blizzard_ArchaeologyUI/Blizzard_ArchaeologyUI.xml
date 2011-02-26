@@ -828,7 +828,6 @@
 									</Layer>
 								</Layers>
 								<BarTexture file="Interface\Archeology\Arch-Progress-Fill">
-									<TexCoords left="0" right="0.810546875" top="0" bottom="0.77525"/>
 								</BarTexture>
 								<Scripts>
 									<OnEnter>

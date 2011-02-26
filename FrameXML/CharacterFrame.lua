@@ -141,6 +141,8 @@ function CharacterFrame_OnHide (self)
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
 	HideWatchedReputationBarText();
+	PaperDollFrame.currentSideBar = nil;
+	UIDropDownMenu_SetSelectedValue(PaperDollSideBarDropDown, 1);
 end
 
 function CharacterFrame_Collapse()
@@ -149,7 +151,9 @@ function CharacterFrame_Collapse()
 	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
 	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down");
 	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled");
-	CharacterStatsPane:Hide();
+	for i = 1, #PAPERDOLL_SIDEBARS do
+		_G[PAPERDOLL_SIDEBARS[i].frame]:Hide();
+	end
 	CharacterFrameInsetRight:Hide();
 	UpdateUIPanelPositions(CharacterFrame);
 end
@@ -160,7 +164,11 @@ function CharacterFrame_Expand()
 	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
 	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
 	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled");
-	CharacterStatsPane:Show();
+	if (PaperDollFrame:IsShown() and PaperDollFrame.currentSideBar) then
+		PaperDollFrame.currentSideBar:Show();
+	else
+		CharacterStatsPane:Show();
+	end
 	CharacterFrameInsetRight:Show();
 	UpdateUIPanelPositions(CharacterFrame);
 end
@@ -168,7 +176,7 @@ end
 local function CompareFrameSize(frame1, frame2)
 	return frame1:GetWidth() > frame2:GetWidth();
 end
-local CharTabtable = {};
+local CharTabtable = {}; 
 function CharacterFrame_TabBoundsCheck(self)
 	if ( string.sub(self:GetName(), 1, 17) ~= "CharacterFrameTab" ) then
 		return;

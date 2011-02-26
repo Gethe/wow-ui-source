@@ -304,7 +304,8 @@ function WorldMapFrame_Update()
 	else
 		completeMapFileName = mapFileName;
 	end
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+	local numOfDetailTiles = GetNumberOfDetailTiles();
+	for i=1, numOfDetailTiles do
 		texName = "Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i;
 		_G["WorldMapDetailTile"..i]:SetTexture(texName);
 	end		
@@ -1225,11 +1226,12 @@ function WorldMap_ClearTextures()
 	for i=1, NUM_WORLDMAP_OVERLAYS do
 		_G["WorldMapOverlay"..i]:SetTexture(nil);
 	end
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+	local numOfDetailTiles = GetNumberOfDetailTiles();
+	for i=1, numOfDetailTiles do
 		_G["WorldMapFrameTexture"..i]:SetTexture(nil);
 		_G["WorldMapDetailTile"..i]:SetTexture(nil);
 	end
-	for i = NUM_WORLDMAP_DETAIL_TILES + 1, NUM_WORLDMAP_DETAIL_TILES + NUM_WORLDMAP_PATCH_TILES do
+	for i = numOfDetailTiles + 1, numOfDetailTiles + NUM_WORLDMAP_PATCH_TILES do
 		_G["WorldMapFrameTexture"..i]:SetTexture(nil);
 	end
 end
@@ -1661,7 +1663,8 @@ function WorldMapFrame_SetQuestMapView()
 	WorldMapQuestDetailScrollFrame:Show();
 	WorldMapQuestRewardScrollFrame:Show();
 	WorldMapQuestScrollFrame:Show();
-	for i = NUM_WORLDMAP_DETAIL_TILES + 1, NUM_WORLDMAP_DETAIL_TILES + NUM_WORLDMAP_PATCH_TILES do
+	local numOfDetailTiles = GetNumberOfDetailTiles();
+	for i = numOfDetailTiles + 1, numOfDetailTiles + NUM_WORLDMAP_PATCH_TILES do
 		_G["WorldMapFrameTexture"..i]:Hide();
 	end
 end
@@ -1675,7 +1678,8 @@ function WorldMapFrame_SetFullMapView()
 	WorldMapQuestDetailScrollFrame:Hide();
 	WorldMapQuestRewardScrollFrame:Hide();
 	WorldMapQuestScrollFrame:Hide();
-	for i = NUM_WORLDMAP_DETAIL_TILES + 1, NUM_WORLDMAP_DETAIL_TILES + NUM_WORLDMAP_PATCH_TILES do
+	local numOfDetailTiles = GetNumberOfDetailTiles();
+	for i = numOfDetailTiles + 1, numOfDetailTiles + NUM_WORLDMAP_PATCH_TILES do
 		_G["WorldMapFrameTexture"..i]:Show();
 	end
 end

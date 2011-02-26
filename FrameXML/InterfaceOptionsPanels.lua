@@ -259,6 +259,7 @@ CombatPanelOptions = {
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.05 },
 	reducedLagTolerance = { text = "REDUCED_LAG_TOLERANCE" },
 	MaxSpellStartRecoveryOffset = { text = "LAG_TOLERANCE", minValue = 0, maxValue = 400, valueStep = 10 },
+	ActionButtonUseKeyDown = { text = "ACTION_BUTTON_USE_KEY_DOWN" },
 }
 
 function InterfaceOptionsCombatPanelReducedLagTolerance_UpdateText()
@@ -1242,6 +1243,8 @@ function InterfaceOptionsActionBarsPanel_OnLoad (self)
 	InterfaceOptionsPanel_OnLoad(self);
 
 	self:SetScript("OnEvent", InterfaceOptionsActionBarsPanel_OnEvent);
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsActionBarsPanelPickupActionKeyDropDown, GetModifiedClick("PICKUPACTION"));
+	UIDropDownMenu_EnableDropDown(InterfaceOptionsActionBarsPanelPickupActionKeyDropDown);
 end
 
 function InterfaceOptionsActionBarsPanel_OnEvent (self, event, ...)
@@ -1283,6 +1286,96 @@ function InterfaceOptions_UpdateMultiActionBars ()
 	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
+end
+
+function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.defaultValue = "SHIFT";
+		self.oldValue = GetModifiedClick("PICKUPACTION");
+		self.value = self.oldValue or self.defaultValue;
+		self.tooltip = _G["OPTION_TOOLTIP_PICKUP_ACTION_"..self.value.."_KEY"];
+
+		UIDropDownMenu_SetWidth(self, 90);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, self.value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				UIDropDownMenu_SetSelectedValue(self, value);
+				SetModifiedClick("PICKUPACTION", value);
+				SaveBindings(GetCurrentBindingSet());
+				self.tooltip = _G["OPTION_TOOLTIP_PICKUP_ACTION_"..value.."_KEY"];
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+		
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+	end
+end
+
+function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnClick(self)
+	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsActionBarsPanelPickupActionKeyDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALT_KEY;
+	info.func = InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnClick;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_PICKUP_ACTION_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.func = InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnClick;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_PICKUP_ACTION_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHIFT_KEY;
+	info.func = InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnClick;
+	info.value = "SHIFT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = SHIFT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_PICKUP_ACTION_SHIFT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NONE_KEY;
+	info.func = InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnClick;
+	info.value = "NONE";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NONE_KEY;
+	info.tooltipText = OPTION_TOOLTIP_PICKUP_ACTION_NONE_KEY;
+	UIDropDownMenu_AddButton(info);
 end
 
 -- [[ Names Options Panel ]] --

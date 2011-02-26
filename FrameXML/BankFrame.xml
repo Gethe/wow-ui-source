@@ -70,7 +70,7 @@
 				ResetCursor();
 			</OnLeave>
 			<OnClick>
-				if ( IsModifiedClick("PICKUPACTION") ) then
+				if ( IsModifiedClick("PICKUPITEM") ) then
 					BankFrameItemButtonBag_Pickup(self);
 				else
 					BankFrameItemButtonBag_OnClick(self, button);

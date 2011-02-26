@@ -168,7 +168,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame  name="$parentLevelFrame" parentKey="levelFrame">
+			<Frame  name="$parentLevelFrame" parentKey="levelFrame" alpha="1">
 				<Size x="418" y="72"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -191,11 +191,13 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="levelUp">
+<!--
 						<Alpha change="1" duration="0.7" startDelay="1.5" order="1" />
-						<Alpha change="-1" duration="0.5" startDelay="1.5" order="2"/>
+-->
+						<Alpha change="-1" duration="0.5" startDelay="1.5"/>
 						<Scripts>
 							<OnPlay>
-								LevelUpDisplayGLine.grow:Play();
+--								LevelUpDisplayGLine.grow:Play();
 							</OnPlay>
 							<OnFinished>
 								LevelUpDisplay_AnimStep(LevelUpDisplay);
@@ -203,21 +205,11 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
-				<Scripts>
-					<Onload>
-						self:SetAlpha(0);
-					</Onload>
-				</Scripts>
 			</Frame>
-			<Frame name="$parentSpellFrame" inherits="LevelUpSkillTemplate" parentKey="spellFrame">
+			<Frame name="$parentSpellFrame" inherits="LevelUpSkillTemplate" parentKey="spellFrame" alpha="0">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
-				<Scripts>
-					<Onload>
-						self:SetAlpha(0);
-					</Onload>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Animations>
@@ -284,15 +276,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentUnlockFrame1" inherits="LevelUpSkillTemplate">
+			<Frame name="$parentUnlockFrame1" inherits="LevelUpSkillTemplate" alpha="0">
 				<Anchors>
 					<Anchor point="TOP"  relativeTo="$parentGoldBg" relativePoint="BOTTOM" x="-20" y="-3"/>
 				</Anchors>
-				<Scripts>
-					<Onload>
-						self:SetAlpha(0);
-					</Onload>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Animations>

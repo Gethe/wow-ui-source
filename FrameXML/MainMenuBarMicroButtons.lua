@@ -90,18 +90,20 @@ function UpdateMicroButtons()
 	end
 
 	GuildMicroButton_UpdateTabard();
-	if ( GuildFrame and GuildFrame:IsShown() ) then
+	if ( ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() ) ) then
 		GuildMicroButton:SetButtonState("PUSHED", 1);
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
 		GuildMicroButtonTabard:SetAlpha(0.70);
 	else
+		GuildMicroButton:SetButtonState("NORMAL");
+		GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
+		GuildMicroButtonTabard:SetAlpha(1);	
 		if ( IsInGuild() ) then
-			GuildMicroButton:Enable();
-			GuildMicroButton:SetButtonState("NORMAL");
-			GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
-			GuildMicroButtonTabard:SetAlpha(1);
+			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
+			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
 		else
-			GuildMicroButton:Disable();
+			GuildMicroButton.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
+			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
 		end
 	end
 	
@@ -159,7 +161,11 @@ end
 
 function GuildMicroButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BINDINGS" ) then
-		GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
+		if ( IsInGuild() ) then
+			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
+		else
+			GuildMicroButton.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
+		end
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		GuildMicroButtonTabard.needsUpdate = true;
 		UpdateMicroButtons();

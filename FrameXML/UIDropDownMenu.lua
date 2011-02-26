@@ -161,6 +161,7 @@ info.fontObject = [FONT] -- font object replacement for Normal and Highlight
 info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
 info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
 info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
+info.minWidth = [nil, NUMBER] -- Minimum width for this line
 ]]
 
 local UIDropDownMenu_ButtonInfo = {};
@@ -307,6 +308,7 @@ function UIDropDownMenu_AddButton(info, level)
 		if ( info.padding ) then
 			width = width + info.padding;
 		end
+		width = max(width, info.minWidth or 0);
 		-- Set maximum button width
 		if ( width > listFrame.maxWidth ) then
 			listFrame.maxWidth = width;

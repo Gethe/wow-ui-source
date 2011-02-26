@@ -64,6 +64,69 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<StatusBar name="ClassTrainerStatusBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
+				<Size>
+					<AbsDimension x="136" y="18"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="64" y="-36"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="rankText">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="TradeSkillRankFrame">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
+							<Size x="18" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
+							<Size x="18" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0.75" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+					<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<!--
+				<BarTexture name="$parentBar" urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				-->
+				<BarColor r="0" g="0" b="1" a="0.5"/>
+				<Scripts>
+					<OnLoad>
+						ClassTrainerStatusBarBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
 			<Frame name="ClassTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 					<Anchors>
 					<Anchor point="TOPRIGHT">

@@ -508,7 +508,7 @@ function GuildBankTab_OnClick(self, mouseButton, currentTab)
 	end
 	SetCurrentGuildBankTab(currentTab);
 	GuildBankFrame_UpdateTabs();
-	if ( IsGuildLeader() and mouseButton == "RightButton" and currentTab ~= (GetNumGuildBankTabs() + 1) ) then
+	if ( CanEditGuildBankTabInfo() and mouseButton == "RightButton" and currentTab ~= (GetNumGuildBankTabs() + 1) ) then
 		--Show the popup if it's a right click
 		GuildBankPopupFrame:Show();
 		GuildBankPopupFrame_Update(currentTab);
@@ -624,6 +624,8 @@ function GuildBankFrame_UpdateMoneyLog()
 			msg = format(GUILDBANK_WITHDRAWFORTAB_MONEY_FORMAT, name, money);
 		elseif ( type == "buyTab" ) then
 			msg = format(GUILDBANK_BUYTAB_MONEY_FORMAT, name, money);
+		elseif ( type == "depositSummary" ) then
+			msg = format(GUILDBANK_AWARD_MONEY_SUMMARY_FORMAT, money);
 		end
 		GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME_PREPEND..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)));
 	end

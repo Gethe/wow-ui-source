@@ -983,10 +983,14 @@ function TradeSkillGuilCraftersFrame_Update()
 		if ( index > numMembers ) then
 			button:Hide();
 		else
-			name, online = GetGuildRecipeMember(index);
+			name, classFileName, online = GetGuildRecipeMember(index);
 			button:SetText(name);
 			if ( online ) then
 				button:Enable();
+				if ( classFileName ) then
+					local classColor = RAID_CLASS_COLORS[classFileName];
+					_G["TradeSkillGuildCrafter"..i.."Text"]:SetTextColor(classColor.r, classColor.g, classColor.b);				
+				end
 			else
 				button:Disable();
 			end

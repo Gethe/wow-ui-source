@@ -1,7 +1,7 @@
 
 BANK_TAB_OFFSET = 4;
 BANK_TAB_HEIGHT = BANK_TAB_OFFSET + 73;
-NUM_RANK_FLAGS = 18;
+NUM_RANK_FLAGS = 19;
 MAX_GUILDRANKS = 10;
 
 function GuildControlUI_OnLoad(self)
@@ -14,7 +14,7 @@ function GuildControlUI_OnLoad(self)
 	UIDropDownMenu_Initialize(self.dropdown, GuildControlUINavigationDropDown_Initialize);
 	
 	local buttonText;
-	for i=1, 18 do	
+	for i=1, NUM_RANK_FLAGS do
 		buttonText = _G["GuildControlUIRankSettingsFrameCheckbox"..i.."Text"];
 		if ( buttonText ) then
 			buttonText:SetText(_G["GUILDCONTROL_OPTION"..i]);

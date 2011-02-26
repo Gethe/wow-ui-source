@@ -24,6 +24,10 @@ function ActionButtonDown(id)
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
+	if (GetCVarBool("ActionButtonUseKeyDown")) then
+		SecureActionButton_OnClick(button, "LeftButton");
+		ActionButton_UpdateState(button);
+	end
 end
 
 function ActionButtonUp(id)
@@ -37,8 +41,10 @@ function ActionButtonUp(id)
 	end
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		SecureActionButton_OnClick(button, "LeftButton");
-		ActionButton_UpdateState(button);
+		if (not GetCVarBool("ActionButtonUseKeyDown")) then
+			SecureActionButton_OnClick(button, "LeftButton");
+			ActionButton_UpdateState(button);
+		end
 	end
 end
 

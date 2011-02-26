@@ -25,6 +25,11 @@ function EventTraceFrame_OnLoad (self)
 	self.events = {};
 	self.times = {};
 	self.rawtimes = {};
+	self.eventids = {};
+	self.eventtimes = {};
+	self.numhandlers = {};
+	self.slowesthandlers = {};
+	self.slowesthandlertimes = {}
 	self.timeSinceLast = {};
 	self.framesSinceLast = {};
 	self.args = { {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} };
@@ -42,10 +47,8 @@ end
 local _workTable = {};
 function EventTraceFrame_OnEvent (self, event, ...)
 	if ( not self.ignoredEvents[event] ) then
-		if ( not self.ignoreElapsed and _framesSinceLast ~= 0 ) then
-			self.ignoreElapsed = true;
+		if ( _framesSinceLast ~= 0 and event ~= "On Update") then
 			EventTraceFrame_OnEvent(self, "On Update");
-			self.ignoreElapsed = nil;
 		end
 		
 		local nextIndex = self.lastIndex + 1;
@@ -56,12 +59,17 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			self.rawtimes[staleIndex] = nil;
 			self.timeSinceLast[staleIndex] = nil;
 			self.framesSinceLast[staleIndex] = nil;
+			self.eventids[staleIndex] = nil;
+			self.eventtimes[staleIndex] = nil;
+			self.numhandlers[staleIndex] = nil;
+			self.slowesthandlers[staleIndex] = nil;
+			self.slowesthandlertimes[staleIndex] = nil;
 			for k, v in next, self.args do
 				self.args[k][staleIndex] = nil;
 			end
 		end
 		
-		if ( string.match(event, "Begin Capture") or string.match(event, "End Capture") ) then
+		if ( event == "Begin Capture" or event == "End Capture" ) then
 			self.times[nextIndex] = "System";
 			if ( self.eventsToCapture ) then
 				self.events[nextIndex] = string.format("%s (%s events)", event, tostring(self.eventsToCapture));
@@ -72,7 +80,7 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			self.framesSinceLast[nextIndex] = 0;
 		elseif ( event == "On Update" ) then
 			self.times[nextIndex] = "Elapsed";
-			self.events[nextIndex] = string.format(string.format("%.3f sec", _timeSinceLast) .. " - %d frame(s)", _framesSinceLast);
+			self.events[nextIndex] = string.format("%.3f sec - %d frame(s)", _timeSinceLast, _framesSinceLast);
 			self.timeSinceLast[nextIndex] = _timeSinceLast;
 			self.framesSinceLast[nextIndex] = _framesSinceLast;
 			_timeSinceLast = 0;
@@ -88,6 +96,7 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			self.times[nextIndex] = string.format("%.2d:%.2d:%06.3f", hours, minutes, seconds);
 			self.timeSinceLast[nextIndex] = 0;
 			self.framesSinceLast[nextIndex] = 0;
+			self.eventids[nextIndex] = GetCurrentEventID();
 
 			local numArgs = select("#", ...);
 			for i=1, numArgs do
@@ -102,9 +111,11 @@ function EventTraceFrame_OnEvent (self, event, ...)
 			end
 		end
 		
+		-- NOTE: Remember that this work will be captured in the elapsed time for this event, so 
+		-- don't do anything slow here or it will throw off the profiled data
+		
 		self.rawtimes[nextIndex] = GetTime();
 		self.lastIndex = nextIndex;		
-		EventTraceFrame_Update ();
 		if ( self.eventsToCapture and self.eventsToCapture <= 0 ) then
 			self.eventsToCapture = nil;
 			EventTraceFrame_StopEventCapture();
@@ -114,6 +125,9 @@ end
 
 function EventTraceFrame_OnShow(self)
 	wipe(self.ignoredEvents);
+	local scrollBar = _G["EventTraceFrameScroll"];
+	local minValue, maxValue = scrollBar:GetMinMaxValues();
+	scrollBar:SetValue(maxValue);
 end
 
 function EventTraceFrame_OnUpdate (self, elapsed)
@@ -188,13 +202,35 @@ function EventTraceFrame_Update ()
 				button.index = index;
 				button.time:SetText(timeString);
 				button.event:SetText(event);
+				if (_EventTraceFrame.eventids[index] and not _EventTraceFrame.eventtimes[index]) then
+					local eventTime, numHandlers, slowestHandler, slowestHandlerTime = GetEventTime(_EventTraceFrame.eventids[index]);
+					_EventTraceFrame.eventtimes[index] = eventTime;
+					_EventTraceFrame.numhandlers[index] = numHandlers;
+					_EventTraceFrame.slowesthandlers[index] = slowestHandler;
+					_EventTraceFrame.slowesthandlertimes[index] = slowestHandlerTime;
+				end
 				local color = EVENT_TRACE_EVENT_COLORS[event] or EVENT_TRACE_EVENT_COLORS[timeString];
 				if ( color ) then
 					button.time:SetTextColor(unpack(color));
 					button.event:SetTextColor(unpack(color));
 				else
-					button.time:SetTextColor(1, 1, 1, 1);
-					button.event:SetTextColor(1, 1, 1, 1);
+					local eventTime = _EventTraceFrame.eventtimes[index];
+					if (eventTime and eventTime > 50.0) then
+						button.time:SetTextColor(1, 0, 0, 1);
+						button.event:SetTextColor(1, 0, 0, 1);
+					elseif (eventTime and eventTime > 20.0) then
+						button.time:SetTextColor(1, .5, 0, 1);
+						button.event:SetTextColor(1, .5, 0, 1);
+					elseif (eventTime and eventTime > 10.0) then
+						button.time:SetTextColor(1, .8, 0, 1);
+						button.event:SetTextColor(1, .8, 0, 1);
+					elseif (eventTime and eventTime > 5.0) then
+						button.time:SetTextColor(1, 1, .6, 1);
+						button.event:SetTextColor(1, 1, .6, 1);
+					else
+						button.time:SetTextColor(1, 1, 1, 1);
+						button.event:SetTextColor(1, 1, 1, 1);
+					end
 				end
 				button:Show();
 				if ( _EventTraceFrame.selectedEvent ) then
@@ -316,6 +352,12 @@ function EventTraceFrame_RemoveEvent(i)
 		tremove(EventTraceFrame.rawtimes, i);
 		tremove(EventTraceFrame.timeSinceLast, i);
 		tremove(EventTraceFrame.framesSinceLast, i);
+		tremove(EventTraceFrame.eventtimes, i);
+		tremove(EventTraceFrame.eventids, i);
+		tremove(EventTraceFrame.numhandlers, i);
+		tremove(EventTraceFrame.slowesthandlers, i);
+		tremove(EventTraceFrame.slowesthandlertimes, i);
+		
 		for k, v in next, EventTraceFrame.args do
 			-- can't use tremove because some of these are nil
 			for j = i, EventTraceFrame.lastIndex do
@@ -326,9 +368,12 @@ function EventTraceFrame_RemoveEvent(i)
 	end
 end
 
-local TIME_ENTRY_FORMAT = "Time:";
-local DETAILS_ENTRY_FORMAT = "Details:";
-local ARGUMENT_ENTRY_FORMAT = "arg %d:";
+local TIME_LABEL = "Time:";
+local DETAILS_LABEL = "Details:";
+local SLOWEST_LABEL = "Slowest:";
+local ARGUMENT_LABEL_FORMAT = "arg %d:";
+local NUM_HANDLERS_FORMAT = "(%d handlers)";
+local EVENT_TIME_FORMAT = "%.2fms";
 
 local function EventTrace_FormatArgValue (val)
 	if ( type(val) == "string" ) then
@@ -354,14 +399,27 @@ function EventTraceFrameEvent_DisplayTooltip (eventButton)
 	local timeString = _EventTraceFrame.times[index]
 	if ( EVENT_TRACE_SYSTEM_TIMES[timeString] ) then
 		tooltip:AddLine(timeString, 1, 1, 1);
-		tooltip:AddDoubleLine(string.format(TIME_ENTRY_FORMAT), _EventTraceFrame.rawtimes[index], 1, .82, 0, 1, 1, 1);
-		tooltip:AddDoubleLine(string.format(DETAILS_ENTRY_FORMAT), _EventTraceFrame.events[index], 1, .82, 0, 1, 1, 1);
+		tooltip:AddDoubleLine(TIME_LABEL, _EventTraceFrame.rawtimes[index], 1, .82, 0, 1, 1, 1);
+		tooltip:AddDoubleLine(DETAILS_LABEL, _EventTraceFrame.events[index], 1, .82, 0, 1, 1, 1);
 	else	
 		tooltip:AddLine(_EventTraceFrame.events[index], 1, 1, 1);
-		tooltip:AddDoubleLine(string.format(TIME_ENTRY_FORMAT), _EventTraceFrame.rawtimes[index], 1, .82, 0, 1, 1, 1);
+		local eventTime = _EventTraceFrame.eventtimes[index];
+		if (eventTime) then
+			if (eventTime < 0) then
+				eventTime = "?";
+			else
+				eventTime = format(EVENT_TIME_FORMAT, eventTime);
+			end
+			tooltip:AddDoubleLine(TIME_LABEL, eventTime .. "  " .. format(NUM_HANDLERS_FORMAT, _EventTraceFrame.numhandlers[index] or 0), 1, .82, 0, 1, 1, 1);
+		else
+			tooltip:AddDoubleLine(TIME_LABEL, _EventTraceFrame.rawtimes[index], 1, .82, 0, 1, 1, 1);
+		end
+		if (_EventTraceFrame.slowesthandlers[index]) then
+			tooltip:AddDoubleLine(SLOWEST_LABEL, format("%s  (%.2fms)", _EventTraceFrame.slowesthandlers[index], _EventTraceFrame.slowesthandlertimes[index]), 1, .82, 0, 1, 1, 1);
+		end
 		for k, v in ipairs(EventTraceFrame.args) do
 			if ( v[index] ) then
-				tooltip:AddDoubleLine(string.format(ARGUMENT_ENTRY_FORMAT, k), EventTrace_FormatArgValue(v[index]), 1, .82, 0, 1, 1, 1);
+				tooltip:AddDoubleLine(format(ARGUMENT_LABEL_FORMAT, k), EventTrace_FormatArgValue(v[index]), 1, .82, 0, 1, 1, 1);
 			end
 		end
 	end

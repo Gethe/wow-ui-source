@@ -127,7 +127,21 @@ function ClassTrainerFrame_Update()
 		end
 	end
 
-
+	-- rank status bar
+	local rank, maxRank, rankModifier = GetTrainerTradeskillRankValues();
+	if ( rank and rank > 0 ) then
+		local statusBar = ClassTrainerStatusBar;
+		statusBar:SetMinMaxValues(1, maxRank);
+		statusBar:SetValue(rank);
+		statusBar:Show();
+		if ( rankModifier > 0 ) then
+			statusBar.rankText:SetFormattedText(TRADESKILL_RANK_WITH_MODIFIER, rank, rankModifier, maxRank);
+		else
+			statusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
+		end
+	else
+		ClassTrainerStatusBar:Hide();
+	end
 
 	scrollFrame:SetWidth(buttonSize+2);
 

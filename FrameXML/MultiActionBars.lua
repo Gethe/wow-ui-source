@@ -10,14 +10,20 @@ function MultiActionButtonDown (bar, id)
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
+	if (GetCVarBool("ActionButtonUseKeyDown")) then
+		SecureActionButton_OnClick(button, "LeftButton");
+		ActionButton_UpdateState(button);
+	end
 end
 
 function MultiActionButtonUp (bar, id)
 	local button = _G[bar.."Button"..id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		SecureActionButton_OnClick(button, "LeftButton");
-		ActionButton_UpdateState(button);
+		if(not GetCVarBool("ActionButtonUseKeyDown")) then
+			SecureActionButton_OnClick(button, "LeftButton");
+			ActionButton_UpdateState(button);
+		end
 	end
 end
 
@@ -56,17 +62,6 @@ function MultiActionBar_Update ()
 	else
 		MultiBarLeft:Hide();
 		VIEWABLE_ACTION_BAR_PAGES[LEFT_ACTIONBAR_PAGE] = 1;
-	end
-	
-	--Adjust VehicleSeatIndicator position
-	if ( VehicleSeatIndicator ) then
-		if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -100, -13);
-		elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, -13);
-		else
-			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, -13);
-		end
 	end
 end
 
@@ -130,4 +125,3 @@ function MultiBar4_IsVisible ()
 	STATE_MultiBar4 = SHOW_MULTI_ACTIONBAR_4;
 	return SHOW_MULTI_ACTIONBAR_4;
 end
-

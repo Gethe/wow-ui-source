@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Timer.lua"/>
+
+	
+	<Frame name="StartTimerBar" virtual="true">
+		<Size>
+			<AbsDimension x="160" y="13"/>
+		</Size>
+		<Frames>
+			<StatusBar name="$parentBar" parentKey="bar">
+				<Size>
+					<AbsDimension x="160" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTimeText" inherits="TextStatusBarText" justifyH="CENTER" parentKey="timeText">
+							<Size>
+								<AbsDimension x="0" y="9"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-3" y="6"/>
+								<Anchor point="BOTTOMRIGHT" x="3" y="-7"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+							</Anchors>
+							<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="0.03125" g="0.85" b="0.0" />
+				<Scripts>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	
+	
+	<Frame name="TimerTracker" toplevel="true" parent="UIParent" hidden="true">
+		<Size x="5" y="5"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="TimerTracker_OnLoad"/>
+			<OnEvent function="TimerTracker_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	</Ui>

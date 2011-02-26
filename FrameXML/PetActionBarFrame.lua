@@ -263,13 +263,18 @@ function PetActionButtonDown(id)
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
+	if (GetCVarBool("ActionButtonUseKeyDown")) then
+		CastPetAction(id);
+	end
 end
 
 function PetActionButtonUp (id)
 	local button = _G["PetActionButton"..id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
-		CastPetAction(id);
+		if(not GetCVarBool("ActionButtonUseKeyDown")) then
+			CastPetAction(id);
+		end
 	end
 end
 

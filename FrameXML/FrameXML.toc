@@ -158,6 +158,8 @@ SpellActivationOverlay.xml
 GuildInviteFrame.xml
 GhostFrame.xml
 StreamingFrame.xml
+IconIntroAnimation.xml
+Timer.xml
 
 ## add new modules above here
 LocalizationPost.xml

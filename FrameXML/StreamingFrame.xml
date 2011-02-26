@@ -17,7 +17,7 @@
 						<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" />
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\COMMON\StreamFrame" name="$parenAlpha" setAllPoints="true" />
+						<Texture file="Interface\COMMON\StreamFrame" name="$parentAlpha" setAllPoints="true" />
 					</Layer>
 				</Layers>
 			</Frame>
@@ -42,10 +42,22 @@
             <OnLeave function="GameTooltip_Hide"/>
 			<OnLoad function="StreamingIcon_OnLoad"/>
  			<OnEvent function="StreamingIcon_OnEvent"/>
-			<OnShow function="StreamingIcon_OnShow"/>
-			<OnHide function="StreamingIcon_OnHide"/>
 		</Scripts>
 		<Animations>
+			<AnimationGroup parentKey="FadeIN">
+				<Alpha target="StreamingIcon" order="1" change="1.0" duration="2" />
+				<Scripts>
+					<OnFinished function="StreamingFrame_FadeIN_OnFinished"/>
+					<OnStop function="StreamingFrame_FadeIN_OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOUT">
+				<Alpha target="StreamingIcon" order="1" change="-1.0" startDelay="3" duration="10" />
+				<Scripts>
+					<OnFinished function="StreamingFrame_FadeOUT_OnFinished"/>
+					<OnStop function="StreamingFrame_FadeOUT_OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
 			<AnimationGroup parentKey="Loop" looping="REPEAT" >
 				<Rotation target="StreamingIconSpin" order="1" duration="8" degrees="-360" />
 			</AnimationGroup>

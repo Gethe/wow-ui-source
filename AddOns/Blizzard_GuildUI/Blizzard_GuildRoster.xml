@@ -470,29 +470,23 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-6"/>
+								<AbsDimension x="0" y="-8"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight" nonspacewrap="true" justifyH="LEFT" justifyV="TOP">
-					<Size x="110" y="0"/>
+				<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="TOPRIGHT">
+						<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
 							<Offset>
-								<AbsDimension x="2" y="1"/>
+								<AbsDimension x="2" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailOnlineLabel" inherits="GameFontNormalSmall" text="LAST_ONLINE_COLON">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOP" relativeTo="GuildMemberDetailRankText" relativePoint="BOTTOM">
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="BOTTOMLEFT">
 							<Offset>
 								<AbsDimension x="0" y="-8"/>
 							</Offset>
@@ -612,59 +606,18 @@
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
-			<Button name="GuildFramePromoteButton">
-				<Size>
-					<AbsDimension x="28" y="28"/>
-				</Size>
+			<Frame name="GuildMemberRankDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildMemberDetailFrame" relativePoint="RIGHT">
-						<Offset x="-60" y="50"/>
-					</Anchor>
-					<Anchor point="TOP" relativeTo="GuildMemberDetailRankLabel" relativePoint="TOP">
-						<Offset x="0" y="8"/>
-					</Anchor>
-				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="6" right="6" top="7" bottom="7"/>
-				</HitRectInsets>
-				<Scripts>
-					<OnClick function="GuildFramePromoteButton_OnClick"/>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
-				<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
-				<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Disabled"/>
-				<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
-			</Button>
-			<Button name="GuildFrameDemoteButton">
-				<Size>
-					<AbsDimension x="28" y="28"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildFramePromoteButton" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-8" y="0"/>
+							<AbsDimension x="-16" y="-3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="6" right="6" top="7" bottom="7"/>
-				</HitRectInsets>
 				<Scripts>
-					<OnClick function="GuildFrameDemoteButton_OnClick"/>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad function="GuildMemberRankDropdown_OnLoad"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
-				<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
-				<DisabledTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Disabled"/>
-				<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
-			</Button>
+			</Frame>
 			<Frame name="GuildMemberNoteBackground" enableMouse="true">
 				<Size>
 					<AbsDimension x="181" y="40"/>
