@@ -1,9 +1,658 @@
 ﻿
-**World of Warcraft Client Patch 4.0.6**
+**World of Warcraft PTR Patch 4.1**
 
-The latest client patch notes can be found [here][1].
+The latest retail patch notes can be found [here][1].
 
-**_[Death Knights][2]_**
+**Important**: _These patch notes are not final. Additional updates will be
+made, and all existing changes are subject to revision during the course of
+the testing process. More information regarding patch 4.1 can be found
+[here][2]. Visit our Public Test Realm forum for more information about the
+testing process._
+
+**[Classes: General][3]**
+
+  * All non-damaging interrupts off the global cooldown will now always hit
+the target. This includes Pummel, Shield Bash, Kick, Mind Freeze, Rebuke,
+Skull Bash, Counterspell, Wind Shear, Solar Beam, Silencing Shot, and related
+player pet abilities.
+
+**[Death Knights][4]**
+
+  * Dark Simulacrum now works on numerous additional spells in dungeon
+encounters.
+
+  * Talent Specializations
+
+    * Blood
+
+      * Death Strike self-healing no longer generates threat.
+
+    * Frost
+
+      * Blood of the North (passive) now permanently converts both Blood Runes
+into Death Runes. There is no longer any proc interaction with Blood Strike
+required to activate Death Runes.
+
+**[Druids][5]**
+
+  * Efflorescence has a new spell effect.
+
+  * Talent Specializations
+
+    * Balance
+
+      * Solar Beam is now more responsive when enemies move into or out of it.
+
+**[Hunters][6]**
+
+  * Explosive Trap now has a new spell effect.
+
+  * Master's Call now has a new spell effect.
+
+  * Tame Beast now tames pets to match the hunter's level, rather than 5
+levels below.
+
+**[Mages][7]**
+
+  * Talent Specializations
+
+    * Fire
+
+      * Ignite is no longer triggered from periodic critical effects.
+
+**[Paladins][8]**
+
+  * Word of Glory now has a 20-second cooldown.
+
+  * Talent Specializations
+
+    * Holy
+
+      * Walk in the Light (passive) removes the cooldown of Word of Glory.
+
+    * Protection
+
+      * Divine Guardian cooldown is now 3 minutes, up from 2.
+
+    * Retribution
+
+      * Divine Storm now generates 1 point of Holy Power if it hits (i.e.
+successfully lands on) 4 or more targets.
+
+      * Sacred Shield's internal cooldown has been increased to 60 seconds, up
+from 30.
+
+**[Priests][9]**
+
+  * Divine Aegis duration has been increased to 15 seconds, up from 12.
+
+  * Dispel Magic can only be used on the casting priest as a baseline effect.
+
+  * Holy Word: Sanctuary has a new spell effect.
+
+  * Power Word: Shield duration has been reduced to 15 seconds, down from 30.
+
+  * Talent Specializations
+
+    * Discipline
+
+      * Absolution (new passive) enables priests to use Dispel Magic on up to
+2 harmful effects on friendly targets.
+
+    * Holy
+
+      * Absolution (new passive) enables priests to use Dispel Magic on up to
+2 harmful effects on friendly targets.
+
+**[Rogues][10]**
+
+  * Recuperate base effect now heals 3% per tick, up from 2%.
+
+  * Stealth base cooldown has been reduced to 4 seconds, down from 10, and the
+movement penalty from being in Stealth has been removed.
+
+  * Tricks of the Trade now has a 100-yard range, up from 20.
+
+  * Talent Specializations
+
+    * Combat
+
+      * Improved Recuperate now adds 0.5%/1% to the health restoration effect
+of Recuperate, down from 1%/2%.
+
+    * Subtlety
+
+      * Nightstalker now reduces the cooldown of Stealth by 2/4 seconds, and
+instead of negating the movement penalty from Stealth, it adds a 5/10%
+movement speed bonus (stacking with other effects) while Stealthed.
+
+**[Shaman][11]**
+
+  * Fire Nova has been redesigned and decoupled from shaman Fire totems.
+Instead, it now pulses that same area-of-effect from each target that is
+afflicted by the shaman's own Flame Shock debuff. It now damages all enemies
+except the target hit by Flame Shock. The ability's cooldown has been reduced
+from 4 seconds, down from 10.
+
+  * Magma Totem now lasts for 60 seconds, up from 21.
+
+  * Stoneclaw Totem's area-of-effect threat pulse no longer affects critters.
+
+  * Talent Specializations
+
+    * Elemental Combat
+
+      * Earthquake is no longer a channeled spell. It now has a 2-second cast
+time, lasts for 10 seconds, and has a 10-second cooldown. Its damage has been
+reduced by 40% from its channeled version.
+
+    * Enhancement
+
+      * Improved Fire Nova has been redesigned and replaced by a talent called
+Seasoned Winds. When an enemy spell cast is successfully prevented with Wind
+Shear or Grounding Totem, the shaman gains magical resistance (in an amount
+equal to what a protection totem/aura would grant, stacking with such buffs)
+to the spell school(s) of the interrupted spell (except for Holy spells),
+lasting 10 seconds.
+
+**[Warriors][12]**
+
+  * Charge and Intercept no longer have diminishing returns on their stun
+effects.
+
+  * Colossus Smash now ignores 70% of an opponent's armor, down from 100%.
+
+  * Inner Rage is now available at level 56.
+
+  * Intercept now has a 1.5-second stun, down from 3 seconds.
+
+  * Overpower damage has been increased to 140% weapon damage, up from 125%.
+
+  * Rallying Cry (new ability) is available from trainers at level 83. It
+temporarily grants the warrior and all party or raid members within 30 yards
+20% of maximum health for 10 seconds. After the effect expires, the health is
+lost. It has no cost, no stance requirements, and is not on the global
+cooldown. It has a 3-minute cooldown, but also shares a cooldown with Last
+Stand.
+
+  * Whirlwind now has its cooldown reduced by 6 seconds when it deals damage
+to 4 or more targets. The Whirlwind effect caused by Bladestorm remains
+unchanged.
+
+  * Talent Specializations
+
+    * Arms
+
+      * Improved Hamstring now reduces the global cooldown on Hamstring by
+0.5/1 seconds in addition to its current effects.
+
+      * Improved Slam increases Slam damage by 20/40%, up from 10/20%.
+
+      * Juggernaut no longer adds 2 seconds to the Charge stun, but instead
+lowers the cooldown of Charge by 3 seconds (to 12 seconds total).
+
+      * Mortal Strike damage has been increased to 175% weapon damage, up from
+150%.
+
+**[Dungeons & Raids][13]**
+
+  * New dungeons available for partial testing.
+
+    * Zul'Aman has returned as a level-85 5-player Heroic dungeon featuring a
+revamp of the original dungeon and improved loot!
+
+    * Zul'Gurub has returned as a level-85 5-player Heroic dungeon featuring
+all-new encounters, achievements, and improved loot!
+
+    * Both dungeons will be in a new Dungeon Finder difficulty tier above the
+current level-85 Heroic dungeons and offer epic-quality item level 353 loot.
+
+    * These dungeons may only partially be available for testing at this time.
+Stay tuned for additional updates.
+
+  * Blackwing Descent
+
+    * Flash Bomb (Golem Sentry ability) now has a more clear warning visual.
+
+    * Magmaw now triggers a raid emote when summoning Lava Parasites.
+
+    * Further improvements have been made in the Maloriak encounter to avoid
+Flash Freeze targeting the tanks.
+
+**[Guilds][14]**
+
+  * The Guild Perk, Cash Flow, no longer prints out text to the Chat Log.
+Instead, the daily amount deposited is shown in the Guild Vault Money Log. In
+addition, players can view the weekly contribution in a new window at the
+bottom of the Money Log.
+
+  * We have added two new custom guild tabards as Guild Rewards. The tabards
+are account bound and offer a bonus to gaining guild reputation.
+
+**[Items][15]**
+
+  * The PvP Horde and Alliance trinkets have a new spell effect.
+
+**[Professions][16]**
+
+  * All major cities will now have every type of profession trainer and their
+associated trade supply vendors.
+
+**[PvP][17]**
+
+  * Battlegrounds
+
+    * Twin Peaks
+
+      * Graveyard Changes
+
+        * Players will now only spawn at their base graveyard when they die in
+the enemy base.
+
+        * Defending players will respawn at the middle graveyard.
+
+        * Midfield players will respawn at the middle graveyard.
+
+        * Attacking players will respawn at their base graveyard.
+
+**[Races][18]**
+
+  * The gnomish racial ability, Escape Artist, is no longer affected by the
+global cooldowns triggered by other abilities.
+
+  * The human racial ability, Every Man for Himself, has a new spell effect.
+
+**[User Interface][19]**
+
+  * Work has begun on a new Looking for Guild system. Further details will be
+provided when we are ready for feedback.
+
+  * Spells bound to a key now start to be cast when the button is pressed down
+by default, instead of waiting for the key to go up. This is an option that
+can be turned off in the Interface menu under Combat. Mouse clicking has not
+changed and operates on mouse click up.
+
+**PTR-Patch 4.1.0 für World of Warcraft**
+
+Die neuesten Patchnotes befinden sich [hier][20].
+
+**_Inhalt_**
+
+  * Klassen
+
+  * Dungeons & Schlachtzüge
+
+  * Gilden
+
+  * Gegenstände
+
+  * Berufe
+
+  * PvP
+
+  * Völker
+
+  * Benutzeroberfläche
+
+**Wichtiger Hinweis**: _Dies ist nicht die finale Version der Patch Notes, d.
+h. es wird Aktualisierungen geben und alle genannten Änderungen unterliegen
+ständiger Überprüfung während des Testprozesses. Weitere Informationen zu
+Patch 4.1 und zum Testprozess finden sich in unserem [PTR-Forum][21]._
+
+**[Klassen: Allgemeines][22]**
+
+  * Alle Unterbrechungszauber, die keinen Schaden verursachen und keine
+globale Abklingzeit auslösen, werden nun immer das Ziel treffen. Davon
+eingeschlossen: 'Zuschlagen', 'Schildhieb', 'Tritt', 'Gedankenfrost',
+'Zurechtweisung', 'Schädelstoß', 'Gegenzauber', 'Windstoß', 'Sonnenstrahl',
+'Unterdrückender Schuss' und dazugehörige Begleiterfähigkeiten.
+
+**[Todesritter][23]**
+
+  * 'Dunkles Simulakrum' funktioniert jetzt bei mehreren zusätzlichen Zaubern
+in Dungeonkämpfen.
+
+  * Talentspezialisierungen
+
+    * Blut
+
+      * Die Selbstheilung von 'Todesstoß' erzeugt nicht länger Bedrohung.
+
+    * Frost
+
+      * 'Blut des Nordens' (passiv) wandelt jetzt beide Blutrunen in
+Todesrunen um. Es wird nicht länger eine Auslöserinteraktion mit 'Blutstoß'
+benötigt, um Todesrunen zu aktivieren.
+
+**[Druiden][24]**
+
+  * 'Erblühen' hat einen neuen Zaubereffekt.
+
+  * Talentspezialisierungen
+
+    * Gleichgewicht
+
+      * Der Effekt von 'Sonnenstrahl' reagiert jetzt besser darauf, wenn
+Feinde sich hinein- oder hinausbewegen.
+
+**[Jäger][25]**
+
+  * Für 'Abschreckung' muss nun nicht länger eine Nahkampfwaffe angelegt sein.
+
+  * 'Sprengfalle' hat jetzt einen neuen Zaubereffekt.
+
+  * 'Ruf des Meisters' hat jetzt einen neuen Zaubereffekt.
+
+  * Mit 'Wildtier zähmen' lassen sich jetzt Begleiter auf der Stufe des Jägers
+zähmen, anstatt wie zuvor 3 Stufen unter der des Jägers.
+
+**[Magier][26]**
+
+  * Talentspezialisierungen
+
+    * Feuer
+
+      * 'Entzünden' wird nicht länger durch regelmäßige kritische Effekte
+ausgelöst.
+
+**[Paladine][27]**
+
+  * 'Wort der Herrlichkeit' verfügt jetzt über eine Abklingzeit von 20
+Sekunden.
+
+  * Talentspezialisierungen
+
+    * Heilig
+
+      * 'Im Lichte wandeln' (passiv) entfernt die Abklingzeit von 'Wort der
+Herrlichkeit'.
+
+    * Schutz
+
+      * Die Abklingzeit von 'Heiliger Wächter' wurde von 2 auf 3 Minuten
+erhöht.
+
+    * Vergeltung
+
+      * 'Göttlicher Sturm' erzeugt 1 Punkt Heilige Kraft, wenn es 4 oder mehr
+Ziele trifft (d.h. erfolgreich auf ihnen landet).
+
+      * Die interne Abklingzeit von 'Geheiligter Schild' wurde von 30 auf 60
+Sekunden erhöht.
+
+**[Priester][28]**
+
+  * Die Dauer von 'Göttliche Aegis' wurde von 12 auf 15 Sekunden erhöht.
+
+  * Wird 'Magie bannen' auf den zaubernden Priester selbst angewandt, ist nur
+der Grundeffekt des Zaubers wirksam.
+
+  * 'Segenswort: Refugium' hat einen jetzt neuen Zaubereffekt.
+
+  * Die Dauer von 'Machtwort: Schild' wurde von 30 auf 15 Sekunden verringert.
+
+  * Talentspezialisierungen
+
+    * Disziplin
+
+      * 'Absolution' (neue passive Fähigkeit) gestattet es Priestern, bis zu 2
+schädliche magische Effekte zu bannen, die auf befreundete Ziele wirken.
+
+    * Heilig
+
+      * 'Absolution' (neue passive Fähigkeit) gestattet es Priestern, bis zu 2
+schädliche magische Effekte zu bannen, die auf befreundete Ziele wirken.
+
+**[Schurken][29]**
+
+  * Der Grundeffekt von 'Gesundung' heilt nun um 3% pro Tick, anstatt wie
+zuvor um 2%.
+
+  * Die Grundabklingzeit von 'Verstohlenheit' wurde von 10 auf 4 Sekunden
+verringert und die Einschränkung der Bewegungsgeschwindigkeit, die der Wechsel
+in 'Verstohlenheit' mit sich brachte, ist entfernt worden.
+
+  * Die Reichweite von 'Schurkenhandel' wurde von 20 auf 100 Meter erhöht.
+
+  * Talentspezialisierungen
+
+    * Kampf
+
+      * 'Verbesserte Gesundung' fügt dem Gesundheitswiederherstellungseffekt
+von 'Gesundung' nun 0.5%/1% hinzu, anstatt wie zuvor 1%/2%.
+
+    * Täuschung
+
+      * 'Nachtpirscher' verringert nun die Abklingzeit von 'Verstohlenheit' um
+2/4 Sekunden, und anstatt die aus 'Verstohlenheit' resultierende Einschränkung
+der Bewegungsgeschwindigkeit aufzuheben, gewährt der Zauber einen
+Geschwindigkeitsbonus von 5/10% (stapelbar mit anderen Effekten), wenn in
+'Verstohlenheit' gewechselt wird.
+
+**[Schamanen][30]**
+
+  * 'Feuernova' wurde überarbeitet und von schamanischen Feuertotems
+abgekoppelt. Stattdessen pulsiert sie nun denselben Flächeneffekt von jedem
+Ziel, das von dem 'Flammenschock'-Schwächungszauber des Schamanen betroffen
+ist. Sie verursacht nun Schaden an allen Feinden außer an dem von
+'Flammenschock' getroffenen Ziel. Die Abklingzeit der Fähigkeit wurde von 10
+auf 4 Sekunden verringert.
+
+  * 'Totem des glühenden Magmas' hält nun 60 Sekunden lang an, anstatt wie
+zuvor 21 Sekunden.
+
+  * Der Bedrohungspuls aus dem Flächeneffekt von 'Totem der Steinklaue' hat
+nicht länger einen Effekt auf Tiere.
+
+  * Talentspezialisierungen
+
+    * Elementarkampf
+
+      * 'Erdbeben' ist nicht länger ein kanalisierter Zauber. Er hat jetzt
+eine Zauberzeit von 2 Sekunden, hält 10 Sekunden lang an und hat eine
+Abklingzeit von 10 Sekunden. Sein Schaden wurde gegenüber der kanalisierten
+Version um 40% verringert.
+
+    * Verstärkung
+
+      * 'Verbesserte Feuernova' wurde überarbeitet und durch ein Talent namens
+'Sturmböen' ersetzt. Wenn das Wirken eines feindlichen Zaubers erfolgreich
+durch die Anwendung von 'Windstoß' oder 'Totem der Erdung' abgewendet wird,
+erhält der Schamane Magiewiderstand (in der Höhe dessen, was ein
+Schutztotem/eine Schutzaura gewähren würde, stapelbar mit solchen
+Stärkungszaubern) gegen die Magieart(en) des unterbrochenen Zaubers (außer für
+Heiligzauber), für eine Dauer von 10 Sekunden.
+
+**[Krieger][31]**
+
+  * Die Betäubungseffekte von 'Sturmangriff' und 'Abfangen' unterliegen nicht
+länger den Regeln nachlassender Wirkungskraft.
+
+  * 'Kolossales Schmettern' ignoriert ab sofort 70% des gegnerischen
+Rüstungswertes, anstatt wie zuvor 100%.
+
+  * 'Innere Wut' ist nun ab Stufe 56 erlernbar.
+
+  * 'Abfangen' betäubt ab sofort 1,5 Sekunden lang, anstatt wie zuvor 3
+Sekunden.
+
+  * Der von 'Überwältigen' verursachte Schaden wurde von 125% auf 140%
+Waffenschaden erhöht.
+
+  * 'Anspornender Schrei' (neue Fähigkeit) ist bei Lehrern ab Stufe 83
+erlernbar. Die Fähigkeit gewährt dem Krieger und allen Gruppen- oder
+Schlachtzugsmitgliedern im Umkreis von 30 Metern für 10 Sekunden 20% der
+Maximalgesundheit. Sobald der Effekt abgeschlossen ist, ist die Gesundheit
+verloren. Die Fähigkeit kostet nichts, benötigt keine bestimmte Haltung und
+löst keine globale Abklingzeit aus. Sie hat eine Abklingzeit von 3 Minuten,
+teilt sich aber auch eine Abklingzeit mit 'Letztes Gefecht'.
+
+  * Die Abklingzeit von 'Wirbelwind' wird nun um 6 Sekunden verringert, wenn
+der Zauber Schaden an 4 oder mehr Zielen verursacht. Der 'Wirbelwind'-Effekt
+aus 'Klingensturm' bleibt unverändert.
+
+  * Talentspezialisierungen
+
+    * Waffen
+
+      * Zusätzlich zu bereits bestehenden Effekten verringert 'Verbesserte
+Kniesehne' auch die globale Abklingzeit von 'Kniesehne' um 0,5/1 Sekunden.
+
+      * 'Verbessertes Zerschmettern' erhöht den von 'Zerschmettern'
+verursachten Schaden um 20/40%, anstatt wie zuvor um 10/20%.
+
+      * 'Dampfwalze' fügt nicht länger 2 Sekunden zu der Betäubung aus
+'Sturmangriff' hinzu, sondern verringert stattdessen die Abklingzeit von
+'Sturmangriff' um 3 Sekunden (auf 12 Sekunden insgesamt).
+
+      * Der Schaden aus 'Tödlicher Stoß' ist von 150% auf 175% Waffenschaden
+erhöht worden.
+
+    * Furor
+
+      * Der Schaden von 'Wütender Schlag' wurde von 100% auf 120%
+Waffenschaden erhöht.
+
+**[Dungeons & Schlachtzüge][32]**
+
+  * Es stehen neue Dungeons zum Teiltest bereit.
+
+    * Zul'Aman ist zurück als heroische 5-Spieler-Instanz der Stufe 85, mit
+überarbeitetem Dungeon und verbesserter Beute!
+
+    * Zul'Gurub ist zurück als heroische 5-Spieler-Instanz der Stufe 85, mit
+komplett neuen Kämpfen, Erfolgen und verbesserter Beute!
+
+    * Beide Instanzen werden im Dungeonbrowser in einer neuen
+Schwierigkeitskategorie zu finden sein, über den derzeitigen heroischen
+Instanzen der Stufe 85, und bieten Beute von epischer Qualität und
+Gegenstandsstufe 353.
+
+    * Es kann sein, dass diese Instanzen zurzeit nur teilweise zum Test bereit
+sind. Aktuelle Informationen dazu folgen!
+
+  * Pechschwingenabstieg
+
+    * 'Blitzbombe' (Fähigkeit der Golemwachposten) verfügt jetzt über ein
+deutlicheres visuelles Warnsignal.
+
+    * Magmaul löst jetzt eine Schlachtzugsnachricht aus, wenn er Lavaparasiten
+beschwört.
+
+    * Es wurden weitere Verbesserungen am Kampf mit Maloriak vorgenommen, um
+zu vermeiden, dass Tanks zum Ziel von 'Blitzeis' werden.
+
+**[Gilden][33]**
+
+  * Der Gildenbonus "Zahlungsfluss" gibt nicht länger Text im Chat aus.
+Stattdessen wird das täglich eingezahlte Geld im Geldlog des Gildentresors
+angezeigt. Darüber hinaus können die Spieler den wöchentlichen Beitrag in
+einem neuen Fenster am Fuße des Geldlogs sehen.
+
+  * Wir haben zwei neue Gildenwappenröcke als Gildenbelohnungen hinzugefügt.
+Die Wappenröcke sind accountgebunden und bieten einen Bonus auf das Erlangen
+von Gildenruf.
+
+**[Gegenstände][34]**
+
+  * Die PvP-Schmuckstücke von Horde und Allianz haben neue Zaubereffekte.
+
+**[Berufe][35]**
+
+  * In allen großen Städten wird man nun einen Lehrer für jeden Beruf finden,
+zusammen mit dazugehörigen Handwerkswarenverkäufern.
+
+**[PvP][36]**
+
+  * Schlachtfelder
+
+    * Zwillingsgipfel
+
+      * Änderungen am Friedhof
+
+        * Spieler werden sich nach ihrem Tod nur auf dem Friedhof ihrer
+eigenen Basis wiederfinden, wenn sie in der Basis des Feindes gestorben sind.
+
+        * Verteidigende Spieler werden sich auf dem mittleren Friedhof
+wiederfinden.
+
+        * Spieler des Mittelfeldes werden sich auf dem mittleren Friedhof
+wiederfinden.
+
+        * Angreifende Spieler werden sich auf dem Friedhof ihrer eigenen Basis
+wiederfinden.
+
+**[Völker][37]**
+
+  * Die Volksfähigkeit der Gnome, 'Entfesselungskünstler', ist nicht länger
+durch globale Abklingzeiten anderer Fähigkeiten betroffen.
+
+  * Die Volksfähigkeit der Menschen, 'Jeder für sich', hat einen neuen
+Zaubereffekt.
+
+**[Benutzeroberfläche][38]**
+
+  * Die Arbeiten an einem neuen Gildensuche-System haben begonnen. Weitere
+Details folgen, sobald wir bereit sind, Feedback zu verwerten.
+
+  * Zauber, die an eine Taste gebunden sind, werden jetzt standardmäßig
+gewirkt, sobald die Taste gedrückt wird, anstatt abzuwarten, bis die Taste
+wieder hoch geht. Dies ist eine Option, die im Interface-Menü unter Kampf
+ausgeschaltet werden kann. Das Klicken der Maus hat sich nicht geändert und
+wird ausgeführt, sobald die Maustaste nach einem Klick wieder oben ist.
+
+**World of Warcraft PTR Patch 4.1.0**
+
+The latest test realm patch notes can always be found at [http://www.wow-
+europe.com/en/info/underdev/testrealm.html][39]
+
+The latest patch notes can always be found at [http://www.wow-
+europe.com/en/patchnotes/][40]
+
+**_Table of Contents_**
+
+  * Achievements
+
+  * Classes
+
+  * Dungeons & Raids
+
+  * Guilds
+
+  * Items
+
+  * Professions
+
+  * PvP
+
+  * Quests & Creatures
+
+  * Races
+
+  * User Interface
+
+  * General Bug Fixes (fixes pertaining specifically to the sections listed
+above are noted within those sections)
+
+**Achievements**
+
+  * Two new achievements have been added for earning exalted reputation with
+45 and 50 factions respectively. The title The Exalted is now awarded for
+earning exalted reputation with 50 factions, up from 40.
+
+  * A new achievement, Just Another Day in Tol Barad, has been added for
+completing all of the Tol Barad daily quests.
+
+  * Achievement Bug Fixes
+
+    * Players should correctly receive the achievement Faster Than the Speed
+of Light (Halls of Origination) if they die prior to the party meeting the
+criteria.
+
+    * The achievement criteria for Prototype Prodigy (Deadmines) correctly
+resets after a wipe.
+
+**_[Death Knights][4]_**
 
   * Death Coil damage has been reduced by roughly 10%.
 
@@ -149,7 +798,7 @@ Chains of Ice.
       * The Vampiric Blood tooltip became awkwardly worded after applying
 Glyph of Vampiric Blood. We made the words less awkward.
 
-**_[Druids][3]_**
+**_[Druids][5]_**
 
   * Barkskin is no longer dispellable.
 
@@ -293,8 +942,6 @@ only by Spirit gained from items and effects.
     * Feral Charge: Cat should always turn the druid around to face the back
 of the target.
 
-    * Hurricane should no longer proc when Polymorph is cast on the druid.
-
     * Hurricane now remains at the same location it was cast at while on a
 moving transport.
 
@@ -334,7 +981,7 @@ Tree of Life Form.
       * Glyph of Ferocious Bite now correctly augments the Ferocious Bite
 tooltip.
 
-**_[Hunters][4]_**
+**_[Hunters][6]_**
 
   * Aimed Shot weapon damage has been increased to 200%, up from 150%. In
 addition, the base cast time has been reduced to 2.4 seconds, down from 3.
@@ -466,7 +1113,7 @@ be seen when cast.
       * The tooltip for the armor value in the Character pane should now be
 showing the correct amount of armor granted to pets.
 
-**_[Mages][5]_**
+**_[Mages][7]_**
 
   * Arcane Barrage mana cost has been reduced by 8%.
 
@@ -546,6 +1193,9 @@ after the Fire Power talent is chosen.
     * Rank 1 Frostfire Orb is no longer applying a debuff that incorrectly
 states that it snares its target.
 
+    * The Hurricane weapon enchant should no longer proc when Polymorph is
+cast.
+
     * Molten Armor tooltips now display the correct information.
 
     * Nether Vortex was causing Arcane Blast to yield a string error when
@@ -568,7 +1218,7 @@ Blink, Mana Shield, and Mirror Image to 0.
       * Ice Barrier's tooltip is now correctly updated by Glyph of Ice
 Barrier.
 
-**_[Paladins][6]_**
+**_[Paladins][8]_**
 
   * The mana costs of Blessing of Might and Blessing of Kings have been
 increased by approximately 217%, making them roughly equal to the cost of Mark
@@ -616,9 +1266,6 @@ Wrath, Exorcism, and Templar's Verdict) can now trigger this seal.
   * Talent Specializations
 
     * Holy
-
-      * Aura Mastery: This ability no longer increases the benefit granted by
-Crusader Aura.
 
       * Denounce now has a spell overlay.
 
@@ -680,9 +1327,12 @@ remedied.
     * The damage bonus from Communion is no longer applied even when the
 paladin has no paladin auras active.
 
+    * Crusader Strike, Holy Shock, and Hammer of the Righteous no longer
+incorrectly grant Holy Power from a missed attack.
+
     * Divine Storm no longer incorrectly highlights when Hand of Light procs.
 
-    * Exorcism automatically re-targets whomever it does damage to when it
+    * Exorcism no longer re-targets whomever it does damage to when it
 finishes casting.
 
     * The healing amount in the buff tooltip for Holy Radiance is now
@@ -720,7 +1370,7 @@ with when Seal of Insight can be learned from the trainer.
       * The Glyph of Templar's Verdict is now updating the tooltip of
 Templar's Verdict.
 
-**_[Priests][7]_**
+**_[Priests][9]_**
 
   * The duration of Levitate has been increased to 10 minutes, up from 2.
 
@@ -778,7 +1428,7 @@ addition to its current effect.
         * Binding Heal and Holy Word: Serenity now refresh the duration of
 Renew on the target, in addition to the other direct heals.
 
-        * Binding Heal, Flash Heal, Greater Heal can now trigger Chakra:
+        * Binding Heal, Flash Heal, and Greater Heal can now trigger Chakra:
 Serenity.
 
         * Mind Spike can now trigger Chakra: Chastise.
@@ -883,7 +1533,7 @@ while a Flash Heal is being cast.
 
       * Critical heals from Glyph of Dispel Magic properly proc Divine Aegis.
 
-**_[Rogues][8]_**
+**_[Rogues][10]_**
 
   * Blind now has a PvP duration of 8 seconds.
 
@@ -983,7 +1633,7 @@ effect when Glyph of Hemorrhage is applied.
 
       * The Preparation tooltip is now augmented by Glyph of Preparation.
 
-**_[Shaman][9]_**
+**_[Shaman][11]_**
 
   * Chain Heal's effectiveness has been increased by approximately 10%.
 
@@ -1076,13 +1726,12 @@ Wolf is applied.
 Grounding Totem is applied.
 
       * The tooltip for Healing Stream Totem now updates to reflect the
-additional benefit of 25 spell resistance granted by Glyph of Healing Stream
-Totem.
+additional spell resistance benefits granted by Glyph of Healing Stream Totem.
 
       * The spell tooltip for Healing Wave now updates when Glyph of Healing
 Wave is applied.
 
-**_[Warlocks][10]_**
+**_[Warlocks][41]_**
 
   * Curse of Exhaustion now reduces movement speed by 30%, down from 50%. Its
 range has been increased to 40 yards, up from 30.
@@ -1195,7 +1844,7 @@ showing the correct amount of armor granted to pets.
       * Glyph of Voidwalker's tooltip has been updated to the new pet scaling
 system.
 
-**_[Warriors][11]_**
+**_[Warriors][12]_**
 
   * Charge now shares diminishing returns with stun effects.
 
@@ -1300,6 +1949,45 @@ of Origination now drop 30 Justice Points each when killed.
   * Players no longer need to discover Cataclysm dungeon entrances in order to
 access them via the Dungeon Finder.
 
+  * The Bastion of Twilight
+
+    * Ascendant Council
+
+      * The Elementium Monstrosity can be attacked from farther away than was
+previously the case.
+
+      * The damage dealt by Liquid Ice has been increased significantly.
+
+      * The damage dealt by Electric Instability on normal difficulty has been
+reduced slightly.
+
+      * Immunity effects will no longer cancel Gravity Crush.
+
+      * Gravity Crush no longer hits additional targets on Heroic difficulty.
+
+      * Frozen Orbs now despawn at the start of phase 3 on Heroic difficulty.
+
+    * Cho'gall
+
+      * The recast time on Depravity has been increased in 10-player mode.
+
+    * Halfus Wyrmbreaker
+
+      * Shadow Nova is now cast less frequently in 10-player modes to account
+for fewer available interrupts there.
+
+      * The captured drakes in this encounter now apply Dragon's Vengeance
+when they are killed instead of when they are freed. To account for this
+change, the health and damage of the drakes has been reduced, and the damage
+bonus gained from Dragon's Vengeance has been increased.
+
+    * Valiona and Theralion
+
+      * Immunities no longer port players out of the Twilight Realm.
+
+      * The damage dealt by Twilight Sentries on Heroic difficulty has been
+reduced.
+
   * Blackrock Caverns
 
     * Beauty now spawns with only two pups in Heroic difficulty. Not to worry
@@ -1307,10 +1995,46 @@ though, the missing pup has been adopted by a wonderful, if not insane family.
 
   * Blackwing Descent
 
-    * The Dwarven Golem Council will now go berserk after 10 minutes in Heroic
-difficulty.
+    * Atramedes will now go berserk after 10 minutes on Heroic difficulty.
 
-    * Atramedes will now go berserk after 10 minutes in Heroic difficulty.
+    * Magmaw
+
+      * Blazing Bone Constructs on Heroic difficulty no longer drop fire
+periodically.
+
+      * Blazing Bone Constructs on Heroic difficulty have had their health
+reduced.
+
+      * Magmaw's health on Heroic difficulty has been reduced.
+
+    * Maloriak
+
+      * Increased the cast time of Release Aberrations.
+
+      * Heroic: Decreased the health of the Vile Swill by 15%.
+
+      * Heroic: Dark Sludge can now only target players.
+
+    * Nefarian
+
+      * The Chromatic Prototypes featured in the second phase of this
+encounter now wait longer before casting their first Blast Nova.
+
+      * The Stolen Power enhancement gained in Heroic difficulties now
+increases all damage and healing for a set time, but each attack is increased
+by a smaller amount. This change will not be reflected in the tooltip until a
+later patch.
+
+      * Freeing one's mind from Dominion now grants a movement speed bonus for
+a short time.
+
+    * Omnotron Defense System
+
+      * There is now a 10-minute berserk timer on Heroic difficulty.
+
+      * Golem health has been reduced on Heroic difficulty.
+
+      * The damage dealt by Incineration Security Measure has been reduced.
 
   * Deadmines
 
@@ -1425,6 +2149,20 @@ away a player must get to be clear of Shatter.
 
       * Shatter damage is now reduced by armor, but has been increased by
 33.3% (repeating, of course) as a result.
+
+  * Throne of the Four Winds
+
+    * Al� Akir
+
+      * Al'Akir's Electrocute can no longer be interrupted by Spell
+Reflection.
+
+    * Conclave of Wind
+
+      * Heroic: Slicing Gale debuff reduced from 10% per stack to 5%.
+
+      * The duration of the Wind Blast pre-effect has been increased to 5
+seconds, up from 3.
 
   * Throne of the Tides
 
@@ -1632,6 +2370,9 @@ the boat during the Vanessa VanCleef encounter.
 when players access the ropes during the Vanessa VanCleef encounter has been
 amended.
 
+      * Fixed a bug where players would sometimes have mounting issues after
+engaging Helix Gearbreaker in any incarnation.
+
     * Grim Batol
 
       * The Twilight Beguiler's ability Deceitful Blast no longer ignores line
@@ -1750,6 +2491,8 @@ outside the boss room above the geometry of the dungeon.
       * Commander Ulthok's Dark Fissure effect should now display correctly
 when projected textures are disabled.
 
+      * Poisoned Spear: The impact of this damage has been reduced.
+
     * The Vortex Pinnacle
 
       * Players who enter the dungeon through the instance portal are now
@@ -1799,7 +2542,7 @@ will now be able to complete guild achievements and earn guild experience at
     * Also note that Heroic dungeons offer a 1.5x multiplier on all guild
 experience earned.
 
-**_[Items][12]_**
+**_[Items][15]_**
 
   * Bell of Enraging Resonance can now trigger from any damage spell instead
 of only critical strikes.
@@ -2002,7 +2745,7 @@ been corrected.
     * Tooltip Fixes
 
       * Many tooltips have been updated to reflect any changes made via recent
-[hotfixes][13].
+[hotfixes][42].
 
       * Several flying mount tooltips have been updated so they no longer say
 these mounts can be summoned in Outland and Northrend only.
@@ -2079,6 +2822,10 @@ nodes and Pyrite with the Electrostatic Condenser.
 
     * Rare fishing poles now have a chance to be found in the Bag of Fishing
 Treasures earned via the Stormwind and Orgrimmar Fishing daily quests.
+
+  * Inscription
+
+    * Ink Traders have been added to Orgrimmar and Stormwind.
 
   * Jewelcrafting
 
@@ -2328,7 +3075,7 @@ skinned.
     * Players should now always receive 6 daily quests in Tol Barad Peninsula
 as intended, rather than sometimes only getting 5.
 
-**_[Races][14]_**
+**_[Races][18]_**
 
   * The draenei racial trait Gift of the Naaru now heals 20% of the target's
 health over 15 seconds, rather than a scaling value.
@@ -2360,8 +3107,8 @@ or Dash is active (and they cannot be activated while Darkflight is active).
     * Goblin characters can now participate in the Argent Tournament via the
 Orgrimmar delegation.
 
-    * The tooltip for the orc racial Blood Fury now show the correct amount of
-attack/spell power boosts.
+    * The tooltip for the orc racial Blood Fury now shows the correct amount
+of attack/spell power boosts.
 
     * Attempting to use the worgen ability Two Forms while under the effects
 of a druid's Shapeshift should no longer cause an incorrect error message.
@@ -2420,12 +3167,12 @@ current tab.
 
     * Predicted healing (previously only available for Raid Frames and raid-
 style Party Frames) has been added to the following unit frames: Player Frame,
-Party Frame, Target Frame, Focus Frame.
+Party Frame, Target Frame, and Focus Frame.
 
   * User Interface Bug Fixes
 
     * Many tooltips have been updated to reflect any changes made via recent
-[hotfixes][13].
+[hotfixes][42].
 
     * Several typos found in various item and spell tooltips have been
 corrected.
@@ -2479,30 +3226,40 @@ being played at once.
 
     * There should no longer be delays on some sounds in select situations.
 
-   [1]: http://us.battle.net/wow/en/blog/2166872
+   [1]: http://us.battle.net/wow/en/game/patch-notes/
 
-   [2]: http://us.battle.net/wow/en/game/class/death-knight
+   [2]: http://us.battle.net/wow/en/blog/2356431
 
-   [3]: http://us.battle.net/wow/en/game/class/druid
+   [3]: http://us.battle.net/wow/en/forum/#forum1033923
 
-   [4]: http://us.battle.net/wow/en/game/class/hunter
+   [4]: http://us.battle.net/wow/en/game/class/death-knight
 
-   [5]: http://us.battle.net/wow/en/game/class/mage
+   [5]: http://us.battle.net/wow/en/game/class/druid
 
-   [6]: http://us.battle.net/wow/en/game/class/paladin
+   [6]: http://us.battle.net/wow/en/game/class/hunter
 
-   [7]: http://us.battle.net/wow/en/game/class/priest
+   [7]: http://us.battle.net/wow/en/game/class/mage
 
-   [8]: http://us.battle.net/wow/en/game/class/rogue
+   [8]: http://us.battle.net/wow/en/game/class/paladin
 
-   [9]: http://us.battle.net/wow/en/game/class/shaman
+   [9]: http://us.battle.net/wow/en/game/class/priest
 
-   [10]: http://us.battle.net/wow/en/game/class/warlock
+   [10]: http://us.battle.net/wow/en/game/class/rogue
 
-   [11]: http://us.battle.net/wow/en/game/class/warrior
+   [11]: http://us.battle.net/wow/en/game/class/shaman
 
-   [12]: http://us.battle.net/wow/en/item/
+   [12]: http://us.battle.net/wow/en/game/class/warrior
 
-   [13]: http://us.battle.net/wow/en/blog/1232869#blog
+   [13]: http://us.battle.net/wow/en/forum/1011645/
 
-   [14]: http://us.battle.net/wow/en/game/race/
+   [14]: http://us.battle.net/wow/en/forum/2187372/
+
+   [15]: http://us.battle.net/wow/en/item/
+
+   [16]: http://us.battle.net/wow/en/forum/1011647/
+
+   [17]: http://us.battle.net/wow/en/pvp/
+
+   [18]: http://us.battle.net/wow/en/game/race/
+
+   [19]: http://us.battle.net/wow/en/forum/1011693/
