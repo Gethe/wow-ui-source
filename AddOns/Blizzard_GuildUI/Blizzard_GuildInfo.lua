@@ -1,3 +1,5 @@
+local GUILD_BUTTON_HEIGHT = 84;
+
 local GUILD_EVENT_TEXTURES = {
 	--[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
 	--[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
@@ -9,14 +11,91 @@ local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 
 function GuildInfoFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
+	PanelTemplates_SetNumTabs(self, 3);
+
+	self:RegisterEvent("GUILD_MOTD");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("GUILD_RANKS_UPDATE");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	self:RegisterEvent("LF_GUILD_POST_UPDATED");
+	self:RegisterEvent("LF_GUILD_RECRUITS_UPDATED");
+	
+	RequestGuildRecruitmentSettings();
+end
+
+function GuildInfoFrame_OnEvent(self, event, arg1)
+	if ( event == "GUILD_MOTD" ) then
+		GuildInfoMOTD:SetText(arg1);
+	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		GuildInfoFrame_UpdatePermissions();
+		GuildInfoFrame_UpdateText();
+	elseif ( event == "GUILD_RANKS_UPDATE" ) then
+		GuildInfoFrame_UpdatePermissions();
+	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
+		GuildInfoFrame_UpdatePermissions();
+	elseif ( event == "LF_GUILD_POST_UPDATED" ) then
+		local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
+		-- playstyle
+		if ( bModerate ) then
+			GuildRecruitmentPlaystyleButton_OnClick(2);
+		elseif ( bHardcore ) then
+			GuildRecruitmentPlaystyleButton_OnClick(3);
+		else
+			GuildRecruitmentPlaystyleButton_OnClick(1);
+		end
+		-- availability
+		GuildRecruitmentWeekdaysButton:SetChecked(bWeekdays);
+		GuildRecruitmentWeekendsButton:SetChecked(bWeekends);
+		-- roles
+		GuildRecruitmentTankButton.checkButton:SetChecked(bTank);
+		GuildRecruitmentHealerButton.checkButton:SetChecked(bHealer);
+		GuildRecruitmentDamagerButton.checkButton:SetChecked(bDamage);
+		-- level
+		if ( bMaxLevel ) then
+			GuildRecruitmentLevelButton_OnClick(2);
+		else
+			GuildRecruitmentLevelButton_OnClick(1);
+		end
+		-- comment
+		GuildRecruitmentCommentEditBox:SetText(GetGuildRecruitmentComment());
+		GuildRecruitmentListGuildButton_Update();
+	elseif ( event == "LF_GUILD_RECRUITS_UPDATED" ) then
+		GuildInfoFrameApplicants_Update();
+	end
+end
+
+function GuildInfoFrame_OnShow(self)
+	RequestGuildApplicantsList();
+end
+
+function GuildInfoFrame_Update()
+	local selectedTab = PanelTemplates_GetSelectedTab(GuildInfoFrame);
+	if ( selectedTab == 1 ) then
+		GuildInfoFrameInfo:Show();
+		GuildInfoFrameRecruitment:Hide();
+		GuildInfoFrameApplicants:Hide();
+	elseif ( selectedTab == 2 ) then
+		GuildInfoFrameInfo:Hide();
+		GuildInfoFrameRecruitment:Show();
+		GuildInfoFrameApplicants:Hide();
+	else
+		GuildInfoFrameInfo:Hide();
+		GuildInfoFrameRecruitment:Hide();
+		GuildInfoFrameApplicants:Show();
+	end
+end
+
+--*******************************************************************************
+--   Info Tab
+--*******************************************************************************
+
+function GuildInfoFrameInfo_OnLoad(self)
 	GuildInfoEventsContainer.update = GuildInfoEvents_Update;
 	HybridScrollFrame_CreateButtons(GuildInfoEventsContainer, "GuildNewsButtonTemplate", 0, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 	local buttons = GuildInfoEventsContainer.buttons;
 	for i = 1, #buttons do
 		buttons[i].isEvent = true;
 	end
-	self:RegisterEvent("GUILD_MOTD");
-	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 
 	local fontString = GuildInfoEditMOTDButton:GetFontString();
 	GuildInfoEditMOTDButton:SetHeight(fontString:GetHeight() + 4);
@@ -36,16 +115,7 @@ function GuildInfoFrame_OnLoad(self)
 	end
 end
 
-function GuildInfoFrame_OnEvent(self, event, arg1)
-	if ( event == "GUILD_MOTD" ) then
-		GuildInfoMOTD:SetText(arg1);
-	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
-		GuildInfoFrame_UpdatePermissions();
-		GuildInfoFrame_UpdateText();
-	end
-end
-
-function GuildInfoFrame_OnShow()
+function GuildInfoFrameInfo_OnShow(self)
 	GuildInfoEvents_Update();
 	GuildInfoFrame_UpdatePermissions();	
 	GuildInfoFrame_UpdateText();
@@ -67,6 +137,40 @@ function GuildInfoFrame_UpdatePermissions()
 	else
 		GuildInfoEditEventButton:Hide();
 	end
+	local guildInfoFrame = GuildInfoFrame;
+	if ( IsGuildLeader() ) then
+		GuildControlButton:Enable();
+		-- show the recruitment tabs if the player is guild leader
+		if ( not guildInfoFrame.tabsShowing ) then
+			guildInfoFrame.tabsShowing = true;
+			GuildInfoFrameTab1:Show();
+			GuildInfoFrameTab2:Show();
+			GuildInfoFrameTab3:Show();
+			GuildInfoFrameTab3:SetText(GUILDINFOTAB_APPLICANTS_NONE);
+			PanelTemplates_DisableTab(guildInfoFrame, 3);
+			PanelTemplates_SetTab(guildInfoFrame, 1);
+			PanelTemplates_UpdateTabs(guildInfoFrame);
+			RequestGuildApplicantsList();
+		end
+	else
+		GuildControlButton:Disable();
+		-- hide the recruitment tabs if the player is not guild leader any more
+		if ( guildInfoFrame.tabsShowing ) then
+			guildInfoFrame.tabsShowing = nil;
+			GuildInfoFrameTab1:Hide();
+			GuildInfoFrameTab2:Hide();
+			GuildInfoFrameTab3:Hide();
+			if ( PanelTemplates_GetSelectedTab(guildInfoFrame) ~= 1 ) then
+				PanelTemplates_SetTab(guildInfoFrame, 1);
+				GuildInfoFrame_Update();
+			end
+		end
+	end
+	if ( CanGuildInvite() ) then
+		GuildAddMemberButton:Enable();
+	else
+		GuildAddMemberButton:Disable();
+	end	
 end
 
 function GuildInfoFrame_UpdateText(infoText)
@@ -83,8 +187,6 @@ function GuildInfoFrame_UpdateText(infoText)
 	GuildInfoDetailsFrame:SetVerticalScroll(0);
 	GuildInfoDetailsFrameScrollBarScrollUpButton:Disable();
 end
-
---****** Events *****************************************************************
 
 function GuildInfoEvents_Update()
 	local scrollFrame = GuildInfoEventsContainer;
@@ -174,7 +276,239 @@ function GuildInfoEventButton_OnClick(self, button)
 	end
 end
 
---****** Popups *****************************************************************
+--*******************************************************************************
+--   Recruitment Tab
+--*******************************************************************************
+
+function GuildInfoFrameRecruitment_OnLoad(self)
+	GuildRecruitmentPlaystyleFrameText:SetText(GUILD_PLAYSTYLE);
+	GuildRecruitmentPlaystyleFrame:SetHeight(46);
+	GuildRecruitmentAvailabilityFrameText:SetText(GUILD_AVAILABILITY);
+	GuildRecruitmentAvailabilityFrame:SetHeight(46);
+	GuildRecruitmentRolesFrameText:SetText(CLASS_ROLES);
+	GuildRecruitmentRolesFrame:SetHeight(80);
+	GuildRecruitmentLevelFrameText:SetText(GUILD_RECRUITMENT_LEVEL);
+	GuildRecruitmentLevelFrame:SetHeight(46);
+	GuildRecruitmentCommentFrameText:SetText(COMMENT);
+	GuildRecruitmentCommentFrame:SetHeight(84);
+	
+	-- defaults until data is retrieved
+	GuildRecruitmentCasualButton:SetChecked(1);
+	GuildRecruitmentLevelAnyButton:SetChecked(1);
+	GuildRecruitmentListGuildButton:Disable();
+end
+
+function GuildRecruitmentPlaystyleButton_OnClick(index, userClick)
+	local param;
+	if ( index == 1 ) then
+		GuildRecruitmentCasualButton:SetChecked(1);
+		GuildRecruitmentModerateButton:SetChecked(nil);
+		GuildRecruitmentHardcoreButton:SetChecked(nil);
+		param = LFGUILD_PARAM_CASUAL;
+	elseif ( index == 2 ) then
+		GuildRecruitmentCasualButton:SetChecked(nil);
+		GuildRecruitmentModerateButton:SetChecked(1);
+		GuildRecruitmentHardcoreButton:SetChecked(nil);
+		param = LFGUILD_PARAM_MODERATE;
+	else
+		GuildRecruitmentCasualButton:SetChecked(nil);
+		GuildRecruitmentModerateButton:SetChecked(nil);
+		GuildRecruitmentHardcoreButton:SetChecked(1);
+		param = LFGUILD_PARAM_HARDCORE;
+	end
+	if ( userClick ) then
+		SetGuildRecruitmentSettings(param, true);
+	end
+end
+
+function GuildRecruitmentLevelButton_OnClick(index, userClick)
+	local param;
+	if ( index == 1 ) then
+		GuildRecruitmentLevelAnyButton:SetChecked(1);
+		GuildRecruitmentLevelMaxButton:SetChecked(nil);
+		param = LFGUILD_PARAM_ANY_LEVEL;
+	elseif ( index == 2 ) then
+		GuildRecruitmentLevelAnyButton:SetChecked(nil);
+		GuildRecruitmentLevelMaxButton:SetChecked(1);
+		param = LFGUILD_PARAM_MAX_LEVEL;
+	end
+	if ( userClick ) then
+		SetGuildRecruitmentSettings(param, true);
+	end	
+end
+
+function GuildRecruitmentRoleButton_OnClick(self)
+	local checked = self:GetChecked();
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
+	local id = self:GetParent():GetID();
+	if ( id == 1 ) then
+		SetGuildRecruitmentSettings(LFGUILD_PARAM_TANK, checked);
+	elseif ( id == 2 ) then
+		SetGuildRecruitmentSettings(LFGUILD_PARAM_HEALER, checked);
+	else
+		SetGuildRecruitmentSettings(LFGUILD_PARAM_DAMAGE, checked);
+	end
+	GuildRecruitmentListGuildButton_Update();
+end
+
+function GuildRecruitmentListGuildButton_Update()
+	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
+	-- need to have at least 1 time and at least 1 role checked to be able to list
+	if ( bWeekdays or bWeekends ) and ( bTank or bHealer or bDamage ) then
+		GuildRecruitmentListGuildButton:Enable();
+	else
+		GuildRecruitmentListGuildButton:Disable();
+		-- delist if already listed
+		if ( bListed ) then
+			bListed = false;
+			SetGuildRecruitmentSettings(LFGUILD_PARAM_LOOKING, false);
+		end
+	end
+	GuildRecruitmentListGuildButton_UpdateText(bListed);
+end
+
+function GuildRecruitmentListGuildButton_OnClick(self)
+	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
+	bListed = not bListed;
+	if ( bListed and GuildRecruitmentCommentEditBox:HasFocus() ) then
+		GuildRecruitmentComment_SaveText();
+	end
+	SetGuildRecruitmentSettings(LFGUILD_PARAM_LOOKING, bListed);
+	GuildRecruitmentListGuildButton_UpdateText(bListed);
+end
+
+function GuildRecruitmentListGuildButton_UpdateText(listed)
+	if ( listed ) then
+		GuildRecruitmentListGuildButton:SetText(GUILD_CLOSE_RECRUITMENT);
+	else
+		GuildRecruitmentListGuildButton:SetText(GUILD_OPEN_RECRUITMENT);
+	end
+end
+
+function GuildRecruitmentComment_SaveText(self)
+	self = self or GuildRecruitmentCommentEditBox;
+	SetGuildRecruitmentComment(self:GetText());
+	self:ClearFocus();
+end
+
+--*******************************************************************************
+--   Applicants Tab
+--*******************************************************************************
+
+function GuildInfoFrameApplicants_OnLoad(self)
+	GuildInfoFrameApplicantsContainer.update = GuildInfoFrameApplicants_Update;
+	HybridScrollFrame_CreateButtons(GuildInfoFrameApplicantsContainer, "GuildRecruitmentApplicantTemplate", 0, 0);
+	
+	GuildInfoFrameApplicantsContainerScrollBar.Show = 
+		function (self)
+			GuildInfoFrameApplicantsContainer:SetWidth(304);
+			for _, button in next, GuildInfoFrameApplicantsContainer.buttons do
+				button:SetWidth(301);
+			end
+			getmetatable(self).__index.Show(self);
+		end
+	GuildInfoFrameApplicantsContainerScrollBar.Hide = 
+		function (self)
+			GuildInfoFrameApplicantsContainer:SetWidth(320);
+			for _, button in next, GuildInfoFrameApplicantsContainer.buttons do
+				button:SetWidth(320);
+			end
+			getmetatable(self).__index.Hide(self);
+		end
+end
+
+function GuildInfoFrameApplicants_OnShow(self)
+	GuildInfoFrameApplicants_Update();
+end
+
+function GuildInfoFrameApplicants_Update()
+	local scrollFrame = GuildInfoFrameApplicantsContainer;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local button, index;
+	local numApplicants = GetNumGuildApplicants();
+	local selection = GetGuildApplicantSelection();
+
+	if ( numApplicants == 0 ) then
+		if ( not GuildInfoFrameTab3.wasEnabled ) then
+			PanelTemplates_DisableTab(GuildInfoFrame, 3);
+		end
+		GuildInfoFrameTab3:SetText(GUILDINFOTAB_APPLICANTS_NONE);
+	else
+		PanelTemplates_EnableTab(GuildInfoFrame, 3);
+		GuildInfoFrameTab3.wasEnabled = true;
+		GuildInfoFrameTab3:SetFormattedText(GUILDINFOTAB_APPLICANTS, numApplicants);
+	end
+	PanelTemplates_TabResize(GuildInfoFrameTab3, 0);
+	
+	for i = 1, numButtons do
+		button = buttons[i];
+		index = offset + i;
+		local name, level, class, _, _, _, _, _, isTank, isHealer, isDamage, comment = GetGuildApplicantInfo(index);
+		if ( name ) then
+			button.name:SetText(name);
+			button.level:SetText(level);
+			button.comment:SetText(comment);
+			button.emblem:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
+			-- roles
+			if ( isTank ) then
+				button.tankTex:Show();
+			else
+				button.tankTex:Hide();
+			end
+			if ( isHealer ) then
+				button.healerTex:Show();
+			else
+				button.healerTex:Hide();
+			end
+			if ( isDamage ) then
+				button.damageTex:Show();
+			else
+				button.damageTex:Hide();
+			end
+			-- selection
+			if ( index == selection ) then
+				button.selectedTex:Show();
+			else
+				button.selectedTex:Hide();
+			end
+			
+			button:Show();
+			button.index = index;
+		else
+			button:Hide();
+		end
+	end
+	local totalHeight = numApplicants * GUILD_BUTTON_HEIGHT;
+	local displayedHeight = numApplicants * GUILD_BUTTON_HEIGHT;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+	
+	if ( selection and selection > 0 ) then
+		GuildRecruitmentInviteButton:Enable();
+		GuildRecruitmentDeclineButton:Enable();
+		GuildRecruitmentMessageButton:Enable();
+	else
+		GuildRecruitmentInviteButton:Disable();
+		GuildRecruitmentDeclineButton:Disable();
+		GuildRecruitmentMessageButton:Disable();
+	end
+end
+
+function GuildRecruitmentApplicant_OnClick(self, button)
+	if ( button == "LeftButton" ) then
+		SetGuildApplicantSelection(self.index);
+		GuildInfoFrameApplicants_Update();
+	end
+end
+
+--*******************************************************************************
+--   Popups
+--*******************************************************************************
 
 function GuildTextEditFrame_OnLoad(self)
 	GuildFrame_RegisterPopup(self);

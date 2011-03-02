@@ -70,7 +70,6 @@
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				<!--Warning: The Leader button overrides this.-->
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
 				if ( self.permDisabled ) then
@@ -152,6 +151,16 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentTabardBorder" file="Interface\GuildFrame\GuildFrame" parentKey="border">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="-12"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
+					<Color r="0.25" b="0.25" g="0.25"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture name="$parentRing" inherits="Talent-Ring">
 					<Size x="48" y="48"/>
 					<Anchors>
@@ -174,7 +183,7 @@
 					<Color r="1.0" g="1.0" b="0.45"/>
 				</FontString>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
+			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture name="$parentLevelRing" inherits="TalentHeader-PointCircle-Gold" parentKey="PointsSpentBgGold">
 					<Size x="27" y="27"/>
 					<Anchors>
@@ -491,7 +500,7 @@
 					<Anchor point="TOPLEFT" relativeTo="LookingForGuildAvailabilityFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 				<Frames>
-					<Button name="LookingForGuildTankButton" inherits="LookingForGuildRoleTemplate" id="1">
+					<Button name="LookingForGuildTankButton" inherits="LookingForGuildRoleTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -503,11 +512,12 @@
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+								self.param = LFGUILD_PARAM_TANK;
 								LookingForGuildTankButtonText:SetText(TANK);
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="LookingForGuildHealerButton" inherits="LookingForGuildRoleTemplate" id="2">
+					<Button name="LookingForGuildHealerButton" inherits="LookingForGuildRoleTemplate" id="3">
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset>
@@ -519,11 +529,12 @@
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+								self.param = LFGUILD_PARAM_HEALER;
 								LookingForGuildHealerButtonText:SetText(HEALER);
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="LookingForGuildDamagerButton" inherits="LookingForGuildRoleTemplate" id="3">
+					<Button name="LookingForGuildDamagerButton" inherits="LookingForGuildRoleTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
@@ -535,6 +546,7 @@
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+								self.param = LFGUILD_PARAM_DAMAGE;
 								LookingForGuildDamagerButtonText:SetText(DAMAGER);
 							</OnLoad>
 						</Scripts>

@@ -394,6 +394,64 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>	
+		
+	<Button name="PaperDollSidebarTabTemplate" virtual="true">
+		<Size x="33" y="35"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs" parentKey="TabBg">
+					<Size x="50" y="43"/>
+					<TexCoords left="0.01562500" right="0.79687500" top="0.61328125" bottom="0.78125000"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-9" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="33" y="35"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="1" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Hider" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
+					<Size x="34" y="19"/>
+					<TexCoords left="0.01562500" right="0.54687500" top="0.11328125" bottom="0.18750000"/>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
+					<Size x="31" y="31"/>	
+					<TexCoords left="0.01562500" right="0.50000000" top="0.19531250" bottom="0.31640625"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetTexture(PAPERDOLL_SIDEBARS[self:GetID()].icon);
+				local tcoords = PAPERDOLL_SIDEBARS[self:GetID()].texCoords;
+				self.Icon:SetTexCoord(tcoords[1], tcoords[2], tcoords[3], tcoords[4]);
+			</OnLoad>
+			<OnClick>
+				PaperDollFrame_SetSidebar(self, self:GetID());
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(PAPERDOLL_SIDEBARS[self:GetID()].name, 1, 1, 1);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
 	
     <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
 		<Layers>
@@ -410,21 +468,67 @@
             </Layer>
         </Layers>
         <Frames>
-		
-			<Frame name="PaperDollSideBarDropDown" inherits="UIDropDownMenuTemplate" parent="CharacterFrameInsetRight" hidden="true">
-				<Size x="300" y="0"/>
+			<Frame name="PaperDollSidebarTabs" parent="CharacterFrameInsetRight" hidden="true">
+				<Size x="168" y="35"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-14" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-6" y="-1"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						UIDropDownMenu_Initialize(self, PaperDollSideBarDropDown_Initialize);
-						UIDropDownMenu_SetSelectedValue(self, 1);
-						UIDropDownMenu_SetWidth(self, 154);
-						UIDropDownMenu_JustifyText(self, "LEFT");
-						self:SetFrameLevel(CharacterFrameInsetRight:GetFrameLevel()+5);
-					</OnLoad>
-				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="DecorLeft" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
+							<Size x="28" y="11"/>
+							<TexCoords left="0.01562500" right="0.45312500" top="0.00390625" bottom="0.04687500"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="DecorRight" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
+							<Size x="28" y="13"/>
+							<TexCoords left="0.01562500" right="0.45312500" top="0.05468750" bottom="0.10546875"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="PaperDollSidebarTab3" inherits="PaperDollSidebarTabTemplate" id="3">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-30" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="PaperDollSidebarTab2" inherits="PaperDollSidebarTabTemplate" id="2">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="PaperDollSidebarTab3" relativePoint="LEFT" x="-4"/>
+						</Anchors>
+					</Button>
+					<Button name="PaperDollSidebarTab1" inherits="PaperDollSidebarTabTemplate" id="1">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="PaperDollSidebarTab2" relativePoint="LEFT" x="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+								self:RegisterEvent("PLAYER_ENTERING_WORLD");
+								
+								local tcoords = PAPERDOLL_SIDEBARS[self:GetID()].texCoords;
+								self.Icon:SetTexCoord(tcoords[1], tcoords[2], tcoords[3], tcoords[4]);
+								self.Icon:SetSize(29, 31);
+								self.Icon:SetPoint("BOTTOM", 1, 0);
+							</OnLoad>
+							<OnEvent>
+								if ( event == "UNIT_PORTRAIT_UPDATE" ) then
+									local unit = ...;
+									if ( unit == "player" ) then
+										SetPortraitTexture(self.Icon, unit);
+									end
+								elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+									SetPortraitTexture(self.Icon, "player");
+								end
+							</OnEvent>
+						</Scripts>
+					</Button>
+				</Frames>
 			</Frame>
 		
 			<ScrollFrame name="PaperDollTitlesPane" inherits="HybridScrollFrameTemplate" hidden="true">
@@ -466,7 +570,7 @@
 					<Button name="$parentEquipSet" text="EQUIPSET_EQUIP" parentKey="EquipSet" inherits="UIPanelButtonTemplate">
 						<Size x="87" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-24"/>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="PaperDollEquipmentManagerPaneEquipSet_OnClick"/>

@@ -97,7 +97,6 @@ PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION = PDFITEMFLYOUT_UNIGNORESLOT_LOCATION
 
 PLAYER_DISPLAYED_TITLES = 6;
 PLAYER_TITLE_HEIGHT = 22;
-SIDEBAR_DROPDOWN_HEIGHT = 24;
 
 EQUIPMENTSET_BUTTON_HEIGHT = 44;
 
@@ -131,14 +130,20 @@ PAPERDOLL_SIDEBARS = {
 	{
 		name=PAPERDOLL_SIDEBAR_STATS;
 		frame="CharacterStatsPane";
+		icon = nil;  -- Uses the character portrait
+		texCoords = {0.109375, 0.890625, 0.09375, 0.90625};
 	},
 	{
 		name=PAPERDOLL_SIDEBAR_TITLES;
 		frame="PaperDollTitlesPane";
+		icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
+		texCoords = {0.01562500, 0.53125000, 0.32421875, 0.46093750};
 	},
 	{
 		name=PAPERDOLL_EQUIPMENTMANAGER;
 		frame="PaperDollEquipmentManagerPane";
+		icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
+		texCoords = {0.01562500, 0.53125000, 0.46875000, 0.60546875};
 	},
 };
 
@@ -561,9 +566,13 @@ function PaperDollFrame_SetLevel()
 		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, UnitLevel("player"), classColorString, classDisplayName);
 	end
 	
-	-- Hack: if the string is very long, move it to the right a bit so that it has more room (although it will no longer be centered)
+	-- Hack: if the string is very long, move it a bit so that it has more room (although it will no longer be centered)
 	if (CharacterLevelText:GetWidth() > 210) then
-		CharacterLevelText:SetPoint("TOP", 10, -36);
+		if (CharacterFrameInsetRight:IsVisible()) then
+			CharacterLevelText:SetPoint("TOP", -10, -36);
+		else
+			CharacterLevelText:SetPoint("TOP", 10, -36);
+		end
 	else
 		CharacterLevelText:SetPoint("TOP", 0, -36);
 	end
@@ -2150,7 +2159,7 @@ function CharacterSpellCritChance_OnEnter (self)
 end
 
 function PaperDollFrame_OnShow (self)
-	CharacterStatsPane.initialOffsetY = -SIDEBAR_DROPDOWN_HEIGHT;
+	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
 	local activeSpec = GetActiveTalentGroup();
@@ -2170,7 +2179,7 @@ function PaperDollFrame_OnShow (self)
 	
 	SetPaperDollBackground(CharacterModelFrame, "player");
 	PaperDollBgDesaturate(1);
-	PaperDollSideBarDropDown:Show();
+	PaperDollSidebarTabs:Show();
 end
  
 function PaperDollFrame_OnHide (self)
@@ -2180,7 +2189,7 @@ function PaperDollFrame_OnHide (self)
 	if (MOVING_STAT_CATEGORY) then
 		PaperDollStatCategory_OnDragStop(MOVING_STAT_CATEGORY);
 	end
-	PaperDollSideBarDropDown:Hide();
+	PaperDollSidebarTabs:Hide();
 end
 
 function PaperDollFrame_ClearIgnoredSlots ()
@@ -3778,7 +3787,7 @@ end
 function PaperDollEquipmentManagerPane_OnLoad(self)
 	HybridScrollFrame_OnLoad(self);
 	self.update = PaperDollEquipmentManagerPane_Update;	
-	HybridScrollFrame_CreateButtons(self, "GearSetButtonTemplate", 2, -(SIDEBAR_DROPDOWN_HEIGHT+self.EquipSet:GetHeight()+4));
+	HybridScrollFrame_CreateButtons(self, "GearSetButtonTemplate", 2, -(self.EquipSet:GetHeight()+4));
 	
 	self:RegisterEvent("EQUIPMENT_SWAP_FINISHED");
 	self:RegisterEvent("EQUIPMENT_SETS_CHANGED");
@@ -3876,7 +3885,7 @@ function PaperDollEquipmentManagerPane_Update()
 		numRows = numRows + 1;  -- "Add New Set" button
 	end
 
-	HybridScrollFrame_Update(PaperDollEquipmentManagerPane, numRows * EQUIPMENTSET_BUTTON_HEIGHT + SIDEBAR_DROPDOWN_HEIGHT + PaperDollEquipmentManagerPaneEquipSet:GetHeight() + 20 , PaperDollEquipmentManagerPane:GetHeight());
+	HybridScrollFrame_Update(PaperDollEquipmentManagerPane, numRows * EQUIPMENTSET_BUTTON_HEIGHT + PaperDollEquipmentManagerPaneEquipSet:GetHeight() + 20 , PaperDollEquipmentManagerPane:GetHeight());
 	
 	local scrollOffset = HybridScrollFrame_GetOffset(PaperDollEquipmentManagerPane);
 	local buttons = PaperDollEquipmentManagerPane.buttons;
@@ -3915,12 +3924,16 @@ function PaperDollEquipmentManagerPane_Update()
 				else
 					button.Check:Hide();
 				end
+				button.icon:SetSize(36, 36);
+				button.icon:SetPoint("LEFT", 4, 0);
 			else
 				-- This is the Add New button
 				button.name = nil;
 				button.text:SetText(PAPERDOLL_NEWEQUIPMENTSET);
 				button.text:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-				button.icon:SetTexture("Interface\\Icons\\Spell_ChargePositive");
+				button.icon:SetTexture("Interface\\PaperDollInfoFrame\\Character-Plus");
+				button.icon:SetSize(30, 30);
+				button.icon:SetPoint("LEFT", 7, 0);
 				button.Check:Hide();
 				button.SelectedBar:Hide();
 			end
@@ -3977,7 +3990,7 @@ end
 function PaperDollTitlesPane_OnLoad(self)
 	HybridScrollFrame_OnLoad(self);
 	self.update = PaperDollTitlesPane_UpdateScrollFrame;	
-	HybridScrollFrame_CreateButtons(self, "PlayerTitleButtonTemplate", 2, -(SIDEBAR_DROPDOWN_HEIGHT+4));
+	HybridScrollFrame_CreateButtons(self, "PlayerTitleButtonTemplate", 2, -4);
 end
 
 function PaperDollTitlesPane_UpdateScrollFrame()
@@ -4062,10 +4075,10 @@ function PaperDollTitlesPane_Update()
 	end
 
 	table.sort(playerTitles, PlayerTitleSort);
-	playerTitles[1].name = NONE;
+	playerTitles[1].name = PLAYER_TITLE_NONE;
 	PaperDollTitlesPane.titles = playerTitles;	
 
-	HybridScrollFrame_Update(PaperDollTitlesPane, titleCount * PLAYER_TITLE_HEIGHT + SIDEBAR_DROPDOWN_HEIGHT + 20 , PaperDollTitlesPane:GetHeight());
+	HybridScrollFrame_Update(PaperDollTitlesPane, titleCount * PLAYER_TITLE_HEIGHT + 20 , PaperDollTitlesPane:GetHeight());
 	PaperDollTitlesPane_UpdateScrollFrame();
 end
 
@@ -4106,6 +4119,10 @@ function SetPaperDollBackground(model, unit)
 		model.BackgroundOverlay:SetAlpha(0.3);
 	elseif ( strupper(fileName) == "TROLL" or strupper(fileName) == "ORC") then
 		model.BackgroundOverlay:SetAlpha(0.6);
+	elseif ( strupper(fileName) == "WORGEN" ) then
+		model.BackgroundOverlay:SetAlpha(0.5);
+	elseif ( strupper(fileName) == "GOBLIN" ) then
+		model.BackgroundOverlay:SetAlpha(0.6);
 	else
 		model.BackgroundOverlay:SetAlpha(0.7);
 	end
@@ -4118,24 +4135,31 @@ function PaperDollBgDesaturate(on)
 	CharacterModelFrameBackgroundBotRight:SetDesaturated(on);
 end
 
-function PaperDollSideBarDropDown_Callback(self, arg1, arg2, checked)
-	local frame = PaperDollSideBarDropDown;
-	UIDropDownMenu_SetSelectedValue(frame, arg1);
+function PaperDollFrame_UpdateSidebarTabs()
 	for i = 1, #PAPERDOLL_SIDEBARS do
-		_G[PAPERDOLL_SIDEBARS[i].frame]:Hide();
+		local tab = _G["PaperDollSidebarTab"..i];
+		if (tab) then
+			if (_G[PAPERDOLL_SIDEBARS[i].frame]:IsShown()) then
+				tab.Hider:Hide();
+				tab.Highlight:Hide();
+				tab.TabBg:SetTexCoord(0.01562500, 0.79687500, 0.78906250, 0.95703125);
+			else
+				tab.Hider:Show();
+				tab.Highlight:Show();
+				tab.TabBg:SetTexCoord(0.01562500, 0.79687500, 0.61328125, 0.78125000);
+			end
+		end
 	end
-	_G[PAPERDOLL_SIDEBARS[arg1].frame]:Show();
-	PaperDollFrame.currentSideBar = _G[PAPERDOLL_SIDEBARS[arg1].frame];
 end
 
-function PaperDollSideBarDropDown_Initialize(self)
-	for i = 1, #PAPERDOLL_SIDEBARS do
-		local info = UIDropDownMenu_CreateInfo();
-		info.func = PaperDollSideBarDropDown_Callback;
-		info.text = PAPERDOLL_SIDEBARS[i].name;
-		info.value = i;
-		info.arg1 = i;
-		info.minWidth = 160;
-		UIDropDownMenu_AddButton(info);
+function PaperDollFrame_SetSidebar(self, index)
+	if (not _G[PAPERDOLL_SIDEBARS[index].frame]:IsShown()) then
+		for i = 1, #PAPERDOLL_SIDEBARS do
+			_G[PAPERDOLL_SIDEBARS[i].frame]:Hide();
+		end
+		_G[PAPERDOLL_SIDEBARS[index].frame]:Show();
+		PaperDollFrame.currentSideBar = _G[PAPERDOLL_SIDEBARS[index].frame];
+		PlaySound("igMainMenuOptionCheckBoxOff");
+		PaperDollFrame_UpdateSidebarTabs();
 	end
 end

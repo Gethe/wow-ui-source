@@ -122,14 +122,7 @@ function LookingForGuildRoleButton_OnClick(self)
 	else
 		PlaySound("igMainMenuOptionCheckBoxOff");
 	end
-	local id = self:GetParent():GetID();
-	if ( id == 1 ) then
-		SetLookingForGuildSettings(LFGUILD_PARAM_TANK, checked);
-	elseif ( id == 2 ) then
-		SetLookingForGuildSettings(LFGUILD_PARAM_HEALER, checked);
-	else
-		SetLookingForGuildSettings(LFGUILD_PARAM_DAMAGE, checked);
-	end
+	SetLookingForGuildSettings(self:GetParent().param, checked);
 	LookingForGuildBrowseButton_Update();
 end
 
@@ -143,7 +136,7 @@ function LookingForGuildStartFrame_OnLoad(self)
 	LookingForGuildCommentFrameText:SetText(COMMENT);
 	LookingForGuildCommentFrame:SetHeight(112);
 
-	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetLookingForGuildSettings();
+	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetLookingForGuildSettings();
 	-- playstyle
 	if ( bModerate ) then
 		LookingForGuildPlaystyleButton_OnClick(2);
@@ -165,7 +158,7 @@ function LookingForGuildStartFrame_OnLoad(self)
 end
 
 function LookingForGuildBrowseButton_Update()
-	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetLookingForGuildSettings();
+	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetLookingForGuildSettings();
 	-- need to have at least 1 time and at least 1 role checked to be able to browse
 	if ( bWeekdays or bWeekends ) and ( bTank or bHealer or bDamage ) then
 		LookingForGuildBrowseButton:Enable();
@@ -229,7 +222,7 @@ function LookingForGuild_Update()
 			button.comment:SetText(comment);
 			-- tabard
 			local tabardInfo = { GetRecruitingGuildTabardInfo(index) };
-			SetLargeGuildTabardTextures(nil, button.emblem, button.tabard, nil, tabardInfo);
+			SetLargeGuildTabardTextures(nil, button.emblem, button.tabard, button.border, tabardInfo);
 			-- selection
 			if ( requestPending ) then
 				button.selectedTex:Show();

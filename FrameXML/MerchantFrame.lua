@@ -1,7 +1,6 @@
 MERCHANT_ITEMS_PER_PAGE = 10;
 BUYBACK_ITEMS_PER_PAGE = 12;
 MAX_ITEM_COST = 3;
-BACKPACK_WAS_OPEN = nil;
 
 function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_UPDATE");
@@ -38,8 +37,8 @@ function MerchantFrame_OnEvent(self, event, ...)
 	end
 end
 
-function MerchantFrame_OnShow()
-	BACKPACK_WAS_OPEN = OpenBackpack();
+function MerchantFrame_OnShow(self)
+	OpenAllBags(self);
 	
 	-- Update repair all button status
 	MerchantFrame_UpdateCanRepairAll();
@@ -50,11 +49,9 @@ function MerchantFrame_OnShow()
 	PlaySound("igCharacterInfoOpen");
 end
 
-function MerchantFrame_OnHide()
+function MerchantFrame_OnHide(self)
 	CloseMerchant();
-	if ( not BACKPACK_WAS_OPEN ) then
-		CloseBackpack();
-	end
+	CloseAllBags(self);
 	ResetCursor();
 	
 	StaticPopup_Hide("CONFIRM_PURCHASE_TOKEN_ITEM");

@@ -109,7 +109,6 @@ function GuildBankFrame_OnLoad(self)
 	GuildBankFrame.numTabs = 4;
 	GuildBankFrame_UpdateTabs();
 	GuildBankFrame_UpdateTabard();
-
 end
 
 function GuildBankFrame_OnEvent(self, event, ...)
@@ -491,11 +490,33 @@ function GuildBankFrame_UpdateTabs()
 		GuildBankTabLimitBackground:Show();
 		GuildBankTabLimitBackgroundLeft:Show();
 		GuildBankTabLimitBackgroundRight:Show();
+		GuildBankCashFlowLabel:Hide();
+		GuildBankCashFlowMoneyFrame:Hide();
+	elseif ( GuildBankFrame.mode == "moneylog" and GetSpellInfo("Cash Flow") ) then
+		MoneyFrame_Update("GuildBankCashFlowMoneyFrame", GetGuildBankBonusDepositMoney());
+		local width = GuildBankCashFlowLabel:GetWidth() + GuildBankCashFlowMoneyFrame:GetWidth() + 10;
+		GuildBankTabLimitBackground:SetWidth(width);
+		if ( width > 310 ) then
+			GuildBankTabLimitBackground:ClearAllPoints();
+			GuildBankTabLimitBackground:SetPoint("RIGHT", GuildBankFrameWithdrawButton, "LEFT", -14, -1);
+		else
+			GuildBankTabLimitBackground:ClearAllPoints();
+			GuildBankTabLimitBackground:SetPoint("TOP", "GuildBankFrame", "TOP", 6, -388);
+		end
+		
+		GuildBankTabLimitBackground:Show();
+		GuildBankTabLimitBackgroundLeft:Show();
+		GuildBankTabLimitBackgroundRight:Show();
+		GuildBankLimitLabel:Hide();
+		GuildBankCashFlowLabel:Show();
+		GuildBankCashFlowMoneyFrame:Show();
 	else
 		GuildBankLimitLabel:Hide();
 		GuildBankTabLimitBackground:Hide();
 		GuildBankTabLimitBackgroundLeft:Hide();
 		GuildBankTabLimitBackgroundRight:Hide();
+		GuildBankCashFlowLabel:Hide();
+		GuildBankCashFlowMoneyFrame:Hide();
 	end
 end
 

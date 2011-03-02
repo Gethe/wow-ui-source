@@ -164,6 +164,18 @@ MoneyTypeInfo["REFORGE"] = {
 	showSmallerCoins = "Backpack",
 };
 
+MoneyTypeInfo["GUILDBANKCASHFLOW"] = {
+	OnloadFunc = function(self)
+		self:RegisterEvent("GUILDBANKLOG_UPDATE");
+	end,
+	UpdateFunc = function(self)
+		MoneyFrame_Update(self, GetGuildBankBonusDepositMoney());
+		return nil;
+	end,
+	collapse = 1,
+	showSmallerCoins = "Backpack",
+};
+
 function MoneyFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("PLAYER_TRADE_MONEY");
@@ -216,6 +228,8 @@ function MoneyFrame_OnEvent (self, event, ...)
 	elseif ( event == "GUILDBANK_UPDATE_MONEY" and moneyType == "GUILDBANK" ) then
 		MoneyFrame_UpdateMoney(self);
 	elseif ( event == "GUILDBANK_UPDATE_WITHDRAWMONEY" and moneyType == "GUILDBANKWITHDRAW" ) then
+		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "GUILDBANKLOG_UPDATE" and moneyType == "GUILDBANKCASHFLOW" ) then
 		MoneyFrame_UpdateMoney(self);
 	end
 end

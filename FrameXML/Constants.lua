@@ -445,8 +445,6 @@ QuestDifficultyColors = {
 -- WorldMap
 --
 NUM_WORLDMAP_PATCH_TILES = 6;
-NUM_WORLDMAP_DETAIL_TILE_ROWS = 3;
-NUM_WORLDMAP_DETAIL_TILE_COLS = 4;
 
 --
 -- Totems

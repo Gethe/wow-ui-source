@@ -647,7 +647,7 @@
 		ToggleBag(1);
 	</Binding>
 	<Binding name="OPENALLBAGS">
-		OpenAllBags();
+		ToggleAllBags();
 	</Binding>
 	<Binding name="TOGGLEKEYRING">
 		ToggleKeyRing();

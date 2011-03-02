@@ -2313,10 +2313,6 @@ SlashCmdList["RELOAD"] = function(msg)
 	ConsoleExec("reloadui");
 end
 
-SlashCmdList["TRANSFORM"] = function(msg)
-	Transform();
-end
-
 SlashCmdList["RANDOMPET"] = function(msg)
 	local numCompanions = GetNumCompanions("CRITTER");
 	if ( numCompanions > 0  ) then

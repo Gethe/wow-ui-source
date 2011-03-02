@@ -1,7 +1,7 @@
 
 BANK_TAB_OFFSET = 4;
 BANK_TAB_HEIGHT = BANK_TAB_OFFSET + 73;
-NUM_RANK_FLAGS = 19;
+NUM_RANK_FLAGS = 20;
 MAX_GUILDRANKS = 10;
 
 function GuildControlUI_OnLoad(self)
@@ -223,13 +223,13 @@ function GuildControlUI_RankPermissions_Update(self)
 		self.goldBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
 	
-	-- disable the Authenticate checkbox for the last rank or if a rank has members
+	-- disable the Authenticate checkbox for the last rank ,or if a rank has members and the option is unchecked
 	checkbox = _G[prefix.."18"];
 	if ( currentRank == GuildControlGetNumRanks() ) then
 		checkbox.text:SetFontObject("GameFontDisableSmall");
 		checkbox:Disable();
 		checkbox.tooltipFrame.tooltip = AUTHENTICATOR_GUILD_RANK_LAST;
-	elseif ( GetNumMembersInRank(currentRank ) > 0 ) then
+	elseif ( GetNumMembersInRank(currentRank ) > 0 and not checkbox:GetChecked() ) then
 		checkbox.text:SetFontObject("GameFontDisableSmall");
 		checkbox:Disable();
 		checkbox.tooltipFrame.tooltip = AUTHENTICATOR_GUILD_RANK_IN_USE;

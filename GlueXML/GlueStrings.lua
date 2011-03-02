@@ -532,7 +532,7 @@ LOAD_NEW = "New";
 LOAD_RECOMMENDED = "New Players";
 LOGIN = "Login";
 LOGIN_ACCOUNT_CONVERTED = "This account is now attached to a Battle.net account. Please log in with your Battle.net account email address (example: john.doe@blizzard.com) and password.";
-LOGIN_ACCOUNT_LOCKED = "<html><body><p align=\"CENTER\">Our login system has detected a change in your access pattern. In order to protect the account, we require you to verify your identity via a message sent to the e-mail address associated with this account.|nFor more information, please visit|n<a href='http://us.battle.net/wow/account-locked/en-us/'>us.battle.net/wow/account-locked/en-us/</a></p></body></html>";
+LOGIN_ACCOUNT_LOCKED = "<html><body><p align=\"CENTER\">Our login system has detected a change in your access pattern. In order to protect the account, we require you to verify your identity via a message sent to the e-mail address associated with this account.|nFor more information, please visit|n<a href='https://us.battle.net/account/support/password-reset.html'>https://us.battle.net/account/support/password-reset.html</a></p></body></html>";
 LOGIN_ALREADYONLINE = "This account is already logged into World of Warcraft.  Please check the spelling and try again.";
 LOGIN_ANTI_INDULGENCE = "Your game account is locked by anti-indulgence controls.";
 LOGIN_AUTH_OUTAGE = "<html><body><p align=\"CENTER\">The login server is currently busy. Please try again later. If the problem persists, please contact Technical Support at: <a href=\"http://us.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2316\">http://us.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2316</a></p></body></html>";

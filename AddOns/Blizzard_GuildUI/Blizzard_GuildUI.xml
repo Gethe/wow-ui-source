@@ -521,56 +521,6 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button name="GuildAddMemberButton" inherits="MagicButtonTemplate" text="ADDMEMBER">
-				<Size x="116" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						if ( StaticPopup_FindVisible("ADD_GUILDMEMBER") ) then
-							StaticPopup_Hide("ADD_GUILDMEMBER");
-						else
-							StaticPopup_Show("ADD_GUILDMEMBER");
-						end
-					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, ADDMEMBER, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ADDMEMBER, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="GuildControlButton" inherits="MagicButtonTemplate" text="GUILDCONTROL">
-				<Size x="116" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						if ( not GuildControlUI ) then
-							UIParentLoadAddOn("Blizzard_GuildControlUI");
-						end
-						CloseWindows(nil, GuildFrame);
-						GuildFramePopup_Toggle(GuildControlUI);
-					</OnClick>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, GUILDCONTROL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDCONTROL, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="GuildViewLogButton" inherits="MagicButtonTemplate" text="GUILD_VIEW_LOG">
-				<Size x="0" y="22"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildAddMemberButton" relativePoint="RIGHT"/>
-					<Anchor point="RIGHT" relativeTo="GuildControlButton" relativePoint="LEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						GuildFramePopup_Toggle(GuildLogFrame);
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Frame name="GuildXPFrame">
 				<Size>
 					<AbsDimension x="264" y="20"/>

@@ -54,7 +54,7 @@ function MailFrame_OnEvent(self, event, ...)
 			GuildRoster();
 		end
 
-		OpenBackpack();
+		OpenAllBags(self);
 		SendMailFrame_Update();
 		MailFrameTab_OnClick(nil, 1);
 		CheckInbox();
@@ -79,6 +79,7 @@ function MailFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "MAIL_CLOSED" ) then
 		HideUIPanel(MailFrame);
+		CloseAllBags(self);
 		SendMailFrameLockSendMail:Hide();
 		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 	elseif ( event == "CLOSE_INBOX_ITEM" ) then

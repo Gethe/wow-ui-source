@@ -1505,6 +1505,64 @@ function InterfaceOptionsNPCNamesDropDown_Initialize(self)
 end
 
 
+
+-- Namplate Motion Dropdown ---
+
+function InterfaceOptionsNameplateMotionDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local value = GetCVar("nameplateMotion") +1;
+		self.tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..value];
+		
+		
+		self.defaultValue = "1";
+		self.oldValue = value;
+		self.value = value;
+
+		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsNameplateMotionDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				UIDropDownMenu_SetSelectedValue(self, value);
+				SetNamePlateMotionType(value);
+				self.tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..value];				
+			end;	
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsNameplateMotionDropDown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsNameplateMotionDropDown_OnClick(self)
+	InterfaceOptionsNamesPanelUnitNameplatesMotionDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsNameplateMotionDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+	
+	local numTypes = GetNumNamePlateMotionTypes();
+	for i=1,numTypes do
+		info.text =  _G["UNIT_NAMEPLATES_TYPE_"..i];
+		info.func = InterfaceOptionsNameplateMotionDropDown_OnClick;
+		info.value = i;
+		info.checked = i == selectedValue;
+		info.tooltipTitle = _G["UNIT_NAMEPLATES_TYPE_"..i];
+		info.tooltipText = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..i];
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+
+
 -- [[ Combat Text Options Panel ]] --
 
 FCTPanelOptions = {

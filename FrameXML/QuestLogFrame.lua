@@ -249,7 +249,6 @@ function QuestLog_OnEvent(self, event, ...)
 		QuestLog_Update();
 		if ( QuestLogDetailScrollFrame:IsVisible() ) then
 			QuestLog_UpdateQuestDetails(false);
-			QuestLog_UpdateMap();
 		end
 		if (not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH) then
 			local isComplete = select(7, GetQuestLogTitle(GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH)));
@@ -586,37 +585,6 @@ function QuestLog_UpdateQuestDetails(resetScrollBar)
 	QuestLogDetailScrollFrame:Show();
 end
 
-function QuestLog_UpdateMap()
-	-- Fill in map tiles
-	local mapFileName, textureHeight = GetMapInfo();
-	if ( not mapFileName ) then
-		return;
-	end
-	local texName;
-	local dungeonLevel = GetCurrentMapDungeonLevel();
-	local completeMapFileName;
-	if ( dungeonLevel > 0 ) then
-		completeMapFileName = mapFileName..dungeonLevel.."_";
-	else
-		completeMapFileName = mapFileName;
-	end
-	local mapFrameWidth = QuestLogMapFrame:GetRight() - QuestLogMapFrame:GetLeft();
-	local mapFrameHeight = QuestLogMapFrame:GetTop() - QuestLogMapFrame:GetBottom();
-	local tileWidth = mapFrameWidth / NUM_WORLDMAP_DETAIL_TILE_COLS;
-	-- there are a few unused pixels on the bottom of the bottom row's map tiles, so fudge the map height
-	-- to account for these extra pixels
-	local tileHeight = (mapFrameHeight) / NUM_WORLDMAP_DETAIL_TILE_ROWS;
-	local tile;
-	for i=1, GetNumberOfDetailTiles() do
-		tile = _G["QuestLogMapFrame"..i];
-		tile:SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i);
---[[
-		tile:SetWidth(tileWidth);
---]]
-		tile:SetHeight(tileHeight);
-	end
-end
-
 function QuestLog_UpdatePartyInfoTooltip(questLogTitle)
 	local numPartyMembers = GetNumPartyMembers();
 	if ( numPartyMembers == 0 or questLogTitle.isHeader ) then
@@ -727,7 +695,6 @@ function QuestLog_SetSelection(questIndex)
 
 	-- update the quest
 	QuestLog_UpdateQuestDetails(true);
-	QuestLog_UpdateMap();
 	if ( not QuestLogFrame:IsShown() ) then
 		ShowUIPanel(QuestLogDetailFrame);
 	end

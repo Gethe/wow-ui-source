@@ -202,6 +202,7 @@ function BankFrame_OnShow (self)
 		BankFrameItemButton_Update(button);
 	end
 	UpdateBagSlotStatus();
+	OpenAllBags(self);
 end
 
 function BankFrame_OnHide (self)
@@ -213,6 +214,7 @@ function BankFrame_OnHide (self)
 	self:UnregisterEvent("PLAYER_MONEY");
 
 	StaticPopup_Hide("CONFIRM_BUY_BANK_SLOT");
+	CloseAllBags(self);
 	CloseBankBagFrames();
 	CloseBankFrame();
 	updateContainerFrameAnchors();

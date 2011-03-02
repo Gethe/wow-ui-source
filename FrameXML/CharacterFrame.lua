@@ -142,7 +142,6 @@ function CharacterFrame_OnHide (self)
 	HideTextStatusBarText(PetFrameManaBar);
 	HideWatchedReputationBarText();
 	PaperDollFrame.currentSideBar = nil;
-	UIDropDownMenu_SetSelectedValue(PaperDollSideBarDropDown, 1);
 end
 
 function CharacterFrame_Collapse()
@@ -156,6 +155,7 @@ function CharacterFrame_Collapse()
 	end
 	CharacterFrameInsetRight:Hide();
 	UpdateUIPanelPositions(CharacterFrame);
+	PaperDollFrame_SetLevel();
 end
 
 function CharacterFrame_Expand()
@@ -169,8 +169,10 @@ function CharacterFrame_Expand()
 	else
 		CharacterStatsPane:Show();
 	end
+	PaperDollFrame_UpdateSidebarTabs();
 	CharacterFrameInsetRight:Show();
 	UpdateUIPanelPositions(CharacterFrame);
+	PaperDollFrame_SetLevel();
 end
 
 local function CompareFrameSize(frame1, frame2)

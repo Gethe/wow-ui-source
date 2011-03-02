@@ -335,8 +335,9 @@
 	
 	
 	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="338" y="444"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="20" y="-6"/>
+			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="20" y="0"/>
  		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -450,7 +451,7 @@
 						</Scripts>
 					</Frame>
 					<Frame name="$parentInset" inherits="InsetFrameTemplate2" parentKey="inset">
-						<Size x="290" y="290"/>
+						<Size x="290" y="310"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-45"/>
 						</Anchors>
@@ -495,7 +496,7 @@
 							<Color r="0.95" g="0.95" b="1" a="0.09"/>
 						</Texture>
 						<Texture name="$parentInfoBg" >
-							<Size x="290" y="80"/>
+							<Size x="290" y="100"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="$parentRosterBg" relativePoint="BOTTOM" x="0" y="-6"/>
 							</Anchors>
@@ -611,11 +612,6 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox9" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="$parentCheckbox13" inherits="GuildPermissionCheckBoxTemplate" id="13">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox11" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-						</Anchors>
-					</CheckButton>
 					<CheckButton name="$parentCheckbox10" inherits="GuildPermissionCheckBoxTemplate" id="10">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentCheckbox9" relativePoint="RIGHT" x="128" y="0"/>
@@ -628,10 +624,19 @@
 					</CheckButton>
 					<CheckButton name="$parentCheckbox17" inherits="GuildPermissionCheckBoxTemplate" id="17">
 						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox11" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="$parentCheckbox20" inherits="GuildPermissionCheckBoxTemplate" id="20">
+						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox12" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
-
+					<CheckButton name="$parentCheckbox13" inherits="GuildPermissionCheckBoxTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox17" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+						</Anchors>
+					</CheckButton>
 					<CheckButton name="$parentCheckbox15" inherits="GuildPermissionCheckBoxTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentBankLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>

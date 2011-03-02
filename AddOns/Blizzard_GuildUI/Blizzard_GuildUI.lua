@@ -6,7 +6,6 @@ local BUTTON_WIDTH_NO_SCROLLBAR = 320;
 
 function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	self:RegisterEvent("GUILD_RANKS_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("GUILD_XP_UPDATE");
 	self:RegisterEvent("GUILD_PERK_UPDATE");
@@ -21,7 +20,6 @@ function GuildFrame_OnLoad(self)
 	GuildFrame_UpdateLevel();
 	GuildFrame_UpdateXP();
 	GuildFrame_UpdateFaction();
-	GuildFrame_CheckPermissions();
 	local guildName = GetGuildInfo("player");
 	GuildFrameTitleText:SetText(guildName);
 end
@@ -71,9 +69,6 @@ function GuildFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
 		local totalMembers, onlineMembers = GetNumGuildMembers();
 		GuildFrameMembersCount:SetText(onlineMembers.." / "..totalMembers);
-		GuildFrame_CheckPermissions();
-	elseif ( event == "GUILD_RANKS_UPDATE" ) then
-		GuildFrame_CheckPermissions();
 	elseif ( event == "GUILD_XP_UPDATE" ) then
 		GuildFrame_UpdateXP();
 	elseif ( event == "UPDATE_FACTION" ) then
@@ -82,7 +77,6 @@ function GuildFrame_OnEvent(self, event, ...)
 		if ( IsInGuild() ) then
 			local guildName = GetGuildInfo("player");
 			GuildFrameTitleText:SetText(guildName);
-			GuildFrame_CheckPermissions();
 			GuildFrame_UpdateTabard();
 		else
 			if ( self:IsShown() ) then
@@ -269,9 +263,6 @@ function GuildFrame_TabClicked(self)
 		GuildFrameBottomInset:Show();
 		GuildXPFrame:Show();
 		GuildFactionFrame:Show();
-		GuildAddMemberButton:Hide();
-		GuildControlButton:Hide();
-		GuildViewLogButton:Hide();
 		updateRosterCount = true;
 		GuildFrameMembersCountLabel:Hide();
 	elseif ( tabIndex == 2 ) then -- Roster 
@@ -282,9 +273,6 @@ function GuildFrame_TabClicked(self)
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Hide();
 		GuildFactionFrame:Hide();
-		GuildAddMemberButton:Hide();
-		GuildControlButton:Hide();
-		GuildViewLogButton:Hide();
 		updateRosterCount = true;
 		GuildFrameMembersCountLabel:Show();
 	elseif ( tabIndex == 3 ) then -- News
@@ -295,9 +283,6 @@ function GuildFrame_TabClicked(self)
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Show();
 		GuildFactionFrame:Hide();
-		GuildAddMemberButton:Hide();
-		GuildControlButton:Hide();
-		GuildViewLogButton:Hide();
 		updateRosterCount = true;
 		GuildFrameMembersCountLabel:Show();
 	elseif ( tabIndex == 4 ) then -- Rewards
@@ -308,9 +293,6 @@ function GuildFrame_TabClicked(self)
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Hide();
 		GuildFactionFrame:Show();
-		GuildAddMemberButton:Hide();
-		GuildControlButton:Hide();
-		GuildViewLogButton:Hide();
 		updateRosterCount = true;
 		GuildFrameMembersCountLabel:Hide();
 	elseif ( tabIndex == 5 ) then -- Info
@@ -321,9 +303,6 @@ function GuildFrame_TabClicked(self)
 		GuildFrameBottomInset:Hide();
 		GuildXPFrame:Hide();
 		GuildFactionFrame:Hide();
-		GuildAddMemberButton:Show();
-		GuildControlButton:Show();
-		GuildViewLogButton:Show();
 		GuildFrameMembersCountLabel:Hide();
 	end
 	if ( updateRosterCount ) then

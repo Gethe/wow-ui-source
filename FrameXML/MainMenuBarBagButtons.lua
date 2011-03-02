@@ -26,7 +26,7 @@ end
 function BagSlotButton_OnModifiedClick(self)
 	if ( IsModifiedClick("OPENALLBAGS") ) then
 		if ( GetInventoryItemTexture("player", self:GetID()) ) then
-			OpenAllBags();
+			ToggleAllBags();
 		end
 	end
 	BagSlotButton_UpdateChecked(self);
@@ -58,7 +58,7 @@ end
 
 function BackpackButton_OnModifiedClick(self)
 	if ( IsModifiedClick("OPENALLBAGS") ) then
-		OpenAllBags();
+		ToggleAllBags();
 	end
 	BackpackButton_UpdateChecked(self);
 end

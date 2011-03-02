@@ -168,7 +168,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame  name="$parentLevelFrame" parentKey="levelFrame" alpha="1">
+			<Frame  name="$parentLevelFrame" parentKey="levelFrame" alpha="0">
 				<Size x="418" y="72"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -191,13 +191,11 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="levelUp">
-<!--
 						<Alpha change="1" duration="0.7" startDelay="1.5" order="1" />
--->
-						<Alpha change="-1" duration="0.5" startDelay="1.5"/>
+						<Alpha change="-1" duration="0.5" startDelay="1.5" order="2"/>
 						<Scripts>
 							<OnPlay>
---								LevelUpDisplayGLine.grow:Play();
+								LevelUpDisplayGLine.grow:Play();
 							</OnPlay>
 							<OnFinished>
 								LevelUpDisplay_AnimStep(LevelUpDisplay);

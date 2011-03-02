@@ -1890,7 +1890,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentNPCNamesDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="10" y="-40"/>
+							<AbsDimension x="10" y="-35"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2046,7 +2046,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentFriendly" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="0" y="-16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2063,12 +2063,12 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>	
+				<Frames>
 					<CheckButton name="$parentFriends" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="0"/>
+									<AbsDimension x="0" y="-15"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2198,6 +2198,39 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
+					<Frame name="$parentMotionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentEnemies" relativePoint="TOPLEFT" x="-10" y="-2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="UNIT_NAMEPLATES_TYPES">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="16" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_DROPDOWN;
+								self:RegisterEvent("PLAYER_ENTERING_WORLD");
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+							</OnLoad>
+							<OnEnter>
+								if ( not self.isDisabled ) then
+									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+								end
+							</OnEnter>
+							<OnEvent function="InterfaceOptionsNameplateMotionDropDown_OnEvent"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
 				</Frames>
 			</Frame>
 		</Frames>

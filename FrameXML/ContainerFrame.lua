@@ -797,45 +797,92 @@ function ContainerFrameItemButton_OnEnter(self)
 	end
 end
 
-function OpenAllBags(forceOpen)
+function ToggleAllBags()
+	if ( not UIParent:IsShown() ) then
+		return;
+	end
+
+	local bagsOpen = 0;
+	local totalBags = 1;
+	if ( IsBagOpen(0) ) then
+		bagsOpen = bagsOpen +1;
+		CloseBackpack()
+	end
+
+	for i=1, NUM_BAG_FRAMES, 1 do
+		if ( GetContainerNumSlots(i) > 0 ) then		
+			totalBags = totalBags +1;
+		end
+		if ( IsBagOpen(i) ) then
+			CloseBag(i);
+			bagsOpen = bagsOpen +1;
+		end
+	end
+	if (bagsOpen < totalBags) then
+		OpenBackpack();
+		for i=1, NUM_BAG_FRAMES, 1 do
+			OpenBag(i);
+		end
+	elseif( BankFrame:IsShown() ) then
+		bagsOpen = 0;
+		totalBags = 0;
+		for i=NUM_BAG_FRAMES+1, NUM_CONTAINER_FRAMES, 1 do
+			if ( GetContainerNumSlots(i) > 0 ) then		
+				totalBags = totalBags +1;
+			end
+			if ( IsBagOpen(i) ) then
+				CloseBag(i);
+				bagsOpen = bagsOpen +1;
+			end
+		end
+		if (bagsOpen < totalBags) then
+			OpenBackpack();
+			for i=1, NUM_CONTAINER_FRAMES, 1 do
+				OpenBag(i);
+			end
+		end
+	end
+end
+
+FRAME_THAT_OPENED_BAGS = nil;
+function OpenAllBags(frame)
 	if ( not UIParent:IsShown() ) then
 		return;
 	end
 	
-	local bagsOpen = 0;
-	local totalBags = 1;
-	for i=1, NUM_CONTAINER_FRAMES, 1 do
-		local containerFrame = _G["ContainerFrame"..i];
-		local bagButton = _G["CharacterBag"..(i -1).."Slot"];
-		if ( (i <= NUM_BAG_FRAMES) and GetContainerNumSlots(bagButton:GetID() - CharacterBag0Slot:GetID() + 1) > 0) then		
-			totalBags = totalBags + 1;
-		end
-		if ( containerFrame:IsShown() ) then
-			containerFrame:Hide();
-			if ( containerFrame:GetID() ~= KEYRING_CONTAINER ) then
-				bagsOpen = bagsOpen + 1;
-			end
-		end
-	end
-	if ( bagsOpen >= totalBags and not forceOpen ) then
-		return;
-	else
-		ToggleBackpack();
-		ToggleBag(1);
-		ToggleBag(2);
-		ToggleBag(3);
-		ToggleBag(4);
-		if ( BankFrame:IsShown() ) then
-			ToggleBag(5);
-			ToggleBag(6);
-			ToggleBag(7);
-			ToggleBag(8);
-			ToggleBag(9);
-			ToggleBag(10);
-			ToggleBag(11);
+	for i=0, NUM_BAG_FRAMES, 1 do
+		if (IsBagOpen(i)) then
+			return;
 		end
 	end
 
+	if( frame and not FRAME_THAT_OPENED_BAGS ) then
+		FRAME_THAT_OPENED_BAGS = frame:GetName();
+	end
+	
+	OpenBackpack();
+	for i=1, NUM_BAG_FRAMES, 1 do
+		OpenBag(i);
+	end
+end
+
+function CloseAllBags(frame)
+	if( frame ) then
+		if ( frame:GetName() == FRAME_THAT_OPENED_BAGS) then
+			FRAME_THAT_OPENED_BAGS = nil;
+			CloseBackpack();
+			for i=1, NUM_BAG_FRAMES, 1 do
+				CloseBag(i);
+			end
+		end
+		return;
+	end
+	
+	FRAME_THAT_OPENED_BAGS = nil;
+	CloseBackpack();
+	for i=1, NUM_BAG_FRAMES, 1 do
+		CloseBag(i);
+	end
 end
 
 function CloseAllBags()
@@ -844,6 +891,7 @@ function CloseAllBags()
 		CloseBag(i);
 	end
 end
+
 
 --KeyRing functions
 
