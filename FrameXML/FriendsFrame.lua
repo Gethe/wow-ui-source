@@ -1130,9 +1130,11 @@ function WhoFrame_GetDefaultWhoCommand()
 	return command;
 end
 
-function FriendsFrame_GetLastOnline(lastOnline)
+function FriendsFrame_GetLastOnline(timeDifference, isAbsolute)
+	if ( not isAbsolute ) then
+		timeDifference = time() - timeDifference;
+	end
 	local year, month, day, hour, minute;
-	local timeDifference = time() - lastOnline;
 	local ONE_MINUTE = 60;
 	local ONE_HOUR = 60 * ONE_MINUTE;
 	local ONE_DAY = 24 * ONE_HOUR;

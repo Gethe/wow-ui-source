@@ -1,9 +1,10 @@
 UIPanelWindows["LookingForGuildFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
 local GUILD_BUTTON_HEIGHT = 84;
+local APP_BUTTON_HEIGHT = 30;
 
 function LookingForGuildFrame_OnLoad(self)
-	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetNumTabs(self, 3);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
 	self.Inset:SetPoint("TOPLEFT", 4, -64);
@@ -24,6 +25,7 @@ function LookingForGuildFrame_OnLoad(self)
 	
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("LF_GUILD_BROWSE_UPDATED");
+	self:RegisterEvent("LF_GUILD_MEMBERSHIP_LIST_UPDATED");
 end
 
 function LookingForGuildFrame_OnShow(self)
@@ -54,6 +56,7 @@ function LookingForGuildFrame_OnShow(self)
 	end
 
 	UpdateMicroButtons();
+	RequestGuildMembershipList();
 end
 
 function LookingForGuildFrame_OnEvent(self, event)
@@ -63,6 +66,8 @@ function LookingForGuildFrame_OnEvent(self, event)
 		end
 	elseif ( event == "LF_GUILD_BROWSE_UPDATED" ) then
 		LookingForGuild_Update();
+	elseif ( event == "LF_GUILD_MEMBERSHIP_LIST_UPDATED" ) then
+		LookingForGuildApps_Update();
 	end
 end
 
@@ -82,15 +87,27 @@ function LookingForGuildFrame_Update()
 	if ( LookingForGuildFrame.selectedTab == 1 ) then
 		LookingForGuildStartFrame:Show();
 		LookingForGuildBrowseFrame:Hide();
+		LookingForGuildAppsFrame:Hide();
 		LookingForGuildRequestButton:Hide();
 		LookingForGuildBrowseButton:Show();
-	else
+	elseif ( LookingForGuildFrame.selectedTab == 2 ) then
 		LookingForGuildStartFrame:Hide();
 		LookingForGuildBrowseFrame:Show();
+		LookingForGuildAppsFrame:Hide();
 		LookingForGuildRequestButton:Show();
 		LookingForGuildBrowseButton:Hide();
+	else
+		LookingForGuildStartFrame:Hide();
+		LookingForGuildBrowseFrame:Hide();
+		LookingForGuildAppsFrame:Show();
+		LookingForGuildRequestButton:Hide();
+		LookingForGuildBrowseButton:Hide();	
 	end
 end
+
+--*******************************************************************************
+--   Settings frame
+--*******************************************************************************
 
 function LookingForGuildPlaystyleButton_OnClick(index, userClick)
 	local param;
@@ -174,6 +191,10 @@ function LookingForGuildComment_SaveText(self)
 	SetLookingForGuildComment(self:GetText());
 	self:ClearFocus();
 end
+
+--*******************************************************************************
+--   Browse frame
+--*******************************************************************************
 
 function LookingForGuildBrowseFrame_OnLoad(self)
 	LookingForGuildBrowseFrameContainer.update = LookingForGuild_Update;
@@ -267,4 +288,71 @@ function LookingForGuild_RequestMembership()
 	RequestGuildMembership();
 	SetRecruitingGuildSelection(nil);
 	LookingForGuild_Update();
+	RequestGuildMembershipList();
+end
+
+--*******************************************************************************
+--   Apps frame
+--*******************************************************************************
+
+function LookingForGuildAppsFrame_OnLoad(self)
+	LookingForGuildAppsFrameContainer.update = LookingForGuildApps_Update;
+	HybridScrollFrame_CreateButtons(LookingForGuildAppsFrameContainer, "LookingForGuildAppTemplate", 0, 0);
+	
+	LookingForGuildAppsFrameContainerScrollBar.Show = 
+		function (self)
+			LookingForGuildAppsFrameContainer:SetWidth(304);
+			for _, button in next, LookingForGuildAppsFrameContainer.buttons do
+				button:SetWidth(301);
+			end
+			getmetatable(self).__index.Show(self);
+		end	
+	LookingForGuildAppsFrameContainerScrollBar.Hide = 
+		function (self)
+			LookingForGuildAppsFrameContainer:SetWidth(320);
+			for _, button in next, LookingForGuildAppsFrameContainer.buttons do
+				button:SetWidth(320);
+			end
+			getmetatable(self).__index.Hide(self);
+		end
+		
+	LookingForGuildApps_Update();
+end
+
+function LookingForGuildApps_Update()
+	local scrollFrame = LookingForGuildAppsFrameContainer;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local button, index;
+	local numApps = GetNumGuildMembershipRequests();
+
+	if ( numApps == 0 ) then
+		if ( not LookingForGuildFrameTab3.wasEnabled ) then
+			PanelTemplates_DisableTab(LookingForGuildFrame, 3);
+		end
+		LookingForGuildFrameTab3:SetText(LFGUILD_TAB_REQUESTS_NONE);
+	else
+		PanelTemplates_EnableTab(LookingForGuildFrame, 3);
+		LookingForGuildFrameTab3.wasEnabled = true;
+		LookingForGuildFrameTab3:SetFormattedText(LFGUILD_TAB_REQUESTS, numApps);
+	end
+	PanelTemplates_TabResize(LookingForGuildFrameTab3, 0);
+	
+	for i = 1, numButtons do
+		button = buttons[i];
+		index = offset + i;
+		local name, timeSince = GetGuildMembershipRequestInfo(index);
+		if ( name ) then
+			button.name:SetText(name);
+			button.time:SetText("Sent "..FriendsFrame_GetLastOnline(timeSince, true).." ago");
+			button:Show();
+			button.index = index;
+		else
+			button:Hide();
+		end
+	end
+	local totalHeight = numApps * APP_BUTTON_HEIGHT;
+	local displayedHeight = numButtons * APP_BUTTON_HEIGHT;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end

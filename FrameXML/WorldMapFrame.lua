@@ -159,6 +159,7 @@ function WorldMapFrame_OnShow(self)
 	CloseDropDownMenus();
 	WorldMapFrame_PingPlayerPosition();	
 	WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
+	DoEmote("READ", nil, true);
 end
 
 function WorldMapFrame_OnHide(self)
@@ -178,6 +179,7 @@ function WorldMapFrame_OnHide(self)
 	end
 	-- forces WatchFrame event via the WORLD_MAP_UPDATE event, needed to restore the POIs in the tracker to the current zone
 	SetMapToCurrentZone();
+	CancelEmote();
 end
 
 function WorldMapFrame_OnEvent(self, event, ...)

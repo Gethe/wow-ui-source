@@ -234,6 +234,98 @@
 			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
 		</HighlightTexture>
 	</Button>
+	<Button name="LookingForGuildAppTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="320" y="30"/>
+		</Size>	
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="12"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="12"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentGuildName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Anchors>
+						<Anchor point="LEFT" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormalSmall" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentGuildName" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="0.45"/>
+				</FontString>
+				<FontString name="$parentTime" inherits="GameFontHighlightSmall" parentKey="time">
+					<Anchors>
+						<Anchor point="RIGHT" x="-40" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentRemoveButton" parentKey="removeButton" hidden="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" x="-12" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():LockHighlight();
+					</OnEnter>
+					<OnLeave>
+						self:Hide();
+						self:GetParent():UnlockHighlight();
+						self.texture:SetPoint("TOPLEFT", 0, 0);
+					</OnLeave>
+					<OnMouseDown>
+						self.texture:SetPoint("TOPLEFT", 1, -1);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetPoint("TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnClick>
+						CancelGuildMembershipRequest(self:GetParent().index);
+						RequestGuildMembershipList();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropColor(1, 1, 1, 0.3);
+			</OnLoad>
+			<OnEnter>
+				self.removeButton:Show();
+			</OnEnter>
+			<OnLeave>
+				if ( not self.removeButton:IsMouseOver() ) then
+					self.removeButton:Hide();
+				end
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+			</Anchors>
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>
+	</Button>
 <!--
 *******************************************************************************
 	Guild Frame
@@ -274,7 +366,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="LookingForGuildFrameTab1" inherits="TabButtonTemplate" text="LOOK_FOR_GUILD_TAB" id="1">
+			<Button name="LookingForGuildFrameTab1" inherits="TabButtonTemplate" text="LFGUILD_TAB_SETTINGS" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT">
 						<Offset>
@@ -294,7 +386,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="LookingForGuildFrameTab2" inherits="TabButtonTemplate" text="BROWSE_GUILDS_TAB" id="2">
+			<Button name="LookingForGuildFrameTab2" inherits="TabButtonTemplate" text="LFGUILD_TAB_BROWSE" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="LookingForGuildFrameTab1" relativePoint="RIGHT">
 						<Offset>
@@ -310,6 +402,22 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="LookingForGuildFrameTab3" inherits="TabButtonTemplate" text="LFGUILD_TAB_REQUESTS_NONE" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LookingForGuildFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PanelTemplates_Tab_OnClick(self, LookingForGuildFrame);
+						LookingForGuildFrame_Update();
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
+				</Scripts>
+			</Button>			
 			<Button name="LookingForGuildRequestButton" inherits="MagicButtonTemplate" text="REQUEST_GUILD_MEMBERSHIP" hidden="true">
 				<Size x="156" y="22"/>
 				<Anchors>
@@ -769,4 +877,48 @@
 			<OnShow function="LookingForGuildBrowseFrame_OnShow"/>
 		</Scripts>
 	</Frame>
+<!--
+*******************************************************************************
+	Apps panel
+*******************************************************************************
+-->
+	<Frame name="LookingForGuildAppsFrame" parent="LookingForGuildFrame" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate" hidden="false">
+				<Size x="304" y="327"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LookingForGuildAppsFrame_OnLoad"/>
+		</Scripts>
+	</Frame>	
 </Ui>

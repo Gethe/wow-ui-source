@@ -114,14 +114,14 @@ function WorldStateAlwaysUpFrame_Update()
 	local numUI = GetNumWorldStateUI();
 	local name, frame, frameText, frameDynamicIcon, frameIcon, frameFlash, flashTexture, frameDynamicButton;
 	local extendedUI, extendedUIState1, extendedUIState2, extendedUIState3, uiInfo; 
-	local uiType, text, icon, state, dynamicIcon, tooltip, dynamicTooltip, flash, relative;
+	local uiType, text, icon, state, hidden, dynamicIcon, tooltip, dynamicTooltip, flash, relative;
 	local inInstance, instanceType = IsInInstance();
 	local alwaysUpShown = 1;
 	local extendedUIShown = 1;
 	local alwaysUpHeight = 10;
 	for i=1, numUI do
-		uiType, state, text, icon, dynamicIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
-		if ( (uiType ~= 1) or ((WORLD_PVP_OBJECTIVES_DISPLAY == "1") or (WORLD_PVP_OBJECTIVES_DISPLAY == "2" and IsSubZonePVPPOI()) or (instanceType == "pvp")) ) then
+		uiType, state, hidden, text, icon, dynamicIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
+		if ( (not hidden) and ((uiType ~= 1) or ((WORLD_PVP_OBJECTIVES_DISPLAY == "1") or (WORLD_PVP_OBJECTIVES_DISPLAY == "2" and IsSubZonePVPPOI()) or (instanceType == "pvp"))) ) then
 			if ( state > 0 ) then
 				-- Handle always up frames and extended ui's completely differently
 				if ( extendedUI ~= "" ) then

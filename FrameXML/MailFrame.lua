@@ -58,6 +58,7 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailFrame_Update();
 		MailFrameTab_OnClick(nil, 1);
 		CheckInbox();
+		DoEmote("READ");
 	elseif ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
 		OpenMail_Update();
@@ -78,6 +79,7 @@ function MailFrame_OnEvent(self, event, ...)
 			InboxGetMoreMail();
 		end
 	elseif ( event == "MAIL_CLOSED" ) then
+		CancelEmote();
 		HideUIPanel(MailFrame);
 		CloseAllBags(self);
 		SendMailFrameLockSendMail:Hide();
