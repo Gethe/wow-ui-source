@@ -400,7 +400,7 @@ function CompactUnitFrame_UpdateStatusText(frame)
 	if ( not UnitIsConnected(frame.unit) ) then
 		frame.statusText:SetText(PLAYER_OFFLINE)
 		frame.statusText:Show();
-	elseif ( UnitIsDead(frame.displayedUnit) ) then
+	elseif ( UnitIsDeadOrGhost(frame.displayedUnit) ) then
 		frame.statusText:SetText(DEAD);
 		frame.statusText:Show();
 	elseif ( frame.optionTable.healthText == "health" ) then

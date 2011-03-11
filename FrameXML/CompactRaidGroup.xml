@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CompactRaidGroup.lua"/>
-	<Frame name="CompactRaidGroupTemplate" frameStrata="LOW" clampedToScreen="true" movable="true" virtual="true">
+	<Frame name="CompactRaidGroupTemplate" frameStrata="LOW" virtual="true">
 		<Size x="72" y="199"/>
 		<Frames>
 			<Button name="$parentTitle" parentKey="title">
@@ -9,21 +9,6 @@
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						if ( self:GetParent().movable ) then
-							CompactRaidGroup_StartMoving(self:GetParent());
-						end
-					</OnDragStart>
-					<OnDragStop>
-						if ( self:GetParent().movable ) then
-							CompactRaidGroup_StopMoving(self:GetParent());
-						end
-					</OnDragStop>
-				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
 				<DisabledFont style="GameFontNormalSmall"/>
 			</Button>

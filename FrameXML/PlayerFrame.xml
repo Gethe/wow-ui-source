@@ -512,6 +512,8 @@
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
 			<OnReceiveDrag function="PlayerFrame_OnReceiveDrag"/>
+			<OnDragStart function="PlayerFrame_OnDragStart"/>
+			<OnDragStop function="PlayerFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
 </Ui>

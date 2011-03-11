@@ -36,6 +36,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
+	self:RegisterEvent("VARIABLES_LOADED");
 	
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
@@ -241,6 +242,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
 		PlayerFrame_UpdateRolesAssigned();
+	elseif ( event == "VARIABLES_LOADED" ) then
+		PlayerFrame_SetLocked(not PLAYER_FRAME_UNLOCKED);
 	end
 end
 
@@ -263,7 +266,9 @@ end
 
 function PlayerFrame_ResetPosition(self)
 	CancelAnimations(PlayerFrame);
-	self:SetPoint(PlayerFrame_AnimPos(self, 0));
+	if ( not self:IsUserPlaced() ) then
+		self:SetPoint(PlayerFrame_AnimPos(self, 0));
+	end
 	self.inSequence = false;
 	PetFrame_Update(PetFrame);
 end
@@ -277,7 +282,11 @@ function PlayerFrame_AnimateOut(self)
 	self.inSeat = false;
 	self.animFinished = false;
 	self.inSequence = true;
-	SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_AnimFinished, false)
+	if ( self:IsUserPlaced() ) then
+		PlayerFrame_AnimFinished(PlayerFrame);
+	else
+		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_AnimFinished, false)
+	end
 end
 
 function PlayerFrame_AnimFinished(self)
@@ -287,7 +296,11 @@ end
 
 function PlayerFrame_UpdateArt(self)
 	if ( self.animFinished and self.inSeat and self.inSequence) then
-		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
+		if ( self:IsUserPlaced() ) then
+			PlayerFrame_SequenceFinished(PlayerFrame);
+		else
+			SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
+		end
 		if ( UnitHasVehiclePlayerFrameUI("player") ) then
 			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
 		else
@@ -647,7 +660,7 @@ end
 
 function PlayerFrame_HideVehicleTexture()
 	PlayerFrameVehicleTexture:Hide();
-		
+	
 	local _, class = UnitClass("player");	
 	if ( class == "WARLOCK" ) then
 		ShardBarFrame:Show();
@@ -660,4 +673,28 @@ function PlayerFrame_HideVehicleTexture()
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Show();
 	end
+end
+
+function PlayerFrame_OnDragStart(self)
+	self:StartMoving();
+	self:SetUserPlaced(true);
+end
+
+function PlayerFrame_OnDragStop(self)
+	self:StopMovingOrSizing();
+end
+
+function PlayerFrame_SetLocked(locked)
+	PLAYER_FRAME_UNLOCKED = not locked;
+	if ( locked ) then
+		PlayerFrame:RegisterForDrag();	--Unregister all buttons.
+	else
+		PlayerFrame:RegisterForDrag("LeftButton");
+	end
+end
+
+function PlayerFrame_ResetUserPlacedPosition()
+	PlayerFrame:ClearAllPoints();
+	PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4);
+	PlayerFrame:SetUserPlaced(false);
 end

@@ -3002,13 +3002,7 @@
 						self.cvar = "useCompactPartyFrames";
 						self.setFunc = function (value)
 							RaidOptionsFrame_UpdatePartyFrames()
-							CompactPartyFrame_UpdateShown(CompactPartyFrame);
 							CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
-							if ( value == "1" ) then
-								_G[self:GetParent():GetName().."ResetPartyPosition"]:Show();
-							else
-								_G[self:GetParent():GetName().."ResetPartyPosition"]:Hide();
-							end
 						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
@@ -3018,18 +3012,6 @@
 					</OnEvent>
 				</Scripts>
 			</CheckButton>
-			<Button name="$parentResetPartyPosition" inherits="UIPanelButtonTemplate2" text="RESET_POSITION">
-				<Size x="140" y="22"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRaidStylePartyFrames" relativePoint="BOTTOMLEFT" x="20" y="-8"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						CompactPartyFrame_ResetPosition(CompactPartyFrame);
-						CompactPartyFrame:SetUserPlaced(false);
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>

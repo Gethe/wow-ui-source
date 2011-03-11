@@ -274,6 +274,9 @@
 						local tex = self:GetNormalTexture();
 						tex:SetAllPoints();
 					</OnMouseUp>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent().displayFrame:GetFrameLevel() + 2);
+					</OnShow>
 				</Scripts>
 				<NormalTexture file="Interface\RaidFrame\RaidPanel-Toggle">
 					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
@@ -292,7 +295,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="$parentRaidMembersLabel" inherits="GameFontNormalMed3" text="RAID_MEMBERS">
+						<FontString name="$parentRaidMembersLabel" inherits="GameFontNormalMed3" text="RAID_MEMBERS" parentKey="label">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="10" y="-8"/>
 							</Anchors>
@@ -307,13 +310,6 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="-21"/>
 								<Anchor point="TOPRIGHT" x="-9" y="-21"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentFooterDelineator" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
-							<Size x="0" y="12"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="-102"/>
-								<Anchor point="TOPRIGHT" x="-9" y="-102"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -331,79 +327,98 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank">
+					<Frame name="$parentFilterOptions" parentKey="filterOptions">
+						<Size x="200" y="85"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="9" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="0" y="4"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.role = "TANK";
-								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:32:48:0:16|t";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentFilterRoleHealer" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleHealer">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterRoleTank" relativePoint="RIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.role = "HEALER";
-								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:48:64:0:16|t";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentFilterRoleDamager" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleDamager">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterRoleHealer" relativePoint="RIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.role = "DAMAGER";
-								self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:16:32:0:16|t";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentFilterGroup1" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup1" text="1" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentFilterRoleTank" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentFilterGroup2" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup2" text="2" id="2">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterGroup1" relativePoint="RIGHT" x="2" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentFilterGroup3" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup3" text="3" id="3">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterGroup2" relativePoint="RIGHT" x="2" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentFilterGroup4" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup4" text="4" id="4">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterGroup3" relativePoint="RIGHT" x="2" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentFilterGroup5" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup5" text="5" id="5">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentFilterGroup1" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentFilterGroup6" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup6" text="6" id="6">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterGroup5" relativePoint="RIGHT" x="2" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentFilterGroup7" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup7" text="7" id="7">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterGroup6" relativePoint="RIGHT" x="2" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentFilterGroup8" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup8" text="8" id="8">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentFilterGroup7" relativePoint="RIGHT" x="2" y="0"/>
-						</Anchors>
-					</Button>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentFooterDelineator" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
+									<Size x="0" y="12"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" x="-9" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="9" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.role = "TANK";
+										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:32:48:0:16|t";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentFilterRoleHealer" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleHealer">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterRoleTank" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.role = "HEALER";
+										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:48:64:0:16|t";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentFilterRoleDamager" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleDamager">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterRoleHealer" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.role = "DAMAGER";
+										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:16:32:0:16|t";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentFilterGroup1" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup1" text="1" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentFilterRoleTank" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentFilterGroup2" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup2" text="2" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterGroup1" relativePoint="RIGHT" x="2" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentFilterGroup3" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup3" text="3" id="3">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterGroup2" relativePoint="RIGHT" x="2" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentFilterGroup4" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup4" text="4" id="4">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterGroup3" relativePoint="RIGHT" x="2" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentFilterGroup5" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup5" text="5" id="5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentFilterGroup1" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentFilterGroup6" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup6" text="6" id="6">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterGroup5" relativePoint="RIGHT" x="2" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentFilterGroup7" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup7" text="7" id="7">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterGroup6" relativePoint="RIGHT" x="2" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentFilterGroup8" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup8" text="8" id="8">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterGroup7" relativePoint="RIGHT" x="2" y="0"/>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
 					<Button name="$parentLockedModeToggle" inherits="UIMenuButtonStretchTemplate">
 						<Size x="83" y="20"/>
 						<Anchors>
@@ -427,7 +442,7 @@
 						</Scripts>
 					</Button>
 					<Frame name="$parentLeaderOptions" parentKey="leaderOptions" hidden="true">
-						<Size x="0" y="70"/>
+						<Size x="0" y="95"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="$parentLockedModeToggle" relativePoint="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentHiddenModeToggle" relativePoint="TOPRIGHT"/>
@@ -477,7 +492,7 @@
 									</Anchors>
 								</NormalTexture>
 							</Button>
-							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK">
+							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK" parentKey="readyCheckButton">
 								<Size x="0" y="20"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -489,7 +504,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL">
+							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL" parentKey="rolePollButton">
 								<Size x="0" y="20"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPLEFT" x="0" y="0"/>

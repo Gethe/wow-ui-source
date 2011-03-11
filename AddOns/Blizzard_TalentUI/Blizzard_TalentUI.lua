@@ -750,22 +750,6 @@ function PlayerTalentFrame_UpdatePetInfo(self)
 		end
 		
 		PlayerTalentFramePetIcon:SetTexture(GetPetIcon());
-		
-		local happiness, damagePercentage = GetPetHappiness();
-		if ( happiness ) then
-			PlayerTalentFramePetHappiness:Show();
-			if ( happiness == 1 ) then
-				PlayerTalentFramePetHappinessTexture:SetTexCoord(0.375, 0.5625, 0, 0.359375);
-			elseif ( happiness == 2 ) then
-				PlayerTalentFramePetHappinessTexture:SetTexCoord(0.1875, 0.375, 0, 0.359375);
-			elseif ( happiness == 3 ) then
-				PlayerTalentFramePetHappinessTexture:SetTexCoord(0, 0.1875, 0, 0.359375);
-			end
-			PlayerTalentFramePetHappiness.tooltip = _G["PET_HAPPINESS"..happiness];
-			PlayerTalentFramePetHappiness.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage);
-		else
-			PlayerTalentFramePetHappiness:Hide();
-		end
 	end
 end
 

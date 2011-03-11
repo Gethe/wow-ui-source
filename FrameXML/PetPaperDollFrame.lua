@@ -28,7 +28,6 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
 	self:RegisterEvent("UNIT_DEFENSE");
 	self:RegisterEvent("UNIT_ATTACK");
-	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PET_SPELL_POWER_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -71,10 +70,6 @@ function PetPaperDollFrame_OnEvent (self, event, ...)
 	elseif( event == "PET_SPELL_POWER_UPDATE" ) then
 		if (self:IsVisible()) then
 			self:SetScript("OnUpdate", PetPaperDollFrame_QueuedUpdate);
-		end
-	elseif( event == "UNIT_POWER") then
-		if (arg1 == "pet" and arg2 == "HAPPINESS") then
-			PetPaperDollFrame_UpdatePetHappiness();
 		end
 	elseif (event == "VARIABLES_LOADED") then
 		if (self:IsVisible()) then
@@ -133,7 +128,6 @@ function PetPaperDollFrame_Update()
 	CharacterFrameTitleText:SetText(UnitName("pet"));
 	PetExpBar_Update();
 	PaperDollFrame_UpdateStats();
-	PetPaperDollFrame_UpdatePetHappiness();
 	
 	local _, playerClass = UnitClass("player");
 	if (playerClass == "HUNTER") then
@@ -156,24 +150,6 @@ function PetPaperDollFrame_Update()
 		PetPaperDollPetInfo:Show();
 	else
 		PetPaperDollPetInfo:Hide();
-	end
-end
-
-function PetPaperDollFrame_UpdatePetHappiness()
-	local happiness, damagePercentage = GetPetHappiness();
-	if ( happiness ) then
-		PetPaperDollPetHappiness:Show();
-		if ( happiness == 1 ) then
-			PetPaperDollPetHappiness.Texture:SetTexCoord(0.375, 0.5625, 0, 0.359375);
-		elseif ( happiness == 2 ) then
-			PetPaperDollPetHappiness.Texture:SetTexCoord(0.1875, 0.375, 0, 0.359375);
-		elseif ( happiness == 3 ) then
-			PetPaperDollPetHappiness.Texture:SetTexCoord(0, 0.1875, 0, 0.359375);
-		end
-		PetPaperDollPetHappiness.tooltip = _G["PET_HAPPINESS"..happiness];
-		PetPaperDollPetHappiness.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage);
-	else
-		PetPaperDollPetHappiness:Hide();
 	end
 end
 

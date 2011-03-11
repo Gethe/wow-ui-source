@@ -14,12 +14,18 @@ function CompactRaidFrameContainer_OnLoad(self)
 	
 	self:SetClampRectInsets(0, 200 - self:GetWidth(), 10, 0);
 	
-	self.units = {--[["raid1", "raid2", "raid3", ..., "raid40"]]};
+	self.raidUnits = {--[["raid1", "raid2", "raid3", ..., "raid40"]]};
 	for i=1, MAX_RAID_MEMBERS do
-		tinsert(self.units, "raid"..i);
+		tinsert(self.raidUnits, "raid"..i);
 	end
+	self.partyUnits = { "player" };
+	for i=1, MAX_PARTY_MEMBERS do
+		tinsert(self.partyUnits, "party"..i);
+	end
+	CompactRaidFrameContainer_UpdateDisplayedUnits(self);
 	
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("UNIT_PET");
 	
 	self.frameReservations = {
@@ -45,12 +51,13 @@ function CompactRaidFrameContainer_OnLoad(self)
 end
 
 function CompactRaidFrameContainer_OnEvent(self, event, ...)
-	if ( event == "RAID_ROSTER_UPDATE" ) then
+	if ( event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
+		CompactRaidFrameContainer_UpdateDisplayedUnits(self);
 		CompactRaidFrameContainer_TryUpdate(self);
 	elseif ( event == "UNIT_PET" ) then
 		if ( self.displayPets ) then
 			local unit = ...;
-			if ( strfind(unit, "raid%d+$") ) then
+			if ( unit == "player" or strsub(unit, 1, 4) == "raid" or strsub(unit, 1, 5) == "party" ) then
 				CompactRaidFrameContainer_TryUpdate(self);
 			end
 		end
@@ -114,9 +121,6 @@ function CompactRaidFrameContainer_ApplyToFrames(self, updateSpecifier, func, ..
 			end
 		end
 	end
-	
-	--A little hacky, but not too bad.
-	CompactPartyFrame:applyFunc(updateSpecifier, func, ...);
 end
 
 --Internally used functions
@@ -138,6 +142,14 @@ function CompactRaidFrameContainer_ReadyToUpdate(self)
 	end
 	
 	return true;
+end
+
+function CompactRaidFrameContainer_UpdateDisplayedUnits(self)
+	if ( GetNumRaidMembers() > 0 ) then
+		self.units = self.raidUnits;
+	else
+		self.units = self.partyUnits;
+	end
 end
 
 function CompactRaidFrameContainer_LayoutFrames(self)
@@ -189,28 +201,44 @@ end
 do
 	local usedGroups = {}; --Enclosure to make sure usedGroups isn't used anywhere else.
 	function CompactRaidFrameContainer_AddGroups(self)
-		RaidUtil_GetUsedGroups(usedGroups);
-		
-		local numGroups = 0;
-		for groupNum, isUsed in ipairs(usedGroups) do
-			if ( isUsed and self.groupFilterFunc(groupNum) ) then
-				numGroups = numGroups + 1;
-				local groupFrame, didCreation = CompactRaidGroup_GenerateForGroup(groupNum);
-				groupFrame:SetParent(self);
-				groupFrame:SetFrameStrata("LOW");
-				groupFrame.unusedFunc = groupFrame.Hide;
-				if ( didCreation ) then
-					tinsert(self.frameUpdateList.normal, groupFrame);
-					tinsert(self.frameUpdateList.group, groupFrame);
+	
+		if ( GetNumRaidMembers() > 0 ) then
+			RaidUtil_GetUsedGroups(usedGroups);
+			
+			for groupNum, isUsed in ipairs(usedGroups) do
+				if ( isUsed and self.groupFilterFunc(groupNum) ) then
+					CompactRaidFrameContainer_AddGroup(self, groupNum);
 				end
-				FlowContainer_AddObject(self, groupFrame);
-				groupFrame:Show();
 			end
+		else
+			CompactRaidFrameContainer_AddGroup(self, "PARTY");
 		end
 		FlowContainer_SetOrientation(self, "vertical")
 	end
+	
 end
 
+function CompactRaidFrameContainer_AddGroup(self, id)
+
+	local groupFrame, didCreation;
+	if ( type(id) == "number" ) then
+		groupFrame, didCreation = CompactRaidGroup_GenerateForGroup(id);
+	elseif ( id == "PARTY" ) then
+		groupFrame, didCreation = CompactPartyFrame_Generate();
+	else
+		GMError("Unknown id");
+	end
+	
+	groupFrame:SetParent(self);
+	groupFrame:SetFrameStrata("LOW");
+	groupFrame.unusedFunc = groupFrame.Hide;
+	if ( didCreation ) then
+		tinsert(self.frameUpdateList.normal, groupFrame);
+		tinsert(self.frameUpdateList.group, groupFrame);
+	end
+	FlowContainer_AddObject(self, groupFrame);
+	groupFrame:Show();
+end
 
 function CompactRaidFrameContainer_AddPlayers(self)
 	--First, sort the players we're going to use
@@ -230,10 +258,23 @@ function CompactRaidFrameContainer_AddPlayers(self)
 end
 
 function CompactRaidFrameContainer_AddPets(self)
-	for i=1, MAX_RAID_MEMBERS do
-		local unit = "raidpet"..i;
-		if ( UnitExists(unit) ) then
-			CompactRaidFrameContainer_AddUnitFrame(self, unit, "pet");
+	if ( GetNumRaidMembers() > 0 ) then
+		for i=1, MAX_RAID_MEMBERS do
+			local unit = "raidpet"..i;
+			if ( UnitExists(unit) ) then
+				CompactRaidFrameContainer_AddUnitFrame(self, unit, "pet");
+			end
+		end
+	else
+		--Add the player's pet.
+		if ( UnitExists("pet") ) then
+			CompactRaidFrameContainer_AddUnitFrame(self, "pet", "pet");
+		end
+		for i=1, GetNumPartyMembers() do
+			local unit = "partypet"..i;
+			if ( UnitExists(unit) ) then
+				CompactRaidFrameContainer_AddUnitFrame(self, unit, "pet");
+			end
 		end
 	end
 end

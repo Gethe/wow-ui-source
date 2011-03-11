@@ -203,7 +203,7 @@ function GuildRoster_Update()
 		else
 			GuildMemberRemoveButton:Disable();
 		end
-		if ( (UnitName("player") == name) or (not online) ) then
+		if ( (UnitName("player") == name) or (not online) or isMobile ) then
 			GuildMemberGroupInviteButton:Disable();
 		else
 			GuildMemberGroupInviteButton:Enable();

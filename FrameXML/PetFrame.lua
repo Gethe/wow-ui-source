@@ -21,7 +21,6 @@ function PetFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PET_ATTACK_START");
 	self:RegisterEvent("PET_ATTACK_STOP");
-	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PET_RENAMEABLE");
 	local showmenu = function()
@@ -59,7 +58,6 @@ function PetFrame_Update (self, override)
 			end
 			PetAttackModeTexture:Hide();
 
-			PetFrame_SetHappiness(self);
 			RefreshDebuffs(self, self.unit, nil, nil, true);
 		else
 			self:Hide();
@@ -97,10 +95,6 @@ function PetFrame_OnEvent (self, event, ...)
 		PetAttackModeTexture:Show();
 	elseif ( event == "PET_ATTACK_STOP" ) then
 		PetAttackModeTexture:Hide();
-	elseif ( event == "UNIT_POWER" ) then
-		if ( arg2 == "HAPPINESS" ) then
-			PetFrame_SetHappiness(self);
-		end
 	elseif ( event == "PET_RENAMEABLE" ) then
 		StaticPopup_Show("RENAME_PET");
 	end
@@ -150,25 +144,6 @@ function PetFrame_OnUpdate (self, elapsed)
 	--	end
 	--end
 	
-end
-
-function PetFrame_SetHappiness ()
-	local happiness, damagePercentage = GetPetHappiness();
-	local hasPetUI, isHunterPet = HasPetUI();
-	if ( not happiness or not isHunterPet ) then
-		PetFrameHappiness:Hide();
-		return;	
-	end
-	PetFrameHappiness:Show();
-	if ( happiness == 1 ) then
-		PetFrameHappinessTexture:SetTexCoord(0.375, 0.5625, 0, 0.359375);
-	elseif ( happiness == 2 ) then
-		PetFrameHappinessTexture:SetTexCoord(0.1875, 0.375, 0, 0.359375);
-	elseif ( happiness == 3 ) then
-		PetFrameHappinessTexture:SetTexCoord(0, 0.1875, 0, 0.359375);
-	end
-	PetFrameHappiness.tooltip = _G["PET_HAPPINESS"..happiness];
-	PetFrameHappiness.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage);
 end
 
 function PetFrameDropDown_OnLoad (self)

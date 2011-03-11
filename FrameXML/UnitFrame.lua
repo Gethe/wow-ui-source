@@ -4,7 +4,7 @@ PowerBarColor["MANA"] = { r = 0.00, g = 0.00, b = 1.00 };
 PowerBarColor["RAGE"] = { r = 1.00, g = 0.00, b = 0.00 };
 PowerBarColor["FOCUS"] = { r = 1.00, g = 0.50, b = 0.25 };
 PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00 };
-PowerBarColor["HAPPINESS"] = { r = 0.00, g = 1.00, b = 1.00 };
+PowerBarColor["UNUSED"] = { r = 0.00, g = 1.00, b = 1.00 };
 PowerBarColor["RUNES"] = { r = 0.50, g = 0.50, b = 0.50 };
 PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00 };
 PowerBarColor["SOUL_SHARDS"] = { r = 0.50, g = 0.32, b = 0.55 };
@@ -20,7 +20,7 @@ PowerBarColor[0] = PowerBarColor["MANA"];
 PowerBarColor[1] = PowerBarColor["RAGE"];
 PowerBarColor[2] = PowerBarColor["FOCUS"];
 PowerBarColor[3] = PowerBarColor["ENERGY"];
-PowerBarColor[4] = PowerBarColor["HAPPINESS"];
+PowerBarColor[4] = PowerBarColor["UNUSED"];
 PowerBarColor[5] = PowerBarColor["RUNES"];
 PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
 PowerBarColor[7] = PowerBarColor["SOUL_SHARDS"];
@@ -256,8 +256,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	TextStatusBar_UpdateTextString(manaBar);
 
 	-- Setup newbie tooltip
-	-- FIXME: Fix this to use powerToken instead of powerType
-	if ( manaBar.unit ~= "pet" or powerToken == "HAPPINESS" ) then
+	if ( manaBar.unit ~= "pet") then
 	    if ( unitFrame:GetName() == "PlayerFrame" ) then
 		    manaBar.tooltipTitle = prefix;
 		    manaBar.tooltipText = _G["NEWBIE_TOOLTIP_MANABAR_"..powerType];

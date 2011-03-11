@@ -15,10 +15,12 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_FLAGS");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	
 	self.containerResizeFrame:SetMinResize(self.container:GetWidth(), MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2);
 	self.dynamicContainerPosition = true;
@@ -40,10 +42,11 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_ResizeFrame_LoadPosition(self);
 	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
 		CompactRaidFrameManager_UpdateContainerBounds(self);
-	elseif ( event == "RAID_ROSTER_UPDATE" ) then
+	elseif ( event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
 		CompactRaidFrameManager_UpdateShown(self);
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
-	elseif ( event == "UNIT_FLAGS" ) then
+		CompactRaidFrameManager_UpdateLabel(self);
+	elseif ( event == "UNIT_FLAGS" or event == "PLAYER_FLAGS_CHANGED" ) then
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		CompactRaidFrameManager_UpdateShown(self);
@@ -64,6 +67,14 @@ function CompactRaidFrameManager_UpdateShown(self)
 		self:Show();
 	else
 		self:Hide();
+	end
+end
+
+function CompactRaidFrameManager_UpdateLabel(self)
+	if ( GetNumRaidMembers() > 0 ) then
+		self.displayFrame.label:SetText(RAID_MEMBERS);
+	else
+		self.displayFrame.label:SetText(PARTY_MEMBERS);
 	end
 end
 
@@ -90,18 +101,41 @@ function CompactRaidFrameManager_Collapse(self)
 end
 
 function CompactRaidFrameManager_UpdateLeaderButtonsShown(self)
-	if ( IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
-		if ( not self.hasLeader ) then
-			self.hasLeader = true
-			self:SetHeight(235);
-			self.displayFrame.leaderOptions:Show();
-		end
+	--First, we'll update the overall height as well as which panels are showing.
+	local height = 57;
+	if ( GetNumRaidMembers() > 0 ) then
+		height = height + self.displayFrame.filterOptions:GetHeight();
+		self.displayFrame.filterOptions:Show();
 	else
-		if ( self.hasLeader ) then
-			self.hasLeader = false;
-			self:SetHeight(140);
-			self.displayFrame.leaderOptions:Hide();
-		end
+		self.displayFrame.filterOptions:Hide();
+	end
+	
+	if ( GetNumRaidMembers() == 0 or IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
+		height = height + self.displayFrame.leaderOptions:GetHeight();
+		self.displayFrame.leaderOptions:Show();
+	else
+		self.displayFrame.leaderOptions:Hide();
+	end
+	self:SetHeight(height);
+	
+	--Then, we update which specific buttons are enabled.
+	
+	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
+	if ( (GetNumRaidMembers() > 0 and (IsRaidLeader() or IsRaidOfficer())) or (GetNumPartyMembers() > 0 and IsPartyLeader() and not HasLFGRestrictions()) ) then
+		self.displayFrame.leaderOptions.rolePollButton:Enable();
+		self.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
+	else
+		self.displayFrame.leaderOptions.rolePollButton:Disable();
+		self.displayFrame.leaderOptions.rolePollButton:SetAlpha(0.5);
+	end
+	
+	--Any sort of leader may initiate a ready check.
+	if ( (GetNumRaidMembers() > 0 and (IsRaidLeader() or IsRaidOfficer())) or (GetNumPartyMembers() > 0 and IsPartyLeader()) ) then
+		self.displayFrame.leaderOptions.readyCheckButton:Enable();
+		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(1);
+	else
+		self.displayFrame.leaderOptions.readyCheckButton:Disable();
+		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(0.5);
 	end
 end
 
@@ -150,13 +184,13 @@ end
 
 local usedGroups = {};
 function CompactRaidFrameManager_UpdateFilterInfo(self)
-	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterRoleTank);
-	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterRoleHealer);
-	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterRoleDamager);
+	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterOptions.filterRoleTank);
+	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterOptions.filterRoleHealer);
+	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterOptions.filterRoleDamager);
 	
 	RaidUtil_GetUsedGroups(usedGroups);
 	for i=1, MAX_RAID_GROUPS do
-		CompactRaidFrameManager_UpdateGroupFilterButton(self.displayFrame["filterGroup"..i], usedGroups);
+		CompactRaidFrameManager_UpdateGroupFilterButton(self.displayFrame.filterOptions["filterGroup"..i], usedGroups);
 	end
 end
 
@@ -314,11 +348,6 @@ do	--Enclosure to make sure people go through SetSetting
 		end
 		
 		CompactRaidFrameContainer_SetDisplayPets(container, displayPets);
-		if ( displayPets ) then
-			CompactPartyFrame_EnablePets(CompactPartyFrame);
-		else
-			CompactPartyFrame_DisablePets(CompactPartyFrame);
-		end
 	end
 
 	local function CompactRaidFrameManager_SetDisplayMainTankAndAssist(value)
@@ -586,18 +615,28 @@ end
 -------------Utility functions-------------
 --Functions used for sorting and such
 function CRFSort_Group(token1, token2)
-	local id1 = tonumber(string.sub(token1, 5));
-	local id2 = tonumber(string.sub(token2, 5));
-	
-	local _, _, subgroup1 = GetRaidRosterInfo(id1);
-	local _, _, subgroup2 = GetRaidRosterInfo(id2);
-	
-	if ( subgroup1 and subgroup2 and subgroup1 ~= subgroup2 ) then
-		return subgroup1 < subgroup2;
+	if ( GetNumRaidMembers() > 0 ) then
+		local id1 = tonumber(string.sub(token1, 5));
+		local id2 = tonumber(string.sub(token2, 5));
+		
+		local _, _, subgroup1 = GetRaidRosterInfo(id1);
+		local _, _, subgroup2 = GetRaidRosterInfo(id2);
+		
+		if ( subgroup1 and subgroup2 and subgroup1 ~= subgroup2 ) then
+			return subgroup1 < subgroup2;
+		end
+		
+		--Fallthrough: Sort by order in Raid window.
+		return id1 < id2;
+	else
+		if ( token1 == "player" ) then
+			return true;
+		elseif ( token2 == "player" ) then
+			return false;
+		else
+			return token1 < token2;	--String compare is OK since we don't go above 1 digit for party.
+		end
 	end
-	
-	--Fallthrough: Sort by order in Raid window.
-	return id1 < id2;
 end
 
 local roleValues = { MAINTANK = 1, MAINASSIST = 2, TANK = 3, HEALER = 4, DAMAGER = 5, NONE = 6 };
@@ -721,18 +760,27 @@ end
 
 function CRF_CountStuff()
 	CRF_ResetCountedStuff();
-	for i=1, GetNumRaidMembers() do
-		local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, assignedRole = GetRaidRosterInfo(i);	--Weird that we have 2 role return values, but... oh well
-		if ( name ) then
-			RaidInfoCounts.totalCount = RaidInfoCounts.totalCount + 1;
-			if ( not isDead ) then
-				RaidInfoCounts.totalAlive = RaidInfoCounts.totalAlive + 1;
-			end
-			
-			RaidInfoCounts["totalRole"..assignedRole] = RaidInfoCounts["totalRole"..assignedRole] + 1;
-			if ( not isDead ) then
-				RaidInfoCounts["aliveRole"..assignedRole] = RaidInfoCounts["aliveRole"..assignedRole] + 1;
+	if ( GetNumRaidMembers() > 0 ) then
+		for i=1, GetNumRaidMembers() do
+			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, assignedRole = GetRaidRosterInfo(i);	--Weird that we have 2 role return values, but... oh well
+			if ( name ) then
+				CRF_AddToCount(isDead, assignedRole);
 			end
 		end
+	else
+		CRF_AddToCount(UnitIsDeadOrGhost("player") , UnitGroupRolesAssigned("player"));
+		for i=1, GetNumPartyMembers() do
+			local unit = "party"..i;
+			CRF_AddToCount(UnitIsDeadOrGhost(unit), UnitGroupRolesAssigned(unit));
+		end
+	end		
+end
+
+function CRF_AddToCount(isDead, assignedRole)
+	RaidInfoCounts.totalCount = RaidInfoCounts.totalCount + 1;
+	RaidInfoCounts["totalRole"..assignedRole] = RaidInfoCounts["totalRole"..assignedRole] + 1;
+	if ( not isDead ) then
+		RaidInfoCounts.totalAlive = RaidInfoCounts.totalAlive + 1;
+		RaidInfoCounts["aliveRole"..assignedRole] = RaidInfoCounts["aliveRole"..assignedRole] + 1;
 	end
 end

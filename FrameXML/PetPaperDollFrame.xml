@@ -176,37 +176,10 @@
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<Frame name="PetPaperDollPetHappiness" enableMouse="true" hidden="false">
-						<Size x="24" y="23"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-8" y="-8"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="PetPaperDollPetHappinessTexture" file="Interface\PetPaperDollFrame\UI-PetHappiness" setAllPoints="true" parentKey="Texture">
-									<Size x="24" y="23"/>
-									<TexCoords left="0" right="0.1875" top="0" bottom="0.359375"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								if ( self.tooltip ) then
-									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-									GameTooltip:SetText(self.tooltip);
-									if ( self.tooltipDamage ) then
-										GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1);
-									end
-									GameTooltip:Show();
-								end
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Frame>
 					<Frame name="PetPaperDollPetInfo" enableMouse="true" hidden="false">
 						<Size x="24" y="23"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="PetPaperDollPetHappiness" x="-4" y="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-8" y="-8"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">

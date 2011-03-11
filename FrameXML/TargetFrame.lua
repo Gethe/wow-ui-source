@@ -224,6 +224,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		CloseDropDownMenus();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
+		TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
 	elseif ( event == "CVAR_UPDATE" ) then
 		if ( arg1 == "SHOW_CASTABLE_DEBUFFS_TEXT" and self:IsShown() ) then
 			-- have to set uvar manually or it will be the previous value
@@ -942,6 +943,30 @@ function Target_Spellbar_AdjustPosition(self)
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 7 );
 		end
 	end
+end
+
+function TargetFrame_OnDragStart(self)
+	self:StartMoving();
+	self:SetUserPlaced(true);
+end
+
+function TargetFrame_OnDragStop(self)
+	self:StopMovingOrSizing();
+end
+
+function TargetFrame_SetLocked(locked)
+	TARGET_FRAME_UNLOCKED = not locked;
+	if ( locked ) then
+		TargetFrame:RegisterForDrag();	--Unregister all buttons.
+	else
+		TargetFrame:RegisterForDrag("LeftButton");
+	end
+end
+
+function TargetFrame_ResetUserPlacedPosition()
+	TargetFrame:ClearAllPoints();
+	TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4);
+	TargetFrame:SetUserPlaced(false);
 end
 
 -- *********************************************************************************

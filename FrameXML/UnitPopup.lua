@@ -56,26 +56,26 @@ UnitPopupButtons["RESET_INSTANCES"] = { text = RESET_INSTANCES, dist = 0 };
 UnitPopupButtons["CONVERT_TO_RAID"] = { text = CONVERT_TO_RAID, dist = 0 };
 UnitPopupButtons["CONVERT_TO_PARTY"] = { text = CONVERT_TO_PARTY, dist = 0 };
 
-UnitPopupButtons["DUNGEON_DIFFICULTY"] = { text = DUNGEON_DIFFICULTY, dist = 0,  nested = 1};
-UnitPopupButtons["DUNGEON_DIFFICULTY1"] = { text = DUNGEON_DIFFICULTY1, dist = 0 };
-UnitPopupButtons["DUNGEON_DIFFICULTY2"] = { text = DUNGEON_DIFFICULTY2, dist = 0 };
+UnitPopupButtons["DUNGEON_DIFFICULTY"] = { text = DUNGEON_DIFFICULTY, dist = 0,  nested = 1 };
+UnitPopupButtons["DUNGEON_DIFFICULTY1"] = { text = DUNGEON_DIFFICULTY1, dist = 0, checkable = 1 };
+UnitPopupButtons["DUNGEON_DIFFICULTY2"] = { text = DUNGEON_DIFFICULTY2, dist = 0, checkable = 1 };
 --UnitPopupButtons["DUNGEON_DIFFICULTY3"] = { text = DUNGEON_DIFFICULTY3, dist = 0 };
 
 UnitPopupButtons["RAID_DIFFICULTY"] = { text = RAID_DIFFICULTY, dist = 0,  nested = 1};
-UnitPopupButtons["RAID_DIFFICULTY1"] = { text = RAID_DIFFICULTY1, dist = 0 };
-UnitPopupButtons["RAID_DIFFICULTY2"] = { text = RAID_DIFFICULTY2, dist = 0 };
-UnitPopupButtons["RAID_DIFFICULTY3"] = { text = RAID_DIFFICULTY3, dist = 0 };
-UnitPopupButtons["RAID_DIFFICULTY4"] = { text = RAID_DIFFICULTY4, dist = 0 };
+UnitPopupButtons["RAID_DIFFICULTY1"] = { text = RAID_DIFFICULTY1, dist = 0, checkable = 1 };
+UnitPopupButtons["RAID_DIFFICULTY2"] = { text = RAID_DIFFICULTY2, dist = 0, checkable = 1 };
+UnitPopupButtons["RAID_DIFFICULTY3"] = { text = RAID_DIFFICULTY3, dist = 0, checkable = 1 };
+UnitPopupButtons["RAID_DIFFICULTY4"] = { text = RAID_DIFFICULTY4, dist = 0, checkable = 1 };
 
 UnitPopupButtons["PVP_FLAG"] = { text = PVP_FLAG, dist = 0, nested = 1};
-UnitPopupButtons["PVP_ENABLE"] = { text = ENABLE, dist = 0, checkable = 1 };
-UnitPopupButtons["PVP_DISABLE"] = { text = DISABLE, dist = 0, checkable = 1 };
+UnitPopupButtons["PVP_ENABLE"] = { text = ENABLE, dist = 0, checkable = 1, checkable = 1 };
+UnitPopupButtons["PVP_DISABLE"] = { text = DISABLE, dist = 0, checkable = 1, checkable = 1 };
 
 UnitPopupButtons["LOOT_THRESHOLD"] = { text = LOOT_THRESHOLD, dist = 0, nested = 1 };
 UnitPopupButtons["LOOT_PROMOTE"] = { text = LOOT_PROMOTE, dist = 0 };
-UnitPopupButtons["ITEM_QUALITY2_DESC"] = { text = ITEM_QUALITY2_DESC, dist = 0, color = ITEM_QUALITY_COLORS[2] };
-UnitPopupButtons["ITEM_QUALITY3_DESC"] = { text = ITEM_QUALITY3_DESC, dist = 0, color = ITEM_QUALITY_COLORS[3] };
-UnitPopupButtons["ITEM_QUALITY4_DESC"] = { text = ITEM_QUALITY4_DESC, dist = 0, color = ITEM_QUALITY_COLORS[4] };
+UnitPopupButtons["ITEM_QUALITY2_DESC"] = { text = ITEM_QUALITY2_DESC, dist = 0, color = ITEM_QUALITY_COLORS[2], checkable = 1 };
+UnitPopupButtons["ITEM_QUALITY3_DESC"] = { text = ITEM_QUALITY3_DESC, dist = 0, color = ITEM_QUALITY_COLORS[3], checkable = 1 };
+UnitPopupButtons["ITEM_QUALITY4_DESC"] = { text = ITEM_QUALITY4_DESC, dist = 0, color = ITEM_QUALITY_COLORS[4], checkable = 1 };
 
 UnitPopupButtons["OPT_OUT_LOOT_TITLE"] = { text = OPT_OUT_LOOT_TITLE, dist = 0, nested = 1, tooltipText = NEWBIE_TOOLTIP_UNIT_OPT_OUT_LOOT };
 UnitPopupButtons["OPT_OUT_LOOT_ENABLE"] = { text = YES, dist = 0, checkable = 1 };
@@ -106,6 +106,16 @@ UnitPopupButtons["CLEAR_FOCUS"] = { text = CLEAR_FOCUS, dist = 0 };
 UnitPopupButtons["LOCK_FOCUS_FRAME"] = { text = LOCK_FOCUS_FRAME, dist = 0 };
 UnitPopupButtons["UNLOCK_FOCUS_FRAME"] = { text = UNLOCK_FOCUS_FRAME, dist = 0 };
 
+UnitPopupButtons["MOVE_PLAYER_FRAME"] = { text = MOVE_FRAME, dist = 0, nested = 1 };
+UnitPopupButtons["LOCK_PLAYER_FRAME"] = { text = LOCK_FRAME, dist = 0 };
+UnitPopupButtons["UNLOCK_PLAYER_FRAME"] = { text = UNLOCK_FRAME, dist = 0 };
+UnitPopupButtons["RESET_PLAYER_FRAME_POSITION"] = { text = RESET_POSITION, dist = 0 };
+
+UnitPopupButtons["MOVE_TARGET_FRAME"] = { text = MOVE_FRAME, dist = 0, nested = 1 };
+UnitPopupButtons["LOCK_TARGET_FRAME"] = { text = LOCK_FRAME, dist = 0 };
+UnitPopupButtons["UNLOCK_TARGET_FRAME"] = { text = UNLOCK_FRAME, dist = 0 };
+UnitPopupButtons["RESET_TARGET_FRAME_POSITION"] = { text = RESET_POSITION, dist = 0 };
+
 -- Voice Chat Related
 UnitPopupButtons["MUTE"] = { text = MUTE, dist = 0 };
 UnitPopupButtons["UNMUTE"] = { text = UNMUTE, dist = 0 };
@@ -123,10 +133,10 @@ UnitPopupButtons["RAID_TARGET_NONE"] = { text = RAID_TARGET_NONE, dist = 0, chec
 
 --Role icons
 UnitPopupButtons["SELECT_ROLE"] = { text = SET_ROLE, dist = 0, nested = 1 };
-UnitPopupButtons["SET_ROLE_NONE"] = { text = NO_ROLE, dist = 0 };
-UnitPopupButtons["SET_ROLE_TANK"] = { text = INLINE_TANK_ICON.." "..TANK, dist = 0 };
-UnitPopupButtons["SET_ROLE_HEALER"] = { text = INLINE_HEALER_ICON.." "..HEALER, dist = 0 };
-UnitPopupButtons["SET_ROLE_DAMAGER"] = { text = INLINE_DAMAGER_ICON.." "..DAMAGER, dist = 0 };
+UnitPopupButtons["SET_ROLE_NONE"] = { text = NO_ROLE, dist = 0, checkable = 1 };
+UnitPopupButtons["SET_ROLE_TANK"] = { text = INLINE_TANK_ICON.." "..TANK, dist = 0, checkable = 1 };
+UnitPopupButtons["SET_ROLE_HEALER"] = { text = INLINE_HEALER_ICON.." "..HEALER, dist = 0, checkable = 1 };
+UnitPopupButtons["SET_ROLE_DAMAGER"] = { text = INLINE_DAMAGER_ICON.." "..DAMAGER, dist = 0, checkable = 1 };
 
 -- Chat Channel Player Commands
 UnitPopupButtons["CHAT_PROMOTE"] = { text = MAKE_MODERATOR, dist = 0 };
@@ -145,12 +155,12 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "CANCEL" };
-UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "CANCEL" };
-UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
-UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
-UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "CANCEL" };
-UnitPopupMenus["RAID"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "CANCEL" };
+UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
+UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["RAID"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET_NOTE", "IGNORE", "REPORT_SPAM", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_WITH", "BN_INVITE", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BLOCK_COMMUNICATION", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
@@ -159,8 +169,8 @@ UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
-UnitPopupMenus["VEHICLE"] = { "SET_FOCUS", "RAID_TARGET_ICON", "VEHICLE_LEAVE", "CANCEL" };
-UnitPopupMenus["TARGET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
+UnitPopupMenus["VEHICLE"] = { "SET_FOCUS", "RAID_TARGET_ICON", "VEHICLE_LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["TARGET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["ARENAENEMY"] = { "SET_FOCUS", "CANCEL" };
 UnitPopupMenus["FOCUS"] = { "CLEAR_FOCUS", "LOCK_FOCUS_FRAME", "UNLOCK_FOCUS_FRAME", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["BOSS"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
@@ -173,6 +183,8 @@ UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DI
 UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2" };
 UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "RAID_DIFFICULTY4" };
 UnitPopupMenus["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" };
+UnitPopupMenus["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION" };
+UnitPopupMenus["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" };
 
 UnitPopupShown = {};
 UnitPopupShown[1] = {};
@@ -290,103 +302,110 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 		OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
 		info = UIDropDownMenu_CreateInfo();
 		for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE]) do
-			info.text = UnitPopupButtons[value].text;
-			info.owner = UIDROPDOWNMENU_MENU_VALUE;
-			-- Set the text color
-			color = UnitPopupButtons[value].color;
-			if ( color ) then
-				info.colorCode = string.format("|cFF%02x%02x%02x", color.r*255, color.g*255, color.b*255);
-			else
-				info.colorCode = nil;
-			end
-			-- Icons
-			info.icon = UnitPopupButtons[value].icon;
-			info.tCoordLeft = UnitPopupButtons[value].tCoordLeft;
-			info.tCoordRight = UnitPopupButtons[value].tCoordRight;
-			info.tCoordTop = UnitPopupButtons[value].tCoordTop;
-			info.tCoordBottom = UnitPopupButtons[value].tCoordBottom;
-			-- Checked conditions
-			info.checked = nil;
-			if ( info.text == dropdownMenu.selectedLootMethod  ) then
-				info.checked = 1;
-			elseif ( info.text == dropdownMenu.selectedLootThreshold ) then
-				info.checked = 1;
-			elseif ( strsub(value, 1, 12) == "RAID_TARGET_" ) then
-				local raidTargetIndex = GetRaidTargetIndex(unit);
-				if ( raidTargetIndex == index ) then
+			if( UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] == 1 ) then
+				info.text = UnitPopupButtons[value].text;
+				info.owner = UIDROPDOWNMENU_MENU_VALUE;
+				-- Set the text color
+				color = UnitPopupButtons[value].color;
+				if ( color ) then
+					info.colorCode = string.format("|cFF%02x%02x%02x", color.r*255, color.g*255, color.b*255);
+				else
+					info.colorCode = nil;
+				end
+				-- Icons
+				info.icon = UnitPopupButtons[value].icon;
+				info.tCoordLeft = UnitPopupButtons[value].tCoordLeft;
+				info.tCoordRight = UnitPopupButtons[value].tCoordRight;
+				info.tCoordTop = UnitPopupButtons[value].tCoordTop;
+				info.tCoordBottom = UnitPopupButtons[value].tCoordBottom;
+				-- Checked conditions
+				info.checked = nil;
+				if ( info.text == dropdownMenu.selectedLootMethod  ) then
 					info.checked = 1;
-				end
-			elseif ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(value) > 18)) then
-				local dungeonDifficulty = GetDungeonDifficulty();
-				if ( dungeonDifficulty == index ) then
+				elseif ( info.text == dropdownMenu.selectedLootThreshold ) then
 					info.checked = 1;
-				end
-				local inParty = 0;
-				if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
-					inParty = 1;
-				end
-				local isLeader = 0;
-				if ( IsPartyLeader() ) then
-					isLeader = 1;
-				end
-				local inInstance, instanceType = IsInInstance();
-				if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
-					info.disabled = 1;	
-				end
-			elseif ( strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15)) then
-				if ( isDynamicInstance ) then
-					if ( selectedRaidDifficulty == index ) then
+				elseif ( strsub(value, 1, 12) == "RAID_TARGET_" ) then
+					local raidTargetIndex = GetRaidTargetIndex(unit);
+					if ( raidTargetIndex == index ) then
 						info.checked = 1;
 					end
-				else
-					local dungeonDifficulty = GetRaidDifficulty();
+				elseif ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(value) > 18)) then
+					local dungeonDifficulty = GetDungeonDifficulty();
 					if ( dungeonDifficulty == index ) then
 						info.checked = 1;
 					end
+					local inParty = 0;
+					if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
+						inParty = 1;
+					end
+					local isLeader = 0;
+					if ( IsPartyLeader() ) then
+						isLeader = 1;
+					end
+					local inInstance, instanceType = IsInInstance();
+					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+						info.disabled = 1;	
+					end
+				elseif ( strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15)) then
+					if ( isDynamicInstance ) then
+						if ( selectedRaidDifficulty == index ) then
+							info.checked = 1;
+						end
+					else
+						local dungeonDifficulty = GetRaidDifficulty();
+						if ( dungeonDifficulty == index ) then
+							info.checked = 1;
+						end
+					end
+					local inParty = 0;
+					if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
+						inParty = 1;
+					end
+					local isLeader = 0;
+					if ( IsPartyLeader() ) then
+						isLeader = 1;
+					end
+					local inInstance, instanceType = IsInInstance();
+					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+						info.disabled = 1;
+					end
+					if ( allowedRaidDifficultyChange and allowedRaidDifficultyChange == value ) then
+						info.disabled = nil;
+					end
+				elseif ( value == "PVP_ENABLE" ) then
+					if ( GetPVPDesired() == 1 ) then
+						info.checked = 1;
+					end
+				elseif ( value == "PVP_DISABLE" ) then
+					if ( GetPVPDesired() == 0 ) then
+						info.checked = 1;
+					end
+				elseif ( value == "OPT_OUT_LOOT_ENABLE" ) then
+					if ( GetOptOutOfLoot() ) then
+						info.checked = 1;
+					end
+				elseif ( value == "OPT_OUT_LOOT_DISABLE" ) then
+					if ( not GetOptOutOfLoot() ) then
+						info.checked = 1;
+					end
+				elseif ( strsub(value, 1, 9) == "SET_ROLE_" ) then
+					if ( UnitGroupRolesAssigned(unit) == strsub(value, 10) ) then
+						info.checked = 1;
+					end
 				end
-				local inParty = 0;
-				if ( (GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) ) then
-					inParty = 1;
+				
+				info.value = value;
+				info.func = UnitPopup_OnClick;
+				if ( not UnitPopupButtons[value].checkable ) then
+					info.notCheckable = 1;
+				else
+					info.notCheckable = nil;
 				end
-				local isLeader = 0;
-				if ( IsPartyLeader() ) then
-					isLeader = 1;
-				end
-				local inInstance, instanceType = IsInInstance();
-				if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
-					info.disabled = 1;
-				end
-				if ( allowedRaidDifficultyChange and allowedRaidDifficultyChange == value ) then
-					info.disabled = nil;
-				end
-			elseif ( value == "PVP_ENABLE" ) then
-				if ( GetPVPDesired() == 1 ) then
-					info.checked = 1;
-				end
-			elseif ( value == "PVP_DISABLE" ) then
-				if ( GetPVPDesired() == 0 ) then
-					info.checked = 1;
-				end
-			elseif ( value == "OPT_OUT_LOOT_ENABLE" ) then
-				if ( GetOptOutOfLoot() ) then
-					info.checked = 1;
-				end
-			elseif ( value == "OPT_OUT_LOOT_DISABLE" ) then
-				if ( not GetOptOutOfLoot() ) then
-					info.checked = 1;
-				end
-			elseif ( strsub(value, 1, 9) == "SET_ROLE_" ) then
-				if ( UnitGroupRolesAssigned(unit) == strsub(value, 10) ) then
-					info.checked = 1;
-				end
+				-- Setup newbie tooltips
+				info.tooltipTitle = UnitPopupButtons[value].text;
+				info.tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..value];
+				UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 			end
-			
-			info.value = value;
-			info.func = UnitPopup_OnClick;
-			-- Setup newbie tooltips
-			info.tooltipTitle = UnitPopupButtons[value].text;
-			info.tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..value];
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 		end
 		return;			
 	end
@@ -689,6 +708,30 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "LOOT_THRESHOLD" ) then
 			if ( inParty == 0 or HasLFGRestrictions() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "MOVE_PLAYER_FRAME" ) then
+			if ( dropdownMenu ~= PlayerFrameDropDown ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "MOVE_TARGET_FRAME" ) then
+			if ( dropdownMenu ~= TargetFrameDropDown ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "LOCK_PLAYER_FRAME" ) then
+			if (  not PLAYER_FRAME_UNLOCKED ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "LOCK_TARGET_FRAME" ) then
+			if (  not TARGET_FRAME_UNLOCKED ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "UNLOCK_PLAYER_FRAME" ) then
+			if (  PLAYER_FRAME_UNLOCKED ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "UNLOCK_TARGET_FRAME" ) then
+			if (  TARGET_FRAME_UNLOCKED ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then
@@ -1455,6 +1498,18 @@ function UnitPopup_OnClick (self)
 		FocusFrame_SetLock(true);
 	elseif ( button == "UNLOCK_FOCUS_FRAME" ) then
 		FocusFrame_SetLock(false);
+	elseif ( button == "LOCK_PLAYER_FRAME" ) then
+		PlayerFrame_SetLocked(true);
+	elseif ( button == "UNLOCK_PLAYER_FRAME" ) then
+		PlayerFrame_SetLocked(false);
+	elseif ( button == "LOCK_TARGET_FRAME" ) then
+		TargetFrame_SetLocked(true);
+	elseif ( button == "UNLOCK_TARGET_FRAME" ) then
+		TargetFrame_SetLocked(false);
+	elseif ( button == "RESET_PLAYER_FRAME_POSITION" ) then
+		PlayerFrame_ResetUserPlacedPosition();
+	elseif ( button == "RESET_TARGET_FRAME_POSITION" ) then
+		TargetFrame_ResetUserPlacedPosition();
 	elseif ( strsub(button, 1, 10) == "BN_REPORT_" ) then
 		BNet_InitiateReport(dropdownFrame.presenceID, strsub(button, 11));
 	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then

@@ -3757,11 +3757,13 @@ end
 
 function GetDisplayedAllyFrames()
 	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( GetNumRaidMembers() > 0 and (not IsActiveBattlefieldArena() or useCompact) ) then
-		return "raid";
-	elseif ( useCompact ) then
-		return "compact-party";
-	else
+	if ( IsActiveBattlefieldArena() and not useCompact ) then
 		return "party";
+	elseif ( GetNumRaidMembers() > 0 or (GetNumPartyMembers() > 0 and useCompact)) then
+		return "raid";
+	elseif ( GetNumPartyMembers() > 0 ) then
+		return "party";
+	else
+		return nil;
 	end
 end

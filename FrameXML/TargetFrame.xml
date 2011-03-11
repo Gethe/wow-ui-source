@@ -665,7 +665,7 @@
 		</Scripts>
 	</StatusBar>
 			
-	<Button name="TargetFrame" inherits="TargetFrameTemplate">
+	<Button name="TargetFrame" inherits="TargetFrameTemplate" movable="true">
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
@@ -701,6 +701,8 @@
 				TargetFrame_CreateTargetofTarget(self, "targettarget");
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
 			</OnLoad>
+			<OnDragStart function="TargetFrame_OnDragStart"/>
+			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
 	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">

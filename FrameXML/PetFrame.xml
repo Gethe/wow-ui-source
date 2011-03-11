@@ -242,41 +242,6 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Frame name="PetFrameHappiness" enableMouse="true" hidden="false">
-				<Size>
-					<AbsDimension x="24" y="23"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-7" y="-4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="PetFrameHappinessTexture" file="Interface\PetPaperDollFrame\UI-PetHappiness" setAllPoints="true">
-							<Size>
-								<AbsDimension x="24" y="23"/>
-							</Size>
-							<TexCoords left="0" right="0.1875" top="0" bottom="0.359375"/>
-						</Texture>			
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.tooltip ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltip);
-							if ( self.tooltipDamage ) then
-								GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1);
-							end
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="PetFrame_OnLoad"/>
