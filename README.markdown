@@ -58,7 +58,8 @@ required to activate Death Runes.
       * Howling Blast damage has been increased by 20%. To compensate, the
 area-of-effect splash now does 50% of the single-target damage, down from 60%.
 The net result of this change leaves the area-of-effect damage roughly the
-same as 4.0.6 numbers.
+same as 4.0.6 numbers. In addition, Howling Blast now has a facing
+requirement.
 
   * Glyphs
 
@@ -73,6 +74,8 @@ cast 60% faster.
 
   * Lifebloom's bloom effect has been reduced by 20%.
 
+  * Prowl has a new icon.
+
   * Stampeding Roar's duration has been increased to 8 seconds, up from 6. The
 movement speed effect has been increased to 60%, up from 40%.
 
@@ -86,10 +89,28 @@ movement speed effect has been increased to 60%, up from 40%.
 
       * Solar Beam is now more responsive when enemies move into or out of it.
 
+    * Feral
+
+      * Feral Swiftness now also causes Dash and Stampeding Roar to have a
+50/100% chance to instantly remove all movement impairing effects from the
+affected targets when used.
+
     * Restoration
 
-    * Gift of Nature (passive) also reduces Tranquility's cooldown by 2.5/5
+      * Gift of Nature (passive) also reduces Tranquility's cooldown by 2.5/5
 minutes.
+
+      * Efflorescence has been redesigned. It creates a healing zone at the
+feet of a Swiftmend target, but this healing zone now restores health equal to
+4/8/12% of the amount healed by Swiftmend to the three most injured targets
+within 8 yards, every 1 second for 7 seconds. This periodic effect now also
+benefits from spell haste, but the individual ticks cannot be critical
+effects.
+
+  * Glyphs
+
+    * Glyph of Rake is now Glyph of Pounce, which increases the range of
+Pounce by 3 yards.
 
 **[Hunters][6]**
 
@@ -98,6 +119,8 @@ minutes.
   * Explosive Trap now has a new spell effect.
 
   * Master's Call now has a new spell effect.
+
+  * Multi-Shot damage has been increased by 250%.
 
   * Tame Beast now tames pets to match the hunter's level, rather than 3
 levels below.
@@ -109,6 +132,11 @@ levels below.
     * Fire
 
       * Ignite is no longer triggered from periodic critical effects.
+
+    * Frost
+
+      * The root effect from Shattered Barrier now shares diminishing returns
+with the root from Improved Cone of Cold.
 
 **[Paladins][8]**
 
@@ -127,6 +155,9 @@ Crusader Aura.
 
       * Divine Guardian cooldown is now 3 minutes, up from 2.
 
+      * Grand Crusader will now generate a charge of Holy Power if the Avenger
+Shield it procs is used within 6 seconds.
+
     * Retribution
 
       * Divine Storm now generates 1 point of Holy Power if it hits (i.e.
@@ -141,9 +172,14 @@ from 30.
 
   * Dispel Magic can only be used on the casting priest as a baseline effect.
 
+  * Holy Fire damage has been increased to be approximately 30% higher than
+Smite.
+
   * Holy Word: Sanctuary has a new spell effect.
 
   * Inner Will and Inner Fire now last until canceled.
+
+  * Mind Sear damage has been doubled.
 
   * Power Word: Shield duration has been reduced to 15 seconds, down from 30.
 
@@ -153,6 +189,8 @@ from 30.
 
       * Absolution (new passive) enables priests to use Dispel Magic on up to
 2 harmful effects on friendly targets.
+
+      * Atonement now works with Holy Fire in addition to Smite.
 
       * Power Word: Barrier's cooldown has been increased to 3 minutes, up
 from 2, and its effect has been reduced to 25%, down from 30%.
@@ -164,6 +202,11 @@ of another priest's Power Word: Shield through Strength of Soul.
 
       * Absolution (new passive) enables priests to use Dispel Magic on up to
 2 harmful effects on friendly targets.
+
+  * Glyphs
+
+    * Glyph of Divine Accuracy now also affects Holy Fire in addition to
+Smite.
 
 **[Rogues][10]**
 
@@ -216,7 +259,21 @@ equal to what a protection totem/aura would grant, stacking with such buffs)
 to the spell school(s) of the interrupted spell (except for Holy spells),
 lasting 10 seconds.
 
+    * Restoration
+
+      * Deep Healing now benefits all heals, not just direct heals.
+
+      * Spirit Link Totem (new talent) reduces damage taken by all party and
+raid members within 10 yards by 10%. This lasts 6 seconds, and every second it
+is active the health of all affected players is redistributed among them, such
+that each player ends up with the same percentage of their maximum health.
+This counts as an Air totem and has a 3-minute cooldown.
+
 **[Warlocks][12]**
+
+  * Rain of Fire damage has been increased by 25%.
+
+  * Seed of Corruption damage has been increased by 20%.
 
   * Talent Specializations
 
@@ -295,13 +352,13 @@ parity with other strike changes.
 
     * Fury
 
-      * Flurry haste bonus has been doubled to 16/32/50%.
+      * Precision (passive) now increase auto-attack damage by 40%, in
+addition to the 3% hit it offers currently.
 
       * Raging Blow damage has been increased back to 120% weapon damage, up
 from 100%.
 
       * Unshackled Fury now only grants 2 base points of mastery, down from 8.
-This change offsets the Flurry boost to better control Fury burst damage.
 
     * Protection
 
@@ -367,6 +424,11 @@ the death knight gains Death Runes).
 
     * The current Holy paladin 4-piece raid set bonus now grants 540 Spirit
 for 6 seconds after casting Holy Shock.
+
+    * The current healing priest 4-piece raid set bonus no longer requires a
+target to be under the effects of Weakened Soul for the priest to receive the
+Spirit bonus. Instead the benefit will be granted each time the priest's
+Penance spell heals a target.
 
 **[Professions][17]**
 
@@ -445,7 +507,6 @@ unlocked and moved to one's content.
 by default, instead of waiting for the key to go up. This is an option that
 can be turned off in the Interface menu under Combat. Mouse clicking has not
 changed and operates on mouse click up.
-
 
    [1]: http://us.battle.net/wow/en/game/patch-notes/
 
