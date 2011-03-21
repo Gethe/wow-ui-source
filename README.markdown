@@ -22,6 +22,9 @@ damage reduction unchanged in 4.1. Those with less than 32.5% will gain
 slightly. Those with more will lose some damage reduction, increasingly so as
 their resilience climbs.
 
+  * A dead player can now be resurrected by targeting them using the Party or
+Raid Frame even if they have released. No more hunting for corpses.
+
 **[Classes: General][3]**
 
   * All non-damaging interrupts off the global cooldown will now always hit
@@ -81,6 +84,9 @@ movement speed effect has been increased to 60%, up from 40%.
 
   * Swipe (Bear) cooldown has been reduced to 3 seconds, down from 6.
 
+  * Druids now innately have 100% pushback protection from damage while
+channeling Tranquility.
+
   * Talent Specializations
 
     * Balance
@@ -107,10 +113,18 @@ within 8 yards, every 1 second for 7 seconds. This periodic effect now also
 benefits from spell haste, but the individual ticks cannot be critical
 effects.
 
+      * Malfurion's Gift now reduces the cooldown of Tranquility by 2.5/5
+minutes.
+
   * Glyphs
 
     * Glyph of Rake is now Glyph of Pounce, which increases the range of
 Pounce by 3 yards.
+
+  * Druid Bug Fixes
+
+    * The troll druid models for Flight Form and Swift Flight Form has slimmed
+down to be more in scale with other druid flight forms.
 
 **[Hunters][6]**
 
@@ -125,11 +139,53 @@ Pounce by 3 yards.
   * Tame Beast now tames pets to match the hunter's level, rather than 3
 levels below.
 
+  * Pets
+
+    * Bloodthirsty no longer generates Happiness.
+
+    * Carrion Feeder no longer restores Happiness.
+
+    * The Feed Pet ability now instantly heals 50% of the pet's health. Cannot
+be used in combat. Requires diet-appropriate food.
+
+    * Guard Dog no longer causes Growl to generate additional Happiness.
+
+    * The Happiness/Pet Loyalty System has been removed. Hunters will no
+longer have to manage Happiness for their pets, and the previous damage bonus
+for pets being happy will now be baseline for all tamed pets.
+
+  * Glyphs
+
+    * Glyph of Mend Pet is now Glyph of Greater Proportion, which increases
+the size of the pet slightly.
+
+  * Hunter Bug Fixes
+
+    * Distracting Shot and Multi-Shot are now properly 40-yard range.
+
+    * Multi-Shot now properly has a 1-second global cooldown.
+
 **[Mages][7]**
+
+  * Arcane Blast damage has been increased by 13%. In addition, the stacking
+effect of Arcane Blast now increases the damage done by Arcane Explosion, and
+Arcane Explosion does not consume that effect.
+
+  * Arcane Explosion damage has been increased by 13%.
+
+  * Arcane Missiles damage has been increased by 13%.
+
+  * Blizzard damage has been increased by 70%.
 
   * Talent Specializations
 
+    * Arcane
+
+      * Arcane Barrage damage has been increased by 13%.
+
     * Fire
+
+      * Combustion no longer has a global cooldown.
 
       * Ignite is no longer triggered from periodic critical effects.
 
@@ -140,6 +196,8 @@ with the root from Improved Cone of Cold.
 
 **[Paladins][8]**
 
+  * Righteous Fury now persists through death.
+
   * Word of Glory now has a 20-second cooldown.
 
   * Talent Specializations
@@ -148,6 +206,9 @@ with the root from Improved Cone of Cold.
 
       * Aura Mastery: This ability no longer increases the benefit granted by
 Crusader Aura.
+
+      * Illuminated Healing shield duration is now 15 seconds, up from 8
+seconds.
 
       * Walk in the Light (passive) removes the cooldown of Word of Glory.
 
@@ -172,6 +233,9 @@ from 30.
 
   * Dispel Magic can only be used on the casting priest as a baseline effect.
 
+  * Priests now innately have 100% pushback protection from damage while
+channeling Divine Hymn and Hymn of Hope.
+
   * Holy Fire damage has been increased to be approximately 30% higher than
 Smite.
 
@@ -192,6 +256,8 @@ Smite.
 
       * Atonement now works with Holy Fire in addition to Smite.
 
+      * The direct damage portion of Holy Fire can now trigger Evangelism.
+
       * Power Word: Barrier's cooldown has been increased to 3 minutes, up
 from 2, and its effect has been reduced to 25%, down from 30%.
 
@@ -202,6 +268,10 @@ of another priest's Power Word: Shield through Strength of Soul.
 
       * Absolution (new passive) enables priests to use Dispel Magic on up to
 2 harmful effects on friendly targets.
+
+      * Chakra now lasts until canceled, up from 1 minute.
+
+      * Surge of Light can now also trigger from Binding Heal.
 
   * Glyphs
 
@@ -294,6 +364,10 @@ is using a Felguard or Felhunter.
 to be the best guardian for single-target damage, and the Infernal the best
 when there are multiple targets.
 
+    * Lash of Pain (Succubus) damage now scales with level, reducing the
+damage done at lower levels such that it will deal 50% damage at level 20, and
+100% damage at level 80 and above.
+
     * Shadow Bite (Felhunter) damage and effect has doubled.
 
 **[Warriors][13]**
@@ -347,8 +421,8 @@ addition to its current effects.
       * Mortal Strike damage has been increased to 175% weapon damage, up from
 150%.
 
-      * Strikes of Opportunity damage has been increased by 10% to keep stat
-parity with other strike changes.
+      * Strikes of Opportunity value per point of mastery has been increased
+by 10%.
 
     * Fury
 
@@ -374,6 +448,11 @@ damage by 7/14/20% for 6 seconds.
 seconds, up from 1 second.
 
 **[Dungeons & Raids][14]**
+
+  * Dungeon Finder
+
+    * The Dungeon Finder now attempts to avoid putting damage-dealing classes
+with the same armor type in a group.
 
   * New dungeons available for partial testing.
 
@@ -452,7 +531,13 @@ Assault. In additional to the damage debuff, this debuff also caps the
 player's movement speed at 100%. The damage taken debuff works the same and
 will add 10% to the debuff up to a maximum of 100% damage taken.
 
+    * Arathi Basin
+
+      * Flags should now cap in 7 seconds, down from 8.
+
     * The Battle for Gilneas
+
+      * Flags should now cap in 7 seconds, down from 8.
 
       * Graveyard Changes
 
