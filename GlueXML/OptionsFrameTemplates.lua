@@ -249,7 +249,10 @@ end
 function OptionsFrameOkay_OnClick (self, apply)
 	--Iterate through registered panels and run their okay methods in a taint-safe fashion
 	for _, category in SecureNext, self.categoryList do
-		securecall(OptionsFrame_RunOkayForCategory, category);
+		-- But if the apply button was used, category has to support it
+		if ( not apply or category.hasApply ) then
+			securecall(OptionsFrame_RunOkayForCategory, category);
+		end
 	end
 end
 

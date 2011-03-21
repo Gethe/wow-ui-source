@@ -4,6 +4,39 @@
 	<Script file="..\FrameXML\VideoOptionsPanels.lua"/>
 	<Script file="..\FrameXML\GraphicsQualityLevels.lua"/>
 	<Frame name="VideoOptionsDropDownMenuTemplate" inherits="DropDownMenuTemplate" virtual="true">
+		<Frames>
+			<Frame name="$parentWarning" enableMouse="true" hidden="true" parentKey="warning">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-12" y="1" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.tooltip ) then
+							VideoOptionsTooltip:SetOwner(self, "ANCHOR_LEFT");
+							VideoOptionsTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0, 1, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						VideoOptionsTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnEnter>
 				-- also called by $childButton
@@ -90,7 +123,7 @@
 	</Texture>
 
 	<!-- Graphics Panel. Delta_y is n*30 + 16 -->
-	<Frame name="Graphics_" hidden="false" parent="VideoOptionsFramePanelContainer">
+	<Frame name="Graphics_" hidden="true" parent="VideoOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentDisplayHeader" text="DISPLAY_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
@@ -192,6 +225,7 @@
 			<OnLoad>
 				Graphics_OnLoad(self);
 			</OnLoad>
+			<OnShow function="VideoOptionsPanel_OnShow"/>
 		</Scripts>  
 		<Frames>
 			<!-- Column A -->
@@ -307,16 +341,6 @@
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture name="$parentInvalid" file="Interface\Buttons\VideoOptionsRed-Tile.png" >
-							<Size x="50" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset x="-10" y="0"/>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
 							<Anchors>
@@ -567,7 +591,7 @@
 	</Frame>	
 
 	<!-- Advanced Panel -->
-	<Frame name="Advanced_" parent="VideoOptionsFramePanelContainer">
+	<Frame name="Advanced_" parent="VideoOptionsFramePanelContainer" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentDisplayHeader" text="EFFECTS_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
@@ -643,9 +667,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" >
+			<Frame name="$parentGraphicsAPIDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursorDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GXAPI" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsAPIDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="-90" y="-20"/>
 					</Anchor>
 				</Anchors>
@@ -938,7 +980,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="16" y="-240"/>
+								<AbsDimension x="16" y="-256"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1048,6 +1090,72 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="Advanced_OnLoad" />
+			<OnShow function="VideoOptionsPanel_OnShow"/>
+		</Scripts>  
+	</Frame>
+	
+	<!-- Network Panel -->
+	<Frame name="NetworkOptionsPanel" parent="VideoOptionsFramePanelContainer" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDisplayHeader" text="NETWORK_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentOptimizeSpeed" inherits="OptionsCheckButtonTemplate" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="10" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "disableServerNagle";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnClick function="NetworkOptionsPanel_CheckButton_OnClick"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentUseIPv6" inherits="OptionsCheckButtonTemplate" motionScriptsWhileDisabled="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentOptimizeSpeed" relativePoint="BOTTOM">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useIPv6";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						if ( not IsIPv6Available() ) then
+							BlizzardOptionsPanel_CheckButton_Disable(self);
+						end
+					</OnLoad>
+					<OnClick function="NetworkOptionsPanel_CheckButton_OnClick"/>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="NetworkOptionsPanel_OnLoad" />
+			<OnShow function="VideoOptionsPanel_OnShow"/>
 		</Scripts>  
 	</Frame>
 </Ui>

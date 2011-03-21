@@ -13,14 +13,14 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-16" y="8"/>
+							<AbsDimension x="-32" y="56"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnShow>
+					<OnLoad>
 						self:Disable();
-					</OnShow>				
+					</OnLoad>				
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						VideoOptionsFrameOkay_OnClick(self, button, down, true);
@@ -33,7 +33,11 @@
 					<AbsDimension x="110" y="38"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="8"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick function="VideoOptionsFrameCancel_OnClick"/>

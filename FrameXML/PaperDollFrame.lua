@@ -458,6 +458,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_ATTACK_POWER");
 	self:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
 	self:RegisterEvent("UNIT_ATTACK");
+	self:RegisterEvent("UNIT_SPELL_HASTE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
@@ -516,7 +517,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	if ( unit == "player" ) then
 		if ( event == "UNIT_LEVEL" ) then
 			PaperDollFrame_SetLevel();
-		elseif ( event == "UNIT_DAMAGE" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" or event == "UNIT_RESISTANCES") then
+		elseif ( event == "UNIT_DAMAGE" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" or event == "UNIT_RESISTANCES" or event == "UNIT_SPELL_HASTE") then
 			self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 		end
 	end
@@ -1555,7 +1556,12 @@ function MeleeHitChance_OnEnter(statFrame)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
 	local hitChance = GetCombatRatingBonus(CR_HIT_MELEE) + GetHitModifier();
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..format("+%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE);
+	if (hitChance >= 0) then
+		hitChance = format("+%.2f%%", hitChance);
+	else
+		hitChance = RED_FONT_COLOR_CODE..format("%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE;
+	end
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..hitChance..FONT_COLOR_CODE_CLOSE);
 	GameTooltip:AddLine(format(STAT_HIT_MELEE_TOOLTIP, GetCombatRating(CR_HIT_MELEE), GetCombatRatingBonus(CR_HIT_MELEE)));
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, MISS_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1596,7 +1602,11 @@ function PaperDollFrame_SetMeleeHitChance(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_HIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local hitChance = GetCombatRatingBonus(CR_HIT_MELEE) + GetHitModifier();
-	hitChance = format("+%.2f%%", hitChance);
+	if (hitChance >= 0) then
+		hitChance = format("+%.2f%%", hitChance);
+	else
+		hitChance = RED_FONT_COLOR_CODE..format("%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE;
+	end
 	text:SetText(hitChance);
 	statFrame:SetScript("OnEnter", MeleeHitChance_OnEnter);
 	statFrame:Show();
@@ -1607,7 +1617,12 @@ function RangedHitChance_OnEnter(statFrame)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
 	local hitChance = GetCombatRatingBonus(CR_HIT_RANGED) + GetHitModifier();
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..format("+%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE);
+	if (hitChance >= 0) then
+		hitChance = format("+%.2f%%", hitChance);
+	else
+		hitChance = RED_FONT_COLOR_CODE..format("%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE;
+	end
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..hitChance..FONT_COLOR_CODE_CLOSE);
 	GameTooltip:AddLine(format(STAT_HIT_RANGED_TOOLTIP, GetCombatRating(CR_HIT_RANGED), GetCombatRatingBonus(CR_HIT_RANGED)));
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, MISS_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1633,7 +1648,11 @@ function PaperDollFrame_SetRangedHitChance(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_HIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local hitChance = GetCombatRatingBonus(CR_HIT_RANGED) + GetHitModifier();
-	hitChance = format("+%.2f%%", hitChance);
+	if (hitChance >= 0) then
+		hitChance = format("+%.2f%%", hitChance);
+	else
+		hitChance = RED_FONT_COLOR_CODE..format("%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE;
+	end
 	text:SetText(hitChance);
 	statFrame:SetScript("OnEnter", RangedHitChance_OnEnter);
 	statFrame:Show();
@@ -1644,7 +1663,12 @@ function SpellHitChance_OnEnter(statFrame)
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
 	local hitChance = GetCombatRatingBonus(CR_HIT_SPELL) + GetSpellHitModifier();
-	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..format("+%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE);
+	if (hitChance >= 0) then
+		hitChance = format("+%.2f%%", hitChance);
+	else
+		hitChance = RED_FONT_COLOR_CODE..format("%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE;
+	end
+	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..hitChance..FONT_COLOR_CODE_CLOSE);
 	GameTooltip:AddLine(format(STAT_HIT_SPELL_TOOLTIP, GetCombatRating(CR_HIT_SPELL), GetCombatRatingBonus(CR_HIT_SPELL)));
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, MISS_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1670,7 +1694,11 @@ function PaperDollFrame_SetSpellHitChance(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_HIT_CHANCE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local hitChance = GetCombatRatingBonus(CR_HIT_SPELL) + GetSpellHitModifier();
-	hitChance = format("+%.2f%%", hitChance);
+	if (hitChance >= 0) then
+		hitChance = format("+%.2f%%", hitChance);
+	else
+		hitChance = RED_FONT_COLOR_CODE..format("%.2f%%", hitChance)..FONT_COLOR_CODE_CLOSE;
+	end
 	text:SetText(hitChance);
 	statFrame:SetScript("OnEnter", SpellHitChance_OnEnter);
 	statFrame:Show();

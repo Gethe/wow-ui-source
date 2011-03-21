@@ -1090,7 +1090,7 @@
 								<ScrollChild>
 									<Frame name="$parentChildFrame">
 										<Size>
-											<AbsDimension x="1" y="1"/>
+											<AbsDimension x="298" y="1"/>
 										</Size>
 										<Layers>
 											<Layer level="ARTWORK">
@@ -1202,6 +1202,29 @@
 														SmallMoneyFrame_OnLoad(self);
 														MoneyFrame_SetType(self, "STATIC");
 													</OnLoad>
+												</Scripts>
+											</Frame>
+											<Frame name="$parentRandomList" parentKey="randomList">
+												<Size x="100" y="32"/>
+												<Layers>
+													<Layer level="ARTWORK">
+														<Texture name="$parentDiceTexture" file="Interface\Buttons\UI-GroupLoot-Dice-Up">
+															<Size x="32" y="32"/>
+															<Anchors>
+																<Anchor point="BOTTOMRIGHT"/>
+															</Anchors>
+														</Texture>
+														<FontString  inherits="ChatFontSmall" text="INCLUDED_DUNGEONS" justifyH="RIGHT">
+															<Anchors>
+																<Anchor point="TOPLEFT"/>
+																<Anchor point="BOTTOMRIGHT" relativeTo="$parentDiceTexture" relativePoint="BOTTOMLEFT" x="-3" y="0"/>
+															</Anchors>
+														</FontString>
+													</Layer>
+												</Layers>
+												<Scripts>
+													<OnEnter function="LFDQueueFrameRandomRandomList_OnEnter"/>
+													<OnLeave function="GameTooltip_Hide"/>
 												</Scripts>
 											</Frame>
 											<Frame name="$parentSpacer" parentKey="spacer">

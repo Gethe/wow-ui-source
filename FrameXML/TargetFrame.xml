@@ -700,6 +700,8 @@
 				TargetFrame_CreateSpellbar(self, "PLAYER_TARGET_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "targettarget");
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
+				self.threatNumericIndicator:SetScript("OnShow", function() TargetFrame_UpdateAuras(self) end);
+				self.threatNumericIndicator:SetScript("OnHide", function() TargetFrame_UpdateAuras(self) end);
 			</OnLoad>
 			<OnDragStart function="TargetFrame_OnDragStart"/>
 			<OnDragStop function="TargetFrame_OnDragStop"/>

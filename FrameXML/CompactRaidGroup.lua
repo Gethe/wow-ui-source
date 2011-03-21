@@ -77,7 +77,7 @@ function CompactRaidGroup_UpdateLayout(frame)
 end
 
 function CompactRaidGroup_UpdateBorder(frame)
-	local showBorder = RAID_BORDERS_SHOWN;
+	local showBorder = GetCVarBool("raidOptionShowBorders");
 	
 	if ( showBorder ) then
 		frame.borderFrame:Show();

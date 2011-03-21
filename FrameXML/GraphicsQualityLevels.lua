@@ -112,21 +112,6 @@ VideoData["Graphics_Quality"]={
 	dependtarget = Graphics_ControlRefreshValue,
 	initialize = 
 		function(self)
-			local max = 0;
-			local valid = true;
-			for i, value in ipairs(self.data) do
-				for key, val in pairs(value.notify) do
-					local j = _G[key]:lookup(val)
-					if( not IsValid ( _G[key], j) ) then
-						valid = false;
-						break;
-					end
-				end
-				if(not valid) then
-					break;
-				end
-				max = max + 1;
-			end
 			self:SetBackdrop({bgFile = "Interface\\Buttons\\UI-SliderBar-Background", edgeFile = "Interface\\Buttons\\UI-SliderBar-Border", tile = true, tileSize = 8, edgeSize = 8, pieces=93, insets = { left = 3, right = 3, top = 6, bottom = 6 } } );
 			local parent = self:GetParent():GetName();
 			local name = self:GetName();
@@ -137,16 +122,7 @@ VideoData["Graphics_Quality"]={
 
 			local fullwidth = _G[parent .."GraphicsHeaderUnderline"]:GetWidth() - 20;
 			self.noclick = true;
-			if((max < #self.data) and (max>0)) then
-				local area = fullwidth * (max-1)/4 + 20;
-				self:SetWidth(area);
-				_G[name .. "Invalid"]:SetWidth(fullwidth - area + 10);
-				_G[name .. "Invalid"]:Show();
-				self:SetMinMaxValues(1,max);
-			else
-				self:SetWidth(fullwidth);
-				_G[name .. "Invalid"]:Hide();
-			end
+			self:SetWidth(fullwidth);
 			if(not self.isdependtarget) then
 				self:setinitialslider();
 			end
@@ -171,15 +147,19 @@ VideoData["Graphics_Quality"]={
 				self.noclick = true;
 				Graphics_Quality:SetValue(value);	-- set the slider only
 				self.noclick = false;
-				_G["Graphics_RightQualityLabel"]:Hide();
+				if ( self:GetValue() > #self.data ) then
+					_G["Graphics_RightQualityLabel"]:Show();
+				else
+					_G["Graphics_RightQualityLabel"]:Hide();
+				end
 			end
 		end,
 	onvaluechanged = 
 		function(self, value)
 			self.savevalue = value;
 			if(not self.noclick) then
-				self:updatecustomfield(value);
 				VideoOptions_OnClick(self, value);
+				self:updatecustomfield(value);
 			end
 		end,
 	commitslider =
@@ -1069,4 +1049,34 @@ VideoData["Advanced_StereoEnabled"]={
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
 }
 
+-------------------------------------------------------------------------------------------------------
+VideoData["Advanced_GraphicsAPIDropDown"]={
+	name = GXAPI;
+	description = OPTION_TOOLTIP_GXAPI;
 
+	tablefunction = 
+		function(self)
+			self.cvarValues = { GetGraphicsAPIs() };	-- this is a table of the cvar values, ie "d3d9", "opengl", etc
+			local temp = { };
+			for i = 1, #self.cvarValues do
+				tinsert(temp, _G["GXAPI_"..strupper(self.cvarValues[i])]);
+			end
+			return unpack(temp);
+		end,
+	SetValue =
+		function (self, value)
+			SetCVar("gxapi", self.cvarValues[value]);
+		end,
+	doGetValue = 
+		function(self)
+			local api = GetCVar("gxapi");
+			for i = 1, #self.cvarValues do
+				if (self.cvarValues[i] == api) then
+					return i;
+				end
+			end
+		end,
+	lookup = Graphics_TableLookupSafe,
+	clientRestart = true,
+	gameRestart = true,
+}

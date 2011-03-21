@@ -494,6 +494,11 @@ function TargetFrame_UpdateAuras (self)
 	end
 	
 	self.auraRows = 0;
+	
+	local mirrorAurasVertically = false;
+	if ( self == TargetFrame and TARGET_FRAME_BUFFS_ON_TOP ) then
+		mirrorAurasVertically = true;
+	end
 	local haveTargetofTarget;
 	if ( self.totFrame ) then
 		haveTargetofTarget = self.totFrame:IsShown();
@@ -502,17 +507,17 @@ function TargetFrame_UpdateAuras (self)
 	local maxRowWidth;
 	-- update buff positions
 	maxRowWidth = ( haveTargetofTarget and self.TOT_AURA_ROW_WIDTH ) or AURA_ROW_WIDTH;
-	TargetFrame_UpdateAuraPositions(self, selfName.."Buff", numBuffs, numDebuffs, largeBuffList, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3);
+	TargetFrame_UpdateAuraPositions(self, selfName.."Buff", numBuffs, numDebuffs, largeBuffList, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically);
 	-- update debuff positions
 	maxRowWidth = ( haveTargetofTarget and self.auraRows < NUM_TOT_AURA_ROWS and self.TOT_AURA_ROW_WIDTH ) or AURA_ROW_WIDTH;
-	TargetFrame_UpdateAuraPositions(self, selfName.."Debuff", numDebuffs, numBuffs, largeDebuffList, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4);
+	TargetFrame_UpdateAuraPositions(self, selfName.."Debuff", numDebuffs, numBuffs, largeDebuffList, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically);
 	-- update the spell bar position
 	if ( self.spellbar ) then
 		Target_Spellbar_AdjustPosition(self.spellbar);
 	end
 end
 
-function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX)
+function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
 	-- a lot of this complexity is in place to allow the auras to wrap around the target of target frame if it's shown
 
 	-- Position auras
@@ -540,7 +545,7 @@ function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAu
 		if ( rowWidth > maxRowWidth ) then
 			-- this aura would cause the current row to exceed the max row width, so make this aura
 			-- the start of a new row instead
-			updateFunc(self, auraName, i, numOppositeAuras, firstBuffOnRow, size, offsetX, offsetY);
+			updateFunc(self, auraName, i, numOppositeAuras, firstBuffOnRow, size, offsetX, offsetY, mirrorAurasVertically);
 
 			rowWidth = size;
 			self.auraRows = self.auraRows + 1;
@@ -553,32 +558,51 @@ function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAu
 				maxRowWidth = AURA_ROW_WIDTH;
 			end
 		else
-			updateFunc(self, auraName, i, numOppositeAuras, i - 1, size, offsetX, offsetY);
+			updateFunc(self, auraName, i, numOppositeAuras, i - 1, size, offsetX, offsetY, mirrorAurasVertically);
 		end
 	end
 end
 
-function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorIndex, size, offsetX, offsetY)
+function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorIndex, size, offsetX, offsetY, mirrorVertically)
+	--For mirroring vertically
+	local point, relativePoint;
+	local startY, auraOffsetY;
+	if ( mirrorVertically ) then
+		point = "BOTTOM";
+		relativePoint = "TOP";
+		startY = -15;
+		if ( self.threatNumericIndicator:IsShown() ) then
+			startY = startY + self.threatNumericIndicator:GetHeight();
+		end
+		offsetY = - offsetY;
+		auraOffsetY = -AURA_OFFSET_Y;
+	else
+		point = "TOP";
+		relativePoint="BOTTOM";
+		startY = AURA_START_Y;
+		auraOffsetY = AURA_OFFSET_Y;
+	end
+	
 	local buff = _G[buffName..index];
 	if ( index == 1 ) then
 		if ( UnitIsFriend("player", self.unit) or numDebuffs == 0 ) then
 			-- unit is friendly or there are no debuffs...buffs start on top
-			buff:SetPoint("TOPLEFT", self, "BOTTOMLEFT", AURA_START_X, AURA_START_Y);			
+			buff:SetPoint(point.."LEFT", self, relativePoint.."LEFT", AURA_START_X, startY);			
 		else
 			-- unit is not friendly and we have debuffs...buffs start on bottom
-			buff:SetPoint("TOPLEFT", self.debuffs, "BOTTOMLEFT", 0, -offsetY);
+			buff:SetPoint(point.."LEFT", self.debuffs, relativePoint.."LEFT", 0, -offsetY);
 		end
-		self.buffs:SetPoint("TOPLEFT", buff, "TOPLEFT", 0, 0);
-		self.buffs:SetPoint("BOTTOMLEFT", buff, "BOTTOMLEFT", 0, -AURA_OFFSET_Y);
+		self.buffs:SetPoint(point.."LEFT", buff, point.."LEFT", 0, 0);
+		self.buffs:SetPoint(relativePoint.."LEFT", buff, relativePoint.."LEFT", 0, -auraOffsetY);
 		self.spellbarAnchor = buff;
 	elseif ( anchorIndex ~= (index-1) ) then
 		-- anchor index is not the previous index...must be a new row
-		buff:SetPoint("TOPLEFT", _G[buffName..anchorIndex], "BOTTOMLEFT", 0, -offsetY);
-		self.buffs:SetPoint("BOTTOMLEFT", buff, "BOTTOMLEFT", 0, -AURA_OFFSET_Y);
+		buff:SetPoint(point.."LEFT", _G[buffName..anchorIndex], relativePoint.."LEFT", 0, -offsetY);
+		self.buffs:SetPoint(relativePoint.."LEFT", buff, relativePoint.."LEFT", 0, -auraOffsetY);
 		self.spellbarAnchor = buff;
 	else
 		-- anchor index is the previous index
-		buff:SetPoint("TOPLEFT", _G[buffName..anchorIndex], "TOPRIGHT", offsetX, 0);
+		buff:SetPoint(point.."LEFT", _G[buffName..anchorIndex], point.."RIGHT", offsetX, 0);
 	end
 
 	-- Resize
@@ -586,32 +610,52 @@ function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorI
 	buff:SetHeight(size);
 end
 
-function TargetFrame_UpdateDebuffAnchor(self, debuffName, index, numBuffs, anchorIndex, size, offsetX, offsetY)
+function TargetFrame_UpdateDebuffAnchor(self, debuffName, index, numBuffs, anchorIndex, size, offsetX, offsetY, mirrorVertically)
 	local buff = _G[debuffName..index];
 	local isFriend = UnitIsFriend("player", self.unit);
+	
+	--For mirroring vertically
+	local point, relativePoint;
+	local startY, auraOffsetY;
+	if ( mirrorVertically ) then
+		point = "BOTTOM";
+		relativePoint = "TOP";
+		startY = -15;
+		if ( self.threatNumericIndicator:IsShown() ) then
+			startY = startY + self.threatNumericIndicator:GetHeight();
+		end
+		offsetY = - offsetY;
+		auraOffsetY = -AURA_OFFSET_Y;
+	else
+		point = "TOP";
+		relativePoint="BOTTOM";
+		startY = AURA_START_Y;
+		auraOffsetY = AURA_OFFSET_Y;
+	end
+	
 	if ( index == 1 ) then
 		if ( isFriend and numBuffs > 0 ) then
 			-- unit is friendly and there are buffs...debuffs start on bottom
-			buff:SetPoint("TOPLEFT", self.buffs, "BOTTOMLEFT", 0, -offsetY);
+			buff:SetPoint(point.."LEFT", self.buffs, relativePoint.."LEFT", 0, -offsetY);
 		else
 			-- unit is not friendly or there are no buffs...debuffs start on top
-			buff:SetPoint("TOPLEFT", self, "BOTTOMLEFT", AURA_START_X, AURA_START_Y);
+			buff:SetPoint(point.."LEFT", self, relativePoint.."LEFT", AURA_START_X, startY);
 		end
-		self.debuffs:SetPoint("TOPLEFT", buff, "TOPLEFT", 0, 0);
-		self.debuffs:SetPoint("BOTTOMLEFT", buff, "BOTTOMLEFT", 0, -AURA_OFFSET_Y);
+		self.debuffs:SetPoint(point.."LEFT", buff, point.."LEFT", 0, 0);
+		self.debuffs:SetPoint(relativePoint.."LEFT", buff, relativePoint.."LEFT", 0, -auraOffsetY);
 		if ( ( isFriend ) or ( not isFriend and numBuffs == 0) ) then
 			self.spellbarAnchor = buff;
 		end
 	elseif ( anchorIndex ~= (index-1) ) then
 		-- anchor index is not the previous index...must be a new row
-		buff:SetPoint("TOPLEFT", _G[debuffName..anchorIndex], "BOTTOMLEFT", 0, -offsetY);
-		self.debuffs:SetPoint("BOTTOMLEFT", buff, "BOTTOMLEFT", 0, -AURA_OFFSET_Y);
+		buff:SetPoint(point.."LEFT", _G[debuffName..anchorIndex], relativePoint.."LEFT", 0, -offsetY);
+		self.debuffs:SetPoint(relativePoint.."LEFT", buff, relativePoint.."LEFT", 0, -auraOffsetY);
 		if ( ( isFriend ) or ( not isFriend and numBuffs == 0) ) then
 			self.spellbarAnchor = buff;
 		end
 	else
 		-- anchor index is the previous index
-		buff:SetPoint("TOPLEFT", _G[debuffName..(index-1)], "TOPRIGHT", offsetX, 0);
+		buff:SetPoint(point.."LEFT", _G[debuffName..(index-1)], point.."RIGHT", offsetX, 0);
 	end
 
 	-- Resize
@@ -925,19 +969,19 @@ function Target_Spellbar_AdjustPosition(self)
 	-- this may need to be reworked, but it covers all cases within 3 conditionals
 	local parentFrame = self:GetParent();
 	if ( parentFrame.haveToT ) then
-		if ( parentFrame.auraRows <= 1 ) then
+		if ( TARGET_FRAME_BUFFS_ON_TOP or parentFrame.auraRows <= 1 ) then
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -21 );
 		else
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		end
 	elseif ( parentFrame.haveElite ) then
-		if ( parentFrame.auraRows <= 1 ) then
+		if ( TARGET_FRAME_BUFFS_ON_TOP or parentFrame.auraRows <= 1 ) then
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -5 );
 		else
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		end
 	else
-		if ( parentFrame.auraRows > 0 ) then
+		if ( (not TARGET_FRAME_BUFFS_ON_TOP) and parentFrame.auraRows > 0 ) then
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		else
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 7 );
@@ -948,6 +992,7 @@ end
 function TargetFrame_OnDragStart(self)
 	self:StartMoving();
 	self:SetUserPlaced(true);
+	self:SetClampedToScreen(true);
 end
 
 function TargetFrame_OnDragStop(self)
@@ -967,6 +1012,10 @@ function TargetFrame_ResetUserPlacedPosition()
 	TargetFrame:ClearAllPoints();
 	TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4);
 	TargetFrame:SetUserPlaced(false);
+	TargetFrame:SetClampedToScreen(false);
+	TARGET_FRAME_BUFFS_ON_TOP = false;
+	TargetFrame_UpdateAuras(TargetFrame);
+	TargetFrame_SetLocked(true);
 end
 
 -- *********************************************************************************

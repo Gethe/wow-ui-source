@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="195" y="240"/>
+			<AbsDimension x="195" y="214"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -44,7 +44,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="VIDEOOPTIONS_MENU">
+			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="SYSTEMOPTIONS_MENU">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP">
 						<Offset>
@@ -67,32 +67,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GameMenuButtonSoundOptions" inherits="GameMenuButtonTemplate" text="SOUNDOPTIONS_MENU">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						if (tonumber(GetCVar("blizzcon")) == 1) then
-							self:Disable();
-						else
-							self:Enable();
-						end
-					</OnShow>
-					<OnClick>
-						PlaySound("igMainMenuOption");
-						ShowUIPanel(AudioOptionsFrame);
-						AudioOptionsFrame.lastFrame = GameMenuFrame;
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="GameMenuButtonUIOptions" inherits="GameMenuButtonTemplate" text="UIOPTIONS_MENU">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonSoundOptions" relativePoint="BOTTOM">
+					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="-1"/>
 						</Offset>
@@ -108,7 +85,7 @@
 			</Button>
 			<Button name="GameMenuButtonMacOptions" inherits="GameMenuButtonTemplate" text="MAC_OPTIONS">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonSoundOptions" relativePoint="BOTTOM">
+					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="-1"/>
 						</Offset>
@@ -123,9 +100,9 @@
 					<OnLoad>
 						if(not IsMacClient()) then
 							GameMenuButtonMacOptions:Hide();
-							GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonSoundOptions, "BOTTOM", 0, -1);
+							GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
 						else
-							GameMenuFrame:SetHeight(266);
+							GameMenuFrame:SetHeight(240);
 							GameMenuButtonMacOptions:Show();
 							GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonMacOptions, "BOTTOM", 0, -1);
 						end

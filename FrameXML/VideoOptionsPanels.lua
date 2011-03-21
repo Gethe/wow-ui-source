@@ -441,8 +441,43 @@ function Graphics_DropDownRefreshValue(self)
 	VideoOptionsDropDownMenu_Initialize(self, self.initialize);
 	VideoOptionsDropDownMenu_SetSelectedID(self, self:GetValue(), 1);
 	if(self.dependent ~= nil) then
+		local checkWarning;
 		for i, key in ipairs(self.dependent) do
 			 _G[key].needrefresh = true;
+			 if ( key == "Graphics_Quality" ) then
+				checkWarning = true;
+			 end
+		end
+		-- check warning if this control depended on the graphics quality slider
+		if ( checkWarning ) then
+			local displayWarning;
+			local qualityValue = BlizzardOptionsPanel_GetCVarSafe("graphicsQuality");
+			local settings = VideoData["Graphics_Quality"].data[qualityValue];
+			local value;
+			if ( settings and settings.notify ) then
+				local key = self:GetName();
+				value = settings.notify[key];
+				-- if there is a setting for this control at the current quality setting
+				if ( value ) then
+					local index;
+					-- find the index of that setting in the dropdown options
+					for i, val in ipairs(self.table) do
+						if(val == value) then
+							index = i;
+							break;
+						end
+					end
+					if ( index ~= self:GetValue() ) then
+						displayWarning = true;
+					end
+				end
+			end
+			if ( displayWarning ) then
+				self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
+				self.warning:Show();
+			else
+				self.warning:Hide();
+			end
 		end
 	end
 end
@@ -603,6 +638,10 @@ function VideoOptionsDropDown_OnLoad(self)
 				self.newValue = index;
 				self.selectedID = index;
 				VideoOptionsDropDownMenu_SetText(value, self);
+				self.warning:Hide();
+			else
+				self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
+				self.warning:Show();
 			end
 		end
 
@@ -647,6 +686,14 @@ function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
 
+function VideoOptionsPanel_OnShow(self)
+	if ( self.hasApply ) then
+		VideoOptionsFrameApply:Show();
+	else
+		VideoOptionsFrameApply:Hide();
+	end
+end
+
 function Graphics_OnLoad (self)
 	if(IsGMClient() and InGlue()) then
 		local qualityNames =
@@ -680,12 +727,14 @@ function Graphics_OnLoad (self)
 		end
 	end
 	self.name = GRAPHICS_LABEL;
+	self.hasApply = true;
 	VideoOptionsPanel_OnLoad(self, nil, nil, Graphics_Default, nil)
 	self:SetScript("OnEvent", Graphics_OnEvent);
 end
 
 function Advanced_OnLoad (self)
 	self.name = ADVANCED_LABEL;
+	self.hasApply = true;
 	VideoOptionsPanel_OnLoad(self, nil, nil, Advanced_Default, nil)
 	-- this must come AFTER the parent OnLoad because the functions will be set to defaults there
 	self:SetScript("OnEvent", Graphics_OnEvent);
@@ -700,5 +749,24 @@ function Advanced_OnLoad (self)
 	end
 end
 
+--
+-- Network
+--
+NetworkPanelOptions = {
+	disableServerNagle = { text = "OPTIMIZE_NETWORK_SPEED" },
+	useIPv6 = { text = "USEIPV6" },
+}
 
+function NetworkOptionsPanel_OnLoad(self)
+	self.name = NETWORK_LABEL;
+	self.options = NetworkPanelOptions;
+	BlizzardOptionsPanel_OnLoad(self, nil, BlizzardOptionsPanel_Cancel, BlizzardOptionsPanel_Default, BlizzardOptionsPanel_Refresh);
+	OptionsFrame_AddCategory(VideoOptionsFrame, self);
+end
 
+function NetworkOptionsPanel_CheckButton_OnClick(self)
+	BlizzardOptionsPanel_CheckButton_OnClick(self);
+	if ( self.cvar ) then
+		BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetChecked(), self.event);
+	end	
+end

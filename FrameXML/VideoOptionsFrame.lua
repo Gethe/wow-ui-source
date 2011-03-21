@@ -21,12 +21,12 @@ end
 function VideoOptionsFrame_OnLoad (self)
 	OptionsFrame_OnLoad(self);
 
-	_G[self:GetName().."HeaderText"]:SetText(VIDEOOPTIONS_MENU);
+	_G[self:GetName().."HeaderText"]:SetText(SYSTEMOPTIONS_MENU);
 end
 
 function VideoOptionsFrame_OnHide (self)
 	OptionsFrame_OnHide(self);
-
+	VideoOptionsFrameApply:Disable();
 	if ( VideoOptionsFrame.gameRestart ) then
 		StaticPopup_Show("CLIENT_RESTART_ALERT");
 		VideoOptionsFrame.gameRestart = nil;
@@ -54,4 +54,3 @@ function VideoOptionsFrameDefault_OnClick (self, button)
 
 	StaticPopup_Show("CONFIRM_RESET_VIDEO_SETTINGS");
 end
-

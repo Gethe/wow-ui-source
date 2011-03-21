@@ -114,6 +114,7 @@ UnitPopupButtons["RESET_PLAYER_FRAME_POSITION"] = { text = RESET_POSITION, dist 
 UnitPopupButtons["MOVE_TARGET_FRAME"] = { text = MOVE_FRAME, dist = 0, nested = 1 };
 UnitPopupButtons["LOCK_TARGET_FRAME"] = { text = LOCK_FRAME, dist = 0 };
 UnitPopupButtons["UNLOCK_TARGET_FRAME"] = { text = UNLOCK_FRAME, dist = 0 };
+UnitPopupButtons["TARGET_FRAME_BUFFS_ON_TOP"] = { text = BUFFS_ON_TOP, dist = 0, checkable = 1, isNotRadio = 1 };
 UnitPopupButtons["RESET_TARGET_FRAME_POSITION"] = { text = RESET_POSITION, dist = 0 };
 
 -- Voice Chat Related
@@ -184,7 +185,7 @@ UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICU
 UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "RAID_DIFFICULTY4" };
 UnitPopupMenus["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" };
 UnitPopupMenus["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION" };
-UnitPopupMenus["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" };
+UnitPopupMenus["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" , "TARGET_FRAME_BUFFS_ON_TOP"};
 
 UnitPopupShown = {};
 UnitPopupShown[1] = {};
@@ -388,6 +389,10 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					if ( not GetOptOutOfLoot() ) then
 						info.checked = 1;
 					end
+				elseif ( value == "TARGET_FRAME_BUFFS_ON_TOP" ) then
+					if ( TARGET_FRAME_BUFFS_ON_TOP ) then
+						info.checked = 1;
+					end
 				elseif ( strsub(value, 1, 9) == "SET_ROLE_" ) then
 					if ( UnitGroupRolesAssigned(unit) == strsub(value, 10) ) then
 						info.checked = 1;
@@ -400,6 +405,11 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					info.notCheckable = 1;
 				else
 					info.notCheckable = nil;
+				end
+				if ( UnitPopupButtons[value].isNotRadio ) then
+					info.isNotRadio = 1
+				else
+					info.isNotRadio = nil;
 				end
 				-- Setup newbie tooltips
 				info.tooltipTitle = UnitPopupButtons[value].text;
@@ -1510,6 +1520,9 @@ function UnitPopup_OnClick (self)
 		PlayerFrame_ResetUserPlacedPosition();
 	elseif ( button == "RESET_TARGET_FRAME_POSITION" ) then
 		TargetFrame_ResetUserPlacedPosition();
+	elseif ( button == "TARGET_FRAME_BUFFS_ON_TOP" ) then
+		TARGET_FRAME_BUFFS_ON_TOP = not TARGET_FRAME_BUFFS_ON_TOP;
+		TargetFrame_UpdateAuras(TargetFrame);
 	elseif ( strsub(button, 1, 10) == "BN_REPORT_" ) then
 		BNet_InitiateReport(dropdownFrame.presenceID, strsub(button, 11));
 	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then

@@ -52,11 +52,11 @@ function AccountLogin_OnShow(self)
 	AccountLoginAccountEdit:SetText(accountName);
 	AccountLoginPasswordEdit:SetText("");
 	AccountLoginTokenEdit:SetText("");
-	if ( accountName and accountName ~= "" and GetUsesToken() ) then
+	--[[if ( accountName and accountName ~= "" and GetUsesToken() ) then
 		AccountLoginTokenEdit:Show()
 	else
 		AccountLoginTokenEdit:Hide()
-	end
+	end]]
 	
 	AccountLogin_SetupAccountListDDL();
 	

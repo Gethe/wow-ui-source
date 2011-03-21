@@ -52,10 +52,10 @@
 
 	<!-- Sound Panel -->
 
-	<Frame name="AudioOptionsSoundPanel" hidden="false" parent="AudioOptionsFramePanelContainer">
+	<Frame name="AudioOptionsSoundPanel" hidden="true" parent="VideoOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="SOUND_LABEL" inherits="OptionsFontLarge" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentDisplayHeader" text="SOUND_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -64,30 +64,22 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubText" text="SOUND_SUBTEXT" inherits="OptionsFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension y="32" x="0"/>
-					</Size>
+				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="0"/>
+								<AbsDimension x="0" y="-3"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</FontString>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<CheckButton name="$parentEnableSound" inherits="AudioOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="-64" y="-72"/>
+					<Anchor point="TOPLEFT">
+						<Offset x="24" y="-64"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -644,6 +636,7 @@
 			<OnLoad>
 				AudioOptionsSoundPanel_OnLoad(self);
 			</OnLoad>
+			<OnShow function="VideoOptionsPanel_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

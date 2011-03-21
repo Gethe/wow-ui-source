@@ -119,7 +119,7 @@ function AudioOptionsSoundPanel_OnLoad (self)
 	self.name = SOUND_LABEL;
 	self.options = SoundPanelOptions;
 	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default, AudioOptionsPanel_Refresh);
-	OptionsFrame_AddCategory(AudioOptionsFrame, self);
+	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
 
 function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)

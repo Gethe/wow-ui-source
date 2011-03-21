@@ -930,7 +930,47 @@ function LFDQueueFrameRandom_UpdateFrame()
 		parentFrame.xpAmount:Hide();
 	end
 	
+	if ( not isHoliday ) then
+		if ( parentFrame:GetRight() and lastFrame:GetRight() ) then
+			local lastDistFromSide = parentFrame:GetRight() - lastFrame:GetRight()
+			local xOffset = lastDistFromSide - parentFrame.randomList:GetWidth();	--We want this to be aligned along the right side.
+			parentFrame.randomList:ClearAllPoints();
+			parentFrame.randomList:SetPoint(xOffset < 0 and "TOPLEFT" or "BOTTOMLEFT", lastFrame, "BOTTOMRIGHT", xOffset, 0);
+			parentFrame.randomList:Show();
+			lastFrame = parentFrame.randomList;
+		end
+	else
+		parentFrame.randomList:Hide();
+	end
+	
 	parentFrame.spacer:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -10);
+end
+
+function LFDQueueFrameRandomRandomList_OnEnter(self)
+	local randomID = LFDQueueFrame.type;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(INCLUDED_DUNGEONS, 1, 1, 1);
+	GameTooltip:AddLine(INCLUDED_DUNGEONS_SUBTEXT, nil, nil, nil, true);
+	GameTooltip:AddLine(" ");
+	
+	for i=1, GetNumDungeonForRandomSlot(randomID) do
+		local dungeonID = GetDungeonForRandomSlot(randomID, i);
+		local info = LFGGetDungeonInfoByID(dungeonID);
+		local name, minLevel, maxLevel, recLevel = info[LFG_RETURN_VALUES.name], info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel], info[LFG_RETURN_VALUES.recLevel];
+		local rangeText;
+		if ( minLevel == maxLevel ) then
+			rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);
+		else
+			rangeText = format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel);
+		end
+		local difficultyColor = GetQuestDifficultyColor(recLevel);
+		GameTooltip:AddDoubleLine(name, rangeText, difficultyColor.r, difficultyColor.g, difficultyColor.b, difficultyColor.r, difficultyColor.g, difficultyColor.b);
+		if ( LFGLockList[dungeonID] ) then
+			GameTooltip:AddTexture("Interface\\LFGFrame\\UI-LFG-ICON-LOCK", 0, 0.875, 0, 0.875);
+		end
+	end
+		
+	GameTooltip:Show();
 end
 
 function LFDQueueFrameRandomCooldownFrame_OnLoad(self)

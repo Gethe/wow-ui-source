@@ -6,21 +6,21 @@
 
 	<Frame name="VideoOptionsFrame" inherits="OptionsFrameTemplate">
 		<Frames>
-			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY">
+			<Button name="$parentApply" inherits="UIPanelButtonTemplate" text="APPLY" hidden="true">
 				<Size>
 					<AbsDimension x="96" y="22"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-16" y="16"/>
+							<AbsDimension x="-32" y="64"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnShow>
+					<OnLoad>
 						self:Disable();
-					</OnShow>
+					</OnLoad>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						VideoOptionsFrameOkay_OnClick(self, button, down, true);
@@ -33,7 +33,11 @@
 					<AbsDimension x="96" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentApply" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick function="VideoOptionsFrameCancel_OnClick"/>

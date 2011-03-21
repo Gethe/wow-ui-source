@@ -124,7 +124,7 @@ function AudioOptionsSoundPanel_OnLoad (self)
 	self.name = SOUND_LABEL;
 	self.options = SoundPanelOptions;
 	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default, AudioOptionsPanel_Refresh);
-	OptionsFrame_AddCategory(AudioOptionsFrame, self);
+	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
 
 function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
@@ -314,7 +314,7 @@ end
 function AudioOptionsVoicePanel_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		if ( IsVoiceChatAllowedByServer() ) then
-			OptionsFrame_AddCategory(AudioOptionsFrame, self);
+			OptionsFrame_AddCategory(VideoOptionsFrame, self);
 			BlizzardOptionsPanel_OnEvent(self, event, ...);
 		end
 		self:UnregisterEvent(event);
@@ -324,6 +324,7 @@ end
 function AudioOptionsVoicePanel_OnShow (self)
 	VoiceChatTalkers:SetAlpha(1);
 	VoiceChatTalkers.optionsLock = true;
+	VideoOptionsPanel_OnShow(self);
 end
 
 function AudioOptionsVoicePanel_OnHide (self)

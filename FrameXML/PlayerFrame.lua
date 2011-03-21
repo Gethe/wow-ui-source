@@ -43,6 +43,8 @@ function PlayerFrame_OnLoad(self)
 
 	PlayerAttackBackground:SetVertexColor(0.8, 0.1, 0.1);
 	PlayerAttackBackground:SetAlpha(0.4);
+	
+	self:SetClampRectInsets(20, 0, 0, 0);
 
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
@@ -678,6 +680,7 @@ end
 function PlayerFrame_OnDragStart(self)
 	self:StartMoving();
 	self:SetUserPlaced(true);
+	self:SetClampedToScreen(true);
 end
 
 function PlayerFrame_OnDragStop(self)
@@ -697,4 +700,6 @@ function PlayerFrame_ResetUserPlacedPosition()
 	PlayerFrame:ClearAllPoints();
 	PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4);
 	PlayerFrame:SetUserPlaced(false);
+	PlayerFrame:SetClampedToScreen(false);
+	PlayerFrame_SetLocked(true);
 end

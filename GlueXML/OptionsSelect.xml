@@ -78,6 +78,7 @@
 										PlaySound("igMainMenuOption");
 										VideoOptionsFrame.lastFrame = OptionsSelectFrame;
 										VideoOptionsFrame:Show();
+										OptionsFrame_OpenToCategory(VideoOptionsFrame, GRAPHICS_LABEL);
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -91,8 +92,9 @@
 								<Scripts>
 									<OnClick>
 										PlaySound("igMainMenuOption");
-										AudioOptionsFrame.lastFrame = OptionsSelectFrame;
-										AudioOptionsFrame:Show();
+										VideoOptionsFrame.lastFrame = OptionsSelectFrame;
+										VideoOptionsFrame:Show();
+										OptionsFrame_OpenToCategory(VideoOptionsFrame, SOUND_LABEL);
 									</OnClick>
 								</Scripts>
 							</Button>

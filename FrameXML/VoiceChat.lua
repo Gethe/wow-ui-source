@@ -223,18 +223,9 @@ end
 --- Global Voice Chat Switch
 function VoiceChat_Toggle()
 	if ( IsVoiceChatEnabled() ) then
-		-- Options Frame Enable
-		GameMenuButtonSoundOptions:SetText(SOUNDOPTIONS_MENU);
 		ChannelFrameAutoJoin:Show();
 		VoiceChatTalkers:Show();
 	else
-		if ( IsVoiceChatAllowedByServer() ) then
-			-- Options Frame Enable
-			GameMenuButtonSoundOptions:SetText(SOUNDOPTIONS_MENU);
-		else
-			-- Options Frame Disable
-			GameMenuButtonSoundOptions:SetText(VOICE_SOUND);
-		end
 		ChannelFrameAutoJoin:Hide();
 		VoiceChatTalkers:Hide();
 	end
