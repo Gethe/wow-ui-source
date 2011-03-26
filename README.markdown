@@ -3,10 +3,41 @@
 
 The latest retail patch notes can be found [here][1].
 
+**_Table of Contents_**
+
+_Click a link to jump directly to the corresponding section of the patch
+notes._
+
+  * [General][2]
+
+  * [Achievements][3]
+
+  * [Classes: General][4]
+
+    * [Death Knights][5], [Druids][6], [Hunters][7], [Mages][8],
+[Paladins][9], [Priests][10], [Rogues][11], [Shaman][12], [Warlocks][13],
+[Warriors][14]
+
+  * [Dungeons & Raids][15]
+
+  * [Guilds][16]
+
+  * [Items][17]
+
+  * [Professions][18]
+
+  * [PvP][19]
+
+  * [Quests & Creatures][20]
+
+  * [Races][21]
+
+  * [User Interface][22]
+
 **Important**: _These patch notes are not final. Additional updates will be
 made, and all existing changes are subject to revision during the course of
 the testing process. More information regarding patch 4.1 can be found
-[here][2]. Visit our Public Test Realm forum for more information about the
+[here][23]. Visit our Public Test Realm forum for more information about the
 testing process._
 
 **General**
@@ -25,14 +56,61 @@ their resilience climbs.
   * A dead player can now be resurrected by targeting them using the Party or
 Raid Frame even if they have released. No more hunting for corpses.
 
-**[Classes: General][3]**
+**[Achievements][24]**
+
+  * A new feat of strength with an associated title, "the Camel-Hoarder", has
+been added for players that have bested Dormus and obtained the Reins of the
+Grey Riding Camel -- because there must always be a Camel-Hoarder.
+
+  * PvP
+
+    * Rated Battlegrounds
+
+      * The achievements to win 100 rated Battlegrounds have been renamed to
+"Veteran of the Alliance" and "Veteran of the Horde", and now award those
+titles.
+
+      * Achievements to win 300 rated Battlegrounds have been added, awarding
+the "Warbound" and "Warbringer" titles to the Alliance and Horde respectively.
+
+    * Arathi Basin
+
+      * The achievement "We Had It All Along *cough*" now requires the player
+to win Arathi Basin by 50 points or less, up from 10 points or less.
+
+    * The Battle for Gilneas
+
+      * The achievement "Jugger Not" now requires the player to win The Battle
+for Gilneas by 100 points or less, up from 10 points or less.
+
+      * The achievement "Out of the Fog" requires the player to defend 2 bases
+in a single battle, down from 3.
+
+      * The achievement "One Two Three You Don't Know About Me" requires the
+player to assault 2 bases in a single battle, down from 3.
+
+      * The achievement "Not Your Average PUG'er" now requires 10 total flag
+defenses, down from 50.
+
+      * The achievement "Battle for Gilneas All-Star" now requires a single
+flag assault and flag defense in a battle, down from 2.
+
+**[Classes: General][25]**
 
   * All non-damaging interrupts off the global cooldown will now always hit
 the target. This includes Pummel, Shield Bash, Kick, Mind Freeze, Rebuke,
 Skull Bash, Counterspell, Wind Shear, Solar Beam, Silencing Shot, and related
 player pet abilities.
 
-**[Death Knights][4]**
+  * Several persistent ground effects now display different visuals for
+hostile and friendly players. The following spells have the same visual
+effects for friendly players, but new alternate visuals for hostile players:
+Ring of Frost, Consecration, Desecration, Wild Mushroom, Flare, Ice Trap,
+Power Word: Barrier, Smoke Bomb, and Hand of Gul'dan. As a general rule, the
+alternate effects have a red tint or hue indicating they are created by an
+enemy player.
+
+**[Death Knights][26]**
 
   * Dark Simulacrum now works on numerous additional spells in dungeon
 encounters.
@@ -64,12 +142,18 @@ The net result of this change leaves the area-of-effect damage roughly the
 same as 4.0.6 numbers. In addition, Howling Blast now has a facing
 requirement.
 
+    * Unholy
+
+      * Desecration no longer triggers when an applicable strike hits a snare-
+immune target. This is primarily to avoid unnecessary spell effect clutter
+during boss encounters.
+
   * Glyphs
 
     * Glyph of Raise Ally is now Glyph of Death Gate, and makes Death Gate
 cast 60% faster.
 
-**[Druids][5]**
+**[Druids][27]**
 
   * Cyclone duration has been reduced to 5 seconds, down from 6.
 
@@ -111,7 +195,8 @@ feet of a Swiftmend target, but this healing zone now restores health equal to
 4/8/12% of the amount healed by Swiftmend to the three most injured targets
 within 8 yards, every 1 second for 7 seconds. This periodic effect now also
 benefits from spell haste, but the individual ticks cannot be critical
-effects.
+effects. In addition, Living Seed is no longer a prerequisite talent for
+Efflorescence.
 
       * Malfurion's Gift now reduces the cooldown of Tranquility by 2.5/5
 minutes.
@@ -126,7 +211,7 @@ Pounce by 3 yards.
     * The troll druid models for Flight Form and Swift Flight Form has slimmed
 down to be more in scale with other druid flight forms.
 
-**[Hunters][6]**
+**[Hunters][28]**
 
   * Deterrence no longer requires a melee weapon to be equipped.
 
@@ -141,18 +226,18 @@ levels below.
 
   * Pets
 
-    * Bloodthirsty no longer generates Happiness.
-
-    * Carrion Feeder no longer restores Happiness.
-
     * The Feed Pet ability now instantly heals 50% of the pet's health. Cannot
 be used in combat. Requires diet-appropriate food.
-
-    * Guard Dog no longer causes Growl to generate additional Happiness.
 
     * The Happiness/Pet Loyalty System has been removed. Hunters will no
 longer have to manage Happiness for their pets, and the previous damage bonus
 for pets being happy will now be baseline for all tamed pets.
+
+      * Bloodthirsty no longer generates Happiness.
+
+      * Carrion Feeder no longer restores Happiness.
+
+      * Guard Dog no longer causes Growl to generate additional Happiness.
 
   * Glyphs
 
@@ -165,7 +250,7 @@ the size of the pet slightly.
 
     * Multi-Shot now properly has a 1-second global cooldown.
 
-**[Mages][7]**
+**[Mages][29]**
 
   * Arcane Blast damage has been increased by 13%. In addition, the stacking
 effect of Arcane Blast now increases the damage done by Arcane Explosion, and
@@ -177,11 +262,16 @@ Arcane Explosion does not consume that effect.
 
   * Blizzard damage has been increased by 70%.
 
+  * Frostbolt damage has been increased by 10%.
+
   * Talent Specializations
 
     * Arcane
 
       * Arcane Barrage damage has been increased by 13%.
+
+      * Improved Arcane Explosion now also reduces the mana cost of Arcane
+Explosion by 25/50%.
 
     * Fire
 
@@ -191,10 +281,22 @@ Arcane Explosion does not consume that effect.
 
     * Frost
 
+      * Fingers of Frost bonus damage applied to Ice Lance has been increased
+to 25%, up from 15%.
+
+      * Ice Barrier base damage value has been increased by approximately
+120%. In addition, the benefit from spell power has been increased by
+approximately 8%.
+
       * The root effect from Shattered Barrier now shares diminishing returns
 with the root from Improved Cone of Cold.
 
-**[Paladins][8]**
+  * Glyphs
+
+    * Glyph of Frost Armor (new glyph): Frost Armor also causes the mage to
+regenerate 2% of maximum mana every 5 seconds.
+
+**[Paladins][30]**
 
   * Righteous Fury now persists through death.
 
@@ -208,7 +310,8 @@ with the root from Improved Cone of Cold.
 Crusader Aura.
 
       * Illuminated Healing shield duration is now 15 seconds, up from 8
-seconds.
+seconds. In addition, Illuminated Healing has been increased to provide 1.5%
+effect per mastery, up from 1.25%.
 
       * Walk in the Light (passive) removes the cooldown of Word of Glory.
 
@@ -227,7 +330,7 @@ successfully lands on) 4 or more targets.
       * Sacred Shield's internal cooldown has been increased to 60 seconds, up
 from 30.
 
-**[Priests][9]**
+**[Priests][31]**
 
   * Divine Aegis duration has been increased to 15 seconds, up from 12.
 
@@ -278,7 +381,7 @@ of another priest's Power Word: Shield through Strength of Soul.
     * Glyph of Divine Accuracy now also affects Holy Fire in addition to
 Smite.
 
-**[Rogues][10]**
+**[Rogues][32]**
 
   * Recuperate base effect now heals 3% per tick, up from 2%.
 
@@ -300,7 +403,7 @@ of Recuperate, down from 1%/2%.
 instead of negating the movement penalty from Stealth, it adds a 5/10%
 movement speed bonus (stacking with other effects) while Stealthed.
 
-**[Shaman][11]**
+**[Shaman][33]**
 
   * Fire Nova has been redesigned and decoupled from shaman Fire totems.
 Instead, it now pulses the Fire Nova effect from each target that is afflicted
@@ -324,10 +427,10 @@ reduced by 40% from its channeled version.
 
       * Improved Fire Nova has been redesigned and replaced by a talent called
 Seasoned Winds. When an enemy spell cast is successfully prevented with Wind
-Shear or Grounding Totem, the shaman gains magical resistance (in an amount
-equal to what a protection totem/aura would grant, stacking with such buffs)
-to the spell school(s) of the interrupted spell (except for Holy spells),
-lasting 10 seconds.
+Shear, the shaman gains magical resistance (in an amount equal to what a
+protection totem/aura would grant, stacking with such buffs) to the spell
+school(s) of the interrupted spell (except for Holy spells), lasting 10
+seconds.
 
     * Restoration
 
@@ -339,7 +442,7 @@ is active the health of all affected players is redistributed among them, such
 that each player ends up with the same percentage of their maximum health.
 This counts as an Air totem and has a 3-minute cooldown.
 
-**[Warlocks][12]**
+**[Warlocks][34]**
 
   * Rain of Fire damage has been increased by 25%.
 
@@ -370,20 +473,19 @@ damage done at lower levels such that it will deal 50% damage at level 20, and
 
     * Shadow Bite (Felhunter) damage and effect has doubled.
 
-**[Warriors][13]**
+**[Warriors][35]**
 
   * Charge and Intercept no longer have diminishing returns on their stun
 effects.
 
-  * Colossus Smash now ignores 70% of an opponent's armor, down from 100%.
+  * Colossus Smash now ignores 50% of a hostile player's armor (PvP), but
+continues to ignore 100% of a non-player character's armor (PvE).
 
   * Heroic Throw is now available from trainers at level 20.
 
   * Inner Rage is now available at level 56.
 
   * Intercept now has a 1.5-second stun, down from 3 seconds.
-
-  * Overpower damage has been increased to 140% weapon damage, up from 125%.
 
   * Pummel is now usable in all stances.
 
@@ -409,17 +511,12 @@ unchanged.
       * Improved Hamstring now reduces the global cooldown on Hamstring by
 0.5/1 seconds in addition to its current effects.
 
-      * Improved Slam increases Slam damage by 20/40%, up from 10/20%.
-
       * Juggernaut no longer adds 2 seconds to the Charge stun, but instead
 lowers the cooldown of Charge by 2 seconds (to 13 seconds total without the
 glyph).
 
       * Lambs to the Slaughter now causes Mortal Strike to refresh Rend in
 addition to its current effects.
-
-      * Mortal Strike damage has been increased to 175% weapon damage, up from
-150%.
 
       * Strikes of Opportunity value per point of mastery has been increased
 by 10%.
@@ -428,9 +525,6 @@ by 10%.
 
       * Precision (passive) now increase auto-attack damage by 40%, in
 addition to the 3% hit it offers currently.
-
-      * Raging Blow damage has been increased back to 120% weapon damage, up
-from 100%.
 
       * Unshackled Fury now only grants 2 base points of mastery, down from 8.
 
@@ -447,7 +541,7 @@ damage by 7/14/20% for 6 seconds.
     * Glyph of Spell Reflection reduces the cooldown of Spell Reflection by 5
 seconds, up from 1 second.
 
-**[Dungeons & Raids][14]**
+**[Dungeons & Raids][36]**
 
   * Dungeon Finder
 
@@ -470,6 +564,16 @@ Stay tuned for additional updates.
 
   * Blackwing Descent
 
+    * Atramedes
+
+      * Searing Flames now causes a 6-second cooldown on Modulation.
+
+      * Searing Flames no longer increases Sound on players.
+
+      * Players should no longer be able to avoid the first period damage tick
+of Searing Flame, and Searing Flame now ticks every 2 seconds. The damage of
+Searing Flame has been increased to compensate for it ticking less frequently.
+
     * Flash Bomb (Golem Sentry ability) now has a more clear warning visual.
 
     * Magmaw now triggers a raid emote when summoning Lava Parasites.
@@ -477,21 +581,96 @@ Stay tuned for additional updates.
     * Further improvements have been made in the Maloriak encounter to avoid
 Flash Freeze targeting the tanks.
 
-  * The gold amounts on the following encounters have been substantially
-reduced: Flame Leviathan, Magtheridon, Gruul the Dragonkiller, Doom Lord
-Kazzak, and all encounters in Karazhan.
+    * Nefarian's End
 
-**[Guilds][15]**
+      * The damage of Shadowflame Barrage has been reduced by 15% (10-player
+normal and Heroic difficulty only).
+
+      * The damage of Tail Lash has been reduced by 20% (10-player normal and
+Heroic difficulty only).
+
+  * Bastion of Twilight
+
+    * Dragon Siblings
+
+      * Blackout can now be dispelled on Heroic difficulty.
+
+    * Cho'gall
+
+      * The health of Blood of the Old God on 10-player Heroic difficulty has
+been lowered by roughly 20%.
+
+      * The health of Darkened Creations on 10-player Heroic difficulty has
+been lowered by roughly 20%.
+
+      * Corruption: Accelerated on 10-player Heroic difficulty has been
+lowered slightly.
+
+      * Knockbacks and Deathgrip can now be used to interrupt players that are
+converted by Cho'gall.
+
+  * Dire Maul North
+
+    * The Gordok Courtyard Key in Fengus's Chest is now replenished after
+several seconds.
+
+  * The Mechanar
+
+    * The Cache of the Legion now unlocks when Gatewatcher Gyro-kill is gyro-
+killed.
+
+  * Stratholme
+
+    * Postboxes no longer require keys to open, because really, who locks
+their postboxes anymore when they're all undead? It's just people sending
+coupons for brains anyway.
+
+    * The Postmaster now spawns when 3 of any postbox are opened.
+
+  * Uldaman
+
+    * The Staff of Prehistoria is no longer required to open the door in the
+Map Room.
+
+    * Baelog's chest has been given new loot. If it's grey it's good, right?
+
+  * Zul'Farrak
+
+    * Troll Cages no longer require the Executioner's Key to open.
+
+  * The gold amounts awarded for the following encounters have been
+substantially reduced: Flame Leviathan, Magtheridon, Gruul the Dragonkiller,
+Doom Lord Kazzak, and all encounters in Karazhan.
+
+**[Guilds][37]**
 
   * The Guild Perk, Cash Flow, no longer prints out text to the Chat Log.
 Instead, the daily amount deposited is shown in the Guild Vault Money Log. In
 addition, players can view the weekly contribution in a new window at the
 bottom of the Money Log.
 
-  * We have added two new custom guild tabards as Guild Rewards. The tabards
+  * Two new custom guild tabards have been added as Guild Rewards. The tabards
 are account bound and offer a bonus to gaining guild reputation.
 
-**[Items][16]**
+  * The amount of guild experience rewarded for rated Battleground guild group
+wins has been dramatically increased.
+
+  * Players are now rewarded guild experience for Honorable Kills in the
+field.
+
+  * Players are now rewarded guild experience for Battleground wins in
+Battleground brackets up to level 80.
+
+  * Arena teams are now awarded guild experience for wins. The entire team
+must be members of the same guild to earn this experience.
+
+**[Items][38]**
+
+  * All trade goods available for purchase with Honor or Justice Points from
+the associated commodities vendors have had their prices reduced by 50%.
+
+  * Maelstrom Crystals are now available for purchase with Honor or Justice
+Points from the associated commodities vendors.
 
   * The PvP Horde and Alliance trinkets have a new spell effect.
 
@@ -509,12 +688,21 @@ target to be under the effects of Weakened Soul for the priest to receive the
 Spirit bonus. Instead the benefit will be granted each time the priest's
 Penance spell heals a target.
 
-**[Professions][17]**
+**[Professions][39]**
 
   * All major cities will now have every type of profession trainer and their
 associated trade supply vendors.
 
-**[PvP][18]**
+**[PvP][40]**
+
+  * Arenas
+
+    * The Ring of Valor has returned! It should now be playable again in the
+Arena map rotation.
+
+    * New starting areas have been added for Ring of Valor. Players will no
+longer enter the Arena on the elevator. It's been removed. Instead players
+will start in a room at opposite ends of the Arena.
 
   * Battlegrounds
 
@@ -532,6 +720,8 @@ player's movement speed at 100%. The damage taken debuff works the same and
 will add 10% to the debuff up to a maximum of 100% damage taken.
 
     * Arathi Basin
+
+      * Arathi Basin is now available as a 10v10-player rated Battleground.
 
       * Flags should now cap in 7 seconds, down from 8.
 
@@ -567,23 +757,27 @@ the enemy base.
 
         * Attacking players will respawn at their base graveyard.
 
-**[Quests & Creatures][19]**
+**[Quests & Creatures][41]**
 
   * A handful of quests have been added to Northern Barrens to provide more
 level 18-20 content. Look for new quests at Nozzlepot's Outpost and Darsok's
 Outpost.
 
-**[Races][20]**
+  * Loot from the creatures Garr, Julak-Doom, Mobus, and Poseidus has been
+adjusted to be commensurate to their rarity and invested effort.
+
+**[Races][42]**
 
   * The gnomish racial ability, Escape Artist, is no longer affected by the
 global cooldowns triggered by other abilities.
 
   * The human racial ability, Every Man for Himself, has a new spell effect.
 
-**[User Interface][21]**
+**[User Interface][43]**
 
-  * Work has begun on a new Looking for Guild system. Further details will be
-provided when we are ready for feedback.
+  * The Guild Finder has been implemented! While we are continuing to add
+final polish to this feature, we welcome all focused testers to give it a go.
+Feedback can be provided [here][44].
 
   * Like the Focus Frame, the character Unit and Target Frames can now be
 unlocked and moved to one's content.
@@ -595,42 +789,88 @@ changed and operates on mouse click up.
 
    [1]: http://us.battle.net/wow/en/game/patch-notes/
 
-   [2]: http://us.battle.net/wow/en/blog/2356431
+   [2]: #general
 
-   [3]: http://us.battle.net/wow/en/forum/#forum1033923
+   [3]: #achievements
 
-   [4]: http://us.battle.net/wow/en/game/class/death-knight
+   [4]: #classes
 
-   [5]: http://us.battle.net/wow/en/game/class/druid
+   [5]: #deathknights
 
-   [6]: http://us.battle.net/wow/en/game/class/hunter
+   [6]: #druids
 
-   [7]: http://us.battle.net/wow/en/game/class/mage
+   [7]: #hunters
 
-   [8]: http://us.battle.net/wow/en/game/class/paladin
+   [8]: #mages
 
-   [9]: http://us.battle.net/wow/en/game/class/priest
+   [9]: #paladins
 
-   [10]: http://us.battle.net/wow/en/game/class/rogue
+   [10]: #priests
 
-   [11]: http://us.battle.net/wow/en/game/class/shaman
+   [11]: #rogues
 
-   [12]: http://us.battle.net/wow/en/game/class/warlock
+   [12]: #shaman
 
-   [13]: http://us.battle.net/wow/en/game/class/warrior
+   [13]: #warlocks
 
-   [14]: http://us.battle.net/wow/en/forum/1011645/
+   [14]: #warriors
 
-   [15]: http://us.battle.net/wow/en/forum/2187372/
+   [15]: #dungeons
 
-   [16]: http://us.battle.net/wow/en/item/
+   [16]: #guilds
 
-   [17]: http://us.battle.net/wow/en/forum/1011647/
+   [17]: #items
 
-   [18]: http://us.battle.net/wow/en/pvp/
+   [18]: #professions
 
-   [19]: http://us.battle.net/wow/en/forum/1011692/
+   [19]: #pvp
 
-   [20]: http://us.battle.net/wow/en/game/race/
+   [20]: #quests
 
-   [21]: http://us.battle.net/wow/en/forum/1011693/
+   [21]: #races
+
+   [22]: #ui
+
+   [23]: http://us.battle.net/wow/en/blog/2356431
+
+   [24]: http://us.battle.net/wow/en/forum/1011646/
+
+   [25]: http://us.battle.net/wow/en/forum/#forum1033923
+
+   [26]: http://us.battle.net/wow/en/game/class/death-knight
+
+   [27]: http://us.battle.net/wow/en/game/class/druid
+
+   [28]: http://us.battle.net/wow/en/game/class/hunter
+
+   [29]: http://us.battle.net/wow/en/game/class/mage
+
+   [30]: http://us.battle.net/wow/en/game/class/paladin
+
+   [31]: http://us.battle.net/wow/en/game/class/priest
+
+   [32]: http://us.battle.net/wow/en/game/class/rogue
+
+   [33]: http://us.battle.net/wow/en/game/class/shaman
+
+   [34]: http://us.battle.net/wow/en/game/class/warlock
+
+   [35]: http://us.battle.net/wow/en/game/class/warrior
+
+   [36]: http://us.battle.net/wow/en/forum/1011645/
+
+   [37]: http://us.battle.net/wow/en/forum/2187372/
+
+   [38]: http://us.battle.net/wow/en/item/
+
+   [39]: http://us.battle.net/wow/en/forum/1011647/
+
+   [40]: http://us.battle.net/wow/en/pvp/
+
+   [41]: http://us.battle.net/wow/en/forum/1011692/
+
+   [42]: http://us.battle.net/wow/en/game/race/
+
+   [43]: http://us.battle.net/wow/en/forum/1011693/
+
+   [44]: http://us.battle.net/wow/en/forum/topic/2267579911
