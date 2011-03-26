@@ -2640,7 +2640,7 @@ function AchievementFrameComparison_OnShow ()
 	AchievementFrameStats:Hide();
 	AchievementFrameAchievements:Hide();
 	AchievementFrame:SetWidth(890);
-	AchievementFrame:SetAttribute("UIPanelLayout-xOffset", 38);
+	SetUIPanelAttribute(AchievementFrame, "xOffset", 38);
 	UpdateUIPanelPositions(AchievementFrame);
 	AchievementFrame.isComparison = true;
 end
@@ -2648,7 +2648,7 @@ end
 function AchievementFrameComparison_OnHide ()
 	AchievementFrame.selectedTab = nil;
 	AchievementFrame:SetWidth(768);
-	AchievementFrame:SetAttribute("UIPanelLayout-xOffset", 80);
+	SetUIPanelAttribute(AchievementFrame, "xOffset", 80);
 	UpdateUIPanelPositions(AchievementFrame);
 	AchievementFrame.isComparison = false;
 	ClearAchievementComparisonUnit();

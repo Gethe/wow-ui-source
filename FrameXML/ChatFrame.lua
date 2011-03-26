@@ -2331,6 +2331,14 @@ SlashCmdList["WARGAME"] = function(msg)
 	end
 end
 
+SlashCmdList["GUILDFINDER"] = function(msg)
+	if ( IsTrialAccount() ) then
+		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT, 1.0, 0.1, 0.1, 1.0);
+	else
+		ToggleGuildFinder();
+	end
+end
+
 for index, value in pairs(ChatTypeInfo) do
 	value.r = 1.0;
 	value.g = 1.0;
@@ -2984,10 +2992,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 						return;
 					end
 					--Add Blizzard Icon, this was sent by a GM
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
+					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 				elseif ( arg6 == "DEV" ) then
 					--Add Blizzard Icon, this was sent by a Dev
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
+					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 				else
 					pflag = _G["CHAT_FLAG_"..arg6];
 				end
@@ -3558,12 +3566,14 @@ end
 
 local function ChatEdit_SetDeactivated(editBox)
 	editBox:SetFrameStrata("LOW");
-	if ( GetCVar("chatStyle") == "classic") then
+	if ( GetCVar("chatStyle") == "classic" and not editBox.isGM ) then
 		editBox:Hide();
 	else
 		editBox:SetText("");
 		editBox.header:Hide();
-		editBox:SetAlpha(0.35);
+		if ( not editBox.isGM ) then
+			editBox:SetAlpha(0.35);
+		end
 		editBox:ClearFocus();
 		
 		editBox.focusLeft:Hide();
@@ -3597,7 +3607,7 @@ end
 
 function ChatEdit_SetLastActiveWindow(editBox)
 	local previousValue = LAST_ACTIVE_CHAT_EDIT_BOX;
-	if ( LAST_ACTIVE_CHAT_EDIT_BOX and LAST_ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
+	if ( LAST_ACTIVE_CHAT_EDIT_BOX and not LAST_ACTIVE_CHAT_EDIT_BOX.isGM and LAST_ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		if ( GetCVar("chatStyle") == "im" ) then
 			LAST_ACTIVE_CHAT_EDIT_BOX:Hide();
 		end
@@ -3877,7 +3887,7 @@ end
 function ChatEdit_OnEscapePressed(editBox)
 	if ( not AutoCompleteEditBox_OnEscapePressed(editBox) ) then
 		ChatEdit_ResetChatTypeToSticky(editBox);
-		if ( GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox ) then
+		if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox) ) then
 			editBox:SetText("");
 			editBox:Hide();
 		else

@@ -26,6 +26,7 @@ function LookingForGuildFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("LF_GUILD_BROWSE_UPDATED");
 	self:RegisterEvent("LF_GUILD_MEMBERSHIP_LIST_UPDATED");
+	self:RegisterEvent("LF_GUILD_MEMBERSHIP_LIST_CHANGED");
 end
 
 function LookingForGuildFrame_OnShow(self)
@@ -68,6 +69,8 @@ function LookingForGuildFrame_OnEvent(self, event)
 		LookingForGuild_Update();
 	elseif ( event == "LF_GUILD_MEMBERSHIP_LIST_UPDATED" ) then
 		LookingForGuildApps_Update();
+	elseif ( event == "LF_GUILD_MEMBERSHIP_LIST_CHANGED" ) then
+		RequestGuildMembershipList();
 	end
 end
 
@@ -144,24 +147,22 @@ function LookingForGuildRoleButton_OnClick(self)
 end
 
 function LookingForGuildStartFrame_OnLoad(self)
-	LookingForGuildPlaystyleFrameText:SetText(GUILD_PLAYSTYLE);
-	LookingForGuildPlaystyleFrame:SetHeight(56);
+	LookingForGuildInterestFrameText:SetText(GUILD_INTEREST);
+	LookingForGuildInterestFrame:SetHeight(74);
 	LookingForGuildAvailabilityFrameText:SetText(GUILD_AVAILABILITY);
-	LookingForGuildAvailabilityFrame:SetHeight(56);
+	LookingForGuildAvailabilityFrame:SetHeight(51);
 	LookingForGuildRolesFrameText:SetText(CLASS_ROLES);
-	LookingForGuildRolesFrame:SetHeight(80);
+	LookingForGuildRolesFrame:SetHeight(83);
 	LookingForGuildCommentFrameText:SetText(COMMENT);
-	LookingForGuildCommentFrame:SetHeight(112);
+	LookingForGuildCommentFrame:SetHeight(98);
 
-	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetLookingForGuildSettings();
-	-- playstyle
-	if ( bModerate ) then
-		LookingForGuildPlaystyleButton_OnClick(2);
-	elseif ( bHardcore ) then
-		LookingForGuildPlaystyleButton_OnClick(3);
-	else
-		LookingForGuildPlaystyleButton_OnClick(1);
-	end
+	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetLookingForGuildSettings();
+	-- interests
+	LookingForGuildQuestButton:SetChecked(bQuest);
+	LookingForGuildDungeonButton:SetChecked(bDungeon);
+	LookingForGuildRaidButton:SetChecked(bRaid);
+	LookingForGuildPvPButton:SetChecked(bPvP);
+	LookingForGuildRPButton:SetChecked(bRP);
 	-- availability
 	LookingForGuildWeekdaysButton:SetChecked(bWeekdays);
 	LookingForGuildWeekendsButton:SetChecked(bWeekends);
@@ -171,13 +172,13 @@ function LookingForGuildStartFrame_OnLoad(self)
 	LookingForGuildDamagerButton.checkButton:SetChecked(bDamage);
 	LookingForGuildBrowseButton_Update();
 	-- comment
-	LookingForGuildCommentEditBox:SetText(GetLookingForGuildComment());	
+	LookingForGuildCommentEditBox:SetText(GetLookingForGuildComment());
 end
 
 function LookingForGuildBrowseButton_Update()
-	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetLookingForGuildSettings();
-	-- need to have at least 1 time and at least 1 role checked to be able to browse
-	if ( bWeekdays or bWeekends ) and ( bTank or bHealer or bDamage ) then
+	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetLookingForGuildSettings();
+	-- need to have at least 1 interest, 1 time, and 1 role checked to be able to list
+	if ( bQuest or bDungeon or bRaid or bPvP or bRP ) and ( bWeekdays or bWeekends ) and ( bTank or bHealer or bDamage ) then
 		LookingForGuildBrowseButton:Enable();
 		PanelTemplates_EnableTab(LookingForGuildFrame, 2)
 	else
@@ -216,6 +217,8 @@ function LookingForGuildBrowseFrame_OnLoad(self)
 			end
 			getmetatable(self).__index.Hide(self);
 		end
+
+	LookingForGuild_Update();
 end
 
 function LookingForGuildBrowseFrame_OnShow(self)
@@ -234,8 +237,8 @@ function LookingForGuild_Update()
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
-		local name, level, numMembers, achPoints, comment, requestPending = GetRecruitingGuildInfo(index);
-		if ( name ) then
+		if ( index <= numGuilds ) then
+			local name, level, numMembers, achPoints, comment, cached, requestPending = GetRecruitingGuildInfo(index);
 			button.name:SetText(name);
 			button.level:SetText(level);
 			button.numMembers:SetFormattedText(BROWSE_GUILDS_NUM_MEMBERS, numMembers);
@@ -276,7 +279,7 @@ end
 
 function LookingForGuildGuild_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		local name, level, numMembers, achPoints, comment, requestPending = GetRecruitingGuildInfo(self.index);
+		local name, level, numMembers, achPoints, comment, cached, requestPending = GetRecruitingGuildInfo(self.index);
 		if ( not requestPending ) then
 			SetRecruitingGuildSelection(self.index);
 			LookingForGuild_Update();
@@ -284,11 +287,47 @@ function LookingForGuildGuild_OnClick(self, button)
 	end
 end
 
+function LookingForGuildGuild_ShowTooltip(self)
+	local name = GetRecruitingGuildInfo(self.index);
+	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetRecruitingGuildSettings(self.index);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(name);
+	local buf = "";
+	-- interests
+	if ( bQuest ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_QUEST; end
+	if ( bDungeon ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_DUNGEON; end
+	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
+	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
+	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	-- availability
+	buf = "";
+	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
+	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	-- roles
+	buf = "";
+	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
+	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
+	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGE; end
+	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	
+	GameTooltip:Show();
+end
+
 function LookingForGuild_RequestMembership()
-	RequestGuildMembership();
+	StaticPopupSpecial_Show(GuildFinderRequestMembershipFrame);
+	local name, level = GetRecruitingGuildInfo(GetRecruitingGuildSelection());
+	GuildFinderRequestMembershipFrameGuildName:SetText(name);
+	GuildFinderRequestMembershipFrameGuildLevel:SetFormattedText(GUILD_LEVEL, level);
+	GuildFinderRequestMembershipEditBox:SetText(GetLookingForGuildComment());
+end
+
+function GuildFinderRequestMembershipFrame_SendRequest()
+	StaticPopupSpecial_Hide(GuildFinderRequestMembershipFrame);
+	RequestGuildMembership(GuildFinderRequestMembershipFrameGuildName:GetText(), GuildFinderRequestMembershipEditBox:GetText());
 	SetRecruitingGuildSelection(nil);
 	LookingForGuild_Update();
-	RequestGuildMembershipList();
 end
 
 --*******************************************************************************
@@ -328,13 +367,8 @@ function LookingForGuildApps_Update()
 	local numApps = GetNumGuildMembershipRequests();
 
 	if ( numApps == 0 ) then
-		if ( not LookingForGuildFrameTab3.wasEnabled ) then
-			PanelTemplates_DisableTab(LookingForGuildFrame, 3);
-		end
 		LookingForGuildFrameTab3:SetText(LFGUILD_TAB_REQUESTS_NONE);
 	else
-		PanelTemplates_EnableTab(LookingForGuildFrame, 3);
-		LookingForGuildFrameTab3.wasEnabled = true;
 		LookingForGuildFrameTab3:SetFormattedText(LFGUILD_TAB_REQUESTS, numApps);
 	end
 	PanelTemplates_TabResize(LookingForGuildFrameTab3, 0);
@@ -342,10 +376,16 @@ function LookingForGuildApps_Update()
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
-		local name, timeSince = GetGuildMembershipRequestInfo(index);
+		local name, timeSince, timeLeft = GetGuildMembershipRequestInfo(index);
 		if ( name ) then
 			button.name:SetText(name);
-			button.time:SetText("Sent "..FriendsFrame_GetLastOnline(timeSince, true).." ago");
+			-- time left
+			local daysLeft = floor(timeLeft / 86400); -- seconds in a day
+			if ( daysLeft < 1 ) then
+				button.timeLeft:SetText(GUILD_FINDER_LAST_DAY_LEFT);
+			else
+				button.timeLeft:SetFormattedText(GUILD_FINDER_DAYS_LEFT, daysLeft);
+			end
 			button:Show();
 			button.index = index;
 		else

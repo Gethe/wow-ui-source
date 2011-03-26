@@ -28,6 +28,7 @@ UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, width = 605, 
 UIPanelWindows["PVPFrame"] =					{ area = "left",			pushable = 1,	whileDead = 1};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0 };
+UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
@@ -50,8 +51,6 @@ UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["MinigameFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
-UIPanelWindows["LFGParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["LFRParentFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 
@@ -65,11 +64,24 @@ local function GetUIPanelWindowInfo(frame, name)
 	    for name,value in pairs(info) do
 			frame:SetAttribute("UIPanelLayout-"..name, value);
 		end
-		frame:SetAttribute("UIPanelLayout-enabled", true);
 	end
-	if ( frame:GetAttribute("UIPanelLayout-enabled") ) then
-		return frame:GetAttribute("UIPanelLayout-"..name);
+	return frame:GetAttribute("UIPanelLayout-"..name);
+end
+
+function SetUIPanelAttribute(frame, name, value)
+	local info = UIPanelWindows[frame:GetName()];
+	if ( not info ) then
+		return;
 	end
+	
+	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
+		frame:SetAttribute("UIPanelLayout-defined", true);
+		for name,value in pairs(info) do
+			frame:SetAttribute("UIPanelLayout-"..name, value);
+		end
+	end
+	
+	frame:SetAttribute("UIPanelLayout-"..name, value);
 end
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
@@ -453,10 +465,14 @@ function ToggleGuildFrame()
 			GuildFrame_Toggle();
 		end
 	else
-		LookingForGuildFrame_LoadUI();
-		if ( LookingForGuildFrame_Toggle ) then
-			LookingForGuildFrame_Toggle();
-		end
+		ToggleGuildFinder();
+	end
+end
+
+function ToggleGuildFinder()
+	LookingForGuildFrame_LoadUI();
+	if ( LookingForGuildFrame_Toggle ) then
+		LookingForGuildFrame_Toggle();
 	end
 end
 
@@ -487,7 +503,7 @@ function ToggleHelpFrame()
 		StaticPopup_Hide("GM_RESPONSE_NEED_MORE_HELP");
 		StaticPopup_Hide("GM_RESPONSE_RESOLVE_CONFIRM");
 		StaticPopup_Hide("GM_RESPONSE_MUST_RESOLVE_RESPONSE");
-		HelpFrame_ShowFrame(HELPFRAME_START_PAGE);
+		HelpFrame_ShowFrame();
 	end
 end
 
@@ -521,7 +537,7 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrame_LoadUI();
 			GMChatFrame:Show()
 			local info = ChatTypeInfo["WHISPER"];
-			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t "..
+			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t "..
 			"|HplayerGM:"..lastTalkedToGM.."|h".."["..lastTalkedToGM.."]".."|h"), info.r, info.g, info.b, info.id);
 		end
 	elseif ( event == "PLAYER_LOGIN" ) then
@@ -1554,10 +1570,6 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		return;
 	end
 	self.updatingPanels = true;
-	
-	if (currentFrame) then
-		currentFrame:SetAttribute("UIPanelLayout-defined", false); -- This is needed to clear the cache'd layout values, see GetUIPanelWindowInfo()
-	end
 	
 	local topOffset = UIParent:GetAttribute("TOP_OFFSET");
 	local leftOffset = UIParent:GetAttribute("LEFT_OFFSET");
@@ -2921,9 +2933,7 @@ function ToggleGameMenu()
 		PlaySound("igMainMenuQuit");
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
-		if ( HelpFrame.back and HelpFrame.back.Click ) then
-			HelpFrame.back:Click();
-		end
+		ToggleHelpFrame();
 	elseif ( VideoOptionsFrame:IsShown() ) then
 		VideoOptionsFrameCancel:Click();
 	elseif ( AudioOptionsFrame:IsShown() ) then

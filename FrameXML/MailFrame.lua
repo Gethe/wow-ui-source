@@ -58,7 +58,7 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailFrame_Update();
 		MailFrameTab_OnClick(nil, 1);
 		CheckInbox();
-		DoEmote("READ");
+		DoEmote("READ", nil, true);
 	elseif ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
 		OpenMail_Update();

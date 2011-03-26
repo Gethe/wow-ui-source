@@ -4,58 +4,160 @@
 
 	
 	<Frame name="StartTimerBar" virtual="true">
-		<Size>
-			<AbsDimension x="160" y="13"/>
-		</Size>
+		<Size x="206" y="26"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentDigit1" parentKey="digit1" alpha="0"/>
+				<Texture name="$parentDigit2" parentKey="digit2" alpha="0"/>
+				<Texture name="$parentFaction" parentKey="faction" alpha="0">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="UIParent" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="$parentGlow1" parentKey="glow1" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDigit1" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDigit1" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlow2" parentKey="glow2" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDigit2" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDigit2" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFactionGlow" parentKey="factionGlow" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentFaction" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentFaction" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<StatusBar name="$parentBar" parentKey="bar">
-				<Size>
-					<AbsDimension x="160" y="13"/>
-				</Size>
+			<StatusBar name="$parentStatusBar" useParentLevel="true" parentKey="bar" alpha="0">
+				<Size x="195" y="13"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="0"/>
+					<Anchor point="TOP" x="0" y="-2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="$parentTimeText" inherits="TextStatusBarText" justifyH="CENTER" parentKey="timeText">
-							<Size>
-								<AbsDimension x="0" y="9"/>
-							</Size>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Size x="195" y="13"/>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="-2"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>		
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
+							<Size x="256" y="64"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="25"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentTimeText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="timeText">
+							<Size x="0" y="9"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-3" y="6"/>
-								<Anchor point="BOTTOMRIGHT" x="3" y="-7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBackground">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="-1"/>
-								<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
-							</Anchors>
-							<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
-						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r="0.03125" g="0.85" b="0.0" />
-				<Scripts>
-					<OnEnter>
-					</OnEnter>
-					<OnLeave>
-					</OnLeave>
-				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1" g="0.0" b="0.0" />
 			</StatusBar>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="fadeBarIn">
+				<Alpha target="$parentStatusBar" change="1.0" duration="1.9" order="1"/>
+				<Scripts>
+					<OnPlay>
+						local frame = self:GetParent();
+						frame.bar:SetAlpha(0);
+					</OnPlay>
+					<OnFinished>
+						local frame = self:GetParent();
+						frame.bar:SetAlpha(1);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="fadeBarOut">
+				<Alpha target="$parentStatusBar" change="-1.0" duration="0.9" order="1"/>
+				<Scripts>
+					<OnFinished>
+						local frame = self:GetParent();
+						frame.bar:SetAlpha(0);
+						frame.startNumbers:Play();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			
+			<AnimationGroup parentKey="startNumbers">
+				<Scale target="$parentDigit1" scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+				<Scale target="$parentDigit2" scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+				<Scale target="$parentGlow1" scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+				<Scale target="$parentGlow2" scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+				<Alpha target="$parentDigit1" change="1" 				duration="0.0" order="1"/>
+				<Alpha target="$parentDigit2" change="1" 				duration="0.0" order="1"/>
+				<Alpha target="$parentGlow1" change="1" 				duration="0.0" order="1"/>
+				<Alpha target="$parentGlow2" change="1" 				duration="0.0" order="1"/>
+				
+				
+				<Scale target="$parentDigit1" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
+				<Scale target="$parentDigit2" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
+				<Scale target="$parentGlow1" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
+				<Scale target="$parentGlow2" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
+				<Alpha target="$parentGlow1" change="-1.0" 			duration="0.3" smoothing="IN" order="2"/>
+				<Alpha target="$parentGlow2" change="-1.0" 			duration="0.3" smoothing="IN" order="2"/>
+				
+				
+				<Scale target="$parentDigit1" startDelay="0.6" scaleX="1.2" scaleY="1.2"	duration="0.1" order="3"/>
+				<Scale target="$parentDigit2" startDelay="0.6" scaleX="1.2" scaleY="1.2" 	duration="0.1" order="3"/>
+				<Alpha target="$parentDigit1" startDelay="0.6" change="-1.0" 			duration="0.1" order="3"/>
+				<Alpha target="$parentDigit2" startDelay="0.6" change="-1.0" 			duration="0.1" order="3"/>
+				<Scripts>
+					<OnPlay>
+						local frame = self:GetParent();
+						StartTimer_SetTexNumbers(frame, frame.digit1, frame.digit2)
+					</OnPlay>
+					<OnFinished>
+						local frame = self:GetParent();
+						StartTimer_NumberAnimOnFinished(frame)
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			
+			<AnimationGroup parentKey="factionAnim">
+				<Scale target="$parentFaction" 		scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+				<Scale target="$parentFactionGlow" 	scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+				
+				<Alpha target="$parentFaction" 		change="1" 					duration="0.0" order="2"/>
+				<Alpha target="$parentFactionGlow" 	change="1" 					duration="0.0" order="2"/>
+				
+				
+				<Scale target="$parentFaction" 		scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
+				<Scale target="$parentFactionGlow" 	scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
+				<Alpha target="$parentFactionGlow" 	change="-1.0" 			duration="0.4" smoothing="IN" order="3"/>
+				
+				
+				<Scale target="$parentFaction" startDelay="0.6" scaleX="1.4" scaleY="1.4"	duration="0.2" smoothing="OUT" order="4"/>
+				<Alpha target="$parentFaction" startDelay="0.6" change="-1.0" 				duration="0.2" smoothing="OUT" order="4"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	
+	
+	
+	<Frame name="TimerTest" toplevel="true" parent="UIParent" inherits="StartTimerBar">
+		<Anchors>
+			<Anchor point="CENTER" x="20" y="20"/>
+		</Anchors>
 	</Frame>
 	
 	

@@ -747,6 +747,10 @@ function Advanced_OnLoad (self)
 		_G[name .. "StereoHeader"]:Hide();
 		_G[name .. "StereoHeaderUnderline"]:Hide();
 	end
+	if ( IsMacClient() ) then
+		Advanced_UIScaleSlider:SetPoint("TOPLEFT", Advanced_HardwareCursorDropDown, "BOTTOMLEFT", -90, -20);
+		Advanced_GraphicsAPIDropDown:Hide();
+	end
 end
 
 --

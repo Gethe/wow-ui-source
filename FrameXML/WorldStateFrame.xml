@@ -220,7 +220,25 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTeamSkill" inherits="GameFontNormalSmall" parentKey="teamSkill">
+				<FontString name="$parentMatchmakingRating" inherits="GameFontNormalSmall" parentKey="matchmakingRating">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBgRating" inherits="GameFontNormalSmall" parentKey="bgRating">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRatingChange" inherits="GameFontNormalSmall" parentKey="ratingChange">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
@@ -820,16 +838,39 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="WorldStateScoreFrameTeamSkill" inherits="WorldStateScoreColumnTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="WorldStateScoreFrameHealingDone" relativePoint="RIGHT">
-						<Offset x="-5" y="0"/>
-					</Anchor>
-				</Anchors>
+			<Button name="WorldStateScoreFrameMatchmakingRating" inherits="WorldStateScoreColumnTemplate">
 				<Scripts>
 					<OnLoad>
-						WorldStateScoreFrameTeamSkillText:SetText(SCORE_TEAM_SKILL);
+						WorldStateScoreFrameMatchmakingRatingText:SetText(SCORE_TEAM_SKILL);
 						self.tooltip = TEAM_SKILL_TOOLTIP;
+						self.sortType = "mmr";
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:Show();
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="WorldStateScoreFrameBgRating" inherits="WorldStateScoreColumnTemplate">
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameBgRatingText:SetText(BATTLEGROUND_RATING);
+						self.tooltip = BATTLEGROUND_RATING;
+						self.sortType = "bgRating";
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:Show();
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="WorldStateScoreFrameRatingChange" inherits="WorldStateScoreColumnTemplate">
+				<Scripts>
+					<OnLoad>
+						WorldStateScoreFrameRatingChangeText:SetText(SCORE_RATING_CHANGE);
+						self.tooltip = RATING_CHANGE_TOOLTIP;
 						self.sortType = "team";
 					</OnLoad>
 					<OnEnter>

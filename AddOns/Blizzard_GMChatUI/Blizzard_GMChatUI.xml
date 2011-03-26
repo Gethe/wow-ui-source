@@ -11,6 +11,119 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Frames>
+			<Frame name="GMChatTab" parent="GMChatFrame" useParentLevel="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="GMChatFrame" relativePoint="TOPLEFT" x="-34" y="4"/>
+					<Anchor point="TOPRIGHT" relativeTo="GMChatFrame" relativePoint="TOPRIGHT" x="2" y="28"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true">
+							<TexCoords left="0.00000000" right="1.00000000" top="0.01171875" bottom="0.05859375"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIcon" file="Interface\ChatFrame\UI-ChatIcon-Blizz">
+							<Size x="32" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" x="8" y="1"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentText" inherits="GameFontHighlight" text="GM_CHAT" justifyH="LEFT">
+							<Size x="200" y="8"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentBG" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true">
+							<Size x="128" y="3"/>	
+							<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.00781250"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentBG" x="0" y="0"/>
+								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parentBG" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentNubL" file="Interface\HelpFrame\CS_HelpTextures">
+							<Size x="4" y="10"/>	
+							<TexCoords left="0.43750000" right="0.44531250" top="0.46875000" bottom="0.54687500"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentBG" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentNubR" file="Interface\HelpFrame\CS_HelpTextures">
+							<Size x="4" y="10"/>
+							<TexCoords left="0.43750000" right="0.44531250" top="0.37500000" bottom="0.45312500"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parentBG" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnDragStart>
+						GMChatFrame:StartMoving();
+					</OnDragStart>
+					<OnDragStop>
+						GMChatFrame:StopMovingOrSizing();
+					</OnDragStop>
+				</Scripts>
+			</Frame>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parent="GMChatFrame">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="GMChatTab" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel() + 40);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			</Frames>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentTopLeft" inherits="Thin-BorderTopLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="GMChatTab" x="-7" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRight" inherits="Thin-BorderTopRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="GMChatTab" x="8" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTop" inherits="_Thin-BorderTop">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentLeft" inherits="!Thin-BorderLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRight" inherits="!Thin-BorderRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad function="GMChatFrame_OnLoad"/>
 			<OnEvent function="GMChatFrame_OnEvent"/>
@@ -18,237 +131,90 @@
 			<OnHide function="GMChatFrame_OnHide"/>
 		</Scripts>
 	</ScrollingMessageFrame>
-	<Frame name="GMChatTab" frameStrata="LOW" parent="GMChatFrame">
+	<Button name="GMChatStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="FULLSCREEN">
+		<Size x="290" y="72"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="GMChatFrame" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="3"/>
-				</Offset>
-			</Anchor>
-			<Anchor point="TOPRIGHT" relativeTo="GMChatFrame" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="30"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPRIGHT" x="-170" y="-5"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
-					<Size>
-						<AbsDimension x="14" y="27"/>
-					</Size>
+			<Layer level="BORDER">
+				<Texture name="$parentBoarderLeft" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderLeft">
+					<Size x="49" y="72"/>	
+					<TexCoords left="0.25585938" right="0.35156250" top="0.37500000" bottom="0.93750000"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="LEFT" x="20" y="0"/>
 					</Anchors>
-					<TexCoords left="0.3164" right="0.371" top="0.0" bottom="0.07"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
-					<Size>
-						<AbsDimension x="14" y="27"/>
-					</Size>
+				<Texture name="$parentBoarderRight" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderRight">
+					<Size x="40" y="72"/>
+					<TexCoords left="0.35546875" right="0.43359375" top="0.37500000" bottom="0.93750000"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT"/>
+						<Anchor point="RIGHT" x="-20" y="0"/>
 					</Anchors>
-					<TexCoords left="0.371" right="0.3164" top="0.0" bottom="0.07"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="$parentBoarderMid" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true" parentKey="boarderMid">
+					<TexCoords left="0.00000000" right="1.00000000" top="0.32812500" bottom="0.46875000"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentBoarderLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBoarderRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.371" right="0.85156" top="0.0" bottom="0.07"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall" text="GM_CHAT" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="200" y="8"/>
-					</Size>
+				<FontString name="$parentTitleText" inherits="GameFontNormalSmall" justifyH="LEFT" text="GM_CHAT_STATUS_READY">
+					<Size x="170" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentBoarderLeft" relativePoint="TOPRIGHT" x="0" y="-18"/>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentDescription" inherits="GameFontHighlightSmall" justifyH="LEFT" text="GM_CHAT_STATUS_READY_DESCRIPTION">
+					<Size x="180" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitleText" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\ChatFrame\UI-ChatIcon-Blizz">
+					<Size x="28" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBoarderLeft" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlowLeft" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderLeft" alpha="0" alphaMode="ADD">
+					<Size x="49" y="72"/>	
+					<TexCoords left="0.70703125" right="0.80273438" top="0.00781250" bottom="0.57031250"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowRight" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderRight" alpha="0" alphaMode="ADD">
+					<Size x="40" y="72"/>
+					<TexCoords left="0.80664063" right="0.88476563" top="0.00781250" bottom="0.57031250"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlowMid" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true" parentKey="boarderMid" alpha="0" alphaMode="ADD">
+					<TexCoords left="0.00000000" right="1.00000000" top="0.47265625" bottom="0.61328125"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGlowLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame name="$parentFlash" hidden="true">
-				<Size>
-					<AbsDimension x="5" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLeft">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="RIGHT" relativeTo="$parentRight">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" setAllPoints="true"/>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForDrag("LeftButton");
-			</OnLoad>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnDragStart>
-				GMChatFrame:StartMoving();
-			</OnDragStart>
-			<OnDragStop>
-				GMChatFrame:StopMovingOrSizing();
-			</OnDragStop>
-		</Scripts>
-	</Frame>
-	<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parent="GMChatFrame" frameStrata="MEDIUM">
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="GMChatTab" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="-1" y="-2"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 40);
-			</OnLoad>
-		</Scripts>
-	</Button>
-	<Frame name="GMChatStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="FULLSCREEN">
-		<Size>
-			<AbsDimension x="208" y="75"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="-180" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<!-- this frame helps us size a backdrop frame according to the size of the title and text
-			and prevents the backdrop frame from drawing on top of the text-->
-			<Frame setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="GMChatStatusFrameTitleText" inherits="GameFontNormalSmall" justifyH="LEFT" text="GM_CHAT_STATUS_READY">
-							<Size x="168" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="10" y="-8"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="GMChatStatusFrameDescription" inherits="GameFontHighlightSmall" justifyH="LEFT" text="GM_CHAT_STATUS_READY_DESCRIPTION">
-							<Size x="168" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="GMChatStatusFrameTitleText" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Button enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GMChatStatusFrameTitleText">
-						<Offset x="-8" y="8"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativeTo="GMChatStatusFrameDescription">
-						<Offset x="30" y="-8"/>		<!-- width added to accomodate the status button -->
-					</Anchor>
-				</Anchors>
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-				</Backdrop>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="GMChatStatusFramePulse" file="Interface\GMChatFrame\UI-GMStatusFrame-Pulse" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-24" y="18"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="24" y="-18"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-					</OnLoad>
-					<OnClick>
-						GMChatStatusFrame_OnClick();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentButton">
-				<Size>
-					<AbsDimension x="32" y="16"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-5" y="-6"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\ChatFrame\UI-ChatIcon-Blizz">
-							<Size>
-								<AbsDimension x="32" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick>
-						GMChatStatusFrame_OnClick();
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="pulse" looping="repeat">
+				<Alpha target="$parentGlowLeft" 	change="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowRight" 	change="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowMid" 		change="1" duration="0.9" order="1"/>
+				
+				<Alpha target="$parentGlowLeft" 	change="-1" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowRight" 	change="-1" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowMid" 		change="-1" duration="0.9" order="2"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnShow>
 				GetGMTicket();
@@ -258,6 +224,9 @@
 				GetGMTicket();
 				TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
 			</OnHide>
+			<OnClick>
+				GMChatStatusFrame_OnClick();
+			</OnClick>
 		</Scripts>
-	</Frame>
+	</Button>
 </Ui>

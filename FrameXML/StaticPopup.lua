@@ -1090,7 +1090,7 @@ StaticPopupDialogs["HELP_TICKET"] = {
 	button2 = HELP_TICKET_ABANDON,
 	OnAccept = function(self)
 		if ( HelpFrame_IsGMTicketQueueActive() ) then
-			HelpFrame_ShowFrame("OpenTicket");
+			HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
 		else
 			HideUIPanel(HelpFrame);
 			StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
@@ -1110,7 +1110,7 @@ StaticPopupDialogs["GM_RESPONSE_NEED_MORE_HELP"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		HelpFrame_ShowFrame("NeedMoreHelp");
+		HelpFrame_ShowFrame(HELPFRAME_OPEN_TICKET);
 	end,
 	OnCancel = function(self)
 	end,
@@ -1137,7 +1137,7 @@ StaticPopupDialogs["GM_RESPONSE_MUST_RESOLVE_RESPONSE"] = {
 	button1 = GM_RESPONSE_POPUP_VIEW_RESPONSE,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		HelpFrame_ShowFrame("GMResponse");
+		HelpFrame_ShowFrame(HELPFRAME_GM_RESPONSE);
 	end,
 	OnCancel = function(self)
 	end,

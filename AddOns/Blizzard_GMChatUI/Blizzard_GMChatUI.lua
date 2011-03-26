@@ -36,6 +36,12 @@ function GMChatFrame_OnLoad(self)
 	FCF_SetButtonSide(self, "left", true);
 	self.buttonFrame:SetAlpha(1);
 	self.buttonFrame.minimizeButton:Hide();
+	
+	self.editBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 8, -2);
+	self.editBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -43, -2);
+	self.editBox:Show();
+	self.editBox.isGM = true;
+	ChatEdit_DeactivateChat(self.editBox);
 end
 
 function GMChatFrame_OnEvent(self, event, ...)
@@ -43,7 +49,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 	if ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then
 		local info = ChatTypeInfo["WHISPER"];
 		
-		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
+		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:26:0:16|t ";
 		
 		-- Search for icon links and replace them with texture links.
 		local term;
@@ -66,7 +72,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 		
 		if ( not GMChatFrame:IsShown() ) then
 			GMChatStatusFrame:Show();
-			GMChatStatusFrame_Pulse();
+			GMChatStatusFrame.pulse:Play();
 			table.insert(self.lastGM,arg2);
 			PlaySound("GM_ChatWarning");
 			
@@ -81,7 +87,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 	elseif ( event == "CHAT_MSG_WHISPER_INFORM" and GMChatFrame_IsGM(arg2) ) then
 		local info = ChatTypeInfo["WHISPER_INFORM"];
 		
-		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz.blp:0:2:0:-3|t ";
+		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 		
 		-- Search for icon links and replace them with texture links.
 		local term;
@@ -164,21 +170,4 @@ end
 
 function GMChatStatusFrame_OnClick()
 	GMChatFrame_Show();
-end
-
-local function GMChatStatusFrame_PulseFunc(self, elapsed)
-	return abs(sin(elapsed*180*450--[[<--Number of times to pulse here]]));
-end
-
-local GMChatStatusFrame_PulseTable = {
-	totalTime = 900,
-	updateFunc = "SetAlpha",
-	getPosFunc = GMChatStatusFrame_PulseFunc,
-}
-
-function GMChatStatusFrame_Pulse()
-	local pulse = GMChatStatusFramePulse;
-	pulse:Show();
-	pulse:SetAlpha(0);
-	SetUpAnimation(pulse, GMChatStatusFrame_PulseTable, pulse.Hide);
 end

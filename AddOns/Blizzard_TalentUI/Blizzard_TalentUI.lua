@@ -604,7 +604,9 @@ function PlayerTalentFrame_Refresh()
 	PlayerTalentFramePanel2.talentGroup = PlayerTalentFrame.talentGroup;
 	PlayerTalentFramePanel3.talentGroup = PlayerTalentFrame.talentGroup;
 	
-	PlayerTalentFrame_Update();
+	if (not PlayerTalentFrame_Update()) then
+		return;
+	end
 	
 	if (PlayerTalentFramePanel1:IsVisible()) then
 		PlayerTalentFramePanel_Update(PlayerTalentFramePanel1);
@@ -628,13 +630,13 @@ function PlayerTalentFrame_Update(playerLevel)
 	-- update specs
 	if ( not PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups) ) then
 		-- the current spec is not selectable any more, discontinue updates
-		return;
+		return false;
 	end
 
 	-- update tabs
 	if ( not PlayerTalentFrame_UpdateTabs(playerLevel) ) then
 		-- the current spec is not selectable any more, discontinue updates
-		return;
+		return false;
 	end
 	
 	-- set the active spec
@@ -660,6 +662,8 @@ function PlayerTalentFrame_Update(playerLevel)
 		PlayerTalentFrameTitleGlowRight:Hide();
 		PlayerTalentFrameTitleGlowCenter:Hide();
 	end
+	
+	return true;
 end
 
 function PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup)
@@ -1276,18 +1280,12 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			UIFrameFlashStop(PlayerTalentFrameLearnButton.Flash);
 			PlayerTalentFrameLearnButton.Flash:Hide();
 		end
-		-- squish all frames to make room for this bar
-		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFramePreviewBar, "TOP", 0, -4);
 	else
-		--ButtonFrameTemplate_HideButtonBar(PlayerTalentFrame);
 		PlayerTalentFrameLearnButton:Hide();
 		PlayerTalentFrameResetButton:Hide();
 		PlayerTalentFrameLearnButtonTutorial:Hide();
 		UIFrameFlashStop(PlayerTalentFrameLearnButton.Flash);
 		PlayerTalentFrameLearnButton.Flash:Hide();
-
-		-- unsquish frames since the bar is now hidden
-		--PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
 	end
 	
 	-- Update header elements for the player talents

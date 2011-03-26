@@ -3,6 +3,7 @@ MAX_ACHIEVEMENT_ALERTS = 2;
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("LFG_COMPLETION_REWARD");
+	self:RegisterEvent("GUILD_CHALLENGE_COMPLETED");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -16,12 +17,15 @@ function AlertFrame_OnEvent (self, event, ...)
 		AchievementAlertFrame_ShowAlert(id);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
 		DungeonCompletionAlertFrame_ShowAlert();
+	elseif ( event == "GUILD_CHALLENGE_COMPLETED" ) then
+		GuildChallengeAlertFrame_ShowAlert(...);
 	end
 end
 
 function AlertFrame_FixAnchors()
 	AchievementAlertFrame_FixAnchors();
 	DungeonCompletionAlertFrame_FixAnchors();
+	GuildChallengeAlertFrame_FixAnchors();
 end
 
 function AlertFrame_AnimateIn(frame)
@@ -45,6 +49,49 @@ end
 
 function AlertFrame_ResumeOutAnimation(frame)
 	frame.waitAndAnimOut:Play();
+end
+
+-- [[ GuildChallengeAlertFrame ]] --
+function GuildChallengeAlertFrame_ShowAlert(...)
+	local challengeType, count, max = ...;
+	GuildChallengeAlertFrameType:SetText(_G["GUILD_CHALLENGE_TYPE"..challengeType]);
+	GuildChallengeAlertFrameCount:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, count, max);
+	SetLargeGuildTabardTextures("player", GuildChallengeAlertFrameEmblemIcon, GuildChallengeAlertFrameEmblemBackground, GuildChallengeAlertFrameEmblemBorder);
+	AlertFrame_AnimateIn(GuildChallengeAlertFrame);
+	AlertFrame_FixAnchors();
+end
+
+function GuildChallengeAlertFrame_FixAnchors()
+	if (  DungeonCompletionAlertFrame1:IsShown() ) then
+		GuildChallengeAlertFrame:SetPoint("BOTTOM",  DungeonCompletionAlertFrame1, "TOP", 0, 10);
+		return;
+	end
+	
+	for i=MAX_ACHIEVEMENT_ALERTS, 1, -1 do
+		local frame = _G["AchievementAlertFrame"..i];
+		if ( frame and frame:IsShown() ) then
+			GuildChallengeAlertFrame:SetPoint("BOTTOM", frame, "TOP", 0, 10);
+			return;
+		end
+	end
+	
+	for i=NUM_GROUP_LOOT_FRAMES, 1, -1 do
+		local frame = _G["GroupLootFrame"..i];
+		if ( frame and frame:IsShown() ) then
+			GuildChallengeAlertFrame:SetPoint("BOTTOM", frame, "TOP", 0, 10);
+			return;
+		end
+	end
+	
+	GuildChallengeAlertFrame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
+end
+
+function GuildChallengeAlertFrame_OnClick(self)
+	if ( not GuildFrame or not GuildFrame:IsShown() ) then
+		ToggleGuildFrame();
+	end
+	-- select the Info tab
+	GuildFrame_TabClicked(GuildFrameTab5);
 end
 
 -- [[ DungeonCompletionAlertFrame ]] --

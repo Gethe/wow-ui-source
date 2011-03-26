@@ -40,6 +40,10 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 	self:RegisterEvent("LFG_OPEN_FROM_GOSSIP");
 	self:RegisterEvent("GOSSIP_CLOSED");
+	
+	ButtonFrameTemplate_HideAttic(self);
+	self.Inset:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 2, 284);
+	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 26);
 end
 
 function LFDFrame_OnEvent(self, event, ...)
@@ -103,6 +107,7 @@ end
 
 function LFDFrame_OnShow(self)
 	LFDFrame_UpdateBackfill(true);
+	LFDFrame_UpdateCapBar();
 end
 
 function LFDFrame_OnHide(self)
@@ -115,10 +120,157 @@ end
 function LFDQueueFrame_UpdatePortrait()
 	local mode, submode = GetLFGMode();
 	if ( mode == "queued" or mode == "rolecheck" ) then
-		EyeTemplate_StartAnimating(LFDParentFramePortrait);
+		EyeTemplate_StartAnimating(LFDParentFrameEyeFrame);
 	else
-		EyeTemplate_StopAnimating(LFDParentFramePortrait);
+		EyeTemplate_StopAnimating(LFDParentFrameEyeFrame);
 	end
+end
+
+--If we want to change the bar based on the current selection, just replace instances of VALOR_TIER1_LFG_ID with LFDQueueFrame.type
+local VALOR_TIER1_LFG_ID = 301;
+function LFDFrame_UpdateCapBar()
+	local capBar = LFDQueueFrameCapBar;
+	
+	local currencyID, tier1DungeonID, tier1Quantity, tier1Limit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit = GetLFGDungeonRewardCapBarInfo(VALOR_TIER1_LFG_ID);
+	
+	local currencyName, currencyQuantity, currencyIcon, currencyEarnedThisWeek, currencyEarnablePerWeek, currencyCap, currencyIsDiscovered = GetCurrencyInfo(currencyID);
+	if ( currencyIsDiscovered ) then
+		capBar:Show();
+		LFDParentFrame:SetHeight(470);
+	else
+		capBar:Hide();
+		LFDParentFrame:SetHeight(428);
+		return;
+	end
+	
+	local hasNoSharedStats = false;
+	if ( periodPurseQuantity == 0 and periodPurseLimit == 0 ) then
+		--This is the case for reward counts not directly associated with currencies (e.g. non-heroics)
+		periodPurseQuantity, periodPurseLimit = overallQuantity, overallLimit;
+		hasNoSharedStats = true;
+	end
+	
+	local barWidth = capBar:GetWidth();
+	local sizePerPoint = barWidth / periodPurseLimit;
+	local progressWidth = periodPurseQuantity * sizePerPoint;
+	local tier1Width = (tier1Limit - tier1Quantity) * sizePerPoint;
+	local overallWidth = (overallLimit - overallQuantity) * sizePerPoint - tier1Width;
+	
+	--Don't let it go past the end.
+	progressWidth = min(progressWidth, barWidth);
+	tier1Width = min(tier1Width, barWidth - progressWidth);
+	overallWidth = min(overallWidth, barWidth - progressWidth - tier1Width);
+	
+	capBar.progress:SetWidth(progressWidth);
+	
+	capBar.cap1:SetWidth(tier1Width);
+	capBar.cap2:SetWidth(overallWidth);
+	
+	local lastFrame, lastRelativePoint = capBar, "LEFT";
+	
+	if ( progressWidth > 0 ) then
+		capBar.progress:Show();
+		capBar.progress:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
+		lastFrame, lastRelativePoint = capBar.progress, "RIGHT";
+	else
+		capBar.progress:Hide();
+	end
+	
+	if ( tier1Width > 0 and not hasNoSharedStats) then
+		capBar.cap1:Show();
+		capBar.cap1Marker:Show();
+		capBar.cap1:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
+		lastFrame, lastRelativePoint = capBar.cap1, "RIGHT";
+	else
+		capBar.cap1:Hide();
+		capBar.cap1Marker:Hide();
+	end
+	
+	if ( overallWidth > 0 and not hasNoSharedStats) then
+		capBar.cap2:Show();
+		capBar.cap2Marker:Show();
+		capBar.cap2:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
+		lastFrame, lastRelativePoint = capBar.cap2, "RIGHT";
+	else
+		capBar.cap2:Hide();
+		capBar.cap2Marker:Hide();
+	end
+	
+	if ( currencyID == 0 ) then
+		currencyName = REWARDS;
+	end
+	
+	capBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
+end
+
+function LFDFrame_SetCapBarNotches(count)
+	local capBar = LFDQueueFrameCapBar;
+	local barWidth = capBar:GetWidth();
+	
+	if ( capBar.notchCount and capBar.notchCount > count ) then
+		for i = count + 1, capBar.notchCount do
+			_G["LFDQueueFrameCapBarDivider"..i]:Hide();
+		end
+	end
+	
+	local notchWidth = barWidth / count;
+	
+	for i=1, count - 1 do
+		local notch = _G["LFDQueueFrameCapBarDivider"..i];
+		if ( not notch ) then
+			notch = capBar:CreateTexture("LFDQueueFrameCapBarDivider"..i, "BORDER", "LFDCapBarDividerTemplate", -1);
+		end
+		notch:ClearAllPoints();
+		notch:SetPoint("LEFT", capBar, "LEFT", notchWidth * i - 2, 0);
+	end
+	capBar.notchCount = count;
+end
+
+function LFDQueueFrameCapBar_OnEnter(self)
+	local currencyID, tier1DungeonID, tier1Quantity, tier1Limit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit = GetLFGDungeonRewardCapBarInfo(VALOR_TIER1_LFG_ID);
+	local currencyName;
+	if ( currencyID == 0 ) then
+		currencyName = REWARDS;
+	else
+		currencyName = GetCurrencyInfo(currencyID);
+	end
+	local tier1Name = GetLFGDungeonInfo(tier1DungeonID);
+	local hasNoSharedStats = (periodPurseLimit == 0);
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(MAXIMUM_REWARD);
+	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
+	GameTooltip:AddDoubleLine(format(FROM_A_DUNGEON, tier1Name), format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit));
+	if ( not hasNoSharedStats ) then
+		GameTooltip:AddDoubleLine(FROM_DUNGEON_FINDER_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, overallQuantity, overallLimit));
+		GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity, periodPurseLimit));
+	end
+	GameTooltip:Show();
+end
+
+function LFDQueueFrameCapBarCapMarker_OnEnter(self)
+	local isTier1 = self:GetID() == 1;
+	
+	local currencyID, tier1DungeonID, tier1Quantity, tier1Limit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit = GetLFGDungeonRewardCapBarInfo(VALOR_TIER1_LFG_ID);
+	local currencyName;
+	if ( currencyID == 0 ) then
+		currencyName = REWARDS;
+	else
+		currencyName = GetCurrencyInfo(currencyID);
+	end
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( isTier1 ) then
+		local tier1Name = GetLFGDungeonInfo(tier1DungeonID);
+		GameTooltip:SetText(MAXIMUM_REWARD);
+		GameTooltip:AddLine(format(LFD_CURRENCY_CAP_SPECIFIC, currencyName, tier1Name), 1, 1, 1, true);
+		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier1Quantity, tier1Limit));
+	else
+		GameTooltip:SetText(MAXIMUM_REWARD);
+		GameTooltip:AddLine(format(LFD_CURRENCY_CAP_ALL, currencyName), 1, 1, 1, true);
+		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, overallQuantity, overallLimit));
+	end
+	GameTooltip:Show();
 end
 
 --Backfill option
@@ -821,17 +973,14 @@ function LFDQueueFrameRandom_UpdateFrame()
 
 	
 	local backgroundTexture;
-	if ( isHeroic ) then
-		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC";
-	elseif ( isHoliday ) then
+	if ( textureFilename ~= "" ) then
 		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-HOLIDAY-BACKGROUND-"..textureFilename;
-	else 
+	elseif ( isHeroic ) then
+		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC";
+	else
 		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER";
 	end
-	
-	if ( not LFDQueueFrameBackground:SetTexture(backgroundTexture) ) then
-		LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER");
-	end
+	LFDQueueFrameBackground:SetTexture(backgroundTexture);
 	
 	local lastFrame = parentFrame.rewardsLabel;
 	if ( isHoliday ) then
@@ -843,10 +992,11 @@ function LFDQueueFrameRandom_UpdateFrame()
 		parentFrame.title:SetText(dungeonName);
 		parentFrame.description:SetText(dungeonDescription);
 	else
-		if ( doneToday ) then
-			parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);
+		local numCompletions, isWeekly = LFDQueueFrameRandom_EstimateRemainingCompletions(dungeonID);
+		if ( isWeekly ) then
+			parentFrame.rewardsDescription:SetText(format(LFD_REWARD_DESCRIPTION_WEEKLY, numCompletions));
 		else
-			parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION1);
+			parentFrame.rewardsDescription:SetText(format(LFD_REWARD_DESCRIPTION_DAILY, numCompletions));
 		end
 		parentFrame.title:SetText(LFG_TYPE_RANDOM_DUNGEON);
 		parentFrame.description:SetText(LFD_RANDOM_EXPLANATION);
@@ -931,14 +1081,7 @@ function LFDQueueFrameRandom_UpdateFrame()
 	end
 	
 	if ( not isHoliday ) then
-		if ( parentFrame:GetRight() and lastFrame:GetRight() ) then
-			local lastDistFromSide = parentFrame:GetRight() - lastFrame:GetRight()
-			local xOffset = lastDistFromSide - parentFrame.randomList:GetWidth();	--We want this to be aligned along the right side.
-			parentFrame.randomList:ClearAllPoints();
-			parentFrame.randomList:SetPoint(xOffset < 0 and "TOPLEFT" or "BOTTOMLEFT", lastFrame, "BOTTOMRIGHT", xOffset, 0);
-			parentFrame.randomList:Show();
-			lastFrame = parentFrame.randomList;
-		end
+		parentFrame.randomList:Show();
 	else
 		parentFrame.randomList:Hide();
 	end
@@ -946,27 +1089,43 @@ function LFDQueueFrameRandom_UpdateFrame()
 	parentFrame.spacer:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -10);
 end
 
+function LFDQueueFrameRandom_EstimateRemainingCompletions(dungeonID)
+	local currencyID, currencyQuantity, specificQuantity, specificLimit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit, isWeekly = GetLFGDungeonRewardCapInfo(LFDQueueFrame.type);
+	local remainingAllotment = min(specificLimit - specificQuantity, overallLimit - overallQuantity);
+	if ( periodPurseLimit ~= 0 ) then
+		remainingAllotment = min(remainingAllotment, periodPurseLimit - periodPurseQuantity);
+	end
+
+	return ceil(remainingAllotment / currencyQuantity), isWeekly;
+end
+
 function LFDQueueFrameRandomRandomList_OnEnter(self)
 	local randomID = LFDQueueFrame.type;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(INCLUDED_DUNGEONS, 1, 1, 1);
-	GameTooltip:AddLine(INCLUDED_DUNGEONS_SUBTEXT, nil, nil, nil, true);
-	GameTooltip:AddLine(" ");
 	
-	for i=1, GetNumDungeonForRandomSlot(randomID) do
-		local dungeonID = GetDungeonForRandomSlot(randomID, i);
-		local info = LFGGetDungeonInfoByID(dungeonID);
-		local name, minLevel, maxLevel, recLevel = info[LFG_RETURN_VALUES.name], info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel], info[LFG_RETURN_VALUES.recLevel];
-		local rangeText;
-		if ( minLevel == maxLevel ) then
-			rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);
-		else
-			rangeText = format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel);
-		end
-		local difficultyColor = GetQuestDifficultyColor(recLevel);
-		GameTooltip:AddDoubleLine(name, rangeText, difficultyColor.r, difficultyColor.g, difficultyColor.b, difficultyColor.r, difficultyColor.g, difficultyColor.b);
-		if ( LFGLockList[dungeonID] ) then
-			GameTooltip:AddTexture("Interface\\LFGFrame\\UI-LFG-ICON-LOCK", 0, 0.875, 0, 0.875);
+	local numDungeons = GetNumDungeonForRandomSlot(randomID);
+	
+	if ( numDungeons == 0 ) then
+		GameTooltip:AddLine(INCLUDED_DUNGEONS_EMPTY, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	else
+		GameTooltip:AddLine(INCLUDED_DUNGEONS_SUBTEXT, nil, nil, nil, true);
+		GameTooltip:AddLine(" ");
+		for i=1, numDungeons do
+			local dungeonID = GetDungeonForRandomSlot(randomID, i);
+			local info = LFGGetDungeonInfoByID(dungeonID);
+			local name, minLevel, maxLevel, recLevel = info[LFG_RETURN_VALUES.name], info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel], info[LFG_RETURN_VALUES.recLevel];
+			local rangeText;
+			if ( minLevel == maxLevel ) then
+				rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);
+			else
+				rangeText = format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel);
+			end
+			local difficultyColor = GetQuestDifficultyColor(recLevel);
+			GameTooltip:AddDoubleLine(name, rangeText, difficultyColor.r, difficultyColor.g, difficultyColor.b, difficultyColor.r, difficultyColor.g, difficultyColor.b);
+			if ( LFGLockList[dungeonID] ) then
+				GameTooltip:AddTexture("Interface\\LFGFrame\\UI-LFG-ICON-LOCK", 0, 0.875, 0, 0.875);
+			end
 		end
 	end
 		
@@ -1241,6 +1400,7 @@ function LFDQueueFrame_Update()
 	LFGQueueFrame_UpdateLFGDungeonList(LFDDungeonList, LFDHiddenByCollapseList, LFGLockList, LFGDungeonInfo, enableList, LFGCollapseList, LFD_CURRENT_FILTER);
 	
 	LFDQueueFrameSpecificList_Update();
+	LFDFrame_UpdateCapBar();
 end
 
 function LFDList_DefaultFilterFunction(dungeonID)

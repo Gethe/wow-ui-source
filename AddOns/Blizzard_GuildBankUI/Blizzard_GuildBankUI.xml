@@ -728,11 +728,6 @@
 					</Anchor>
 				</Anchors>
                 <Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText("", 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
@@ -747,11 +742,6 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText("", 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
@@ -766,11 +756,6 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText("", 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>
@@ -785,11 +770,6 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText("", 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						GuildBankFrameTab_OnClick(self, self:GetID());
 					</OnClick>

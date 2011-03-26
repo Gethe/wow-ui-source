@@ -3540,7 +3540,7 @@ end
 
 function CalendarCreateEventFrame_OnShow(self)
 	CalendarCreateEventFrame_Update();
-	UIPanelWindows["CalendarFrame"].extraWidth = self:GetWidth() + CALENDAR_FRAME_EXTRA_WIDTH;
+	SetUIPanelAttribute(CalendarFrame, "extraWidth", self:GetWidth() + CALENDAR_FRAME_EXTRA_WIDTH);
 	UpdateUIPanelPositions(CalendarFrame);
 end
 
@@ -3550,7 +3550,7 @@ function CalendarCreateEventFrame_OnHide(self)
 	CalendarCreateEventRaidInviteButton.inviteLostMembers = false;
 	CalendarCreateEventRaidInviteButton.inviteCount = 0;
 	CalendarMassInviteFrame:Hide();
-	UIPanelWindows["CalendarFrame"].extraWidth = CALENDAR_FRAME_EXTRA_WIDTH;
+	SetUIPanelAttribute(CalendarFrame, "extraWidth", CALENDAR_FRAME_EXTRA_WIDTH);
 	UpdateUIPanelPositions(CalendarFrame);
 end
 

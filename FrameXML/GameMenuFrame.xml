@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="195" y="214"/>
+			<AbsDimension x="195" y="235"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -44,11 +44,26 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="SYSTEMOPTIONS_MENU">
+			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="HELP_LABEL">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP">
 						<Offset>
 							<AbsDimension x="0" y="-37"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						ToggleHelpFrame()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="SYSTEMOPTIONS_MENU">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonHelp" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -102,7 +117,7 @@
 							GameMenuButtonMacOptions:Hide();
 							GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
 						else
-							GameMenuFrame:SetHeight(240);
+							GameMenuFrame:SetHeight(261);
 							GameMenuButtonMacOptions:Show();
 							GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonMacOptions, "BOTTOM", 0, -1);
 						end

@@ -1483,8 +1483,8 @@ function WorldMap_ToggleSizeUp()
 	WorldMapFrame_ResetFrameLevels();
 	WorldMapFrame:ClearAllPoints();
 	WorldMapFrame:SetAllPoints();
-	WorldMapFrame:SetAttribute("UIPanelLayout-area", "full");
-	WorldMapFrame:SetAttribute("UIPanelLayout-allowOtherPanels", false);
+	SetUIPanelAttribute(WorldMapFrame, "area", "full");
+	SetUIPanelAttribute(WorldMapFrame, "allowOtherPanels", false);
 	WorldMapFrame:EnableMouse(true);
 	WorldMapFrame:EnableKeyboard(true);
 	-- adjust map frames
@@ -2194,26 +2194,16 @@ end
 function WorldMapFrame_SetMiniMode()
 	WorldMapFrame:ClearAllPoints();
 	if ( WORLDMAP_SETTINGS.advanced ) then
-		if ( not WorldMapFrame:GetAttribute("UIPanelLayout-defined") ) then
-			UIPanelWindows["WorldMapFrame"].area = "center";
-			UIPanelWindows["WorldMapFrame"].allowOtherPanels = true;
-		else
-			WorldMapFrame:SetAttribute("UIPanelLayout-area", "center");
-			WorldMapFrame:SetAttribute("UIPanelLayout-allowOtherPanels", true);
-		end
+		SetUIPanelAttribute(WorldMapFrame, "area", "center");
+		SetUIPanelAttribute(WorldMapFrame, "allowOtherPanels", true);
 		WorldMapFrame:SetMovable("true");
 		WorldMapFrame:SetWidth(593);		
 		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, 0);
 		WorldMapFrameMiniBorderLeft:SetPoint("TOPLEFT", 0, 0);		
 		WorldMapDetailFrame:SetPoint("TOPLEFT", 19, -42);
 	else
-		if ( not WorldMapFrame:GetAttribute("UIPanelLayout-defined") ) then
-			UIPanelWindows["WorldMapFrame"].area = "doublewide";
-			UIPanelWindows["WorldMapFrame"].allowOtherPanels = false;
-		else
-			WorldMapFrame:SetAttribute("UIPanelLayout-area", "doublewide");
-			WorldMapFrame:SetAttribute("UIPanelLayout-allowOtherPanels", false);
-		end
+		SetUIPanelAttribute(WorldMapFrame, "area", "doublewide");
+		SetUIPanelAttribute(WorldMapFrame, "allowOtherPanels", true);
 		WorldMapFrame:SetMovable("false");
 		WorldMapFrame:SetWidth(623);	-- extra width so it tiles nicely
 		WorldMapFrameMiniBorderLeft:SetPoint("TOPLEFT", 10, -14);		

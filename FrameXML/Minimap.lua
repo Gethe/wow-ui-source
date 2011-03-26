@@ -12,6 +12,8 @@ function Minimap_OnLoad(self)
 	Minimap:SetPlayerTextureWidth(40);
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("FOCUS_TARGET_CHANGED");
 end
 
 function ToggleMinimap()
@@ -81,7 +83,9 @@ function Minimap_SetTooltip( pvpType, factionName )
 end
 
 function Minimap_OnEvent(self, event, ...)
-	if ( event == "MINIMAP_PING" ) then
+	if ( event == "PLAYER_TARGET_CHANGED" or event == "FOCUS_TARGET_CHANGED" ) then
+		self:UpdateBlips();
+	elseif ( event == "MINIMAP_PING" ) then
 		local arg1, arg2, arg3 = ...;
 		Minimap_SetPing(arg2, arg3, 1);
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then

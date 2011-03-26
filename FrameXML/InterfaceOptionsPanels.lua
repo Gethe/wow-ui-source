@@ -2338,7 +2338,7 @@ LanguagesPanelOptions = {
 
 function InterfaceOptionsLanguagesPanel_OnLoad (panel)
 	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
-	if ( #({GetExistingLocales()}) <= 1 ) then
+	if ( #({GetAvailableLocales()}) <= 1 ) then
 		return;
 	end
 
@@ -2390,7 +2390,7 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize (self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 
-	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetExistingLocales());
+	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetAvailableLocales());
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createInfo, selectedValue, ...)

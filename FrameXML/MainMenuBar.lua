@@ -517,6 +517,8 @@ for i, movieList in next, MovieList do
 	movieList.inProgress = inProgress;
 end
 
+local ipTypes = { "IPv4", "IPv6" }
+
 function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local string = "";
 	local i, j, k = 0, 0, 0;
@@ -534,6 +536,18 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 		GameTooltip:AddLine(NEWBIE_TOOLTIP_LATENCY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 	end
 	GameTooltip:AddLine(" ");
+	
+	-- protocol types
+	if GetCVarBool("useIPv6") then
+		local ipTypeHome, ipTypeWorld = GetNetIpTypes();
+		string = format(MAINMENUBAR_PROTOCOLS_LABEL, ipTypes[ipTypeHome or 0] or UNKNOWN, ipTypes[ipTypeWorld or 0] or UNKNOWN);
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(string, 1.0, 1.0, 1.0);
+		if ( SHOW_NEWBIE_TIPS == "1" ) then
+			GameTooltip:AddLine(NEWBIE_TOOLTIP_PROTOCOLS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+		end
+		GameTooltip:AddLine(" ");
+	end
 
 	-- framerate
 	string = format(MAINMENUBAR_FPS_LABEL, GetFramerate());

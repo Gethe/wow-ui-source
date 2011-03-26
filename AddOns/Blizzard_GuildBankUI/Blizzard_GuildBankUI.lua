@@ -107,6 +107,7 @@ function GuildBankFrame_OnLoad(self)
 	end
 	GuildBankFrame.mode = "bank";
 	GuildBankFrame.numTabs = 4;
+	GuildBankFrame.maxTabWidth = 128;
 	GuildBankFrame_UpdateTabs();
 	GuildBankFrame_UpdateTabard();
 end

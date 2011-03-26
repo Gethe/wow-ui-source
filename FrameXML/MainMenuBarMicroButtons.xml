@@ -242,6 +242,10 @@
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
 				GuildMicroButton_UpdateTabard(true);
+				if ( IsTrialAccount() ) then
+					self:Disable();
+					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT;
+				end
 			</OnLoad>
 			<OnEvent function="GuildMicroButton_OnEvent"/>
 			<OnClick>

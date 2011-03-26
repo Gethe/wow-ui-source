@@ -140,7 +140,8 @@ function BattlefieldMinimap_Update()
 	else
 		completeMapFileName = mapFileName;
 	end
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+	local numDetailTiles = GetNumberOfDetailTiles();
+	for i=1, numDetailTiles do
 		texName = "Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i;
 		_G["BattlefieldMinimap"..i]:SetTexture(texName);
 	end
@@ -244,7 +245,8 @@ function BattlefieldMinimap_ClearTextures()
 	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
 		_G["BattlefieldMinimapOverlay"..i]:SetTexture(nil);
 	end
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+	local numDetailTiles = GetNumberOfDetailTiles();
+	for i=1, numDetailTiles do
 		_G["BattlefieldMinimap"..i]:SetTexture(nil);
 	end
 end
@@ -287,7 +289,8 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	if ( BattlefieldMinimap.resizing ) then
 		local sizeUnit = BattlefieldMinimap:GetWidth()/4;
 		local mapPiece;
-		for i=1, NUM_WORLDMAP_DETAIL_TILES do
+		local numDetailTiles = GetNumberOfDetailTiles();
+		for i=1, numDetailTiles do
 			mapPiece = _G["BattlefieldMinimap"..i];
 			mapPiece:SetWidth(sizeUnit);
 			mapPiece:SetHeight(sizeUnit);
@@ -545,7 +548,8 @@ function BattlefieldMinimap_UpdateOpacity(opacity)
 	BattlefieldMinimapOptions.opacity = opacity or OpacityFrameSlider:GetValue();
 	local alpha = 1.0 - BattlefieldMinimapOptions.opacity;
 	BattlefieldMinimapBackground:SetAlpha(alpha);
-	for i=1, NUM_WORLDMAP_DETAIL_TILES do
+	local numDetailTiles = GetNumberOfDetailTiles();
+	for i=1, numDetailTiles do
 		_G["BattlefieldMinimap"..i]:SetAlpha(alpha);
 	end
 	if ( alpha >= 0.15 ) then

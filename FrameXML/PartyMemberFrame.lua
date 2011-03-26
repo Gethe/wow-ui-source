@@ -113,6 +113,7 @@ end
 function PartyMemberFrame_UpdateMember (self)
 	if ( GetDisplayedAllyFrames() ~= "party" ) then
 		self:Hide();
+		UpdatePartyMemberBackground();
 		return;
 	end
 	local id = self:GetID();

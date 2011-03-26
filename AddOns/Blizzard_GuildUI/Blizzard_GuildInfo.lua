@@ -9,6 +9,8 @@ local GUILD_EVENT_TEXTURES = {
 };
 local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 
+local CHALLENGE_SECTIONS = { "GuildInfoChallengesDungeon", "GuildInfoChallengesRaid", "GuildInfoChallengesRatedBG" };
+
 function GuildInfoFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
 	PanelTemplates_SetNumTabs(self, 3);
@@ -19,8 +21,11 @@ function GuildInfoFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("LF_GUILD_POST_UPDATED");
 	self:RegisterEvent("LF_GUILD_RECRUITS_UPDATED");
+	self:RegisterEvent("LF_GUILD_RECRUIT_LIST_CHANGED");
+	self:RegisterEvent("GUILD_CHALLENGE_UPDATED");
 	
 	RequestGuildRecruitmentSettings();
+	RequestGuildChallengeInfo();
 end
 
 function GuildInfoFrame_OnEvent(self, event, arg1)
@@ -34,15 +39,13 @@ function GuildInfoFrame_OnEvent(self, event, arg1)
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		GuildInfoFrame_UpdatePermissions();
 	elseif ( event == "LF_GUILD_POST_UPDATED" ) then
-		local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
-		-- playstyle
-		if ( bModerate ) then
-			GuildRecruitmentPlaystyleButton_OnClick(2);
-		elseif ( bHardcore ) then
-			GuildRecruitmentPlaystyleButton_OnClick(3);
-		else
-			GuildRecruitmentPlaystyleButton_OnClick(1);
-		end
+		local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
+		-- interest
+		GuildRecruitmentQuestButton:SetChecked(bQuest);
+		GuildRecruitmentDungeonButton:SetChecked(bDungeon);
+		GuildRecruitmentRaidButton:SetChecked(bRaid);
+		GuildRecruitmentPvPButton:SetChecked(bPvP);
+		GuildRecruitmentRPButton:SetChecked(bRP);
 		-- availability
 		GuildRecruitmentWeekdaysButton:SetChecked(bWeekdays);
 		GuildRecruitmentWeekendsButton:SetChecked(bWeekends);
@@ -61,11 +64,16 @@ function GuildInfoFrame_OnEvent(self, event, arg1)
 		GuildRecruitmentListGuildButton_Update();
 	elseif ( event == "LF_GUILD_RECRUITS_UPDATED" ) then
 		GuildInfoFrameApplicants_Update();
+	elseif ( event == "LF_GUILD_RECRUIT_LIST_CHANGED" ) then
+		RequestGuildApplicantsList();
+	elseif ( event == "GUILD_CHALLENGE_UPDATED" ) then
+		GuildInfoFrame_UpdateChallenges();
 	end
 end
 
 function GuildInfoFrame_OnShow(self)
 	RequestGuildApplicantsList();
+	RequestGuildChallengeInfo();
 end
 
 function GuildInfoFrame_Update()
@@ -132,7 +140,7 @@ function GuildInfoFrame_UpdatePermissions()
 	else
 		GuildInfoEditDetailsButton:Hide();
 	end
-	if ( CanEditGuildEvent() ) then
+	if ( CanEditGuildEvent() and not GuildInfoChallenges:IsShown() ) then
 		GuildInfoEditEventButton:Show();
 	else
 		GuildInfoEditEventButton:Hide();
@@ -147,7 +155,6 @@ function GuildInfoFrame_UpdatePermissions()
 			GuildInfoFrameTab2:Show();
 			GuildInfoFrameTab3:Show();
 			GuildInfoFrameTab3:SetText(GUILDINFOTAB_APPLICANTS_NONE);
-			PanelTemplates_DisableTab(guildInfoFrame, 3);
 			PanelTemplates_SetTab(guildInfoFrame, 1);
 			PanelTemplates_UpdateTabs(guildInfoFrame);
 			RequestGuildApplicantsList();
@@ -276,49 +283,68 @@ function GuildInfoEventButton_OnClick(self, button)
 	end
 end
 
+function GuildInfoFrame_UpdateChallenges()
+	local numChallenges = GetNumGuildChallenges();
+	if ( numChallenges == 0 ) then
+		GuildInfoFrameInfoHeader1Label:SetText(EVENTS_LABEL);
+		GuildInfoChallenges:Hide();
+		GuildInfoEventsContainer:Show();
+		GuildInfoChallenges:Hide();
+		GuildInfoChallengesDungeonTexture:Hide();
+		GuildInfoChallengesRaidTexture:Hide();
+		GuildInfoChallengesRatedBGTexture:Hide();
+		if ( CanEditGuildEvent() ) then
+			GuildInfoEditEventButton:Show();
+		end
+	else
+		-- if for some reason events were showing, switch
+		if ( not GuildInfoChallenges:IsShown() ) then
+			GuildInfoFrameInfoHeader1Label:SetText(GUILD_FRAME_CHALLENGES);
+			GuildInfoChallenges:Show();
+			GuildInfoEventsContainer:Hide();
+			GuildInfoChallengesDungeonTexture:Show();
+			GuildInfoChallengesRaidTexture:Show();
+			GuildInfoChallengesRatedBGTexture:Show();
+			GuildInfoEditEventButton:Hide();
+		end
+		for i = 1, numChallenges do
+			local index, current, max = GetGuildChallengeInfo(i);
+			if ( CHALLENGE_SECTIONS[index] ) then
+				if ( current == max ) then
+					SetDesaturation(_G[CHALLENGE_SECTIONS[index].."Texture"], true);
+					_G[CHALLENGE_SECTIONS[index].."Count"]:Hide();
+					_G[CHALLENGE_SECTIONS[index].."Check"]:Show();
+					_G[CHALLENGE_SECTIONS[index].."Label"]:SetTextColor(0.1, 1, 0.1);
+				else
+					SetDesaturation(_G[CHALLENGE_SECTIONS[index].."Texture"], false);
+					_G[CHALLENGE_SECTIONS[index].."Count"]:Show();
+					_G[CHALLENGE_SECTIONS[index].."Count"]:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, current, max);
+					_G[CHALLENGE_SECTIONS[index].."Check"]:Hide();
+					_G[CHALLENGE_SECTIONS[index].."Label"]:SetTextColor(1, 1, 1);
+				end
+			end
+		end
+	end
+end
+
 --*******************************************************************************
 --   Recruitment Tab
 --*******************************************************************************
 
 function GuildInfoFrameRecruitment_OnLoad(self)
-	GuildRecruitmentPlaystyleFrameText:SetText(GUILD_PLAYSTYLE);
-	GuildRecruitmentPlaystyleFrame:SetHeight(46);
+	GuildRecruitmentInterestFrameText:SetText(GUILD_INTEREST);
+	GuildRecruitmentInterestFrame:SetHeight(63);
 	GuildRecruitmentAvailabilityFrameText:SetText(GUILD_AVAILABILITY);
-	GuildRecruitmentAvailabilityFrame:SetHeight(46);
+	GuildRecruitmentAvailabilityFrame:SetHeight(43);
 	GuildRecruitmentRolesFrameText:SetText(CLASS_ROLES);
 	GuildRecruitmentRolesFrame:SetHeight(80);
 	GuildRecruitmentLevelFrameText:SetText(GUILD_RECRUITMENT_LEVEL);
-	GuildRecruitmentLevelFrame:SetHeight(46);
-	GuildRecruitmentCommentFrameText:SetText(COMMENT);
-	GuildRecruitmentCommentFrame:SetHeight(84);
+	GuildRecruitmentLevelFrame:SetHeight(43);
+	GuildRecruitmentCommentFrame:SetHeight(72);
 	
 	-- defaults until data is retrieved
-	GuildRecruitmentCasualButton:SetChecked(1);
 	GuildRecruitmentLevelAnyButton:SetChecked(1);
 	GuildRecruitmentListGuildButton:Disable();
-end
-
-function GuildRecruitmentPlaystyleButton_OnClick(index, userClick)
-	local param;
-	if ( index == 1 ) then
-		GuildRecruitmentCasualButton:SetChecked(1);
-		GuildRecruitmentModerateButton:SetChecked(nil);
-		GuildRecruitmentHardcoreButton:SetChecked(nil);
-		param = LFGUILD_PARAM_CASUAL;
-	elseif ( index == 2 ) then
-		GuildRecruitmentCasualButton:SetChecked(nil);
-		GuildRecruitmentModerateButton:SetChecked(1);
-		GuildRecruitmentHardcoreButton:SetChecked(nil);
-		param = LFGUILD_PARAM_MODERATE;
-	else
-		GuildRecruitmentCasualButton:SetChecked(nil);
-		GuildRecruitmentModerateButton:SetChecked(nil);
-		GuildRecruitmentHardcoreButton:SetChecked(1);
-		param = LFGUILD_PARAM_HARDCORE;
-	end
-	if ( userClick ) then
-		SetGuildRecruitmentSettings(param, true);
-	end
 end
 
 function GuildRecruitmentLevelButton_OnClick(index, userClick)
@@ -356,9 +382,9 @@ function GuildRecruitmentRoleButton_OnClick(self)
 end
 
 function GuildRecruitmentListGuildButton_Update()
-	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
-	-- need to have at least 1 time and at least 1 role checked to be able to list
-	if ( bWeekdays or bWeekends ) and ( bTank or bHealer or bDamage ) then
+	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
+	-- need to have at least 1 interest, 1 time, and 1 role checked to be able to list
+	if ( bQuest or bDungeon or bRaid or bPvP or bRP ) and ( bWeekdays or bWeekends ) and ( bTank or bHealer or bDamage ) then
 		GuildRecruitmentListGuildButton:Enable();
 	else
 		GuildRecruitmentListGuildButton:Disable();
@@ -372,7 +398,7 @@ function GuildRecruitmentListGuildButton_Update()
 end
 
 function GuildRecruitmentListGuildButton_OnClick(self)
-	local bCasual, bModerate, bHardcore, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
+	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
 	bListed = not bListed;
 	if ( bListed and GuildRecruitmentCommentEditBox:HasFocus() ) then
 		GuildRecruitmentComment_SaveText();
@@ -435,13 +461,8 @@ function GuildInfoFrameApplicants_Update()
 	local selection = GetGuildApplicantSelection();
 
 	if ( numApplicants == 0 ) then
-		if ( not GuildInfoFrameTab3.wasEnabled ) then
-			PanelTemplates_DisableTab(GuildInfoFrame, 3);
-		end
 		GuildInfoFrameTab3:SetText(GUILDINFOTAB_APPLICANTS_NONE);
 	else
-		PanelTemplates_EnableTab(GuildInfoFrame, 3);
-		GuildInfoFrameTab3.wasEnabled = true;
 		GuildInfoFrameTab3:SetFormattedText(GUILDINFOTAB_APPLICANTS, numApplicants);
 	end
 	PanelTemplates_TabResize(GuildInfoFrameTab3, 0);
@@ -449,12 +470,19 @@ function GuildInfoFrameApplicants_Update()
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
-		local name, level, class, _, _, _, _, _, isTank, isHealer, isDamage, comment = GetGuildApplicantInfo(index);
+		local name, level, class, _, _, _, _, _, _, _, isTank, isHealer, isDamage, comment, timeSince, timeLeft = GetGuildApplicantInfo(index);
 		if ( name ) then
 			button.name:SetText(name);
 			button.level:SetText(level);
 			button.comment:SetText(comment);
-			button.emblem:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
+			button.class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
+			-- time left
+			local daysLeft = floor(timeLeft / 86400); -- seconds in a day
+			if ( daysLeft < 1 ) then
+				button.timeLeft:SetText(GUILD_FINDER_LAST_DAY_LEFT);
+			else
+				button.timeLeft:SetFormattedText(GUILD_FINDER_DAYS_LEFT, daysLeft);
+			end
 			-- roles
 			if ( isTank ) then
 				button.tankTex:Show();
@@ -504,6 +532,27 @@ function GuildRecruitmentApplicant_OnClick(self, button)
 		SetGuildApplicantSelection(self.index);
 		GuildInfoFrameApplicants_Update();
 	end
+end
+
+function GuildRecruitmentApplicant_ShowTooltip(self)
+	local name, level, class, bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage, comment, timeSince, timeLeft = GetGuildApplicantInfo(self.index);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(name);
+	local buf = "";
+	-- interests
+	if ( bQuest ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_QUEST; end
+	if ( bDungeon ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_DUNGEON; end
+	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
+	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
+	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	-- availability
+	buf = "";
+	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
+	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	
+	GameTooltip:Show();
 end
 
 --*******************************************************************************

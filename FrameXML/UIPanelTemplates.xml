@@ -348,6 +348,92 @@
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
+	<Slider name="UIPanelScrollBarTrimTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="0"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBG" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b="0" a=".85"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size>
+						<AbsDimension x="24" y="48"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-4" y="17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size>
+						<AbsDimension x="24" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-4" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
+				</Texture>
+			</Layer>	
+		</Layers>
+		<Frames>
+			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() - scrollStep);
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() + scrollStep);
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				self:GetParent():SetVerticalScroll(value);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size>
+				<AbsDimension x="18" y="24"/>
+			</Size>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
 	<Slider name="UIPanelScrollBarTemplateLightBorder" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="0"/>
@@ -1804,6 +1890,18 @@
 		<Size x="32" y="32"/>	
 		<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>	
 	</Texture>
+	<Texture name="Thin-BorderTopLeft" file="Interface\Common\ThinBorder-TopLeft" virtual="true" >
+		<Size x="32" y="32"/>		
+	</Texture>
+	<Texture name="Thin-BorderBottomLeft" file="Interface\Common\ThinBorder-BottomLeft" virtual="true" >
+		<Size x="32" y="32"/>
+	</Texture>
+	<Texture name="Thin-BorderTopRight" file="Interface\Common\ThinBorder-TopRight" virtual="true" >
+		<Size x="32" y="32"/>
+	</Texture>
+	<Texture name="Thin-BorderBottomRight" file="Interface\Common\ThinBorder-BottomRight" virtual="true" >
+		<Size x="32" y="32"/>
+	</Texture>
 	
 	
 <!-- Vertically tiling pieces -->
@@ -1876,7 +1974,13 @@
 	<Texture name="Dialog-BorderRight" file="Interface\DialogFrame\DialogFrame-Right" virtual="true" vertTile="true">
 		<Size x="16" y="32"/>
 	</Texture>
-
+	<Texture name="!Thin-BorderRight" file="Interface\Common\ThinBorder-Right" virtual="true" vertTile="true">
+		<Size x="32" y="32"/>
+	</Texture>
+	<Texture name="!Thin-BorderLeft" file="Interface\Common\ThinBorder-Left" virtual="true" vertTile="true">
+		<Size x="32" y="32"/>
+	</Texture>
+	
 <!-- Horizontally tiling pieces -->
 	<Texture name="_UI-Frame-InnerBotTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
 		<Size x="256" y="3"/>	
@@ -1976,7 +2080,12 @@
 	<Texture name="Dialog-BorderBottom" file="Interface\DialogFrame\DialogFrame-Bot" virtual="true" horizTile="true">
 		<Size x="32" y="16"/>
 	</Texture>
-
+	<Texture name="_Thin-BorderTop" file="Interface\Common\ThinBorder-Top" virtual="true" horizTile="true">
+		<Size x="32" y="32"/>
+	</Texture>
+	<Texture name="_Thin-BorderBottom" file="Interface\Common\ThinBorder-Bottom" virtual="true" horizTile="true">
+		<Size x="32" y="32"/>
+	</Texture>
 
 <!--
 *******************************************************************************
@@ -2655,7 +2764,7 @@
 	<Frame name="TranslucentFrameTemplate" virtual="true">
 		<Size x="338" y="424"/>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
+			<Layer level="BACKGROUND" textureSubLevel="-8">
 				<Texture name="$parentBg" parentKey="Bg">
 					<Anchors>
 						<Anchor point="TOPLEFT"  x="10" y="-10"/>

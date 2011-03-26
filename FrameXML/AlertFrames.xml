@@ -432,7 +432,135 @@
 	</Scripts>
 </Button>
 
-<Button name="DungeonCompletionAlertFrame1" inherits="DungeonCompletionAlertFrameTemplate"/>
+<Button name="GuildChallengeAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+	<Size>
+		<AbsDimension x="270" y="75"/>
+	</Size>
+	<Anchors>
+		<Anchor point="BOTTOM">
+			<Offset>
+				<AbsDimension x="0" y="128"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="$parentEmblemBackground" file="Interface\GuildFrame\GuildChallenges">
+				<Size x="37" y="36"/>
+				<Anchors>
+					<Anchor point="LEFT" x="14" y="0"/>
+				</Anchors>
+				<TexCoords left="0.03027344" right="0.06640625" top="0.30468750" bottom="0.58593750"/>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture file="Interface\GuildFrame\GuildChallenges">
+				<Size x="270" y="67"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<TexCoords left="0.06835938" right="0.33203125" top="0.00781250" bottom="0.53125000"/>
+			</Texture>
+			<Texture name="$parentEmblemBorder" file="Interface\GuildFrame\GuildChallenges">
+				<Size x="37" y="36"/>
+				<Anchors>
+					<Anchor point="LEFT" x="14" y="0"/>
+				</Anchors>
+				<TexCoords left="0.03027344" right="0.06640625" top="0.00781250" bottom="0.28906250"/>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<Texture name="$parentEmblemIcon">
+				<Size x="35" y="35"/>
+				<Anchors>
+					<Anchor point="LEFT" x="15" y="0"/>
+				</Anchors>
+			</Texture>
+			<FontString inherits="GameFontNormal" text="GUILD_CHALLENGE_LABEL">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset x="66" y="11"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentType" inherits="GameFontWhiteTiny" parentKey="type">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset x="72" y="-12"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentCount" inherits="GameFontNormal">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-18" y="20"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="glow">
+				<Size>
+					<AbsDimension x="350" y="151"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+			</Texture>
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" alpha="0" parentKey="shine">
+				<Size>
+					<AbsDimension x="67" y="60"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="0" y="8"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="200" offsetY="0" duration="0.71" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnClick function="GuildChallengeAlertFrame_OnClick"/>
+	</Scripts>
+</Button>
+
+<Button name="DungeonCompletionAlertFrame1" inherits="DungeonCompletionAlertFrameTemplate">
+	<Scripts>
+		<OnHide function="AlertFrame_FixAnchors"/>
+	</Scripts>
+</Button>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">
 	<Scripts>

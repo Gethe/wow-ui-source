@@ -24,13 +24,13 @@ function SetAuctionDressUpBackground()
 end
 
 function AuctionDressUpFrame_OnShow()
-	UIPanelWindows["AuctionFrame"].width = 1020;
+	SetUIPanelAttribute(AuctionFrame, "width", 1020);
 	UpdateUIPanelPositions(AuctionFrame);
 	PlaySound("igCharacterInfoOpen");
 end
 
 function AuctionDressUpFrame_OnHide()
-	UIPanelWindows["AuctionFrame"].width = 840;
+	SetUIPanelAttribute(AuctionFrame, "width", 840);
 	UpdateUIPanelPositions();
 	PlaySound("igCharacterInfoClose");
 end

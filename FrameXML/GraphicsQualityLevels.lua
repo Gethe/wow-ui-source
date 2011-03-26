@@ -934,7 +934,7 @@ VideoData["Advanced_HardwareCursorDropDown"]={
 		function(self)
 			local anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor = GetVideoCaps();
 			if ( not hardwareCursor ) then
-				self:Disable();
+				VideoOptionsDropDownMenu_DisableDropDown(self);
 			end
 		end,
 	restart = true,

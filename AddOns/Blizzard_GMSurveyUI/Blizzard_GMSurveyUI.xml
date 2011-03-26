@@ -635,6 +635,76 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
+							<Frame name="GMSurveyQuestion11" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion10" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion10" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion12" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion11" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion11" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion13" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion12" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion12" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion14" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion13" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion13" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="GMSurveyQuestion15" inherits="GMSurveyQuestionTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GMSurveyQuestion14" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="GMSurveyQuestion14" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
 							<Frame name="GMSurveyCommentFrame">
 								<Size>
 									<AbsDimension x="541" y="85"/>

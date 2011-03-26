@@ -692,6 +692,7 @@ function PVPHonorFrame_OnLoad(self)
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 end
 
 function PVPHonorFrame_OnEvent(self, event, ...)
@@ -711,6 +712,8 @@ function PVPHonorFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
 		PVPHonorFrame_UpdateGroupAvailable();
+	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
+		PVPHonor_UpdateRandomInfo();
 	end
 end
 
@@ -1490,7 +1493,9 @@ function PVPQueue_UpdateRandomInfo(base, infoFunc)
 		base.winReward.honorSymbol:Hide();
 		base.winReward.honorAmount:Hide();
 	end
-	
+
+	local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
+	winArena = max(0, min(winArena, maxPointsThisWeek - pointsThisWeek));
 	if (winArena ~= 0) then
 		base.winReward.arenaSymbol:Show();
 		base.winReward.arenaAmount:Show();

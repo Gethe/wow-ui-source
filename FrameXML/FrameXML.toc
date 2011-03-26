@@ -9,6 +9,7 @@ Localization.xml
 ## add snippets independent of modules here
 Util.lua
 FlowContainer.lua
+NavigationBar.lua
 
 ## add new modules below here
 
@@ -118,7 +119,6 @@ TabardFrame.xml
 GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml
-KnowledgeBaseFrame.xml
 ColorPickerFrame.xml
 GossipFrame.xml
 MailFrame.xml

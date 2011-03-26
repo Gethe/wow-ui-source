@@ -76,7 +76,7 @@ function UpdateMicroButtons()
 		MainMenuMicroButton_SetNormal();
 	end
 
-	if ( PVPFrame:IsShown() ) then
+	if ( PVPFrame and PVPFrame:IsShown() ) then
 		PVPMicroButton:SetButtonState("PUSHED", 1);
 		PVPMicroButton_SetPushed();
 	else
@@ -94,7 +94,7 @@ function UpdateMicroButtons()
 		GuildMicroButton:SetButtonState("PUSHED", 1);
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
 		GuildMicroButtonTabard:SetAlpha(0.70);
-	else
+	elseif ( not IsTrialAccount() ) then
 		GuildMicroButton:SetButtonState("NORMAL");
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
 		GuildMicroButtonTabard:SetAlpha(1);	

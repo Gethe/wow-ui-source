@@ -530,13 +530,12 @@ end
 -- end
 
 -- function GuildControlPopupFrame_OnShow()
-	-- FriendsFrame:SetAttribute("UIPanelLayout-defined", nil);
 	-- FriendsFrame.guildControlShow = 1;
 	-- GuildControlPopupAcceptButton:Disable();
 	-- -- Update popup
 	-- GuildControlPopupframe_Update();
 	
-	-- UIPanelWindows["FriendsFrame"].width = FriendsFrame:GetWidth() + GuildControlPopupFrame:GetWidth();
+	-- SetUIPanelAttribute(FriendsFrame, "width", FriendsFrame:GetWidth() + GuildControlPopupFrame:GetWidth());
 	-- UpdateUIPanelPositions(FriendsFrame);
 	-- --GuildControlPopupFrame:RegisterEvent("GUILD_ROSTER_UPDATE"); --It was decided that having a risk of conflict when two people are editing the guild permissions at once is better than resetting whenever someone joins the guild or changes ranks.
 -- end
@@ -560,10 +559,9 @@ end
 -- end
 
 -- function GuildControlPopupFrame_OnHide()
-	-- FriendsFrame:SetAttribute("UIPanelLayout-defined", nil);
 	-- FriendsFrame.guildControlShow = 0;
 
-	-- UIPanelWindows["FriendsFrame"].width = FriendsFrame:GetWidth();
+	-- SetUIPanelAttribute(FriendsFrame, "width", FriendsFrame:GetWidth());
 	-- UpdateUIPanelPositions();
 
 	-- GuildControlPopupFrame.goldChanged = nil;

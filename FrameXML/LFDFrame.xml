@@ -860,18 +860,23 @@
 			<OnShow function="LFDSearchStatus_Update"/>
 		</Scripts>
 	</Frame>
-	<Frame name="LFDParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent">
-		<Size x="355" y="440"/>
+	<Texture name="LFDCapBarDividerTemplate" file="Interface\GuildFrame\GuildFrame" virtual="true">
+		<Size x="7" y="14"/>
+		<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
+	</Texture>	
+	<Frame name="LFDParentFrame" toplevel="true" hidden="true" enableMouse="true" inherits="ButtonFrameTemplate" parent="UIParent">
+		<Size x="338" y="482"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentRoleBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
+					<Size x="512" y="128"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="2" y="275"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Button inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="2" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Frame name="LFDQueueFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
@@ -880,23 +885,9 @@
 								<AbsDimension x="512" y="256"/>
 							</Size>
 							<Anchors>
-								<Anchor point="LEFT">
+								<Anchor point="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="21" y="-64"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFG-FRAME">
-							<Size>
-								<AbsDimension x="512" y="512"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
+										<AbsDimension x="6" y="26"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -907,7 +898,7 @@
 							<Anchors>
 								<Anchor point="TOP">
 									<Offset>
-										<AbsDimension x="12" y="-17"/>
+										<AbsDimension x="12" y="-5"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -915,11 +906,142 @@
 					</Layer>
 				</Layers>
 				<Frames>
+				<Frame name="$parentCapBar">
+					<Size>
+						<AbsDimension x="254" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" x="20" y="-40"/>
+					</Anchors>
+					<Layers>
+						<Layer level="BORDER">
+							<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
+								<Size x="18" y="18"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+								<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
+							</Texture>
+							<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
+								<Size x="18" y="18"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								</Anchors>
+								<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
+							</Texture>
+							<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+								<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
+							</Texture>
+						</Layer>
+						<Layer level="BACKGROUND">
+							<Texture name="$parentBG" file="Interface\GuildFrame\GuildFrame">
+								<Size x="0" y="14"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="0" y="0"/>
+									<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<TexCoords left="0.39843750" right="0.41210938" top="0.96875000" bottom="0.99609375"/>
+							</Texture>
+						</Layer>
+						<Layer level="BACKGROUND" textureSubLevel="1">
+							<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="progress">
+								<Size x="1" y="14"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
+								</Anchors>
+								<Color r="0.4706" g="0.2627" b="0.8588"/>
+							</Texture>
+							<Texture name="$parentShadow" file="Interface\GuildFrame\GuildFrame" parentKey="shadow">
+								<Size x="9" y="14"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
+							</Texture>
+							<Texture name="$parentCap1" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="cap1">
+								<Size x="20" y="14"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<Color r="0.4863" g="0.5529" b="0.6353" a="0.3"/>
+							</Texture>
+							<Texture name="$parentCap2" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="cap2">
+								<Size x="20" y="14"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentCap1" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<Color r="0.8588" g="0.5961" b="0.2627" a="0.3"/>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK">
+							<FontString name="$parentLabel" inherits="GameFontNormalSmall" parentKey="label">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+						<Layer level="ARTWORK" textureSubLevel="1">
+							<FontString name="$parentText" inherits="GameFontHighlightSmall">
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="4"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Frame name="$parentCap1Marker" parentKey="cap1Marker" id="1">
+							<Size x="9" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentCap1" relativePoint="RIGHT" x="-4" y="0"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<Texture name="$parentTexture" file="Interface\GuildFrame\GuildFrame" parentKey="tex" >
+										<TexCoords left="0.38378906" right="0.39257813" top="0.95898438" bottom="0.99804688"/>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnEnter function="LFDQueueFrameCapBarCapMarker_OnEnter"/>
+								<OnLeave function="GameTooltip_Hide"/>
+							</Scripts>
+						</Frame>
+						<Frame name="$parentCap2Marker" parentKey="cap2Marker" id="2">
+							<Size x="9" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentCap2" relativePoint="RIGHT" x="-4" y="0"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<Texture name="$parentTexture" file="Interface\GuildFrame\GuildFrame" parentKey="tex" >
+										<TexCoords left="0.38378906" right="0.39257813" top="0.95898438" bottom="0.99804688"/>
+										<Color r="1.0" g="0.7567" b="0.0" a="1"/>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnEnter function="LFDQueueFrameCapBarCapMarker_OnEnter"/>
+								<OnLeave function="GameTooltip_Hide"/>
+							</Scripts>
+						</Frame>
+					</Frames>
+					<Scripts>
+						<OnLoad>
+							LFDFrame_SetCapBarNotches(7);
+						</OnLoad>
+						<OnEnter function="LFDQueueFrameCapBar_OnEnter"/>
+						<OnLeave function="GameTooltip_Hide"/>
+					</Scripts>
+				</Frame>
 					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT">
+							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="65" y="-60"/>
+									<AbsDimension x="50" y="334"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -988,9 +1110,9 @@
 					</Button>
 					<Frame name="$parentTypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT">
+							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="131" y="-125"/>
+									<AbsDimension x="117" y="285"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1205,21 +1327,24 @@
 												</Scripts>
 											</Frame>
 											<Frame name="$parentRandomList" parentKey="randomList">
-												<Size x="100" y="32"/>
+												<Size x="18" y="18"/>
+												<Anchors>
+													<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="5" y="-3"/>
+												</Anchors>
 												<Layers>
 													<Layer level="ARTWORK">
 														<Texture name="$parentDiceTexture" file="Interface\Buttons\UI-GroupLoot-Dice-Up">
-															<Size x="32" y="32"/>
+															<Size x="18" y="18"/>
 															<Anchors>
 																<Anchor point="BOTTOMRIGHT"/>
 															</Anchors>
 														</Texture>
-														<FontString  inherits="ChatFontSmall" text="INCLUDED_DUNGEONS" justifyH="RIGHT">
+														<!--FontString  inherits="ChatFontSmall" text="INCLUDED_DUNGEONS" justifyH="RIGHT">
 															<Anchors>
 																<Anchor point="TOPLEFT"/>
 																<Anchor point="BOTTOMRIGHT" relativeTo="$parentDiceTexture" relativePoint="BOTTOMLEFT" x="-3" y="0"/>
 															</Anchors>
-														</FontString>
+														</FontString-->
 													</Layer>
 												</Layers>
 												<Scripts>
@@ -1260,9 +1385,9 @@
 						<Frames>
 							<Frame name="$parentListButton1" inherits="LFDFrameDungeonChoiceTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT">
+									<Anchor point="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="25" y="-165"/>
+											<AbsDimension x="10" y="256"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1449,14 +1574,14 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="FIND_A_GROUP">
+					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP">
 						<Size>
 							<AbsDimension x="135" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="18" y="6"/>
+									<AbsDimension x="4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1471,14 +1596,14 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
+					<Button name="$parentCancelButton" inherits="MagicButtonTemplate" text="CLOSE">
 						<Size>
 							<AbsDimension x="112" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-7" y="6"/>
+									<AbsDimension x="-7" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1495,7 +1620,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-7" y="28"/>
+									<AbsDimension x="-6" y="27"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1791,14 +1916,14 @@
 			<OnHide function="LFDFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="LFDParentFramePortrait" inherits="EyeTemplate" hidden="false" parent="LFDParentFrame">
+	<Frame name="LFDParentFrameEyeFrame" inherits="EyeTemplate" hidden="false" parent="LFDParentFrame">
 		<Size>
 			<AbsDimension x="64" y="64"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
-					<AbsDimension x="9" y="-5"/>
+					<AbsDimension x="-8" y="9"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

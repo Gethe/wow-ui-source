@@ -1,11 +1,68 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildInfo.lua"/>
+
+<!-- patchwerk	
+<Texture name="ChallengeCompleteCheckmark.png" >
+	<Size x="28" y="24"/>
+	<TexCoords left="0.00097656" right="0.02832031" top="0.00781250" bottom="0.19531250"/>	
+</Texture>
+<Texture name="GuildChallengeToast-IconBorder.png" >
+	<Size x="37" y="36"/>
+	<TexCoords left="0.03027344" right="0.06640625" top="0.00781250" bottom="0.28906250"/>	
+</Texture>
+<Texture name="GuildChallengeToast-IconBG.png" >
+	<Size x="37" y="36"/>
+	<TexCoords left="0.03027344" right="0.06640625" top="0.30468750" bottom="0.58593750"/>	
+</Texture>
+<Texture name="GuildChallengeToast.png" >
+	<Size x="270" y="67"/>
+	<TexCoords left="0.06835938" right="0.33203125" top="0.00781250" bottom="0.53125000"/>	
+</Texture>
+<Texture name="DungeonBG.png" >
+	<Size x="321" y="36"/>
+	<TexCoords left="0.33398438" right="0.64746094" top="0.00781250" bottom="0.28906250"/>	
+</Texture>
+<Texture name="DungeonBG-Cleared.png" >
+	<Size x="321" y="36"/>
+	<TexCoords left="0.33398438" right="0.64746094" top="0.30468750" bottom="0.58593750"/>	
+</Texture>
+<Texture name="RatedBG.png" >
+	<Size x="321" y="36"/>
+	<TexCoords left="0.33398438" right="0.64746094" top="0.60156250" bottom="0.88281250"/>	
+</Texture>
+<Texture name="RaidBG-Cleared.png" >
+	<Size x="321" y="36"/>
+	<TexCoords left="0.64941406" right="0.96289063" top="0.00781250" bottom="0.28906250"/>	
+</Texture>
+<Texture name="RaidBG.png" >
+	<Size x="321" y="36"/>
+	<TexCoords left="0.64941406" right="0.96289063" top="0.30468750" bottom="0.58593750"/>	
+</Texture>
+<Texture name="RatedBG-Cleared.png" >
+	<Size x="321" y="36"/>
+	<TexCoords left="0.64941406" right="0.96289063" top="0.60156250" bottom="0.88281250"/>	
+</Texture>
+-->
+
 <!--
 *******************************************************************************
 	Templates
 *******************************************************************************
 -->	
+	<CheckButton name="GuildRecruitmentCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SetGuildRecruitmentSettings(self:GetID(), self:GetChecked());
+				GuildRecruitmentListGuildButton_Update();
+			</OnClick>
+		</Scripts>
+		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+	</CheckButton>
 	<Frame name="GuildRecruitmentSectionTemplate" virtual="true">
 		<Size x="312" y="74"/>
 		<Layers>
@@ -21,7 +78,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-6"/>
+						<Anchor point="TOPLEFT" x="8" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -128,19 +185,8 @@
 					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
 				</Texture>
 			</Layer>
-			<!--
-			<Layer level="BORDER">
-				<Texture name="$parentTabardBackground" file="Interface\GuildFrame\GuildFrame" parentKey="tabard">
-					<Size x="38" y="38"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="13" y="-12"/>
-					</Anchors>
-					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
-				</Texture>
-			</Layer>
-			-->
 			<Layer level="ARTWORK">
-				<Texture name="$parentTabardEmblem" file="Interface\TargetingFrame\UI-Classes-Circles" parentKey="emblem">
+				<Texture name="$parentClass" file="Interface\TargetingFrame\UI-Classes-Circles" parentKey="class">
 					<Size x="39" y="39"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="13" y="-11"/>
@@ -150,6 +196,13 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="66" y="-10"/>
 					</Anchors>
+				</FontString>
+				<FontString name="$parentTimeLeft" inherits="GameFontNormalSmall" justifyH="RIGHT" parentKey="timeLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="0.45"/>
 				</FontString>
 				<FontString name="$parentComment" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" parentKey="comment" spacing="2">
 					<Anchors>
@@ -213,6 +266,10 @@
 				self:SetBackdropColor(1, 1, 1, 0.3);
 			</OnLoad>
 			<OnClick function="GuildRecruitmentApplicant_OnClick"/>
+			<OnEnter function="GuildRecruitmentApplicant_ShowTooltip"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
 			<Anchors>
@@ -222,6 +279,57 @@
 			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
 		</HighlightTexture>
 	</Button>
+	<Frame name="GuildChallengeTemplate" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" x="18" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCount" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" x="-12" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentCheck" file="Interface\GuildFrame\GuildChallenges" hidden="true">
+					<Size x="28" y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" x="-8" y="0"/>
+					</Anchors>	
+					<TexCoords left="0.00097656" right="0.02832031" top="0.00781250" bottom="0.19531250"/>	
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				_G[self:GetName().."Label"]:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
+			</OnLoad>
+			<OnEnter>
+				local index, current, max, xp, gold = GetGuildChallengeInfo(self:GetID());
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, 1, 1);
+				if ( current == max ) then
+					GameTooltip:AddLine(GUILD_CHALLENGE_TOOLTIP_DONE, 1, 1, 1, 1, 1);
+				else
+					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_TOOLTIP_PROGRESS, max - current), 1, 1, 1, 1, 1);
+				end
+				GameTooltip:AddLine(" ")
+				if ( GetGuildLevel() == MAX_GUILD_LEVEL ) then
+					local goldString = GetMoneyString(gold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, 1, 1);
+				else
+					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_XP, xp), 1, 1, 1, 1, 1);
+				end
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
 <!--
 *******************************************************************************
 	Info panel
@@ -368,9 +476,30 @@
 					</Anchors>
 					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
 				</Texture>
+				<Texture name="GuildInfoChallengesDungeonTexture" file="Interface\GuildFrame\GuildChallenges">
+					<Size x="319" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-25"/>
+					</Anchors>
+					<TexCoords left="0.33398438" right="0.64746094" top="0.00781250" bottom="0.28906250"/>	
+				</Texture>
+				<Texture name="GuildInfoChallengesRaidTexture" file="Interface\GuildFrame\GuildChallenges">
+					<Size x="319" y="36"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GuildInfoChallengesDungeonTexture" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0.64941406" right="0.96289063" top="0.30468750" bottom="0.58593750"/>	
+				</Texture>
+				<Texture name="GuildInfoChallengesRatedBGTexture" file="Interface\GuildFrame\GuildChallenges">
+					<Size x="319" y="36"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GuildInfoChallengesRaidTexture" relativePoint="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0.33398438" right="0.64746094" top="0.60156250" bottom="0.88281250"/>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString	inherits="GameFontNormal" text="GUILD_EVENTS">
+				<FontString	name="$parentHeader1Label" inherits="GameFontNormal" text="GUILD_FRAME_CHALLENGES">
 					<Size>
 						<AbsDimension x="0" y="0"/>
 					</Size>
@@ -406,6 +535,46 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="GuildInfoChallenges">
+				<Size x="319" y="108"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="4" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Fontstring inherits="GameFontNormalSmall" text="GUILD_CHALLENGES_THIS_WEEK">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="GuildInfoFrameInfoHeader1" x="-8" y="0"/>								
+							</Anchors>
+							<Color r="0.973" g="0.937" b="0.580"/>
+						</Fontstring>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentDungeon" inherits="GuildChallengeTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="GuildInfoChallengesDungeonTexture" relativePoint="TOPRIGHT" x="0" y="0"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildInfoChallengesDungeonTexture" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentRaid" inherits="GuildChallengeTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="GuildInfoChallengesRaidTexture" relativePoint="TOPRIGHT" x="0" y="0"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildInfoChallengesRaidTexture" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentRatedBG" inherits="GuildChallengeTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="GuildInfoChallengesRatedBGTexture" relativePoint="TOPRIGHT" x="0" y="0"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildInfoChallengesRatedBGTexture" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>					
+				</Frames>
+			</Frame>
 			<Button name="GuildInfoEditEventButton" text="GUILD_CREATE_EVENT_LINK" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader1" x="-8" y="0"/>
@@ -460,7 +629,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<ScrollFrame name="GuildInfoEventsContainer" inherits="MinimalHybridScrollFrameTemplate">
+			<ScrollFrame name="GuildInfoEventsContainer" inherits="MinimalHybridScrollFrameTemplate" hidden="true">
 				<Size x="298" y="108"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -580,85 +749,121 @@
 -->
 	<Frame name="GuildInfoFrameRecruitment" parent="GuildInfoFrame" setAllPoints="true" hidden="true">
 		<Frames>
-			<Frame name="GuildRecruitmentPlaystyleFrame" inherits="GuildRecruitmentSectionTemplate">
+			<Frame name="GuildRecruitmentInterestFrame" inherits="GuildRecruitmentSectionTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="8" y="-10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="GuildRecruitmentCasualText" inherits="GameFontHighlightSmall" text="GUILD_PLAYSTYLE_CASUAL">
+						<FontString name="GuildRecruitmentQuestText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_QUEST">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="31" y="-28"/>
+								<Anchor point="TOPLEFT" x="31" y="-26"/>
 							</Anchors>
 						</FontString>
-						<FontString name="GuildRecruitmentHardcoreText" inherits="GameFontHighlightSmall" text="GUILD_PLAYSTYLE_HARDCORE">
+						<FontString name="GuildRecruitmentRaidText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_RAID">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-12" y="-28"/>
+								<Anchor point="TOPRIGHT" x="-12" y="-26"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<CheckButton name="GuildRecruitmentCasualButton" inherits="UIRadioButtonTemplate">
+					<CheckButton name="GuildRecruitmentQuestButton" inherits="GuildRecruitmentCheckButtonTemplate" id="1">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildRecruitmentCasualText" relativePoint="LEFT" x="-3" y="0"/>
+							<Anchor point="RIGHT" relativeTo="GuildRecruitmentQuestText" relativePoint="LEFT" x="-3" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								GuildRecruitmentPlaystyleButton_OnClick(1, true);
-							</OnClick>
-						</Scripts>
 					</CheckButton>
-					<CheckButton name="GuildRecruitmentHardcoreButton" inherits="UIRadioButtonTemplate">
+					<CheckButton name="GuildRecruitmentRaidButton" inherits="GuildRecruitmentCheckButtonTemplate" id="3">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildRecruitmentHardcoreText" relativePoint="LEFT" x="-3" y="0"/>
+							<Anchor point="RIGHT" relativeTo="GuildRecruitmentRaidText" relativePoint="LEFT" x="-3" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								GuildRecruitmentPlaystyleButton_OnClick(3, true);
-							</OnClick>
-						</Scripts>
 					</CheckButton>
-					<Frame name="GuildRecruitmentModerateFramePlacer">
+					<Frame name="GuildRecruitmentDungeonFramePlacer">
 						<Size x="0" y="30"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildRecruitmentCasualText" relativePoint="RIGHT" x="0" y="0"/>
-							<Anchor point="RIGHT" relativeTo="GuildRecruitmentHardcoreButton" relativePoint="LEFT" x="0" y="0"/>									
+							<Anchor point="LEFT" relativeTo="GuildRecruitmentQuestText" relativePoint="RIGHT" x="0" y="0"/>
+							<Anchor point="RIGHT" relativeTo="GuildRecruitmentRaidButton" relativePoint="LEFT" x="0" y="0"/>									
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString name="GuildRecruitmentModerateText" inherits="GameFontHighlightSmall" text="GUILD_PLAYSTYLE_MODERATE">
+								<FontString name="GuildRecruitmentDungeonText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_DUNGEON">
 									<Anchors>
-										<Anchor point="CENTER" x="9" y="0"/>
+										<Anchor point="CENTER" x="11" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>
-					<CheckButton name="GuildRecruitmentModerateButton" inherits="UIRadioButtonTemplate">
+					<CheckButton name="GuildRecruitmentDungeonButton" inherits="GuildRecruitmentCheckButtonTemplate" id="2">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildRecruitmentModerateText" relativePoint="LEFT" x="-3" y="0"/>
+							<Anchor point="RIGHT" relativeTo="GuildRecruitmentDungeonText" relativePoint="LEFT" x="-3" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								GuildRecruitmentPlaystyleButton_OnClick(2, true);
-							</OnClick>
-						</Scripts>
+					</CheckButton>
+					<CheckButton name="GuildRecruitmentPvPButton" inherits="GuildRecruitmentCheckButtonTemplate" id="4">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildRecruitmentQuestButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_PVP">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="3" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</CheckButton>
+					<CheckButton name="GuildRecruitmentRPButton" inherits="GuildRecruitmentCheckButtonTemplate" id="5">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildRecruitmentDungeonButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_RP">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="3" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 					</CheckButton>
 				</Frames>
 			</Frame>
 			<Frame name="GuildRecruitmentAvailabilityFrame" inherits="GuildRecruitmentSectionTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildRecruitmentPlaystyleFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="GuildRecruitmentInterestFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 				<Frames>
-					<CheckButton name="GuildRecruitmentWeekdaysButton">
+					<CheckButton name="GuildRecruitmentWeekdaysButton" inherits="GuildRecruitmentCheckButtonTemplate" id="6">
 						<Size>
 							<AbsDimension x="20" y="20"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-22"/>
-							<Anchor point="LEFT" relativeTo="GuildRecruitmentCasualButton" relativePoint="LEFT"/>
+							<Anchor point="TOP" x="0" y="-21"/>
+							<Anchor point="LEFT" relativeTo="GuildRecruitmentQuestButton" relativePoint="LEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -673,25 +878,14 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnClick>
-								SetGuildRecruitmentSettings(LFGUILD_PARAM_WEEKDAYS, self:GetChecked());
-								GuildRecruitmentListGuildButton_Update();
-							</OnClick>
-						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-						<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-						<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-						<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
-					<CheckButton name="GuildRecruitmentWeekendsButton">
+					<CheckButton name="GuildRecruitmentWeekendsButton" inherits="GuildRecruitmentCheckButtonTemplate" id="7">
 						<Size>
 							<AbsDimension x="20" y="20"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-22"/>
-							<Anchor point="LEFT" relativeTo="GuildRecruitmentModerateButton" relativePoint="LEFT"/>
+							<Anchor point="TOP" x="0" y="-21"/>
+							<Anchor point="LEFT" relativeTo="GuildRecruitmentDungeonButton" relativePoint="LEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -706,17 +900,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnClick>
-								SetGuildRecruitmentSettings(LFGUILD_PARAM_WEEKENDS, self:GetChecked());
-								GuildRecruitmentListGuildButton_Update();
-							</OnClick>
-						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-						<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-						<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-						<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>					
 					</CheckButton>
 				</Frames>
 			</Frame>
@@ -729,7 +912,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="30" y="-25"/>
+									<AbsDimension x="30" y="-24"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -745,7 +928,7 @@
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset>
-									<AbsDimension x="1" y="-25"/>
+									<AbsDimension x="1" y="-24"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -761,7 +944,7 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="-30" y="-25"/>
+									<AbsDimension x="-30" y="-24"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -783,14 +966,14 @@
 					<Layer level="ARTWORK">
 						<FontString name="GuildRecruitmentLevelAnyText" inherits="GameFontHighlightSmall" text="GUILD_RECRUITMENT_ANYLEVEL">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-28"/>
-								<Anchor point="LEFT" relativeTo="GuildRecruitmentCasualText"/>
+								<Anchor point="TOP" x="0" y="-26"/>
+								<Anchor point="LEFT" relativeTo="GuildRecruitmentQuestText"/>
 							</Anchors>
 						</FontString>
 						<FontString name="GuildRecruitmentLevelMaxText" inherits="GameFontHighlightSmall" text="GUILD_RECRUITMENT_MAXLEVEL">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-28"/>
-								<Anchor point="LEFT" relativeTo="GuildRecruitmentModerateText"/>
+								<Anchor point="TOP" x="0" y="-26"/>
+								<Anchor point="LEFT" relativeTo="GuildRecruitmentDungeonText"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -824,10 +1007,10 @@
 				</Anchors>
 				<Frames>
 					<Frame name="GuildRecruitmentCommentInputFrame">
-						<Size x="286" y="50"/>
+						<Size x="286" y="62"/>
 						<Anchors>
 							<Anchor point="TOP">
-								<Offset x="0" y="-26"/>
+								<Offset x="0" y="-5"/>
 							</Anchor>
 						</Anchors>
 						<Layers>
@@ -936,7 +1119,7 @@
 									</OnLoad>
 								</Scripts>
 								<ScrollChild>
-									<EditBox name="GuildRecruitmentCommentEditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
+									<EditBox name="GuildRecruitmentCommentEditBox" multiLine="true" letters="255" countInvisibleLetters="true" autoFocus="false">
 										<Size x="258" y="1"/>
 										<Layers>
 											<Layer level="BORDER">
