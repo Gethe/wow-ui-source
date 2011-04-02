@@ -370,14 +370,7 @@ function GuildRecruitmentRoleButton_OnClick(self)
 	else
 		PlaySound("igMainMenuOptionCheckBoxOff");
 	end
-	local id = self:GetParent():GetID();
-	if ( id == 1 ) then
-		SetGuildRecruitmentSettings(LFGUILD_PARAM_TANK, checked);
-	elseif ( id == 2 ) then
-		SetGuildRecruitmentSettings(LFGUILD_PARAM_HEALER, checked);
-	else
-		SetGuildRecruitmentSettings(LFGUILD_PARAM_DAMAGE, checked);
-	end
+	SetGuildRecruitmentSettings(self:GetParent().param, checked);
 	GuildRecruitmentListGuildButton_Update();
 end
 

@@ -42,62 +42,6 @@
 		</Scripts>
 	</CheckButton>
 	<Frame name="ActionBarButtonSpellActivationAlert" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentSpark" parentKey="spark" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.61718750" top="0.00390625" bottom="0.26953125"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentInnerGlow" parentKey="innerGlow" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
-				</Texture>
-				<Texture name="$parentInnerGlowOver" parentKey="innerGlowOver" file="Interface\SpellActivationOverlay\IconAlert" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentInnerGlow" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentInnerGlow" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.50781250" top="0.53515625" bottom="0.78515625"/>
-				</Texture>
-				<Texture name="$parentOuterGlow" parentKey="outerGlow" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
-				</Texture>
-				<Texture name="$parentOuterGlowOver" parentKey="outerGlowOver" file="Interface\SpellActivationOverlay\IconAlert" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentOuterGlow" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentOuterGlow" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.00781250" right="0.50781250" top="0.53515625" bottom="0.78515625"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentAnts" parentKey="ants" file="Interface\SpellActivationOverlay\IconAlertAnts" alpha="0" setAllPoints="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnUpdate>
-				AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
-			</OnUpdate>
-			<OnHide>
-				if ( self.animOut:IsPlaying() ) then
-					self.animOut:Stop();
-					ActionButton_OverlayGlowAnimOutFinished(self.animOut);
-				end
-			</OnHide>
-		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
 				<Scale target="$parentSpark" duration="0.2" scaleX="1.5" scaleY="1.5" order="1"/>
@@ -154,6 +98,62 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSpark" parentKey="spark" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.61718750" top="0.00390625" bottom="0.26953125"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentInnerGlow" parentKey="innerGlow" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+				</Texture>
+				<Texture name="$parentInnerGlowOver" parentKey="innerGlowOver" file="Interface\SpellActivationOverlay\IconAlert" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentInnerGlow" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentInnerGlow" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.53515625" bottom="0.78515625"/>
+				</Texture>
+				<Texture name="$parentOuterGlow" parentKey="outerGlow" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+				</Texture>
+				<Texture name="$parentOuterGlowOver" parentKey="outerGlowOver" file="Interface\SpellActivationOverlay\IconAlert" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentOuterGlow" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentOuterGlow" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.53515625" bottom="0.78515625"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentAnts" parentKey="ants" file="Interface\SpellActivationOverlay\IconAlertAnts" alpha="0" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate>
+				AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
+			</OnUpdate>
+			<OnHide>
+				if ( self.animOut:IsPlaying() ) then
+					self.animOut:Stop();
+					ActionButton_OverlayGlowAnimOutFinished(self.animOut);
+				end
+			</OnHide>
+		</Scripts>
 	</Frame>
 	<CheckButton name="ActionButton1" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="1">
 		<Anchors>
@@ -283,9 +283,9 @@
 				PlaySound("UChatScrollButton");
 			</OnClick>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
+		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
 		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
-		<DisabledTexture urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
 	</Button>
 	<Button name="ActionBarDownButton" parent="MainMenuBarArtFrame">
@@ -308,9 +308,9 @@
 				PlaySound("UChatScrollButton");
 			</OnClick>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
 		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
-		<DisabledTexture urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
 	</Button>
 </Ui>

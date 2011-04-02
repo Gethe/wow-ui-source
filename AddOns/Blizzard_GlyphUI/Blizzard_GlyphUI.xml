@@ -92,12 +92,6 @@ size=1024,1024
 				</Texture>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
-			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
-		</NormalTexture>
-		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
-			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
-		</HighlightTexture>
 		<Scripts>
 			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
 			<OnEnter>
@@ -114,6 +108,12 @@ size=1024,1024
 				GlyphFrameSpell_OnClick (self, button);
 			</OnClick>
 		</Scripts>
+		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>
 	</Button>
 	
 	<Button name="GlyphHeaderButtonTemplate" virtual="true">
@@ -186,6 +186,12 @@ size=1024,1024
 	</Button>
 
 	<Button name="GlyphTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup looping="REPEAT" parentKey="glow">
+				<Alpha target="$parentHighlight"  change="0.5" duration="0.8" smoothing="IN_OUT" order="1"/>
+				<Alpha target="$parentHighlight" change="-0.5" duration="0.8" smoothing="IN_OUT" order="2"/>
+			</AnimationGroup>
+		</Animations>
 		<Size>
 			<AbsDimension x="72" y="72"/>
 		</Size>
@@ -219,12 +225,6 @@ size=1024,1024
 				</Texture>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup looping="repeat" parentKey="glow">
-				<Alpha target="$parentHighlight"  change="0.5" duration="0.8" smoothing="IN_OUT" order="1"/>
-				<Alpha target="$parentHighlight" change="-0.5" duration="0.8" smoothing="IN_OUT" order="2"/>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnLoad>
 				GlyphFrameGlyph_OnLoad(self);
@@ -267,33 +267,33 @@ size=1024,1024
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame" parentKey="background">
 					<Size x="437" y="433"/>
-					<TexCoords left="0.42968750" right="0.85644531" top="0.00097656" bottom="0.42382813"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" y="-2"/>
 					</Anchors>
+					<TexCoords left="0.42968750" right="0.85644531" top="0.00097656" bottom="0.42382813"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentGlow" parentKey="glow" file="Interface\Spellbook\UI-GlyphFrame" alphaMode="ADD">
-					<Size x="437" y="433"/>	
-					<TexCoords left="0.00097656" right="0.42773438" top="0.00097656" bottom="0.42382813"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentBackground" x="0" y="0"/>
-					</Anchors>
 					<Animations>
 						<AnimationGroup name="$parentPulse" parentKey="pulse">
 							<Alpha name="$parentIn" change="1" duration="0.1"/>
 							<Alpha name="$parentOut" change="-1" duration="1.5"/>
 						</AnimationGroup>
 					</Animations>
+					<Size x="437" y="433"/>	
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBackground" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.42773438" top="0.00097656" bottom="0.42382813"/>
 					<Color r="1.0" g="1.0" b="1.0" a="0.0"/>
 				</Texture>
 				<Texture name="$LevelOverlay1" parentKey="levelOverlay1" file="Interface\Spellbook\UI-GlyphFrame">
 					<Size x="218" y="248"/>
-					<TexCoords left="0.00097656" right="0.21386719" top="0.42578125" bottom="0.66796875"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentBackground" x="-110" y="-20"/>
 					</Anchors>
+					<TexCoords left="0.00097656" right="0.21386719" top="0.42578125" bottom="0.66796875"/>
 				</Texture>
 				<FontString name="$LevelOverlayText1" inherits="GameFontNormalHugeBlack" justifyH="CENTER" parentKey="levelOverlayText1" text="GLYPH_SLOT_TOOLTIP1">
 					<Size>
@@ -306,10 +306,10 @@ size=1024,1024
 				</FontString>	
 				<Texture name="$LevelOverlay2" parentKey="levelOverlay2" file="Interface\Spellbook\UI-GlyphFrame">
 					<Size x="284" y="227"/>
-					<TexCoords left="0.21582031" right="0.49316406" top="0.42578125" bottom="0.64746094"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentBackground" x="80" y="-100"/>
 					</Anchors>
+					<TexCoords left="0.21582031" right="0.49316406" top="0.42578125" bottom="0.64746094"/>
 				</Texture>
 				<FontString name="$LevelOverlayText2" inherits="GameFontNormalHugeBlack" justifyH="CENTER" parentKey="levelOverlayText2" text="GLYPH_SLOT_TOOLTIP1">
 					<Size>
@@ -332,10 +332,10 @@ size=1024,1024
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame">
 							<Size x="168" y="348"/>
-							<TexCoords left="0.49511719" right="0.64941406" top="0.42578125" bottom="0.79492188"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="2" y="-2"/>
 							</Anchors>
+							<TexCoords left="0.49511719" right="0.64941406" top="0.42578125" bottom="0.79492188"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -388,7 +388,7 @@ size=1024,1024
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -399,7 +399,7 @@ size=1024,1024
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -410,7 +410,7 @@ size=1024,1024
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="0" y="20"/>
 							</Size>
@@ -423,13 +423,13 @@ size=1024,1024
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
-							<Color r="0.7" g="0.7" b="0.7" />
 							<Size>
 								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
 								<Anchor point="LEFT" y="-2"/>
 							</Anchors>
+							<Color r="0.7" g="0.7" b="0.7" />
 						</Texture>
 					</Layer>
 				</Layers>

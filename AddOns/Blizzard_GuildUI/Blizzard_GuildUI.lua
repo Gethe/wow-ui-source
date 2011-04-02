@@ -22,6 +22,8 @@ function GuildFrame_OnLoad(self)
 	GuildFrame_UpdateFaction();
 	local guildName = GetGuildInfo("player");
 	GuildFrameTitleText:SetText(guildName);
+	local totalMembers, onlineMembers = GetNumGuildMembers();
+	GuildFrameMembersCount:SetText(onlineMembers.." / "..totalMembers);
 end
 
 function GuildFrame_OnShow(self)

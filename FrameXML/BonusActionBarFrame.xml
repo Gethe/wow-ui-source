@@ -7,7 +7,6 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Size x="64" y="64"/>
 				<Texture name="$parentBG" parentKey="bg">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -45,7 +44,7 @@
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture2" urgency="5" file="Interface\Buttons\UI-Quickslot2">
+		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
 			<Size>
 				<AbsDimension x="54" y="54"/>
 			</Size>
@@ -76,6 +75,19 @@
 	</CheckButton>
 
 	<Frame name="BonusActionBarFrame" frameStrata="HIGH" parent="MainMenuBar" enableMouse="true" toplevel="true" hidden="true">
+		<Animations>
+			<AnimationGroup parentKey="slideout">
+				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
+				<Scripts>
+					<OnPlay>
+						BonusActionBarFrame:Show();
+					</OnPlay>
+					<OnFinished>
+						ActionBar_AnimTransitionFinished(BonusActionBarFrame);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Size>
 			<AbsDimension x="505" y="43"/>
 		</Size>
@@ -103,19 +115,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="slideout">
-				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
-				<Scripts>
-					<OnPlay>
-						BonusActionBarFrame:Show();
-					</OnPlay>
-					<OnFinished>
-						ActionBar_AnimTransitionFinished(BonusActionBarFrame);
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Frames>
 			<CheckButton name="BonusActionButton1" inherits="BonusActionButtonTemplate" id="1">
 				<Anchors>

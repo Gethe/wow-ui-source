@@ -174,6 +174,7 @@ function HelpFrame_OnEvent(self, event, ...)
 			self.button6:SetText(HELP_TICKET_EDIT);
 			self.asec.ticketButton:SetText(HELP_TICKET_EDIT);
 			self.ticketHelp.ticketButton:SetText(HELP_TICKET_EDIT);
+			self.report.ticketButton:SetText(HELP_TICKET_EDIT);
 		else
 			-- the player does not have a ticket
 			HelpFrameOpenTicketEditBox:SetText("");
@@ -188,6 +189,7 @@ function HelpFrame_OnEvent(self, event, ...)
 			self.button6:SetText(HELP_TICKET_OPEN);
 			self.asec.ticketButton:SetText(HELP_TICKET_OPEN);
 			self.ticketHelp.ticketButton:SetText(HELP_TICKET_OPEN);
+			self.report.ticketButton:SetText(HELP_TICKET_OPEN);
 		end
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
 		local ticketDescription, response = ...;
@@ -578,6 +580,7 @@ function KnowledgeBase_OnEvent(self, event, ...)
 		local totalArticleHeaderCount = KBQuery_GetTotalArticleCount();
 
 		if ( totalArticleHeaderCount > 0 ) then
+			self.scrollFrame.ScrollBar:SetValue(0);
 			self.totalArticleCount = totalArticleHeaderCount;
 			self.dataFunc = KBQuery_GetArticleHeaderData;
 			KnowledgeBase_UpdateArticles();
@@ -614,6 +617,7 @@ function KnowledgeBase_Clearlist()
 		button:SetScript("OnClick", nil);
 	end
 	
+	scrollFrame.ScrollBar:SetValue(0);
 	scrollFrame.update = KnowledgeBase_Clearlist;
 end
 
@@ -673,6 +677,8 @@ function KnowledgeBase_ResendArticleRequest(self)
 		
 	HelpFrame.kbase.category = self.data.category;
 	HelpFrame.kbase.subcategory = self.data.subcategory;
+	
+	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
 
@@ -699,6 +705,8 @@ function KnowledgeBase_SendArticleRequest(categoryIndex, subcategoryIndex)
 		
 	HelpFrame.kbase.category = categoryIndex;
 	HelpFrame.kbase.subcategory = subcategoryIndex;
+	
+	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
 
@@ -717,6 +725,8 @@ function KnowledgeBase_SelectCategory(self, index, navBar) -- Index could also b
 		KnowledgeBase_DisplaySubCategories(index-2, text);
 		HelpFrame.kbase.category = index-2;
 	end
+	
+	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
 
@@ -726,6 +736,8 @@ function KnowledgeBase_SelectSubCategory(self, index, navBar) -- Index could als
 	end
 	HelpFrame.kbase.subcategory = index-1;
 	KnowledgeBase_SendArticleRequest(HelpFrame.kbase.category, index-1);
+	
+	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
 
@@ -910,19 +922,40 @@ function KnowledgeBase_Search()
 		return;
 	end
 	
-	local categoryIndex = HelpFrame.kbase.category or 0;
-	local subcategoryIndex = HelpFrame.kbase.subcategory or 0;
+	HelpFrame.kbase.category = 0;
+	HelpFrame.kbase.subcategory = 0;
 
 	local searchText = HelpFrame.kbase.searchBox:GetText();
 	if HelpFrame.kbase.searchBox.inactive then
 		searchText = "";
 	end
-		
+	
+	if not HelpFrame.kbase.hasSearch then
+		NavBar_Reset(HelpFrame.kbase.navBar);
+			local buttonData = {
+			name = KBASE_SEARCH_RESULTS,
+			OnClick = KnowledgeBase_Search,
+		}
+		NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
+	end
+	
 	KBQuery_BeginLoading(searchText,
-		categoryIndex,
-		subcategoryIndex,
+		0,
+		0,
 		KBASE_NUM_ARTICLES_PER_PAGE,
-		1);
+		0);
+		
+	HelpFrame.kbase.hasSearch = true;
+end
+
+function KnowledgeBase_ClearSearch(self)
+	EditBox_ClearFocus(self);
+	self:SetText(SEARCH);
+	self:SetFontObject("GameFontDisable");
+	self.icon:SetVertexColor(0.6, 0.6, 0.6);
+	self.inactive = true;
+	self.clearButton:Disable();
+	HelpFrame.kbase.hasSearch = false;
 end
 
 

@@ -213,7 +213,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentNameBackground" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground" parentKey="nameBackground">
+				<Texture name="$parentNameBackground" file="Interface\TargetingFrame\UI-TargetingFrame-LevelBackground" parentKey="nameBackground">
 					<Size>
 						<AbsDimension x="119" y="19"/>
 					</Size>
@@ -243,7 +243,7 @@
 			<Frame name="$parentTextureFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame">
+						<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
 							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
 						</Texture>
 						<FontString name="$parentName" inherits="GameFontNormalSmall">
@@ -392,7 +392,7 @@
 						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
 					</OnSizeChanged>
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate" useParentLevel="true"/>
 			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate" useParentLevel="true"/>
@@ -415,7 +415,7 @@
 						self.cvarLabel = "STATUS_TEXT_TARGET";
 					</OnLoad>
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Frame name="$parentBuffs" parentKey="buffs" hidden="true">
@@ -446,7 +446,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentBG" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="bg">
+						<Texture name="$parentBG" file="Interface\TargetingFrame\UI-StatusBar" parentKey="bg">
 							<Size>
 								<AbsDimension x="37" y="14"/>
 							</Size>
@@ -592,7 +592,7 @@
 						TargetofTargetHealthCheck(self:GetParent());
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="1.0" b="0"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
@@ -606,7 +606,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Frame name="$parentDebuff1" inherits="TargetofTargetDebuffFrameTemplate" id="1">

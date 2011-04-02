@@ -18,11 +18,11 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<CheckButton name="RealmWizardLocationButtonTemplate" inherits="RealmWizardGameTypeButtonTemplate" virtual="true">
 		<Scripts>

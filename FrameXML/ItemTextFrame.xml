@@ -17,7 +17,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\Spellbook\Spellbook-Icon">
+				<Texture file="Interface\Spellbook\Spellbook-Icon">
 					<Size>
 						<AbsDimension x="58" y="58"/>
 					</Size>
@@ -31,7 +31,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture urgency="5" file="Interface\ItemTextFrame\UI-ItemText-TopLeft">
+				<Texture file="Interface\ItemTextFrame\UI-ItemText-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -39,7 +39,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -51,7 +51,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\ItemTextFrame\UI-ItemText-BotLeft">
+				<Texture file="Interface\ItemTextFrame\UI-ItemText-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -63,7 +63,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -230,7 +230,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size>
 								<AbsDimension x="256" y="23"/>
 							</Size>
@@ -244,7 +244,7 @@
 				<Scripts>
 					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
 				<BarColor r="0.25" g="0.75" b="0.25"/>
 			</StatusBar>
 			<Button name="ItemTextPrevPageButton">
@@ -273,9 +273,9 @@
 						ItemTextPrevPage();
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="ItemTextNextPageButton">
@@ -304,9 +304,9 @@
 						ItemTextNextPage();
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="ItemTextCloseButton">
@@ -323,9 +323,9 @@
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

@@ -270,14 +270,10 @@
 				</FontString>
 				<FontString name="$parentTypeLabel" inherits="GameFontHighlightSmall" text="ARENA_THIS_WEEK" justifyH="LEFT" justifyV="BOTTOM">
 					<Size>
-						<AbsDimension x="60``h`" y="0"/>
+						<AbsDimension x="90" y="0"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentGamesLabel" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-68" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="18" y="7"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentGames" inherits="GameFontHighlightSmall">
@@ -358,17 +354,17 @@
 		</Size>
 		<Layers> 		
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" hidden="true" parentKey="BG">
+				<Texture file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" hidden="true" parentKey="BG">
 					<Color r="1" g="1" b="1" a="0.08"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentClassIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes" hidden="true" parentKey="classIcon">
-					<Color r="1" g="1" b="1"/>
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"  x="3" y="-1"/>
 					</Anchors>
+					<Color r="1" g="1" b="1"/>
 				</Texture>
 				<FontString name="$parentNameText" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="98" y="14"/>
@@ -403,11 +399,11 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentCaptainIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true" parentKey="leaderIcon">
-					<Color r="1" g="1" b="1"/>
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentNameText"  relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
+					<Color r="1" g="1" b="1"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -437,7 +433,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="19"/>
 					</Size>
@@ -446,7 +442,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="53" y="19"/>
 					</Size>
@@ -455,7 +451,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="19"/>
 					</Size>
@@ -525,8 +521,8 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<HighlightTexture name="$parentHighlight" urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" parentKey="highlight">
-			<Color r="1.0" g="0.82" />
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" parentKey="highlight">
+			<Color r="1.0" g="0.82" b="0" />
 		</HighlightTexture>
 		<ButtonText name="$parentText" parentKey="title">
 			<Size>
@@ -565,17 +561,17 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentHeader" parentKey="NormalHeader" file="Interface\PVPFrame\PVP-Conquest-Misc">
 					<Size x="85" y="32"/>	
-					<TexCoords left="0.00097656" right="0.08398438" top="0.93359375" bottom="0.99609375"/>			
 					<Anchors>
 						<Anchor point="TOP" y="-1"/>
 					</Anchors>
+					<TexCoords left="0.00097656" right="0.08398438" top="0.93359375" bottom="0.99609375"/>			
 				</Texture>
 				<Texture name="$parentHeaderSelected" parentKey="GlowHeader" file="Interface\PVPFrame\PVP-Conquest-Misc" hidden="true">
 					<Size x="85" y="32"/>	
-					<TexCoords left="0.08593750" right="0.16894531" top="0.93359375" bottom="0.99609375"/>			
 					<Anchors>
 						<Anchor point="TOP" y="-1"/>
 					</Anchors>
+					<TexCoords left="0.08593750" right="0.16894531" top="0.93359375" bottom="0.99609375"/>			
 				</Texture>
 				<Texture name="$parentBorder">
 					<Size>
@@ -609,6 +605,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<HitRectInsets>
+			<AbsInset left="30" right="40" top="29" bottom="6"/>
+		</HitRectInsets>
 		<HighlightTexture file="Interface\PVPFrame\PVP-Banner-2" alphaMode="ADD">
 			<Size>
 				<AbsDimension x="47" y="96"/>
@@ -635,8 +634,5 @@
 			</Anchors>
 			<Color r="0.2" g="0.2" b="1.0" a="0.8"/>
 		</PushedTexture>	
-		<HitRectInsets>
-			<AbsInset left="30" right="40" top="29" bottom="6"/>
-		</HitRectInsets>
 	</Button>
 </Ui>

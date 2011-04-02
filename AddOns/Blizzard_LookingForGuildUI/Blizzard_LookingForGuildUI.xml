@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_LookingForGuildUI.lua"/>
 <!--
 *******************************************************************************
@@ -13,22 +13,22 @@
 				LookingForGuildBrowseButton_Update();
 			</OnClick>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>					
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>					
 	</CheckButton>
 	<Frame name="LookingForGuildSectionTemplate" virtual="true">
 		<Size x="312" y="74"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBg" >
-					<Color r="0.95" g="0.95" b="1" a="0.09"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
+					<Color r="0.95" g="0.95" b="1" a="0.09"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -74,11 +74,11 @@
 					<OnClick function="LookingForGuildRoleButton_OnClick"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -281,13 +281,6 @@
 						<Anchor point="LEFT" x="12" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="GameFontNormalSmall" justifyH="RIGHT" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentGuildName" relativePoint="RIGHT" x="8" y="0"/>
-						<Anchor point="RIGHT" x="-8" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="0.45"/>
-				</FontString>
 				<FontString name="$parentTimeLeft" inherits="GameFontHighlightSmall" parentKey="timeLeft">
 					<Anchors>
 						<Anchor point="RIGHT" x="-40" y="0"/>
@@ -325,7 +318,6 @@
 					</OnMouseUp>
 					<OnClick>
 						CancelGuildMembershipRequest(self:GetParent().index);
-						RequestGuildMembershipList();
 						RequestRecruitingGuildsList();
 					</OnClick>
 				</Scripts>
@@ -373,7 +365,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTabardEmblem" urgency="5" file="Interface\FriendsFrame\PlusManz-Horde" hidden="false">
+				<Texture name="$parentTabardEmblem" file="Interface\FriendsFrame\PlusManz-Horde" hidden="false">
 					<Size x="47" y="47"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -882,8 +874,6 @@
 			<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT"/>
 			<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT"/>
 		</Anchors>
-		<Layers>
-		</Layers>
 		<Frames>
 			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate" hidden="false">
 				<Size x="304" y="327"/>
@@ -927,8 +917,6 @@
 			<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT"/>
 			<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT"/>
 		</Anchors>
-		<Layers>
-		</Layers>
 		<Frames>
 			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate" hidden="false">
 				<Size x="304" y="327"/>

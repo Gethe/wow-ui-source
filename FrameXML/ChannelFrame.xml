@@ -80,7 +80,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
 			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
 		</NormalTexture>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
@@ -207,14 +207,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTop" urgency="5" file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
+						<Texture name="$parentTop" file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
 							<Size x="12" y="128"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="0.1875" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
+						<Texture name="$parentMiddle" file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
 							<Size x="9" y="128"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTop">
@@ -223,7 +223,7 @@
 							</Anchors>
 							<TexCoords left="0.421875" right="0.5625" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
+						<Texture file="Interface\FriendsFrame\UI-ChannelFrame-VerticalBar">
 							<Size x="12" y="128"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentMiddle">
@@ -1292,7 +1292,7 @@
 										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), 1);
 									</OnClick>
 								</Scripts>
-								<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
 								<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
 								<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
 								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -1309,9 +1309,9 @@
 										ChannelPulloutRoster_Scroll(self:GetParent():GetParent(), -1);
 									</OnClick>
 								</Scripts>
-								<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+								<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
 								<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-								<DisabledTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+								<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
 								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 							</Button>
 						</Frames>

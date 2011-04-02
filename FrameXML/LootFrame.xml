@@ -18,7 +18,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentNameFrame" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size>
 						<AbsDimension x="130" y="62"/>
 					</Size>
@@ -170,9 +170,9 @@
 						HideUIPanel(LootFrame);
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="LootButton1" inherits="LootButtonTemplate" id="1">
 				<Anchors>
@@ -224,7 +224,7 @@
 				<Scripts>
 					<OnClick function="LootFrame_PageUp"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
 				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
 				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -243,9 +243,9 @@
 				<Scripts>
 					<OnClick function="LootFrame_PageDown"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
 				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-				<DisabledTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
@@ -270,7 +270,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentSlotTexture" urgency="5" file="Interface\Buttons\UI-EmptySlot">
+				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -282,7 +282,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNameFrame" urgency="5" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
@@ -482,7 +482,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size>
 								<AbsDimension x="156" y="20"/>
 							</Size>
@@ -501,7 +501,7 @@
 						GroupLootFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
-				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="1.0" g="1.0" b="0" />
 			</StatusBar>
 		</Frames>

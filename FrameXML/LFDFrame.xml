@@ -162,7 +162,7 @@
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-						<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
 					<Frame name="$parentPlayer1" inherits="LFDDungeonReadyStatusPlayerTemplate" id="1">
 						<Anchors>
@@ -331,7 +331,7 @@
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-						<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
 					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate2" text="ENTER_DUNGEON">
 						<Size>
@@ -948,7 +948,7 @@
 							</Texture>
 						</Layer>
 						<Layer level="BACKGROUND" textureSubLevel="1">
-							<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="progress">
+							<Texture name="$parentProgress" file="Interface\TargetingFrame\UI-StatusBar" parentKey="progress">
 								<Size x="1" y="14"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
@@ -962,14 +962,14 @@
 								</Anchors>
 								<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
 							</Texture>
-							<Texture name="$parentCap1" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="cap1">
+							<Texture name="$parentCap1" file="Interface\TargetingFrame\UI-StatusBar" parentKey="cap1">
 								<Size x="20" y="14"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
 								<Color r="0.4863" g="0.5529" b="0.6353" a="0.3"/>
 							</Texture>
-							<Texture name="$parentCap2" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="cap2">
+							<Texture name="$parentCap2" file="Interface\TargetingFrame\UI-StatusBar" parentKey="cap2">
 								<Size x="20" y="14"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentCap1" relativePoint="RIGHT" x="0" y="0"/>
@@ -1762,7 +1762,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-7" y="28"/>
+									<AbsDimension x="-6" y="27"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1844,7 +1844,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-7" y="28"/>
+									<AbsDimension x="-6" y="27"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

@@ -72,7 +72,7 @@
 				ResetCursor();
 			</OnLeave>
 		</Scripts>
-		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate" parent="MainMenuBarArtFrame" id="0">
 		<Size>
@@ -125,7 +125,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 			<OnEvent function="MainMenuBarBackpackButton_OnEvent"/>
 		</Scripts>
-		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 	<CheckButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
 		<Anchors>

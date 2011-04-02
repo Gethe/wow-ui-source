@@ -89,7 +89,7 @@
 				TradeSkillFrameButton_OnLeave(self);
 			</OnLeave>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-MinusButton-UP">
+		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
 			<Size>
 				<AbsDimension x="16" y="16"/>
 			</Size>
@@ -166,17 +166,17 @@
 		<Size>
 			<AbsDimension x="152" y="16"/>
 		</Size>
+		<Scripts>
+			<OnClick>
+				ChatFrame_SendTell(self.name);
+			</OnClick>
+		</Scripts>
 		<ButtonText name="$parentText">
 			<Size x="0" y="16"/>
 			<Anchors>
 				<Anchor point="LEFT" x="4" y="0"/>
 			</Anchors>
 		</ButtonText>
-		<Scripts>
-			<OnClick>
-				ChatFrame_SendTell(self.name);
-			</OnClick>
-		</Scripts>
 		<NormalFont style="GameFontHighlightLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
 		<DisabledFont style="GameFontDisableLeft"/>
@@ -218,7 +218,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="TradeSkillHorizontalBarLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture name="TradeSkillHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="256" y="16"/>
 					</Size>
@@ -236,7 +236,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="75" y="16"/>
 					</Size>
@@ -387,9 +387,9 @@
 						TradeSkillInputBox:ClearFocus();
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<EditBox name="TradeSkillInputBox" letters="3" numeric="true" autoFocus="false">
@@ -405,7 +405,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -418,7 +418,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -431,7 +431,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="10" y="20"/>
 							</Size>
@@ -473,9 +473,9 @@
 						TradeSkillInputBox:ClearFocus();
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="TradeSkillViewGuildCraftersButton" inherits="MagicButtonTemplate" text="GUILD_TRADE_SKILL_VIEW_CRAFTERS" hidden="true">
@@ -505,7 +505,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="TradeSkillExpandTabLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
+						<Texture name="TradeSkillExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
 							<Size>
 								<AbsDimension x="8" y="32"/>
 							</Size>
@@ -513,7 +513,7 @@
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="TradeSkillExpandTabMiddle" urgency="5" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+						<Texture name="TradeSkillExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
 							<Size>
 								<AbsDimension x="50" y="32"/>
 							</Size>
@@ -525,7 +525,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture name="TradeSkillExpandTabRight" urgency="5" file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+						<Texture name="TradeSkillExpandTabRight" file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
 							<Size>
 								<AbsDimension x="8" y="32"/>
 							</Size>
@@ -552,7 +552,19 @@
 								<FontString name="$parentSubText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
 							</Layer>
 						</Layers>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-MinusButton-UP">
+						<Scripts>
+							<OnLoad>
+								_G[self:GetName()]:SetText(ALL);
+							</OnLoad>
+							<OnClick function="TradeSkillCollapseAllButton_OnClick"/>
+							<OnEnter>
+								_G[self:GetName().."SubText"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							</OnEnter>
+							<OnLeave>
+								_G[self:GetName().."SubText"]:SetTextColor(self.r, self.g, self.b);
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
 							<Size>
 								<AbsDimension x="16" y="16"/>
 							</Size>
@@ -601,18 +613,6 @@
 						<NormalFont style="GameFontNormalLeft"/>
 						<HighlightFont style="GameFontHighlightLeft"/>
 						<DisabledFont style="GameFontDisableLeft"/>
-						<Scripts>
-							<OnLoad>
-								_G[self:GetName()]:SetText(ALL);
-							</OnLoad>
-							<OnClick function="TradeSkillCollapseAllButton_OnClick"/>
-							<OnEnter>
-								_G[self:GetName().."SubText"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-							</OnEnter>
-							<OnLeave>
-								_G[self:GetName().."SubText"]:SetTextColor(self.r, self.g, self.b);
-							</OnLeave>
-						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>
@@ -629,7 +629,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2">							
+						<Texture file="Interface\Buttons\UI-Listbox-Highlight2">							
 							<Color r="0.6" g="0.75" b="1.0" a="0.5" />
 						</Texture>	
 						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT">
@@ -697,7 +697,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="TradeSkillHighlight" urgency="5" file="Interface\Buttons\UI-Listbox-Highlight2"/>
+						<Texture name="TradeSkillHighlight" file="Interface\Buttons\UI-Listbox-Highlight2"/>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -803,7 +803,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTop" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture name="$parentTop" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size>
 								<AbsDimension x="30" y="123"/>
 							</Size>
@@ -816,7 +816,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.46875" top="0" bottom="0.9609375"/>
 						</Texture>
-						<Texture name="$parentBottom" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size>
 								<AbsDimension x="30" y="123"/>
 							</Size>
@@ -886,7 +886,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<Texture name="TradeSkillDetailHeaderLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
+								<Texture name="TradeSkillDetailHeaderLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
 									<Size>
 										<AbsDimension x="256" y="64"/>
 									</Size>
@@ -898,7 +898,7 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderRight">
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderRight">
 									<Size>
 										<AbsDimension x="64" y="64"/>
 									</Size>
@@ -1076,7 +1076,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size>
 								<AbsDimension x="245" y="27"/>
 							</Size>
@@ -1101,7 +1101,7 @@
 					</OnLoad>
 					<OnEvent function="TradeSkillFrame_Update"/>
 				</Scripts>
-				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="0.25" g="0.25" b="0.75" />
 			</StatusBar>
 			<EditBox name="$parentSearchBox" autoFocus="false">
@@ -1115,7 +1115,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -1126,7 +1126,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -1137,7 +1137,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="0" y="20"/>
 							</Size>
@@ -1150,13 +1150,13 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon">
-							<Color r="0.7" g="0.7" b="0.7" />
 							<Size>
 								<AbsDimension x="14" y="14"/>
 							</Size>
 							<Anchors>
 								<Anchor point="LEFT" y="-2"/>
 							</Anchors>
+							<Color r="0.7" g="0.7" b="0.7" />
 						</Texture>
 					</Layer>
 				</Layers>

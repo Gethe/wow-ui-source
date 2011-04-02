@@ -494,17 +494,7 @@ function GuildBankFrame_UpdateTabs()
 		GuildBankCashFlowLabel:Hide();
 		GuildBankCashFlowMoneyFrame:Hide();
 	elseif ( GuildBankFrame.mode == "moneylog" and GetSpellInfo("Cash Flow") ) then
-		MoneyFrame_Update("GuildBankCashFlowMoneyFrame", GetGuildBankBonusDepositMoney());
-		local width = GuildBankCashFlowLabel:GetWidth() + GuildBankCashFlowMoneyFrame:GetWidth() + 10;
-		GuildBankTabLimitBackground:SetWidth(width);
-		if ( width > 310 ) then
-			GuildBankTabLimitBackground:ClearAllPoints();
-			GuildBankTabLimitBackground:SetPoint("RIGHT", GuildBankFrameWithdrawButton, "LEFT", -14, -1);
-		else
-			GuildBankTabLimitBackground:ClearAllPoints();
-			GuildBankTabLimitBackground:SetPoint("TOP", "GuildBankFrame", "TOP", 6, -388);
-		end
-		
+		GuildBankFrame_UpdateCashFlowMoney();
 		GuildBankTabLimitBackground:Show();
 		GuildBankTabLimitBackgroundLeft:Show();
 		GuildBankTabLimitBackgroundRight:Show();
@@ -518,6 +508,19 @@ function GuildBankFrame_UpdateTabs()
 		GuildBankTabLimitBackgroundRight:Hide();
 		GuildBankCashFlowLabel:Hide();
 		GuildBankCashFlowMoneyFrame:Hide();
+	end
+end
+
+function GuildBankFrame_UpdateCashFlowMoney()
+	MoneyFrame_Update("GuildBankCashFlowMoneyFrame", GetGuildBankBonusDepositMoney());
+	local width = GuildBankCashFlowLabel:GetWidth() + GuildBankCashFlowMoneyFrame:GetWidth() + 10;
+	GuildBankTabLimitBackground:SetWidth(width);
+	if ( width > 310 ) then
+		GuildBankTabLimitBackground:ClearAllPoints();
+		GuildBankTabLimitBackground:SetPoint("RIGHT", GuildBankFrameWithdrawButton, "LEFT", -14, -1);
+	else
+		GuildBankTabLimitBackground:ClearAllPoints();
+		GuildBankTabLimitBackground:SetPoint("TOP", "GuildBankFrame", "TOP", 6, -388);
 	end
 end
 

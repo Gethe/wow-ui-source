@@ -495,7 +495,7 @@
 						CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_REWIND);
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\TimeManager\RWButton"/>
+				<NormalTexture file="Interface\TimeManager\RWButton"/>
 			</Button>
 			<Button name="$parentPauseButton" inherits="CreditsSpeedButtonTemplate">
 				<Anchors>
@@ -506,7 +506,7 @@
 						CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PAUSE);
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\TimeManager\PauseButton"/>
+				<NormalTexture file="Interface\TimeManager\PauseButton"/>
 			</Button>
 			<Button name="$parentPlayButton" inherits="CreditsSpeedButtonTemplate">
 				<Anchors>
@@ -517,7 +517,7 @@
 						CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 			</Button>
 			<Button name="$parentFastForwardButton" inherits="CreditsSpeedButtonTemplate">
 				<Anchors>
@@ -528,7 +528,7 @@
 						CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_FASTFORWARD);
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\TimeManager\FFButton"/>
+				<NormalTexture file="Interface\TimeManager\FFButton"/>
 			</Button>
 		</Frames>
 		<Scripts>

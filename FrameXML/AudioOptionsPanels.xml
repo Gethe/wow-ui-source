@@ -932,7 +932,7 @@
 									<OnLoad function="LoopbackVUMeter_OnLoad"/>
 									<OnUpdate function="LoopbackVUMeter_OnUpdate"/>
 								</Scripts>
-								<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 							</StatusBar>
 						</Frames>
 					</Frame>

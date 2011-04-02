@@ -28,6 +28,16 @@
 -->
  
 	<Frame name="PaladinPowerBar" parent="PlayerFrame" useParentLevel="true">
+		<Animations>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha change="1" duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Size x="136" y="39"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="43" y="39"/>
@@ -45,17 +55,6 @@
 		</Layers>
 		<Frames>
 			<Frame name="$parentGlowBG" setAllPoints="true"  useParentLevel="true" parentKey="glow">
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture name="$parentTexture" file="Interface\PlayerFrame\PaladinPowerTextures">
-							<Anchors>
-								<Anchor point="TOP" />
-							</Anchors>
-							<Size x="136" y="39"/>
-							<TexCoords left="0.00390625" right="0.53515625" top="0.00781250" bottom="0.31250000"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="pulse">
 						<Alpha change="1" duration="0.5" order="1"/>
@@ -69,8 +68,37 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture name="$parentTexture" file="Interface\PlayerFrame\PaladinPowerTextures">
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+							<Size x="136" y="39"/>
+							<TexCoords left="0.00390625" right="0.53515625" top="0.00781250" bottom="0.31250000"/>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Frame name="$parentRune1" parentKey="rune1">
+				<Animations>
+					<AnimationGroup parentKey="activate">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="deactivate">
+						<Alpha change="-1" duration="0.3" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(0);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="21" y="-11"/>
 				</Anchors>
@@ -82,6 +110,8 @@
 						</Texture>
 					</Layer>
 				</Layers>
+			</Frame>
+			<Frame name="$parentRune2" parentKey="rune2">
 				<Animations>
 					<AnimationGroup parentKey="activate">
 						<Alpha change="1" duration="0.2" order="1"/>
@@ -100,8 +130,6 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
-			</Frame>
-			<Frame name="$parentRune2" parentKey="rune2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRune1" relativePoint="RIGHT"/>
 				</Anchors>
@@ -113,6 +141,8 @@
 						</Texture>
 					</Layer>
 				</Layers>
+			</Frame>
+			<Frame name="$parentRune3" parentKey="rune3">
 				<Animations>
 					<AnimationGroup parentKey="activate">
 						<Alpha change="1" duration="0.2" order="1"/>
@@ -131,8 +161,6 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
-			</Frame>
-			<Frame name="$parentRune3" parentKey="rune3">
 				<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRune2" relativePoint="RIGHT" x="2" y="-1"/>
 					</Anchors>
@@ -144,36 +172,8 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Animations>
-					<AnimationGroup parentKey="activate">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Scripts>
-							<OnFinished>
-								self:GetParent():SetAlpha(1);
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
-					<AnimationGroup parentKey="deactivate">
-						<Alpha change="-1" duration="0.3" order="1"/>
-						<Scripts>
-							<OnFinished>
-								self:GetParent():SetAlpha(0);
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
 			</Frame>
 		</Frames>
-		<Animations>
-			<AnimationGroup parentKey="showAnim">
-				<Alpha change="1" duration="0.5" order="1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():SetAlpha(1.0);
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnLoad function="PaladinPowerBar_OnLoad"/>
 			<OnEvent function="PaladinPowerBar_OnEvent"/>

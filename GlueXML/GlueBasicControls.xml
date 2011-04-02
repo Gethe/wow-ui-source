@@ -15,13 +15,13 @@
 		end
 		seterrorhandler(_ERRORMESSAGE);
 	</Script>
-	<Texture name="DialogButtonNormalTexture" urgency="5" file="Interface\Buttons\UI-Panel-Button-Up" virtual="true">
+	<Texture name="DialogButtonNormalTexture" file="Interface\Buttons\UI-Panel-Button-Up" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Texture name="DialogButtonPushedTexture" file="Interface\Buttons\UI-Panel-Button-Down" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Texture name="DialogButtonDisabledTexture" urgency="5" file="Interface\Buttons\UI-Panel-Button-Disabled" virtual="true">
+	<Texture name="DialogButtonDisabledTexture" file="Interface\Buttons\UI-Panel-Button-Disabled" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Texture name="DialogButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">

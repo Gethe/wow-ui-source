@@ -4,74 +4,6 @@
 
 	
 	<Frame name="StartTimerBar" virtual="true">
-		<Size x="206" y="26"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentDigit1" parentKey="digit1" alpha="0"/>
-				<Texture name="$parentDigit2" parentKey="digit2" alpha="0"/>
-				<Texture name="$parentFaction" parentKey="faction" alpha="0">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="UIParent" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture name="$parentGlow1" parentKey="glow1" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentDigit1" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDigit1" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentGlow2" parentKey="glow2" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentDigit2" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDigit2" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentFactionGlow" parentKey="factionGlow" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentFaction" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentFaction" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<StatusBar name="$parentStatusBar" useParentLevel="true" parentKey="bar" alpha="0">
-				<Size x="195" y="13"/>
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-2"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Size x="195" y="13"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-2"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="0.5"/>
-						</Texture>		
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
-							<Size x="256" y="64"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="25"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentTimeText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="timeText">
-							<Size x="0" y="9"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="1" g="0.0" b="0.0" />
-			</StatusBar>
-		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="fadeBarIn">
 				<Alpha target="$parentStatusBar" change="1.0" duration="1.9" order="1"/>
@@ -149,6 +81,74 @@
 				<Alpha target="$parentFaction" startDelay="0.6" change="-1.0" 				duration="0.2" smoothing="OUT" order="4"/>
 			</AnimationGroup>
 		</Animations>
+		<Size x="206" y="26"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentDigit1" parentKey="digit1" alpha="0"/>
+				<Texture name="$parentDigit2" parentKey="digit2" alpha="0"/>
+				<Texture name="$parentFaction" parentKey="faction" alpha="0">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="UIParent" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="$parentGlow1" parentKey="glow1" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDigit1" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDigit1" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlow2" parentKey="glow2" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDigit2" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDigit2" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFactionGlow" parentKey="factionGlow" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentFaction" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentFaction" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentStatusBar" useParentLevel="true" parentKey="bar" alpha="0">
+				<Size x="195" y="13"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Size x="195" y="13"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-2"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>		
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
+							<Size x="256" y="64"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="25"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentTimeText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="timeText">
+							<Size x="0" y="9"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1" g="0.0" b="0.0" />
+			</StatusBar>
+		</Frames>
 	</Frame>
 	
 	

@@ -116,16 +116,13 @@
 						</Texture>
 					</Layer>
 				</Layers>
-					<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<!--
-				<BarTexture name="$parentBar" urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
-				-->
-				<BarColor r="0" g="0" b="1" a="0.5"/>
 				<Scripts>
 					<OnLoad>
 						ClassTrainerStatusBarBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
 					</OnLoad>
 				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="0" g="0" b="1" a="0.5"/>
 			</StatusBar>
 			<Frame name="ClassTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 					<Anchors>

@@ -117,11 +117,11 @@
 				</Texture>
 				<Texture name="$parentBgMiddle" file="Interface\CharacterFrame\Char-Stat-Middle" parentKey="BgMiddle" vertTile="true">
 					<Size x="169" y="8"/>
-					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBgTop" relativePoint="BOTTOMLEFT" x="1"/>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBgBottom" relativePoint="TOPLEFT"/>
 					</Anchors>
+					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
 				</Texture>
 				<Texture name="$parentBgMinimized" inherits="Char-Stat-Minimized" parentKey="BgMinimized" hidden="true">
 					<Size x="169" y="18"/>
@@ -350,10 +350,6 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-2" y="-1"/>
 				</Anchors>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
@@ -384,6 +380,10 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			
 			<ScrollFrame name="CharacterStatsPane" hidden="true" inherits="UIPanelScrollFrameTemplate2">
@@ -391,6 +391,13 @@
 					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInsetRight" x="-27" y="2"/>
 				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.ScrollBar.scrollStep = 50;
+						ScrollFrame_OnLoad(self);
+						ScrollFrame_OnScrollRangeChanged(self);
+					</OnLoad>
+				</Scripts>
 				<ScrollChild>
 					<Frame name="CharacterStatsPaneScrollChild">
 						<Size x="170" y="0"/>
@@ -408,13 +415,6 @@
 						</Frames>
 					</Frame>
 				</ScrollChild>
-				<Scripts>
-					<OnLoad>
-						self.ScrollBar.scrollStep = 50;
-						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self);
-					</OnLoad>
-				</Scripts>
 			</ScrollFrame>
 		</Frames>
 		<Scripts>

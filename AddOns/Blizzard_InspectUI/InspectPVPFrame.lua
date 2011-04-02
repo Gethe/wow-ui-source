@@ -34,6 +34,14 @@ function InspectPVPFrame_Update()
 	end	
 	InspectPVPFrame_SetFaction();
 	InspectPVPTeam_Update();
+	InspectPVP_RatedBG_Update();
+end
+
+
+function InspectPVP_RatedBG_Update()
+	local rating, played, won = GetInspectRatedBGData();
+	InspectPVPFrame.bgRating:SetText(rating);
+	InspectPVPFrame.bgRecord:SetText(won.."-"..(played-won));
 end
 
 function InspectPVPTeam_Update()

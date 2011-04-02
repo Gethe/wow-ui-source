@@ -140,10 +140,10 @@
 				</Texture>
 				<Texture name="$parentBgMiddle" file="Interface\CharacterFrame\Char-Stat-Middle" parentKey="BgMiddle" vertTile="true">
 					<Size x="169" y="8"/>
-					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
 					<Anchors>
 						<Anchor point="LEFT" x="1"/>
 					</Anchors>
+					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -155,7 +155,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check" parentKey="Check" hidden="true">
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" parentKey="Check" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -182,7 +182,7 @@
 				<Anchor point="RIGHT" x="-3" y="0"/>
 			</Anchors>
 		</ButtonText>
-		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alphaMode="ADD"/>	
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alphaMode="ADD"/>	
 	</Button>
 	
 	<Button name="GearSetButtonTemplate" virtual="true">
@@ -204,10 +204,10 @@
 				</Texture>
 				<Texture name="$parentBgMiddle" file="Interface\CharacterFrame\Char-Stat-Middle" parentKey="BgMiddle" vertTile="true">
 					<Size x="169" y="8"/>
-					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
 					<Anchors>
 						<Anchor point="LEFT" x="1"/>
 					</Anchors>
+					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -219,7 +219,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check" parentKey="Check" hidden="true">
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" parentKey="Check" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT">
@@ -325,20 +325,6 @@
 				</Scripts>
 			</Button>
 		</Frames>
-	
-		<NormalTexture name="$parentIcon" parentKey="icon">
-			<Size>
-				<AbsDimension x="36" y="36"/>
-			</Size>
-			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="4" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</NormalTexture>
-		
 		<Scripts>
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
@@ -366,6 +352,18 @@
 				end
 			</OnDragStart>
 		</Scripts>
+		<NormalTexture name="$parentIcon" parentKey="icon">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="4" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
 	</Button>
 	
 	<CheckButton name="GearSetPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
@@ -392,7 +390,7 @@
 			</Anchors>
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>	
 		
 	<Button name="PaperDollSidebarTabTemplate" virtual="true">
@@ -401,10 +399,10 @@
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs" parentKey="TabBg">
 					<Size x="50" y="43"/>
-					<TexCoords left="0.01562500" right="0.79687500" top="0.61328125" bottom="0.78125000"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-9" y="-2"/>
 					</Anchors>
+					<TexCoords left="0.01562500" right="0.79687500" top="0.61328125" bottom="0.78125000"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -418,19 +416,19 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="Hider" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
 					<Size x="34" y="19"/>
-					<TexCoords left="0.01562500" right="0.54687500" top="0.11328125" bottom="0.18750000"/>
 					<Anchors>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
+					<TexCoords left="0.01562500" right="0.54687500" top="0.11328125" bottom="0.18750000"/>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="Highlight" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
 					<Size x="31" y="31"/>	
-					<TexCoords left="0.01562500" right="0.50000000" top="0.19531250" bottom="0.31640625"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-3"/>
 					</Anchors>
+					<TexCoords left="0.01562500" right="0.50000000" top="0.19531250" bottom="0.31640625"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -477,17 +475,17 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="DecorLeft" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
 							<Size x="28" y="11"/>
-							<TexCoords left="0.01562500" right="0.45312500" top="0.00390625" bottom="0.04687500"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
+							<TexCoords left="0.01562500" right="0.45312500" top="0.00390625" bottom="0.04687500"/>
 						</Texture>
 						<Texture parentKey="DecorRight" file="Interface\PaperDollInfoFrame\PaperDollSidebarTabs">
 							<Size x="28" y="13"/>
-							<TexCoords left="0.01562500" right="0.45312500" top="0.05468750" bottom="0.10546875"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
+							<TexCoords left="0.01562500" right="0.45312500" top="0.05468750" bottom="0.10546875"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -578,11 +576,11 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="ButtonBackground">
-									<Color r="0" g="0" b="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="PaperDollEquipmentManagerPane"/>
 										<Anchor point="BOTTOMRIGHT" relativeTo="PaperDollEquipmentManagerPane" relativePoint="TOPRIGHT" x="0" y="-23"/>
 									</Anchors>
+									<Color r="0" g="0" b="0"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -631,31 +629,31 @@
 					<Layer level="BACKGROUND">
 						<Texture name="CharacterModelFrameBackgroundTopLeft" parentKey="BackgroundTopLeft">
 							<Size  x="212" y="245"/>
-							<TexCoords left="0.171875" right="1" top="0.0392156862745098" bottom="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
+							<TexCoords left="0.171875" right="1" top="0.0392156862745098" bottom="1"/>
 						</Texture>
 						<Texture name="CharacterModelFrameBackgroundTopRight" parentKey="BackgroundTopRight">
 							<Size x="19" y="245"/>
-							<TexCoords left="0" right="0.296875" top="0.0392156862745098" bottom="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameBackgroundTopLeft" relativePoint="TOPRIGHT"/>
 							</Anchors>
+							<TexCoords left="0" right="0.296875" top="0.0392156862745098" bottom="1"/>
 						</Texture>
 						<Texture name="CharacterModelFrameBackgroundBotLeft" parentKey="BackgroundBotLeft">
 							<Size x="212" y="128"/>
-							<TexCoords left="0.171875" right="1" top="0" bottom="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
+							<TexCoords left="0.171875" right="1" top="0" bottom="1"/>
 						</Texture>
 						<Texture name="CharacterModelFrameBackgroundBotRight" parentKey="BackgroundBotRight">
 							<Size x="19" y="128"/>
-							<TexCoords left="0" right="0.296875" top="0" bottom="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
+							<TexCoords left="0" right="0.296875" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
@@ -690,32 +688,32 @@
 						</Texture>
 						<Texture name="PaperDollInnerBorderLeft" inherits="Char-Inner-Left">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeto="PaperDollInnerBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1"/>
-								<Anchor point="BOTTOMLEFT" relativeto="PaperDollInnerBorderBottomLeft" relativePoint="TOPLEFT" x="-1"/>
+								<Anchor point="TOPLEFT" relativeTo="PaperDollInnerBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="PaperDollInnerBorderBottomLeft" relativePoint="TOPLEFT" x="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderRight" inherits="Char-Inner-Right">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeto="PaperDollInnerBorderTopRight" relativePoint="BOTTOMRIGHT" x="1"/>
-								<Anchor point="BOTTOMRIGHT" relativeto="PaperDollInnerBorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
+								<Anchor point="TOPRIGHT" relativeTo="PaperDollInnerBorderTopRight" relativePoint="BOTTOMRIGHT" x="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="PaperDollInnerBorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderTop" inherits="Char-Inner-Top">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeto="PaperDollInnerBorderTopLeft" relativePoint="TOPRIGHT" y="1"/>
-								<Anchor point="TOPRIGHT" relativeto="PaperDollInnerBorderTopRight" relativePoint="TOPLEFT" y="1"/>
+								<Anchor point="TOPLEFT" relativeTo="PaperDollInnerBorderTopLeft" relativePoint="TOPRIGHT" y="1"/>
+								<Anchor point="TOPRIGHT" relativeTo="PaperDollInnerBorderTopRight" relativePoint="TOPLEFT" y="1"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderBottom" inherits="Char-Inner-Bottom">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeto="PaperDollInnerBorderBottomLeft" relativePoint="BOTTOMRIGHT" y="-1"/>
-								<Anchor point="BOTTOMRIGHT" relativeto="PaperDollInnerBorderBottomRight" relativePoint="BOTTOMLEFT" y="-1"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="PaperDollInnerBorderBottomLeft" relativePoint="BOTTOMRIGHT" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="PaperDollInnerBorderBottomRight" relativePoint="BOTTOMLEFT" y="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture name="PaperDollInnerBorderBottom2" inherits="Char-Inner-Bottom">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeto="CharacterFrameInset" y="27"/>
-								<Anchor point="BOTTOMRIGHT" relativeto="CharacterFrameInset" y="27"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="CharacterFrameInset" y="27"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" y="27"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -749,7 +747,7 @@
 								Model_RotateLeft(self:GetParent());
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -768,7 +766,7 @@
 								Model_RotateRight(self:GetParent());
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -957,14 +955,14 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopLeft">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
 					<Size x="256" y="212"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.828125"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopRight">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
 					<Size x="64" y="212"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -973,7 +971,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.828125"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotLeft">
+				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
 					<Size x="256" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -981,7 +979,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotRight">
+				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -1021,7 +1019,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size x="30" y="120"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
@@ -1030,7 +1028,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size x="30" y="79"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
@@ -1056,7 +1054,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 							<Size x="12" y="29"/>
 							<Anchors>
 								<Anchor point="TOPLEFT">
@@ -1065,14 +1063,14 @@
 							</Anchors>
 							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+						<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 							<Size x="175" y="29"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 							</Anchors>
 							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentRight" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 							<Size x="12" y="29"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>

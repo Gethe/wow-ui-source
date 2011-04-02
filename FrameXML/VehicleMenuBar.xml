@@ -465,7 +465,7 @@
 							</OnValueChanged>
 							<OnEnter function="VehicleMenuBarStatusBars_ShowTooltip"/>
 						</Scripts>
-						<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 					</StatusBar>
 					<StatusBar name="VehicleMenuBarPowerBar" drawLayer="ARTWORK" inherits="TextStatusBar" orientation="VERTICAL" rotatesTexture="true">
 						<Layers>
@@ -509,7 +509,7 @@
 							<OnValueChanged function="VehicleMenuBarStatusBars_ShowTooltip"/>
 							<OnEnter function="VehicleMenuBarStatusBars_ShowTooltip"/>
 						</Scripts>
-						<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 					</StatusBar>
 				</Frames>
 			</Frame>

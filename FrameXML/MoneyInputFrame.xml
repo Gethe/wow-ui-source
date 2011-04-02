@@ -14,7 +14,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -27,7 +27,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -40,7 +40,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="10" y="20"/>
 							</Size>
@@ -52,7 +52,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
+						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
@@ -117,7 +117,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -130,7 +130,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -143,7 +143,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="10" y="20"/>
 							</Size>
@@ -155,7 +155,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
+						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
@@ -217,7 +217,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -230,7 +230,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="8" y="20"/>
 							</Size>
@@ -243,7 +243,7 @@
 							</Anchors>
 							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 						</Texture>
-						<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 							<Size>
 								<AbsDimension x="10" y="20"/>
 							</Size>
@@ -255,7 +255,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
+						<Texture parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
 							<Size>
 								<AbsDimension x="13" y="13"/>
 							</Size>
@@ -325,7 +325,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTexture" parentKey="texture" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons">
+				<Texture name="$parentTexture" parentKey="texture" file="Interface\MoneyFrame\UI-MoneyIcons">
 					<Size>
 						<AbsDimension x="13" y="13"/>
 					</Size>

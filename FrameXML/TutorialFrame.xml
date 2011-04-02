@@ -2,6 +2,14 @@
 ..\FrameXML\UI.xsd">
 	<Script file="TutorialFrame.lua"/>
 	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true" propagateKeyboardInput="true">
+		<Animations>
+			<AnimationGroup name="AnimateMouse" looping="BOUNCE">
+				<Alpha target="TutorialFrameMouse" change="1" duration="0.8" smoothing="IN_OUT"/>
+			</AnimationGroup>
+			<AnimationGroup name="AnimateCallout" looping="BOUNCE">
+				<Alpha target="TutorialFrameCallOut" change="-0.5" duration="0.8" smoothing="IN_OUT"/>
+			</AnimationGroup>
+		</Animations>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="100"/>
 		</Anchors>
@@ -16,83 +24,83 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentTop" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentTop" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="364" y="80"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.0019531" right="0.7109375" top="0.0019531" bottom="0.1562500"/>
 				</Texture>
-				<Texture name="$parentBottom" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentBottom" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="356" y="30"/>
 					<TexCoords left="0.0019531" right="0.6953125" top="0.1621094" bottom="0.2187500"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentMouseLeftClick" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentMouseLeftClick" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="76" y="101"/>
 					<TexCoords left="0.0019531" right="0.1484375" top="0.4257813" bottom="0.6210938"/>
 				</Texture>
-				<Texture name="$parentMouseRightClick" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentMouseRightClick" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="76" y="101"/>
 					<TexCoords left="0.0019531" right="0.1484375" top="0.6269531" bottom="0.8222656"/>
 				</Texture>
-				<Texture name="$parentMouseBothClick" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentMouseBothClick" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="76" y="101"/>
 					<TexCoords left="0.1542969" right="0.3007813" top="0.2246094" bottom="0.4199219"/>
 				</Texture>
-				<Texture name="$parentMouseWheel" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentMouseWheel" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="76" y="101"/>
 					<TexCoords left="0.0019531" right="0.1484375" top="0.2246094" bottom="0.4199219"/>
 				</Texture>
 				
-				<Texture name="$parentArrowUp" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowUp" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="68" y="89"/>
 					<TexCoords left="0.1542969" right="0.2851563" top="0.6269531" bottom="0.7988281"/>
 				</Texture>
-				<Texture name="$parentArrowDown" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowDown" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="68" y="89"/>
 					<TexCoords left="0.1542969" right="0.2851563" top="0.7988281" bottom="0.6269531"/>
 				</Texture>
-				<Texture name="$parentArrowRight" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowRight" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="89" y="68"/>
 					<TexCoords left="0.3066406" right="0.4785156" top="0.2246094" bottom="0.3554688"/>
 				</Texture>
-				<Texture name="$parentArrowLeft" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowLeft" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="89" y="68"/>
 					<TexCoords left="0.4785156" right="0.3066406" top="0.2246094" bottom="0.3554688"/>
 				</Texture>
 				
-				<Texture name="$parentArrowCurveUpRight" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveUpRight" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="66" y="81"/>
 					<TexCoords left="0.3066406" right="0.4335938" top="0.3613281" bottom="0.5175781"/>
 				</Texture>
-				<Texture name="$parentArrowCurveUpLeft" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveUpLeft" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="66" y="81"/>
 					<TexCoords left="0.4335938" right="0.3066406" top="0.3613281" bottom="0.5175781"/>
 				</Texture>
-				<Texture name="$parentArrowCurveDownRight" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveDownRight" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="66" y="81"/>
 					<TexCoords left="0.3066406" right="0.4335938" top="0.5175781" bottom="0.3613281"/>
 				</Texture>
-				<Texture name="$parentArrowCurveDownLeft" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveDownLeft" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="66" y="81"/>
 					<TexCoords left="0.4335938" right="0.3066406" top="0.5175781" bottom="0.3613281"/>
 				</Texture>
 
-				<Texture name="$parentArrowCurveRightDown" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveRightDown" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="82" y="66"/>
 					<TexCoords left="0.4843750" right="0.6425781" top="0.2246094" bottom="0.3515625"/>
 				</Texture>
-				<Texture name="$parentArrowCurveRightUp" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveRightUp" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="82" y="66"/>
 					<TexCoords left="0.4843750" right="0.6425781" top="0.3515625" bottom="0.2246094"/>
 				</Texture>
-				<Texture name="$parentArrowCurveLeftDown" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveLeftDown" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="82" y="66"/>
 					<TexCoords left="0.6425781" right="0.4843750" top="0.2246094" bottom="0.3515625"/>
 				</Texture>
-				<Texture name="$parentArrowCurveLeftUp" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="$parentArrowCurveLeftUp" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="82" y="66"/>
 					<TexCoords left="0.6425781" right="0.4843750" top="0.3515625" bottom="0.2246094"/>
 				</Texture>
@@ -105,7 +113,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="TutorialFrameMouse" urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture name="TutorialFrameMouse" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="76" y="101"/>
 					<TexCoords left="0.1542969" right="0.3007813" top="0.4257813" bottom="0.6210938"/>
 					<Color r="1.0" g="1.0" b="1.0" a="0.0"/>
@@ -215,9 +223,9 @@
 						TutorialFramePrevButton_OnClick(self);
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentNextButton">
@@ -240,9 +248,9 @@
 						TutorialFrameNextButton_OnClick(self);
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<PlayerModel name="TutorialNPCModel" hidden="true">
@@ -270,14 +278,6 @@
 			<OnKeyDown function="TutorialFrame_OnKeyDown"/>
 			<OnMouseDown function="TutorialFrame_OnMouseDown"/>
 		</Scripts>
-		<Animations>
-			<AnimationGroup name="AnimateMouse" looping="bounce">
-				<Alpha target="TutorialFrameMouse" change="1" duration="0.8" smoothing="IN_OUT"/>
-			</AnimationGroup>
-			<AnimationGroup name="AnimateCallout" looping="bounce">
-				<Alpha target="TutorialFrameCallOut" change="-0.5" duration="0.8" smoothing="IN_OUT"/>
-			</AnimationGroup>
-		</Animations>
 	</Frame>
 	<Button name="TutorialFrameAlertButton" parent="UIParent" frameStrata="DIALOG" hidden="true" >
 		<Size x="116" y="71"/>
@@ -292,10 +292,10 @@
 				TutorialFrame_AlertButton_OnClick(self);
 			</OnClick>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+		<NormalTexture file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 			<TexCoords left="0.7167969" right="0.9414063" top="0.0019531" bottom="0.1386719"/>
 		</NormalTexture>
-		<HighlightTexture urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME" alphaMode="ADD">
+		<HighlightTexture file="Interface\TutorialFrame\UI-TUTORIAL-FRAME" alphaMode="ADD">
 			<Size x="51" y="50"/>
 			<Anchors>
 				<Anchor point="CENTER" x="2" y="4"/>
@@ -310,7 +310,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture urgency="5" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+				<Texture file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<TexCoords left="0.6484375" right="0.7500000" top="0.2246094" bottom="0.3242188"/>
 				</Texture>
 				<FontString name="TutorialFrameAlertButtonBadgeText" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" hidden="true">

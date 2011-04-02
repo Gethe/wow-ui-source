@@ -6,10 +6,10 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" file="Interface\PVPFrame\PVP-Conquest-Misc">
 					<Size x="319" y="118"/>	
-					<TexCoords left="0.00097656" right="0.31445313" top="0.33789063" bottom="0.56835938"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-64"/>
 					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.33789063" bottom="0.56835938"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
@@ -52,7 +52,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentRating" inherits="GameFontHighlight" text="0">
+				<FontString name="$parentRating" inherits="GameFontHighlight" text="0" parentKey="bgRating">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRatingLabel" relativePoint="RIGHT">
 							<Offset>
@@ -70,7 +70,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentRecord" inherits="GameFontHighlight" text="0">
+				<FontString name="$parentRecord" inherits="GameFontHighlight" text="0" parentKey="bgRecord">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRecordLabel" relativePoint="RIGHT">
 							<Offset>

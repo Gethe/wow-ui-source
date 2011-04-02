@@ -134,21 +134,21 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size x="25" y="64"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-5" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size x="25" y="64"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-44" y="0"/>
 					</Anchors>
 					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size x="40" y="64"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
@@ -296,7 +296,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<Texture name="CharacterCreateClassIcon" urgency="5" file="Interface\TargetingFrame\UI-Classes-Circles">
+								<Texture name="CharacterCreateClassIcon" file="Interface\TargetingFrame\UI-Classes-Circles">
 									<Size x="48" y="48"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="4" y="-4"/>
@@ -393,7 +393,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="BACKGROUND">
-								<Texture name="CharacterCreateConfigurationBackground" urgency="5" file="Interface\Tooltips\UI-Tooltip-Background">
+								<Texture name="CharacterCreateConfigurationBackground" file="Interface\Tooltips\UI-Tooltip-Background">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="CharacterCreateOuterBorder1" relativePoint="TOPLEFT" x="10" y="-8"/>
 										<Anchor point="BOTTOMRIGHT" relativeTo="CharacterCreateOuterBorder3" relativePoint="BOTTOMRIGHT" x="-10" y="8"/>
@@ -824,20 +824,20 @@
 							</OnLeave>
 -->
 						</Scripts>
-						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="add">
+						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
 							<Size x="60" y="60"/>	
-							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="-5"/>
 							</Anchors>
-						</CheckedTexture>
-						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="add">
-							<Size x="60" y="60"/>	
 							<TexCoords left="0.49218750" right="0.96093750" top="0.62890625" bottom="0.86328125"/>	
+						</HighlightTexture>
+						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="-5"/>
 							</Anchors>
-						</HighlightTexture>
+							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
+						</CheckedTexture>
 					</CheckButton>
 					<CheckButton name="CharacterCreateAlternateFormBottom" hidden="true">
 						<Size x="82" y="79"/>
@@ -876,20 +876,20 @@
 							</OnLeave>
 -->
 						</Scripts>
-						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="add">
+						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
 							<Size x="60" y="60"/>	
-							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="1"/>
 							</Anchors>
-						</CheckedTexture>
-						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="add">
-							<Size x="60" y="60"/>	
 							<TexCoords left="0.49218750" right="0.96093750" top="0.62890625" bottom="0.86328125"/>	
+						</HighlightTexture>
+						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="1"/>
 							</Anchors>
-						</HighlightTexture>
+							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
+						</CheckedTexture>
 					</CheckButton>
 				</Frames>
 				<Scripts>

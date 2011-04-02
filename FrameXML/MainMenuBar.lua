@@ -43,9 +43,9 @@ end
 function MainMenuBar_AnimFinished(self)
 	MainMenuBar.busy = false;
 	if ( GetBonusBarOffset() > 0 ) then
-		ShowBonusActionBar(true);
+		ShowBonusActionBar();
 	else
-		HideBonusActionBar(true);
+		HideBonusActionBar();
 	end
 	MainMenuBar_UpdateArt(self);
 end
@@ -126,9 +126,9 @@ function MainMenuBar_ToPlayerArt(self)
 
 	PossessBar_Update(true);
 	if ( GetBonusBarOffset() > 0 ) then
-		ShowBonusActionBar(true);
+		ShowBonusActionBar();
 	else
-		HideBonusActionBar(true);
+		HideBonusActionBar();
 	end
 	--UIParent_ManageFramePositions()	--This is called in PossessBar_Update
 	MainMenuBarVehicleLeaveButton_Update();

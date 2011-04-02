@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildUI.lua"/>
 <!--
 *******************************************************************************
@@ -45,7 +45,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture name="$parentProgress" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="progress">
+				<Texture name="$parentProgress" file="Interface\TargetingFrame\UI-StatusBar" parentKey="progress">
 					<Size x="1" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="LEFT" x="1" y="0"/>
@@ -59,7 +59,7 @@
 					</Anchors>
 					<TexCoords left="0.41601563" right="0.42480469" top="0.88671875" bottom="0.91406250"/>
 				</Texture>
-				<Texture name="$parentCap" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" hidden="true" parentKey="cap">
+				<Texture name="$parentCap" file="Interface\TargetingFrame\UI-StatusBar" hidden="true" parentKey="cap">
 					<Size x="20" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentProgress" relativePoint="RIGHT" x="0" y="0"/>
@@ -169,10 +169,10 @@
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture file="Interface\GuildFrame\GuildFrame" parentKey="lock">
 					<Size x="17" y="21"/>
-					<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="0" y="0"/>
 					</Anchors>
+					<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -251,7 +251,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="24"/>
 					</Size>
@@ -260,7 +260,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="53" y="24"/>
 					</Size>
@@ -269,7 +269,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="24"/>
 					</Size>
@@ -325,7 +325,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="CENTER" wordwrap="false" parentKey="text">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" parentKey="text">
 					<Anchors>
 						<Anchor point="LEFT" x="24" y="0"/>
 						<Anchor point="RIGHT" x="-8" y="0"/>
@@ -345,7 +345,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -368,6 +367,7 @@
 				end
 			</OnLeave>
 		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 	</Button>
 	<Button name="GuildFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
@@ -409,7 +409,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTabardEmblem" urgency="5" file="Interface\GuildFrame\GuildEmblemsLG_01">
+				<Texture name="$parentTabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-8" y="9"/>
@@ -851,10 +851,10 @@
 						</FontString>
 						<Texture name="GuildUpdatesDivider" file="Interface\GuildFrame\GuildFrame">
 							<Size x="261" y="1"/>
-							<TexCoords left="0.00097656" right="0.25585938" top="0.97851563" bottom="0.98046875"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
+							<TexCoords left="0.00097656" right="0.25585938" top="0.97851563" bottom="0.98046875"/>
 						</Texture>
 						<FontString name="GuildUpdatesNoNews" inherits="GameFontDisable" text="GUILD_NO_GUILD_NEWS" hidden="true">
 							<Size>
@@ -937,19 +937,19 @@
 							<Layer level="BORDER">
 								<Texture name="LatestPerk-Glow.png" file="Interface\GuildFrame\GuildFrame" alphaMode="ADD">
 									<Size x="73" y="73"/>
-									<TexCoords left="0.54003906" right="0.61132813" top="0.60156250" bottom="0.74414063"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentIconTexture"/>
 									</Anchors>
+									<TexCoords left="0.54003906" right="0.61132813" top="0.60156250" bottom="0.74414063"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="LatestPerk-Border.png" file="Interface\GuildFrame\GuildFrame">
 									<Size x="45" y="46"/>
-									<TexCoords left="0.31640625" right="0.36035156" top="0.88671875" bottom="0.97656250"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentIconTexture"/>
 									</Anchors>
+									<TexCoords left="0.31640625" right="0.36035156" top="0.88671875" bottom="0.97656250"/>
 								</Texture>
 								<FontString	name="$parentLabel" inherits="SystemFont_Shadow_Med2" text="GUILD_LATEST_PERK">
 									<Anchors>
@@ -982,10 +982,10 @@
 							<Layer level="ARTWORK">
 								<Texture name="$parentLockTexture" file="Interface\GuildFrame\GuildFrame">
 									<Size x="17" y="21"/>
-									<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="0" y="0"/>
 									</Anchors>
+									<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
 								</Texture>
 								<FontString	name="$parentLabel" justifyH="LEFT" inherits="SystemFont_Shadow_Med2">
 									<Size x="144" y="38"/>

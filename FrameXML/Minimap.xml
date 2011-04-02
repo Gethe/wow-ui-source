@@ -60,7 +60,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="MinimapBorderTop" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
+				<Texture name="MinimapBorderTop" file="Interface\Minimap\UI-Minimap-Border">
 					<Size>
 						<AbsDimension x="192" y="32"/>
 					</Size>
@@ -148,7 +148,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture name="MiniMapMailBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapMailBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
@@ -225,7 +225,7 @@
 
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture name="MiniMapBattlefieldBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
+								<Texture name="MiniMapBattlefieldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
@@ -235,7 +235,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="BORDER">
-								<Texture name="BattlegroundShine" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+								<Texture name="BattlegroundShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
 									<Size>
 										<AbsDimension x="32" y="32"/>
 									</Size>
@@ -307,12 +307,12 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="MinimapBorder" urgency="5" file="Interface\Minimap\UI-Minimap-Border">
+								<Texture name="MinimapBorder" file="Interface\Minimap\UI-Minimap-Border">
 									<TexCoords left="0.25" right="1.0" top="0.125" bottom="0.875"/>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture name="MinimapNorthTag" urgency="5" file="Interface\Minimap\CompassNorthTag">
+								<Texture name="MinimapNorthTag" file="Interface\Minimap\CompassNorthTag">
 									<Size>
 										<AbsDimension x="16" y="16"/>
 									</Size>
@@ -368,7 +368,7 @@
 									<Size x="32" y="32"/>
 									<TexCoords left="0.0" right="1" top="0.5" bottom="1"/>
 								</PushedTexture>									
-								<HighlightTexture file="Interface\BUTTONS\UI-Common-MouseHilight.png" alphaMode="add">
+								<HighlightTexture file="Interface\BUTTONS\UI-Common-MouseHilight.png" alphaMode="ADD">
 									<Size x="28" y="28"/>
 									<Anchors>
 										<Anchor point="TOPRIGHT" x="2" y="-2"/>
@@ -384,7 +384,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="$parentBackground" urgency="5" file="Interface\Minimap\UI-Minimap-Background">
+										<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
 											<Size x="25" y="25"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
@@ -395,7 +395,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<Texture name="$parentIcon" urgency="5" file="Interface\Minimap\Tracking\None">
+										<Texture name="$parentIcon" file="Interface\Minimap\Tracking\None">
 											<Size x="20" y="20"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
@@ -427,7 +427,7 @@
 										</Anchors>
 										<Layers>
 											<Layer level="BORDER">
-												<Texture name="$parentBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
+												<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 													<Size x="54" y="54"/>
 													<Anchors>
 														<Anchor point="TOPLEFT"/>
@@ -435,7 +435,7 @@
 												</Texture>
 											</Layer>
 											<Layer level="OVERLAY">
-												<Texture name="$parentShine" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+												<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
 													<Size x="27" y="27"/>
 													<Anchors>
 														<Anchor point="TOPLEFT">
@@ -491,7 +491,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
-										<Texture name="$parentBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
+										<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 											<Size>
 												<AbsDimension x="52" y="52"/>
 											</Size>
@@ -563,7 +563,7 @@
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
-								<NormalTexture urgency="5" file="Interface\Minimap\UI-Minimap-ZoomInButton-Up"/>
+								<NormalTexture file="Interface\Minimap\UI-Minimap-ZoomInButton-Up"/>
 								<PushedTexture file="Interface\Minimap\UI-Minimap-ZoomInButton-Down"/>
 								<DisabledTexture file="Interface\Minimap\UI-Minimap-ZoomInButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
@@ -592,7 +592,7 @@
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
-								<NormalTexture urgency="5" file="Interface\Minimap\UI-Minimap-ZoomOutButton-Up"/>
+								<NormalTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Up"/>
 								<PushedTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Down"/>
 								<DisabledTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
@@ -624,7 +624,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<Texture name="MiniMapRecordingBorder" urgency="5" file="Interface\Minimap\MiniMap-TrackingBorder">
+										<Texture name="MiniMapRecordingBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 											<Size>
 												<AbsDimension x="41" y="41"/>
 											</Size>
@@ -754,7 +754,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="$parentEmblem" parentKey="emblem" urgency="5" file="Interface\GuildFrame\GuildEmblems_01">
+						<Texture name="$parentEmblem" parentKey="emblem" file="Interface\GuildFrame\GuildEmblems_01">
 							<Size x="16" y="16"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="12" y="-10"/>

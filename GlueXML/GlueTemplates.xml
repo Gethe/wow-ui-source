@@ -10,9 +10,9 @@
 				self:GetParent():Hide();
 			</OnClick>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-		<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Texture name="GlueScrollBarButton" virtual="true">
 		<TexCoords left="0.23" right="0.77" top="0.23" bottom="0.77"/>
@@ -23,16 +23,16 @@
 		</Size>
 		<NormalTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
 		<PushedTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
-		<DisabledTexture inherits="GlueScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+		<DisabledTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
 		<HighlightTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="GlueScrollDownButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="18" y="18"/>
 		</Size>
-		<NormalTexture inherits="GlueScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
+		<NormalTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
 		<PushedTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
-		<DisabledTexture inherits="GlueScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+		<DisabledTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
 		<HighlightTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Texture name="GluePanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
@@ -82,11 +82,11 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<Slider name="GlueScrollBarTemplate" virtual="true">
 		<Size>
@@ -131,7 +131,7 @@
 				end
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture inherits="GlueScrollBarButton" urgency="5" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture inherits="GlueScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size>
 				<AbsDimension x="18" y="24"/>
 			</Size>

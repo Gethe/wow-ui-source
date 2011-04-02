@@ -31,7 +31,7 @@
             </Texture>
         </Layer>
 		<Layer level="ARTWORK">
-			<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+			<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 				<Size>
 					<AbsDimension x="256" y="256"/>
 				</Size>
@@ -39,7 +39,7 @@
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 			</Texture>
-			<Texture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+			<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
 				<Size>
 					<AbsDimension x="128" y="256"/>
 				</Size>
@@ -51,7 +51,7 @@
 					</Anchor>
 				</Anchors>
 			</Texture>
-			<Texture urgency="5" file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+			<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
 				<Size>
 					<AbsDimension x="256" y="256"/>
 				</Size>
@@ -63,7 +63,7 @@
 					</Anchor>
 				</Anchors>
 			</Texture>
-			<Texture urgency="5" file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+			<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
 				<Size>
 					<AbsDimension x="128" y="256"/>
 				</Size>
@@ -223,7 +223,7 @@
 							Model_RotateLeft(self:GetParent());
 						</OnClick>
 					</Scripts>
-					<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+					<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 					<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 					<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 				</Button>
@@ -242,7 +242,7 @@
 							Model_RotateRight(self:GetParent());
 						</OnClick>
 					</Scripts>
-					<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+					<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 					<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 					<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 				</Button>

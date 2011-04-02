@@ -20,11 +20,11 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBG" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true">
-							<TexCoords left="0.00000000" right="1.00000000" top="0.01171875" bottom="0.05859375"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
+							<TexCoords left="0.00000000" right="1.00000000" top="0.01171875" bottom="0.05859375"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -42,27 +42,27 @@
 						</FontString>
 						<Texture name="$parentBG" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true">
 							<Size x="128" y="3"/>	
-							<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.00781250"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentBG" x="0" y="0"/>
 								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parentBG" x="0" y="0"/>
 							</Anchors>
+							<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.00781250"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentNubL" file="Interface\HelpFrame\CS_HelpTextures">
 							<Size x="4" y="10"/>	
-							<TexCoords left="0.43750000" right="0.44531250" top="0.46875000" bottom="0.54687500"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentBG" x="0" y="0"/>
 							</Anchors>
+							<TexCoords left="0.43750000" right="0.44531250" top="0.46875000" bottom="0.54687500"/>
 						</Texture>
 						<Texture name="$parentNubR" file="Interface\HelpFrame\CS_HelpTextures">
 							<Size x="4" y="10"/>
-							<TexCoords left="0.43750000" right="0.44531250" top="0.37500000" bottom="0.45312500"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parentBG" x="0" y="0"/>
 							</Anchors>
+							<TexCoords left="0.43750000" right="0.44531250" top="0.37500000" bottom="0.45312500"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -132,6 +132,17 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<Button name="GMChatStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="FULLSCREEN">
+		<Animations>
+			<AnimationGroup parentKey="pulse" looping="REPEAT">
+				<Alpha target="$parentGlowLeft" 	change="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowRight" 	change="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowMid" 		change="1" duration="0.9" order="1"/>
+				
+				<Alpha target="$parentGlowLeft" 	change="-1" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowRight" 	change="-1" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowMid" 		change="-1" duration="0.9" order="2"/>
+			</AnimationGroup>
+		</Animations>
 		<Size x="290" y="72"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-170" y="-5"/>
@@ -140,24 +151,24 @@
 			<Layer level="BORDER">
 				<Texture name="$parentBoarderLeft" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderLeft">
 					<Size x="49" y="72"/>	
-					<TexCoords left="0.25585938" right="0.35156250" top="0.37500000" bottom="0.93750000"/>
 					<Anchors>
 						<Anchor point="LEFT" x="20" y="0"/>
 					</Anchors>
+					<TexCoords left="0.25585938" right="0.35156250" top="0.37500000" bottom="0.93750000"/>
 				</Texture>
 				<Texture name="$parentBoarderRight" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderRight">
 					<Size x="40" y="72"/>
-					<TexCoords left="0.35546875" right="0.43359375" top="0.37500000" bottom="0.93750000"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-20" y="0"/>
 					</Anchors>
+					<TexCoords left="0.35546875" right="0.43359375" top="0.37500000" bottom="0.93750000"/>
 				</Texture>
 				<Texture name="$parentBoarderMid" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true" parentKey="boarderMid">
-					<TexCoords left="0.00000000" right="1.00000000" top="0.32812500" bottom="0.46875000"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBoarderLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBoarderRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.32812500" bottom="0.46875000"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -183,38 +194,27 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentGlowLeft" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderLeft" alpha="0" alphaMode="ADD">
 					<Size x="49" y="72"/>	
-					<TexCoords left="0.70703125" right="0.80273438" top="0.00781250" bottom="0.57031250"/>
 					<Anchors>
 						<Anchor point="LEFT" x="20" y="0"/>
 					</Anchors>
+					<TexCoords left="0.70703125" right="0.80273438" top="0.00781250" bottom="0.57031250"/>
 				</Texture>
 				<Texture name="$parentGlowRight" file="Interface\HelpFrame\CS_HelpTextures" parentKey="boarderRight" alpha="0" alphaMode="ADD">
 					<Size x="40" y="72"/>
-					<TexCoords left="0.80664063" right="0.88476563" top="0.00781250" bottom="0.57031250"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-20" y="0"/>
 					</Anchors>
+					<TexCoords left="0.80664063" right="0.88476563" top="0.00781250" bottom="0.57031250"/>
 				</Texture>
 				<Texture name="$parentGlowMid" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true" parentKey="boarderMid" alpha="0" alphaMode="ADD">
-					<TexCoords left="0.00000000" right="1.00000000" top="0.47265625" bottom="0.61328125"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentGlowLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.47265625" bottom="0.61328125"/>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="pulse" looping="repeat">
-				<Alpha target="$parentGlowLeft" 	change="1" duration="0.9" order="1"/>
-				<Alpha target="$parentGlowRight" 	change="1" duration="0.9" order="1"/>
-				<Alpha target="$parentGlowMid" 		change="1" duration="0.9" order="1"/>
-				
-				<Alpha target="$parentGlowLeft" 	change="-1" duration="0.9" order="2"/>
-				<Alpha target="$parentGlowRight" 	change="-1" duration="0.9" order="2"/>
-				<Alpha target="$parentGlowMid" 		change="-1" duration="0.9" order="2"/>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnShow>
 				GetGMTicket();

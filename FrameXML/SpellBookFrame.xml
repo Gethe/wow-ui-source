@@ -98,7 +98,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -112,7 +112,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTabardEmblem" parentKey="TabardEmblem" hidden="true" urgency="5" file="Interface\GuildFrame\GuildEmblemsLG_01">
+				<Texture name="$parentTabardEmblem" parentKey="TabardEmblem" hidden="true" file="Interface\GuildFrame\GuildEmblemsLG_01">
 					<Size x="38" y="38"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-3" y="3"/>
@@ -142,7 +142,7 @@
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	<Button name="SpellBookFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true" hidden="true">
 		<Scripts>
@@ -272,10 +272,10 @@
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow" hidden="true">
 					<Size x="23" y="11"/>	
-					<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>	
 					<Anchors>
 						<Anchor point="RIGHT" x="2" y="0"/>
 					</Anchors>
+					<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>	
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -338,7 +338,7 @@
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
 		<Size>
@@ -375,11 +375,9 @@
 			</Layer>		
 			<Layer level="BACKGROUND">
 				<Texture name="$parentNameFrame" file="Interface\Spellbook\ProfessionsBook">
-					<Color r="1.0" g="1.0" b="1.0" a="0.8"/>
 					<Size>
 						<AbsDimension x="108" y="41"/>
 					</Size>
-					<TexCoords left="0.00390625" right="0.42578125" top="0.14843750" bottom="0.46875000"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
 							<Offset>
@@ -387,6 +385,8 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="0.8"/>
+					<TexCoords left="0.00390625" right="0.42578125" top="0.14843750" bottom="0.46875000"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -431,7 +431,7 @@
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>	
 	<CheckButton name="SpellBookCompanionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
 		<Size>
@@ -474,7 +474,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentActiveTexture" urgency="5" file="Interface\Buttons\CheckButtonHilight" parentKey="ActiveTexture" alphaMode="ADD"/>
+				<Texture name="$parentActiveTexture" file="Interface\Buttons\CheckButtonHilight" parentKey="ActiveTexture" alphaMode="ADD"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -625,7 +625,6 @@
 				
 				<Texture name="$parentIconBorder" file="Interface\Spellbook\ProfessionsBook">
 					<Size x="72" y="72"/>	
-					<TexCoords left="0.43359375" right="0.72265625" top="0.14843750" bottom="0.72656250"/>	
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -633,6 +632,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
+					<TexCoords left="0.43359375" right="0.72265625" top="0.14843750" bottom="0.72656250"/>	
 				</Texture>
 			</Layer>			
 			<Layer level="BORDER">				
@@ -760,12 +760,6 @@
 					<Color r="0.1" g="0.05" b="0.05"/>
 				</FontString>
 			</Layer>			
-			<Layer level="BORDER">		
-				<!--Texture file="Interface\Spellbook\Spellbook-Page-1">
-					<TexCoords left="0.65234375" right="0.80468750" top="0.28906250" bottom="0.43359375"/>	
-					<Color r="0.25" g="1.00" b="0"/>
-				</Texture-->
-			</Layer>
 		</Layers>		
 		<Frames>		
 			<CheckButton name="$parentSpellButtonRight" inherits="ProfessionButtonTemplate" parentKey="button1" id="1">
@@ -790,7 +784,7 @@
 		</Frames>			
 	</Frame>
 	
-	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" framestrata="MEDIUM">
+	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
 		<Size>
 			<AbsDimension x="550" y="525"/>
 		</Size>
@@ -890,9 +884,9 @@
 						<Scripts>
 							<OnClick function="SpellBookPrevPageButton_OnClick"/>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="SpellBookNextPageButton">
@@ -909,9 +903,9 @@
 						<Scripts>
 							<OnClick function="SpellBookNextPageButton_OnClick"/>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 				</Frames>
@@ -1323,7 +1317,7 @@
 										Model_RotateLeft(SpellBookCompanionModelFrame);
 									</OnClick>
 								</Scripts>
-								<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
@@ -1342,7 +1336,7 @@
 										Model_RotateRight(SpellBookCompanionModelFrame);
 									</OnClick>
 								</Scripts>
-								<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>

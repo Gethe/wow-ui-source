@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ArchaeologyUI.lua"/>
 
 <!--size=512,256
@@ -69,7 +69,14 @@
 	
 	
 	
-	<Button name="ArchaeologyRaceTemplate" id="" virtual="true" alpha="0.83">
+	<Button name="ArchaeologyRaceTemplate" virtual="true" alpha="0.83">
+		<Animations>
+			<AnimationGroup parentKey="readyAnim" looping="REPEAT">
+				<Alpha target="$parentGlow" change="1.0" duration="0.9" order="1"/>
+				<Alpha target="$parentGlow" change="-1.0" duration="0.9" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		
 		<Size x="82" y="93"/>
 		<Layers>
 			<Layer>
@@ -81,29 +88,14 @@
 				</FontString>
 				<Texture name="$parentGlow" parentKey="glow" file="Interface\Archeology\Arch-TempLogo" alphaMode="ADD" alpha="0">
 					<Size x="82" y="93"/>
-					<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
-					<Color r="0.5" g="0.5" b="0.7" a="0.1"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
+					<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
+					<Color r="0.5" g="0.5" b="0.7" a="0.1"/>
 				</Texture>
 			</Layer>
 		</Layers>
-		
-		<Animations>
-			<AnimationGroup parentKey="readyAnim" looping="REPEAT">
-				<Alpha target="$parentGlow" change="1.0" duration="0.9" order="1"/>
-				<Alpha target="$parentGlow" change="-1.0" duration="0.9" order="2"/>
-			</AnimationGroup>
-		</Animations>
-		
-		<NormalTexture file="Interface\Archeology\Arch-TempLogo">
-			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Archeology\Arch-TempLogo" alphaMode="ADD">
-			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
-			<Color r="0.5" g="0.5" b="1" a="0.3"/>
-		</HighlightTexture>
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_ShowArtifact(self:GetID());
@@ -119,6 +111,14 @@
 				self:SetAlpha(0.83);
 			</OnEnable>
 		</Scripts>
+		
+		<NormalTexture file="Interface\Archeology\Arch-TempLogo">
+			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Archeology\Arch-TempLogo" alphaMode="ADD">
+			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
+			<Color r="0.5" g="0.5" b="1" a="0.3"/>
+		</HighlightTexture>
 	</Button>	
 	<Button name="ArchaeologyArtifactTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="200" y="44"/>
@@ -142,7 +142,7 @@
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentArtifactName" inherits="SystemFont_Med1" justifyH="LEFT" justifyV="CENTER" text="RACES" parentKey="artifactName">
+				<FontString name="$parentArtifactName" inherits="SystemFont_Med1" justifyH="LEFT" text="RACES" parentKey="artifactName">
 					<Size x="130" y="30"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentIcon"  relativePoint="RIGHT" x="12" y="6"/>
@@ -158,9 +158,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<HighlightTexture alphaMode="ADD">
-			<Color r="0.2" g="0.2" b="0.2" a="0.4"/>
-		</HighlightTexture>
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_ShowArtifact(self.raceIndex, self.projectIndex);
@@ -183,6 +180,9 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
+		<HighlightTexture alphaMode="ADD">
+			<Color r="0.2" g="0.2" b="0.2" a="0.4"/>
+		</HighlightTexture>
 	</Button>
 	<Button name="KeystoneTemplate" virtual="true">
 		<Size x="51" y="56"/>
@@ -196,15 +196,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\Archeology\ArchaeologyParts">
-			<Size x="51" y="56"/>	
-			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
-			<Size x="51" y="56"/>	
-			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
-			<Color r="0.8" g="0.8" b="0.8" a="0.4"/>
-		</HighlightTexture>
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_KeyStoneClick(self);
@@ -226,13 +217,22 @@
 				self:SetAlpha(0.3);
 			</OnDisable>
 		</Scripts>
+		<NormalTexture file="Interface\Archeology\ArchaeologyParts">
+			<Size x="51" y="56"/>	
+			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
+			<Size x="51" y="56"/>	
+			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
+			<Color r="0.8" g="0.8" b="0.8" a="0.4"/>
+		</HighlightTexture>
 	</Button>
 	
 	
 	
 	
 
-	<Frame name="ArchaeologyFrame" toplevel="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" framestrata="MEDIUM">
+	<Frame name="ArchaeologyFrame" toplevel="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
 		<Size x="550" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -293,7 +293,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size>
 								<AbsDimension x="255" y="29"/>
 							</Size>
@@ -312,8 +312,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r="0.03125" g="0.85" b="0.0" />
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -324,9 +322,14 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="0.03125" g="0.85" b="0.0" />
 			</StatusBar>
 			<Button name="$parentSummarytButton" parentKey="tab1" id="1">
 				<Size x="63" y="57"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-22" y="-50" relativePoint="TOPRIGHT"/>
+				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentFactionIcon" file="Interface\Archeology\ArchaeologyParts" parentKey="factionIcon">
@@ -337,24 +340,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="-22" y="-50" relativePoint="TOPRIGHT"/>
-				</Anchors>
-				<NormalTexture file="Interface\Archeology\ArchaeologyParts">
-					<Size x="63" y="57"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.85546875" right="0.97851563" top="0.00390625" bottom="0.22656250"/>
-				</NormalTexture>
-				<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
-					<Size x="63" y="57"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.85546875" right="0.97851563" top="0.00390625" bottom="0.22656250"/>
-					<Color r="1" g="1" b="1" a="0.3"/>
-				</HighlightTexture>
 				<Scripts>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self)
@@ -368,12 +353,40 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
+				<NormalTexture file="Interface\Archeology\ArchaeologyParts">
+					<Size x="63" y="57"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.85546875" right="0.97851563" top="0.00390625" bottom="0.22656250"/>
+				</NormalTexture>
+				<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
+					<Size x="63" y="57"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.85546875" right="0.97851563" top="0.00390625" bottom="0.22656250"/>
+					<Color r="1" g="1" b="1" a="0.3"/>
+				</HighlightTexture>
 			</Button>
 			<Button name="$parentCompletedButton"  parentKey="tab2" id="2">
 				<Size x="63" y="57"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-22" y="-120" relativePoint="TOPRIGHT"/>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						ArchaeologyFrame_OnTabClick(self)
+						PlaySound("igSpellBookOpen");
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+						GameTooltip:SetText(ARCHAEOLOGY_COMPLETED);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 				<NormalTexture file="Interface\Archeology\ArchaeologyParts">
 					<Size x="48" y="57"/>
 					<Anchors>
@@ -389,19 +402,6 @@
 					<TexCoords left="0.31250000" right="0.40625000" top="0.56250000" bottom="0.78515625"/>
 					<Color r="1" g="1" b="1" a="0.3"/>
 				</HighlightTexture>
-				<Scripts>
-					<OnClick>
-						ArchaeologyFrame_OnTabClick(self)
-						PlaySound("igSpellBookOpen");
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-						GameTooltip:SetText(ARCHAEOLOGY_COMPLETED);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
 			</Button>
 			<Frame name="$parentSummaryPage" parentKey="summaryPage">
 				<Anchors>
@@ -502,7 +502,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString inherits="SystemFont_Med1" justifyH="CENTER" text="ARCHAEOLOGY_NONE_COMPLETED" parentkey="infoText">
+						<FontString inherits="SystemFont_Med1" justifyH="CENTER" text="ARCHAEOLOGY_NONE_COMPLETED" parentKey="infoText">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -510,20 +510,20 @@
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
 						
-						<FontString name="$parentTitle" inherits="SystemFont_Med3" justifyH="CENTER" text="ARCHAEOLOGY_COMPLETED" parentkey="titleBig">
+						<FontString name="$parentTitle" inherits="SystemFont_Med3" justifyH="CENTER" text="ARCHAEOLOGY_COMPLETED" parentKey="titleBig">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-55"/>
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleBigLeft">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentKey="titleBigLeft">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentTitle" relativePoint="LEFT" x="-10"/>
 							</Anchors>
 							<Size x="54" y="34"/>
 							<TexCoords left="0.00195313" right="0.10742188" top="0.70312500" bottom="0.83593750"/>
 						</Texture>
-						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleBigRight">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentKey="titleBigRight">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="10"/>
 							</Anchors>
@@ -531,20 +531,20 @@
 							<TexCoords left="0.00195313" right="0.10742188" top="0.56250000" bottom="0.69531250"/>
 						</Texture>
 						
-						<FontString name="$parentTitleTop" inherits="SystemFont_Med1" justifyH="CENTER" parentkey="titleTop">
+						<FontString name="$parentTitleTop" inherits="SystemFont_Med1" justifyH="CENTER" parentKey="titleTop">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-55"/>
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleTopLeft">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentKey="titleTopLeft">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentTitleTop" relativePoint="LEFT" x="-8"/>
 							</Anchors>
 							<Size x="42" y="27"/>
 							<TexCoords left="0.11132813" right="0.19335938" top="0.78906250" bottom="0.89453125"/>
 						</Texture>
-						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleTopRight">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentKey="titleTopRight">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentTitleTop" relativePoint="RIGHT" x="8"/>
 							</Anchors>
@@ -552,27 +552,27 @@
 							<TexCoords left="0.00195313" right="0.08398438" top="0.84375000" bottom="0.94921875"/>
 						</Texture>
 						
-						<FontString name="$parentTitleMid" inherits="SystemFont_Med1" justifyH="CENTER" parentkey="titleMid" text="ARCHAEOLOGY_COMMON_COMPLETED">
+						<FontString name="$parentTitleMid" inherits="SystemFont_Med1" justifyH="CENTER" parentKey="titleMid" text="ARCHAEOLOGY_COMMON_COMPLETED">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-55"/>
 							</Anchors>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleMidLeft">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentKey="titleMidLeft">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="$parentTitleMid" relativePoint="LEFT" x="-8"/>
 							</Anchors>
 							<Size x="42" y="27"/>
 							<TexCoords left="0.11132813" right="0.19335938" top="0.78906250" bottom="0.89453125"/>
 						</Texture>
-						<Texture file="Interface\Archeology\ArchaeologyParts" parentkey="titleMidRight">
+						<Texture file="Interface\Archeology\ArchaeologyParts" parentKey="titleMidRight">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentTitleMid" relativePoint="RIGHT" x="8"/>
 							</Anchors>
 							<Size x="42" y="27"/>
 							<TexCoords left="0.00195313" right="0.08398438" top="0.84375000" bottom="0.94921875"/>
 						</Texture>
-						<FontString name="$parentPageText" inherits="GameFontBlack" justifyH="RIGHT" parentkey="pageText" text="PAGE">
+						<FontString name="$parentPageText" inherits="GameFontBlack" justifyH="RIGHT" parentKey="pageText" text="PAGE">
 							<Size>
 								<AbsDimension x="102" y="0"/>
 							</Size>
@@ -646,7 +646,7 @@
 					</Button>
 					<Button name="$parentPrevPageButton"  inherits="UIPanelSquareButton" parentKey="prevPageButon">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentPageText" relativePoint="RIGHT" x="8" y=""/>
+							<Anchor point="LEFT" relativeTo="$parentPageText" relativePoint="RIGHT" x="8"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -724,26 +724,26 @@
 					<Layer level="BORDER">
 						<Texture name="$parentIconBG" file="Interface\Archeology\ArchaeologyParts">
 							<Size x="368" y="79"/>
-							<TexCoords left="0.00195313" right="0.72460938" top="0.00390625" bottom="0.31250000"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentIcon" x="-10" y="1"/>
 							</Anchors>
+							<TexCoords left="0.00195313" right="0.72460938" top="0.00390625" bottom="0.31250000"/>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentRaceBG" parentKey="raceBG">
 							<Size x="256" y="300"/>
-							<TexCoords left="0" right="1" top="0" bottom="0.5859375"/>
 							<Anchors>
 								<Anchor point="LEFT"  x="25" y="50"/>
 							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.5859375"/>
 						</Texture>
 						<Texture name="$parentArtifactBG" parentKey="artifactBG">
 							<Size x="420" y="240"/>
-							<TexCoords left="0" right="0.8203125" top="0" bottom="0.9375"/>
 							<Anchors>
 								<Anchor point="LEFT"  x="25" y="80"/>
 							</Anchors>
+							<TexCoords left="0" right="0.8203125" top="0" bottom="0.9375"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -809,10 +809,10 @@
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBarBG" file="Interface\Archeology\Arch-Progress-Bg">
 											<Size x="436" y="46"/>
-											<TexCoords left="0" right="0.84765625" top="0" bottom="0.65625"/>
 											<Anchors>
 												<Anchor point="CENTER"  x="0" y="2"/>
 											</Anchors>
+											<TexCoords left="0" right="0.84765625" top="0" bottom="0.65625"/>
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
@@ -827,8 +827,6 @@
 										</FontString>
 									</Layer>
 								</Layers>
-								<BarTexture file="Interface\Archeology\Arch-Progress-Fill">
-								</BarTexture>
 								<Scripts>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -839,6 +837,8 @@
 										GameTooltip:Hide();
 									</OnLeave>
 								</Scripts>
+								<BarTexture file="Interface\Archeology\Arch-Progress-Fill">
+								</BarTexture>
 							</StatusBar>
 						</Frames>
 					</Frame>
@@ -846,6 +846,14 @@
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentHistoryTitle" relativePoint="BOTTOM" y="-12"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.scrollBarHideable = true;
+								local name = self:GetName();
+								_G[name.."ScrollBar"]:Hide();
+								_G[name.."ScrollBarTrack"]:Hide();
+							</OnLoad>
+						</Scripts>
 						<ScrollChild>
 							<Frame name="$parentChild" parentKey="child" >
 								<Anchors>
@@ -863,16 +871,14 @@
 								</Layers>
 							</Frame>
 						</ScrollChild>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = true;
-								local name = self:GetName();
-								_G[name.."ScrollBar"]:Hide();
-								_G[name.."ScrollBarTrack"]:Hide();
-							</OnLoad>
-						</Scripts>
 					</ScrollFrame>
 					<Frame name="$parentFinishedGlow" parentKey="glow">
+						<Animations>
+							<AnimationGroup parentKey="completeAnim">
+								<Alpha change="1.0" duration="0.1" order="1" />
+								<Alpha startDelay="0.1" change="-1.0" duration="0.5" order="2" />
+							</AnimationGroup>
+						</Animations>
 						<Size x="512" y="512"/>
 						<Anchors>
 							<Anchor point="CENTER" x="9" y="-6"/>
@@ -883,12 +889,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Animations>
-							<AnimationGroup parentKey="completeAnim">
-								<Alpha change="1.0" duration="0.1" order="1" />
-								<Alpha startDelay="0.1" change="-1.0" duration="0.5" order="2" />
-							</AnimationGroup>
-						</Animations>
 					</Frame>
 				</Frames>
 			</Frame>
@@ -952,6 +952,14 @@
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.scrollBarHideable = true;
+								local name = self:GetName();
+								_G[name.."ScrollBar"]:Hide();
+								_G[name.."ScrollBarTrack"]:Hide();
+							</OnLoad>
+						</Scripts>
 						<ScrollChild>
 							<Frame>
 								<Size x="400" y="120"/>
@@ -971,14 +979,6 @@
 								</Layers>
 							</Frame>
 						</ScrollChild>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = true;
-								local name = self:GetName();
-								_G[name.."ScrollBar"]:Hide();
-								_G[name.."ScrollBarTrack"]:Hide();
-							</OnLoad>
-						</Scripts>
 					</ScrollFrame>
 				</Frames>
 			</Frame>

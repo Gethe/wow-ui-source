@@ -44,6 +44,8 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	overflowButton:SetPoint("LEFT", self, "LEFT", 0, 0);
 	overflowButton:Hide();
 		
+	homeButton.oldClick = homeButton:GetScript("OnClick");
+	overflowButton.oldClick = overflowButton:GetScript("OnClick");
 	homeButton:SetScript("OnClick", NavBar_ButtonOnClick);
 	overflowButton:SetScript("OnClick", NavBar_ToggleMenu);
 	self.homeButton = homeButton;
@@ -77,6 +79,7 @@ function NavBar_AddButton(self, buttonData)
 	
 	if not navButton then
 		navButton = CreateFrame("BUTTON", self:GetName().."Button"..(#self.navList+1), self, self.template);
+		navButton.oldClick = navButton:GetScript("OnClick");
 		navButton:SetScript("OnClick", NavBar_ButtonOnClick);
 		navButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 		
@@ -131,6 +134,11 @@ function NavBar_ButtonOnClick(self, button)
 	CloseDropDownMenus();
 	if button == "LeftButton" then
 		NavBar_ClearTrailingButtons(parent.navList, parent.freeButtons, self);
+		
+		if self.oldClick then
+			self:oldClick(button);
+		end
+		
 		if self.myclick then
 			self:myclick(button);
 		end

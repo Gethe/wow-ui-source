@@ -95,7 +95,7 @@
 				CastingBarFrame_OnShow(self);
 			</OnShow>
 		</Scripts>
-		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
 	<StatusBar name="CastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">

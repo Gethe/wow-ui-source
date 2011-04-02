@@ -97,7 +97,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
 					<Size>
 						<AbsDimension x="30" y="128"/>
 					</Size>
@@ -110,7 +110,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
 					<Size>
 						<AbsDimension x="30" y="128"/>
 					</Size>
@@ -386,7 +386,7 @@
 								<Anchor point="RIGHT" relativeTo="$parentIcon" relativePoint="LEFT" x="0"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentValue" inherits="GameFontHighlight" text="0" justifyH="Right">
+						<FontString name="$parentValue" inherits="GameFontHighlight" text="0" justifyH="RIGHT">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0"/>
 							</Anchors>
@@ -468,11 +468,11 @@
 								<Anchor point="TOPLEFT" x="1" y="-2"/>
 								<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
 							</Anchors>
-							<Color r="0" g="0" b="0" a="06"/>
+							<Color r="0" g="0" b="0" a="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="$parentBorder" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-2" y="6"/>
 								<Anchor point="BOTTOMRIGHT" x="1" y="-7"/>
@@ -489,8 +489,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<BarTexture urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r="1.0" g="0.11" b=".15"/>
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -498,6 +496,8 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
+				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="1.0" g="0.11" b=".15"/>
 			</StatusBar>
 		
 			
@@ -676,7 +676,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 									<Size>
 										<AbsDimension x="30" y="84"/>
 									</Size>
@@ -689,7 +689,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.46875" top="0.0" bottom="0.65625"/>
 								</Texture>
-								<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 									<Size>
 										<AbsDimension x="30" y="84"/>
 									</Size>
@@ -744,12 +744,12 @@
 					<Layer level="ARTWORK">
 						<Texture name="$parentBG1" file="Interface\PVPFrame\PVP-Conquest-Misc" parentKey="BG">
 							<Size x="321" y="280"/>
-							<TexCoords left="0.00097656" right="0.31445313" top="0.33789063" bottom="0.88476563"/>
 							<Anchors>
 								<Anchor point="BOTTOM"/>
 							</Anchors>
+							<TexCoords left="0.00097656" right="0.31445313" top="0.33789063" bottom="0.88476563"/>
 						</Texture>
-						<Texture name="$parentBarLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+						<Texture name="$parentBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size>
 								<AbsDimension x="256" y="16"/>
 							</Size>
@@ -760,7 +760,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size>
 								<AbsDimension x="75" y="16"/>
 							</Size>
@@ -771,11 +771,11 @@
 						</Texture>
 						<Texture name="$parentPartyStatusBG" parentKey="partyStatusBG" file="Interface\PVPFrame\PVP-Conquest-Misc">
 							<Size x="217" y="19"/>	
-							<TexCoords left="0.00097656" right="0.21289063" top="0.88867188" bottom="0.92968750"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" x="2" y="-24"/>
 							</Anchors>
-							<Color r="1"/>
+							<TexCoords left="0.00097656" right="0.21289063" top="0.88867188" bottom="0.92968750"/>
+							<Color r="1" g="0" b="0"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -784,7 +784,7 @@
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="$parentPartyStatusBG"/>
 							</Anchors>
-							<Color r="1"/>
+							<Color r="1" g="0" b="0"/>
 						</FontString>
 						<FontString name="$parentTitle" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="title" text="ARENA_BATTLES">
 							<Anchors>
@@ -944,26 +944,26 @@
 								</Texture>
 								<Texture name="$parentInfoBGOff" parentKey="bgOff" file="Interface\PVPFrame\PVP-Conquest-Misc" hidden="true">
 									<Size x="314" y="60"/>
-									<TexCoords left="0.63867188" right="0.94531250" top="0.00195313" bottom="0.11914063"/>
 									<Anchors>
 										<Anchor point="BOTTOM" relativeTo="$parentInfoBG"/>
 									</Anchors>
+									<TexCoords left="0.63867188" right="0.94531250" top="0.00195313" bottom="0.11914063"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="$parentInfoIconHorde" file="Interface\PVPFrame\PVP-Conquest-Misc" hidden="true">
 									<Size x="55" y="66"/>
-									<TexCoords left="0.63867188" right="0.69238281" top="0.60351563" bottom="0.73242188"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentInfoBG" x="5" y="0"/>
 									</Anchors>
+									<TexCoords left="0.63867188" right="0.69238281" top="0.60351563" bottom="0.73242188"/>
 								</Texture>
 								<Texture name="$parentInfoIconAlliance" file="Interface\PVPFrame\PVP-Conquest-Misc" hidden="true">
 									<Size x="55" y="64"/>
-									<TexCoords left="0.69433594" right="0.74804688" top="0.60351563" bottom="0.72851563"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentInfoBG" x="5" y="0"/>
 									</Anchors>
+									<TexCoords left="0.69433594" right="0.74804688" top="0.60351563" bottom="0.72851563"/>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
@@ -1001,7 +1001,7 @@
 								</FontString>
 								<FontString name="$parentBottomLeftText" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="bottomLeftText" text="ARENA_5V5">
 									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentTopLeftText" relativePoint="BOTTOM" x="" y="-5"/>
+										<Anchor point="TOP" relativeTo="$parentTopLeftText" relativePoint="BOTTOM" y="-5"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentArenaError" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="arenaError" text="PVP_ARENA_PARTY_ERROR">
@@ -1054,19 +1054,19 @@
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBG" file="Interface\PVPFrame\PVP-Conquest-Misc">
 							<Size x="321" y="193"/>	
-							<TexCoords left="0.32324219" right="0.63671875" top="0.55273438" bottom="0.92968750"/>
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>
+							<TexCoords left="0.32324219" right="0.63671875" top="0.55273438" bottom="0.92968750"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentInfoBG" file="Interface\PVPFrame\PVP-Conquest-Misc">
 							<Size x="328" y="97"/>
-							<TexCoords left="0.00097656" right="0.32128906" top="0.00195313" bottom="0.19140625"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativeTo="$parentBG" y="-6"/>
 							</Anchors>
+							<TexCoords left="0.00097656" right="0.32128906" top="0.00195313" bottom="0.19140625"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -1083,12 +1083,12 @@
 								PVPTeamManagementFrame_ToggleSeasonal(self);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
-					<Frame name="$parentWeeklyDisplay"  autoFocus="false">
+					<Frame name="$parentWeeklyDisplay">
 						<Size>
 							<AbsDimension x="140" y="20"/>
 						</Size>
@@ -1097,7 +1097,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1110,7 +1110,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1123,7 +1123,7 @@
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="10" y="20"/>
 									</Size>
@@ -1137,7 +1137,7 @@
 							<Layer level="BACKGROUND">
 								<FontString name="PvP_WeeklyText" inherits="GameFontNormal">
 									<Anchors>
-										<Anchor point="CENTER" Y="1"/>
+										<Anchor point="CENTER" y="1"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1159,9 +1159,9 @@
 								PVPTeamManagementFrame_ToggleSeasonal(self);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>			
 					<Button name="$parentFlag2" inherits="PVPArenaTeamFlagTemplate" parentKey="flag2">
@@ -1318,7 +1318,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 									<Size>
 										<AbsDimension x="30" y="84"/>
 									</Size>
@@ -1331,7 +1331,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.46875" top="0.0" bottom="0.65625"/>
 								</Texture>
-								<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 									<Size>
 										<AbsDimension x="30" y="84"/>
 									</Size>
@@ -1394,7 +1394,7 @@
 					<Frame name="$parentInvalidTeamFrame" inherits="GlowBoxTemplate" parentKey="invalidTeam" hidden="true">
 						<Size x="295" y="35"/>
 						<Anchors>
-							<Anchor point="TOPLEFT"  relaTiveTo="$parentTeamData" relativePoint="TOPLEFT" x="9" y="-31"/>
+							<Anchor point="TOPLEFT"  relativeTo="$parentTeamData" relativePoint="TOPLEFT" x="9" y="-31"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -1473,10 +1473,10 @@
 			<Layer level="BORDER">
 				<Texture name="$parentBackground" file="Interface\PVPFrame\PVP-Conquest-Misc" >
 					<Size x="293" y="128"/>
-					<TexCoords left="0.63867188" right="0.92480469" top="0.12304688" bottom="0.37304688"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-11"/>
 					</Anchors>
+					<TexCoords left="0.63867188" right="0.92480469" top="0.12304688" bottom="0.37304688"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -1490,10 +1490,10 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentRing" file="Interface\PVPFrame\PVP-Conquest-Misc" >
 					<Size x="70" y="71"/>
-					<TexCoords left="0.92675781" right="0.99511719" top="0.12304688" bottom="0.26171875"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentRingIcon"/>
 					</Anchors>
+					<TexCoords left="0.92675781" right="0.99511719" top="0.12304688" bottom="0.26171875"/>
 				</Texture>
 				<FontString name="$parentTitle" parentKey="title" inherits="GameFontHighlight" justifyH="CENTER">
 					<Size>
@@ -1538,7 +1538,7 @@
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
 				<Size>

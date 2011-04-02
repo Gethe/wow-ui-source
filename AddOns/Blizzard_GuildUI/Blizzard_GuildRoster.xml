@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildRoster.lua"/>
 <!--
 *******************************************************************************
@@ -17,7 +17,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentBarTexture" hidden="true" urgency="5" file="Interface\TargetingFrame\UI-StatusBar" parentKey="barTexture">
+				<Texture name="$parentBarTexture" hidden="true" file="Interface\TargetingFrame\UI-StatusBar" parentKey="barTexture">
 					<Size>
 						<AbsDimension x="10" y="20"/>
 					</Size>
@@ -138,13 +138,6 @@
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentRight" x="-10" y="1"/>
 						</Anchors>
-						<ButtonText>
-							<Anchors>
-								<Anchor point="RIGHT" x="-2" y="0"/>
-							</Anchors>
-							<Color r="0.973" g="0.937" b="0.580"/>
-						</ButtonText>
-						<NormalFont style="GameFontNormalSmall"/>
 						<Scripts>
 							<OnLoad>
 								local fontString = self:GetFontString();
@@ -155,6 +148,13 @@
 								ViewGuildRecipes(self:GetParent().skillID);
 							</OnClick>
 						</Scripts>
+						<ButtonText>
+							<Anchors>
+								<Anchor point="RIGHT" x="-2" y="0"/>
+							</Anchors>
+							<Color r="0.973" g="0.937" b="0.580"/>
+						</ButtonText>
+						<NormalFont style="GameFontNormalSmall"/>
 					</Button>
 				</Frames>
 				<Scripts>
@@ -170,7 +170,6 @@
 				</Scripts>
 			</Button>
 		</Frames>
-		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -185,6 +184,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
 	</Button>
 	<Button name="GuildRosterColumnButtonTemplate" virtual="true">
 		<Size>
@@ -192,7 +192,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="24"/>
 					</Size>
@@ -201,7 +201,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="53" y="24"/>
 					</Size>
@@ -210,7 +210,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="24"/>
 					</Size>
@@ -384,11 +384,11 @@
 						GuildRoster_Update();
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 		</Frames>
 		<Scripts>

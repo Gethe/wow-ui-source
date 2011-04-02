@@ -7,7 +7,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\ComboFrame\ComboPoint">
+				<Texture file="Interface\ComboFrame\ComboPoint">
 					<Size>
 						<AbsDimension x="12" y="16"/>
 					</Size>
@@ -18,7 +18,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentHighlight" urgency="5" file="Interface\ComboFrame\ComboPoint">
+				<Texture name="$parentHighlight" file="Interface\ComboFrame\ComboPoint">
 					<Size>
 						<AbsDimension x="8" y="16"/>
 					</Size>
@@ -33,7 +33,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentShine" urgency="5" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+				<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="14" y="16"/>
 					</Size>

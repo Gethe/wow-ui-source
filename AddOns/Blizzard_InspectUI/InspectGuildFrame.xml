@@ -26,28 +26,28 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" file="Interface\GuildFrame\GuildInspect-Parts">
 					<Size x="321" y="334"/>	
-					<TexCoords left="0.00195313" right="0.62890625" top="0.00195313" bottom="0.65429688"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="4" y="-4"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.62890625" top="0.00195313" bottom="0.65429688"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture name="InspectGuildFrameBanner" file="Interface\GuildFrame\GuildInspect-Parts" virtual="true" >
 					<Size x="118" y="144"/>	
-					<TexCoords left="0.23632813" right="0.46679688" top="0.70117188" bottom="0.98242188"/>	
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="104" y="-4"/>
 					</Anchors>
+					<TexCoords left="0.23632813" right="0.46679688" top="0.70117188" bottom="0.98242188"/>	
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture name="InspectGuildFrameBannerBorder" file="Interface\GuildFrame\GuildInspect-Parts" virtual="true" >
 					<Size x="118" y="144"/>	
-					<TexCoords left="0.00195313" right="0.23242188" top="0.70117188" bottom="0.98242188"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="InspectGuildFrameBanner"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.23242188" top="0.70117188" bottom="0.98242188"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">

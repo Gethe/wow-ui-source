@@ -41,7 +41,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentSlotTexture" urgency="5" file="Interface\Buttons\UI-EmptySlot">
+				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -53,7 +53,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNameFrame" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size>
 						<AbsDimension x="124" y="64"/>
 					</Size>

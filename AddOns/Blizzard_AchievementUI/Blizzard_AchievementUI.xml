@@ -132,7 +132,7 @@
 				AchievementFrameSummaryCategory_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>		
-		<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r="0" g="1" b="0"/>
 	</StatusBar>
 	<CheckButton name="AchievementCheckButtonTemplate" virtual="true">
@@ -179,11 +179,11 @@
 				self:SetChecked(IsTrackedAchievement(self:GetParent().id));
 			</OnShow>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-	 	<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
 	</CheckButton>
 
 	<Button name="AchievementFrameTabButtonTemplate" virtual="true">
@@ -353,7 +353,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentEmblem" urgency="5" file="Interface\GuildFrame\GuildEmblemsLG_01" parentKey="emblem">
+				<Texture name="$parentEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01" parentKey="emblem">
 					<Size x="60" y="60"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="14"/>
@@ -514,7 +514,7 @@
 				end
 			</OnClick>
 		</Scripts>
-		<HighlightTexture urgency="5" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT"/>
 				<Anchor point="BOTTOMRIGHT">
@@ -603,7 +603,7 @@
 				self:GetStatusBarTexture():SetDrawLayer("BORDER");
 			</OnLoad>
 		</Scripts>
-		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 	</StatusBar>
 
 	<StatusBar name="AchievementHeaderStatusBarTemplate" virtual="true">
@@ -673,7 +673,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r="0" g="1" b="0"/>
 	</StatusBar>
 	
@@ -1060,7 +1060,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentCheck" urgency="5" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
 					<Size>
 						<AbsDimension x="20" y="16"/>
 					</Size>
@@ -2892,7 +2892,7 @@
 										</Texture>
 									</Layer>
 								</Layers>
-								<BarTexture name="$parentBar" urgency="5" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+								<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 								<BarColor r="0" g="1" b="0"/>
 							</StatusBar>							
 							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate" id="92">	
@@ -3387,7 +3387,7 @@
 								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
-						<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 							<Size>
 								<AbsDimension x="24" y="24"/>
 							</Size>
@@ -3403,7 +3403,7 @@
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</PushedTexture>
-						<DisabledTexture name="$parentDisabledTexture" urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
 							<Size>
 								<AbsDimension x="24" y="24"/>
 							</Size>

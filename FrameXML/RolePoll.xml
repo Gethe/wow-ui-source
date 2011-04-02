@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
 	<Script file="RolePoll.lua"/>
 	<Button name="RolePollRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size>
@@ -108,9 +108,9 @@
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentRoleButtonTank" inherits="RolePollRoleButtonTemplate" id="2">
 				<Size>

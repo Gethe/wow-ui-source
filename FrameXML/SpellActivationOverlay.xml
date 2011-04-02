@@ -2,11 +2,6 @@
 ..\FrameXML\UI.xsd">
 	<Script file="SpellActivationOverlay.lua"/>
 	<Frame name="SpellActivationOverlayTemplate" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="texture" setAllPoints="true"/>
-			</Layer>
-		</Layers>
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 				<Alpha change="1" duration="0.2"/>
@@ -22,11 +17,16 @@
 					</Scripts>
 				</Alpha>
 			</AnimationGroup>
-			<AnimationGroup name="$parentPulse" looping="repeat" parentKey="pulse">
+			<AnimationGroup name="$parentPulse" looping="REPEAT" parentKey="pulse">
 				<Scale scaleX="1.08" scaleY="1.08" duration="0.5" smoothing="IN_OUT" order="1"/>
 				<Scale scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
 			</AnimationGroup>
 		</Animations>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="texture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnShow function="SpellActivationOverlayTexture_OnShow"/>
 			<OnHide function="SpellActivationOverlayTexture_OnHide"/>

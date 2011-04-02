@@ -10,7 +10,7 @@
 				self:SetPoint("BOTTOMLEFT", healthBar:GetStatusBarTexture(), "BOTTOMRIGHT");
 			</OnLoad>
 		</Scripts>
-		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="0.0" g="0.827" b="0.765"/>
 	</StatusBar>
 	<StatusBar name="OtherHealPredictionBarTemplate" virtual="true" enableMouse="false">
@@ -25,7 +25,7 @@
 				self:SetPoint("BOTTOMLEFT", myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT");
 			</OnLoad>
 		</Scripts>
-		<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="0.0" g="0.631" b="0.557"/>
 	</StatusBar>
 </Ui>

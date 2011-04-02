@@ -95,6 +95,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			if ( extendedCost and (price <= 0) ) then
 				itemButton.price = nil;
 				itemButton.extendedCost = true;
+				itemButton.name = name;
 				itemButton.link = GetMerchantItemLink(index);
 				itemButton.texture = texture;
 				MerchantFrame_UpdateAltCurrency(index, i);
@@ -105,6 +106,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			elseif ( extendedCost and (price > 0) ) then
 				itemButton.price = price;
 				itemButton.extendedCost = true;
+				itemButton.name = name;
 				itemButton.link = GetMerchantItemLink(index);
 				itemButton.texture = texture;
 				MerchantFrame_UpdateAltCurrency(index, i);
@@ -116,6 +118,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			else
 				itemButton.price = price;
 				itemButton.extendedCost = nil;
+				itemButton.name = name;
 				itemButton.link = GetMerchantItemLink(index);
 				itemButton.texture = texture;
 				MoneyFrame_Update(merchantMoney:GetName(), price);
@@ -154,6 +157,7 @@ function MerchantFrame_UpdateMerchantInfo()
 		else
 			itemButton.price = nil;
 			itemButton.hasItem = nil;
+			itemButton.name = nil;
 			itemButton:Hide();
 			SetItemButtonNameFrameVertexColor(merchantButton, 0.5, 0.5, 0.5);
 			SetItemButtonSlotVertexColor(merchantButton,0.4, 0.4, 0.4);
@@ -500,8 +504,18 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		return;
 	end
 	
-	local itemName, _, itemQuality = GetItemInfo(itemButton.link);
-	local r, g, b = GetItemQualityColor(itemQuality);
+	
+	local itemName = "YOU HAVE FOUND A BUG!";
+	local itemQuality = 1;
+	local r, g, b = 1, 1, 1;
+	if(itemButton.link) then
+		itemName, _, itemQuality = GetItemInfo(itemButton.link);
+		r, g, b = GetItemQualityColor(itemQuality); 
+	elseif(itemName) then		-- This is the case for a currency, which don't support links yet
+		itemName = itemButton.name;
+		r, g, b = GetItemQualityColor(1); 
+	end
+	
 	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
 end
 

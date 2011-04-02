@@ -658,7 +658,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND" textureSublevel="1">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<FontString name="WorldStateScoreFrameLabel" inherits="GameFontNormal" text="BATTLEFIELDS">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-6"/>

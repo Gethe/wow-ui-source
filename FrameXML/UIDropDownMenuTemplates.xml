@@ -273,7 +273,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentLeft" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
@@ -286,7 +286,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="115" y="64"/>
 					</Size>
@@ -295,7 +295,7 @@
 					</Anchors>
 					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
@@ -350,7 +350,7 @@
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>
@@ -366,7 +366,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</PushedTexture>
-				<DisabledTexture name="$parentDisabledTexture" urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+				<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>

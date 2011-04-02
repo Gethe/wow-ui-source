@@ -217,8 +217,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			</Frames>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" parentKey="highlight" />
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.highlight:SetVertexColor(0.243, 0.570, 1);
@@ -233,6 +232,7 @@
 				FriendsFrameFriendButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" parentKey="highlight" />
 	</Button>
 	<!--
 	<Button name="FriendsFrameButtonTemplate" virtual="true">
@@ -799,7 +799,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="24"/>
 					</Size>
@@ -808,7 +808,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="53" y="24"/>
 					</Size>
@@ -817,7 +817,7 @@
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="24"/>
 					</Size>
@@ -886,7 +886,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -1077,7 +1077,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1088,7 +1088,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1099,7 +1099,7 @@
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="0" y="20"/>
 									</Size>
@@ -1160,9 +1160,6 @@
 							</OnTextChanged>
 							<OnHide function="FriendsFrameBroadcastInput_UpdateDisplay"/>
 						</Scripts>
-						<FontString inherits="FriendsFont_UserText">
-							<Color r="0.345" g="0.667" b="0.867" />
-						</FontString>
 						<Frames>
 							<Button name="$parentTooltipButton" setAllPoints="true">
 								<Scripts>
@@ -1213,6 +1210,9 @@
 								FriendsFrameBroadcastInputClearButton:SetFrameLevel(frameLevel + 2);
 							</OnLoad>
 						</Scripts>
+						<FontString inherits="FriendsFont_UserText">
+							<Color r="0.345" g="0.667" b="0.867" />
+						</FontString>
 					</EditBox>
 					<Button name="FriendsTabHeaderTab1" inherits="TabButtonTemplate" text="FRIENDS" id="1">
 						<Anchors>
@@ -1757,51 +1757,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<ScrollChild>
-							<Frame name="$parentScrollChild" parentKey="scrollChild">
-								<Size>
-									<AbsDimension x="10" y="10"/>
-								</Size>
-								<Frames>
-									<Button name="FriendsFramePendingButton1" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Button>
-									<Button name="FriendsFramePendingButton2" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton1" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Button>
-									<Button name="FriendsFramePendingButton3" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton2" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Button>
-									<Button name="FriendsFramePendingButton4" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton3" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Button>
-								</Frames>
-							</Frame>
-						</ScrollChild>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="scrollBar" hidden="true">
 								<Anchors>
@@ -1852,6 +1807,51 @@
 								FriendsFramePendingScrollFrame_AdjustScroll(delta * -2);
 							</OnMouseWheel>
 						</Scripts>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="scrollChild">
+								<Size>
+									<AbsDimension x="10" y="10"/>
+								</Size>
+								<Frames>
+									<Button name="FriendsFramePendingButton1" inherits="FriendsFramePendingButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="FriendsFramePendingButton2" inherits="FriendsFramePendingButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton1" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="FriendsFramePendingButton3" inherits="FriendsFramePendingButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton2" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+									<Button name="FriendsFramePendingButton4" inherits="FriendsFramePendingButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton3" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Button>
+								</Frames>
+							</Frame>
+						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
@@ -2784,7 +2784,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -2795,7 +2795,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -2806,7 +2806,7 @@
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="0" y="20"/>
 									</Size>

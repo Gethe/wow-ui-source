@@ -713,6 +713,10 @@ function CRFFlowFilterFunc(token)
 		return false;
 	end
 	
+	if ( GetNumRaidMembers() <= 0 ) then	--We don't filter unless we're in a raid.
+		return true;
+	end
+	
 	local role = UnitGroupRolesAssigned(token);
 	if ( not filterOptions["displayRole"..role] ) then
 		return false;

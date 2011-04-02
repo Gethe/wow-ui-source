@@ -307,8 +307,8 @@
 									<xs:attribute name="point" type="FRAMEPOINT" use="required"/>
 									<xs:attribute name="relativeTo" type="xs:string"/>
 									<xs:attribute name="relativePoint" type="FRAMEPOINT"/>
-									<xs:attribute name="x" type="xs:int"/>
-									<xs:attribute name="y" type="xs:int"/>
+									<xs:attribute name="x" type="xs:float"/>
+									<xs:attribute name="y" type="xs:float"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
@@ -372,8 +372,10 @@
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="file" type="xs:string"/>
+				<xs:attribute name="mask" type="xs:string"/>
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
+				<xs:attribute name="forceAlpha" type="xs:boolean" default="false"/>
 				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
 				<xs:attribute name="horizTile" type="xs:boolean" default="false"/>
 				<xs:attribute name="vertTile" type="xs:boolean" default="false"/>
@@ -443,6 +445,14 @@
 												</xs:choice>
 											</xs:sequence>
 											<xs:attribute name="level" type="DRAWLAYER" default="ARTWORK"/>
+											<xs:attribute name="textureSubLevel" default="0">
+												<xs:simpleType>
+													<xs:restriction base="xs:int">
+														<xs:minInclusive value="-8"/>
+														<xs:maxInclusive value="7"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
 										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
@@ -462,6 +472,7 @@
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
 				<xs:attribute name="parent" type="xs:string"/>
 				<xs:attribute name="toplevel" type="xs:boolean" default="false"/>
+				<xs:attribute name="useParentLevel" type="xs:boolean" default="false"/>
 				<xs:attribute name="movable" type="xs:boolean" default="false"/>
 				<xs:attribute name="resizable" type="xs:boolean" default="false"/>
 				<xs:attribute name="frameStrata" type="ui:FRAMESTRATA" default="PARENT"/>
@@ -472,6 +483,9 @@
 				<xs:attribute name="clampedToScreen" type="xs:boolean" default="false"/>
 				<xs:attribute name="protected" type="xs:boolean" default="false"/>
 				<xs:attribute name="depth" type="xs:float" default="0.0"/>
+				<xs:attribute name="dontSavePosition" type="xs:boolean" default="false"/>
+				<xs:attribute name="propagateKeyboardInput" type="xs:boolean" default="false"/>
+				<xs:attribute name="forceAlpha" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -767,6 +781,15 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="QuestPOIFrame" type="QuestPOIFrameType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="ArchaeologyDigSiteFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="filltexture" type="xs:string"/>
+				<xs:attribute name="bordertexture" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ArchaeologyDigSiteFrame" type="ArchaeologyDigSiteFrameType" substitutionGroup="ui:Frame"/>
 	<xs:complexType name="MinimapType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -871,12 +894,13 @@
 		<xs:attribute name="name" type="xs:string"/>
 		<xs:attribute name="inherits" type="xs:string"/>
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
+		<xs:attribute name="target" type="xs:string"/>
+		<xs:attribute name="parentKey" type="xs:string"/>
 		<xs:attribute name="startDelay" type="xs:float" default="0.0"/>
 		<xs:attribute name="endDelay" type="xs:float" default="0.0"/>
 		<xs:attribute name="duration" type="xs:float"/>
-		<xs:attribute name="smoothing" type="ANIMSMOOTHTYPE" default="NONE"/>
 		<xs:attribute name="order" type="AnimOrderType"/>
-		<xs:attribute name="parentKey" type="xs:string"/>
+		<xs:attribute name="smoothing" type="ANIMSMOOTHTYPE" default="NONE"/>
 	</xs:complexType>
 	<xs:element name="Animation" type="AnimationType"/>
 	<xs:complexType name="TranslationType">
@@ -920,18 +944,26 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Alpha" type="AlphaType" substitutionGroup="Animation"/>
-	<xs:complexType name="ControlPointType">
-		<xs:attribute name="name" type="xs:string"/>
-		<xs:attribute name="offsetX" type="xs:float" default="0.0"/>
-		<xs:attribute name="offsetY" type="xs:float" default="0.0"/>
+	<xs:complexType name="ControlPointsType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="ControlPoint" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string"/>
+						<xs:attribute name="offsetX" type="xs:float" default="0.0"/>
+						<xs:attribute name="offsetY" type="xs:float" default="0.0"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
 	</xs:complexType>
-	<xs:element name="ControlPoint" type="ControlPointType"/>
+	<xs:element name="ControlPoints" type="ControlPointsType"/>
 	<xs:complexType name="PathType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
 				<xs:sequence minOccurs="0">
 					<xs:choice maxOccurs="unbounded">
-						<xs:element name="ControlPoints" type="ControlPointType"/>
+						<xs:element name="ControlPoints" type="ControlPointsType"/>
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="curve" type="ANIMCURVETYPE" default="NONE"/>

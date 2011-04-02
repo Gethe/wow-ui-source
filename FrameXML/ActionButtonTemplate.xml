@@ -98,7 +98,7 @@
 				</Anchors> 
 			</Cooldown>
 		</Frames>
-		<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="-15" y="15"/>
 				<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
@@ -106,7 +106,7 @@
 		</NormalTexture>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 </Ui>
 

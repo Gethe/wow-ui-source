@@ -54,9 +54,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentChecked" parentKey="Checked" urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" hidden="true">
-					<Anchor point="CENTER"/>
-				</Texture>
+				<Texture name="$parentChecked" parentKey="Checked" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -217,7 +215,7 @@
 								Model_RotateLeft(PetStableModel);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -236,14 +234,14 @@
 								Model_RotateRight(PetStableModel);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 					<Frame name="PetStableModelShadow" inherits="ShadowOverlayTemplate" useParentLevel="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="-0.5" y="0.5"/>
-							<Anchor point="BOTTOMRIGHT" x="0.5" y="-0.5"/>
+							<Anchor point="TOPLEFT" x="-1" y="1"/>
+							<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -295,9 +293,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="PetStableDietTexture" inherits="PetStable-DietIcon" >
-									<Anchor point="TOPLEFT"/>
-								</Texture>
+								<Texture name="PetStableDietTexture" inherits="PetStable-DietIcon"/>
 							</Layer>
 						</Layers>
 						<Scripts>

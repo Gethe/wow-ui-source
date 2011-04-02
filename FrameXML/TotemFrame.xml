@@ -7,7 +7,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" urgency="5" file="Interface\Minimap\UI-Minimap-Background">
+				<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
 					<Size x="34" y="34"/>
 					<Anchors>
 						<Anchor point="CENTER">

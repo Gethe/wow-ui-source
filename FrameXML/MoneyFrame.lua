@@ -169,7 +169,7 @@ MoneyTypeInfo["GUILDBANKCASHFLOW"] = {
 		self:RegisterEvent("GUILDBANKLOG_UPDATE");
 	end,
 	UpdateFunc = function(self)
-		MoneyFrame_Update(self, GetGuildBankBonusDepositMoney());
+		GuildBankFrame_UpdateCashFlowMoney();
 		return nil;
 	end,
 	collapse = 1,

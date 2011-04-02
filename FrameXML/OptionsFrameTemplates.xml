@@ -127,7 +127,7 @@
 		-->
 			<Layer level="BACKGROUND">
 				<!-- Yay. It's a backdrop. -->
-				<Texture name="$parentTopLeft" urgency="5" file="Interface\Tooltips\UI-Tooltip-Border">
+				<Texture name="$parentTopLeft" file="Interface\Tooltips\UI-Tooltip-Border">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -136,7 +136,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentBottomLeft" urgency="5" file="Interface\Tooltips\UI-Tooltip-Border">
+				<Texture name="$parentBottomLeft" file="Interface\Tooltips\UI-Tooltip-Border">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -145,7 +145,7 @@
 					</Anchors>
 					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentBottomRight" urgency="5" file="Interface\Tooltips\UI-Tooltip-Border">
+				<Texture name="$parentBottomRight" file="Interface\Tooltips\UI-Tooltip-Border">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -154,7 +154,7 @@
 					</Anchors>
 					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentTopRight" urgency="5" file="Interface\Tooltips\UI-Tooltip-Border">
+				<Texture name="$parentTopRight" file="Interface\Tooltips\UI-Tooltip-Border">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -163,14 +163,14 @@
 					</Anchors>
 					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentLeft" urgency="5" file="Interface\Tooltips\UI-Tooltip-Border">
+				<Texture name="$parentLeft" file="Interface\Tooltips\UI-Tooltip-Border">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.125" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\Tooltips\UI-Tooltip-Border">
+				<Texture name="$parentRight" file="Interface\Tooltips\UI-Tooltip-Border">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
@@ -299,7 +299,7 @@
 						OptionsListButtonToggle_OnClick(self);
 					</OnClick>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-MinusButton-UP"/>
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-MinusButton-UP"/>
 				<PushedTexture name="$parentPushedTexture" file="Interface\Buttons\UI-MinusButton-DOWN"/>
 				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
 			</Button>
@@ -352,7 +352,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
 						<AbsDimension x="300" y="68"/>
 					</Size>

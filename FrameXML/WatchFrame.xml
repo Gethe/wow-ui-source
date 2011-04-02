@@ -135,7 +135,7 @@
 				WatchFrameItem_OnClick(self, button, down);
 			</OnClick>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size x="42" y="42"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
@@ -234,13 +234,13 @@
 				<Scripts>
 					<OnClick function="WatchFrame_CollapseExpandButton_OnClick"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-QuestHideButton">
+				<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
 					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
 				</NormalTexture>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-Panel-QuestHideButton">
+				<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
 					<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
 				</PushedTexture>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
 				<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
 			</Button>
 			<Frame name="WatchFrameLines" hidden="false">
@@ -285,6 +285,19 @@
 	
 	<ScrollFrame name="WatchFrameAutoQuestPopUpTemplate" enableMouse="true" virtual="true">
 		<Size x="224" y="72"/>
+		<Scripts>
+			<OnMouseUp>
+				if (self.type == "OFFER") then
+					ShowQuestOffer(GetQuestLogIndexByID(self.questId));
+				else
+					ShowQuestComplete(GetQuestLogIndexByID(self.questId));
+				end
+				WatchFrameAutoQuest_ClearPopUp(self.questId);
+			</OnMouseUp>
+			<OnLoad>
+				self:SetHorizontalScroll(-28.5);
+			</OnLoad>
+		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChild" parentKey="ScrollChild">
 				<Size x="190" y="60"/>
@@ -316,36 +329,36 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBorderLeft" file="Interface\QuestFrame\AutoQuestToastBorder-LeftRight" vertTile="true">
-							<TexCoords left="0" right="0.5" top="0" bottom="1"/>
 							<Size x="8" y="16"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="BOTTOMLEFT"/>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBotLeft" relativePoint="TOPLEFT"/>
 							</Anchors>
+							<TexCoords left="0" right="0.5" top="0" bottom="1"/>
 						</Texture>
 						<Texture name="$parentBorderRight" file="Interface\QuestFrame\AutoQuestToastBorder-LeftRight" vertTile="true">
-							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
 							<Size x="8" y="16"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="BOTTOMRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBotRight" relativePoint="TOPRIGHT"/>
 							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
 						</Texture>
 						<Texture name="$parentBorderTop" file="Interface\QuestFrame\AutoQuestToastBorder-TopBot" horizTile="true">
-							<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 							<Size x="16" y="8"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="TOPRIGHT"/>
 								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="TOPLEFT"/>
 							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 						</Texture>
 						<Texture name="$parentBorderBottom" file="Interface\QuestFrame\AutoQuestToastBorder-TopBot" horizTile="true">
-							<TexCoords left="0" right="1" top="0.5" bottom="1"/>
 							<Size x="16" y="8"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBotLeft" relativePoint="BOTTOMRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBotRight" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
+							<TexCoords left="0" right="1" top="0.5" bottom="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -393,11 +406,6 @@
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="1">
 						<Texture name="$parentShine" alphaMode="ADD" alpha="0" hidden="true" parentKey="Shine">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-1" y="1"/>
-								<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-							</Anchors>
-							<Color r="1" g="1" b="1"/>
 							<Animations>
 								<AnimationGroup name="$parentFlash" parentKey="Flash">
 									<Alpha startDelay="0" change="0.4" duration="0.25" order="1"/>
@@ -412,6 +420,11 @@
 									</Scripts>
 								</AnimationGroup>
 							</Animations>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -473,19 +486,6 @@
 				</Frames>
 			</Frame>
 		</ScrollChild>
-		<Scripts>
-			<OnMouseUp>
-				if (self.type == "OFFER") then
-					ShowQuestOffer(GetQuestLogIndexByID(self.questId));
-				else
-					ShowQuestComplete(GetQuestLogIndexByID(self.questId));
-				end
-				WatchFrameAutoQuest_ClearPopUp(self.questId);
-			</OnMouseUp>
-			<OnLoad>
-				self:SetHorizontalScroll(-28.5);
-			</OnLoad>
-		</Scripts>
 	</ScrollFrame>
 
 	<Frame name="WatchFrameHeaderDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">

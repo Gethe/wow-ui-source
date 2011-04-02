@@ -7,7 +7,7 @@
 		</Size>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentActiveTexture" urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+				<Texture name="$parentActiveTexture" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -82,14 +82,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="PetPaperDollXPBar1" urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture name="PetPaperDollXPBar1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size x="140" y="13"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="2"/>
 							</Anchors>
 							<TexCoords left="0.203125" right="0.8046875" top="0.2890625" bottom="0.33984375"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+						<Texture file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size x="140" y="13"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="PetPaperDollXPBar1" relativePoint="RIGHT" x="0" y="0"/>
@@ -116,7 +116,7 @@
 					<OnMinMaxChanged function="TextStatusBar_OnValueChanged"/>
 					<OnLeave function="HideTextStatusBarText"/>
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>
 			</StatusBar>
 			<PlayerModel name="PetModelFrame">
@@ -153,7 +153,7 @@
 								Model_RotateLeft(PetModelFrame);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -172,7 +172,7 @@
 								Model_RotateRight(PetModelFrame);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>

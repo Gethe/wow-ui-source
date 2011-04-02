@@ -26,7 +26,7 @@
 				AuctionFrameFilter_OnClick(self, button, down);
 			</OnClick>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
 			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
 		</NormalTexture>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
@@ -48,7 +48,7 @@
 	<Button name="AuctionSortButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="5" y="19"/>
 					</Size>
@@ -57,7 +57,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
 				</Texture>
-				<Texture name="$parentRight" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="4" y="19"/>
 					</Size>
@@ -66,7 +66,7 @@
 					</Anchors>
 					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
 				</Texture>
-				<Texture name="$parentMiddle" urgency="5" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size>
 						<AbsDimension x="10" y="19"/>
 					</Size>
@@ -270,7 +270,7 @@
 						end
 					</OnUpdate>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -575,7 +575,7 @@
 						end
 					</OnUpdate>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>
@@ -823,7 +823,7 @@
 						end
 					</OnUpdate>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-Quickslot2">
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>

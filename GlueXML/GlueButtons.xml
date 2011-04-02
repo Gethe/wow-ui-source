@@ -80,6 +80,15 @@
 		<Size>
 			<AbsDimension x="170" y="45"/>
 		</Size>
+		<Scripts>
+			<OnShow>
+				if (WOW_GLUE_MODEL) then
+					self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+					self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+					self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+				end
+			</OnShow>
+		</Scripts>
 		<ButtonText>
 			<Anchors>
 				<Anchor point="CENTER">
@@ -96,15 +105,6 @@
 		<PushedTexture inherits="GluePanelButtonDownTextureBlue"/>
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="GluePanelButtonHighlightTextureBlue" alphaMode="ADD"/>
-		<Scripts>
-			<OnShow>
-				if (WOW_GLUE_MODEL) then
-					self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
-					self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
-					self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-				end
-			</OnShow>
-		</Scripts>
 	</Button>
 	<Button name="GlueButtonSmallTemplate" virtual="true">
 		<Size>
@@ -131,6 +131,15 @@
 		<Size>
 			<AbsDimension x="150" y="38"/>
 		</Size>
+		<Scripts>
+			<OnLoad>
+				if (WOW_GLUE_MODEL) then
+					self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+					self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+					self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+				end
+			</OnLoad>
+		</Scripts>
 		<ButtonText>
 			<Anchors>
 				<Anchor point="CENTER">
@@ -147,14 +156,5 @@
 		<PushedTexture inherits="GluePanelButtonDownTextureBlue"/>
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="GluePanelButtonHighlightTextureBlue" alphaMode="ADD"/>
-		<Scripts>
-			<OnLoad>
-				if (WOW_GLUE_MODEL) then
-					self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
-					self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
-					self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-				end
-			</OnLoad>
-		</Scripts>
 	</Button>
 </Ui>

@@ -837,9 +837,9 @@
 								CharacterSelectScrollDown_OnClick()
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-						<DisabledTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="ScrollDownUp" hidden="true">
@@ -854,7 +854,7 @@
 								CharacterSelectScrollUp_OnClick()
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
 						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>

@@ -590,11 +590,11 @@
 								end
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-						<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-						<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-						<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
 					<CheckButton name="AccountLoginShowLauncher">
 						<Size>
@@ -651,11 +651,11 @@
 								SetCVar("showToolsUI", checked);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-						<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-						<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-						<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
 					<Frame name="ServerAlertFrame" hidden="true">
 						<Size>
@@ -781,7 +781,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+										<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 											<Size>
 												<AbsDimension x="8" y="20"/>
 											</Size>
@@ -794,7 +794,7 @@
 											</Anchors>
 											<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 										</Texture>
-										<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+										<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 											<Size>
 												<AbsDimension x="8" y="20"/>
 											</Size>
@@ -807,7 +807,7 @@
 											</Anchors>
 											<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 										</Texture>
-										<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+										<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 											<Size>
 												<AbsDimension x="10" y="20"/>
 											</Size>
@@ -1484,7 +1484,7 @@
 				</HitRectInsets>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-TopLeft">
+						<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -1492,7 +1492,7 @@
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Top">
+						<Texture file="Interface\HelpFrame\HelpFrame-Top">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -1512,7 +1512,7 @@
 								<Anchor point="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotLeft">
+						<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -1520,7 +1520,7 @@
 								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
+						<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -1532,7 +1532,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotRight">
+						<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
 							<Size>
 								<AbsDimension x="128" y="256"/>
 							</Size>
@@ -1542,7 +1542,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="TOSFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture name="TOSFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="300" y="38"/>
 							</Size>
@@ -1555,7 +1555,7 @@
 							</Anchors>
 							<TexCoords left="0.3" right="0.7" top="0.015625" bottom="0.609375"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="15" y="38"/>
 							</Size>
@@ -1568,7 +1568,7 @@
 							</Anchors>
 							<TexCoords left="0.23046875" right="0.28515625" top="0.015625" bottom="0.609375"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="15" y="38"/>
 							</Size>
@@ -2102,7 +2102,7 @@
 				</HitRectInsets>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-TopLeft">
+						<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2110,7 +2110,7 @@
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Top">
+						<Texture file="Interface\HelpFrame\HelpFrame-Top">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2130,7 +2130,7 @@
 								<Anchor point="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotLeft">
+						<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2138,7 +2138,7 @@
 								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
+						<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2150,7 +2150,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotRight">
+						<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
 							<Size>
 								<AbsDimension x="128" y="256"/>
 							</Size>
@@ -2160,7 +2160,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="SurveyNotificationFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture name="SurveyNotificationFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="620" y="64"/>
 							</Size>
@@ -2267,7 +2267,7 @@
 				</HitRectInsets>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-TopLeft">
+						<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2275,7 +2275,7 @@
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Top">
+						<Texture file="Interface\HelpFrame\HelpFrame-Top">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2295,7 +2295,7 @@
 								<Anchor point="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotLeft">
+						<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2303,7 +2303,7 @@
 								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
+						<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
 							<Size>
 								<AbsDimension x="256" y="256"/>
 							</Size>
@@ -2315,7 +2315,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<Texture urgency="5" file="Interface\HelpFrame\HelpFrame-BotRight">
+						<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
 							<Size>
 								<AbsDimension x="128" y="256"/>
 							</Size>
@@ -2325,7 +2325,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="ConnectionHelpFrameHeader" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture name="ConnectionHelpFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="420" y="64"/>
 							</Size>
@@ -2486,31 +2486,36 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentPlayButton" file="Interface\Glues\Common\cinematicbuttons" parentKey="PlayButton">
 					<Size x="43" y="43"/>
-					<TexCoords left="0.78515625" right="0.86914063" top="0.00781250" bottom="0.09179688"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-5" y="1"/>
 					</Anchors>
+					<TexCoords left="0.78515625" right="0.86914063" top="0.00781250" bottom="0.09179688"/>
 				</Texture>
 				<Texture name="$parentDownloadIcon" file="Interface\Glues\Common\cinematicbuttons" parentKey="DownloadIcon">
 					<Size x="43" y="43"/>
-					<TexCoords left="0.69726563" right="0.78125000" top="0.00781250" bottom="0.09179688"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-5" y="1"/>
 					</Anchors>
+					<TexCoords left="0.69726563" right="0.78125000" top="0.00781250" bottom="0.09179688"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		
 		<Frames>
 			<Frame name="$parentStreamingIcon" hidden="true" parentKey="StreamingIcon">
+				<Animations>
+					<AnimationGroup parentKey="Loop" looping="REPEAT" >
+						<Rotation target="StreamingIconSpin" order="1" duration="8" degrees="-360" />
+					</AnimationGroup>
+				</Animations>
+				<Size x="48" y="48"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-2" y="5"/>
 				</Anchors>
-				<Size x="48" y="48"/>
 				<Frames>
 					<Frame name="$parentFrame" setAllPoints="true" parentKey="Frame" >
 						<Layers>
-							<Layer level="BACKGROUND" sublevel="1">
+							<Layer level="BACKGROUND" >
 								<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" parentKey="Background"/>
 							</Layer>
 							<Layer level="ARTWORK">
@@ -2520,7 +2525,7 @@
 					</Frame>
 					<Frame name="$parentSpin" setAllPoints="true" parentKey="Spin">
 						<Layers>
-							<Layer level="BACKGROUND" sublevel="2" >
+							<Layer level="BACKGROUND" >
 								<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" parentKey="Spinner"/>
 							</Layer>
 							<Layer level="OVERLAY" >
@@ -2535,11 +2540,6 @@
 						self.Frame.Background:SetVertexColor(0,1,0);
 					</OnLoad>
 				</Scripts>
-				<Animations>
-					<AnimationGroup parentKey="Loop" looping="REPEAT" >
-						<Rotation target="StreamingIconSpin" order="1" duration="8" degrees="-360" />
-					</AnimationGroup>
-				</Animations>
 			</Frame>
 			<StatusBar name="$parentStatusBar" hidden="true" parentKey="StatusBar">
 				<Size x="168" y="2"/>
@@ -2550,11 +2550,11 @@
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBg" file="Interface\Glues\Common\cinematicbuttons">
 							<Size x="8" y="4"/>
-							<TexCoords left="0.69726563" right="0.71289063" top="0.09570313" bottom="0.10351563"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" y="1"/>
 								<Anchor point="TOPRIGHT" y="1"/>
 							</Anchors>
+							<TexCoords left="0.69726563" right="0.71289063" top="0.09570313" bottom="0.10351563"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -2563,21 +2563,6 @@
 				</BarTexture>
 			</StatusBar>
 		</Frames>
-		
-		<NormalFont style="GlueFontNormalExtraSmall"/>
-		<HighlightFont style="GlueFontHighlightExtraSmall"/>
-		<DisabledFont style="GlueFontDisableExtraSmall"/>
-		<HighlightTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons" alphaMode="ADD">
-			<TexCoords left="0.00195313" right="0.34570313" top="0.63281250" bottom="0.78515625"/>
-		</HighlightTexture>
-		<ButtonText>
-			<Size x="176" y="0"/>
-			<Anchors>
-				<Anchor point="BOTTOM" y="5"/>
-			</Anchors>
-		</ButtonText>
-		<PushedTextOffset x="-3" y="-3"/> 
-		
 		<Scripts>
 			<OnClick function="CinematicsButton_OnClick"/>
 			<OnMouseDown>
@@ -2598,6 +2583,19 @@
 				self.mouseIsOverMe = false;
 			</OnLeave>
 		</Scripts>
+		<NormalFont style="GlueFontNormalExtraSmall"/>
+		<HighlightFont style="GlueFontHighlightExtraSmall"/>
+		<DisabledFont style="GlueFontDisableExtraSmall"/>
+		<HighlightTexture file="Interface\Glues\Common\cinematicbuttons" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.34570313" top="0.63281250" bottom="0.78515625"/>
+		</HighlightTexture>
+		<ButtonText>
+			<Size x="176" y="0"/>
+			<Anchors>
+				<Anchor point="BOTTOM" y="5"/>
+			</Anchors>
+		</ButtonText>
+		<PushedTextOffset x="-3" y="-3"/> 
 	</Button>
 
 	<Frame name="CinematicsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
@@ -2651,10 +2649,10 @@
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-44"/>
 				</Anchors>
-				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.34960938" right="0.69335938" top="0.16406250" bottom="0.31640625"/>
 				</NormalTexture>
-				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.00195313" right="0.34570313" top="0.16406250" bottom="0.31640625"/>
 				</PushedTexture>
 			</Button>
@@ -2663,10 +2661,10 @@
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
-				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.34960938" right="0.69335938" top="0.32031250" bottom="0.47265625"/>
 				</NormalTexture>
-				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.00195313" right="0.34570313" top="0.78906250" bottom="0.94140625"/>
 				</PushedTexture>
 			</Button>
@@ -2675,10 +2673,10 @@
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
-				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.34960938" right="0.69335938" top="0.00781250" bottom="0.16015625"/>	
 				</NormalTexture>
-				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.00195313" right="0.34570313" top="0.00781250" bottom="0.16015625"/>
 				</PushedTexture>
 			</Button>
@@ -2687,10 +2685,10 @@
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
-				<NormalTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.00195313" right="0.34570313" top="0.47656250" bottom="0.62890625"/>
 				</NormalTexture>
-				<PushedTexture urgency="5" file="Interface\Glues\Common\cinematicbuttons">
+				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.00195313" right="0.34570313" top="0.32031250" bottom="0.47265625"/>
 				</PushedTexture>
 			</Button>
@@ -2766,7 +2764,7 @@
 						<Anchor point="TOP" relativeTo="KoreanRatingsViolence" relativePoint="BOTTOM" x="0" y="-20"/>
 					</Anchors>
 				</Texture>
-				<FontString name="KoreanRatingsText" inherits="GlueFontNormalGigantor" justifyH="CENTER" justifyV="CENTER" text="RATINGS_TEXT">
+				<FontString name="KoreanRatingsText" inherits="GlueFontNormalGigantor" justifyH="CENTER" text="RATINGS_TEXT">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="KoreanRatings" relativePoint="BOTTOMLEFT" x="50" y="400"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="KoreanRatings" relativePoint="BOTTOMRIGHT" x="-50" y="60"/>

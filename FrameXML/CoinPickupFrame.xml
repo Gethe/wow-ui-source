@@ -15,7 +15,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="CoinPickupGoldIcon" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
+				<Texture name="CoinPickupGoldIcon" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -28,7 +28,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="CoinPickupSilverIcon" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
+				<Texture name="CoinPickupSilverIcon" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -41,7 +41,7 @@
 					</Anchors>
 					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="CoinPickupCopperIcon" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
+				<Texture name="CoinPickupCopperIcon" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>

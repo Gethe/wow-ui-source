@@ -178,12 +178,12 @@ function BonusActionBarGetBarInfo(barType)
 end
 
 
-function ShowBonusActionBar (force)
+function ShowBonusActionBar ()
 	if (MainMenuBar.state ==  "vehicle") then
 		if ( BonusActionBarFrame:IsShown() and not MainMenuBar:IsShown() ) then
 			HideBonusActionBar ();
 		end
-	elseif (( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) or force) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+	elseif ( not MainMenuBar.busy and not UnitHasVehicleUI("player")) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		local barType = GetBonusBarOverrideBarType() or "default";
 		local barInfo = BonusActionBarGetBarInfo(barType);
 	
@@ -234,9 +234,9 @@ function ShowBonusActionBar (force)
 	end
 end
 
-function HideBonusActionBar (force)
+function HideBonusActionBar ()
 	if ( BonusActionBarFrame:IsShown() ) then
-		if (  force or (MainMenuBar.state == "bonus" and not MainMenuBar.busy and not UnitHasVehicleUI("player") ) ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+		if ( MainMenuBar.state == "bonus" and not MainMenuBar.busy and not UnitHasVehicleUI("player") ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 			MainMenuBar.state = "player";
 			MultiActionBar_Update();
 			local oldbarInfo = BonusActionBarGetBarInfo(BonusActionBarFrame.currentType);

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildNews.lua"/>
 <!--
 *******************************************************************************
@@ -86,6 +86,11 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader" x="-8" y="0"/>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						GuildFramePopup_Show(GuildNewsFiltersFrame);
+					</OnClick>
+				</Scripts>
 				<ButtonText>
 					<Anchors>
 						<Anchor point="RIGHT" x="-2" y="0"/>
@@ -93,11 +98,6 @@
 					<Color r="0.973" g="0.937" b="0.580"/>
 				</ButtonText>
 				<NormalFont style="GameFontNormalSmall"/>
-				<Scripts>
-					<OnClick>
-						GuildFramePopup_Show(GuildNewsFiltersFrame);
-					</OnClick>
-				</Scripts>
 			</Button>
 			<ScrollFrame name="GuildNewsContainer" inherits="MinimalHybridScrollFrameTemplate">
 				<Size x="298" y="305"/>
@@ -205,7 +205,7 @@
 	Boss Model
 *******************************************************************************
 -->
-	<PlayerModel name="GuildNewsBossModel" enableMouse="true" hidden="true" parent="GuildFrame" clampedToScreen="true" framestrata="HIGH">
+	<PlayerModel name="GuildNewsBossModel" enableMouse="true" hidden="true" parent="GuildFrame" clampedToScreen="true" frameStrata="HIGH">
 		<Size x="198" y="230"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="-3" y="-43"/>

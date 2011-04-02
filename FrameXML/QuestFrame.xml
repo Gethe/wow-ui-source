@@ -807,22 +807,6 @@
 							<Anchor point="TOPLEFT" x="10" y="-6"/>
 							<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
 						</Anchors>
-						<ScrollChild>
-							<Frame name="QuestNPCModelTextScrollChildFrame">
-								<Size x="178" y="0"/>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="QuestNPCModelText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-											<Size x="178" y="0"/>
-											<Color r="0.96875" g="0.8984375" b="0.578125"/>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</ScrollChild>
 						<Scripts>
 							<OnLoad>
 								self.scrollBarHideable = 1;
@@ -833,6 +817,22 @@
 								self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -12, 16);
 							</OnLoad>
 						</Scripts>
+						<ScrollChild>
+							<Frame name="QuestNPCModelTextScrollChildFrame">
+								<Size x="178" y="0"/>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="QuestNPCModelText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+											<Size x="178" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+											<Color r="0.96875" g="0.8984375" b="0.578125"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>

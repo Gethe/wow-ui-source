@@ -68,7 +68,7 @@
 				PetActionButton_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture2" urgency="5" file="Interface\Buttons\UI-Quickslot2">
+		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
 			<Size>
 				<AbsDimension x="54" y="54"/>
 			</Size>

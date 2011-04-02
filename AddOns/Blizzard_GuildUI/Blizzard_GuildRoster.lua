@@ -140,7 +140,7 @@ function GuildRoster_Update()
 	if ( selectedGuildMember > 0 ) then
 		-- Update the guild member details frame
 		if ( isMobile ) then
-			GuildMemberDetailName:SetText(ChatFrame_GetMobileEmbeddedTexture(119/255, 137/255, 119/255)..GuildFrame.selectedName);
+			GuildMemberDetailName:SetText(ChatFrame_GetMobileEmbeddedTexture(73/255, 177/255, 73/255)..GuildFrame.selectedName);
 		else
 			GuildMemberDetailName:SetText(GuildFrame.selectedName);
 		end
@@ -229,7 +229,7 @@ function GuildRoster_Update()
 			button.guildIndex = index;
 			local displayedName = name;
 			if ( isMobile ) then
-				displayedName = ChatFrame_GetMobileEmbeddedTexture(119/255, 137/255, 119/255)..displayedName;
+				displayedName = ChatFrame_GetMobileEmbeddedTexture(73/255, 177/255, 73/255)..displayedName;
 			end
 			button.online = online;
 			if ( currentGuildView == "playerStatus" ) then
@@ -367,7 +367,7 @@ function GuildRoster_UpdateTradeSkills()
 		index = offset + i;
 		if ( index <= numTradeSkill ) then
 			button.guildIndex = index;
-			local skillID, isCollapsed, iconTexture, headerName, numOnline, numVisible, numPlayers, playerName, class, online, zone, skill, classFileName = GetGuildTradeSkillInfo(index);
+			local skillID, isCollapsed, iconTexture, headerName, numOnline, numVisible, numPlayers, playerName, class, online, zone, skill, classFileName, isMobile = GetGuildTradeSkillInfo(index);
 			button.online = online;
 			if ( headerName ) then
 				GuildRosterButton_SetStringText(button.string1, headerName, 1);
@@ -415,8 +415,11 @@ function GuildRoster_UpdateTradeSkills()
 				button.header.skillID = skillID;
 				button:Show();
 			elseif ( playerName ) then
+				if ( isMobile ) then
+					playerName = ChatFrame_GetMobileEmbeddedTexture(73/255, 177/255, 73/255)..playerName;
+				end
 				GuildRosterButton_SetStringText(button.string1, playerName, online, classFileName);
-				GuildRosterButton_SetStringText(button.string2, zone, online);
+				GuildRosterButton_SetStringText(button.string2, isMobile and REMOTE_CHAT or zone, online);
 				GuildRosterButton_SetStringText(button.string3, "["..skill.."]", online);
 				button.header:Hide();
 				button:Show();

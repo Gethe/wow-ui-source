@@ -35,8 +35,23 @@
 		</Animations>
 	</Frame>
 	<Frame name="UnitPowerBarAltTemplate" hidden="true" inherits="UnitPowerBarAltTexturableTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="flashAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
+				<Alpha change="1" duration="0.6" order="1" target="$parentFlash"/>
+				<Scripts>
+					<OnPlay function="UnitPowerBarAlt_OnFlashPlay"/>
+					<OnFinished function="UnitPowerBarAlt_OnFlashFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="flashOutAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
+				<Alpha change="-1" duration="0.2" target="$parentFlash"/>
+				<Scripts>
+					<OnFinished function="UnitPowerBarAlt_OnFlashOutFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Frames>
-			<Frame name="$parentStatusFrame" parentKey="statusFrame">
+			<StatusBar name="$parentStatusFrame" parentKey="statusFrame">
 				<Size>
 					<AbsDimension x="10" y="10"/>
 				</Size>
@@ -63,23 +78,8 @@
 					</OnLoad>
 					<OnEvent function="UnitPowerBarAltStatus_OnEvent"/>
 				</Scripts>
-			</Frame>
+			</StatusBar>
 		</Frames>
-		<Animations>
-			<AnimationGroup parentKey="flashAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
-				<Alpha change="1" duration="0.6" order="1" target="$parentFlash"/>
-				<Scripts>
-					<OnPlay function="UnitPowerBarAlt_OnFlashPlay"/>
-					<OnFinished function="UnitPowerBarAlt_OnFlashFinished"/>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="flashOutAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
-				<Alpha change="-1" duration="0.2" target="$parentFlash"/>
-				<Scripts>
-					<OnFinished function="UnitPowerBarAlt_OnFlashOutFinished"/>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnEvent>
 				UnitPowerBarAlt_OnEvent(self, event, ...);

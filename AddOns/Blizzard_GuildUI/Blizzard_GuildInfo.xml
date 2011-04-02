@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildInfo.lua"/>
 
 <!-- patchwerk	
@@ -57,22 +57,22 @@
 				GuildRecruitmentListGuildButton_Update();
 			</OnClick>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
 	</CheckButton>
 	<Frame name="GuildRecruitmentSectionTemplate" virtual="true">
 		<Size x="312" y="74"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBg" >
-					<Color r="0.95" g="0.95" b="1" a="0.09"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
+					<Color r="0.95" g="0.95" b="1" a="0.09"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -115,36 +115,20 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<!--
-					<OnClick>
-						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
-						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
-						end
-						if ( self.onClick ) then
-							self.onClick(self, button);
-						end
-					</OnClick>
-					-->
 					<OnClick function="GuildRecruitmentRoleButton_OnClick"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
 			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				<!--Warning: The Leader button overrides this.-->
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
-				if ( self.permDisabled ) then
-					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, 1);
-				end
+				GameTooltip:SetText(_G["GUILDRECRUITMENT_ROLE"..self:GetID()], nil, nil, nil, nil, 1);
 				GameTooltip:Show();
 				LFDFrameRoleCheckButton_OnEnter(self);
 			</OnEnter>
@@ -404,7 +388,7 @@
 	<Frame name="GuildInfoFrameInfo" parent="GuildInfoFrame" setAllPoints="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBar1Left" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture name="$parentBar1Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="256" y="16"/>
 					</Size>
@@ -415,7 +399,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="70" y="16"/>
 					</Size>
@@ -424,7 +408,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
 				</Texture>
-				<Texture name="$parentBar2Left" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture name="$parentBar2Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="256" y="16"/>
 					</Size>
@@ -435,7 +419,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="70" y="16"/>
 					</Size>
@@ -546,12 +530,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Fontstring inherits="GameFontNormalSmall" text="GUILD_CHALLENGES_THIS_WEEK">
+						<FontString inherits="GameFontNormalSmall" text="GUILD_CHALLENGES_THIS_WEEK">
 							<Anchors>
 								<Anchor point="RIGHT" relativeTo="GuildInfoFrameInfoHeader1" x="-8" y="0"/>								
 							</Anchors>
 							<Color r="0.973" g="0.937" b="0.580"/>
-						</Fontstring>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -579,13 +563,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader1" x="-8" y="0"/>
 				</Anchors>
-				<ButtonText>
-					<Anchors>
-						<Anchor point="RIGHT" x="-2" y="0"/>
-					</Anchors>
-					<Color r="0.973" g="0.937" b="0.580"/>
-				</ButtonText>
-				<NormalFont style="GameFontNormalSmall"/>
 				<Scripts>
 					<OnClick>
 						Calendar_LoadUI();
@@ -594,28 +571,23 @@
 						end
 					</OnClick>
 				</Scripts>
+				<ButtonText>
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Color r="0.973" g="0.937" b="0.580"/>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
 			</Button>
 			<Button name="GuildInfoEditMOTDButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader2" x="-8" y="0"/>
 				</Anchors>
-				<ButtonText>
-					<Anchors>
-						<Anchor point="RIGHT" x="-2" y="0"/>
-					</Anchors>
-					<Color r="0.973" g="0.937" b="0.580"/>
-				</ButtonText>
-				<NormalFont style="GameFontNormalSmall"/>
 				<Scripts>
 					<OnClick>
 						GuildTextEditFrame_Show("motd");
 					</OnClick>
 				</Scripts>
-			</Button>
-			<Button name="GuildInfoEditDetailsButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentHeader3" x="-8" y="0"/>
-				</Anchors>
 				<ButtonText>
 					<Anchors>
 						<Anchor point="RIGHT" x="-2" y="0"/>
@@ -623,11 +595,23 @@
 					<Color r="0.973" g="0.937" b="0.580"/>
 				</ButtonText>
 				<NormalFont style="GameFontNormalSmall"/>
+			</Button>
+			<Button name="GuildInfoEditDetailsButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentHeader3" x="-8" y="0"/>
+				</Anchors>
 				<Scripts>
 					<OnClick>
 						GuildTextEditFrame_Show("info");
 					</OnClick>
 				</Scripts>
+				<ButtonText>
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Color r="0.973" g="0.937" b="0.580"/>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
 			</Button>
 			<ScrollFrame name="GuildInfoEventsContainer" inherits="MinimalHybridScrollFrameTemplate" hidden="true">
 				<Size x="298" y="108"/>
@@ -655,6 +639,13 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHeader3" relativePoint="BOTTOMLEFT" x="14" y="-1"/>
 				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.scrollBarHideable = true;
+						ScrollBar_AdjustAnchors(GuildInfoDetailsFrameScrollBar, 1, -7);
+						GuildInfoDetailsFrameScrollBar:Hide();
+					</OnLoad>
+				</Scripts>
 				<ScrollChild>
 					<Frame>
 						<Size>
@@ -678,13 +669,6 @@
 						</Layers>
 					</Frame>
 				</ScrollChild>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = true;
-						ScrollBar_AdjustAnchors(GuildInfoDetailsFrameScrollBar, 1, -7);
-						GuildInfoDetailsFrameScrollBar:Hide();
-					</OnLoad>
-				</Scripts>
 			</ScrollFrame>
 			<Button name="GuildAddMemberButton" inherits="MagicButtonTemplate" text="ADDMEMBER">
 				<Size x="116" y="22"/>
@@ -908,7 +892,7 @@
 					<Anchor point="TOPLEFT" relativeTo="GuildRecruitmentAvailabilityFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 				<Frames>
-					<Button name="GuildRecruitmentTankButton" inherits="GuildRecruitmentRoleTemplate" id="1">
+					<Button name="GuildRecruitmentTankButton" inherits="GuildRecruitmentRoleTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -920,11 +904,12 @@
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+								self.param = LFGUILD_PARAM_TANK;
 								GuildRecruitmentTankButtonText:SetText(TANK);
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="GuildRecruitmentHealerButton" inherits="GuildRecruitmentRoleTemplate" id="2">
+					<Button name="GuildRecruitmentHealerButton" inherits="GuildRecruitmentRoleTemplate" id="3">
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset>
@@ -936,11 +921,12 @@
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+								self.param = LFGUILD_PARAM_HEALER;
 								GuildRecruitmentHealerButtonText:SetText(HEALER);
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="GuildRecruitmentDamagerButton" inherits="GuildRecruitmentRoleTemplate" id="3">
+					<Button name="GuildRecruitmentDamagerButton" inherits="GuildRecruitmentRoleTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
@@ -952,6 +938,7 @@
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+								self.param = LFGUILD_PARAM_DAMAGE;
 								GuildRecruitmentDamagerButtonText:SetText(DAMAGER);
 							</OnLoad>
 						</Scripts>

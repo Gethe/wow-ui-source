@@ -4,7 +4,7 @@
 	<Frame name="FloatingBorderedFrame" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" urgency="5" file="Interface\ChatFrame\ChatFrameBackground">
+				<Texture name="$parentBackground" file="Interface\ChatFrame\ChatFrameBackground">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -86,7 +86,7 @@
 						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTexture" relativePoint="TOPRIGHT"/>
 					</Anchors>
-					<TexCoords left="1.0" right="0.0"/>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="0.0"/>
 				</Texture>
 				<Texture name="$parentBottomTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderTop" horizTile="true">
 					<Size x="0" y="16"/>
@@ -94,7 +94,7 @@
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftTexture" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTexture" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords top="1.0" bottom="0.0"/>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="0.0"/>
 				</Texture>
 				<Texture name="$parentTopTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderTop" horizTile="true">
 					<Size x="0" y="16"/>
@@ -594,7 +594,7 @@
 								self:GetParent():GetParent():ScrollToBottom();
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
 						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -626,9 +626,9 @@
 								PlaySound("igChatScrollDown");
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-						<DisabledTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="$parentUpButton" parentKey="upButton">
@@ -654,7 +654,7 @@
 								PlaySound("igChatScrollUp");
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
 						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
 						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -666,15 +666,15 @@
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="$parentUpButton" relativePoint="TOP"/>
 						</Anchors>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Up"/>
-						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 						<Scripts>
 							<OnClick>
 								local chatFrame = self:GetParent():GetParent();
 								FCF_MinimizeFrame(chatFrame, strupper(chatFrame.buttonSide));
 							</OnClick>
 						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 				</Frames>
 			</Frame>
@@ -815,14 +815,14 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Maximize-Up"/>
-				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Maximize-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
 						FCF_MaximizeFrame(self:GetParent().maxFrame);
 					</OnClick>
 				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Maximize-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Maximize-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -919,7 +919,7 @@
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
+		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
@@ -933,11 +933,11 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Fontstring name="$parentCount" inherits="GameFontHighlightSmall" text="0">
+				<FontString name="$parentCount" inherits="GameFontHighlightSmall" text="0">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="4"/>
 					</Anchors>
-				</Fontstring>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

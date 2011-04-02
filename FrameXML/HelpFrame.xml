@@ -191,28 +191,13 @@
 				</Texture>
 				<Texture name="$parentSelected" file="Interface\HelpFrame\HelpButtons" parentKey="selected" hidden="true">
 					<Size x="199" y="54"/>
-					<TexCoords left="0.00390625" right="0.78125000" top="0.66015625" bottom="0.87109375"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00390625" right="0.78125000" top="0.66015625" bottom="0.87109375"/>
 				</Texture>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\HelpFrame\HelpButtons">
-			<TexCoords left="0.00390625" right="0.78125000" top="0.44140625" bottom="0.65234375"/>	
-		</NormalTexture>		
-		<PushedTexture file="Interface\HelpFrame\HelpButtons">
-			<TexCoords left="0.00390625" right="0.78125000" top="0.22265625" bottom="0.43359375"/>
-		</PushedTexture>
-		<HighlightTexture file="Interface\HelpFrame\HelpButtons" alphaMode="ADD">
-			<TexCoords left="0.00390625" right="0.78125000" top="0.00390625" bottom="0.21484375"/>
-		</HighlightTexture>
-		<ButtonText name="$parentText" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="text">
-			<Size x="140" y="30"/>
-			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0" y="-1"/>
-			</Anchors>
-		</ButtonText>
 		<Scripts>
 			<OnLoad>
 				local data = HelpFrameNavTbl[self:GetID()];
@@ -229,7 +214,9 @@
 				data.button = self;
 			</OnLoad>
 			<OnMouseDown>
-				self.icon:SetPoint("LEFT", 4, -1);
+				if self:IsEnabled() then
+					self.icon:SetPoint("LEFT", 4, -1);
+				end
 			</OnMouseDown>
 			<OnMouseUp>
 				self.icon:SetPoint("LEFT", 3, 0);
@@ -260,6 +247,21 @@
 				HelpFrame.selectedId = self:GetID();
 			</OnClick>
 		</Scripts>
+		<NormalTexture file="Interface\HelpFrame\HelpButtons">
+			<TexCoords left="0.00390625" right="0.78125000" top="0.44140625" bottom="0.65234375"/>	
+		</NormalTexture>		
+		<PushedTexture file="Interface\HelpFrame\HelpButtons">
+			<TexCoords left="0.00390625" right="0.78125000" top="0.22265625" bottom="0.43359375"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\HelpFrame\HelpButtons" alphaMode="ADD">
+			<TexCoords left="0.00390625" right="0.78125000" top="0.00390625" bottom="0.21484375"/>
+		</HighlightTexture>
+		<ButtonText name="$parentText" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="text">
+			<Size x="140" y="30"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0" y="-1"/>
+			</Anchors>
+		</ButtonText>
 	</Button>
 
 	<Button name="HelpFrameNavButtonTemplate" virtual="true">
@@ -289,6 +291,21 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self.arrowUp:Hide();
+				self.arrowDown:Show();
+			</OnMouseDown>
+			<OnMouseUp>
+				self.arrowDown:Hide();
+				self.arrowUp:Show();
+			</OnMouseUp>
+			<OnClick>
+				if self.myclick ~= KnowledgeBase_Search then
+					KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
+				end
+			</OnClick>
+		</Scripts>
 		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true">
 			<TexCoords left="0.00000000" right="1.00000000" top="0.06250000" bottom="0.12109375"/>
 		</NormalTexture>		
@@ -305,16 +322,6 @@
 				<Anchor point="RIGHT" x="-2" y="0"/>
 			</Anchors>
 		</ButtonText>
-		<Scripts>
-			<OnMouseDown>
-				self.arrowUp:Hide();
-				self.arrowDown:Show();
-			</OnMouseDown>
-			<OnMouseUp>
-				self.arrowDown:Hide();
-				self.arrowUp:Show();
-			</OnMouseUp>
-		</Scripts>
 	</Button>
 	
 	<Button name="KnowledgeBaseArticleTemplate" virtual="true">
@@ -325,31 +332,31 @@
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture name="$parentLEndDown" file="Interface\HelpFrame\KnowledgeBaseButtton" parentKey="ldown" hidden="true">
 					<Size x="64" y="25"/>
-					<TexCoords left="0.00195313" right="0.12695313" top="0.21875000" bottom="0.41406250"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-5" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.12695313" top="0.21875000" bottom="0.41406250"/>
 				</Texture>
 				<Texture name="$parentLEndUp" file="Interface\HelpFrame\KnowledgeBaseButtton" parentKey="lup">
 					<Size x="64" y="25"/>
-					<TexCoords left="0.00195313" right="0.12695313" top="0.00781250" bottom="0.20312500"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-5" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.12695313" top="0.00781250" bottom="0.20312500"/>
 				</Texture>
 				<Texture name="$parentREndDown" file="Interface\HelpFrame\KnowledgeBaseButtton" parentKey="rdown" hidden="true">
 					<Size x="64" y="25"/>
-					<TexCoords left="0.00195313" right="0.12695313" top="0.64062500" bottom="0.83593750"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="5" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.12695313" top="0.64062500" bottom="0.83593750"/>
 				</Texture>
 				<Texture name="$parentREndUp" file="Interface\HelpFrame\KnowledgeBaseButtton" parentKey="rup">
 					<Size x="64" y="25"/>
-					<TexCoords left="0.00195313" right="0.12695313" top="0.42968750" bottom="0.62500000"/>	
 					<Anchors>
 						<Anchor point="RIGHT" x="5" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.12695313" top="0.42968750" bottom="0.62500000"/>	
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">			
@@ -369,15 +376,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
-			<TexCoords left="0.13085938" right="0.63085938" top="0.21875000" bottom="0.41406250"/>	
-		</NormalTexture>		
-		<PushedTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
-			<TexCoords left="0.13085938" right="0.63085938" top="0.42968750" bottom="0.62500000"/>
-		</PushedTexture>
-		<HighlightTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
-			<TexCoords left="0.13085938" right="0.63085938" top="0.00781250" bottom="0.20312500"/>
-		</HighlightTexture>
 		<Scripts>
 			<OnMouseDown>
 				self.lup:Hide();
@@ -391,11 +389,16 @@
 				self.rdown:Hide();
 				self.rup:Show();
 			</OnMouseUp>
-			<OnEnter>
-			</OnEnter>
-			<OnLeave>
-			</OnLeave>
 		</Scripts>
+		<NormalTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
+			<TexCoords left="0.13085938" right="0.63085938" top="0.21875000" bottom="0.41406250"/>	
+		</NormalTexture>		
+		<PushedTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
+			<TexCoords left="0.13085938" right="0.63085938" top="0.42968750" bottom="0.62500000"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
+			<TexCoords left="0.13085938" right="0.63085938" top="0.00781250" bottom="0.20312500"/>
+		</HighlightTexture>
 	</Button>
 
 	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="TranslucentFrameTemplate" hidden="true" enableMouse="true" >
@@ -923,6 +926,14 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-13" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-13" y="16"/>
+								</Anchors>
+							</Slider>
+						</Frames>
 						<ScrollChild>
 							<EditBox name="HelpFrameOpenTicketEditBox" multiLine="true" letters="500" autoFocus="false">
 								<Size x="420" y="220"/>
@@ -944,14 +955,6 @@
 								<FontString inherits="ChatFontNormal"/>
 							</EditBox>
 						</ScrollChild>
-						<Frames>
-							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-13" y="-16"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-13" y="16"/>
-								</Anchors>
-							</Slider>
-						</Frames>
 					</ScrollFrame>
 					<Frame>
 						<Anchors>
@@ -1014,7 +1017,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentOpenTicket" inherits="HelpFrameButtonTemplate" id="14">
+					<Button name="$parentOpenTicket" parentKey="ticketButton" inherits="HelpFrameButtonTemplate" id="14">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="60"/>
 						</Anchors>
@@ -1092,23 +1095,20 @@
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="icon">
-									<Color r="0.7" g="0.7" b="0.7" />
 									<Size>
 										<AbsDimension x="14" y="14"/>
 									</Size>
 									<Anchors>
 										<Anchor point="LEFT" y="-2"/>
 									</Anchors>
+									<Color r="0.7" g="0.7" b="0.7" />
 								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
 							<OnShow>
-								self:SetText(SEARCH);
-								self:SetFontObject("GameFontDisable");
-								self.icon:SetVertexColor(0.6, 0.6, 0.6);
 								self:SetTextInsets(16, 0, 0, 0);
-								self.inactive = true;
+								KnowledgeBase_ClearSearch(self)
 							</OnShow>
 							<OnEnterPressed>
 								PlaySound("igMainMenuOptionCheckBoxOn");
@@ -1119,10 +1119,7 @@
 							<OnEditFocusLost>
 								self:HighlightText(0, 0);
 								if ( self:GetText() == "" ) then
-									self:SetText(SEARCH);
-									self:SetFontObject("GameFontDisable");
-									self.icon:SetVertexColor(0.6, 0.6, 0.6);
-									self.inactive = true;
+									KnowledgeBase_ClearSearch(self)
 								end
 							</OnEditFocusLost>
 							<OnEditFocusGained>
@@ -1132,11 +1129,12 @@
 									self.icon:SetVertexColor(1.0, 1.0, 1.0);
 									self.inactive = false;
 								end
+								
+								self.clearButton:Enable();
 							</OnEditFocusGained>
 						</Scripts>
-						<FontString inherits="ChatFontSmall"/>
 						<Frames>
-							<Button name="$parentExitButton">
+							<Button name="$parentExitButton" parentKey="clearButton">
 								<Size x="17" y="17"/>
 								<Anchors>
 									<Anchor point="RIGHT" x="-3" y="0"/>
@@ -1161,23 +1159,25 @@
 										self.texture:SetAlpha(0.5);
 									</OnLeave>
 									<OnMouseDown>
-										self.texture:SetPoint("TOPLEFT", 1, -1);
+										if self:IsEnabled() then
+											self.texture:SetPoint("TOPLEFT", 1, -1);
+										end
 									</OnMouseDown>
 									<OnMouseUp>
 										self.texture:SetPoint("TOPLEFT", 0, 0);
 									</OnMouseUp>
 									<OnClick>
 										local editBox = self:GetParent();
-										editBox:SetText(SEARCH);
-										editBox:SetFontObject("GameFontDisable");
-										editBox.icon:SetVertexColor(0.6, 0.6, 0.6);
-										EditBox_ClearFocus(editBox);
-										editBox.inactive = true;
-										KnowledgeBase_Search();
+										if HelpFrame.kbase.hasSearch then
+											NavBar_Reset(HelpFrame.kbase.navBar);
+											KnowledgeBase_DisplayCategories();
+										end
+										KnowledgeBase_ClearSearch(editBox)
 									</OnClick>
 								</Scripts>
 							</Button>
 						</Frames>
+						<FontString inherits="ChatFontSmall"/>
 					</EditBox>
 					<Button name="$parentSearchButton" inherits="GameMenuButtonTemplate" text="SEARCH">
 						<Size x="85" y="21"/>
@@ -1227,6 +1227,11 @@
 							</Frame>
 							<Button name="$parentOverflowButton" parentKey="overflow">
 								<Size x="44" y="30"/>
+								<Scripts>
+									<OnLoad>
+										self.xoffset = -18
+									</OnLoad>
+								</Scripts>
 								<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
 									<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
 								</NormalTexture>		
@@ -1236,11 +1241,6 @@
 								<HighlightTexture file="Interface\HelpFrame\CS_HelpTextures" alphaMode="ADD" alpha="0.4">
 									<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
 								</HighlightTexture>
-								<Scripts>
-									<OnLoad>
-										self.xoffset = -18
-									</OnLoad>
-								</Scripts>
 							</Button>
 							<Button name="$parentHomeButton" parentKey="home" text="HOME">
 								<Size x="128" y="30"/>
@@ -1254,6 +1254,22 @@
 										</Texture>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad>
+										self.xoffset = -15;
+										local newWidth = min(128, self.text:GetStringWidth()+40)
+										local texCoordoffsetX = (newWidth/128)*0.25;
+											
+										self:GetNormalTexture():SetTexCoord(0.70312500-texCoordoffsetX, 0.70312500, 0.00781250, 0.24218750);
+										self:GetPushedTexture():SetTexCoord(0.70312500-texCoordoffsetX, 0.70312500, 0.25781250, 0.49218750);
+										self:GetHighlightTexture():SetTexCoord(0.70312500-texCoordoffsetX, 0.71312500, 0.50781250, 0.74218750);
+										
+										self:SetWidth(newWidth);
+									</OnLoad>
+									<OnClick>
+										KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
+									</OnClick>
+								</Scripts>
 								<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
 								</NormalTexture>		
 								<PushedTexture file="Interface\HelpFrame\CS_HelpTextures">
@@ -1267,23 +1283,6 @@
 										<Anchor point="RIGHT" x="-30" y="0"/>
 									</Anchors>
 								</ButtonText>
-								<Scripts>
-									<OnLoad>
-										self.xoffset = -15;
-										local newWidth = min(128, self.text:GetStringWidth()+40)
-										local texCoordoffsetX = (newWidth/128)*0.25;
-										
-										--<TexCoords left="0.45312500" right="0.70312500" top="0.00781250" bottom="0.24218750"/>
-										--<TexCoords left="0.45312500" right="0.70312500" top="0.25781250" bottom="0.49218750"/>
-										--<TexCoords left="0.45312500" right="0.70312500" top="0.50781250" bottom="0.74218750"/>
-										
-										self:GetNormalTexture():SetTexCoord(0.70312500-texCoordoffsetX, 0.70312500, 0.00781250, 0.24218750);
-										self:GetPushedTexture():SetTexCoord(0.70312500-texCoordoffsetX, 0.70312500, 0.25781250, 0.49218750);
-										self:GetHighlightTexture():SetTexCoord(0.70312500-texCoordoffsetX, 0.71312500, 0.50781250, 0.74218750);
-										
-										self:SetWidth(newWidth);
-									</OnLoad>
-								</Scripts>
 							</Button>
 						</Frames>
 						<Scripts>
@@ -1298,7 +1297,7 @@
 							<Anchor point="BOTTOMRIGHT" x="-22" y="3"/>
 						</Anchors>
 						<Frames>
-							<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate">
+							<Slider name="$parentScrollBar" parentKey="ScrollBar" inherits="HybridScrollBarTrimTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-16"/>
 									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
@@ -1399,8 +1398,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-				</Frames>
 				<Scripts>
 					<OnLoad>
 						tinsert(HelpFrameWindows, self);
@@ -1412,17 +1409,17 @@
 			<Layer level="BORDER">
 				<Texture file="Interface\HelpFrame\CS_HelpTextures">
 					<Size x="229" y="45"/>
-					<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="5"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
 				</Texture>
 				<Texture file="Interface\HelpFrame\CS_HelpTextures">
 					<Size x="229" y="45"/>
-					<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="5"/>
 					</Anchors>
+					<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -1436,21 +1433,9 @@
 
 	<Button name="HelpOpenTicketButton" parent="HelpMicroButton" hidden="true">
 		<Size x="34" y="35"/>
-		<HitRectInsets>
-			<AbsInset left="4" right="4" top="4" bottom="4"/>
-		</HitRectInsets>
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="HelpMicroButton" relativePoint="TOPRIGHT" x="-3" y="-26"/>
 		</Anchors>
-		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
-			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>	
-		</NormalTexture>
-		<PushedTexture file="Interface\HelpFrame\CS_HelpTextures">
-			<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>
-		</PushedTexture>
-		<HighlightTexture file="Interface\HelpFrame\CS_HelpTextures">
-			<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>
-		</HighlightTexture>
 		<Frames>
 			<Frame name="$parentTutorial" inherits="GlowBoxTemplate" parentKey="tutorial" enableMouse="true" hidden="true">
 				<Size x="220" y="100"/>
@@ -1508,6 +1493,18 @@
 				self:SetScript("OnUpdate", nil);
 			</OnLeave>
 		</Scripts>
+		<HitRectInsets>
+			<AbsInset left="4" right="4" top="4" bottom="4"/>
+		</HitRectInsets>
+		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>	
+		</NormalTexture>
+		<PushedTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>
+		</HighlightTexture>
 	</Button>
 	
 	

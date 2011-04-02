@@ -376,8 +376,8 @@ function LookingForGuildApps_Update()
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
-		local name, timeSince, timeLeft = GetGuildMembershipRequestInfo(index);
-		if ( name ) then
+		if ( index <= numApps ) then
+			local name, timeSince, timeLeft, declined = GetGuildMembershipRequestInfo(index);
 			button.name:SetText(name);
 			-- time left
 			local daysLeft = floor(timeLeft / 86400); -- seconds in a day

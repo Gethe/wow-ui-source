@@ -53,7 +53,7 @@
 			<Frame name="$parentHighlightFrame" setAllPoints="true">
 				<Layers>
 					<Layer>
-						<Texture name="$parentTexture" alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
+						<Texture name="$parentTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
 					</Layer>
 				</Layers>
 			</Frame>

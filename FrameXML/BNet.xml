@@ -9,6 +9,21 @@
 	</Frame>
 	
 	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Animations>
+			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+				<Alpha change="-1" duration="0" order="1"/>
+				<Alpha change="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							BNToastFrame_Close();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
 		<Size>
 			<AbsDimension x="250" y="50"/>
 		</Size>
@@ -26,21 +41,6 @@
 				<AbsValue val="12"/>
 			</EdgeSize>
 		</Backdrop>
-		<Animations>
-			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha change="-1" duration="0" order="1"/>
-				<Alpha change="1" duration="0.2" order="2"/>
-			</AnimationGroup>
-			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
-					<Scripts>
-						<OnFinished>
-							BNToastFrame_Close();
-						</OnFinished>
-					</Scripts>
-				</Alpha>
-			</AnimationGroup>
-		</Animations>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" file="Interface\FriendsFrame\UI-Toast-ToastIcons">
@@ -150,9 +150,6 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-4" y="-3"/>
 				</Anchors>
-				<NormalTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Up"/>
-				<PushedTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Down"/>
-				<HighlightTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Highlight" alphaMode="ADD"/>
 				<Scripts>
 					<OnEnter>
 						AlertFrame_StopOutAnimation(BNToastFrame);
@@ -162,6 +159,9 @@
 					</OnLeave>
 					<OnClick function="BNToastFrame_Close"/>
 				</Scripts>
+				<NormalTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Up"/>
+				<PushedTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Down"/>
+				<HighlightTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

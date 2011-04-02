@@ -188,7 +188,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="GMSurveyTopLeft" urgency="5" file="Interface\HelpFrame\HelpFrame-TopLeft">
+				<Texture name="GMSurveyTopLeft" file="Interface\HelpFrame\HelpFrame-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -196,7 +196,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GMSurveyTop" urgency="5" file="Interface\HelpFrame\HelpFrame-Top">
+				<Texture name="GMSurveyTop" file="Interface\HelpFrame\HelpFrame-Top">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -204,7 +204,7 @@
 						<Anchor point="TOPLEFT" relativeTo="GMSurveyTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GMSurveyTopRight" urgency="5" file="Interface\HelpFrame\HelpFrame-TopRight">
+				<Texture name="GMSurveyTopRight" file="Interface\HelpFrame\HelpFrame-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -212,7 +212,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GMSurveyTopFiller" urgency="5" file="Interface\HelpFrame\HelpFrame-Top">
+				<Texture name="GMSurveyTopFiller" file="Interface\HelpFrame\HelpFrame-Top">
 					<Size>
 						<AbsDimension x="5" y="256"/>
 					</Size>
@@ -221,7 +221,7 @@
 						<Anchor point="TOPRIGHT" relativeTo="GMSurveyTopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GMSurveyLeft" urgency="5" file="Interface\HelpFrame\HelpFrame-BotLeft">
+				<Texture name="GMSurveyLeft" file="Interface\HelpFrame\HelpFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="50"/>
 					</Size>
@@ -230,7 +230,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
 				</Texture>
-				<Texture name="GMSurveyMiddle" urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
+				<Texture name="GMSurveyMiddle" file="Interface\HelpFrame\HelpFrame-Bottom">
 					<Size>
 						<AbsDimension x="256" y="50"/>
 					</Size>
@@ -239,7 +239,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
 				</Texture>
-				<Texture name="GMSurveyRight" urgency="5" file="Interface\HelpFrame\HelpFrame-BotRight">
+				<Texture name="GMSurveyRight" file="Interface\HelpFrame\HelpFrame-BotRight">
 					<Size>
 						<AbsDimension x="128" y="50"/>
 					</Size>
@@ -248,7 +248,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
 				</Texture>
-				<Texture name="GMSurveyMiddleFiller" urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
+				<Texture name="GMSurveyMiddleFiller" file="Interface\HelpFrame\HelpFrame-Bottom">
 					<Size>
 						<AbsDimension x="5" y="50"/>
 					</Size>
@@ -258,7 +258,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.1953125"/>
 				</Texture>
-				<Texture name="GMSurveyBottomLeft" urgency="5" file="Interface\HelpFrame\HelpFrame-BotLeft">
+				<Texture name="GMSurveyBottomLeft" file="Interface\HelpFrame\HelpFrame-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -266,7 +266,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GMSurveyBottom" urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
+				<Texture name="GMSurveyBottom" file="Interface\HelpFrame\HelpFrame-Bottom">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -274,7 +274,7 @@
 						<Anchor point="BOTTOMLEFT" relativeTo="GMSurveyBottomLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GMSurveyBottomRight" urgency="5" file="Interface\HelpFrame\HelpFrame-BotRight">
+				<Texture name="GMSurveyBottomRight" file="Interface\HelpFrame\HelpFrame-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -282,7 +282,7 @@
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GMSurveyBottomFiller" urgency="5" file="Interface\HelpFrame\HelpFrame-Bottom">
+				<Texture name="GMSurveyBottomFiller" file="Interface\HelpFrame\HelpFrame-Bottom">
 					<Size>
 						<AbsDimension x="5" y="256"/>
 					</Size>
@@ -316,7 +316,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="GMSurveyHeaderLeft" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture name="GMSurveyHeaderLeft" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="32" y="41"/>
 							</Size>
@@ -329,7 +329,7 @@
 							</Anchors>
 							<TexCoords left="0.22265625" right="0.34375" top="0" bottom="0.640625"/>
 						</Texture>
-						<Texture name="GMSurveyHeaderRight" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture name="GMSurveyHeaderRight" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="32" y="41"/>
 							</Size>
@@ -342,7 +342,7 @@
 							</Anchors>
 							<TexCoords left="0.65234375" right="0.77734375" top="0" bottom="0.640625"/>
 						</Texture>
-						<Texture name="GMSurveyHeaderCenter" urgency="5" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Texture name="GMSurveyHeaderCenter" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size>
 								<AbsDimension x="10" y="41"/>
 							</Size>

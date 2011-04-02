@@ -7,7 +7,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
 					<Size>
 						<AbsDimension x="40" y="40"/>
 					</Size>
@@ -540,7 +540,7 @@
 						end
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
 				<Size x="68" y="6"/>
@@ -573,7 +573,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<StatusBar name="$parentTarget" drawLayer="ARTWORK" inherits="SecureFrameTemplate, TextStatusBar" enableMouse="false">
@@ -626,7 +626,7 @@
 						TargetUnit(self:GetParent().unit.."target");
 					</OnMouseUp> 
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="1.0" g="0" b="0"/>
 			</StatusBar>
 			<Frame name="$parentTargetTargetFrame" hidden="true">
@@ -733,7 +733,7 @@
 						TargetUnit(self:GetParent().unit.."targettarget");
 					</OnMouseUp> 
 				</Scripts>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<Button name="$parentClearButton" setAllPoints="true" inherits="SecureUnitButtonTemplate">
 				<Scripts>

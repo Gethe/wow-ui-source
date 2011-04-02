@@ -5,7 +5,7 @@
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab">
+				<Texture name="$parentBackground" file="Interface\SpellBook\SpellBook-SkillLineTab">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -29,7 +29,7 @@
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	<Button name="PlayerTalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
@@ -335,18 +335,18 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackgroundTopLeft" parentKey="BgTopLeft">
 					<Size x="198" y="256"/>
-					<TexCoords left="0.19921875" right="0.97265625" top="0" bottom="1"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-40"/>
 					</Anchors>
+					<TexCoords left="0.19921875" right="0.97265625" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentBackgroundTopRight" parentKey="BgTopRight" hidden="true" />
 				<Texture name="$parentBackgroundBottomLeft" parentKey="BgBottomLeft" >
 					<Size x="198" y="75"/>
-					<TexCoords left="0.19921875" right="0.97265625" top="0" bottom="0.4140625"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
+					<TexCoords left="0.19921875" right="0.97265625" top="0" bottom="0.4140625"/>
 				</Texture>
 				<Texture name="$parentBackgroundBottomRight" parentKey="BgBottomRight" hidden="true" />
 				
@@ -357,45 +357,45 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentGlowTopLeft" inherits="Talent-PrimaryHighlight-TopLeft" parentKey="GlowTopLeft" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowTopLeft" inherits="Talent-PrimaryHighlight-TopLeft" parentKey="GlowTopLeft" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowTopRight" inherits="Talent-PrimaryHighlight-TopRight" parentKey="GlowTopRight" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowTopRight" inherits="Talent-PrimaryHighlight-TopRight" parentKey="GlowTopRight" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parentBackgroundTopLeft"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBackgroundBottomLeft"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackgroundBottomLeft"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowTop" inherits="_Talent-PrimaryHighlight-Top" parentKey="GlowTop" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowTop" inherits="_Talent-PrimaryHighlight-Top" parentKey="GlowTop" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
 						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphamode="ADD" alpha="0.5" hidden="true">
+				<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphaMode="ADD" alpha="0.5" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
 						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
@@ -556,12 +556,12 @@
 					<Layer level="ARTWORK">
 						<Texture name="$parentPrimaryBorder" inherits="TalentHeader-PrimaryIconBorder" parentKey="PrimaryBorder">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeto="$parentIcon" x="-6" y="6"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-6" y="6"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentSecondaryBorder" inherits="TalentHeader-SecondaryIconBorder" parentKey="SecondaryBorder" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeto="$parentIcon" x="-6" y="6"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-6" y="6"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -634,45 +634,45 @@
 							</Anchors>
 						</Texture>
 
-						<Texture name="$parentGlowTopLeft" inherits="Talent-PrimaryHighlight-TopLeft" parentKey="GlowTopLeft" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowTopLeft" inherits="Talent-PrimaryHighlight-TopLeft" parentKey="GlowTopLeft" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentGlowTopRight" inherits="Talent-PrimaryHighlight-TopRight" parentKey="GlowTopRight" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowTopRight" inherits="Talent-PrimaryHighlight-TopRight" parentKey="GlowTopRight" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowBottomLeft" inherits="Talent-PrimaryHighlight-BottomLeft" parentKey="GlowBottomLeft" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowBottomRight" inherits="Talent-PrimaryHighlight-BottomRight" parentKey="GlowBottomRight" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentGlowTop" inherits="_Talent-PrimaryHighlight-Top" parentKey="GlowTop" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowTop" inherits="_Talent-PrimaryHighlight-Top" parentKey="GlowTop" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
 								<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowBottom" inherits="_Talent-PrimaryHighlight-Bottom" parentKey="GlowBottom" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowLeft" inherits="!Talent-PrimaryHighlight-Left" parentKey="GlowLeft" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
 								<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphamode="ADD" hidden="true">
+						<Texture name="$parentGlowRight" inherits="!Talent-PrimaryHighlight-Right" parentKey="GlowRight" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
 								<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
@@ -757,6 +757,12 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" x="10" y="-268"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.scrollBarHideable = 1;
+								ScrollFrame_OnLoad(self)
+							</OnLoad>
+						</Scripts>
 						<ScrollChild>
 							<Frame name="$parentScrollChild" parentKey="ScrollChild">
 								<Size x="200" y="200"/>
@@ -771,12 +777,6 @@
 								</Layers>
 							</Frame>
 						</ScrollChild>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = 1;
-								ScrollFrame_OnLoad(self)
-							</OnLoad>
-						</Scripts>
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
@@ -851,7 +851,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="PlayerTalentFrameActiveSpecTabHighlight" urgency="5" file="Interface\SpellBook\SpellBook-SkillLineTab-Glow" hidden="true">
+				<Texture name="PlayerTalentFrameActiveSpecTabHighlight" file="Interface\SpellBook\SpellBook-SkillLineTab-Glow" hidden="true">
 					<Size x="74" y="86"/>
 				</Texture>
 				<Texture name="PlayerTalentFrameTitleGlowLeft" inherits="Talent-TitleGlow-Left" alphaMode="ADD">
@@ -981,10 +981,10 @@
 							</Anchors>
 						</FontString>
 						<FontString name="PlayerTalentFrameHeaderSubText" inherits="GameFontDisableSmall" parentKey="SubHeaderText" text="You may change this at your trainer at any time" hidden="true">
-							<Color r="0.65" g="0.65" b="0.65"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="PlayerTalentFrameHeaderText" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
+							<Color r="0.65" g="0.65" b="0.65"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -1195,7 +1195,7 @@
 								Model_RotateLeft(PlayerTalentFramePetModel);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -1214,7 +1214,7 @@
 								Model_RotateRight(PlayerTalentFramePetModel);
 							</OnClick>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
@@ -1311,32 +1311,32 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="PlayerTalentFramePetPanelBackgroundTopLeft">
-							<TexCoords left="0.13671875" right="1" top="0.0234375" bottom="1"/>
 							<Size x="221" y="250"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="5" y="-53"/>
 							</Anchors>
+							<TexCoords left="0.13671875" right="1" top="0.0234375" bottom="1"/>
 						</Texture>
 						<Texture name="PlayerTalentFramePetPanelBackgroundTopRight">
-							<TexCoords left="0" right="0.109375" top="0.0234375" bottom="1"/>
 							<Size x="7" y="250"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft" relativePoint="TOPRIGHT"/>
 							</Anchors>
+							<TexCoords left="0" right="0.109375" top="0.0234375" bottom="1"/>
 						</Texture>
 						<Texture name="PlayerTalentFramePetPanelBackgroundBottomLeft">
-							<TexCoords left="0.13671875" right="1" top="0" bottom="0.53125"/>
 							<Size x="221" y="68"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
+							<TexCoords left="0.13671875" right="1" top="0" bottom="0.53125"/>
 						</Texture>
 						<Texture name="PlayerTalentFramePetPanelBackgroundBottomRight">
-							<TexCoords left="0" right="0.109375" top="0" bottom="0.53125"/>
 							<Size x="7" y="68"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePetPanelBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
+							<TexCoords left="0" right="0.109375" top="0" bottom="0.53125"/>
 						</Texture>
 						
 						<Texture name="PlayerTalentFramePetPanelHeaderBackground" inherits="PetTalent-TreeTitle-BG" parentKey="HeaderBackground">
@@ -1494,7 +1494,7 @@
 							<Layer level="ARTWORK">
 								<Texture name="$parentBorder" inherits="PetTalent-TalentIconBorder" parentKey="Border">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeto="$parentIcon" x="-7" y="7"/>
+										<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-7" y="7"/>
 									</Anchors>
 								</Texture>
 							</Layer>

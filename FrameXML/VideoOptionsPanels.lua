@@ -467,7 +467,7 @@ function Graphics_DropDownRefreshValue(self)
 							break;
 						end
 					end
-					if ( index ~= self:GetValue() ) then
+					if ( not IsValid(self, index) ) then
 						displayWarning = true;
 					end
 				end

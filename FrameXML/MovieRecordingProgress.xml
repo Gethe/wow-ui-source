@@ -75,7 +75,7 @@
 						</Backdrop>
 					</Frame>
 				</Frames>
-				<BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
 			<Button name="MovieRecordingCancelButton">
@@ -98,9 +98,9 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight"/>
 			</Button>
 		</Frames>
 		<Scripts>

@@ -1,4 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\LCDXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 <!-- ENGLISH -->
 	<Screen name="WoWTitleScreen" BGColor="0,0,0">
 		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\GLUES-WOW-CCLOGO.BLP" miplevel="1" alpha="0">

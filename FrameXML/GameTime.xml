@@ -68,10 +68,10 @@
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontBlack"/>
-		<NormalTexture urgency="5" file="Interface\Calendar\UI-Calendar-Button">
+		<NormalTexture file="Interface\Calendar\UI-Calendar-Button">
 			<TexCoords left="0.0" right="0.390625" top="0.0" bottom="0.78125"/>
 		</NormalTexture>
-		<PushedTexture urgency="5" file="Interface\Calendar\UI-Calendar-Button">
+		<PushedTexture file="Interface\Calendar\UI-Calendar-Button">
 			<TexCoords left="0.5" right="0.890625" top="0.0" bottom="0.78125"/>
 		</PushedTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildControlUI.lua"/>
 	
 	
@@ -140,27 +140,31 @@
 				GuildControlUI_CheckClicked(self);
 			</OnClick>
 		</Scripts>
-		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<Frame name="BankTabPermissionTemplate" virtual="true">
 		<Size x="268" y="74"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBg" >
-					<Color r="0.95" g="0.95" b="1" a="0.09"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
+					<Color r="0.95" g="0.95" b="1" a="0.09"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentOwned" parentkey="owned">
+			<Frame name="$parentOwned" parentKey="owned">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentTabIcon" file="Interface\Icons\Ability_ThunderClap" parentKey="tabIcon">
@@ -177,10 +181,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-				</Anchors>
 				<Frames>
 					<CheckButton name="$parentViewCheck" inherits="GuildPermissionCheckBoxTemplate" id="1" parentKey="viewCB">
 						<Anchors>
@@ -272,7 +272,7 @@
 					</EditBox>
 				</Frames>
 			</Frame>
-			<Frame name="$parentBuy" parentkey="buy">
+			<Frame name="$parentBuy" parentKey="buy">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
@@ -844,7 +844,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopLeft">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -852,7 +852,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopRight">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
 					<Size>
 						<AbsDimension x="64" y="256"/>
 					</Size>
@@ -860,7 +860,7 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotLeft">
+				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -868,7 +868,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-BotRight">
+				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
 					<Size>
 						<AbsDimension x="64" y="64"/>
 					</Size>
@@ -876,7 +876,7 @@
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopLeft">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="20"/>
 					</Size>
@@ -890,7 +890,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.3125" bottom="1"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\MacroFrame\MacroPopup-TopRight">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
 					<Size>
 						<AbsDimension x="64" y="20"/>
 					</Size>
@@ -997,7 +997,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-MinusButton-Up"/>
+						<NormalTexture file="Interface\Buttons\UI-MinusButton-Up"/>
 						<PushedTexture file="Interface\Buttons\UI-MinusButton-Down"/>
 						<DisabledTexture file="Interface\Buttons\UI-MinusButton-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>

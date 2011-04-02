@@ -190,7 +190,7 @@
 					</OnLeave>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-				<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
+				<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 			</CheckButton>
 		</Frames>
 	</Frame>
@@ -212,7 +212,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNameFrame" urgency="5" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
@@ -273,7 +273,7 @@
 			</Anchors>
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" urgency="5" file="Interface\Buttons\CheckButtonHilight"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 	<Button name="SendMailAttachment" virtual="true">
 		<Size>
@@ -408,7 +408,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="MailFrameTopRight" urgency="5" file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+				<Texture name="MailFrameTopRight" file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -424,7 +424,7 @@
 						<Anchor point="TOPLEFT" relativeTo="MailFrameTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="MailFrameBotRight" urgency="5" file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+				<Texture name="MailFrameBotRight" file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -611,9 +611,9 @@
 							</OnLoad>
 							<OnClick function="InboxPrevPage"/>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="InboxNextPageButton">
@@ -642,9 +642,9 @@
 							</OnLoad>
 							<OnClick function="InboxNextPage"/>
 						</Scripts>
-						<NormalTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture urgency="5" file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 				</Frames>
@@ -676,7 +676,7 @@
 								<AbsDimension x="0" y="10"/>
 							</Size>
 						</FontString>
-						<Texture name="SendMailErrorCoin" urgency="5" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
+						<Texture name="SendMailErrorCoin" file="Interface\MoneyFrame\UI-MoneyIcons" hidden="true">
 							<Size>
 								<AbsDimension x="10" y="10"/>
 							</Size>
@@ -689,7 +689,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 						</Texture>
-						<Texture name="SendMailHorizontalBarLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+						<Texture name="SendMailHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size>
 								<AbsDimension x="256" y="16"/>
 							</Size>
@@ -702,7 +702,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size>
 								<AbsDimension x="75" y="16"/>
 							</Size>
@@ -715,7 +715,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
 						</Texture>
-						<Texture name="SendMailHorizontalBarLeft2" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+						<Texture name="SendMailHorizontalBarLeft2" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size>
 								<AbsDimension x="256" y="16"/>
 							</Size>
@@ -728,7 +728,7 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 							<Size>
 								<AbsDimension x="75" y="16"/>
 							</Size>
@@ -878,7 +878,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -891,7 +891,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="100" y="20"/>
 									</Size>
@@ -900,7 +900,7 @@
 									</Anchors>
 									<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -993,7 +993,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<Texture name="$parentLeft" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1006,7 +1006,7 @@
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentMiddle" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="221" y="20"/>
 									</Size>
@@ -1015,7 +1015,7 @@
 									</Anchors>
 									<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 								</Texture>
-								<Texture name="$parentRight" urgency="5" file="Interface\Common\Common-Input-Border">
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
 									<Size>
 										<AbsDimension x="8" y="20"/>
 									</Size>
@@ -1359,7 +1359,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size>
 								<AbsDimension x="30" y="120"/>
 							</Size>
@@ -1372,7 +1372,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 						</Texture>
-						<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
 							<Size>
 								<AbsDimension x="30" y="123"/>
 							</Size>
@@ -1504,7 +1504,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="OpenMailFrameTopLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+				<Texture name="OpenMailFrameTopLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -1512,7 +1512,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="OpenMailFrameTopRight" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+				<Texture name="OpenMailFrameTopRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -1528,7 +1528,7 @@
 						<Anchor point="TOPLEFT" relativeTo="OpenMailFrameTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="OpenMailFrameBotRight" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+				<Texture name="OpenMailFrameBotRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -1603,7 +1603,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="OpenMailHorizontalBarLeft" urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture name="OpenMailHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="256" y="16"/>
 					</Size>
@@ -1616,7 +1616,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
-				<Texture urgency="5" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size>
 						<AbsDimension x="75" y="16"/>
 					</Size>
