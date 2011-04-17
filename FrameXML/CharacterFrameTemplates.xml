@@ -69,7 +69,13 @@
 		<Scripts>
 			<OnLoad>
 				self:SetFrameLevel(self:GetFrameLevel() + 4);
+				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 			</OnLoad>
+			<OnEvent>
+				if (self:IsVisible()) then
+					PanelTemplates_TabResize(self, 0, nil, 36, self:GetParent().maxTabWidth or 88);
+				end
+			</OnEvent>
 			<OnClick>
 				PanelTemplates_Tab_OnClick(self, CharacterFrame);
 				CharacterFrameTab_OnClick(self, button);

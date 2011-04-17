@@ -12,6 +12,7 @@ function LFGDebug(text, ...)
 	end
 end
 
+LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
 	name = 1,
 	typeID = 2,
@@ -43,6 +44,11 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	[1025] = "MISSING_ITEM",
 	
 }
+
+LFG_ROLE_SHORTAGE_RARE = 1;
+LFG_ROLE_SHORTAGE_UNCOMMON = 2;
+LFG_ROLE_SHORTAGE_PLENTIFUL = 3;
+LFG_ROLE_NUM_SHORTAGE_TYPES = 3;
 
 --Variables to store dungeon info in Lua
 --local LFDDungeonList, LFRRaidList, LFGDungeonInfo, LFGCollapseList, LFGEnabledList, LFDHiddenByCollapseList, LFGLockList;
@@ -170,6 +176,11 @@ function LFG_PermanentlyDisableRoleButton(button)
 	if ( button.background ) then
 		button.background:Hide();
 	end
+	if ( button.shortageBorder ) then
+		button.shortageBorder:SetVertexColor(0.5, 0.5, 0.5);
+		button.incentiveIcon.texture:SetVertexColor(0.5, 0.5, 0.5);
+		button.incentiveIcon.border:SetVertexColor(0.5, 0.5, 0.5);
+	end
 end
 
 function LFG_DisableRoleButton(button)
@@ -182,6 +193,11 @@ function LFG_DisableRoleButton(button)
 	if ( button.background ) then
 		button.background:Hide();
 	end
+	if ( button.shortageBorder ) then
+		button.shortageBorder:SetVertexColor(0.5, 0.5, 0.5);
+		button.incentiveIcon.texture:SetVertexColor(0.5, 0.5, 0.5);
+		button.incentiveIcon.border:SetVertexColor(0.5, 0.5, 0.5);
+	end
 end
 
 function LFG_EnableRoleButton(button)
@@ -193,6 +209,11 @@ function LFG_EnableRoleButton(button)
 	button.checkButton:Enable();
 	if ( button.background ) then
 		button.background:Show();
+	end
+	if ( button.shortageBorder ) then
+		button.shortageBorder:SetVertexColor(1, 1, 1);
+		button.incentiveIcon.texture:SetVertexColor(1, 1, 1);
+		button.incentiveIcon.border:SetVertexColor(1, 1, 1);
 	end
 end
 
@@ -271,6 +292,34 @@ function LFG_UpdateRolesChangeable()
 	else
 		LFG_UpdateAvailableRoles();
 	end
+end
+
+function LFG_SetRoleIconIncentive(roleButton, incentiveIndex)
+	if ( incentiveIndex ) then
+		local tex;
+		if ( incentiveIndex == LFG_ROLE_SHORTAGE_PLENTIFUL ) then
+			tex = "Interface\\Icons\\INV_Misc_Coin_19";
+		elseif ( incentiveIndex == LFG_ROLE_SHORTAGE_UNCOMMON ) then
+			tex = "Interface\\Icons\\INV_Misc_Coin_18";
+		elseif ( incentiveIndex == LFG_ROLE_SHORTAGE_RARE ) then
+			tex = "Interface\\Icons\\INV_Misc_Coin_17";
+		end
+		SetPortraitToTexture(roleButton.incentiveIcon.texture, tex);
+		roleButton.incentiveIcon:Show();
+		roleButton.shortageBorder:Show();
+	else
+		roleButton.incentiveIcon:Hide();
+		roleButton.shortageBorder:Hide();
+	end
+end
+
+function LFGRoleIconIncentive_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local role = LFG_ID_TO_ROLES[self:GetParent():GetID()];
+	
+	GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[role]), 1, 1, 1);
+	GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, 1);
+	GameTooltip:Show();
 end
 
 function LFGSpecificChoiceEnableButton_SetIsRadio(button, isRadio)

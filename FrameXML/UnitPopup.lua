@@ -693,7 +693,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
-			if ( inParty == 0 or IsInFakeRaid() ) then
+			if ( (inParty == 0 and not IsOnePersonParty()) or IsInFakeRaid() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FREE_FOR_ALL" ) then
@@ -1142,7 +1142,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "LEAVE" ) then
-						if ( inParty == 0 ) then
+						if ( inParty == 0 and not IsOnePersonParty()) then
 							enable = 0;
 						end
 					elseif ( value == "INVITE" ) then

@@ -52,3 +52,12 @@ function VideoOptionsFrameDefault_OnClick (self, button)
 	GlueDialog_Show("CONFIRM_RESET_VIDEO_SETTINGS");
 end
 
+function VideoOptionsFrameReset_OnClick_Reset(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	GlueDialog_Show("RESET_SERVER_SETTINGS");
+end
+
+function VideoOptionsFrameReset_OnClick_Cancel(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	GlueDialog_Show("CANCEL_RESET_SETTINGS");
+end

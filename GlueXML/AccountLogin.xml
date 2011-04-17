@@ -478,7 +478,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="OptionsButton" inherits="GlueButtonSmallTemplateBlue" text="OPTIONS">
+					<Button name="OptionsButton" inherits="GlueButtonSmallTemplateBlue" text="SYSTEMOPTIONS_MENU">
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="AccountLoginCinematicsButton" relativePoint="TOP">
 								<Offset>

@@ -3648,7 +3648,7 @@ function GetLFGMode()
 		return "rolecheck";
 	elseif ( IsListedInLFR() ) then
 		return "listed", (LFR_IsEmpowered() and "empowered" or "unempowered");
-	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
+	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) or IsOnePersonParty()) ) then
 		return "lfgparty";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() ) then
 		return "abandonedInDungeon";

@@ -2,15 +2,13 @@ UIPanelWindows["LookingForGuildFrame"] = { area = "left", pushable = 1, whileDea
 
 local GUILD_BUTTON_HEIGHT = 84;
 local APP_BUTTON_HEIGHT = 30;
+local INTEREST_TYPES = {"QUEST", "DUNGEON", "RAID", "PVP", "RP"};
 
 function LookingForGuildFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 3);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
-	self.Inset:SetPoint("TOPLEFT", 4, -64);
-	
-	LookingForGuildRequestButton:SetWidth(max(116, LookingForGuildRequestButton:GetTextWidth() + 24));
-	LookingForGuildBrowseButton:SetWidth(max(116, LookingForGuildBrowseButton:GetTextWidth() + 24));
+	self.Inset:SetPoint("TOPLEFT", 4, -64);	
 
 	local factionGroup = UnitFactionGroup("player");
 	if ( factionGroup == "Alliance" ) then
@@ -30,6 +28,7 @@ function LookingForGuildFrame_OnLoad(self)
 end
 
 function LookingForGuildFrame_OnShow(self)
+	PlaySound("igCharacterInfoOpen");
 	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");
 	
 	if ( canBeTank ) then
@@ -60,7 +59,7 @@ function LookingForGuildFrame_OnShow(self)
 	RequestGuildMembershipList();
 end
 
-function LookingForGuildFrame_OnEvent(self, event)
+function LookingForGuildFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_GUILD_UPDATE" ) then
 		if ( IsInGuild() and self:IsShown() ) then
 			HideUIPanel(self);
@@ -68,6 +67,8 @@ function LookingForGuildFrame_OnEvent(self, event)
 	elseif ( event == "LF_GUILD_BROWSE_UPDATED" ) then
 		LookingForGuild_Update();
 	elseif ( event == "LF_GUILD_MEMBERSHIP_LIST_UPDATED" ) then
+		local numAppsLeft = ...;
+		LookingForGuildBrowseFrameRequestsLeft:SetFormattedText(GUILD_FINDER_REQUESTS_LEFT, numAppsLeft);
 		LookingForGuildApps_Update();
 	elseif ( event == "LF_GUILD_MEMBERSHIP_LIST_CHANGED" ) then
 		RequestGuildMembershipList();
@@ -75,6 +76,7 @@ function LookingForGuildFrame_OnEvent(self, event)
 end
 
 function LookingForGuildFrame_OnHide(self)
+	PlaySound("igCharacterInfoClose");
 	UpdateMicroButtons();
 end
 
@@ -91,20 +93,14 @@ function LookingForGuildFrame_Update()
 		LookingForGuildStartFrame:Show();
 		LookingForGuildBrowseFrame:Hide();
 		LookingForGuildAppsFrame:Hide();
-		LookingForGuildRequestButton:Hide();
-		LookingForGuildBrowseButton:Show();
 	elseif ( LookingForGuildFrame.selectedTab == 2 ) then
 		LookingForGuildStartFrame:Hide();
 		LookingForGuildBrowseFrame:Show();
 		LookingForGuildAppsFrame:Hide();
-		LookingForGuildRequestButton:Show();
-		LookingForGuildBrowseButton:Hide();
 	else
 		LookingForGuildStartFrame:Hide();
 		LookingForGuildBrowseFrame:Hide();
 		LookingForGuildAppsFrame:Show();
-		LookingForGuildRequestButton:Hide();
-		LookingForGuildBrowseButton:Hide();	
 	end
 end
 
@@ -173,6 +169,8 @@ function LookingForGuildStartFrame_OnLoad(self)
 	LookingForGuildBrowseButton_Update();
 	-- comment
 	LookingForGuildCommentEditBox:SetText(GetLookingForGuildComment());
+	
+	LookingForGuildBrowseButton:SetWidth(max(116, LookingForGuildBrowseButton:GetTextWidth() + 24));
 end
 
 function LookingForGuildBrowseButton_Update()
@@ -193,11 +191,22 @@ function LookingForGuildComment_SaveText(self)
 	self:ClearFocus();
 end
 
+function LookingForGuildCheckButton_OnEnter(self)
+	local interestType = INTEREST_TYPES[self:GetID()];
+	if ( interestType ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(_G["GUILD_INTEREST_"..interestType]);
+		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, 1, 1);
+		GameTooltip:Show();
+	end
+end
+
 --*******************************************************************************
 --   Browse frame
 --*******************************************************************************
 
 function LookingForGuildBrowseFrame_OnLoad(self)
+	LookingForGuildRequestButton:SetWidth(max(116, LookingForGuildRequestButton:GetTextWidth() + 24));
 	LookingForGuildBrowseFrameContainer.update = LookingForGuild_Update;
 	HybridScrollFrame_CreateButtons(LookingForGuildBrowseFrameContainer, "LookingForGuildGuildTemplate", 0, 0);
 	
@@ -232,6 +241,7 @@ function LookingForGuild_Update()
 	local numButtons = #buttons;
 	local button, index;
 	local numGuilds = GetNumRecruitingGuilds();
+	local _, numAppsRemaining = GetNumGuildMembershipRequests();
 	local selection = GetRecruitingGuildSelection();
 
 	for i = 1, numButtons do
@@ -269,8 +279,8 @@ function LookingForGuild_Update()
 	local totalHeight = numGuilds * GUILD_BUTTON_HEIGHT;
 	local displayedHeight = numButtons * GUILD_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-	
-	if ( selection ) then
+
+	if ( selection and numAppsRemaining > 0 ) then
 		LookingForGuildRequestButton:Enable();
 	else
 		LookingForGuildRequestButton:Disable();
@@ -317,6 +327,7 @@ end
 
 function LookingForGuild_RequestMembership()
 	StaticPopupSpecial_Show(GuildFinderRequestMembershipFrame);
+	PlaySound("igMainMenuOpen");
 	local name, level = GetRecruitingGuildInfo(GetRecruitingGuildSelection());
 	GuildFinderRequestMembershipFrameGuildName:SetText(name);
 	GuildFinderRequestMembershipFrameGuildLevel:SetFormattedText(GUILD_LEVEL, level);
@@ -395,4 +406,32 @@ function LookingForGuildApps_Update()
 	local totalHeight = numApps * APP_BUTTON_HEIGHT;
 	local displayedHeight = numButtons * APP_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+end
+
+function LookingForGuildApp_ShowTooltip(self)
+	local name = GetGuildMembershipRequestInfo(self.index);
+	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetGuildMembershipRequestSettings(self.index);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(name);
+	local buf = "";
+	-- interests
+	if ( bQuest ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_QUEST; end
+	if ( bDungeon ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_DUNGEON; end
+	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
+	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
+	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	-- availability
+	buf = "";
+	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
+	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	-- roles
+	buf = "";
+	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
+	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
+	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGE; end
+	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	
+	GameTooltip:Show();
 end

@@ -1094,7 +1094,10 @@
 					<Anchor point="BOTTOM" x="0" y="3"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="LeaveBattlefield"/>
+					<OnClick>
+						WorldStateScoreFrame.leaving = true;
+						LeaveBattlefield();
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Frame name="WorldStateScoreWinnerFrame" hidden="true" useParentLevel="true">
@@ -1155,7 +1158,7 @@
 			<OnLoad function="WorldStateScoreFrame_OnLoad"/>
 			<OnEvent>
 				if	( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES") then
-					if ( WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) then
+					if ( not WorldStateScoreFrame.leaving and (WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) ) then
 						WorldStateScoreFrame_Resize();
 						WorldStateScoreFrame_Update();
 					end
@@ -1163,6 +1166,7 @@
 				if ( event == "PLAYER_ENTERING_WORLD" ) then
 					HideUIPanel(WorldStateScoreFrame);
 					WorldStateScoreFrame.firstOpen = false;
+					WorldStateScoreFrame.leaving = nil;
 					BATTLEFIELD_SHUTDOWN_TIMER = 0;
 				end
 			</OnEvent>

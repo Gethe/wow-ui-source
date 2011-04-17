@@ -15,7 +15,7 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	
 	if not homeButton then
 		homeButton = CreateFrame("BUTTON", self:GetName().."HomeButton", self, self.template);
-		homeButton:SetText(homeData.name);
+		homeButton:SetText(homeData.name or HOME);
 		homeButton:SetWidth(homeButton.text:GetStringWidth()+30);
 	end
 	
@@ -92,19 +92,11 @@ function NavBar_AddButton(self, buttonData)
 		end
 	end
 	
-	for i=1,#self.navList do
-		if self.navList[i].selected then
-			self.navList[i].selected:Hide();
-		end
-	end
-	
+
 	--Set up the button
 	local navParent = self.navList[#self.navList];
 	self.navList[#self.navList+1] = navButton;
 	
-	if navButton.selected then
-		navButton.selected:Show();
-	end
 	navButton:SetText(buttonData.name);
 	navButton:SetWidth(navButton.text:GetStringWidth()+30);
 	
@@ -193,6 +185,20 @@ function NavBar_CheckLength(self)
 				self.navList[i]:SetFrameLevel(self:GetFrameLevel()+1);
 			end
 			lastShown = i;
+		end
+		
+		if i<#self.navList then
+			if self.navList[i].selected then
+				self.navList[i].selected:Hide();
+			end
+			self.navList[i]:Enable();
+		else
+			if self.navList[i].selected then
+				self.navList[i].selected:Show();
+			end
+			
+			self.navList[i]:SetButtonState("NORMAL");
+			self.navList[i]:Disable();
 		end
 	end
 	

@@ -86,7 +86,7 @@
 						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTexture" relativePoint="TOPRIGHT"/>
 					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="0.0"/>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentBottomTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderTop" horizTile="true">
 					<Size x="0" y="16"/>
@@ -94,7 +94,7 @@
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftTexture" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTexture" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="0.0"/>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 				</Texture>
 				<Texture name="$parentTopTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderTop" horizTile="true">
 					<Size x="0" y="16"/>

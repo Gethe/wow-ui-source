@@ -72,6 +72,19 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="$parentReset" inherits="GlueButtonSmallTemplateBlue" text="RESET_SETTINGS">
+				<Size x="220" y="38"/>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="8" y="8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						VideoOptionsFrameReset_OnClick_Reset(self);
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="VideoOptionsFrame_OnLoad"/>

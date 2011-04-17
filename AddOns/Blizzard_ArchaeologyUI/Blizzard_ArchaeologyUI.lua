@@ -217,7 +217,9 @@ function ArchaeologyFrame_UpdateSummary(self)
 			else
 				raceButton:Enable();
 				if currencyAmount >= projectAmount then
-					raceButton.readyAnim:Play();
+					if not raceButton.readyAnim:IsPlaying() then
+						raceButton.readyAnim:Play();
+					end
 				else
 					raceButton.readyAnim:Stop();
 				end

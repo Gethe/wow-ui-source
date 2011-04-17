@@ -9,9 +9,18 @@
 	<CheckButton name="LookingForGuildCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
 				SetLookingForGuildSettings(self:GetID(), self:GetChecked());
 				LookingForGuildBrowseButton_Update();
 			</OnClick>
+			<OnEnter function="LookingForGuildCheckButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -317,6 +326,7 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						CancelGuildMembershipRequest(self:GetParent().index);
 						RequestRecruitingGuildsList();
 					</OnClick>
@@ -329,11 +339,13 @@
 			</OnLoad>
 			<OnEnter>
 				self.removeButton:Show();
+				LookingForGuildApp_ShowTooltip(self);
 			</OnEnter>
 			<OnLeave>
 				if ( not self.removeButton:IsMouseOver() ) then
 					self.removeButton:Hide();
 				end
+				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
@@ -434,32 +446,6 @@
 						LookingForGuildFrame_Update();
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
-				</Scripts>
-			</Button>			
-			<Button name="LookingForGuildRequestButton" inherits="MagicButtonTemplate" text="REQUEST_GUILD_MEMBERSHIP" hidden="true">
-				<Size x="156" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" />
-				</Anchors>
-				<Scripts>
-					<OnClick function="LookingForGuild_RequestMembership"/>
-					<OnEnter>
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="LookingForGuildBrowseButton" inherits="MagicButtonTemplate" text="BROWSE_GUILDS_BUTTON">
-				<Size x="116" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						LookingForGuildFrameTab2:Click();
-					</OnClick>
-					<OnEnter>
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -859,6 +845,20 @@
 					</Frame>
 				</Frames>
 			</Frame>
+			<Button name="LookingForGuildBrowseButton" inherits="MagicButtonTemplate" text="BROWSE_GUILDS_BUTTON">
+				<Size x="116" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="LookingForGuildFrame" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LookingForGuildFrameTab2:Click();
+					</OnClick>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>			
 		</Frames>
 		<Scripts>
 			<OnLoad function="LookingForGuildStartFrame_OnLoad"/>
@@ -874,6 +874,15 @@
 			<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT"/>
 			<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT"/>
 		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentRequestsLeft" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="LookingForGuildFrame" relativePoint="BOTTOMRIGHT" x="-15" y="9" />
+					</Anchors>
+				</FontString>			
+			</Layer>
+		</Layers>
 		<Frames>
 			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate" hidden="false">
 				<Size x="304" y="327"/>
@@ -901,6 +910,18 @@
 					</Slider>
 				</Frames>
 			</ScrollFrame>
+			<Button name="LookingForGuildRequestButton" inherits="MagicButtonTemplate" text="REQUEST_GUILD_MEMBERSHIP">
+				<Size x="156" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="LookingForGuildFrame" />
+				</Anchors>
+				<Scripts>
+					<OnClick function="LookingForGuild_RequestMembership"/>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>			
 		</Frames>
 		<Scripts>
 			<OnLoad function="LookingForGuildBrowseFrame_OnLoad"/>

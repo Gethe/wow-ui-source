@@ -182,12 +182,6 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentMarker" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="marker" alphaMode="ADD">
-					<Animations>
-						<AnimationGroup looping="REPEAT" parentKey="pulse">
-							<Scale scaleX="1.08" scaleY="1.08" duration="0.5" smoothing="IN_OUT" order="1"/>
-							<Scale scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
-						</AnimationGroup>
-					</Animations>
 					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="CENTER" y="2"/>
@@ -195,13 +189,19 @@
 					<TexCoords left="1.0" right="0.914" top="0.82" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="glow" >
+					<Animations>
+						<AnimationGroup looping="REPEAT" parentKey="pulse">
+							<Scale scaleX="1.08" scaleY="1.08" duration="0.5" smoothing="IN_OUT" order="1"/>
+							<Scale scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
+						</AnimationGroup>
+					</Animations>
 					<Size x="43" y="45"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.55859375" right="0.72656250" top="0.00781250" bottom="0.35937500"/>
 				</Texture>
-				<FontString name="$parentPowertext" inherits="TextStatusBarText" text="Chaz" parentKey="powerText" hidden="true">
+				<FontString name="$parentPowertext" inherits="TextStatusBarText" parentKey="powerText" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>

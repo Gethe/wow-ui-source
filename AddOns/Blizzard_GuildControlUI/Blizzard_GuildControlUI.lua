@@ -110,7 +110,9 @@ function GuildControlUI_BankTabPermissions_Update(self)
 		local button = _G["GuildControlBankTab"..i];
 		if ( not button ) then
 			button = CreateFrame("Frame", "GuildControlBankTab"..i, scrollFrame:GetScrollChild(), "BankTabPermissionTemplate");
-			GuildControlUI_LocalizeBankTab(button);
+			if ( GuildControlUI_LocalizeBankTab ) then
+				GuildControlUI_LocalizeBankTab(button);
+			end
 			if ( i == 1 ) then
 				button:SetPoint("TOPLEFT", 0, 0);
 			else
@@ -393,6 +395,8 @@ function GuildControlUI_ShiftRankDownButton_OnClick(self)
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();
 	end
+	self:SetButtonState("NORMAL");
+	self:Disable();
 	local index = self:GetParent():GetID();
 	GuildControlShiftRankDown(index);
 end
@@ -403,6 +407,8 @@ function GuildControlUI_ShiftRankUpButton_OnClick(self)
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();
 	end
+	self:SetButtonState("NORMAL");
+	self:Disable();
 	local index = self:GetParent():GetID();
 	GuildControlShiftRankUp(index);
 end

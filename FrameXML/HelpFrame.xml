@@ -222,6 +222,7 @@
 				self.icon:SetPoint("LEFT", 3, 0);
 			</OnMouseUp>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				local data = HelpFrameNavTbl[self:GetID()];
 				if data.frame then
 					local showFrame = HelpFrame[data.frame];
@@ -264,7 +265,7 @@
 		</ButtonText>
 	</Button>
 
-	<Button name="HelpFrameNavButtonTemplate" virtual="true">
+	<Button name="HelpFrameNavButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="80" y="30"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
@@ -293,14 +294,17 @@
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
-				self.arrowUp:Hide();
-				self.arrowDown:Show();
+				if self:IsEnabled() then
+					self.arrowUp:Hide();
+					self.arrowDown:Show();
+				end
 			</OnMouseDown>
 			<OnMouseUp>
 				self.arrowDown:Hide();
 				self.arrowUp:Show();
 			</OnMouseUp>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				if self.myclick ~= KnowledgeBase_Search then
 					KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 				end
@@ -382,6 +386,7 @@
 				self.ldown:Show();
 				self.rup:Hide();
 				self.rdown:Show();
+				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnMouseDown>
 			<OnMouseUp>
 				self.ldown:Hide();
@@ -1130,7 +1135,8 @@
 									self.inactive = false;
 								end
 								
-								self.clearButton:Enable();
+								self.clearButton:Show();
+								self:GetParent().searchButton:Enable();
 							</OnEditFocusGained>
 						</Scripts>
 						<Frames>
@@ -1167,6 +1173,7 @@
 										self.texture:SetPoint("TOPLEFT", 0, 0);
 									</OnMouseUp>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										local editBox = self:GetParent();
 										if HelpFrame.kbase.hasSearch then
 											NavBar_Reset(HelpFrame.kbase.navBar);
@@ -1179,7 +1186,7 @@
 						</Frames>
 						<FontString inherits="ChatFontSmall"/>
 					</EditBox>
-					<Button name="$parentSearchButton" inherits="GameMenuButtonTemplate" text="SEARCH">
+					<Button name="$parentSearchButton" parentKey="searchButton" inherits="GameMenuButtonTemplate" text="SEARCH">
 						<Size x="85" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentSearchBox" relativePoint="RIGHT" x="30" y="0"/>
@@ -1231,6 +1238,9 @@
 									<OnLoad>
 										self.xoffset = -18
 									</OnLoad>
+									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
+									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
 									<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
@@ -1257,7 +1267,7 @@
 								<Scripts>
 									<OnLoad>
 										self.xoffset = -15;
-										local newWidth = min(128, self.text:GetStringWidth()+40)
+										local newWidth = min(128, self.text:GetStringWidth()+50)
 										local texCoordoffsetX = (newWidth/128)*0.25;
 											
 										self:GetNormalTexture():SetTexCoord(0.70312500-texCoordoffsetX, 0.70312500, 0.00781250, 0.24218750);
@@ -1267,6 +1277,7 @@
 										self:SetWidth(newWidth);
 									</OnLoad>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 									</OnClick>
 								</Scripts>

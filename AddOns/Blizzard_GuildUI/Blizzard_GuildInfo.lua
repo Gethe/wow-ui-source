@@ -10,6 +10,7 @@ local GUILD_EVENT_TEXTURES = {
 local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 
 local CHALLENGE_SECTIONS = { "GuildInfoChallengesDungeon", "GuildInfoChallengesRaid", "GuildInfoChallengesRatedBG" };
+local INTEREST_TYPES = {"QUEST", "DUNGEON", "RAID", "PVP", "RP"};
 
 function GuildInfoFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
@@ -148,11 +149,19 @@ function GuildInfoFrame_UpdatePermissions()
 	local guildInfoFrame = GuildInfoFrame;
 	if ( IsGuildLeader() ) then
 		GuildControlButton:Enable();
-		-- show the recruitment tabs if the player is guild leader
+		GuildInfoFrameTab2:Show();
+		GuildInfoFrameTab3:SetPoint("LEFT", GuildInfoFrameTab2, "RIGHT");
+	else
+		GuildControlButton:Disable();
+		GuildInfoFrameTab2:Hide();
+		GuildInfoFrameTab3:SetPoint("LEFT", GuildInfoFrameTab1, "RIGHT");
+	end
+	if ( CanGuildInvite() ) then
+		GuildAddMemberButton:Enable();
+		-- show the recruitment tabs
 		if ( not guildInfoFrame.tabsShowing ) then
 			guildInfoFrame.tabsShowing = true;
 			GuildInfoFrameTab1:Show();
-			GuildInfoFrameTab2:Show();
 			GuildInfoFrameTab3:Show();
 			GuildInfoFrameTab3:SetText(GUILDINFOTAB_APPLICANTS_NONE);
 			PanelTemplates_SetTab(guildInfoFrame, 1);
@@ -160,23 +169,17 @@ function GuildInfoFrame_UpdatePermissions()
 			RequestGuildApplicantsList();
 		end
 	else
-		GuildControlButton:Disable();
-		-- hide the recruitment tabs if the player is not guild leader any more
+		GuildAddMemberButton:Disable();
+		-- hide the recruitment tabs
 		if ( guildInfoFrame.tabsShowing ) then
 			guildInfoFrame.tabsShowing = nil;
 			GuildInfoFrameTab1:Hide();
-			GuildInfoFrameTab2:Hide();
 			GuildInfoFrameTab3:Hide();
 			if ( PanelTemplates_GetSelectedTab(guildInfoFrame) ~= 1 ) then
 				PanelTemplates_SetTab(guildInfoFrame, 1);
 				GuildInfoFrame_Update();
 			end
 		end
-	end
-	if ( CanGuildInvite() ) then
-		GuildAddMemberButton:Enable();
-	else
-		GuildAddMemberButton:Disable();
 	end	
 end
 
@@ -225,6 +228,7 @@ function GuildInfoEvents_Update()
 	GuildFrame_UpdateScrollFrameWidth(scrollFrame);
 end
 
+local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
 function GuildInfoEvents_SetButton(button, eventIndex)
 	local today = date("*t");
 	local month, day, weekday, hour, minute, eventType, title, calendarType, textureName = CalendarGetGuildEventInfo(eventIndex);
@@ -233,11 +237,20 @@ function GuildInfoEvents_SetButton(button, eventIndex)
 	
 	if ( today["day"] == day and today["month"] == month ) then
 		displayDay = NORMAL_FONT_COLOR_CODE..GUILD_EVENT_TODAY..FONT_COLOR_CODE_CLOSE;
-	elseif ( abs(today["day"] - day) > 6 ) then		-- good-enough calculation of next week
-		displayDay = string.format(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday], day, month);
 	else
-		displayDay = CALENDAR_WEEKDAY_NAMES[weekday];
+		local year = today["year"];
+		-- if in December and looking at an event in January
+		if ( month < today["month"] ) then
+			year = year + 1;
+		end
+		local eventTime = time{year = year, month = month, day = day};
+		if ( eventTime - time() < SIX_DAYS ) then
+			displayDay = CALENDAR_WEEKDAY_NAMES[weekday];
+		else
+			displayDay = string.format(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday], day, month);
+		end
 	end
+
 	button.text:SetFormattedText(GUILD_EVENT_FORMAT, displayDay, displayTime, title);
 	button.index = eventIndex;
 	-- icon
@@ -359,6 +372,7 @@ function GuildRecruitmentLevelButton_OnClick(index, userClick)
 		param = LFGUILD_PARAM_MAX_LEVEL;
 	end
 	if ( userClick ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		SetGuildRecruitmentSettings(param, true);
 	end	
 end
@@ -391,6 +405,7 @@ function GuildRecruitmentListGuildButton_Update()
 end
 
 function GuildRecruitmentListGuildButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
 	bListed = not bListed;
 	if ( bListed and GuildRecruitmentCommentEditBox:HasFocus() ) then
@@ -412,6 +427,16 @@ function GuildRecruitmentComment_SaveText(self)
 	self = self or GuildRecruitmentCommentEditBox;
 	SetGuildRecruitmentComment(self:GetText());
 	self:ClearFocus();
+end
+
+function GuildRecruitmentCheckButton_OnEnter(self)
+	local interestType = INTEREST_TYPES[self:GetID()];
+	if ( interestType ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(_G["GUILD_INTEREST_"..interestType]);
+		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, 1, 1);
+		GameTooltip:Show();
+	end
 end
 
 --*******************************************************************************
@@ -478,19 +503,19 @@ function GuildInfoFrameApplicants_Update()
 			end
 			-- roles
 			if ( isTank ) then
-				button.tankTex:Show();
+				button.tankTex:SetAlpha(1);
 			else
-				button.tankTex:Hide();
+				button.tankTex:SetAlpha(0.2);
 			end
 			if ( isHealer ) then
-				button.healerTex:Show();
+				button.healerTex:SetAlpha(1);
 			else
-				button.healerTex:Hide();
+				button.healerTex:SetAlpha(0.2);
 			end
 			if ( isDamage ) then
-				button.damageTex:Show();
+				button.damageTex:SetAlpha(1);
 			else
-				button.damageTex:Hide();
+				button.damageTex:SetAlpha(0.2);
 			end
 			-- selection
 			if ( index == selection ) then

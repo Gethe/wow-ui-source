@@ -842,7 +842,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 		WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
 		questIndex = GetQuestIndexForWatch(i);
 		if ( questIndex ) then
-			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
+			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent = GetQuestLogTitle(questIndex);
 			
 			if (WORLDMAP_SETTINGS and GetSuperTrackedQuestID() == 0) then
 				SetSuperTrackedQuestID(questID);
@@ -855,7 +855,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 			if ( isComplete and isComplete < 0 ) then
 				isComplete = false;
 				questFailed = true;
-			elseif ( numObjectives == 0 and playerMoney >= requiredMoney ) then
+			elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
 				isComplete = true;		
 			end
 			-- check filters
@@ -907,9 +907,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 					for j = 1, numObjectives do
 						text, objectiveType, finished = GetQuestLogLeaderBoard(j, questIndex);
 						if ( not finished and text ) then
-							if (objectiveType ~= "spell") then
-								text = WatchFrame_ReverseQuestObjective(text);
-							end
+							text = WatchFrame_ReverseQuestObjective(text, objectiveType);
 							line = WatchFrame_GetQuestLine();
 							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 							lastLine = line;

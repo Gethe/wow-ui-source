@@ -902,7 +902,6 @@ end
 
 
 function KnowledgeBase_ArticleOnClick(self)
-	KnowledgeBase_Clearlist();
 	PlaySound("igMainMenuOptionCheckBoxOn");
 
 	local buttonData = {
@@ -910,9 +909,9 @@ function KnowledgeBase_ArticleOnClick(self)
 	}
 	NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
 	
-	
 	local searchType = 1;
 	KBArticle_BeginLoading(self.articleId, searchType);
+	KnowledgeBase_Clearlist();
 end
 
 
@@ -930,14 +929,12 @@ function KnowledgeBase_Search()
 		searchText = "";
 	end
 	
-	if not HelpFrame.kbase.hasSearch then
-		NavBar_Reset(HelpFrame.kbase.navBar);
-			local buttonData = {
-			name = KBASE_SEARCH_RESULTS,
-			OnClick = KnowledgeBase_Search,
-		}
-		NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
-	end
+	NavBar_Reset(HelpFrame.kbase.navBar);
+	local buttonData = {
+		name = KBASE_SEARCH_RESULTS,
+		OnClick = KnowledgeBase_Search,
+	}
+	NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
 	
 	KBQuery_BeginLoading(searchText,
 		0,
@@ -954,7 +951,8 @@ function KnowledgeBase_ClearSearch(self)
 	self:SetFontObject("GameFontDisable");
 	self.icon:SetVertexColor(0.6, 0.6, 0.6);
 	self.inactive = true;
-	self.clearButton:Disable();
+	self.clearButton:Hide();
+	self:GetParent().searchButton:Disable();
 	HelpFrame.kbase.hasSearch = false;
 end
 

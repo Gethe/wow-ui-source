@@ -404,7 +404,7 @@ function QuestLog_Update()
 
 	local numPartyMembers = GetNumPartyMembers();
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questCheck;
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, displayQuestID;
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID;
 	local color;
 	local partyMembersOnQuest, tempWidth, textWidth;
 	for i=1, numButtons do
@@ -416,7 +416,7 @@ function QuestLog_Update()
 		questCheck = questLogTitle.check;
 		questNormalText = questLogTitle.normalText;
 		if ( questIndex <= numEntries ) then
-			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, displayQuestID = GetQuestLogTitle(questIndex);
+			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID = GetQuestLogTitle(questIndex);
 
 			if ( isHeader ) then
 				-- set the title

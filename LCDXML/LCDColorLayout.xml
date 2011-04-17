@@ -233,23 +233,6 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="30" Wrap="false"/>
 			<RelOrigin RelTo="BAG_FLD" x="0" y="16" />
 		</LCDText>
-		<LCDText name="AMMO" text="AMMOSLOT">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="85" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY" x="0" y="16" />
-		</LCDText>
-		<LCDText name="AMMO_FLD">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="30" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY_FLD" x="0" y="16" />
-		</LCDText>
-		<!-- SOUL_SHARD overlaps AMMO because thier display is mutally exclusive -->
-		<LCDText name="SOUL_SHARD" text="SOUL_SHARD">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="85" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY" x="0" y="16" />
-		</LCDText>
-		<LCDText name="SOUL_SHARD_FLD">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="30" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY_FLD" x="0" y="16" />
-		</LCDText>
 	</Screen>
 	<Screen name="BattlefieldAlertScreen">
 		<LCDBitmap name="ALLIANCELOGO2" id="0" type="texture" data="Interface\PvPRankBadges\PvPRankAlliance.blp" miplevel="0">

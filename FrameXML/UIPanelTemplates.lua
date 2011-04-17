@@ -47,6 +47,7 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth
 	if ( absoluteTextSize ) then
 		textWidth = absoluteTextSize;
 	else
+		tabText:SetWidth(0);
 		textWidth = tabText:GetWidth();
 	end
 	-- If there's an absolute size specified then use it

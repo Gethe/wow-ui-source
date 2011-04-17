@@ -85,6 +85,9 @@
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
 	<Font name="GlueFontDisableSmallLeft" inherits="GlueFontDisableSmall" justifyH="LEFT" virtual="true"/>
+	<Font name="GlueFontDisableExtraSmall" inherits="SystemFont_Shadow_Outline_Small" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
 	<Font name="GlueFontGreenSmall" inherits="GlueFontNormalSmall" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
 	</Font>

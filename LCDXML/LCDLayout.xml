@@ -63,21 +63,21 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="45" Wrap="false"/>
 			<RelOrigin RelTo="DAMAGE" x="23" y="0" />
 		</LCDText>
-		<LCDText name="SPEED" text="SPEED" id="55">
+		<LCDText name="HASTE" text="STAT_HASTE" id="55">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="30" Wrap="false"/>
 			<RelOrigin RelTo="DAMAGE" x="0" y="8" />
 		</LCDText>
-		<LCDText name="SPEED_FLD" id="11">
+		<LCDText name="HASTE_FLD" id="11">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="DAMAGE_FLD" x="5" y="8" />
 		</LCDText>
 		<LCDText name="POWER" text="ATTACK_POWER" id="56">
 		  <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="SPEED" x="0" y="8" />
+			<RelOrigin RelTo="HASTE" x="0" y="8" />
 		</LCDText>
 		<LCDText name="POWER_FLD" id="11">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="SPEED_FLD" x="0" y="8" />
+			<RelOrigin RelTo="HASTE_FLD" x="0" y="8" />
 		</LCDText>
 		<LCDText name="HIT" text="HIT" id="57">
 		  <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
@@ -147,29 +147,29 @@
 		</LCDText>
     </LCDSubscreen>
     <LCDSubscreen name="Spell" id="2">
-		<LCDText name="SPELL_DAMAGE" text="BONUS_DAMAGE_ABBR" id="49">
+		<LCDText name="SPELL_POWER" text="ATTACK_POWER" id="49">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="33" Wrap="false"/>
 			<Origin x="43" y="0" />
 		</LCDText>
-		<LCDText name="SPELL_DAMAGE_FLD">
+		<LCDText name="SPELL_POWER_FLD">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_DAMAGE" x="33" y="0" />
+			<RelOrigin RelTo="SPELL_POWER" x="33" y="0" />
 		</LCDText>
-		<LCDText name="SPELL_HEALING" text="BONUS_HEALING_ABBR" id="50">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="33" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_DAMAGE" x="0" y="8" />
-		</LCDText>
-		<LCDText name="SPELL_HEALING_FLD">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_DAMAGE_FLD" x="0" y="8" />
-		</LCDText>
+      <LCDText name="SPELL_HASTE" text="SPELL_HASTE_ABBR" id="53">
+        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+        <RelOrigin RelTo="SPELL_POWER" x="0" y="8" />
+    </LCDText>
+    <LCDText name="SPELL_HASTE_FLD">
+      <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
+      <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="8" />
+    </LCDText>
 		<LCDText name="SPELL_HIT" text="HIT" id="51">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_HEALING" x="0" y="8" />
+			<RelOrigin RelTo="SPELL_HASTE" x="0" y="8" />
 		</LCDText>
 		<LCDText name="SPELL_HIT_FLD" text="HIT">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_HEALING_FLD" x="0" y="8" />
+			<RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="8" />
 		</LCDText>
 		<LCDText name="SPELL_CRIT" text="CRIT_ABBR" id="52">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
@@ -179,26 +179,19 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
 			<RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="8" />
 		</LCDText>
-		<LCDText name="SPELL_HASTE" text="SPELL_HASTE_ABBR" id="53">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_CRIT" x="0" y="8" />
-		</LCDText>
-		<LCDText name="SPELL_HASTE_FLD">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_CRIT_FLD" x="0" y="8" />
-		</LCDText>
+		
 		<LCDText name="MANA_REGEN" text="MANA_REGEN_ABBR" id="54">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="27" Wrap="false"/>
-			<RelOrigin RelTo="SPELL_DAMAGE_FLD" x="40" y="0" />
+			<RelOrigin RelTo="SPELL_CRIT" x="0" y="8" />
 		</LCDText>
 		<LCDText name="MANA_REGEN_FLD">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="16" Wrap="false"/>
-			<RelOrigin RelTo="MANA_REGEN" x="27" y="0" />
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_CRIT_FLD" x="0" y="8" />
 		</LCDText>
     </LCDSubscreen>
 		<LCDText name="BAG" text="BAGSLOT" id="40">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="23" Wrap="false"/>
-			<RelOrigin RelTo="MANA_REGEN" x="0" y="16" />
+			<RelOrigin RelTo="RESILIENCE" x="0" y="16" />
 		</LCDText>
 		<LCDText name="BAG_FLD">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="20" Wrap="false"/>
@@ -211,23 +204,6 @@
 		<LCDText name="DURABILITY_FLD">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="20" Wrap="false"/>
 			<RelOrigin RelTo="BAG_FLD" x="0" y="8" />
-		</LCDText>
-		<LCDText name="AMMO" text="AMMOSLOT" id="20">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY" x="0" y="8" />
-		</LCDText>
-		<LCDText name="AMMO_FLD">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="20" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY_FLD" x="0" y="8" />
-		</LCDText>
-		<!-- SOUL_SHARD overlaps AMMO because thier display is mutally exclusive -->
-		<LCDText name="SOUL_SHARD" text="SHARDS" id="42">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY" x="0" y="8" />
-		</LCDText>
-		<LCDText name="SOUL_SHARD_FLD">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="20" Wrap="false"/>
-			<RelOrigin RelTo="DURABILITY_FLD" x="0" y="8" />
 		</LCDText>
 	</Screen>
 	<Screen name="BattlefieldAlertScreen">

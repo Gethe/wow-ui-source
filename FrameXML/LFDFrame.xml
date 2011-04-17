@@ -84,14 +84,57 @@
 			<AbsDimension x="25" y="25"/>
 		</Size>
 	</Texture>
+	<Frame name="LFDRandomDungeonLootShortageTemplate" virtual="true">
+		<Size x="19" y="19"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="texture"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[self.role]), 1, 1, 1);
+				GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, 1);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
 	<Button name="LFDRandomDungeonLootTemplate" inherits="LargeItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentShortageBorder" inherits="Talent-GoldMedal-Border" parentKey="shortageBorder">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" x="-6" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentRoleIcon1" inherits="LFDRandomDungeonLootShortageTemplate" parentKey="roleIcon1" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRoleIcon2" inherits="LFDRandomDungeonLootShortageTemplate" parentKey="roleIcon2" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleIcon1" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.hasItem = 1;
 			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetLFGDungeonReward(LFDQueueFrame.type, self:GetID());
+				if ( self.shortageIndex ) then
+					GameTooltip:SetLFGDungeonShortageReward(LFDQueueFrame.type, self.shortageIndex, self:GetID());
+				else
+					GameTooltip:SetLFGDungeonReward(LFDQueueFrame.type, self:GetID());
+				end
 				CursorUpdate(self);
 			</OnEnter>
 			<OnLeave>
@@ -102,7 +145,11 @@
 				CursorOnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnClick>
-				HandleModifiedItemClick(GetLFGDungeonRewardLink(LFDQueueFrame.type, self:GetID()));
+				if ( self.shortageIndex ) then
+					HandleModifiedItemClick(GetLFGDungeonShortageRewardLink(LFDQueueFrame.type, self.shortageIndex, self:GetID()));
+				else
+					HandleModifiedItemClick(GetLFGDungeonRewardLink(LFDQueueFrame.type, self:GetID()));
+				end
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -1037,7 +1084,7 @@
 						<OnLeave function="GameTooltip_Hide"/>
 					</Scripts>
 				</Frame>
-					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundTemplate" id="2">
+					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="2">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
@@ -1054,7 +1101,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundTemplate" id="3">
+					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="3">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
 								<Offset>
@@ -1071,7 +1118,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundTemplate" id="1">
+					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="1">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
 								<Offset>
@@ -1140,12 +1187,12 @@
 						<Frames>
 							<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
 								<Size>
-									<AbsDimension x="298" y="253"/>
+									<AbsDimension x="303" y="253"/>
 								</Size>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="-34" y="30"/>
+											<AbsDimension x="-29" y="28"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1155,16 +1202,16 @@
 											<Anchors>
 												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 													<Offset>
-														<AbsDimension x="0" y="-5"/>
+														<AbsDimension x="-4" y="0"/>
 													</Offset>
 												</Anchor>
 												<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="29" y="-2"/>
+														<AbsDimension x="24" y="-2"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
-											<Color r="0" b="0" g="0" a=".55"/>
+											<Color r="0" b="0" g="0" a=".65"/>
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
@@ -1175,7 +1222,7 @@
 											<Anchors>
 												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 													<Offset>
-														<AbsDimension x="-2" y="5"/>
+														<AbsDimension x="-5" y="5"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -1188,7 +1235,7 @@
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="-2" y="-4"/>
+														<AbsDimension x="-5" y="-4"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -1203,7 +1250,10 @@
 										_G[myName.."ScrollBackgroundTopLeft"]:SetParent(_G[myName.."ScrollBar"]);
 										_G[myName.."ScrollBackgroundBottomRight"]:SetParent(_G[myName.."ScrollBar"]);
 										
-										_G[myName.."ScrollBar"]:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 14);
+										local scrollBar = _G[myName.."ScrollBar"];
+										scrollBar:ClearAllPoints();
+										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 3, 14);
+										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -16);
 										
 										self.scrollBarHideable = true;
 										ScrollFrame_OnLoad(self);

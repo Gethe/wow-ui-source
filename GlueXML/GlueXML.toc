@@ -32,7 +32,6 @@ VideoOptionsFrame.xml
 ..\FrameXML\VideoOptionsPanels.xml
 AudioOptionsFrame.xml
 AudioOptionsPanels.xml
-OptionsSelect.xml
 ##CameraSelect.xml
 
 ## This Always Runs Last, Add New Items above it.

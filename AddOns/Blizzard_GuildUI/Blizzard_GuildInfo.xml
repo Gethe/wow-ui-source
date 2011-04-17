@@ -53,15 +53,24 @@
 	<CheckButton name="GuildRecruitmentCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				end
 				SetGuildRecruitmentSettings(self:GetID(), self:GetChecked());
 				GuildRecruitmentListGuildButton_Update();
 			</OnClick>
+			<OnEnter function="GuildRecruitmentCheckButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<Frame name="GuildRecruitmentSectionTemplate" virtual="true">
 		<Size x="312" y="74"/>
@@ -290,22 +299,21 @@
 				_G[self:GetName().."Label"]:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
 			</OnLoad>
 			<OnEnter>
-				local index, current, max, xp, gold = GetGuildChallengeInfo(self:GetID());
+				local index, current, max, xp, gold, maxGold = GetGuildChallengeInfo(self:GetID());
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
 				GameTooltip:AddLine(" ")
 				GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, 1, 1);
-				if ( current == max ) then
-					GameTooltip:AddLine(GUILD_CHALLENGE_TOOLTIP_DONE, 1, 1, 1, 1, 1);
-				else
-					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_TOOLTIP_PROGRESS, max - current), 1, 1, 1, 1, 1);
-				end
 				GameTooltip:AddLine(" ")
 				if ( GetGuildLevel() == MAX_GUILD_LEVEL ) then
-					local goldString = GetMoneyString(gold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+					local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
 					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, 1, 1);
 				else
 					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_XP, xp), 1, 1, 1, 1, 1);
+					if ( gold > 0 ) then
+						local goldString = GetMoneyString(gold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+						GameTooltip:AddLine(goldString, 1, 1, 1, 1, 1);
+					end
 				end
 				GameTooltip:Show();
 			</OnEnter>
@@ -1161,10 +1169,6 @@
 				</Anchors>
 				<Scripts>
 					<OnClick function="GuildRecruitmentListGuildButton_OnClick"/>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, GUILDCONTROL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDCONTROL, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -1212,6 +1216,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						local name = GetGuildApplicantInfo(GetGuildApplicantSelection());
 						if ( name ) then
 							GuildInvite(name);
@@ -1226,6 +1231,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						DeclineGuildApplicant(GetGuildApplicantSelection());
 					</OnClick>
 				</Scripts>
@@ -1238,6 +1244,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						local name = GetGuildApplicantInfo(GetGuildApplicantSelection());
 						if ( name ) then
 							ChatFrame_SendTell(name);

@@ -117,6 +117,20 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentBlackBg">
+					<Animations>
+						<AnimationGroup parentKey="grow">
+							<Scale scaleX="1.0" scaleY="0.001" duration="0.0" startDelay="1.5" order="1">
+								 <Origin point="BOTTOM">
+									<Offset x="0" y="0"/>
+								 </Origin>
+							</Scale>
+							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="0.15" order="2">
+								 <Origin point="BOTTOM">
+									<Offset x="0" y="0"/>
+								 </Origin>
+							</Scale>
+						</AnimationGroup>
+					</Animations>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>

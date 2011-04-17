@@ -122,6 +122,8 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TRADE_SKILL_NAME_UPDATE" ) then
 		TradeSkillFrame_SetLinkName();
+	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+		TradeSkillFrame_Update();
 	end
 end
 

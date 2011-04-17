@@ -196,7 +196,7 @@ LEVEL_UP_CLASS_HACKS = {
 }
 
 
-function LevelUpDisplay_Onload(self)	
+function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self:RegisterEvent("UNIT_LEVEL");

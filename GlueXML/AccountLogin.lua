@@ -227,7 +227,7 @@ end
 
 function AccountLogin_Options()
 	PlaySound("gsTitleOptions");
-	OptionsSelectFrame:Show();
+	VideoOptionsFrame:Show();
 	CinematicsFrame:Hide();
 end
 

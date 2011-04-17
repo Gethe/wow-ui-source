@@ -153,7 +153,7 @@ function LFDFrame_UpdateCapBar()
 	local barWidth = capBar:GetWidth();
 	local sizePerPoint = barWidth / periodPurseLimit;
 	local progressWidth = periodPurseQuantity * sizePerPoint;
-	local tier1Width = (tier1Limit - tier1Quantity) * sizePerPoint;
+	local tier1Width = min(tier1Limit - tier1Quantity, overallLimit - overallQuantity) * sizePerPoint;	--Tier 1 can't go past the overall LFG limit either.
 	local overallWidth = (overallLimit - overallQuantity) * sizePerPoint - tier1Width;
 	
 	--Don't let it go past the end.
@@ -240,10 +240,31 @@ function LFDQueueFrameCapBar_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(MAXIMUM_REWARD);
 	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
-	GameTooltip:AddDoubleLine(format(FROM_A_DUNGEON, tier1Name), format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit));
-	if ( not hasNoSharedStats ) then
-		GameTooltip:AddDoubleLine(FROM_DUNGEON_FINDER_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, overallQuantity, overallLimit));
-		GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity, periodPurseLimit));
+	GameTooltip:AddLine(" ");
+	
+	local r, g, b = 1, 1, 1;
+	if ( hasNoSharedStats ) then
+		if ( tier1Quantity >= tier1Limit ) then
+			r, g, b = 0.5, 0.5, 0.5;
+		end
+		GameTooltip:AddDoubleLine(format(FROM_A_DUNGEON, tier1Name), format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
+	else
+		if ( periodPurseQuantity >= periodPurseLimit ) then
+			r, g, b = 0.5, 0.5, 0.5;
+		end
+		GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity, periodPurseLimit), r, g, b, r, g, b);
+		GameTooltip:AddDoubleLine(" -"..FROM_RAID, format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity - overallQuantity, periodPurseLimit), r, g, b, r, g, b);
+		
+		if ( overallQuantity >= overallLimit ) then
+			r, g, b = 0.5, 0.5, 0.5;
+		end
+		GameTooltip:AddDoubleLine(" -"..FROM_DUNGEON_FINDER_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, overallQuantity, overallLimit), r, g, b, r, g, b);
+		GameTooltip:AddDoubleLine("   -"..FROM_TROLLPOCALYPSE, format(CURRENCY_WEEKLY_CAP_FRACTION, overallQuantity - tier1Quantity, overallLimit), r, g, b, r, g, b);
+		
+		if ( tier1Quantity >= tier1Limit ) then
+			r, g, b = 0.5, 0.5, 0.5;
+		end
+		GameTooltip:AddDoubleLine("   -"..format(FROM_A_DUNGEON, tier1Name), format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
 	end
 	GameTooltip:Show();
 end
@@ -297,8 +318,40 @@ function LFDQueueFrame_SetRoles()
 		LFDQueueFrameRoleButtonDPS.checkButton:GetChecked());
 end
 
+function LFDQueueFrame_GetRoles()
+	return LFDQueueFrameRoleButtonLeader.checkButton:GetChecked(), 
+		LFDQueueFrameRoleButtonTank.checkButton:GetChecked(),
+		LFDQueueFrameRoleButtonHealer.checkButton:GetChecked(),
+		LFDQueueFrameRoleButtonDPS.checkButton:GetChecked();
+end
+
 function LFDFrameRoleCheckButton_OnClick(self)
 	LFDQueueFrame_SetRoles();
+	LFDQueueFrameRandom_UpdateFrame();	--We may show or hide shortage rewards.
+end
+
+function LFDQueueFrame_UpdateRoleIncentives()
+	local dungeonID = LFDQueueFrame.type;
+	LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonTank, nil);
+	LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonHealer, nil);
+	LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonDPS, nil);
+	
+	if ( type(dungeonID) == "number" ) then
+		for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+			local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
+			if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
+				if ( forTank ) then
+					LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonTank, i);
+				end
+				if ( forHealer ) then
+					LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonHealer, i);
+				end
+				if ( forDamage ) then
+					LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonDPS, i);
+				end
+			end
+		end
+	end
 end
 
 --Role-check popup functions
@@ -330,9 +383,7 @@ function LFDRoleCheckPopup_Update()
 	local displayName;
 	if ( slots == 1 ) then
 		local dungeonType, dungeonID = GetLFGRoleUpdateSlot(1);
-		if ( dungeonType == TYPEID_RANDOM_DUNGEON ) then
-			displayName = A_RANDOM_DUNGEON;
-		elseif ( dungeonType == TYPEID_HEROIC_DIFFICULTY ) then
+		if ( dungeonType == TYPEID_HEROIC_DIFFICULTY ) then
 			displayName = format(HEROIC_PREFIX, select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID)));
 		else
 			displayName = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID));
@@ -726,7 +777,7 @@ function LFDDungeonReadyDialog_UpdateRewards(dungeonID)
 		local frameID = (i + rewardsOffset);
 		local frame = _G["LFDDungeonReadyDialogRewardsFrameReward"..frameID];
 		if ( not frame ) then
-			frame = CreateFrame("FRAME", "LFDDungeonReadyDialogRewardsFrameReward"..frameID, LFDDungeonReadyDialogRewardsFrame, LFDDungeonReadyRewardTemplate);
+			frame = CreateFrame("FRAME", "LFDDungeonReadyDialogRewardsFrameReward"..frameID, LFDDungeonReadyDialogRewardsFrame, "LFDDungeonReadyRewardTemplate");
 			frame:SetID(frameID);
 			LFD_MAX_REWARDS = frameID;
 		end
@@ -913,6 +964,7 @@ function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id
 		LFDQueueFrame_SetTypeRandomDungeon();
 		LFDQueueFrameRandom_UpdateFrame();
 	end
+	LFDQueueFrame_UpdateRoleIncentives();
 end
 
 function LFDQueueFrame_SetTypeRandomDungeon()
@@ -973,7 +1025,13 @@ function LFDQueueFrameRandom_UpdateFrame()
 
 	
 	local backgroundTexture;
-	if ( textureFilename ~= "" ) then
+	
+	local leaderChecked, tankChecked, healerChecked, damageChecked = LFDQueueFrame_GetRoles();
+	
+	--HACK
+	if ( dungeonID == 341 ) then	--Trollpocalypse Heroic
+		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-TROLLPOCALYPSE";
+	elseif ( textureFilename ~= "" ) then
 		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-HOLIDAY-BACKGROUND-"..textureFilename;
 	elseif ( isHeroic ) then
 		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC";
@@ -993,7 +1051,9 @@ function LFDQueueFrameRandom_UpdateFrame()
 		parentFrame.description:SetText(dungeonDescription);
 	else
 		local numCompletions, isWeekly = LFDQueueFrameRandom_EstimateRemainingCompletions(dungeonID);
-		if ( isWeekly ) then
+		if ( numCompletions <= 0 ) then
+			parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);
+		elseif ( isWeekly ) then
 			parentFrame.rewardsDescription:SetText(format(LFD_REWARD_DESCRIPTION_WEEKLY, numCompletions));
 		else
 			parentFrame.rewardsDescription:SetText(format(LFD_REWARD_DESCRIPTION_DAILY, numCompletions));
@@ -1002,28 +1062,25 @@ function LFDQueueFrameRandom_UpdateFrame()
 		parentFrame.description:SetText(LFD_RANDOM_EXPLANATION);
 	end
 		
+	local itemButtonIndex = 1;
 	for i=1, numRewards do
-		local frame = _G[parentName.."Item"..i];
-		if ( not frame ) then
-			frame = CreateFrame("Button", parentName.."Item"..i, _G[parentName], "LFDRandomDungeonLootTemplate");
-			frame:SetID(i);
-			NUM_LFD_RANDOM_REWARD_FRAMES = i;
-			if ( mod(i, 2) == 0 ) then
-				frame:SetPoint("LEFT", parentName.."Item"..(i-1), "RIGHT", 0, 0);
-			else
-				frame:SetPoint("TOPLEFT", parentName.."Item"..(i-2), "BOTTOMLEFT", 0, -5);
+		local name, texture, numItems = GetLFGDungeonRewardInfo(dungeonID, i);
+		lastFrame = LFDQueueFrameRandom_SetItemButton(itemButtonIndex, i, name, texture, numItems, nil);
+		itemButtonIndex = itemButtonIndex + 1;
+	end
+	
+	for shortageIndex=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+		local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
+		if ( eligible and ((tankChecked and forTank) or (healerChecked and forHealer) or (damageChecked and forDamage)) ) then
+			for rewardIndex=1, itemCount do
+				local name, texture, numItems = GetLFGDungeonShortageRewardInfo(dungeonID, shortageIndex, rewardIndex);
+				lastFrame = LFDQueueFrameRandom_SetItemButton(itemButtonIndex, rewardIndex, name, texture, numItems, shortageIndex, forTank, forHealer, forDamage);
+				itemButtonIndex = itemButtonIndex + 1;
 			end
 		end
-
-		local name, texture, numItems = GetLFGDungeonRewardInfo(dungeonID, i);
-		
-		_G[parentName.."Item"..i.."Name"]:SetText(name);
-		SetItemButtonTexture(frame, texture);
-		SetItemButtonCount(frame, numItems);
-		frame:Show();
-		lastFrame = frame;
 	end
-	for i=numRewards+1, NUM_LFD_RANDOM_REWARD_FRAMES do
+	
+	for i=itemButtonIndex, NUM_LFD_RANDOM_REWARD_FRAMES do
 		_G[parentName.."Item"..i]:Hide();
 	end
 	
@@ -1087,6 +1144,70 @@ function LFDQueueFrameRandom_UpdateFrame()
 	end
 	
 	parentFrame.spacer:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -10);
+	LFDQueueFrame_UpdateRoleIncentives();
+end
+
+function LFDQueueFrameRandom_SetItemButton(index, id, name, texture, numItems, shortageIndex, showTankIcon, showHealerIcon, showDamageIcon)
+	local parentName = "LFDQueueFrameRandomScrollFrameChildFrame";
+	local frame = _G[parentName.."Item"..index];
+	if ( not frame ) then
+		frame = CreateFrame("Button", parentName.."Item"..index, _G[parentName], "LFDRandomDungeonLootTemplate");
+		NUM_LFD_RANDOM_REWARD_FRAMES = index;
+		if ( mod(index, 2) == 0 ) then
+			frame:SetPoint("LEFT", parentName.."Item"..(index-1), "RIGHT", 0, 0);
+		else
+			frame:SetPoint("TOPLEFT", parentName.."Item"..(index-2), "BOTTOMLEFT", 0, -5);
+		end
+	end
+	frame:SetID(id);
+	
+	_G[parentName.."Item"..index.."Name"]:SetText(name);
+	SetItemButtonTexture(frame, texture);
+	SetItemButtonCount(frame, numItems);
+	frame.shortageIndex = shortageIndex;
+	
+	if ( shortageIndex ) then
+		frame.shortageBorder:Show();
+	else
+		frame.shortageBorder:Hide();
+	end
+	
+	local numRoles = (showTankIcon and 1 or 0) + (showHealerIcon and 1 or 0) + (showDamageIcon and 1 or 0);
+	
+	--Show role icons if this reward is specific to a role:
+	frame.roleIcon1:Hide();
+	frame.roleIcon2:Hide();
+	
+	if ( numRoles > 0 and numRoles < 3 ) then	--If we give it to all 3 roles, no reason to show icons.
+		local roleIcon = frame.roleIcon1;
+		if ( showTankIcon ) then
+			roleIcon.texture:SetTexCoord(GetTexCoordsForRoleSmallCircle("TANK"));
+			roleIcon.role = "TANK";
+			roleIcon:Show();
+			roleIcon = frame.roleIcon2;
+		end
+		if ( showHealerIcon ) then
+			roleIcon.texture:SetTexCoord(GetTexCoordsForRoleSmallCircle("HEALER"));
+			roleIcon.role = "HEALER";
+			roleIcon:Show();
+			roleIcon = frame.roleIcon2;
+		end
+		if ( showDamageIcon ) then
+			roleIcon.texture:SetTexCoord(GetTexCoordsForRoleSmallCircle("DAMAGER"));
+			roleIcon.role = "DAMAGER";
+			roleIcon:Show();
+			roleIcon = frame.roleIcon2;
+		end
+		
+		if ( numRoles == 2 ) then
+			frame.roleIcon1:SetPoint("LEFT", frame, "TOPLEFT", 1, -2);
+		else
+			frame.roleIcon1:SetPoint("LEFT", frame, "TOPLEFT", 10, -2);
+		end
+	end
+	
+	frame:Show();
+	return frame;
 end
 
 function LFDQueueFrameRandom_EstimateRemainingCompletions(dungeonID)
@@ -1122,10 +1243,12 @@ function LFDQueueFrameRandomRandomList_OnEnter(self)
 				rangeText = format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel);
 			end
 			local difficultyColor = GetQuestDifficultyColor(recLevel);
-			GameTooltip:AddDoubleLine(name, rangeText, difficultyColor.r, difficultyColor.g, difficultyColor.b, difficultyColor.r, difficultyColor.g, difficultyColor.b);
+			
+			local displayName = name;
 			if ( LFGLockList[dungeonID] ) then
-				GameTooltip:AddTexture("Interface\\LFGFrame\\UI-LFG-ICON-LOCK", 0, 0.875, 0, 0.875);
+				displayName = "|TInterface\\LFGFrame\\UI-LFG-ICON-LOCK:14:14:0:0:32:32:0:28:0:28|t"..displayName;
 			end
+			GameTooltip:AddDoubleLine(displayName, rangeText, difficultyColor.r, difficultyColor.g, difficultyColor.b, difficultyColor.r, difficultyColor.g, difficultyColor.b);
 		end
 	end
 		

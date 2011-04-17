@@ -20,7 +20,11 @@ function SpellActivationOverlay_OnEvent(self, event, ...)
 		end
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_HIDE" ) then
 		local spellID = ...;
-		SpellActivationOverlay_HideOverlays(self, spellID);
+		if ( spellID ) then
+			SpellActivationOverlay_HideOverlays(self, spellID);
+		else
+			SpellActivationOverlay_HideAllOverlays(self);
+		end
 	end
 end
 
@@ -142,6 +146,12 @@ function SpellActivationOverlay_HideOverlays(self, spellID)
 			overlay.pulse:Pause();
 			overlay.animOut:Play();
 		end
+	end
+end
+
+function SpellActivationOverlay_HideAllOverlays(self)
+	for spellID, overlayList in pairs(self.overlaysInUse) do
+		SpellActivationOverlay_HideOverlays(self, spellID);
 	end
 end
 

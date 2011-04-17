@@ -81,6 +81,53 @@
 			</Layer>
 		</Layers>
 	</Button>
+	<Button name="LFGRoleButtonWithBackgroundAndRewardTemplate" inherits="LFGRoleButtonWithBackgroundTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="$parentShortageBorder" file="Interface\Common\GoldRing" parentKey="shortageBorder" hidden="true">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIncentiveIcon" parentKey="incentiveIcon">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" parentKey="texture">
+							<Size>
+								<AbsDimension x="17" y="17"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-3" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentBorder" setAllPoints="true" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING" parentKey="border">
+							<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						LFGRoleIconIncentive_OnEnter(self);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
 	<Frame name="LFGSpecificChoiceTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="295" y="16"/>

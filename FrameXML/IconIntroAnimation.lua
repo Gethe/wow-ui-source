@@ -13,7 +13,7 @@ function IconIntroTracker_OnEvent(self, event, ...)
 		local freeIcon;
 	
 		for a,b in pairs(self.iconList) do
-			if not b.isFree then
+			if b.isFree then
 				freeIcon = b;
 			end
 		end

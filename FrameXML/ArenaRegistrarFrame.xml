@@ -283,7 +283,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<EditBox name="$parentEditBox" inherits="InputBoxTemplate" letters="24" historyLines="1" autoFocus="false" parentKey="teamName">
+			<EditBox name="$parentEditBox" inherits="InputBoxTemplate" letters="23" historyLines="1" autoFocus="false" parentKey="teamName">
 				<Size>
 					<AbsDimension x="140" y="32"/>
 				</Size>

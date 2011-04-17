@@ -32,8 +32,8 @@ GlueDialogTypes["CANCEL_RESET_SETTINGS"] = {
 	OnAccept = function ()
 		AccountLoginUIResetFrame:Hide();
 		-- Switch the reset settings button back to reset mode
-		OptionsSelectResetSettingsButton:SetText(RESET_SETTINGS);
-		OptionsSelectResetSettingsButton:SetScript("OnClick", OptionsSelectResetSettingsButton_OnClick_Reset);
+		VideoOptionsFrameReset:SetText(RESET_SETTINGS);
+		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Reset);
 		SetClearConfigData(false);
 	end,
 	OnCancel = function()
@@ -48,8 +48,8 @@ GlueDialogTypes["RESET_SERVER_SETTINGS"] = {
 	OnAccept = function ()
 		AccountLoginUIResetFrame:Show();
 		-- Switch the reset settings button to cancel mode
-		OptionsSelectResetSettingsButton:SetText(CANCEL_RESET);
-		OptionsSelectResetSettingsButton:SetScript("OnClick", OptionsSelectResetSettingsButton_OnClick_Cancel);
+		VideoOptionsFrameReset:SetText(CANCEL_RESET);
+		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Cancel);
 		SetClearConfigData(true);
 	end,
 	OnCancel = function ()
