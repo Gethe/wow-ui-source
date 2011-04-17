@@ -64,6 +64,11 @@ Grey Riding Camel -- because there must always be a Camel-Hoarder.
 
   * PvP
 
+    * The following Battleground achievements have been permanently removed
+from the game, as they do not function correctly with the achievement tracking
+system: Guild Gankin' in Gilneas, Guild Gulch, The Peak of Perfection, The
+Perfect Guild Storm, Storming the Beach.
+
     * Rated Battlegrounds
 
       * The achievements to win 100 rated Battlegrounds have been renamed to
@@ -95,12 +100,22 @@ defenses, down from 50.
       * The achievement "Battle for Gilneas All-Star" now requires a single
 flag assault and flag defense in a battle, down from 2.
 
+  * Achievements Bug Fixes
+
+    * The guild achievements for earning exalted reputation with factions
+(Ambassador, Diplomacy, and United Nations) have been fixed to now correctly
+count cumulative guild members with exalted factions. Previously, these
+achievements would only count exalted factions on one guild member.
+
+    * The guild rated Battleground title achievements should now properly be
+awarded.
+
 **[Classes: General][25]**
 
   * All non-damaging interrupts off the global cooldown will now always hit
-the target. This includes Pummel, Shield Bash, Kick, Mind Freeze, Rebuke,
-Skull Bash, Counterspell, Wind Shear, Solar Beam, Silencing Shot, and related
-player pet abilities.
+the target. This includes Pummel, Kick, Mind Freeze, Rebuke, Skull Bash,
+Counterspell, Wind Shear, Solar Beam, Silencing Shot, and related player pet
+abilities.
 
   * Several persistent ground effects now display different visuals for
 hostile and friendly players. The following spells have the same visual
@@ -155,7 +170,8 @@ cast 60% faster.
 
 **[Druids][27]**
 
-  * Cyclone duration has been reduced to 5 seconds, down from 6.
+  * Lacerate bonus threat has been removed and replaced with increased initial
+damage done.
 
   * Efflorescence has a new spell effect.
 
@@ -163,10 +179,21 @@ cast 60% faster.
 
   * Prowl has a new icon.
 
+  * Savage Defense has been redesigned slightly. Instead of a single charge
+absorption, it now places an absorption effect on the druid absorbing up to
+35% of the druid's attack power (modified by mastery, if applicable) in damage
+and lasting 10 seconds. There are no longer any charges on the effect.
+
   * Stampeding Roar's duration has been increased to 8 seconds, up from 6. The
 movement speed effect has been increased to 60%, up from 40%.
 
-  * Swipe (Bear) cooldown has been reduced to 3 seconds, down from 6.
+  * Swipe (Bear) cooldown has been reduced to 3 seconds, down from 6, and is
+now on trainable at level 18 (training cost has been reduced). In addition,
+the bonus threat from this ability has been removed and replaced with
+increased damage done.
+
+  * Thrash bonus threat has been removed and replaced with increased damage
+done.
 
   * Druids now innately have 100% pushback protection from damage while
 channeling Tranquility.
@@ -200,6 +227,9 @@ Efflorescence.
 
       * Malfurion's Gift now reduces the cooldown of Tranquility by 2.5/5
 minutes.
+
+      * Nature's Swiftness now also increases the healing done by the affected
+nature spell by 50%.
 
   * Glyphs
 
@@ -239,6 +269,8 @@ for pets being happy will now be baseline for all tamed pets.
 
       * Guard Dog no longer causes Growl to generate additional Happiness.
 
+    * Summoned pets now start with 100 focus, up from 0.
+
   * Glyphs
 
     * Glyph of Mend Pet is now Glyph of Greater Proportion, which increases
@@ -246,17 +278,30 @@ the size of the pet slightly.
 
   * Hunter Bug Fixes
 
+    * Hunters will automatically acquire a new target if the current target
+dies in the middle of a cast.
+
+    * Aimed Shot and Steady Shot should no longer start casting Auto Shot on a
+new target when the "Stop Auto Attack" option enabled.
+
+    * Auto Shot now automatically turns off until reactivated once Freezing
+Trap is cast on an enemy player.
+
     * Distracting Shot and Multi-Shot are now properly 40-yard range.
 
     * Multi-Shot now properly has a 1-second global cooldown.
 
+    * Scatter Shot's disorient effect should no longer sometimes be broken by
+the hunter's Auto Shot.
+
 **[Mages][29]**
 
-  * Arcane Blast damage has been increased by 13%. In addition, the stacking
-effect of Arcane Blast now increases the damage done by Arcane Explosion, and
-Arcane Explosion does not consume that effect.
+  * Arcane Blast cast time has been reduced to 2.0 seconds, down from 2.35
+seconds. In addition, the stacking effect of Arcane Blast now increases the
+damage done by Arcane Explosion, and Arcane Explosion does not consume that
+effect.
 
-  * Arcane Explosion damage has been increased by 13%.
+  * Arcane Explosion damage has been increased by 30%.
 
   * Arcane Missiles damage has been increased by 13%.
 
@@ -322,6 +367,9 @@ effect per mastery, up from 1.25%.
       * Grand Crusader will now generate a charge of Holy Power if the Avenger
 Shield it procs is used within 6 seconds.
 
+      * Sacred Duty can now be activated by Avenger's Shield in addition to
+Judgements. The effect now lasts 10 seconds, down from 15.
+
     * Retribution
 
       * Divine Storm now generates 1 point of Holy Power if it hits (i.e.
@@ -341,8 +389,6 @@ channeling Divine Hymn and Hymn of Hope.
 
   * Holy Fire damage has been increased to be approximately 30% higher than
 Smite.
-
-  * Holy Word: Sanctuary has a new spell effect.
 
   * Inner Will and Inner Fire now last until canceled.
 
@@ -374,6 +420,9 @@ of another priest's Power Word: Shield through Strength of Soul.
 
       * Chakra now lasts until canceled, up from 1 minute.
 
+      * Holy Word: Sanctuary healing done has been increased by 35%. In
+addition, it has a new spell effect.
+
       * Surge of Light can now also trigger from Binding Heal.
 
   * Glyphs
@@ -398,6 +447,9 @@ movement penalty from being in Stealth has been removed.
 of Recuperate, down from 1%/2%.
 
     * Subtlety
+
+      * Cheat Death now reduces damage taken by 80% while in effect, down from
+90%. Its internal cooldown has been raised to 90 seconds, up from 60.
 
       * Nightstalker now reduces the cooldown of Stealth by 2/4 seconds, and
 instead of negating the movement penalty from Stealth, it adds a 5/10%
@@ -434,6 +486,8 @@ seconds.
 
     * Restoration
 
+      * Cleansing Waters now has a 6-second internal cooldown.
+
       * Deep Healing now benefits all heals, not just direct heals.
 
       * Spirit Link Totem (new talent) reduces damage taken by all party and
@@ -456,6 +510,9 @@ This counts as an Air totem and has a 3-minute cooldown.
 
       * Shadow Mastery (passive) has been increased to 30%, up from 25%.
 
+Unstable Affliction damage done when it is dispelled has been doubled, but
+this damage can no longer be critical.
+
     * Demonology
 
       * Mana Feed now restores more mana (four times as much) when the warlock
@@ -473,6 +530,11 @@ damage done at lower levels such that it will deal 50% damage at level 20, and
 
     * Shadow Bite (Felhunter) damage and effect has doubled.
 
+  * Glyphs
+
+    * Glyph of Soul Swap now increases the cooldown of Soul Swap by 15
+seconds, up from 10 seconds.
+
 **[Warriors][35]**
 
   * Charge and Intercept no longer have diminishing returns on their stun
@@ -482,6 +544,9 @@ effects.
 continues to ignore 100% of a non-player character's armor (PvE).
 
   * Heroic Throw is now available from trainers at level 20.
+
+  * Heroic Leap is no longer on the global cooldown, similar to other warrior
+movement abilities.
 
   * Inner Rage is now available at level 56.
 
@@ -534,7 +599,9 @@ addition to the 3% hit it offers currently.
 however, it now allows Shield Block to proc a second aura that reduces magic
 damage by 7/14/20% for 6 seconds.
 
-      * Gag Order now only affects Heroic Throw.
+      * Gag Order now applies to Pummel and Heroic Throw, giving these
+abilities a 100% chance to silence the target for 3 seconds. In addition, Gag
+Order lowers the cooldown of Heroic Throw by 30 seconds.
 
   * Glyphs
 
@@ -548,7 +615,7 @@ seconds, up from 1 second.
     * The Dungeon Finder now attempts to avoid putting damage-dealing classes
 with the same armor type in a group.
 
-  * New dungeons available for partial testing.
+  * New level-85 Heroic dungeons are available for testing.
 
     * Zul'Aman has returned as a level-85 5-player Heroic dungeon featuring a
 revamp of the original dungeon and improved loot!
@@ -559,8 +626,17 @@ all-new encounters, achievements, and improved loot!
     * Both dungeons will be in a new Dungeon Finder difficulty tier above the
 current level-85 Heroic dungeons and offer epic-quality item level 353 loot.
 
-    * These dungeons may only partially be available for testing at this time.
-Stay tuned for additional updates.
+    * More information on these updated dungeons can be found [here][37].
+
+  * Blackrock Caverns
+
+    * Aura of Arcane Haste now has a clearer visual on the bearer of the aura.
+
+    * Bound Flames in the Karsh Steelbender encounter no longer create Lava
+Pools when they are killed.
+
+    * The Short Throw ability used by Twilight Sadists has had its range
+reduced to 10 yards.
 
   * Blackwing Descent
 
@@ -589,7 +665,7 @@ normal and Heroic difficulty only).
       * The damage of Tail Lash has been reduced by 20% (10-player normal and
 Heroic difficulty only).
 
-  * Bastion of Twilight
+  * The Bastion of Twilight
 
     * Dragon Siblings
 
@@ -609,15 +685,44 @@ lowered slightly.
       * Knockbacks and Deathgrip can now be used to interrupt players that are
 converted by Cho'gall.
 
+  * Deadmines
+
+    * Ragezone cast by Defias Blood Wizards now only increases damage dealt,
+no longer increasing damage taken.
+
   * Dire Maul North
 
     * The Gordok Courtyard Key in Fengus's Chest is now replenished after
 several seconds.
 
+  * Grim Batol
+
+    * Bleeding Wound damage from General Umbriss has been lowered by 20%.
+
+    * Malignant Trogg now moves more slowly.
+
+    * The Encumbered damage bonus from Forgemaster Throngus has been reduced
+by 50%.
+
+    * Invoked Flaming Spirits should prefer non-tank targets to fixate on.
+
+    * The Twilight Flame Patch from the Twilight Drake has been removed.
+
+    * The cooldown portion of the Twisted Arcane buff cast by Azureborne Seers
+has been removed.
+
   * The Mechanar
 
     * The Cache of the Legion now unlocks when Gatewatcher Gyro-kill is gyro-
 killed.
+
+  * The Stonecore
+
+    * Ground Slam now has a pre-cast visual on the ground in front of Ozruk.
+In addition, Ground Slam's damage and radius have been reduced.
+
+    * High Priestess Azil's Seismic Shard now has a more obvious warning
+visual.
 
   * Stratholme
 
@@ -627,12 +732,40 @@ coupons for brains anyway.
 
     * The Postmaster now spawns when 3 of any postbox are opened.
 
+  * Throne of the Tides
+
+    * Gilgoblin Hunters' Poisoned Spear direct and periodic damage has been
+reduced.
+
+    * Gilgoblin Aquamages' Tsunami damage has been reduced.
+
+    * Visual effects during the Lady Naz'jar have been improved for clarity.
+
+    * Blight Beasts summoned during the Ozumat encounter now deal less damage
+with Aura of Dread.
+
   * Uldaman
 
     * The Staff of Prehistoria is no longer required to open the door in the
 Map Room.
 
     * Baelog's chest has been given new loot. If it's grey it's good, right?
+
+  * Vortex Pinnacle
+
+    * The Air Nova ability triggered when a Gust Soldier is killed has had its
+knockback effect reduced.
+
+    * Altairus now spawns closer to the center of his platform, away from the
+edge.
+
+    * Temple Adepts and Ministers of Air now wait 2 seconds before starting a
+spell cast when they are first engaged.
+
+  * Wailing Caverns
+
+    * The maze section has been removed, and nearby creatures and bosses have
+been adjusted to compensate.
 
   * Zul'Farrak
 
@@ -642,12 +775,41 @@ Map Room.
 substantially reduced: Flame Leviathan, Magtheridon, Gruul the Dragonkiller,
 Doom Lord Kazzak, and all encounters in Karazhan.
 
-**[Guilds][37]**
+**[Guilds][38]**
 
-  * The Guild Perk, Cash Flow, no longer prints out text to the Chat Log.
-Instead, the daily amount deposited is shown in the Guild Vault Money Log. In
-addition, players can view the weekly contribution in a new window at the
-bottom of the Money Log.
+  * [Guild Challenges][39] are now available for testing.
+
+    * These challenges can be found in the Info pane of the guild UI.
+
+    * Guild Challenges fall into three categories: Guild Dungeon Run, Guild
+Raid, and Guild Rated Battleground.
+
+    * Each challenge can be completed a set number of times per week. Guild
+groups participating in level-appropriate Heroic or normal difficulty dungeons
+and raids, or Rated Battlegrounds, will automatically qualify for challenge
+credit.
+
+    * Each time a Guild Challenge is completed, the guild will be awarded
+experience and gold deposited directly into the Guild Vault, as well as the
+opportunity to earn all-new achievements. A popup or "toast" will be displayed
+to confirm a Guild Challenge has been completed (similar to achievement
+alerts).
+
+    * Guild experience earned via Guild Challenges will be awarded above the
+daily cap. The experience cap will move forward relative to the amount of
+experience obtained through completing Guild Challenges (similar to rested
+experience for characters).
+
+    * Guilds already at the level cap will be awarded substantially more gold
+in place of guild experience.
+
+    * Gold rewards require the qualified guild members of the group to be
+honored with their guild, and the guild must be level 5.
+
+    *   * The Guild Perk, Cash Flow, no longer prints out text to the Chat
+Log. Instead, the daily amount deposited is shown in the Guild Vault Money
+Log. In addition, players can view the weekly contribution in a new window at
+the bottom of the Money Log.
 
   * Two new custom guild tabards have been added as Guild Rewards. The tabards
 are account bound and offer a bonus to gaining guild reputation.
@@ -664,12 +826,25 @@ Battleground brackets up to level 80.
   * Arena teams are now awarded guild experience for wins. The entire team
 must be members of the same guild to earn this experience.
 
-**[Items][38]**
+**[Items][40]**
 
-  * All trade goods available for purchase with Honor or Justice Points from
+  * Account Bound Items
+
+    * Many "Account Bound" heirlooms are now labeled as "Battle.net Account
+Bound", meaning that they can also be traded or mailed to characters that are
+on different World of Warcraft accounts under the same Battle.net account.
+
+    * Mail sent to characters on the same Battle.net account now arrives
+instantaneously, as it does for the same World of Warcraft account.
+
+    * Mailing account-bound items to characters of the opposite faction on the
+same Battle.net account will now correctly translate faction-specific items to
+their appropriate equivalent.
+
+    * All trade goods available for purchase with Honor or Justice Points from
 the associated commodities vendors have had their prices reduced by 50%.
 
-  * Maelstrom Crystals are now available for purchase with Honor or Justice
+    * Maelstrom Crystals are now available for purchase with Honor or Justice
 Points from the associated commodities vendors.
 
   * The PvP Horde and Alliance trinkets have a new spell effect.
@@ -688,23 +863,37 @@ target to be under the effects of Weakened Soul for the priest to receive the
 Spirit bonus. Instead the benefit will be granted each time the priest's
 Penance spell heals a target.
 
-**[Professions][39]**
+**[Professions][41]**
 
   * All major cities will now have every type of profession trainer and their
 associated trade supply vendors.
 
-**[PvP][40]**
+  * Alchemy
+
+    * Flask of Steelskin now grants 450 Stamina, up from 300. The Mixology
+bonus for alchemists remains at 120 Stamina.
+
+**[PvP][42]**
+
+  * The rate at which Honor Points are earned has been doubled.
 
   * Arenas
 
-    * The Ring of Valor has returned! It should now be playable again in the
+    * Arena matchmaking can now extend beyond a team's Battlegroup.
+
+    * Ring of Valor
+
+      * The Ring of Valor has returned! It should now be playable again in the
 Arena map rotation.
 
-    * New starting areas have been added for Ring of Valor. Players will no
+      * New starting areas have been added for Ring of Valor. Players will no
 longer enter the Arena on the elevator. It's been removed. Instead players
 will start in a room at opposite ends of the Arena.
 
   * Battlegrounds
+
+    * Battleground raid leaders can now move players from other realms among
+raid subgroups.
 
     * The Focused Assault and Brutal Assault buffs have changed.
 
@@ -757,27 +946,28 @@ the enemy base.
 
         * Attacking players will respawn at their base graveyard.
 
-**[Quests & Creatures][41]**
+**[Quests & Creatures][43]**
 
   * A handful of quests have been added to Northern Barrens to provide more
 level 18-20 content. Look for new quests at Nozzlepot's Outpost and Darsok's
 Outpost.
 
-  * Loot from the creatures Garr, Julak-Doom, Mobus, and Poseidus has been
-adjusted to be commensurate to their rarity and invested effort.
+  * Loot from the creatures Garr, Julak-Doom, Mobus, Akma'Hat, Xariona, and
+Poseidus has been adjusted to be commensurate to their rarity and invested
+effort.
 
-**[Races][42]**
+**[Races][44]**
 
   * The gnomish racial ability, Escape Artist, is no longer affected by the
 global cooldowns triggered by other abilities.
 
   * The human racial ability, Every Man for Himself, has a new spell effect.
 
-**[User Interface][43]**
+**[User Interface][45]**
 
   * The Guild Finder has been implemented! While we are continuing to add
 final polish to this feature, we welcome all focused testers to give it a go.
-Feedback can be provided [here][44].
+Feedback can be provided [here][46].
 
   * Like the Focus Frame, the character Unit and Target Frames can now be
 unlocked and moved to one's content.
@@ -859,18 +1049,22 @@ changed and operates on mouse click up.
 
    [36]: http://us.battle.net/wow/en/forum/1011645/
 
-   [37]: http://us.battle.net/wow/en/forum/2187372/
+   [37]: http://us.battle.net/wow/en/blog/2514161
 
-   [38]: http://us.battle.net/wow/en/item/
+   [38]: http://us.battle.net/wow/en/forum/2187372/
 
-   [39]: http://us.battle.net/wow/en/forum/1011647/
+   [39]: http://us.battle.net/wow/en/blog/2534919
 
-   [40]: http://us.battle.net/wow/en/pvp/
+   [40]: http://us.battle.net/wow/en/item/
 
-   [41]: http://us.battle.net/wow/en/forum/1011692/
+   [41]: http://us.battle.net/wow/en/forum/1011647/
 
-   [42]: http://us.battle.net/wow/en/game/race/
+   [42]: http://us.battle.net/wow/en/pvp/
 
-   [43]: http://us.battle.net/wow/en/forum/1011693/
+   [43]: http://us.battle.net/wow/en/forum/1011692/
 
-   [44]: http://us.battle.net/wow/en/forum/topic/2267579911
+   [44]: http://us.battle.net/wow/en/game/race/
+
+   [45]: http://us.battle.net/wow/en/forum/1011693/
+
+   [46]: http://us.battle.net/wow/en/forum/topic/2267579911
