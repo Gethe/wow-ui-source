@@ -42,7 +42,14 @@ testing process._
 
 **General**
 
-  * Flying mounts can now be used in Ghostlands.
+  * Conquest Points are now purchasable from the Valor Quartermasters at 250
+Conquest Points per 250 Valor Points.
+
+  * Honor Points are now purchasable from the Justice Trade Goods vendors at
+250 Honor Points per 375 Justice Points.
+
+  * Justice Points are now purchasable from the Honor Trade Goods vendors at
+250 Justice Points per 375 Honor Points.
 
   * Resilience scaling has been modified for linear returns, as opposed to
 increasing returns. Under the new formula, going from 30 resilience to 40
@@ -123,7 +130,9 @@ effects for friendly players, but new alternate visuals for hostile players:
 Ring of Frost, Consecration, Desecration, Wild Mushroom, Flare, Ice Trap,
 Power Word: Barrier, Smoke Bomb, and Hand of Gul'dan. As a general rule, the
 alternate effects have a red tint or hue indicating they are created by an
-enemy player.
+enemy player. There are currently some issues with this new change which are
+affecting several of these abilities and is not working as intended at this
+time.
 
 **[Death Knights][26]**
 
@@ -163,6 +172,9 @@ requirement.
 immune target. This is primarily to avoid unnecessary spell effect clutter
 during boss encounters.
 
+      * Rage of Rivendare again applies 15/30/45% additional damage to Plague,
+Scourge, and Festering Strike, up from 12/24/36%.
+
   * Glyphs
 
     * Glyph of Raise Ally is now Glyph of Death Gate, and makes Death Gate
@@ -175,6 +187,8 @@ damage done.
 
   * Efflorescence has a new spell effect.
 
+  * Enrage no longer increases physical damage taken.
+
   * Lifebloom's bloom effect has been reduced by 20%.
 
   * Prowl has a new icon.
@@ -185,12 +199,15 @@ absorption, it now places an absorption effect on the druid absorbing up to
 and lasting 10 seconds. There are no longer any charges on the effect.
 
   * Stampeding Roar's duration has been increased to 8 seconds, up from 6. The
-movement speed effect has been increased to 60%, up from 40%.
+movement speed effect has been increased to 60%, up from 40% and is no longer
+cancelled by cancelling shapeshift form.
 
   * Swipe (Bear) cooldown has been reduced to 3 seconds, down from 6, and is
 now on trainable at level 18 (training cost has been reduced). In addition,
 the bonus threat from this ability has been removed and replaced with
 increased damage done.
+
+  * Swipe (Cat) damage has been doubled.
 
   * Thrash bonus threat has been removed and replaced with increased damage
 done.
@@ -207,6 +224,8 @@ channeling Tranquility.
       * Solar Beam is now more responsive when enemies move into or out of it.
 
     * Feral
+
+      * Berserk is no longer on the global cooldown.
 
       * Feral Swiftness now also causes Dash and Stampeding Roar to have a
 50/100% chance to instantly remove all movement impairing effects from the
@@ -287,6 +306,9 @@ new target when the "Stop Auto Attack" option enabled.
     * Auto Shot now automatically turns off until reactivated once Freezing
 Trap is cast on an enemy player.
 
+    * Deterrence: The area damage of the paladin ability Hammer of the
+Righteous will no longer hit hunters with Deterrence active.
+
     * Distracting Shot and Multi-Shot are now properly 40-yard range.
 
     * Multi-Shot now properly has a 1-second global cooldown.
@@ -306,6 +328,18 @@ effect.
   * Arcane Missiles damage has been increased by 13%.
 
   * Blizzard damage has been increased by 70%.
+
+  * Frost Armor has been reworked:
+
+    * It now reduces physical damage taken by 15%, instead of providing 20%
+additional armor.
+
+    * The Chilled proc from Frost Armor can no longer proc Fingers of Frost.
+
+    * The attack speed slow from the Chilled proc is now 20%, down from 25%,
+but it also affects ranged attack speed.
+
+    * Frost Armor also no longer increases Frost resistance.
 
   * Frostbolt damage has been increased by 10%.
 
@@ -377,6 +411,17 @@ successfully lands on) 4 or more targets.
 
       * Sacred Shield's internal cooldown has been increased to 60 seconds, up
 from 30.
+
+  * Paladin Bug Fixes
+
+    * Avenger's Shield can no longer be blocked.
+
+    * Judgements of the Just debuff can no longer trigger talents and other
+effects.
+
+    * Seal of Truth: Fixed a tooltip error that stated swings at targets with
+Censure fully stacked dealt 9% weapon damage. They actually dealt 15% damage
+and the tooltip has been updated accordingly.
 
 **[Priests][31]**
 
@@ -463,6 +508,8 @@ by the shaman's own Flame Shock debuff. It now damages all enemies except the
 target hit by Flame Shock. The ability's cooldown has been reduced to 4
 seconds, down from 10.
 
+  * Grounding Totem cooldown has been increased to 25 seconds, up from 15.
+
   * Magma Totem now lasts for 60 seconds, up from 21.
 
   * Stoneclaw Totem's area-of-effect threat pulse no longer affects critters.
@@ -490,13 +537,29 @@ seconds.
 
       * Deep Healing now benefits all heals, not just direct heals.
 
+      * Earth Shield healing done by Restoration shaman has been reduced by
+20%.
+
+      * Nature's Blessing has been improved to 6/12/18% bonus direct healing
+on Earth Shielded targets, up from 5/10/15%.
+
       * Spirit Link Totem (new talent) reduces damage taken by all party and
 raid members within 10 yards by 10%. This lasts 6 seconds, and every second it
 is active the health of all affected players is redistributed among them, such
 that each player ends up with the same percentage of their maximum health.
 This counts as an Air totem and has a 3-minute cooldown.
 
+  * Glyphs
+
+    * Glyph of Grounding Totem now increases the cooldown of the ability by 35
+seconds, down from 45 seconds.
+
 **[Warlocks][34]**
+
+  * Dark Intent: The friendly target of this ability now receives 1% (stacking
+3 times to 3%) periodic spell damage and healing bonus instead of 3% (stacking
+3 times to 9%). The casting Warlock still receives 3% (stacking 3 times to
+9%).
 
   * Rain of Fire damage has been increased by 25%.
 
@@ -510,8 +573,8 @@ This counts as an Air totem and has a 3-minute cooldown.
 
       * Shadow Mastery (passive) has been increased to 30%, up from 25%.
 
-Unstable Affliction damage done when it is dispelled has been doubled, but
-this damage can no longer be critical.
+      * Unstable Affliction damage done when it is dispelled has been doubled,
+but this damage can no longer be critical.
 
     * Demonology
 
@@ -574,7 +637,7 @@ unchanged.
     * Arms
 
       * Improved Hamstring now reduces the global cooldown on Hamstring by
-0.5/1 seconds in addition to its current effects.
+0.25/0.5 seconds in addition to its current effects.
 
       * Juggernaut no longer adds 2 seconds to the Charge stun, but instead
 lowers the cooldown of Charge by 2 seconds (to 13 seconds total without the
@@ -614,6 +677,32 @@ seconds, up from 1 second.
 
     * The Dungeon Finder now attempts to avoid putting damage-dealing classes
 with the same armor type in a group.
+
+    * Players will now get bonus rewards 7 times per week (while earning less
+than 980 Valor Points) instead of once a day when using Dungeon Finder.
+
+    * When there is only 1 player left in a Dungeon Finder group, they will
+now be able to queue for replacements as long as they queue within 2 minutes
+or stay in the dungeon.
+
+    * The Dungeon Finder: Call to Arms will now identify which class role is
+currently the least represented in the queue, and offer them additional
+rewards for entering the Dungeon Finder queue and completing a random level-85
+Heroic dungeon.
+
+      * The least represented class icon will show within the Dungeon Finder
+to indicate the role that is eligible to earn the bonus reward.
+
+      * Players must queue solo with the currently indicated least represented
+class (by the system) and complete the dungeon up to and including the final
+boss in order to be eligible for the bonus reward.
+
+      * The bonus reward will be displayed to eligible (system identified as
+least represented) classes within the UI.
+
+      * Once the dungeon is completed the eligible player will receive a
+Satchel of Exotic Mysteries (account bound) with various potential rewards
+including: gold, rare gems, non-combat pets, and (very rare) mounts.
 
   * New level-85 Heroic dungeons are available for testing.
 
@@ -685,6 +774,12 @@ lowered slightly.
       * Knockbacks and Deathgrip can now be used to interrupt players that are
 converted by Cho'gall.
 
+    * Sinestra
+
+      * Twilight Slicer is now less likely to target two helers at once.
+
+      * Wrack will avoid jumping to tanks.
+
   * Deadmines
 
     * Ragezone cast by Defias Blood Wizards now only increases damage dealt,
@@ -710,6 +805,16 @@ by 50%.
 
     * The cooldown portion of the Twisted Arcane buff cast by Azureborne Seers
 has been removed.
+
+  * Halls of Origination
+
+    * Temple Gardian Anhuur should now properly go into his shield phase at
+33% even if he was channeling his 66% shield phase.
+
+  * Lost City of Tol'vir
+
+    * Soul Fragments that spawn during the High Prophet Barim encounter should
+now perform an emote when they merge with the Harbinger of Darkness.
 
   * The Mechanar
 
@@ -764,8 +869,9 @@ spell cast when they are first engaged.
 
   * Wailing Caverns
 
-    * The maze section has been removed, and nearby creatures and bosses have
-been adjusted to compensate.
+    * The maze section has been removed to make the overall dungeon more
+accessible and quicker to complete. Nearby creatures and bosses have been
+adjusted to compensate.
 
   * Zul'Farrak
 
@@ -776,6 +882,9 @@ substantially reduced: Flame Leviathan, Magtheridon, Gruul the Dragonkiller,
 Doom Lord Kazzak, and all encounters in Karazhan.
 
 **[Guilds][38]**
+
+  * The criteria on many of the profession-related guild achievements has been
+significantly reduced.
 
   * [Guild Challenges][39] are now available for testing.
 
@@ -803,13 +912,13 @@ experience for characters).
     * Guilds already at the level cap will be awarded substantially more gold
 in place of guild experience.
 
-    * Gold rewards require the qualified guild members of the group to be
-honored with their guild, and the guild must be level 5.
+    * Gold rewards are deposited into the guild bank once the guild reaches
+level 5. The text for the Cash Flow guild perk has been updated appropriately.
 
-    *   * The Guild Perk, Cash Flow, no longer prints out text to the Chat
-Log. Instead, the daily amount deposited is shown in the Guild Vault Money
-Log. In addition, players can view the weekly contribution in a new window at
-the bottom of the Money Log.
+  * The Guild Perk, Cash Flow, no longer prints out text to the Chat Log.
+Instead, the daily amount deposited is shown in the Guild Vault Money Log. In
+addition, players can view the weekly contribution in a new window at the
+bottom of the Money Log.
 
   * Two new custom guild tabards have been added as Guild Rewards. The tabards
 are account bound and offer a bonus to gaining guild reputation.
@@ -863,10 +972,16 @@ target to be under the effects of Weakened Soul for the priest to receive the
 Spirit bonus. Instead the benefit will be granted each time the priest's
 Penance spell heals a target.
 
+    * The caster shaman 4-piece PvP set bonus now reduces the cooldown of
+Grounding Totem by 3 seconds, up from 1.5.
+
 **[Professions][41]**
 
   * All major cities will now have every type of profession trainer and their
 associated trade supply vendors.
+
+  * New Cooking and Fishing Dailies have been added to Darnassus, Ironforge,
+Thunder Bluff, and Undercity.
 
   * Alchemy
 
@@ -976,6 +1091,56 @@ unlocked and moved to one's content.
 by default, instead of waiting for the key to go up. This is an option that
 can be turned off in the Interface menu under Combat. Mouse clicking has not
 changed and operates on mouse click up.
+
+  * Targets and focus targets now display on the mini-map.
+
+  * Moved Video and Sound to a new "Options" screen.
+
+  * Added a network category to the new Options screen and included the two
+network checkboxes.
+
+    * The Network category contains the options "Optimize network for speed"
+and "Enable IPv6 when available". "Optimize network for speed" will be enabled
+by default, and will send packets more frequently at the cost of higher
+bandwidth. The higher bandwidth may lead to disconnects for some players who
+have limited bandwidth. Players getting disconnected frequently should try
+unchecking this box.
+
+  * Visual Settings Updates
+
+    * Removed the red bar preventing the overall graphics slider from going to
+ultra based on computer specs.
+
+    * When a player moves the overall slider to a setting that would have
+previously been prevented, any option that can't go as high as that setting
+will get the warning icon with a tooltip explaining why it can't go higher.
+For example: a player sets the overall slider to Ultra and the water setting
+can only go to Fair. The water setting would automatically switch to Fair.
+
+    * Support for DirectX 11 can now be found in the Advanced tab of the
+Options screen.
+
+  * At the login screen:
+
+    * Moved the "Reset User Options" button from the popup window that appears
+when clicking Options to the actual Options window.
+
+    * Clicking Options now goes directly to the Video tab of the Options
+screen.
+
+    * Removed the now-unneeded popup.
+
+  * The New Features (!) Option screen has been updated:
+
+    * Cast action keybinds on key down (Combat)
+
+    * Pick Up Action Key (ActionBars)
+
+    * Nameplate Motion Type (Names)
+
+    * Graphics API (Advanced)
+
+    * Network category
 
    [1]: http://us.battle.net/wow/en/game/patch-notes/
 
