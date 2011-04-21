@@ -1260,7 +1260,7 @@
 									</OnLoad>
 								</Scripts>
 								<ScrollChild>
-									<Frame name="$parentChildFrame">
+									<Frame name="$parentChildFrame" hidden="true">
 										<Size>
 											<AbsDimension x="298" y="1"/>
 										</Size>

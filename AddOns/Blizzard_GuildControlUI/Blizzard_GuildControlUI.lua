@@ -396,7 +396,7 @@ function GuildControlUI_ShiftRankDownButton_OnClick(self)
 		activeEditBox:ClearFocus();
 	end
 	self:SetButtonState("NORMAL");
-	self:Disable();
+	GuildControlUI_DisableRankButtons();
 	local index = self:GetParent():GetID();
 	GuildControlShiftRankDown(index);
 end
@@ -408,12 +408,19 @@ function GuildControlUI_ShiftRankUpButton_OnClick(self)
 		activeEditBox:ClearFocus();
 	end
 	self:SetButtonState("NORMAL");
-	self:Disable();
+	GuildControlUI_DisableRankButtons();
 	local index = self:GetParent():GetID();
 	GuildControlShiftRankUp(index);
 end
 
-
+function GuildControlUI_DisableRankButtons()
+	local numRanks = GuildControlGetNumRanks();
+	for i = 1, numRanks do
+		local rankFrame = _G["GuildControlUIRankOrderFrameRank"..i];
+		rankFrame.downButton:Disable();
+		rankFrame.upButton:Disable();
+	end
+end
 
 function GuildControlUINavigationDropDown_OnSelect(self, arg1, arg2)
 	UIDropDownMenu_SetText(GuildControlUINavigationDropDown, arg2);

@@ -493,7 +493,7 @@ function GuildBankFrame_UpdateTabs()
 		GuildBankTabLimitBackgroundRight:Show();
 		GuildBankCashFlowLabel:Hide();
 		GuildBankCashFlowMoneyFrame:Hide();
-	elseif ( GuildBankFrame.mode == "moneylog" and GetSpellInfo("Cash Flow") ) then
+	elseif ( GuildBankFrame.mode == "moneylog" and GetSpellInfo(83940) ) then	-- Cash Flow rank 1
 		GuildBankFrame_UpdateCashFlowMoney();
 		GuildBankTabLimitBackground:Show();
 		GuildBankTabLimitBackgroundLeft:Show();

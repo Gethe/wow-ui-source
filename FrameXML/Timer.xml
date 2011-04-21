@@ -24,6 +24,8 @@
 					<OnFinished>
 						local frame = self:GetParent();
 						frame.bar:SetAlpha(0);
+						-- Subtract this animations time
+						frame.time = frame.time - 0.9
 						frame.startNumbers:Play();
 					</OnFinished>
 				</Scripts>

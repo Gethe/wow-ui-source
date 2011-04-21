@@ -62,6 +62,8 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("LFG_OFFER_CONTINUE");
 	self:RegisterEvent("LFG_ROLE_CHECK_ROLE_CHOSEN");
 	
+	self:RegisterEvent("VARIABLES_LOADED");
+	
 	--These just update states (roles changeable, buttons clickable, etc.)
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
@@ -121,6 +123,8 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		end
 		assert(roleList);
 		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
+	elseif ( event == "VARIABLES_LOADED" ) then
+		LFG_UpdateRoleCheckboxes();
 	end
 	
 	LFG_UpdateRolesChangeable();

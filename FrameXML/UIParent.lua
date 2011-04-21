@@ -3777,3 +3777,15 @@ function GetDisplayedAllyFrames()
 		return nil;
 	end
 end
+
+function ReverseQuestObjective(text, objectiveType)
+	if ( objectiveType == "spell" ) then
+		return text;
+	end
+	local _, _, arg1, arg2 = string.find(text, "(.*):%s(.*)");
+	if ( arg1 and arg2 ) then
+		return arg2.." "..arg1;
+	else
+		return text;
+	end
+end

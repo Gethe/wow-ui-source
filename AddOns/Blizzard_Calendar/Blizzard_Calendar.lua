@@ -592,6 +592,7 @@ local CALENDAR_EVENTTYPE_TEXTURE_PATHS = {
 --	[CALENDAR_EVENTTYPE_PVP]		= "",
 --	[CALENDAR_EVENTTYPE_MEETING]	= "",
 --	[CALENDAR_EVENTTYPE_OTHER]		= "",
+	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = "Interface\\LFGFrame\\LFGIcon-",
 };
 local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-Raid",
@@ -599,6 +600,7 @@ local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
 	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
+	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = "Interface\\LFGFrame\\LFGIcon-Dungeon",
 };
 local CALENDAR_EVENTTYPE_TCOORDS = {
 	[CALENDAR_EVENTTYPE_RAID] = {
@@ -626,6 +628,12 @@ local CALENDAR_EVENTTYPE_TCOORDS = {
 		bottom	= 1.0,
 	},
 	[CALENDAR_EVENTTYPE_OTHER] = {
+		left	= 0.0,
+		right	= 1.0,
+		top		= 0.0,
+		bottom	= 1.0,
+	},
+	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
@@ -3767,15 +3775,15 @@ function CalendarCreateEventTexture_Update()
 end
 
 function CalendarCreateEventTypeDropDown_Initialize(self)
-	CalendarCreateEventTypeDropDown_InitEventTypes(self, CalendarEventGetTypes());
+	CalendarCreateEventTypeDropDown_InitEventTypes(self, CalendarEventGetTypesDisplayOrdered());
 end
 
 function CalendarCreateEventTypeDropDown_InitEventTypes(self, ...)
 	local info = UIDropDownMenu_CreateInfo();
-	for i = 1, select("#", ...) do
-		info.text = select(i, ...);
+	for i = 1, select("#", ...), 2 do
+		info.text, info.value = select(i, ...);
 		info.func = CalendarCreateEventTypeDropDown_OnClick;
-		if ( CalendarCreateEventFrame.selectedEventType == i ) then
+		if ( CalendarCreateEventFrame.selectedEventType == info.value ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(self, info.text);
 		else
@@ -3786,13 +3794,13 @@ function CalendarCreateEventTypeDropDown_InitEventTypes(self, ...)
 end
 
 function CalendarCreateEventTypeDropDown_OnClick(self)
-	local id = self:GetID();
-	if ( id == CALENDAR_EVENTTYPE_DUNGEON or id == CALENDAR_EVENTTYPE_RAID ) then
-		CalendarTexturePickerFrame_Show(id);
+	local eventType = self.value;
+	if ( eventType == CALENDAR_EVENTTYPE_DUNGEON or eventType == CALENDAR_EVENTTYPE_RAID or eventType == CALENDAR_EVENTTYPE_HEROIC_DUNGEON ) then
+		CalendarTexturePickerFrame_Show(eventType);
 	else
-		UIDropDownMenu_SetSelectedID(CalendarCreateEventTypeDropDown, id);
-		CalendarCreateEventFrame.selectedEventType = id;
-		CalendarEventSetType(id);
+		UIDropDownMenu_SetSelectedValue(CalendarCreateEventTypeDropDown, eventType);
+		CalendarCreateEventFrame.selectedEventType = eventType;
+		CalendarEventSetType(eventType);
 		-- NOTE: clear the texture selection for non-dungeon types since those don't have texture selections
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
 		CalendarCreateEventTexture_Update();
@@ -3803,7 +3811,7 @@ end
 
 function CalendarCreateEvent_UpdateEventType()
 	UIDropDownMenu_Initialize(CalendarCreateEventTypeDropDown, CalendarCreateEventTypeDropDown_Initialize);
-	UIDropDownMenu_SetSelectedID(CalendarCreateEventTypeDropDown, CalendarCreateEventFrame.selectedEventType);
+	UIDropDownMenu_SetSelectedValue(CalendarCreateEventTypeDropDown, CalendarCreateEventFrame.selectedEventType);
 end
 
 function CalendarCreateEventRepeatOptionDropDown_Initialize(self)
@@ -5180,7 +5188,7 @@ function CalendarTexturePickerAcceptButton_OnClick(self)
 		CalendarEventSetType(eventType);
 		CalendarEventSetTextureID(CalendarCreateEventFrame.selectedTextureIndex);
 		-- update the create event frame using our selection
-		UIDropDownMenu_SetSelectedID(CalendarCreateEventTypeDropDown, eventType);
+		UIDropDownMenu_SetSelectedValue(CalendarCreateEventTypeDropDown, eventType);
 		CalendarCreateEventFrame.selectedEventType = eventType;
 		CalendarCreateEventTexture_Update();
 		CalendarTexturePickerFrame:Hide();

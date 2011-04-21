@@ -132,6 +132,9 @@ function LFDFrame_UpdateCapBar()
 	local capBar = LFDQueueFrameCapBar;
 	
 	local currencyID, tier1DungeonID, tier1Quantity, tier1Limit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit = GetLFGDungeonRewardCapBarInfo(VALOR_TIER1_LFG_ID);
+	if ( not currencyID ) then
+		return;	--We may not have any info yet. (If the player has 5 seconds of lag and opens the window right after login)
+	end
 	
 	local currencyName, currencyQuantity, currencyIcon, currencyEarnedThisWeek, currencyEarnablePerWeek, currencyCap, currencyIsDiscovered = GetCurrencyInfo(currencyID);
 	if ( currencyIsDiscovered ) then
@@ -584,7 +587,7 @@ function LFDQueueFrame_Join()
 			LFDQueueFrame_QueueForInstanceIfEnabled(queueID);
 		end
 		JoinLFG();
-	else
+	elseif ( LFDQueueFrame.type ) then
 		ClearAllLFGDungeons();
 		SetLFGDungeon(LFDQueueFrame.type);
 		JoinLFG();
@@ -1008,9 +1011,11 @@ function LFDQueueFrameRandom_UpdateFrame()
 	
 	local dungeonID = LFDQueueFrame.type;
 	
-	if ( not dungeonID ) then	--We haven't gotten info on available dungeons yet.
+	if ( type(dungeonID) ~= "number" ) then	--We haven't gotten info on available dungeons yet.
 		return;
 	end
+	
+	parentFrame:Show();
 	
 	local holiday;
 	local difficulty;

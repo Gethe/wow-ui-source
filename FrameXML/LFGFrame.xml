@@ -93,7 +93,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentIncentiveIcon" parentKey="incentiveIcon">
+			<Frame name="$parentIncentiveIcon" parentKey="incentiveIcon" hidden="true">
 				<Size x="25" y="25"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>

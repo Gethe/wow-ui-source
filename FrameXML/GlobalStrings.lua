@@ -1397,6 +1397,7 @@ CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON = "Remove yourself from this event.";
 CALENDAR_TOOLTIP_SIGNUPBUTTON = "Add yourself to this event.";
 CALENDAR_TOOLTIP_TENTATIVEBUTTON = "Sets your status to Tentative for this event.";
 CALENDAR_TYPE_DUNGEON = "Dungeon";
+CALENDAR_TYPE_HEROIC_DUNGEON = "Heroic Dungeon";
 CALENDAR_TYPE_MEETING = "Meeting";
 CALENDAR_TYPE_OTHER = "Other";
 CALENDAR_TYPE_PVP = "PvP";

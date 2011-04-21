@@ -407,6 +407,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 			PartyMemberFrame_ToPlayerArt(self);
 		end
 	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
+		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateOnlineStatus(self);
 	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
 		if ( event ~= "UNIT_PHASE" or arg1 == unit ) then

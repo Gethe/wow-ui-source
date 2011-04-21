@@ -1778,7 +1778,7 @@ function WorldMapFrame_UpdateQuests()
 				for j = 1, numObjectives do
 					text, objectiveType, finished = GetQuestLogLeaderBoard(j, questLogIndex);
 					if ( text and not finished ) then
-						reversedText = WorldMapFrame_ReverseQuestObjective(text, objectiveType);
+						reversedText = ReverseQuestObjective(text, objectiveType);
 						questText = questText..reversedText.."|n";
 						refFrame.objectives:SetText(reversedText);
 						-- need to add 1 spacing's worth to height because for n number of lines there are n-1 spacings
@@ -1944,18 +1944,6 @@ function WorldMapFrame_GetQuestFrame(index, isComplete)
 	return frame;
 end
 
-function WorldMapFrame_ReverseQuestObjective(text, objectiveType)
-	if ( objectiveType == "spell" ) then
-		return text;
-	end
-	local _, _, arg1, arg2 = string.find(text, "(.*):%s(.*)");
-	if ( arg1 and arg2 ) then
-		return arg2.." "..arg1;
-	else
-		return text;
-	end
-end
-
 function WorldMapQuestFrame_OnEnter(self)
 	self.ownPOI:LockHighlight();
 	WorldMapQuestScrollFrame.highlightedFrame = self;
@@ -2064,7 +2052,7 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 			for i = 1, numObjectives do
 				local text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
 				if ( text and not finished ) then
-					WorldMapTooltip:AddLine("- "..WorldMapFrame_ReverseQuestObjective(text, objectiveType), 1, 1, 1, 1);
+					WorldMapTooltip:AddLine("- "..ReverseQuestObjective(text, objectiveType), 1, 1, 1, 1);
 				end
 			end
 		end
@@ -2075,7 +2063,7 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 			for i = 1, numItemDropTooltips do
 				text, objectiveType, finished = GetQuestLogItemDrop(i, questLogIndex);
 				if ( text and not finished ) then
-					WorldMapTooltip:AddLine("- "..WorldMapFrame_ReverseQuestObjective(text, objectiveType), 1, 1, 1, 1);
+					WorldMapTooltip:AddLine("- "..ReverseQuestObjective(text, objectiveType), 1, 1, 1, 1);
 				end
 			end
 		else
@@ -2089,7 +2077,7 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 					text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
 				end
 				if ( text and not finished ) then
-					WorldMapTooltip:AddLine("- "..WorldMapFrame_ReverseQuestObjective(text, objectiveType), 1, 1, 1, 1);
+					WorldMapTooltip:AddLine("- "..ReverseQuestObjective(text, objectiveType), 1, 1, 1, 1);
 				end
 			end		
 		end

@@ -223,29 +223,8 @@
 			</OnMouseUp>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
-				local data = HelpFrameNavTbl[self:GetID()];
-				if data.frame then
-					local showFrame = HelpFrame[data.frame];
-					for a,frame in pairs(HelpFrameWindows) do
-						if showFrame ~= frame then
-							frame:Hide();
-						end
-					end
-					showFrame:Show();
-				end
-				
-				if data.func then
-					_G[data.func]();
-				end
-				
-				self.selected:Show();
-				if HelpFrame.disabledButton then
-					HelpFrame.disabledButton.selected:Hide();
-					HelpFrame.disabledButton:Enable();
-				end
-				self:Disable();
-				HelpFrame.disabledButton = self;
-				HelpFrame.selectedId = self:GetID();
+				HelpFrame_SetSelectedButton(self);
+				HelpFrame_SetFrameByKey(self:GetID());
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\HelpFrame\HelpButtons">
@@ -1362,18 +1341,52 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-					<Frame name="$parentErrorFrame" hidden="true" parentKey="errorFrame">
+					<Frame>
 						<Size x="300" y="300"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="$parentScrollFrame" x="0" y="20"/>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentText" inherits="ErrorFont" text="ERROR" justifyH="CENTER" parentKey="text">			
-									<Size x="300" y="0"/>
-								</FontString>
-							</Layer>
-						</Layers>
+						<Frames>
+							<Frame name="$parentErrorFrame" inherits="TranslucentFrameTemplate" enableMouse="true" hidden="true">
+								<Size x="350" y="230"/>
+								<Anchors>
+									<Anchor point="CENTER" relativeTo="$parentScrollFrame" x="0" y="20"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="7" y="-10"/>
+												<Anchor point="BOTTOMRIGHT" x="-7" y="10"/>
+											</Anchors>
+											<Color r="0" g="0" b="0" a="1"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<FontString name="$parentText" inherits="ErrorFont" text="ERROR" justifyH="CENTER" parentKey="text">			
+											<Size x="300" y="0"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="-6" y="-6"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												self:GetParent():Hide();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										self:GetParent():GetParent().errorFrame = self;
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -1395,24 +1408,185 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_SUBMIT_TICKET_TITLE" justifyH="LEFT">
+						<FontString name="$parentTitle1" parentKey="title1" inherits="GameFontNormalLarge" text="HELPFRAME_OPENTICKET_EDITTEXT" justifyH="LEFT">
 							<Size x="0" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="15" y="-15"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_OPENTICKET_TEXT" justifyH="LEFT">
-							<Size x="450" y="0"/>
+						<FontString name="$parentTitle2" parentKey="title2" inherits="GameFontNormalLarge" text="GM_RESPONSE_FRAME_HEADER" justifyH="LEFT">
+							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+								<Anchor point="TOPLEFT" x="15" y="-214"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button name="$parentNeedMoreHelp" inherits="GameMenuButtonTemplate" text="GM_RESPONSE_MORE_HELP">
+						<Size x="160" y="30"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="-100" y="15"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("GM_RESPONSE_NEED_MORE_HELP");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentCancel" inherits="GameMenuButtonTemplate" text="GM_RESPONSE_RESOLVE" parentKey="cancelButton">
+						<Size x="160" y="30"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="100" y="15"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("GM_RESPONSE_RESOLVE_CONFIRM");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parentScrollFrame1" inherits="UIPanelScrollFrameCodeTemplate">
+						<Size x="435" y="140"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-45"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentCharacterCount" inherits="GameFontDisableLarge" parentKey="charCount">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-15" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-13" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-13" y="16"/>
+								</Anchors>
+							</Slider>
+						</Frames>
+						<ScrollChild>
+							<Frame>
+								<Size>
+									<AbsDimension x="10" y="10"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="HelpFrameGMResponse_IssueText" inherits="ChatFontNormal" justifyH="LEFT">
+											<Size x="413" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<ScrollFrame name="$parentScrollFrame2" inherits="UIPanelScrollFrameCodeTemplate">
+						<Size x="435" y="140"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="70"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentCharacterCount" inherits="GameFontDisableLarge" parentKey="charCount">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-15" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-13" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-13" y="16"/>
+								</Anchors>
+							</Slider>
+						</Frames>
+						<ScrollChild>
+							<Frame>
+								<Size>
+									<AbsDimension x="10" y="10"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="HelpFrameGMResponse_GMText" inherits="ChatFontNormal" justifyH="LEFT">
+											<Size x="413" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<Frame>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame1" x="-7" y="7"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame1" x="7" y="-7"/>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(0, 0, 0);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame2" x="-7" y="7"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame2" x="7" y="-7"/>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(0, 0, 0);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						tinsert(HelpFrameWindows, self);
 					</OnLoad>
+					<OnShow>
+						if ( not TicketStatusFrame.hasGMSurvey and TicketStatusFrame:IsShown() ) then
+							TicketStatusFrame:Hide();
+						end
+					</OnShow>
 				</Scripts>
 			</Frame>
 		</Frames>

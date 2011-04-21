@@ -1110,7 +1110,7 @@ StaticPopupDialogs["GM_RESPONSE_NEED_MORE_HELP"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		HelpFrame_ShowFrame(HELPFRAME_OPEN_TICKET);
+		HelpFrame_GMResponse_Acknowledge();
 	end,
 	OnCancel = function(self)
 	end,
@@ -1123,8 +1123,7 @@ StaticPopupDialogs["GM_RESPONSE_RESOLVE_CONFIRM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GMResponseResolve();
-		HideUIPanel(HelpFrame);
+		HelpFrame_GMResponse_Acknowledge(true);
 	end,
 	OnCancel = function(self)
 	end,

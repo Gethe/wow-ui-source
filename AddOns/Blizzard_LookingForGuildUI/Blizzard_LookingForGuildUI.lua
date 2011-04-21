@@ -319,7 +319,7 @@ function LookingForGuildGuild_ShowTooltip(self)
 	buf = "";
 	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
-	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGE; end
+	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
 	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
 	
 	GameTooltip:Show();
@@ -430,7 +430,7 @@ function LookingForGuildApp_ShowTooltip(self)
 	buf = "";
 	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
-	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGE; end
+	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
 	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
 	
 	GameTooltip:Show();

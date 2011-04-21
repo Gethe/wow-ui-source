@@ -27,7 +27,9 @@ HelpFrameNavTbl[5] = {	text = BNET_REPORT_ABUSE_BUTTON,
 HelpFrameNavTbl[6] = {	text = HELP_TICKET_OPEN, 
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
 						frame = "ticketHelp"
-					};
+					};					
+HELPFRAME_NAV_COUNT = 6;
+
 --LAG REPORITNG BUTTONS					
 HelpFrameNavTbl[7] = {	icon ="Interface\\HelpFrame\\ReportLagIcon-Loot",
 						tooltipTex = BUTTON_LAG_LOOT_TOOLTIP,
@@ -163,34 +165,14 @@ function HelpFrame_OnEvent(self, event, ...)
 		if ( category and ticketDescription ) then
 			-- Has an open ticket
 			HelpFrameOpenTicketEditBox:SetText(ticketDescription);
-			
 			haveResponse = false;
 			haveTicket = true;
-			
-			self.ticket.submitButton:SetText(EDIT_TICKET);
-			self.ticket.cancelButton:SetText(HELP_TICKET_ABANDON);
-			self.ticket.title:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
-			
-			self.button6:SetText(HELP_TICKET_EDIT);
-			self.asec.ticketButton:SetText(HELP_TICKET_EDIT);
-			self.ticketHelp.ticketButton:SetText(HELP_TICKET_EDIT);
-			self.report.ticketButton:SetText(HELP_TICKET_EDIT);
 		else
 			-- the player does not have a ticket
-			HelpFrameOpenTicketEditBox:SetText("");
 			haveResponse = false;
 			haveTicket = false;
-			
-			
-			self.ticket.submitButton:SetText(SUBMIT);
-			self.ticket.cancelButton:SetText(CANCEL);
-			self.ticket.title:SetText(HELPFRAME_SUBMIT_TICKET_TITLE);
-			
-			self.button6:SetText(HELP_TICKET_OPEN);
-			self.asec.ticketButton:SetText(HELP_TICKET_OPEN);
-			self.ticketHelp.ticketButton:SetText(HELP_TICKET_OPEN);
-			self.report.ticketButton:SetText(HELP_TICKET_OPEN);
 		end
+		HelpFrame_SetTicketEntry();
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
 		local ticketDescription, response = ...;
 
@@ -203,34 +185,27 @@ function HelpFrame_OnEvent(self, event, ...)
 		TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
 		TicketStatusTime:SetText("");
 		TicketStatusTime:Hide();
+		TicketStatusFrame:Show();
 		TicketStatusFrame.hasGMSurvey = false;
-
-		local descriptionSuffix = "\n";
-		HelpFrameViewResponseIssueBody:SetText(ticketDescription..descriptionSuffix);
-		local responseSuffix = "\n";
-		HelpFrameViewResponseMessageBody:SetText(response..responseSuffix);
-
-		-- -- clear out the open ticket edit box...the original design called for filling in the edit box with the ticketDescription in case
-		-- -- the player wanted to create a follow-up ticket, but creating a new ticket with your old ticket's text felt strange so I opted
-		-- -- to just clear out the text instead
-		-- HelpFrameOpenTicketEditBox:SetText("");
-		-- HelpFrameOpenTicketSubmit:SetText(SUBMIT);
-		-- HelpFrameOpenTicketLabel:SetText(HELPFRAME_OPENTICKET_FOLLOWUPTEXT);
-
-		-- -- hide the buttons that edit a ticket and show the buttons that open a ticket
-		-- -- the player shouldn't be able to edit or open a ticket while a response is up, but they will at least be able to view
-		-- -- the information on the various help pages this way
-		-- KnowledgeBaseFrameOpenTicket:Show();
-		-- KnowledgeBaseFrameEditTicket:Hide();
-		-- HelpFrameOpenTicketAbandon:Hide();
+		HelpFrame_SetTicketButtonText(GM_RESPONSE_POPUP_VIEW_RESPONSE);
+		HelpFrameGMResponse_IssueText:SetText(ticketDescription);
+		HelpFrameGMResponse_GMText:SetText(response);
+		
+		-- update if at a ticket panel
+		if ( HelpFrame.selectedId == HELPFRAME_OPEN_TICKET or HelpFrame.selectedId == HELPFRAME_SUBMIT_TICKET ) then		
+			HelpFrame_SetFrameByKey(HELPFRAME_GM_RESPONSE);
+			HelpFrame_SetSelectedButton(HelpFrameButton6);
+		end
 	end
 end
 
 function HelpFrame_ShowFrame(key)
 	key = key or HelpFrame.selectedId or HELPFRAME_START_PAGE;
-
-	if HELPFRAME_SUBMIT_TICKET then
+	if HelpFrameNavTbl[key].button and HelpFrameNavTbl[key].button:IsEnabled() then
 		HelpFrameNavTbl[key].button:Click();
+	else
+		-- if the button was not enabled then it's not a user click so force the frame
+		HelpFrame_SetFrameByKey(key);
 	end
 
 	if ( key == HELPFRAME_SUBMIT_TICKET ) then
@@ -238,13 +213,6 @@ function HelpFrame_ShowFrame(key)
 			-- Petition queue is down and we're trying to go to the OpenTicket frame, show a dialog instead
 			HideUIPanel(HelpFrame);
 			StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
-			return;
-		end
-		if ( haveResponse ) then
-			-- if we have a response that hasn't been dealt with and the player is trying to open a new ticket,
-			-- give them a warning dialog instead
-			HideUIPanel(HelpFrame);
-			StaticPopup_Show("GM_RESPONSE_MUST_RESOLVE_RESPONSE");
 			return;
 		end
 	end
@@ -264,6 +232,75 @@ function HelpFrame_HaveGMResponse()
 	return haveResponse;
 end
 
+function HelpFrame_GMResponse_Acknowledge(markRead)
+	haveResponse = false;
+	HelpFrame_SetTicketEntry();
+	if ( markRead ) then
+		GMResponseResolve();
+		HelpFrame_ShowFrame(HELPFRAME_OPEN_TICKET);
+	else
+		HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
+	end
+end
+
+function HelpFrame_SetFrameByKey(key)
+	-- if we're trying to open any ticket window and we have a GM response, override
+	if ( haveResponse and ( key == HELPFRAME_OPEN_TICKET or key == HELPFRAME_SUBMIT_TICKET ) ) then
+		key = HELPFRAME_GM_RESPONSE;
+		HelpFrame_SetSelectedButton(HelpFrameButton6);
+	end
+	local data = HelpFrameNavTbl[key];
+	if data.frame then
+		local showFrame = HelpFrame[data.frame];
+		for a,frame in pairs(HelpFrameWindows) do
+			if showFrame ~= frame then
+				frame:Hide();
+			end
+		end
+		showFrame:Show();
+	end
+	if data.func then
+		_G[data.func]();
+	end
+end
+
+function HelpFrame_SetSelectedButton(button)
+	-- if button:GetID() > HELPFRAME_NAV_COUNT then
+		-- return; -- do not set selected if this is an internal button ie report spell lag
+	-- end
+
+	button.selected:Show();
+	if HelpFrame.disabledButton and HelpFrame.disabledButton ~= button then
+		HelpFrame.disabledButton.selected:Hide();
+		HelpFrame.disabledButton:Enable();
+	end
+	button:Disable();
+	HelpFrame.disabledButton = button;
+	HelpFrame.selectedId = button:GetID();
+end
+
+function HelpFrame_SetTicketButtonText(text)
+	HelpFrame.button6:SetText(text);
+	HelpFrame.asec.ticketButton:SetText(text);
+	HelpFrame.ticketHelp.ticketButton:SetText(text);
+	HelpFrame.report.ticketButton:SetText(text);
+end
+
+function HelpFrame_SetTicketEntry()
+	local self = HelpFrame;
+	if ( haveTicket ) then
+		self.ticket.submitButton:SetText(EDIT_TICKET);
+		self.ticket.cancelButton:SetText(HELP_TICKET_ABANDON);
+		self.ticket.title:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
+		HelpFrame_SetTicketButtonText(HELP_TICKET_EDIT);
+	else
+		HelpFrameOpenTicketEditBox:SetText("");
+		self.ticket.submitButton:SetText(SUBMIT);
+		self.ticket.cancelButton:SetText(CANCEL);
+		self.ticket.title:SetText(HELPFRAME_SUBMIT_TICKET_TITLE);
+		HelpFrame_SetTicketButtonText(HELP_TICKET_OPEN);
+	end
+end
 
 --
 -- HelpFrameStuck
@@ -504,12 +541,12 @@ function TicketStatusFrameButton_OnClick(self)
 		StaticPopup_Hide("GM_RESPONSE_RESOLVE_CONFIRM");
 	elseif ( StaticPopup_Visible("GM_RESPONSE_CANT_OPEN_TICKET") ) then
 		StaticPopup_Hide("GM_RESPONSE_CANT_OPEN_TICKET");
-	elseif ( not HelpFrame:IsShown() and not HelpFrame.kbase:IsShown() ) then
-		if ( haveResponse ) then
-			HelpFrame_ShowFrame(HELPFRAME_GM_RESPONSE);
-		elseif ( haveTicket ) then
-			StaticPopup_Show("HELP_TICKET");
+	elseif ( haveResponse ) then
+		HelpFrame_SetFrameByKey(HELPFRAME_OPEN_TICKET);
+		if ( not HelpFrame:IsShown() ) then
+			ShowUIPanel(HelpFrame);
 		end
+		TicketStatusFrame:Hide();
 	end
 end
 
@@ -599,7 +636,7 @@ function KnowledgeBase_OnEvent(self, event, ...)
 		self.scrollFrame:Hide();
 		self.scrollFrame2:Show();
 	elseif ( event == "KNOWLEDGE_BASE_ARTICLE_LOAD_FAILURE" ) then
-		KnowledgeBase_ShowErrorFrame(self, self, KBASE_ERROR_LOAD_FAILURE);
+		KnowledgeBase_ShowErrorFrame(self, KBASE_ERROR_LOAD_FAILURE);
 	end
 end
 
@@ -609,7 +646,6 @@ function KnowledgeBase_Clearlist()
 	local scrollFrame = self.scrollFrame;
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
-	self.errorFrame:Hide();
 	
 	for i = 1, numButtons do
 		local button = buttons[i];
@@ -631,7 +667,6 @@ function KnowledgeBase_UpdateArticles()
 	
 	self.scrollFrame2:Hide();
 	self.scrollFrame:Show();
-	self.errorFrame:Hide();
 	
 	for i = 1, numButtons do
 		local button = buttons[i];
@@ -772,7 +807,6 @@ function KnowledgeBase_DisplayCategories()
 	
 	self.scrollFrame2:Hide();
 	self.scrollFrame:Show();
-	self.errorFrame:Hide();
 	
 	local showButton = false;
 	for i = 1, numButtons do
@@ -843,7 +877,6 @@ function KnowledgeBase_DisplaySubCategories(category)
 	
 	self.scrollFrame2:Hide();
 	self.scrollFrame:Show();
-	self.errorFrame:Hide();
 	
 	local showButton = false;
 	for i = 1, numButtons do
@@ -876,8 +909,6 @@ end
 function KnowledgeBase_ShowErrorFrame(self, message)
 	self.errorFrame.text:SetText(message);
 	self.errorFrame:Show();
-	self.scrollFrame:Hide();
-	self.scrollFrame2:Hide();
 end
 
 

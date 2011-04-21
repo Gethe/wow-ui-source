@@ -167,21 +167,21 @@
 			</LCDText>
 		</LCDSubscreen>
 		<LCDSubscreen name="Spell" id="2">
-			<LCDText name="SPELL_DAMAGE" text="STAT_SPELLPOWER">
+			<LCDText name="SPELL_POWER" text="STAT_SPELLPOWER">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
 				<RelOrigin RelTo="STRENGTH" x="150" y="0" />
 			</LCDText>
-			<LCDText name="SPELL_DAMAGE_FLD">
+			<LCDText name="SPELL_POWER_FLD">
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-				<RelOrigin RelTo="SPELL_DAMAGE" x="90" y="0" />
+				<RelOrigin RelTo="SPELL_POWER" x="90" y="0" />
 			</LCDText>
       <LCDText name="SPELL_HASTE" text="STAT_HASTE">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_DAMAGE" x="0" y="16" />
+        <RelOrigin RelTo="SPELL_POWER" x="0" y="16" />
       </LCDText>
       <LCDText name="SPELL_HASTE_FLD">
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_DAMAGE_FLD" x="0" y="16" />
+        <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="16" />
       </LCDText>
       <LCDText name="SPELL_PENETRATION" text="SPELL_PENETRATION">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>

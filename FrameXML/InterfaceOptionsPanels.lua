@@ -812,7 +812,6 @@ SocialPanelOptions = {
 	spamFilter = { text="SPAM_FILTER" },
 	removeChatDelay = { text="REMOVE_CHAT_DELAY_TEXT" },
 	guildMemberNotify = { text="GUILDMEMBER_ALERT" },
-	guildRecruitmentChannel = { text="AUTO_JOIN_GUILD_CHANNEL" },
 	showChatIcons = { text="SHOW_CHAT_ICONS" },	
 	wholeChatWindowClickable = { text = "CHAT_WHOLE_WINDOW_CLICKABLE" },
 	chatMouseScroll = { text = "CHAT_MOUSE_WHEEL_SCROLL" },

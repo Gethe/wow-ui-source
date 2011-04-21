@@ -23,7 +23,7 @@ end
 
 function TimerTracker_OnEvent(self, event, ...)
 	
-	if event == "START_TIMER" then	
+	if event == "START_TIMER" then
 		local timerType, timeSeconds, totalTime  = ...;
 		local timer;
 		local numTimers = 0;
@@ -37,10 +37,11 @@ function TimerTracker_OnEvent(self, event, ...)
 			end
 		end
 		
-		
-		
 		if isTimerRuning then
-			timer.time = timeSeconds;
+			-- don't interupt the final count down
+			if not timer.startNumbers:IsPlaying() then
+				timer.time = timeSeconds;
+			end
 		else
 			for a,b in pairs(self.timerList) do
 				if not timer and b.isFree then
@@ -88,7 +89,9 @@ function TimerTracker_OnEvent(self, event, ...)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
-			timer.time = nil
+			timer.time = nil;
+			timer.type = nil;
+			timer.isFree = nil;
 			timer:SetScript("OnUpdate", nil);
 			timer.fadeBarOut:Stop();
 			timer.fadeBarIn:Stop();
@@ -96,7 +99,6 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer.factionAnim:Stop();
 			timer.bar:SetAlpha(0);
 		end
-		self.timerList[#self.timerList+1] = timer;
 	end
 end
 
@@ -104,24 +106,20 @@ end
 function StartTimer_BigNumberOnUpdate(self, elasped)
 	self.time = self.time - elasped;
 	self.updateTime = self.updateTime - elasped;
-	local minutes, seconds = floor(self.time/60), mod(self.time, 60); 
+	local minutes, seconds = floor(self.time/60), floor(mod(self.time, 60)); 
 
 	
-	if self.updateTime <= 0 then
-		ValidateTimer(self.type);
-		self.updateTime = TIMER_UPDATE_INTERVAL;
-	end
-	
 	if self.time < TIMER_MEDIUM_MARKER then
-		self.time = floor(self.time);
 		self.fadeBarOut:Play();
 		self.barShowing = false;
 		self.anchorCenter = false;
-	
 		self:SetScript("OnUpdate", nil);
 	elseif not self.barShowing then
 		self.fadeBarIn:Play();
 		self.barShowing = true;
+	elseif self.updateTime <= 0 then
+		ValidateTimer(self.type);
+		self.updateTime = TIMER_UPDATE_INTERVAL;
 	end
 
 	self.bar:SetValue(self.time);

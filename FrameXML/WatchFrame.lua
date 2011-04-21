@@ -907,7 +907,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 					for j = 1, numObjectives do
 						text, objectiveType, finished = GetQuestLogLeaderBoard(j, questIndex);
 						if ( not finished and text ) then
-							text = WatchFrame_ReverseQuestObjective(text, objectiveType);
+							text = ReverseQuestObjective(text, objectiveType);
 							line = WatchFrame_GetQuestLine();
 							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 							lastLine = line;
@@ -1332,15 +1332,6 @@ function WatchFrameItem_OnClick (self, button, down)
 		end
 	else
 		UseQuestLogSpecialItem(questIndex);
-	end
-end
-
-function WatchFrame_ReverseQuestObjective(text)
-	local _, _, arg1, arg2 = string.find(text, "(.*):%s(.*)");
-	if ( arg1 and arg2 ) then
-		return arg2.." "..arg1;
-	else
-		return text;
 	end
 end
 
