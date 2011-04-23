@@ -105,7 +105,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="20" y="-4"/>
 					</Anchors>
 					<Size>
-						<AbsDimension x="250" y="0"/>
+						<AbsDimension x="250" y="12"/>
 					</Size>								
 					<Color r="0.345" g="0.667" b="0.867" />
 				</FontString>			
@@ -116,7 +116,7 @@
 						<AbsDimension x="16" y="16"/>
 					</Size>	
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentBroadcastMessage" relativePoint="LEFT" x="-5" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBroadcastMessage" relativePoint="TOPLEFT" x="-4" y="1"/>
 					</Anchors>						
 				</Texture>					
 			</Layer>

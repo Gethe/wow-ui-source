@@ -99,6 +99,7 @@ local ticketQueueActive = true;
 local haveTicket = false;		-- true if the server tells us we have an open ticket
 local haveResponse = false;		-- true if we got a GM response to a previous ticket
 local needResponse = true;		-- true if we want a GM to contact us when we open a new ticket (Note:  This flag is always true right now)
+local needMoreHelp = false;
 
 
 --
@@ -236,9 +237,11 @@ function HelpFrame_GMResponse_Acknowledge(markRead)
 	haveResponse = false;
 	HelpFrame_SetTicketEntry();
 	if ( markRead ) then
+		needMoreHelp = false;
 		GMResponseResolve();
 		HelpFrame_ShowFrame(HELPFRAME_OPEN_TICKET);
 	else
+		needMoreHelp = true;
 		HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
 	end
 end
@@ -349,8 +352,9 @@ function HelpFrameOpenTicketCancel_OnClick()
 end
 
 function HelpFrameOpenTicketSubmit_OnClick()
-	if ( haveResponse ) then
+	if ( needMoreHelp ) then
 		GMResponseNeedMoreHelp(HelpFrameOpenTicketEditBox:GetText());
+		needMoreHelp = false;
 	else
 		if ( haveTicket ) then
 			UpdateGMTicket(HelpFrameOpenTicketEditBox:GetText());
