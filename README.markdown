@@ -1,44 +1,90 @@
 ﻿
-**World of Warcraft PTR Patch 4.1**
+**World of Warcraft Client Patch 4.1**
 
-The latest retail patch notes can be found [here][1].
+Notes for all World of Warcraft patches can be found [here][1].
+
+**[Rise of the Zandalari][2]**
+
+_ The days when great troll empires stretched across ancient Kalimdor are long
+past. Millennia of war and internal strife have stripped these nations of
+their power, lands, and glory. As Azeroth recovers from the destruction of the
+Cataclysm, the world's divided troll populations face a bleak future. These
+dark times have spurred the trolls of the Zandalar, the historically wise and
+scholarly tribe from which all trolls originated, to take drastic action. They
+have embarked on a bold crusade to save their race by uniting trolls into a
+single mighty empire. With the Zandalari's aid, the fallen capitals of the
+Gurubashi and Amani nations—Zul'Gurub and Zul'Aman—are already rebuilding,
+replenishing their forces for a bloody campaign to expand their territories.
+
+Yet Vol'jin and his Darkspear trolls are not aligned with the Zandalari. They
+have sworn to stand with their Horde comrades—and even work with the
+Alliance—should the trolls ignite a new war on Azeroth. Soon, Vol'jin might be
+forced to act on his promise, for if the Gurubashi and Amani are left to their
+own devices, the world will know the legendary strength and savagery of the
+ancient troll empires once again. _
+
+**[Guild Challenges][3]**
+
+Built into the Info panel of the guild user interface, Guild Challenges are
+weekly tasks guild groups can tackle for additional guild experience,
+achievements, and gold. At the top of the guild user interface Info pane, a
+new Guild Challenges section is displayed and broken into three categories:
+Dungeons, Raids, and Rated Battlegrounds. Any guild group will qualify for
+Guild Challenges credit and there is a set number of times each challenge can
+be completed per week.
+
+**[Guild Finder][4]**
+
+Guild Finder is a new system designed to enable easier and faster guild
+recruitment. Guild leaders and players who are looking for a guild to call
+home will use the Guild Finder to meet one another and begin communications
+that can lead to a prosperous membership. Whether you're a guild leader
+looking to fill your ranks or a player looking for a guild that meets your
+strictest requirements, the Guild Finder provides an easy way to make new
+friends!
+
+**[Dungeon Finder: Call to Arms][5]**
+
+A new system intended to lower queue times, Dungeon Finder: Call to Arms
+offers additional rewards for queuing as the currently least represented role.
+To be eligible for the additional rewards you must solo queue for a random
+level-85 Heroic in the role that is currently being Called to Arms, and
+complete the dungeon by killing the final boss. Every time you hit these
+requirements (there is no daily limit) you'll receive a goodie bag that will
+contain some gold, a chance at a rare gem, a chance at a flask/potion, a good
+chance of receiving a non-combat pet (including cross faction pets), and a
+very rare chance at receiving a mount.
 
 **_Table of Contents_**
 
 _Click a link to jump directly to the corresponding section of the patch
 notes._
 
-  * [General][2]
+  * [General][6]
 
-  * [Achievements][3]
+  * [Achievements][7]
 
-  * [Classes: General][4]
+  * [Classes: General][8]
 
-    * [Death Knights][5], [Druids][6], [Hunters][7], [Mages][8],
-[Paladins][9], [Priests][10], [Rogues][11], [Shaman][12], [Warlocks][13],
-[Warriors][14]
+    * [Death Knights][9], [Druids][10], [Hunters][11], [Mages][12],
+[Paladins][13], [Priests][14], [Rogues][15], [Shaman][16], [Warlocks][17],
+[Warriors][18]
 
-  * [Dungeons & Raids][15]
+  * [Dungeons & Raids][19]
 
-  * [Guilds][16]
+  * [Guilds][20]
 
-  * [Items][17]
+  * [Items][21]
 
-  * [Professions][18]
+  * [Professions][22]
 
-  * [PvP][19]
+  * [PvP][23]
 
-  * [Quests & Creatures][20]
+  * [Quests & Creatures][24]
 
-  * [Races][21]
+  * [Races][25]
 
-  * [User Interface][22]
-
-**Important**: _These patch notes are not final. Additional updates will be
-made, and all existing changes are subject to revision during the course of
-the testing process. More information regarding patch 4.1 can be found
-[here][23]. Visit our Public Test Realm forum for more information about the
-testing process._
+  * [User Interface][26]
 
 **General**
 
@@ -63,7 +109,7 @@ their resilience climbs.
   * A dead player can now be resurrected by targeting them using the Party or
 Raid Frame even if they have released. No more hunting for corpses.
 
-**[Achievements][24]**
+**[Achievements][27]**
 
   * A new feat of strength with an associated title, "the Camel-Hoarder", has
 been added for players that have bested Dormus and obtained the Reins of the
@@ -109,15 +155,10 @@ flag assault and flag defense in a battle, down from 2.
 
   * Achievements Bug Fixes
 
-    * The guild achievements for earning exalted reputation with factions
-(Ambassador, Diplomacy, and United Nations) have been fixed to now correctly
-count cumulative guild members with exalted factions. Previously, these
-achievements would only count exalted factions on one guild member.
-
     * The guild rated Battleground title achievements should now properly be
 awarded.
 
-**[Classes: General][25]**
+**[Classes: General][28]**
 
   * All non-damaging interrupts off the global cooldown will now always hit
 the target. This includes Pummel, Kick, Mind Freeze, Rebuke, Skull Bash,
@@ -130,11 +171,9 @@ effects for friendly players, but new alternate visuals for hostile players:
 Ring of Frost, Consecration, Desecration, Wild Mushroom, Flare, Ice Trap,
 Power Word: Barrier, Smoke Bomb, and Hand of Gul'dan. As a general rule, the
 alternate effects have a red tint or hue indicating they are created by an
-enemy player. There are currently some issues with this new change which are
-affecting several of these abilities and is not working as intended at this
-time.
+enemy player.
 
-**[Death Knights][26]**
+**[Death Knights][29]**
 
   * Dark Simulacrum now works on numerous additional spells in dungeon
 encounters.
@@ -180,7 +219,7 @@ Scourge, and Festering Strike, up from 12/24/36%.
     * Glyph of Raise Ally is now Glyph of Death Gate, and makes Death Gate
 cast 60% faster.
 
-**[Druids][27]**
+**[Druids][30]**
 
   * Lacerate bonus threat has been removed and replaced with increased initial
 damage done.
@@ -260,7 +299,7 @@ Pounce by 3 yards.
     * The troll druid models for Flight Form and Swift Flight Form has slimmed
 down to be more in scale with other druid flight forms.
 
-**[Hunters][28]**
+**[Hunters][31]**
 
   * Deterrence no longer requires a melee weapon to be equipped.
 
@@ -292,13 +331,13 @@ for pets being happy will now be baseline for all tamed pets.
 
   * Glyphs
 
-    * Glyph of Mend Pet is now Glyph of Greater Proportion, which increases
-the size of the pet slightly.
+    * Glyph of Mend Pet is now Glyph of Lesser Proportion, which decreases the
+size of the pet slightly.
 
   * Hunter Bug Fixes
 
-    * Hunters will automatically acquire a new target if the current target
-dies in the middle of a cast.
+    * Hunters will no longer automatically acquire a new target if the current
+target dies in the middle of a cast.
 
     * Aimed Shot and Steady Shot should no longer start casting Auto Shot on a
 new target when the "Stop Auto Attack" option enabled.
@@ -316,7 +355,7 @@ Righteous will no longer hit hunters with Deterrence active.
     * Scatter Shot's disorient effect should no longer sometimes be broken by
 the hunter's Auto Shot.
 
-**[Mages][29]**
+**[Mages][32]**
 
   * Arcane Blast cast time has been reduced to 2.0 seconds, down from 2.35
 seconds. In addition, the stacking effect of Arcane Blast now increases the
@@ -375,7 +414,7 @@ with the root from Improved Cone of Cold.
     * Glyph of Frost Armor (new glyph): Frost Armor also causes the mage to
 regenerate 2% of maximum mana every 5 seconds.
 
-**[Paladins][30]**
+**[Paladins][33]**
 
   * Righteous Fury now persists through death.
 
@@ -423,7 +462,7 @@ effects.
 Censure fully stacked dealt 9% weapon damage. They actually dealt 15% damage
 and the tooltip has been updated accordingly.
 
-**[Priests][31]**
+**[Priests][34]**
 
   * Divine Aegis duration has been increased to 15 seconds, up from 12.
 
@@ -475,7 +514,7 @@ addition, it has a new spell effect.
     * Glyph of Divine Accuracy now also affects Holy Fire in addition to
 Smite.
 
-**[Rogues][32]**
+**[Rogues][35]**
 
   * Recuperate base effect now heals 3% per tick, up from 2%.
 
@@ -500,7 +539,7 @@ of Recuperate, down from 1%/2%.
 instead of negating the movement penalty from Stealth, it adds a 5/10%
 movement speed bonus (stacking with other effects) while Stealthed.
 
-**[Shaman][33]**
+**[Shaman][36]**
 
   * Fire Nova has been redesigned and decoupled from shaman Fire totems.
 Instead, it now pulses the Fire Nova effect from each target that is afflicted
@@ -551,10 +590,10 @@ This counts as an Air totem and has a 3-minute cooldown.
 
   * Glyphs
 
-    * Glyph of Grounding Totem now increases the cooldown of the ability by 35
-seconds, down from 45 seconds.
+    * Glyph of Grounding Totem: The increased cooldown of Grounding Totem
+applied by this glyph has been reduced to 35 seconds, down from 45 seconds.
 
-**[Warlocks][34]**
+**[Warlocks][37]**
 
   * Dark Intent: The friendly target of this ability now receives 1% (stacking
 3 times to 3%) periodic spell damage and healing bonus instead of 3% (stacking
@@ -564,6 +603,8 @@ seconds, down from 45 seconds.
   * Rain of Fire damage has been increased by 25%.
 
   * Seed of Corruption damage has been increased by 20%.
+
+  * Soulstone can now be used in combat to resurrect a targeted dead player.
 
   * Talent Specializations
 
@@ -598,7 +639,7 @@ damage done at lower levels such that it will deal 50% damage at level 20, and
     * Glyph of Soul Swap now increases the cooldown of Soul Swap by 15
 seconds, up from 10 seconds.
 
-**[Warriors][35]**
+**[Warriors][38]**
 
   * Charge and Intercept no longer have diminishing returns on their stun
 effects.
@@ -671,7 +712,21 @@ Order lowers the cooldown of Heroic Throw by 30 seconds.
     * Glyph of Spell Reflection reduces the cooldown of Spell Reflection by 5
 seconds, up from 1 second.
 
-**[Dungeons & Raids][36]**
+**[Dungeons & Raids][39]**
+
+  * Rise of the Zandalari
+
+    * Zul'Aman is now a level-85 5-player Heroic dungeon. Players with a
+minimum average item level of 346 or higher can access this dungeon via the
+Dungeon Finder.
+
+    * Zul'Gurub is now a level-85 5-player Heroic dungeon. Players with a
+minimum average item level of 346 or higher can access this dungeon via the
+Dungeon Finder.
+
+    * Both Zul'Gurub and Zul'Aman exist in a separate tier in the Dungeon
+Finder above the current level-85 Heroic dungeons. Players can randomly queue
+for either dungeon by selecting the Rise of the Zandalari setting.
 
   * Dungeon Finder
 
@@ -703,19 +758,6 @@ least represented) classes within the UI.
       * Once the dungeon is completed the eligible player will receive a
 Satchel of Exotic Mysteries (account bound) with various potential rewards
 including: gold, rare gems, non-combat pets, and (very rare) mounts.
-
-  * New level-85 Heroic dungeons are available for testing.
-
-    * Zul'Aman has returned as a level-85 5-player Heroic dungeon featuring a
-revamp of the original dungeon and improved loot!
-
-    * Zul'Gurub has returned as a level-85 5-player Heroic dungeon featuring
-all-new encounters, achievements, and improved loot!
-
-    * Both dungeons will be in a new Dungeon Finder difficulty tier above the
-current level-85 Heroic dungeons and offer epic-quality item level 353 loot.
-
-    * More information on these updated dungeons can be found [here][37].
 
   * Blackrock Caverns
 
@@ -881,21 +923,21 @@ adjusted to compensate.
 substantially reduced: Flame Leviathan, Magtheridon, Gruul the Dragonkiller,
 Doom Lord Kazzak, and all encounters in Karazhan.
 
-**[Guilds][38]**
+**[Guilds][40]**
 
   * The criteria on many of the profession-related guild achievements has been
 significantly reduced.
 
-  * [Guild Challenges][39] are now available for testing.
+  * Guild Challenges
 
     * These challenges can be found in the Info pane of the guild UI.
 
-    * Guild Challenges fall into three categories: Guild Dungeon Run, Guild
-Raid, and Guild Rated Battleground.
+    * Guild Challenges fall into three categories: Dungeons, Raids, and Rated
+Battlegrounds.
 
     * Each challenge can be completed a set number of times per week. Guild
 groups participating in level-appropriate Heroic or normal difficulty dungeons
-and raids, or Rated Battlegrounds, will automatically qualify for challenge
+and raids, or rated Battlegrounds, will automatically qualify for challenge
 credit.
 
     * Each time a Guild Challenge is completed, the guild will be awarded
@@ -915,6 +957,29 @@ in place of guild experience.
     * Gold rewards are deposited into the guild bank once the guild reaches
 level 5. The text for the Cash Flow guild perk has been updated appropriately.
 
+  * Guild Finder
+
+    * A new Guild Finder button will now appear on the Micro Menu for guild
+leaders, as well as players without a guild.
+
+    * A Guild Interests field allows players to form a guild around common
+interests: Questing, Dungeons, Raids, PvP, and Role Playing.
+
+    * An Availability field allows players to note whether or not weekdays or
+weekends are better for playing.
+
+    * The Class Roles field allows players to indicate the role or roles they
+are capable of, and willing to fill.
+
+    * A Comment box is also available for supplying additional information.
+
+    * Once a player has filled out the Guild Interests field, the Browse
+Guilds tab allows them to find guilds actively recruiting via the Guild
+Finder. Guilds listed here are displayed according to common interests.
+
+    * The Requests tab tracks all recruitment requests submitted by an
+unguilded player, or submitted to the leader of a selected guild.
+
   * The Guild Perk, Cash Flow, no longer prints out text to the Chat Log.
 Instead, the daily amount deposited is shown in the Guild Vault Money Log. In
 addition, players can view the weekly contribution in a new window at the
@@ -922,6 +987,9 @@ bottom of the Money Log.
 
   * Two new custom guild tabards have been added as Guild Rewards. The tabards
 are account bound and offer a bonus to gaining guild reputation.
+
+  * The Reins of the Dark Phoenix, purchased from the Guild Vendor, has had
+its art improved. It's now less transparent and indisputably more awesome.
 
   * The amount of guild experience rewarded for rated Battleground guild group
 wins has been dramatically increased.
@@ -935,7 +1003,7 @@ Battleground brackets up to level 80.
   * Arena teams are now awarded guild experience for wins. The entire team
 must be members of the same guild to earn this experience.
 
-**[Items][40]**
+**[Items][41]**
 
   * Account Bound Items
 
@@ -975,7 +1043,7 @@ Penance spell heals a target.
     * The caster shaman 4-piece PvP set bonus now reduces the cooldown of
 Grounding Totem by 3 seconds, up from 1.5.
 
-**[Professions][41]**
+**[Professions][42]**
 
   * All major cities will now have every type of profession trainer and their
 associated trade supply vendors.
@@ -988,22 +1056,20 @@ Thunder Bluff, and Undercity.
     * Flask of Steelskin now grants 450 Stamina, up from 300. The Mixology
 bonus for alchemists remains at 120 Stamina.
 
-**[PvP][42]**
+  * Archaeology
+
+    * Seven new rare items have been added.
+
+    * Players now have a much smaller chance of getting a dig site for a race
+for which they have completed all rare finds.
+
+**[PvP][43]**
 
   * The rate at which Honor Points are earned has been doubled.
 
   * Arenas
 
     * Arena matchmaking can now extend beyond a team's Battlegroup.
-
-    * Ring of Valor
-
-      * The Ring of Valor has returned! It should now be playable again in the
-Arena map rotation.
-
-      * New starting areas have been added for Ring of Valor. Players will no
-longer enter the Arena on the elevator. It's been removed. Instead players
-will start in a room at opposite ends of the Arena.
 
   * Battlegrounds
 
@@ -1061,7 +1127,7 @@ the enemy base.
 
         * Attacking players will respawn at their base graveyard.
 
-**[Quests & Creatures][43]**
+**[Quests & Creatures][44]**
 
   * A handful of quests have been added to Northern Barrens to provide more
 level 18-20 content. Look for new quests at Nozzlepot's Outpost and Darsok's
@@ -1071,18 +1137,14 @@ Outpost.
 Poseidus has been adjusted to be commensurate to their rarity and invested
 effort.
 
-**[Races][44]**
+**[Races][45]**
 
   * The gnomish racial ability, Escape Artist, is no longer affected by the
 global cooldowns triggered by other abilities.
 
   * The human racial ability, Every Man for Himself, has a new spell effect.
 
-**[User Interface][45]**
-
-  * The Guild Finder has been implemented! While we are continuing to add
-final polish to this feature, we welcome all focused testers to give it a go.
-Feedback can be provided [here][46].
+**[User Interface][46]**
 
   * Like the Focus Frame, the character Unit and Target Frames can now be
 unlocked and moved to one's content.
@@ -1144,92 +1206,92 @@ screen.
 
    [1]: http://us.battle.net/wow/en/game/patch-notes/
 
-   [2]: #general
+   [2]: http://us.battle.net/wow/en/blog/2514161#blog
 
-   [3]: #achievements
+   [3]: http://us.battle.net/wow/en/blog/2534919
 
-   [4]: #classes
+   [4]: http://us.battle.net/wow/en/blog/2657799
 
-   [5]: #deathknights
+   [5]: http://us.battle.net/wow/en/blog/2568337#blog
 
-   [6]: #druids
+   [6]: #general
 
-   [7]: #hunters
+   [7]: #achievements
 
-   [8]: #mages
+   [8]: #classes
 
-   [9]: #paladins
+   [9]: #deathknights
 
-   [10]: #priests
+   [10]: #druids
 
-   [11]: #rogues
+   [11]: #hunters
 
-   [12]: #shaman
+   [12]: #mages
 
-   [13]: #warlocks
+   [13]: #paladins
 
-   [14]: #warriors
+   [14]: #priests
 
-   [15]: #dungeons
+   [15]: #rogues
 
-   [16]: #guilds
+   [16]: #shaman
 
-   [17]: #items
+   [17]: #warlocks
 
-   [18]: #professions
+   [18]: #warriors
 
-   [19]: #pvp
+   [19]: #dungeons
 
-   [20]: #quests
+   [20]: #guilds
 
-   [21]: #races
+   [21]: #items
 
-   [22]: #ui
+   [22]: #professions
 
-   [23]: http://us.battle.net/wow/en/blog/2356431
+   [23]: #pvp
 
-   [24]: http://us.battle.net/wow/en/forum/1011646/
+   [24]: #quests
 
-   [25]: http://us.battle.net/wow/en/forum/#forum1033923
+   [25]: #races
 
-   [26]: http://us.battle.net/wow/en/game/class/death-knight
+   [26]: #ui
 
-   [27]: http://us.battle.net/wow/en/game/class/druid
+   [27]: http://us.battle.net/wow/en/forum/1011646/
 
-   [28]: http://us.battle.net/wow/en/game/class/hunter
+   [28]: http://us.battle.net/wow/en/forum/#forum1033923
 
-   [29]: http://us.battle.net/wow/en/game/class/mage
+   [29]: http://us.battle.net/wow/en/game/class/death-knight
 
-   [30]: http://us.battle.net/wow/en/game/class/paladin
+   [30]: http://us.battle.net/wow/en/game/class/druid
 
-   [31]: http://us.battle.net/wow/en/game/class/priest
+   [31]: http://us.battle.net/wow/en/game/class/hunter
 
-   [32]: http://us.battle.net/wow/en/game/class/rogue
+   [32]: http://us.battle.net/wow/en/game/class/mage
 
-   [33]: http://us.battle.net/wow/en/game/class/shaman
+   [33]: http://us.battle.net/wow/en/game/class/paladin
 
-   [34]: http://us.battle.net/wow/en/game/class/warlock
+   [34]: http://us.battle.net/wow/en/game/class/priest
 
-   [35]: http://us.battle.net/wow/en/game/class/warrior
+   [35]: http://us.battle.net/wow/en/game/class/rogue
 
-   [36]: http://us.battle.net/wow/en/forum/1011645/
+   [36]: http://us.battle.net/wow/en/game/class/shaman
 
-   [37]: http://us.battle.net/wow/en/blog/2514161
+   [37]: http://us.battle.net/wow/en/game/class/warlock
 
-   [38]: http://us.battle.net/wow/en/forum/2187372/
+   [38]: http://us.battle.net/wow/en/game/class/warrior
 
-   [39]: http://us.battle.net/wow/en/blog/2534919
+   [39]: http://us.battle.net/wow/en/forum/1011645/
 
-   [40]: http://us.battle.net/wow/en/item/
+   [40]: http://us.battle.net/wow/en/forum/2187372/
 
-   [41]: http://us.battle.net/wow/en/forum/1011647/
+   [41]: http://us.battle.net/wow/en/item/
 
-   [42]: http://us.battle.net/wow/en/pvp/
+   [42]: http://us.battle.net/wow/en/forum/1011647/
 
-   [43]: http://us.battle.net/wow/en/forum/1011692/
+   [43]: http://us.battle.net/wow/en/pvp/
 
-   [44]: http://us.battle.net/wow/en/game/race/
+   [44]: http://us.battle.net/wow/en/forum/1011692/
 
-   [45]: http://us.battle.net/wow/en/forum/1011693/
+   [45]: http://us.battle.net/wow/en/game/race/
 
-   [46]: http://us.battle.net/wow/en/forum/topic/2267579911
+   [46]: http://us.battle.net/wow/en/forum/1011693/
