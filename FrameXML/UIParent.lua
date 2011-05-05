@@ -116,6 +116,7 @@ for i = -1, NUM_ITEM_QUALITIES do
 	ITEM_QUALITY_COLORS[i].g,
 	ITEM_QUALITY_COLORS[i].b,
 	ITEM_QUALITY_COLORS[i].hex = GetItemQualityColor(i);
+	ITEM_QUALITY_COLORS[i].hex = "|c"..ITEM_QUALITY_COLORS[i].hex;
 end
 
 function UIParent_OnLoad(self)
@@ -372,6 +373,11 @@ end
 function LookingForGuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_LookingForGuildUI");
 end
+
+function MovePad_LoadUI()
+	UIParentLoadAddOn("Blizzard_MovePad");
+end
+
 
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
@@ -811,7 +817,7 @@ function UIParent_OnEvent(self, event, ...)
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
 		if ( dialog ) then
-			dialog.text:SetFormattedText(LOOT_NO_DROP, ITEM_QUALITY_COLORS[quality].hex..name.."|r");
+			dialog.text:SetFormattedText(arg3, ITEM_QUALITY_COLORS[quality].hex..name.."|r");
 			StaticPopup_Resize(dialog, "CONFIRM_LOOT_ROLL");
 			dialog.data = arg1;
 			dialog.data2 = arg2;

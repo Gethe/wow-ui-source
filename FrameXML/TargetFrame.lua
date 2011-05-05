@@ -858,43 +858,6 @@ function TargetofTargetHealthCheck(self)
 	end
 end
 
-function SetTargetSpellbarAspect(self)
-	local targetFrameSpellBarName = self:GetName();
-
-	local frameText = _G[targetFrameSpellBarName.."Text"];
-	if ( frameText ) then
-		frameText:SetFontObject(SystemFont_Shadow_Small);
-		frameText:ClearAllPoints();
-		frameText:SetPoint("TOP", self, "TOP", 0, 4);
-	end
-
-	local frameBorder = _G[targetFrameSpellBarName.."Border"];
-	if ( frameBorder ) then
-		frameBorder:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
-		frameBorder:SetWidth(197);
-		frameBorder:SetHeight(49);
-		frameBorder:ClearAllPoints();
-		frameBorder:SetPoint("TOP", self, "TOP", 0, 20);
-	end
-	
-	local frameBorderShield = _G[targetFrameSpellBarName.."BorderShield"];
-	if ( frameBorderShield ) then
-		frameBorderShield:SetWidth(197);
-		frameBorderShield:SetHeight(49);
-		frameBorderShield:ClearAllPoints();
-		frameBorderShield:SetPoint("TOP", self, "TOP", -5, 20);
-	end
-
-	local frameFlash = _G[targetFrameSpellBarName.."Flash"];
-	if ( frameFlash ) then
-		frameFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
-		frameFlash:SetWidth(197);
-		frameFlash:SetHeight(49);
-		frameFlash:ClearAllPoints();
-		frameFlash:SetPoint("TOP", self, "TOP", 0, 20);
-	end
-end
-
 function TargetFrame_CreateSpellbar(self, event)
 	local name = self:GetName().."SpellBar";
 	local spellbar = CreateFrame("STATUSBAR", name, self, "TargetSpellBarTemplate");
@@ -913,11 +876,7 @@ function TargetFrame_CreateSpellbar(self, event)
 	
 	local barIcon =_G[name.."Icon"];
 	barIcon:Show();
-
-	SetTargetSpellbarAspect(spellbar);
 	
-	--The target casting bar has less room for text than most, so shorten it
-	_G[name.."Text"]:SetWidth(150)
 	-- check to see if the castbar should be shown
 	if ( GetCVar("showTargetCastbar") == "0") then
 		spellbar.showCastbar = false;	

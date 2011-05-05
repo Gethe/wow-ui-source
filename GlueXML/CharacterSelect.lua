@@ -10,6 +10,14 @@ CHARACTER_LIST_OFFSET = 0;
 
 CHARACTER_SELECT_BACK_FROM_CREATE = false;
 
+MOVING_TEXT_OFFSET = 12;
+DEFAULT_TEXT_OFFSET = 0;
+CHARACTER_BUTTON_HEIGHT = 57;
+CHARACTER_LIST_TOP = 688;
+AUTO_DRAG_TIME = 0.5;				-- in seconds
+
+local translationTable = { };	-- for character reordering: key = button index, value = character ID
+
 function CharacterSelect_OnLoad(self)
 	self:SetSequence(0);
 	self:SetCamera(0);
@@ -174,7 +182,12 @@ function CharacterSelect_OnShow()
 	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, ALL);
 end
 
-function CharacterSelect_OnHide()
+function CharacterSelect_OnHide(self)
+	-- the user may have gotten d/c while dragging
+	if ( CharacterSelect.draggedIndex ) then
+		local button = _G["CharSelectCharacterButton"..(CharacterSelect.draggedIndex - CHARACTER_LIST_OFFSET)];
+		CharacterSelectButton_OnDragStop(button);
+	end
 	CharacterDeleteDialog:Hide();
 	CharacterRenameDialog:Hide();
 	if ( DeclensionFrame ) then
@@ -183,7 +196,7 @@ function CharacterSelect_OnHide()
 	SERVER_SPLIT_STATE_PENDING = -1;
 end
 
-function CharacterSelect_OnUpdate(elapsed)
+function CharacterSelect_OnUpdate(self, elapsed)
 	if ( SERVER_SPLIT_STATE_PENDING > 0 ) then
 		CharacterSelectRealmSplitButton:Show();
 
@@ -231,6 +244,13 @@ function CharacterSelect_OnUpdate(elapsed)
 			end
 		end
 	end
+	
+	if ( self.pressDownButton ) then
+		self.pressDownTime = self.pressDownTime + elapsed;
+		if ( self.pressDownTime >= AUTO_DRAG_TIME ) then
+			CharacterSelectButton_OnDragStart(self.pressDownButton);
+		end
+	end
 end
 
 function CharacterSelect_OnKeyDown(self,key)
@@ -251,6 +271,14 @@ function CharacterSelect_OnEvent(self, event, ...)
 	if ( event == "ADDON_LIST_UPDATE" ) then
 		UpdateAddonButton();
 	elseif ( event == "CHARACTER_LIST_UPDATE" ) then
+		local listSize = ...;
+		if ( listSize ) then
+			table.wipe(translationTable);
+			for i = 1, listSize do
+				tinsert(translationTable, i);
+			end
+			CharacterSelect.orderChanged = nil;
+		end
 		if (not CHARACTER_SELECT_BACK_FROM_CREATE) then
 			local numChars = GetNumCharacters();
 			if (numChars == 0) then
@@ -259,14 +287,15 @@ function CharacterSelect_OnEvent(self, event, ...)
 			end
 		end
 		UpdateCharacterList();
-		CharSelectCharacterName:SetText(GetCharacterInfo(self.selectedIndex));
+		CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
 	elseif ( event == "UPDATE_SELECTED_CHARACTER" ) then
-		local index = ...;
-		if ( index == 0 ) then
+		local charID = ...;
+		if ( charID == 0 ) then
 			CharSelectCharacterName:SetText("");
 		else
-			CharSelectCharacterName:SetText(GetCharacterInfo(index));
+			local index = GetIndexFromCharID(charID);
 			self.selectedIndex = index;
+			CharSelectCharacterName:SetText(GetCharacterInfo(charID));
 		end
 		if ((CHARACTER_LIST_OFFSET == 0) and (self.selectedIndex > MAX_CHARACTERS_DISPLAYED)) then
 			CHARACTER_LIST_OFFSET = self.selectedIndex - MAX_CHARACTERS_DISPLAYED;
@@ -303,13 +332,21 @@ function CharacterSelect_UpdateModel(self)
 end
 
 function UpdateCharacterSelection(self)
+	local button;
 	for i=1, MAX_CHARACTERS_DISPLAYED, 1 do
-		_G["CharSelectCharacterButton"..i]:UnlockHighlight();
+		button = _G["CharSelectCharacterButton"..i];
+		button.selection:Hide();
+		button.upButton:Hide();
+		button.downButton:Hide();
 	end
 
 	local index = self.selectedIndex - CHARACTER_LIST_OFFSET;
-	if ( (index > 0) and (index <= MAX_CHARACTERS_DISPLAYED) )then
-		_G["CharSelectCharacterButton"..index]:LockHighlight();
+	if ( (index > 0) and (index <= MAX_CHARACTERS_DISPLAYED) ) then
+		button = _G["CharSelectCharacterButton"..index];
+		button.selection:Show();
+		if ( button:IsMouseOver() ) then
+			CharacterSelectButton_ShowMoveButtons(button);
+		end
 	end
 end
 
@@ -318,7 +355,7 @@ function UpdateCharacterList()
 	local index = 1;
 	local coords;
 	for i=1, numChars, 1 do
-		local name, race, class, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(i+CHARACTER_LIST_OFFSET);
+		local name, race, class, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
 		if ( not name ) then
 			button:SetText("ERROR - too many characters");
@@ -335,26 +372,57 @@ function UpdateCharacterList()
 			_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(zone);
 		end
 		button:Show();
+		button.index = i + CHARACTER_LIST_OFFSET;
 
-		-- setup paid service buttons
-		_G["CharSelectCharacterCustomize"..index]:Hide();
-		_G["CharSelectRaceChange"..index]:Hide();
-		_G["CharSelectFactionChange"..index]:Hide();
+		-- setup paid service button
+		local paidServiceButton = _G["CharSelectPaidService"..index];
+		local serviceType, disableService;
 		if ( PFC ) then
-			_G["CharSelectFactionChange"..index]:Show();
+			serviceType = PAID_FACTION_CHANGE;
+			paidServiceButton.texture:SetTexCoord(0, 0.5, 0.5, 1);
+			paidServiceButton.tooltip = PAID_FACTION_CHANGE_TOOLTIP;
+			paidServiceButton.disabledTooltip = nil;
 		elseif ( PRC ) then
-			_G["CharSelectRaceChange"..index]:Show();
-			if(PRCDisabled) then
-				_G["CharSelectRaceChange"..index]:Disable();
-				_G["CharSelectRaceChange"..index]:GetNormalTexture():SetDesaturated(1);
-			else
-				_G["CharSelectRaceChange"..index]:GetNormalTexture():SetDesaturated(0);
-				_G["CharSelectRaceChange"..index]:Enable();
-			end
+			serviceType = PAID_RACE_CHANGE;
+			paidServiceButton.texture:SetTexCoord(0.5, 1, 0, 0.5);
+			disableService = PRCDisabled;
+			paidServiceButton.tooltip = PAID_RACE_CHANGE_TOOLTIP;
+			paidServiceButton.disabledTooltip = PAID_RACE_CHANGE_DISABLED_TOOLTIP;
 		elseif ( PCC ) then
-			_G["CharSelectCharacterCustomize"..index]:Show();
+			serviceType = PAID_CHARACTER_CUSTOMIZATION;
+			paidServiceButton.texture:SetTexCoord(0, 0.5, 0, 0.5);
+			paidServiceButton.tooltip = PAID_CHARACTER_CUSTOMIZE_TOOLTIP;
+			paidServiceButton.disabledTooltip = nil;
+		end
+		if ( serviceType ) then
+			paidServiceButton:Show();
+			paidServiceButton.serviceType = serviceType;
+			if ( disableService ) then
+				paidServiceButton:Disable();
+				paidServiceButton.texture:SetDesaturated(1);
+			elseif ( not paidServiceButton:IsEnabled() ) then
+				paidServiceButton.texture:SetDesaturated(0);
+				paidServiceButton:Enable();
+			end
+		else
+			paidServiceButton:Hide();
 		end
 
+		-- is a button being dragged?
+		if ( CharacterSelect.draggedIndex ) then
+			if ( CharacterSelect.draggedIndex == button.index ) then
+				button:SetAlpha(1);
+				button.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
+				button:LockHighlight();
+				paidServiceButton.texture:SetVertexColor(1, 1, 1);
+			else
+				button:SetAlpha(0.6);
+				button.buttonText.name:SetPoint("TOPLEFT", DEFAULT_TEXT_OFFSET, -5);
+				button:UnlockHighlight();
+				paidServiceButton.texture:SetVertexColor(0.35, 0.35, 0.35);
+			end
+		end
+		
 		index = index + 1;
 		if ( index > MAX_CHARACTERS_DISPLAYED ) then
 			break;
@@ -384,9 +452,7 @@ function UpdateCharacterList()
 				CharSelectCreateCharacterButton:Show();	
 			end
 		end
-		_G["CharSelectCharacterCustomize"..index]:Hide();
-		_G["CharSelectFactionChange"..index]:Hide();
-		_G["CharSelectRaceChange"..index]:Hide();
+		_G["CharSelectPaidService"..index]:Hide();
 		button:Hide();
 		index = index + 1;
 	end
@@ -441,6 +507,17 @@ function CharacterSelectButton_OnDoubleClick(self)
 	CharacterSelect_EnterWorld();
 end
 
+function CharacterSelectButton_ShowMoveButtons(button)
+	if ( not CharacterSelect.draggedIndex ) then
+		button.upButton:Show();
+		button.upButton.normalTexture:SetPoint("CENTER", 0, 0);
+		button.upButton.highlightTexture:SetPoint("CENTER", 0, 0);
+		button.downButton:Show();
+		button.downButton.normalTexture:SetPoint("CENTER", 0, 0);
+		button.downButton.highlightTexture:SetPoint("CENTER", 0, 0);
+	end
+end
+
 function CharacterSelect_TabResize(self)
 	local buttonMiddle = _G[self:GetName().."Middle"];
 	local buttonMiddleDisabled = _G[self:GetName().."MiddleDisabled"];
@@ -451,22 +528,22 @@ function CharacterSelect_TabResize(self)
 	self:SetWidth(width + (2 * leftWidth));
 end
 
-function CharacterSelect_SelectCharacter(id, noCreate)
-	if ( id == CharacterSelect.createIndex ) then
+function CharacterSelect_SelectCharacter(index, noCreate)
+	if ( index == CharacterSelect.createIndex ) then
 		if ( not noCreate ) then
 			PlaySound("gsCharacterSelectionCreateNew");
 			SetGlueScreen("charcreate");
 		end
 	else
-		CharacterSelect.currentModel = GetSelectBackgroundModel(id);
+		local charID = GetCharIDFromIndex(index);
+		CharacterSelect.currentModel = GetSelectBackgroundModel(charID);
 		SetBackgroundModel(CharacterSelect,CharacterSelect.currentModel);
-
-		SelectCharacter(id);
+		SelectCharacter(charID);
 	end
 end
 
 function CharacterDeleteDialog_OnShow()
-	local name, race, class, level = GetCharacterInfo(CharacterSelect.selectedIndex);
+	local name, race, class, level = GetCharacterInfo(GetCharIDFromIndex(CharacterSelect.selectedIndex));
 	CharacterDeleteText1:SetFormattedText(CONFIRM_CHAR_DELETE, name, level, class);
 	CharacterDeleteBackground:SetHeight(16 + CharacterDeleteText1:GetHeight() + CharacterDeleteText2:GetHeight() + 23 + CharacterDeleteEditBox:GetHeight() + 8 + CharacterDeleteButton1:GetHeight() + 16);
 	CharacterDeleteButton1:Disable();
@@ -559,7 +636,7 @@ function RealmSplit_SetChoiceText()
 end
 
 function CharacterSelect_PaidServiceOnClick(self, button, down, service)
-	PAID_SERVICE_CHARACTER_ID = self:GetID() + CHARACTER_LIST_OFFSET;
+	PAID_SERVICE_CHARACTER_ID = GetCharIDFromIndex(self:GetID() + CHARACTER_LIST_OFFSET);
 	PAID_SERVICE_TYPE = service;
 	PlaySound("gsCharacterSelectionCreateNew");
 	SetGlueScreen("charcreate");
@@ -617,4 +694,96 @@ function CharacterSelectScrollUp_OnClick()
 		end
 		UpdateCharacterList();
 	end
+end
+
+function CharacterSelectButton_OnDragUpdate(self)
+	-- only check Y-axis, user dragging horizontally should not change anything
+	local _, cursorY = GetCursorPosition();
+	if ( cursorY <= CHARACTER_LIST_TOP ) then
+		-- check if the mouse is on a different button
+		local buttonIndex = floor((CHARACTER_LIST_TOP - cursorY) / CHARACTER_BUTTON_HEIGHT) + 1;
+		local button = _G["CharSelectCharacterButton"..buttonIndex];
+		if ( button and button.index ~= CharacterSelect.draggedIndex and button:IsShown() ) then
+			-- perform move
+			if ( button.index > CharacterSelect.draggedIndex ) then
+				-- move down
+				MoveCharacter(CharacterSelect.draggedIndex, CharacterSelect.draggedIndex + 1, true);
+			else
+				-- move up
+				MoveCharacter(CharacterSelect.draggedIndex, CharacterSelect.draggedIndex - 1, true);
+			end
+		end
+	end
+end
+
+function CharacterSelectButton_OnDragStart(self)
+	CharacterSelect.pressDownButton = nil;
+	CharacterSelect.draggedIndex = self:GetID() + CHARACTER_LIST_OFFSET;
+	self:SetScript("OnUpdate", CharacterSelectButton_OnDragUpdate);	
+	for index = 1, MAX_CHARACTERS_DISPLAYED do
+		local button = _G["CharSelectCharacterButton"..index];
+		if ( button ~= self ) then
+			button:SetAlpha(0.6);
+			_G["CharSelectPaidService"..index].texture:SetVertexColor(0.35, 0.35, 0.35);
+		end
+	end
+	self.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
+	self:LockHighlight();
+	self.upButton:Hide();
+	self.downButton:Hide();
+end
+
+function CharacterSelectButton_OnDragStop(self)
+	CharacterSelect.pressDownButton = nil;
+	CharacterSelect.draggedIndex = nil;
+	self:SetScript("OnUpdate", nil);
+	for index = 1, MAX_CHARACTERS_DISPLAYED do
+		local button = _G["CharSelectCharacterButton"..index];
+		button:SetAlpha(1);
+		button:UnlockHighlight();
+		button.buttonText.name:SetPoint("TOPLEFT", DEFAULT_TEXT_OFFSET, -5);
+		_G["CharSelectPaidService"..index].texture:SetVertexColor(1, 1, 1);
+		if ( button.selection:IsShown() and button:IsMouseOver() ) then
+			CharacterSelectButton_ShowMoveButtons(button);
+		end
+	end
+end
+
+function MoveCharacter(originIndex, targetIndex, fromDrag)
+	CharacterSelect.orderChanged = true;
+	if ( targetIndex < 1 ) then
+		targetIndex = #translationTable;
+	elseif ( targetIndex > #translationTable ) then
+		targetIndex = 1;
+	end
+	if ( originIndex == CharacterSelect.selectedIndex ) then
+		CharacterSelect.selectedIndex = targetIndex;
+	elseif ( targetIndex == CharacterSelect.selectedIndex ) then
+		CharacterSelect.selectedIndex = originIndex;
+	end
+	translationTable[originIndex], translationTable[targetIndex] = translationTable[targetIndex], translationTable[originIndex];
+	-- update character list
+	if ( fromDrag ) then
+		CharacterSelect.draggedIndex = targetIndex;
+	end
+	UpdateCharacterSelection(CharacterSelect);
+	UpdateCharacterList();
+end
+
+-- translation functions
+function GetCharIDFromIndex(index)
+	return translationTable[index];
+end
+
+function GetIndexFromCharID(charID)
+	-- no need for lookup if the order hasn't changed
+	if ( not CharacterSelect.orderChanged ) then
+		return charID;
+	end
+	for index = 1, #translationTable do
+		if ( translationTable[index] == charID ) then
+			return index;
+		end
+	end
+	return 0;
 end

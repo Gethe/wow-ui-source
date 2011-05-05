@@ -72,6 +72,7 @@ function TotemFrame_Update()
 	else
 		TotemFrame:Hide();
 	end
+	PlayerFrame_AdjustAttachments();
 end
 
 function TotemFrame_OnEvent(self, event, ...)

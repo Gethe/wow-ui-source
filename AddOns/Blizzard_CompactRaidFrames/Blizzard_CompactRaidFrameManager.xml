@@ -321,7 +321,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InterfaceOptionsFrame_OpenToCategory(RAID_FRAMES_LABEL);
+								InterfaceOptionsFrame_OpenToCategory(COMPACT_UNIT_FRAME_PROFILES_LABEL);
 								PlaySound("igMainMenuOption");
 								--ToggleFriendsFrame(4);
 							</OnClick>
@@ -426,6 +426,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								SetRaidProfileState(GetActiveRaidProfile(), "locked", self.lockMode);
 								CompactRaidFrameManager_SetSetting("Locked", self.lockMode);
 							</OnClick>
 						</Scripts>
@@ -437,6 +438,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								SetRaidProfileState(GetActiveRaidProfile(), "shown", self.shownMode);
 								CompactRaidFrameManager_SetSetting("IsShown", self.shownMode);
 							</OnClick>
 						</Scripts>

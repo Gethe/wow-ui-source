@@ -250,8 +250,14 @@
 				UnitFrame_Update(self);
 				PetFrame_Update(self);
 				TotemFrame_Update(self);
+				-- this will happen in TotemFrame_Update
+				--PlayerFrame_AdjustAttachments();
 			</OnShow>
-			<OnHide function="TotemFrame_Update"/>
+			<OnHide>
+				TotemFrame_Update(self);
+				-- this will happen in TotemFrame_Update
+				--PlayerFrame_AdjustAttachments();
+			</OnHide>
 			<OnUpdate function="PetFrame_OnUpdate"/>
 			<OnEnter>
 				UnitFrame_OnEnter(self);

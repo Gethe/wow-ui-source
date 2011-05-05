@@ -235,7 +235,9 @@ function TokenButton_OnClick(self)
 		end
 	else
 		TokenFrame.selectedToken = self.name:GetText();
-		if ( IsModifiedClick("TOKENWATCHTOGGLE") ) then
+		if ( IsModifiedClick("CHATLINK") ) then
+			HandleModifiedItemClick(GetCurrencyListLink(self.index));
+		elseif ( IsModifiedClick("TOKENWATCHTOGGLE") ) then
 			TokenFrame.selectedID = self.index;
 			if ( self.isWatched ) then
 				SetCurrencyBackpack(TokenFrame.selectedID, 0);

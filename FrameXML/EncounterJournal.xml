@@ -1,0 +1,1047 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="EncounterJournal.lua"/>
+
+	<!-- Tiled textures size=64,512-->
+	<Texture name="_FilterButtonUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="26"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.05273438"/>	
+	</Texture>
+	<Texture name="_FilterButtonHighlight-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="26"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.05664063" bottom="0.10742188"/>	
+	</Texture>
+	<Texture name="_FilterButtonDown-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="26"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.11132813" bottom="0.16210938"/>	
+	</Texture>
+	<Texture name="_SearchBarSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="27"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.16601563" bottom="0.21875000"/>	
+	</Texture>
+	<Texture name="_PaperHeader-SelectDown-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.22265625" bottom="0.27929688"/>	
+	</Texture>
+	<Texture name="_PaperHeader-UnSelectDown-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.28320313" bottom="0.33984375"/>	
+	</Texture>
+	<Texture name="_PaperHeader-UnSelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.40039063"/>	
+	</Texture>
+	<Texture name="_PaperHeader-Highlight-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.40429688" bottom="0.46093750"/>	
+	</Texture>
+	<Texture name="_PaperHeader-SelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.46484375" bottom="0.52148438"/>	
+	</Texture>
+	<Texture name="_SearchBarLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="49"/>	
+		<TexCoords left="0.00000000" right="1.00000000" top="0.52539063" bottom="0.62109375"/>	
+	</Texture>
+
+
+	
+	<!--size=512,1024-->
+	<Texture name="UI-EJ-AbilityTextBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="256" y="80"/>	
+		<TexCoords left="0.00195313" right="0.50195313" top="0.00097656" bottom="0.07910156"/>	
+	</Texture>
+	<Texture name="UI-EJ-AbilityTextBottomBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="243" y="9"/>	
+		<TexCoords left="0.50585938" right="0.98046875" top="0.00097656" bottom="0.00976563"/>	
+	</Texture>
+	<Texture name="UI-EJ-CreatureHeaderFrameLg-bg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="63" y="22"/>	
+		<TexCoords left="0.50585938" right="0.62890625" top="0.01171875" bottom="0.03320313"/>	
+	</Texture>
+	<Texture name="UI-EJ-CreatureHeaderFrameLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="63" y="22"/>	
+		<TexCoords left="0.50585938" right="0.62890625" top="0.03515625" bottom="0.05664063"/>	
+	</Texture>
+	<Texture name="UI-EJ-CreatureHeaderFrameSm-bg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="45" y="44"/>	
+		<TexCoords left="0.63281250" right="0.72070313" top="0.01171875" bottom="0.05468750"/>	
+	</Texture>
+	<Texture name="UI-EJ-SearchIconFrameSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="22" y="22"/>	
+		<TexCoords left="0.63281250" right="0.67578125" top="0.05664063" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="UI-EJ-CreatureHeaderFrameSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="45" y="44"/>	
+		<TexCoords left="0.72460938" right="0.81250000" top="0.01171875" bottom="0.05468750"/>	
+	</Texture>
+	<Texture name="UI-EJ-FilterButtonDown" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="26" y="26"/>	
+		<TexCoords left="0.81640625" right="0.86718750" top="0.01171875" bottom="0.03710938"/>	
+	</Texture>
+	<Texture name="UI-EJ-FilterButtonHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="26" y="26"/>	
+		<TexCoords left="0.81640625" right="0.86718750" top="0.03906250" bottom="0.06445313"/>	
+	</Texture>
+	<Texture name="UI-EJ-FilterButtonUp" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="26" y="26"/>	
+		<TexCoords left="0.87109375" right="0.92187500" top="0.01171875" bottom="0.03710938"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-Highlight-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.87109375" right="0.99609375" top="0.03906250" bottom="0.06738281"/>	
+	</Texture>
+	<Texture name="UI-EJ-BossButton-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="276" y="55"/>	
+		<TexCoords left="0.00195313" right="0.54101563" top="0.08105469" bottom="0.13476563"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonButtonSm-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="174" y="48"/>	
+		<TexCoords left="0.54492188" right="0.88476563" top="0.08105469" bottom="0.12792969"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonSm-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="50" y="50"/>	
+		<TexCoords left="0.88867188" right="0.98632813" top="0.08105469" bottom="0.12988281"/>	
+	</Texture>
+	<Texture name="UI-EJ-BossButton-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="276" y="55"/>	
+		<TexCoords left="0.00195313" right="0.54101563" top="0.13671875" bottom="0.19042969"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonButtonSm-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="174" y="48"/>	
+		<TexCoords left="0.54492188" right="0.88476563" top="0.13671875" bottom="0.18359375"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonSm-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="50" y="50"/>	
+		<TexCoords left="0.88867188" right="0.98632813" top="0.13671875" bottom="0.18554688"/>	
+	</Texture>
+	<Texture name="UI-EJ-BossButton-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="276" y="55"/>	
+		<TexCoords left="0.00195313" right="0.54101563" top="0.19238281" bottom="0.24609375"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonButtonSm-Selection" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="174" y="48"/>	
+		<TexCoords left="0.54492188" right="0.88476563" top="0.19238281" bottom="0.23925781"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonSm-Selection" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="50" y="50"/>	
+		<TexCoords left="0.88867188" right="0.98632813" top="0.19238281" bottom="0.24121094"/>	
+	</Texture>
+	<Texture name="UI-EJ-BossNameShadow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="395" y="63"/>	
+		<TexCoords left="0.00195313" right="0.77343750" top="0.24804688" bottom="0.30957031"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonLg-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="62" y="61"/>	
+		<TexCoords left="0.77734375" right="0.89843750" top="0.24804688" bottom="0.30761719"/>	
+	</Texture>
+	<Texture name="UI-EJ-SearchIconFrameLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="38" y="38"/>	
+		<TexCoords left="0.90234375" right="0.97656250" top="0.24804688" bottom="0.28515625"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonButton-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="174" y="96"/>	
+		<TexCoords left="0.00195313" right="0.34179688" top="0.31152344" bottom="0.40527344"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonButton-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="174" y="96"/>	
+		<TexCoords left="0.34570313" right="0.68554688" top="0.31152344" bottom="0.40527344"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonLg-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="62" y="61"/>	
+		<TexCoords left="0.68945313" right="0.81054688" top="0.31152344" bottom="0.37109375"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonLg-Select" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="62" y="61"/>	
+		<TexCoords left="0.81445313" right="0.93554688" top="0.31152344" bottom="0.37109375"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-Highlight-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.81445313" right="0.93945313" top="0.37304688" bottom="0.40136719"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonButton-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="174" y="96"/>	
+		<TexCoords left="0.00195313" right="0.34179688" top="0.40722656" bottom="0.50097656"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonButtonSm-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="174" y="48"/>	
+		<TexCoords left="0.34570313" right="0.68554688" top="0.40722656" bottom="0.45410156"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapNameShadow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="128" y="33"/>	
+		<TexCoords left="0.34570313" right="0.59570313" top="0.45605469" bottom="0.48828125"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonLg-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="62" y="61"/>	
+		<TexCoords left="0.68945313" right="0.81054688" top="0.40722656" bottom="0.46679688"/>	
+	</Texture>
+	<Texture name="UI-EJ-MapButtonSm-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="50" y="50"/>	
+		<TexCoords left="0.81445313" right="0.91210938" top="0.40722656" bottom="0.45605469"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-SelectDown-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.81445313" right="0.93945313" top="0.45800781" bottom="0.48632813"/>	
+	</Texture>
+	<Texture name="UI-EJ-DungeonNameBg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="256" y="64"/>	
+		<TexCoords left="0.00195313" right="0.50195313" top="0.50292969" bottom="0.56542969"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-SelectDown-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.50585938" right="0.63085938" top="0.50292969" bottom="0.53125000"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-SelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.50585938" right="0.63085938" top="0.53320313" bottom="0.56152344"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-SelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.63476563" right="0.75976563" top="0.50292969" bottom="0.53125000"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-UnSelectDown-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.63476563" right="0.75976563" top="0.53320313" bottom="0.56152344"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-UnSelectDown-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.76367188" right="0.88867188" top="0.50292969" bottom="0.53125000"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-UnSelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.76367188" right="0.88867188" top="0.53320313" bottom="0.56152344"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-BossIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>	
+		<TexCoords left="0.89257813" right="0.98632813" top="0.50292969" bottom="0.54492188"/>	
+	</Texture>
+	<Texture name="UI-EJ-FilterBar" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="320" y="28"/>	
+		<TexCoords left="0.00195313" right="0.62695313" top="0.56738281" bottom="0.59472656"/>	
+	</Texture>
+	<Texture name="UI-EJ-SearchBarHighlightSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="128" y="27"/>	
+		<TexCoords left="0.63085938" right="0.88085938" top="0.56738281" bottom="0.59375000"/>	
+	</Texture>
+	<Texture name="UI-EJ-FilterHeader" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="321" y="39"/>	
+		<TexCoords left="0.00195313" right="0.62890625" top="0.59667969" bottom="0.63476563"/>	
+	</Texture>
+	<Texture name="UI-EJ-PaperHeader-UnSelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="64" y="29"/>	
+		<TexCoords left="0.63281250" right="0.75781250" top="0.59667969" bottom="0.62500000"/>	
+	</Texture>
+	<Texture name="UI-EJ-LootFrame" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="275" y="45"/>	
+		<TexCoords left="0.00195313" right="0.53906250" top="0.63671875" bottom="0.68066406"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-BossIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>	
+		<TexCoords left="0.54296875" right="0.63671875" top="0.63671875" bottom="0.67871094"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-LootIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>	
+		<TexCoords left="0.64062500" right="0.73437500" top="0.63671875" bottom="0.67871094"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-LootIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>	
+		<TexCoords left="0.73828125" right="0.83203125" top="0.63671875" bottom="0.67871094"/>	
+	</Texture>
+	<Texture name="UI-EJ-LoreBackground" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="256" y="114"/>	
+		<TexCoords left="0.00195313" right="0.50195313" top="0.68261719" bottom="0.79394531"/>	
+	</Texture>
+	<Texture name="UI-EJ-SearchBarHighlightLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="256" y="47"/>	
+		<TexCoords left="0.00195313" right="0.50195313" top="0.79589844" bottom="0.84179688"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="82" y="57"/>	
+		<TexCoords left="0.00195313" right="0.16210938" top="0.84375000" bottom="0.89941406"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="82" y="57"/>	
+		<TexCoords left="0.00195313" right="0.16210938" top="0.90136719" bottom="0.95703125"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="82" y="57"/>	
+		<TexCoords left="0.16601563" right="0.32617188" top="0.84375000" bottom="0.89941406"/>	
+	</Texture>
+	<Texture name="UI-EJ-WorldMapDivider" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="21" y="128"/>	
+		<TexCoords left="0.50585938" right="0.54687500" top="0.68261719" bottom="0.80761719"/>	
+	</Texture>
+
+	
+	<Button name="EncounterCreatureButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
+		<Size x="100" y="55"/>
+		<Frames>
+			<Frame>
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" TextureSubLevel="6">
+						<Texture name="$parentCreature" file="Interface\EncounterJournal\UI-EJ-BOSS-Default" parentKey="creature">
+							<Size x="128" y="64"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="24" y="13"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:GetParent().creature = self.creature;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<NormalTexture inherits="UI-EJ-BossButton-Up">
+		</NormalTexture>
+		<PushedTexture inherits="UI-EJ-BossButton-Down">
+		</PushedTexture>
+		<HighlightTexture inherits="UI-EJ-BossButton-Highlight">
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad>
+				--Messy Pathwerk use to automatically update texcodors
+				local ratio = 100/276 --New Size/Texture Size
+				local texs = { self:GetNormalTexture(), self:GetPushedTexture(), self:GetHighlightTexture() };
+				for i,tex in pairs(texs) do
+					local l,t,_,b,r = tex:GetTexCoord();
+					tex:SetTexCoord( (r-l)*ratio ,l,t,b);
+				end
+				
+				--start small
+				self:SetSize(70, 44);
+				self.creature:SetSize(100, 50);
+				self.creature:SetPoint("TOPRIGHT", self, "TOPRIGHT", 21, 8);
+			</OnLoad>
+			<OnDisable>
+				self:SetSize(100, 55);
+				self.creature:SetSize(128, 64);
+				self.creature:SetPoint("TOPRIGHT", self, "TOPRIGHT", 24, 13);
+			</OnDisable>
+			<OnEnable>
+				self:SetSize(70, 44);
+				self.creature:SetSize(100, 50);
+				self.creature:SetPoint("TOPRIGHT", self, "TOPRIGHT", 21, 8);
+			</OnEnable>
+			<OnClick>
+				EncounterJournal_DisplayCreature(self)
+			</OnClick>
+			<OnEnter>
+				if self.description then
+					GameTooltip:SetOwner(self);
+					GameTooltip:SetText(self.description);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Button name="EncounterBossButtonTemplate" virtual="true" hidden="true">
+		<Size x="276" y="55"/>
+		<Frames>
+			<Frame>
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-4" y="13"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" TextureSubLevel="6">
+						<Texture name="$parentCreature" file="Interface\EncounterJournal\UI-EJ-BOSS-Default" parentKey="creature">
+							<Size x="128" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:GetParent().creature = self.creature;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<NormalTexture inherits="UI-EJ-BossButton-Up">
+		</NormalTexture>
+		<PushedTexture inherits="UI-EJ-BossButton-Down">
+		</PushedTexture>
+		<HighlightTexture inherits="UI-EJ-BossButton-Highlight">
+		</HighlightTexture>
+		<ButtonText name="$parentText" parentKey="text" justifyH="LEFT"  justifyV="MIDDLE">
+			<Size x="160" y="40"/>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="105" y="-3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontHighlightMedium"/>
+		<DisabledFont style="GameFontHighlightMedium"/>
+		<Scripts>
+			<OnClick>
+				EncounterJournal_DisplayEncounter(EncounterJournal.encounter, self.encounterID)
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Button name="EncounterTabTemplate" virtual="true">
+		<Size x="82" y="57"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentUnselect" inherits="UI-EJ-Tab-BossIcon-UnSelected" parentKey="unselected">
+					<Size x="48" y="43"/>
+					<Anchors>
+						<Anchor point="LEFT" x="6" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentSelect" inherits="UI-EJ-Tab-BossIcon-Selected" parentKey="selected">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentUnselect" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentUnselect" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="UI-EJ-Tab-UnSelected"/>
+		<PushedTexture inherits="UI-EJ-Tab-Selected"/>
+		<DisabledTexture inherits="UI-EJ-Tab-Selected"/>
+		<HighlightTexture inherits="UI-EJ-Tab-Highlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnClick function="EncounterJournal_TabClicked"/>
+			<OnDisable>
+				self.selected:Show();
+				self.unselected:Hide();
+				--self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+			</OnDisable>
+			<OnEnable>
+				self.unselected:Show();
+				self.selected:Hide();
+				--self:SetFrameLevel(self:GetParent():GetFrameLevel()+1);
+			</OnEnable>
+		</Scripts>
+	</Button>
+	
+	<Button name="EncounterDifficultyTemplate" virtual="true">
+		<Size x="26" y="26"/>
+		<NormalTexture inherits="UI-EJ-FilterButtonUp">
+		</NormalTexture>
+		<PushedTexture inherits="UI-EJ-FilterButtonDown">
+		</PushedTexture>
+		<HighlightTexture inherits="UI-EJ-FilterButtonHighlight" alphaMode="ADD">
+		</HighlightTexture>
+		<NormalFont style="GameFontNormalSmall"/>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="0"/>
+			</Anchors>
+		</ButtonText>
+	</Button>
+	
+	<Frame name="EncounterInfoTemplate" virtual="true">
+		<Size x="5" y="24"/>
+		<Frames>
+			<Button name="$parentHeaderButton" parentKey="button">
+				<Size x="5" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentExpandedIcon" inherits="GameFontNormalLarge" parentKey="expandedIcon">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" x="5" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentAbilityIcon" parentKey="abilityIcon">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentExpandedIcon" relativePoint="RIGHT" x="5" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentPortraitIcon" parentKey="portraitIcon">
+							<Size x="26" y="26"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentAbilityIcon" x="0" y="0"/>
+							</Anchors>
+						</Texture>		
+						
+						<Texture name="$parentIcon1" file="Interface\EncounterJournal\UI-EJ-Icons" parentKey="icon1">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="5" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentIcon2" file="Interface\EncounterJournal\UI-EJ-Icons" parentKey="icon2">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentIcon1" relativePoint="LEFT" x="15" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentIcon3" file="Interface\EncounterJournal\UI-EJ-Icons" parentKey="icon3">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentIcon2" relativePoint="LEFT" x="15" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentIcon4" file="Interface\EncounterJournal\UI-EJ-Icons" parentKey="icon4">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentIcon3" relativePoint="LEFT" x="15" y="0"/>
+							</Anchors>
+						</Texture>
+						
+						<FontString name="$parentTile" inherits="GameFontNormal" parentKey="title" justifyH="LEFT">
+							<Size x="5" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentAbilityIcon" relativePoint="RIGHT" x="5" y="-1"/>
+								<Anchor point="RIGHT" relativeTo="$parentIcon4" relativePoint="LEFT" x="-5" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" inherits="UI-EJ-PaperHeader-SelectUp-Left" parentKey="left">
+							<Anchors>
+								<Anchor point="LEFT" x="-1" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" inherits="UI-EJ-PaperHeader-SelectUp-Right" parentKey="right">
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-2">
+						<Texture name="$parentMid" inherits="_PaperHeader-SelectUp-Mid" parentKey="mid">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="-32" y="0"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" x="32" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture name="$parentHighlightLeft" inherits="UI-EJ-PaperHeader-Highlight-Left" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="LEFT" x="-1" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentHighlightRight" inherits="UI-EJ-PaperHeader-Highlight-Right" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentHighlightMid" inherits="_PaperHeader-Highlight-Mid" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentHighlightLeft" relativePoint="RIGHT" x="-32" y="0"/>
+								<Anchor point="RIGHT" relativeTo="$parentHighlightRight" relativePoint="LEFT" x="32" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<PushedTexture>
+					<Color r="1" a="0.5"/>
+				</PushedTexture>
+				<NormalFont style="GameFontHighlight"/>
+				<ButtonText>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</ButtonText>
+				<Scripts>
+					<OnClick>
+						EncounterJournal_ToggleHeaders(self:GetParent())
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton" x="0" y="-4"/>
+					</Anchors>
+					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentDescriptionBG" inherits="UI-EJ-AbilityTextBG" parentKey="descriptionBG">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDescription" x="-4" y="7"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDescription" x="4" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="UI-EJ-AbilityTextBottomBorder" parentKey="descriptionBGBottom">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentDescriptionBG" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parentDescriptionBG" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="EncounterItemTemplate" virtual="true">
+		<Size x="275" y="49"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="LEFT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture inherits="UI-EJ-LootFrame">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="name">
+					<Size x="200" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="7" y="-7`"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSlot" inherits="GameFontBlack" justifyH="LEFT" parentKey="slot">
+					<Size x="90" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="7" y="5"/>
+					</Anchors>
+					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+				</FontString>
+				<FontString name="$parentArmorClass" inherits="GameFontBlack" justifyH="RIGHT" parentKey="armorType">
+					<Size x="90" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-16" y="10"/>
+					</Anchors>
+					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+				GameTooltip:SetItemByID(self.itemID);
+				self.showingTooltip = true;
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.showingTooltip = false;
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	
+	<Frame name="EncounterJournal" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
+		<Size x="800" y="496"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<!--EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
+				<Size x="280" y="20"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-15" y="35"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+					</OnShow>
+					<OnEnterPressed function="EncounterJournal_ShowFullSearch"/>
+					<OnTextChanged function="EncounterJournal_OnSearchTextChanged"/>
+				</Scripts>
+				<FontString inherits="ChatFontSmall"/>
+			</EditBox-->
+		
+		
+			<Frame name="$parentNavBar" inherits="NavBarTemplate" parentKey="navBar">
+				<Size x="740" y="34"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-24"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="inset">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentNavBar" relativePoint="BOTTOMRIGHT" x="0" y="-3" />
+					<Anchor point="BOTTOMLEFT" x="4" y="5"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentEncounterFrame" parentKey="encounter">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="0" y="0" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBGLeft" file="Interface\EncounterJournal\UI-EJ-BACKGROUND-Default" parentKey="bgLeft">
+							<Size x="465" y="425"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="3" y="2"/>
+							</Anchors>
+							<TexCoords left="0" right="0.908203125" top="0" bottom="0.830078125"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentInstanceFrame" parentKey="instance">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentBGLeft" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGLeft" x="-10" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTileBG" inherits="UI-EJ-DungeonNameBg">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentTile" inherits="QuestFont_Super_Huge" justifyH="CENTER" justifyV="BOTTOM" parentKey="title">
+									<Size x="300" y="10"/>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentTileBG"  x="0" y="28"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" parentKey="description">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="15"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentLoreBG" inherits="UI-EJ-LoreBackground">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentDescription" x="-35" y="35"/>
+										<Anchor point="RIGHT" relativeTo="$parentDescription" x="35" y="0"/>
+										<Anchor point="BOTTOM" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<PlayerModel name="$parentModelFrame" parentKey="model" useParentLevel="true" >
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentBGLeft" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGLeft" x="-10" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTileBG" inherits="UI-EJ-BossNameShadow">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentImageTile" inherits="QuestTitleFontBlackShadow" justifyH="CENTER" parentKey="imageTitle">
+									<Size x="380" y="10"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="8"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								Model_OnLoad(self);
+								self:SetCamDistanceScale(1.0);
+								self:GetParent().imageTitle = self.imageTitle;
+							</OnLoad>
+							<OnEvent function="Model_OnEvent"/>
+							<OnUpdate function="Model_OnUpdate"/>
+							<OnMouseDown function="Model_OnMouseDown"/>
+							<OnMouseUp function="Model_OnMouseUp"/>
+							<OnMouseWheel>
+								--Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
+							</OnMouseWheel>
+						</Scripts>
+					</PlayerModel>
+					<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-35"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentCreatureButton2" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton1" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentCreatureButton3" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton2" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentCreatureButton4" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton3" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentCreatureButton5" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton4" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentCreatureButton6" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton5" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</Button>
+					<Frame> <!--Info buffer Frame-->
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentInfo" parentKey="info">
+								<Size x="300" y="425"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+											<Texture name="$parentBGRight" file="Interface\EncounterJournal\UI-EJ-JournalBG" parentKey="bgRight">
+											<Size x="372" y="425"/>
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+											</Anchors>
+											<TexCoords left="0" right="0.7265625" top="0" bottom="0.830078125"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<FontString name="$parentTypeHeader" inherits="QuestTitleFontBlackShadow" text="ENCOUNTER" justifyH="CENTER" parentKey="typeHeader">
+											<Size x="380" y="10"/>
+											<Anchors>
+												<Anchor point="TOP" relativeTo="$parentBGRight" x="20" y="-14"/>
+											</Anchors>
+											<Color r="0.9" g="0.85" b="0.95"/>
+										</FontString>
+										<Texture name="$parentBGRightCover" file="Interface\EncounterJournal\UI-EJ-JournalBG">
+											<Size x="87" y="425"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-30" y="0"/>
+											</Anchors>
+											<TexCoords left="0.830078125" right="1" top="0" bottom="0.830078125"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY"  TextureSubLevel="1">
+										<Texture name="$parentTitleBG" inherits="UI-EJ-FilterHeader">
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="0" y="-40"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY"  TextureSubLevel="2">
+										<FontString name="$parentEncounterTile" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="encounterTitle">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-300" y="-66"/>
+											</Anchors>
+											<Color r="0.9" g="0.85" b="0.95"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="$parentBossTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="bossTab" id="1">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="-65" y="-75"/>
+										</Anchors>
+									</Button>
+									<Button name="$parentLootTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="lootTab" id="2">
+										<Anchors>
+											<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="-5"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.selected:SetTexCoord(0.64062500, 0.73437500,  0.63671875, 0.67871094);	
+												self.unselected:SetTexCoord(0.73828125, 0.83203125, 0.63671875, 0.67871094);	
+											</OnLoad>
+										</Scripts>
+									</Button>
+									<Button name="$parentHeroicButton" inherits="EncounterDifficultyTemplate">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="-7" y="-45"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<Texture name="$parentSkull" file="Interface\EncounterJournal\UI-EJ-HeroicTextIcon" parentKey="skull">
+													<Size x="14" y="14"/>
+													<Anchors>
+														<Anchor point="CENTER" x="0" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnClick>
+												EncounterJournal.isHeroic = not EncounterJournal.isHeroic;
+												if EncounterJournal.isHeroic then
+													self:LockHighlight();
+												else
+													self:UnlockHighlight();
+												end
+												EncounterJournal_Refresh();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button name="$parent25ManButton" inherits="EncounterDifficultyTemplate" text="25" parentKey="diff25man">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="$parentHeroicButton" relativePoint="LEFT" x="-1" y="0"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												EncounterJournal.is10Man = false;
+												self:LockHighlight();
+												self:GetParent().diff10man:UnlockHighlight();
+												EncounterJournal_Refresh();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button name="$parent10ManButton" inherits="EncounterDifficultyTemplate" text="10" parentKey="diff10man">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="$parent25ManButton" relativePoint="LEFT" x="-1" y="0"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self:LockHighlight();
+											</OnLoad>
+											<OnClick>
+												EncounterJournal.is10Man = true;
+												self:LockHighlight();
+												self:GetParent().diff25man:UnlockHighlight();
+												EncounterJournal_Refresh();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<ScrollFrame name="$parentDetailsScrollFrame" parentKey="detailsScroll" inherits="UIPanelScrollFrameCodeTemplate">
+										<Size x="300" y="350"/>
+										<Anchors>
+											<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+										</Anchors>
+										<!--Layers>
+											<Layer level="OVERLAY">
+												<Texture>
+													<Anchors>
+														<Anchor point="TOPLEFT" x="0" y="0"/>
+														<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+													</Anchors>
+													<Color r="1" a="0.5"/>
+												</Texture>
+											</Layer>
+										</Layers-->
+										<Frames>
+											<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="0" y="-17"/>
+													<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
+												</Anchors>
+												<Scripts>
+													<OnLoad>
+														self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
+													</OnLoad>
+												</Scripts>
+											</Slider>
+										</Frames>
+										<ScrollChild>
+											<Frame name="$parentScrollChild" parentKey="child">
+												<Size x="277" y="400"/>
+												<Anchors>
+													<Anchor point="TOPLEFT" x="0" y="0"/>
+												</Anchors>
+												<Layers>
+													<Layer level="ARTWORK">
+														<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+															<Size x="0" y="0"/>
+															<Anchors>
+																<Anchor point="TOPLEFT" x="2" y="-8"/>
+															</Anchors>
+															<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+														</FontString>
+													</Layer>
+												</Layers>
+											</Frame>
+										</ScrollChild>
+									</ScrollFrame>
+									<ScrollFrame name="$parentLootScrollFrame" parentKey="lootScroll" inherits="HybridScrollFrameTemplate">
+										<Size x="295" y="350"/>
+										<Anchors>
+											<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<!--Texture>
+													<Anchors>
+														<Anchor point="TOPLEFT" x="0" y="0"/>
+														<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+													</Anchors>
+													<Color b="1" a="0.5"/>
+												</Texture-->
+											</Layer>
+										</Layers>
+										<Frames>
+											<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="0" y="-17"/>
+													<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
+												</Anchors>
+												<Scripts>
+													<OnLoad>
+														self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
+													</OnLoad>
+												</Scripts>
+											</Slider>
+										</Frames>
+										<Scripts>
+											<OnShow>
+												EncounterJournal_LootUpdate();
+											</OnShow>
+										</Scripts>
+									</ScrollFrame>
+								</Frames>
+							</Frame>	
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:GetParent().info = self.info;
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentTierDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="tierDropDown">
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="50" y="33"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentTempDD" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="tempDD">
+				<Anchors>
+					<Anchor point="LEFT"  relativeTo="$parentTierDropDown" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow function="EncounterJournal_OnShow"/>
+			<OnHide function="EncounterJournal_OnHide"/>
+			<OnLoad function="EncounterJournal_OnLoad"/>
+			<OnEvent function="EncounterJournal_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

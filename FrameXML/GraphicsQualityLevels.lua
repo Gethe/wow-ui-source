@@ -356,7 +356,10 @@ VideoData["Graphics_MultiSampleDropDown"]={
 	description = OPTION_TOOLTIP_MULTISAMPLING;
 	
 	table = {},
-	tablefunction = GetMultisampleFormats;
+	tablefunction =
+		function()
+			return GetMultisampleFormats(Graphics_PrimaryMonitorDropDown:GetValue());
+		end,
 	tablenext = 3;
 	readfilter =
 		function(self, colorBits, depthBits, multiSample)
@@ -364,9 +367,12 @@ VideoData["Graphics_MultiSampleDropDown"]={
 		end,
 	SetValue = 
 		function (self, value)
-			SetMultisampleFormat(value);
+			SetMultisampleFormat(value, Graphics_PrimaryMonitorDropDown:GetValue());
 		end,
-	doGetValue = GetCurrentMultisampleFormat;
+	doGetValue = 
+		function()
+			return GetCurrentMultisampleFormat(Graphics_PrimaryMonitorDropDown:GetValue());
+		end,
 	restart = true,
 }
 
@@ -375,29 +381,29 @@ VideoData["Graphics_RefreshDropDown"]={
 	name = REFRESH_RATE;
 	description = OPTION_TOOLTIP_REFRESH_RATE,
 	
-	cvar = "gxRefresh";
-	-- code run for dependent target
+	tablenext = 2;
 	tablefunction = 
 		function()
 			-- get refresh rates for the currently selected resolution
 			local x, y = Graphics_ResolutionDropDown:getValues();
-			return GetRefreshRates(x, y, Graphics_PrimaryMonitorDropDown:GetValue());
+			local monitor = Graphics_PrimaryMonitorDropDown:GetValue();
+			return GetRefreshRates(x, y, monitor);
 		end,
 	readfilter =
-		function(self, value)
-			return value .. HERTZ;
+		function(self, numer, denom)
+			return string.format("%.1f", numer / denom) .. HERTZ;
 		end,
-	SetValue =
-		function(self, value)
-			local str = self.table[value];
-			if(str ~= nil) then
-				local val = string.match(self.table[value], "(%d+)");
-				BlizzardOptionsPanel_SetCVarSafe(self.cvar, val);
-			end
+	SetValue = 
+		function (self, value)
+			local x, y = Graphics_ResolutionDropDown:getValues();
+			local monitor = Graphics_PrimaryMonitorDropDown:GetValue();
+			SetRefresh(value, x, y, monitor);
 		end,
 	doGetValue = 
-		function(self)
-			return self:lookup(self.table[self.selectedID] or BlizzardOptionsPanel_GetCVarSafe(self.cvar) .. HERTZ);
+		function ()
+			local x, y = Graphics_ResolutionDropDown:getValues();
+			local monitor = Graphics_PrimaryMonitorDropDown:GetValue();
+			return GetCurrentRefresh(x, y, monitor);
 		end,
 	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable,
 	onrefresh =

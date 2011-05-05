@@ -1,0 +1,6 @@
+## Interface: 40200
+## Title: Blizzard_CompactUnitFrameProfiles
+## Secure: 1
+## LoadOnDemand: 0
+
+Blizzard_CompactUnitFrameProfiles.xml

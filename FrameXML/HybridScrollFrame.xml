@@ -240,7 +240,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentTrack">
+				<Texture name="$parentTrack" parentKey="trackBG">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="17"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="-17"/>

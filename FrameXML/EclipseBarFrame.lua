@@ -50,8 +50,8 @@ function EclipseBar_UpdateShown(self)
 		end
 	else
 		self:Hide();
-		return;
 	end
+	PlayerFrame_AdjustAttachments();
 end
 
 function EclipseBar_Update(self)
@@ -238,5 +238,4 @@ function EclipseBar_OnEvent(self, event, ...)
 		EclipseBar_UpdateShown(self);
 	end
 end
-
 

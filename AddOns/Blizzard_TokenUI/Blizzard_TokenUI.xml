@@ -105,6 +105,9 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetCurrencyToken(self:GetParent().index);
 					</OnEnter>
+					<OnClick>
+						HandleModifiedItemClick(GetCurrencyListLink(self:GetParent().index));
+					</OnClick>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>

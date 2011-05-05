@@ -2177,7 +2177,7 @@ _G.CombatLog_Color_ColorStringByEventType = CombatLog_Color_ColorStringByEventTy
 
 local defaultCombatLogLineColor = { a = 1.00, r = 1.00, g = 1.00, b = 1.00 };
 
-function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 	-- [environmentalDamageType]
 	-- [spellName, spellRank, spellSchool]
 	-- [damage, school, [resisted, blocked, absorbed, crit, glancing, crushing]]
@@ -2976,10 +2976,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	-- Unit Icons
 	if ( settings.unitIcons ) then
 		if ( sourceName ) then
-			sourceIcon = CombatLog_String_GetIcon(sourceFlags, "source");
+			sourceIcon = CombatLog_String_GetIcon(sourceRaidFlags, "source");
 		end
 		if ( destName ) then
-			destIcon = CombatLog_String_GetIcon(destFlags, "dest");
+			destIcon = CombatLog_String_GetIcon(destRaidFlags, "dest");
 		end
 	end
 

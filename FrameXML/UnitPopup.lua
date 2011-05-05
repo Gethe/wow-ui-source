@@ -110,6 +110,7 @@ UnitPopupButtons["MOVE_PLAYER_FRAME"] = { text = MOVE_FRAME, dist = 0, nested = 
 UnitPopupButtons["LOCK_PLAYER_FRAME"] = { text = LOCK_FRAME, dist = 0 };
 UnitPopupButtons["UNLOCK_PLAYER_FRAME"] = { text = UNLOCK_FRAME, dist = 0 };
 UnitPopupButtons["RESET_PLAYER_FRAME_POSITION"] = { text = RESET_POSITION, dist = 0 };
+UnitPopupButtons["PLAYER_FRAME_SHOW_CASTBARS"] = { text = PLAYER_FRAME_SHOW_CASTBARS, dist = 0, checkable = 1, isNotRadio = 1 };
 
 UnitPopupButtons["MOVE_TARGET_FRAME"] = { text = MOVE_FRAME, dist = 0, nested = 1 };
 UnitPopupButtons["LOCK_TARGET_FRAME"] = { text = LOCK_FRAME, dist = 0 };
@@ -184,7 +185,7 @@ UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DI
 UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2" };
 UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "RAID_DIFFICULTY4" };
 UnitPopupMenus["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" };
-UnitPopupMenus["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION" };
+UnitPopupMenus["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" };
 UnitPopupMenus["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" , "TARGET_FRAME_BUFFS_ON_TOP"};
 
 UnitPopupShown = {};
@@ -391,6 +392,10 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					end
 				elseif ( value == "TARGET_FRAME_BUFFS_ON_TOP" ) then
 					if ( TARGET_FRAME_BUFFS_ON_TOP ) then
+						info.checked = 1;
+					end
+				elseif ( value == "PLAYER_FRAME_SHOW_CASTBARS" ) then
+					if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
 						info.checked = 1;
 					end
 				elseif ( strsub(value, 1, 9) == "SET_ROLE_" ) then
@@ -1523,6 +1528,13 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "TARGET_FRAME_BUFFS_ON_TOP" ) then
 		TARGET_FRAME_BUFFS_ON_TOP = not TARGET_FRAME_BUFFS_ON_TOP;
 		TargetFrame_UpdateAuras(TargetFrame);
+	elseif ( button == "PLAYER_FRAME_SHOW_CASTBARS" ) then
+		PLAYER_FRAME_CASTBARS_SHOWN = not PLAYER_FRAME_CASTBARS_SHOWN;
+		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
+			PlayerFrame_AttachCastBar();
+		else
+			PlayerFrame_DetachCastBar();
+		end
 	elseif ( strsub(button, 1, 10) == "BN_REPORT_" ) then
 		BNet_InitiateReport(dropdownFrame.presenceID, strsub(button, 11));
 	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then

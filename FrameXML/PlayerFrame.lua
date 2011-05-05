@@ -246,6 +246,9 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateRolesAssigned();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		PlayerFrame_SetLocked(not PLAYER_FRAME_UNLOCKED);
+		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
+			PlayerFrame_AttachCastBar();
+		end
 	end
 end
 
@@ -702,4 +705,69 @@ function PlayerFrame_ResetUserPlacedPosition()
 	PlayerFrame:SetUserPlaced(false);
 	PlayerFrame:SetClampedToScreen(false);
 	PlayerFrame_SetLocked(true);
+end
+
+--
+-- Functions for having the cast bar underneath the player frame
+--
+
+function PlayerFrame_AttachCastBar()
+	local castBar = CastingBarFrame;
+	local petCastBar = PetCastingBarFrame;
+	-- player
+	castBar.ignoreFramePositionManager = true;
+	CastingBarFrame_SetLook(castBar, "UNITFRAME");
+	castBar:ClearAllPoints();
+	castBar:SetPoint("LEFT", PlayerFrame, 78, 0);
+	-- pet
+	CastingBarFrame_SetLook(petCastBar, "UNITFRAME");
+	petCastBar:SetWidth(150);
+	petCastBar:SetHeight(10);
+	petCastBar:ClearAllPoints();
+	petCastBar:SetPoint("TOP", castBar, "TOP", 0, 0);
+	
+	PlayerFrame_AdjustAttachments();
+end
+
+function PlayerFrame_DetachCastBar()
+	local castBar = CastingBarFrame;
+	local petCastBar = PetCastingBarFrame;
+	-- player
+	castBar.ignoreFramePositionManager = nil;
+	CastingBarFrame_SetLook(castBar, "CLASSIC");
+	castBar:ClearAllPoints();
+	-- pet
+	CastingBarFrame_SetLook(petCastBar, "CLASSIC");
+	petCastBar:SetWidth(195);
+	petCastBar:SetHeight(13);
+	petCastBar:ClearAllPoints();
+	petCastBar:SetPoint("BOTTOM", castBar, "TOP", 0, 12);
+	
+	UIParent_ManageFramePositions();
+end
+
+function PlayerFrame_AdjustAttachments()
+	if ( not PLAYER_FRAME_CASTBARS_SHOWN ) then
+		return;
+	end
+	if ( PetFrame and PetFrame:IsShown() ) then
+		CastingBarFrame:SetPoint("TOP", PetFrame, "BOTTOM", 0, -4);
+	elseif ( TotemFrame and TotemFrame:IsShown() ) then
+		CastingBarFrame:SetPoint("TOP", TotemFrame, "BOTTOM", 0, 2);
+	else
+		local _, class = UnitClass("player");
+		if ( class == "PALADIN" ) then
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -6);
+		elseif ( class == "DRUID" ) then
+			if ( EclipseBarFrame and EclipseBarFrame:IsShown() ) then
+				CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -2);
+			else
+				CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
+			end
+		elseif ( class == "DEATHKNIGHT" or class == "WARLOCK" ) then
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 4);
+		else
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
+		end
+	end
 end

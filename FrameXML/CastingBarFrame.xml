@@ -9,7 +9,7 @@
 				</Texture>		
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
+				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border" parentKey="border">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -21,7 +21,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
+				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true" parentKey="borderShield">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -33,7 +33,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlight">
+				<FontString name="$parentText" inherits="GameFontHighlight" parentKey="text">
 					<Size>
 						<AbsDimension x="185" y="16"/>
 					</Size>
@@ -45,7 +45,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentIcon" hidden="true">
+				<Texture name="$parentIcon" hidden="true" parentKey="icon">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -59,15 +59,15 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" parentKey="barSpark">
 					<Size>
 						<AbsDimension x="32" y="32"/>
 					</Size>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="0" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentFlash" file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+				<Texture name="$parentFlash" file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD" parentKey="barFlash">
 					<Size>
 						<AbsDimension x="256" y="64"/>
 					</Size>
@@ -77,6 +77,94 @@
 								<AbsDimension x="0" y="28"/>
 							</Offset>
 						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CastingBarFrame_OnLoad(self, "player", true, false);
+			</OnLoad>
+			<OnEvent>
+				CastingBarFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				CastingBarFrame_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				CastingBarFrame_OnShow(self);
+			</OnShow>
+		</Scripts>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="1.0" g="0.7" b="0.0"/>
+	</StatusBar>
+	<StatusBar name="SmallCastingBarFrameTemplate" drawLayer="BORDER" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="10"/>
+		</Size>	
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border-Small" parentKey="border">
+					<Size>
+						<AbsDimension x="0" y="49"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-23" y="20"/>
+						<Anchor point="TOPRIGHT" x="23" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true" parentKey="borderShield">
+					<Size>
+						<AbsDimension x="0" y="49"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-28" y="20"/>
+						<Anchor point="TOPRIGHT" x="18" y="20"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="SystemFont_Shadow_Small" parentKey="text">
+					<Size>
+						<AbsDimension x="0" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="4"/>
+						<Anchor point="TOPRIGHT" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIcon" hidden="true" parentKey="icon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" parentKey="barSpark">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFlash" file="Interface\CastingBar\UI-CastingBar-Flash-Small" alphaMode="ADD" parentKey="barFlash">
+					<Size>
+						<AbsDimension x="0" y="49"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-23" y="20"/>
+						<Anchor point="TOPRIGHT" x="23" y="20"/>
 					</Anchors>
 				</Texture>
 			</Layer>

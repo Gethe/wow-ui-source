@@ -18,7 +18,7 @@
 
 	<Frame name="InterfaceOptionsFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size>
-			<AbsDimension x="648" y="520"/>
+			<AbsDimension x="858" y="660"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -125,7 +125,7 @@
 			</Button>
 			<Frame name="$parentCategories" inherits="OptionsFrameListTemplate">
 				<Size>
-					<AbsDimension x="175" y="429"/>
+					<AbsDimension x="175" y="569"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -144,7 +144,7 @@
 			</Frame>
 			<Frame name="$parentAddOns" inherits="OptionsFrameListTemplate" hidden="true">
 				<Size>
-					<AbsDimension x="175" y="429"/>
+					<AbsDimension x="175" y="569"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">

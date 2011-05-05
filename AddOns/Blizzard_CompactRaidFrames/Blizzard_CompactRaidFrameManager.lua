@@ -10,7 +10,6 @@ function CompactRaidFrameManager_OnLoad(self)
 	self.container = CompactRaidFrameContainer;
 	self.container:SetParent(self);
 	
-	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
@@ -35,12 +34,7 @@ end
 
 local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", "DisplayPets", "DisplayMainTankAndAssist", "IsShown", "ShowBorders" };
 function CompactRaidFrameManager_OnEvent(self, event, ...)
-	if ( event == "VARIABLES_LOADED" ) then
-		for _, setting in pairs(settings) do
-			CompactRaidFrameManager_SetSetting(setting, GetCVar("raidOption"..setting));
-		end
-		CompactRaidFrameManager_ResizeFrame_LoadPosition(self);
-	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
+	if ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
 		CompactRaidFrameManager_UpdateContainerBounds(self);
 	elseif ( event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
 		CompactRaidFrameManager_UpdateShown(self);
@@ -277,14 +271,32 @@ local cachedSettings = {};
 local isSettingCached = {};
 function CompactRaidFrameManager_GetSetting(settingName)
 	if ( not isSettingCached[settingName] ) then
-		cachedSettings[settingName] = GetCVar("raidOption"..settingName);
+		cachedSettings[settingName] = CompactRaidFrameManager_GetSettingBeforeLoad(settingName);
 		isSettingCached[settingName] = true;
 	end
 	return cachedSettings[settingName];
 end
 
-function CompactRaidFrameManager_GetSettingDefault(settingName)
-	return GetCVarDefault("raidOption"..settingName);
+function CompactRaidFrameManager_GetSettingBeforeLoad(settingName)
+	if ( settingName == "Managed" ) then
+		return true;
+	elseif ( settingName == "Locked" ) then
+		return true;
+	elseif ( settingName == "SortMode" ) then
+		return "role";
+	elseif ( settingName == "KeepGroupsTogether" ) then
+		return false;
+	elseif ( settingName == "DisplayPets" ) then
+		return false;
+	elseif ( settingName == "DisplayMainTankAndAssist" ) then
+		return true;
+	elseif ( settingName == "IsShown" ) then
+		return true;
+	elseif ( settingName == "ShowBorders" ) then
+		return true;
+	else
+		GMError("Unknown setting "..tostring(settingName));
+	end
 end
 
 do	--Enclosure to make sure people go through SetSetting
@@ -294,17 +306,14 @@ do	--Enclosure to make sure people go through SetSetting
 
 	local function CompactRaidFrameManager_SetLocked(value)
 		local manager = CompactRaidFrameManager;
-		if ( value == "lock" ) then
+		if ( value and value ~= "0" ) then
 			CompactRaidFrameManager_LockContainer(manager);
 			CompactRaidFrameManagerDisplayFrameLockedModeToggle:SetText(UNLOCK);
-			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = "unlock";
-		elseif ( value == "unlock" ) then
+			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = false;
+		else
 			CompactRaidFrameManager_UnlockContainer(manager);
 			CompactRaidFrameManagerDisplayFrameLockedModeToggle:SetText(LOCK);
-			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = "lock";
-		else
-			CompactRaidFrameManager_SetSetting("Locked", CompactRaidFrameManager_GetSettingDefault("Locked"));
-			GMError("Unknown lock value: "..tostring(value));
+			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = true;
 		end
 	end
 
@@ -317,7 +326,7 @@ do	--Enclosure to make sure people go through SetSetting
 		elseif ( value == "alphabetical" ) then
 			CompactRaidFrameContainer_SetFlowSortFunction(manager.container, CRFSort_Alphabetical);
 		else
-			CompactRaidFrameManager_SetSetting("SortMode", CompactRaidFrameManager_GetSettingDefault("SortMode"));
+			CompactRaidFrameManager_SetSetting("SortMode", "role");
 			GMError("Unknown sort mode: "..tostring(value));
 		end
 	end
@@ -332,11 +341,6 @@ do	--Enclosure to make sure people go through SetSetting
 		end
 		
 		CompactRaidFrameContainer_SetGroupMode(manager.container, groupMode);
-		if ( groupMode == "discrete" ) then		
-			InterfaceOptionsRaidFramePanelSortBy:Hide();
-		elseif ( groupMode == "flush" ) then
-			InterfaceOptionsRaidFramePanelSortBy:Show();
-		end
 		CompactRaidFrameManager_UpdateFilterInfo(manager);
 	end
 
@@ -383,7 +387,6 @@ do	--Enclosure to make sure people go through SetSetting
 	end
 	
 	function CompactRaidFrameManager_SetSetting(settingName, value)
-		SetCVar("raidOption"..settingName, value);
 		cachedSettings[settingName] = value;
 		isSettingCached[settingName] = true;
 		
@@ -509,11 +512,9 @@ function CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager)
 	end
 end
 
-local POSITION_CVAR_VERSION = 2;	--In case we ever change the format of this save.
 function CompactRaidFrameManager_ResizeFrame_SavePosition(manager)
-	local cvar = "raidFramesPosition";
 	if ( manager.dynamicContainerPosition ) then
-		SetCVar(cvar, "");
+		SetRaidProfileSavedPosition(GetActiveRaidProfile(), true);
 		return;
 	end
 	
@@ -557,15 +558,13 @@ function CompactRaidFrameManager_ResizeFrame_SavePosition(manager)
 		end
 	end
 	
-	SetCVar(cvar, strjoin(",", POSITION_CVAR_VERSION, topPoint, topOffset, bottomPoint, bottomOffset, leftPoint, leftOffset));
+	SetRaidProfileSavedPosition(GetActiveRaidProfile(), false, topPoint, topOffset, bottomPoint, bottomOffset, leftPoint, leftOffset);
 end
 
 function CompactRaidFrameManager_ResizeFrame_LoadPosition(manager)
-	local cvar = "raidFramesPosition";
+	local dynamic, topPoint, topOffset, bottomPoint, bottomOffset, leftPoint, leftOffset = GetRaidProfileSavedPosition(GetActiveRaidProfile());
 	
-	local version, topPoint, topOffset, bottomPoint, bottomOffset, leftPoint, leftOffset = strsplit(",", GetCVar(cvar));
-	
-	if ( version == "" or version == "1" ) then	--We are automatically placed.
+	if ( dynamic ) then	--We are automatically placed.
 		manager.dynamicContainerPosition = true;
 		CompactRaidFrameManager_UpdateContainerBounds(manager);
 		return;

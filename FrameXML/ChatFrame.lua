@@ -1414,6 +1414,12 @@ SecureCmdList["PET_AGGRESSIVE"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_ASSIST"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		PetAssistMode();
+	end
+end
+
 SecureCmdList["PET_AUTOCASTON"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then

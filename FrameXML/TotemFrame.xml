@@ -128,7 +128,13 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="TotemFrame_OnLoad"/>
+			<OnShow>
+				PlayerFrame_AdjustAttachments();
+			</OnShow>
 			<OnEvent function="TotemFrame_OnEvent"/>
+			<OnHide>
+				PlayerFrame_AdjustAttachments();
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

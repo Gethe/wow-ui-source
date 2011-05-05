@@ -297,7 +297,9 @@ function BlizzardOptionsPanel_OnLoad (frame, okay, cancel, default, refresh)
 	frame.refresh = refresh or BlizzardOptionsPanel_Refresh;
 
 	frame:RegisterEvent("PLAYER_ENTERING_WORLD");
-	frame:SetScript("OnEvent", BlizzardOptionsPanel_OnEvent);
+	if ( not frame:GetScript("OnEvent") ) then
+		frame:SetScript("OnEvent", BlizzardOptionsPanel_OnEvent);
+	end
 end
 
 function BlizzardOptionsPanel_OnEvent (frame, event, ...)

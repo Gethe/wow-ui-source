@@ -234,6 +234,15 @@ end
 function LevelUpDisplay_BuildCharacterList(self)
 	local name, icon = "","";
 	self.unlockList = {};
+
+
+	if LEVEL_UP_EVENTS[self.level] then
+		for _, unlockType in pairs(LEVEL_UP_EVENTS[self.level]) do
+			self.unlockList[#self.unlockList +1] = LEVEL_UP_TYPES[unlockType];
+		end
+	end
+	
+	
 	if  self.level == GetNextTalentLevel(self.level-1)  then
 		self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["TalentPoint"]
 	end
@@ -279,14 +288,6 @@ function LevelUpDisplay_BuildCharacterList(self)
 																link=LEVEL_UP_FEATURE2.." "..GetSpellLink(feature)
 															};
 	end	
-	
-	
-	
-	if LEVEL_UP_EVENTS[self.level] then
-		for _, unlockType in pairs(LEVEL_UP_EVENTS[self.level]) do
-			self.unlockList[#self.unlockList +1] = LEVEL_UP_TYPES[unlockType];
-		end
-	end
 	
 	self.currSpell = 1;
 end

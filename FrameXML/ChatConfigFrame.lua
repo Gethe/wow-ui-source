@@ -1131,11 +1131,11 @@ function CombatConfig_Colorize_Update()
 	CombatConfigColorsHighlightingSchool:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting);
 
 	
-	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28, 0, 116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigColorsExampleString1:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, UnitName("player"), 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0, 0x0000000000000001, UnitName("player"), 0x511, 0, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
 	CombatConfigColorsExampleString2:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString2:SetText(text);
 end
@@ -1157,11 +1157,11 @@ function CombatConfig_Formatting_Update()
 	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces);
 	CombatConfigFormattingFullText:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText);
 
-	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28 ,116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28, 0, 116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigFormattingExampleString1:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0x0000000000000001, UnitName("player"), 0x511, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0, 0x0000000000000001, UnitName("player"), 0x511, 0, 20793,EXAMPLE_SPELL_FIREBALL, SCHOOL_MASK_FIRE, 68, SCHOOL_MASK_FIRE, nil, nil, nil, nil, nil, nil);
 	CombatConfigFormattingExampleString2:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString2:SetText(text);
 end

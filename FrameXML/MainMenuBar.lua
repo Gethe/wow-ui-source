@@ -140,6 +140,8 @@ end
 function MainMenuBarVehicleLeaveButton_OnLoad(self)
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("VEHICLE_UPDATE");
 end
 
@@ -239,11 +241,15 @@ function MainMenuBar_OnEvent(self, event, ...)
 			MainMenuBar_UpdateKeyRing();
 		end
 	elseif ( (event == "UNIT_ENTERED_VEHICLE") and (arg1=="player") ) then
-		MainMenuBar.animComplete = true;
-		MainMenuBar_UpdateArt(self);
+		if( not MainMenuBar.animComplete ) then
+			MainMenuBar.animComplete = true;
+			MainMenuBar_UpdateArt(self);
+		end
 	elseif ( (event == "UNIT_EXITED_VEHICLE") and (arg1=="player") )then
-		MainMenuBar.animComplete = true;
-		MainMenuBar_UpdateArt(self);
+		if( not MainMenuBar.animComplete ) then
+			MainMenuBar.animComplete = true;
+			MainMenuBar_UpdateArt(self);
+		end
 	elseif ( (event == "UNIT_ENTERING_VEHICLE") and (arg1=="player") ) then
 		MainMenuBar.busy = true;
 		MainMenuBar.animComplete = false;
@@ -275,7 +281,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( (event == "UNIT_EXITING_VEHICLE") and (arg1=="player") ) then
-		if ( MainMenuBar.state ~= "player" ) then
+		if ( MainMenuBar.state == "vehicle" ) then
 			MainMenuBar.busy = true;
 			MainMenuBar.animComplete = false;
 			MultiBarRight.ignoreFramePositionManager = true;

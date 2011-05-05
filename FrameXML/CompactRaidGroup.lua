@@ -51,7 +51,7 @@ function CompactRaidGroup_UpdateUnits(frame)
 	local frameIndex = 1;
 	for i=1, GetNumRaidMembers() do
 		local name, rank, subgroup = GetRaidRosterInfo(i);
-		if ( subgroup == groupIndex ) then
+		if ( subgroup == groupIndex and frameIndex <= MEMBERS_PER_RAID_GROUP ) then
 			CompactUnitFrame_SetUnit(_G[frame:GetName().."Member"..frameIndex], "raid"..i);
 			frameIndex = frameIndex + 1;
 		end

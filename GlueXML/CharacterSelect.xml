@@ -1,6 +1,25 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CharacterSelect.lua"/>
+	<Button name="CharSelectMoveButtonTemplate" virtual="true" hidden="true">
+		<Size x="24" y="24"/>
+		<Scripts>
+			<OnMouseDown>
+				self.normalTexture:SetPoint("CENTER", 1, -1);
+				self.highlightTexture:SetPoint("CENTER", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.normalTexture:SetPoint("CENTER", 0, 0);
+				self.highlightTexture:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+			<OnEnter>
+				self:GetParent():LockHighlight();
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():UnlockHighlight();
+			</OnLeave>
+		</Scripts>
+	</Button>
 	<Button name="CharSelectCharacterButtonTemplate" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="256" y="70"/>
@@ -8,11 +27,27 @@
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="0" bottom="15"/>
 		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Highlight" alphaMode="ADD" parentKey="selection" hidden="true">
+					<Size>
+						<AbsDimension x="256" y="74"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-20" y="8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Frame name="$parentButtonText" setAllPoints="true">
+			<Frame name="$parentButtonText" setAllPoints="true" parentKey="buttonText">
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="$parentName" inherits="GlueFontNormal" justifyH="LEFT">
+						<FontString name="$parentName" inherits="GlueFontNormal" justifyH="LEFT" parentKey="name">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -48,16 +83,85 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Button name="$parentMoveUp" parentKey="upButton" inherits="CharSelectMoveButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-35" y="-4"/>
+				</Anchors>
+				<NormalTexture file="Interface\Glues\CharacterSelect\Glue-Char-Up" parentKey="normalTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-Char-Up-Glow" parentKey="highlightTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						local index = self:GetParent().index;
+						MoveCharacter(index, index - 1);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentMoveDown" parentKey="downButton" inherits="CharSelectMoveButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-35" y="18"/>
+				</Anchors>
+				<NormalTexture file="Interface\Glues\CharacterSelect\Glue-Char-Down"  parentKey="normalTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-Char-Down-Glow" parentKey="highlightTexture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						local index = self:GetParent().index;
+						MoveCharacter(index, index + 1);
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
 			<OnClick>
 				CharacterSelectButton_OnClick(self);
 			</OnClick>
 			<OnDoubleClick>
 				CharacterSelectButton_OnDoubleClick(self);
 			</OnDoubleClick>
+			<OnDragStart>
+				CharacterSelectButton_OnDragStart(self);
+			</OnDragStart>
+			<OnDragStop>
+				CharacterSelectButton_OnDragStop(self);
+			</OnDragStop>
+			<OnMouseDown>
+				CharacterSelect.pressDownButton = self;
+				CharacterSelect.pressDownTime = 0;
+			</OnMouseDown>
+			<OnMouseUp>
+				CharacterSelectButton_OnDragStop(self);
+			</OnMouseUp>
+			<OnEnter>
+				if ( self.selection:IsShown() ) then
+					CharacterSelectButton_ShowMoveButtons(self);
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
+					self.upButton:Hide();
+					self.downButton:Hide();
+				end
+			</OnLeave>
 		</Scripts>
-		<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Highlight" alphaMode="ADD">
+		<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Hover" alphaMode="ADD">
 			<Size>
 				<AbsDimension x="256" y="74"/>
 			</Size>
@@ -72,80 +176,28 @@
 		<NormalFont style="GlueFontNormal"/>
 		<HighlightFont style="GlueFontHighlight"/>
 	</Button>
-	<Button name="CharSelectCharacterCustomizeTemplate" virtual="true" hidden="true">
+	<Button name="CharSelectPaidServiceTemplate" virtual="true" hidden="true" motionScriptsWhileDisabled="true">
 		<Size>
 			<AbsDimension x="64" y="64"/>
 		</Size>
 		<Scripts>
 			<OnClick>
-				CharacterSelect_PaidServiceOnClick(self, button, down, PAID_CHARACTER_CUSTOMIZATION);
+				CharacterSelect_PaidServiceOnClick(self, button, down, self.serviceType);
 			</OnClick>
 			<OnEnter>
 				GlueTooltip:SetOwner(self);
-				GlueTooltip:SetText(PAID_CHARACTER_CUSTOMIZE_TOOLTIP, 1.0, 1.0, 1.0);
-			</OnEnter>
-			<OnLeave>
-				GlueTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-PaidCharacterCustomization-Button">
-			<TexCoords left="0" right=".5" top="0" bottom=".5"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-			<Size x="46" y="46"/>
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-		</HighlightTexture>
-	</Button>
-	<Button name="CharSelectRaceChangeTemplate" virtual="true" hidden="true" motionScriptsWhileDisabled="true">
-		<Size>
-			<AbsDimension x="64" y="64"/>
-		</Size>
-		<Scripts>
-			<OnClick>
-				CharacterSelect_PaidServiceOnClick(self, button, down, PAID_RACE_CHANGE);
-			</OnClick>
-			<OnEnter>
-				GlueTooltip:SetOwner(self);
-				if (self:IsEnabled()) then
-					GlueTooltip:SetText(PAID_RACE_CHANGE_TOOLTIP, 1.0, 1.0, 1.0);
+				if ( self:IsEnabled() ) then
+					GlueTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0);
 				else
-					GlueTooltip:SetText(PAID_RACE_CHANGE_DISABLED_TOOLTIP, 1.0, 1.0, 1.0);
+					GlueTooltip:SetText(self.disabledTooltip, 1.0, 1.0, 1.0);
 				end
 			</OnEnter>
 			<OnLeave>
 				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-PaidCharacterCustomization-Button">
-			<TexCoords left=".5" right="1" top="0" bottom=".5"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-			<Size x="46" y="46"/>
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-		</HighlightTexture>
-	</Button>
-	<Button name="CharSelectFactionChangeTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="64" y="64"/>
-		</Size>
-		<Scripts>
-			<OnClick>
-				CharacterSelect_PaidServiceOnClick(self, button, down, PAID_FACTION_CHANGE);
-			</OnClick>
-			<OnEnter>
-				GlueTooltip:SetOwner(self);
-				GlueTooltip:SetText(PAID_FACTION_CHANGE_TOOLTIP, 1.0, 1.0, 1.0);
-			</OnEnter>
-			<OnLeave>
-				GlueTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-PaidCharacterCustomization-Button">
-			<TexCoords left="0" right=".5" top="0.5" bottom="1"/>
+		<NormalTexture file="Interface\Buttons\UI-PaidCharacterCustomization-Button" parentKey="texture">
+			<TexCoords left="0" right=".5" top="0" bottom=".5"/>
 		</NormalTexture>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
 			<Size x="46" y="46"/>
@@ -488,92 +540,62 @@
 							</Button>
 							<Button name="CharSelectCharacterButton1" inherits="CharSelectCharacterButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="24" y="-65"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" x="0" y="-65"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton2" inherits="CharSelectCharacterButtonTemplate" id="2">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton1" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton1" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton3" inherits="CharSelectCharacterButtonTemplate" id="3">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton2" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton2" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton4" inherits="CharSelectCharacterButtonTemplate" id="4">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton3" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton3" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton5" inherits="CharSelectCharacterButtonTemplate" id="5">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton4" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton4" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton6" inherits="CharSelectCharacterButtonTemplate" id="6">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton5" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton5" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton7" inherits="CharSelectCharacterButtonTemplate" id="7">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton6" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton6" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton8" inherits="CharSelectCharacterButtonTemplate" id="8">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton7" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton7" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton9" inherits="CharSelectCharacterButtonTemplate" id="9">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton8" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton8" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCharacterButton10" inherits="CharSelectCharacterButtonTemplate" id="10">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectCharacterButton9" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="13"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton9" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="CharSelectCreateCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
@@ -599,220 +621,68 @@
 									</OnUpdate>
 								</Scripts>
 							</Button>
-
-							<Button name="CharSelectCharacterCustomize1" inherits="CharSelectCharacterCustomizeTemplate" id="1">
+							
+							<Button name="CharSelectPaidService1" inherits="CharSelectPaidServiceTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton1" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton1" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize2" inherits="CharSelectCharacterCustomizeTemplate" id="2">
+							<Button name="CharSelectPaidService2" inherits="CharSelectPaidServiceTemplate" id="2">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton2" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton2" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize3" inherits="CharSelectCharacterCustomizeTemplate" id="3">
+							<Button name="CharSelectPaidService3" inherits="CharSelectPaidServiceTemplate" id="3">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton3" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton3" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize4" inherits="CharSelectCharacterCustomizeTemplate" id="4">
+							<Button name="CharSelectPaidService4" inherits="CharSelectPaidServiceTemplate" id="4">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton4" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton4" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize5" inherits="CharSelectCharacterCustomizeTemplate" id="5">
+							<Button name="CharSelectPaidService5" inherits="CharSelectPaidServiceTemplate" id="5">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton5" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton5" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize6" inherits="CharSelectCharacterCustomizeTemplate" id="6">
+							<Button name="CharSelectPaidService6" inherits="CharSelectPaidServiceTemplate" id="6">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton6" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton6" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize7" inherits="CharSelectCharacterCustomizeTemplate" id="7">
+							<Button name="CharSelectPaidService7" inherits="CharSelectPaidServiceTemplate" id="7">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton7" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton7" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize8" inherits="CharSelectCharacterCustomizeTemplate" id="8">
+							<Button name="CharSelectPaidService8" inherits="CharSelectPaidServiceTemplate" id="8">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton8" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton8" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize9" inherits="CharSelectCharacterCustomizeTemplate" id="9">
+							<Button name="CharSelectPaidService9" inherits="CharSelectPaidServiceTemplate" id="9">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton9" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton9" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCharacterCustomize10" inherits="CharSelectCharacterCustomizeTemplate" id="10">
+							<Button name="CharSelectPaidService10" inherits="CharSelectPaidServiceTemplate" id="10">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton10" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton10" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-15" y="0"/>
 								</Anchors>
 							</Button>
-
-							<Button name="CharSelectRaceChange1" inherits="CharSelectRaceChangeTemplate" id="1">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton1" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange2" inherits="CharSelectRaceChangeTemplate" id="2">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton2" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange3" inherits="CharSelectRaceChangeTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton3" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange4" inherits="CharSelectRaceChangeTemplate" id="4">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton4" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange5" inherits="CharSelectRaceChangeTemplate" id="5">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton5" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange6" inherits="CharSelectRaceChangeTemplate" id="6">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton6" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange7" inherits="CharSelectRaceChangeTemplate" id="7">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton7" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange8" inherits="CharSelectRaceChangeTemplate" id="8">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton8" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange9" inherits="CharSelectRaceChangeTemplate" id="9">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton9" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectRaceChange10" inherits="CharSelectRaceChangeTemplate" id="10">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton10" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-
-							<Button name="CharSelectFactionChange1" inherits="CharSelectFactionChangeTemplate" id="1">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton1" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange2" inherits="CharSelectFactionChangeTemplate" id="2">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton2" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange3" inherits="CharSelectFactionChangeTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton3" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange4" inherits="CharSelectFactionChangeTemplate" id="4">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton4" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange5" inherits="CharSelectFactionChangeTemplate" id="5">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton5" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange6" inherits="CharSelectFactionChangeTemplate" id="6">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton6" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange7" inherits="CharSelectFactionChangeTemplate" id="7">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton7" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange8" inherits="CharSelectFactionChangeTemplate" id="8">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton8" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange9" inherits="CharSelectFactionChangeTemplate" id="9">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton9" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="CharSelectFactionChange10" inherits="CharSelectFactionChangeTemplate" id="10">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="CharSelectCharacterButton10" relativePoint="TOPLEFT">
-										<Offset x="-15" y="6"/>
-									</Anchor>
-								</Anchors>
-							</Button>
-							</Frames>
+						</Frames>
 						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
 							<BackgroundInsets>
 								<AbsInset left="10" right="5" top="4" bottom="9"/>
@@ -975,12 +845,8 @@
 			<OnShow>
 				CharacterSelect_OnShow();
 			</OnShow>
-			<OnHide>
-				CharacterSelect_OnHide();
-			</OnHide>
-			<OnUpdate>
-				CharacterSelect_OnUpdate(elapsed);
-			</OnUpdate>
+			<OnHide function="CharacterSelect_OnHide"/>
+			<OnUpdate function="CharacterSelect_OnUpdate"/>
 			<OnKeyDown>
 				CharacterSelect_OnKeyDown(self,key);
 			</OnKeyDown>
@@ -1067,7 +933,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								DeleteCharacter(CharacterSelect.selectedIndex);
+								DeleteCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex));
 								CharacterDeleteDialog:Hide();
 								PlaySound("gsTitleOptionOK");
 							</OnClick> 
@@ -1147,7 +1013,7 @@
 					</OnTextChanged> 
 					<OnEnterPressed>
 						if ( CharacterDeleteButton1:IsEnabled() ) then
-							DeleteCharacter(CharacterSelect.selectedIndex);
+							DeleteCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex));
 							CharacterDeleteDialog:Hide();
 						end
 					</OnEnterPressed>
@@ -1243,7 +1109,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( RenameCharacter(CharacterSelect.selectedIndex, CharacterRenameEditBox:GetText()) ) then
+								if ( RenameCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex), CharacterRenameEditBox:GetText()) ) then
 									CharacterRenameDialog:Hide();
 								end
 							</OnClick> 
@@ -1314,7 +1180,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnterPressed>
-						if ( RenameCharacter(CharacterSelect.selectedIndex, CharacterRenameEditBox:GetText()) ) then
+						if ( RenameCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex), CharacterRenameEditBox:GetText()) ) then
 							CharacterRenameDialog:Hide();
 						end
 					</OnEnterPressed>

@@ -27,6 +27,12 @@ function CastingBarFrame_OnLoad (self, unit, showTradeSkills, showShield)
 	if ( barIcon ) then
 		barIcon:Hide();
 	end
+	
+	local spark = _G[self:GetName().."Spark"];
+	local point, relativeTo, relativePoint, offsetX, offsetY = spark:GetPoint();
+	if ( point == "CENTER" ) then
+		spark.offsetY = offsetY;
+	end
 end
 
 function CastingBarFrame_OnShow (self)
@@ -276,7 +282,7 @@ function CastingBarFrame_OnUpdate (self, elapsed)
 		end
 		if ( barSpark ) then
 			local sparkPosition = (self.value / self.maxValue) * self:GetWidth();
-			barSpark:SetPoint("CENTER", self, "LEFT", sparkPosition, 2);
+			barSpark:SetPoint("CENTER", self, "LEFT", sparkPosition, barSpark.offsetY or 2);
 		end
 	elseif ( self.channeling ) then
 		self.value = self.value - elapsed;
@@ -336,5 +342,72 @@ function CastingBarFrame_UpdateIsShown(self)
 		CastingBarFrame_OnEvent(self, "PLAYER_ENTERING_WORLD")
 	else
 		self:Hide();
+	end
+end
+
+function CastingBarFrame_SetLook(castBar, look)
+	if ( look == "CLASSIC" ) then
+		castBar:SetWidth(195);
+		castBar:SetHeight(13);
+		-- border
+		castBar.border:ClearAllPoints();
+		castBar.border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border");
+		castBar.border:SetWidth(256);
+		castBar.border:SetHeight(64);
+		castBar.border:SetPoint("TOP", 0, 28);
+		-- bordershield
+		castBar.borderShield:ClearAllPoints();
+		castBar.borderShield:SetWidth(256);
+		castBar.borderShield:SetHeight(64);
+		castBar.borderShield:SetPoint("TOP", 0, 28);
+		-- text
+		castBar.text:ClearAllPoints();
+		castBar.text:SetWidth(185);
+		castBar.text:SetHeight(16);
+		castBar.text:SetPoint("TOP", 0, 5);
+		castBar.text:SetFontObject("GameFontHighlight");
+		-- icon
+		castBar.icon:Hide();
+		-- bar spark
+		castBar.barSpark.offsetY = 2;
+		-- bar flash
+		castBar.barFlash:ClearAllPoints();
+		castBar.barFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash");
+		castBar.barFlash:SetWidth(256);
+		castBar.barFlash:SetHeight(64);
+		castBar.barFlash:SetPoint("TOP", 0, 28);
+	elseif ( look == "UNITFRAME" ) then
+		castBar:SetWidth(150);
+		castBar:SetHeight(10);
+		-- border
+		castBar.border:ClearAllPoints();
+		castBar.border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
+		castBar.border:SetWidth(0);
+		castBar.border:SetHeight(49);
+		castBar.border:SetPoint("TOPLEFT", -23, 20);
+		castBar.border:SetPoint("TOPRIGHT", 23, 20);
+		-- bordershield
+		castBar.borderShield:ClearAllPoints();
+		castBar.borderShield:SetWidth(0);
+		castBar.borderShield:SetHeight(49);
+		castBar.borderShield:SetPoint("TOPLEFT", -28, 20);
+		castBar.borderShield:SetPoint("TOPRIGHT", 18, 20);
+		-- text
+		castBar.text:ClearAllPoints();
+		castBar.text:SetWidth(0);
+		castBar.text:SetHeight(16);
+		castBar.text:SetPoint("TOPLEFT", 0, 4);
+		castBar.text:SetPoint("TOPRIGHT", 0, 4);
+		castBar.text:SetFontObject("SystemFont_Shadow_Small");
+		-- icon
+		castBar.icon:Show();
+		-- bar spark
+		castBar.barSpark.offsetY = 0;
+		-- bar flash
+		castBar.barFlash:ClearAllPoints();
+		castBar.barFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
+		castBar.barFlash:SetWidth(0);
+		castBar.barFlash:SetPoint("TOPLEFT", -23, 20);
+		castBar.barFlash:SetPoint("TOPRIGHT", 23, 20);
 	end
 end

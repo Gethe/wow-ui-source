@@ -1,0 +1,7 @@
+## Interface: 40200
+## Title: Blizzard MovePad
+## Author: slouken and karl
+## Notes: A clickable movement pad
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_MovePad.xml

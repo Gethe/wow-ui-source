@@ -804,6 +804,7 @@ function KnowledgeBase_DisplayCategories()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local numCata = KBSetup_GetCategoryCount()+2;
+	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 	
 	
 	HelpFrame.kbase.category = nil;

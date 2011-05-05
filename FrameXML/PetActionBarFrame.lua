@@ -6,6 +6,7 @@ NUM_PET_ACTION_SLOTS = 10;
 PET_DEFENSIVE_TEXTURE = "Interface\\Icons\\Ability_Defend";
 PET_AGGRESSIVE_TEXTURE = "Interface\\Icons\\Ability_Racial_BloodRage";
 PET_PASSIVE_TEXTURE = "Interface\\Icons\\Ability_Seal";
+PET_ASSIST_TEXTURE = "Interface\\Icons\\Ability_Racial_BloodRage";
 PET_ATTACK_TEXTURE = "Interface\\Icons\\Ability_GhoulFrenzy";
 PET_FOLLOW_TEXTURE = "Interface\\Icons\\Ability_Tracking";
 PET_WAIT_TEXTURE = "Interface\\Icons\\Spell_Nature_TimeStop";
