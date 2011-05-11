@@ -186,8 +186,8 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		local _, currentHonor, _, _, _, maxHonor = GetCurrencyInfo(392);
-		local _, currentArenaPoints, _, _, _, maxArenaPoints = GetCurrencyInfo(390);
+		local _, currentHonor, _, _, _, maxHonor = GetCurrencyInfo(HONOR_CURRENCY);
+		local _, currentArenaPoints, _, _, _, maxArenaPoints = GetCurrencyInfo(CONQUEST_CURRENCY);
 		local overflowHonor = maxHonor > 0 and MerchantFrame.honorPoints and ( MerchantFrame.honorPoints + currentHonor > maxHonor );
 		local overflowArena = maxArenaPoints > 0 and MerchantFrame.arenaPoints and ( MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints );
 		if ( overflowHonor and overflowArena ) then
@@ -1612,6 +1612,19 @@ StaticPopupDialogs["USE_BIND"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["CONFIM_BEFORE_USE"] = {
+	text = CONFIRM_ITEM_USE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ConfirmOnUse();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["DELETE_ITEM"] = {
 	text = DELETE_ITEM,
 	button1 = YES,

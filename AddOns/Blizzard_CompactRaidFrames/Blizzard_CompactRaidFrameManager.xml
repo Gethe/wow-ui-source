@@ -327,10 +327,18 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate" parentKey="profileSelector">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="-10" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp"/>
+						</Scripts>
+					</Frame>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
 						<Size x="200" y="85"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentProfileSelector" relativePoint="BOTTOMLEFT" x="10" y="4"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -426,7 +434,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								SetRaidProfileState(GetActiveRaidProfile(), "locked", self.lockMode);
+								SetRaidProfileOption(GetActiveRaidProfile(), "locked", self.lockMode);
 								CompactRaidFrameManager_SetSetting("Locked", self.lockMode);
 							</OnClick>
 						</Scripts>
@@ -438,7 +446,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								SetRaidProfileState(GetActiveRaidProfile(), "shown", self.shownMode);
+								SetRaidProfileOption(GetActiveRaidProfile(), "shown", self.shownMode);
 								CompactRaidFrameManager_SetSetting("IsShown", self.shownMode);
 							</OnClick>
 						</Scripts>

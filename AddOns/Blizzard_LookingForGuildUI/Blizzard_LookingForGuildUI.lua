@@ -1,6 +1,8 @@
 UIPanelWindows["LookingForGuildFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
 local GUILD_BUTTON_HEIGHT = 84;
+local GUILD_COMMENT_HEIGHT = 50;
+local GUILD_COMMENT_BORDER = 10;
 local APP_BUTTON_HEIGHT = 30;
 local INTEREST_TYPES = {"QUEST", "DUNGEON", "RAID", "PVP", "RP"};
 
@@ -215,6 +217,7 @@ function LookingForGuildBrowseFrame_OnLoad(self)
 			LookingForGuildBrowseFrameContainer:SetWidth(304);
 			for _, button in next, LookingForGuildBrowseFrameContainer.buttons do
 				button:SetWidth(301);
+				button.fullComment:SetWidth(223);
 			end
 			getmetatable(self).__index.Show(self);
 		end	
@@ -223,6 +226,7 @@ function LookingForGuildBrowseFrame_OnLoad(self)
 			LookingForGuildBrowseFrameContainer:SetWidth(320);
 			for _, button in next, LookingForGuildBrowseFrameContainer.buttons do
 				button:SetWidth(320);
+				button.fullComment:SetWidth(242);
 			end
 			getmetatable(self).__index.Hide(self);
 		end
@@ -254,10 +258,12 @@ function LookingForGuild_Update()
 			button.numMembers:SetFormattedText(BROWSE_GUILDS_NUM_MEMBERS, numMembers);
 			button.achPoints:SetText(achPoints);
 			button.comment:SetText(comment);
+			button.fullComment:SetText(comment);
 			-- tabard
 			local tabardInfo = { GetRecruitingGuildTabardInfo(index) };
 			SetLargeGuildTabardTextures(nil, button.emblem, button.tabard, button.border, tabardInfo);
 			-- selection
+			local buttonHeight = GUILD_BUTTON_HEIGHT;
 			if ( requestPending ) then
 				button.selectedTex:Show();
 				button.pendingFrame:Show();
@@ -265,10 +271,15 @@ function LookingForGuild_Update()
 				button.pendingFrame:Hide();
 				if ( index == selection ) then
 					button.selectedTex:Show();
+					local commentHeight = button.fullComment:GetHeight();
+					if ( commentHeight > GUILD_COMMENT_HEIGHT ) then
+						buttonHeight = GUILD_BUTTON_HEIGHT + commentHeight - GUILD_COMMENT_HEIGHT + GUILD_COMMENT_BORDER;
+					end
 				else
 					button.selectedTex:Hide();
 				end
 			end
+			button:SetHeight(buttonHeight);
 			
 			button:Show();
 			button.index = index;
@@ -276,7 +287,15 @@ function LookingForGuild_Update()
 			button:Hide();
 		end
 	end
+
+	if ( not selection ) then
+		HybridScrollFrame_CollapseButton(scrollFrame);
+	end
+	
 	local totalHeight = numGuilds * GUILD_BUTTON_HEIGHT;
+	if ( scrollFrame.largeButtonHeight ) then
+		totalHeight = totalHeight + (scrollFrame.largeButtonHeight - GUILD_BUTTON_HEIGHT);
+	end
 	local displayedHeight = numButtons * GUILD_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 
@@ -292,6 +311,14 @@ function LookingForGuildGuild_OnClick(self, button)
 		local name, level, numMembers, achPoints, comment, cached, requestPending = GetRecruitingGuildInfo(self.index);
 		if ( not requestPending ) then
 			SetRecruitingGuildSelection(self.index);
+			local commentHeight = self.fullComment:GetHeight();
+			if ( commentHeight > GUILD_COMMENT_HEIGHT ) then
+				local buttonHeight = GUILD_BUTTON_HEIGHT + commentHeight - GUILD_COMMENT_HEIGHT + GUILD_COMMENT_BORDER;
+				self:SetHeight(buttonHeight);
+				HybridScrollFrame_ExpandButton(LookingForGuildBrowseFrameContainer, ((self.index - 1) * GUILD_BUTTON_HEIGHT), buttonHeight);
+			else
+				HybridScrollFrame_CollapseButton(LookingForGuildBrowseFrameContainer);
+			end
 			LookingForGuild_Update();
 		end
 	end

@@ -127,6 +127,7 @@ function RaidBossEmoteFrame_OnLoad(self)
 	
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE");
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_WHISPER");
+	self:RegisterEvent("CLEAR_BOSS_EMOTES");
 end
 
 function RaidBossEmoteFrame_OnEvent(self, event, ...)
@@ -140,5 +141,7 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 		if ( enableRaidBossEmoteWarningSound ) then
 			PlaySound("RaidBossEmoteWarning");
 		end
+	elseif ( event == "CLEAR_BOSS_EMOTES" ) then
+		RaidNotice_Clear(self);
 	end
 end

@@ -273,6 +273,124 @@
 	</Texture>
 
 	
+	<Button name="EncounterSearchSMTemplate" virtual="true">
+		<Size x="275" y="27"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="$parentIconFrame" inherits="UI-EJ-SearchIconFrameLg">
+					<Size x="21" y="21"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" file="Interface\Icons\Ability_ThunderClap" parentKey="icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIconFrame" x="1" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconFrame" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name" text="ENCOUNTER">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+					<Color r="0.96875" g="0.8984375" b="0.578125" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="_SearchBarSm">
+		</NormalTexture>
+		<PushedTexture inherits="_SearchBarSm">
+		</PushedTexture>
+		<HighlightTexture inherits="UI-EJ-SearchBarHighlightSm">
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				if self.itemID then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+					GameTooltip:SetItemByID(self.itemID);
+					self.showingTooltip = true;
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.showingTooltip = false;
+			</OnLeave>
+			<OnShow>
+				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+			</OnShow>
+			<OnClick>
+				EncounterJournal_SelectSearch(self:GetID())
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Button name="EncounterSearchLGTemplate" virtual="true">
+		<Size x="575" y="49"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="$parentIconFrame" inherits="UI-EJ-SearchIconFrameLg">
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" file="Interface\Icons\Ability_ThunderClap" parentKey="icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIconFrame" x="1" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconFrame" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name" text="ENCOUNTER">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT" x="10" y="0"/>
+					</Anchors>
+					<Color r="0.96875" g="0.8984375" b="0.578125" a="1"/>
+				</FontString>
+				<FontString name="$parentPath" inherits="GameFontNormal" justifyH="LEFT" parentKey="path" text="ENCOUNTER">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+					</Anchors>
+					<Color r="0.66796875" g="0.51171875" b="0.3359375" a="1"/>
+				</FontString>
+				<FontString name="$parentType" inherits="GameFontNormal" justifyH="RIGHT" parentKey="resultType" text="ENCOUNTER">
+					<Size x="140" y="0"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-14" y="0"/>
+					</Anchors>
+					<Color r="0.66796875" g="0.51171875" b="0.3359375" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="_SearchBarLg">
+		</NormalTexture>
+		<PushedTexture inherits="_SearchBarLg">
+		</PushedTexture>
+		<HighlightTexture inherits="UI-EJ-SearchBarHighlightLg">
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				if self.itemID then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetItemByID(self.itemID);
+				end
+				self.showingTooltip = true;
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.showingTooltip = false;
+			</OnLeave>		
+			<OnClick>
+				EncounterJournal_SelectSearch(self:GetID())
+			</OnClick>
+		</Scripts>
+	</Button>
+	
 	<Button name="EncounterCreatureButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="100" y="55"/>
 		<Frames>
@@ -330,7 +448,7 @@
 				self.creature:SetPoint("TOPRIGHT", self, "TOPRIGHT", 21, 8);
 			</OnEnable>
 			<OnClick>
-				EncounterJournal_DisplayCreature(self)
+				EncounterJournal_DisplayCreature(self);
 			</OnClick>
 			<OnEnter>
 				if self.description then
@@ -571,7 +689,7 @@
 				<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton" x="0" y="-4"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton" x="0" y="-9"/>
 					</Anchors>
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
@@ -580,8 +698,8 @@
 				<Texture name="$parentDescriptionBG" inherits="UI-EJ-AbilityTextBG" parentKey="descriptionBG">
 					<Size x="12" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentDescription" x="-4" y="7"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDescription" x="4" y="-6"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentDescription" x="-9" y="12"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDescription" x="9" y="-11"/>
 					</Anchors>
 				</Texture>
 				<Texture inherits="UI-EJ-AbilityTextBottomBorder" parentKey="descriptionBGBottom">
@@ -655,31 +773,290 @@
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Frames>
-			<!--EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
-				<Size x="280" y="20"/>
+			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
+				<Size x="210" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-15" y="35"/>
+					<Anchor point="TOPRIGHT" x="-10" y="-32"/>
 				</Anchors>
+				<Frames>
+					<Button name="$parentSearchButton1" inherits="EncounterSearchSMTemplate" parentKey="sbutton1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-5" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="boarderAnchor">
+									<Anchors>
+										<Anchor point="LEFT" x="-7" y="0"/>
+										<Anchor point="BOTTOM" x="0" y="-5"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5" a="1"/>
+								</Texture>
+								<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="$parentBotLeftCorner" x="0" y="0"/>
+										<Anchor point="RIGHT" x="4" y="0"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5" a="1"/>
+								</Texture>
+								<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5" a="1"/>
+								</Texture>
+								<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="1" />
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5" a="1"/>
+								</Texture>
+								<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="1" />
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5" a="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Button>
+					<Button name="$parentSearchButton2" inherits="EncounterSearchSMTemplate" parentKey="sbutton2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSearchButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentSearchButton1" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentSearchButton3" inherits="EncounterSearchSMTemplate" parentKey="sbutton3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSearchButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentSearchButton2" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentSearchButton4" inherits="EncounterSearchSMTemplate" parentKey="sbutton4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSearchButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentSearchButton3" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentSearchButton5" inherits="EncounterSearchSMTemplate" parentKey="sbutton5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSearchButton4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentSearchButton4" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentShowALL" parentKey="showAllResults">
+						<Size x="275" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentSearchButton1" x="0" y="0"/>
+							<Anchor point="RIGHT" relativeTo="$parentSearchButton1" x="0" y="0"/>
+							<Anchor point="TOP" relativeTo="$parentSearchButton5" relativePoint="BOTTOM" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="text" text="ENCOUNTER">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<NormalTexture inherits="_SearchBarSm">
+						</NormalTexture>
+						<PushedTexture inherits="_SearchBarSm">
+						</PushedTexture>
+						<HighlightTexture inherits="UI-EJ-SearchBarHighlightSm">
+						</HighlightTexture>
+						<Scripts>
+							<OnShow>
+								self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+							</OnShow>
+							<OnClick>
+								EncounterJournal_ShowFullSearch()
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
 				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
-					</OnShow>
 					<OnEnterPressed function="EncounterJournal_ShowFullSearch"/>
 					<OnTextChanged function="EncounterJournal_OnSearchTextChanged"/>
 				</Scripts>
-				<FontString inherits="ChatFontSmall"/>
-			</EditBox-->
-		
-		
-			<Frame name="$parentNavBar" inherits="NavBarTemplate" parentKey="navBar">
-				<Size x="740" y="34"/>
+			</EditBox>
+			<Frame name="$parentSearchResults" parentKey="searchResults" hidden="true">
+				<Size x="600" y="400"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-24"/>
+					<Anchor point="BOTTOM" x="0" y="7"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+							<Color r="0.9" g="0.8" b="0.7" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-7"/>
+								<Anchor point="LEFT" x="60"/>
+								<Anchor point="RIGHT" x="-60"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopCornerLeft" parentKey="boarderAnchor">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-7" y="4"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+						<Texture name="$parentTopRightCorner" inherits="UI-Frame-TopCornerRightSimple">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="4"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+						<Texture name="$parentTopBorder" inherits="_UI-Frame-Top">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="TOPRIGHT" y="0"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT" y="0"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+						<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="0" />
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+						<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="0" />
+								<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="-1">
+						<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture name="$parentTopLeftCorner2" inherits="UI-Frame-TopCornerLeft" parentKey="boarderAnchor">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-7" y="-20"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+						<Texture name="$parentTopRightCorner2" inherits="UI-Frame-TopCornerRightSimple">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="-20"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+						<Texture name="$parentTopBorder2" inherits="_UI-Frame-Top">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner2" relativePoint="TOPRIGHT" y="0"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner2" relativePoint="TOPLEFT" y="0"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="7" y="2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="HybridScrollFrameTemplate">
+						<Size x="578" y="371"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="1" y="1"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" parentKey="scrollBar" inherits="HybridScrollBarTrimTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.trackBG:Show();
+										self.trackBG:SetVertexColor(0, 0, 0, 1);
+									</OnLoad>
+								</Scripts>
+							</Slider>
+						</Frames>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						--always on top
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentNavBar" inherits="NavBarTemplate" parentKey="navBar">
+				<Size x="500" y="34"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="61" y="-22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="-5">
+						<Texture name="$parentInsetBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"  x="-3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentInsetBotRightCorner" inherits="UI-Frame-InnerBotRight" parentKey="InsetBorderBottomRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"  x="3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentInsetBottomBorder" inherits="_UI-Frame-InnerBotTile" parentKey="InsetBorderBottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentInsetBotLeftCorner" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentInsetBotRightCorner" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentInsetLeftBorder" inherits="!UI-Frame-InnerLeftTile" parentKey="InsetBorderLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-3" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentInsetBotLeftCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentInsetRightBorder" inherits="!UI-Frame-InnerRightTile" parentKey="InsetBorderRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT"  x="3" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentInsetBotRightCorner" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>	
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="inset">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentNavBar" relativePoint="BOTTOMRIGHT" x="0" y="-3" />
+					<Anchor point="TOPRIGHT" x="-4" y="-60" />
 					<Anchor point="BOTTOMLEFT" x="4" y="5"/>
 				</Anchors>
 			</Frame>
@@ -812,14 +1189,14 @@
 						</Anchors>
 						<Frames>
 							<Frame name="$parentInfo" parentKey="info">
-								<Size x="300" y="425"/>
+								<Size x="360" y="425"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 											<Texture name="$parentBGRight" file="Interface\EncounterJournal\UI-EJ-JournalBG" parentKey="bgRight">
-											<Size x="372" y="425"/>
+											<Size x="432" y="425"/>
 											<Anchors>
 												<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 											</Anchors>
@@ -853,7 +1230,7 @@
 										<FontString name="$parentEncounterTile" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="encounterTitle">
 											<Size x="0" y="0"/>
 											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-300" y="-66"/>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-360" y="-66"/>
 											</Anchors>
 											<Color r="0.9" g="0.85" b="0.95"/>
 										</FontString>
@@ -932,7 +1309,7 @@
 										</Scripts>
 									</Button>
 									<ScrollFrame name="$parentDetailsScrollFrame" parentKey="detailsScroll" inherits="UIPanelScrollFrameCodeTemplate">
-										<Size x="300" y="350"/>
+										<Size x="360" y="350"/>
 										<Anchors>
 											<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 										</Anchors>
@@ -962,7 +1339,7 @@
 										</Frames>
 										<ScrollChild>
 											<Frame name="$parentScrollChild" parentKey="child">
-												<Size x="277" y="400"/>
+												<Size x="337" y="400"/>
 												<Anchors>
 													<Anchor point="TOPLEFT" x="0" y="0"/>
 												</Anchors>
@@ -981,7 +1358,7 @@
 										</ScrollChild>
 									</ScrollFrame>
 									<ScrollFrame name="$parentLootScrollFrame" parentKey="lootScroll" inherits="HybridScrollFrameTemplate">
-										<Size x="295" y="350"/>
+										<Size x="355" y="350"/>
 										<Anchors>
 											<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 										</Anchors>
@@ -1028,12 +1405,7 @@
 			</Frame>
 			<Frame name="$parentTierDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="tierDropDown">
 				<Anchors>
-					<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="50" y="33"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentTempDD" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="tempDD">
-				<Anchors>
-					<Anchor point="LEFT"  relativeTo="$parentTierDropDown" relativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="5" y="-8"/>
 				</Anchors>
 			</Frame>
 		</Frames>

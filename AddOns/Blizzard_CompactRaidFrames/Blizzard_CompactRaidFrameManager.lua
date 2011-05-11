@@ -56,6 +56,29 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 	end
 end
 
+function CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp(self)
+	UIDropDownMenu_SetWidth(self, 165);
+	UIDropDownMenu_Initialize(self, CompactRaidFrameManagerDisplayFrameProfileSelector_Initialize);
+end
+
+function CompactRaidFrameManagerDisplayFrameProfileSelector_Initialize()
+	local info = UIDropDownMenu_CreateInfo();
+	
+	for i=1, GetNumRaidProfiles() do
+		local name = GetRaidProfileName(i);
+		info.text = name;
+		info.value = name;
+		info.func = CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick;
+		info.checked = GetActiveRaidProfile() == info.value;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick(self)
+	local profile = self.value;
+	CompactUnitFrameProfiles_ActivateRaidProfile(profile);
+end
+
 function CompactRaidFrameManager_UpdateShown(self)
 	if ( GetDisplayedAllyFrames() == "raid" ) then
 		self:Show();
@@ -96,7 +119,7 @@ end
 
 function CompactRaidFrameManager_UpdateLeaderButtonsShown(self)
 	--First, we'll update the overall height as well as which panels are showing.
-	local height = 57;
+	local height = 84;
 	if ( GetNumRaidMembers() > 0 ) then
 		height = height + self.displayFrame.filterOptions:GetHeight();
 		self.displayFrame.filterOptions:Show();
@@ -294,6 +317,8 @@ function CompactRaidFrameManager_GetSettingBeforeLoad(settingName)
 		return true;
 	elseif ( settingName == "ShowBorders" ) then
 		return true;
+	elseif ( settingName == "HorizontalGroups" ) then
+		return false;
 	else
 		GMError("Unknown setting "..tostring(settingName));
 	end
@@ -383,7 +408,16 @@ do	--Enclosure to make sure people go through SetSetting
 		if ( value and value ~= "0" ) then
 			showBorder = true;
 		end
+		CUF_SHOW_BORDER = showBorder;
 		CompactRaidFrameContainer_SetBorderShown(manager.container, showBorder);
+	end
+	
+	local function CompactRaidFrameManager_SetHorizontalGroups(value)
+		local horizontalGroups;
+		if ( value and value ~= "0" ) then
+			horizontalGroups = true;
+		end
+		CUF_HORIZONTAL_GROUPS = horizontalGroups;
 	end
 	
 	function CompactRaidFrameManager_SetSetting(settingName, value)
@@ -407,6 +441,8 @@ do	--Enclosure to make sure people go through SetSetting
 			CompactRaidFrameManager_SetIsShown(value);
 		elseif ( settingName == "ShowBorders" ) then
 			CompactRaidFrameManager_SetBorderShown(value);
+		elseif ( settingName == "HorizontalGroups" ) then
+			CompactRaidFrameManager_SetHorizontalGroups(value);
 		else
 			GMError("Unknown setting "..tostring(settingName));
 		end

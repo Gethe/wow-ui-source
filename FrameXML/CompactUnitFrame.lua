@@ -583,20 +583,22 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 	
 	index = 1;
 	--Now, we display all normal debuffs.
-	while ( frameNum <= maxDebuffs ) do
-		local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
-		if ( debuffName ) then
-			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter) and
-				not CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter)) then
-				local debuffFrame = frame.debuffFrames[frameNum];
-				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
-				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
-				frameNum = frameNum + 1;
+	if ( frame.optionTable.displayNonBossDebuffs ) then
+		while ( frameNum <= maxDebuffs ) do
+			local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
+			if ( debuffName ) then
+				if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter) and
+					not CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter)) then
+					local debuffFrame = frame.debuffFrames[frameNum];
+					CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
+					CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
+					frameNum = frameNum + 1;
+				end
+			else
+				break;
 			end
-		else
-			break;
+			index = index + 1;
 		end
-		index = index + 1;
 	end
 	
 	for i=frameNum, frame.maxDebuffs do
@@ -818,6 +820,7 @@ DefaultCompactUnitFrameOptions = {
 	displayBuffs = true,
 	displayDebuffs = true,
 	displayOnlyDispellableDebuffs = false,
+	displayNonBossDebuffs = true,
 	healthText = "none",
 }
 

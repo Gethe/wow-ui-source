@@ -772,7 +772,7 @@ end
 
 -- translation functions
 function GetCharIDFromIndex(index)
-	return translationTable[index];
+	return translationTable[index] or 0;
 end
 
 function GetIndexFromCharID(charID)

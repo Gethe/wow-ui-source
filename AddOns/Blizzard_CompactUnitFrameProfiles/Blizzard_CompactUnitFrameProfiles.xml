@@ -109,7 +109,7 @@
 				CompactUnitFrameProfilesSlider_Initialize(self);
 			</OnLoad-->
 			<OnValueChanged>
-				CompactUnitFrameProfilesSlider_OnValueChanged(self, value);
+				CompactUnitFrameProfilesSlider_OnValueChanged(self, value, userInput);
 			</OnValueChanged>
 		</Scripts>
 		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
@@ -154,6 +154,15 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnShow>
+				UIDropDownMenu_DisableDropDown(CompactRaidFrameManagerDisplayFrameProfileSelector);
+			</OnShow>
+			<OnHide>
+				UIDropDownMenu_EnableDropDown(CompactRaidFrameManagerDisplayFrameProfileSelector);
+				self:Hide();	--If the parent is hidden, we'll cancel this popup.
+			</OnHide>
+		</Scripts>
 	</Frame>
 	
 	<Frame name="CompactUnitFrameProfiles" hidden="true" parent="InterfaceOptionsFramePanelContainer">
@@ -336,7 +345,7 @@
 								if ( newProfile == self:GetParent().profile ) then
 									newProfile = GetRaidProfileName(2);
 								end
-								CompactUnitFrameProfiles_SetSelectedProfile(newProfile);
+								CompactUnitFrameProfiles_ActivateRaidProfile(newProfile);
 								DeleteRaidProfile(self:GetParent().profile);
 								CompactUnitFrameProfiles_UpdateManagementButtons();
 								self:GetParent():Hide();
@@ -409,6 +418,30 @@
 				</Frames>
 			</Frame>
 			<Frame name="$parentGeneralOptionsFrame" setAllPoints="true" parentKey="optionsFrame">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentAutoActivateBG" parentKey="autoActivateBG">
+							<Size x="190" y="345"/>	<!--Also change the with of AutoActivateDisabledLabel -->
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="415" y="-40"/>
+							</Anchors>
+							<Color r="0.3" g="0.3" b="0.3" a="0.3"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentAutoActivateLabel" inherits="GameFontNormal" text="AUTO_ACTIVATE_ON" parentKey="autoActivateLabel">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateBG" relativePoint="TOPLEFT" x="5" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentAutoActivateDisabledLabel" inherits="GameFontNormalLeftRed" parentKey="autoActivateDisabledLabel" hidden="true">
+							<Size x="190" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateBG" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<CheckButton name="$parentKeepGroupsTogether" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
@@ -419,13 +452,26 @@
 								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "keepGroupsTogether", function(self)
 									local currentValue = GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName);
 									local sortBy = _G[self:GetParent():GetName().."SortByDropdown"];
+									local horizontalGroups = _G[self:GetParent():GetName().."HorizontalGroups"];
 									if ( currentValue ) then
 										sortBy:Hide();
+										horizontalGroups:Show();
 									else
 										sortBy:Show();
+										horizontalGroups:Hide();
 									end
 									self:SetChecked(currentValue);
 								end)
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentHorizontalGroups" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="15" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "horizontalGroups");
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -470,19 +516,9 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentDisplayOnlyDispellableDebuffs" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayAggroHighlight" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayOnlyDispellableDebuffs");
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentUseClassColors" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayOnlyDispellableDebuffs" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentDisplayAggroHighlight" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -490,19 +526,9 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentDisplayBorder" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentUseClassColors" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayBorder");
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentDisplayPets" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayBorder" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentUseClassColors" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -520,9 +546,38 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
+					<CheckButton name="$parentShowDebuffs" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentDisplayMainTankAndAssist" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayNonBossDebuffs", function(self)
+									local currentValue = GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName);
+									local onlyDispellable = _G[self:GetParent():GetName().."DisplayOnlyDispellableDebuffs"];
+									if ( currentValue ) then
+										onlyDispellable:Show();
+									else
+										onlyDispellable:Hide();
+									end
+									self:SetChecked(currentValue);
+								end)
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentDisplayOnlyDispellableDebuffs" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShowDebuffs" relativePoint="BOTTOMLEFT" x="15" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayOnlyDispellableDebuffs");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 					<Frame name="$parentHealthTextDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayMainTankAndAssist" relativePoint="BOTTOMLEFT" x="-3" y="-15"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentDisplayOnlyDispellableDebuffs" relativePoint="BOTTOMLEFT" x="-18" y="-18"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -550,6 +605,129 @@
 							</OnLoad>
 						</Scripts>
 					</Slider>
+					<CheckButton name="$parentDisplayBorder" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="235" y="-43"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayBorder");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parentAutoActivate2Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate2Players");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivate3Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate2Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate3Players");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivate5Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate3Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate5Players");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivate10Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate5Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate10Players");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivate15Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate10Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate15Players");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivate25Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate15Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate25Players");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivate40Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate25Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate40Players");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parentAutoActivateSpec1" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate40Players" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivateSpec1");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivateSpec2" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivateSpec2");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parentAutoActivatePvP" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec2" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivatePvP");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivatePvE" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivatePvP" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivatePvE");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>

@@ -65,9 +65,39 @@ end
 
 function CompactRaidGroup_UpdateLayout(frame)
 	local totalHeight = frame.title:GetHeight();
-	totalHeight = totalHeight + _G[frame:GetName().."Member1"]:GetHeight() * MEMBERS_PER_RAID_GROUP;
+	local totalWidth = 0;
+	if ( CUF_HORIZONTAL_GROUPS ) then
+		frame.title:ClearAllPoints();
+		frame.title:SetPoint("TOPLEFT");
+		
+		local frame1 = _G[frame:GetName().."Member1"];
+		frame1:ClearAllPoints();
+		frame1:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -frame.title:GetHeight());
+		
+		for i=2, MEMBERS_PER_RAID_GROUP do
+			local unitFrame = _G[frame:GetName().."Member"..i];
+			unitFrame:ClearAllPoints();
+			unitFrame:SetPoint("LEFT", _G[frame:GetName().."Member"..(i-1)], "RIGHT", 0, 0);
+		end
+		totalHeight = totalHeight + _G[frame:GetName().."Member1"]:GetHeight();
+		totalWidth = totalWidth + _G[frame:GetName().."Member1"]:GetWidth() * MEMBERS_PER_RAID_GROUP;
+	else
+		frame.title:ClearAllPoints();
+		frame.title:SetPoint("TOP");
+		
+		local frame1 = _G[frame:GetName().."Member1"];
+		frame1:ClearAllPoints();
+		frame1:SetPoint("TOP", frame, "TOP", 0, -frame.title:GetHeight());
+		
+		for i=2, MEMBERS_PER_RAID_GROUP do
+			local unitFrame = _G[frame:GetName().."Member"..i];
+			unitFrame:ClearAllPoints();
+			unitFrame:SetPoint("TOP", _G[frame:GetName().."Member"..(i-1)], "BOTTOM", 0, 0);
+		end
+		totalHeight = totalHeight + _G[frame:GetName().."Member1"]:GetHeight() * MEMBERS_PER_RAID_GROUP;
+		totalWidth = totalWidth + _G[frame:GetName().."Member1"]:GetWidth();
+	end
 	
-	local totalWidth = _G[frame:GetName().."Member1"]:GetWidth();
 	if ( frame.borderFrame:IsShown() ) then
 		totalWidth = totalWidth + 12;
 		totalHeight = totalHeight + 4;
@@ -76,10 +106,8 @@ function CompactRaidGroup_UpdateLayout(frame)
 	frame:SetSize(totalWidth, totalHeight);
 end
 
-function CompactRaidGroup_UpdateBorder(frame)
-	local showBorder = GetCVarBool("raidOptionShowBorders");
-	
-	if ( showBorder ) then
+function CompactRaidGroup_UpdateBorder(frame)	
+	if ( CUF_SHOW_BORDER ) then
 		frame.borderFrame:Show();
 	else
 		frame.borderFrame:Hide();

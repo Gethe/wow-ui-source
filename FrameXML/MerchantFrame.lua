@@ -1,6 +1,7 @@
 MERCHANT_ITEMS_PER_PAGE = 10;
 BUYBACK_ITEMS_PER_PAGE = 12;
 MAX_ITEM_COST = 3;
+MAX_MERCHANT_CURRENCIES = 6;
 
 function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_UPDATE");
@@ -30,6 +31,7 @@ function MerchantFrame_OnEvent(self, event, ...)
 			return;
 		end
 		self.page = 1;
+		MerchantFrame_UpdateCurrencies();
 		MerchantFrame_Update();
 	elseif ( event == "PLAYER_MONEY" or event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		MerchantFrame_UpdateCanRepairAll();
@@ -598,4 +600,111 @@ function MerchantFrame_UpdateRepairButtons()
 		MerchantRepairItemButton:Hide();
 		MerchantGuildBankRepairButton:Hide();
 	end
+end
+
+function MerchantFrame_UpdateCurrencies()
+	local currencies = { GetMerchantCurrencies() };
+	
+	if ( #currencies == 0 ) then	-- common case
+		MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -36, 67);
+		MerchantMoneyFrame:Show();
+	else
+		MerchantFrame_OrderCurrencies(currencies);
+		if ( #currencies > 3 ) then
+			MerchantMoneyFrame:Hide();
+		else
+			MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -204, 67);
+			MerchantMoneyFrame:Show();
+		end
+		for index = 1, #currencies do
+			local tokenButton = _G["MerchantToken"..index];
+			-- if this button doesn't exist yet, create it and anchor it
+			if ( not tokenButton ) then
+				tokenButton = CreateFrame("BUTTON", "MerchantToken"..index, MerchantFrame, "BackpackTokenTemplate");
+				-- token display order is: 4 5 6 | 1 2 3
+				if ( index == 1 ) then
+					tokenButton:SetPoint("BOTTOMRIGHT", -150, 67);
+				elseif ( index == 4 ) then
+					tokenButton:SetPoint("BOTTOMLEFT", 20, 67);
+				else
+					tokenButton:SetPoint("LEFT", _G["MerchantToken"..index - 1], "RIGHT", 2, 0);
+				end
+				tokenButton:SetScript("OnEnter", MerchantFrame_ShowCurrencyTooltip);
+			end
+
+			name, count, icon = GetCurrencyInfo(currencies[index]);
+			if ( name and name ~= "" ) then
+				if ( count <= 9999 ) then
+					tokenButton.count:SetText(count);
+				else
+					tokenButton.count:SetText("*");
+				end
+				tokenButton.icon:SetTexture("Interface\\Icons\\"..icon);
+				tokenButton.currencyID = currencies[index];
+				tokenButton:Show();
+			else
+				tokenButton:Hide();
+			end
+		end
+	end
+	
+	for i = #currencies + 1, MAX_MERCHANT_CURRENCIES do
+		local tokenButton = _G["MerchantToken"..i];
+		if ( tokenButton ) then
+			tokenButton:Hide();
+		else
+			break;
+		end
+	end
+end
+
+function MerchantFrame_OrderCurrencies(currencyTable)
+	local orderedCurrencies = { };
+	local numSpecial = 0;
+	local indexOther = 5;
+	-- order is valor, justice, conquest, honor, then others
+	-- the first 3 items are on the right side of the merchant window, the last 3 items are on the left side
+	-- keep valor/justice and conquest/honor together, so if all 4 exist move conquest/honor to the left side - this will leave a gap that might be filled by an other
+	for i = 1, #currencyTable do
+		if ( currencyTable[i] == VALOR_CURRENCY ) then
+			orderedCurrencies[1] = currencyTable[i];
+			numSpecial = numSpecial + 1;
+		elseif ( currencyTable[i] == JUSTICE_CURRENCY ) then
+			orderedCurrencies[2] = currencyTable[i];
+			numSpecial = numSpecial + 1;
+		-- nothing uses the 3rd index yet, that's for the possible gap
+		elseif ( currencyTable[i] == CONQUEST_CURRENCY ) then
+			orderedCurrencies[4] = currencyTable[i];
+			numSpecial = numSpecial + 1;
+		elseif ( currencyTable[i] == HONOR_CURRENCY ) then
+			orderedCurrencies[5] = currencyTable[i];
+			numSpecial = numSpecial + 1;
+		else
+			indexOther = indexOther + 1;
+			orderedCurrencies[indexOther] = currencyTable[i];
+		end
+	end
+	-- if all 4 special currencies exist, there will be a gap between the 2 pairs
+	if ( numSpecial == 4 ) then
+		-- move an other currency into the gap if there is one
+		if ( indexOther > 5 ) then
+			orderedCurrencies[3] = orderedCurrencies[6];
+			orderedCurrencies[6] = nil;
+		else
+			orderedCurrencies[3] = 0;
+		end
+	end
+	-- read back into the original table
+	local index = 0;
+	for i = 1, indexOther do
+		if ( orderedCurrencies[i] ) then
+			index = index + 1;
+			currencyTable[index] = orderedCurrencies[i];
+		end
+	end
+end
+
+function MerchantFrame_ShowCurrencyTooltip(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetCurrencyByID(self.currencyID);
 end

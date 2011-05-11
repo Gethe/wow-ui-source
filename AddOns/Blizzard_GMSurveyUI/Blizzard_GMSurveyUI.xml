@@ -167,9 +167,6 @@
 			<OnLoad>
 				GMSurveyQuestion_OnLoad(self);
 			</OnLoad>
-			<OnShow>
-				GMSurveyQuestion_OnShow(self);
-			</OnShow>
 		</Scripts>
 	</Frame>
 	<Frame name="GMSurveyFrame" toplevel="true" parent="UIParent" hidden="true">

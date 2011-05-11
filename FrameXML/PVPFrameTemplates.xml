@@ -538,7 +538,7 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
-	</Button>	
+	</Button>
 	<Button name="PVPArenaTeamFlagTemplate" virtual="true">
 		<Size x="112" y="114"/>	
 		<Layers>
@@ -634,5 +634,128 @@
 			</Anchors>
 			<Color r="0.2" g="0.2" b="1.0" a="0.8"/>
 		</PushedTexture>	
+	</Button>
+	<Button name="WarGameButtonTemplate" virtual="true">
+		<Size x="300" y="16"/>
+		<Frames>
+			<Button name="$parentHeader" parentKey="header" hidden="true">
+				<Size x="300" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP" parentKey="normalTexture">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD" parentKey="highlightTexture">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</HighlightTexture>
+				<ButtonText name="$parentNormalText" parentKey="name">
+					<Size>
+						<AbsDimension x="0" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="20" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors> 
+				</ButtonText>
+				<NormalFont style="GameFontNormalLeft"/>
+				<HighlightFont style="GameFontHighlightLeft"/>
+				<DisabledFont style="GameFontHighlightLeft"/>
+				<Scripts>
+					<OnClick function="WarGameButtonHeader_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentWarGame" parentKey="warGame" hidden="true">
+				<Size x="300" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBg">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+							</Anchors>
+							<Color r="0.95" g="0.95" b="1" a="0.09"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIcon" parentKey="icon">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="6" y="-3"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentSize" parentKey="size" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-8" y="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentMinSize" parentKey="minSize" inherits="GameFontDisableSmall">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parentSize" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentName" parentKey="name" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="160" y="40"/>
+							<Anchors>
+								<Anchor point="LEFT" x="44" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture name="$parentBorder" file="Interface\PVPFrame\SilverIconBorder">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-2" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="WarGameButton_OnEnter"/>
+					<OnLeave function="WarGameButton_OnLeave"/>
+					<OnClick function="WarGameButton_OnClick"/>
+				</Scripts>
+				<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+				</HighlightTexture>
+			</Button>
+		</Frames>
 	</Button>
 </Ui>

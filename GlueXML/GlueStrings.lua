@@ -518,6 +518,7 @@ HUNTER_DISABLED = "You must choose a different race to be this class.";
 IDLE_LOGOUT_WARNING = "You will be logged out soon";
 INT = "INT";
 INTERNAL_BUILD = "INTERNAL";
+LANGUAGES_LABEL = "Languages";
 LATEST_AGREEMENTS_URL = "http://launcher.worldofwarcraft.com/legal/agreements.mpq";
 LATEST_EULA_URL = "http://launcher.worldofwarcraft.com/legal/eula.htm";
 LATEST_TERMINATION_WITHOUT_NOTICE_URL = "http://launcher.worldofwarcraft.com/legal/notice.htm";

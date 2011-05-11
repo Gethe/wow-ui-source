@@ -1,4 +1,6 @@
 local GUILD_BUTTON_HEIGHT = 84;
+local GUILD_COMMENT_HEIGHT = 50;
+local GUILD_COMMENT_BORDER = 10;
 
 local GUILD_EVENT_TEXTURES = {
 	--[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
@@ -453,6 +455,7 @@ function GuildInfoFrameApplicants_OnLoad(self)
 			GuildInfoFrameApplicantsContainer:SetWidth(304);
 			for _, button in next, GuildInfoFrameApplicantsContainer.buttons do
 				button:SetWidth(301);
+				button.fullComment:SetWidth(223);
 			end
 			getmetatable(self).__index.Show(self);
 		end
@@ -461,6 +464,7 @@ function GuildInfoFrameApplicants_OnLoad(self)
 			GuildInfoFrameApplicantsContainer:SetWidth(320);
 			for _, button in next, GuildInfoFrameApplicantsContainer.buttons do
 				button:SetWidth(320);
+				button.fullComment:SetWidth(242);
 			end
 			getmetatable(self).__index.Hide(self);
 		end
@@ -494,6 +498,7 @@ function GuildInfoFrameApplicants_Update()
 			button.name:SetText(name);
 			button.level:SetText(level);
 			button.comment:SetText(comment);
+			button.fullComment:SetText(comment);
 			button.class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 			-- time left
 			local daysLeft = floor(timeLeft / 86400); -- seconds in a day
@@ -519,19 +524,33 @@ function GuildInfoFrameApplicants_Update()
 				button.damageTex:SetAlpha(0.2);
 			end
 			-- selection
+			local buttonHeight = GUILD_BUTTON_HEIGHT;
 			if ( index == selection ) then
 				button.selectedTex:Show();
+				local commentHeight = button.fullComment:GetHeight();
+				if ( commentHeight > GUILD_COMMENT_HEIGHT ) then
+					buttonHeight = GUILD_BUTTON_HEIGHT + commentHeight - GUILD_COMMENT_HEIGHT + GUILD_COMMENT_BORDER;
+				end
 			else
 				button.selectedTex:Hide();
 			end
 			
+			button:SetHeight(buttonHeight);
 			button:Show();
 			button.index = index;
 		else
 			button:Hide();
 		end
 	end
+	
+	if ( not selection ) then
+		HybridScrollFrame_CollapseButton(scrollFrame);
+	end
+	
 	local totalHeight = numApplicants * GUILD_BUTTON_HEIGHT;
+	if ( scrollFrame.largeButtonHeight ) then
+		totalHeight = totalHeight + (scrollFrame.largeButtonHeight - GUILD_BUTTON_HEIGHT);
+	end
 	local displayedHeight = numApplicants * GUILD_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 	
@@ -549,6 +568,14 @@ end
 function GuildRecruitmentApplicant_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		SetGuildApplicantSelection(self.index);
+		local commentHeight = self.fullComment:GetHeight();
+		if ( commentHeight > GUILD_COMMENT_HEIGHT ) then
+			local buttonHeight = GUILD_BUTTON_HEIGHT + commentHeight - GUILD_COMMENT_HEIGHT + GUILD_COMMENT_BORDER;
+			self:SetHeight(buttonHeight);
+			HybridScrollFrame_ExpandButton(GuildInfoFrameApplicantsContainer, ((self.index - 1) * GUILD_BUTTON_HEIGHT), buttonHeight);
+		else
+			HybridScrollFrame_CollapseButton(GuildInfoFrameApplicantsContainer);
+		end
 		GuildInfoFrameApplicants_Update();
 	end
 end

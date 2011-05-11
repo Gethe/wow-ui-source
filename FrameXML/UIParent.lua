@@ -141,6 +141,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("EQUIP_BIND_CONFIRM");
 	self:RegisterEvent("AUTOEQUIP_BIND_CONFIRM");
 	self:RegisterEvent("USE_BIND_CONFIRM");
+	self:RegisterEvent("CONFIRM_BEFORE_USE");
 	self:RegisterEvent("DELETE_ITEM_CONFIRM");
 	self:RegisterEvent("QUEST_ACCEPT_CONFIRM");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -638,6 +639,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "USE_BIND_CONFIRM" ) then
 		StaticPopup_Show("USE_BIND");
+	elseif ( event == "CONFIRM_BEFORE_USE" ) then
+		StaticPopup_Show("CONFIM_BEFORE_USE");
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
 		-- Check quality
 		if ( arg2 >= 3 ) then

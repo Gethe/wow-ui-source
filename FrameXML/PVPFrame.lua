@@ -31,6 +31,9 @@ NO_ARENA_SEASON = 0;
 BG_BUTTON_WIDTH = 320;
 BG_BUTTON_SCROLL_WIDTH = 298;
 
+WARGAME_HEADER_HEIGHT = 16;
+WARGAME_BUTTON_HEIGHT = 40;
+
 local BATTLEFIELD_FRAME_FADE_TIME = 0.15
 
 
@@ -45,7 +48,22 @@ PVPHONOR_TEXTURELIST[32] = "Interface\\PVPFrame\\PvpRandomBg";
 PVPHONOR_TEXTURELIST[108] = "Interface\\PVPFrame\\PvpBg-TwinPeaks";
 PVPHONOR_TEXTURELIST[120] = "Interface\\PVPFrame\\PvpBg-Gilneas";
 
-
+local WARGAMES_TEXTURELIST = {
+	  [0] = "Interface\\PVPFrame\\RandomPVPIcon",
+	  [1] = "Interface\\LFGFrame\\LFGIcon-Battleground",
+	  [2] = "Interface\\LFGFrame\\LFGIcon-WarsongGulch",
+	  [3] = "Interface\\LFGFrame\\LFGIcon-ArathiBasin",
+	  [4] = "Interface\\LFGFrame\\LFGIcon-NagrandArena",
+	  [5] = "Interface\\LFGFrame\\LFGIcon-BladesEdgeArena",
+	  [7] = "Interface\\LFGFrame\\LFGIcon-NetherBattlegrounds",
+	  [8] = "Interface\\LFGFrame\\LFGIcon-RuinsofLordaeron",
+	  [9] = "Interface\\LFGFrame\\LFGIcon-StrandoftheAncients",
+	 [10] = "Interface\\LFGFrame\\LFGIcon-DalaranSewers",
+	 [11] = "Interface\\LFGFrame\\LFGIcon-RingofValor",
+	 [30] = "Interface\\LFGFrame\\LFGIcon-IsleOfConquest",
+	[108] = "Interface\\LFGFrame\\LFGIcon-TwinPeaksBG",
+	[120] = "Interface\\LFGFrame\\LFGIcon-TheBattleforGilneas",
+}
 
 local PVPWORLD_TEXTURELIST = {};
 PVPWORLD_TEXTURELIST[1] = "Interface\\PVPFrame\\PvpBg-Wintergrasp";
@@ -114,7 +132,7 @@ end
 
 
 function PVPFrame_OnLoad(self)
-	PanelTemplates_SetNumTabs(self, 3)
+	PanelTemplates_SetNumTabs(self, 4)
 	PVPFrame_TabClicked(PVPFrameTab1);
 	SetPortraitToTexture(PVPFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	
@@ -368,6 +386,7 @@ function PVPFrame_TabClicked(self)
 	PVPFrame.panel1:Hide();	
 	PVPFrame.panel2:Hide();	
 	PVPFrame.panel3:Hide();
+	PVPFrame.panel4:Hide();
 	
 	PVPFrame.lowLevelFrame:Hide();
 	PVPFrameLeftButton:Show();
@@ -390,6 +409,9 @@ function PVPFrame_TabClicked(self)
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
 		PVPFrameCurrency.currencyID = HONOR_CURRENCY;
 		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
+	elseif index == 4 then -- War games
+		PVPFrame.panel4:Show();
+		PVPFrameConquestBar:Hide();
 	elseif UnitLevel("player") < SHOW_CONQUEST_LEVEL then
 		self:GetParent().lastSelectedTab = nil;
 		PVPFrameLeftButton:Hide();
@@ -586,18 +608,6 @@ function PVPHonor_ButtonClicked(self)
 	self:GetParent().selectedPvpID = self.pvpID;
 	PVPHonorFrame_ResetInfo();
 	PVPHonorFrame_UpdateGroupAvailable();
-	
-	
-	if PVPFrame.wargamesEnable and not self.isWorldPVP then
-		PVPHonorFrameWarGameButton:Show();
-		if CanInitiateWarGame(self.pvpID) then
-			PVPHonorFrameWarGameButton:Enable();
-		else
-			PVPHonorFrameWarGameButton:Disable();
-		end
-	else
-		PVPHonorFrameWarGameButton:Hide();
-	end
 end
 
 
@@ -727,14 +737,8 @@ function PVPHonorFrame_UpdateGroupAvailable()
 	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
 		-- If this is true then can join as a group
 		PVPFrameRightButton:Enable();
-		if not PVPHonorFrame.selectedIsWorldPvp and CanInitiateWarGame(PVPHonorFrame.selectedPvpID) then
-			PVPHonorFrameWarGameButton:Enable();
-		else
-			PVPHonorFrameWarGameButton:Disable();
-		end
 	else
 		PVPFrameRightButton:Disable();
-		PVPHonorFrameWarGameButton:Disable();
 	end
 end
 
@@ -1911,4 +1915,221 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 		end
 	end
 	PVPFrame.numQueues = numberQueues;
+end
+
+--
+-- WARGAMES
+--
+
+function WarGamesFrame_OnLoad(self)
+	self.scrollFrame.scrollBar.doNotHide = true;
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");		-- for leadership changes
+	self:RegisterAllEvents();
+	self.scrollFrame.update = WarGamesFrame_Update;
+	self.scrollFrame.dynamic =  WarGamesFrame_GetTopButton;
+	HybridScrollFrame_CreateButtons(self.scrollFrame, "WarGameButtonTemplate", 0, -1);
+end
+
+function WarGamesFrame_OnEvent(self, event, ...)
+	if ( self:IsShown() ) then
+		WarGameStartButton_Update();
+	end
+end
+
+function WarGamesFrame_OnShow(self)
+	if ( not self.dataLevel or UnitLevel("player") > self.dataLevel ) then
+		WarGamesFrame.otherHeaderIndex = nil;
+		self.dataLevel = UnitLevel("player");
+		UpdateWarGamesList();
+	end
+	WarGamesFrame_Update();
+end
+
+function  WarGamesFrame_GetTopButton(offset)
+	local heightLeft = offset;
+	local buttonHeight;
+	local numWarGames = GetNumWarGameTypes();
+
+	-- find the other header's position if needed (assuming collapsing and expanding headers are a rare occurence for a list this small)
+	if ( not WarGamesFrame.otherHeaderIndex ) then
+		WarGamesFrame.otherHeaderIndex = 0;
+		for i = 2, numWarGames do
+			local name = GetWarGameTypeInfo(i);
+			if ( name == "header" ) then
+				WarGamesFrame.otherHeaderIndex = i;
+				break;
+			end
+		end
+	end
+	-- determine top button
+	local otherHeaderIndex = WarGamesFrame.otherHeaderIndex;
+	for i = 1, numWarGames do
+		if ( i == 1 or i == otherHeaderIndex ) then
+			buttonHeight =	WARGAME_HEADER_HEIGHT;
+		else
+			buttonHeight = WARGAME_BUTTON_HEIGHT;
+		end
+		if ( heightLeft - buttonHeight <= 0 ) then
+			return i - 1, heightLeft;
+		else
+			heightLeft = heightLeft - buttonHeight;
+		end
+	end
+end
+
+function WarGamesFrame_Update()
+	local scrollFrame = WarGamesFrame.scrollFrame;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	local numWarGames = GetNumWarGameTypes();
+	local selectedIndex = GetSelectedWarGameType();
+	
+	for i = 1, numButtons do
+		local button = buttons[i];
+		local index = offset + i;
+		if index <= numWarGames  then
+			local name, pvpType, collapsed, id, minPlayers, maxPlayers, isRandom = GetWarGameTypeInfo(index);
+			if ( name == "header" ) then
+				button:SetHeight(WARGAME_HEADER_HEIGHT);
+				button.header:Show();
+				button.warGame:Hide();
+				if ( pvpType == INSTANCE_TYPE_BG ) then
+					button.header.name:SetText(BATTLEGROUND);
+				elseif ( pvpType == INSTANCE_TYPE_ARENA ) then
+					button.header.name:SetText(ARENA);
+				else
+					button.header.name:SetText(UNKNOWN);
+				end
+				if ( collapsed ) then
+					button.header:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+				else
+					button.header:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
+				end
+			else
+				button:SetHeight(WARGAME_BUTTON_HEIGHT);
+				button.header:Hide();
+				local warGame = button.warGame;
+				warGame:Show();
+				warGame.name:SetText(name);
+				-- arena?
+				if ( pvpType == INSTANCE_TYPE_ARENA ) then
+					minPlayers = 2;
+					warGame.size:SetText(WARGAME_ARENA_SIZES);
+				else
+					warGame.size:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
+				end
+				warGame.minSize:SetFormattedText(WARGAME_MINIMUM, minPlayers, minPlayers);
+				if ( WARGAMES_TEXTURELIST[id] ) then
+					warGame.icon:SetTexture(WARGAMES_TEXTURELIST[id]);
+				else
+					warGame.icon:SetTexture(WARGAMES_TEXTURELIST[0]);
+				end
+				if ( selectedIndex == index ) then
+					warGame.selectedTex:Show();
+					warGame.name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					warGame.size:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				else
+					warGame.selectedTex:Hide();
+					warGame.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					warGame.size:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				end
+			end
+			button:Show();
+			button.index = index;
+		else
+			button:Hide();
+		end
+	end
+
+	-- keeping it somewhat easy to expand past 2 headers if needed
+	local numHeaders = 1;
+	if ( WarGamesFrame.otherHeaderIndex and WarGamesFrame.otherHeaderIndex > 0 ) then
+		numHeaders = numHeaders + 1;
+	end
+	
+	local totalHeight = numHeaders * WARGAME_HEADER_HEIGHT + (numWarGames - numHeaders) * WARGAME_BUTTON_HEIGHT;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, 208);
+	
+	WarGameStartButton_Update();
+end
+
+function WarGameButtonHeader_OnClick(self)
+	local index = self:GetParent().index;
+	local name, pvpType, collapsed = GetWarGameTypeInfo(index);
+	if ( collapsed ) then
+		ExpandWarGameHeader(index);
+	else
+		CollapseWarGameHeader(index);
+	end
+	WarGamesFrame.otherHeaderIndex = nil;	-- header location probably changed;
+	WarGamesFrame_Update();
+end
+
+function WarGameButton_OnEnter(self)
+	self.name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	self.size:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+end
+
+function WarGameButton_OnLeave(self)
+	if ( self:GetParent().index ~= GetSelectedWarGameType() ) then
+		self.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		self.size:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+end
+
+function WarGameButton_OnClick(self)
+	local index = self:GetParent().index;
+	SetSelectedWarGameType(index);
+	WarGamesFrame_Update();
+end
+
+function WarGameStartButton_Update()
+	local selectedIndex = GetSelectedWarGameType();
+	if ( selectedIndex > 0 and not WarGameStartButton_GetErrorTooltip() ) then
+		WarGameStartButton:Enable();
+	else
+		WarGameStartButton:Disable();
+	end
+end
+
+function WarGameStartButton_OnEnter(self)
+	local tooltip = WarGameStartButton_GetErrorTooltip();
+	if ( tooltip ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, 1);
+	end
+end
+
+function WarGameStartButton_GetErrorTooltip()
+	local name, pvpType, collapsed, id, minPlayers, maxPlayers = GetWarGameTypeInfo(GetSelectedWarGameType());
+	if ( name ) then
+		if ( not UnitIsPartyLeader("player") ) then
+			return WARGAME_REQ_LEADER;
+		end	
+		if ( not UnitIsPartyLeader("target") or UnitIsUnit("player", "target") ) then
+			return WARGAME_REQ_TARGET;
+		end
+		local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
+		-- how about a nice game of arena?
+		if ( pvpType == INSTANCE_TYPE_ARENA ) then
+			if ( groupSize ~= 2 and groupSize ~= 3 and groupSize ~= 5 ) then
+				return string.format(WARGAME_REQ_ARENA, name, RED_FONT_COLOR_CODE);
+			end
+		else
+			if ( groupSize < minPlayers or groupSize > maxPlayers ) then
+				return string.format(WARGAME_REQ, name, RED_FONT_COLOR_CODE, minPlayers, maxPlayers);
+			end
+		end
+	end
+	return nil;
+end
+
+function WarGameStartButton_OnClick(self)
+	local name = GetWarGameTypeInfo(GetSelectedWarGameType());
+	if ( name ) then
+		StartWarGame(UnitName("target"), name);
+	end
 end

@@ -17,6 +17,7 @@ function GMSurveyFrame_Update()
 		questionFrame = _G["GMSurveyQuestion"..i];
 		if ( surveyQuestion ) then
 			GMSurveyFrame.numQuestions = GMSurveyFrame.numQuestions + 1;
+			questionFrame.selectedRadioButton = nil;
 			questionFrameText = _G["GMSurveyQuestion"..i.."Text"];
 			questionFrameText:SetText(surveyQuestion);
 			for j=1, MAX_SURVEY_ANSWERS do
@@ -25,6 +26,7 @@ function GMSurveyFrame_Update()
 				if ( surveyAnswer ) then
 					_G["GMSurveyQuestion"..i.."RadioButton"..(j-1).."Score"]:SetText(surveyAnswer);
 					answerFrame:Show();
+					answerFrame:SetChecked(0);
 				else
 					answerFrame:Hide();
 				end
@@ -36,6 +38,7 @@ function GMSurveyFrame_Update()
 			questionFrame:Hide();
 		end
 	end
+	GMSurveySubmitButton:Disable();
 
 	if ( GMSurveyFrame.numQuestions == 0 ) then
 		-- Had no questions
@@ -123,10 +126,6 @@ function GMSurveyQuestion_SpaceAnswers(self, questionNumber)
 	end
 end
 
-function GMSurveyQuestion_OnShow(self)
-	GMSurveyRadioButton_OnClick(self.radioButtons[0]);
-end
-
 function GMSurveyRadioButton_OnClick(self)
 	local owner = self:GetParent();
 	local id = self:GetID();
@@ -147,6 +146,14 @@ function GMSurveyRadioButton_OnClick(self)
 			radioButton:Enable();
 		end
 	end
+	-- check if all questions have an answer selected to enable the Submit button
+	for i=1, MAX_SURVEY_QUESTIONS do
+		local questionFrame = _G["GMSurveyQuestion"..i];
+		if ( questionFrame:IsShown() and not questionFrame.selectedRadioButton ) then
+			return;
+		end
+	end
+	GMSurveySubmitButton:Enable();
 end
 
 function GMSurveyCommentScrollFrame_OnLoad(self)

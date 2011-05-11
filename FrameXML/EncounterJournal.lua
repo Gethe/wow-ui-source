@@ -5,6 +5,16 @@ ENCOUNTER_BOSSED_HEADER = "Dungeon Encounters"
 ENCOUNTER_BOSS_LOOT_HEADER = "Encounter Loot"
 ENCOUNTER_DUNGEON_LOOT_HEADER = "Dungeon Loot"
 ENCOUNTER_JOURNAL = "Encounter Journal"
+ENCOUNTER_JOURNAL_SEARCH_RESULTS = 'Search Results for \"%s\"(%d)'
+ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS = 'Show All %d Results'
+ENCOUNTER_JOURNAL_INSTANCE = 'Dungeon';
+ENCOUNTER_JOURNAL_ENCOUNTER = 'Boss';
+ENCOUNTER_JOURNAL_ENCOUNTER_ADD = 'Add';
+ENCOUNTER_JOURNAL_ABILITY = 'Ability';
+ENCOUNTER_JOURNAL_ITEM = 'Item';
+
+--LOCALIZED CONSTANTS
+EJ_MIN_CHARACTER_SEARCH = 3;
 
 
 --FILE CONSTANTS
@@ -14,6 +24,12 @@ local MAX_CREATURES_PER_ENCOUNTER = 6;
 local SECTION_BUTTON_OFFSET = -6;
 local SECTION_DESCRIPTION_OFFSET = -15;
 
+
+local EJ_STYPE_ITEM = 0;
+local EJ_STYPE_ENCOUNTER = 1;
+local EJ_STYPE_CREATURE = 2;
+local EJ_STYPE_SECTION = 3;
+local EJ_STYPE_INSTANCE = 4;
 
 local EJ_Tabs = {};
 EJ_Tabs[1] = {frame="detailsScroll", button="bossTab"};
@@ -39,21 +55,23 @@ function EncounterJournal_OnLoad(self)
 	UIDropDownMenu_Initialize(self.tierDropDown, EncounterJournal_TierDropDown_Init);
 	
 	
-	UIDropDownMenu_SetWidth(self.tempDD, 170);
-	UIDropDownMenu_SetText(self.tempDD, "Pick A Boss");
-	UIDropDownMenu_JustifyText(self.tempDD, "LEFT");
-	UIDropDownMenu_Initialize(self.tempDD, EncounterJournal_TempDD_Init);
-	UIDropDownMenu_DisableDropDown(self.tempDD);
-	
 	self.encounter.info.bossTab:Click();
 	
 	self.encounter.info.lootScroll.update = EncounterJournal_LootUpdate;
 	self.encounter.info.lootScroll.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.encounter.info.lootScroll, "EncounterItemTemplate", 0, 0);
 	
+	
+	self.searchResults.scrollFrame.update = EncounterJournal_SearchUpdate;
+	self.searchResults.scrollFrame.scrollBar.doNotHide = true;
+	HybridScrollFrame_CreateButtons(self.searchResults.scrollFrame, "EncounterSearchLGTemplate", 0, 0);
+	
 	EncounterJournal.isHeroic = false;
 	EncounterJournal.is10Man = true;
 	EJ_SetDifficulty(EncounterJournal.isHeroic, EncounterJournal.is10Man);
+	
+	EncounterJournal.searchBox.oldEditLost = EncounterJournal.searchBox:GetScript("OnEditFocusLost");
+	EncounterJournal.searchBox:SetScript("OnEditFocusLost", function(self) self:oldEditLost(); EncounterJournal_HideSearchPreview(); end);
 end
 
 
@@ -65,7 +83,6 @@ function EncounterJournal_OnShow(self)
 	
 	UIDropDownMenu_SetText(EncounterJournal.tierDropDown, "Pick a Dungeon");
 	EncounterJournal_TierDropDown_Select( nil, 71, name)
-	EncounterJournal_TempDD_Select( nil, 132, test)
 end
 
 
@@ -79,6 +96,7 @@ end
 function EncounterJournal_OnEvent(self, event, ...)
 	if  event == "EJ_LOOT_DATA_RECIEVED" then
 		EncounterJournal_LootUpdate();
+		EncounterJournal_SearchUpdate();
 	end
 end
 
@@ -98,7 +116,8 @@ function EncounterJournal_DisplayInstance(self, instanceID)
 		self.info.diff25man:Hide();
 	end
 	
-	local name, description = EJ_GetInstanceInfo();
+	local name, description, bgImage = EJ_GetInstanceInfo();
+	self.bgLeft:SetTexture(bgImage);
 	self.instance.title:SetText(name);
 	self.info.encounterTitle:SetText(name);
 	self.instance.description:SetText(description);
@@ -159,13 +178,14 @@ function EncounterJournal_DisplayEncounter(self, encounterID)
 			iconImage = iconImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 			button.creature:SetTexture(iconImage);
 			button.name = name;
+			button.id = id;
 			button.description = description;
 			button.displayInfo = displayInfo;
 			button:Show();
 		end
 		
 		if i == 1 then
-			EncounterJournal_DisplayCreature(button)
+			EncounterJournal_DisplayCreature(button);
 		end
 	end
 	
@@ -198,7 +218,7 @@ function EncounterJournal_ToggleHeaders(self)
 	if self.myID then  -- this is from a button click
 		_, _, _, _, _, _, nextSectionID =  EJ_GetSectionInfo(self.myID)
 		parentID = self.myID;
-		self.description:SetWidth(self:GetWidth() -10);
+		self.description:SetWidth(self:GetWidth() -20);
 		hWidth = hWidth - HEADER_INDENT;
 	else
 		--This sets the base encounter header
@@ -395,6 +415,9 @@ function EncounterJournal_ClearDetails()
 	EncounterJournal.encounter.instance:Hide();
 	EncounterJournal.encounter.infoFrame.description:SetText("");
 	
+	EncounterJournal.encounter.info.lootScroll.scrollBar:SetValue(0);
+	EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(0);
+	
 	local freeHeaders = EncounterJournal.encounter.freeHeaders;
 	local usedHeaders = EncounterJournal.encounter.usedHeaders;
 	
@@ -415,12 +438,15 @@ function EncounterJournal_ClearDetails()
 		bossIndex = bossIndex + 1;
 		bossButton = _G["EncounterJournalBossButton"..bossIndex];
 	end
+	
+	EncounterJournal.searchResults:Hide();
+	EncounterJournal_HideSearchPreview();
+	EncounterJournal.searchBox:ClearFocus();
 end
 
 
 function EncounterJournal_TierDropDown_Select(self, instanceID, name)
 	EncounterJournal_DisplayInstance(EncounterJournal.encounter, instanceID);
-	UIDropDownMenu_EnableDropDown(EncounterJournal.tempDD);
 	UIDropDownMenu_SetText(EncounterJournal.tierDropDown, name);
 end
 
@@ -475,7 +501,7 @@ function EncounterJournal_LootUpdate()
 		item = items[i];
 		index = offset + i;
 		if index <= numLoot then
-			local name, icon, slot, armorType, itemID = EJ_GetLootInfo(index);
+			local name, icon, slot, armorType, itemID = EJ_GetLootInfoByIndex(index);
 			item.name:SetText(name);
 			item.icon:SetTexture(icon);
 			item.slot:SetText(slot);
@@ -493,11 +519,6 @@ function EncounterJournal_LootUpdate()
 	
 	local totalHeight = numLoot * 51;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, 351);
-		
-	-- update tooltip
-	if ( scrollFrame.activeButton ) then
-		GuildPerksButton_OnEnter(scrollFrame.activeButton);
-	end
 end
 
 
@@ -514,7 +535,7 @@ function EncounterJournal_SetFlagIcon(texture, index)
 end
 
 
-function EncounterJournal_Refresh(self, value)
+function EncounterJournal_Refresh(self)
 	EJ_SetDifficulty(EncounterJournal.isHeroic, EncounterJournal.is10Man);
 	EncounterJournal_LootUpdate();
 	
@@ -526,82 +547,194 @@ function EncounterJournal_Refresh(self, value)
 end
 
 
-function EncounterJournal_ShowFullSearch(self, value)
-
-end
-
-
-function EncounterJournal_OnSearchTextChanged(self, value)
-
-end
-
-
-
-
-------------------------------------------------------------
------------------------API FUNCTIONS------------------------
------------------------API FUNCTIONS------------------------
-------------------------------------------------------------
-
-
-function EncounterJournal_GetEncounterInfo(encounterID)
-	local title = "Mr. Forgemaster Throngus"
-	local displayId = 33429
-	local bgImage = "Interface\\EncounterJournal\\UI-EJ-BACKGROUND-Default"
-	local numHeaders = 4
-	local description = "Forgemaster Throngus is a baddass."
-	
-	return title, description, displayId, bgImage, numHeaders;
-end
-
-function EncounterJournal_GetHeaderInfo(parentId, index)
-	local numHeaders = 3 
-	local description = "Forgemaster Throngus is a baddass."
-	local abilityIcon = "Interface\\Icons\\UI-EJ-PortraitIcon"
-	local myID = index + parentId*10
-	local title = "ID: "..myID
-	
-	return myID, title, abilityIcon, description, numHeaders;
-end
-
-function EncounterJournal_GetHeaderInfoByID(myID)
-	local title = "Ability "..myID
-	local numHeaders = 3 
-	local description = "This is Ability"..myID
-	description = description..description..description..description..description..description..description..description
-	local abilityIcon = "Interface\\Icons\\UI-EJ-PortraitIcon"
-	return title, abilityIcon, description, numHeaders;
-end
-
-
-
-function EncounterJournal_TempDD_Select(self, encounterID, name)
-	UIDropDownMenu_SetText(EncounterJournal.tempDD, name);
-	EncounterJournal_DisplayEncounter(EncounterJournal.encounter, encounterID)
-end
-
-
-
-function EncounterJournal_TempDD_Init()
-	local info = UIDropDownMenu_CreateInfo();
-	--This temporarily list all bosses
-	local index = 1;
-	local name, description, bossID = EJ_GetEncounterInfoByIndex(index);
-	
-	while (bossID and index < 25) do
-		info.text = name;
-		info.tooltipTitle = name;
-		info.tooltipText = description;
-		info.arg1 = bossID;
-		info.arg2 = name;
-		info.notCheckable = true;
-		info.func = 	EncounterJournal_TempDD_Select;
-		UIDropDownMenu_AddButton(info);
-		
-		index = index + 1;
-		name, description, bossID = EJ_GetEncounterInfoByIndex(index);
+function EncounterJournal_GetSearchDisplay(index)
+	local name, icon, path, typeText, displayInfo, itemID, _;
+	local id, stype, instanceID, encounterID  = EJ_GetSearchResult(index);
+	if stype == EJ_STYPE_INSTANCE then
+		name, _, _, icon = EJ_GetInstanceInfo(id);
+		typeText = ENCOUNTER_JOURNAL_INSTANCE;
+	elseif stype == EJ_STYPE_ENCOUNTER then
+		name = EJ_GetEncounterInfo(id);
+		typeText = ENCOUNTER_JOURNAL_ENCOUNTER;
+		path = EJ_GetInstanceInfo(instanceID);
+		_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID, instanceID);
+	elseif stype == EJ_STYPE_SECTION then
+		name, _, _, icon, displayInfo = EJ_GetSectionInfo(id)
+		if displayInfo and displayInfo > 0 then
+			typeText = ENCOUNTER_JOURNAL_ENCOUNTER_ADD;
+		else
+			typeText = ENCOUNTER_JOURNAL_ABILITY;
+		end
+		path = EJ_GetInstanceInfo(instanceID).." | "..EJ_GetEncounterInfo(encounterID);
+	elseif stype == EJ_STYPE_ITEM then
+		name, icon, _, _, itemID = EJ_GetLootInfo(id)
+		typeText = ENCOUNTER_JOURNAL_ITEM;
+		path = EJ_GetInstanceInfo(instanceID).." | "..EJ_GetEncounterInfo(encounterID);
+	elseif stype == EJ_STYPE_CREATURE then
+		for i=1,MAX_CREATURES_PER_ENCOUNTER do
+			local cId, cName, _, cDisplayInfo = EJ_GetCreatureInfo(i, encounterID, instanceID);
+			if cId == id then
+				name = cName
+				displayInfo = cDisplayInfo;
+				break;
+			end
+		end
+		typeText = ENCOUNTER_JOURNAL_ENCOUNTER
+		path = EJ_GetInstanceInfo(instanceID).." | "..EJ_GetEncounterInfo(encounterID);
 	end
-end 
+	return name, icon, path, typeText, displayInfo, itemID, stype;
+end
 
+
+function EncounterJournal_SelectSearch(index)
+	local _;
+	local id, stype, instanceID, encounterID = EJ_GetSearchResult(index);
+	if stype == EJ_STYPE_INSTANCE then
+		instanceID = id;
+	end
+	
+	if instanceID then
+		EncounterJournal_DisplayInstance(EncounterJournal.encounter, instanceID);
+	end
+	
+	if encounterID then
+		EncounterJournal_DisplayEncounter(EncounterJournal.encounter, encounterID);
+	end
+
+	
+	if stype == EJ_STYPE_ENCOUNTER then
+	elseif stype == EJ_STYPE_SECTION then
+		EncounterJournal.encounter.info.bossTab:Click();
+	elseif stype == EJ_STYPE_ITEM then
+		EncounterJournal.encounter.info.lootTab:Click();
+	elseif stype == EJ_STYPE_CREATURE then
+		for i=1,MAX_CREATURES_PER_ENCOUNTER do
+			local button = EncounterJournal.encounter["creatureButton"..i];
+			if button and button:IsShown() and button.id == id then
+				EncounterJournal_DisplayCreature(button);
+			end
+		end
+	end
+	
+	EncounterJournal.searchResults:Hide();
+end
+
+
+function EncounterJournal_SearchUpdate()
+	local scrollFrame = EncounterJournal.searchResults.scrollFrame;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local results = scrollFrame.buttons;
+	local result, index;
+	
+	local numResults = EJ_GetNumSearchResults();
+	
+	for i = 1,#results do
+		result = results[i];
+		index = offset + i;
+		if index <= numResults then
+			local name, icon, path, typeText, displayInfo, itemID, stype = EncounterJournal_GetSearchDisplay(index);
+			if stype == EJ_STYPE_INSTANCE then
+				result.icon:SetTexCoord(0.16796875, 0.51171875, 0.03125, 0.71875);
+			else
+				result.icon:SetTexCoord(0, 1, 0, 1);
+			end
+			
+			result.name:SetText(name);
+			result.resultType:SetText(typeText);
+			result.path:SetText(path);
+			result.icon:SetTexture(icon);
+			result.itemID = itemID;
+			if displayInfo and displayInfo > 0 then
+				SetPortraitTexture(result.icon, displayInfo);
+			end
+			result:SetID(index);
+			result:Show();
+			
+			if result.showingTooltip then
+				if itemID then
+					GameTooltip:SetOwner(result, "ANCHOR_RIGHT");
+					GameTooltip:SetItemByID(itemID);
+				else
+					GameTooltip:Hide();
+				end
+			end
+		else
+			result:Hide();
+		end
+	end
+	
+	local totalHeight = numResults * 49;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, 370);
+end
+
+
+function EncounterJournal_ShowFullSearch()
+	local numResults = EJ_GetNumSearchResults();
+	if numResults == 0 then
+		EncounterJournal.searchResults:Hide();
+		return;
+	end
+
+	EncounterJournal.searchResults.TitleText:SetText(string.format(ENCOUNTER_JOURNAL_SEARCH_RESULTS, EncounterJournal.searchBox:GetText(), numResults));
+	EncounterJournal.searchResults:Show();
+	EncounterJournal_SearchUpdate();
+	EncounterJournal.searchResults.scrollFrame.scrollBar:SetValue(0);
+	EncounterJournal_HideSearchPreview();
+end
+
+
+function EncounterJournal_HideSearchPreview()
+	EncounterJournal.searchBox.showAllResults:Hide();
+	local index = 1;
+	local unusedButton = EncounterJournal.searchBox["sbutton"..index];
+	while unusedButton do
+		unusedButton:Hide();
+		index = index + 1;
+		unusedButton = EncounterJournal.searchBox["sbutton"..index]
+	end
+end
+
+
+function EncounterJournal_OnSearchTextChanged(self)
+	local text = self:GetText();
+	EncounterJournal_HideSearchPreview();
+		
+	if strlen(text) < EJ_MIN_CHARACTER_SEARCH or text == SEARCH then
+		EJ_ClearSearch();
+		EncounterJournal.searchResults:Hide();
+		return;
+	end
+	EJ_SetSearch(text);
+	
+	if EncounterJournal.searchResults:IsShown() then
+		EncounterJournal_ShowFullSearch();
+	else
+		local numResults = EJ_GetNumSearchResults();
+		local index = 1;
+		local button;
+		while index <= numResults do
+			button = EncounterJournal.searchBox["sbutton"..index];
+			if button then
+				local name, icon, path, typeText, displayInfo, itemID = EncounterJournal_GetSearchDisplay(index);
+				button.name:SetText(name);
+				button.icon:SetTexture(icon);
+				button.itemID = itemID;
+				if displayInfo and displayInfo > 0 then
+					SetPortraitTexture(button.icon, displayInfo);
+				end
+				button:SetID(index);
+				button:Show();
+			else
+				button = EncounterJournal.searchBox.showAllResults;
+				button.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, numResults));
+				EncounterJournal.searchBox.showAllResults:Show();
+				break;
+			end
+			index = index + 1;
+		end
+		
+		EncounterJournal.searchBox.sbutton1.boarderAnchor:SetPoint("BOTTOM", button, "BOTTOM", 0, -5);
+	end
+end
 
 

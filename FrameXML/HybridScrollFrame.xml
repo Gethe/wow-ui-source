@@ -21,7 +21,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBG" setAllPoints="true" hidden="true">
+				<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG">
 					<Color r="0" g="0" b="0" a=".85"/>
 				</Texture>
 			</Layer>
@@ -136,7 +136,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBG" setAllPoints="true" hidden="true">
+				<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG">
 					<Color r="0" g="0" b="0" a=".85"/>
 				</Texture>
 			</Layer>

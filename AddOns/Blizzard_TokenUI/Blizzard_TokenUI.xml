@@ -312,7 +312,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="count">
 					<Size x="38" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -320,7 +320,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentIcon">
+				<Texture name="$parentIcon" parentKey="icon">
 					<Size>
 						<AbsDimension x="12" y="12"/>
 					</Size>
@@ -333,11 +333,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				local name = self:GetName();
-				self.icon = _G[name.."Icon"];
-				self.count = _G[name.."Count"];
-			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetBackpackToken(self:GetID());
