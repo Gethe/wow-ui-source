@@ -23,6 +23,16 @@
 					</Anchors>
 					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
+				<Texture name="$parentIcon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -256,6 +266,18 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="30" y="2"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

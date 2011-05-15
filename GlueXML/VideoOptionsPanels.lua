@@ -176,7 +176,7 @@ function VideoOptionsResolutionPanelResolutionDropDown_OnLoad(self)
 	self.value = value;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(110, self);
+	GlueDropDownMenu_SetWidth(self, 110);
 	GlueDropDownMenu_Initialize(self, VideoOptionsResolutionPanelResolutionDropDown_Initialize);
 	GlueDropDownMenu_SetSelectedID(self, value, 1);
 
@@ -242,7 +242,7 @@ function VideoOptionsResolutionPanelRefreshDropDown_OnLoad(self)
 	self.value = value;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(110, self);
+	GlueDropDownMenu_SetWidth(self, 110);
 	GlueDropDownMenu_Initialize(self, VideoOptionsResolutionPanelRefreshDropDown_Initialize);
 	GlueDropDownMenu_SetSelectedValue(self, value);
 
@@ -282,7 +282,7 @@ function VideoOptionsResolutionPanel_GetRefreshRates(...)
 
 		if ( GlueDropDownMenu_GetSelectedValue(VideoOptionsResolutionPanelRefreshDropDown) and tonumber(GlueDropDownMenu_GetSelectedValue(VideoOptionsResolutionPanelRefreshDropDown)) == select(i, ...) ) then
 			info.checked = 1;
-			GlueDropDownMenu_SetText(info.text, VideoOptionsResolutionPanelRefreshDropDown);
+			GlueDropDownMenu_SetText(VideoOptionsResolutionPanelRefreshDropDown, info.text);
 		else
 			info.checked = nil;
 		end
@@ -310,7 +310,7 @@ function VideoOptionsResolutionPanelMultiSampleDropDown_OnLoad(self)
 	self.value = value;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(160, self);
+	GlueDropDownMenu_SetWidth(self, 160);
 	GlueDropDownMenu_SetAnchor(self, -200, 23, "TOPRIGHT", "VideoOptionsResolutionPanelMultiSampleDropDownRight", "BOTTOMRIGHT");
 	GlueDropDownMenu_Initialize(self, VideoOptionsResolutionPanelMultiSampleDropDown_Initialize);
 	GlueDropDownMenu_SetSelectedID(self, value);
@@ -349,7 +349,7 @@ function VideoOptionsResolutionPanel_GetMultisampleFormats(...)
 		
 		if ( index == GlueDropDownMenu_GetSelectedID(VideoOptionsResolutionPanelMultiSampleDropDown) ) then
 			checked = 1;
-			GlueDropDownMenu_SetText(info.text, VideoOptionsResolutionPanelMultiSampleDropDown);
+			GlueDropDownMenu_SetText(VideoOptionsResolutionPanelMultiSampleDropDown, info.text);
 		else
 			checked = nil;
 		end

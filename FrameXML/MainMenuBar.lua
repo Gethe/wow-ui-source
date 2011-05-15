@@ -226,20 +226,10 @@ function MainMenuBar_OnEvent(self, event, ...)
 			BackpackTokenFrame_Update();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		MainMenuBar_UpdateKeyRing();
 		if ( not firstEnteringWorld ) then
 			MainMenuBar_ToPlayerArt();
 		end
 		firstEnteringWorld = false;
-	elseif ( event == "BAG_UPDATE" ) then
-		if ( not GetCVarBool("showKeyring") ) then
-			if ( HasKey() ) then
-				-- Show Tutorial and flash keyring
-				SetButtonPulse(KeyRingButton, 60, 1);
-				SetCVar("showKeyring", 1);
-			end
-			MainMenuBar_UpdateKeyRing();
-		end
 	elseif ( (event == "UNIT_ENTERED_VEHICLE") and (arg1=="player") ) then
 		if( not MainMenuBar.animComplete ) then
 			MainMenuBar.animComplete = true;
@@ -467,17 +457,6 @@ function ExhaustionTick_OnUpdate(self, elapsed)
 	end
 end
 
---KeyRing Functions
-
-function MainMenuBar_UpdateKeyRing()
-	if ( GetCVarBool("showKeyring") ) then
-		MainMenuBarTexture3:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
-		MainMenuBarTexture3:SetTexCoord(0, 1, 0.1640625, 0.5);
-		MainMenuBarTexture2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing");
-		MainMenuBarTexture2:SetTexCoord(0, 1, 0.6640625, 1);
-		KeyRingButton:Show();
-	end
-end
 
 -- latency bar
 

@@ -738,6 +738,9 @@
 	<Binding name="TOGGLECURRENCY">
 		ToggleCharacter("TokenFrame");
 	</Binding>
+	<Binding name="TOGGLEENCOUNTERJOURNAL">
+		ToggleFrame(EncounterJournal);
+	</Binding>
 
 	<!-- Misc -->
 	<Binding name="STOPCASTING" header="MISC">

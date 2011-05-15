@@ -28,11 +28,14 @@ function CompactRaidFrameContainer_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("UNIT_PET");
 	
+	local unitFrameReleaseFunc = function(frame)
+													CompactUnitFrame_SetUnit(frame, nil);
+												end;
 	self.frameReservations = {
-		raid		= CompactRaidFrameReservation_NewManager();
-		pet		= CompactRaidFrameReservation_NewManager();
-		flagged	= CompactRaidFrameReservation_NewManager();	--For Main Tank/Assist units
-		target	= CompactRaidFrameReservation_NewManager();	--Target of target for Main Tank/Main Assist
+		raid		= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
+		pet		= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
+		flagged	= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);	--For Main Tank/Assist units
+		target	= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);	--Target of target for Main Tank/Main Assist
 	}
 	
 	self.frameUpdateList = {
@@ -42,7 +45,6 @@ function CompactRaidFrameContainer_OnLoad(self)
 	}
 
 	self.unitFrameUnusedFunc = function(frame)
-													CompactUnitFrame_SetUnit(frame, nil);
 													frame.inUse = false;
 												end;
 												
@@ -153,7 +155,7 @@ function CompactRaidFrameContainer_UpdateDisplayedUnits(self)
 end
 
 function CompactRaidFrameContainer_LayoutFrames(self)
-	--First, hide everything we currently use.
+	--First, mark everything we currently use as unused. We'll hide all the ones that are still unused at the end of this function. (On release)
 	for i=1, #self.flowFrames do
 		if ( type(self.flowFrames[i]) == "table" and self.flowFrames[i].unusedFunc ) then
 			self.flowFrames[i]:unusedFunc();
@@ -310,7 +312,7 @@ end
 
 --Utility Functions
 function CompactRaidFrameContainer_AddUnitFrame(self, unit, frameType)
-	local frame =CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType);
+	local frame = CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType);
 	CompactUnitFrame_SetUnit(frame, unit);
 	FlowContainer_AddObject(self, frame);
 	

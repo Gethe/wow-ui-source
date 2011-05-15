@@ -49,7 +49,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="552" y="2"/>
+					<AbsDimension x="548" y="2"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -361,9 +361,59 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "EJ");
+				SetDesaturation(self:GetDisabledTexture(), true);
+				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
+				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
+				self.minLevel = SHOW_LFD_LEVEL;
+			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
+				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
+			</OnEvent>
+			<OnClick>
+				ToggleFrame(EncounterJournal);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="RaidMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "Raid");
+				SetDesaturation(self:GetDisabledTexture(), true);
+				self.tooltipText = MicroButtonTooltipText(RAID, "TOGGLERAIDTAB");
+				self.newbieText = NEWBIE_TOOLTIP_RAID;
+				self.minLevel = SHOW_LFD_LEVEL;
+			</OnLoad>
+			<OnEvent>
+				self.tooltipText = MicroButtonTooltipText(RAID, "TOGGLERAIDTAB");
+				self.newbieText = NEWBIE_TOOLTIP_RAIDTAB;
+			</OnEvent>
+			<OnClick>
+				ToggleFriendsFrame(4);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="RaidMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>

@@ -273,6 +273,114 @@
 	</Texture>
 
 	
+	<Button name="EncounterMapButtonTemplate" virtual="true">
+		<Size x="62" y="61"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentbgImage" parentKey="bgImage">
+					<Size x="45" y="45"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="UI-EJ-MapButtonLg-Up">
+		</NormalTexture>
+		<PushedTexture inherits="UI-EJ-MapButtonLg-Down">
+		</PushedTexture>
+		<HighlightTexture inherits="UI-EJ-MapButtonLg-Highlight">
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				if self.tooltipTitle then
+					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
+					WorldMapTooltip:SetText(self.tooltipTitle,1,1,1);
+					WorldMapTooltip:AddLine(self.tooltipText, nil, nil, nil, 1);
+					WorldMapTooltip:Show();
+					WorldMapTooltip.EJ_using = true;
+				end
+			</OnEnter>
+			<OnLeave>
+				WorldMapTooltip:Hide();
+				WorldMapTooltip.EJ_using = false;
+			</OnLeave>
+			<OnShow>
+				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+			</OnShow>
+			<OnClick>
+				if WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE then
+					ToggleFrame(WorldMapFrame);
+				end
+			
+				if not EncounterJournal:IsShown() then
+					ToggleFrame(EncounterJournal);
+				end
+				EncounterJournal_ListInstances();
+				EncounterJournal_DisplayInstance(self.instanceID);
+				EncounterJournal_DisplayEncounter(self.encounterID);
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	
+	
+	<Button name="EncounterInstanceButtonTemplate" virtual="true">
+		<Size x="174" y="96"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentbgImage" parentKey="bgImage">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.68359375" top="0" bottom="0.7421875"/>	
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentHeroicIcon" file="Interface\EncounterJournal\UI-EJ-HeroicTextIcon" parentKey="heroicIcon" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalMed3" parentKey="name">
+					<Size x="150" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRange" inherits="GameFontNormal" justifyH="LEFT" parentKey="range" text="82-83" hidden="true">
+					<Size x="100" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="7" y="7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="UI-EJ-DungeonButton-Up">
+		</NormalTexture>
+		<PushedTexture inherits="UI-EJ-DungeonButton-Down">
+		</PushedTexture>
+		<HighlightTexture inherits="UI-EJ-DungeonButton-Highlight">
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				if self.itemID then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+					GameTooltip:SetItemByID(self.itemID);
+					self.showingTooltip = true;
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.showingTooltip = false;
+			</OnLeave>
+			<OnClick>
+				EncounterJournal_DisplayInstance(self.instanceID);
+			</OnClick>
+		</Scripts>
+	</Button>
+	
 	<Button name="EncounterSearchSMTemplate" virtual="true">
 		<Size x="275" y="27"/>
 		<Layers>
@@ -508,7 +616,7 @@
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>
 			<OnClick>
-				EncounterJournal_DisplayEncounter(EncounterJournal.encounter, self.encounterID)
+				EncounterJournal_DisplayEncounter(self.encounterID)
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -1060,7 +1168,76 @@
 					<Anchor point="BOTTOMLEFT" x="4" y="5"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentEncounterFrame" parentKey="encounter">
+			<Frame name="$parentInstanceSelect" parentKey="instanceSelect" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="0" y="-2" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG" file="Interface\EncounterJournal\UI-EJ-Cataclysm" parentKey="bg">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.763671875" top="0" bottom="0.82421875"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentTierDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="tierDropDown" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-2" y="-6"/>
+						</Anchors>
+					</Frame>
+					<ScrollFrame name="$parentScrollFrame" parentKey="scroll" inherits="UIPanelScrollFrameCodeTemplate">
+						<Size x="785" y="385"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-40"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="0" y="-17"/>
+									<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
+									</OnLoad>
+								</Scripts>
+							</Slider>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child">
+								<Size x="337" y="400"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="$parentInstanceButton1" inherits="EncounterInstanceButtonTemplate" parentKey="instance1">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="12" y="-10"/>
+										</Anchors>
+									</Button>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentEncounterFrame" parentKey="encounter" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="0" y="0" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0"/>
@@ -1402,11 +1579,6 @@
 						</Scripts>
 					</Frame>
 				</Frames>
-			</Frame>
-			<Frame name="$parentTierDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="tierDropDown">
-				<Anchors>
-					<Anchor point="TOPLEFT"  relativeTo="$parentInset" x="5" y="-8"/>
-				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>

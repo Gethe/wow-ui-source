@@ -371,7 +371,7 @@
 			<Frame name="$parentCurrency">
 				<Size x="48" y="48"/>
 				<Anchors>
-					<Anchor point="TOP" x="-20" y="-20"/>
+					<Anchor point="TOP" x="0" y="-20"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -471,52 +471,23 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<StatusBar name="$parentConquestBar" drawLayer="BACKGROUND">
+			<Frame name="$parentConquestBar" inherits="CapProgressBarTemplate">
 				<Size>
-					<AbsDimension x="90" y="12"/>
+					<AbsDimension x="254" y="20"/>
 				</Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentCurrencyValue" relativePoint="RIGHT" x="14" y="0"/>
+					<Anchor point="TOP" x="20" y="-38"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBG">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="-2"/>
-								<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="1"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-2" y="6"/>
-								<Anchor point="BOTTOMRIGHT" x="1" y="-7"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentPoints" inherits="GameFontHighlightSmall" parentKey ="pointText" text="0/0">
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(PVP_CONQUEST_TOOLTIP, 1.0,1.0,1.0, 1, true );
-					</OnEnter>
+					<OnLoad>
+						CapProgressBar_SetNotches(self, 5);
+						self.cap1Marker:SetScript("OnEnter", PVPFrameConquestBarMarker_OnEnter);
+						self.progress:SetVertexColor(1, 0, 0)
+					</OnLoad>
+					<OnEnter function="PVPFrameConquestBar_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
-                </Scripts>
-				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r="1.0" g="0.11" b=".15"/>
-			</StatusBar>
-		
+				</Scripts>
+			</Frame>
 			
 			<Frame name="$parentTopInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="topInset" hidden="true">
 				<Anchors>

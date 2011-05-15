@@ -437,12 +437,12 @@ local DISPLAY_DATA = {
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},	
 	
-	[50] = { --TUTORIAL_KEYRINGS
-		tileHeight = 7, 
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "KeyRingButton", align = "TOPLEFT", xOff = -8, yOff = 7, width = 35, height = 52},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
+	-- [50] = { --TUTORIAL_KEYRINGS
+		-- tileHeight = 7, 
+		-- anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
+		-- callOut	= {parent = "KeyRingButton", align = "TOPLEFT", xOff = -8, yOff = 7, width = 35, height = 52},
+		-- textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
+	-- },
 	
 	[51] = { --TUTORIAL_LOOKINGFORGROUP
 		tileHeight = 7, 

@@ -26,9 +26,6 @@ function AccountLogin_OnLoad(self)
 	TokenEnterDialogBackgroundEdit:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
 	TokenEnterDialogBackgroundEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
 
-	if (IsStreamingTrial()) then
-		AccountLoginCinematicsButton:Disable();
-	end
 	SetLoginScreenModel(AccountLogin);
 end
 
@@ -684,7 +681,7 @@ function AccountLogin_SetupAccountListDDL()
 			selected = true;
 			str = strsub(str, 2, #str);
 			GlueDropDownMenu_SetSelectedName(AccountLoginDropDown, str);
-			GlueDropDownMenu_SetText(str, AccountLoginDropDown);
+			GlueDropDownMenu_SetText(AccountLoginDropDown, str);
 		end
 		AccountList[i] = { ["text"] = str, ["value"] = str, ["selected"] = selected, func = AccountLoginDropDown_OnClick };
 		i = i + 1;

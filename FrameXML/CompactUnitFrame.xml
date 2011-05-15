@@ -152,6 +152,7 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight" forceAlpha="true"/>
 				<Texture name="$parentReadyCheckIcon" parentKey="readyCheckIcon" forceAlpha="true"/>
+				<Texture name="$parentIncomingResurrectIcon" parentKey="incomingResurrectIcon" hidden="true" forceAlpha="true"/>
 			</Layer>
 		</Layers>
 		<Frames>

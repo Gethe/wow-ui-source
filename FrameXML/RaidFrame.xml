@@ -467,7 +467,11 @@
 			<OnShow>
 				RaidFrame_Update();
 				RequestRaidInfo();
+				UpdateMicroButtons();
 			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+			</OnHide>
 			<OnEvent function="RaidFrame_OnEvent"/>
 		</Scripts>
 		<HitRectInsets>

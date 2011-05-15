@@ -707,61 +707,58 @@ local MicroButtons = {
 	GuildMicroButton,
 	PVPMicroButton,
 	LFDMicroButton,
+	EJMicroButton,
+	RaidMicroButton,
 	MainMenuMicroButton,
 	HelpMicroButton,
 	}
+	
+	
+function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
+	CharacterMicroButton:ClearAllPoints();
+	CharacterMicroButton:SetPoint(anchor, achorTo, relAnchor, x, y);
+	AchievementMicroButton:ClearAllPoints();
+	LFDMicroButton:ClearAllPoints();
+	if ( isStacked ) then
+		AchievementMicroButton:SetPoint("BOTTOMLEFT", CharacterMicroButton, "BOTTOMRIGHT", -3, 0);
+		LFDMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
+	else
+		AchievementMicroButton:SetPoint("BOTTOMLEFT", TalentMicroButton, "BOTTOMRIGHT", -3, 0);
+		LFDMicroButton:SetPoint("BOTTOMLEFT", PVPMicroButton, "BOTTOMRIGHT", -3, 0);
+	end
+	UpdateMicroButtons();
+end
+	
 function VehicleMenuBar_MoveMicroButtons(skinName)
 	if ( not skinName ) then
-	
 		for _, frame in pairs(MicroButtons) do
 			frame:SetParent(MainMenuBarArtFrame);
 			frame:Show();
 		end
-		
-		CharacterMicroButton:ClearAllPoints();
-		CharacterMicroButton:SetPoint("BOTTOMLEFT", 552, 2);
-		GuildMicroButton:ClearAllPoints();
-		GuildMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);		
-		UpdateMicroButtons();
-		
-		
+		MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 552, 2, false);
 		MainMenuExpBar:SetParent(MainMenuBar);
 		MainMenuExpBar:ClearAllPoints();
 		MainMenuExpBar:SetPoint("TOP");
 		MainMenuExpBar_SetWidth(EXP_DEFAULT_WIDTH);
-		
-		
 	elseif ( skinName == "Mechanical" ) then
-	
 		for _, frame in pairs(MicroButtons) do
 			frame:SetParent(VehicleMenuBarArtFrame);
 			frame:Show();
 		end
-		CharacterMicroButton:ClearAllPoints();
-		CharacterMicroButton:SetPoint("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -340, 41);
-		GuildMicroButton:ClearAllPoints();
-		GuildMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
-		UpdateMicroButtons();
-		
-		
+		MoveMicroButtons("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -340, 41, true);
 		MainMenuExpBar:ClearAllPoints();			
 		MainMenuExpBar:SetParent(VehicleMenuBar);
 		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 148, 50);
 		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -150, 50);
 		MainMenuExpBar_SetWidth(VehicleMenuBar:GetWidth() - 148 - 150);
-		MainMenuExpBar:SetFrameLevel(MainMenuExpBar:GetParent():GetFrameLevel());		
+		MainMenuExpBar:SetFrameLevel(MainMenuExpBar:GetParent():GetFrameLevel());
 	elseif ( skinName == "Natural" ) then
 	
 		for _, frame in pairs(MicroButtons) do
 			frame:SetParent(VehicleMenuBarArtFrame);
 			frame:Show();
 		end
-		CharacterMicroButton:ClearAllPoints();
-		CharacterMicroButton:SetPoint("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -365, 41);
-		GuildMicroButton:ClearAllPoints();
-		GuildMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);		
-		UpdateMicroButtons();
-		
+		MoveMicroButtons("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -365, 41, true);
 		MainMenuExpBar:ClearAllPoints();			
 		MainMenuExpBar:SetParent(VehicleMenuBar);
 		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 166, 53);

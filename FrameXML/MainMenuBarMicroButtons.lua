@@ -134,12 +134,18 @@ function UpdateMicroButtons()
 			AchievementMicroButton:Disable();
 		end
 	end
-
-	-- Keyring microbutton
-	if ( IsBagOpen(KEYRING_CONTAINER) ) then
-		KeyRingButton:SetButtonState("PUSHED", 1);
+	
+	if ( EncounterJournal:IsShown() ) then
+		EJMicroButton:SetButtonState("PUSHED", 1);
 	else
-		KeyRingButton:SetButtonState("NORMAL");
+		EJMicroButton:SetButtonState("NORMAL");
+	end
+	
+	
+	if ( RaidFrame:IsShown() and FriendsFrame:IsShown() ) then
+		RaidMicroButton:SetButtonState("PUSHED", 1);
+	else
+		RaidMicroButton:SetButtonState("NORMAL");
 	end
 end
 

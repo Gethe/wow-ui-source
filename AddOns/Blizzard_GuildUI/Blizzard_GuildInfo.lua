@@ -34,7 +34,7 @@ end
 
 function GuildInfoFrame_OnEvent(self, event, arg1)
 	if ( event == "GUILD_MOTD" ) then
-		GuildInfoMOTD:SetText(arg1);
+		GuildInfoMOTD:SetText(arg1, true);	--Ignores markup.
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 		GuildInfoFrame_UpdatePermissions();
 		GuildInfoFrame_UpdateText();
@@ -187,7 +187,7 @@ function GuildInfoFrame_UpdatePermissions()
 end
 
 function GuildInfoFrame_UpdateText(infoText)
-	GuildInfoMOTD:SetText(GetGuildRosterMOTD());
+	GuildInfoMOTD:SetText(GetGuildRosterMOTD(), true); --Extra argument ignores markup.
 	if ( infoText ) then
 		GuildInfoFrame.cachedInfoText = infoText;
 		GuildInfoFrame.cacheExpiry = GetTime() + 10;
@@ -577,6 +577,13 @@ function GuildRecruitmentApplicant_OnClick(self, button)
 			HybridScrollFrame_CollapseButton(GuildInfoFrameApplicantsContainer);
 		end
 		GuildInfoFrameApplicants_Update();
+	elseif ( button == "RightButton" ) then
+		local dropDown = GuildRecruitmentDropDown;
+		if ( dropDown.index ~= self.index ) then
+			CloseDropDownMenus();
+		end
+		dropDown.index = self.index;
+		ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
 	end
 end
 
@@ -599,6 +606,59 @@ function GuildRecruitmentApplicant_ShowTooltip(self)
 	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
 	
 	GameTooltip:Show();
+end
+
+function GuildRecruitmentDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, GuildRecruitmentDropDown_Initialize, "MENU");
+end
+
+function GuildRecruitmentDropDown_Initialize(self)
+	local info = UIDropDownMenu_CreateInfo();
+	local name = GetGuildApplicantInfo(GuildRecruitmentDropDown.index) or UNKNOWN;
+	info.text = name;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
+	info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = 1;
+	info.func = GuildRecruitmentDropDown_OnClick;
+	
+	info.text = INVITE;
+	info.arg1 = "invite";
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	
+	info.text = WHISPER;
+	info.arg1 = "whisper";
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
+	info.text = ADD_FRIEND;
+	info.arg1 = "addfriend";
+	if ( GetFriendInfo(name) ) then
+		info.disabled = 1;
+	end
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	
+	info.text = DECLINE;
+	info.arg1 = "decline";
+	info.disabled = nil;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+end
+
+function GuildRecruitmentDropDown_OnClick(button, action)
+	local name = GetGuildApplicantInfo(GuildRecruitmentDropDown.index);
+	if ( not name ) then
+		return;
+	end
+	if ( action == "invite" ) then
+		GuildInvite(name);
+	elseif ( action == "whisper" ) then
+		ChatFrame_SendTell(name);
+	elseif ( action == "addfriend" ) then
+		AddOrRemoveFriend(name);
+	elseif ( action == "decline" ) then
+		DeclineGuildApplicant(GuildRecruitmentDropDown.index);
+	end
 end
 
 --*******************************************************************************

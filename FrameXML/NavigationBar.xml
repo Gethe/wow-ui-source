@@ -163,6 +163,14 @@
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
+			<OnEnable>
+				self.arrowDown:Hide();
+				self.arrowUp:Show();
+			</OnEnable>
+			<OnDisable>
+				self.arrowDown:Hide();
+				self.arrowUp:Show();
+			</OnDisable>
 		</Scripts>
 		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true">
 			<TexCoords left="0.00000000" right="1.00000000" top="0.06250000" bottom="0.12109375"/>

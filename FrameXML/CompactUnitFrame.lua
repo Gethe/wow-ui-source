@@ -1,6 +1,7 @@
 --Widget Handlers
 local OPTION_TABLE_NONE = {};
 BOSS_DEBUFF_SIZE_INCREASE = 9;
+CUF_READY_CHECK_DECAY_TIME = 11;
 
 function CompactUnitFrame_OnLoad(self)
 	if ( not self:GetName() ) then
@@ -34,6 +35,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT");
+	self:RegisterEvent("INCOMING_RESURRECT_CHANGED");
 	
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
@@ -56,8 +58,10 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateAuras(self);	--We filter differently based on whether the player is in Combat, so we need to update when that changes.
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
 		CompactUnitFrame_UpdateRoleIcon(self);
-	elseif ( event == "READY_CHECK" or event == "READY_CHECK_FINISHED" ) then
+	elseif ( event == "READY_CHECK" ) then
 		CompactUnitFrame_UpdateReadyCheck(self);
+	elseif ( event == "READY_CHECK_FINISHED" ) then
+		CompactUnitFrame_FinishReadyCheck(self);
 	elseif ( event == "PARTY_MEMBER_DISABLE" or event == "PARTY_MEMBER_ENABLE" ) then	--Alternate power info may now be available.
 		CompactUnitFrame_UpdateMaxPower(self);
 		CompactUnitFrame_UpdatePower(self);
@@ -97,6 +101,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateAll(self);
 		elseif ( event == "READY_CHECK_CONFIRM" ) then
 			CompactUnitFrame_UpdateReadyCheck(self);
+		elseif ( event == "INCOMING_RESURRECT_CHANGED" ) then
+			CompactUnitFrame_UpdateIncomingResurrectIcon(self);
 		end
 	end
 end
@@ -104,6 +110,7 @@ end
 --DEBUG FIXME - We should really try to avoid having OnUpdate on every frame. An event when going in/out of range would be greatly preferred.
 function CompactUnitFrame_OnUpdate(self, elapsed)
 	CompactUnitFrame_UpdateInRange(self);
+	CompactUnitFrame_CheckReadyCheckDecay(self, elapsed);
 end
 
 --Externally accessed functions
@@ -112,6 +119,8 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		frame.unit = unit;
 		frame.displayedUnit = unit;	--May differ from unit if unit is in a vehicle.
 		frame.inVehicle = false;
+		frame.readyCheckStatus = nil
+		frame.readyCheckDecay = nil;
 		frame:SetAttribute("unit", unit);
 		if ( unit ) then
 			CompactUnitFrame_RegisterEvents(frame);
@@ -225,6 +234,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateRoleIcon(frame);
 		CompactUnitFrame_UpdateReadyCheck(frame);
 		CompactUnitFrame_UpdateAuras(frame);
+		CompactUnitFrame_UpdateIncomingResurrectIcon(frame);
 	end
 end
 
@@ -487,7 +497,12 @@ function CompactUnitFrame_UpdateRoleIcon(frame)
 end
 
 function CompactUnitFrame_UpdateReadyCheck(frame)
+	if ( frame.readyCheckDecay and GetReadyCheckTimeLeft() <= 0 ) then
+		return;
+	end
+	
 	local readyCheckStatus = GetReadyCheckStatus(frame.unit);
+	frame.readyCheckStatus = readyCheckStatus;
 	if ( readyCheckStatus == "ready" ) then
 		frame.readyCheckIcon:SetTexture(READY_CHECK_READY_TEXTURE);
 		frame.readyCheckIcon:Show();
@@ -499,6 +514,36 @@ function CompactUnitFrame_UpdateReadyCheck(frame)
 		frame.readyCheckIcon:Show();
 	else
 		frame.readyCheckIcon:Hide();
+	end
+end
+
+function CompactUnitFrame_FinishReadyCheck(frame)
+	frame.readyCheckDecay = CUF_READY_CHECK_DECAY_TIME;
+	
+	if ( frame.readyCheckStatus == "waiting" ) then	--If you haven't responded, you are not ready.
+		frame.readyCheckIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+		frame.readyCheckIcon:Show();
+	end
+end
+
+function CompactUnitFrame_CheckReadyCheckDecay(frame, elapsed)
+	if ( frame.readyCheckDecay ) then
+		if ( frame.readyCheckDecay > 0 ) then
+			frame.readyCheckDecay = frame.readyCheckDecay - elapsed;
+		else
+			frame.readyCheckDecay = nil;
+			CompactUnitFrame_UpdateReadyCheck(frame);
+		end
+	end
+end
+
+function CompactUnitFrame_UpdateIncomingResurrectIcon(frame)
+	local incomingResurrect = UnitHasIncomingResurrection(frame.unit);
+	
+	if ( frame.optionTable.displayIncomingResurrect and incomingResurrect ) then
+		frame.incomingResurrectIcon:Show();
+	else
+		frame.incomingResurrectIcon:Hide();
 	end
 end
 
@@ -822,6 +867,7 @@ DefaultCompactUnitFrameOptions = {
 	displayOnlyDispellableDebuffs = false,
 	displayNonBossDebuffs = true,
 	healthText = "none",
+	displayIncomingResurrect = true,
 }
 
 local NATIVE_UNIT_FRAME_HEIGHT = 36;
@@ -950,6 +996,11 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.aggroHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
 	frame.aggroHighlight:SetTexCoord(unpack(texCoords["Raid-AggroFrame"]));
 	frame.aggroHighlight:SetAllPoints(frame);
+	
+	frame.incomingResurrectIcon:ClearAllPoints();
+	frame.incomingResurrectIcon:SetPoint("CENTER", frame, "BOTTOM", 0, options.height / 3 + 2);
+	frame.incomingResurrectIcon:SetSize(buffSize * 2, buffSize * 2);
+	frame.incomingResurrectIcon:SetTexture("Interface\\RaidFrame\\Raid-Icon-Rez");
 	
 	if ( options.displayBorder ) then
 		frame.horizTopBorder:ClearAllPoints();

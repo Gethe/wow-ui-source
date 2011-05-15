@@ -106,6 +106,7 @@ CLASS_ICON_TCOORDS = {
 --
 -- Spell
 --
+HUNTER_DISMISS_PET = 2641;
 
 -- Power Types
 SPELL_POWER_MANA = 0;

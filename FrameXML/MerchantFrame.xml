@@ -198,6 +198,16 @@
  					</Anchors>
  				</FontString>
 			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture name="MerchantFrameExtraCurrencyTex" file="Interface\MerchantFrame\UI-Merchant-BotLeft-Currency" hidden="true">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="53"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="BuybackFrameTopLeft" file="Interface\MerchantFrame\UI-BuyBack-TopLeft">
 					<Size>

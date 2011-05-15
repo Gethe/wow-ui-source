@@ -1,7 +1,7 @@
 
 
-function CompactRaidFrameReservation_NewManager()
-	return { unusedFrames = {}, reservations = {} };
+function CompactRaidFrameReservation_NewManager(releaseFunc)
+	return { unusedFrames = {}, reservations = {}, releaseFunc = releaseFunc };
 end
 
 function CompactRaidFrameReservation_GetFrame(self, key)
@@ -23,6 +23,9 @@ end
 function CompactRaidFrameReservation_ReleaseUnusedReservations(self)
 	for key, frame in pairs(self.reservations) do
 		if ( frame and not frame.inUse ) then
+			if ( self.releaseFunc ) then
+				self.releaseFunc(frame);
+			end
 			self.reservations[key] = false;
 			tinsert(self.unusedFrames, frame);
 		end

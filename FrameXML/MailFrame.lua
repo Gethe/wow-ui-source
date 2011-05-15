@@ -464,7 +464,7 @@ function OpenMail_Update()
 	OpenMailSubject:SetText(subject);
 	-- Set Text
 	local bodyText, texture, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
-	OpenMailBodyText:SetText(bodyText);
+	OpenMailBodyText:SetText(bodyText, true);
 	if ( texture ) then
 		OpenStationeryBackgroundLeft:SetTexture(STATIONERY_PATH..texture.."1");
 		OpenStationeryBackgroundRight:SetTexture(STATIONERY_PATH..texture.."2");

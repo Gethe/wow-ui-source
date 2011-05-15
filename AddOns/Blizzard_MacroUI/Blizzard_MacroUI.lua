@@ -6,7 +6,7 @@ NUM_ICONS_PER_ROW = 5;
 NUM_ICON_ROWS = 4;
 MACRO_ICON_ROW_HEIGHT = 36;
 
-UIPanelWindows["MacroFrame"] = { area = "left", pushable = 5, whileDead = 1, 	xoffset = -16, 		yoffset = 12 };
+UIPanelWindows["MacroFrame"] = { area = "left", pushable = 1, whileDead = 1, xoffset = -16, yoffset = 12, width = PANEL_DEFAULT_WIDTH };
 
 function MacroFrame_Show()
 	ShowUIPanel(MacroFrame);
@@ -142,6 +142,19 @@ end
 function MacroButton_OnClick(self, button)
 	MacroFrame_SaveMacro();
 	MacroFrame_SelectMacro(MacroFrame.macroBase + self:GetID());
+	MacroFrame_Update();
+	MacroPopupFrame:Hide();
+	MacroFrameText:ClearFocus();
+end
+
+function MacroFrameSaveButton_OnClick()
+	MacroFrame_SaveMacro();
+	MacroFrame_Update();
+	MacroPopupFrame:Hide();
+	MacroFrameText:ClearFocus();
+end
+
+function MacroFrameCancelButton_OnClick()
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();

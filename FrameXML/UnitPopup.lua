@@ -158,7 +158,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 -- First level menus
 UnitPopupMenus = { };
 UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
-UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_ABANDON", "PET_DISMISS", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
@@ -899,7 +899,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PET_DISMISS" ) then
-			if( PetCanBeAbandoned() or not PetCanBeDismissed() ) then
+			if( ( PetCanBeAbandoned() and not IsSpellKnown(HUNTER_DISMISS_PET) ) or not PetCanBeDismissed() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( strsub(value, 1, 12)  == "RAID_TARGET_" ) then
@@ -1395,7 +1395,11 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "PET_DISMISS" ) then
-		PetDismiss();
+		if ( PetCanBeAbandoned() ) then
+			CastSpellByID(HUNTER_DISMISS_PET);
+		else
+			PetDismiss();
+		end
 	elseif ( button == "PET_ABANDON" ) then
 		StaticPopup_Show("ABANDON_PET");
 	elseif ( button == "PET_PAPERDOLL" ) then

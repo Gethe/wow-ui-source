@@ -29,9 +29,9 @@ OptionsPanelTemplates.xml
 TrialConvert.xml
 GlueOptions.xml
 VideoOptionsFrame.xml
-..\FrameXML\VideoOptionsPanels.xml
 AudioOptionsFrame.xml
 AudioOptionsPanels.xml
+..\FrameXML\VideoOptionsPanels.xml
 ##CameraSelect.xml
 
 ## This Always Runs Last, Add New Items above it.

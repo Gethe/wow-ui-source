@@ -922,9 +922,6 @@ function ToggleKeyRing()
 		_G["ContainerFrame"..shownContainerID]:Hide();
 	else
 		ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), GetKeyRingSize(), KEYRING_CONTAINER);
-
-		-- Stop keyring button pulse
-		SetButtonPulse(KeyRingButton, 0, 1);
 	end
 end
 

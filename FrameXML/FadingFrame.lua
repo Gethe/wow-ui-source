@@ -42,3 +42,15 @@ function FadingFrame_OnUpdate(fadingFrame)
 	end
 	fadingFrame:Hide();
 end
+
+function FadingFrame_GetRemainingTime(fadingFrame)
+	local elapsed = GetTime() - fadingFrame.startTime;
+	return (fadingFrame.holdTime + fadingFrame.fadeInTime + fadingFrame.fadeOutTime - elapsed);
+end
+
+function FadingFrame_CopyTimes(src, dest)
+	dest.fadeInTime = src.fadeInTime;
+	dest.holdTime = src.holdTime;
+	dest.fadeOutTime = src.fadeOutTime;
+	dest.startTime = src.startTime;
+end

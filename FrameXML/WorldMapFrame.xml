@@ -1036,6 +1036,12 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Frame name="WorldMapBossButtonFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 			<ScrollFrame name="WorldMapQuestScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="283" y="670"/>

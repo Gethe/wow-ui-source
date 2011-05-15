@@ -293,7 +293,11 @@ function UIDropDownMenu_AddButton(info, level)
 		end
 		-- Set icon
 		if ( info.icon ) then
+			icon:SetSize(16,16);
 			icon:SetTexture(info.icon);
+			icon:ClearAllPoints();
+			icon:SetPoint("RIGHT");
+
 			if ( info.tCoordLeft ) then
 				icon:SetTexCoord(info.tCoordLeft, info.tCoordRight, info.tCoordTop, info.tCoordBottom);
 			else
@@ -324,6 +328,30 @@ function UIDropDownMenu_AddButton(info, level)
 	else
 		button:SetText("");
 		icon:Hide();
+	end
+	
+	button.iconOnly = nil;
+	button.icon = nil;
+	button.iconInfo = nil;
+	if (info.iconOnly and info.icon) then
+		button.iconOnly = true;
+		button.icon = info.icon;
+		button.iconInfo = info.iconInfo;
+
+		UIDropDownMenu_SetIconImage(icon, info.icon, info.iconInfo);
+		icon:ClearAllPoints();
+		icon:SetPoint("LEFT");
+
+		width = icon:GetWidth();
+		if ( info.hasArrow or info.hasColorSwatch ) then
+			width = width + 50 - 30;
+		end
+		if ( info.notCheckable ) then
+			width = width - 30;
+		end
+		if ( width > listFrame.maxWidth ) then
+			listFrame.maxWidth = width;
+		end
 	end
 
 	-- Pass through attributes
@@ -367,18 +395,23 @@ function UIDropDownMenu_AddButton(info, level)
 	-- If not checkable move everything over to the left to fill in the gap where the check would be
 	local xPos = 5;
 	local yPos = -((button:GetID() - 1) * UIDROPDOWNMENU_BUTTON_HEIGHT) - UIDROPDOWNMENU_BORDER_HEIGHT;
-	normalText:ClearAllPoints();
+	local displayInfo = normalText;
+	if (info.iconOnly) then
+		displayInfo = icon;
+	end
+	
+	displayInfo:ClearAllPoints();
 	if ( info.notCheckable ) then
 		if ( info.justifyH and info.justifyH == "CENTER" ) then
-			normalText:SetPoint("CENTER", button, "CENTER", -7, 0);
+			displayInfo:SetPoint("CENTER", button, "CENTER", -7, 0);
 		else
-			normalText:SetPoint("LEFT", button, "LEFT", 0, 0);
+			displayInfo:SetPoint("LEFT", button, "LEFT", 0, 0);
 		end
 		xPos = xPos + 10;
 		
 	else
 		xPos = xPos + 12;
-		normalText:SetPoint("LEFT", button, "LEFT", 20, 0);
+		displayInfo:SetPoint("LEFT", button, "LEFT", 20, 0);
 	end
 
 	-- Adjust offset if displayMode is menu
@@ -502,10 +535,15 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
 			if ( checked ) then
 				somethingChecked = true;
-				if ( useValue ) then
+				local icon = _G[frame:GetName().."Icon"];
+				if (button.iconOnly and icon and button.icon) then
+					UIDropDownMenu_SetIconImage(icon, button.icon, button.iconInfo);
+				elseif ( useValue ) then
 					UIDropDownMenu_SetText(frame, button.value);
+					icon:Hide();
 				else
 					UIDropDownMenu_SetText(frame, button:GetText());
+					icon:Hide();
 				end
 				button:LockHighlight();
 				checkImage:Show();
@@ -518,9 +556,13 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		end
 
 		if ( button:IsShown() ) then
-			normalText = _G[button:GetName().."NormalText"];
-			-- Determine the maximum width of a button
-			width = normalText:GetWidth() + 40;
+			if ( button.iconOnly ) then
+				local icon = _G[frame:GetName().."Icon"];
+				width = icon:GetWidth();
+			else
+				normalText = _G[button:GetName().."NormalText"];
+				width = normalText:GetWidth() + 40;
+			end
 			-- Add padding if has and expand arrow or color swatch
 			if ( button.hasArrow or button.hasColorSwatch ) then
 				width = width + 10;
@@ -546,6 +588,26 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		end
 		_G["DropDownList"..dropdownLevel]:SetWidth(maxWidth+15);
 	end
+end
+
+function UIDropDownMenu_SetIconImage(icon, texture, info)
+	icon:SetTexture(texture);
+	if ( info.tCoordLeft ) then
+		icon:SetTexCoord(info.tCoordLeft, info.tCoordRight, info.tCoordTop, info.tCoordBottom);
+	else
+		icon:SetTexCoord(0, 1, 0, 1);
+	end
+	if ( info.tSizeX ) then
+		icon:SetWidth(info.tSizeX);
+	else
+		icon:SetWidth(16);
+	end
+	if ( info.tSizeY ) then
+		icon:SetHeight(info.tSizeY);
+	else
+		icon:SetHeight(16);
+	end
+	icon:Show();
 end
 
 function UIDropDownMenu_SetSelectedName(frame, name, useValue)

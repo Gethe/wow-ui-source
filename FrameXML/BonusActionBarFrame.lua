@@ -292,16 +292,8 @@ function ActionBar_AnimTransitionFinished(self)
 					MainMenuExpBar:SetPoint("TOP", self.nextAnimBar, 0, 0);
 				end
 				if self.nextAnimBar.microBarX then
-					CharacterMicroButton:ClearAllPoints();
 					UpdateMicroButtonsParent(self.nextAnimBar.microBarParent);
-					CharacterMicroButton:SetPoint("BOTTOMLEFT", self.nextAnimBar.microBarX, self.nextAnimBar.microBarY);
-					GuildMicroButton:ClearAllPoints();
-					if self.nextAnimBar.microTwoRows then
-						GuildMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 22);
-					else
-						GuildMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -3, 0);
-					end
-					UpdateMicroButtons();
+					MoveMicroButtons("BOTTOMLEFT", self.nextAnimBar.microBarParent, "BOTTOMLEFT", self.nextAnimBar.microBarX, self.nextAnimBar.microBarY, self.nextAnimBar.microTwoRows);
 				end
 			end
 			

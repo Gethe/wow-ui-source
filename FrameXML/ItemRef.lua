@@ -192,6 +192,10 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 13) == "pettalentpane" ) then
 		TogglePetTalentFrame();
 		return;
+	elseif ( strsub(link, 1, 8) == "urlIndex" ) then
+		local _, index = strsplit(":", link);
+		LoadURLIndex(tonumber(index));
+		return;
 	end
     
 	if ( IsModifiedClick() ) then

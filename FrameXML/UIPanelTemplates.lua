@@ -699,3 +699,82 @@ function SquareButton_SetIcon(self, name)
 		self.icon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 	end
 end
+
+
+-- Cap progress bar
+function CapProgressBar_SetNotches(capBar, count)
+	local barWidth = capBar:GetWidth();
+	local barName = capBar:GetName();
+	
+	if ( capBar.notchCount and capBar.notchCount > count ) then
+		for i = count + 1, capBar.notchCount do
+			_G[barName.."Divider"..i]:Hide();
+		end
+	end
+	
+	local notchWidth = barWidth / count;
+	
+	for i=1, count - 1 do
+		local notch = _G[barName.."Divider"..i];
+		if ( not notch ) then
+			notch = capBar:CreateTexture(barName.."Divider"..i, "BORDER", "CapProgressBarDividerTemplate", -1);
+		end
+		notch:ClearAllPoints();
+		notch:SetPoint("LEFT", capBar, "LEFT", notchWidth * i - 2, 0);
+	end
+	capBar.notchCount = count;
+end
+
+function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, cap2Limit, totalQuantity, totalLimit, hasNoSharedStats)
+	local barWidth = capBar:GetWidth();
+	local sizePerPoint = barWidth / totalLimit;
+	local progressWidth = totalQuantity * sizePerPoint;
+	
+	local cap1Width, cap2Width;
+	if ( cap2Quantity and cap2Limit ) then
+		cap1Width = min(cap1Limit - cap1Quantity, cap2Limit - cap2Quantity) * sizePerPoint;	--cap1 can't go past the cap2 LFG limit either.
+		cap2Width = (cap2Limit - cap2Quantity) * sizePerPoint - cap1Width;
+	else
+		cap1Width = (cap1Limit - cap1Quantity) * sizePerPoint;
+		cap2Width = 0;
+	end
+	
+	--Don't let it go past the end.
+	progressWidth = min(progressWidth, barWidth);
+	cap1Width = min(cap1Width, barWidth - progressWidth);
+	cap2Width = min(cap2Width, barWidth - progressWidth - cap1Width);
+	capBar.progress:SetWidth(progressWidth);
+	
+	capBar.cap1:SetWidth(cap1Width);
+	capBar.cap2:SetWidth(cap2Width);
+	
+	local lastFrame, lastRelativePoint = capBar, "LEFT";
+	
+	if ( progressWidth > 0 ) then
+		capBar.progress:Show();
+		capBar.progress:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
+		lastFrame, lastRelativePoint = capBar.progress, "RIGHT";
+	else
+		capBar.progress:Hide();
+	end
+	
+	if ( cap1Width > 0 and not hasNoSharedStats) then
+		capBar.cap1:Show();
+		capBar.cap1Marker:Show();
+		capBar.cap1:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
+		lastFrame, lastRelativePoint = capBar.cap1, "RIGHT";
+	else
+		capBar.cap1:Hide();
+		capBar.cap1Marker:Hide();
+	end
+	
+	if ( cap2Width > 0 and not hasNoSharedStats) then
+		capBar.cap2:Show();
+		capBar.cap2Marker:Show();
+		capBar.cap2:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
+		lastFrame, lastRelativePoint = capBar.cap2, "RIGHT";
+	else
+		capBar.cap2:Hide();
+		capBar.cap2Marker:Hide();
+	end
+end

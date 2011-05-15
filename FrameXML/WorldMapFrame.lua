@@ -513,6 +513,10 @@ function WorldMapFrame_Update()
 	for i=textureCount+1, NUM_WORLDMAP_DEBUG_OBJECTS do
 		_G["WorldMapDebugObject"..i]:Hide();
 	end
+	
+	if ( EncounterJournal_AddMapButtons ) then
+		EncounterJournal_AddMapButtons();
+	end
 end
 
 function WorldMapFrame_UpdateUnits(raidUnitPrefix, partyUnitPrefix)
@@ -1819,6 +1823,7 @@ function WorldMapFrame_UpdateQuests()
 	QuestPOI_HideButtons("WorldMapPOIFrame", QUEST_POI_NUMERIC, numPOINumeric + 1);
 	QuestPOI_HideButtons("WorldMapPOIFrame", QUEST_POI_COMPLETE_SWAP, numPOICompleteSwap + 1);
 	
+	EncounterJournal_CheckQuestButtons();
 	return questCount;
 end
 
@@ -2107,7 +2112,7 @@ function WorldMapBlobFrame_OnUpdate(self)
 	if(numObjectives) then
 		WorldMapTooltip:SetOwner(WorldMapFrame, "ANCHOR_CURSOR");
 		WorldMapQuestPOI_SetTooltip(nil, questLogIndex, numObjectives);
-	else
+	elseif(not WorldMapTooltip.EJ_using) then
 		WorldMapTooltip:Hide();
 	end
 end

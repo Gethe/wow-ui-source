@@ -29,6 +29,7 @@ UIPanelWindows["PVPFrame"] =					{ area = "left",			pushable = 1,	whileDead = 1}
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0 };
 UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 	whileDead = 1 };
+UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
@@ -1974,7 +1975,7 @@ end
 local MINIMAP_OVERLAP_ALLOWED = 60;
 
 function GetMaxUIPanelsWidth()
-	local bufferBoundry = UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
+--[[	local bufferBoundry = UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
 	if ( Minimap:IsShown() and not MinimapCluster:IsUserPlaced() ) then
 		-- If the Minimap is in the default place, make sure you wont overlap it either
 		return min(MinimapCluster:GetLeft()+MINIMAP_OVERLAP_ALLOWED, bufferBoundry);
@@ -1982,6 +1983,8 @@ function GetMaxUIPanelsWidth()
 		-- If the minimap has been moved, make sure not to overlap the right side bars
 		return bufferBoundry;
 	end
+]]
+	return UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
 end
 
 function ClampUIPanelY(frame, yOffset)

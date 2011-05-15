@@ -42,10 +42,10 @@
 						end
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="LockButton-Locked-Up"/>
-				<PushedTexture file="LockButton-Unlocked-Down"/>
+				<NormalTexture file="Interface\Buttons\LockButton-Locked-Up"/>
+				<PushedTexture file="Interface\Buttons\LockButton-Unlocked-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="LockButton-Unlocked-Up"/>
+				<CheckedTexture file="Interface\Buttons\LockButton-Unlocked-Up"/>
 			</CheckButton>
 			<CheckButton name="MovePadForward" inherits="MovePadCheckboxTemplate">
 				<Anchors>

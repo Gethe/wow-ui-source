@@ -383,7 +383,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								GlueDropDownMenu_SetWidth(174, self);
+								GlueDropDownMenu_SetWidth(self, 174);
 								GlueDropDownMenu_SetSelectedValue(self, 1);
 								GlueDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
 								AccountLoginDropDownText:SetJustifyH("LEFT");
@@ -503,7 +503,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="10" y="135"/>
+									<AbsDimension x="10" y="130"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -524,6 +524,38 @@
 						<Scripts>
 							<OnClick>
 								AccountLogin_ManageAccount();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="LanguageButton" inherits="GlueButtonSmallTemplateBlue" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="AccountLoginManageAccountButton" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture file="Interface\Common\Lang-Languages" parentKey="Texture">
+									<Size x="256" y="16"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT" x="20" y="2"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								if ( #({GetAvailableLocales()}) > 1 ) then
+									self:Show();
+								end
+							</OnLoad>
+							<OnShow>
+								Language_SetOSLanguageTexture(self.Texture);
+							</OnShow>
+							<OnClick>
+								OptionsFrame_OpenToCategory(VideoOptionsFrame, LANGUAGES_LABEL);
 							</OnClick>
 						</Scripts>
 					</Button>

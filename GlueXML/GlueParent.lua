@@ -509,9 +509,10 @@ end
 function SetLoginScreenModel(model)
 	model:SetCamera(0);
 	model:SetSequence(0);
-	if (IsStreamingTrial()) then
-		model:SetModel("Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2");
-	else
-		model:SetModel("Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2");
-	end
+	
+	local lowResBG = "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2";
+	local highResBG = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2";
+	local background = GetLoginScreenBackground(highResBG, lowResBG);
+							
+	model:SetModel(background);	
 end

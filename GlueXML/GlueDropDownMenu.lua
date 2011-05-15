@@ -173,6 +173,7 @@ function GlueDropDownMenu_AddButton(info, level)
 	
 	local button = _G[listFrameName.."Button"..index];
 	local normalText = _G[button:GetName().."NormalText"];
+	local icon = _G[button:GetName().."Icon"];
 	-- This button is used to capture the mouse OnEnter/OnLeave events if the dropdown button is disabled, since a disabled button doesn't receive any events
 	-- This is used specifically for drop down menu time outs
 	local invisibleButton = _G[button:GetName().."InvisibleButton"];
@@ -222,6 +223,24 @@ function GlueDropDownMenu_AddButton(info, level)
 		if ( info.notCheckable ) then
 			width = width - 30;
 		end
+		-- Set icon
+		if ( info.icon ) then
+			icon:SetSize(16,16);
+			icon:SetTexture(info.icon);
+			icon:ClearAllPoints();
+			icon:SetPoint("RIGHT");
+
+			if ( info.iconInfo.tCoordLeft ) then
+				icon:SetTexCoord(info.iconInfo.tCoordLeft, info.iconInfo.tCoordRight, info.iconInfo.tCoordTop, info.iconInfo.tCoordBottom);
+			else
+				icon:SetTexCoord(0, 1, 0, 1);
+			end
+			icon:Show();
+			-- Add padding for the icon
+			width = width + 10;
+		else
+			icon:Hide();
+		end
 		if ( width > listFrame.maxWidth ) then
 			listFrame.maxWidth = width;
 		end
@@ -235,6 +254,31 @@ function GlueDropDownMenu_AddButton(info, level)
 		end
 	else
 		button:SetText("");
+		icon:Hide();
+	end
+	
+	button.iconOnly = nil;
+	button.icon = nil;
+	button.iconInfo = nil;
+	if (info.iconOnly and info.icon) then
+		button.iconOnly = true;
+		button.icon = info.icon;
+		button.iconInfo = info.iconInfo;
+		GlueDropDownMenu_SetIconImage(icon, info.icon, info.iconInfo);
+		icon:ClearAllPoints();
+		icon:SetPoint("LEFT");
+
+		-- Add padding if has and expand arrow or color swatch
+		width = icon:GetWidth();
+		if ( info.hasArrow or info.hasColorSwatch ) then
+			width = width + 50 - 30;
+		end
+		if ( info.notCheckable ) then
+			width = width - 30;
+		end
+		if ( width > listFrame.maxWidth ) then
+			listFrame.maxWidth = width;
+		end
 	end
 
 	-- Pass through attributes
@@ -268,18 +312,23 @@ function GlueDropDownMenu_AddButton(info, level)
 	-- If not checkable move everything over to the left to fill in the gap where the check would be
 	local xPos = 5;
 	local yPos = -((button:GetID() - 1) * GLUEDROPDOWNMENU_BUTTON_HEIGHT) - GLUEDROPDOWNMENU_BORDER_HEIGHT;
-	normalText:ClearAllPoints();
+	local displayInfo = normalText;
+	if (info.iconOnly) then
+		displayInfo = icon;
+	end
+	
+	displayInfo:ClearAllPoints();
 	if ( info.notCheckable ) then
 		if ( info.justifyH and info.justifyH == "CENTER" ) then
-			normalText:SetPoint("CENTER", button, "CENTER", -7, 0);
+			displayInfo:SetPoint("CENTER", button, "CENTER", -7, 0);
 		else
-			normalText:SetPoint("LEFT", button, "LEFT", 0, 0);
+			displayInfo:SetPoint("LEFT", button, "LEFT", 0, 0);
 		end
 		xPos = xPos + 10;
 		
 	else
 		xPos = xPos + 12;
-		normalText:SetPoint("LEFT", button, "LEFT", 27, 0);
+		displayInfo:SetPoint("LEFT", button, "LEFT", 27, 0);
 	end
 
 	-- Adjust offset if displayMode is menu
@@ -394,10 +443,15 @@ function GlueDropDownMenu_Refresh(frame, useValue)
 			uncheckImage = _G["DropDownList"..GLUEDROPDOWNMENU_MENU_LEVEL.."Button"..i.."UnCheck"];	
 			if ( checked ) then
 				somethingChecked = true;
-				if ( useValue ) then
-					GlueDropDownMenu_SetText(button.value, frame);
+				local icon = _G[frame:GetName().."Icon"];
+				if (button.iconOnly and icon and button.icon) then
+					GlueDropDownMenu_SetIconImage(icon, button.icon, button.iconInfo);
+				elseif ( useValue ) then
+					GlueDropDownMenu_SetText(frame, button.value);
+					icon:Hide();
 				else
-					GlueDropDownMenu_SetText(button:GetText(), frame);
+					GlueDropDownMenu_SetText(frame, button:GetText());
+					icon:Hide();
 				end
 				button:LockHighlight();
 				checkImage:Show();
@@ -410,10 +464,29 @@ function GlueDropDownMenu_Refresh(frame, useValue)
 		end
 	end
 	if(somethingChecked == nil) then
-		GlueDropDownMenu_SetText( VIDEO_QUALITY_LABEL6, frame);
+		GlueDropDownMenu_SetText( frame, VIDEO_QUALITY_LABEL6 );
 	end
 end
 
+function GlueDropDownMenu_SetIconImage(icon, texture, info)
+	icon:SetTexture(texture);
+	if ( info.tCoordLeft ) then
+		icon:SetTexCoord(info.tCoordLeft, info.tCoordRight, info.tCoordTop, info.tCoordBottom);
+	else
+		icon:SetTexCoord(0, 1, 0, 1);
+	end
+	if ( info.tSizeX ) then
+		icon:SetWidth(info.tSizeX);
+	else
+		icon:SetWidth(16);
+	end
+	if ( info.tSizeY ) then
+		icon:SetHeight(info.tSizeY);
+	else
+		icon:SetHeight(16);
+	end
+	icon:Show();
+end
 
 function GlueDropDownMenu_SetSelectedName(frame, name, useValue)
 	frame.selectedName = name;
@@ -666,7 +739,7 @@ function CloseDropDownMenus(level)
 	end
 end
 
-function GlueDropDownMenu_SetWidth(width, frame)
+function GlueDropDownMenu_SetWidth(frame, width)
 	_G[frame:GetName().."Middle"]:SetWidth(width);
 	frame:SetWidth(width + 25 + 25);
 	_G[frame:GetName().."Text"]:SetWidth(width - 25);
@@ -683,7 +756,7 @@ function GlueDropDownMenu_SetButtonWidth(width, frame)
 end
 
 
-function GlueDropDownMenu_SetText(text, frame)
+function GlueDropDownMenu_SetText(frame, text)
 	local filterText = _G[frame:GetName().."Text"];
 	filterText:SetText(text);
 end
@@ -698,7 +771,7 @@ function GlueDropDownMenu_ClearAll(frame)
 	frame.selectedID = nil;
 	frame.selectedName = nil;
 	frame.selectedValue = nil;
-	GlueDropDownMenu_SetText("", frame);
+	GlueDropDownMenu_SetText(frame, "");
 
 	local button, checkImage;
 	

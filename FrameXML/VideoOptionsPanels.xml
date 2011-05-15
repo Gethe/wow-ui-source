@@ -1158,5 +1158,78 @@
 			<OnShow function="VideoOptionsPanel_OnShow"/>
 		</Scripts>  
 	</Frame>
+
+	<!-- Languages -->
+
+	<Frame name="InterfaceOptionsLanguagesPanel" parent="VideoOptionsFramePanelContainer" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDisplayHeader" text="LANGUAGES_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-16"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentLocaleDropDown" inherits="DropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-16" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true">
+							<Size x="512" y="18"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="20" y="-20"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad(self)
+					</OnLoad>
+					<OnEvent>
+						InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent(self, event, ...);
+					</OnEvent>
+					<OnEnter>
+						VideoOptionsTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						VideoOptionsTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+<!--
+			<CheckButton name="$parentUseEnglishAudio" inherits="InterfaceOptionsCheckButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLocaleDropDown" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="48" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useEnglishAudio";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+-->
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				InterfaceOptionsLanguagesPanel_OnLoad(self);			
+			</OnLoad>
+		</Scripts>		
+	</Frame>
 </Ui>
 

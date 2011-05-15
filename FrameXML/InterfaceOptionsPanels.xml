@@ -427,6 +427,7 @@
 						self.cvar = "spellActivationOverlayOpacity";
 						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
+							value = math.floor(value * 100 + 0.5) / 100;
 							self:SetDisplayValue(value);
 							SpellActivationOverlayFrame:SetAlpha(value);
 						end
@@ -436,13 +437,15 @@
 						BlizzardOptionsPanel_SetupDependentControl(_G[self:GetParent():GetName().."ShowSpellAlerts"], self);
 					</OnLoad>
 					<OnValueChanged>
+						value = math.floor(value * 100 + 0.5) / 100;
 						self.value = value;
 						self:SetValue(value);
 						SetCVar(self.cvar, value);
 					</OnValueChanged>
 					<OnEvent>
-						local val = tonumber(GetCVar(self.cvar));
-						self:SetValue(val);
+						local value = tonumber(GetCVar(self.cvar));
+						value = math.floor(value * 100 + 0.5) / 100;
+						self:SetValue(value);
 					</OnEvent>
 				</Scripts>
 			</Slider>
@@ -3897,104 +3900,5 @@
 				InterfaceOptionsPanel_OnLoad(self);
 			</OnLoad>
 		</Scripts>
-	</Frame>
-
-	<!-- Languages -->
-
-	<Frame name="InterfaceOptionsLanguagesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="LANGUAGES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubText" text="LANGUAGES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension y="32" x="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentLocaleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-16" y="-16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOCALE_INFORMATION">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("PLAYER_ENTERING_WORLD");
-					</OnLoad>
-					<OnEvent>
-						InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent(self, event, ...);
-					</OnEvent>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Frame>
-			<CheckButton name="$parentUseEnglishAudio" inherits="InterfaceOptionsCheckButtonTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLocaleDropDown" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="48" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "useEnglishAudio";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.name = LANGUAGES_LABEL;
-				self.options = LanguagesPanelOptions;
-				InterfaceOptionsLanguagesPanel_OnLoad(self);			
-			</OnLoad>
-		</Scripts>		
 	</Frame>
 </Ui>

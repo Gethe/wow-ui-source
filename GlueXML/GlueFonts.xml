@@ -80,7 +80,7 @@
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 		<FontHeight>
-			<AbsValue val="50"/>
+			<AbsValue val="32"/>
 		</FontHeight>
 	</Font>
 

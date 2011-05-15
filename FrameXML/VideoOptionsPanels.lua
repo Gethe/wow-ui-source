@@ -618,7 +618,7 @@ function VideoOptionsDropDown_OnLoad(self)
 	if(self.width == nil) then
 		self.width = 110;
 	end
-	VideoOptionsDropDownMenu_SetWidth(self.width, self);
+	VideoOptionsDropDownMenu_SetWidth(self, self.width);
 	-- force another control to change to a value
 	self.notifytarget = self.notifytarget or
 		function (self, value)
@@ -637,7 +637,7 @@ function VideoOptionsDropDown_OnLoad(self)
 				self.selectedValue = nil;
 				self.newValue = index;
 				self.selectedID = index;
-				VideoOptionsDropDownMenu_SetText(value, self);
+				VideoOptionsDropDownMenu_SetText(self, value);
 				self.warning:Hide();
 			else
 				self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
@@ -773,4 +773,142 @@ function NetworkOptionsPanel_CheckButton_OnClick(self)
 	if ( self.cvar ) then
 		BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetChecked(), self.event);
 	end	
+end
+
+
+-- [[ Languages Options Panel ]] --
+
+LanguagesPanelOptions = {
+	useEnglishAudio = { text = "USE_ENGLISH_AUDIO" },
+}
+
+function LanguagePanel_Cancel (self)
+	local languageDropDown = InterfaceOptionsLanguagesPanelLocaleDropDown;
+	if (languageDropDown.value ~= languageDropDown.oldValue) then
+		languageDropDown.SetValue(languageDropDown, languageDropDown.oldValue);
+	end
+end
+
+function InterfaceOptionsLanguagesPanel_OnLoad (self)
+	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
+	if ( #({GetAvailableLocales()}) <= 1 ) then
+		return;
+	end
+
+	self.name = LANGUAGES_LABEL;
+	self.options = LanguagesPanelOptions;
+	BlizzardOptionsPanel_OnLoad(self, nil, LanguagePanel_Cancel, BlizzardOptionsPanel_Default, BlizzardOptionsPanel_Refresh);
+	OptionsFrame_AddCategory(VideoOptionsFrame, self);
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
+	self.type = CONTROLTYPE_DROPDOWN;
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self.cvar = "locale";
+
+	local value = GetCVar(self.cvar);
+	self.defaultValue = GetCVarDefault(self.cvar);
+	self.oldValue = value;
+	self.value = value;
+	self.tooltip = OPTION_TOOLTIP_LOCALE;
+
+	VideoOptionsDropDownMenu_SetWidth(self, 200);
+	VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+	VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+
+	self.SetValue = 
+		function (self, value)
+			SetCVar("locale", value, self.event);
+			self.value = value;
+			if ( self.oldValue ~= value ) then
+				self.gameRestart = true;
+				Language_ShowRestartTexture(self, value);
+			else
+				self.RestartNeeded:Hide();
+			end
+			VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+		end
+	self.GetValue =
+		function (self)
+			return VideoOptionsDropDownMenu_GetSelectedValue(self);
+		end
+	self.RefreshValue =
+		function (self)
+			VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+			VideoOptionsDropDownMenu_SetSelectedValue(self, self.value);
+		end
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick (self)
+	InterfaceOptionsLanguagesPanelLocaleDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize (self)
+	local selectedValue = VideoOptionsDropDownMenu_GetSelectedValue(self);
+	local info = VideoOptionsDropDownMenu_CreateInfo();
+
+	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetAvailableLocales());
+end
+
+LanguageRegions = {}
+LanguageRegions["deDE"] = 0;
+LanguageRegions["enGB"] = 1;
+LanguageRegions["enUS"] = 2;
+LanguageRegions["esES"] = 3;
+LanguageRegions["frFR"] = 4;
+LanguageRegions["koKR"] = 5;
+LanguageRegions["zhCN"] = 6;
+LanguageRegions["zhTW"] = 7;
+LanguageRegions["enCN"] = 8;
+LanguageRegions["enTW"] = 9;
+LanguageRegions["esMX"] = 10;
+LanguageRegions["ruRU"] = 11;
+
+LANGUAGE_TEXTURE_HEIGHT = 16/256;
+LANGUAGE_RESTART_HEIGHT = 18/256;
+
+function Language_SetOSLanguageTexture(texture)
+	local locale = GetOSLocale();
+	local value = LanguageRegions[locale];
+	if (value) then
+		texture:SetTexCoord(0.0, 1.0, LANGUAGE_TEXTURE_HEIGHT * value, (LANGUAGE_TEXTURE_HEIGHT * value) + LANGUAGE_TEXTURE_HEIGHT);
+	end
+end
+
+function Language_ShowRestartTexture(self, region)
+	if (region) then
+		local value = LanguageRegions[region];
+		if ( value ) then
+			self.RestartNeeded:SetTexCoord(0.0, 1.0, LANGUAGE_RESTART_HEIGHT * value, (LANGUAGE_RESTART_HEIGHT * value) + LANGUAGE_RESTART_HEIGHT);
+			self.RestartNeeded:Show();
+		end
+	end
+end
+
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createInfo, selectedValue, ...)
+	for i = 1, select("#", ...) do
+		local value = select(i, ...);
+		if (value and LanguageRegions[value]) then
+			createInfo.text = nil;
+			createInfo.iconOnly = true;
+			createInfo.icon = "Interface\\Common\\Lang-Regions";
+			createInfo.iconInfo = {};
+			createInfo.iconInfo.tCoordLeft = 0.0;
+			createInfo.iconInfo.tCoordRight = 1.0;
+			createInfo.iconInfo.tCoordTop = LANGUAGE_TEXTURE_HEIGHT * LanguageRegions[value];
+			createInfo.iconInfo.tCoordBottom = (LANGUAGE_TEXTURE_HEIGHT * LanguageRegions[value]) + LANGUAGE_TEXTURE_HEIGHT;
+			createInfo.iconInfo.tSizeX = 256;
+			createInfo.iconInfo.tSizeY = 16;
+			createInfo.func = InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick;
+			createInfo.value = value;
+			if ( createInfo.value == selectedValue ) then
+				createInfo.checked = 1;
+			else
+				createInfo.checked = nil;
+			end
+			VideoOptionsDropDownMenu_AddButton(createInfo);
+		end
+	end
 end

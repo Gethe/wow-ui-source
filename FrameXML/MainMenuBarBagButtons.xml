@@ -76,12 +76,12 @@
 	</CheckButton>
 	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate" parent="MainMenuBarArtFrame" id="0">
 		<Size>
-			<AbsDimension x="37" y="37"/>
+			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-6" y="2"/>
+					<AbsDimension x="-4" y="6"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -103,6 +103,9 @@
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("CVAR_UPDATE");
 				self:RegisterEvent("BAG_UPDATE");
+				_G[self:GetName().."NormalTexture"]:SetWidth(50);
+				_G[self:GetName().."NormalTexture"]:SetHeight(50);
+				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
 			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
@@ -131,7 +134,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-5" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -140,7 +143,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-4" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -149,7 +152,7 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-4" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -158,63 +161,9 @@
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-4" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
-	</CheckButton>
-	<CheckButton name="KeyRingButton" parent="MainMenuBarArtFrame" hidden="true">
-		<Size x="18" y="39"/>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="CharacterBag3Slot" relativePoint="LEFT">
-				<Offset>
-					<AbsDimension x="-6" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<Model name="$parentItemAnim" inherits="ItemAnimTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Model>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetID(KEYRING_CONTAINER);
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnClick>
-				if (CursorHasItem()) then
-					PutKeyInKeyRing();
-				else
-					ToggleKeyRing();
-				end
-			</OnClick>
-			<OnReceiveDrag>
-				if (CursorHasItem()) then
-					PutKeyInKeyRing();
-				end
-			</OnReceiveDrag>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(KEYRING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				GameTooltip:AddLine();
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
-			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
-			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-		</HighlightTexture>
-		<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
-			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-		</PushedTexture>
 	</CheckButton>
 </Ui>

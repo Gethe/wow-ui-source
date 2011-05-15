@@ -120,6 +120,7 @@ function PVPFrame_OnShow(self)
 		PVPFrame_TabClicked(PVPFrameTab1);
 	end
 	RequestRatedBattlegroundInfo();
+	RequestPVPRewards();
 	RequestPVPOptionsEnabled();
 end
 
@@ -153,7 +154,7 @@ function PVPFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
 	self:RegisterEvent("WARGAME_REQUESTED");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
-	
+	self:RegisterEvent("PVP_REWARDS_UPDATE");
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
 	self:RegisterEvent("PVP_TYPES_ENABLED");
@@ -179,6 +180,9 @@ function PVPFrame_OnEvent(self, event, ...)
 		PVP_UpdateStatus(false, nil);
 	elseif event == "CURRENCY_DISPLAY_UPDATE" then
 		PVPFrame_UpdateCurrency(self);
+		if ( self:IsShown() ) then
+			RequestPVPRewards();
+		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		local arg1 = ...
 		PVP_UpdateStatus(false, arg1);
@@ -245,16 +249,15 @@ function PVPFrame_OnEvent(self, event, ...)
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
 		PVP_UpdateStatus(false);
 		--PVPFrame_Update();
+	elseif ( event == "PVP_REWARDS_UPDATE" ) then
+		PVPFrame_UpdateCurrency(self);
 	elseif ( event == "WARGAME_REQUESTED" ) then
 		local challengerName, bgName, timeout = ...;
 		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		--PVPFrame_Update();
 	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
-		local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
-		PVPFrameConquestBar:SetMinMaxValues(0, maxPointsThisWeek);
-		PVPFrameConquestBar:SetValue(pointsThisWeek);
-		PVPFrameConquestBar.pointText:SetText(pointsThisWeek.."/"..maxPointsThisWeek);
+		PVPFrame_UpdateCurrency(self);
 	elseif ( event == "BATTLEFIELDS_SHOW" )  then
 		local isArena, bgId = ...;
 		if isArena then
@@ -313,46 +316,100 @@ function PVPFrame_OnEvent(self, event, ...)
 	end
 end
 
-
-
-function PVPFrame_UpdateCurrency(self, currency)
-	if ( not currency and self.lastSelectedTab ) then
-		local index = self.lastSelectedTab:GetID();
-		local _;
-		if index == 1 then -- Honor Page	
-			PVPFrameCurrency.currencyID = HONOR_CURRENCY;
-			_, currency = GetCurrencyInfo(HONOR_CURRENCY);
-		elseif index == 2 then -- Conquest 
-			PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
-			_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
-		elseif index == 3 then -- Arena Management
-			PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
-			_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
+function PVPFrame_UpdateCurrency(self)
+	local currencyID = PVPFrameCurrency.currencyID;
+	local currencyName, currencyAmount;
+	if ( currencyID ) then
+		currencyName, currencyAmount = GetCurrencyInfo(currencyID);
+	end
+	
+	if ( currencyName ) then
+		-- show conquest bar?
+		if ( currencyID == CONQUEST_CURRENCY ) then
+			PVPFrameCurrency:Hide();
+			PVPFrameConquestBar:Show();
+			local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+			-- if BG limit is below arena, swap them
+			if ( tier2Limit < tier1Limit ) then
+				tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
+				tier1Limit, tier2Limit = tier2Limit, tier1Limit;
+			end
+			-- if the higher limit is the max, drop one tier
+			if ( tier2Limit == maxPointsThisWeek ) then
+				tier2Quantity = nil;
+				tier2Limit = nil;
+			end
+			CapProgressBar_Update(PVPFrameConquestBar, tier1Quantity, tier1Limit, tier2Quantity, tier2Limit, pointsThisWeek, maxPointsThisWeek);
+			PVPFrameConquestBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
+		else
+			PVPFrameCurrency:Show();
+			PVPFrameConquestBar:Hide();
+			PVPFrameCurrencyValue:SetText(currencyAmount);
 		end
-	end
-	
-	if ( currency ) then
-		local _, _, pointsThisWeek, maxPointsThisWeek = GetPersonalRatedBGInfo();
-		PVPFrameConquestBar:SetMinMaxValues(0, maxPointsThisWeek);
-		PVPFrameConquestBar:SetValue(pointsThisWeek);
-		PVPFrameConquestBar.pointText:SetText(pointsThisWeek.."/"..maxPointsThisWeek);
-		PVPFrameCurrencyValue:SetText(currency);
-		PVPFrameCurrencyLabel:Show();
-		PVPFrameCurrencyIcon:Show();
-		PVPFrameCurrencyValue:Show();
 	else
-		PVPFrameCurrencyLabel:Hide();
-		PVPFrameCurrencyIcon:Hide();
-		PVPFrameCurrencyValue:Hide();
-	end
-	
-	if GetMaxPlayerLevel() ~= UnitLevel("player") then
+		PVPFrameCurrency:Hide();
 		PVPFrameConquestBar:Hide();
-		PVPFrameCurrency:SetPoint("TOP", 0, -20);
 	end
 end
 
+function PVPFrameConquestBar_OnEnter(self)
+	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(MAXIMUM_REWARD);
+	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
+	GameTooltip:AddLine(" ");
 
+	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+	
+	local r, g, b = 1, 1, 1;
+	if ( pointsThisWeek >= maxPointsThisWeek ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	end
+	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, pointsThisWeek, maxPointsThisWeek), r, g, b, r, g, b);
+	
+	if ( pointsThisWeek >= maxPointsThisWeek ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_WEEKLY_CAP_FRACTION, tier2Quantity, tier2Limit), r, g, b, r, g, b);	
+	
+	if ( tier1Quantity >= tier1Limit ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
+
+	GameTooltip:Show();
+end
+
+function PVPFrameConquestBarMarker_OnEnter(self)
+	local isTier1 = self:GetID() == 1;
+
+	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+	local tier2tooltip = PVP_CURRENCY_CAP_RATEDBG;
+	local tier1tooltip = PVP_CURRENCY_CAP_ARENA;
+	-- if BG limit is below arena, swap them
+	if ( tier2Limit < tier1Limit ) then
+		tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
+		tier1Limit, tier2Limit = tier2Limit, tier1Limit;
+		tier1tooltip, tier2tooltip = tier2tooltip, tier1tooltip;
+	end
+	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(MAXIMUM_REWARD);
+	if ( isTier1 ) then
+		GameTooltip:AddLine(format(tier1tooltip, currencyName), 1, 1, 1, true);
+		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier1Quantity, tier1Limit));
+	else
+		GameTooltip:AddLine(format(tier2tooltip, currencyName), 1, 1, 1, true);
+		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier2Quantity, tier2Limit));
+	end
+	GameTooltip:Show();
+end
 
 function PVPFrame_JoinClicked(self, isParty, wargame)
 	local tabID =  PVPFrame.lastSelectedTab:GetID();
@@ -395,7 +452,6 @@ function PVPFrame_TabClicked(self)
 	PVPFrameTitleText:SetText(self:GetText());	
 	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
 	PVPFrame.topInset:Hide();
-	local _, currency = 0;
 	local factionGroup = UnitFactionGroup("player");
 	
 	if index == 1 then -- Honor Page
@@ -404,14 +460,11 @@ function PVPFrame_TabClicked(self)
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
 		PVPFrameLeftButton:Enable();
 		PVPFrameCurrencyLabel:SetText(HONOR);
-		PVPFrameCurrency:SetPoint("TOP", 0, -20);
-		PVPFrameConquestBar:Hide();
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
 		PVPFrameCurrency.currencyID = HONOR_CURRENCY;
-		_, currency = GetCurrencyInfo(HONOR_CURRENCY);
 	elseif index == 4 then -- War games
 		PVPFrame.panel4:Show();
-		PVPFrameConquestBar:Hide();
+		PVPFrameCurrency.currencyID = nil;
 	elseif UnitLevel("player") < SHOW_CONQUEST_LEVEL then
 		self:GetParent().lastSelectedTab = nil;
 		PVPFrameLeftButton:Hide();
@@ -419,7 +472,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.lowLevelFrame.error:SetFormattedText(PVP_CONQUEST_LOWLEVEL, self:GetText());
 		PVPFrame.lowLevelFrame.description:SetText(self.info);
 		PVPFrame.lowLevelFrame:Show();
-		currency = nil;
+		PVPFrameCurrency.currencyID = nil;
 	elseif GetCurrentArenaSeason() == NO_ARENA_SEASON then
 		self:GetParent().lastSelectedTab = nil;
 		PVPFrameLeftButton:Hide();
@@ -427,34 +480,26 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.lowLevelFrame.error:SetText("");
 		PVPFrame.lowLevelFrame.description:SetText(ARENA_MASTER_NO_SEASON_TEXT);
 		PVPFrame.lowLevelFrame:Show();
-		PVPFrameConquestBar:Hide();
-		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);		
+		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
-		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
 		PVPFrameCurrencyLabel:SetText(PVP_CONQUEST);
-		PVPFrameCurrency:SetPoint("TOP", -15, -20);
-		PVPFrameConquestBar:Show();
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
-		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	elseif index == 3 then -- Arena Management
 		PVPFrameLeftButton:SetText(ADDMEMBER_TEAM);
 		PVPFrameLeftButton:Disable();
 		PVPFrame.panel3:Show();	
 		PVPFrameCurrencyLabel:SetText(PVP_CONQUEST);
-		PVPFrameCurrency:SetPoint("TOP", -15, -20);
-		PVPFrameConquestBar:Show();		
 		PVPFrame.topInset:Show();
 		PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -281);
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
-		_, currency = GetCurrencyInfo(CONQUEST_CURRENCY);
 	end
 	
-	PVPFrame_UpdateCurrency(self, currency);
+	PVPFrame_UpdateCurrency(self);
 end
 
 
@@ -855,7 +900,7 @@ function PVPConquestFrame_Update(self)
 			self.infoButton.bottomLeftText:Show();
 		end
 	else -- Rated BG
-		local personalBGRating, ratedBGreward, _, _, weeklyWins, weeklyPlayed = GetPersonalRatedBGInfo();
+		local personalBGRating, ratedBGreward, _, _, _, _, weeklyWins, weeklyPlayed = GetPersonalRatedBGInfo();
 		reward = ratedBGreward;
 		self.topRatingText:SetText(RATING..": "..personalBGRating);
 		self.winReward.winAmount:SetText(ratedBGreward);

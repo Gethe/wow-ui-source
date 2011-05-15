@@ -263,6 +263,7 @@
 		<Scripts>
 			<OnLoad>
 				self:SetBackdropColor(1, 1, 1, 0.3);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick function="GuildRecruitmentApplicant_OnClick"/>
 			<OnEnter function="GuildRecruitmentApplicant_ShowTooltip"/>
@@ -513,15 +514,6 @@
 						<Anchor point="LEFT" relativeTo="$parentHeader2" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="GuildInfoMOTD" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" spacing="2">
-					<Size>
-						<AbsDimension x="291" y="38"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-				</FontString>
 				<FontString	inherits="GameFontNormal" text="GUILD_INFORMATION">
 					<Size>
 						<AbsDimension x="0" y="0"/>
@@ -533,6 +525,22 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<SimpleHTML name="GuildInfoMOTD" disallowFormatting="true">
+				<Size>
+					<AbsDimension x="291" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnHyperlinkClick>
+						SetItemRef(link, text, button, self);
+					</OnHyperlinkClick>
+				</Scripts>
+				<FontString inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" spacing="2">
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</SimpleHTML>
 			<Frame name="GuildInfoChallenges">
 				<Size x="319" y="108"/>
 				<Anchors>
@@ -1258,6 +1266,14 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame name="GuildRecruitmentDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Scripts>
+					<OnLoad function="GuildRecruitmentDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="GuildInfoFrameApplicants_OnLoad"/>

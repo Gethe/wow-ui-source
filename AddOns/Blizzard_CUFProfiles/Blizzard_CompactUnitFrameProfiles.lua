@@ -268,7 +268,7 @@ function CompactUnitFrameProfiles_GetAutoActivationState()
 		if ( numRaidMembers > 0 ) then
 			return countMap[GetNumRaidMembers()], "world", "PvE";
 		else
-			return countMap[GetNumPartyMembers() + 1], "world", "PvE";
+			return 5, "world", "PvE";
 		end
 	end
 end

@@ -132,7 +132,7 @@ function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
 	self.newValue = selectedDriverIndex;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(136, self)
+	GlueDropDownMenu_SetWidth(self, 136)
 	GlueDropDownMenu_SetSelectedValue(self, selectedDriverIndex);
 	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelHardwareDropDown_Initialize);
 
@@ -168,7 +168,7 @@ function AudioOptionsSoundPanelHardwareDropDown_Initialize()
 		info.value = index;
 		info.checked = nil;
 		if (selectedValue and index == selectedValue) then
-			GlueDropDownMenu_SetText(info.text, dropdown);
+			GlueDropDownMenu_SetText(dropdown, info.text);
 			info.checked = 1;
 		else
 			info.checked = nil;
@@ -183,7 +183,7 @@ function AudioOptionsSoundPanelHardwareDropDown_OnClick(self)
 	local value = self.value;
 	local dropdown = AudioOptionsSoundPanelHardwareDropDown;
 	GlueDropDownMenu_SetSelectedValue(dropdown, value);
-	GlueDropDownMenu_SetText(Sound_GameSystem_GetOutputDriverNameByIndex(value), dropdown);
+	GlueDropDownMenu_SetText(dropdown, Sound_GameSystem_GetOutputDriverNameByIndex(value));
 
 	local prevValue = dropdown:GetValue();
 	dropdown:SetValue(value);
@@ -201,7 +201,7 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
 	self.newValue = selected;
 	self.restart = true;
 
-	GlueDropDownMenu_SetWidth(136, self);
+	GlueDropDownMenu_SetWidth(self, 136);
 	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundChannelsDropDown_Initialize);
 	GlueDropDownMenu_SetSelectedValue(self, selected);
 

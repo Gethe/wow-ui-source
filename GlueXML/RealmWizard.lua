@@ -1,9 +1,6 @@
 local MAX_REALM_CATEGORY_TABS = 8;
 
 function RealmWizard_OnLoad(self)
-	if (IsStreamingTrial()) then
-		AccountLoginCinematicsButton:Disable();
-	end
 	SetLoginScreenModel(RealmWizard);
 end
 

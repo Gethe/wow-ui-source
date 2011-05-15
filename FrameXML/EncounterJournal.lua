@@ -1,5 +1,7 @@
 
 --Global Strings
+BINDING_NAME_TOGGLEENCOUNTERJOURNAL = "Toggle Dungeon Journal"
+
 ENCOUNTER = "Encounter"
 ENCOUNTER_BOSSED_HEADER = "Dungeon Encounters"
 ENCOUNTER_BOSS_LOOT_HEADER = "Encounter Loot"
@@ -31,6 +33,12 @@ local EJ_STYPE_CREATURE = 2;
 local EJ_STYPE_SECTION = 3;
 local EJ_STYPE_INSTANCE = 4;
 
+
+local EJ_NUM_INSTANCE_PER_ROW = 4;
+
+local EJ_QUEST_POI_MINDIS_SQR = 2500;
+
+
 local EJ_Tabs = {};
 EJ_Tabs[1] = {frame="detailsScroll", button="bossTab"};
 EJ_Tabs[2] = {frame="lootScroll", button="lootTab"};
@@ -49,10 +57,10 @@ function EncounterJournal_OnLoad(self)
 	--self.encounter.scrollFrame.stepSize = 12;
 	
 	
-	UIDropDownMenu_SetWidth(self.tierDropDown, 170);
-	UIDropDownMenu_SetText(self.tierDropDown, "Pick A Dungeon");
-	UIDropDownMenu_JustifyText(self.tierDropDown, "LEFT");
-	UIDropDownMenu_Initialize(self.tierDropDown, EncounterJournal_TierDropDown_Init);
+	UIDropDownMenu_SetWidth(self.instanceSelect.tierDropDown, 170);
+	UIDropDownMenu_SetText(self.instanceSelect.tierDropDown, "Pick A Dungeon");
+	UIDropDownMenu_JustifyText(self.instanceSelect.tierDropDown, "LEFT");
+	UIDropDownMenu_Initialize(self.instanceSelect.tierDropDown, EncounterJournal_TierDropDown_Init);
 	
 	
 	self.encounter.info.bossTab:Click();
@@ -72,36 +80,86 @@ function EncounterJournal_OnLoad(self)
 	
 	EncounterJournal.searchBox.oldEditLost = EncounterJournal.searchBox:GetScript("OnEditFocusLost");
 	EncounterJournal.searchBox:SetScript("OnEditFocusLost", function(self) self:oldEditLost(); EncounterJournal_HideSearchPreview(); end);
+	
+	local homeData = {
+		name = HOME,
+		OnClick = EncounterJournal_ListInstances,
+		listFunc = EJNAV_ListInstance,
+	}
+	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
+	EncounterJournal_ListInstances();
 end
 
 
 function EncounterJournal_OnShow(self)
-	--PVPMicroButton_SetPushed();
-	--UpdateMicroButtons();
+	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
 	
-	
-	UIDropDownMenu_SetText(EncounterJournal.tierDropDown, "Pick a Dungeon");
-	EncounterJournal_TierDropDown_Select( nil, 71, name)
+	--automatically navigate to the current dungeon if you are in one;
+	local instanceID = EJ_GetCurrentInstance();
+	if instanceID ~= 0 then
+		EncounterJournal_ListInstances();
+		EncounterJournal_DisplayInstance(instanceID);
+	end
 end
 
 
 function EncounterJournal_OnHide(self)
-	--PVPMicroButton_SetNormal();
-	--UpdateMicroButtons();
+	UpdateMicroButtons();
 	PlaySound("igCharacterInfoClose");
 end
 
 
 function EncounterJournal_OnEvent(self, event, ...)
 	if  event == "EJ_LOOT_DATA_RECIEVED" then
-		EncounterJournal_LootUpdate();
+		local itemID = ...
+		EncounterJournal_LootCallback(itemID);
 		EncounterJournal_SearchUpdate();
 	end
 end
 
 
-function EncounterJournal_DisplayInstance(self, instanceID)
+function EncounterJournal_ListInstances()
+	NavBar_Reset(EncounterJournal.navBar);
+	EncounterJournal.encounter:Hide();
+	EncounterJournal.instanceSelect:Show();
+
+	local self = EncounterJournal.instanceSelect.scroll.child;
+	local index = 1;
+	local instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index);
+	local instanceButton;
+	while instanceID do
+		instanceButton = self["instance"..index];
+		if not instanceButton then -- create button
+			instanceButton = CreateFrame("BUTTON", self:GetParent():GetName().."instance"..index, self, "EncounterInstanceButtonTemplate");
+			self["instance"..index] = instanceButton;
+			if mod(index-1, EJ_NUM_INSTANCE_PER_ROW) == 0 then
+				instanceButton:SetPoint("TOP", self["instance"..(index-EJ_NUM_INSTANCE_PER_ROW)], "BOTTOM", 0, -15);
+			else
+				instanceButton:SetPoint("LEFT", self["instance"..(index-1)], "RIGHT", 15, 0);
+			end
+		end
+	
+		instanceButton.name:SetText(name);
+		instanceButton.bgImage:SetTexture(buttonImage);
+		instanceButton.instanceID = instanceID;
+		instanceButton.tooltipTitle = name;
+		instanceButton.tooltipText = description;
+		
+		index = index + 1;
+		instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index);
+	end
+
+--Hide old buttons needed.
+end
+
+
+function EncounterJournal_DisplayInstance(instanceID, noButton)
+	local self = EncounterJournal.encounter;
+	
+	EncounterJournal.instanceSelect:Hide();
+	EncounterJournal.encounter:Show();
+
 	EncounterJournal.instanceID = instanceID;
 	EncounterJournal.encounterID = nil;
 	EJ_SelectInstance(instanceID);
@@ -116,11 +174,11 @@ function EncounterJournal_DisplayInstance(self, instanceID)
 		self.info.diff25man:Hide();
 	end
 	
-	local name, description, bgImage = EJ_GetInstanceInfo();
-	self.bgLeft:SetTexture(bgImage);
-	self.instance.title:SetText(name);
-	self.info.encounterTitle:SetText(name);
+	local iname, description, bgImage = EJ_GetInstanceInfo();
+	self.instance.title:SetText(iname);
 	self.instance.description:SetText(description);
+	self.info.encounterTitle:SetText(iname);
+	--self.info.dungeonBG:SetTexture(bgImage);
 	
 	local bossIndex = 1;
 	local name, description, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
@@ -149,18 +207,30 @@ function EncounterJournal_DisplayInstance(self, instanceID)
 	end
 	
 	--handle typeHeader
+	
 	self.instance:Show();
+	
+	if not noButton then
+		local buttonData = {
+			name = iname,
+			OnClick = EJNAV_RefreshInstance,
+			listFunc = EJNAV_ListEncounter
+		}
+		NavBar_AddButton(EncounterJournal.navBar, buttonData);
+	end
 end
 
 
-function EncounterJournal_DisplayEncounter(self, encounterID)
-	local name, description, _, rootSectionID = EJ_GetEncounterInfo(encounterID);
+function EncounterJournal_DisplayEncounter(encounterID, noButton)
+	local self = EncounterJournal.encounter;
+	
+	local ename, description, _, rootSectionID = EJ_GetEncounterInfo(encounterID);
 	EncounterJournal.encounterID = encounterID;
 	EJ_SelectEncounter(encounterID);
 	EncounterJournal_LootUpdate();
 	EncounterJournal_ClearDetails();
 	
-	self.info.encounterTitle:SetText(name);
+	self.info.encounterTitle:SetText(ename);
 		
 	self.infoFrame.description:SetText(description);
 	self.infoFrame.description:SetWidth(self.infoFrame:GetWidth() -5);
@@ -191,6 +261,14 @@ function EncounterJournal_DisplayEncounter(self, encounterID)
 	
 	EncounterJournal_ToggleHeaders(self.infoFrame)
 	self:Show();
+	
+	if not noButton then
+		local buttonData = {
+			name = ename,
+			OnClick = EJNAV_RefreshEncounter,
+		}
+		NavBar_AddButton(EncounterJournal.navBar, buttonData);
+	end
 end
 
 
@@ -446,8 +524,8 @@ end
 
 
 function EncounterJournal_TierDropDown_Select(self, instanceID, name)
-	EncounterJournal_DisplayInstance(EncounterJournal.encounter, instanceID);
-	UIDropDownMenu_SetText(EncounterJournal.tierDropDown, name);
+	EncounterJournal_DisplayInstance(instanceID);
+	UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, name);
 end
 
 
@@ -489,6 +567,21 @@ function EncounterJournal_TabClicked(self, button)
 end
 
 
+function EncounterJournal_LootCallback(itemID)
+	local scrollFrame = EncounterJournal.encounter.info.lootScroll;
+	
+	for i,item in pairs(scrollFrame.buttons) do
+		if item.itemID == itemID then
+			local name, icon, slot, armorType, itemID = EJ_GetLootInfoByIndex(item.index);
+			item.name:SetText(name);
+			item.icon:SetTexture(icon);
+			item.slot:SetText(slot);
+			item.armorType:SetText(armorType);
+		end
+	end
+end
+
+
 function EncounterJournal_LootUpdate()
 	local scrollFrame = EncounterJournal.encounter.info.lootScroll;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -507,6 +600,7 @@ function EncounterJournal_LootUpdate()
 			item.slot:SetText(slot);
 			item.armorType:SetText(armorType);
 			item.itemID = itemID;
+			item.index = index;
 			item:Show();
 			
 			if item.showingTooltip then
@@ -540,9 +634,9 @@ function EncounterJournal_Refresh(self)
 	EncounterJournal_LootUpdate();
 	
 	if EncounterJournal.encounterID then
-		EncounterJournal_DisplayEncounter(EncounterJournal.encounter, EncounterJournal.encounterID)
+		EncounterJournal_DisplayEncounter(EncounterJournal.encounterID, true)
 	elseif EncounterJournal.instanceID then
-		EncounterJournal_DisplayInstance(EncounterJournal.encounter, EncounterJournal.instanceID);
+		EncounterJournal_DisplayInstance(EncounterJournal.instanceID, true);
 	end
 end
 
@@ -594,11 +688,11 @@ function EncounterJournal_SelectSearch(index)
 	end
 	
 	if instanceID then
-		EncounterJournal_DisplayInstance(EncounterJournal.encounter, instanceID);
+		EncounterJournal_DisplayInstance(instanceID);
 	end
 	
 	if encounterID then
-		EncounterJournal_DisplayEncounter(EncounterJournal.encounter, encounterID);
+		EncounterJournal_DisplayEncounter(encounterID);
 	end
 
 	
@@ -735,6 +829,138 @@ function EncounterJournal_OnSearchTextChanged(self)
 		
 		EncounterJournal.searchBox.sbutton1.boarderAnchor:SetPoint("BOTTOM", button, "BOTTOM", 0, -5);
 	end
+end
+
+
+function EncounterJournal_AddMapButtons()
+	local left = WorldMapBossButtonFrame:GetLeft();
+	local right = WorldMapBossButtonFrame:GetRight();
+	local top = WorldMapBossButtonFrame:GetTop();
+	local bottom = WorldMapBossButtonFrame:GetBottom();
+
+	if not left or not right or not top or not bottom then
+		--This frame is resizing
+		WorldMapBossButtonFrame.ready = false;
+		WorldMapBossButtonFrame:SetScript("OnUpdate", EncounterJournal_AddMapButtons);
+		return;
+	else
+		WorldMapBossButtonFrame:SetScript("OnUpdate", nil);
+	end
+	
+	local width = right - left;
+	local height = top - bottom;
+
+	local bossButton, questPOI, displayInfo, _;
+	local index = 1;
+	local x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index);
+	while name do
+		bossButton = _G["EJMapButton"..index];
+		if not bossButton then -- create button
+			bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
+		end
+	
+		bossButton.instanceID = instanceID;
+		bossButton.encounterID = encounterID;
+		bossButton.tooltipTitle = name;
+		bossButton.tooltipText = description;
+		bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", x*width, y*height);
+		_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID, instanceID);
+		SetPortraitTexture(bossButton.bgImage, displayInfo);
+		bossButton:Show();
+		index = index + 1;
+		x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index);
+	end
+	
+	bossButton = _G["EJMapButton"..index];
+	while bossButton do
+		bossButton:Hide();
+		index = index + 1;
+		bossButton = _G["EJMapButton"..index];
+	end
+	
+	if not WorldMapBossButtonFrame.ready then
+		WorldMapBossButtonFrame.ready = true;
+		EncounterJournal_CheckQuestButtons();
+	end
+end
+	
+
+function EncounterJournal_CheckQuestButtons()
+	if not WorldMapBossButtonFrame.ready then
+		return;
+	end
+	
+	--Validate that there are no quest button intersection
+	local questI, bossI = 1, 1;
+	bossButton = _G["EJMapButton"..bossI];
+	questPOI = _G["poiWorldMapPOIFrame1_"..questI];
+	while bossButton and bossButton:IsShown() do
+		while questPOI and questPOI:IsShown() do
+			local qx,qy = questPOI:GetCenter();
+			local bx,by = bossButton:GetCenter();
+			if not qx or not qy or not bx or not by then
+				_G["EJMapButton1"]:SetScript("OnUpdate", EncounterJournal_CheckQuestButtons);
+				return;
+			end
+			
+			local xdis = abs(bx-qx);
+			local ydis = abs(by-qy);
+			local disSqr = xdis*xdis + ydis*ydis;
+			
+			if EJ_QUEST_POI_MINDIS_SQR > disSqr then
+				questPOI:SetPoint("CENTER", bossButton, "BOTTOMRIGHT",  -15, 15);
+			end
+			questI = questI + 1;
+			questPOI = _G["poiWorldMapPOIFrame1_"..questI];
+		end
+		questI = 1;
+		bossI = bossI + 1;
+		bossButton = _G["EJMapButton"..bossI];
+		questPOI = _G["poiWorldMapPOIFrame1_"..questI];
+	end
+	if _G["EJMapButton1"] then
+		_G["EJMapButton1"]:SetScript("OnUpdate", nil);
+	end
+end
+
+
+
+
+----------------------------------------
+--------------Nav Bar Func--------------
+----------------------------------------
+function EJNAV_RefreshInstance()
+	EncounterJournal_DisplayInstance(EncounterJournal.instanceID, true);
+end
+
+function EJNAV_SelectInstance(self, index, navBar)
+	local instanceID = EJ_GetInstanceByIndex(index);
+	EncounterJournal_DisplayInstance(instanceID);
+end
+
+
+function EJNAV_ListInstance(self, index)
+	--local navBar = self:GetParent();
+	local _, name = EJ_GetInstanceByIndex(index);
+	return name, EJNAV_SelectInstance;
+end
+
+
+function EJNAV_RefreshEncounter()
+	EncounterJournal_DisplayInstance(EncounterJournal.encounterID);
+end
+
+
+function EJNAV_SelectEncounter(self, index, navBar)
+	local _, _, bossID = EJ_GetEncounterInfoByIndex(index);
+	EncounterJournal_DisplayEncounter(bossID);
+end
+
+
+function EJNAV_ListEncounter(self, index)
+	--local navBar = self:GetParent();
+	local name = EJ_GetEncounterInfoByIndex(index);
+	return name, EJNAV_SelectEncounter;
 end
 
 

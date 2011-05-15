@@ -162,7 +162,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="8" y="0"/>
+								<AbsDimension x="8" y="3"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -259,14 +259,14 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
+			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate2" text="CHANGE_MACRO_NAME_ICON">
 				<Size>
 					<AbsDimension x="170" y="22"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground">
 						<Offset>
-							<AbsDimension x="51" y="-30"/>
+							<AbsDimension x="55" y="-30"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -281,7 +281,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="11" y="-18"/>
+							<AbsDimension x="11" y="-13"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -323,6 +323,36 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="MacroCancelButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate2" text="CANCEL">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="MacroFrameText" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="25" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="MacroFrameCancelButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="MacroSaveButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate2" text="SAVE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="MacroCancelButton" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="MacroFrameSaveButton_OnClick"/>
+				</Scripts>
+			</Button>
 			<Frame name="MacroFrameTextBackground">
 				<Size>
 					<AbsDimension x="322" y="95"/>
@@ -330,7 +360,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrame">
 						<Offset>
-							<AbsDimension x="18" y="-305"/>
+							<AbsDimension x="18" y="-300"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

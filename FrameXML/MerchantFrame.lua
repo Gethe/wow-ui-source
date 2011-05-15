@@ -608,26 +608,29 @@ function MerchantFrame_UpdateCurrencies()
 	if ( #currencies == 0 ) then	-- common case
 		MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -36, 67);
 		MerchantMoneyFrame:Show();
+		MerchantFrameExtraCurrencyTex:Hide();
 	else
+		MerchantFrameExtraCurrencyTex:Show();
 		MerchantFrame_OrderCurrencies(currencies);
-		if ( #currencies > 3 ) then
+		local numCurrencies = #currencies;
+		if ( numCurrencies > 3 ) then
 			MerchantMoneyFrame:Hide();
 		else
-			MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -204, 67);
+			MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -201, 67);
 			MerchantMoneyFrame:Show();
 		end
-		for index = 1, #currencies do
+		for index = 1, numCurrencies do
 			local tokenButton = _G["MerchantToken"..index];
 			-- if this button doesn't exist yet, create it and anchor it
 			if ( not tokenButton ) then
 				tokenButton = CreateFrame("BUTTON", "MerchantToken"..index, MerchantFrame, "BackpackTokenTemplate");
-				-- token display order is: 4 5 6 | 1 2 3
+				-- token display order is: 6 5 4 | 3 2 1
 				if ( index == 1 ) then
-					tokenButton:SetPoint("BOTTOMRIGHT", -150, 67);
+					tokenButton:SetPoint("BOTTOMRIGHT", -48, 67);
 				elseif ( index == 4 ) then
-					tokenButton:SetPoint("BOTTOMLEFT", 20, 67);
+					tokenButton:SetPoint("BOTTOMLEFT", 121, 67);
 				else
-					tokenButton:SetPoint("LEFT", _G["MerchantToken"..index - 1], "RIGHT", 2, 0);
+					tokenButton:SetPoint("RIGHT", _G["MerchantToken"..index - 1], "LEFT", -2, 0);
 				end
 				tokenButton:SetScript("OnEnter", MerchantFrame_ShowCurrencyTooltip);
 			end
@@ -660,46 +663,71 @@ end
 
 function MerchantFrame_OrderCurrencies(currencyTable)
 	local orderedCurrencies = { };
-	local numSpecial = 0;
-	local indexOther = 5;
-	-- order is valor, justice, conquest, honor, then others
+	local numPVE = 0;
+	local numPVP = 0;
+	local numOther = 0;
+	local isPVPfirst;
 	-- the first 3 items are on the right side of the merchant window, the last 3 items are on the left side
-	-- keep valor/justice and conquest/honor together, so if all 4 exist move conquest/honor to the left side - this will leave a gap that might be filled by an other
-	for i = 1, #currencyTable do
+	-- keep valor/justice and conquest/honor together, so if all 4 exist move 1 group together to the left side - this might leave a gap that might be filled by an other
+	-- valor/conquest are the equivalent of gold and should always be on the leftmost edge of the window side
+	-- the first pvp or pve currency should be the type of vendor (pvp or pve) so keep the currency for that on the right window side
+	local numCurrencies = #currencyTable;
+	for i = 1, numCurrencies do
+		-- 1st index empty for PVP/PVE split
 		if ( currencyTable[i] == VALOR_CURRENCY ) then
-			orderedCurrencies[1] = currencyTable[i];
-			numSpecial = numSpecial + 1;
-		elseif ( currencyTable[i] == JUSTICE_CURRENCY ) then
 			orderedCurrencies[2] = currencyTable[i];
-			numSpecial = numSpecial + 1;
-		-- nothing uses the 3rd index yet, that's for the possible gap
+			numPVE = numPVE + 1;
+		elseif ( currencyTable[i] == JUSTICE_CURRENCY ) then
+			orderedCurrencies[3] = currencyTable[i];
+			numPVE = numPVE + 1;
+		-- 4th index empty for PVP/PVE split
 		elseif ( currencyTable[i] == CONQUEST_CURRENCY ) then
-			orderedCurrencies[4] = currencyTable[i];
-			numSpecial = numSpecial + 1;
-		elseif ( currencyTable[i] == HONOR_CURRENCY ) then
 			orderedCurrencies[5] = currencyTable[i];
-			numSpecial = numSpecial + 1;
+			numPVP = numPVP + 1;
+			if ( numPVE == 0 ) then
+				isPVPfirst = true;
+			end
+		elseif ( currencyTable[i] == HONOR_CURRENCY ) then
+			orderedCurrencies[6] = currencyTable[i];
+			numPVP = numPVP + 1;
+			if ( numPVE == 0 ) then
+				isPVPfirst = true;
+			end
 		else
-			indexOther = indexOther + 1;
-			orderedCurrencies[indexOther] = currencyTable[i];
+			orderedCurrencies[7 + numOther] = currencyTable[i];
+			numOther = numOther + 1;
 		end
 	end
-	-- if all 4 special currencies exist, there will be a gap between the 2 pairs
-	if ( numSpecial == 4 ) then
+
+	-- if PVP currency was found before PVE, switch them around
+	if ( isPVPfirst and numPVE > 0 ) then
+		orderedCurrencies[2], orderedCurrencies[5] = orderedCurrencies[5], orderedCurrencies[2];	-- swap valor/conquest
+		orderedCurrencies[3], orderedCurrencies[6] = orderedCurrencies[6], orderedCurrencies[3];	-- swap justice/honor
+	end
+
+	-- if all 4 special currencies exist, there may be a gap between the 2 pairs
+	if ( numPVP + numPVE == 4 ) then
 		-- move an other currency into the gap if there is one
-		if ( indexOther > 5 ) then
-			orderedCurrencies[3] = orderedCurrencies[6];
-			orderedCurrencies[6] = nil;
+		if ( numOther > 0 ) then
+			numOther = numOther - 1;
+			orderedCurrencies[4] = orderedCurrencies[7 + numOther];
+			orderedCurrencies[7 + numOther] = nil;
 		else
-			orderedCurrencies[3] = 0;
+			orderedCurrencies[1] = 0;
 		end
 	end
-	-- read back into the original table
-	local index = 0;
-	for i = 1, indexOther do
+	
+	-- now put back in the original table
+	local numInserted = 0;
+	local insertionIndex = 1;
+	wipe(currencyTable);
+	for i = 1, 6 + numOther do
 		if ( orderedCurrencies[i] ) then
-			index = index + 1;
-			currencyTable[index] = orderedCurrencies[i];
+			tinsert(currencyTable, insertionIndex, orderedCurrencies[i]);
+			numInserted = numInserted + 1;
+			if ( numInserted == 3 ) then
+				insertionIndex = 4;
+			end
 		end
 	end
 end

@@ -153,80 +153,13 @@ function LFDFrame_UpdateCapBar()
 		hasNoSharedStats = true;
 	end
 	
-	local barWidth = capBar:GetWidth();
-	local sizePerPoint = barWidth / periodPurseLimit;
-	local progressWidth = periodPurseQuantity * sizePerPoint;
-	local tier1Width = min(tier1Limit - tier1Quantity, overallLimit - overallQuantity) * sizePerPoint;	--Tier 1 can't go past the overall LFG limit either.
-	local overallWidth = (overallLimit - overallQuantity) * sizePerPoint - tier1Width;
-	
-	--Don't let it go past the end.
-	progressWidth = min(progressWidth, barWidth);
-	tier1Width = min(tier1Width, barWidth - progressWidth);
-	overallWidth = min(overallWidth, barWidth - progressWidth - tier1Width);
-	
-	capBar.progress:SetWidth(progressWidth);
-	
-	capBar.cap1:SetWidth(tier1Width);
-	capBar.cap2:SetWidth(overallWidth);
-	
-	local lastFrame, lastRelativePoint = capBar, "LEFT";
-	
-	if ( progressWidth > 0 ) then
-		capBar.progress:Show();
-		capBar.progress:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
-		lastFrame, lastRelativePoint = capBar.progress, "RIGHT";
-	else
-		capBar.progress:Hide();
-	end
-	
-	if ( tier1Width > 0 and not hasNoSharedStats) then
-		capBar.cap1:Show();
-		capBar.cap1Marker:Show();
-		capBar.cap1:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
-		lastFrame, lastRelativePoint = capBar.cap1, "RIGHT";
-	else
-		capBar.cap1:Hide();
-		capBar.cap1Marker:Hide();
-	end
-	
-	if ( overallWidth > 0 and not hasNoSharedStats) then
-		capBar.cap2:Show();
-		capBar.cap2Marker:Show();
-		capBar.cap2:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
-		lastFrame, lastRelativePoint = capBar.cap2, "RIGHT";
-	else
-		capBar.cap2:Hide();
-		capBar.cap2Marker:Hide();
-	end
+	CapProgressBar_Update(capBar, tier1Quantity, tier1Limit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit, hasNoSharedStats);
 	
 	if ( currencyID == 0 ) then
 		currencyName = REWARDS;
 	end
 	
 	capBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
-end
-
-function LFDFrame_SetCapBarNotches(count)
-	local capBar = LFDQueueFrameCapBar;
-	local barWidth = capBar:GetWidth();
-	
-	if ( capBar.notchCount and capBar.notchCount > count ) then
-		for i = count + 1, capBar.notchCount do
-			_G["LFDQueueFrameCapBarDivider"..i]:Hide();
-		end
-	end
-	
-	local notchWidth = barWidth / count;
-	
-	for i=1, count - 1 do
-		local notch = _G["LFDQueueFrameCapBarDivider"..i];
-		if ( not notch ) then
-			notch = capBar:CreateTexture("LFDQueueFrameCapBarDivider"..i, "BORDER", "LFDCapBarDividerTemplate", -1);
-		end
-		notch:ClearAllPoints();
-		notch:SetPoint("LEFT", capBar, "LEFT", notchWidth * i - 2, 0);
-	end
-	capBar.notchCount = count;
 end
 
 function LFDQueueFrameCapBar_OnEnter(self)

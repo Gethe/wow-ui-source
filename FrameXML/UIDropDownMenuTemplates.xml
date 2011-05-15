@@ -317,6 +317,18 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="30" y="2"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentButton"  motionScriptsWhileDisabled="true" >
