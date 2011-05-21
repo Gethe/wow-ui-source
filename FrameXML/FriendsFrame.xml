@@ -2,6 +2,26 @@
 ..\FrameXML\UI.xsd">
 	<Script file="FriendsFrame.lua"/>
 
+<!-- Patchwerk
+TRAVEL PASS
+<Texture name="TravelPass-Pressed.png" >
+	<Size x="24" y="32"/>	
+	<TexCoords left="0.01562500" right="0.39062500" top="0.00781250" bottom="0.25781250"/>	
+</Texture>
+<Texture name="TravelPass-Normal.png" >
+	<Size x="24" y="32"/>	
+	<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>	
+</Texture>
+<Texture name="TravelPass-Hover.png" >
+	<Size x="24" y="32"/>	
+	<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>	
+</Texture>
+<Texture name="TravelPass-Disabled.png" >
+	<Size x="24" y="32"/>	
+	<TexCoords left="0.42187500" right="0.79687500" top="0.27343750" bottom="0.52343750"/>	
+</Texture>
+-->	
+
 	<Frame name="FriendsFrameHeaderTemplate" virtual="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="302" y="16"/>
@@ -122,6 +142,37 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentTravelPassButton" hidden="true" motionScriptsWhileDisabled="true" parentKey="travelPassButton">
+				<Size x="24" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="1" y="-1"/>
+					</Anchor>
+				</Anchors>
+				<NormalTexture name="$parentNormalTexture" file="Interface\FriendsFrame\TravelPass-Invite">
+					<Size x="24" y="32"/>
+					<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>					
+				</NormalTexture>
+				<PushedTexture name="$parentPushedTexture" file="Interface\FriendsFrame\TravelPass-Invite">
+					<Size x="24" y="32"/>
+					<TexCoords left="0.42187500" right="0.79687500" top="0.27343750" bottom="0.52343750"/>
+				</PushedTexture>
+				<DisabledTexture name="$parentDisabledTexture" file="Interface\FriendsFrame\TravelPass-Invite">
+					<Size x="24" y="32"/>
+					<TexCoords left="0.01562500" right="0.39062500" top="0.00781250" bottom="0.25781250"/>
+				</DisabledTexture>
+				<HighlightTexture name="$parentHighlightTexture" file="Interface\FriendsFrame\TravelPass-Invite" alphaMode="ADD">
+					<Size x="24" y="32"/>
+					<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnEnter function="TravelPassButton_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick function="TravelPassButton_OnClick"/>
+				</Scripts>
+			</Button>
 			<Button name="$parentSummonButton" inherits="ActionButtonTemplate" hidden="true" parentKey="summonButton">
 				<Size x="26" y="26"/>
 				<Anchors>
@@ -886,7 +937,7 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+				<Texture name="$parentIcon" file="Interface\FriendsFrame\Battlenet-Portrait">
 					<Size>
 						<AbsDimension x="60" y="60"/>
 					</Size>

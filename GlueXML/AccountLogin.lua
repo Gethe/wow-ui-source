@@ -544,7 +544,7 @@ function WoWAccountSelect_OnEvent(self, event)
 			str = str .. name .. "|";
 		end
 		
-		if ( str == strreplace(GetSavedAccountList(), "!", "") and selectedIndex ) then
+		if ( str == string.gsub(GetSavedAccountList(), "!", "") and selectedIndex ) then
 			WoWAccountSelect_SelectAccount(selectedIndex);
 			return;
 		else

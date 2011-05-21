@@ -222,7 +222,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox name="$parentEditBox" autoFocus="false" parentKey="editBox">
+					<EditBox name="$parentEditBox" autoFocus="false" parentKey="editBox" letters="31">
 						<Size>
 							<AbsDimension x="210" y="32"/>
 						</Size>
@@ -728,6 +728,18 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
+					
+					<Button name="$parentResetPositionButton" inherits="UIPanelButtonTemplate2" text="RESET_POSITION">
+						<Size x="160" y="21"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CompactRaidFrameManager_ResetContainerPosition();
+							</OnClick>
+						</Scripts>
+					</Button>
 				</Frames>
 			</Frame>
 		</Frames>

@@ -125,21 +125,13 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2" x="90" y="0" />
 			</LCDText>
-			<LCDText name="DEFENSE" text="DEFENSE" id="44">
+			<LCDText name="DODGE" text="DODGE" id="45">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2" x="0" y="16" />
 			</LCDText>
-			<LCDText name="DEFENSE_FLD" id="11">
-				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-				<RelOrigin RelTo="ARMOR2_FLD" x="0" y="16" />
-			</LCDText>
-			<LCDText name="DODGE" text="DODGE" id="45">
-				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
-				<RelOrigin RelTo="DEFENSE" x="0" y="16" />
-			</LCDText>
 			<LCDText name="DODGE_FLD" id="11">
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-				<RelOrigin RelTo="DEFENSE_FLD" x="0" y="16" />
+				<RelOrigin RelTo="ARMOR2_FLD" x="0" y="16" />
 			</LCDText>
 			<LCDText name="PARRY" text="PARRY" id="46">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>

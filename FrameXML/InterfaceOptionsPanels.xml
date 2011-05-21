@@ -1295,9 +1295,9 @@
 			</CheckButton>
 			<Frame name="$parentChatStyle" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentChatMouseScroll" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-24"/>
+							<AbsDimension x="260" y="-16"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1344,11 +1344,46 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
-			<Frame name="$parentWhisperMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame name="$parentTimestamps" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentWholeChatWindowClickable" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="-30" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="TIMESTAMPS_LABEL">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("VARIABLES_LOADED");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsSocialPanelTimestamps_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentWhisperMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTimestamps" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1447,41 +1482,6 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnEvent function="InterfaceOptionsSocialPanelConversationMode_OnEvent"/>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentTimestamps" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentConversationMode" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-20"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="TIMESTAMPS_LABEL">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("VARIABLES_LOADED");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEvent function="InterfaceOptionsSocialPanelTimestamps_OnEvent"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -2986,7 +2986,6 @@
 				self.name = UNITFRAME_LABEL;
 				self.options = UnitFramePanelOptions;
 				InterfaceOptionsPanel_OnLoad(self);
-				InterfaceOptionsPanel_RegisterSetToDefaultFunc(function() _G[self:GetName().."ResetPartyPosition"]:Click(); end, self);
 			</OnLoad>
 		</Scripts>
 	</Frame>

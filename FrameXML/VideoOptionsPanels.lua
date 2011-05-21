@@ -865,14 +865,13 @@ LanguageRegions["enTW"] = 9;
 LanguageRegions["esMX"] = 10;
 LanguageRegions["ruRU"] = 11;
 
-LANGUAGE_TEXTURE_HEIGHT = 16/256;
-LANGUAGE_RESTART_HEIGHT = 18/256;
+LANGUAGE_TEXT_HEIGHT = 22/512;
 
 function Language_SetOSLanguageTexture(texture)
 	local locale = GetOSLocale();
 	local value = LanguageRegions[locale];
 	if (value) then
-		texture:SetTexCoord(0.0, 1.0, LANGUAGE_TEXTURE_HEIGHT * value, (LANGUAGE_TEXTURE_HEIGHT * value) + LANGUAGE_TEXTURE_HEIGHT);
+		texture:SetTexCoord(0.0, 1.0, LANGUAGE_TEXT_HEIGHT * value, (LANGUAGE_TEXT_HEIGHT * value) + LANGUAGE_TEXT_HEIGHT);
 	end
 end
 
@@ -880,7 +879,7 @@ function Language_ShowRestartTexture(self, region)
 	if (region) then
 		local value = LanguageRegions[region];
 		if ( value ) then
-			self.RestartNeeded:SetTexCoord(0.0, 1.0, LANGUAGE_RESTART_HEIGHT * value, (LANGUAGE_RESTART_HEIGHT * value) + LANGUAGE_RESTART_HEIGHT);
+			self.RestartNeeded:SetTexCoord(0.0, 1.0, LANGUAGE_TEXT_HEIGHT * value, (LANGUAGE_TEXT_HEIGHT * value) + LANGUAGE_TEXT_HEIGHT);
 			self.RestartNeeded:Show();
 		end
 	end
@@ -897,10 +896,10 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createIn
 			createInfo.iconInfo = {};
 			createInfo.iconInfo.tCoordLeft = 0.0;
 			createInfo.iconInfo.tCoordRight = 1.0;
-			createInfo.iconInfo.tCoordTop = LANGUAGE_TEXTURE_HEIGHT * LanguageRegions[value];
-			createInfo.iconInfo.tCoordBottom = (LANGUAGE_TEXTURE_HEIGHT * LanguageRegions[value]) + LANGUAGE_TEXTURE_HEIGHT;
+			createInfo.iconInfo.tCoordTop = LANGUAGE_TEXT_HEIGHT * LanguageRegions[value];
+			createInfo.iconInfo.tCoordBottom = (LANGUAGE_TEXT_HEIGHT * LanguageRegions[value]) + LANGUAGE_TEXT_HEIGHT;
 			createInfo.iconInfo.tSizeX = 256;
-			createInfo.iconInfo.tSizeY = 16;
+			createInfo.iconInfo.tSizeY = 22;
 			createInfo.func = InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick;
 			createInfo.value = value;
 			if ( createInfo.value == selectedValue ) then

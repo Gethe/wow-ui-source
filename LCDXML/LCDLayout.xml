@@ -105,21 +105,13 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="ARMOR2" x="28" y="0" />
 		</LCDText>
-		<LCDText name="DEFENSE" text="DEFENSE_ABBR" id="44">
+		<LCDText name="DODGE" text="DODGE" id="45">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
 			<RelOrigin RelTo="ARMOR2" x="0" y="8" />
 		</LCDText>
-		<LCDText name="DEFENSE_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="ARMOR2_FLD" x="0" y="8" />
-		</LCDText>
-		<LCDText name="DODGE" text="DODGE" id="45">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="DEFENSE" x="0" y="8" />
-		</LCDText>
 		<LCDText name="DODGE_FLD" id="11">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="DEFENSE_FLD" x="0" y="8" />
+			<RelOrigin RelTo="ARMOR2_FLD" x="0" y="8" />
 		</LCDText>
 		<LCDText name="PARRY" text="PARRY" id="46">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
@@ -139,11 +131,11 @@
 		</LCDText>
 		<LCDText name="RESILIENCE" text="RESILIENCE_ABBR" id="48">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="ARMOR2_FLD" x="44" y="0" />
+			<RelOrigin RelTo="BLOCK" x="0" y="8" />
 		</LCDText>
 		<LCDText name="RESILIENCE_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="23" Wrap="false"/>
-			<RelOrigin RelTo="RESILIENCE" x="20" y="0" />
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="BLOCK_FLD" x="0" y="8" />
 		</LCDText>
     </LCDSubscreen>
     <LCDSubscreen name="Spell" id="2">
@@ -191,7 +183,7 @@
     </LCDSubscreen>
 		<LCDText name="BAG" text="BAGSLOT" id="40">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="23" Wrap="false"/>
-			<RelOrigin RelTo="RESILIENCE" x="0" y="16" />
+			<RelOrigin RelTo="ARMOR2_FLD" x="44" y="0" />
 		</LCDText>
 		<LCDText name="BAG_FLD">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="20" Wrap="false"/>

@@ -281,7 +281,6 @@ local math_floor = _G.math.floor
 local format = _G.format
 local gsub = _G.gsub
 local strsub = _G.strsub
-local strreplace = _G.strreplace;
  
 -- Make all the constants upvalues. This prevents the global environment lookup + table lookup each time we use one (and they're used a lot)
 local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE
@@ -2103,8 +2102,8 @@ local function CombatLog_String_GetToken (unitGUID, unitName, unitFlags)
 		if ( Blizzard_CombatLog_UnitTokens[unitGUID] == unitName ) then
 			return unitName;
 		end
-		newName = strreplace ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
-		newName = strreplace ( newName, "$unitName", unitName );
+		newName = gsub ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
+		newName = gsub ( newName, "$unitName", unitName );
 	else
 		if ( not Blizzard_CombatLog_UnitTokens[unitName] or Blizzard_CombatLog_UnitTokens[unitName] > 26*26) then
 			Blizzard_CombatLog_UnitTokens[unitName] = 1;
@@ -2120,8 +2119,8 @@ local function CombatLog_String_GetToken (unitGUID, unitName, unitFlags)
 				Blizzard_CombatLog_UnitTokens[unitGUID] = string.char ( TEXT_MODE_A_STRING_TOKEN_BASE + math.fmod(Blizzard_CombatLog_UnitTokens[unitName], 26) );
 			end
 
-			newName = strreplace ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
-			newName = strreplace ( newName, "$unitName", unitName );
+			newName = gsub ( newName, "$token", Blizzard_CombatLog_UnitTokens[unitGUID] );
+			newName = gsub ( newName, "$unitName", unitName );
 		end
 	end
 	]]
@@ -2443,7 +2442,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 				-- Result String
 				--resultStr = _G[textModeString .. "RESULT"];
-				--resultStr = strreplace(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]); 
+				--resultStr = gsub(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]); 
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2476,7 +2475,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				
 				-- Parse the result string
 				--resultStr = _G[textModeString .. "RESULT"];
-				--resultStr = strreplace(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]); 
+				--resultStr = gsub(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]); 
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2521,7 +2520,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 			-- Result String
 			resultStr = format("(%s)", missType);
-			--resultStr = strreplace(_G[textModeString .. "RESULT"],"$resultString", missType);
+			--resultStr = gsub(_G[textModeString .. "RESULT"],"$resultString", missType);
 
 			-- Disable appropriate sections
 			valueEnabled = false;

@@ -1183,7 +1183,7 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true">
-							<Size x="512" y="18"/>
+							<Size x="512" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="20" y="-20"/>
 							</Anchors>

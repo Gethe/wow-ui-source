@@ -538,9 +538,9 @@
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture file="Interface\Common\Lang-Languages" parentKey="Texture">
-									<Size x="256" y="16"/>
+									<Size x="128" y="22"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT" x="20" y="2"/>
+										<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" x="0" y="2"/>
 									</Anchors>
 								</Texture>
 							</Layer>

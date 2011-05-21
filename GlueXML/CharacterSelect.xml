@@ -3,6 +3,10 @@
 	<Script file="CharacterSelect.lua"/>
 	<Button name="CharSelectMoveButtonTemplate" virtual="true" hidden="true">
 		<Size x="24" y="24"/>
+		<!-- insets to stop a flickering bug when mousing right on the edge -->
+		<HitRectInsets>
+			<AbsInset left="1" right="1" top="0" bottom="0"/>
+		</HitRectInsets>
 		<Scripts>
 			<OnMouseDown>
 				self.normalTexture:SetPoint("CENTER", 1, -1);

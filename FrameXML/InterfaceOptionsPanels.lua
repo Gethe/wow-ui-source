@@ -825,8 +825,6 @@ function InterfaceOptionsSocialPanel_OnLoad (self)
 		conversationCheckBox:Hide();
 		bnWhisperCheckBox:UnregisterEvent("VARIABLES_LOADED");
 		bnWhisperCheckBox:Hide();
-		timestampCheckBox:ClearAllPoints();
-		timestampCheckBox:SetPoint("TOPLEFT", bnWhisperCheckBox);
 	end
 	self.name = SOCIAL_LABEL;
 	self.options = SocialPanelOptions;

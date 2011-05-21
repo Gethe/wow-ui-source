@@ -188,12 +188,20 @@ function CharacterSelect_OnHide(self)
 		local button = _G["CharSelectCharacterButton"..(CharacterSelect.draggedIndex - CHARACTER_LIST_OFFSET)];
 		CharacterSelectButton_OnDragStop(button);
 	end
+	CharacterSelect_SaveCharacterOrder();
 	CharacterDeleteDialog:Hide();
 	CharacterRenameDialog:Hide();
 	if ( DeclensionFrame ) then
 		DeclensionFrame:Hide();
 	end
 	SERVER_SPLIT_STATE_PENDING = -1;
+end
+
+function CharacterSelect_SaveCharacterOrder()
+	if ( CharacterSelect.orderChanged ) then
+		SaveCharacterOrder(translationTable);
+		CharacterSelect.orderChanged = nil;
+	end
 end
 
 function CharacterSelect_OnUpdate(self, elapsed)
@@ -550,12 +558,14 @@ function CharacterDeleteDialog_OnShow()
 end
 
 function CharacterSelect_EnterWorld()
+	CharacterSelect_SaveCharacterOrder();
 	PlaySound("gsCharacterSelectionEnterWorld");
 	StopGlueAmbience();
 	EnterWorld();
 end
 
 function CharacterSelect_Exit()
+	CharacterSelect_SaveCharacterOrder();
 	PlaySound("gsCharacterSelectionExit");
 	DisconnectFromServer();
 	SetGlueScreen("login");

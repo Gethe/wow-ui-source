@@ -514,20 +514,14 @@ function WorldStateScoreFrame_Update()
 			WorldStateScoreFrameDamageDone:SetPoint("LEFT", WorldStateScoreFrameDeaths, "RIGHT", -5, 0);	
 			
 			WorldStateScoreFrameBgRating:Show();
-			
-			WorldStateScoreFrameMatchmakingRating:Show();
-			WorldStateScoreFrameMatchmakingRating.sortType = "mmr";
-
 			firstFrameAfterCustomStats = WorldStateScoreFrameBgRating;
 
 			if battlefieldWinner then
 				WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
 				WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameBgRating, "RIGHT", -5, 0);
 				WorldStateScoreFrameRatingChange:Show();
-				WorldStateScoreFrameMatchmakingRating:SetPoint("LEFT", WorldStateScoreFrameRatingChange, "RIGHT", 0, 0);
 			else
 				WorldStateScoreFrameRatingChange:Hide();
-				WorldStateScoreFrameMatchmakingRating:SetPoint("LEFT", WorldStateScoreFrameBgRating, "RIGHT", 0, 0);
 			end
 		else 
 			WorldStateScoreFrameHK:Show();
@@ -536,10 +530,10 @@ function WorldStateScoreFrame_Update()
 			
 			WorldStateScoreFrameHonorGained:Show();
 
-			WorldStateScoreFrameMatchmakingRating:Hide();
 			WorldStateScoreFrameRatingChange:Hide();
 			WorldStateScoreFrameBgRating:Hide();
 		end
+		WorldStateScoreFrameMatchmakingRating:Hide();
 	end
 
 	--Show the frame if its hidden and there is a victor
@@ -612,7 +606,7 @@ function WorldStateScoreFrame_Update()
 	local numScores = GetNumBattlefieldScores();
 
 	local scoreButton, columnButtonIcon;
-	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange;
+	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec;
 	local teamName, teamRating, newTeamRating, teamMMR;
 	local index;
 	local columnData;
@@ -679,7 +673,7 @@ function WorldStateScoreFrame_Update()
 		end
 		if ( index <= numScores ) then
 			
-			name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange = GetBattlefieldScore(index);
+			name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec = GetBattlefieldScore(index);
 			
 			if ( classToken ) then
 				coords = CLASS_BUTTONS[classToken];
@@ -699,7 +693,11 @@ function WorldStateScoreFrame_Update()
 			end
 			scoreButton.name.name = name;
 			scoreButton.name.tooltip = race.." "..class;
-			_G["WorldStateScoreButton"..i.."ClassButton"].tooltip = class;
+			if ( talentSpec ) then
+				_G["WorldStateScoreButton"..i.."ClassButton"].tooltip = format(TALENT_SPEC_AND_CLASS, talentSpec, class);
+			else
+				_G["WorldStateScoreButton"..i.."ClassButton"].tooltip = class;
+			end
 			scoreButton.killingBlows:SetText(killingBlows);
 			scoreButton.damage:SetText(damageDone);
 			scoreButton.healing:SetText(healingDone);
@@ -757,8 +755,6 @@ function WorldStateScoreFrame_Update()
 					end
 					scoreButton.bgRating:SetText(bgRating);
 					scoreButton.bgRating:Show();
-					scoreButton.matchmakingRating:SetText(preMatchMMR+mmrChange);
-					scoreButton.matchmakingRating:Show();
 					scoreButton.honorGained:Hide();
 					scoreButton.honorableKills:Hide();
 				else 
@@ -766,10 +762,10 @@ function WorldStateScoreFrame_Update()
 					scoreButton.honorGained:Show();
 					scoreButton.honorableKills:SetText(honorableKills);
 					scoreButton.honorableKills:Show();
-					scoreButton.matchmakingRating:Hide();
 					scoreButton.ratingChange:Hide();
 					scoreButton.bgRating:Hide();
 				end
+				scoreButton.matchmakingRating:Hide();
 			end
 			
 			for j=1, MAX_NUM_STAT_COLUMNS do
@@ -913,7 +909,6 @@ function WorldStateScoreFrame_Resize()
 			width = width + 43;
 		end
 	elseif ( isRatedBG ) then
-		columns = columns + 1;
 		if not GetBattlefieldWinner() then
 			columns = columns - 1;
 		end

@@ -236,7 +236,8 @@ function FriendsFrame_OnShow()
 end
 
 function FriendsFrame_Update()
-	if ( FriendsFrame.selectedTab == 1 ) then	
+	if ( FriendsFrame.selectedTab == 1 ) then
+		FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
 		FriendsTabHeader:Show();
 		if ( FriendsTabHeader.selectedTab == 1 ) then
 			ShowFriends();
@@ -276,6 +277,7 @@ function FriendsFrame_Update()
 	else
 		FriendsTabHeader:Hide();
 		if ( FriendsFrame.selectedTab == 2 ) then
+			FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
 			FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
 			FriendsFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
 			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotLeft");
@@ -284,6 +286,7 @@ function FriendsFrame_Update()
 			FriendsFrame_ShowSubFrame("WhoFrame");
 			WhoList_Update();
 		elseif ( FriendsFrame.selectedTab == 3 ) then
+			FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
 			FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
 			FriendsFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-ChannelFrame-BotLeft");
@@ -291,6 +294,7 @@ function FriendsFrame_Update()
 			FriendsFrameTitleText:SetText(CHAT_CHANNELS);
 			FriendsFrame_ShowSubFrame("ChannelFrame");
 		elseif ( FriendsFrame.selectedTab == 4 ) then
+			FriendsFrameIcon:SetTexture("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 			FriendsFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
 			FriendsFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
 			FriendsFrameBottomLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft");
@@ -1273,6 +1277,14 @@ function FriendsFrame_UpdateFriends()
 	local height;
 	local usedHeight = 0;
 
+	local accountHasTravelPass = HasTravelPass();
+	local canInvite = true;
+	if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+		if ( not IsPartyLeader() and not IsRaidOfficer() ) then
+			canInvite = false;
+		end
+	end
+	
 	FriendsFrameOfflineHeader:Hide();
 	for i = 1, numButtons do
 		local button = buttons[i];
@@ -1280,6 +1292,7 @@ function FriendsFrame_UpdateFriends()
 		if ( index <= numFriendButtons and usedHeight < FRIENDS_SCROLLFRAME_HEIGHT ) then
 			button.buttonType = FriendButtons[index].buttonType;
 			button.id = FriendButtons[index].id;
+			local hasTravelPass = false;
 			if ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
 				local name, level, class, area, connected, status, note = GetFriendInfo(FriendButtons[index].id);
 				broadcastText = nil;
@@ -1307,7 +1320,7 @@ function FriendsFrame_UpdateFriends()
 				local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfo(FriendButtons[index].id);
 				broadcastText = messageText;
 				if ( isOnline ) then
-					local _, _, _, _, _, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
+					local _, _, _, realmName, faction, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
 					button.background:SetTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
 					if ( isAFK ) then
 						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
@@ -1329,6 +1342,23 @@ function FriendsFrame_UpdateFriends()
 					end
 					nameColor = FRIENDS_BNET_NAME_COLOR;
 					button.gameIcon:Show();
+					-- travel pass
+					if ( accountHasTravelPass ) then
+						hasTravelPass = true;
+						if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
+							button.travelPassButton:Disable();
+							button.travelPassButton.errorTooltip = ERR_TRAVEL_PASS_NOT_ALLIED;
+						elseif ( not canInvite ) then
+							button.travelPassButton:Disable();
+							button.travelPassButton.errorTooltip = ERR_TRAVEL_PASS_NOT_LEADER;
+						elseif ( not realmName or realmName == "" ) then
+							button.travelPassButton:Disable();
+							button.travelPassButton.errorTooltip = ERR_TRAVEL_PASS_NO_INFO;
+						else
+							button.travelPassButton:Enable();
+							button.travelPassButton.errorTooltip = nil;
+						end
+					end
 				else
 					button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
 					button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
@@ -1362,6 +1392,14 @@ function FriendsFrame_UpdateFriends()
 				FriendsFrameOfflineHeader:SetAllPoints(button);
 				height = FRIENDS_BUTTON_HEADER_HEIGHT;
 				nameText = nil;
+			end
+			-- travel pass?
+			if ( hasTravelPass ) then
+				button.travelPassButton:Show();
+				button.gameIcon:SetPoint("TOPRIGHT", -21, -2);
+			else
+				button.travelPassButton:Hide();
+				button.gameIcon:SetPoint("TOPRIGHT", -2, -2);
 			end
 			-- selection
 			if ( FriendsFrame.selectedFriendType == FriendButtons[index].buttonType and FriendsFrame.selectedFriend == FriendButtons[index].id ) then
@@ -2004,5 +2042,26 @@ function CanCooperateWithToon(toonID)
 		return true;
 	else
 		return false;
+	end
+end
+
+function TravelPassButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( self.errorTooltip ) then
+		GameTooltip:SetText(TRAVEL_PASS_INVITE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(self.errorTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+		GameTooltip:Show();
+	else
+		GameTooltip:SetText(TRAVEL_PASS_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+	end
+end
+
+function TravelPassButton_OnClick(self)
+	local presenceID, givenName, surname, toonName, toonID = BNGetFriendInfo(self:GetParent().id);
+	if ( toonID ) then
+		local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(toonID);
+		if ( toonName and realmName ) then
+			InviteUnit(toonName, realmName);
+		end
 	end
 end

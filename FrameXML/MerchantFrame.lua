@@ -23,6 +23,7 @@ function MerchantFrame_OnEvent(self, event, ...)
 			MerchantFrame_Update();
 		end
 	elseif ( event == "MERCHANT_CLOSED" ) then
+		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 		HideUIPanel(self);
 	elseif ( event == "MERCHANT_SHOW" ) then
 		ShowUIPanel(self);
@@ -36,6 +37,8 @@ function MerchantFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_MONEY" or event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		MerchantFrame_UpdateCanRepairAll();
 		MerchantFrame_UpdateRepairButtons();
+	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
+		MerchantFrame_UpdateCurrencyAmounts();
 	end
 end
 
@@ -606,10 +609,12 @@ function MerchantFrame_UpdateCurrencies()
 	local currencies = { GetMerchantCurrencies() };
 	
 	if ( #currencies == 0 ) then	-- common case
+		MerchantFrame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 		MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -36, 67);
 		MerchantMoneyFrame:Show();
 		MerchantFrameExtraCurrencyTex:Hide();
 	else
+		MerchantFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 		MerchantFrameExtraCurrencyTex:Show();
 		MerchantFrame_OrderCurrencies(currencies);
 		local numCurrencies = #currencies;
@@ -646,6 +651,7 @@ function MerchantFrame_UpdateCurrencies()
 				tokenButton.currencyID = currencies[index];
 				tokenButton:Show();
 			else
+				tokenButton.currencyID = nil;
 				tokenButton:Hide();
 			end
 		end
@@ -654,6 +660,7 @@ function MerchantFrame_UpdateCurrencies()
 	for i = #currencies + 1, MAX_MERCHANT_CURRENCIES do
 		local tokenButton = _G["MerchantToken"..i];
 		if ( tokenButton ) then
+			tokenButton.currencyID = nil;
 			tokenButton:Hide();
 		else
 			break;
@@ -735,4 +742,22 @@ end
 function MerchantFrame_ShowCurrencyTooltip(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetCurrencyByID(self.currencyID);
+end
+
+function MerchantFrame_UpdateCurrencyAmounts()
+	for i = 1, MAX_MERCHANT_CURRENCIES do
+		local tokenButton = _G["MerchantToken"..i];
+		if ( tokenButton ) then
+			if ( tokenButton.currencyID ) then
+				local name, count = GetCurrencyInfo(tokenButton.currencyID);
+				if ( count <= 9999 ) then
+					tokenButton.count:SetText(count);
+				else
+					tokenButton.count:SetText("*");
+				end
+			end
+		else
+			return;
+		end
+	end
 end

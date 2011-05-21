@@ -209,6 +209,10 @@ function LFDQueueFrameCapBarCapMarker_OnEnter(self)
 	local isTier1 = self:GetID() == 1;
 	
 	local currencyID, tier1DungeonID, tier1Quantity, tier1Limit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit = GetLFGDungeonRewardCapBarInfo(VALOR_TIER1_LFG_ID);
+	if(not currencyID) then
+		return;
+	end
+
 	local currencyName;
 	if ( currencyID == 0 ) then
 		currencyName = REWARDS;
@@ -1022,7 +1026,9 @@ function LFDQueueFrameRandom_UpdateFrame()
 		_G[parentName.."Item"..i]:Hide();
 	end
 	
-	if ( numRewards > 0 or ((moneyVar == 0 and experienceVar == 0) and (moneyAmount > 0 or experienceGained > 0)) ) then
+	local totalRewards = itemButtonIndex - 1;
+		
+	if ( totalRewards > 0 or ((moneyVar == 0 and experienceVar == 0) and (moneyAmount > 0 or experienceGained > 0)) ) then
 		parentFrame.rewardsLabel:Show();
 		parentFrame.rewardsDescription:Show();
 		lastFrame = parentFrame.rewardsDescription;
@@ -1031,8 +1037,8 @@ function LFDQueueFrameRandom_UpdateFrame()
 		parentFrame.rewardsDescription:Hide();
 	end
 	
-	if ( numRewards > 0 ) then
-		lastFrame = _G[parentName.."Item"..(numRewards - mod(numRewards+1, 2))];
+	if ( totalRewards > 0 ) then
+		lastFrame = _G[parentName.."Item"..(totalRewards - mod(totalRewards+1, 2))];
 	end
 	
 	if ( moneyVar > 0 or experienceVar > 0 ) then
@@ -1150,6 +1156,10 @@ end
 
 function LFDQueueFrameRandom_EstimateRemainingCompletions(dungeonID)
 	local currencyID, currencyQuantity, specificQuantity, specificLimit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit, isWeekly = GetLFGDungeonRewardCapInfo(LFDQueueFrame.type);
+	if(not currencyID) then
+		return 0, false;
+	end
+
 	local remainingAllotment = min(specificLimit - specificQuantity, overallLimit - overallQuantity);
 	if ( periodPurseLimit ~= 0 ) then
 		remainingAllotment = min(remainingAllotment, periodPurseLimit - periodPurseQuantity);

@@ -437,14 +437,14 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-            <Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="ARENA_TEAMS">
+            <Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="ARENA">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(ARENA_TEAMS, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
+						GameTooltip:SetText(MicroButtonTooltipText(ARENA, "TOGGLECHARACTER4"), 1.0,1.0,1.0 );
 					</OnEnter>
 					<OnClick>
 						PVPFrame_TabClicked(self);

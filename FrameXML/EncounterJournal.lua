@@ -1,19 +1,4 @@
 
---Global Strings
-BINDING_NAME_TOGGLEENCOUNTERJOURNAL = "Toggle Dungeon Journal"
-
-ENCOUNTER = "Encounter"
-ENCOUNTER_BOSSED_HEADER = "Dungeon Encounters"
-ENCOUNTER_BOSS_LOOT_HEADER = "Encounter Loot"
-ENCOUNTER_DUNGEON_LOOT_HEADER = "Dungeon Loot"
-ENCOUNTER_JOURNAL = "Encounter Journal"
-ENCOUNTER_JOURNAL_SEARCH_RESULTS = 'Search Results for \"%s\"(%d)'
-ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS = 'Show All %d Results'
-ENCOUNTER_JOURNAL_INSTANCE = 'Dungeon';
-ENCOUNTER_JOURNAL_ENCOUNTER = 'Boss';
-ENCOUNTER_JOURNAL_ENCOUNTER_ADD = 'Add';
-ENCOUNTER_JOURNAL_ABILITY = 'Ability';
-ENCOUNTER_JOURNAL_ITEM = 'Item';
 
 --LOCALIZED CONSTANTS
 EJ_MIN_CHARACTER_SEARCH = 3;
@@ -23,8 +8,8 @@ EJ_MIN_CHARACTER_SEARCH = 3;
 local HEADER_INDENT = 15;
 local MAX_CREATURES_PER_ENCOUNTER = 6;
 
-local SECTION_BUTTON_OFFSET = -6;
-local SECTION_DESCRIPTION_OFFSET = -15;
+local SECTION_BUTTON_OFFSET = 6;
+local SECTION_DESCRIPTION_OFFSET = 27;
 
 
 local EJ_STYPE_ITEM = 0;
@@ -38,10 +23,15 @@ local EJ_NUM_INSTANCE_PER_ROW = 4;
 
 local EJ_QUEST_POI_MINDIS_SQR = 2500;
 
+local EJ_LORE_MAX_HEIGHT = 97;
+
 
 local EJ_Tabs = {};
 EJ_Tabs[1] = {frame="detailsScroll", button="bossTab"};
 EJ_Tabs[2] = {frame="lootScroll", button="lootTab"};
+
+
+local EJ_section_openTable = {};
 
 
 
@@ -176,9 +166,19 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	
 	local iname, description, bgImage = EJ_GetInstanceInfo();
 	self.instance.title:SetText(iname);
-	self.instance.description:SetText(description);
 	self.info.encounterTitle:SetText(iname);
-	--self.info.dungeonBG:SetTexture(bgImage);
+	
+	self.instance.loreScroll.child.lore:SetText(description);
+	local loreHeight = self.instance.loreScroll.child.lore:GetHeight();
+	self.instance.loreScroll.ScrollBar:SetValue(0);
+	if loreHeight <= EJ_LORE_MAX_HEIGHT then
+		self.instance.loreScroll.ScrollBar:Hide();
+	else
+		self.instance.loreScroll.ScrollBar:Show();
+	end
+	
+	self.info.dungeonBG:SetTexture(bgImage);
+	self.info.dungeonBG:Hide();
 	
 	local bossIndex = 1;
 	local name, description, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
@@ -238,6 +238,8 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.infoFrame.rootSectionID = rootSectionID;
 	self.infoFrame.expanded = false;
 	
+	self.info.dungeonBG:Show();
+	
 	-- Setup Creatures
 	local id, displayInfo, iconImage;
 	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
@@ -245,8 +247,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 		
 		local button = self["creatureButton"..i];
 		if id then
-			iconImage = iconImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
-			button.creature:SetTexture(iconImage);
+			SetPortraitTexture(button.creature, displayInfo);
 			button.name = name;
 			button.id = id;
 			button.description = description;
@@ -287,9 +288,11 @@ function EncounterJournal_DisplayCreature(self)
 	EncounterJournal.encounter.shownCreatureButton = self;
 end
 
-
-function EncounterJournal_ToggleHeaders(self)
-	local infoHeader, lastHeader, parentID, _;
+local toggleTempList = {};
+local headerCount = 0;
+function EncounterJournal_ToggleHeaders(self, doNotShift)
+	local numAdded = 0
+	local infoHeader, parentID, _;
 	local hWidth = self:GetWidth();
 	local nextSectionID;
 	local topLevelSection = false;
@@ -312,61 +315,46 @@ function EncounterJournal_ToggleHeaders(self)
 	self.expanded = not self.expanded;
 	local hideHeaders = not self.expanded;
 	if hideHeaders then
-		if self.button then
-			self.button.expandedIcon:SetText("+");
-			
+		-- This can only happen for buttons
+		self.button.expandedIcon:SetText("+");
+		self.description:Hide();
+		self.descriptionBG:Hide();
+		self.descriptionBGBottom:Hide();
+		
+		EncounterJournal_ClearChildHeaders(self);
+	else
+		if strlen(self.description:GetText() or "") > 0 then
+			self.description:Show();
+			if self.button then
+				self.descriptionBG:Show();
+				self.descriptionBGBottom:Show();
+				self.button.expandedIcon:SetText("-");
+			end
+		elseif self.button then
 			self.description:Hide();
 			self.descriptionBG:Hide();
 			self.descriptionBGBottom:Hide();
-		end
-		
-		for key,used in pairs(usedHeaders) do
-			if used.parentID == self.myID then
-				if used.expanded then
-					EncounterJournal_ToggleHeaders(used)
-				end
-				used.anchorChild = nil;
-				used:Hide();
-				usedHeaders[key] = nil;
-				freeHeaders[#freeHeaders+1] = used;
-			end
-		end
-		
-		if self.anchorChild then
-			self.anchorChild:ClearAllPoints();
-			self.anchorChild:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0 , SECTION_BUTTON_OFFSET);
-		end
-	else
-		if self.button then
 			self.button.expandedIcon:SetText("-");
-			if strlen(self.description:GetText() or "") > 0 then
-				self.description:Show();
-				self.descriptionBG:Show();
-				self.descriptionBGBottom:Show();
-			else
-				self.description:Hide();
-				self.descriptionBG:Hide();
-				self.descriptionBGBottom:Hide();
-			end
 		end
-		
-		
-		lastHeader = nil;
+	
 		-- Get Section Info
+		local listEnd  = #usedHeaders;
 		while nextSectionID do
 			local title, description, headerType, abilityIcon, displayInfo, siblingID, _, fileredByDifficulty, flag1, flag2, flag3, flag4 = EJ_GetSectionInfo(nextSectionID);
-		
 			if not title then
 				break;
 			elseif not fileredByDifficulty then --ignore all sections that should not be shown with our current difficulty settings		
 				if #freeHeaders == 0 then -- create a new header;
-					infoHeader = CreateFrame("FRAME", "EncounterJournalInfoHeader"..(#freeHeaders+#usedHeaders), EncounterJournal.encounter.infoFrame, "EncounterInfoTemplate");
+					headerCount = headerCount + 1; -- the is a file local
+					infoHeader = CreateFrame("FRAME", "EncounterJournalInfoHeader"..headerCount, EncounterJournal.encounter.infoFrame, "EncounterInfoTemplate");
 					--print("Creating: "..(#freeHeaders+#usedHeaders));
 				else
 					infoHeader = freeHeaders[#freeHeaders];
 					freeHeaders[#freeHeaders] = nil;
 				end
-				usedHeaders[#usedHeaders+1] = infoHeader;
+				
+				numAdded = numAdded + 1;
+				toggleTempList[#toggleTempList+1] = infoHeader;
 				
 				infoHeader.parentID = parentID;
 				infoHeader.myID = nextSectionID;
@@ -398,12 +386,13 @@ function EncounterJournal_ToggleHeaders(self)
 				
 				--Show Creature Portrait
 				if displayInfo ~= 0 then
-					SetPortraitTexture(infoHeader.button.portraitIcon, displayInfo);
-					infoHeader.button.portraitIcon:Show();
-					textLeftAnchor = infoHeader.button.portraitIcon;
+					SetPortraitTexture(infoHeader.button.portrait.icon, displayInfo);
+					infoHeader.button.portrait.displayInfo = displayInfo;
+					infoHeader.button.portrait:Show();
+					textLeftAnchor = infoHeader.button.portrait;
 					infoHeader.button.abilityIcon:Hide();
 				else
-					infoHeader.button.portraitIcon:Hide();
+					infoHeader.button.portrait:Hide();
 				end
 				infoHeader.button.title:SetPoint("LEFT", textLeftAnchor, "RIGHT", 5, 0);
 				
@@ -417,19 +406,27 @@ function EncounterJournal_ToggleHeaders(self)
 				if flag1 then
 					textRightAnchor = infoHeader.button.icon1;
 					infoHeader.button.icon1:Show();
-					EncounterJournal_SetFlagIcon(infoHeader.button.icon1, flag1);
+					infoHeader.button.icon1.tooltipTitle = _G["ENCOUNTER_JOURNAL_SECTION_FLAG"..flag1];
+					infoHeader.button.icon1.tooltipText = _G["ENCOUNTER_JOURNAL_SECTION_FLAG_DESCRIPTION"..flag1];
+					EncounterJournal_SetFlagIcon(infoHeader.button.icon1.icon, flag1);
 					if flag2 then
 						textRightAnchor = infoHeader.button.icon2;
 						infoHeader.button.icon2:Show();
-						EncounterJournal_SetFlagIcon(infoHeader.button.icon2, flag2);
+						EncounterJournal_SetFlagIcon(infoHeader.button.icon2.icon, flag2);
+						infoHeader.button.icon2.tooltipTitle = _G["ENCOUNTER_JOURNAL_SECTION_FLAG"..flag2];
+						infoHeader.button.icon2.tooltipText = _G["ENCOUNTER_JOURNAL_SECTION_FLAG_DESCRIPTION"..flag2];
 						if flag3 then
 							textRightAnchor = infoHeader.button.icon3;
 							infoHeader.button.icon3:Show();
-							EncounterJournal_SetFlagIcon(infoHeader.button.icon3, flag3);
+							EncounterJournal_SetFlagIcon(infoHeader.button.icon3.icon, flag3);
+							infoHeader.button.icon3.tooltipTitle = _G["ENCOUNTER_JOURNAL_SECTION_FLAG"..flag3];
+							infoHeader.button.icon3.tooltipText = _G["ENCOUNTER_JOURNAL_SECTION_FLAG_DESCRIPTION"..flag3];
 							if flag4 then
 								textRightAnchor = infoHeader.button.icon4;
 								infoHeader.button.icon4:Show();
-								EncounterJournal_SetFlagIcon(infoHeader.button.icon4, flag4);
+								EncounterJournal_SetFlagIcon(infoHeader.button.icon4.icon, flag4);
+								infoHeader.button.icon4.tooltipTitle = _G["ENCOUNTER_JOURNAL_SECTION_FLAG"..flag4];
+								infoHeader.button.icon4.tooltipText = _G["ENCOUNTER_JOURNAL_SECTION_FLAG_DESCRIPTION"..flag4];
 							end
 						end
 					end
@@ -440,53 +437,107 @@ function EncounterJournal_ToggleHeaders(self)
 					infoHeader.button.title:SetPoint("RIGHT", infoHeader.button, "RIGHT", -5, 0);
 				end
 				
-				--SetupAnchors
-				infoHeader.anchorChild = nil;
-				if not lastHeader then
-					if self.description:IsShown() then
-						infoHeader:ClearAllPoints();
-						infoHeader:SetPoint("TOP", self.description, "BOTTOM", 0 , SECTION_DESCRIPTION_OFFSET);
-						infoHeader:SetPoint("RIGHT", self, "RIGHT", 0 , 0);
-					else
-						infoHeader:ClearAllPoints();
-						infoHeader:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0 , SECTION_BUTTON_OFFSET);
-					end
-				else
-					lastHeader.anchorChild = infoHeader;
-					infoHeader:ClearAllPoints();
-					infoHeader:SetPoint("TOPRIGHT", lastHeader, "BOTTOMRIGHT", 0 , SECTION_BUTTON_OFFSET);
+				infoHeader.index = nil;
+				infoHeader:SetWidth(hWidth);
+				
+				--toggleNested?
+				if EJ_section_openTable[infoHeader.myID] then
+					infoHeader.expanded = false;
+					numAdded = numAdded + EncounterJournal_ToggleHeaders(infoHeader, true);
 				end
 				
-				infoHeader:SetWidth(hWidth);
 				infoHeader:Show();
-				lastHeader = infoHeader;
 			end -- if not fileredByDifficulty
 			nextSectionID = siblingID;
 		end
-
-		if self.anchorChild then
-			if lastHeader then
-				lastHeader.anchorChild = self.anchorChild;
-				self.anchorChild:ClearAllPoints();
-				self.anchorChild:SetPoint("TOPRIGHT", lastHeader, "BOTTOMRIGHT", 0 , SECTION_BUTTON_OFFSET);
-			elseif self.description:IsShown() then
-				self.anchorChild:ClearAllPoints();
-				self.anchorChild:SetPoint("TOP", self.description, "BOTTOM", 0 , SECTION_DESCRIPTION_OFFSET);
-				self.anchorChild:SetPoint("RIGHT", self, "RIGHT", 0 , 0);
+		
+		if not doNotShift and numAdded > 0 then
+			--fix the usedlist
+			local startIndex = self.index or 0;
+			for i=listEnd,startIndex+1,-1 do
+				usedHeaders[i+numAdded] = usedHeaders[i];
+				usedHeaders[i+numAdded].index = i + numAdded;
+				usedHeaders[i] = nil
+			end
+			for i=1,numAdded do
+				usedHeaders[startIndex + i] = toggleTempList[i];
+				usedHeaders[startIndex + i].index = startIndex + i;
+				toggleTempList[i] = nil;
 			end
 		end
 		
-
-		--Should be in the ccllapse
-		--Hide remaining free Buttons
-		for _,free in pairs(freeHeaders) do
-			free:Hide();
+		if topLevelSection and usedHeaders[1] then
+			usedHeaders[1]:SetPoint("TOPRIGHT", 0 , -8 - self.description:GetHeight() - SECTION_BUTTON_OFFSET);
 		end
 	end
 	
-	self:Show();
+	if self.myID then
+		EJ_section_openTable[self.myID] = self.expanded;
+	end
+	
+	if not doNotShift then
+		EncounterJournal_ShiftHeaders(self.index or 1);
+	end
+	return numAdded;
 end
 
+
+function EncounterJournal_ShiftHeaders(index)
+	local usedHeaders = EncounterJournal.encounter.usedHeaders;
+	if not usedHeaders[index] then
+		return;
+	end
+
+	local _, _, _, _, achorY = usedHeaders[index]:GetPoint();
+	achorY = achorY - usedHeaders[index]:GetHeight();
+	if usedHeaders[index].description:IsShown() then
+		achorY = achorY - usedHeaders[index].description:GetHeight() - SECTION_DESCRIPTION_OFFSET;
+	else
+		achorY = achorY - SECTION_BUTTON_OFFSET;
+	end	
+	
+	for i=index+1,#usedHeaders do
+		assert(i == usedHeaders[i].index)
+		usedHeaders[i]:SetPoint("TOPRIGHT", 0 , achorY);
+		achorY = achorY - usedHeaders[i]:GetHeight();
+		if usedHeaders[i].description:IsShown() then
+			achorY = achorY - usedHeaders[i].description:GetHeight() - SECTION_DESCRIPTION_OFFSET;
+		else
+			achorY = achorY - SECTION_BUTTON_OFFSET;
+		end
+	end
+end
+
+
+function EncounterJournal_ClearChildHeaders(self, doNotShift)
+	local usedHeaders = EncounterJournal.encounter.usedHeaders;
+	local freeHeaders = EncounterJournal.encounter.freeHeaders;
+	local numCleared = 0
+	for key,header in pairs(usedHeaders) do
+		if header.parentID == self.myID then
+			if header.expanded then
+				numCleared = numCleared + EncounterJournal_ClearChildHeaders(header, true)
+			end
+			header:Hide();
+			usedHeaders[key] = nil;
+			freeHeaders[#freeHeaders+1] = header;
+			numCleared = numCleared + 1;
+		end
+	end
+	
+	if numCleared > 0 and not doNotShift then
+		local placeIndex = self.index + 1;
+		local shiftHeader = usedHeaders[placeIndex + numCleared];
+		while shiftHeader do
+			usedHeaders[placeIndex] = shiftHeader;
+			usedHeaders[placeIndex].index = placeIndex;
+			usedHeaders[placeIndex + numCleared] = nil;
+			placeIndex = placeIndex + 1;
+			shiftHeader = usedHeaders[placeIndex + numCleared];
+		end
+	end
+	return numCleared
+end
 
 function EncounterJournal_ClearDetails()
 	EncounterJournal.encounter.model:Hide();

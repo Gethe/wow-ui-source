@@ -247,7 +247,13 @@ for i=26, 40 do countMap[i] = 40 end;
 function CompactUnitFrameProfiles_GetAutoActivationState()
 	local name, instanceType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic = GetInstanceInfo();
 	if ( instanceType == "party" or instanceType == "raid" ) then
-		return countMap[maxPlayers], instanceType, "PvE";
+		local numPlayers;
+		if ( maxPlayers <= 5 ) then
+			numPlayers = 5;	--For 5-man dungeons.
+		else
+			numPlayers = countMap[maxPlayers];
+		end
+		return numPlayers, instanceType, "PvE";
 	elseif ( instanceType == "arena" ) then
 		--TODO - Get the actual arena size, not just the # in party.
 		if ( GetNumRaidMembers() <= 2 ) then
