@@ -5,35 +5,70 @@ Notes for all World of Warcraft patches can be found [here][1].
 
 **_Table of Contents_**
 
-_Click a link to be directed directly to the corresponding section of the
-patch notes._
+_Click a link to be taken directly to the corresponding section of the patch
+notes._
 
-  * [Classes: General][2]
+  * [General][2]
 
-    * [![][3]][4] [Death Knights][4], [![][5]][6] [Druids][6], [![][7]][8]
-[Hunters][8], [![][9]][10] [Mages][10], [![][11]][12] [Paladins][12],
+  * [Achievements][3]
 
-    * [![][13]][14] [Priests][14], [![][15]][16] [Rogues][16], [![][17]][18]
-[Shaman][18], [![][19]][20] [Warlocks][20], [![][21]][22] [Warriors][22]
+  * [Classes: General][4]
 
-  * [Dungeons & Raids][23]
+    * [![][5]][6] [Death Knights][6], [![][7]][8] [Druids][8], [![][9]][10]
+[Hunters][10], [![][11]][12] [Mages][12], [![][13]][14] [Paladins][14],
 
-  * [Guilds][24]
+    * [![][15]][16] [Priests][16], [![][17]][18] [Rogues][18], [![][19]][20]
+[Shaman][20], [![][21]][22] [Warlocks][22], [![][23]][24] [Warriors][24]
 
-  * [Items][25]
+  * [Dungeons & Raids][25]
 
-  * [Professions][26]
+  * [Guilds][26]
 
-  * [PvP][27]
+  * [Items][27]
 
-  * [Quests & Creatures][28]
+  * [Professions][28]
 
-  * [User Interface][29]
+  * [PvP][29]
 
-**[Classes: General][30]**
+  * [Quests & Creatures][30]
+
+  * [User Interface][31]
+
+**General**
+
+  * All existing Valor Points in the Currency tab have been converted to
+Justice Points.
+
+  * The Keyring bag slot has been removed to make room in the user interface
+for new features.
+
+    * Keys which no longer serve a purpose in the game will be removed from
+player inventories. Compensation for the keys will be automatically provided
+in the form of each key's vendor sell price in gold.
+
+    * Keys which are obsolete quest items will be removed from player
+inventories.
+
+    * Keys which may still be of use to players will be transferred to regular
+inventory space. If a player's bags are full, these keys will sit in a
+backlogged inventory until sufficient space is made available. Once space is
+opened, the keys will appear in regular inventory upon the player logging out
+or switching zones.
+
+**[Achievements][32]**
+
+  * Bear-ly Made It (new achievement): Save all four prisoners before they are
+sacrificed in Zul'Aman on Heroic difficulty.
+
+**[Classes: General][33]**
 
   * All healing critical strikes now heal for 2 times a normal heal (+100%),
 up from 1.5 times a normal heal (+50%).
+
+  * Players are once again free to dance in combat (without causing graphic
+errors). Other animations, such as attacks, will take precedence over dancing.
+The dance animation will be suppressed until the higher priority animation is
+complete. Fun has been unnerfed.
 
   * Buffs
 
@@ -72,7 +107,7 @@ Spike (Frost and Shadow schools) or Frostfire Bolt (Frost and Fire schools).
 However, being interrupted while casting a dual-school spell will still
 interrupt all respective schools as intended.
 
-**[![][3]][31] [Death Knights][31]**
+**[![][5]][34] [Death Knights][34]**
 
   * Obliterate base damage has been reduced to 150% weapon damage, down from
 160%.
@@ -88,7 +123,7 @@ interrupt all respective schools as intended.
 
       * Unholy Might now increases Strength by 10%, up from 5%.
 
-**[![][5]][32] [Druids][32]**
+**[![][7]][35] [Druids][35]**
 
   * Druids now gain 1 attack power per point of Strength, down from 2. They
 continue to gain 2 attack power per point of Agility while in Cat Form or Bear
@@ -159,11 +194,14 @@ healing from druid spells is considered periodic.
 
     * Glyph of Berserk duration increase is now 10 seconds, up from 5.
 
+    * Glyph of Ferocious Bite has been redesigned. It now causes Ferocious
+Bite to heal the caster for 1% of maximum health for each 10 energy used.
+
     * Glyph of Innervate now causes the druid to gain 10% of his or her
 maximum mana over 10 seconds when Innervate is used on a friendly target, in
 addition to Innervate's base effect.
 
-**[![][7]][33] [Hunters][33]**
+**[![][9]][36] [Hunters][36]**
 
   * Multi-shot damage has been reduced. It now deals 120% weapon damage at
 level 80 or higher, down from 137%.
@@ -171,13 +209,19 @@ level 80 or higher, down from 137%.
   * Traps now scale with hunter stats such as hit, expertise, spell
 penetration and attack power as intended.
 
-**[![][9]][34] [Mages][34]**
+  * Pets
+
+    * Intervene (Pet Tenacity) has been redesigned. The pet runs at high speed
+toward a group member, reducing the damage done by the next melee or ranged
+attack made against them equal to 50% of the pet's total health.
+
+**[![][11]][37] [Mages][37]**
 
   * Ring of Frost now has a 1.5-second cast time.
 
   * Spellsteal now has a 6-second cooldown.
 
-**[![][11]][35] [Paladins][35]**
+**[![][13]][38] [Paladins][38]**
 
   * Divine Light mana cost has been increased to 35% of base mana, up from
 30%.
@@ -193,10 +237,23 @@ penetration and attack power as intended.
 
     * Holy
 
-      * Beacon of Light can no longer be dispelled.
+      * Beacon of Light can no longer be dispelled. In addition, it now
+transfers 100% of the heal from Holy Light, but still 50% of the heal from
+other spells.
 
-      * Holy Shock mana cost has been increased to 9% of base mana, up from
+      * Denounce has been redesigned. It still reduces the mana cost of
+Exorcism. However, it no longer has a chance on Holy Shock of making Exorcism
+free and instant. Instead, it has a 50/100% chance to prevent the Exorcism
+target from causing critical effects for the next 6 seconds. This effect can
+be dispelled.
+
+      * Holy Shock mana cost has been decreased to 7% of base mana, down from
 8%.
+
+      * Infusion of Light can now lower the cast time of Flash of Light by
+0.75/1.5 seconds, in addition to Holy Light and Divine Light. In addition, the
+old Denounce spell overlay effect has been transferred to Infusion of Light
+since Denounce is no longer a proc.
 
       * Speed of Light now increases movement speed when Holy Radiance or
 Divine Protection are cast. In addition, this talent now reduces the cooldown
@@ -214,21 +271,43 @@ which means judgements that miss can still grant mana. This is to help ensure
 Protection paladins are not starved for mana if they aren't capped on hit
 rating.
 
-**[![][13]][36] [Priests][36]**
+    * Retribution
+
+      * Selfless Healer can no longer be dispelled and cannot be stolen via
+Spellsteal; and, in addition to its current effects, it lowers the cooldown of
+Word of Glory by 5/10 seconds.
+
+**[![][15]][39] [Priests][39]**
+
+  * Devouring Plague damage done has been decreased by 12%.
+
+  * Mind Blast damage done has been increased by 12%.
+
+  * Shadow Word: Death damage done has been increased by 12%.
+
+  * Shadow Word: Pain damage done has been decreased by 12%.
+
+  * Talent Specializations
+
+    * Shadow
+
+      * Mind Flay damage done has been increased by 12%.
+
+      * Vampiric Touch damage done has been decreased by 12%.
 
   * Priest Bug Fixes
 
     * Players will no longer prematurely cancel a channeled spell when
 clicking on the Lightwell.
 
-**[![][15]][37] [Rogues][37]**
+**[![][17]][40] [Rogues][40]**
 
   * Blind duration against enemy NPCs is now 1 minute, while the duration
 against players remains 8 seconds.
 
   * Stealth now once again begins its cooldown once the rogue leaves Stealth.
 
-**[![][17]][38] [Shaman][38]**
+**[![][19]][41] [Shaman][41]**
 
   * Lightning Shield and Water Shield can no longer be dispelled.
 
@@ -264,7 +343,9 @@ scaled down accordingly for faster or multi-target spells).
     * Glyph of Unleashed Lightning (new Prime glyph) allows Lightning Bolt to
 be cast while moving.
 
-**[![][19]][39] [Warlocks][39]**
+**[![][21]][42] [Warlocks][42]**
+
+  * Drain Life's damage has been reduced by approximately 25%.
 
   * Soul Harvest has a new spell effect.
 
@@ -272,7 +353,7 @@ be cast while moving.
 
     * It is no longer possible to leave combat while channeling Drain Soul.
 
-**[![][21]][40] [Warriors][40]**
+**[![][23]][43] [Warriors][43]**
 
   * Overpower now has a 1.5-second cooldown and global cooldown (Taste for
 Blood's Overpower cooldown has not changed).
@@ -280,17 +361,22 @@ Blood's Overpower cooldown has not changed).
   * Retaliation, Recklessness and Shield Wall no longer have stance
 requirements.
 
-**[Dungeons & Raids][41]**
+**[Dungeons & Raids][44]**
 
   * Dungeon Journal is in the process of being implemented. While some UI
 elements may exist in the current Public Test Realm build, the feature is not
 yet complete.
 
   * The Firelands, a new 10- and 25-player raid, is now available for limited
-testing. Please visit the [PTR Discussion forum][42] for the latest raid
+testing. Please visit the [PTR Discussion forum][45] for the latest raid
 testing schedule.
 
-**[Guilds][43]**
+  * Deadmines
+
+    * Vanessa VanCleef (Heroic difficulty) now has a sweet, sweet voice to
+accompany her dialog.
+
+**[Guilds][46]**
 
   * The daily guild experience cap has been increased by 25%.
 
@@ -301,7 +387,7 @@ testing schedule.
   * The Reins of the Dark Phoenix, purchased from the Guild Vendor, has had
 its art improved. It's now less transparent and indisputably more awesome.
 
-**[Items][44]**
+**[Items][47]**
 
   * Darkmoon Card: Hurricane damage done when triggered has been increased by
 40%, however, it can no longer deal critical strikes and no longer receives
@@ -309,19 +395,24 @@ any modifiers to its damage from the equipping player.
 
   * Set Bonuses
 
+    * The 2-piece resilience bonus from Cataclysm PvP sets no longer stacks.
+If a player wears 2 pieces each from 2 different Cataclysm sets, the player
+will only receive the 400 resilience rating bonus once. This change does not
+apply to PvP sets from prior expansions.
+
     * The 4-piece Elemental shaman PvP set bonus (Gladiator's Thunderfist set)
 has been redesigned. It now causes Lightning Shield to generate an extra
 charge, rather than consuming one, when it is triggered by receiving damage,
 up to a maximum of 3 (9 with the Rolling Thunder talent).
 
-**[Professions][45]**
+**[Professions][48]**
 
   * Skinning
 
     * Players can no longer skin corpses already being actively skinned or
 looted by other players.
 
-**[PvP][46]**
+**[PvP][49]**
 
   * Battlegrounds
 
@@ -352,12 +443,12 @@ Battlegrounds, they can no longer earn Conquest Points from that source.
 Conquest Points from Battleground holidays only count toward the total
 Conquest Point cap.
 
-**[Quests & Creatures][47]**
+**[Quests & Creatures][50]**
 
   * There are no longer oddities in the critical strike and dodge chance of
 lower-level creatures.
 
-**[User Interface][48]**
+**[User Interface][51]**
 
   * Characters can now be reorganized at the Character Selection screen. This
 feature not yet fully functional and the reorganization of characters doesn't
@@ -375,96 +466,102 @@ raids, Battlegrounds, etc.).
 
    [1]: http://us.battle.net/wow/en/game/patch-notes/
 
-   [2]: #classes
+   [2]: #general
 
-   [3]: http://us.battle.net/wow/static/images/icons/class/6.gif
+   [3]: #achievements
 
-   [4]: #deathknights
+   [4]: #classes
 
-   [5]: http://us.battle.net/wow/static/images/icons/class/11.gif
+   [5]: http://us.battle.net/wow/static/images/icons/class/6.gif
 
-   [6]: #druids
+   [6]: #deathknights
 
-   [7]: http://us.battle.net/wow/static/images/icons/class/3.gif
+   [7]: http://us.battle.net/wow/static/images/icons/class/11.gif
 
-   [8]: #hunters
+   [8]: #druids
 
-   [9]: http://us.battle.net/wow/static/images/icons/class/8.gif
+   [9]: http://us.battle.net/wow/static/images/icons/class/3.gif
 
-   [10]: #mages
+   [10]: #hunters
 
-   [11]: http://us.battle.net/wow/static/images/icons/class/2.gif
+   [11]: http://us.battle.net/wow/static/images/icons/class/8.gif
 
-   [12]: #paladins
+   [12]: #mages
 
-   [13]: http://us.battle.net/wow/static/images/icons/class/5.gif
+   [13]: http://us.battle.net/wow/static/images/icons/class/2.gif
 
-   [14]: #priests
+   [14]: #paladins
 
-   [15]: http://us.battle.net/wow/static/images/icons/class/4.gif
+   [15]: http://us.battle.net/wow/static/images/icons/class/5.gif
 
-   [16]: #rogues
+   [16]: #priests
 
-   [17]: http://us.battle.net/wow/static/images/icons/class/7.gif
+   [17]: http://us.battle.net/wow/static/images/icons/class/4.gif
 
-   [18]: #shaman
+   [18]: #rogues
 
-   [19]: http://us.battle.net/wow/static/images/icons/class/9.gif
+   [19]: http://us.battle.net/wow/static/images/icons/class/7.gif
 
-   [20]: #warlocks
+   [20]: #shaman
 
-   [21]: http://us.battle.net/wow/static/images/icons/class/1.gif
+   [21]: http://us.battle.net/wow/static/images/icons/class/9.gif
 
-   [22]: #warriors
+   [22]: #warlocks
 
-   [23]: #dungeons
+   [23]: http://us.battle.net/wow/static/images/icons/class/1.gif
 
-   [24]: #guilds
+   [24]: #warriors
 
-   [25]: #items
+   [25]: #dungeons
 
-   [26]: #professions
+   [26]: #guilds
 
-   [27]: #pvp
+   [27]: #items
 
-   [28]: #quests
+   [28]: #professions
 
-   [29]: #ui
+   [29]: #pvp
 
-   [30]: http://us.battle.net/wow/en/forum/#forum1033923
+   [30]: #quests
 
-   [31]: http://us.battle.net/wow/en/game/class/death-knight
+   [31]: #ui
 
-   [32]: http://us.battle.net/wow/en/game/class/druid
+   [32]: http://us.battle.net/wow/en/forum/1011646/
 
-   [33]: http://us.battle.net/wow/en/game/class/hunter
+   [33]: http://us.battle.net/wow/en/forum/#forum1033923
 
-   [34]: http://us.battle.net/wow/en/game/class/mage
+   [34]: http://us.battle.net/wow/en/game/class/death-knight
 
-   [35]: http://us.battle.net/wow/en/game/class/paladin
+   [35]: http://us.battle.net/wow/en/game/class/druid
 
-   [36]: http://us.battle.net/wow/en/game/class/priest
+   [36]: http://us.battle.net/wow/en/game/class/hunter
 
-   [37]: http://us.battle.net/wow/en/game/class/rogue
+   [37]: http://us.battle.net/wow/en/game/class/mage
 
-   [38]: http://us.battle.net/wow/en/game/class/shaman
+   [38]: http://us.battle.net/wow/en/game/class/paladin
 
-   [39]: http://us.battle.net/wow/en/game/class/warlock
+   [39]: http://us.battle.net/wow/en/game/class/priest
 
-   [40]: http://us.battle.net/wow/en/game/class/warrior
+   [40]: http://us.battle.net/wow/en/game/class/rogue
 
-   [41]: http://us.battle.net/wow/en/forum/1011645/
+   [41]: http://us.battle.net/wow/en/game/class/shaman
 
-   [42]: http://us.battle.net/wow/en/forum/1181024/
+   [42]: http://us.battle.net/wow/en/game/class/warlock
 
-   [43]: http://us.battle.net/wow/en/forum/2187372/
+   [43]: http://us.battle.net/wow/en/game/class/warrior
 
-   [44]: http://us.battle.net/wow/en/item/
+   [44]: http://us.battle.net/wow/en/forum/1011645/
 
-   [45]: http://us.battle.net/wow/en/forum/1011647/
+   [45]: http://us.battle.net/wow/en/forum/1181024/
 
-   [46]: http://us.battle.net/wow/en/pvp/
+   [46]: http://us.battle.net/wow/en/forum/2187372/
 
-   [47]: http://us.battle.net/wow/en/forum/1011692/
+   [47]: http://us.battle.net/wow/en/item/
 
-   [48]: http://us.battle.net/wow/en/forum/1011693/
+   [48]: http://us.battle.net/wow/en/forum/1011647/
+
+   [49]: http://us.battle.net/wow/en/pvp/
+
+   [50]: http://us.battle.net/wow/en/forum/1011692/
+
+   [51]: http://us.battle.net/wow/en/forum/1011693/
