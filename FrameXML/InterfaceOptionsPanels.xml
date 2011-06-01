@@ -2956,30 +2956,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentRaidStylePartyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentFullSizeFocusFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "useCompactPartyFrames";
-						self.setFunc = function (value)
-							RaidOptionsFrame_UpdatePartyFrames()
-							CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
-						end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("VARIABLES_LOADED");
-					</OnLoad>
-					<OnEvent>
-						self.setFunc(GetCVar(self.cvar));
-					</OnEvent>
-				</Scripts>
-			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>

@@ -930,14 +930,7 @@ function FriendsFrameFriendButton_OnClick(self, button)
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 			-- bnet friend
-			FriendsFrame.cachedCanInviteFromAccount = false;
 			local presenceID, givenName, surname, toonName, toonID, client, isOnline = BNGetFriendInfo(self.id);
-			if ( HasTravelPass() ) then
-				local restriction = FriendsFrame_GetInviteRestriction(self.id, FriendsFrame_HasInvitePermission());
-				if ( restriction == INVITE_RESTRICTION_NONE ) then
-					FriendsFrame.cachedCanInviteFromAccount = true;
-				end
-			end
 			FriendsFrame_ShowBNDropdown(format(BATTLENET_NAME_FORMAT, givenName, surname), isOnline, nil, nil, nil, 1, presenceID);
 		else
 			-- wow friend
@@ -2040,28 +2033,22 @@ function FriendsFriendsFrame_Show(presenceID)
 end
 
 function FriendsFrame_BattlenetInvite(button, presenceID)
-	-- no button means click from UnitPopup dropdown, find the friend by presenceID
-	local id;
+	-- no button means click from UnitPopup dropdown, find the friend index by presenceID
+	local index;
 	if ( not button ) then
-		local numBNetTotal, numBNetOnline = BNGetNumFriends();
-		for i = 1, numBNetOnline do
-			if ( BNGetFriendInfo(i) == presenceID ) then
-				id = i;
-				break
-			end
-		end
+		index = BNGetFriendIndex(presenceID);
 	else
-		id = button.id;
+		index = button.id;
 	end
-	if ( id ) then
-		local numToons = BNGetNumFriendToons(id);
+	if ( index ) then
+		local numToons = BNGetNumFriendToons(index);
 		if ( numToons > 1 ) then
 			-- if no button, now find the physical friend button to anchor the dropdown
 			-- it might not exist if the list was scrolled
 			if ( not button ) then
 				local buttons = FriendsFrameFriendsScrollFrame.buttons;
 				for i = 1, #buttons do
-					if ( buttons[i].id == id and buttons[i].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+					if ( buttons[i].id == index and buttons[i].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 						button = buttons[i];
 						break;
 					end
@@ -2070,11 +2057,10 @@ function FriendsFrame_BattlenetInvite(button, presenceID)
 			
 			PlaySound("igMainMenuOptionCheckBoxOn");
 			local dropDown = TravelPassDropDown;
-			if ( dropDown.id ~= id ) then
+			if ( dropDown.index ~= index ) then
 				CloseDropDownMenus();
 			end
-			dropDown.id = id;
-			dropDown.numToons = numToons;
+			dropDown.index = index;
 			-- show dropdown at the button if one was passed in or we found it
 			if ( button ) then
 				ToggleDropDownMenu(1, nil, dropDown, button.travelPassButton, 20, 34);
@@ -2082,19 +2068,16 @@ function FriendsFrame_BattlenetInvite(button, presenceID)
 				ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
 			end
 		else
-			local presenceID, givenName, surname, toonName, toonID = BNGetFriendInfo(id);
+			local presenceID, givenName, surname, toonName, toonID = BNGetFriendInfo(index);
 			if ( toonID ) then
-				local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(toonID);
-				if ( toonName and realmName ) then
-					InviteUnit(toonName, realmName);
-				end
+				BNInviteFriend(toonID);
 			end
 		end	
 	end
 end
 
-function CanCooperateWithToon(toonID, hasTravelPass)
-	local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(toonID);
+function CanCooperateWithToon(presenceID, hasTravelPass)
+	local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(presenceID);
 	if ( hasTravelPass ) then
 		if ( realmName and realmName ~= "" and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
 			return true;
@@ -2107,17 +2090,19 @@ function CanCooperateWithToon(toonID, hasTravelPass)
 	return false;
 end
 
-function CanCooperateWithAccount(toonID)
-	if ( FriendsFrame.cachedCanInviteFromAccount ) then
-		return true;
-	else
-		return CanCooperateWithToon(toonID);
-	end
-end
-
 --
 -- travel pass
 --
+
+function CanGroupWithAccount(presenceID)
+	if ( HasTravelPass() ) then
+		local index = BNGetFriendIndex(presenceID);
+		local restriction = FriendsFrame_GetInviteRestriction(index, FriendsFrame_HasInvitePermission());
+		return (restriction == INVITE_RESTRICTION_NONE);
+	else
+		return CanCooperateWithToon(presenceID, false);
+	end
+end
 
 function FriendsFrame_HasInvitePermission()
 	if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
@@ -2179,7 +2164,6 @@ function TravelPassButton_OnEnter(self)
 end
 
 function TravelPassDropDown_OnLoad(self)
-	TravelPassDropDown.numToons = 0;
 	UIDropDownMenu_Initialize(self, TravelPassDropDown_Initialize, "MENU");
 end
 
@@ -2194,11 +2178,16 @@ function TravelPassDropDown_Initialize(self)
 	info.notCheckable = 1;
 	info.func = TravelPassDropDown_OnClick;
 	
-	local hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level;
-	local restriction;
-	for i = 1, self.numToons do
+	local hasFocus, toonName, client, realmName, faction, race, class, level, toonID;
+	local numToons, restriction;
+	if ( self.index ) then
+		numToons = BNGetNumFriendToons(self.index);
+	else
+		numToons = 0;
+	end
+	for i = 1, numToons do
 		restriction = INVITE_RESTRICTION_NONE;
-		hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level = BNGetFriendToonInfo(self.id, i);
+		hasFocus, toonName, client, realmName, faction, race, class, _, _, level, _, _, _, _, toonID = BNGetFriendToonInfo(self.index, i);
 		if ( client == BNET_CLIENT_WOW ) then
 			if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
 				restriction = INVITE_RESTRICTION_FACTIONINVITE_RESTRICTION_FACTION;
@@ -2215,18 +2204,16 @@ function TravelPassDropDown_Initialize(self)
 			info.text = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:18|t"..toonName;
 		end
 		if ( restriction == INVITE_RESTRICTION_NONE ) then
-			info.arg1 = toonName;
-			info.arg2 = realmName;
+			info.arg1 = toonID;
 			info.disabled = nil;
 		else
 			info.arg1 = nil;
-			info.arg2 = nil;
 			info.disabled = 1;
 		end
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 end
 
-function TravelPassDropDown_OnClick(button, toonName, realmName)
-	InviteUnit(toonName, realmName);
+function TravelPassDropDown_OnClick(button, toonID)
+	BNInviteFriend(toonID);
 end

@@ -269,9 +269,9 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<EditBox name="$parentComment" multiLine="true" letters="64" autoFocus="false" countInvisibleLetters="true">
+					<ScrollFrame name="LFRQueueFrameCommentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
 						<Size>
-							<AbsDimension x="313" y="41"/>
+							<AbsDimension x="313" y="36"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
@@ -280,39 +280,81 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString name="$parentExplanation" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" text="TYPE_LFR_COMMENT_HERE">
-									<Size>
-										<AbsDimension x="313" y="42"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
+						<ScrollChild>
+							<EditBox name="LFRQueueFrameComment" multiLine="true" letters="64" autoFocus="false" countInvisibleLetters="true">
+								<Size>
+									<AbsDimension x="313" y="1"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parentExplanation" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" text="TYPE_LFR_COMMENT_HERE">
+											<Size>
+												<AbsDimension x="313" y="36"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+									</OnTextChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+									<OnEditFocusGained>
+										if ( LFR_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
+											LFRQueueFrameCommentExplanation:Hide();
+										else
+											self:ClearFocus();
+										end
+									</OnEditFocusGained>
+									<OnEditFocusLost>
+										if ( strtrim(self:GetText()) == "" ) then
+											LFRQueueFrameCommentExplanation:Show();
+										end
+										SetLFGComment(self:GetText());
+										PlaySound("UChatScrollButton");
+									</OnEditFocusLost>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnEnterPressed function="EditBox_ClearFocus"/>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</ScrollChild>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="13"/>
+								</Anchors>
+								<Scripts>
+									<OnShow>
+										LFRQueueFrameCommentScrollFrame:SetWidth(295);
+										LFRQueueFrameComment:SetWidth(295);
+									</OnShow>
+									<OnHide>
+										LFRQueueFrameCommentScrollFrame:SetWidth(313);
+										LFRQueueFrameComment:SetWidth(313);
+									</OnHide>
+								</Scripts>
+							</Slider>
+						</Frames>
 						<Scripts>
-							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-							<OnEditFocusGained>
-								if ( LFR_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
-									LFRQueueFrameCommentExplanation:Hide();
-								else
-									self:ClearFocus();
-								end
-							</OnEditFocusGained>
-							<OnEditFocusLost>
-								if ( strtrim(self:GetText()) == "" ) then
-									LFRQueueFrameCommentExplanation:Show();
-								end
-								SetLFGComment(self:GetText());
-								PlaySound("UChatScrollButton");
-							</OnEditFocusLost>
-							<OnEscapePressed function="EditBox_ClearFocus"/>
-							<OnEnterPressed function="EditBox_ClearFocus"/>
+							<OnLoad>
+								self.scrollBarHideable = true;
+								self.noScrollThumb = true;
+								ScrollFrame_OnLoad(self);
+								self.ScrollBar.trackBG:Hide();
+							</OnLoad>
 						</Scripts>
-						<FontString inherits="GameFontHighlight"/>
-					</EditBox>
+					</ScrollFrame>
 					<Button name="$parentCommentTextButton">
 						<Size>
 							<AbsDimension x="313" y="42"/>

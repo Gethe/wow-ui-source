@@ -1159,7 +1159,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "BN_INVITE" ) then
-						if ( not currentDropDown.presenceID or not CanCooperateWithAccount(currentDropDown.presenceID) ) then
+						if ( not currentDropDown.presenceID or not CanGroupWithAccount(currentDropDown.presenceID) ) then
 							enable = 0;
 						end
 					elseif ( value == "BN_TARGET" ) then

@@ -80,6 +80,10 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer.glow2:SetTexture(timer.style.texture.."Glow");
 			
 			local factionGroup = UnitFactionGroup("player");
+			-- this might be a rated BG or wargame and if so the player's faction might be altered
+			if ( not IsActiveBattlefieldArena() ) then
+				factionGroup = PLAYER_FACTION_GROUP[GetBattlefieldArenaFaction()];
+			end
 			if ( factionGroup ) then
 				timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
 				timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");

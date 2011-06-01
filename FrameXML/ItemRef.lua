@@ -192,6 +192,11 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 13) == "pettalentpane" ) then
 		TogglePetTalentFrame();
 		return;
+	elseif ( strsub(link, 1, 7) == "journal" ) then
+		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then
+			EncounterJournal_OpenJournalLink(strsplit(":", link));
+		end
+		return;
 	elseif ( strsub(link, 1, 8) == "urlIndex" ) then
 		local _, index = strsplit(":", link);
 		LoadURLIndex(tonumber(index));
@@ -226,6 +231,8 @@ function GetFixedLink(text)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffd000%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 13) == "instancelock" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff8000%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 8) == "journal" ) then
+			return gsub(text, "(|H.+|h.+|h)", "|cff66bbff%1|r", 1);
 		end
 	end
 	--Nothing to change.

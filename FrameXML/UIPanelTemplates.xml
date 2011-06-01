@@ -809,6 +809,55 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentClearButton" parentKey="clearButton" hidden="true">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.5" parentKey="texture">
+							<Size>
+								<AbsDimension x="17" y="17"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.texture:SetAlpha(1.0);
+					</OnEnter>
+					<OnLeave>
+						self.texture:SetAlpha(0.5);
+					</OnLeave>
+					<OnMouseDown>
+						if self:IsEnabled() then
+							self.texture:SetPoint("TOPLEFT", 1, -1);
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetPoint("TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						local editBox = self:GetParent();
+						if editBox.clearFunc then
+							editBox.clearFunc(editBox);
+						end
+						
+						editBox:SetText("");
+						if not editBox:HasFocus() then
+							editBox:GetScript("OnEditFocusLost")(editBox);
+						end
+						editBox:ClearFocus();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self:SetText(SEARCH);
@@ -819,10 +868,11 @@
 			<OnEscapePressed function="EditBox_ClearFocus"/>
 			<OnEditFocusLost>
 				self:HighlightText(0, 0);
-				if ( self:GetText() == "" ) then
+				if ( self:GetText() == "" or self:GetText() == SEARCH ) then
 					self:SetText(SEARCH);
 					self:SetFontObject("GameFontDisable");
 					self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+					self.clearButton:Hide();
 				end
 			</OnEditFocusLost>
 			<OnEditFocusGained>
@@ -831,6 +881,7 @@
 					self:SetFontObject("ChatFontSmall");
 					self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
 				end
+				self.clearButton:Show();
 			</OnEditFocusGained>
 		</Scripts>
 	</EditBox>
@@ -840,7 +891,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>

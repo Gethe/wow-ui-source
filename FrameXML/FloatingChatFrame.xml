@@ -549,7 +549,7 @@
 					<OnMouseDown>
 						local chatFrame = self:GetParent();
 						self:SetButtonState("PUSHED", true);
-						SetCursor("UI-Cursor-Size");	--Hide the cursor
+						--SetCursor("UI-Cursor-Size");	--Hide the cursor
 
 						self:GetHighlightTexture():Hide();
 						
@@ -557,7 +557,7 @@
 					</OnMouseDown>
 					<OnMouseUp>
 						self:SetButtonState("NORMAL", false);
-						SetCursor(nil); --Show the cursor again
+						--SetCursor(nil); --Show the cursor again
 
 						self:GetHighlightTexture():Show();
 						

@@ -720,11 +720,15 @@ function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
 	AchievementMicroButton:ClearAllPoints();
 	LFDMicroButton:ClearAllPoints();
 	if ( isStacked ) then
+		SpellbookMicroButton:Hide();
+		TalentMicroButton:Hide();
 		AchievementMicroButton:SetPoint("BOTTOMLEFT", CharacterMicroButton, "BOTTOMRIGHT", -3, 0);
 		LFDMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
 	else
 		AchievementMicroButton:SetPoint("BOTTOMLEFT", TalentMicroButton, "BOTTOMRIGHT", -3, 0);
 		LFDMicroButton:SetPoint("BOTTOMLEFT", PVPMicroButton, "BOTTOMRIGHT", -3, 0);
+		SpellbookMicroButton:Show();
+		TalentMicroButton:Show();
 	end
 	UpdateMicroButtons();
 end

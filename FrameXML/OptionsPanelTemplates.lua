@@ -296,7 +296,11 @@ function BlizzardOptionsPanel_OnLoad (frame, okay, cancel, default, refresh)
 	frame.default = default or BlizzardOptionsPanel_Default;
 	frame.refresh = refresh or BlizzardOptionsPanel_Refresh;
 
-	frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+	if ( frame:IsEventRegistered("PLAYER_ENTERING_WORLD") ) then
+		frame.keepPEWRegistered = true;
+	else
+		frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+	end
 	if ( not frame:GetScript("OnEvent") ) then
 		frame:SetScript("OnEvent", BlizzardOptionsPanel_OnEvent);
 	end
@@ -348,7 +352,9 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 				end
 			end
 		end
-		frame:UnregisterEvent(event);	
+		if ( not frame.keepPEWRegistered ) then
+			frame:UnregisterEvent(event);
+		end
 	end
 end
 

@@ -147,10 +147,7 @@
 	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" useParentLevel="true" enableMouse="true" hidden="true" id="4">
         <Frames>
 			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-23" y="4"/>
-				</Anchors>
+				<!-- See TokenFrame_OnShow for anchors -->
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>

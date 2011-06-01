@@ -203,12 +203,12 @@
 								self:RegisterForDrag("LeftButton");
 							</OnLoad>
 							<OnMouseDown>
-								SetCursor("UI-Cursor-Move");
+								--SetCursor("UI-Cursor-Move");
 								
 								CompactRaidFrameManager_ResizeFrame_OnDragStart(self:GetParent():GetParent());
 							</OnMouseDown>
 							<OnMouseUp>
-								SetCursor(nil);
+								--SetCursor(nil);
 								
 								CompactRaidFrameManager_ResizeFrame_OnDragStop(self:GetParent():GetParent());
 							</OnMouseUp>
@@ -232,12 +232,12 @@
 						</Anchors>
 						<Scripts>
 							<OnMouseDown>
-								SetCursor("UI-Cursor-Size");	--Hide the cursor
+								--SetCursor("UI-Cursor-Size");	--Hide the cursor
 								
 								CompactRaidFrameManager_ResizeFrame_OnResizeStart(self:GetParent():GetParent());
 							</OnMouseDown>
 							<OnMouseUp>
-								SetCursor(nil); --Show the cursor again
+								--SetCursor(nil); --Show the cursor again
 								
 								CompactRaidFrameManager_ResizeFrame_OnResizeStop(self:GetParent():GetParent());
 							</OnMouseUp>

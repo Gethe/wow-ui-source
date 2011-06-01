@@ -3,19 +3,21 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("COMPACT_UNIT_FRAME_PROFILES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	
 	--Get this working with the InterfaceOptions panel.
 	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
-	self.options = {};
-	self.controls = {};
+	self.options = {
+		useCompactPartyFrames = { text = "USE_RAID_STYLE_PARTY_FRAMES" },
+	}
 	
-	BlizzardOptionsPanel_OnLoad(self, CompactUnitFrameProfiles_SaveChanges, CompactUnitFrameProfiles_CancelChanges, CompactUnitFrameProfiles_ResetToDefaults, CompactUnitFrameProfiles_UpdateCurrentPanel);
+	BlizzardOptionsPanel_OnLoad(self, CompactUnitFrameProfiles_SaveChanges, CompactUnitFrameProfiles_CancelCallback, CompactUnitFrameProfiles_DefaultCallback, CompactUnitFrameProfiles_UpdateCurrentPanel);
 	InterfaceOptions_AddCategory(self, false, 11);
 end
 
 function CompactUnitFrameProfiles_OnEvent(self, event, ...)
+	--Do normal BlizzardOptionsPanel code too.
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+	
 	if ( event == "COMPACT_UNIT_FRAME_PROFILES_LOADED" ) then
 		self.profilesLoaded = true;
 		self:UnregisterEvent(event);
@@ -27,8 +29,6 @@ function CompactUnitFrameProfiles_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then	--Check for zoning
 		CompactUnitFrameProfiles_CheckAutoActivation();
 	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then	--Check for changing specs
-		CompactUnitFrameProfiles_CheckAutoActivation();
-	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then	--Check for different number of players in group.
 		CompactUnitFrameProfiles_CheckAutoActivation();
 	end
 end
@@ -43,6 +43,11 @@ function CompactUnitFrameProfiles_ValidateProfilesLoaded(self)
 			CompactUnitFrameProfiles_ActivateRaidProfile(GetRaidProfileName(1));
 		end
 	end
+end
+
+function CompactUnitFrameProfiles_DefaultCallback(self)
+	InterfaceOptionsPanel_Default(self);
+	CompactUnitFrameProfiles_ResetToDefaults();
 end
 
 function CompactUnitFrameProfiles_ResetToDefaults()
@@ -62,7 +67,13 @@ function CompactUnitFrameProfiles_SaveChanges(self)
 	CompactUnitFrameProfiles_UpdateManagementButtons();
 end
 
+function CompactUnitFrameProfiles_CancelCallback(self)
+	InterfaceOptionsPanel_Cancel(self);
+	CompactUnitFrameProfiles_CancelChanges(self);
+end
+
 function CompactUnitFrameProfiles_CancelChanges(self)
+	InterfaceOptionsPanel_Cancel(self);
 	RestoreRaidProfileFromCopy();
 	CompactUnitFrameProfiles_UpdateCurrentPanel();
 	CompactUnitFrameProfiles_ApplyCurrentSettings();
@@ -161,6 +172,7 @@ end
 
 
 function CompactUnitFrameProfiles_UpdateCurrentPanel()
+	InterfaceOptionsPanel_Refresh(CompactUnitFrameProfiles);
 	local panel = CompactUnitFrameProfiles.optionsFrame;
 	for i=1, #panel.optionControls do
 		panel.optionControls[i]:updateFunc();
@@ -190,6 +202,7 @@ function CompactUnitFrameProfiles_HideNewProfileDialog()
 end
 
 function CompactUnitFrameProfiles_ShowNewProfileDialog()
+	UIDropDownMenu_SetSelectedValue(CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector, nil);
 	UIDropDownMenu_SetText(CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector, DEFAULTS);
 	CompactUnitFrameProfiles.newProfileDialog.baseProfile = nil;
 	CompactUnitFrameProfiles.newProfileDialog:Show();
@@ -272,10 +285,11 @@ function CompactUnitFrameProfiles_GetAutoActivationState()
 		end
 		profileType, enemyType = instanceType, "PvE";
 	elseif ( instanceType == "arena" ) then
+		local groupSize = max(GetRealNumPartyMembers() + 1, GetRealNumRaidMembers());
 		--TODO - Get the actual arena size, not just the # in party.
-		if ( GetNumRaidMembers() <= 2 ) then
+		if ( groupSize <= 2 ) then
 			numPlayers, profileType, enemyType = 2, instanceType, "PvP";
-		elseif ( GetNumRaidMembers() <= 3 ) then
+		elseif ( groupSize <= 3 ) then
 			numPlayers, profileType, enemyType = 3, instanceType, "PvP";
 		else
 			numPlayers, profileType, enemyType = 5, instanceType, "PvP";
@@ -304,7 +318,7 @@ end
 
 function CompactUnitFrameProfiles_CheckAutoActivation()
 	if ( GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0 ) then
-		CompactUnitFrameProfiles.lastActivationType = nil;
+		CompactUnitFrameProfiles_SetLastActivationType(nil, nil, nil, nil);
 		return;
 	end
 	
@@ -319,23 +333,40 @@ function CompactUnitFrameProfiles_CheckAutoActivation()
 	end
 		
 	local spec = GetActiveTalentGroup();
-	local lastActivationType = CompactUnitFrameProfiles.lastActivationType;
+	local lastActivationType, lastNumPlayers, lastSpec, lastEnemyType = CompactUnitFrameProfiles_GetLastActivationType();
 	
-	if ( (lastActivationType and lastActivationType ~= "world") and activationType == "world" ) then	--We keep these in case the player zoned out to repair/summon/etc.
+	if ( activationType == "world" ) then	--We don't adjust due to just the number of players in the raid.
+		return;
+	end
+	
+	if ( lastActivationType == activationType and lastNumPlayers == numPlayers and lastSpec == spec and lastEnemyType == enemyType ) then
+		--If we last auto-adjusted for this same thing, we don't change. (In case they manually changed the profile.)
 		return;
 	end
 	
 	if ( CompactUnitFrameProfiles_ProfileMatchesAutoActivation(GetActiveRaidProfile(), numPlayers, spec, enemyType) ) then
-		CompactUnitFrameProfiles.lastActivationType = activationType;
+		CompactUnitFrameProfiles_SetLastActivationType(activationType, numPlayers, spec, enemyType);
 	else
 		for i=1, GetNumRaidProfiles() do
 			local profile = GetRaidProfileName(i);
 			if ( CompactUnitFrameProfiles_ProfileMatchesAutoActivation(profile, numPlayers, spec, enemyType) ) then
 				CompactUnitFrameProfiles_ActivateRaidProfile(profile);
-				CompactUnitFrameProfiles.lastActivationType = activationType;
+				CompactUnitFrameProfiles_SetLastActivationType(activationType, numPlayers, spec, enemyType);
 			end
 		end
 	end
+end
+
+function CompactUnitFrameProfiles_SetLastActivationType(activationType, numPlayers, spec, enemyType)
+	CompactUnitFrameProfiles.lastActivationType = activationType;
+	CompactUnitFrameProfiles.lastNumPlayers = numPlayers;
+	CompactUnitFrameProfiles.lastSpec = spec;
+	CompactUnitFrameProfiles.lastEnemyType = enemyType;
+end
+
+function CompactUnitFrameProfiles_GetLastActivationType()
+	return CompactUnitFrameProfiles.lastActivationType, CompactUnitFrameProfiles.lastNumPlayers, 
+		CompactUnitFrameProfiles.lastSpec, CompactUnitFrameProfiles.lastEnemyType;
 end
 
 function CompactUnitFrameProfiles_ProfileMatchesAutoActivation(profile, numPlayers, spec, enemyType)

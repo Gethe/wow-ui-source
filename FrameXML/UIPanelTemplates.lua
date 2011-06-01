@@ -279,6 +279,9 @@ function ScrollFrame_OnLoad(self)
 		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
 		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
 	end
+	if ( self.noScrollThumb ) then
+		_G[scrollbar:GetName().."ThumbTexture"]:Hide();
+	end
 end
 
 function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
@@ -308,7 +311,9 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
 		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
 		_G[self:GetName().."ScrollBar"]:Show();
-		_G[scrollbar:GetName().."ThumbTexture"]:Show();
+		if ( not self.noScrollThumb ) then
+			_G[scrollbar:GetName().."ThumbTexture"]:Show();
+		end
 		-- The 0.005 is to account for precision errors
 		if ( yrange - value > 0.005 ) then
 			_G[scrollbar:GetName().."ScrollDownButton"]:Enable();

@@ -688,22 +688,22 @@ function LFDDungeonReadyPopup_Update()
 			LFDDungeonReadyDialogRoleIconLeaderIcon:Hide();
 		end
 		
-		LFDDungeonReadyDialog_UpdateRewards(id);
+		LFDDungeonReadyDialog_UpdateRewards(id, role);
 	end
 end
 
-function LFDDungeonReadyDialog_UpdateRewards(dungeonID)
+function LFDDungeonReadyDialog_UpdateRewards(dungeonID, role)
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	
 	local numRandoms = 4 - GetNumPartyMembers();
 	local moneyAmount = moneyBase + moneyVar * numRandoms;
 	local experienceGained = experienceBase + experienceVar * numRandoms;
 	
-	local rewardsOffset = 0;
+	local frameID = 1;
 
 	if ( moneyAmount > 0 or experienceGained > 0 ) then --hasMiscReward ) then
 		LFDDungeonReadyDialogReward_SetMisc(LFDDungeonReadyDialogRewardsFrameReward1);
-		rewardsOffset = 1;
+		frameID = 2;
 	end
 	
 	if ( moneyAmount == 0 and experienceGained == 0 and numRewards == 0 ) then
@@ -711,30 +711,52 @@ function LFDDungeonReadyDialog_UpdateRewards(dungeonID)
 	else
 		LFDDungeonReadyDialogRewardsFrameLabel:Show();
 	end
-
 	
 	for i = 1, numRewards do
-		local frameID = (i + rewardsOffset);
 		local frame = _G["LFDDungeonReadyDialogRewardsFrameReward"..frameID];
 		if ( not frame ) then
 			frame = CreateFrame("FRAME", "LFDDungeonReadyDialogRewardsFrameReward"..frameID, LFDDungeonReadyDialogRewardsFrame, "LFDDungeonReadyRewardTemplate");
 			frame:SetID(frameID);
 			LFD_MAX_REWARDS = frameID;
 		end
-		LFDDungeonReadyDialogReward_SetReward(frame, dungeonID, i)
+		LFDDungeonReadyDialogReward_SetReward(frame, dungeonID, i, "reward")
+		frameID = frameID + 1;
 	end
 	
-	local usedButtons = numRewards + rewardsOffset;
+	for shortageIndex = 1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+		local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
+		if ( eligible and ((role == "TANK" and forTank) or (role == "HEALER" and forHealer) or (role == "DAMAGER" and forDamage)) ) then
+			for rewardIndex=1, itemCount do
+				local frame = _G["LFDDungeonReadyDialogRewardsFrameReward"..frameID];
+				if ( not frame ) then
+					frame = CreateFrame("FRAME", "LFDDungeonReadyDialogRewardsFrameReward"..frameID, LFDDungeonReadyDialogRewardsFrame, "LFDDungeonReadyRewardTemplate");
+					frame:SetID(frameID);
+					LFD_MAX_REWARDS = frameID;
+				end
+				LFDDungeonReadyDialogReward_SetReward(frame, dungeonID, rewardIndex, "shortage", shortageIndex);
+				frameID = frameID + 1;
+			end
+		end
+	end
+	
 	--Hide the unused ones
-	for i = usedButtons + 1, LFD_MAX_REWARDS do
+	for i = frameID, LFD_MAX_REWARDS do
 		_G["LFDDungeonReadyDialogRewardsFrameReward"..i]:Hide();
 	end
 	
+	local usedButtons= frameID - 1;
+	
 	if ( usedButtons > 0 ) then
 		--Set up positions
-		local positionPerIcon = 1/(2 * usedButtons) * LFDDungeonReadyDialogRewardsFrame:GetWidth();
-		local iconOffset = 2 * positionPerIcon - LFDDungeonReadyDialogRewardsFrameReward1:GetWidth();
-		LFDDungeonReadyDialogRewardsFrameReward1:SetPoint("CENTER", LFDDungeonReadyDialogRewardsFrame, "LEFT", positionPerIcon, 5);
+		local iconOffset;
+		if ( usedButtons > 2 ) then
+			iconOffset = -5;
+		else
+			iconOffset = 0;
+		end
+		local area = usedButtons * LFDDungeonReadyDialogRewardsFrameReward1:GetWidth() + (usedButtons - 1) * iconOffset;
+		
+		LFDDungeonReadyDialogRewardsFrameReward1:SetPoint("LEFT", LFDDungeonReadyDialogRewardsFrame, "CENTER", -area/2, 5);
 		for i = 2, usedButtons do
 			_G["LFDDungeonReadyDialogRewardsFrameReward"..i]:SetPoint("LEFT", "LFDDungeonReadyDialogRewardsFrameReward"..(i - 1), "RIGHT", iconOffset, 0);
 		end
@@ -743,22 +765,29 @@ end
 
 function LFDDungeonReadyDialogReward_SetMisc(button)
 	SetPortraitToTexture(button.texture, "Interface\\Icons\\inv_misc_coin_02");
-	button.rewardID = 0;
+	button.rewardType = "misc";
 	button:Show();
 end
 
-function LFDDungeonReadyDialogReward_SetReward(button, dungeonID, rewardIndex)
-	local name, texturePath, quantity = GetLFGDungeonRewardInfo(dungeonID, rewardIndex);
+function LFDDungeonReadyDialogReward_SetReward(button, dungeonID, rewardIndex, rewardType, rewardArg)
+	local name, texturePath, quantity;
+	if ( rewardType == "reward" ) then
+		name, texturePath, quantity = GetLFGDungeonRewardInfo(dungeonID, rewardIndex);
+	elseif ( rewardType == "shortage" ) then
+		name, texturePath, quantity = GetLFGDungeonShortageRewardInfo(dungeonID, rewardArg, rewardIndex);
+	end
 	if ( texturePath ) then	--Otherwise, we may be waiting on the item data to come from the server.
 		SetPortraitToTexture(button.texture, texturePath);
 	end
+	button.rewardType = rewardType;
 	button.rewardID = rewardIndex;
+	button.rewardArg = rewardArg;
 	button:Show();
 end
 	
 function LFDDungeonReadyDialogReward_OnEnter(self, dungeonID)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( self.rewardID == 0 ) then
+	if ( self.rewardType == "misc" ) then
 		GameTooltip:AddLine(REWARD_ITEMS_ONLY);
 		local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(LFDDungeonReadyPopup.dungeonID);
 		local numRandoms = 4 - GetNumPartyMembers();
@@ -771,8 +800,10 @@ function LFDDungeonReadyDialogReward_OnEnter(self, dungeonID)
 		if ( moneyAmount > 0 ) then
 			SetTooltipMoney(GameTooltip, moneyAmount, nil);
 		end
-	else
+	elseif ( self.rewardType == "reward" ) then
 		GameTooltip:SetLFGDungeonReward(LFDDungeonReadyPopup.dungeonID, self.rewardID);
+	elseif ( self.rewardType == "shortage" ) then
+		GameTooltip:SetLFGDungeonShortageReward(LFDDungeonReadyPopup.dungeonID, self.rewardArg, self.rewardID);
 	end
 	GameTooltip:Show();
 end

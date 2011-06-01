@@ -1664,7 +1664,7 @@ function WorldMapFrame_SetQuestMapView()
 	WORLDMAP_SETTINGS.size = WORLDMAP_QUESTLIST_SIZE;
 	WorldMapDetailFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
 	WorldMapButton:SetScale(WORLDMAP_QUESTLIST_SIZE);
-	WorldMapFrameAreaFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);			
+	WorldMapFrameAreaFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
 	WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -726, -99);
 	WorldMapQuestDetailScrollFrame:Show();
 	WorldMapQuestRewardScrollFrame:Show();
@@ -1673,13 +1673,14 @@ function WorldMapFrame_SetQuestMapView()
 	for i = numOfDetailTiles + 1, numOfDetailTiles + NUM_WORLDMAP_PATCH_TILES do
 		_G["WorldMapFrameTexture"..i]:Hide();
 	end
+	EncounterJournal_AddMapButtons();
 end
 
 function WorldMapFrame_SetFullMapView()
 	WORLDMAP_SETTINGS.size = WORLDMAP_FULLMAP_SIZE;
 	WorldMapDetailFrame:SetScale(WORLDMAP_FULLMAP_SIZE);
 	WorldMapButton:SetScale(WORLDMAP_FULLMAP_SIZE);
-	WorldMapFrameAreaFrame:SetScale(WORLDMAP_FULLMAP_SIZE);			
+	WorldMapFrameAreaFrame:SetScale(WORLDMAP_FULLMAP_SIZE);
 	WorldMapDetailFrame:SetPoint("TOPLEFT", WorldMapPositioningGuide, "TOP", -502, -69);
 	WorldMapQuestDetailScrollFrame:Hide();
 	WorldMapQuestRewardScrollFrame:Hide();
@@ -1688,6 +1689,7 @@ function WorldMapFrame_SetFullMapView()
 	for i = numOfDetailTiles + 1, numOfDetailTiles + NUM_WORLDMAP_PATCH_TILES do
 		_G["WorldMapFrameTexture"..i]:Show();
 	end
+	EncounterJournal_AddMapButtons();
 end
 
 function WorldMapFrame_UpdateMap(questId)

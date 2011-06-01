@@ -166,11 +166,9 @@ function HelpFrame_OnEvent(self, event, ...)
 		if ( category and ticketDescription ) then
 			-- Has an open ticket
 			HelpFrameOpenTicketEditBox:SetText(ticketDescription);
-			haveResponse = false;
 			haveTicket = true;
 		else
 			-- the player does not have a ticket
-			haveResponse = false;
 			haveTicket = false;
 		end
 		HelpFrame_SetTicketEntry();
@@ -244,6 +242,9 @@ function HelpFrame_GMResponse_Acknowledge(markRead)
 		needMoreHelp = true;
 		HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
 	end
+	if ( not TicketStatusFrame.hasGMSurvey and TicketStatusFrame:IsShown() ) then
+		TicketStatusFrame:Hide();
+	end
 end
 
 function HelpFrame_SetFrameByKey(key)
@@ -290,18 +291,21 @@ function HelpFrame_SetTicketButtonText(text)
 end
 
 function HelpFrame_SetTicketEntry()
-	local self = HelpFrame;
-	if ( haveTicket ) then
-		self.ticket.submitButton:SetText(EDIT_TICKET);
-		self.ticket.cancelButton:SetText(HELP_TICKET_ABANDON);
-		self.ticket.title:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
-		HelpFrame_SetTicketButtonText(HELP_TICKET_EDIT);
-	else
-		HelpFrameOpenTicketEditBox:SetText("");
-		self.ticket.submitButton:SetText(SUBMIT);
-		self.ticket.cancelButton:SetText(CANCEL);
-		self.ticket.title:SetText(HELPFRAME_SUBMIT_TICKET_TITLE);
-		HelpFrame_SetTicketButtonText(HELP_TICKET_OPEN);
+	-- don't do anything if we have a response
+	if ( not haveResponse ) then
+		local self = HelpFrame;
+		if ( haveTicket ) then
+			self.ticket.submitButton:SetText(EDIT_TICKET);
+			self.ticket.cancelButton:SetText(HELP_TICKET_ABANDON);
+			self.ticket.title:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
+			HelpFrame_SetTicketButtonText(HELP_TICKET_EDIT);
+		else
+			HelpFrameOpenTicketEditBox:SetText("");
+			self.ticket.submitButton:SetText(SUBMIT);
+			self.ticket.cancelButton:SetText(CANCEL);
+			self.ticket.title:SetText(HELPFRAME_SUBMIT_TICKET_TITLE);
+			HelpFrame_SetTicketButtonText(HELP_TICKET_OPEN);
+		end
 	end
 end
 
@@ -550,7 +554,6 @@ function TicketStatusFrameButton_OnClick(self)
 		if ( not HelpFrame:IsShown() ) then
 			ShowUIPanel(HelpFrame);
 		end
-		TicketStatusFrame:Hide();
 	end
 end
 

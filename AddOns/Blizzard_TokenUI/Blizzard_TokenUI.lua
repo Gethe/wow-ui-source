@@ -44,6 +44,10 @@ function TokenFrame_OnShow(self)
 
 	-- Create buttons if not created yet
 	if (not TokenFrameContainer.buttons) then
+		-- if the currency frame was opened via a keybind before the character frame was opened, CharacterFrameInset would not exist during the TokenUI addon load
+		TokenFrameContainer:SetPoint("TOPLEFT", CharacterFrameInset, "TOPLEFT", 4, -4);
+		TokenFrameContainer:SetWidth(328);
+		TokenFrameContainer:SetHeight(360);
 		HybridScrollFrame_CreateButtons(TokenFrameContainer, "TokenButtonTemplate", 1, -2, "TOPLEFT", "TOPLEFT", 0, -TOKEN_BUTTON_OFFSET);
 		local buttons = TokenFrameContainer.buttons;
 		local numButtons = #buttons;
@@ -82,7 +86,6 @@ function TokenFrame_Update()
 	for i=1, numButtons do
 		index = offset+i;
 		name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
-
 		button = buttons[i];
 		button.check:Hide();
 		if ( not name or name == "" ) then

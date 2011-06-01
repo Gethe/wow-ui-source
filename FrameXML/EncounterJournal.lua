@@ -33,11 +33,18 @@ EJ_Tabs[2] = {frame="lootScroll", button="lootTab"};
 local EJ_section_openTable = {};
 
 
+local EJ_LINK_INSTANCE 		= 0;
+local EJ_LINK_ENCOUNTER		= 1;
+local EJ_LINK_SECTION 		= 3;
+
+
 
 function EncounterJournal_OnLoad(self)
 	EncounterJournalTitleText:SetText(ENCOUNTER_JOURNAL);
 	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	
 	self.encounter.freeHeaders = {};
 	self.encounter.usedHeaders = {};
@@ -69,6 +76,8 @@ function EncounterJournal_OnLoad(self)
 	
 	EncounterJournal.searchBox.oldEditLost = EncounterJournal.searchBox:GetScript("OnEditFocusLost");
 	EncounterJournal.searchBox:SetScript("OnEditFocusLost", function(self) self:oldEditLost(); EncounterJournal_HideSearchPreview(); end);
+	EncounterJournal.searchBox.clearFunc = EncounterJournal_ClearSearch;
+	
 	
 	local homeData = {
 		name = HOME,
@@ -110,6 +119,49 @@ function EncounterJournal_OnEvent(self, event, ...)
 		else
 			EncounterJournal_LootUpdate();
 		end
+	elseif event == "EJ_DIFFICULTY_UPDATE" then
+		--fix the difficulty buttons
+		local isHeroic, is10man = ...;
+		if is10man then
+			EncounterJournal.is10Man = true;
+			EncounterJournal.encounter.info.diff10man.selected:Show();
+			EncounterJournal.encounter.info.diff25man.selected:Hide();
+		else
+			EncounterJournal.is10Man = false;
+			EncounterJournal.encounter.info.diff10man.selected:Hide();
+			EncounterJournal.encounter.info.diff25man.selected:Show();
+		end
+		
+		EncounterJournal.isHeroic = isHeroic;
+		if isHeroic then
+			EncounterJournal.encounter.info.heroButton.selected:Show();
+		else
+			EncounterJournal.encounter.info.heroButton.selected:Hide();
+		end
+	elseif event == "UNIT_PORTRAIT_UPDATE" then
+		local unit = ...;
+		if not unit and EncounterJournal:IsShown() then
+			EncounterJournal_UpdatePortraits();
+		end
+	end
+end
+
+
+function EncounterJournal_UpdatePortraits()
+	local self = EncounterJournal.encounter;
+	for i = 1, MAX_CREATURES_PER_ENCOUNTER do
+		local button = self["creatureButton"..i];
+		if ( button and button:IsShown() ) then
+			SetPortraitTexture(button.creature, button.displayInfo);
+		else
+			break;
+		end
+	end
+	local usedHeaders = EncounterJournal.encounter.usedHeaders;
+	for _, header in pairs(usedHeaders) do
+		if ( header.button.portrait.displayInfo ) then
+			SetPortraitTexture(header.button.portrait.icon, header.button.portrait.displayInfo);
+		end
 	end
 end
 
@@ -123,7 +175,7 @@ function EncounterJournal_ListInstances()
 
 	local self = EncounterJournal.instanceSelect.scroll.child;
 	local index = 1;
-	local instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index, showRaid);
+	local instanceID, name, description, _, buttonImage, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
 	local instanceButton;
 	while instanceID do
 		instanceButton = self["instance"..index];
@@ -142,10 +194,11 @@ function EncounterJournal_ListInstances()
 		instanceButton.instanceID = instanceID;
 		instanceButton.tooltipTitle = name;
 		instanceButton.tooltipText = description;
+		instanceButton.link = link;
 		instanceButton:Show();
 		
 		index = index + 1;
-		instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index, showRaid);
+		instanceID, name, description, _, buttonImage, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
 	end
 
 	--Hide old buttons needed.
@@ -160,9 +213,10 @@ end
 
 function EncounterJournal_DisplayInstance(instanceID, noButton)
 	local self = EncounterJournal.encounter;
-	
+	EncounterJournal.encounter.model:Hide();
 	EncounterJournal.instanceSelect:Hide();
 	EncounterJournal.encounter:Show();
+	EncounterJournal.ceatureDisplayID = 0;
 
 	EncounterJournal.instanceID = instanceID;
 	EncounterJournal.encounterID = nil;
@@ -196,7 +250,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.info.dungeonBG:Hide();
 	
 	local bossIndex = 1;
-	local name, description, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
+	local name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	local bossButton;
 	while bossID do
 		bossButton = _G["EncounterJournalBossButton"..bossIndex];
@@ -209,6 +263,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 			end
 		end
 		
+		bossButton.link = link;
 		bossButton:SetText(name);
 		bossButton:Show();
 		bossButton.encounterID = bossID;
@@ -218,7 +273,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossButton.creature:SetTexture(bossImage);
 		
 		bossIndex = bossIndex + 1;
-		name, description, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
+		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
 	
 	--handle typeHeader
@@ -238,6 +293,7 @@ end
 
 function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	local self = EncounterJournal.encounter;
+	EncounterJournal.encounter.model:Show();
 	
 	local ename, description, _, rootSectionID = EJ_GetEncounterInfo(encounterID);
 	EncounterJournal.encounterID = encounterID;
@@ -293,15 +349,18 @@ function EncounterJournal_DisplayCreature(self)
 		EncounterJournal.encounter.shownCreatureButton:Enable();
 	end
 	
-	if self.displayInfo then
+	if EncounterJournal.ceatureDisplayID == self.displayInfo then
+		--Don't refresh the same model
+	elseif self.displayInfo then
 		EncounterJournal.encounter.model.imageTitle:SetText(self.name);
 		EncounterJournal.encounter.model:SetDisplayInfo(self.displayInfo);
-		EncounterJournal.encounter.model:Show();
+		EncounterJournal.ceatureDisplayID = self.displayInfo;
 	end
 	
 	self:Disable();
 	EncounterJournal.encounter.shownCreatureButton = self;
 end
+
 
 local toggleTempList = {};
 local headerCount = 0;
@@ -355,14 +414,14 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 		-- Get Section Info
 		local listEnd  = #usedHeaders;
 		while nextSectionID do
-			local title, description, headerType, abilityIcon, displayInfo, siblingID, _, fileredByDifficulty, flag1, flag2, flag3, flag4 = EJ_GetSectionInfo(nextSectionID);
+			local title, description, headerType, abilityIcon, displayInfo, siblingID, _, fileredByDifficulty, link, flag1, flag2, flag3, flag4 = EJ_GetSectionInfo(nextSectionID);
 			if not title then
 				break;
 			elseif not fileredByDifficulty then --ignore all sections that should not be shown with our current difficulty settings		
 				if #freeHeaders == 0 then -- create a new header;
 					headerCount = headerCount + 1; -- the is a file local
 					infoHeader = CreateFrame("FRAME", "EncounterJournalInfoHeader"..headerCount, EncounterJournal.encounter.infoFrame, "EncounterInfoTemplate");
-					--print("Creating: "..(#freeHeaders+#usedHeaders));
+					infoHeader:Hide();
 				else
 					infoHeader = freeHeaders[#freeHeaders];
 					freeHeaders[#freeHeaders] = nil;
@@ -371,6 +430,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				numAdded = numAdded + 1;
 				toggleTempList[#toggleTempList+1] = infoHeader;
 				
+				infoHeader.button.link = link;
 				infoHeader.parentID = parentID;
 				infoHeader.myID = nextSectionID;
 				infoHeader.description:SetText(description);
@@ -409,6 +469,8 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					infoHeader.button.abilityIcon:Hide();
 				else
 					infoHeader.button.portrait:Hide();
+					infoHeader.button.portrait.name = nil;
+					infoHeader.button.portrait.displayInfo = nil;
 				end
 				infoHeader.button.title:SetPoint("LEFT", textLeftAnchor, "RIGHT", 5, 0);
 				
@@ -458,7 +520,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				
 				--toggleNested?
 				if EJ_section_openTable[infoHeader.myID] then
-					infoHeader.expanded = false;
+					infoHeader.expanded = false; -- setting false to expand it in EncounterJournal_ToggleHeaders
 					numAdded = numAdded + EncounterJournal_ToggleHeaders(infoHeader, true);
 				end
 				
@@ -525,6 +587,35 @@ function EncounterJournal_ShiftHeaders(index)
 end
 
 
+function EncounterJournal_FocusSection(sectionID)
+	local usedHeaders = EncounterJournal.encounter.usedHeaders;
+	for _, section in pairs(usedHeaders) do
+		if section.myID == sectionID then
+			section.cbCount = 0;
+			section.flashAnim:Play();
+			section:SetScript("OnUpdate", EncounterJournal_FocusSectionCallback);
+			return;
+		end
+	end
+end
+
+
+function EncounterJournal_FocusSectionCallback(self)
+	if not self:IsShown() then
+		self:SetScript("OnUpdate", nil);
+	end
+	
+	if self.cbCount > 0 then
+		local _, _, _, _, achorY = self:GetPoint();
+		achorY = abs(achorY);
+		achorY = achorY - EncounterJournal.encounter.info.detailsScroll:GetHeight()/2;
+		EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(achorY);
+		self:SetScript("OnUpdate", nil);
+	end
+	self.cbCount = self.cbCount + 1;
+end
+
+
 function EncounterJournal_ClearChildHeaders(self, doNotShift)
 	local usedHeaders = EncounterJournal.encounter.usedHeaders;
 	local freeHeaders = EncounterJournal.encounter.freeHeaders;
@@ -555,8 +646,8 @@ function EncounterJournal_ClearChildHeaders(self, doNotShift)
 	return numCleared
 end
 
+
 function EncounterJournal_ClearDetails()
-	EncounterJournal.encounter.model:Hide();
 	EncounterJournal.encounter.instance:Hide();
 	EncounterJournal.encounter.infoFrame.description:SetText("");
 	
@@ -594,28 +685,6 @@ function EncounterJournal_TierDropDown_Select(self, instanceID, name)
 	EncounterJournal_DisplayInstance(instanceID);
 	UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, name);
 end
-
-
--- function EncounterJournal_TierDropDown_Init()
-	-- local info = UIDropDownMenu_CreateInfo();
-	-- --This temporarily list all bosses
-	-- local index = 1;
-	-- local instanceID, name, description = EJ_GetInstanceByIndex(index);
-	
-	-- while (instanceID) do
-		-- info.text = name;
-		-- info.tooltipTitle = name;
-		-- info.tooltipText = description;
-		-- info.arg1 = instanceID;
-		-- info.arg2 = name;
-		-- info.notCheckable = true;
-		-- info.func = 	EncounterJournal_TierDropDown_Select;
-		-- UIDropDownMenu_AddButton(info);
-		
-		-- index = index + 1;
-		-- instanceID, name, description = EJ_GetInstanceByIndex(index);
-	-- end
--- end 
 
 
 function EncounterJournal_TabClicked(self, button)
@@ -656,6 +725,7 @@ function EncounterJournal_LootUpdate()
 	local item, index;
 	
 	local numLoot = EJ_GetNumLoot();
+	local buttonSize = items[1]:GetHeight();
 	
 	for i = 1,#items do
 		item = items[i];
@@ -679,23 +749,28 @@ function EncounterJournal_LootUpdate()
 		end
 	end
 	
-	local totalHeight = numLoot * 51;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, 351);
+	local totalHeight = numLoot * buttonSize;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
 end
 
 
 function EncounterJournal_Loot_OnUpdate(self)
-		if GameTooltip:IsOwned(self) then
-			if IsModifiedClick("COMPAREITEMS") then --or (GetCVarBool("alwaysCompareItems") ) then
-				GameTooltip_ShowCompareItem();
-			end
-
-			if IsModifiedClick("DRESSUP") then
-				ShowInspectCursor();
-			else
-				ResetCursor();
-			end
+	if GameTooltip:IsOwned(self) then
+		if IsModifiedClick("COMPAREITEMS") or
+				 (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) then
+			GameTooltip_ShowCompareItem();
+		else
+			ShoppingTooltip1:Hide();
+			ShoppingTooltip2:Hide();
+			ShoppingTooltip3:Hide();
 		end
+
+		if IsModifiedClick("DRESSUP") then
+			ShowInspectCursor();
+		else
+			ResetCursor();
+		end
+	end
 end
 
 
@@ -726,7 +801,7 @@ end
 
 function EncounterJournal_GetSearchDisplay(index)
 	local name, icon, path, typeText, displayInfo, itemID, _;
-	local id, stype, instanceID, encounterID  = EJ_GetSearchResult(index);
+	local id, stype, _, instanceID, encounterID  = EJ_GetSearchResult(index);
 	if stype == EJ_STYPE_INSTANCE then
 		name, _, _, icon = EJ_GetInstanceInfo(id);
 		typeText = ENCOUNTER_JOURNAL_INSTANCE;
@@ -765,34 +840,19 @@ end
 
 function EncounterJournal_SelectSearch(index)
 	local _;
-	local id, stype, instanceID, encounterID = EJ_GetSearchResult(index);
+	local id, stype, mask, instanceID, encounterID = EJ_GetSearchResult(index);
+	local sectionID, creatureID, itemID;
 	if stype == EJ_STYPE_INSTANCE then
 		instanceID = id;
-	end
-	
-	if instanceID then
-		EncounterJournal_DisplayInstance(instanceID);
-	end
-	
-	if encounterID then
-		EncounterJournal_DisplayEncounter(encounterID);
-	end
-
-	
-	if stype == EJ_STYPE_ENCOUNTER then
 	elseif stype == EJ_STYPE_SECTION then
-		EncounterJournal.encounter.info.bossTab:Click();
+		sectionID = id;
 	elseif stype == EJ_STYPE_ITEM then
-		EncounterJournal.encounter.info.lootTab:Click();
+		itemID = id;
 	elseif stype == EJ_STYPE_CREATURE then
-		for i=1,MAX_CREATURES_PER_ENCOUNTER do
-			local button = EncounterJournal.encounter["creatureButton"..i];
-			if button and button:IsShown() and button.id == id then
-				EncounterJournal_DisplayCreature(button);
-			end
-		end
+		creatureID = id;
 	end
 	
+	EncounterJournal_OpenJournal(mask, instanceID, encounterID, sectionID, creatureID, itemID);
 	EncounterJournal.searchResults:Hide();
 end
 
@@ -872,6 +932,12 @@ function EncounterJournal_HideSearchPreview()
 end
 
 
+function EncounterJournal_ClearSearch(editbox)
+	EncounterJournal.searchResults:Hide();
+	EncounterJournal_HideSearchPreview();
+end
+
+
 function EncounterJournal_OnSearchTextChanged(self)
 	local text = self:GetText();
 	EncounterJournal_HideSearchPreview();
@@ -930,8 +996,9 @@ function EncounterJournal_AddMapButtons()
 		WorldMapBossButtonFrame:SetScript("OnUpdate", nil);
 	end
 	
-	local width = right - left;
-	local height = top - bottom;
+	local scale = WorldMapDetailFrame:GetScale();
+	local width = WorldMapDetailFrame:GetWidth() * scale;
+	local height = WorldMapDetailFrame:GetHeight() * scale;
 
 	local bossButton, questPOI, displayInfo, _;
 	local index = 1;
@@ -961,10 +1028,8 @@ function EncounterJournal_AddMapButtons()
 		bossButton = _G["EJMapButton"..index];
 	end
 	
-	if not WorldMapBossButtonFrame.ready then
-		WorldMapBossButtonFrame.ready = true;
-		EncounterJournal_CheckQuestButtons();
-	end
+	WorldMapBossButtonFrame.ready = true;
+	EncounterJournal_CheckQuestButtons();
 end
 	
 
@@ -1035,6 +1100,55 @@ function EncounterJournal_SetClassFilter(classID, className)
 	EncounterJournal_LootUpdate();
 end
 
+
+function EncounterJournal_OpenJournalLink(tag, jtype, id, mask)
+	jtype = tonumber(jtype);
+	id = tonumber(id);
+	mask = tonumber(mask);
+	local instanceID, encounterID, sectionID = EJ_HandleLinkPath(jtype, id);
+	EncounterJournal_OpenJournal(mask, instanceID, encounterID, sectionID);
+end
+
+
+function EncounterJournal_OpenJournal(mask, instanceID, encounterID, sectionID, creatureID, itemID)
+	ShowUIPanel(EncounterJournal);
+	if instanceID then
+		NavBar_Reset(EncounterJournal.navBar);
+		EncounterJournal_DisplayInstance(instanceID);
+		EJ_SetDifficultyByMask(mask);
+		if encounterID then
+			if sectionID then
+				EncounterJournal.encounter.info.bossTab:Click();
+				local sectionPath = {EJ_GetSectionPath(sectionID)};
+				for _, id in pairs(sectionPath) do
+					EJ_section_openTable[id] = true;
+				end
+			end
+			
+			
+			EncounterJournal_DisplayEncounter(encounterID);
+			if sectionID then
+				EncounterJournal_FocusSection(sectionID);
+			elseif itemID then
+				EncounterJournal.encounter.info.lootTab:Click();
+			end
+			
+			
+			if creatureID then
+				for i=1,MAX_CREATURES_PER_ENCOUNTER do
+					local button = EncounterJournal.encounter["creatureButton"..i];
+					if button and button:IsShown() and button.id == creatureID then
+						EncounterJournal_DisplayCreature(button);
+					end
+				end
+			end
+		end
+	else
+		EncounterJournal_ListInstances()
+	end
+end
+
+
 ----------------------------------------
 --------------Nav Bar Func--------------
 ----------------------------------------
@@ -1071,5 +1185,3 @@ function EJNAV_ListEncounter(self, index)
 	local name = EJ_GetEncounterInfoByIndex(index);
 	return name, EJNAV_SelectEncounter;
 end
-
-

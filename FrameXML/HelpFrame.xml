@@ -1432,11 +1432,6 @@
 					<OnLoad>
 						tinsert(HelpFrameWindows, self);
 					</OnLoad>
-					<OnShow>
-						if ( not TicketStatusFrame.hasGMSurvey and TicketStatusFrame:IsShown() ) then
-							TicketStatusFrame:Hide();
-						end
-					</OnShow>
 				</Scripts>
 			</Frame>
 		</Frames>

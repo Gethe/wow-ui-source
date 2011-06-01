@@ -83,7 +83,7 @@ local function InterfaceOptionsPanel_Okay (self)
 	end
 end
 
-local function InterfaceOptionsPanel_Cancel (self)
+function InterfaceOptionsPanel_Cancel (self)
 	for _, control in SecureNext, self.controls do
 		securecall(InterfaceOptionsPanel_CancelControl, control);
 		if ( control.setFunc ) then
@@ -92,7 +92,7 @@ local function InterfaceOptionsPanel_Cancel (self)
 	end
 end
 
-local function InterfaceOptionsPanel_Default (self)
+function InterfaceOptionsPanel_Default (self)
 	for _, control in SecureNext, self.controls do
 		securecall(InterfaceOptionsPanel_DefaultControl, control);
 		if ( control.setFunc ) then
@@ -106,7 +106,7 @@ local function InterfaceOptionsPanel_Default (self)
 	end
 end
 
-local function InterfaceOptionsPanel_Refresh (self)
+function InterfaceOptionsPanel_Refresh (self)
 	for _, control in SecureNext, self.controls do
 		securecall(BlizzardOptionsPanel_RefreshControl, control);
 		-- record values so we can cancel back to this state
@@ -1746,7 +1746,6 @@ UnitFramePanelOptions = {
 	showArenaEnemyCastbar = { text = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
 	showArenaEnemyPets = { text = "SHOW_ARENA_ENEMY_PETS_TEXT" },
 	fullSizeFocusFrame = { text = "FULL_SIZE_FOCUS_FRAME_TEXT" },
-	useCompactPartyFrames = { text = "USE_RAID_STYLE_PARTY_FRAMES" },
 }
 
 function BlizzardOptionsPanel_UpdateRaidPullouts ()

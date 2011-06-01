@@ -25,7 +25,7 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<CheckButton name="CompactUnitFrameProfilesCheckButtonTemplate" virtual="true">
+	<CheckButton name="CompactUnitFrameProfilesCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size>
 			<AbsDimension x="26" y="26"/>
 		</Size>
@@ -52,6 +52,26 @@
 			<OnClick>
 				CompactUnitFrameProfilesCheckButton_OnClick(self, button);
 			</OnClick>
+			<OnEnable>
+				self.label:SetFontObject(GameFontHighlightLeft);
+			</OnEnable>
+			<OnDisable>
+				self.label:SetFontObject(GameFontDisableLeft);
+			</OnDisable>
+			<OnEnter>
+				if ( not self:IsEnabled() ) then
+					if ( self.disabledTooltip ) then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(self.disabledTooltip, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					end
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( GameTooltip:GetOwner() == self ) then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
 		</Scripts>
 		<NormalTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture urgency="5" file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -177,12 +197,19 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentSeparator">
+					<Size x="600" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="10" y="-40"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="-15" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="-15" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnShow function="CompactUnitFrameProfilesProfileSelector_SetUp"/>
@@ -210,6 +237,36 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<CheckButton name="$parentRaidStylePartyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-260" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "useCompactPartyFrames";
+						self.setFunc = function (value)
+							RaidOptionsFrame_UpdatePartyFrames()
+							CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
+							
+							if ( value and value ~= "0" ) then
+								self:GetParent().optionsFrame.autoActivate2Players:Enable();
+								self:GetParent().optionsFrame.autoActivate3Players:Enable();
+								self:GetParent().optionsFrame.autoActivate5Players:Enable();
+							else
+								self:GetParent().optionsFrame.autoActivate2Players:Disable();
+								self:GetParent().optionsFrame.autoActivate3Players:Disable();
+								self:GetParent().optionsFrame.autoActivate5Players:Disable();
+							end
+						end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
+					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
 			<Frame name="$parentNewProfileDialog" inherits="CompactUnitFrameProfileDialogWithCoverTemplate" parentKey="newProfileDialog">
 				<Size x="450" y="200"/>
 				<Layers>
@@ -424,7 +481,7 @@
 						<Texture name="$parentAutoActivateBG" parentKey="autoActivateBG">
 							<Size x="190" y="345"/>	<!--Also change the with of AutoActivateDisabledLabel -->
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="415" y="-40"/>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="415" y="-50"/>
 							</Anchors>
 							<Color r="0.3" g="0.3" b="0.3" a="0.3"/>
 						</Texture>
@@ -446,7 +503,7 @@
 				<Frames>
 					<CheckButton name="$parentKeepGroupsTogether" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="13" y="-100"/>
+							<Anchor point="TOPLEFT" x="13" y="-110"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -547,9 +604,19 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentShowDebuffs" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentDisplayBorder" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentDisplayMainTankAndAssist" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayBorder");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentShowDebuffs" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentDisplayBorder" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -588,7 +655,7 @@
 					</Frame>
 					<Slider name="$parentHeightSlider" inherits="CompactUnitFrameProfilesSliderTemplate" minValue="36" maxValue="72" valueStep="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHealthTextDropdown" relativePoint="BOTTOMLEFT" x="10" y="-25"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentHealthTextDropdown" relativePoint="BOTTOMLEFT" x="10" y="-15"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -598,7 +665,7 @@
 					</Slider>
 					<Slider name="$parentWidthSlider" inherits="CompactUnitFrameProfilesSliderTemplate" minValue="72" maxValue="144" valueStep="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHeightSlider" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							<Anchor point="LEFT" relativeTo="$parentHeightSlider" relativePoint="RIGHT" x="40" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -606,44 +673,37 @@
 							</OnLoad>
 						</Scripts>
 					</Slider>
-					<CheckButton name="$parentDisplayBorder" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="235" y="-43"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayBorder");
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					
-					<CheckButton name="$parentAutoActivate2Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivate2Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="autoActivate2Players">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate2Players");
+								self.disabledTooltip = AUTO_ACTIVATE_DISABLED_IN_PARTY;
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentAutoActivate3Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivate3Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="autoActivate3Players">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate2Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate3Players");
+								self.disabledTooltip = AUTO_ACTIVATE_DISABLED_IN_PARTY;
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentAutoActivate5Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivate5Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="autoActivate5Players">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate3Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate5Players");
+								self.disabledTooltip = AUTO_ACTIVATE_DISABLED_IN_PARTY;
 							</OnLoad>
 						</Scripts>
 					</CheckButton>

@@ -472,6 +472,12 @@
 				self.showingTooltip = false;
 			</OnLeave>
 			<OnClick>
+				if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+					if self.link then
+						ChatEdit_InsertLink(self.link);
+					end
+					return;
+				end
 				EncounterJournal_DisplayInstance(self.instanceID);
 			</OnClick>
 		</Scripts>
@@ -499,6 +505,7 @@
 					<Size x="400" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="5" y="0"/>
+						<Anchor point="RIGHT" x="-5" y="0"/>
 					</Anchors>
 					<Color r="0.96875" g="0.8984375" b="0.578125" a="1"/>
 				</FontString>
@@ -549,7 +556,7 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name" text="ENCOUNTER">
-					<Size x="400" y="0"/>
+					<Size x="460" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT" x="10" y="0"/>
 					</Anchors>
@@ -690,6 +697,12 @@
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>
 			<OnClick>
+				if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+					if self.link then
+						ChatEdit_InsertLink(self.link);
+					end
+					return;
+				end
 				EncounterJournal_DisplayEncounter(self.encounterID)
 			</OnClick>
 		</Scripts>
@@ -769,6 +782,14 @@
 	</Frame>
 	
 	<Frame name="EncounterInfoTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="flashAnim">
+				<Alpha target="$parentHeaderButtonGlow" change="1.0" duration="0.6" order="1"/>
+				<Alpha target="$parentHeaderButtonGlow" change="-1.0"  duration="0.6" order="2"/>
+				<Alpha target="$parentHeaderButtonGlow" change="1.0" duration="0.6" order="3"/>
+				<Alpha target="$parentHeaderButtonGlow" change="-1.0"  duration="0.9" order="4"/>
+			</AnimationGroup>
+		</Animations>
 		<Size x="5" y="24"/>
 		<Frames>
 			<Button name="$parentHeaderButton" parentKey="button">
@@ -887,6 +908,32 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame name="$parentGlow" alpha="0">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentHighlightLeft" inherits="UI-EJ-PaperHeader-Highlight-Left">
+									<Anchors>
+										<Anchor point="LEFT" x="-1" y="-1"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentHighlightRight" inherits="UI-EJ-PaperHeader-Highlight-Right">
+									<Anchors>
+										<Anchor point="RIGHT" x="3" y="-1"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentHighlightMid" inherits="_PaperHeader-Highlight-Mid">
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentHighlightLeft" relativePoint="RIGHT" x="-32" y="0"/>
+										<Anchor point="RIGHT" relativeTo="$parentHighlightRight" relativePoint="LEFT" x="32" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame name="$parentIcon1" inherits="EncounterSectionIconTemplate" parentKey="icon1">
 						<Anchors>
 							<Anchor point="RIGHT" x="5" y="0"/>
@@ -941,6 +988,7 @@
 								if self.displayInfo then
 									EncounterJournal_DisplayCreature(self);
 								end
+								self:Enable();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -984,26 +1032,15 @@
 						self.tex.down[3]:Hide();
 					</OnShow>
 					<OnClick>
-						EncounterJournal_ToggleHeaders(self:GetParent())
-						self.tex.up[1]:Hide();
-						self.tex.up[2]:Hide();
-						self.tex.up[3]:Hide();
-						self.tex.down[1]:Hide();
-						self.tex.down[2]:Hide();
-						self.tex.down[3]:Hide();
-						
-						if self:GetParent().expanded then
-							self.tex = self.textures.expanded;
-						else
-							self.tex = self.textures.collapsed;
+						if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+							if self.link then
+								ChatEdit_InsertLink(self.link);
+							end
+							return;
 						end
-						
-						self.tex.up[1]:Show();
-						self.tex.up[2]:Show();
-						self.tex.up[3]:Show();
-						self.tex.down[1]:Hide();
-						self.tex.down[2]:Hide();
-						self.tex.down[3]:Hide();
+					
+						EncounterJournal_ToggleHeaders(self:GetParent())
+						self:GetScript("OnShow")(self);
 					</OnClick>
 					<OnMouseDown>
 						self.tex.up[1]:Hide();
@@ -1188,19 +1225,22 @@
 			</Anchors>
 		</ButtonText>
 		<Scripts>
-			<OnDisable>
-				self.leftSelect:Show();
-				self.midSelect:Show();
-				self.rightSelect:Show();
+			<OnLoad>
 				self.storedHeight = self:GetHeight();
 				self:SetHeight(self.storedHeight-4);
-			</OnDisable>
+			</OnLoad>
 			<OnEnable>
 				self.leftSelect:Hide();
 				self.midSelect:Hide();
 				self.rightSelect:Hide();
-				self:SetHeight(self.storedHeight);
+				self:SetHeight(self.storedHeight-4);
 			</OnEnable>
+			<OnDisable>
+				self.leftSelect:Show();
+				self.midSelect:Show();
+				self.rightSelect:Show();
+				self:SetHeight(self.storedHeight);
+			</OnDisable>
 		</Scripts>
 	</Button>
 	
@@ -1634,8 +1674,8 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString name="$parentText" font="GameFontNormal" text="SHOW_MAP">
-											<Size x="40" y="0"/>
+										<FontString name="$parentText" font="GameFontNormal" justifyH="LEFT" text="ENCOUNTER_JOURNAL_SHOW_MAP">
+											<Size x="0" y="0"/>
 											<Anchors>
 												<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0"/>
 											</Anchors>
@@ -1678,17 +1718,6 @@
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="5"/>
 								</Anchors>
-								<!--Layers>
-									<Layer level="OVERLAY">
-										<Texture>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="0"/>
-												<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-											</Anchors>
-											<Color r="1" a="0.5"/>
-										</Texture>
-									</Layer>
-								</Layers-->
 								<Frames>
 									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
 										<Anchors>
@@ -1711,7 +1740,7 @@
 										<Layers>
 											<Layer level="ARTWORK">
 												<FontString name="$parentLore" inherits="GameFontBlack" justifyH="LEFT" parentKey="lore">
-													<Size x="315" y="0"/>
+													<Size x="300" y="0"/>
 													<Anchors>
 														<Anchor point="TOPLEFT" x="5" y="-5"/>
 													</Anchors>
@@ -1730,14 +1759,14 @@
 							<Anchor point="TOPLEFT" x="3" y="-4"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
+							<Layer level="OVERLAY">
 								<Texture name="$parentTitleBG" inherits="UI-EJ-BossNameShadow">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="OVERLAY">
+							<Layer level="OVERLAY" textureSubLevel="1">
 								<FontString name="$parentImageTile" inherits="QuestTitleFontBlackShadow" justifyH="CENTER" parentKey="imageTitle">
 									<Size x="380" y="10"/>
 									<Anchors>
@@ -1864,7 +1893,7 @@
 									</Layer>
 								</Layers>
 							</Button>
-							<Button name="$parentHeroicButton" inherits="EncounterDifficultyTemplate">
+							<Button name="$parentHeroicButton" inherits="EncounterDifficultyTemplate" parentKey="heroButton">
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-8" y="-13"/>
 								</Anchors>
@@ -2197,7 +2226,7 @@
 										</NormalTexture>
 										<PushedTexture inherits="_FilterButtonDown-Mid">
 										</PushedTexture>
-										<HighlightTexture inherits="_FilterButtonHighlight-Mid" alphaMode="ADD">
+										<HighlightTexture inherits="_FilterButtonHighlight-Mid">
 										</HighlightTexture>
 										<NormalFont style="GameFontNormal"/>
 										<ButtonText>
