@@ -47,6 +47,13 @@ FRIENDS_TOOLTIP_MAX_TOONS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 
+local INVITE_RESTRICTION_NO_TOONS = 0;
+local INVITE_RESTRICTION_CLIENT = 1;
+local INVITE_RESTRICTION_LEADER = 2;
+local INVITE_RESTRICTION_FACTION = 3;
+local INVITE_RESTRICTION_INFO = 4;
+local INVITE_RESTRICTION_NONE = 5;
+
 local FriendButtons = { count = 0 };
 local BNetBroadcasts = { };
 local totalScrollHeight = 0;
@@ -923,7 +930,14 @@ function FriendsFrameFriendButton_OnClick(self, button)
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 			-- bnet friend
+			FriendsFrame.cachedCanInviteFromAccount = false;
 			local presenceID, givenName, surname, toonName, toonID, client, isOnline = BNGetFriendInfo(self.id);
+			if ( HasTravelPass() ) then
+				local restriction = FriendsFrame_GetInviteRestriction(self.id, FriendsFrame_HasInvitePermission());
+				if ( restriction == INVITE_RESTRICTION_NONE ) then
+					FriendsFrame.cachedCanInviteFromAccount = true;
+				end
+			end
 			FriendsFrame_ShowBNDropdown(format(BATTLENET_NAME_FORMAT, givenName, surname), isOnline, nil, nil, nil, 1, presenceID);
 		else
 			-- wow friend
@@ -1277,13 +1291,9 @@ function FriendsFrame_UpdateFriends()
 	local height;
 	local usedHeight = 0;
 
-	local accountHasTravelPass = HasTravelPass();
-	local canInvite = true;
-	if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
-		if ( not IsPartyLeader() and not IsRaidOfficer() ) then
-			canInvite = false;
-		end
-	end
+	local hasTravelPass = HasTravelPass();
+	local hasTravelPassButton;
+	local canInvite = FriendsFrame_HasInvitePermission();
 	
 	FriendsFrameOfflineHeader:Hide();
 	for i = 1, numButtons do
@@ -1292,7 +1302,7 @@ function FriendsFrame_UpdateFriends()
 		if ( index <= numFriendButtons and usedHeight < FRIENDS_SCROLLFRAME_HEIGHT ) then
 			button.buttonType = FriendButtons[index].buttonType;
 			button.id = FriendButtons[index].id;
-			local hasTravelPass = false;
+			hasTravelPassButton = false;
 			if ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
 				local name, level, class, area, connected, status, note = GetFriendInfo(FriendButtons[index].id);
 				broadcastText = nil;
@@ -1343,20 +1353,13 @@ function FriendsFrame_UpdateFriends()
 					nameColor = FRIENDS_BNET_NAME_COLOR;
 					button.gameIcon:Show();
 					-- travel pass
-					if ( accountHasTravelPass ) then
-						hasTravelPass = true;
-						if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
-							button.travelPassButton:Disable();
-							button.travelPassButton.errorTooltip = ERR_TRAVEL_PASS_NOT_ALLIED;
-						elseif ( not canInvite ) then
-							button.travelPassButton:Disable();
-							button.travelPassButton.errorTooltip = ERR_TRAVEL_PASS_NOT_LEADER;
-						elseif ( not realmName or realmName == "" ) then
-							button.travelPassButton:Disable();
-							button.travelPassButton.errorTooltip = ERR_TRAVEL_PASS_NO_INFO;
-						else
+					if ( hasTravelPass ) then
+						hasTravelPassButton = true;
+						local restriction = FriendsFrame_GetInviteRestriction(button.id, canInvite);
+						if ( restriction == INVITE_RESTRICTION_NONE ) then
 							button.travelPassButton:Enable();
-							button.travelPassButton.errorTooltip = nil;
+						else
+							button.travelPassButton:Disable();
 						end
 					end
 				else
@@ -1372,7 +1375,7 @@ function FriendsFrame_UpdateFriends()
 				end
 				if ( givenName and surname ) then
 					if ( toonName ) then
-						if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID) ) then
+						if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID, hasTravelPass) ) then
 							nameText = string.format(BATTLENET_NAME_FORMAT, givenName, surname).." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..toonName..")";
 						else
 							if ( ENABLE_COLORBLIND_MODE == "1" ) then
@@ -1394,7 +1397,7 @@ function FriendsFrame_UpdateFriends()
 				nameText = nil;
 			end
 			-- travel pass?
-			if ( hasTravelPass ) then
+			if ( hasTravelPassButton ) then
 				button.travelPassButton:Show();
 				button.gameIcon:SetPoint("TOPRIGHT", -21, -2);
 			else
@@ -1597,7 +1600,7 @@ function FriendsFrameTooltip_Show(self)
 			race = race or "";
 			class = class or "";
 			if ( client == BNET_CLIENT_WOW ) then
-				if ( CanCooperateWithToon(toonID) ) then
+				if ( CanCooperateWithToon(toonID, HasTravelPass()) ) then
 					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
 				else
 					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
@@ -2036,32 +2039,194 @@ function FriendsFriendsFrame_Show(presenceID)
 	BNRequestFOFInfo(presenceID);
 end
 
-function CanCooperateWithToon(toonID)
+function FriendsFrame_BattlenetInvite(button, presenceID)
+	-- no button means click from UnitPopup dropdown, find the friend by presenceID
+	local id;
+	if ( not button ) then
+		local numBNetTotal, numBNetOnline = BNGetNumFriends();
+		for i = 1, numBNetOnline do
+			if ( BNGetFriendInfo(i) == presenceID ) then
+				id = i;
+				break
+			end
+		end
+	else
+		id = button.id;
+	end
+	if ( id ) then
+		local numToons = BNGetNumFriendToons(id);
+		if ( numToons > 1 ) then
+			-- if no button, now find the physical friend button to anchor the dropdown
+			-- it might not exist if the list was scrolled
+			if ( not button ) then
+				local buttons = FriendsFrameFriendsScrollFrame.buttons;
+				for i = 1, #buttons do
+					if ( buttons[i].id == id and buttons[i].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+						button = buttons[i];
+						break;
+					end
+				end
+			end
+			
+			PlaySound("igMainMenuOptionCheckBoxOn");
+			local dropDown = TravelPassDropDown;
+			if ( dropDown.id ~= id ) then
+				CloseDropDownMenus();
+			end
+			dropDown.id = id;
+			dropDown.numToons = numToons;
+			-- show dropdown at the button if one was passed in or we found it
+			if ( button ) then
+				ToggleDropDownMenu(1, nil, dropDown, button.travelPassButton, 20, 34);
+			else
+				ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
+			end
+		else
+			local presenceID, givenName, surname, toonName, toonID = BNGetFriendInfo(id);
+			if ( toonID ) then
+				local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(toonID);
+				if ( toonName and realmName ) then
+					InviteUnit(toonName, realmName);
+				end
+			end
+		end	
+	end
+end
+
+function CanCooperateWithToon(toonID, hasTravelPass)
 	local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(toonID);
-	if ( realmName == playerRealmName and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
+	if ( hasTravelPass ) then
+		if ( realmName and realmName ~= "" and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
+			return true;
+		end
+	else
+		if ( realmName == playerRealmName and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
+			return true;
+		end
+	end
+	return false;
+end
+
+function CanCooperateWithAccount(toonID)
+	if ( FriendsFrame.cachedCanInviteFromAccount ) then
 		return true;
 	else
-		return false;
+		return CanCooperateWithToon(toonID);
+	end
+end
+
+--
+-- travel pass
+--
+
+function FriendsFrame_HasInvitePermission()
+	if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+		if ( not IsPartyLeader() and not IsRaidOfficer() ) then
+			return false;
+		end
+	end
+	return true;
+end
+
+function FriendsFrame_GetInviteRestriction(index, canInvite)
+	local restriction = INVITE_RESTRICTION_NO_TOONS;
+	local numToons = BNGetNumFriendToons(index);
+	for i = 1, numToons do
+		local hasFocus, toonName, client, realmName, faction = BNGetFriendToonInfo(index, i);
+		if ( client == BNET_CLIENT_WOW ) then
+			if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
+				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
+			elseif ( not realmName or realmName == "" ) then
+				restriction = max(INVITE_RESTRICTION_INFO, restriction);
+			elseif ( not canInvite ) then
+				restriction = max(INVITE_RESTRICTION_LEADER, restriction);
+			else
+				-- there is at lease 1 toon that can be invited
+				return INVITE_RESTRICTION_NONE;
+			end
+		else
+			restriction = max(INVITE_RESTRICTION_CLIENT, restriction);
+		end
+	end
+	return restriction;
+end
+
+function FriendsFrame_GetInviteRestrictionText(restriction)
+	if ( restriction == INVITE_RESTRICTION_LEADER ) then
+		return ERR_TRAVEL_PASS_NOT_LEADER;
+	elseif ( restriction == INVITE_RESTRICTION_FACTION ) then
+		return ERR_TRAVEL_PASS_NOT_ALLIED;
+	elseif ( restriction == INVITE_RESTRICTION_INFO ) then
+		return ERR_TRAVEL_PASS_NO_INFO;
+	elseif ( restriction == INVITE_RESTRICTION_CLIENT ) then
+		return ERR_TRAVEL_PASS_NOT_WOW;
+	else
+		return "";
 	end
 end
 
 function TravelPassButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( self.errorTooltip ) then
-		GameTooltip:SetText(TRAVEL_PASS_INVITE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
-		GameTooltip:AddLine(self.errorTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
-		GameTooltip:Show();
-	else
+	local canInvite = FriendsFrame_HasInvitePermission();
+	local restriction = FriendsFrame_GetInviteRestriction(self:GetParent().id, canInvite);
+	if ( restriction == INVITE_RESTRICTION_NONE ) then
 		GameTooltip:SetText(TRAVEL_PASS_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+	else
+		GameTooltip:SetText(TRAVEL_PASS_INVITE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+		GameTooltip:Show();
 	end
 end
 
-function TravelPassButton_OnClick(self)
-	local presenceID, givenName, surname, toonName, toonID = BNGetFriendInfo(self:GetParent().id);
-	if ( toonID ) then
-		local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(toonID);
-		if ( toonName and realmName ) then
-			InviteUnit(toonName, realmName);
+function TravelPassDropDown_OnLoad(self)
+	TravelPassDropDown.numToons = 0;
+	UIDropDownMenu_Initialize(self, TravelPassDropDown_Initialize, "MENU");
+end
+
+function TravelPassDropDown_Initialize(self)
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = TRAVEL_PASS_INVITE;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
+	info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = 1;
+	info.func = TravelPassDropDown_OnClick;
+	
+	local hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level;
+	local restriction;
+	for i = 1, self.numToons do
+		restriction = INVITE_RESTRICTION_NONE;
+		hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level = BNGetFriendToonInfo(self.id, i);
+		if ( client == BNET_CLIENT_WOW ) then
+			if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
+				restriction = INVITE_RESTRICTION_FACTIONINVITE_RESTRICTION_FACTION;
+			elseif ( not realmName or realmName == "" ) then
+				restriction = INVITE_RESTRICTION_INFO;
+			end
+			if ( restriction == INVITE_RESTRICTION_NONE ) then
+				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
+			else
+				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
+			end
+		else
+			restriction = INVITE_RESTRICTION_CLIENT;
+			info.text = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:18|t"..toonName;
 		end
+		if ( restriction == INVITE_RESTRICTION_NONE ) then
+			info.arg1 = toonName;
+			info.arg2 = realmName;
+			info.disabled = nil;
+		else
+			info.arg1 = nil;
+			info.arg2 = nil;
+			info.disabled = 1;
+		end
+		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
+end
+
+function TravelPassDropDown_OnClick(button, toonName, realmName)
+	InviteUnit(toonName, realmName);
 end

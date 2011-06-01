@@ -360,6 +360,10 @@ function WatchFrame_ClearDisplay ()
 	for _, questLine in pairs(WATCHFRAME_QUESTLINES) do
 		questLine:Reset();
 	end
+	for i = 1, WATCHFRAME_NUM_ITEMS do
+		_G["WatchFrameItem" .. i]:Hide();
+	end
+	QuestPOI_HideAllButtons("WatchFrameLines");
 end
 
 function WatchFrame_Update (self)

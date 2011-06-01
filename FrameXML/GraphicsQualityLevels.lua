@@ -1077,7 +1077,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 		function(self)
 			local api = GetCVar("gxapi");
 			for i = 1, #self.cvarValues do
-				if (self.cvarValues[i] == api) then
+				if (string.lower(self.cvarValues[i]) == string.lower(api)) then
 					return i;
 				end
 			end

@@ -89,6 +89,10 @@ function LFR_CanQueueForLockedInstances()
 	return GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
 end
 
+function LFR_CanQueueForRaidLockedInstances()
+	return true;	--For now, everyone can queue for raid locked instances.
+end
+
 function LFR_CanQueueForMultiple()
 	return (GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0);
 end
@@ -227,11 +231,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.isCollapsed = false;
 	end
 	
-	--Could probably use being refactored.
-	if ( not LFR_CanQueueForLockedInstances() and LFGLockList[dungeonID] ) then
-		button.enableButton:Hide();
-		button.lockedIndicator:Show();
-	else
+	if ( not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED) ) then
 		if ( LFR_CanQueueForMultiple() ) then
 			button.enableButton:Show();
 			LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, false);
@@ -244,6 +244,9 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			end
 		end
 		button.lockedIndicator:Hide();
+	else
+		button.enableButton:Hide();
+		button.lockedIndicator:Show();
 	end
 	
 	local enableState;
@@ -312,7 +315,8 @@ function LFRQueueFrameSpecificList_Update()
 end
 
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
-	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and (LFR_CanQueueForLockedInstances() or not LFGLockList[queueID]) ) then
+	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and
+		(not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
 		local info = LFGGetDungeonInfoByID(queueID);
 		SetLFGDungeon(queueID);
 		return true;
@@ -540,7 +544,7 @@ function LFRBrowseFrameList_Update()
 end
 
 function LFRBrowseFrameListButton_SetData(button, index)
-	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(index);
+	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(index);
 	
 	button.index = index;
 	button.unitName = name;
@@ -603,7 +607,11 @@ function LFRBrowseFrameListButton_SetData(button, index)
 		button.partyIcon:SetTexture("Interface\\LFGFrame\\LFGRole_BW");
 	else
 		button:Enable();
-		button.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+		if ( isIneligible ) then
+			button.name:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		else
+			button.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+		end
 		button.level:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		button.tankIcon:SetTexture("Interface\\LFGFrame\\LFGRole");
 		button.healerIcon:SetTexture("Interface\\LFGFrame\\LFGRole");
@@ -613,7 +621,7 @@ function LFRBrowseFrameListButton_SetData(button, index)
 end
 
 function LFRBrowseButton_OnEnter(self)
-	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(self.index);
+	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
 	
 	if ( partyMembers > 0 ) then
@@ -667,12 +675,14 @@ function LFRBrowseButton_OnEnter(self)
 		end
 	end
 	
-	if ( encountersComplete > 0 ) then
+	if ( encountersComplete > 0 or isIneligible ) then
 		GameTooltip:AddLine("\n"..BOSSES);
 		for i=1, encountersTotal do
-			local bossName, texture, isKilled = SearchLFGGetEncounterResults(self.index, i);
+			local bossName, texture, isKilled, isIneligible = SearchLFGGetEncounterResults(self.index, i);
 			if ( isKilled ) then
 				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			elseif ( isIneligible ) then
+				GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE_INELIGIBLE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 			else
 				GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 			end

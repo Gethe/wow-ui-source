@@ -1,4 +1,4 @@
-﻿
+
 **World of Warcraft PTR Patch 4.2**
 
 Notes for all World of Warcraft patches can be found [here][1].
@@ -64,6 +64,14 @@ sacrificed in Zul'Aman on Heroic difficulty.
 
   * All healing critical strikes now heal for 2 times a normal heal (+100%),
 up from 1.5 times a normal heal (+50%).
+
+  * Dodge: Death Knights, paladins, and warriors no longer receive any bonus
+to their chance to dodge from Agility. Their base chance to dodge is now a
+fixed 5%.
+
+  * Parry: Death Knights, paladins, and warriors now receive 27% of their
+Strength bonuses as parry rating, up from 25%. This conversion still only
+applies to Strength above and beyond their base Strength.
 
   * Players are once again free to dance in combat (without causing graphic
 errors). Other animations, such as attacks, will take precedence over dancing.
@@ -217,9 +225,27 @@ attack made against them equal to 50% of the pet's total health.
 
 **[![][11]][37] [Mages][37]**
 
-  * Ring of Frost now has a 1.5-second cast time.
+  * Pyroblast: The version of this spell cast when Hot Streak is not active
+did slightly less damage than the Hot Streak version. Its damage has been
+increased so that both versions of Pyroblast now do the same amount of damage.
 
-  * Spellsteal now has a 6-second cooldown.
+  * Spellsteal mana cost has been increased 100%
+
+  * Talent Specializations
+
+    * Fire
+
+      * Impact: When Living Bomb is spread via this talent, it will only be
+spread to two additional targets. The net effect is that if the Mage’s most
+recent Living Bomb target is the same as their Impact target, that target will
+no longer lose the Living Bomb effect. If Living Bomb is active on multiple
+targets when the Impact effect is cast, Living Bomb will remain active on the
+most recent Living Bomb target, and will be added to two other nearby targets.
+
+    * Frost
+
+      * Deep Freeze and Ring of Frost will now cause diminishing returns for
+each other.
 
 **[![][13]][38] [Paladins][38]**
 
@@ -232,6 +258,11 @@ attack made against them equal to 50% of the pet's total health.
   * Holy Light mana cost has been increased to 12% of base mana, up from 10%.
 
   * Rebuke, Divine Shield and Divine Protection have new icons.
+
+  * Seal of Righteousness – now can be proc’d by any melee ability, not just
+single target melee abilities. This adds Hammer of the Righteous (the physical
+component) and Divine Storm to the list of abilities that can proc it. In
+addition, Seal of Righteousness procs can now crit.
 
   * Talent Specializations
 
@@ -259,9 +290,15 @@ since Denounce is no longer a proc.
 Divine Protection are cast. In addition, this talent now reduces the cooldown
 of Holy Radiance by 13/26/40 seconds, up from 10/20/30.
 
+      * Walk in the Light now improves Word of Glory healing by 30% in
+addition to its current effects.
+
     * Protection
 
       * Ardent Defender has a new spell effect.
+
+      * Guardian of Ancient Kings now uses the ‘Assist’ pet stance
+functionality.
 
       * Hammer of the Righteous mana cost has been lowered to 10%, down from
 12% to match Crusader Strike.
@@ -273,15 +310,25 @@ rating.
 
     * Retribution
 
+      * Seals of Command: This talent now makes Seal of Righteousness hit an
+unlimited number of melee targets, instead of only 2 additional targets.
+
       * Selfless Healer can no longer be dispelled and cannot be stolen via
 Spellsteal; and, in addition to its current effects, it lowers the cooldown of
 Word of Glory by 5/10 seconds.
+
+    * Glyphs
+
+      * Glyph of Truth: The expertise bonus granted by this glyph now also
+works when Seal of Righteousness is active.
 
 **[![][15]][39] [Priests][39]**
 
   * Devouring Plague damage done has been decreased by 12%.
 
   * Mind Blast damage done has been increased by 12%.
+
+  * Shadowfiend now uses the ‘Assist’ pet stance functionality.
 
   * Shadow Word: Death damage done has been increased by 12%.
 
@@ -292,6 +339,9 @@ Word of Glory by 5/10 seconds.
     * Shadow
 
       * Mind Flay damage done has been increased by 12%.
+
+      * Sin and Punishment’s Vampiric Touch backlash Fear effect now longer
+has diminishing returns.
 
       * Vampiric Touch damage done has been decreased by 12%.
 
@@ -345,8 +395,6 @@ be cast while moving.
 
 **[![][21]][42] [Warlocks][42]**
 
-  * Drain Life's damage has been reduced by approximately 25%.
-
   * Soul Harvest has a new spell effect.
 
   * Warlock Bug Fixes
@@ -371,10 +419,205 @@ yet complete.
 testing. Please visit the [PTR Discussion forum][45] for the latest raid
 testing schedule.
 
-  * Deadmines
+  * Bastion of Twilight
 
-    * Vanessa VanCleef (Heroic difficulty) now has a sweet, sweet voice to
+    * The damage modifier on Normal has been reduced for Arion, Elementium
+Monstrosity, Feludius, Ignacius, and Terrastra.
+
+    * Removed one of each type of Bound elemental from the Ascendant Council
+chamber.
+
+    * Arion
+
+      * Chain Lightning damage has been reduced.
+
+    * Cho’gall
+
+      * Health, melee damage, Health of Corrupting Adherent, Depravity damage,
+Corrupting Crash damage, Flaming Destruction damage, and Unleashed Shadows
+damage has all been reduced by 20%.
+
+      * Corrupting Crash and Depravity
+
+        * Halved the amount of Corruption they give to 5 from 10.
+
+      * Corrupted Bite effect caused by Blood of the Old God reduced.
+
+      * Damage Taken from Corruption of the Old God per Corrupted Blood has
+been reduced from 3% per stack to 2% per stack.
+
+      * Debilitating Beam damage has been reduced by 20% to 6,400.
+
+      * The duration of Twisted Devotion has been reduced by 25%.
+
+    * Dragon Siblings
+
+      * Health, melee damage, Twilight Meteorite damage, Devouring Flames,
+Blackout damage, Unstable Twilight damage, Twilight Zone damage, Twilight
+Blast damage, Fabulous Flames damage, has all been reduced by 20%.
+
+    * Elementium Monstrosity
+
+      * Electrical Instability damage has been reduced.
+
+    * Feludius
+
+      * Damage due to being Frozen while Waterlogged has been reduced.
+
+    * Halfus
+
+      * Health, melee damage, Fireball/Fireball Barrage damage, Furious Roar
+damage, Scorching Breath damage, Shadow Nova damage, has all been reduced by
+20%.
+
+      * Nether Scion, Slate Dragon, Storm Rider, Time Warden, and Orphaned
+Emerald Whelp health has been reduced by 20%.
+
+      * Shadow Nova base cast time has been increased.
+
+    * Ignacius
+
+      * Rising Flames now increases damage by 3% per stack, down from 5%.
+
+    * Terrastra
+
+      * Harden Skin now increases Physical damage dealt by 20% (down from
+100%.)
+
+    * Blackwing Descent
+
+    * Atramedes
+
+      * Health, melee damage, modulation damage, Roaring Flame Breath damage,
+and Searing Flame damage has all been reduced by 20%.
+
+      * Modulation no longer causes Sound in normal difficulty.
+
+      * Sound given by Sonar Pulse has been reduced to 3 (from 5.)
+
+    * Chimaeron
+
+      * Health reduced by 20% and melee damage reduced by 10%.
+
+      * Chimaeron will now only cast two caustic slimes per 30 second cycle,
+at second 17 and second 23.
+
+    * Drakeadon Mongrel:
+
+      * Time Lapse no longer stuns.
+
+      * Frost Burn silence is now 3 seconds
+
+    * Dwarven Kings
+
+      * Whirlwind no longer drops threat.
+
+      * Execution sentence now deals damage only.
+
+      * Shield of Light absorption now reduced.
+
+    * Magmaw
+
+      * Damage and hit points reduced by 20%.
+
+      * Lava Parasites have been diminished
+
+      * Lava Spew damage, Magma Spit damage, Massive Crash damage, and
+Infectious Vomit damage have all been been reduced.
+
+      * Mangled Lifeless no longer instantly kills, and damage has been
+reduced.
+
+      * Parasitic Infection has been decreased.
+
+    * Maloriak
+
+      * Health, damage, Aberation health/damage, Arcane Storm damage, Prime
+Subject damage, Flash Freeze/Shatter damage, and Scorching Blast damage has
+all been decreased by 20%.
+
+      * Aberration stacking damage buff decreased.
+
+      * Prime Subjects no longer fixate, and are no longer immune to taunt.
+
+    * Nefarian
+
+      * Animated Bone Warriors take 33 seconds to fall over, (down from 50.)
+
+      * Blast Nova cast time increased.
+
+      * Chromatic Prototype Health reduced 20%.
+
+      * Electrocute damage reduced 30%.
+
+      * Fewer Animated Bone warriors spawn.
+
+      * Magma Stacking debuff effect reduced 75%.
+
+      * Nefarian health and melee damage reduced by 20%.
+
+      * Nefarian's Shadowblaze cast frequency cannot increase beyond 1 per 15
+sec.
+
+      * Onyxia health and melee damage reduced by 20%.
+
+      * Shadowflame Barrage damage reduced 20%.
+
+      * Tail Lash damage reduced 50%.
+
+    * Omnotron Council
+
+      * Barrier absorb amount increased by 100%.
+
+      * Increased the cooldown on Power Conversion (Converted Power chance).
+
+      * Health, Melee damage, Electrical Discharge damage, Lightning Conductor
+damage, Health of Poison Bomb, Incineration Security Measure damage, Arcane
+Annihilator damage, has all been reduced by 20%.
+
+      * Flamethrower damage has been reduced by 40%.
+
+      * Static Shock caused by Unstable Shield damage and Poison Bomb damage
+has been decreased by 50%.
+
+    * Deadmines
+
+      * Vanessa VanCleef (Heroic difficulty) now has a sweet, sweet voice to
 accompany her dialog.
+
+    * Throne of the Four Winds
+
+      * Al’Akir
+
+        * Acid Rain now stacks every 20s (up from 15s.)
+
+        * Electrocute now pulses every 1s (up from 0.5s.)
+
+        * Feedback duration increased to 30s (from 20s.)
+
+        * Health, damage, and Wind Burst damage have all been reduced 20%.
+
+        * Lightning and Lightning Rod recast time has been increased.
+
+        * Lightning Strike friendly chain damage has been halved.
+
+        * Will no longer use Static Shock on normal difficulty in phase 1 or
+phase 2.
+
+      * Conclave of the Four Winds
+
+        * Gathering Strength cast time has been increased
+
+        * Ice Patch slow is now 5% per stack, up to 10 stacks (down from 10%
+per stack, up to 30 stacks), damage reduced by 20%.
+
+        * Rohash, Anshal, Nezir melee, Ravenous Creeper health/damage,
+Ravenous Creeper toxic spores damage, Hurricane damage, Sleet Storm damage ,
+Permafrost damage , Slicing Gale, and Wind Blast damage have all been reduced
+by 20%.
+
+        * Wind Chill damage decreased by 20%and now increases damage taken by
+5% per stack.
 
 **[Guilds][46]**
 
@@ -405,6 +648,24 @@ has been redesigned. It now causes Lightning Shield to generate an extra
 charge, rather than consuming one, when it is triggered by receiving damage,
 up to a maximum of 3 (9 with the Rolling Thunder talent).
 
+    * Tier 11 Set Bonuses
+
+      * Restoration druid Tier 11 2-Piece: This set bonus has been redesigned
+to work with the new Restoration druid mastery. Druids with this bonus now
+receive the bonus to Spirit while the Harmony mastery bonus to periodic
+healing is active.
+
+    * Tier 12 Set Bonuses
+
+      * Hunter 4P: The effect which makes Shots cost no focus now also makes
+Kill Command cost no focus.
+
+      * Mage 2P: This set bonus can now also be triggered by Frostfire Bolt.
+
+      * Mage 4P: The portions of this bonus referring to Arcane Missiles have
+been removed. Instead, the set bonus now makes Arcane Power reduce the cost of
+Mage spells by 10% instead of increasing their cost.
+
 **[Professions][48]**
 
   * Skinning
@@ -413,6 +674,10 @@ up to a maximum of 3 (9 with the Rolling Thunder talent).
 looted by other players.
 
 **[PvP][49]**
+
+  * Arenas
+
+    * The Ring of Valor has been added to the Arena rotation once again.
 
   * Battlegrounds
 

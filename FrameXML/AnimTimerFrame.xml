@@ -30,6 +30,15 @@
 					</OnLoad>
 				</Scripts>
 			</AnimationGroup>
+			<AnimationGroup name="AnimTimerFrameUpdateActiveRaidProfileGroup">
+				<Animation name="UpdateActiveRaidProfileAnim" duration="3.0" order="1">
+					<Scripts>
+						<OnFinished>
+							CompactUnitFrameProfiles_CheckAutoActivation();
+						</OnFinished>
+					</Scripts>
+				</Animation>
+			</AnimationGroup>
 			<!-- if you have logic that you want to fire periodically, then you should create a looping AnimationGroup with your logic in the OnLoop script -->
 			<!-- if you have logic that you want to fire constantly, then you should create a looping AnimationGroup with your logic in the OnUpdate script -->
 		</Animations>

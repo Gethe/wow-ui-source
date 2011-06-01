@@ -328,7 +328,13 @@ function AccountLogin_ShowUserAgreements()
 		AccountLoginUI:Hide();
 		TOSFrame:Hide();
 		local dllURL = "";
-		if ( IsWindowsClient() ) then dllURL = SCANDLL_URL_WIN32_SCAN_DLL; end
+		if ( IsWindowsClient() ) then
+			if ( Is64BitClient() ) then
+				dllURL = SCANDLL_URL_WIN64_SCAN_DLL;
+			else
+				dllURL = SCANDLL_URL_WIN32_SCAN_DLL;
+			end
+		end
 		ScanDLLStart(SCANDLL_URL_LAUNCHER_TXT, dllURL);
 	else
 		AccountLoginUI:Show();

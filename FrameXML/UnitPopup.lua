@@ -1158,7 +1158,11 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( inParty == 0 or (isLeader == 0) or HasLFGRestrictions() or IsInFakeRaid() ) then
 							enable = 0;
 						end
-					elseif ( value == "BN_INVITE" or value == "BN_TARGET" ) then
+					elseif ( value == "BN_INVITE" ) then
+						if ( not currentDropDown.presenceID or not CanCooperateWithAccount(currentDropDown.presenceID) ) then
+							enable = 0;
+						end
+					elseif ( value == "BN_TARGET" ) then
 						if ( not currentDropDown.presenceID or not CanCooperateWithToon(currentDropDown.presenceID) ) then
 							enable = 0;
 						end
@@ -1352,10 +1356,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "BN_VIEW_FRIENDS" ) then
 		FriendsFriendsFrame_Show(dropdownFrame.presenceID);
 	elseif ( button == "BN_INVITE" ) then
-		local presenceID, givenName, surname, toonName = BNGetFriendInfoByID(dropdownFrame.presenceID);
-		if ( toonName ) then
-			InviteUnit(toonName);
-		end
+		FriendsFrame_BattlenetInvite(nil, dropdownFrame.presenceID);
 	elseif ( button == "BN_TARGET" ) then
 		local presenceID, givenName, surname, toonName = BNGetFriendInfoByID(dropdownFrame.presenceID);
 		if ( toonName ) then

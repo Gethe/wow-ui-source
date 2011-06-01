@@ -165,10 +165,11 @@ end
 
 function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
 	scrollBar = scrollBar or _G[self:GetName() .. "ScrollBar"];
+	local scrollStep = scrollBar.scrollStep or scrollBar:GetHeight() / 2
 	if ( value > 0 ) then
-		scrollBar:SetValue(scrollBar:GetValue() - (scrollBar:GetHeight() / 2));
+		scrollBar:SetValue(scrollBar:GetValue() - scrollStep);
 	else
-		scrollBar:SetValue(scrollBar:GetValue() + (scrollBar:GetHeight() / 2));
+		scrollBar:SetValue(scrollBar:GetValue() + scrollStep);
 	end
 end
 

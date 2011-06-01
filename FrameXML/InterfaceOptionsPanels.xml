@@ -3844,17 +3844,22 @@
 				<Scripts>
 					<OnLoad>		
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.text = _G[self:GetName().."Text"];
-						self.text:SetText(MOVE_PAD);
-						self.tooltipText = OPTION_TOOLTIP_MOVE_PAD;
-						self.defaultValue = "0";
+						self.cvar = "enableMovePad"
+						self.SetDisplayValue = self.SetValue;
+						self.setFunc = function(value)
+							if ( value == "1" ) then
+								UIParentLoadAddOn("Blizzard_MovePad");
+								MovePadFrame:Show();
+							elseif(IsAddOnLoaded("Blizzard_MovePad")) then
+								MovePadFrame:Hide();
+							end
+						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-
-						self.GetValue = function (self) return ( (IsAddOnLoaded("Blizzard_MovePad") and MovePadFrame:IsShown() and "1") or "0" ); end
-						self.SetValue = function (self, value) self.value = value; self:SetChecked(value); end
-						self.setFunc = function(value) if( value == "1" ) then MovePad_LoadUI(); MovePadFrame:Show(); elseif(IsAddOnLoaded("Blizzard_MovePad")) then MovePadFrame:Hide(); end end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
 				</Scripts>
 			</CheckButton>
 			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">

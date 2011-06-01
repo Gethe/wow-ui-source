@@ -273,6 +273,9 @@
 							<OnEscapePressed>
 								self:ClearFocus();
 							</OnEscapePressed>
+							<OnTextChanged>
+								CompactUnitFrameProfiles_UpdateNewProfileCreateButton();
+							</OnTextChanged>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
@@ -301,10 +304,8 @@
 						<Scripts>
 							<OnClick>
 								--Also clicked via the OnEnterPressed script in the EditBox.
-								if ( self:GetParent().editBox:GetText() ~= "" ) then
-									CompactUnitFrameProfiles_CreateProfile(self:GetParent().editBox:GetText());
-									CompactUnitFrameProfiles_HideNewProfileDialog();
-								end
+								CompactUnitFrameProfiles_CreateProfile(strtrim(self:GetParent().editBox:GetText()));
+								CompactUnitFrameProfiles_HideNewProfileDialog();
 							</OnClick>
 						</Scripts>
 					</Button>

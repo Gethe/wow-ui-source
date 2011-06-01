@@ -12,7 +12,6 @@
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-90" y="-180"/>
 		</Anchors>
-		<TitleRegion setAllPoints="true"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -34,12 +33,12 @@
 				</Anchors>
 				<Backdrop bgFile="LockButton-Border"/>
 				<Scripts>
+					<OnLoad>
+						self:SetChecked(false);
+						MovePadFrame.canMove = false;
+					</OnLoad>
 					<OnClick>
-						if ( self:GetChecked() ) then
-							self:GetParent():EnableMouse(true);
-						else
-							self:GetParent():EnableMouse(false);
-						end
+						MovePadFrame.canMove = self:GetChecked();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\LockButton-Locked-Up"/>
@@ -183,5 +182,25 @@
 				</Scripts>
 			</CheckButton>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				if( self.canMove ) then
+					self.moving = true;
+					self:SetFrameStrata("DIALOG");
+					self:StartMoving();
+				end
+			</OnDragStart>
+			<OnDragStop>
+				if( self.canMove and self.moving ) then
+					self.moving = false;
+					self:StopMovingOrSizing();
+					self:SetFrameStrata("BACKGROUND");
+					ValidateFramePosition(self, 25);
+				end
+			</OnDragStop>
+		</Scripts>
 	</Frame>
 </Ui>

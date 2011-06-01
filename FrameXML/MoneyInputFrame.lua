@@ -172,9 +172,11 @@ function MoneyInputFrame_OpenPopup(moneyFrame)
 	if ( popupOwner ) then
 		popupOwner.hasPickup = 0;
 	end
-	popupOwner = moneyFrame;
-	moneyFrame.hasPickup = 1;
-	StaticPopup_Show("PICKUP_MONEY");
+	if(moneyFrame and moneyFrame.info.canPickup) then
+		popupOwner = moneyFrame;
+		moneyFrame.hasPickup = 1;
+		StaticPopup_Show("PICKUP_MONEY");
+	end
 end
 
 function MoneyInputFrame_ClosePopup()

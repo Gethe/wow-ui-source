@@ -44,7 +44,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="HELP_LABEL">
+			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_HELP">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP">
 						<Offset>

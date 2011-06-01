@@ -4,7 +4,8 @@ TRADE_SKILLS_DISPLAYED = 8;
 TRADE_SKILL_GUILD_CRAFTERS_DISPLAYED = 10;
 MAX_TRADE_SKILL_REAGENTS = 8;
 TRADE_SKILL_HEIGHT = 16;
-TRADE_SKILL_TEXT_WIDTH = 275;
+TRADE_SKILL_TEXT_WIDTH = 270;
+TRADE_SKILL_SKILLUP_TEXT_WIDTH = 30;
 TRADE_SKILL_LINKED_NAME_WIDTH = 120;
 
 TradeSkillTypePrefix = {
@@ -169,7 +170,7 @@ function TradeSkillFrame_Update()
 	TradeSkillHighlightFrame:Hide();
 	local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps;
 	local skillIndex, skillButton, skillButtonText, skillButtonCount, skillButtonNumSkillUps, skillButtonNumSkillUpsIcon;
-	local nameWidth, countWidth;
+	local nameWidth, countWidth, usedWidth;
 	
 	local skillNamePrefix = " ";
 	local diplayedSkills = TRADE_SKILLS_DISPLAYED;
@@ -206,18 +207,16 @@ function TradeSkillFrame_Update()
 		skillButtonNumSkillUps = _G["TradeSkillSkill"..buttonIndex.."NumSkillUps"];
 		skillButtonNumSkillUpsText = _G["TradeSkillSkill"..buttonIndex.."NumSkillUpsText"];
 		skillButtonNumSkillUpsIcon = _G["TradeSkillSkill"..buttonIndex.."NumSkillUpsIcon"];
-		if ( skillIndex <= numTradeSkills ) then	
-		
+		if ( skillIndex <= numTradeSkills ) then
 			--turn on the multiskill icon
 			if not isTradeSkillGuild and numSkillUps > 1 and skillType=="optimal" then
 				skillButtonNumSkillUps:Show();
 				skillButtonNumSkillUpsText:SetText(numSkillUps);
+				usedWidth = TRADE_SKILL_SKILLUP_TEXT_WIDTH;
 			else 
 				skillButtonNumSkillUps:Hide();
+				usedWidth = 0;
 			end
-		
-		
-		
 			-- Set button widths if scrollbar is shown or hidden
 			if ( TradeSkillListScrollFrame:IsShown() ) then
 				skillButton:SetWidth(293);
@@ -270,7 +269,7 @@ function TradeSkillFrame_Update()
 				if ( numAvailable <= 0 ) then
 					skillButton:SetText(skillNamePrefix..skillName);
 					skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH);
-					skillButtonCount:SetText(skillCountPrefix);
+					skillButtonCount:SetText("");
 				else
 					skillName = skillNamePrefix..skillName;
 					skillButtonCount:SetText("["..numAvailable.."]");
@@ -278,8 +277,8 @@ function TradeSkillFrame_Update()
 					nameWidth = TradeSkillFrameDummyString:GetWidth();
 					countWidth = skillButtonCount:GetWidth();
 					skillButtonText:SetText(skillName);
-					if ( nameWidth + 2 + countWidth > TRADE_SKILL_TEXT_WIDTH ) then
-						skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH-2-countWidth);
+					if ( nameWidth + 2 + countWidth > TRADE_SKILL_TEXT_WIDTH - usedWidth ) then
+						skillButtonText:SetWidth(TRADE_SKILL_TEXT_WIDTH - 2 - countWidth - usedWidth);
 					else
 						skillButtonText:SetWidth(0);
 					end

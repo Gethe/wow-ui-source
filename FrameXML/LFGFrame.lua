@@ -28,6 +28,8 @@ LFG_RETURN_VALUES = {
 	maxPlayers = 12,
 }
 
+LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
+
 LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g. attunements)
 	"EXPANSION_TOO_LOW",
 	"LEVEL_TOO_LOW",

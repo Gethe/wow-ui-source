@@ -1,5 +1,4 @@
 
-
 --LOCALIZED CONSTANTS
 EJ_MIN_CHARACTER_SEARCH = 3;
 
@@ -44,13 +43,13 @@ function EncounterJournal_OnLoad(self)
 	self.encounter.usedHeaders = {};
 	
 	self.encounter.infoFrame = self.encounter.info.detailsScroll.child;
-	--self.encounter.scrollFrame.stepSize = 12;
+	self.encounter.info.detailsScroll.ScrollBar.scrollStep = 15;
 	
 	
-	UIDropDownMenu_SetWidth(self.instanceSelect.tierDropDown, 170);
-	UIDropDownMenu_SetText(self.instanceSelect.tierDropDown, "Pick A Dungeon");
-	UIDropDownMenu_JustifyText(self.instanceSelect.tierDropDown, "LEFT");
-	UIDropDownMenu_Initialize(self.instanceSelect.tierDropDown, EncounterJournal_TierDropDown_Init);
+	-- UIDropDownMenu_SetWidth(self.instanceSelect.tierDropDown, 170);
+	-- UIDropDownMenu_SetText(self.instanceSelect.tierDropDown, "Pick A Dungeon");
+	-- UIDropDownMenu_JustifyText(self.instanceSelect.tierDropDown, "LEFT");
+	-- UIDropDownMenu_Initialize(self.instanceSelect.tierDropDown, EncounterJournal_TierDropDown_Init);
 	
 	
 	self.encounter.info.bossTab:Click();
@@ -78,6 +77,8 @@ function EncounterJournal_OnLoad(self)
 	}
 	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
 	EncounterJournal_ListInstances();
+	
+	EncounterJournal.instanceSelect.dungeonsTab:Disable();
 end
 
 
@@ -103,8 +104,12 @@ end
 function EncounterJournal_OnEvent(self, event, ...)
 	if  event == "EJ_LOOT_DATA_RECIEVED" then
 		local itemID = ...
-		EncounterJournal_LootCallback(itemID);
-		EncounterJournal_SearchUpdate();
+		if itemID then
+			EncounterJournal_LootCallback(itemID);
+			EncounterJournal_SearchUpdate();
+		else
+			EncounterJournal_LootUpdate();
+		end
 	end
 end
 
@@ -113,10 +118,12 @@ function EncounterJournal_ListInstances()
 	NavBar_Reset(EncounterJournal.navBar);
 	EncounterJournal.encounter:Hide();
 	EncounterJournal.instanceSelect:Show();
+	local showRaid = EncounterJournal.instanceSelect.raidsTab:IsEnabled() == nil;
+	
 
 	local self = EncounterJournal.instanceSelect.scroll.child;
 	local index = 1;
-	local instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index);
+	local instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index, showRaid);
 	local instanceButton;
 	while instanceID do
 		instanceButton = self["instance"..index];
@@ -135,12 +142,19 @@ function EncounterJournal_ListInstances()
 		instanceButton.instanceID = instanceID;
 		instanceButton.tooltipTitle = name;
 		instanceButton.tooltipText = description;
+		instanceButton:Show();
 		
 		index = index + 1;
-		instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index);
+		instanceID, name, description, _, buttonImage = EJ_GetInstanceByIndex(index, showRaid);
 	end
 
---Hide old buttons needed.
+	--Hide old buttons needed.
+	instanceButton = self["instance"..index];
+	while instanceButton do
+		instanceButton:Hide();
+		index = index + 1;
+		instanceButton = self["instance"..index];
+	end
 end
 
 
@@ -164,8 +178,9 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		self.info.diff25man:Hide();
 	end
 	
-	local iname, description, bgImage = EJ_GetInstanceInfo();
+	local iname, description, bgImage, _, loreImage = EJ_GetInstanceInfo();
 	self.instance.title:SetText(iname);
+	self.instance.loreBG:SetTexture(loreImage);
 	self.info.encounterTitle:SetText(iname);
 	
 	self.instance.loreScroll.child.lore:SetText(description);
@@ -387,6 +402,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				--Show Creature Portrait
 				if displayInfo ~= 0 then
 					SetPortraitTexture(infoHeader.button.portrait.icon, displayInfo);
+					infoHeader.button.portrait.name = title;
 					infoHeader.button.portrait.displayInfo = displayInfo;
 					infoHeader.button.portrait:Show();
 					textLeftAnchor = infoHeader.button.portrait;
@@ -580,26 +596,26 @@ function EncounterJournal_TierDropDown_Select(self, instanceID, name)
 end
 
 
-function EncounterJournal_TierDropDown_Init()
-	local info = UIDropDownMenu_CreateInfo();
-	--This temporarily list all bosses
-	local index = 1;
-	local instanceID, name, description = EJ_GetInstanceByIndex(index);
+-- function EncounterJournal_TierDropDown_Init()
+	-- local info = UIDropDownMenu_CreateInfo();
+	-- --This temporarily list all bosses
+	-- local index = 1;
+	-- local instanceID, name, description = EJ_GetInstanceByIndex(index);
 	
-	while (instanceID) do
-		info.text = name;
-		info.tooltipTitle = name;
-		info.tooltipText = description;
-		info.arg1 = instanceID;
-		info.arg2 = name;
-		info.notCheckable = true;
-		info.func = 	EncounterJournal_TierDropDown_Select;
-		UIDropDownMenu_AddButton(info);
+	-- while (instanceID) do
+		-- info.text = name;
+		-- info.tooltipTitle = name;
+		-- info.tooltipText = description;
+		-- info.arg1 = instanceID;
+		-- info.arg2 = name;
+		-- info.notCheckable = true;
+		-- info.func = 	EncounterJournal_TierDropDown_Select;
+		-- UIDropDownMenu_AddButton(info);
 		
-		index = index + 1;
-		instanceID, name, description = EJ_GetInstanceByIndex(index);
-	end
-end 
+		-- index = index + 1;
+		-- instanceID, name, description = EJ_GetInstanceByIndex(index);
+	-- end
+-- end 
 
 
 function EncounterJournal_TabClicked(self, button)
@@ -645,13 +661,14 @@ function EncounterJournal_LootUpdate()
 		item = items[i];
 		index = offset + i;
 		if index <= numLoot then
-			local name, icon, slot, armorType, itemID = EJ_GetLootInfoByIndex(index);
+			local name, icon, slot, armorType, itemID, link = EJ_GetLootInfoByIndex(index);
 			item.name:SetText(name);
 			item.icon:SetTexture(icon);
 			item.slot:SetText(slot);
 			item.armorType:SetText(armorType);
 			item.itemID = itemID;
 			item.index = index;
+			item.link = link;
 			item:Show();
 			
 			if item.showingTooltip then
@@ -664,6 +681,21 @@ function EncounterJournal_LootUpdate()
 	
 	local totalHeight = numLoot * 51;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, 351);
+end
+
+
+function EncounterJournal_Loot_OnUpdate(self)
+		if GameTooltip:IsOwned(self) then
+			if IsModifiedClick("COMPAREITEMS") then --or (GetCVarBool("alwaysCompareItems") ) then
+				GameTooltip_ShowCompareItem();
+			end
+
+			if IsModifiedClick("DRESSUP") then
+				ShowInspectCursor();
+			else
+				ResetCursor();
+			end
+		end
 end
 
 
@@ -975,7 +1007,33 @@ function EncounterJournal_CheckQuestButtons()
 end
 
 
+function EncounterJournal_SetClassFilter(classID, className)
+	local index = 1;
+	local classButton = EncounterJournal.encounter.info.lootScroll.classFilter["class"..index];
 
+	while classButton do
+		if classButton:GetID() == classID then
+			classButton:SetChecked(true);
+		else
+			classButton:SetChecked(false);
+		end
+		index = index + 1;
+		classButton = EncounterJournal.encounter.info.lootScroll.classFilter["class"..index];
+	end
+	
+	if classID then
+		EncounterJournal.encounter.info.lootScroll.classClearFilter.text:SetText(string.format(EJ_CLASS_FILTER, className));
+		EncounterJournal.encounter.info.lootScroll.classClearFilter:Show();
+		EJ_SetClassLootFilter(classID);
+		EncounterJournal.encounter.info.lootScroll:SetHeight(357);
+	else
+		EncounterJournal.encounter.info.lootScroll.classClearFilter:Hide();
+		EJ_SetClassLootFilter(-1);
+		EncounterJournal.encounter.info.lootScroll:SetHeight(380);
+	end
+	
+	EncounterJournal_LootUpdate();
+end
 
 ----------------------------------------
 --------------Nav Bar Func--------------

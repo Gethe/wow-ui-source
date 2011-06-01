@@ -170,7 +170,9 @@ TRAVEL PASS
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
-					<OnClick function="TravelPassButton_OnClick"/>
+					<OnClick>
+						FriendsFrame_BattlenetInvite(self:GetParent());
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="$parentSummonButton" inherits="ActionButtonTemplate" hidden="true" parentKey="summonButton">
@@ -1017,6 +1019,11 @@ TRAVEL PASS
 		</Layers>
 		<Frames>
 			<Frame name="FriendsDropDown" inherits="UIDropDownMenuTemplate"/>
+			<Frame name="TravelPassDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Scripts>
+					<OnLoad function="TravelPassDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
 			<Button name="FriendsFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT">

@@ -328,7 +328,7 @@
 					<AbsDimension x="80" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="MacroFrameText" relativePoint="TOPRIGHT">
+					<Anchor point="BOTTOMRIGHT" relativeTo="MacroFrameScrollFrame" relativePoint="TOPRIGHT">
 						<Offset>
 							<AbsDimension x="25" y="10"/>
 						</Offset>

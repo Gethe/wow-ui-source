@@ -7,7 +7,7 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	
 	--Get this working with the InterfaceOptions panel.
-	self.name = COMPACT_UNIT_FRAME_PROFILES;
+	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
 	self.options = {};
 	self.controls = {};
 	
@@ -174,6 +174,17 @@ function CompactUnitFrameProfiles_CreateProfile(profileName)
 	CompactUnitFrameProfiles_ActivateRaidProfile(profileName);
 end
 
+function CompactUnitFrameProfiles_UpdateNewProfileCreateButton()
+	local button = CompactUnitFrameProfiles.newProfileDialog.createButton;
+	local text = strtrim(CompactUnitFrameProfiles.newProfileDialog.editBox:GetText());
+	
+	if ( text == "" or RaidProfileExists(text) ) then
+		button:Disable();
+	else
+		button:Enable();
+	end
+end
+
 function CompactUnitFrameProfiles_HideNewProfileDialog()
 	CompactUnitFrameProfiles.newProfileDialog:Hide();
 end
@@ -184,6 +195,7 @@ function CompactUnitFrameProfiles_ShowNewProfileDialog()
 	CompactUnitFrameProfiles.newProfileDialog:Show();
 	CompactUnitFrameProfiles.newProfileDialog.editBox:SetText("");
 	CompactUnitFrameProfiles.newProfileDialog.editBox:SetFocus();
+	CompactUnitFrameProfiles_UpdateNewProfileCreateButton();
 end
 
 function CompactUnitFrameProfiles_ConfirmProfileDeletion(profile)
@@ -246,37 +258,48 @@ for i=26, 40 do countMap[i] = 40 end;
 
 function CompactUnitFrameProfiles_GetAutoActivationState()
 	local name, instanceType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic = GetInstanceInfo();
+	if ( not name ) then	--We don't have info.
+		return false;
+	end
+	
+	local numPlayers, profileType, enemyType;
+	
 	if ( instanceType == "party" or instanceType == "raid" ) then
-		local numPlayers;
 		if ( maxPlayers <= 5 ) then
 			numPlayers = 5;	--For 5-man dungeons.
 		else
 			numPlayers = countMap[maxPlayers];
 		end
-		return numPlayers, instanceType, "PvE";
+		profileType, enemyType = instanceType, "PvE";
 	elseif ( instanceType == "arena" ) then
 		--TODO - Get the actual arena size, not just the # in party.
 		if ( GetNumRaidMembers() <= 2 ) then
-			return 2, instanceType, "PvP";
+			numPlayers, profileType, enemyType = 2, instanceType, "PvP";
 		elseif ( GetNumRaidMembers() <= 3 ) then
-			return 3, instanceType, "PvP";
+			numPlayers, profileType, enemyType = 3, instanceType, "PvP";
 		else
-			return 5, instanceType, "PvP";
+			numPlayers, profileType, enemyType = 5, instanceType, "PvP";
 		end
 	elseif ( instanceType == "pvp" ) then
 		if ( IsRatedBattleground() ) then
-			return 10, instanceType, "PvP";
+			numPlayers, profileType, enemyType = 10, instanceType, "PvP";
 		else
-			return countMap[maxPlayers], instanceType, "PvP";
+			numPlayers, profileType, enemyType = countMap[maxPlayers], instanceType, "PvP";
 		end
 	else
 		local numRaidMembers = GetNumRaidMembers();
 		if ( numRaidMembers > 0 ) then
-			return countMap[GetNumRaidMembers()], "world", "PvE";
+			numPlayers, profileType, enemyType = countMap[GetNumRaidMembers()], "world", "PvE";
 		else
-			return 5, "world", "PvE";
+			numPlayers, profileType, enemyType = 5, "world", "PvE";
 		end
 	end
+	
+	if ( not numPlayers ) then
+		return false;
+	end
+	
+	return true, numPlayers, profileType, enemyType;
 end
 
 function CompactUnitFrameProfiles_CheckAutoActivation()
@@ -285,7 +308,16 @@ function CompactUnitFrameProfiles_CheckAutoActivation()
 		return;
 	end
 	
-	local numPlayers, activationType, enemyType = CompactUnitFrameProfiles_GetAutoActivationState();
+	local success, numPlayers, activationType, enemyType = CompactUnitFrameProfiles_GetAutoActivationState();
+	
+	if ( not success ) then
+		--We didn't have all the relevent info yet. Update again soon.
+		AnimTimerFrameUpdateActiveRaidProfileGroup:Play();
+		return;
+	else
+		AnimTimerFrameUpdateActiveRaidProfileGroup:Stop();
+	end
+		
 	local spec = GetActiveTalentGroup();
 	local lastActivationType = CompactUnitFrameProfiles.lastActivationType;
 	

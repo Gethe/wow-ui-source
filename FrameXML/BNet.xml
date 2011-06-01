@@ -121,7 +121,7 @@
 			<Frame name="$parentGlowFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="$parentGlow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" alpha="0" parentKey="glow">
+						<Texture name="$parentGlow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" hidden="true" parentKey="glow">
 							<Size>
 								<AbsDimension x="252" y="56"/>
 							</Size>
@@ -137,6 +137,11 @@
 								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 									<Alpha change="1" duration="0.2" order="1"/>
 									<Alpha change="-1" duration="0.5" order="2"/>
+									<Scripts>
+										<OnFinished>
+											self:GetParent():Hide();
+										</OnFinished>
+									</Scripts>
 								</AnimationGroup>
 							</Animations>
 						</Texture>

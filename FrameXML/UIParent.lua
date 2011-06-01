@@ -29,7 +29,7 @@ UIPanelWindows["PVPFrame"] =					{ area = "left",			pushable = 1,	whileDead = 1}
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0 };
 UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 	whileDead = 1 };
-UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1 };
+UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 
 -- Frames NOT using the new Templates
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };

@@ -233,6 +233,7 @@ function BNToastFrame_Show()
 	frame.toastType = toastType;
 	frame.toastData = toastData;
 	frame.animIn:Play();
+	BNToastFrameGlowFrame.glow:Show();
 	BNToastFrameGlowFrame.glow.animIn:Play();
 	frame.waitAndAnimOut:Stop();	--Just in case it's already animating out, but we want to reinstate it.
 	if ( frame:IsMouseOver() ) then

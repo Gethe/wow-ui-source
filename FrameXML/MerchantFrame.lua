@@ -635,14 +635,14 @@ function MerchantFrame_UpdateCurrencies()
 				elseif ( index == 4 ) then
 					tokenButton:SetPoint("BOTTOMLEFT", 121, 67);
 				else
-					tokenButton:SetPoint("RIGHT", _G["MerchantToken"..index - 1], "LEFT", -2, 0);
+					tokenButton:SetPoint("RIGHT", _G["MerchantToken"..index - 1], "LEFT", 0, 0);
 				end
 				tokenButton:SetScript("OnEnter", MerchantFrame_ShowCurrencyTooltip);
 			end
 
 			name, count, icon = GetCurrencyInfo(currencies[index]);
 			if ( name and name ~= "" ) then
-				if ( count <= 9999 ) then
+				if ( count <= 99999 ) then
 					tokenButton.count:SetText(count);
 				else
 					tokenButton.count:SetText("*");
@@ -750,7 +750,7 @@ function MerchantFrame_UpdateCurrencyAmounts()
 		if ( tokenButton ) then
 			if ( tokenButton.currencyID ) then
 				local name, count = GetCurrencyInfo(tokenButton.currencyID);
-				if ( count <= 9999 ) then
+				if ( count <= 99999 ) then
 					tokenButton.count:SetText(count);
 				else
 					tokenButton.count:SetText("*");

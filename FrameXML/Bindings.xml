@@ -649,9 +649,6 @@
 	<Binding name="OPENALLBAGS">
 		ToggleAllBags();
 	</Binding>
-	<Binding name="TOGGLEKEYRING">
-		ToggleKeyRing();
-	</Binding>
 	<Binding name="TOGGLESPELLBOOK">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
