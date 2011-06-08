@@ -1161,7 +1161,7 @@
 
 	<!-- Languages -->
 
-	<Frame name="InterfaceOptionsLanguagesPanel" parent="VideoOptionsFramePanelContainer" hidden="true">
+	<Frame name="InterfaceOptionsLanguagesPanel" parent="VideoOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentDisplayHeader" text="LANGUAGES_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">

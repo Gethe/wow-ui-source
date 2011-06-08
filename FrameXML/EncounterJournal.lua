@@ -23,6 +23,7 @@ local EJ_NUM_INSTANCE_PER_ROW = 4;
 local EJ_QUEST_POI_MINDIS_SQR = 2500;
 
 local EJ_LORE_MAX_HEIGHT = 97;
+local EJ_MAX_SECTION_MOVE = 320;
 
 
 local EJ_Tabs = {};
@@ -50,7 +51,7 @@ function EncounterJournal_OnLoad(self)
 	self.encounter.usedHeaders = {};
 	
 	self.encounter.infoFrame = self.encounter.info.detailsScroll.child;
-	self.encounter.info.detailsScroll.ScrollBar.scrollStep = 15;
+	self.encounter.info.detailsScroll.ScrollBar.scrollStep = 30;
 	
 	
 	-- UIDropDownMenu_SetWidth(self.instanceSelect.tierDropDown, 170);
@@ -88,6 +89,8 @@ function EncounterJournal_OnLoad(self)
 	EncounterJournal_ListInstances();
 	
 	EncounterJournal.instanceSelect.dungeonsTab:Disable();
+	EncounterJournal.instanceSelect.dungeonsTab.selectedGlow:Show();
+	EncounterJournal.instanceSelect.raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 end
 
 
@@ -140,7 +143,7 @@ function EncounterJournal_OnEvent(self, event, ...)
 		end
 	elseif event == "UNIT_PORTRAIT_UPDATE" then
 		local unit = ...;
-		if not unit and EncounterJournal:IsShown() then
+		if not unit then
 			EncounterJournal_UpdatePortraits();
 		end
 	end
@@ -148,19 +151,30 @@ end
 
 
 function EncounterJournal_UpdatePortraits()
-	local self = EncounterJournal.encounter;
-	for i = 1, MAX_CREATURES_PER_ENCOUNTER do
-		local button = self["creatureButton"..i];
-		if ( button and button:IsShown() ) then
-			SetPortraitTexture(button.creature, button.displayInfo);
-		else
-			break;
+	if ( EncounterJournal:IsShown() ) then
+		local self = EncounterJournal.encounter;
+		for i = 1, MAX_CREATURES_PER_ENCOUNTER do
+			local button = self["creatureButton"..i];
+			if ( button and button:IsShown() ) then
+				SetPortraitTexture(button.creature, button.displayInfo);
+			else
+				break;
+			end
+		end
+		local usedHeaders = EncounterJournal.encounter.usedHeaders;
+		for _, header in pairs(usedHeaders) do
+			if ( header.button.portrait.displayInfo ) then
+				SetPortraitTexture(header.button.portrait.icon, header.button.portrait.displayInfo);
+			end
 		end
 	end
-	local usedHeaders = EncounterJournal.encounter.usedHeaders;
-	for _, header in pairs(usedHeaders) do
-		if ( header.button.portrait.displayInfo ) then
-			SetPortraitTexture(header.button.portrait.icon, header.button.portrait.displayInfo);
+	if ( WorldMapFrame:IsShown() ) then
+		local index = 1;
+		local bossButton = _G["EJMapButton"..index];
+		while ( bossButton and bossButton:IsShown() ) do
+			SetPortraitTexture(bossButton.bgImage, bossButton.displayInfo);
+			index = index + 1;
+			bossButton = _G["EJMapButton"..index];
 		end
 	end
 end
@@ -181,6 +195,9 @@ function EncounterJournal_ListInstances()
 		instanceButton = self["instance"..index];
 		if not instanceButton then -- create button
 			instanceButton = CreateFrame("BUTTON", self:GetParent():GetName().."instance"..index, self, "EncounterInstanceButtonTemplate");
+			if ( EncounterJournal.localizeInstanceButton ) then
+				EncounterJournal.localizeInstanceButton(instanceButton);
+			end
 			self["instance"..index] = instanceButton;
 			if mod(index-1, EJ_NUM_INSTANCE_PER_ROW) == 0 then
 				instanceButton:SetPoint("TOP", self["instance"..(index-EJ_NUM_INSTANCE_PER_ROW)], "BOTTOM", 0, -15);
@@ -414,7 +431,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 		-- Get Section Info
 		local listEnd  = #usedHeaders;
 		while nextSectionID do
-			local title, description, headerType, abilityIcon, displayInfo, siblingID, _, fileredByDifficulty, link, flag1, flag2, flag3, flag4 = EJ_GetSectionInfo(nextSectionID);
+			local title, description, headerType, abilityIcon, displayInfo, siblingID, _, fileredByDifficulty, link, startsOpen, flag1, flag2, flag3, flag4 = EJ_GetSectionInfo(nextSectionID);
 			if not title then
 				break;
 			elseif not fileredByDifficulty then --ignore all sections that should not be shown with our current difficulty settings		
@@ -518,8 +535,14 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				infoHeader.index = nil;
 				infoHeader:SetWidth(hWidth);
 				
+				
+				-- If this section has not be seen and should start open
+				if EJ_section_openTable[infoHeader.myID] == nil and startsOpen then
+					EJ_section_openTable[infoHeader.myID] = true;
+				end
+				
 				--toggleNested?
-				if EJ_section_openTable[infoHeader.myID] then
+				if EJ_section_openTable[infoHeader.myID]  then
 					infoHeader.expanded = false; -- setting false to expand it in EncounterJournal_ToggleHeaders
 					numAdded = numAdded + EncounterJournal_ToggleHeaders(infoHeader, true);
 				end
@@ -555,6 +578,23 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 	
 	if not doNotShift then
 		EncounterJournal_ShiftHeaders(self.index or 1);
+		
+		--check to see if it is offscreen
+		if self.index then
+			local scrollValue = EncounterJournal.encounter.info.detailsScroll.ScrollBar:GetValue();
+			local cutoff = EncounterJournal.encounter.info.detailsScroll:GetHeight() + scrollValue;
+			
+			local _, _, _, _, anchorY = self:GetPoint();
+			anchorY = anchorY - self:GetHeight();
+			if self.description:IsShown() then
+				anchorY = anchorY - self.description:GetHeight() - SECTION_DESCRIPTION_OFFSET;
+			end
+			
+			if cutoff < abs(anchorY) then
+				self.frameCount = 0;
+				self:SetScript("OnUpdate", EncounterJournal_MoveSectionUpdate);
+			end
+		end
 	end
 	return numAdded;
 end
@@ -565,24 +605,17 @@ function EncounterJournal_ShiftHeaders(index)
 	if not usedHeaders[index] then
 		return;
 	end
-
-	local _, _, _, _, achorY = usedHeaders[index]:GetPoint();
-	achorY = achorY - usedHeaders[index]:GetHeight();
-	if usedHeaders[index].description:IsShown() then
-		achorY = achorY - usedHeaders[index].description:GetHeight() - SECTION_DESCRIPTION_OFFSET;
-	else
-		achorY = achorY - SECTION_BUTTON_OFFSET;
-	end	
 	
-	for i=index+1,#usedHeaders do
-		assert(i == usedHeaders[i].index)
-		usedHeaders[i]:SetPoint("TOPRIGHT", 0 , achorY);
-		achorY = achorY - usedHeaders[i]:GetHeight();
+	local _, _, _, _, anchorY = usedHeaders[index]:GetPoint();
+	for i=index,#usedHeaders-1 do
+		anchorY = anchorY - usedHeaders[i]:GetHeight();
 		if usedHeaders[i].description:IsShown() then
-			achorY = achorY - usedHeaders[i].description:GetHeight() - SECTION_DESCRIPTION_OFFSET;
+			anchorY = anchorY - usedHeaders[i].description:GetHeight() - SECTION_DESCRIPTION_OFFSET;
 		else
-			achorY = achorY - SECTION_BUTTON_OFFSET;
+			anchorY = anchorY - SECTION_BUTTON_OFFSET;
 		end
+		
+		usedHeaders[i+1]:SetPoint("TOPRIGHT", 0 , anchorY);
 	end
 end
 
@@ -601,18 +634,27 @@ end
 
 
 function EncounterJournal_FocusSectionCallback(self)
-	if not self:IsShown() then
-		self:SetScript("OnUpdate", nil);
-	end
-	
 	if self.cbCount > 0 then
-		local _, _, _, _, achorY = self:GetPoint();
-		achorY = abs(achorY);
-		achorY = achorY - EncounterJournal.encounter.info.detailsScroll:GetHeight()/2;
-		EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(achorY);
+		local _, _, _, _, anchorY = self:GetPoint();
+		anchorY = abs(anchorY);
+		anchorY = anchorY - EncounterJournal.encounter.info.detailsScroll:GetHeight()/2;
+		EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(anchorY);
 		self:SetScript("OnUpdate", nil);
 	end
 	self.cbCount = self.cbCount + 1;
+end
+
+
+function EncounterJournal_MoveSectionUpdate(self)
+	
+	if self.frameCount > 0 then
+		local _, _, _, _, anchorY = self:GetPoint();
+		local height = min(EJ_MAX_SECTION_MOVE, self:GetHeight() + self.description:GetHeight() + SECTION_DESCRIPTION_OFFSET);
+		local scrollValue = abs(anchorY) - (EncounterJournal.encounter.info.detailsScroll:GetHeight()-height);
+		EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(scrollValue);
+		self:SetScript("OnUpdate", nil);
+	end
+	self.frameCount = self.frameCount + 1;
 end
 
 
@@ -1015,6 +1057,7 @@ function EncounterJournal_AddMapButtons()
 		bossButton.tooltipText = description;
 		bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", x*width, y*height);
 		_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID, instanceID);
+		bossButton.displayInfo = displayInfo;
 		SetPortraitTexture(bossButton.bgImage, displayInfo);
 		bossButton:Show();
 		index = index + 1;
@@ -1157,14 +1200,16 @@ function EJNAV_RefreshInstance()
 end
 
 function EJNAV_SelectInstance(self, index, navBar)
-	local instanceID = EJ_GetInstanceByIndex(index);
+	local showRaid = EncounterJournal.instanceSelect.raidsTab:IsEnabled() == nil;
+	local instanceID = EJ_GetInstanceByIndex(index, showRaid);
 	EncounterJournal_DisplayInstance(instanceID);
 end
 
 
 function EJNAV_ListInstance(self, index)
 	--local navBar = self:GetParent();
-	local _, name = EJ_GetInstanceByIndex(index);
+	local showRaid = EncounterJournal.instanceSelect.raidsTab:IsEnabled() == nil;
+	local _, name = EJ_GetInstanceByIndex(index, showRaid);
 	return name, EJNAV_SelectInstance;
 end
 

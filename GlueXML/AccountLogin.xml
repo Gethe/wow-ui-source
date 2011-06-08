@@ -527,7 +527,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="LanguageButton" inherits="GlueButtonSmallTemplateBlue" hidden="true">
+					<Button name="LanguageButton" inherits="GlueButtonSmallTemplateBlue">
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="AccountLoginManageAccountButton" relativePoint="TOP">
 								<Offset>
@@ -546,11 +546,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								if ( #({GetAvailableLocales()}) > 1 ) then
-									self:Show();
-								end
-							</OnLoad>
 							<OnShow>
 								Language_SetOSLanguageTexture(self.Texture);
 							</OnShow>

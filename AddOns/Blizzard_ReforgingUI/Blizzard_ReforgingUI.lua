@@ -116,7 +116,7 @@ function ReforgingFrame_Update(self)
 		ReforgingFrameItemButtonIconTexture:SetTexture(icon);
 		ReforgingFrameItemButtonIconTexture:SetTexCoord( 0, 1, 0, 1);
 		local _, _, _, hex = GetItemQualityColor(quality);
-		ReforgingFrameItemButton.name:SetText(hex..name);
+		ReforgingFrameItemButton.name:SetText("|c"..hex..name.."|r");
 		ReforgingFrameItemButton.boundStatus:SetText(bound);
 		ReforgingFrameItemButton.missingText:Hide();
 		ReforgingFrame.missingDescription:Hide();

@@ -790,11 +790,6 @@ function LanguagePanel_Cancel (self)
 end
 
 function InterfaceOptionsLanguagesPanel_OnLoad (self)
-	-- Check and see if we have more than one locale. If we don't, then don't register this panel.
-	if ( #({GetAvailableLocales()}) <= 1 ) then
-		return;
-	end
-
 	self.name = LANGUAGES_LABEL;
 	self.options = LanguagesPanelOptions;
 	BlizzardOptionsPanel_OnLoad(self, nil, LanguagePanel_Cancel, BlizzardOptionsPanel_Default, BlizzardOptionsPanel_Refresh);
@@ -887,27 +882,39 @@ end
 
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper (createInfo, selectedValue, ...)
+	local currentChoiceAdded = false;
 	for i = 1, select("#", ...) do
 		local value = select(i, ...);
 		if (value and LanguageRegions[value]) then
-			createInfo.text = nil;
-			createInfo.iconOnly = true;
-			createInfo.icon = "Interface\\Common\\Lang-Regions";
-			createInfo.iconInfo = {};
-			createInfo.iconInfo.tCoordLeft = 0.0;
-			createInfo.iconInfo.tCoordRight = 1.0;
-			createInfo.iconInfo.tCoordTop = LANGUAGE_TEXT_HEIGHT * LanguageRegions[value];
-			createInfo.iconInfo.tCoordBottom = (LANGUAGE_TEXT_HEIGHT * LanguageRegions[value]) + LANGUAGE_TEXT_HEIGHT;
-			createInfo.iconInfo.tSizeX = 256;
-			createInfo.iconInfo.tSizeY = 22;
-			createInfo.func = InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick;
-			createInfo.value = value;
-			if ( createInfo.value == selectedValue ) then
+			InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeChoice(createInfo, value);
+			if ( value == selectedValue ) then
 				createInfo.checked = 1;
+				currentChoiceAdded = true;
 			else
 				createInfo.checked = nil;
 			end
 			VideoOptionsDropDownMenu_AddButton(createInfo);
 		end
 	end
+	
+	if ( not currentChoiceAdded and LanguageRegions[selectedValue]) then
+		InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeChoice(createInfo, selectedValue);
+		createInfo.checked = 1;
+		VideoOptionsDropDownMenu_AddButton(createInfo);
+	end
+end
+
+function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeChoice(createInfo, value)
+	createInfo.text = nil;
+	createInfo.iconOnly = true;
+	createInfo.icon = "Interface\\Common\\Lang-Regions";
+	createInfo.iconInfo = {};
+	createInfo.iconInfo.tCoordLeft = 0.0;
+	createInfo.iconInfo.tCoordRight = 1.0;
+	createInfo.iconInfo.tCoordTop = LANGUAGE_TEXT_HEIGHT * LanguageRegions[value];
+	createInfo.iconInfo.tCoordBottom = (LANGUAGE_TEXT_HEIGHT * LanguageRegions[value]) + LANGUAGE_TEXT_HEIGHT;
+	createInfo.iconInfo.tSizeX = 256;
+	createInfo.iconInfo.tSizeY = 22;
+	createInfo.func = InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick;
+	createInfo.value = value;
 end

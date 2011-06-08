@@ -31,7 +31,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
 				</Anchors>
-				<Backdrop bgFile="LockButton-Border"/>
+				<Backdrop bgFile="Interface\Buttons\LockButton-Border"/>
 				<Scripts>
 					<OnLoad>
 						self:SetChecked(false);

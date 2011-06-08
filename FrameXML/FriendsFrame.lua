@@ -1323,7 +1323,7 @@ function FriendsFrame_UpdateFriends()
 				local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfo(FriendButtons[index].id);
 				broadcastText = messageText;
 				if ( isOnline ) then
-					local _, _, _, realmName, faction, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
+					local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
 					button.background:SetTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
 					if ( isAFK ) then
 						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
@@ -1588,7 +1588,7 @@ function FriendsFrameTooltip_Show(self)
 		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
 		-- toon 1
 		if ( toonID ) then
-			local hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(toonID);
+			local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(toonID);
 			level = level or "";
 			race = race or "";
 			class = class or "";
@@ -1669,7 +1669,7 @@ function FriendsFrameTooltip_Show(self)
 	if ( numToons > 1 ) then
 		FriendsFrameTooltip_SetLine(FriendsTooltipOtherToons, anchor, nil, -8);
 		for i = 1, numToons do
-			local hasFocus, toonName, client, realmName, faction, race, class, guild, zoneName, level, gameText = BNGetFriendToonInfo(self.id, i);
+			local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetFriendToonInfo(self.id, i);
 			-- the focused toon is already at the top of the tooltip
 			if ( not hasFocus ) then
 				toonIndex = toonIndex + 1;
@@ -2077,9 +2077,9 @@ function FriendsFrame_BattlenetInvite(button, presenceID)
 end
 
 function CanCooperateWithToon(presenceID, hasTravelPass)
-	local hasFocus, toonName, client, realmName, faction = BNGetToonInfo(presenceID);
+	local hasFocus, toonName, client, realmName, realmID, faction = BNGetToonInfo(presenceID);
 	if ( hasTravelPass ) then
-		if ( realmName and realmName ~= "" and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
+		if ( realmID > 0 and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
 			return true;
 		end
 	else
@@ -2117,11 +2117,11 @@ function FriendsFrame_GetInviteRestriction(index, canInvite)
 	local restriction = INVITE_RESTRICTION_NO_TOONS;
 	local numToons = BNGetNumFriendToons(index);
 	for i = 1, numToons do
-		local hasFocus, toonName, client, realmName, faction = BNGetFriendToonInfo(index, i);
+		local hasFocus, toonName, client, realmName, realmID, faction = BNGetFriendToonInfo(index, i);
 		if ( client == BNET_CLIENT_WOW ) then
 			if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
-			elseif ( not realmName or realmName == "" ) then
+			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
 			elseif ( not canInvite ) then
 				restriction = max(INVITE_RESTRICTION_LEADER, restriction);
@@ -2178,7 +2178,6 @@ function TravelPassDropDown_Initialize(self)
 	info.notCheckable = 1;
 	info.func = TravelPassDropDown_OnClick;
 	
-	local hasFocus, toonName, client, realmName, faction, race, class, level, toonID;
 	local numToons, restriction;
 	if ( self.index ) then
 		numToons = BNGetNumFriendToons(self.index);
@@ -2187,11 +2186,11 @@ function TravelPassDropDown_Initialize(self)
 	end
 	for i = 1, numToons do
 		restriction = INVITE_RESTRICTION_NONE;
-		hasFocus, toonName, client, realmName, faction, race, class, _, _, level, _, _, _, _, toonID = BNGetFriendToonInfo(self.index, i);
+		local hasFocus, toonName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, toonID = BNGetFriendToonInfo(self.index, i);
 		if ( client == BNET_CLIENT_WOW ) then
 			if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
 				restriction = INVITE_RESTRICTION_FACTIONINVITE_RESTRICTION_FACTION;
-			elseif ( not realmName or realmName == "" ) then
+			elseif ( realmID == 0 ) then
 				restriction = INVITE_RESTRICTION_INFO;
 			end
 			if ( restriction == INVITE_RESTRICTION_NONE ) then

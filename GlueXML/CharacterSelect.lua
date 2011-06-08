@@ -583,6 +583,7 @@ end
 function CharacterSelect_Delete()
 	PlaySound("gsCharacterSelectionDelCharacter");
 	if ( CharacterSelect.selectedIndex > 0 ) then
+		CharacterSelect_SaveCharacterOrder();
 		CharacterDeleteDialog:Show();
 	end
 end
@@ -707,7 +708,12 @@ function CharacterSelectScrollUp_OnClick()
 end
 
 function CharacterSelectButton_OnDragUpdate(self)
-	-- only check Y-axis, user dragging horizontally should not change anything
+	-- shouldn't be doing this without an index...
+	if ( not CharacterSelect.draggedIndex ) then
+		CharacterSelectButton_OnDragStop(self);
+		return;
+	end
+	-- only check Y-axis, user dragging horizontally should not change anything	
 	local _, cursorY = GetCursorPosition();
 	if ( cursorY <= CHARACTER_LIST_TOP ) then
 		-- check if the mouse is on a different button

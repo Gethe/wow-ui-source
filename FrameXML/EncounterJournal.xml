@@ -691,9 +691,9 @@
 					</Offset>
 				</Anchor>
 			</Anchors>
+			<Color r="0.827" g="0.659" b="0.463"/>
 		</ButtonText>
 		<NormalFont style="GameFontNormalMed3"/>
-		<HighlightFont style="GameFontHighlightMedium"/>
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>
 			<OnClick>
@@ -705,6 +705,12 @@
 				end
 				EncounterJournal_DisplayEncounter(self.encounterID)
 			</OnClick>
+			<OnEnter>
+				self.text:SetTextColor(0.973, 0.902, 0.581);
+			</OnEnter>
+			<OnLeave>
+				self.text:SetTextColor(0.827, 0.659, 0.463);
+			</OnLeave>
 		</Scripts>
 	</Button>
 	
@@ -749,8 +755,9 @@
 		<NormalFont style="GameFontNormalSmall"/>
 		<ButtonText>
 			<Anchors>
-				<Anchor point="CENTER" x="1" y="-1"/>
+				<Anchor point="CENTER" x="0" y="-1"/>
 			</Anchors>
+			<Color r="0.973" g="0.902" b="0.581"/>
 		</ButtonText>
 	</Button>
 	
@@ -812,7 +819,7 @@
 								<Anchor point="LEFT" relativeTo="$parentExpandedIcon" relativePoint="RIGHT" x="5" y="0"/>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentTile" inherits="GameFontNormal" parentKey="title" justifyH="LEFT">
+						<FontString name="$parentTitle" inherits="GameFontNormal" parentKey="title" justifyH="LEFT">
 							<Size x="5" y="10"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentAbilityIcon" relativePoint="RIGHT" x="5" y="-1"/>
@@ -1012,8 +1019,12 @@
 						if self:GetParent().expanded then
 							self.tex = self.textures.expanded;
 							oldtex = self.textures.collapsed;
+							self.expandedIcon:SetTextColor(0.929, 0.788, 0.620);
+							self.title:SetTextColor(0.929, 0.788, 0.620);
 						else
 							self.tex = self.textures.collapsed;
+							self.expandedIcon:SetTextColor(0.827, 0.659, 0.463);
+							self.title:SetTextColor(0.827, 0.659, 0.463);
 						end
 						
 						oldtex.up[1]:Hide();
@@ -1060,6 +1071,15 @@
 						self.tex.down[2]:Hide();
 						self.tex.down[3]:Hide();
 					</OnMouseUp>
+					<OnEnter>
+						if ( self.title:IsTruncated() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.title:GetText(), nil, nil, nil, nil, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -1089,6 +1109,11 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnHide>
+				self:SetScript("OnUpdate", nil);
+			</OnHide>
+		</Scripts>
 	</Frame>
 	
 	<Button name="EncounterItemTemplate" virtual="true">
@@ -1126,7 +1151,7 @@
 				<FontString name="$parentArmorClass" inherits="GameFontBlack" justifyH="RIGHT" parentKey="armorType">
 					<Size x="90" y="12"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-5" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="7"/>
 					</Anchors>
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
@@ -1194,6 +1219,12 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentSelectedGlow" inherits="UI-EJ-DungeonGridTab-SelectedGlow" parentKey="selectedGlow" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-18" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="18" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1560,6 +1591,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="10" y="-15"/>
 							</Anchors>
+							<Color r="0.961" g="0.824" b="0.412"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -1571,7 +1603,12 @@
 						<Scripts>
 							<OnClick>
 								self:Disable();
-								self:GetParent().dungeonsTab:Enable();
+								self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+								self.selectedGlow:Show();
+								local dungeonsTab = self:GetParent().dungeonsTab;
+								dungeonsTab:Enable();
+								dungeonsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+								dungeonsTab.selectedGlow:Hide();
 								EncounterJournal_ListInstances();
 							</OnClick>
 						</Scripts>
@@ -1583,7 +1620,12 @@
 						<Scripts>
 							<OnClick>
 								self:Disable();
-								self:GetParent().raidsTab:Enable();
+								self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+								self.selectedGlow:Show();
+								local raidsTab = self:GetParent().raidsTab;
+								raidsTab:Enable();
+								raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+								raidsTab.selectedGlow:Hide();
 								EncounterJournal_ListInstances();
 							</OnClick>
 						</Scripts>
@@ -1645,35 +1687,44 @@
 								<Texture name="$parentBG" file="Interface\EncounterJournal\UI-EJ-LOREBG-Default" parentKey="loreBG">
 									<Size x="390" y="336"/>
 									<Anchors>
-										<Anchor point="TOP" x="0" y="0"/>
+										<Anchor point="TOP" x="3" y="-4"/>
 									</Anchors>
 									<TexCoords left="0" right="0.7617187" top="0" bottom="0.65625"/>
 								</Texture>
 							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentTitle" inherits="QuestFont_Super_Huge" justifyH="CENTER" justifyV="BOTTOM" parentKey="title">
+									<Size x="0" y="10"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-67"/>
+									</Anchors>
+								</FontString>
+							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="$parentTitleBG" inherits="UI-EJ-DungeonNameBg">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-34"/>
+										<Anchor point="TOP" relativeTo="$parentBG" x="0" y="-38"/>
+										<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="LEFT" x="-40" y="0"/>
+										<Anchor point="RIGHT" relativeTo="$parentTitle" relativePoint="RIGHT" x="40" y="0"/>
 									</Anchors>
 								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<FontString name="$parentTile" inherits="QuestFont_Super_Huge" justifyH="CENTER" justifyV="BOTTOM" parentKey="title">
-									<Size x="300" y="10"/>
-									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentTitleBG"  x="0" y="28"/>
-									</Anchors>
-								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Button name="$parentMapButton" parentKey="mapButton">
 								<Size x="48" y="32"/>
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="30" y="130"/>
+									<Anchor point="BOTTOMLEFT" x="33" y="126"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
+										<Texture name="$parentShadow" inherits="UI-EJ-ShowMapBG">
+											<Anchors>
+												<Anchor point="LEFT" x="-3" y="5"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
 										<FontString name="$parentText" font="GameFontNormal" justifyH="LEFT" text="ENCOUNTER_JOURNAL_SHOW_MAP">
 											<Size x="0" y="0"/>
 											<Anchors>
@@ -1760,13 +1811,22 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
+								<Texture name="$parentShadow" file="Interface\EncounterJournal\UI-EJ-BossModelPaperFrame">
+									<Size x="393" y="424"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.767578125" top="0" bottom="0.828125"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
 								<Texture name="$parentTitleBG" inherits="UI-EJ-BossNameShadow">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
+							<Layer level="OVERLAY" textureSubLevel="2">
 								<FontString name="$parentImageTile" inherits="QuestTitleFontBlackShadow" justifyH="CENTER" parentKey="imageTitle">
 									<Size x="380" y="10"/>
 									<Anchors>
@@ -1839,7 +1899,7 @@
 								<Texture name="$parentDungeonBG" file="Interface\EncounterJournal\UI-EJ-BACKGROUND-Default" parentKey="dungeonBG">
 									<Size x="394" y="425"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="3" y="0"/>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.76953125" top="0" bottom="0.830078125"/>
 								</Texture>
@@ -1850,14 +1910,14 @@
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-350" y="-36"/>
 									</Anchors>
-									<Color r="0.9" g="0.85" b="0.95"/>
+									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Button name="$parentBossTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="bossTab" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-12" y="-45"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-12" y="-35"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
@@ -1876,7 +1936,7 @@
 							</Button>
 							<Button name="$parentLootTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="lootTab" id="2">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="-5"/>
+									<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="2"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
@@ -2034,6 +2094,7 @@
 													<Anchors>
 														<Anchor point="LEFT" x="25" y="2"/>
 													</Anchors>
+													<Color r="0.973" g="0.902" b="0.581"/>
 												</FontString>
 											</Layer>
 										</Layers>
@@ -2233,6 +2294,7 @@
 											<Anchors>
 												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
+											<Color r="0.973" g="0.902" b="0.581"/>
 										</ButtonText>
 										<Scripts>
 											<OnClick>
@@ -2300,6 +2362,9 @@
 									<OnShow>
 										EncounterJournal_LootUpdate();
 									</OnShow>
+									<OnHide>
+										self.classFilter:Hide();
+									</OnHide>
 								</Scripts>
 							</ScrollFrame>
 						</Frames>
