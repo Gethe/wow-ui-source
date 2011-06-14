@@ -1509,6 +1509,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
+				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_TICKET");
 			</OnLoad>
 			<OnClick>
@@ -1516,7 +1517,6 @@
 			</OnClick>
 			<OnEvent function="HelpOpenTicketButton_OnEvent"/>
 			<OnEnter>
-				self.refreshTime = 0;
 				self:SetScript("OnUpdate", HelpOpenTicketButton_OnUpdate);
 			</OnEnter>
 			<OnLeave>

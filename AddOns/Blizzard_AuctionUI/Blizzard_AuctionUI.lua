@@ -9,7 +9,8 @@ AUCTIONS_BUTTON_HEIGHT = 37;
 CLASS_FILTERS = {};
 OPEN_FILTER_LIST = {};
 AUCTION_TIMER_UPDATE_DELAY = 0.3;
-MAXIMUM_BID_PRICE = 99999999999999;
+MAXIMUM_BID_PRICE = 9999999999;
+AUCTION_CANCEL_COST =  5;	--5% of the current bid
 
 -- keep last item sent to auction & it's price
 LAST_ITEM_AUCTIONED = "";
@@ -1308,7 +1309,7 @@ function AuctionFrameAuctions_Update()
 					MoneyFrame_Update(buttonName.."MoneyFrame", bidAmount);
 					bidAmountMoneyFrame:SetAlpha(1);
 					-- Set cancel price
-					auction.cancelPrice = floor(bidAmount * 0.05);
+					auction.cancelPrice = floor((bidAmount * AUCTION_CANCEL_COST) / 100);
 					button.bidAmount = bidAmount;
 				else
 					-- No bids so show minBid and gray it out

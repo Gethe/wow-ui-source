@@ -349,10 +349,7 @@
 				end
 			</OnMouseUp>
 			<OnClick>
-				if self:GetChecked() then 
-					EncounterJournal_SetClassFilter(self:GetID(), self.name);
-				end
-				
+				EncounterJournal_SetClassFilter(self:GetID(), self.name);
 				self:GetParent():Hide();
 			</OnClick>
 		</Scripts>

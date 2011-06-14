@@ -437,7 +437,10 @@ end
 
 function HelpOpenTicketButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_TICKET" ) then
-		local category, ticketDescription, ticketAge, oldestTicketTime, updateTime, assignedToGM, openedByGM, waitTimeOverrideMessage, waitTimeOverrideMinutes = ...;
+		local category, ticketDescription, ticketOpenTime, oldestTicketTime, updateTime, assignedToGM, openedByGM, waitTimeOverrideMessage, waitTimeOverrideMinutes = ...;
+		-- ticketOpenTime,   time_t that this ticket was created
+		-- oldestTicketTime, time_t of the oldest unassigned ticket in the region.
+		-- updateTime,       age in seconds (freshness) of our ticket wait time estimates from the GM dept
 		if ( (category or self.hasGMSurvey) and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
 			self:Show();
 			self.titleText = TICKET_STATUS;
@@ -451,8 +454,7 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 					statusText = GM_TICKET_SERVICE_SOON;
 				end
 			else
-				-- convert from days to seconds
-				local estimatedWaitTime = (oldestTicketTime - ticketAge) * 24 * 60 * 60;
+				local estimatedWaitTime = (oldestTicketTime - ticketOpenTime);
 				if ( estimatedWaitTime < 0 ) then
 					estimatedWaitTime = 0;
 				end
@@ -465,7 +467,7 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 						statusText = waitTimeOverrideMessage;
 					end
 					estimatedWaitTime = waitTimeOverrideMinutes*60;
-				elseif ( oldestTicketTime < 0 or updateTime < 0 or updateTime > 0.042 ) then
+				elseif ( oldestTicketTime < 0 or updateTime < 0 or updateTime > 3600 ) then
 					statusText = GM_TICKET_UNAVAILABLE;
 				elseif ( estimatedWaitTime > 7200 ) then
 					-- if wait is over 2 hrs
