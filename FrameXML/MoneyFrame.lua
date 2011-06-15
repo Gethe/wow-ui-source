@@ -16,7 +16,20 @@ COIN_BUTTON_WIDTH = 32;
 MoneyTypeInfo = { };
 MoneyTypeInfo["PLAYER"] = {
 	UpdateFunc = function(self)
-		return (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
+		local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
+		if self.trialErrorButton then
+			if IsTrialAccount() then
+				local _, rMoney = GetRestrictedAccountData();
+				if money >= rMoney then
+					self.trialErrorButton:Show();
+				else
+					self.trialErrorButton:Hide();
+				end
+			else
+				self.trialErrorButton:Hide();
+			end
+		end
+		return money;
 	end,
 
 	PickupFunc = function(self, amount)

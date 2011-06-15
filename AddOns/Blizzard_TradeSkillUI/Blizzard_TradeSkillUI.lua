@@ -497,6 +497,15 @@ function TradeSkillFrame_SetSelection(id)
 		else
 			TradeSkillRankFrameSkillRank:SetFormattedText(TRADESKILL_RANK, skillLineRank, skillLineMaxRank);
 		end
+		
+		if IsTrialAccount() then
+			local _, _, profCap = GetRestrictedAccountData();
+			if skillLineRank >= profCap then
+				local text = TradeSkillRankFrameSkillRank:GetText();
+				text = text.." "..RED_FONT_COLOR_CODE..TRIAL_CAPPED
+				TradeSkillRankFrameSkillRank:SetText(text);
+			end
+		end
 
 		TradeSkillRankFrame:Show();
 		

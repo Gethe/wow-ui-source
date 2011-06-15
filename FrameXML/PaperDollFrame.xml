@@ -463,6 +463,17 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
+                <FontString name="CharacterTrialLevelErrorText" inherits="GameFontNormalSmall" text="TRIAL_LEVEL_CAPPED" hidden="true">
+                    <Size x="250" y="0"/>
+					<Anchors>
+                        <Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
+                            <Offset>
+                                <AbsDimension x="0" y="-3"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+					<Color r="1" g="0.1" b="0.1" a="1"/>
+                </FontString>
             </Layer>
         </Layers>
         <Frames>

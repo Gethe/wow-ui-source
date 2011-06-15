@@ -547,7 +547,7 @@
 						</Layers>
 						<Scripts>
 							<OnShow>
-								Language_SetOSLanguageTexture(self.Texture);
+								Language_SetOSLanguageTexture(self);
 							</OnShow>
 							<OnClick>
 								OptionsFrame_OpenToCategory(VideoOptionsFrame, LANGUAGES_LABEL);

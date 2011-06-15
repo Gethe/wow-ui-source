@@ -577,6 +577,13 @@ function PaperDollFrame_SetLevel()
 	else
 		CharacterLevelText:SetPoint("TOP", 0, -36);
 	end
+	
+	if IsTrialAccount() then
+		local rLevel = GetRestrictedAccountData();
+		if UnitLevel("player") >= rLevel then
+			CharacterTrialLevelErrorText:Show();
+		end
+	end
 end
 
 function GetMeleeMissChance(levelOffset, special)

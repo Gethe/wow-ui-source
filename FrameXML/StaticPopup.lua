@@ -1563,7 +1563,8 @@ StaticPopupDialogs["LOOT_BIND"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	showAlert = 1
 };
 StaticPopupDialogs["EQUIP_BIND"] = {
 	text = EQUIP_NO_DROP,

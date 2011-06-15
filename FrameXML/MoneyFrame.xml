@@ -156,6 +156,32 @@
 			<AbsDimension x="128" y="13"/>
 		</Size>
 		<Frames>
+			<Frame name="$parentTrialErrorButton" parentKey="trialErrorButton" hidden="true">
+				<Size x="13" y="13"/>
+				<Anchors>
+					<Anchor point="LEFT"  x="-23" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
+						GameTooltip:AddLine(TRIAL_CAPPED, 1, 0.1, 0.1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>

@@ -516,6 +516,10 @@ function CharacterSelectButton_OnDoubleClick(self)
 end
 
 function CharacterSelectButton_ShowMoveButtons(button)
+	local numCharacters = GetNumCharacters();
+	if ( numCharacters <= 1 ) then
+		return;
+	end
 	if ( not CharacterSelect.draggedIndex ) then
 		button.upButton:Show();
 		button.upButton.normalTexture:SetPoint("CENTER", 0, 0);
@@ -523,6 +527,20 @@ function CharacterSelectButton_ShowMoveButtons(button)
 		button.downButton:Show();
 		button.downButton.normalTexture:SetPoint("CENTER", 0, 0);
 		button.downButton.highlightTexture:SetPoint("CENTER", 0, 0);
+		if ( button.index == 1 ) then
+			button.upButton:Disable();
+			button.upButton:SetAlpha(0.35);
+		else
+			button.upButton:Enable();
+			button.upButton:SetAlpha(1);
+		end
+		if ( button.index == numCharacters ) then
+			button.downButton:Disable();
+			button.downButton:SetAlpha(0.35);
+		else
+			button.downButton:Enable();
+			button.downButton:SetAlpha(1);
+		end
 	end
 end
 
@@ -733,20 +751,22 @@ function CharacterSelectButton_OnDragUpdate(self)
 end
 
 function CharacterSelectButton_OnDragStart(self)
-	CharacterSelect.pressDownButton = nil;
-	CharacterSelect.draggedIndex = self:GetID() + CHARACTER_LIST_OFFSET;
-	self:SetScript("OnUpdate", CharacterSelectButton_OnDragUpdate);	
-	for index = 1, MAX_CHARACTERS_DISPLAYED do
-		local button = _G["CharSelectCharacterButton"..index];
-		if ( button ~= self ) then
-			button:SetAlpha(0.6);
-			_G["CharSelectPaidService"..index].texture:SetVertexColor(0.35, 0.35, 0.35);
+	if ( GetNumCharacters() > 1 ) then
+		CharacterSelect.pressDownButton = nil;
+		CharacterSelect.draggedIndex = self:GetID() + CHARACTER_LIST_OFFSET;
+		self:SetScript("OnUpdate", CharacterSelectButton_OnDragUpdate);	
+		for index = 1, MAX_CHARACTERS_DISPLAYED do
+			local button = _G["CharSelectCharacterButton"..index];
+			if ( button ~= self ) then
+				button:SetAlpha(0.6);
+				_G["CharSelectPaidService"..index].texture:SetVertexColor(0.35, 0.35, 0.35);
+			end
 		end
+		self.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
+		self:LockHighlight();
+		self.upButton:Hide();
+		self.downButton:Hide();
 	end
-	self.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
-	self:LockHighlight();
-	self.upButton:Hide();
-	self.downButton:Hide();
 end
 
 function CharacterSelectButton_OnDragStop(self)

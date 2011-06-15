@@ -862,11 +862,15 @@ LanguageRegions["ruRU"] = 11;
 
 LANGUAGE_TEXT_HEIGHT = 22/512;
 
-function Language_SetOSLanguageTexture(texture)
-	local locale = GetOSLocale();
-	local value = LanguageRegions[locale];
-	if (value) then
-		texture:SetTexCoord(0.0, 1.0, LANGUAGE_TEXT_HEIGHT * value, (LANGUAGE_TEXT_HEIGHT * value) + LANGUAGE_TEXT_HEIGHT);
+function Language_SetOSLanguageTexture(self)
+	local OSlocale = GetOSLocale();
+	local locale = GetCVar("locale");
+	local value = LanguageRegions[OSlocale];
+	if ((OSlocale ~= locale) and value) then
+		self.Texture:SetTexCoord(0.0, 1.0, LANGUAGE_TEXT_HEIGHT * value, (LANGUAGE_TEXT_HEIGHT * value) + LANGUAGE_TEXT_HEIGHT);
+		self:Show();
+	else
+		self:Hide();
 	end
 end
 

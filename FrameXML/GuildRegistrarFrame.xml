@@ -247,7 +247,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="GuildRegistrarFramePurchaseButton" inherits="UIPanelButtonTemplate" text="PURCHASE">
+					<Button name="GuildRegistrarFramePurchaseButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="PURCHASE">
 						<Size>
 							<AbsDimension x="85" y="22"/>
 						</Size>
@@ -262,6 +262,26 @@
 							<OnClick>
 								GuildRegistrar_PurchaseCharter();
 							</OnClick>
+							<OnShow>
+								if IsTrialAccount() then
+									self.tooltip = RED_FONT_COLOR_CODE..TRIAL_RESTRICTED;
+									self:Disable();
+								else
+									self.tooltip = nil;
+									self:Enable();
+								end
+							</OnShow>
+							<OnEnter>
+								if (self.tooltip) then
+									GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+								end
+							</OnEnter>
+							<OnLeave>
+								if self == GameTooltip:GetOwner() then
+									GameTooltip:Hide();
+								end
+							</OnLeave>
 						</Scripts>
 					</Button>
 					<EditBox name="GuildRegistrarFrameEditBox" letters="24" historyLines="1">

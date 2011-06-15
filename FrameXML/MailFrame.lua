@@ -39,6 +39,11 @@ function MailFrame_OnLoad(self)
 	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
 	MoneyFrame_SetMaxDisplayWidth(SendMailMoneyFrame, 160);
+	
+	if IsTrialAccount() then
+		MailFrameTab2:Hide();
+		self.trialError:Show();
+	end
 end
 
 function MailFrame_OnEvent(self, event, ...)
