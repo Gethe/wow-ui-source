@@ -1563,8 +1563,7 @@ StaticPopupDialogs["LOOT_BIND"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	hideOnEscape = 1,
-	showAlert = 1
+	hideOnEscape = 1
 };
 StaticPopupDialogs["EQUIP_BIND"] = {
 	text = EQUIP_NO_DROP,
@@ -2585,7 +2584,8 @@ StaticPopupDialogs["CONFIRM_LOOT_ROLL"] = {
 	timeout = 0,
 	whileDead = 1,
 	exclusive = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	showAlert = 1
 };
 StaticPopupDialogs["GOSSIP_CONFIRM"] = {
 	text = "%s",
