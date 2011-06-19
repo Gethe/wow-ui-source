@@ -484,11 +484,9 @@ function WorldStateScoreFrame_Update()
 		if ( isRegistered ) then
 			WorldStateScoreFrameTeam:Show();
 			WorldStateScoreFrameKB:SetPoint("LEFT", WorldStateScoreFrameTeam, "RIGHT", -10, 0);
-			WorldStateScoreFrameMatchmakingRating:Show();
-			WorldStateScoreFrameMatchmakingRating:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
-			WorldStateScoreFrameMatchmakingRating.sortType = "preMatchMMR";
+			WorldStateScoreFrameMatchmakingRating:Hide();
 			WorldStateScoreFrameRatingChange:Show();
-			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameMatchmakingRating, "RIGHT", 0, 0);
+			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
 			WorldStateScoreFrameRatingChange.sortType = "mmrChange";
 		else
 			WorldStateScoreFrameMatchmakingRating:Hide();
@@ -717,20 +715,17 @@ function WorldStateScoreFrame_Update()
 				if ( isRegistered ) then
 					scoreButton.team:SetText(teamName);
 					scoreButton.team:Show();
-					scoreButton.matchmakingRating:SetText(preMatchMMR);
-					scoreButton.matchmakingRating:Show();
 					if ( teamDataFailed == 1 ) then
 						scoreButton.ratingChange:SetText("-------");
 					else
-						if mmrChange > 0 then 
-							scoreButton.ratingChange:SetText(GREEN_FONT_COLOR_CODE..mmrChange);
+						if ratingChange > 0 then 
+							scoreButton.ratingChange:SetText(GREEN_FONT_COLOR_CODE..ratingChange);
 						else
-							scoreButton.ratingChange:SetText(RED_FONT_COLOR_CODE..mmrChange);
+							scoreButton.ratingChange:SetText(RED_FONT_COLOR_CODE..ratingChange);
 						end
 					end
 					scoreButton.ratingChange:Show();
 				else
-					scoreButton.matchmakingRating:Hide();
 					scoreButton.team:Hide();
 					scoreButton.ratingChange:Hide();
 				end
@@ -903,7 +898,7 @@ function WorldStateScoreFrame_Resize()
 	if ( isArena ) then
 		columns = 3;
 		if ( isRegistered ) then
-			columns = 5;
+			columns = 4;
 			width = width + WorldStateScoreFrameTeam:GetWidth();
 		else
 			width = width + 43;
