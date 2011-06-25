@@ -467,6 +467,10 @@ function ToggleCalendar()
 end
 
 function ToggleGuildFrame()
+	if ( IsTrialAccount() ) then
+		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT, 1.0, 0.1, 0.1, 1.0);
+		return;
+	end
 	if ( IsInGuild() ) then
 		GuildFrame_LoadUI();
 		if ( GuildFrame_Toggle ) then

@@ -487,7 +487,7 @@ function WorldStateScoreFrame_Update()
 			WorldStateScoreFrameMatchmakingRating:Hide();
 			WorldStateScoreFrameRatingChange:Show();
 			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
-			WorldStateScoreFrameRatingChange.sortType = "mmrChange";
+			WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
 		else
 			WorldStateScoreFrameMatchmakingRating:Hide();
 			WorldStateScoreFrameRatingChange:Hide();
