@@ -68,19 +68,25 @@ notes._
     * [![][19]][20] [Priests][20], [![][21]][22] [Rogues][22], [![][23]][24]
 [Shaman][24], [![][25]][26] [Warlocks][26], [![][27]][28] [Warriors][28]
 
-  * [Dungeons & Raids][29]
+  * [Currency][29]
 
-  * [Guilds][30]
+  * [Dungeons & Raids][30]
 
-  * [Items][31]
+  * [Guilds][31]
 
-  * [Professions][32]
+  * [Items][32]
 
-  * [PvP][33]
+  * [Professions][33]
 
-  * [Quests & Creatures][34]
+  * [PvP][34]
 
-  * [User Interface][35]
+  * [Quests & Creatures][35]
+
+  * [Races][36]
+
+  * [User Interface][37]
+
+  * [Technical][38]
 
 **General**
 
@@ -90,16 +96,16 @@ notes._
 in Hyjal, where players can help the Guardians of Hyjal push back the allies
 of Ragnaros and establish a forward operating base in the Firelands! In order
 to partake in the Regrowth and Molten Front daily quests, players must have at
-least completed up to and including the quest Aessina's Miracle. Once this
-quest has been completed, players should speak with Matoclaw in the Sanctuary
-of Malorne to take part in the Regrowth efforts.
+least completed Mount Hyjal up to and including the quest Aessina's Miracle.
+Once this quest has been completed, players should speak with Matoclaw in the
+Sanctuary of Malorne to take part in the Regrowth efforts.
 
   * New Quest Chain: Elemental Bonds
 
     * A New quest line is now available to level-85 Horde and Alliance
 characters, bringing brave adventurers to Thrall's aid. The Call of the World-
 Shaman, the quest which will point players toward Thrall and The Nordrassil
-Summit, can be obtained in Stormwind or Orgrimmar.
+Summit, can be obtained at the Earthshrines in Stormwind or Orgrimmar.
 
   * New Raid: The Firelands
 
@@ -115,46 +121,26 @@ via Sulfuron Spire in Mount Hyjal.
 create an all-new legendary caster staff. In order to begin the process of
 assembling the staff, players must first kill a Molten Lord in the Firelands.
 Once a Molten Lord is killed, players can accept the quest A Legendary
-Engagement from Ziradormi or Coridormi in Orgrimmar or Stormwind.
+Engagement from Ziradormi in Grommash Hold in Orgrimmar, or Coridormi atop the
+Wizard's Sanctum in Stormwind. The legendary item questline is only available
+to druids, mages, priests, shaman, and warlocks.
 
   * New User Interface Feature: Dungeon Journal
 
     * A host of dungeon information is now built into the user interface via
-the all-new Dungeon Journal. This feature can be accessed with the "M" key
-while in a dungeon, or via a new button in the navigation tray from anywhere
-in the world. Boss background story, encounter details, abilities, and loot
-can be viewed with the Dungeon Journal for all bosses which have been
-integrated into the new system. Additional dungeons are planned to be
-incorporated into the Dungeon Journal in future updates.
+the all-new Dungeon Journal. This feature can be accessed via a new button in
+the Navigation tray from anywhere in the world. Boss background story,
+encounter details, abilities, and loot can be viewed with the Dungeon Journal
+for all bosses which have been integrated into the new system (this includes
+bosses for all Cataclysm dungeons and raids). Additional dungeons are planned
+to be incorporated in future updates.
 
-  * All character races now have a /roar sound.
-
-  * All existing Valor Points in the Currency tab have been converted to
-Justice Points. Any points above the Justice Point cap will be converted into
-gold at a rate of 47 silver per point and mailed to characters.
-
-  * The Keyring bag slot has been removed to make room in the user interface
-for new features.
-
-    * Keys which no longer serve a purpose in the game will be removed from
-player inventories. Compensation for the keys will be automatically provided
-in the form of each key's vendor sell price in gold.
-
-    * Keys which are obsolete quest items will be removed from player
-inventories.
-
-    * Keys which may still be of use to players will be transferred to regular
-inventory space. If a player's bags are full, these keys will sit in a
-backlogged inventory until sufficient space is made available. Once space is
-opened, the keys will appear in regular inventory upon the player logging out
-or switching zones.
-
-**[Achievements][36]**
+**[Achievements][39]**
 
   * Bear-ly Made It (new achievement): Save all four prisoners before they are
 sacrificed in Zul'Aman on Heroic difficulty.
 
-**[Classes: General][37]**
+**[Classes: General][40]**
 
   * All healing critical strikes now heal for 2 times a normal heal (+100%),
 up from 1.5 times a normal heal (+50%).
@@ -214,7 +200,15 @@ their chance to dodge from Agility. Their base chance to dodge is now a fixed
 bonuses as parry rating, up from 25%. This conversion still only applies to
 Strength above and beyond their base Strength.
 
-**[![][9]][38] [Death Knights][38]**
+  * General Class Bug Fixes
+
+    * Players should no longer incorrectly receive a message stating they
+interrupted a spell cast when they did not.
+
+    * Actions bars will no longer briefly disappear when characters that have
+a stance bar enter a vehicle.
+
+**[![][9]][41] [Death Knights][41]**
 
   * Obliterate base damage has been reduced to 150% weapon damage, down from
 160%.
@@ -240,25 +234,42 @@ Presence, it causes the next Death Strike within 15 seconds after killing a
 foe that yields experience or Honor Points to heal for at least 20% of the
 death knight's maximum health (still requires Frost or Unholy Presence).
 
-**[![][11]][39] [Druids][39]**
+  * Death Knight Bug Fixes
+
+    * The talent Killing Machine can now properly be triggered from off-hand
+attacks as well as main-hand attacks.
+
+**[![][11]][42] [Druids][42]**
 
   * Druids now gain 1 attack power per point of Strength, down from 2. They
 continue to gain 2 attack power per point of Agility while in Cat Form or Bear
-Form. To counter balance the loss of damage from this change, the following
-additional changes have been made.
+Form. In addition, Cat Form's scaling rate from gear upgrades was slower than
+other classes, which was causing them to fall behind in damage with higher
+item levels. To counter the Strength change and improve scaling, the following
+changes have been made. All numbers cited are for level-85 druids.
 
     * Ferocious Bite damage has been increased by 15%. In addition, its base
 cost has been reduced to 25 energy and it can use up to 25 energy, for up to a
 100% damage increase.
 
-    * Mangle (Cat) damage at level 80 and above has been increased to 530%
-weapon damage, up from 460%.
+    * Mangle (Cat) damage at level 80 and above has been increased to 540%
+weapon damage, up from 460%, and bonus damage has been lowered to 302.
 
-    * Ravage damage at level 80 and above has been increased to 975% weapon
-damage, up from 850%.
+    * Rake initial damage on hit now deals the same damage as each periodic
+tick (and is treated the same for all combat calculations). Periodic damage
+now gains 14.7% of attack power per tick, up from 12.6%, and base damage per
+tick has been lowered from 557 to 56. There is a known issue with Rake's
+tooltip being incorrect from this change will be corrected in a future patch.
 
-    * Shred damage at level 80 and above has been increased to 520% weapon
-damage, up from 450%.
+    * Ravage damage at level 80 and above has been increased to 950% weapon
+damage, up from 850%, and bonus damage has been lowered to 532.
+
+    * Savage Roar now grants 80% increased damage to melee auto attacks, up
+from 50%. The Glyph of Savage Roar remains an unchanged bonus of 5% to that
+total.
+
+    * Shred damage at level 80 and above has been increased to 540% weapon
+damage, up from 450%, and bonus damage has been lowered to 302.
 
   * Entangling Roots and the equivalent spell triggered by Nature's Grasp no
 longer deal damage.
@@ -380,7 +391,7 @@ healing is active.
     * It is no longer possible in some encounters to use Feral Charge when
 closer than its minimum range.
 
-**[![][13]][40] [Hunters][40]**
+**[![][13]][43] [Hunters][43]**
 
   * Multi-shot damage has been reduced. It now deals 120% weapon damage at
 level 80 or higher, down from 137%.
@@ -411,7 +422,7 @@ access to the full gamut of taming challenges.
 toward a group member, reducing the damage done by the next melee or ranged
 attack made against them equal to 50% of the pet's total health.
 
-**[![][15]][41] [Mages][41]**
+**[![][15]][44] [Mages][44]**
 
   * Arcane Blast damage done has been reduced by 5%.
 
@@ -437,7 +448,7 @@ Living Bomb target, and will be added to two other nearby targets.
       * Deep Freeze and Ring of Frost will cause diminishing returns on each
 other, in addition to the spells they normally share diminishing returns with.
 
-**[![][17]][42] [Paladins][42]**
+**[![][17]][45] [Paladins][45]**
 
   * Divine Light mana cost has been increased to 35% of base mana, up from
 30%.
@@ -526,7 +537,7 @@ Word of Glory by 5/10 seconds.
     * Glyph of Seal of Truth expertise bonus now also works when Seal of
 Righteousness is active.
 
-**[![][19]][43] [Priests][43]**
+**[![][19]][46] [Priests][46]**
 
   * Devouring Plague damage done has been decreased by 12%.
 
@@ -557,7 +568,7 @@ diminishing returns.
     * Players will no longer prematurely cancel a channeled spell when
 clicking on the Lightwell.
 
-**[![][21]][44] [Rogues][44]**
+**[![][21]][47] [Rogues][47]**
 
   * Cloak of Shadows cooldown is now 2 minutes, up from 90 seconds. In
 addition, Cloak of Shadows is no longer on the global cooldown.
@@ -596,7 +607,7 @@ by 15/30 seconds.
       * Sanguinary Vein damage to bleeding targets has been increased to
 8/16%, from 5/10%.
 
-**[![][23]][45] [Shaman][45]**
+**[![][23]][48] [Shaman][48]**
 
   * Fire Nova damage has been increased by 15%.
 
@@ -604,6 +615,8 @@ by 15/30 seconds.
 
   * Unleash Elements is now in the Nature school, and thus can no longer be
 used if a shaman's Nature school has been locked out.
+
+  * Unleash Wind now deals 175% weapon damage, up from 125%.
 
   * Water Shield has had its internal cooldown reduced to 3.5 seconds, once
 again matching other shields. The amount of mana restored when Water Shield
@@ -621,6 +634,10 @@ is dispelled, up from 10/20/30%.
 
       * Thunderstorm now reduces the movement speed of players it knocks back
 by 40% for 5 seconds.
+
+    * Enhancement
+
+      * Stormstrike now deals 225% weapon damage, up from 125%.
 
     * Restoration
 
@@ -644,7 +661,7 @@ has been redesigned. It now causes Lightning Shield to generate an extra
 charge, rather than consuming one, when it is triggered by receiving damage,
 up to a maximum of 3 (9 with the Rolling Thunder talent).
 
-**[![][25]][46] [Warlocks][46]**
+**[![][25]][49] [Warlocks][49]**
 
   * Soul Fire is now available at level 20, down from level 54.
 
@@ -659,7 +676,7 @@ from 15 seconds.
 
     * It is no longer possible to leave combat while channeling Drain Soul.
 
-**[![][27]][47] [Warriors][47]**
+**[![][27]][50] [Warriors][50]**
 
   * Overpower now has a 1.5-second cooldown and global cooldown (Taste for
 Blood's Overpower cooldown has not changed).
@@ -688,13 +705,50 @@ lowered to 12%, down from 20%.
     * It is no longer possible in some encounters to use Charge when closer
 than its minimum range.
 
-**[Dungeons & Raids][48]**
+**Currency**
 
-  * Dungeon Journal is in the process of being implemented. While some UI
-elements may exist in the current Public Test Realm build, the feature is not
-yet complete.
+  * Conquest & Honor Points
 
-  * Valor Points
+    * All existing Conquest Points in the Currency tab have been converted to
+Honor Points. Any points above the Honor Point cap must be spent within the
+next week before Season 10 starts. Once Season 10 begins, all Honor Points
+exceeding the 4,000 point cap will be converted into gold at a rate of 35
+silver per point and mailed to characters.
+
+    * The minimum cap on Conquest Points earned per week from Arenas is now
+1350 at 1500 or less Arena rating. The maximum cap is now 2700 at 3000 or more
+Arena rating. The cap continues to scale non-linearly between those two
+points. For comparison, during season 9 the cap ranged between 1343 and 3000.
+
+    * The game now separately tracks different Conquest Point caps for
+Battlegrounds and Arenas. Battleground ratings receive a bonus of 22.2% to the
+cap they generate, meaning the cap from Battleground rating now ranges between
+1650 and 3300. Players may earn a total number of Conquest Points per week
+equal to the higher of these two caps, but once players have reached the cap
+for either Arenas or Battlegrounds, they can no longer earn Conquest Points
+from that source. Conquest Points from Battleground holidays only count toward
+the total Conquest Point cap.
+
+      * Example: During the first week of Season 10 everyone starts with a
+rating below 1500. Therefore, the cap from Rated Battlegrounds will be 1650
+and the cap from Arena rating will be 1350. In the first week, the character
+wins enough Arena matches to reach the 1350 point cap. After that point, Arena
+wins will no longer grant Conquest points for the week. However, the character
+can still earn up to 300 additional points, but can only earn those points
+from either Rated Battlegrounds, or from the Conquest Point bonus for holiday
+and/or daily random Battlegrounds. The following week the cap will be
+recalculated based on the character's ratings, and it is possible Arena rating
+could now generate the higher cap. The second week, the character's cap from
+Arena rating is 1800, and the cap from Rated Battlegrounds is 1650. The
+character has a total cap of 1800 Conquest points for the week. Up to 1650
+points can be earned from Rated Battlegrounds, but the last 150 must come from
+a different source.
+
+  * Valor & Justice Points
+
+    * All existing Valor Points in the Currency tab have been converted to
+Justice Points. Any points above the Justice Point cap will be converted into
+gold at a rate of 47 silver per point and mailed to characters.
 
     * The maximum number of Valor Points which can be earned in a week from
 any and all applicable dungeons and raids is now 980, down from 1250.
@@ -706,18 +760,31 @@ Zandalari dungeons remains at 980.
 dungeons remains at 490.
 
       * The number of Valor Points awarded for killing a boss in the Firelands
-is 70 in 10-player mode, and 90 in 25-player mode.
+is 120 in 10-player mode, and 140 in 25-player mode.
 
       * The number of Valor Points awarded for killing Occu'thar in Baradin
-Hold is 35 in 10-player mode, and 45 in 25-player mode.
+Hold is 120 in 10-player mode, and 140 in 25-player mode.
 
       * The number of Valor Points awarded for killing a boss on Heroic
 difficulty in The Bastion of Twilight, Blackwing Descent, and Throne of the
 Four winds is 35 in 10-player mode, and 45 in 25-player mode.
 
-  * The Firelands, a new 10- and 25-player raid, is now available for limited
-testing. Please visit the [PTR Discussion forum][49] for the latest raid
-testing schedule.
+**[Dungeons & Raids][51]**
+
+  * Raid Profiles have been added which allow players to save the raid window
+user interface layout based on type of content (i.e. 10-player raids,
+25-player raids, Battlegrounds, etc.) for future use.
+
+    * Players can select PvE, PvP, specialization, and group size. Each Raid
+Profile type will then automatically setup going forward.
+
+    * This feature is available for 5-player content as well when Use Raid-
+Style Party Frames is selected in the Interface options.
+
+    * Raid Profiles can list groups horizontally as well as vertically.
+
+  * A Raid button has been added to the Navigation tray which will bring
+players straight to the Raid window in the Social pane.
 
   * Baradin Hold
 
@@ -732,9 +799,11 @@ Elementium Monstrosity, Feludius, Ignacius, and Terrastra.
     * One of each type of bound elemental in the Ascendant Council chamber has
 been removed.
 
+    * Bound Deluge's Frost Whirl ability now deals 50% less damage.
+
     * Arion
 
-      * Chain Lightning damage has been reduced.
+      * Chain Lightning damage and chain distance has been reduced.
 
     * Cho'gall
 
@@ -935,7 +1004,23 @@ gauntlet.
     * High Priest Venoxis's death now removes the poison from the plants at
 the start of the dungeon.
 
-**[Guilds][50]**
+  * Dungeon & Raid Bug Fixes
+
+    * Bosses are now immune to the shrinking effect from Gnomish Shrink Ray.
+
+    * The achievement Aberrant Behavior should no longer incorrectly reset its
+kill tracking during the Maloriak encounter in Blackwing Descent.
+
+    * Anshal's Soothing Breeze should no longer cause combat pets to behave
+erratically in Throne of the Four Winds.
+
+    * Raid Marker icons are now visible in all phases of boss encounters.
+
+**[Guilds][52]**
+
+  * Guild Finder
+
+    * Long comments will now work and not be cut off in the display.
 
   * The daily guild experience cap has been increased by 25%.
 
@@ -946,24 +1031,81 @@ the start of the dungeon.
   * The Reins of the Dark Phoenix, purchased from the Guild Vendor, has had
 its art improved. It's now less transparent and indisputably more awesome.
 
-**[Items][51]**
+**[Items][53]**
 
   * If a player wins a Need roll under the Need Before Greed system on a Bind
 on Equip item, the item will become Soulbound to that player. The item will
 remain unbound if won via a Greed roll.
 
+  * Applicable tier 11 items now cost Justice Points.
+
   * Darkmoon Card: Hurricane damage done when triggered has been increased by
 40%, however, it can no longer deal critical strikes and no longer receives
 any modifiers to its damage from the equipping player.
 
-  * Set Bonuses
+  * The Keyring bag slot has been removed to make room in the user interface
+for new features.
 
-    * The 2-piece resilience bonus from Cataclysm PvP sets no longer stacks.
+    * Keys which no longer serve a purpose in the game will be removed from
+player inventories. Compensation for the keys will be automatically provided
+in the form of each key's vendor sell price in gold.
+
+    * Keys which are obsolete quest items will be removed from player
+inventories.
+
+    * Keys which may still be of use to players will be transferred to regular
+inventory space. If a player's bags are full, these keys will sit in a
+backlogged inventory until sufficient space is made available. Once space is
+opened, the keys will appear in regular inventory upon the player logging out
+or switching zones.
+
+  * PvP Items & Rewards
+
+    * Applicable Season 9 items now cost Honor Points.
+
+    * Gladiator Weapons
+
+      * Season 10 Conquest Point weapons will only be purchasable once a
+required minimum sum of Conquest Points has been reached during the current
+season. For example, Ruthless Gladiator's Pike costs 3400 Conquest Points to
+purchase. However, players must first earn a total of 11650 Conquest Points
+during Season 10 before they are able to purchase it.
+
+      * Season 9 Honor Point weapons will only be purchasable once a required
+minimum sum of Honor Points has been reached during the current season. For
+example, Vicious Gladiator's Pike costs 3400 Honor Points to purchase.
+However, players must first earn a total of 18500 Honor Points during Season
+10 before they are able to purchase it.
+
+      * Once the minimum sum of points required to purchase weapons is
+reached, all available weapons can be purchased for their listed costs. The
+point requirement is not reset once a purchase is made.
+
+      * Weapon tooltips from the vendor will let players know how many more
+Conquest or Honor Points must be earned in the current season before the item
+can be purchased.
+
+    * Rated Battleground Rewards
+
+      * New PvP ground mounts, the Vicious War Wolf (Horde) and Vicious War
+Steed (Alliance), will be awarded to players for completing achievements to
+win 75, 150, and 300 Rated Battlegrounds respectively, rather than for being
+in the top .5% of the ladder at the end of each season as with Arenas. This
+award system is to better compliment the spirit of Battlegrounds. One account-
+bound mount will be awarded for each achievement unlocked, allowing players
+who obtain 150 and 300 Rated Battleground wins to earn this mount a second and
+third time. The additional mounts earned can then be sent to alt characters,
+given they're account-bound. These mounts are awarded as soon as an associated
+achievement is unlocked and do not correspond with end-of-season rewards.
+
+    * Set Bonuses
+
+      * The 2-piece resilience bonus from Cataclysm PvP sets no longer stacks.
 If a player wears 2 pieces each from 2 different Cataclysm sets, the player
 will only receive the 400 resilience rating bonus once. This change does not
 apply to PvP sets from prior expansions.
 
-**[Professions][52]**
+**[Professions][54]**
 
   * Engineering
 
@@ -977,15 +1119,21 @@ be reached.
     * Players can no longer skin corpses already being actively skinned or
 looted by other players.
 
-**[PvP][53]**
+**[PvP][55]**
 
   * Arenas
+
+    * The individual Matchmaking Rating column has been removed from the Arena
+scoreboard.
 
     * The Ring of Valor has been added to the Arena rotation once again.
 Players no longer start the match on elevators at the center of the map. They
 now begin the match in starting rooms on opposite sides of the Arena.
 
   * Battlegrounds
+
+    * The individual Matchmaking Rating column has been removed from the Rated
+Battleground scoreboard and replaced with a team Matchmaking Rating.
 
     * Eye of the Storm has been added into the rotation as a 10-man Rated
 Battleground. The tug-of-war style capture points have been replaced with
@@ -997,71 +1145,68 @@ still a 15-player Battleground with tug-of-war style capture points.
 
     * War Games
 
-      * Many improvements are being made to the War Games interface, though
-the changes are not yet fully functional.
+      * Many improvements have been made to the War Games interface. It now
+has its own panel for ease of use and raid/group leaders are the only ones who
+can challenge another group to War Games.
 
-  * Conquest Points
-
-    * The minimum cap on Conquest Points earned per week is now 1500 at 1500
-or less Battleground rating. The maximum cap remains 3000 at 3000 or more
-Battleground rating. The cap continues to scale non-linearly between those two
-points.
-
-    * The game now separately tracks different Conquest Point caps for
-Battlegrounds and Arenas. The cap for Arena rating will always be 2/3 of the
-cap for Battleground rating at any given Arena rating. Players may earn a
-total number of Conquest Points per week equal to the higher of these two
-caps, but once players have reached the cap for either Arenas or
-Battlegrounds, they can no longer earn Conquest Points from that source.
-Conquest Points from Battleground holidays only count toward the total
-Conquest Point cap.
-
-  * Gladiator Weapons
-
-    * Season 10 Conquest Point weapons will only be purchasable once a
-required minimum sum of Conquest Points has been reached during the current
-season. For example, Ruthless Gladiator's Pike costs 3400 Conquest Points to
-purchase. However, players must first earn a total of 11650 Conquest Points
-during Season 10 before they are able to purchase it.
-
-    * Season 9 Honor Point weapons will only be purchasable once a required
-minimum sum of Honor Points has been reached during the current season. For
-example, Vicious Gladiator's Pike costs 3400 Honor Points to purchase.
-However, players must first earn a total of 18500 Honor Points during Season
-10 before they are able to purchase it.
-
-    * Once the minimum sum of points required to purchase weapons is reached,
-all available weapons can be purchased for their listed costs. The point
-requirement is not reset once a purchase is made.
-
-    * Weapon tooltips from the vendor will let players know how many more
-Conquest or Honor Points must be earned in the current season before the item
-can be purchased.
-
-**[Quests & Creatures][54]**
+**[Quests & Creatures][56]**
 
   * There are no longer oddities in the critical strike and dodge chance of
 lower-level creatures.
 
-**[User Interface][55]**
+  * Creatures will now display smooth energy regeneration for players.
+
+**[Races][57]**
+
+  * All character races now have a /roar sound.
+
+**[User Interface][58]**
+
+  * The Interface Options screens have changed size to match the Video and
+Audio screens. This allows for a larger Compact Unit Frames Profiles panel.
+
+  * Addons will no longer be able to intelligently swap items by working with
+the built-in Equipment Manager.
 
   * The order in which characters are listed at the Character Selection screen
 can now be rearranged and saved.
 
   * The cast bar can now be moved to display below the Character frame.
 
+  * Character talent specializations can now be viewed on mouseover of the
+Battlegrounds Scoreboard.
+
+  * There is now a Dismiss Pet option on unit frames.
+
+  * The durability character display will now show items as yellow when they
+are below 20% durability, instead of when items have 5 durability or less.
+
+  * The Macros window and Spellbook can now both be open at the same time to
+allow for more intuitive macro creation. In addition, the Macros window has a
+Save/Cancel button.
+
   * Move Pad is a mouse-click interface for movement which is now built into
 the base interface.
 
-  * Raid Profiles have been added which allow players to save the raid window
-user interface layout based on type of content (i.e. 10-player raids,
-25-player raids, Battlegrounds, etc.) for future use.
+  * It is now easier to change the language of the game client to any language
+available in the region.
+
+  * A target or focus target can be selected within the mini-map tracking
+(does not include enemy players).
+
+  * Vendors now display currency types they use.
+
+**[Technical][59]**
+
+  * The Blizzard Launcher now utilizes Universal Plug and Play for port
+configuration. If your router supports UPnP it will automatically open the
+ports that it requires and your downloads will be unrestricted.
 
 **Patch 4.2.0 für World of Warcraft**
 
-Die Patchnotes für alle "World of Warcraft"-Patches befinden sich [hier][56].
+Die Patchnotes für alle "World of Warcraft"-Patches befinden sich [hier][60].
 
-**[Elementare Bande][57]**
+**[Elementare Bande][61]**
 
 Es hätte ein verheißungsvolles Ereignis sein sollen, doch die Zeremonie am
 uralten Weltenbaum Nordrassil endete mit einer Tragödie. Dort hatten sich
@@ -1075,7 +1220,7 @@ Elementarebene verbannte. Sollten sich diese schrecklichen Neuigkeiten
 bewahrheiten, hat der Irdene Ring – und mit ihm ganz Azeroth – einen seiner
 größten Champions verloren.
 
-**[Der Geheilte Hyjal und die Geschmolzene Front][58]**
+**[Der Geheilte Hyjal und die Geschmolzene Front][62]**
 
 Obwohl es den Nachtelfen und ihren Verbündeten gelungen ist, Ragnaros' erste
 Invasion des Hyjal abzuwehren, ist ihre Arbeit auf dem heiligen Berg noch
@@ -1088,7 +1233,7 @@ der Elementare über den Geheilten Hyjal hinwegfegt. Trotz dieses Rückschlags
 halten die Verteidiger des Hyjal stand, denn ihnen allen ist klar, dass das
 Schicksal des Hyjal im geschmolzenen Herzen der Feuerlande entschieden wird.
 
-**[Die Feuerlande][59]**
+**[Die Feuerlande][63]**
 
 Der Moment rückt näher, gegen Ragnaros vorzugehen. Die Schlacht zur
 Verteidigung des Hyjal wütet nun in seinem schwelenden Reich weiter. Mit jedem
@@ -1101,7 +1246,7 @@ die sich in dieses von Asche erstickte Reich gewagt haben, dürfen vor diesen
 Gefahren nicht zurückschrecken. Von dem Ausgang der bevorstehenden Schlachten
 hängt das Überleben von ganz Azeroth ab.
 
-**[Drachenzorn, Tarecgosas letzte Ruhe][60]**
+**[Drachenzorn, Tarecgosas letzte Ruhe][64]**
 
 Im Reich des blauen Drachenschwarms, dem Nexus, herrscht Unsicherheit während
 seine Mitglieder fieberhaft nach einem neuen Anführer suchen. Trotz des tiefen
@@ -1125,27 +1270,33 @@ zu springen._
 
   * [Klassen: Allgemeines][8]
 
-    * [![][61]][10] [Todesritter][10], [![][62]][12] [Druiden][12],
-[![][63]][14] [Jäger][14], [![][64]][16] [Magier][16], [![][65]][18]
+    * [![][65]][10] [Todesritter][10], [![][66]][12] [Druiden][12],
+[![][67]][14] [Jäger][14], [![][68]][16] [Magier][16], [![][69]][18]
 [Paladine][18],
 
-    * [![][66]][20] [Priester][20], [![][67]][22] [Schurken][22],
-[![][68]][24] [Schamanen][24], [![][69]][26] [Hexenmeister][26], [![][70]][28]
+    * [![][70]][20] [Priester][20], [![][71]][22] [Schurken][22],
+[![][72]][24] [Schamanen][24], [![][73]][26] [Hexenmeister][26], [![][74]][28]
 [Krieger][28]
 
-  * [Dungeons & Schlachtzüge][29]
+  * [Abzeichen][29]
 
-  * [Gilden][30]
+  * [Dungeons & Schlachtzüge][30]
 
-  * [Gegenstände][31]
+  * [Gilden][31]
 
-  * [Berufe][32]
+  * [Gegenstände][32]
 
-  * [PvP][33]
+  * [Berufe][33]
 
-  * [Quests & Kreaturen][34]
+  * [PvP][34]
 
-  * [Benutzeroberfläche][35]
+  * [Quests & Kreaturen][35]
+
+  * [Völker][36]
+
+  * [Benutzeroberfläche][37]
+
+  * [Technischer Support][38]
 
 **Allgemeines**
 
@@ -1166,7 +1317,7 @@ helfen.
     * Eine neue Questreihe steht jetzt Horde- und Allianzspielern der Stufe 85
 zur Verfügung, die Thrall als mutige Abenteurer zur Seite stehen wollen. "Der
 Ruf des Weltenschamanen", die Quest, die auf den Gipfel des Hyjal führt, kann
-in Sturmwind oder Orgrimmar angenommen werden.
+an den Erdschreinen in Sturmwind oder Orgrimmar angenommen werden.
 
   * Neuer Schlachtzug: Die Feuerlande
 
@@ -1184,50 +1335,27 @@ brandneuen legendären Stab für Magieklassen zu ergattern. Um den
 Konstruktionsprozess des Stabes zu beginnen, müssen Spieler zuerst einen
 geschmolzenen Lord in den Feuerlanden töten. Sobald ein geschmolzener Lord
 besiegt worden ist, können Spieler die Quest "Eine legendäre Verabredung" von
-Ziradormi oder Coridormi in Orgrimmar oder Sturmwind annehmen.
+Ziradormi in der Feste Grommash in Orgrimmar oder Coridormi im Magiersanktum
+in Sturmwind annehmen. Die Questreihe für den legendären Gegenstand kann nur
+von Druiden, Magiern, Priestern, Schamanen und Hexenmeistern gestartet werden.
 
   * Neue Benutzeroberflächenfunktion: Das Dungeonkompendium
 
     * Eine große Menge an Informationen über Dungeons wurde in Form des
 brandneuen Dungeonkompendiums in die Benutzeroberfläche eingebaut. Diese
-Funktion kann innerhalb eines Dungeons über die Taste "M" oder überall in der
-Spielwelt über eine neue Schaltfläche in der Navigationsleiste aufgerufen
+Funktion kann über eine neue Schaltfläche in der Navigationsleiste aufgerufen
 werden. Das Dungeonkompendium enthält Hintergrundgeschichten, Details über die
 Begegnungen, Fähigkeiten- und Beuteinformationen über alle Bosse, die bisher
-in das neue System integriert wurden. In zukünftigen Patches ist geplant,
-weitere Dungeons in das Dungeonkompendium aufzunehmen.
+in das neue System integriert wurden (dies schließt die Bosse aller Cataclysm-
+Dungeons und -Schlachtzüge ein). In zukünftigen Patches ist geplant, weitere
+Dungeons aufzunehmen.
 
-  * Charaktere aller Völker haben jetzt einen Geräuscheffekt, wenn das /br
-üllen-Emote ausgeführt wird.
-
-  * Alle im Währungsfenster angezeigten Tapferkeitspunkte wurden in
-Gerechtigkeitspunkte umgewandelt. Sämtliche Punkte, die über das Maximum der
-Gerechtigkeitspunkte hinausgehen, werden zu einem Kurs von 47 Silber pro Punkt
-in Gold umgewandelt und Spielercharakteren per Post zugestellt.
-
-  * Der Schlüsselring wurde entfernt, damit an seiner Stelle in der
-Benutzeroberfläche Platz für neue Funktionen wird.
-
-    * Schlüssel, die keinem Zweck mehr im Spiel dienen, werden aus dem
-Spielerinventar verschwinden. Der Verkaufswert dieser Schlüssel wird
-automatisch in Form von Gold erstattet.
-
-    * Schlüssel, die überflüssige Questgegenstände sind, werden aus dem
-Spielerinventar verschwinden.
-
-    * Schlüssel, die der Spieler noch brauchen kann, werden in das normale
-Inventar verschoben. Wenn die Taschen eines Spielers voll sind, werden diese
-Schlüssel in einer Warteschlange verwahrt, bis genügend Taschenplatz zur
-Verfügung steht. Sobald Platz frei wird, werden die Schlüssel in den normalen
-Taschen auftauchen, wenn der Spieler das Spiel verlässt, oder eine andere Zone
-betritt.
-
-**[Erfolge][71]**
+**[Erfolge][75]**
 
   * "Saubääär!" (neuer Erfolg): Rettet in Zul'Aman auf dem heroischen
 Schwierigkeitsgrad alle vier Gefangenen, bevor sie geopfert werden.
 
-**[Klassen: Allgemeines][72]**
+**[Klassen: Allgemeines][76]**
 
   * Alle kritischen Effekte von Heilzaubern rufen nun den doppelten Wert eines
 nicht-kritischen Heileffekts hervor (+100%) anstatt der vorherigen 1,5-fachen
@@ -1296,7 +1424,15 @@ von 5%.
 Parierwertung (vorher 25%). Diese Umrechnung gilt weiterhin nur für
 Stärkepunkte über ihren Stärkegrundwert hinaus.
 
-**[![][61]][73] [Todesritter][73]**
+  * Allgemeine Klassenfehlerbehebungen
+
+    * Spieler sollten nicht länger fälschlicherweise eine Nachricht erhalten,
+dass sie einen Zauber unterbrochen haben, wenn dem nicht so ist.
+
+    * Aktionsleisten werden nicht länger kurz verschwinden, wenn Charaktere
+mit einem Haltungsbalken ein Vehikel nutzen.
+
+**[![][65]][77] [Todesritter][77]**
 
   * Der Grundschaden von 'Auslöschen' wurde auf 150% des Waffenschadens
 verringert (vorher 160%).
@@ -1323,13 +1459,22 @@ Sieg, der Erfahrung oder Ehre gewährt, den Todesritter um mindestens 20%
 seiner Gesamtgesundheit heilt (setzt noch immer Frost- oder unheilige Präsenz
 voraus).
 
-**[![][62]][74] [Druiden][74]**
+  * Behobene Fehler: Todesritter
 
-  * Druiden erhalten nun einen statt zwei Punkte Angriffskraft für jeden Punkt
-Stärke. Sie erhalten weiterhin zwei Punkte Angriffskraft pro Punkt
-Beweglichkeit, während sie sich in Katzen- oder Bärengestalt befinden. Um die
-Schadenseinbußen auszugleichen, die durch diese Änderungen entstehen, wurden
-zusätzlich die folgenden Änderungen vorgenommen.
+    * Das Talent 'Tötungsmaschine' kann nun wie vorgesehen sowohl durch
+Angriffe der Schildhand als auch der Waffenhand ausgelöst werden.
+
+**[![][66]][78] [Druiden][78]**
+
+  * Druiden erhalten für jeden Punkt Stärke nun einen statt zwei Punkte
+Angriffskraft. Sie erhalten weiterhin zwei Punkte Angriffskraft pro Punkt
+Beweglichkeit, während sie sich in Katzen- oder Bärengestalt befinden. Zudem
+war die Skalierungsrate der Katzengestalt hinsichtlich
+Ausrüstungsverbesserungen im Vergleich mit anderen Klassen geringer, wodurch
+Katzen-Druiden auf höheren Ausrüstungsstufen im Schaden zurückfielen. Um der
+Stärke-Änderung entgegenzuwirken und die Skalierung zu verbessern, wurden die
+folgenden Änderungen vorgenommen. Alle genannten Zahlen gelten für Druiden der
+Stufe 85.
 
     * Der von 'Wilder Biss' verursachte Schaden wurde um 15% erhöht. Außerdem
 wurden seine Grundenergiekosten auf 25 herabgesetzt und zusätzlich können bis
@@ -1337,13 +1482,28 @@ zu weitere 25 Energiepunkte verbraucht werden, um eine Schadenserhöhung von
 bis zu 100% zu erzielen.
 
     * Der von 'Zerfleischen' (Katze) verursachte Schaden auf Stufe 80 und
-höher wurde auf 530% des Waffenschadens erhöht (vorher 460%).
+höher wurde auf 540% des Waffenschadens erhöht (vorher 460%) und der
+Bonusschaden wurde auf 302 verringert.
+
+    * Der Initialschaden von 'Krallenhieb' ist nun gleichwertig mit dem
+Schaden jedes regelmäßigen Ticks (und wird für alle Kampfberechnungen
+gleichwertig behandelt). Der regelmäßige Schaden gewinnt durch Angriffskraft
+pro Tick nun 14,7% (von 2,6% erhöht) und der Basisschaden pro Tick wurde von
+557 auf 56 verringert. Der Fehler, dass der Tooltip diese Änderung noch nicht
+widerspiegelt, ist bekannt und wird mit einem zukünftigen Patch behoben
+werden.
 
     * Der von 'Verheeren' verursachte Schaden auf Stufe 80 und höher wurde auf
-970% des Waffenschadens erhöht (vorher 850%).
+950% des Waffenschadens erhöht (vorher 850%) und der Bonusschaden wurde auf
+532 verringert.
+
+    * Die Fähigkeit 'Wildes Brüllen' erhöht den Schaden automatischer Angriffe
+nun um 80% (von 60% erhöht). Die Glyphe 'Wildes Brüllen' behält weiterhin
+einen unveränderten Bonus von 5% auf diesen Gesamtwert bei.
 
     * Der von 'Schreddern' verursachte Schaden auf Stufe 80 und höher wurde
-auf 520% des Waffenschadens erhöht (vorher 450%).
+auf 540% des Waffenschadens erhöht (vorher 450%) und der Bonusschaden wurde
+auf 302 verringert.
 
   * 'Wucherwurzeln' sowie der äquivalente Zauber, der durch 'Griff der Natur'
 ausgelöst wird, verursachen keinen Schaden mehr.
@@ -1479,7 +1639,7 @@ Meisterschaft 'Harmonie' regelmäßige Heileffekte verstärkt.
     * Es ist nicht mehr möglich, in manchen Begegnungen 'Wilde Attacke' zu
 verwenden, obwohl man sich zu nah am Ziel befindet.
 
-**[![][63]][75] [Jäger][75]**
+**[![][67]][79] [Jäger][79]**
 
   * Der von 'Mehrfachschuss' verursachte Schaden auf Stufe 80 oder höher wurde
 verringert. Er verursacht jetzt 120% des Waffenschadens (vorher 137%).
@@ -1513,7 +1673,7 @@ Begleiter stürmt nun auf ein Gruppenmitglied zu und verringert den Schaden,
 den das Ziel durch den nächsten Nahkampf- oder Fernkampfangriff erleidet, um
 einen Wert, der 50% der Gesamtgesundheit des Begleiters entspricht.
 
-**[![][64]][76] [Magier][76]**
+**[![][68]][80] [Magier][80]**
 
   * Der von 'Arkanschlag' verursachte Schaden wurde um 5% verringert.
 
@@ -1542,7 +1702,7 @@ aktiv bleiben und der Effekt auf zwei weitere Ziele übertragen.
 abnehmende Wirkung. Diese Änderung ist zusätzlich zu den Zaubern, mit denen
 diese beiden Zauber eine abnehmende Wirkung teilen.
 
-**[![][65]][77] [Paladine][77]**
+**[![][69]][81] [Paladine][81]**
 
   * Die Manakosten von 'Göttliches Licht' wurden auf 35% des Grundmanas
 angehoben (vorher 30%).
@@ -1643,7 +1803,7 @@ bestehenden Effekten die Abklingzeit von 'Wort der Herrlichkeit' um 5/10 Sek.
 Waffenkundebonus wirkt nun auch, wenn 'Siegel der Rechtschaffenheit' aktiv
 ist.
 
-**[![][66]][78] [Priester][78]**
+**[![][70]][82] [Priester][82]**
 
   * Der von 'Verschlingende Seuche' verursachte Schaden wurde um 12%
 verringert.
@@ -1678,7 +1838,7 @@ betroffen.
     * Das Kanalisieren von Zaubern wird nicht mehr vorzeitig abgebrochen, wenn
 ein Spieler auf den Lichtbrunnen klickt.
 
-**[![][67]][79] [Schurken][79]**
+**[![][71]][83] [Schurken][83]**
 
   * Die Abklingzeit von 'Mantel der Schatten' beträgt nun 2 Minuten (vorher 90
 Sek.). Außerdem löst 'Mantel der Schatten' jetzt keine globale Abklingzeit
@@ -1722,7 +1882,7 @@ die Abklingzeit von 'Kampfbereitschaft' um 15/30 Sek.
       * Der Schadensbonus von 'Venenschnitt' gegen blutende Ziele wurde auf
 8/16% erhöht (vorher 5/10%).
 
-**[![][68]][80] [Schamanen][80]**
+**[![][72]][84] [Schamanen][84]**
 
   * Der von 'Feuernova' verursachte Schaden wurde um 15% erhöht.
 
@@ -1730,6 +1890,8 @@ die Abklingzeit von 'Kampfbereitschaft' um 15/30 Sek.
 
   * 'Elemente entfesseln' ist jetzt ein Naturzauber und kann somit nicht mehr
 benutzt werden, wenn alle Naturzauber des Schamanen gesperrt wurden.
+
+  * 'Wind entfesseln' verursacht nun 175% Waffenschaden (vorher 125%).
 
   * Die interne Abklingzeit von 'Wasserschild' wurde auf 3,5 Sek. verringert
 und verhält sich somit wieder wie andere Schilde. Die Menge des erstatteten
@@ -1748,6 +1910,10 @@ verlängert.
 
       * 'Gewitter' verringert jetzt das Bewegungstempo von Spielern, die es
 zurückstößt, 5 Sek. lang um 40%.
+
+    * Verstärkung
+
+      * 'Sturmschlag' verursacht nun 225% Waffenschaden (vorher 125%).
 
     * Wiederherstellung
 
@@ -1775,7 +1941,7 @@ eine zusätzliche Aufladung erhält, statt sie aufzubrauchen, wenn es von
 erlittenem Schaden ausgelöst wird. Hierdurch können maximal 3 weitere
 Aufladungen erzeugt werden (9 mit dem Talent 'Rollender Donner').
 
-**[![][69]][81] [Hexenmeister][81]**
+**[![][73]][85] [Hexenmeister][85]**
 
   * 'Seelenfeuer' ist jetzt ab Stufe 20 erlernbar (vorher Stufe 54).
 
@@ -1791,7 +1957,7 @@ Abklingzeit von 30 Sek. (vorher 15 Sek.).
     * Es ist nicht mehr möglich, den Kampf zu verlassen, während 'Seelendieb'
 kanalisiert wird.
 
-**[![][70]][82] [Krieger][82]**
+**[![][74]][86] [Krieger][86]**
 
   * 'Überwältigen' hat jetzt eine Abklingzeit und eine globale Abklingzeit von
 1,5 Sek. (die Abklingzeit von 'Verlangen nach Blut' hat sich nicht geändert).
@@ -1814,36 +1980,84 @@ wurde auf 12% verringert (vorher 20%).
     * Furor
 
       * Der von 'Beidhändigkeits-Spezialisierung' gewährte Bonuswaffenschaden
-wurde auf 5% verringert (vorher 10%).
+wurde auf 5% verringert (vorher 10%)
 
   * Behobene Fehler: Krieger
 
     * Es ist nicht mehr möglich, in manchen Begegnungen 'Sturmangriff' zu
 verwenden, obwohl man sich zu nah am Ziel befindet.
 
-**[Dungeons & Schlachtzüge][83]**
+**Abzeichen**
 
-  * Das Dungeonkompendium ist im Begriff, implementiert zu werden. Es bestehen
-zwar schon einige Benutzeroberflächenelemente im aktuellen PTR-Build,
-allerdings ist diese Funktion noch nicht vollständig.
+  * Eroberungs- & Ehrenpunkte
 
-  * Tapferkeitspunkte
+    * Alle existierenden Eroberungspunkte im Abzeichenreiter wurden nun in
+Ehrenpunkte umgewandelt. Alle Punkte oberhalb der Ehrenpunktebegrenzung müssen
+in der nächsten Woche ausgegeben werden, bevor Saison 10 startet. Sobald
+Saison 10 beginnt, werden alle Ehrenpunkte über der 4.000-Punkte-Begrenzung in
+Gold umgewandelt, zu einer Rate von 35 Silber pro Punkt. Das Gold wird den
+Spielern per Post zugeschickt.
+
+    * Die minimale Menge an Eroberungspunkten, die man pro Woche erhält,
+beträgt bei einer Arenawertung von 1500 oder niedriger nun 1350 Punkte. Die
+Maximalmenge beträgt nun bei einer Arenawertung von 3000 oder höher weiterhin
+2700 Punkte. Der Wert skaliert weiterhin nicht-linear zwischen diesen beiden
+Punkten. Zum Vergleich, die Maximal- und Minimalwerte während Saison 9
+betrugen 3000 und 1343.
+
+    * Das Spiel zeichnet jetzt die Maximalwerte für Eroberungspunkte von
+Schlachtfeldern und Arenen separat auf. Schlachtfeldwertungen erhalten einen
+Bonus von 22,2% für den Maximalwert, den sie generieren, sodass der
+Maximalwert durch Schlachtfeldwertung nun zwischen 1650 und 3300 liegt. Pro
+Woche können Spieler entsprechend dem höheren dieser Maximalwerte eine
+Gesamtmenge an Eroberungspunkten verdienen, aber sobald ein Spieler den
+Maximalwert für Arenen oder Schlachtfelder erreicht hat, können aus der
+entsprechenden Quelle keine weiteren Eroberungspunkte gewonnen werden.
+Eroberungspunkte, die durch die Wochenendschlachtfelder gewonnen werden,
+zählen nur für den globalen Maximalwert der Eroberungspunkte.
+
+      * Beispiel: Zu Beginn der ersten Woche von Saison 10 starten alle
+Teilnehmer mit einer Wertung von unter 1500 Punkten. Deshalb wird der
+Maximalwert für gewertete Schlachtfelder 1650 und der Arenamaximalwert 1350
+betragen. Nun gewinnt unser Beispielcharakter genügend Arenaspiele in der
+ersten Woche, um die vollen 1350 Punkte zu erreichen. Darüber hinaus gewähren
+weitere Arenasiege für den Rest der Woche keine Eroberungspunkte mehr. Der
+Charakter kann aber noch weitere 300 Punkte erhalten, indem er gewertete
+Schlachtfelder gewinnt oder Gebrauch von dem Bonus auf Eroberungspunkte der
+Wochenendschlachtfelder oder den zufälligen/täglichen Schlachtfeldern macht.
+In der darauffolgenden Woche wird der Maximalwert auf der Grundlage der
+persönlichen Wertungen des Charakters neu berechnet und es ist möglich, dass
+die Arenawertung nun den höheren Maximalwert ermöglicht. In der zweiten Woche
+beträgt der Maximalwert für die Arenawertung 1800 und der Maximalwert für
+gewertete Schlachtfelder 1650. Damit hat der Charakter einen Gesamtmaximalwert
+von 1800 Eroberungspunkten in dieser Woche. Bis zu 1650 Punkte davon können
+durch Siege auf gewerteten Schlachtfeldern erreicht werden, aber die letzten
+150 Punkte müssen aus anderen Quellen kommen.
+
+  * Tapferkeits- & Gerechtigkeitspunkte
+
+    * Alle existierenden Tapferkeitspunkte im Abzeichenreiter wurden nun in
+Gerechtigkeitspunkte umgewandelt. Alle Punkte oberhalb der
+Gerechtigkeitspunktebegrenzung werden zu einer Rate von 47 Silber pro Punkt
+umgewandelt. Das Gold wird den Spielern per Post zugeschickt.
 
     * Die Maximalmenge an Tapferkeitspunkten, die pro Woche aus sämtlichen
-Quellen gewonnen werden kann, beträgt nun 980 (vorher 1250).
+Instanzen und Schlachtzügen gewonnen werden kann, beträgt nun 980 (vorher
+1250).
 
       * Die Maximalmenge an Tapferkeitspunkten, die für das Abschließen der
-"Aufstieg der Zandalari"-Dungeons gewonnen werden kann, beträgt weiterhin 980.
+"Aufstieg der Zandalari"-Instanzen gewonnen werden kann, beträgt weiterhin
+980.
 
       * Die Maximalmenge an Tapferkeitspunkten, die für das Abschließen von
-heroischen Dungeons gewonnen werden kann, beträgt weiterhin 490.
+heroischen Instanzen gewonnen werden kann, beträgt weiterhin 490.
 
       * Die Menge an Tapferkeitspunkten, die man beim Sieg über einen Boss in
-den Feuerlanden erhält, beträgt 70 im 10-Spieler-Modus und 90 im 25-Spieler-
+den Feuerlanden erhält, beträgt 120 im 10-Spieler-Modus und 140 im 25-Spieler-
 Modus.
 
       * Die Menge an Tapferkeitspunkten, die man beim Sieg über Occu'thar in
-der Baradinfestung erhält, beträgt 35 im 10-Spieler-Modus und 45 im 25
+der Baradinfestung erhält, beträgt 120 im 10-Spieler-Modus und 140 im 25
 -Spieler-Modus.
 
       * Die Menge an Tapferkeitspunkten, die man beim Sieg über einen
@@ -1851,11 +2065,34 @@ heroischen Boss in der Bastion des Zwielichts, dem Pechschwingenabstieg und
 dem Thron der Vier Winde erhält, beträgt 35 im 10-Spieler-Modus und 45 im 25
 -Spieler-Modus.
 
-  * Die Feuerlande, ein neuer Schlachtzug für 10 und 25 Spieler, steht jetzt
-zum eingeschränkten Test bereit. Mehr Informationen über die aktuelle
-Schlachtzugstestplanung befinden sich im [Testrealmforum][84].
+**[Dungeons & Schlachtzüge][87]**
+
+  * Es wurden Schlachtzugsprofile hinzugefügt, die es Spielern gestatten, das
+Layout ihrer Schlachtzugsfenster basierend auf einem Inhaltstyp zu speichern
+(z. B. Schlachtzug für 10 Spieler, Schlachtzug für 25 Spieler, Schlachtfelder,
+usw.).
+
+    * Spieler können zwischen den Varianten PvE, PvP, Spezialisierung und
+Gruppengröße wählen. Diese Einstellungen jedes Schlachtzugsprofiltyps werden
+dann automatisch übernommen.
+
+    * Diese Funktion wird für 5-Spieler-Inhalte verfügbar sein, sowie wenn
+'Gruppe wie Schlachtzüge anz.' in den Benutzeroberflächenoptionen ausgewählt
+ist.
+
+    * Die Schlachtzugsprofile können Gruppen sowohl horizontal als auch
+vertikal arrangieren.
+
+  * Eine Schlachtzugsschaltfläche wurde im Navigationsfenster hinzugefügt, die
+Spieler direkt zum Schlachtzugsfenster im Geselligkeitsfenster bringt.
 
   * Baradinfestung
+
+    * Occu'thar ist aus seinem Käfig ausgebrochen und stellt eine brandneue
+Herausforderung für 10- und 25-Spieler-Gruppen dar, wenn sie Tol Barad
+kontrollieren.
+
+  * Die Bastion des Zwielichts
 
     * Occu'thar ist aus seinem Käfig ausgebrochen und stellt eine brandneue
 Herausforderung für 10- und 25-Spieler-Gruppen dar, wenn sie Tol Barad
@@ -1898,6 +2135,9 @@ Ignazius und Terrastra wurde auf dem normalen Schwierigkeitsgrad verringert.
     * Aus der Kammer der Aszendenten wurde jeweils einer von jeder Art
 gebundener Elementare entfernt.
 
+    * Die Fähigkeit 'Frostwirbel' der gebundenen Fluten verursachen nun 50%
+weniger Schaden.
+
     * Ignazius
 
       * Der Zauber 'Aufsteigende Flammen' erhöht pro Stapel den Schaden nun um
@@ -1910,7 +2150,8 @@ Charakter vom Effekt 'Wasserdurchtränkt' betroffen ist, wurde verringert.
 
     * Arion
 
-      * Der Schaden von 'Kettenblitzschlag' wurde verringert.
+      * Der Schaden von 'Kettenblitzschlag' und die Kettenreichweite wurde
+verringert.
 
     * Terrastra
 
@@ -2091,7 +2332,28 @@ feuerspeienden Tikimasken.
     * Der Tod von Hohepriester Venoxis entfernt nun das Gift der Pflanzen am
 Anfang des Dungeons.
 
-**[Gilden][85]**
+  * Behobene Fehler: Dungeons & Schlachtzüge
+
+    * Bosse sind jetzt gegen den Verkleinerungseffekt des
+Gnomenschrumpfstrahls immun.
+
+    * Der Erfolg "Monströses Verhalten" wird nicht länger während des Kampfes
+mit Maloriak im Pechschwingenabstieg auf inkorrekte Art und Weise den
+"Kill-Zähler" zurücksetzen.
+
+    * Anshals 'Beruhigende Brise' sollte nicht länger dazu führen, dass sich
+im Kampf befindliche Begleiter im Thron der Vier Winde unberechenbar
+verhalten.
+
+    * Die Schlachtzugsmarkierungssymbole werden nun in allen Phasen der
+Bosskämpfe sichtbar sein.
+
+**[Gilden][88]**
+
+  * Gildenbrowser
+
+    * Lange Kommentare werden nun korrekt angezeigt und nicht mehr
+abgeschnitten.
 
   * Der Maximalwert der täglich erreichbaren Gildenerfahrung wurde um 25%
 angehoben.
@@ -2105,27 +2367,89 @@ statt ab Stufe 23.
 Gildenhändler erworben werden können, wurde überarbeitet. Er ist nun weniger
 transparent und unbestreitbar viel großartiger.
 
-**[Gegenstände][86]**
+**[Gegenstände][89]**
 
   * Wenn ein Spieler einen beim Anlegen gebundenen Gegenstand im Rahmen des
 "Bedarf vor Gier"-Systems mit einem "Bedarf"-Wurf gewinnt, wird dieser
 Gegenstand sofort seelengebunden. Der Gegenstand wird weiterhin ungebunden
 sein, wenn er durch einen "Gier"-Wurf erwürfelt wird.
 
+  * Anwendbare T-11-Gegenstände kosten ab sofort Gerechtigkeitspunkte.
+
   * Der von der Dunkelmondkarte: Hurrikan ausgelöste Schaden wurde um 40%
 erhöht, allerdings kann dieser Schaden keinen kritischen Effekt mehr erzielen
 und erhält keine Schadensmodifikatoren des Spielercharakters mehr, der die
 Karte anlegt.
 
-  * Setboni
+  * Der Schlüsselring wurde entfernt, damit an seiner Stelle in der
+Benutzeroberfläche Platz für neue Funktionen wird.
 
-    * Der Abhärtungsbonus für Cataclysm-Sets (2 Teile) ist nicht mehr
+    * Schlüssel, die keinem Zweck mehr im Spiel dienen, werden aus dem
+Spielerinventar verschwinden. Der Verkaufswert dieser Schlüssel wird
+automatisch in Form von Gold erstattet.
+
+    * Schlüssel, die überflüssige Questgegenstände sind, werden aus dem
+Spielerinventar verschwinden.
+
+    * Schlüssel, die der Spieler noch brauchen kann, werden in das normale
+Inventar verschoben. Wenn die Taschen eines Spielers voll sind, werden diese
+Schlüssel in einer Warteschlange verwahrt, bis genügend Taschenplatz zur
+Verfügung steht. Sobald Platz frei wird, werden die Schlüssel in den normalen
+Taschen auftauchen, wenn der Spieler das Spiel verlässt, oder eine andere Zone
+betritt.
+
+  * PvP-Gegenstände & -Belohnungen
+
+    * Entsprechende Saison-9-Gegenstände kosten jetzt Ehrenpunkte.
+
+    * Gladiatorenwaffen
+
+      * Die Waffen der Saison 10, die Eroberungspunkte kosten, werden erst
+dann erhältlich sein, wenn man während der aktuellen Saison eine Mindestmenge
+an Eroberungspunkten gesammelt hat. Zum Beispiel kostet die Pike des ruchlosen
+Gladiators 3400 Eroberungspunkte. Allerdings müssen Spieler erst 11650
+Eroberungspunkte während Saison 10 erhalten, bis sie sie kaufen können.
+
+      * Die Waffen der Saison 9, die Ehrenpunkte kosten, werden erst dann
+erhältlich sein, wenn man während der aktuellen Saison eine Mindestmenge an
+Ehrenpunkten gesammelt hat. Zum Beispiel kostet die Pike des boshaften
+Gladiators 3400 Ehrenpunkte. Allerdings müssen Spieler erst 18500 Ehrenpunkte
+während Saison 10 erhalten, bis sie sie kaufen können.
+
+      * Sobald die Minimalmenge an Punkten, die für den Kauf einer Waffe
+erreicht wurde, können alle verfügbaren Waffen zu ihren angegebenen Preisen
+gekauft werden. Die Punktevoraussetzung wird nicht zurückgesetzt, wenn eine
+Waffe gekauft wird.
+
+      * Die Tooltips der Waffen im Händlerfenster werden den Spielern
+anzeigen, wie viele Eroberungs- oder Ehrenpunkte noch während der laufenden
+Saison erhalten werden müssen, um einen Gegenstand zu kaufen.
+
+    * Belohnungen für gewertete Schlachtfelder
+
+      * Spieler, welche die Schlachtfeld-Erfolge für jeweils 75, 150 und 300
+gewonnene Spiele errungen haben, werden nun mit einem von zwei neuen
+Bodenreittieren belohnt, dem boshaften Kriegswolf (Horde) oder dem boshaften
+Schlachtross (Allianz). Die Entscheidung, diese Belohnung auf Basis gewonnener
+Spiele zu gewähren, statt nur für Charaktere in den obersten 0,5% der
+Rangliste (wie in der Arena), wurde getroffen, um den Wettbewerbsgeist der
+Schlachtfelder widerzuspiegeln. Jeder freigeschaltete Erfolg wird mit einem
+accountgebundenen Reittier entlohnt, sodass Spieler, die 150 und 300 gewertete
+Schlachtfelder gewinnen, dieses Reittier ein zweites und drittes Mal erhalten.
+Die zusätzlichen Reittiere können, da sie accountgebunden sind,
+Zweitcharakteren zugeschickt werden. Die Reittiere werden vergeben, sobald die
+Kriterien des zugehörigen Erfolgs erfüllt wurden, sie sind also nicht mit den
+Belohnungen zu Saisonende vergleichbar.
+
+    * Setboni
+
+      * Der Abhärtungsbonus für Cataclysm-Sets (2 Teile) ist nicht mehr
 stapelbar. Wenn ein Charakter zwei Teile von zwei verschiedenen Cataclysm-Sets
 trägt, erhält er lediglich die 400 Punkte Abhärtungswertung eines der Sets.
 Diese Änderung wirkt sich nicht auf die PvP-Sets vorangegangener Erweiterungen
 aus.
 
-**[Berufe][87]**
+**[Berufe][90]**
 
   * Ingenieurskunst
 
@@ -2139,9 +2463,12 @@ getroffen werden kann.
     * Es ist Spielern nicht mehr möglich, Kadaver zu häuten, die bereits von
 einem anderen Spieler gehäutet oder geplündert werden.
 
-**[PvP][88]**
+**[PvP][91]**
 
   * Arenen
+
+    * Die Spalte für die individuelle Gegnerzuweisungswertung wurde aus der
+Arenapunkteübersicht entfernt.
 
     * Der Ring der Ehre wurde wieder in die Rotation der Arenen aufgenommen.
 Die Teilnehmer beginnen das Match nicht mehr auf Aufzügen in der Mitte der
@@ -2149,6 +2476,24 @@ Karte. Stattdessen beginnen sie in Vorbereitungsräumen an entgegengesetzten
 Seiten der Arena.
 
   * Schlachtfelder
+
+    * Spieler, welche die Schlachtfeld-Erfolge für jeweils 75, 150 und 300
+gewonnene Spiele errungen haben, werden nun mit einem von zwei neuen
+Bodenreittieren belohnt, dem boshaften Kriegswolf (Horde) oder dem boshaften
+Schlachtross (Allianz). Die Entscheidung, diese Belohnung auf Basis gewonnener
+Spiele zu gewähren, statt nur für Charaktere in den obersten 0,5% der
+Rangliste (wie in der Arena), wurde getroffen, um den Wettbewerbsgeist der
+Schlachtfelder widerzuspiegeln. Jeder freigeschaltete Erfolg wird mit einem
+accountgebundenen Reittier entlohnt, sodass Spieler, die 150 und 300 gewertete
+Schlachtfelder gewinnen, dieses Reittier ein zweites und drittes Mal erhalten.
+Die zusätzlichen Reittiere können, da sie accountgebunden sind,
+Zweitcharakteren zugeschickt werden. Die Reittiere werden vergeben, sobald die
+Kriterien des zugehörigen Erfolgs erfüllt wurden, sie sind also nicht mit den
+Belohnungen zu Saisonende vergleichbar.
+
+    * Die persönliche Gegnerzuweisungswertung wurde von der Punkteanzeige der
+gewerteten Schlachtfelder entfernt und durch die Team-Gegnerzuweisungswertung
+ersetzt.
 
     * Das Auge des Sturms wurde der Rotation für 10-Spieler-Schlachtfelder
 hinzugefügt. Die nach dem Tauziehen-Prinzip zu erobernden Stellungen wurden an
@@ -2164,57 +2509,30 @@ wieder hinzugefügt.
     * Kräftemessen
 
       * Es wurden viele Verbesserungen an der Benutzeroberfläche für das
-Kräftemessen vorgenommen, allerdings sind diese Veränderungen noch nicht
-vollkommen funktionstüchtig.
+Kräftemessen vorgenommen. Für einfacheren Zugriff auf dieses System, hat es
+nun sein eigenes Fenster erhalten, das von Gruppen- und Schlachtzugsleitern
+bedient werden kann. Nur sie können andere Gruppen zum Kräftemessen
+herausfordern.
 
-  * Eroberungspunkte
-
-    * Die minimale Menge an Eroberungspunkten, die man pro Woche erhält,
-beträgt bei einer Schlachtfeldwertung von 1500 oder niedriger nun 1500 Punkte.
-Die Maximalmenge bleibt bei einer Schlachtfeldwertung von 3000 oder höher
-weiterhin bei 3000 Punkten. Der Wert skaliert weiterhin nicht-linear zwischen
-diesen beiden Punkten.
-
-    * Das Spiel zeichnet jetzt die Maximalwerte für Eroberungspunkte von
-Schlachtfeldern und Arenen separat auf. Der Maximalwert für die Arenawertung
-wird immer 2/3 des Maximalwertes für gewertete Schlachtfelder betragen, egal
-wie hoch die Arenawertung ausfällt. Pro Woche können Spieler entsprechend dem
-höheren dieser Maximalwerte eine Gesamtmenge an Eroberungspunkten verdienen,
-aber sobald ein Spieler den Maximalwert für Arenen oder Schlachtfelder
-erreicht hat, können aus der entsprechenden Quelle keine weiteren
-Eroberungspunkte gewonnen werden. Eroberungspunkte, die durch die
-Wochenendschlachtfelder gewonnen werden, zählen nur für den globalen
-Maximalwert der Eroberungspunkte.
-
-  * Gladiatorenwaffen
-
-    * Die Waffen der Saison 10, die Eroberungspunkte kosten, werden erst dann
-erhältlich sein, wenn man während der aktuellen Saison eine Mindestmenge an
-Eroberungspunkten gesammelt hat. Zum Beispiel kostet die Pike des ruchlosen
-Gladiators 3400 Eroberungspunkte. Allerdings müssen Spieler erst 11650
-Eroberungspunkte während Saison 10 erhalten, bis sie sie kaufen können.
-
-    * Die Waffen der Saison 9, die Ehrenpunkte kosten, werden erst dann
-erhältlich sein, wenn man während der aktuellen Saison eine Mindestmenge an
-Ehrenpunkten gesammelt hat. Zum Beispiel kostet die Pike des boshaften
-Gladiators 3400 Ehrenpunkte. Allerdings müssen Spieler erst 18500 Ehrenpunkte
-während Saison 10 erhalten, bis sie sie kaufen können.
-
-    * Sobald die Minimalmenge an Punkten, die für den Kauf einer Waffe
-erreicht wurde, können alle verfügbaren Waffen zu ihren angegebenen Preisen
-gekauft werden. Die Punktevoraussetzung wird nicht zurückgesetzt, wenn eine
-Waffe gekauft wird.
-
-    * Die Tooltips der Waffen im Händlerfenster werden den Spielern anzeigen,
-wie viele Eroberungs- oder Ehrenpunkte noch während der laufenden Saison
-erhalten werden müssen, um einen Gegenstand zu kaufen.
-
-**[Quests & Kreaturen][89]**
+**[Quests & Kreaturen][92]**
 
   * Es gibt keine Abweichungen mehr bei der kritischen Trefferchance und
 Ausweichchance niedrigstufiger Kreaturen.
 
-**[Benutzeroberfläche][90]**
+  * Kreaturen bieten Spielern nun reibungslose Energieregeneration.
+
+**[Völker][93]**
+
+  * Alle Charaktere verfügen nun über einen /brüllen-Sound.
+
+**[Benutzeroberfläche][94]**
+
+  * Die Größe des Interface-Optionsfenster wurde verändert, um den Fenstern
+für Video- und Audiooptionen zu entsprechen. Dies erlaubt ein größeres und
+kompakteres Einheitenprofilfenster.
+
+  * Es ist Add-ons nicht länger möglich, unter Nutzung des integrierten
+Ausrüstungsmanagers auf intelligente Art Gegenstände zu wechseln.
 
   * Die Reihenfolge der Charaktere im Charakterauswahlbildschirm kann nun
 verändert und gespeichert werden.
@@ -2222,20 +2540,41 @@ verändert und gespeichert werden.
   * Der Zauberbalken lässt sich nun bewegen, sodass er unter der
 Charakteranzeige platziert werden kann.
 
+  * Im Schlachtfeld-Punktestandsfenster können die Spezialisierungen einzelner
+Charaktere nun durch darüberfahren mit der Maus angezeigt werden.
+
+  * Die Einheitenfenster von Begleitern haben nun die Option 'Freigeben'.
+
+  * Die Haltbarkeitsanzeige wird Gegenstände nun als gelb anzeigen, wenn sie
+eine Haltbarkeit von unter 20% haben, statt wie zuvor unter 5%.
+
+  * Das Makrofenster und das Zauberbuch können nun gleichzeitig geöffnet sein,
+um intuitiveres Schreiben von Makros zu ermöglichen. Zusätzlich hat das
+Makrofenster nun zwei Schaltflächen zum Speichern und Abbrechen.
+
   * Die Bewegungssteuerung ist eine anklickbare Oberfläche für Bewegungen, die
 jetzt Bestandteil der Grundbenutzeroberfläche ist.
 
-  * Darstellungsprofile für Schlachtzüge wurden implementiert.
-Schlachtzugsprofile erlauben es Spielern, die Anordnung ihrer
-Schlachtzugsbenutzeroberfläche zu speichern und je nach Spielinhalt bei Bedarf
-abzurufen (also in 10-Spieler-Schlachtzügen, 25-Spieler-Schlachtzügen,
-Schlachtfeldern usw.).
+  * Es ist nun leichter, die Sprache des Spiel-Clients zu jeder anderen
+Sprache umzustellen, die für die jeweilige Region verfügbar ist.
+
+  * Die Anzeige von Zielen und Fokuszielen kann nun über die Minikarte
+ausgewählt werden (feindliche Spielercharaktere nicht eingeschlossen).
+
+  * Händler zeigen nun an, welche Währungstypen sie nutzen.
+
+**[Technischer Support][95]**
+
+  * Der Blizzard-Launcher nutzt nun "Universal Plug and Play" für die
+Portkonfiguration. Wenn der Router UPnP unterstützt, werden automatisch die
+Ports geöffnet, die es benötigt und der Download wird uneingeschränkt
+stattfinden.
 
 **World of Warcraft Patch 4.2**
 
-Notes for all World of Warcraft patches can be found [here][91].
+Notes for all World of Warcraft patches can be found [here][96].
 
-**[Elemental Bonds][92]**
+**[Elemental Bonds][97]**
 
 What was to be an auspicious event at the ancient World Tree Nordrassil has
 ended in tragedy. There, members of the Cenarion Circle and Earthen Ring,
@@ -2246,7 +2585,7 @@ and struck down Thrall with dark magics... casting his spirit into the four
 domains of the Elemental Plane. If these terrible rumors hold true, the
 Earthen Ring--indeed, all of Azeroth--has lost one of its greatest champions.
 
-**[The Regrowth and Molten Front][93]**
+**[The Regrowth and Molten Front][98]**
 
 Although the night elves and their allies repelled Ragnaros's initial invasion
 of Hyjal, their work on the sacred mount is far from over. Archdruid Malfurion
@@ -2259,7 +2598,7 @@ Hyjal's protectors remain steadfast in their mission, for they know that it is
 in the molten heart of the Firelands that the fate of Mount Hyjal will be
 decided.
 
-**[The Firelands][94]**
+**[The Firelands][99]**
 
 The time to strike at Ragnaros draws near. The battle to protect Mount Hyjal
 now rages in the depths of Ragnaros's smoldering realm. As territory is gained
@@ -2271,7 +2610,7 @@ into this ash-choked domain cannot afford to shy away from any danger. The
 outcome of the battles that lie ahead will determine the very survival of
 Azeroth.
 
-**[Dragonwrath, Tarecgosa's Rest][95]**
+**[Dragonwrath, Tarecgosa's Rest][5]**
 
 Uncertainty looms over the blue dragonflight's domain, the Nexus, as its
 members struggle to appoint a new leader. Split between the two likeliest
@@ -2293,26 +2632,32 @@ notes._
 
   * [Classes: General][8]
 
-    * [![][61]][10] [Death Knights][10], [![][62]][12] [Druids][12],
-[![][63]][14] [Hunters][14], [![][64]][16] [Mages][16], [![][65]][18]
+    * [![][9]][10] [Death Knights][10], [![][11]][12] [Druids][12],
+[![][13]][14] [Hunters][14], [![][15]][16] [Mages][16], [![][17]][18]
 [Paladins][18],
 
-    * [![][66]][20] [Priests][20], [![][67]][22] [Rogues][22], [![][68]][24]
-[Shaman][24], [![][69]][26] [Warlocks][26], [![][70]][28] [Warriors][28]
+    * [![][19]][20] [Priests][20], [![][21]][22] [Rogues][22], [![][23]][24]
+[Shaman][24], [![][25]][26] [Warlocks][26], [![][27]][28] [Warriors][28]
 
-  * [Dungeons & Raids][29]
+  * [Currency][29]
 
-  * [Guilds][30]
+  * [Dungeons & Raids][30]
 
-  * [Items][31]
+  * [Guilds][31]
 
-  * [Professions][32]
+  * [Items][32]
 
-  * [PvP][33]
+  * [Professions][33]
 
-  * [Quests & Creatures][34]
+  * [PvP][34]
 
-  * [User Interface][35]
+  * [Quests & Creatures][35]
+
+  * [Races][36]
+
+  * [User Interface][37]
+
+  * [Technical][38]
 
 **General**
 
@@ -2322,16 +2667,16 @@ notes._
 in Hyjal, where players can help the Guardians of Hyjal push back the allies
 of Ragnaros and establish a forward operating base in the Firelands! In order
 to partake in the Regrowth and Molten Front daily quests, players must have at
-least completed up to and including the quest Aessina's Miracle. Once this
-quest has been completed, players should speak with Matoclaw in the Sanctuary
-of Malorne to take part in the Regrowth efforts.
+least completed Mount Hyjal up to and including the quest Aessina's Miracle.
+Once this quest has been completed, players should speak with Matoclaw in the
+Sanctuary of Malorne to take part in the Regrowth efforts.
 
   * New Quest Chain: Elemental Bonds
 
     * A New quest line is now available to level-85 Horde and Alliance
 characters, bringing brave adventurers to Thrall's aid. The Call of the World-
 Shaman, the quest which will point players toward Thrall and The Nordrassil
-Summit, can be obtained in Stormwind or Orgrimmar.
+Summit, can be obtained at the Earthshrines in Stormwind or Orgrimmar.
 
   * New Raid: The Firelands
 
@@ -2347,46 +2692,26 @@ via Sulfuron Spire in Mount Hyjal.
 create an all-new legendary caster staff. In order to begin the process of
 assembling the staff, players must first kill a Molten Lord in the Firelands.
 Once a Molten Lord is killed, players can accept the quest A Legendary
-Engagement from Ziradormi or Coridormi in Orgrimmar or Stormwind.
+Engagement from Ziradormi in Grommash Hold in Orgrimmar, or Coridormi atop the
+Wizard's Sanctum in Stormwind. The legendary item questline is only available
+to druids, mages, priests, shaman, and warlocks.
 
   * New User Interface Feature: Dungeon Journal
 
     * A host of dungeon information is now built into the user interface via
-the all-new Dungeon Journal. This feature can be accessed with the "M" key
-while in a dungeon, or via a new button in the navigation tray from anywhere
-in the world. Boss background story, encounter details, abilities, and loot
-can be viewed with the Dungeon Journal for all bosses which have been
-integrated into the new system. Additional dungeons are planned to be
-incorporated into the Dungeon Journal in future updates.
+the all-new Dungeon Journal. This feature can be accessed via a new button in
+the Navigation tray from anywhere in the world. Boss background story,
+encounter details, abilities, and loot can be viewed with the Dungeon Journal
+for all bosses which have been integrated into the new system (this includes
+bosses for all Cataclysm dungeons and raids). Additional dungeons are planned
+to be incorporated in future updates.
 
-  * All character races now have a /roar sound.
-
-  * All existing Valor Points in the Currency tab have been converted to
-Justice Points. Any points above the Justice Point cap will be converted into
-gold at a rate of 47 silver per point and mailed to characters.
-
-  * The Keyring bag slot has been removed to make room in the user interface
-for new features.
-
-    * Keys which no longer serve a purpose in the game will be removed from
-player inventories. Compensation for the keys will be automatically provided
-in the form of each key's vendor sell price in gold.
-
-    * Keys which are obsolete quest items will be removed from player
-inventories.
-
-    * Keys which may still be of use to players will be transferred to regular
-inventory space. If a player's bags are full, these keys will sit in a
-backlogged inventory until sufficient space is made available. Once space is
-opened, the keys will appear in regular inventory upon the player logging out
-or switching zones.
-
-**[Achievements][96]**
+**[Achievements][100]**
 
   * Bear-ly Made It (new achievement): Save all four prisoners before they are
 sacrificed in Zul'Aman on Heroic difficulty.
 
-**[Classes: General][97]**
+**[Classes: General][101]**
 
   * All healing critical strikes now heal for 2 times a normal heal (+100%),
 up from 1.5 times a normal heal (+50%).
@@ -2446,7 +2771,15 @@ their chance to dodge from Agility. Their base chance to dodge is now a fixed
 bonuses as parry rating, up from 25%. This conversion still only applies to
 Strength above and beyond their base Strength.
 
-**[![][61]][98] [Death Knights][98]**
+  * General Class Bug Fixes
+
+    * Players should no longer incorrectly receive a message stating they
+interrupted a spell cast when they did not.
+
+    * Actions bars will no longer briefly disappear when characters that have
+a stance bar enter a vehicle.
+
+**[![][9]][102] [Death Knights][102]**
 
   * Obliterate base damage has been reduced to 150% weapon damage, down from
 160%.
@@ -2472,25 +2805,42 @@ Presence, it causes the next Death Strike within 15 seconds after killing a
 foe that yields experience or Honor Points to heal for at least 20% of the
 death knight's maximum health (still requires Frost or Unholy Presence).
 
-**[![][62]][99] [Druids][99]**
+  * Death Knight Bug Fixes
+
+    * The talent Killing Machine can now properly be triggered from off-hand
+attacks as well as main-hand attacks.
+
+**[![][11]][103] [Druids][103]**
 
   * Druids now gain 1 attack power per point of Strength, down from 2. They
 continue to gain 2 attack power per point of Agility while in Cat Form or Bear
-Form. To counter balance the loss of damage from this change, the following
-additional changes have been made.
+Form. In addition, Cat Form's scaling rate from gear upgrades was slower than
+other classes, which was causing them to fall behind in damage with higher
+item levels. To counter the Strength change and improve scaling, the following
+changes have been made. All numbers cited are for level-85 druids.
 
     * Ferocious Bite damage has been increased by 15%. In addition, its base
 cost has been reduced to 25 energy and it can use up to 25 energy, for up to a
 100% damage increase.
 
-    * Mangle (Cat) damage at level 80 and above has been increased to 530%
-weapon damage, up from 460%.
+    * Mangle (Cat) damage at level 80 and above has been increased to 540%
+weapon damage, up from 460%, and bonus damage has been lowered to 302.
 
-    * Ravage damage at level 80 and above has been increased to 975% weapon
-damage, up from 850%.
+    * Rake initial damage on hit now deals the same damage as each periodic
+tick (and is treated the same for all combat calculations). Periodic damage
+now gains 14.7% of attack power per tick, up from 12.6%, and base damage per
+tick has been lowered from 557 to 56. There is a known issue with Rake's
+tooltip being incorrect from this change will be corrected in a future patch.
 
-    * Shred damage at level 80 and above has been increased to 520% weapon
-damage, up from 450%.
+    * Ravage damage at level 80 and above has been increased to 950% weapon
+damage, up from 850%, and bonus damage has been lowered to 532.
+
+    * Savage Roar now grants 80% increased damage to melee auto attacks, up
+from 50%. The Glyph of Savage Roar remains an unchanged bonus of 5% to that
+total.
+
+    * Shred damage at level 80 and above has been increased to 540% weapon
+damage, up from 450%, and bonus damage has been lowered to 302.
 
   * Entangling Roots and the equivalent spell triggered by Nature's Grasp no
 longer deal damage.
@@ -2612,7 +2962,7 @@ healing is active.
     * It is no longer possible in some encounters to use Feral Charge when
 closer than its minimum range.
 
-**[![][63]][100] [Hunters][100]**
+**[![][13]][104] [Hunters][104]**
 
   * Multi-shot damage has been reduced. It now deals 120% weapon damage at
 level 80 or higher, down from 137%.
@@ -2643,7 +2993,7 @@ access to the full gamut of taming challenges.
 toward a group member, reducing the damage done by the next melee or ranged
 attack made against them equal to 50% of the pet's total health.
 
-**[![][64]][101] [Mages][101]**
+**[![][15]][105] [Mages][105]**
 
   * Arcane Blast damage done has been reduced by 5%.
 
@@ -2669,7 +3019,7 @@ Living Bomb target, and will be added to two other nearby targets.
       * Deep Freeze and Ring of Frost will cause diminishing returns on each
 other, in addition to the spells they normally share diminishing returns with.
 
-**[![][65]][102] [Paladins][102]**
+**[![][17]][106] [Paladins][106]**
 
   * Divine Light mana cost has been increased to 35% of base mana, up from
 30%.
@@ -2758,7 +3108,7 @@ Word of Glory by 5/10 seconds.
     * Glyph of Seal of Truth expertise bonus now also works when Seal of
 Righteousness is active.
 
-**[![][66]][103] [Priests][103]**
+**[![][19]][107] [Priests][107]**
 
   * Devouring Plague damage done has been decreased by 12%.
 
@@ -2789,7 +3139,7 @@ diminishing returns.
     * Players will no longer prematurely cancel a channeled spell when
 clicking on the Lightwell.
 
-**[![][67]][104] [Rogues][104]**
+**[![][21]][108] [Rogues][108]**
 
   * Cloak of Shadows cooldown is now 2 minutes, up from 90 seconds. In
 addition, Cloak of Shadows is no longer on the global cooldown.
@@ -2828,7 +3178,7 @@ by 15/30 seconds.
       * Sanguinary Vein damage to bleeding targets has been increased to
 8/16%, from 5/10%.
 
-**[![][68]][105] [Shaman][105]**
+**[![][23]][109] [Shaman][109]**
 
   * Fire Nova damage has been increased by 15%.
 
@@ -2836,6 +3186,8 @@ by 15/30 seconds.
 
   * Unleash Elements is now in the Nature school, and thus can no longer be
 used if a shaman's Nature school has been locked out.
+
+  * Unleash Wind now deals 175% weapon damage, up from 125%.
 
   * Water Shield has had its internal cooldown reduced to 3.5 seconds, once
 again matching other shields. The amount of mana restored when Water Shield
@@ -2853,6 +3205,10 @@ is dispelled, up from 10/20/30%.
 
       * Thunderstorm now reduces the movement speed of players it knocks back
 by 40% for 5 seconds.
+
+    * Enhancement
+
+      * Stormstrike now deals 225% weapon damage, up from 125%.
 
     * Restoration
 
@@ -2876,7 +3232,7 @@ has been redesigned. It now causes Lightning Shield to generate an extra
 charge, rather than consuming one, when it is triggered by receiving damage,
 up to a maximum of 3 (9 with the Rolling Thunder talent).
 
-**[![][69]][106] [Warlocks][106]**
+**[![][25]][110] [Warlocks][110]**
 
   * Soul Fire is now available at level 20, down from level 54.
 
@@ -2891,7 +3247,7 @@ from 15 seconds.
 
     * It is no longer possible to leave combat while channeling Drain Soul.
 
-**[![][70]][107] [Warriors][107]**
+**[![][27]][111] [Warriors][111]**
 
   * Overpower now has a 1.5-second cooldown and global cooldown (Taste for
 Blood's Overpower cooldown has not changed).
@@ -2920,13 +3276,50 @@ lowered to 12%, down from 20%.
     * It is no longer possible in some encounters to use Charge when closer
 than its minimum range.
 
-**[Dungeons & Raids][108]**
+**Currency**
 
-  * Dungeon Journal is in the process of being implemented. While some UI
-elements may exist in the current Public Test Realm build, the feature is not
-yet complete.
+  * Conquest & Honor Points
 
-  * Valor Points
+    * All existing Conquest Points in the Currency tab have been converted to
+Honor Points. Any points above the Honor Point cap must be spent within the
+next week before Season 10 starts. Once Season 10 begins, all Honor Points
+exceeding the 4,000 point cap will be converted into gold at a rate of 35
+silver per point and mailed to characters.
+
+    * The minimum cap on Conquest Points earned per week from Arenas is now
+1350 at 1500 or less Arena rating. The maximum cap is now 2700 at 3000 or more
+Arena rating. The cap continues to scale non-linearly between those two
+points. For comparison, during season 9 the cap ranged between 1343 and 3000.
+
+    * The game now separately tracks different Conquest Point caps for
+Battlegrounds and Arenas. Battleground ratings receive a bonus of 22.2% to the
+cap they generate, meaning the cap from Battleground rating now ranges between
+1650 and 3300. Players may earn a total number of Conquest Points per week
+equal to the higher of these two caps, but once players have reached the cap
+for either Arenas or Battlegrounds, they can no longer earn Conquest Points
+from that source. Conquest Points from Battleground holidays only count toward
+the total Conquest Point cap.
+
+      * Example: During the first week of Season 10 everyone starts with a
+rating below 1500. Therefore, the cap from Rated Battlegrounds will be 1650
+and the cap from Arena rating will be 1350. In the first week, the character
+wins enough Arena matches to reach the 1350 point cap. After that point, Arena
+wins will no longer grant Conquest points for the week. However, the character
+can still earn up to 300 additional points, but can only earn those points
+from either Rated Battlegrounds, or from the Conquest Point bonus for holiday
+and/or daily random Battlegrounds. The following week the cap will be
+recalculated based on the character's ratings, and it is possible Arena rating
+could now generate the higher cap. The second week, the character's cap from
+Arena rating is 1800, and the cap from Rated Battlegrounds is 1650. The
+character has a total cap of 1800 Conquest points for the week. Up to 1650
+points can be earned from Rated Battlegrounds, but the last 150 must come from
+a different source.
+
+  * Valor & Justice Points
+
+    * All existing Valor Points in the Currency tab have been converted to
+Justice Points. Any points above the Justice Point cap will be converted into
+gold at a rate of 47 silver per point and mailed to characters.
 
     * The maximum number of Valor Points which can be earned in a week from
 any and all applicable dungeons and raids is now 980, down from 1250.
@@ -2938,18 +3331,31 @@ Zandalari dungeons remains at 980.
 dungeons remains at 490.
 
       * The number of Valor Points awarded for killing a boss in the Firelands
-is 70 in 10-player mode, and 90 in 25-player mode.
+is 120 in 10-player mode, and 140 in 25-player mode.
 
       * The number of Valor Points awarded for killing Occu'thar in Baradin
-Hold is 35 in 10-player mode, and 45 in 25-player mode.
+Hold is 120 in 10-player mode, and 140 in 25-player mode.
 
       * The number of Valor Points awarded for killing a boss on Heroic
 difficulty in The Bastion of Twilight, Blackwing Descent, and Throne of the
 Four winds is 35 in 10-player mode, and 45 in 25-player mode.
 
-  * The Firelands, a new 10- and 25-player raid, is now available for limited
-testing. Please visit the [PTR Discussion forum][109] for the latest raid
-testing schedule.
+**[Dungeons & Raids][112]**
+
+  * Raid Profiles have been added which allow players to save the raid window
+user interface layout based on type of content (i.e. 10-player raids,
+25-player raids, Battlegrounds, etc.) for future use.
+
+    * Players can select PvE, PvP, specialization, and group size. Each Raid
+Profile type will then automatically setup going forward.
+
+    * This feature is available for 5-player content as well when Use Raid-
+Style Party Frames is selected in the Interface options.
+
+    * Raid Profiles can list groups horizontally as well as vertically.
+
+  * A Raid button has been added to the Navigation tray which will bring
+players straight to the Raid window in the Social pane.
 
   * Baradin Hold
 
@@ -2964,9 +3370,11 @@ Elementium Monstrosity, Feludius, Ignacius, and Terrastra.
     * One of each type of bound elemental in the Ascendant Council chamber has
 been removed.
 
+    * Bound Deluge's Frost Whirl ability now deals 50% less damage.
+
     * Arion
 
-      * Chain Lightning damage has been reduced.
+      * Chain Lightning damage and chain distance has been reduced.
 
     * Cho'gall
 
@@ -3167,7 +3575,23 @@ gauntlet.
     * High Priest Venoxis's death now removes the poison from the plants at
 the start of the dungeon.
 
-**[Guilds][110]**
+  * Dungeon & Raid Bug Fixes
+
+    * Bosses are now immune to the shrinking effect from Gnomish Shrink Ray.
+
+    * The achievement Aberrant Behavior should no longer incorrectly reset its
+kill tracking during the Maloriak encounter in Blackwing Descent.
+
+    * Anshal's Soothing Breeze should no longer cause combat pets to behave
+erratically in Throne of the Four Winds.
+
+    * Raid Marker icons are now visible in all phases of boss encounters.
+
+**[Guilds][113]**
+
+  * Guild Finder
+
+    * Long comments will now work and not be cut off in the display.
 
   * The daily guild experience cap has been increased by 25%.
 
@@ -3178,24 +3602,81 @@ the start of the dungeon.
   * The Reins of the Dark Phoenix, purchased from the Guild Vendor, has had
 its art improved. It's now less transparent and indisputably more awesome.
 
-**[Items][111]**
+**[Items][114]**
 
   * If a player wins a Need roll under the Need Before Greed system on a Bind
 on Equip item, the item will become Soulbound to that player. The item will
 remain unbound if won via a Greed roll.
 
+  * Applicable tier 11 items now cost Justice Points.
+
   * Darkmoon Card: Hurricane damage done when triggered has been increased by
 40%, however, it can no longer deal critical strikes and no longer receives
 any modifiers to its damage from the equipping player.
 
-  * Set Bonuses
+  * The Keyring bag slot has been removed to make room in the user interface
+for new features.
 
-    * The 2-piece resilience bonus from Cataclysm PvP sets no longer stacks.
+    * Keys which no longer serve a purpose in the game will be removed from
+player inventories. Compensation for the keys will be automatically provided
+in the form of each key's vendor sell price in gold.
+
+    * Keys which are obsolete quest items will be removed from player
+inventories.
+
+    * Keys which may still be of use to players will be transferred to regular
+inventory space. If a player's bags are full, these keys will sit in a
+backlogged inventory until sufficient space is made available. Once space is
+opened, the keys will appear in regular inventory upon the player logging out
+or switching zones.
+
+  * PvP Items & Rewards
+
+    * Applicable Season 9 items now cost Honor Points.
+
+    * Gladiator Weapons
+
+      * Season 10 Conquest Point weapons will only be purchasable once a
+required minimum sum of Conquest Points has been reached during the current
+season. For example, Ruthless Gladiator's Pike costs 3400 Conquest Points to
+purchase. However, players must first earn a total of 11650 Conquest Points
+during Season 10 before they are able to purchase it.
+
+      * Season 9 Honor Point weapons will only be purchasable once a required
+minimum sum of Honor Points has been reached during the current season. For
+example, Vicious Gladiator's Pike costs 3400 Honor Points to purchase.
+However, players must first earn a total of 18500 Honor Points during Season
+10 before they are able to purchase it.
+
+      * Once the minimum sum of points required to purchase weapons is
+reached, all available weapons can be purchased for their listed costs. The
+point requirement is not reset once a purchase is made.
+
+      * Weapon tooltips from the vendor will let players know how many more
+Conquest or Honor Points must be earned in the current season before the item
+can be purchased.
+
+    * Rated Battleground Rewards
+
+      * New PvP ground mounts, the Vicious War Wolf (Horde) and Vicious War
+Steed (Alliance), will be awarded to players for completing achievements to
+win 75, 150, and 300 Rated Battlegrounds respectively, rather than for being
+in the top .5% of the ladder at the end of each season as with Arenas. This
+award system is to better compliment the spirit of Battlegrounds. One account-
+bound mount will be awarded for each achievement unlocked, allowing players
+who obtain 150 and 300 Rated Battleground wins to earn this mount a second and
+third time. The additional mounts earned can then be sent to alt characters,
+given they're account-bound. These mounts are awarded as soon as an associated
+achievement is unlocked and do not correspond with end-of-season rewards.
+
+    * Set Bonuses
+
+      * The 2-piece resilience bonus from Cataclysm PvP sets no longer stacks.
 If a player wears 2 pieces each from 2 different Cataclysm sets, the player
 will only receive the 400 resilience rating bonus once. This change does not
 apply to PvP sets from prior expansions.
 
-**[Professions][112]**
+**[Professions][115]**
 
   * Engineering
 
@@ -3209,15 +3690,21 @@ be reached.
     * Players can no longer skin corpses already being actively skinned or
 looted by other players.
 
-**[PvP][113]**
+**[PvP][116]**
 
   * Arenas
+
+    * The individual Matchmaking Rating column has been removed from the Arena
+scoreboard.
 
     * The Ring of Valor has been added to the Arena rotation once again.
 Players no longer start the match on elevators at the center of the map. They
 now begin the match in starting rooms on opposite sides of the Arena.
 
   * Battlegrounds
+
+    * The individual Matchmaking Rating column has been removed from the Rated
+Battleground scoreboard and replaced with a team Matchmaking Rating.
 
     * Eye of the Storm has been added into the rotation as a 10-man Rated
 Battleground. The tug-of-war style capture points have been replaced with
@@ -3229,75 +3716,72 @@ still a 15-player Battleground with tug-of-war style capture points.
 
     * War Games
 
-      * Many improvements are being made to the War Games interface, though
-the changes are not yet fully functional.
+      * Many improvements have been made to the War Games interface. It now
+has its own panel for ease of use and raid/group leaders are the only ones who
+can challenge another group to War Games.
 
-  * Conquest Points
-
-    * The minimum cap on Conquest Points earned per week is now 1500 at 1500
-or less Battleground rating. The maximum cap remains 3000 at 3000 or more
-Battleground rating. The cap continues to scale non-linearly between those two
-points.
-
-    * The game now separately tracks different Conquest Point caps for
-Battlegrounds and Arenas. The cap for Arena rating will always be 2/3 of the
-cap for Battleground rating at any given Arena rating. Players may earn a
-total number of Conquest Points per week equal to the higher of these two
-caps, but once players have reached the cap for either Arenas or
-Battlegrounds, they can no longer earn Conquest Points from that source.
-Conquest Points from Battleground holidays only count toward the total
-Conquest Point cap.
-
-  * Gladiator Weapons
-
-    * Season 10 Conquest Point weapons will only be purchasable once a
-required minimum sum of Conquest Points has been reached during the current
-season. For example, Ruthless Gladiator's Pike costs 3400 Conquest Points to
-purchase. However, players must first earn a total of 11650 Conquest Points
-during Season 10 before they are able to purchase it.
-
-    * Season 9 Honor Point weapons will only be purchasable once a required
-minimum sum of Honor Points has been reached during the current season. For
-example, Vicious Gladiator's Pike costs 3400 Honor Points to purchase.
-However, players must first earn a total of 18500 Honor Points during Season
-10 before they are able to purchase it.
-
-    * Once the minimum sum of points required to purchase weapons is reached,
-all available weapons can be purchased for their listed costs. The point
-requirement is not reset once a purchase is made.
-
-    * Weapon tooltips from the vendor will let players know how many more
-Conquest or Honor Points must be earned in the current season before the item
-can be purchased.
-
-**[Quests & Creatures][114]**
+**[Quests & Creatures][117]**
 
   * There are no longer oddities in the critical strike and dodge chance of
 lower-level creatures.
 
-**[User Interface][115]**
+  * Creatures will now display smooth energy regeneration for players.
+
+**[Races][118]**
+
+  * All character races now have a /roar sound.
+
+**[User Interface][119]**
+
+  * The Interface Options screens have changed size to match the Video and
+Audio screens. This allows for a larger Compact Unit Frames Profiles panel.
+
+  * Addons will no longer be able to intelligently swap items by working with
+the built-in Equipment Manager.
 
   * The order in which characters are listed at the Character Selection screen
 can now be rearranged and saved.
 
   * The cast bar can now be moved to display below the Character frame.
 
+  * Character talent specializations can now be viewed on mouseover of the
+Battlegrounds Scoreboard.
+
+  * There is now a Dismiss Pet option on unit frames.
+
+  * The durability character display will now show items as yellow when they
+are below 20% durability, instead of when items have 5 durability or less.
+
+  * The Macros window and Spellbook can now both be open at the same time to
+allow for more intuitive macro creation. In addition, the Macros window has a
+Save/Cancel button.
+
   * Move Pad is a mouse-click interface for movement which is now built into
 the base interface.
 
-  * Raid Profiles have been added which allow players to save the raid window
-user interface layout based on type of content (i.e. 10-player raids,
-25-player raids, Battlegrounds, etc.) for future use.
+  * It is now easier to change the language of the game client to any language
+available in the region.
 
-**Parche de Reino Público de Pruebas (RPP) de World of Warcraft 4.2**
+  * A target or focus target can be selected within the mini-map tracking
+(does not include enemy players).
+
+  * Vendors now display currency types they use.
+
+**[Technical][101]**
+
+  * The Blizzard Launcher now utilizes Universal Plug and Play for port
+configuration. If your router supports UPnP it will automatically open the
+ports that it requires and your downloads will be unrestricted.
+
+**Parche 4.2. de World of Warcraft**
 
 Las notas de todos los parches de World of Warcraft se pueden encontrar
-[aquí][116].
+[aquí][120].
 
-**[Vínculos elementales][117]**
+**[Vínculos elementales][121]**
 
 Lo que en principio debía ser un acontecimiento feliz en el antiguo Árbol del
-Mundo, Nordrassil, ha terminado en tragedia. Allí, los miembros del Circulo
+Mundo, Nordrassil, ha terminado en tragedia. Allí, los miembros del Círculo
 Cenarion y del Anillo de la Tierra, incluido el antiguo Jefe de Guerra Thrall,
 se habían reunido con los nobles dragones Aspectos para unificar sus poderes y
 restaurar Nordrassil por el bien de Azeroth. Sin embargo, ha corrido la voz de
@@ -3307,7 +3791,7 @@ dominios del plano elemental. Si esos terribles rumores resultan ser ciertos,
 el Anillo de la Tierra, y de hecho todo Azeroth, ha perdido a uno de sus
 mejores campeones.
 
-**[El Brote y el Frente de Magma][118]**
+**[El Brote y el Frente de Magma][122]**
 
 A pesar de que los elfos de la noche y sus aliados rechazaron la primera
 invasión de Hyjal de Ragnaros, su trabajo en el monte sagrado aún no ha
@@ -3320,26 +3804,26 @@ arrasado El Brote. A pesar de este contratiempo, los protectores de Hyjal
 siguen adelante con su misión, pues saben que será en el corazón de magma de
 las Tierras de Fuego donde se decidirá el destino del Monte Hyjal.
 
-**[Las Tierras de Fuego][119]**
+**[Las Tierras de Fuego][123]**
 
 Se acerca el momento de atacar a Ragnaros. Ahora la batalla para proteger el
 Monte Hyjal se libra en las profundidades del ardiente reino de Ragnaros. A
 medida que los defensores de Azeroth ganan terreno y se aproximan a los
 sagrarios interiores de las Tierras de Fuego, les espera una tarea monumental.
-La guarida de Ragnaros, la Fortaleza de Sulfuron, la guardan sus servidores
+La guarida de Ragnaros, la Fortaleza de Sulfuron, la protegen sus servidores
 más leales, incluidos los traidores druidas de la Llama y su misterioso líder.
 Aun así, los valientes héroes que se han aventurado en este reino de cenizas
 no pueden permitir que ningún peligro los espante. El resultado de las
 batallas que están por venir determinará la supervivencia de Azeroth.
 
-**[Dragonira, el Reposo de Tarecgosa][120]**
+**[Dragonira, el Reposo de Tarecgosa][124]**
 
 La incertidumbre reina en el dominio del Vuelo Azul, El Nexo, mientras sus
 miembros discuten por elegir a un nuevo líder. Dividido entre los dos
 sucesores más probables, Kalecgos y Arygos, el Vuelo ha acordado reunirse
 durante un acontecimiento celestial poco común, conocido como el Abrazo, con
-la esperanza de elegir un nuevo Aspecto. Sin embargo, el dragón bronce
-Anachronos ha detectado que algo siniestro actúa alrededor de El Nexo, algo
+la esperanza de elegir un nuevo Aspecto. Sin embargo, el dragón de bronce
+Anachronos ha detectado que algo siniestro actúa alrededor de El Nexo. Algo
 que amenaza con comprometer la ceremonia. Si no se alza un héroe para
 investigar estas fuerzas oscuras y descubrir sus intenciones, Anachronos cree
 que la condenación de Azeroth es inminente.
@@ -3355,27 +3839,33 @@ de las notas de parche._
 
   * [Clases: General][8]
 
-    * [![][61]][10] [Caballeros de la Muerte][10], [![][62]][12]
-[Druidas][12], [![][63]][14] [Cazadores][14], [![][64]][16] [Magos][16],
-[![][65]][18] [Paladines][18],
+    * [![][65]][10] [Caballeros de la Muerte][10], [![][66]][12]
+[Druidas][12], [![][67]][14] [Cazadores][14], [![][68]][16] [Magos][16],
+[![][69]][18] [Paladines][18],
 
-    * [![][66]][20] [Sacerdotes][20], [![][67]][22] [Pícaros][22],
-[![][68]][24] [Chamanes][24], [![][69]][26] [Brujos][26], [![][70]][28]
+    * [![][70]][20] [Sacerdotes][20], [![][71]][22] [Pícaros][22],
+[![][72]][24] [Chamanes][24], [![][73]][26] [Brujos][26], [![][74]][28]
 [Guerreros][28]
 
-  * [Mazmorras y bandas][29]
+  * [Moneda][29]
 
-  * [Hermandades][30]
+  * [Mazmorras y bandas][30]
 
-  * [Objetos][31]
+  * [Hermandades][31]
 
-  * [Profesiones][32]
+  * [Objetos][32]
 
-  * [JcJ][33]
+  * [Profesiones][33]
 
-  * [Misiones y criaturas][34]
+  * [JcJ][34]
 
-  * [Interfaz de usuario][35]
+  * [Misiones y criaturas][35]
+
+  * [Razas][36]
+
+  * [Interfaz de usuario][37]
+
+  * [Apartado técnico][38]
 
 **General**
 
@@ -3386,17 +3876,17 @@ recompensas en Hyjal, donde los jugadores pueden ayudar a los Guardianes de
 Hyjal a hacer retroceder a los aliados de Ragnaros y a establecer una base de
 operaciones en las Tierras de Fuego! Para poder obtener las misiones diarias
 de El Brote y el Frente de Magma, los jugadores deben haber completado todas
-las misiones hasta El milagro de Aessina, incluida esta. En cuanto hayan
-completado esta misión, los jugadores deben hablar con Matogarra en el
-Santuario de Malorne para unirse a las fuerzas de El Brote.
+las misiones del Monte Hyjal hasta El milagro de Aessina, incluida esta. En
+cuanto hayan completado esta misión, los jugadores deben hablar con Matogarra
+en el Santuario de Malorne para unirse a las fuerzas de El Brote.
 
   * Nueva cadena de misiones: Vínculos elementales
 
     * Ya está disponible una nueva línea de misiones para personajes de nivel
 85 de la Horda y de la Alianza para que los valientes aventureros ayuden a
 Thrall. La llamada del chamán del mundo, la misión que guiará a los jugadores
-hacia Thrall y el concilio de Nordrassil, se puede obtener en Ventormenta o en
-Orgrimmar.
+hacia Thrall y el concilio de Nordrassil, se puede obtener en los Santuarios
+de la Tierra de Ventormenta u Orgrimmar.
 
   * Nueva banda: las Tierras de Fuego
 
@@ -3409,53 +3899,32 @@ Hyjal.
 
   * Nuevo objeto legendario: Dragonira, el Reposo de Tarecgosa
 
-    * Los aventureros más acérrimos tienen la oportunidad de embarcarse en una
+    * Los asaltantes más acérrimos tienen la oportunidad de embarcarse en una
 serie de misiones para crear un nuevo bastón legendario. Para comenzar el
 proceso de ensamblaje del bastón, los jugadores deben matar primero a un señor
 de magma en las Tierras de Fuego. Después de matar al señor de magma, los
-jugadores podrán aceptar la misión Un compromiso legendario de Ziradormi o de
-Coridormi en Orgrimmar o en Ventormenta.
+jugadores podrán aceptar la misión Un compromiso legendario de Ziradormi en el
+Fuerte Grommash, en Orgrimmar, o de Coridormi en lo alto del Sagrario del
+Mago, en Ventormenta. La línea de misiones del objeto legendario solo está
+disponible para druidas, magos, sacerdotes, chamanes y brujos.
 
   * Nueva característica de la interfaz de usuario: Guía de mazmorras
 
-    * Ahora, una gran cantidad de información sobre mazmorras forma parte la
-interfaz de usuario gracias a la nueva guía de mazmorras. Se puede acceder a
-esta característica con la tecla "M" mientras se está en la mazmorra, o
-mediante un nuevo botón de la barra de navegación desde cualquier lugar del
-mundo. En la guía de mazmorras se podrá ver la historia del jefe, los detalles
-del encuentro, las facultades y el botín de todos los jefes que se hayan
-integrado en el nuevo sistema. Se planea incorporar más mazmorras en la guía
-de mazmorras en futuras actualizaciones.
+    * Ahora, una gran cantidad de información sobre mazmorras forma parte de
+la interfaz de usuario gracias a la nueva guía de mazmorras. Se puede acceder
+a esta característica mediante un nuevo botón de la barra de navegación desde
+cualquier lugar del mundo. En la guía de mazmorras se podrá ver la historia
+del jefe, los detalles del encuentro, las facultades y el botín de todos los
+jefes que se hayan integrado en el nuevo sistema (esto incluye a los jefes de
+todas las mazmorras y bandas de Cataclysm). Se planea incorporar más mazmorras
+en futuras actualizaciones.
 
-  * Ahora todas las razas de personajes tienen un sonido para /rugir.
-
-  * Todos los puntos de valor existentes en la pestaña Monedas se han
-convertido en puntos de justicia. Todos los puntos de justicia por encima del
-límite se convertirán en oro, a un índice de 47 de plata por punto, y se
-enviarán a los jugadores.
-
-  * Se ha eliminado la ranura del llavero para dejar sitio a nuevas
-características en la interfaz de usuario.
-
-    * Se eliminarán del inventario de los jugadores las llaves que ya no
-sirvan en el juego. Se recompensará automáticamente con oro por las llaves
-según el precio de venta de cada una.
-
-    * Se eliminarán del inventario de los jugadores las llaves que sean
-objetos de misión obsoletos.
-
-    * Las llaves que todavía puedan servir a los jugadores se trasladarán al
-espacio del inventario normal. Si las bolsas de un jugador están llenas, esas
-llaves permanecerán en un inventario de reserva hasta que dispongan del
-espacio necesario. Una vez que haya espacio, las llaves aparecerán en el
-inventario normal cuando el jugador se desconecte o cambie de zona.
-
-**[Logros][121]**
+**[Logros][125]**
 
   * Por los pelos (nuevo logro): salva a todos los prisioneros antes de que
 los sacrifiquen en Zul'Aman en dificultad heroica.
 
-**[Clases: General][122]**
+**[Clases: General][126]**
 
   * Ahora todas las sanaciones críticas sanan 2 veces lo que una sanación
 normal (+100%), en vez de 1,5 (+50%).
@@ -3467,12 +3936,12 @@ prioridad se complete. Vuelve la diversión desenfrenada.
 
   * Beneficios
 
-    * Ya no generan amenaza las facultades de clase que otorgan un beneficio a
-los objetivos amistosos. Esto se aplica a beneficios de banda como Marca de lo
-Salvaje y Palabra de poder: entereza, así como a efectos activados como Temple
-bendito y Dedos de Escarcha y los beneficios de un solo objetivo como
-Propósito oscuro y Frenesí profano. Las excepciones son los beneficios que
-sanan o infligen daño directamente como Espinas o Renovar. Este tipo de
+    * Las facultades de clase que otorgan un beneficio a los objetivos
+amistosos ya no generan amenaza. Esto se aplica tanto a beneficios de banda
+como Marca de lo Salvaje y Palabra de poder: entereza, así como a efectos
+activados como Temple bendito y Dedos de Escarcha y los beneficios de un solo
+objetivo como Propósito oscuro e Histeria. Las excepciones son los beneficios
+que sanan o infligen daño directamente como Espinas o Renovar. Este tipo de
 facultades siguen generando amenaza normal.
 
   * Control de masas
@@ -3520,7 +3989,15 @@ un 27% de sus bonus de fuerza como índice de parada, en vez de un 25%. Esta
 conversión se sigue aplicando únicamente a la fuerza que esté por encima de la
 fuerza de base.
 
-**[![][61]][123] [Caballeros de la Muerte][123]**
+  * Corrección de errores de clases generales
+
+    * Los jugadores ya no deberían recibir por error un mensaje diciendo que
+han interrumpido el lanzamiento de un hechizo cuando no lo han hecho.
+
+    * Las barras de acción ya no desaparecerán brevemente cuando los
+personajes que tengan una barra de actitud entren en un vehículo.
+
+**[![][65]][127] [Caballeros de la Muerte][127]**
 
   * El daño de base de Asolar se ha reducido a un 150% del daño con arma, en
 vez de un 160%.
@@ -3547,25 +4024,45 @@ Golpe letal en los 15 s después de matar a un enemigo que otorgue experiencia
 o puntos de honor sane al menos un 20% de la salud máxima del caballero de la
 Muerte (sigue requiriendo Presencia de Escarcha o Presencia profana).
 
-**[![][62]][124] [Druidas][124]**
+  * Corrección de errores para caballeros de la Muerte
+
+    * Ahora el talento Máquina de matar puede activarse correctamente con los
+ataques que se realicen con ambas manos.
+
+**[![][66]][128] [Druidas][128]**
 
   * Ahora los druidas obtienen 1 p. de poder de ataque por punto de fuerza, en
 vez de 2. Seguirán obteniendo 2 p. de poder de ataque por punto de agilidad en
-forma felina o de oso. Para equilibrar la pérdida de daño de este cambio, se
-han realizado los siguientes ajustes.
+forma felina o de oso. Además, el aumento de escala de las mejoras del
+equipamiento bajo forma felina era más lento que para otras clases, lo que
+hacía que infligiesen menos daño con objetos de rango superior. Para
+contrarrestar el cambio de fuerza y mejorar la escala, se han realizado los
+siguientes cambios. Todas las cifras citadas son para personajes de nivel 85.
 
     * Se ha aumentado un 15% el daño de Mordedura feroz. Además, su coste base
 se ha reducido a 25 p. de energía y puede usar hasta 25 p. de energía para
 aumentar el daño hasta un 100%.
 
     * A partir del nivel 80, el daño de Destrozar (felino) se ha aumentado a
-un 530% del daño con arma, en vez de un 460%.
+un 540% del daño con arma, en vez de un 460%, y el bonus de daño se ha
+reducido a 302 p.
 
-    * A partir del nivel 80, el daño de Devastar se ha aumentado a un 975% del
-daño con arma, en vez de un 850%.
+    * Ahora el daño inicial de Arañazo inflige el mismo daño al golpear que
+cada pulso periódico (y se utiliza así en todos los cálculos de combate).
+Ahora el daño periódico obtiene un 14,7% de poder de ataque por pulso, en vez
+de un 12,6%, y el daño de base por pulso se ha reducido de 557 p. a 56. Hay un
+error conocido en la descripción de Arañazo debido a este cambio, pero se
+corregirá en un futuro parche.
 
-    * A partir del nivel 80, el daño de Triturar se ha aumentado a un 520% del
-daño con arma, en vez de un 450%.
+    * El daño de Devastar a partir del nivel 80 se ha aumentado a un 950% del
+daño con arma, en vez de un 850%, y el bonus de daño se ha reducido a 532 p.
+
+    * Ahora Rugido salvaje otorga un 80% de daño aumentado a los ataques
+automáticos cuerpo a cuerpo, en vez de un 50%. El Glifo de Rugido salvaje
+sigue siendo un bonus de un 5% de ese total.
+
+    * El daño de Triturar a partir del nivel 80 se ha aumentado a un 540% del
+daño con arma, en vez de un 450%, y el bonus de daño se ha reducido a 302 p.
 
   * Raíces enredadoras y el hechizo equivalente activado por Trabazón con la
 Naturaleza ya no infligen daño.
@@ -3613,9 +4110,9 @@ Luna, además de Fuego estelar y Cólera.
 
       * Las facultades de daño del oso estaban subiendo demasiado rápido al
 aumentar el nivel del equipamiento en comparación con otros tanques, así que
-se han hecho los siguientes cambios para equilibrar. Todas las cifras citadas
-son para personajes de nivel 85; las cifras serán más bajas para personajes de
-nivel inferior.
+se han hecho los siguientes cambios para equilibrarlas. Todas las cifras
+citadas son para personajes de nivel 85; las cifras serán más bajas para
+personajes de nivel inferior.
 
         * El daño de base de Fuego feérico (Feral) se ha aumentado a 2950 p.,
 en vez de 679 p. La escala del poder de ataque se ha reducido a un 10,8%, en
@@ -3677,25 +4174,25 @@ del efecto de base de Estimular.
 
   * Bonus de conjunto
 
-    * Ahora el bonus de conjunto de 4 piezas de nivel 11 de druida Equilibrio,
-Alineación astral, otorga una probabilidad total de daño crítico de un 15% con
-3 cargas y disminuye un 5% por carga, en vez de un total de un 99% y disminuir
-un 33% por carga. Este cambio se ha hecho porque el bonus de conjunto resultó
-ser tan valioso que no era posible mejorarlo hasta el nivel 12. Para
-compensar, se han hecho cambios a Fuego estelar y Cólera (listados al
+    * Ahora el bonus de conjunto de JcJ de 4 piezas de rango 11 de druida
+Equilibrio, Alineación astral, otorga una probabilidad total de daño crítico
+de un 15% con 3 cargas y disminuye un 5% por carga, en vez de un total de un
+99% y disminuir un 33% por carga. Este cambio se ha hecho porque el bonus de
+conjunto resultó ser tan valioso que no era posible mejorarlo hasta el nivel
+12. Para compensar, se han hecho cambios a Fuego estelar y Cólera (listados al
 principio de la sección de la clase druida).
 
-    * El bonus de conjunto de 2 piezas de nivel 11 de druida Restauración se
-ha rediseñado para funcionar con la nueva maestría del druida Restauración.
-Ahora los druidas con este bonus reciben el bonus de espíritu mientras el
-bonus de maestría a la sanación periódica de Armonía esté activo.
+    * El bonus de conjunto de JcJ de 2 piezas de rango 11 de druida
+Restauración se ha rediseñado para funcionar con la nueva maestría del druida
+Restauración. Ahora los druidas con este bonus reciben el bonus de espíritu
+mientras el bonus de maestría a la sanación periódica de Armonía esté activo.
 
   * Corrección de errores para druidas
 
     * En algunos encuentros ya no es posible usar Carga feral al estar más
 cerca que lo que permite su alcance mínimo.
 
-**[![][63]][125] [Cazadores][125]**
+**[![][67]][129] [Cazadores][129]**
 
   * Se ha reducido el daño de Multidisparo. Ahora inflige un 120% del daño con
 arma a partir del nivel 80, en vez de un 137%.
@@ -3717,7 +4214,7 @@ contra objetivos con más de un 90% de salud, en vez de un 80%.
 
   * Mascotas
 
-    * Se han añadido 10 nuevas bestias domesticables poco comunes y cada una
+    * Se han añadido 10 nuevas bestias domesticables poco comunes, y cada una
 proporciona un reto de domesticación único. ¿Serás tú el primer cazador que
 domestique a Deth'tilac, la menos común y más poderosa de todas ellas? Los
 jugadores tendrán que avanzar a través de las zonas de misiones diarias de El
@@ -3729,7 +4226,7 @@ a gran velocidad hacia un miembro del grupo, lo que reduce el daño que recibe
 en el siguiente ataque cuerpo a cuerpo o a distancia a un 50% de la salud
 total de la mascota.
 
-**[![][64]][126] [Magos][126]**
+**[![][68]][130] [Magos][130]**
 
   * El daño de Explosión Arcana se ha reducido un 5%.
 
@@ -3757,7 +4254,7 @@ más reciente de Bomba viva, y se le añadirá a otros dos objetivos cercanos.
 decreciente mutuamente, además de los hechizos con los que comparten
 rendimientos decrecientes normalmente.
 
-**[![][65]][127] [Paladines][127]**
+**[![][69]][131] [Paladines][131]**
 
   * El coste de maná de Luz divina se ha aumentado un 35% del maná base, en
 vez de un 30%.
@@ -3773,11 +4270,11 @@ vez de un 10%.
 
   * Reprimenda, Escudo divino y Protección divina tienen iconos nuevos.
 
-  * Ahora Sello de Rectitud puede se puede activar con cualquier facultad
-cuerpo a cuerpo, no solo con las facultades cuerpo a cuerpo de un solo
-objetivo. Esto añade Martillo del honrado (el componente físico) y Tormenta
-divina a la lista de facultades que pueden activar este sello. Además, ahora
-los procs de Sello de Rectitud pueden tener efectos críticos.
+  * Ahora Sello de Rectitud se puede activar con cualquier facultad cuerpo a
+cuerpo, no solo con las facultades cuerpo a cuerpo de un solo objetivo. Esto
+añade Martillo del honrado (el componente físico) y Tormenta divina a la lista
+de facultades que pueden activar este sello. Además, ahora los procs de Sello
+de Rectitud pueden tener efectos críticos.
 
   * Especialización de talentos
 
@@ -3833,7 +4330,7 @@ de bloqueo aumentado de un 20% a los bloqueos con escudo del paladín durante
       * Ahora Sentencias del sabio hace proc al lanzarlo en vez de al golpear,
 lo que significa que las sentencias que fallan aún pueden otorgar maná. Esto
 es para garantizar que los paladines Protección no se quedan sin maná si no
-tienen límite de índice de golpe.
+alcanzan el límite de índice de golpe.
 
     * Reprensión
 
@@ -3853,14 +4350,14 @@ reutilización de Palabra de gloria 5/10 s.
     * Ahora el bonus de pericia de Glifo de Sello de Verdad también funciona
 cuando Sello de Rectitud está activo.
 
-**[![][66]][128] [Sacerdotes][128]**
+**[![][70]][132] [Sacerdotes][132]**
 
   * El daño de Peste devoradora se ha reducido un 12%.
 
   * El daño de Explosión mental se ha aumentado un 12%.
 
-  * Maligno de las Sombras usa la funcionalidad de la nueva actitud de
-"Ayudar" de la mascota.
+  * Maligno de las Sombras usa la funcionalidad de la nueva actitud "Ayudar"
+de la mascota.
 
   * El daño de Palabra de las Sombras: muerte se ha aumentado un 12%.
 
@@ -3876,8 +4373,8 @@ cuando Sello de Rectitud está activo.
 hace consistente con otros hechizos de control de masas que no están basados
 en proyectiles.
 
-      * El efecto de miedo del contragolpe de Toque vampírico de Pecado y
-castigo ya no tiene rendimiento decreciente.
+      * El efecto de miedo que proporciona Pecado y castigo al disipar Toque
+Vampírico, ya no tiene rendimiento decreciente.
 
       * El daño de Toque vampírico se ha reducido un 12%.
 
@@ -3886,7 +4383,7 @@ castigo ya no tiene rendimiento decreciente.
     * Los jugadores ya no cancelarán antes de tiempo un hechizo canalizado al
 hacer clic en Pozo de Luz.
 
-**[![][67]][129] [Pícaros][129]**
+**[![][71]][133] [Pícaros][133]**
 
   * Ahora el tiempo de reutilización de Capa de las Sombras es de 2 minutos,
 en vez de 90 s. Además, Capa de las Sombras ya no depende del tiempo de
@@ -3929,7 +4426,7 @@ de Disposición al combate 15/30 s.
       * El daño de Vena sangrienta a objetivos sangrantes se ha aumentado a un
 8/16%, en vez de un 5/10%.
 
-**[![][68]][130] [Chamanes][130]**
+**[![][72]][134] [Chamanes][134]**
 
   * El daño de Nova de Fuego se ha aumentado un 15%.
 
@@ -3937,6 +4434,8 @@ de Disposición al combate 15/30 s.
 
   * Ahora Desatar elementos está en la escuela de Naturaleza y de este modo ya
 no se puede usar si se ha bloqueado la escuela de Naturaleza de un chamán.
+
+  * Ahora Desatar viento inflige un 175% del daño con arma, en vez de un 125%.
 
   * El tiempo de reutilización interno de Escudo de agua se ha reducido a 3,5
 s para que se ajuste a otros escudos. Se ha reducido un 50% la cantidad de
@@ -3954,17 +4453,22 @@ afectados por Nova de Fuego.
 cuando se disipa el efecto de Choque de llamas, en vez de un 10/20/30%.
 
       * Ahora Tormenta de truenos reduce un 40% la velocidad de movimiento de
-los jugadores a los que derriba durante 5 s.
+los jugadores a los que repele durante 5 s.
+
+    * Mejora
+
+      * Ahora Golpe de tormenta inflige un 225% del daño con arma, en vez de
+un 125%.
 
     * Restauración
 
       * Se ha rediseñado Escudo de agua mejorado y renombrado como
 Resurgimiento. Cuando Escudo de agua está activo, Resurgimiento hace que las
 sanaciones críticas directas restauren maná (Resurgimiento de rango 2 es
-prácticamente igual al 150% del valor del antiguo Escudo de agua mejorado
+prácticamente igual a un 150% del valor del antiguo Escudo de agua mejorado
 cuando una Ola de sanación o una Ola de sanación superior realizan una
 sanación crítica y se ha rebajado de acuerdo con esto para los hechizos más
-rápidos o con varios objetivos.
+rápidos o con varios objetivos).
 
       * Ahora Marea de maná otorga un 200% del espíritu del taumaturgo, en vez
 de un 400%.
@@ -3981,7 +4485,7 @@ Elemental (conjunto puño de trueno de Gladiador). Ahora, cuando se activa al
 recibir daño, hace que Escudo de relámpagos genere una carga extra en vez de
 consumirla, hasta un máximo de 3 (9 con el talento Trueno ensordecedor).
 
-**[![][69]][131] [Brujos][131]**
+**[![][73]][135] [Brujos][135]**
 
   * Ahora Fuego de alma está disponible en el nivel 20, en vez de en el nivel
 54.
@@ -3998,14 +4502,13 @@ a Trueque de alma, en vez de 15 s.
     * Ya no se puede abandonar el combate mientras se está canalizando Drenar
 alma.
 
-**[![][70]][132] [Guerreros][132]**
+**[![][74]][136] [Guerreros][136]**
 
-  * Ahora Abrumar tiene un tiempo de reutilización de 1,5 s y tiempo de
-reutilización global (el tiempo de reutilización de Abrumar de Gusto por la
-sangre no ha cambiado).
+  * Ahora Abrumar tiene un tiempo de reutilización normal y global de 1,5 s
+(el tiempo de reutilización de Abrumar de Gusto por la sangre no ha cambiado).
 
   * Temeridad y Calma mortal ya no se pueden usar al mismo tiempo. No se puede
-usar una si la otra está activa, pero usar una no hace que la otra vuelva a su
+usar una si la otra está activa, pero usar una no hace que la otra entre en su
 tiempo de reutilización total.
 
   * Represalias, Temeridad y Muro de escudo ya no tienen requisitos de
@@ -4028,13 +4531,55 @@ se ha reducido a un 5%, en vez de un 10%.
     * En algunos encuentros ya no es posible usar Cargar al estar más cerca
 que lo que permite su alcance mínimo.
 
-**[Mazmorras y bandas][133]**
+**Moneda**
 
-  * La guía de mazmorras está en proceso de implementación. Aunque aparezcan
-algunos elementos en la IU del Reino Público de Pruebas actual, la
-característica aún no está completa.
+  * Puntos de honor y de conquista
 
-  * Puntos de valor
+    * Todos los puntos de conquista existentes en la pestaña Monedas se han
+convertido en puntos de honor. Todos los puntos de honor que superen el límite
+deberán gastarse en la semana siguiente antes de que empiece la temporada 10.
+En cuanto empiece la temporada 10, todos los puntos de honor que superen el
+límite de 4000 p. se convertirán en oro, a un índice de 35 de plata por punto,
+y se enviarán a los personajes por correo.
+
+    * Ahora el mínimo de puntos de conquista que se gana en arenas por semana
+es de 1350 p. con un índice de arena de 1500 p. o menos. Ahora el máximo es
+2700 p. con un índice de arena de 3000 p. o más. El límite sigue aumentando de
+forma no lineal entre esos dos puntos. Para comparar, durante la temporada 9
+el límite oscilaba entre 1343 y 3000 p.
+
+    * Ahora el juego registra por separado los límites de puntos de conquista
+para campos de batalla y arenas. Los índices de campo de batalla reciben un
+bonus de un 22,2% que se aplica al límite que generan, es decir, el límite
+para el índice de campo de batalla ahora oscila entre 1650 y 3300 p. Los
+jugadores podrán ganar un número total de puntos de conquista por semana igual
+al mayor de estos dos límites, pero una vez que los jugadores hayan alcanzado
+el límite de arenas o de campos de batalla, ya no podrán ganar puntos de
+conquista de esa fuente. Los puntos de conquista las fiestas de campos de
+batalla solo contarán para el límite total de puntos de conquista.
+
+      * Ejemplo: La primera semana de la temporada 10 todos empiezan con un
+índice inferior a 1500 p. Por tanto, el límite de los campos de batalla
+puntuados será de 1650 p. y el límite para el índice de arena será de 1350 p.
+La primera semana, el personaje gana suficientes encuentros de arenas para
+alcanzar el límite de 1350 p. Después, las victorias en arenas ya no otorgarán
+puntos de conquista durante esa semana. Sin embargo, el personaje aún puede
+conseguir hasta 300 p. extra, pero solo en campos de batalla puntuados o con
+los bonus de puntos de conquista por ir a campos de batalla aleatorios diarios
+o de fiestas. La siguiente semana, el límite se volverá a calcular según los
+índices del personaje y puede que el índice de arena ya genere su mayor
+límite. La segunda semana, el límite del índice de arena del personaje es de
+1800 p. y el límite de los campos de batalla puntuados es de 1650 p. El
+personaje cuenta con un límite total de 1800 p. de conquista para la semana.
+Se pueden ganar hasta 1650 p. en campos de batalla puntuados, pero los últimos
+150 p. se deben conseguir de otra forma.
+
+  * Puntos de valor y de justicia
+
+    * Todos los puntos de valor existentes en la pestaña Monedas se han
+convertido en puntos de justicia. Todos los puntos de justicia que superen el
+límite se convertirán en oro, a un índice de 47 de plata por punto, y se
+enviarán a los jugadores por correo.
 
     * Ahora la cantidad máxima de puntos de valor que se puede ganar en una
 semana en cualquiera de las mazmorras y bandas aplicables es 980 p., en vez de
@@ -4047,11 +4592,11 @@ mazmorras de La Rebelión de los Zandalari sigue siendo 980 p.
 mazmorras heroicas sigue siendo 490 p.
 
       * La cantidad de puntos de valor que se otorgan por matar a un jefe en
-las Tierras de Fuego es 70 p. en modo de 10 jugadores y 90 p. en modo de 25
+las Tierras de Fuego es 120 p. en modo de 10 jugadores y 140 p. en modo de 25
 jugadores.
 
       * La cantidad de puntos de valor que se otorgan por matar a Occu'thar en
-el Bastión de Baradin es 35 p. en modo de 10 jugadores y 45 p. en modo de 25
+el Bastión de Baradin es 120 p. en modo de 10 jugadores y 140 p. en modo de 25
 jugadores.
 
       * La cantidad de puntos de valor que se otorgan por matar a un jefe en
@@ -4059,10 +4604,26 @@ dificultad heroica en El Bastión del Crepúsculo, el Descenso de Alanegra y el
 Trono de los Cuatro Vientos es 35 p. en modo de 10 jugadores y 45 p. en modo
 de 25 jugadores.
 
-  * Las Tierras de Fuego, una nueva banda de 10 y 25 jugadores, ya se puede
-probar de forma limitada. Visita [el foro de discusión de Reino público de
-pruebas][134] para obtener información más actualizada sobre las pruebas de
-banda.
+**[Mazmorras y bandas][137]**
+
+  * Se han añadido perfiles de banda que permitirán a los jugadores guardar la
+distribución de la interfaz de usuario de la ventana de banda según el tipo de
+contenido (por ejemplo: bandas de 10 jugadores, bandas de 25 jugadores, campos
+de batalla, etc.) para futuros usos.
+
+    * Los jugadores pueden elegir JcE, JcJ, especialización y tamaño del
+grupo. A partir de ese momento, cada tipo de perfil de banda se establecerá
+automáticamente.
+
+    * Esta característica también está disponible para el contenido de 5
+jugadores cuando esté seleccionado Usar marcos de grupo estilo banda en las
+Opciones de interfaz.
+
+    * Los perfiles de banda pueden enumerar grupos en horizontal y en
+vertical.
+
+  * Se ha añadido un botón de banda a la barra de navegación que llevará a los
+jugadores directamente a la ventana de banda del panel Social.
 
   * Bastión de Baradin
 
@@ -4078,9 +4639,13 @@ la monstruosidad de elementium, Feludius, Ignacious y Terrastra.
     * Se ha eliminado un elemental vinculado de cada tipo en la cámara del
 Consejo de ascendientes.
 
+    * Ahora la facultad Remolino de Escarcha de inundación esclava inflige un
+50% menos de daño.
+
     * Arion
 
-      * Se ha reducido el daño de Cadena de relámpagos.
+      * Se ha reducido el daño y la distancia de encadenamiento de Cadena de
+relámpagos.
 
     * Cho'gall
 
@@ -4126,7 +4691,8 @@ Bola de Fuego y de Tromba de bolas de Fuego, el daño de Rugido furioso, el
 daño de Aliento agostador y el daño de Nova de las Sombras.
 
       * Se ha reducido un 20% la salud del sucesor abisal, el dragón de
-pizarra, el celador del Tiempo y la cría esmeralda huérfana.
+pizarra, el jinete de tormentas, el celador del Tiempo y la cría esmeralda
+huérfana.
 
       * Se ha aumentado el tiempo de lanzamiento de Nova de las Sombras.
 
@@ -4201,7 +4767,7 @@ efectos de Provocar.
 
       * Se ha reducido un 20% la salud y el daño cuerpo a cuerpo.
 
-      * Los guerreros osarios animados tardan 33 s en caer en vez de 50.
+      * Los guerreros osarios animados tardan 33 s en caer, en vez de 50.
 Además, aparecen menos guerreros osarios animados.
 
       * Se ha aumentado el tiempo de lanzamiento de Nova explosiva.
@@ -4256,7 +4822,7 @@ para acompañar a sus diálogos.
         * Se ha reducido un 20% la salud, el daño y el daño de Ráfaga de
 viento.
 
-        * Se ha aumentado el tiempo de volver a lanzar de Relámpago y de Vara
+        * Se ha aumentado el tiempo de relanzamiento de Relámpago y de Vara
 relámpago.
 
         * Se ha reducido un 50% el daño en cadena de Golpe de relámpagos a los
@@ -4267,10 +4833,11 @@ en la 2.
 
       * Cónclave del Viento
 
-        * Se ha reducido un 20% el cuerpo a cuerpo de Rohash, Anshal y Nezir,
-el daño y la salud del trepador voraz, el daño de las esporas tóxicas del
-trepador voraz, el daño de Huracán, el daño de Tormenta de granizo, el daño de
-Escarcha permanente, Vendaval cortante y el daño de Explosión de viento.
+        * Se ha reducido un 20% el daño cuerpo a cuerpo de Rohash, Anshal y
+Nezir, el daño y la salud del trepador voraz, el daño de las esporas tóxicas
+del trepador voraz, el daño de Huracán, el daño de Tormenta de granizo, el
+daño de Escarcha permanente, Vendaval cortante y el daño de Explosión de
+viento.
 
         * Se ha aumentado el tiempo de lanzamiento de Reunir fuerza.
 
@@ -4292,282 +4859,50 @@ máscaras Tiki llameantes.
       * Ahora la muerte del sumo sacerdote Venoxis elimina el veneno de las
 plantas al principio de la mazmorra.
 
-**[Hermandades][135]**
+    * Corrección de errores de mazmorras y bandas
+
+      * Ahora los jefes son inmunes al efecto reductor del rayo reductor
+gnómico.
+
+      * El logro Comportamiento aberrante ya no debería reiniciar por error su
+registro de muertes durante el encuentro de Maloriak en el Descenso de
+Alanegra.
+
+      * La Brisa calmante de Anshal ya no debería provocar que las mascotas de
+combate se comporten de forma errática en el Trono de los Cuatro Vientos.
+
+      * Ahora los iconos de las marcas de banda son visibles en todas las
+fases de los encuentros con jefes.
+
+**[Hermandades][138]**
+
+  * Buscador de hermandad
+
+    * Ahora funcionarán los comentarios largos y no aparecerán cortados.
 
   * El límite diario de experiencia de hermandad se ha aumentado un 25%.
 
   * El límite semanal de reputación de hermandad se ha aumentado un 25%.
 
-  * Ahora el límite de experiencia de hermandad se ha eliminado en el nivel
-20, en vez de en el 23.
+  * Ahora el límite de experiencia de hermandad desaparece en el nivel 20, en
+vez de en el 23.
 
   * Se ha mejorado el diseño de las riendas del fénix oscuro, que se compran a
 un vendedor de hermandad. Ahora la montura es menos transparente y, sin duda,
 más impresionante.
 
-**[Objetos][136]**
+**[Objetos][139]**
 
   * Si un jugador gana un tiro por necesidad en el sistema de necesidad antes
 que codicia con un objeto del tipo Se liga al equiparlo, el objeto se quedará
 ligado al alma de ese jugador. El objeto no se ligará si se gana con un tiro
 por codicia.
 
+  * Ahora los objetos de rango 11 apropiados cuestan puntos de justicia.
+
   * Se ha aumentado un 40% el daño infligido por Naipe de la Luna Negra:
 Huracán cuando se activa. Sin embargo, ya no puede infligir golpes críticos y
 ya no recibe modificadores de daño del jugador que lo equipa.
-
-  * Bonus de conjunto
-
-    * El bonus de temple de 2 piezas de los conjuntos de JcJ de Cataclysm ya
-no se acumula. Si un jugador lleva 2 piezas, cada una de un conjunto de
-Cataclysm diferente, el jugador solo recibirá el bonus de 400 p. de temple una
-vez. Este cambio no se aplica a los conjuntos de JcJ de expansiones
-anteriores.
-
-**[Profesiones][137]**
-
-  * Ingeniería
-
-    * D.E.H.T.A. ha puesto recientemente un gran número de alimañas bajo su
-protección, sobre todo conejos y ardillas. Por eso, el lanzalimañas de
-Cierrasílex se ha readaptado para usar pollos salvajes hasta que se pueda
-llegar a un "acuerdo".
-
-  * Desuello
-
-    * Los jugadores ya no pueden desollar cadáveres que ya estén siendo
-desollados o despojados de forma activa por otros jugadores.
-
-**[JcJ][138]**
-
-  * Arenas
-
-    * El Círculo del Valor se ha vuelto a añadir a la rotación de las arenas.
-Los jugadores ya no empiezan el encuentro en elevadores en el centro del mapa.
-Ahora empezarán el encuentro en salas de inicio en lados opuestos de la arena.
-
-  * Campos de batalla
-
-    * Se ha añadido Ojo de la Tormenta a la rotación como campo de batalla
-puntuado de 10 jugadores. Los puntos de captura al estilo tira y afloja se han
-remplazado por puntos de captura al estilo de la Cuenca de Arathi para
-fomentar la competición 10c10. Este cambio solo se aplica a los campos de
-batalla puntuados. Por otro lado, Ojo de la Tormenta sigue siendo un campo de
-batalla de 15 jugadores con puntos de captura al estilo tira y afloja.
-
-    * Se ha vuelto a añadir Garganta Grito de Guerra a la rotación de campos
-de batalla puntuados.
-
-    * Juegos de guerra
-
-      * Se han hecho muchas mejoras a la interfaz de Juegos de guerra, aunque
-estos cambios aún no son totalmente funcionales.
-
-  * Puntos de conquista
-
-    * Ahora el mínimo de puntos de conquista ganados por semana es de 1500,
-con un índice de campo de batalla de 1500 o menos. El máximo sigue siendo
-3000, con un índice de campo de batalla de 3000 o más. El límite sigue
-aumentando de forma no lineal entre esos dos puntos.
-
-    * Ahora el juego registra por separado los límites de puntos de conquista
-para campos de batalla y arenas. El límite para el índice de arena siempre
-será 2/3 del límite del índice de campo de batalla para cualquier índice de
-arena. Los jugadores podrán ganar un número total de puntos de conquista por
-semana igual al mayor de estos dos límites, pero una vez que los jugadores
-hayan alcanzado el límite de arenas o de campos de batalla, ya no podrán ganar
-puntos de conquista de esa fuente. Los puntos de conquista de campos de
-batalla de las fiestas solo contarán para el límite total de puntos de
-conquista.
-
-  * Armas de Gladiador
-
-    * Las armas por puntos de conquista de la temporada 10 solo se podrán
-comprar una vez que se alcance una cantidad mínima de puntos de conquista
-durante la temporada actual. Por ejemplo, la pica de Gladiador implacable
-cuesta 3400 puntos de conquista. Sin embargo, los jugadores tendrán que
-conseguir primero un total de 11650 puntos de conquista durante la temporada
-10 antes de poder comprarla.
-
-    * Las armas por puntos de honor de la temporada 9 solo se podrán comprar
-una vez que se alcance una cantidad mínima de puntos de honor durante la
-temporada actual. Por ejemplo, la pica de Gladiador sañoso cuesta 3400 puntos
-de honor. Sin embargo, los jugadores tendrán que conseguir primero un total de
-18500 puntos de honor durante la temporada 10 antes de poder comprarla.
-
-    * En cuanto se alcance la cantidad mínima de puntos necesarios para
-comprar armas, todas las armas disponibles se podrán comprar por los precios
-de la lista. El requisito de puntos no se reinicia al realizar una compra.
-
-    * Las descripciones de las armas de los vendedores indicarán a los
-jugadores cuántos puntos de conquista o de honor tienen que conseguir en la
-temporada actual para poder comprar el objeto.
-
-**[Misiones y criaturas][139]**
-
-  * Se han solucionado las anomalías de la probabilidad de golpe crítico y de
-esquivar de las criaturas de nivel bajo.
-
-**[Interfaz de usuario][140]**
-
-  * Ahora el orden en el que aparecen los personajes en la pantalla de
-selección de personaje se puede reorganizar y guardar.
-
-  * Ahora se puede mover la barra de lanzamiento para que aparezca debajo de
-la ventana de Personaje.
-
-  * Cuadro de movimiento es una interfaz de movimiento que funciona con el
-clic del ratón que ahora forma parte de la interfaz básica.
-
-  * Se han añadido perfiles de banda que permitirán a los jugadores guardar la
-distribución de la interfaz de usuario de la ventana de banda según el tipo de
-contenido (por ejemplo: bandas de 10 jugadores, bandas de 25 jugadores, campos
-de batalla, etc.) para futuros usos.
-
-**Parche de Reino Público de Pruebas (RPP) de World of Warcraft 4.2**
-
-Las notas de todos los parches de World of Warcraft se pueden encontrar
-[aquí][141].
-
-**[Vínculos elementales][142]**
-
-Lo que en principio debía ser un acontecimiento feliz en el antiguo Árbol del
-Mundo, Nordrassil, ha terminado en tragedia. Allí, los miembros del Circulo
-Cenarion y del Anillo de la Tierra, incluido el antiguo Jefe de Guerra Thrall,
-se habían reunido con los nobles dragones Aspectos para unificar sus poderes y
-restaurar Nordrassil por el bien de Azeroth. Sin embargo, ha corrido la voz de
-que un misterioso agente del Martillo Crepuscular interrumpió la ceremonia y
-venció a Thrall con magia oscura... diseminando su espíritu por los cuatro
-dominios del plano elemental. Si esos terribles rumores resultan ser ciertos,
-el Anillo de la Tierra, y de hecho todo Azeroth, ha perdido a uno de sus
-mejores campeones.
-
-**[El Brote y el Frente de Magma][143]**
-
-A pesar de que los elfos de la noche y sus aliados rechazaron la primera
-invasión de Hyjal de Ragnaros, su trabajo en el monte sagrado aún no ha
-terminado. El archidruida Malfurion Tempestira ha reunido a sus camaradas en
-el Santuario de Malorne, dentro de El Brote, recién sanado, para invadir los
-dominios de Ragnaros: las Tierras de Fuego. Una vez en el plano elemental, los
-defensores de Hyjal esperan establecer un baluarte permanente. Pero estos
-planes se están viendo amenazados por un nuevo y feroz ataque elemental que ha
-arrasado El Brote. A pesar de este contratiempo, los protectores de Hyjal
-siguen adelante con su misión, pues saben que será en el corazón de magma de
-las Tierras de Fuego donde se decidirá el destino del Monte Hyjal.
-
-**[Las Tierras de Fuego][144]**
-
-Se acerca el momento de atacar a Ragnaros. Ahora la batalla para proteger el
-Monte Hyjal se libra en las profundidades del ardiente reino de Ragnaros. A
-medida que los defensores de Azeroth ganan terreno y se aproximan a los
-sagrarios interiores de las Tierras de Fuego, les espera una tarea monumental.
-La guarida de Ragnaros, la Fortaleza de Sulfuron, la guardan sus servidores
-más leales, incluidos los traidores druidas de la Llama y su misterioso líder.
-Aun así, los valientes héroes que se han aventurado en este reino de cenizas
-no pueden permitir que ningún peligro los espante. El resultado de las
-batallas que están por venir determinará la supervivencia de Azeroth.
-
-**[Dragonira, el Reposo de Tarecgosa][145]**
-
-La incertidumbre reina en el dominio del Vuelo Azul, El Nexo, mientras sus
-miembros discuten por elegir a un nuevo líder. Dividido entre los dos
-sucesores más probables, Kalecgos y Arygos, el Vuelo ha acordado reunirse
-durante un acontecimiento celestial poco común, conocido como el Abrazo, con
-la esperanza de elegir un nuevo Aspecto. Sin embargo, el dragón bronce
-Anachronos ha detectado que algo siniestro actúa alrededor de El Nexo, algo
-que amenaza con comprometer la ceremonia. Si no se alza un héroe para
-investigar estas fuerzas oscuras y descubrir sus intenciones, Anachronos cree
-que la condenación de Azeroth es inminente.
-
-**_Índice_**
-
-_Haz clic en un enlace para saltar directamente a la sección correspondiente
-de las notas de parche._
-
-  * [General][6]
-
-  * [Logros][7]
-
-  * [Clases: General][8]
-
-    * [![][9]][10] [Caballeros de la Muerte][10], [![][11]][12] [Druidas][12],
-[![][13]][14] [Cazadores][14], [![][15]][16] [Magos][16], [![][17]][18]
-[Paladines][18],
-
-    * [![][19]][20] [Sacerdotes][20], [![][21]][22] [Pícaros][22],
-[![][23]][24] [Chamanes][24], [![][25]][26] [Brujos][26], [![][27]][28]
-[Guerreros][28]
-
-  * [Mazmorras y bandas][29]
-
-  * [Hermandades][30]
-
-  * [Objetos][31]
-
-  * [Profesiones][32]
-
-  * [JcJ][33]
-
-  * [Misiones y criaturas][34]
-
-  * [Interfaz de usuario][35]
-
-**General**
-
-  * Nuevas misiones diarias: El Brote y el Frente de Magma
-
-    * ¡Ya está disponible un gran surtido de nuevas misiones diarias y
-recompensas en Hyjal, donde los jugadores pueden ayudar a los Guardianes de
-Hyjal a hacer retroceder a los aliados de Ragnaros y a establecer una base de
-operaciones en las Tierras de Fuego! Para poder obtener las misiones diarias
-de El Brote y el Frente de Magma, los jugadores deben haber completado todas
-las misiones hasta El milagro de Aessina, incluida esta. En cuanto hayan
-completado esta misión, los jugadores deben hablar con Matogarra en el
-Santuario de Malorne para unirse a las fuerzas de El Brote.
-
-  * Nueva cadena de misiones: Vínculos elementales
-
-    * Ya está disponible una nueva línea de misiones para personajes de nivel
-85 de la Horda y de la Alianza para que los valientes aventureros ayuden a
-Thrall. La llamada del chamán del mundo, la misión que guiará a los jugadores
-hacia Thrall y el concilio de Nordrassil, se puede obtener en Ventormenta o en
-Orgrimmar.
-
-  * Nueva banda: las Tierras de Fuego
-
-    * Situada en el plano elemental, ¡las Tierras de Fuego es una nueva banda
-de 10 y 25 jugadores con dificultad normal y heroica! Ahora los veteranos de
-la Horda y de la Alianza, forjados en la batalla, tendrán la oportunidad de
-arremeter contra el señor del fuego Ragnaros y sus leales servidores al
-aventurarse en sus dominios a través de la Aguja de Sulfuron en el Monte
-Hyjal.
-
-  * Nuevo objeto legendario: Dragonira, el Reposo de Tarecgosa
-
-    * Los aventureros más acérrimos tienen la oportunidad de embarcarse en una
-serie de misiones para crear un nuevo bastón legendario. Para comenzar el
-proceso de ensamblaje del bastón, los jugadores deben matar primero a un señor
-de magma en las Tierras de Fuego. Después de matar al señor de magma, los
-jugadores podrán aceptar la misión Un compromiso legendario de Ziradormi o de
-Coridormi en Orgrimmar o en Ventormenta.
-
-  * Nueva característica de la interfaz de usuario: Guía de mazmorras
-
-    * Ahora, una gran cantidad de información sobre mazmorras forma parte la
-interfaz de usuario gracias a la nueva guía de mazmorras. Se puede acceder a
-esta característica con la tecla "M" mientras se está en la mazmorra, o
-mediante un nuevo botón de la barra de navegación desde cualquier lugar del
-mundo. En la guía de mazmorras se podrá ver la historia del jefe, los detalles
-del encuentro, las facultades y el botín de todos los jefes que se hayan
-integrado en el nuevo sistema. Se planea incorporar más mazmorras en la guía
-de mazmorras en futuras actualizaciones.
-
-  * Ahora todas las razas de personajes tienen un sonido para /rugir.
-
-  * Todos los puntos de valor existentes en la pestaña Monedas se han
-convertido en puntos de justicia. Todos los puntos de justicia por encima del
-límite se convertirán en oro, a un índice de 47 de plata por punto, y se
-enviarán a los jugadores.
 
   * Se ha eliminado la ranura del llavero para dejar sitio a nuevas
 características en la interfaz de usuario.
@@ -4585,12 +4920,313 @@ llaves permanecerán en un inventario de reserva hasta que dispongan del
 espacio necesario. Una vez que haya espacio, las llaves aparecerán en el
 inventario normal cuando el jugador se desconecte o cambie de zona.
 
-**[Logros][146]**
+  * Objetos y recompensas de JcJ
+
+    * Ahora los objetos de la temporada 9 apropiados cuestan puntos de honor.
+
+      * Armas de Gladiador
+
+      * Las armas por puntos de conquista de la temporada 10 solo se podrán
+comprar una vez que se alcance una cantidad mínima de puntos de conquista
+durante la temporada actual. Por ejemplo, la pica de Gladiador implacable
+cuesta 3400 puntos de conquista. Sin embargo, los jugadores tendrán que
+conseguir primero un total de 11650 puntos de conquista durante la temporada
+10 antes de poder comprarla.
+
+      * Las armas por puntos de honor de la temporada 9 solo se podrán comprar
+una vez que se alcance una cantidad mínima de puntos de honor durante la
+temporada actual. Por ejemplo, la pica de Gladiador sañoso cuesta 3400 puntos
+de honor. Sin embargo, los jugadores tendrán que conseguir primero un total de
+18500 puntos de honor durante la temporada 10 antes de poder comprarla.
+
+      * En cuanto se alcance la cantidad mínima de puntos necesarios para
+comprar armas, todas las armas disponibles se podrán comprar por los precios
+de la lista. El requisito de puntos no se reinicia al realizar una compra.
+
+      * Las descripciones de las armas de los vendedores indicarán a los
+jugadores cuántos puntos de conquista o de honor tienen que conseguir en la
+temporada actual para poder comprar el objeto.
+
+    * Recompensas de campos de batalla puntuados
+
+      * Se otorgarán a los jugadores nuevas monturas terrestres de JcJ, el
+lobo de guerra sañoso (Horda) y el corcel de guerra sañoso (Alianza), por
+completar los logros de ganar 75, 150 y 300 campos de batalla puntuados
+respectivamente, en vez de por estar entre el 0,5% más alto de la
+clasificación al final de cada temporada, como en las arenas. Este sistema de
+recompensas sirve para premiar mejor el espíritu de los campos de batalla. Se
+otorgará una montura ligada a la cuenta por cada logro desbloqueado, lo que
+permitirá a los jugadores que ganen 150 y 300 campos de batalla puntuados
+conseguir esta montura por segunda y tercera vez. Las monturas adicionales
+obtenidas se pueden enviar a personajes alternativos siempre que estén ligados
+a la cuenta. Estas monturas se otorgan en cuanto se desbloquea un logro
+asociado y no se corresponden con recompensas de fin de temporada.
+
+    * Bonus de conjunto
+
+      * El bonus de temple de 2 piezas de los conjuntos de JcJ de Cataclysm ya
+no se acumula. Si un jugador lleva 2 piezas, cada una de un conjunto de
+Cataclysm diferente, el jugador solo recibirá el bonus de 400 p. de temple una
+vez. Este cambio no se aplica a los conjuntos de JcJ de expansiones
+anteriores.
+
+**[Profesiones][140]**
+
+  * Ingeniería
+
+    * D.E.H.T.A. ha puesto recientemente un gran número de alimañas bajo su
+protección, sobre todo conejos y ardillas. Por eso, el lanzalimañas de
+Cierrasílex se ha readaptado para usar pollos salvajes hasta que se pueda
+llegar a un "acuerdo".
+
+  * Desuello
+
+    * Los jugadores ya no pueden desollar cadáveres que ya estén siendo
+desollados o despojados de forma activa por otros jugadores.
+
+**[JcJ][141]**
+
+  * Arenas
+
+    * Se ha eliminado la columna de índice de búsqueda individual de la
+puntuación de arenas.
+
+    * El Círculo del Valor se ha vuelto a añadir a la rotación de las arenas.
+Los jugadores ya no empiezan el encuentro en elevadores en el centro del mapa.
+Ahora empezarán el encuentro en salas de inicio en lados opuestos de la arena.
+
+  * Campos de batalla
+
+    * Se ha eliminado la columna de índice de búsqueda individual de la
+puntuación de los campos de batalla puntuados y se ha remplazado con un índice
+de búsqueda por equipos.
+
+    * Se ha añadido Ojo de la Tormenta a la rotación como campo de batalla
+puntuado de 10 jugadores. Los puntos de captura al estilo tira y afloja se han
+remplazado por puntos de captura al estilo de la Cuenca de Arathi para
+fomentar la competición 10c10. Este cambio solo se aplica a los campos de
+batalla puntuados. Por otro lado, Ojo de la Tormenta sigue siendo un campo de
+batalla de 15 jugadores con puntos de captura al estilo tira y afloja.
+
+    * Se ha vuelto a añadir Garganta Grito de Guerra a la rotación de campos
+de batalla puntuados.
+
+    * Juegos de guerra
+
+      * Se han hecho muchas mejoras a la interfaz de los juegos de guerra.
+Ahora tiene su propio panel para que su uso sea más sencillo y los líderes de
+grupo o banda serán los únicos que podrán desafiar a otro grupo.
+
+**[Misiones y criaturas][142]**
+
+  * Se han solucionado las anomalías de la probabilidad de golpe crítico y de
+esquivar de las criaturas de nivel bajo.
+
+  * Ahora las criaturas muestran una regeneración de energía progresiva a los
+jugadores.
+
+**[Razas][143]**
+
+  * Ahora todas las razas de personajes tienen un sonido para /rugir.
+
+**[Interfaz de usuario][144]**
+
+  * Se ha cambiado el tamaño de las pantallas de Opciones de interfaz para que
+sea igual que el de las pantallas de vídeo y audio. Esto permite tener un
+panel de perfiles de marcos de unidades compactos más grande.
+
+  * Los addons ya no podrán intercambiar objetos de forma inteligente a través
+del gestor de equipamiento incorporado.
+
+  * Ahora el orden en el que aparecen los personajes en la pantalla de
+selección de personaje se puede reorganizar y guardar.
+
+  * Ahora se puede mover la barra de lanzamiento para que aparezca debajo de
+la ventana de Personaje.
+
+  * Ahora las especializaciones de talentos de los personajes se pueden ver al
+pasar el ratón por el marcador de los campos de batalla.
+
+  * Ahora existe la opción Retirar mascota en los marcos de unidad.
+
+  * Ahora la durabilidad de los objetos del personaje se mostrará en amarillo
+cuando estén por debajo del 20% de su durabilidad, en vez de cuando los
+objetos tengan 5 p. de durabilidad o menos.
+
+  * Ahora la ventana de macros y el libro de hechizos se pueden abrir al mismo
+tiempo para que la creación de macros sea más intuitiva. Además, la ventana de
+macros tiene un botón Guardar/Cancelar.
+
+  * Cuadro de movimiento es una interfaz de movimiento que funciona con el
+clic del ratón, que ahora forma parte de la interfaz básica.
+
+  * Ahora es más fácil cambiar el idioma del cliente del juego a cualquier
+idioma disponible en la región.
+
+  * Se puede seleccionar a un objetivo o a un objetivo enfocado en el
+seguimiento del minimapa (no incluye a jugadores enemigos).
+
+  * Ahora los vendedores muestran los tipos de moneda que usan.
+
+**[Apartado técnico][145]**
+
+  * Ahora el Programa de inicio de Blizzard utiliza Plug and Play universal
+para la configuración de puertos. Si tu enrutador es compatible con un
+dispositivo UPnP, abrirá automáticamente los puertos que necesite y tus
+descargas no estarán restringidas.
+
+**Parche 4.2. de World of Warcraft**
+
+Las notas de todos los parches de World of Warcraft se pueden encontrar
+[aquí][120].
+
+**[Vínculos elementales][146]**
+
+Lo que en principio debía ser un acontecimiento feliz en el antiguo Árbol del
+Mundo, Nordrassil, ha terminado en tragedia. Allí, los miembros del Círculo
+Cenarion y del Anillo de la Tierra, incluido el antiguo Jefe de Guerra Thrall,
+se habían reunido con los nobles dragones Aspectos para unificar sus poderes y
+restaurar Nordrassil por el bien de Azeroth. Sin embargo, ha corrido la voz de
+que un misterioso agente del Martillo Crepuscular interrumpió la ceremonia y
+venció a Thrall con magia oscura... diseminando su espíritu por los cuatro
+dominios del plano elemental. Si esos terribles rumores resultan ser ciertos,
+el Anillo de la Tierra, y de hecho todo Azeroth, ha perdido a uno de sus
+mejores campeones.
+
+**[El Brote y el Frente de Magma][147]**
+
+A pesar de que los elfos de la noche y sus aliados rechazaron la primera
+invasión de Hyjal de Ragnaros, su trabajo en el monte sagrado aún no ha
+terminado. El archidruida Malfurion Tempestira ha reunido a sus camaradas en
+el Santuario de Malorne, dentro de El Brote, recién sanado, para invadir los
+dominios de Ragnaros: las Tierras de Fuego. Una vez en el plano elemental, los
+defensores de Hyjal esperan establecer un baluarte permanente. Pero estos
+planes se están viendo amenazados por un nuevo y feroz ataque elemental que ha
+arrasado El Brote. A pesar de este contratiempo, los protectores de Hyjal
+siguen adelante con su misión, pues saben que será en el corazón de magma de
+las Tierras de Fuego donde se decidirá el destino del Monte Hyjal.
+
+**[Las Tierras de Fuego][148]**
+
+Se acerca el momento de atacar a Ragnaros. Ahora la batalla para proteger el
+Monte Hyjal se libra en las profundidades del ardiente reino de Ragnaros. A
+medida que los defensores de Azeroth ganan terreno y se aproximan a los
+sagrarios interiores de las Tierras de Fuego, les espera una tarea monumental.
+La guarida de Ragnaros, la Fortaleza de Sulfuron, la protegen sus servidores
+más leales, incluidos los traidores druidas de la Llama y su misterioso líder.
+Aun así, los valientes héroes que se han aventurado en este reino de cenizas
+no pueden permitir que ningún peligro los espante. El resultado de las
+batallas que están por venir determinará la supervivencia de Azeroth.
+
+**[Dragonira, el Reposo de Tarecgosa][149]**
+
+La incertidumbre reina en el dominio del Vuelo Azul, El Nexo, mientras sus
+miembros discuten por elegir a un nuevo líder. Dividido entre los dos
+sucesores más probables, Kalecgos y Arygos, el Vuelo ha acordado reunirse
+durante un acontecimiento celestial poco común, conocido como el Abrazo, con
+la esperanza de elegir un nuevo Aspecto. Sin embargo, el dragón de bronce
+Anachronos ha detectado que algo siniestro actúa alrededor de El Nexo. Algo
+que amenaza con comprometer la ceremonia. Si no se alza un héroe para
+investigar estas fuerzas oscuras y descubrir sus intenciones, Anachronos cree
+que la condenación de Azeroth es inminente.
+
+**_Índice_**
+
+_Haz clic en un enlace para saltar directamente a la sección correspondiente
+de las notas de parche._
+
+  * [General][6]
+
+  * [Logros][7]
+
+  * [Clases: General][8]
+
+    * [![][65]][10] [Caballeros de la Muerte][10], [![][66]][12]
+[Druidas][12], [![][67]][14] [Cazadores][14], [![][68]][16] [Magos][16],
+[![][69]][18] [Paladines][18],
+
+    * [![][70]][20] [Sacerdotes][20], [![][71]][22] [Pícaros][22],
+[![][72]][24] [Chamanes][24], [![][73]][26] [Brujos][26], [![][74]][28]
+[Guerreros][28]
+
+  * [Moneda][29]
+
+  * [Mazmorras y bandas][30]
+
+  * [Hermandades][31]
+
+  * [Objetos][32]
+
+  * [Profesiones][33]
+
+  * [JcJ][34]
+
+  * [Misiones y criaturas][35]
+
+  * [Razas][36]
+
+  * [Interfaz de usuario][37]
+
+  * [Apartado técnico][38]
+
+**General**
+
+  * Nuevas misiones diarias: El Brote y el Frente de Magma
+
+    * ¡Ya está disponible un gran surtido de nuevas misiones diarias y
+recompensas en Hyjal, donde los jugadores pueden ayudar a los Guardianes de
+Hyjal a hacer retroceder a los aliados de Ragnaros y a establecer una base de
+operaciones en las Tierras de Fuego! Para poder obtener las misiones diarias
+de El Brote y el Frente de Magma, los jugadores deben haber completado todas
+las misiones del Monte Hyjal hasta El milagro de Aessina, incluida esta. En
+cuanto hayan completado esta misión, los jugadores deben hablar con Matogarra
+en el Santuario de Malorne para unirse a las fuerzas de El Brote.
+
+  * Nueva cadena de misiones: Vínculos elementales
+
+    * Ya está disponible una nueva línea de misiones para personajes de nivel
+85 de la Horda y de la Alianza para que los valientes aventureros ayuden a
+Thrall. La llamada del chamán del mundo, la misión que guiará a los jugadores
+hacia Thrall y el concilio de Nordrassil, se puede obtener en los Santuarios
+de la Tierra de Ventormenta u Orgrimmar.
+
+  * Nueva banda: las Tierras de Fuego
+
+    * Situada en el plano elemental, ¡las Tierras de Fuego es una nueva banda
+de 10 y 25 jugadores con dificultad normal y heroica! Ahora los veteranos de
+la Horda y de la Alianza, forjados en la batalla, tendrán la oportunidad de
+arremeter contra el señor del fuego Ragnaros y sus leales servidores al
+aventurarse en sus dominios a través de la Aguja de Sulfuron en el Monte
+Hyjal.
+
+  * Nuevo objeto legendario: Dragonira, el Reposo de Tarecgosa
+
+    * Los asaltantes más acérrimos tienen la oportunidad de embarcarse en una
+serie de misiones para crear un nuevo bastón legendario. Para comenzar el
+proceso de ensamblaje del bastón, los jugadores deben matar primero a un señor
+de magma en las Tierras de Fuego. Después de matar al señor de magma, los
+jugadores podrán aceptar la misión Un compromiso legendario de Ziradormi en el
+Fuerte Grommash, en Orgrimmar, o de Coridormi en lo alto del Sagrario del
+Mago, en Ventormenta. La línea de misiones del objeto legendario solo está
+disponible para druidas, magos, sacerdotes, chamanes y brujos.
+
+  * Nueva característica de la interfaz de usuario: Guía de mazmorras
+
+    * Ahora, una gran cantidad de información sobre mazmorras forma parte de
+la interfaz de usuario gracias a la nueva guía de mazmorras. Se puede acceder
+a esta característica mediante un nuevo botón de la barra de navegación desde
+cualquier lugar del mundo. En la guía de mazmorras se podrá ver la historia
+del jefe, los detalles del encuentro, las facultades y el botín de todos los
+jefes que se hayan integrado en el nuevo sistema (esto incluye a los jefes de
+todas las mazmorras y bandas de Cataclysm). Se planea incorporar más mazmorras
+en futuras actualizaciones.
+
+**[Logros][150]**
 
   * Por los pelos (nuevo logro): salva a todos los prisioneros antes de que
 los sacrifiquen en Zul'Aman en dificultad heroica.
 
-**[Clases: General][147]**
+**[Clases: General][151]**
 
   * Ahora todas las sanaciones críticas sanan 2 veces lo que una sanación
 normal (+100%), en vez de 1,5 (+50%).
@@ -4602,12 +5238,12 @@ prioridad se complete. Vuelve la diversión desenfrenada.
 
   * Beneficios
 
-    * Ya no generan amenaza las facultades de clase que otorgan un beneficio a
-los objetivos amistosos. Esto se aplica a beneficios de banda como Marca de lo
-Salvaje y Palabra de poder: entereza, así como a efectos activados como Temple
-bendito y Dedos de Escarcha y los beneficios de un solo objetivo como
-Propósito oscuro y Frenesí profano. Las excepciones son los beneficios que
-sanan o infligen daño directamente como Espinas o Renovar. Este tipo de
+    * Las facultades de clase que otorgan un beneficio a los objetivos
+amistosos ya no generan amenaza. Esto se aplica tanto a beneficios de banda
+como Marca de lo Salvaje y Palabra de poder: entereza, así como a efectos
+activados como Temple bendito y Dedos de Escarcha y los beneficios de un solo
+objetivo como Propósito oscuro e Histeria. Las excepciones son los beneficios
+que sanan o infligen daño directamente como Espinas o Renovar. Este tipo de
 facultades siguen generando amenaza normal.
 
   * Control de masas
@@ -4655,7 +5291,15 @@ un 27% de sus bonus de fuerza como índice de parada, en vez de un 25%. Esta
 conversión se sigue aplicando únicamente a la fuerza que esté por encima de la
 fuerza de base.
 
-**[![][9]][148] [Caballeros de la Muerte][148]**
+  * Corrección de errores de clases generales
+
+    * Los jugadores ya no deberían recibir por error un mensaje diciendo que
+han interrumpido el lanzamiento de un hechizo cuando no lo han hecho.
+
+    * Las barras de acción ya no desaparecerán brevemente cuando los
+personajes que tengan una barra de actitud entren en un vehículo.
+
+**[![][65]][152] [Caballeros de la Muerte][152]**
 
   * El daño de base de Asolar se ha reducido a un 150% del daño con arma, en
 vez de un 160%.
@@ -4682,25 +5326,45 @@ Golpe letal en los 15 s después de matar a un enemigo que otorgue experiencia
 o puntos de honor sane al menos un 20% de la salud máxima del caballero de la
 Muerte (sigue requiriendo Presencia de Escarcha o Presencia profana).
 
-**[![][11]][149] [Druidas][149]**
+  * Corrección de errores para caballeros de la Muerte
+
+    * Ahora el talento Máquina de matar puede activarse correctamente con los
+ataques que se realicen con ambas manos.
+
+**[![][66]][153] [Druidas][153]**
 
   * Ahora los druidas obtienen 1 p. de poder de ataque por punto de fuerza, en
 vez de 2. Seguirán obteniendo 2 p. de poder de ataque por punto de agilidad en
-forma felina o de oso. Para equilibrar la pérdida de daño de este cambio, se
-han realizado los siguientes ajustes.
+forma felina o de oso. Además, el aumento de escala de las mejoras del
+equipamiento bajo forma felina era más lento que para otras clases, lo que
+hacía que infligiesen menos daño con objetos de rango superior. Para
+contrarrestar el cambio de fuerza y mejorar la escala, se han realizado los
+siguientes cambios. Todas las cifras citadas son para personajes de nivel 85.
 
     * Se ha aumentado un 15% el daño de Mordedura feroz. Además, su coste base
 se ha reducido a 25 p. de energía y puede usar hasta 25 p. de energía para
 aumentar el daño hasta un 100%.
 
     * A partir del nivel 80, el daño de Destrozar (felino) se ha aumentado a
-un 530% del daño con arma, en vez de un 460%.
+un 540% del daño con arma, en vez de un 460%, y el bonus de daño se ha
+reducido a 302 p.
 
-    * A partir del nivel 80, el daño de Devastar se ha aumentado a un 975% del
-daño con arma, en vez de un 850%.
+    * Ahora el daño inicial de Arañazo inflige el mismo daño al golpear que
+cada pulso periódico (y se utiliza así en todos los cálculos de combate).
+Ahora el daño periódico obtiene un 14,7% de poder de ataque por pulso, en vez
+de un 12,6%, y el daño de base por pulso se ha reducido de 557 p. a 56. Hay un
+error conocido en la descripción de Arañazo debido a este cambio, pero se
+corregirá en un futuro parche.
 
-    * A partir del nivel 80, el daño de Triturar se ha aumentado a un 520% del
-daño con arma, en vez de un 450%.
+    * El daño de Devastar a partir del nivel 80 se ha aumentado a un 950% del
+daño con arma, en vez de un 850%, y el bonus de daño se ha reducido a 532 p.
+
+    * Ahora Rugido salvaje otorga un 80% de daño aumentado a los ataques
+automáticos cuerpo a cuerpo, en vez de un 50%. El Glifo de Rugido salvaje
+sigue siendo un bonus de un 5% de ese total.
+
+    * El daño de Triturar a partir del nivel 80 se ha aumentado a un 540% del
+daño con arma, en vez de un 450%, y el bonus de daño se ha reducido a 302 p.
 
   * Raíces enredadoras y el hechizo equivalente activado por Trabazón con la
 Naturaleza ya no infligen daño.
@@ -4748,9 +5412,9 @@ Luna, además de Fuego estelar y Cólera.
 
       * Las facultades de daño del oso estaban subiendo demasiado rápido al
 aumentar el nivel del equipamiento en comparación con otros tanques, así que
-se han hecho los siguientes cambios para equilibrar. Todas las cifras citadas
-son para personajes de nivel 85; las cifras serán más bajas para personajes de
-nivel inferior.
+se han hecho los siguientes cambios para equilibrarlas. Todas las cifras
+citadas son para personajes de nivel 85; las cifras serán más bajas para
+personajes de nivel inferior.
 
         * El daño de base de Fuego feérico (Feral) se ha aumentado a 2950 p.,
 en vez de 679 p. La escala del poder de ataque se ha reducido a un 10,8%, en
@@ -4812,25 +5476,25 @@ del efecto de base de Estimular.
 
   * Bonus de conjunto
 
-    * Ahora el bonus de conjunto de 4 piezas de nivel 11 de druida Equilibrio,
-Alineación astral, otorga una probabilidad total de daño crítico de un 15% con
-3 cargas y disminuye un 5% por carga, en vez de un total de un 99% y disminuir
-un 33% por carga. Este cambio se ha hecho porque el bonus de conjunto resultó
-ser tan valioso que no era posible mejorarlo hasta el nivel 12. Para
-compensar, se han hecho cambios a Fuego estelar y Cólera (listados al
+    * Ahora el bonus de conjunto de JcJ de 4 piezas de rango 11 de druida
+Equilibrio, Alineación astral, otorga una probabilidad total de daño crítico
+de un 15% con 3 cargas y disminuye un 5% por carga, en vez de un total de un
+99% y disminuir un 33% por carga. Este cambio se ha hecho porque el bonus de
+conjunto resultó ser tan valioso que no era posible mejorarlo hasta el nivel
+12. Para compensar, se han hecho cambios a Fuego estelar y Cólera (listados al
 principio de la sección de la clase druida).
 
-    * El bonus de conjunto de 2 piezas de nivel 11 de druida Restauración se
-ha rediseñado para funcionar con la nueva maestría del druida Restauración.
-Ahora los druidas con este bonus reciben el bonus de espíritu mientras el
-bonus de maestría a la sanación periódica de Armonía esté activo.
+    * El bonus de conjunto de JcJ de 2 piezas de rango 11 de druida
+Restauración se ha rediseñado para funcionar con la nueva maestría del druida
+Restauración. Ahora los druidas con este bonus reciben el bonus de espíritu
+mientras el bonus de maestría a la sanación periódica de Armonía esté activo.
 
   * Corrección de errores para druidas
 
     * En algunos encuentros ya no es posible usar Carga feral al estar más
 cerca que lo que permite su alcance mínimo.
 
-**[![][13]][150] [Cazadores][150]**
+**[![][67]][154] [Cazadores][154]**
 
   * Se ha reducido el daño de Multidisparo. Ahora inflige un 120% del daño con
 arma a partir del nivel 80, en vez de un 137%.
@@ -4852,7 +5516,7 @@ contra objetivos con más de un 90% de salud, en vez de un 80%.
 
   * Mascotas
 
-    * Se han añadido 10 nuevas bestias domesticables poco comunes y cada una
+    * Se han añadido 10 nuevas bestias domesticables poco comunes, y cada una
 proporciona un reto de domesticación único. ¿Serás tú el primer cazador que
 domestique a Deth'tilac, la menos común y más poderosa de todas ellas? Los
 jugadores tendrán que avanzar a través de las zonas de misiones diarias de El
@@ -4864,7 +5528,7 @@ a gran velocidad hacia un miembro del grupo, lo que reduce el daño que recibe
 en el siguiente ataque cuerpo a cuerpo o a distancia a un 50% de la salud
 total de la mascota.
 
-**[![][15]][151] [Magos][151]**
+**[![][68]][155] [Magos][155]**
 
   * El daño de Explosión Arcana se ha reducido un 5%.
 
@@ -4892,7 +5556,7 @@ más reciente de Bomba viva, y se le añadirá a otros dos objetivos cercanos.
 decreciente mutuamente, además de los hechizos con los que comparten
 rendimientos decrecientes normalmente.
 
-**[![][17]][152] [Paladines][152]**
+**[![][69]][156] [Paladines][156]**
 
   * El coste de maná de Luz divina se ha aumentado un 35% del maná base, en
 vez de un 30%.
@@ -4908,11 +5572,11 @@ vez de un 10%.
 
   * Reprimenda, Escudo divino y Protección divina tienen iconos nuevos.
 
-  * Ahora Sello de Rectitud puede se puede activar con cualquier facultad
-cuerpo a cuerpo, no solo con las facultades cuerpo a cuerpo de un solo
-objetivo. Esto añade Martillo del honrado (el componente físico) y Tormenta
-divina a la lista de facultades que pueden activar este sello. Además, ahora
-los procs de Sello de Rectitud pueden tener efectos críticos.
+  * Ahora Sello de Rectitud se puede activar con cualquier facultad cuerpo a
+cuerpo, no solo con las facultades cuerpo a cuerpo de un solo objetivo. Esto
+añade Martillo del honrado (el componente físico) y Tormenta divina a la lista
+de facultades que pueden activar este sello. Además, ahora los procs de Sello
+de Rectitud pueden tener efectos críticos.
 
   * Especialización de talentos
 
@@ -4968,7 +5632,7 @@ de bloqueo aumentado de un 20% a los bloqueos con escudo del paladín durante
       * Ahora Sentencias del sabio hace proc al lanzarlo en vez de al golpear,
 lo que significa que las sentencias que fallan aún pueden otorgar maná. Esto
 es para garantizar que los paladines Protección no se quedan sin maná si no
-tienen límite de índice de golpe.
+alcanzan el límite de índice de golpe.
 
     * Reprensión
 
@@ -4988,14 +5652,14 @@ reutilización de Palabra de gloria 5/10 s.
     * Ahora el bonus de pericia de Glifo de Sello de Verdad también funciona
 cuando Sello de Rectitud está activo.
 
-**[![][19]][153] [Sacerdotes][153]**
+**[![][70]][157] [Sacerdotes][157]**
 
   * El daño de Peste devoradora se ha reducido un 12%.
 
   * El daño de Explosión mental se ha aumentado un 12%.
 
-  * Maligno de las Sombras usa la funcionalidad de la nueva actitud de
-"Ayudar" de la mascota.
+  * Maligno de las Sombras usa la funcionalidad de la nueva actitud "Ayudar"
+de la mascota.
 
   * El daño de Palabra de las Sombras: muerte se ha aumentado un 12%.
 
@@ -5011,8 +5675,8 @@ cuando Sello de Rectitud está activo.
 hace consistente con otros hechizos de control de masas que no están basados
 en proyectiles.
 
-      * El efecto de miedo del contragolpe de Toque vampírico de Pecado y
-castigo ya no tiene rendimiento decreciente.
+      * El efecto de miedo que proporciona Pecado y castigo al disipar Toque
+Vampírico, ya no tiene rendimiento decreciente.
 
       * El daño de Toque vampírico se ha reducido un 12%.
 
@@ -5021,7 +5685,7 @@ castigo ya no tiene rendimiento decreciente.
     * Los jugadores ya no cancelarán antes de tiempo un hechizo canalizado al
 hacer clic en Pozo de Luz.
 
-**[![][21]][154] [Pícaros][154]**
+**[![][71]][158] [Pícaros][158]**
 
   * Ahora el tiempo de reutilización de Capa de las Sombras es de 2 minutos,
 en vez de 90 s. Además, Capa de las Sombras ya no depende del tiempo de
@@ -5064,7 +5728,7 @@ de Disposición al combate 15/30 s.
       * El daño de Vena sangrienta a objetivos sangrantes se ha aumentado a un
 8/16%, en vez de un 5/10%.
 
-**[![][23]][155] [Chamanes][155]**
+**[![][72]][159] [Chamanes][159]**
 
   * El daño de Nova de Fuego se ha aumentado un 15%.
 
@@ -5072,6 +5736,8 @@ de Disposición al combate 15/30 s.
 
   * Ahora Desatar elementos está en la escuela de Naturaleza y de este modo ya
 no se puede usar si se ha bloqueado la escuela de Naturaleza de un chamán.
+
+  * Ahora Desatar viento inflige un 175% del daño con arma, en vez de un 125%.
 
   * El tiempo de reutilización interno de Escudo de agua se ha reducido a 3,5
 s para que se ajuste a otros escudos. Se ha reducido un 50% la cantidad de
@@ -5089,17 +5755,22 @@ afectados por Nova de Fuego.
 cuando se disipa el efecto de Choque de llamas, en vez de un 10/20/30%.
 
       * Ahora Tormenta de truenos reduce un 40% la velocidad de movimiento de
-los jugadores a los que derriba durante 5 s.
+los jugadores a los que repele durante 5 s.
+
+    * Mejora
+
+      * Ahora Golpe de tormenta inflige un 225% del daño con arma, en vez de
+un 125%.
 
     * Restauración
 
       * Se ha rediseñado Escudo de agua mejorado y renombrado como
 Resurgimiento. Cuando Escudo de agua está activo, Resurgimiento hace que las
 sanaciones críticas directas restauren maná (Resurgimiento de rango 2 es
-prácticamente igual al 150% del valor del antiguo Escudo de agua mejorado
+prácticamente igual a un 150% del valor del antiguo Escudo de agua mejorado
 cuando una Ola de sanación o una Ola de sanación superior realizan una
 sanación crítica y se ha rebajado de acuerdo con esto para los hechizos más
-rápidos o con varios objetivos.
+rápidos o con varios objetivos).
 
       * Ahora Marea de maná otorga un 200% del espíritu del taumaturgo, en vez
 de un 400%.
@@ -5116,7 +5787,7 @@ Elemental (conjunto puño de trueno de Gladiador). Ahora, cuando se activa al
 recibir daño, hace que Escudo de relámpagos genere una carga extra en vez de
 consumirla, hasta un máximo de 3 (9 con el talento Trueno ensordecedor).
 
-**[![][25]][156] [Brujos][156]**
+**[![][73]][160] [Brujos][160]**
 
   * Ahora Fuego de alma está disponible en el nivel 20, en vez de en el nivel
 54.
@@ -5133,14 +5804,13 @@ a Trueque de alma, en vez de 15 s.
     * Ya no se puede abandonar el combate mientras se está canalizando Drenar
 alma.
 
-**[![][27]][157] [Guerreros][157]**
+**[![][74]][161] [Guerreros][161]**
 
-  * Ahora Abrumar tiene un tiempo de reutilización de 1,5 s y tiempo de
-reutilización global (el tiempo de reutilización de Abrumar de Gusto por la
-sangre no ha cambiado).
+  * Ahora Abrumar tiene un tiempo de reutilización normal y global de 1,5 s
+(el tiempo de reutilización de Abrumar de Gusto por la sangre no ha cambiado).
 
   * Temeridad y Calma mortal ya no se pueden usar al mismo tiempo. No se puede
-usar una si la otra está activa, pero usar una no hace que la otra vuelva a su
+usar una si la otra está activa, pero usar una no hace que la otra entre en su
 tiempo de reutilización total.
 
   * Represalias, Temeridad y Muro de escudo ya no tienen requisitos de
@@ -5163,13 +5833,55 @@ se ha reducido a un 5%, en vez de un 10%.
     * En algunos encuentros ya no es posible usar Cargar al estar más cerca
 que lo que permite su alcance mínimo.
 
-**[Mazmorras y bandas][158]**
+**Moneda**
 
-  * La guía de mazmorras está en proceso de implementación. Aunque aparezcan
-algunos elementos en la IU del Reino Público de Pruebas actual, la
-característica aún no está completa.
+  * Puntos de honor y de conquista
 
-  * Puntos de valor
+    * Todos los puntos de conquista existentes en la pestaña Monedas se han
+convertido en puntos de honor. Todos los puntos de honor que superen el límite
+deberán gastarse en la semana siguiente antes de que empiece la temporada 10.
+En cuanto empiece la temporada 10, todos los puntos de honor que superen el
+límite de 4000 p. se convertirán en oro, a un índice de 35 de plata por punto,
+y se enviarán a los personajes por correo.
+
+    * Ahora el mínimo de puntos de conquista que se gana en arenas por semana
+es de 1350 p. con un índice de arena de 1500 p. o menos. Ahora el máximo es
+2700 p. con un índice de arena de 3000 p. o más. El límite sigue aumentando de
+forma no lineal entre esos dos puntos. Para comparar, durante la temporada 9
+el límite oscilaba entre 1343 y 3000 p.
+
+    * Ahora el juego registra por separado los límites de puntos de conquista
+para campos de batalla y arenas. Los índices de campo de batalla reciben un
+bonus de un 22,2% que se aplica al límite que generan, es decir, el límite
+para el índice de campo de batalla ahora oscila entre 1650 y 3300 p. Los
+jugadores podrán ganar un número total de puntos de conquista por semana igual
+al mayor de estos dos límites, pero una vez que los jugadores hayan alcanzado
+el límite de arenas o de campos de batalla, ya no podrán ganar puntos de
+conquista de esa fuente. Los puntos de conquista las fiestas de campos de
+batalla solo contarán para el límite total de puntos de conquista.
+
+      * Ejemplo: La primera semana de la temporada 10 todos empiezan con un
+índice inferior a 1500 p. Por tanto, el límite de los campos de batalla
+puntuados será de 1650 p. y el límite para el índice de arena será de 1350 p.
+La primera semana, el personaje gana suficientes encuentros de arenas para
+alcanzar el límite de 1350 p. Después, las victorias en arenas ya no otorgarán
+puntos de conquista durante esa semana. Sin embargo, el personaje aún puede
+conseguir hasta 300 p. extra, pero solo en campos de batalla puntuados o con
+los bonus de puntos de conquista por ir a campos de batalla aleatorios diarios
+o de fiestas. La siguiente semana, el límite se volverá a calcular según los
+índices del personaje y puede que el índice de arena ya genere su mayor
+límite. La segunda semana, el límite del índice de arena del personaje es de
+1800 p. y el límite de los campos de batalla puntuados es de 1650 p. El
+personaje cuenta con un límite total de 1800 p. de conquista para la semana.
+Se pueden ganar hasta 1650 p. en campos de batalla puntuados, pero los últimos
+150 p. se deben conseguir de otra forma.
+
+  * Puntos de valor y de justicia
+
+    * Todos los puntos de valor existentes en la pestaña Monedas se han
+convertido en puntos de justicia. Todos los puntos de justicia que superen el
+límite se convertirán en oro, a un índice de 47 de plata por punto, y se
+enviarán a los jugadores por correo.
 
     * Ahora la cantidad máxima de puntos de valor que se puede ganar en una
 semana en cualquiera de las mazmorras y bandas aplicables es 980 p., en vez de
@@ -5182,11 +5894,11 @@ mazmorras de La Rebelión de los Zandalari sigue siendo 980 p.
 mazmorras heroicas sigue siendo 490 p.
 
       * La cantidad de puntos de valor que se otorgan por matar a un jefe en
-las Tierras de Fuego es 70 p. en modo de 10 jugadores y 90 p. en modo de 25
+las Tierras de Fuego es 120 p. en modo de 10 jugadores y 140 p. en modo de 25
 jugadores.
 
       * La cantidad de puntos de valor que se otorgan por matar a Occu'thar en
-el Bastión de Baradin es 35 p. en modo de 10 jugadores y 45 p. en modo de 25
+el Bastión de Baradin es 120 p. en modo de 10 jugadores y 140 p. en modo de 25
 jugadores.
 
       * La cantidad de puntos de valor que se otorgan por matar a un jefe en
@@ -5194,10 +5906,26 @@ dificultad heroica en El Bastión del Crepúsculo, el Descenso de Alanegra y el
 Trono de los Cuatro Vientos es 35 p. en modo de 10 jugadores y 45 p. en modo
 de 25 jugadores.
 
-  * Las Tierras de Fuego, una nueva banda de 10 y 25 jugadores, ya se puede
-probar de forma limitada. Visita [el foro de discusión de Reino público de
-pruebas][159] para obtener información más actualizada sobre las pruebas de
-banda.
+**[Mazmorras y bandas][162]**
+
+  * Se han añadido perfiles de banda que permitirán a los jugadores guardar la
+distribución de la interfaz de usuario de la ventana de banda según el tipo de
+contenido (por ejemplo: bandas de 10 jugadores, bandas de 25 jugadores, campos
+de batalla, etc.) para futuros usos.
+
+    * Los jugadores pueden elegir JcE, JcJ, especialización y tamaño del
+grupo. A partir de ese momento, cada tipo de perfil de banda se establecerá
+automáticamente.
+
+    * Esta característica también está disponible para el contenido de 5
+jugadores cuando esté seleccionado Usar marcos de grupo estilo banda en las
+Opciones de interfaz.
+
+    * Los perfiles de banda pueden enumerar grupos en horizontal y en
+vertical.
+
+  * Se ha añadido un botón de banda a la barra de navegación que llevará a los
+jugadores directamente a la ventana de banda del panel Social.
 
   * Bastión de Baradin
 
@@ -5213,9 +5941,13 @@ la monstruosidad de elementium, Feludius, Ignacious y Terrastra.
     * Se ha eliminado un elemental vinculado de cada tipo en la cámara del
 Consejo de ascendientes.
 
+    * Ahora la facultad Remolino de Escarcha de inundación esclava inflige un
+50% menos de daño.
+
     * Arion
 
-      * Se ha reducido el daño de Cadena de relámpagos.
+      * Se ha reducido el daño y la distancia de encadenamiento de Cadena de
+relámpagos.
 
     * Cho'gall
 
@@ -5261,7 +5993,8 @@ Bola de Fuego y de Tromba de bolas de Fuego, el daño de Rugido furioso, el
 daño de Aliento agostador y el daño de Nova de las Sombras.
 
       * Se ha reducido un 20% la salud del sucesor abisal, el dragón de
-pizarra, el celador del Tiempo y la cría esmeralda huérfana.
+pizarra, el jinete de tormentas, el celador del Tiempo y la cría esmeralda
+huérfana.
 
       * Se ha aumentado el tiempo de lanzamiento de Nova de las Sombras.
 
@@ -5336,7 +6069,7 @@ efectos de Provocar.
 
       * Se ha reducido un 20% la salud y el daño cuerpo a cuerpo.
 
-      * Los guerreros osarios animados tardan 33 s en caer en vez de 50.
+      * Los guerreros osarios animados tardan 33 s en caer, en vez de 50.
 Además, aparecen menos guerreros osarios animados.
 
       * Se ha aumentado el tiempo de lanzamiento de Nova explosiva.
@@ -5391,7 +6124,7 @@ para acompañar a sus diálogos.
         * Se ha reducido un 20% la salud, el daño y el daño de Ráfaga de
 viento.
 
-        * Se ha aumentado el tiempo de volver a lanzar de Relámpago y de Vara
+        * Se ha aumentado el tiempo de relanzamiento de Relámpago y de Vara
 relámpago.
 
         * Se ha reducido un 50% el daño en cadena de Golpe de relámpagos a los
@@ -5402,10 +6135,11 @@ en la 2.
 
       * Cónclave del Viento
 
-        * Se ha reducido un 20% el cuerpo a cuerpo de Rohash, Anshal y Nezir,
-el daño y la salud del trepador voraz, el daño de las esporas tóxicas del
-trepador voraz, el daño de Huracán, el daño de Tormenta de granizo, el daño de
-Escarcha permanente, Vendaval cortante y el daño de Explosión de viento.
+        * Se ha reducido un 20% el daño cuerpo a cuerpo de Rohash, Anshal y
+Nezir, el daño y la salud del trepador voraz, el daño de las esporas tóxicas
+del trepador voraz, el daño de Huracán, el daño de Tormenta de granizo, el
+daño de Escarcha permanente, Vendaval cortante y el daño de Explosión de
+viento.
 
         * Se ha aumentado el tiempo de lanzamiento de Reunir fuerza.
 
@@ -5427,39 +6161,118 @@ máscaras Tiki llameantes.
       * Ahora la muerte del sumo sacerdote Venoxis elimina el veneno de las
 plantas al principio de la mazmorra.
 
-**[Hermandades][160]**
+    * Corrección de errores de mazmorras y bandas
+
+      * Ahora los jefes son inmunes al efecto reductor del rayo reductor
+gnómico.
+
+      * El logro Comportamiento aberrante ya no debería reiniciar por error su
+registro de muertes durante el encuentro de Maloriak en el Descenso de
+Alanegra.
+
+      * La Brisa calmante de Anshal ya no debería provocar que las mascotas de
+combate se comporten de forma errática en el Trono de los Cuatro Vientos.
+
+      * Ahora los iconos de las marcas de banda son visibles en todas las
+fases de los encuentros con jefes.
+
+**[Hermandades][163]**
+
+  * Buscador de hermandad
+
+    * Ahora funcionarán los comentarios largos y no aparecerán cortados.
 
   * El límite diario de experiencia de hermandad se ha aumentado un 25%.
 
   * El límite semanal de reputación de hermandad se ha aumentado un 25%.
 
-  * Ahora el límite de experiencia de hermandad se ha eliminado en el nivel
-20, en vez de en el 23.
+  * Ahora el límite de experiencia de hermandad desaparece en el nivel 20, en
+vez de en el 23.
 
   * Se ha mejorado el diseño de las riendas del fénix oscuro, que se compran a
 un vendedor de hermandad. Ahora la montura es menos transparente y, sin duda,
 más impresionante.
 
-**[Objetos][161]**
+**[Objetos][164]**
 
   * Si un jugador gana un tiro por necesidad en el sistema de necesidad antes
 que codicia con un objeto del tipo Se liga al equiparlo, el objeto se quedará
 ligado al alma de ese jugador. El objeto no se ligará si se gana con un tiro
 por codicia.
 
+  * Ahora los objetos de rango 11 apropiados cuestan puntos de justicia.
+
   * Se ha aumentado un 40% el daño infligido por Naipe de la Luna Negra:
 Huracán cuando se activa. Sin embargo, ya no puede infligir golpes críticos y
 ya no recibe modificadores de daño del jugador que lo equipa.
 
-  * Bonus de conjunto
+  * Se ha eliminado la ranura del llavero para dejar sitio a nuevas
+características en la interfaz de usuario.
 
-    * El bonus de temple de 2 piezas de los conjuntos de JcJ de Cataclysm ya
+    * Se eliminarán del inventario de los jugadores las llaves que ya no
+sirvan en el juego. Se recompensará automáticamente con oro por las llaves
+según el precio de venta de cada una.
+
+    * Se eliminarán del inventario de los jugadores las llaves que sean
+objetos de misión obsoletos.
+
+    * Las llaves que todavía puedan servir a los jugadores se trasladarán al
+espacio del inventario normal. Si las bolsas de un jugador están llenas, esas
+llaves permanecerán en un inventario de reserva hasta que dispongan del
+espacio necesario. Una vez que haya espacio, las llaves aparecerán en el
+inventario normal cuando el jugador se desconecte o cambie de zona.
+
+  * Objetos y recompensas de JcJ
+
+    * Ahora los objetos de la temporada 9 apropiados cuestan puntos de honor.
+
+      * Armas de Gladiador
+
+      * Las armas por puntos de conquista de la temporada 10 solo se podrán
+comprar una vez que se alcance una cantidad mínima de puntos de conquista
+durante la temporada actual. Por ejemplo, la pica de Gladiador implacable
+cuesta 3400 puntos de conquista. Sin embargo, los jugadores tendrán que
+conseguir primero un total de 11650 puntos de conquista durante la temporada
+10 antes de poder comprarla.
+
+      * Las armas por puntos de honor de la temporada 9 solo se podrán comprar
+una vez que se alcance una cantidad mínima de puntos de honor durante la
+temporada actual. Por ejemplo, la pica de Gladiador sañoso cuesta 3400 puntos
+de honor. Sin embargo, los jugadores tendrán que conseguir primero un total de
+18500 puntos de honor durante la temporada 10 antes de poder comprarla.
+
+      * En cuanto se alcance la cantidad mínima de puntos necesarios para
+comprar armas, todas las armas disponibles se podrán comprar por los precios
+de la lista. El requisito de puntos no se reinicia al realizar una compra.
+
+      * Las descripciones de las armas de los vendedores indicarán a los
+jugadores cuántos puntos de conquista o de honor tienen que conseguir en la
+temporada actual para poder comprar el objeto.
+
+    * Recompensas de campos de batalla puntuados
+
+      * Se otorgarán a los jugadores nuevas monturas terrestres de JcJ, el
+lobo de guerra sañoso (Horda) y el corcel de guerra sañoso (Alianza), por
+completar los logros de ganar 75, 150 y 300 campos de batalla puntuados
+respectivamente, en vez de por estar entre el 0,5% más alto de la
+clasificación al final de cada temporada, como en las arenas. Este sistema de
+recompensas sirve para premiar mejor el espíritu de los campos de batalla. Se
+otorgará una montura ligada a la cuenta por cada logro desbloqueado, lo que
+permitirá a los jugadores que ganen 150 y 300 campos de batalla puntuados
+conseguir esta montura por segunda y tercera vez. Las monturas adicionales
+obtenidas se pueden enviar a personajes alternativos siempre que estén ligados
+a la cuenta. Estas monturas se otorgan en cuanto se desbloquea un logro
+asociado y no se corresponden con recompensas de fin de temporada.
+
+    * Bonus de conjunto
+
+      * El bonus de temple de 2 piezas de los conjuntos de JcJ de Cataclysm ya
 no se acumula. Si un jugador lleva 2 piezas, cada una de un conjunto de
 Cataclysm diferente, el jugador solo recibirá el bonus de 400 p. de temple una
 vez. Este cambio no se aplica a los conjuntos de JcJ de expansiones
 anteriores.
 
-**[Profesiones][162]**
+**[Profesiones][165]**
 
   * Ingeniería
 
@@ -5473,15 +6286,22 @@ llegar a un "acuerdo".
     * Los jugadores ya no pueden desollar cadáveres que ya estén siendo
 desollados o despojados de forma activa por otros jugadores.
 
-**[JcJ][163]**
+**[JcJ][166]**
 
   * Arenas
+
+    * Se ha eliminado la columna de índice de búsqueda individual de la
+puntuación de arenas.
 
     * El Círculo del Valor se ha vuelto a añadir a la rotación de las arenas.
 Los jugadores ya no empiezan el encuentro en elevadores en el centro del mapa.
 Ahora empezarán el encuentro en salas de inicio en lados opuestos de la arena.
 
   * Campos de batalla
+
+    * Se ha eliminado la columna de índice de búsqueda individual de la
+puntuación de los campos de batalla puntuados y se ha remplazado con un índice
+de búsqueda por equipos.
 
     * Se ha añadido Ojo de la Tormenta a la rotación como campo de batalla
 puntuado de 10 jugadores. Los puntos de captura al estilo tira y afloja se han
@@ -5495,55 +6315,30 @@ de batalla puntuados.
 
     * Juegos de guerra
 
-      * Se han hecho muchas mejoras a la interfaz de Juegos de guerra, aunque
-estos cambios aún no son totalmente funcionales.
+      * Se han hecho muchas mejoras a la interfaz de los juegos de guerra.
+Ahora tiene su propio panel para que su uso sea más sencillo y los líderes de
+grupo o banda serán los únicos que podrán desafiar a otro grupo.
 
-  * Puntos de conquista
-
-    * Ahora el mínimo de puntos de conquista ganados por semana es de 1500,
-con un índice de campo de batalla de 1500 o menos. El máximo sigue siendo
-3000, con un índice de campo de batalla de 3000 o más. El límite sigue
-aumentando de forma no lineal entre esos dos puntos.
-
-    * Ahora el juego registra por separado los límites de puntos de conquista
-para campos de batalla y arenas. El límite para el índice de arena siempre
-será 2/3 del límite del índice de campo de batalla para cualquier índice de
-arena. Los jugadores podrán ganar un número total de puntos de conquista por
-semana igual al mayor de estos dos límites, pero una vez que los jugadores
-hayan alcanzado el límite de arenas o de campos de batalla, ya no podrán ganar
-puntos de conquista de esa fuente. Los puntos de conquista de campos de
-batalla de las fiestas solo contarán para el límite total de puntos de
-conquista.
-
-  * Armas de Gladiador
-
-    * Las armas por puntos de conquista de la temporada 10 solo se podrán
-comprar una vez que se alcance una cantidad mínima de puntos de conquista
-durante la temporada actual. Por ejemplo, la pica de Gladiador implacable
-cuesta 3400 puntos de conquista. Sin embargo, los jugadores tendrán que
-conseguir primero un total de 11650 puntos de conquista durante la temporada
-10 antes de poder comprarla.
-
-    * Las armas por puntos de honor de la temporada 9 solo se podrán comprar
-una vez que se alcance una cantidad mínima de puntos de honor durante la
-temporada actual. Por ejemplo, la pica de Gladiador sañoso cuesta 3400 puntos
-de honor. Sin embargo, los jugadores tendrán que conseguir primero un total de
-18500 puntos de honor durante la temporada 10 antes de poder comprarla.
-
-    * En cuanto se alcance la cantidad mínima de puntos necesarios para
-comprar armas, todas las armas disponibles se podrán comprar por los precios
-de la lista. El requisito de puntos no se reinicia al realizar una compra.
-
-    * Las descripciones de las armas de los vendedores indicarán a los
-jugadores cuántos puntos de conquista o de honor tienen que conseguir en la
-temporada actual para poder comprar el objeto.
-
-**[Misiones y criaturas][164]**
+**[Misiones y criaturas][167]**
 
   * Se han solucionado las anomalías de la probabilidad de golpe crítico y de
 esquivar de las criaturas de nivel bajo.
 
-**[Interfaz de usuario][165]**
+  * Ahora las criaturas muestran una regeneración de energía progresiva a los
+jugadores.
+
+**[Razas][168]**
+
+  * Ahora todas las razas de personajes tienen un sonido para /rugir.
+
+**[Interfaz de usuario][169]**
+
+  * Se ha cambiado el tamaño de las pantallas de Opciones de interfaz para que
+sea igual que el de las pantallas de vídeo y audio. Esto permite tener un
+panel de perfiles de marcos de unidades compactos más grande.
+
+  * Los addons ya no podrán intercambiar objetos de forma inteligente a través
+del gestor de equipamiento incorporado.
 
   * Ahora el orden en el que aparecen los personajes en la pantalla de
 selección de personaje se puede reorganizar y guardar.
@@ -5551,20 +6346,43 @@ selección de personaje se puede reorganizar y guardar.
   * Ahora se puede mover la barra de lanzamiento para que aparezca debajo de
 la ventana de Personaje.
 
-  * Cuadro de movimiento es una interfaz de movimiento que funciona con el
-clic del ratón que ahora forma parte de la interfaz básica.
+  * Ahora las especializaciones de talentos de los personajes se pueden ver al
+pasar el ratón por el marcador de los campos de batalla.
 
-  * Se han añadido perfiles de banda que permitirán a los jugadores guardar la
-distribución de la interfaz de usuario de la ventana de banda según el tipo de
-contenido (por ejemplo: bandas de 10 jugadores, bandas de 25 jugadores, campos
-de batalla, etc.) para futuros usos.
+  * Ahora existe la opción Retirar mascota en los marcos de unidad.
+
+  * Ahora la durabilidad de los objetos del personaje se mostrará en amarillo
+cuando estén por debajo del 20% de su durabilidad, en vez de cuando los
+objetos tengan 5 p. de durabilidad o menos.
+
+  * Ahora la ventana de macros y el libro de hechizos se pueden abrir al mismo
+tiempo para que la creación de macros sea más intuitiva. Además, la ventana de
+macros tiene un botón Guardar/Cancelar.
+
+  * Cuadro de movimiento es una interfaz de movimiento que funciona con el
+clic del ratón, que ahora forma parte de la interfaz básica.
+
+  * Ahora es más fácil cambiar el idioma del cliente del juego a cualquier
+idioma disponible en la región.
+
+  * Se puede seleccionar a un objetivo o a un objetivo enfocado en el
+seguimiento del minimapa (no incluye a jugadores enemigos).
+
+  * Ahora los vendedores muestran los tipos de moneda que usan.
+
+**[Apartado técnico][170]**
+
+  * Ahora el Programa de inicio de Blizzard utiliza Plug and Play universal
+para la configuración de puertos. Si tu enrutador es compatible con un
+dispositivo UPnP, abrirá automáticamente los puertos que necesite y tus
+descargas no estarán restringidas.
 
 **Mise à jour de World of Warcraft 4.2**
 
 Toutes les notes de mise à jour de World of Warcraft peuvent être consultées
-[ici][166].
+[ici][171].
 
-**[Liens élémentaires][167]**
+**[Liens élémentaires][172]**
 
 Ce qui s'annonçait comme un évènement prometteur pour l'ancien Arbre-Monde
 Nordrassil s'est achevé en tragédie. Sur place, des membres du Cercle cénarien
@@ -5576,7 +6394,7 @@ Thrall avec de sombres magies... envoyant son esprit dans les quatre domaines
 du plan élémentaire. Si ces terribles rumeurs sont vraies, le Cercle
 terrestre, et en fait tout Azeroth, a perdu l'un de ses plus grands champions.
 
-**[Le Renouveau et le front du Magma][168]**
+**[Le Renouveau et le front du Magma][173]**
 
 Même si les elfes de la nuit et leurs alliés ont repoussé l'invasion initiale
 d'Hyjal par Ragnaros, leur travail sur le mont sacré est loin d'être terminé.
@@ -5589,7 +6407,7 @@ Renouveau. Malgré ce revers, les protecteurs d'Hyjal croient toujours en leur
 mission, car ils savent que c'est au cœur des terres de Feu que le destin du
 mont Hyjal va se jouer.
 
-**[Les terres de Feu][169]**
+**[Les terres de Feu][174]**
 
 Il sera bientôt temps d'attaquer Ragnaros. La bataille pour protéger le mont
 Hyjal fait maintenant rage dans les profondeurs du royaume fumant de Ragnaros.
@@ -5602,7 +6420,7 @@ dans ce domaine voilé par les cendres ne peuvent pas se permettre de fuir le
 danger. Le résultat des batailles qui les attendent déterminera de la survie
 même d'Azeroth.
 
-**[Courroux du dragon, le Repos de Tarecgosa][170]**
+**[Courroux du dragon, le Repos de Tarecgosa][175]**
 
 L'incertitude plane sur le domaine du Vol draconique bleu, le Nexus, tandis
 que ses membres se débattent pour désigner un nouveau meneur. Divisé entre
@@ -5625,26 +6443,32 @@ les notes de mise à jour._
 
   * [Classes : général][8]
 
-    * [![][68]][24] [Chamans][24], [![][13]][14] [Chasseurs][14],
-[![][61]][10] [Chevaliers de la mort][10], [![][25]][26] [Démonistes][26],
+    * [![][72]][24] [Chamans][24], [![][13]][14] [Chasseurs][14],
+[![][65]][10] [Chevaliers de la mort][10], [![][25]][26] [Démonistes][26],
 [![][11]][12] [Druides][12],
 
     * [![][27]][28] [Guerriers][28], [![][15]][16] [Mages][16], [![][17]][18]
 [Paladins][18], [![][19]][20] [Prêtres][20], [![][21]][22] [Voleurs][22]
 
-  * [Donjons et raids][29]
+  * [Monnaies][29]
 
-  * [Guildes][30]
+  * [Donjons et raids][30]
 
-  * [Objets][31]
+  * [Guildes][31]
 
-  * [Métiers][32]
+  * [Objets][32]
 
-  * [JcJ][33]
+  * [Métiers][33]
 
-  * [Quêtes et créatures][34]
+  * [JcJ][34]
 
-  * [Interface utilisateur][35]
+  * [Quêtes et créatures][35]
+
+  * [Races][36]
+
+  * [Interface utilisateur][37]
+
+  * [Technique][38]
 
 **Général**
 
@@ -5655,9 +6479,10 @@ associées est maintenant disponible à Hyjal, où les personnages-joueurs
 peuvent aider les Gardiens d'Hyjal à repousser les alliés de Ragnaros et à
 établir une base avancée des opérations dans les terres de Feu ! Pour prendre
 part aux quêtes journalières du Renouveau et du front du Magma, les joueurs
-doivent avoir atteint et accompli la quête Le miracle d'Aessina. Une fois
-cette quête terminée, les joueurs peuvent aller parler à Matogriffe dans le
-sanctuaire de Malorne pour participer aux efforts de guerre dans le Renouveau.
+doivent avoir terminé le mont Hyjal au moins jusqu'à la fin de la quête Le
+miracle d'Aessina. Une fois cette quête terminée, les joueurs peuvent aller
+parler à Matogriffe dans le sanctuaire de Malorne pour participer aux efforts
+de guerre dans le Renouveau.
 
   * Nouvelle suite de quêtes : Liens élémentaires
 
@@ -5665,7 +6490,7 @@ sanctuaire de Malorne pour participer aux efforts de guerre dans le Renouveau.
 aventuriers de la Horde et de l'Alliance de niveau 85 qui pourront apporter
 leur aide précieuse à Thrall. « L'appel du chaman universel », la quête qui
 conduira les personnages-joueurs jusqu'à Thrall et au sommet de Nordrassil,
-peut être obtenue à Hurlevent ou à Orgrimmar.
+peut être obtenue aux sanctuaires Terrestres à Hurlevent ou à Orgrimmar.
 
   * Nouveau raid : les terres de Feu
 
@@ -5682,48 +6507,29 @@ pour créer un tout nouveau bâton légendaire destiné aux lanceurs de sorts.
 Pour débuter le processus d'assemblage du bâton, les joueurs doivent d'abord
 tuer un seigneur de lave, dans les terres de Feu. Lorsqu'un seigneur de lave
 est mort, les joueurs peuvent accepter la quête « Une rencontre légendaire »
-proposée par Ziradormi ou Coridormi à Orgrimmar ou à Hurlevent.
+proposée par Ziradormi au fort Grommash d'Orgrimmar, ou par Coridormi, au
+sommet du Sanctuaire du sorcier de Hurlevent. La série de quêtes pour cet
+objet légendaire n'est disponible que pour les druides, les mages, les
+prêtres, les chamans et les démonistes.
 
   * Nouvelle fonctionnalité de l'interface utilisateur : le codex des donjons
 
     * Une mine d'informations sur les donjons est désormais disponible via
 l'interface utilisateur grâce au tout nouveau codex des donjons. Les joueurs
-peuvent accéder à cette fonctionnalité en donjon avec la touche "M", ou bien
-en appuyant sur le nouveau bouton de la barre de navigation de n'importe quel
-endroit dans le monde. L'histoire des boss, des détails sur les rencontres,
-les techniques et les butins, peuvent être consultés grâce au codex des
-donjons pour tous les boss intégrés au nouveau système. Il est prévu d'ajouter
-d'autres donjons au codex lors de prochaines mises à jour.
+peuvent accéder à cette fonctionnalité en donjon en appuyant sur le nouveau
+bouton de la barre de navigation de n'importe quel endroit dans le monde.
+L'histoire des boss, des détails sur les rencontres, les techniques et les
+butins, peuvent être consultés grâce au codex des donjons pour tous les boss
+intégrés au nouveau système (cela comprend tous les boss des donjons et raids
+de Cataclysm). Il est prévu d'ajouter d'autres donjons au codex lors de
+prochaines mises à jour.
 
-  * Toutes les races de personnage ont désormais un son pour /rugir.
-
-  * Tous les points de vaillance présents dans l'onglet Monnaies ont été
-convertis en points de justice. Tout point au-dessus du maximum de points de
-justice sera converti en argent, au taux de 47 pièces d'argent par point, et
-envoyé aux personnages.
-
-  * Le trousseau de clés a été retiré de l’interface utilisateur pour laisser
-la place à d’autres fonctionnalités.
-
-    * Les clés qui n’ont plus d’utilité dans le jeu seront retirées de
-l’inventaire des joueurs. En contrepartie, un montant de pièces d’or
-équivalant au prix de vente de chacune de ces clés sera donné au joueur.
-
-    * Les clés qui sont devenues des objets de quête obsolètes seront retirées
-de l’inventaire des joueurs.
-
-    * Les clés qui pourraient encore être utiles aux joueurs seront placées
-dans l’inventaire principal. Si les sacs du joueur sont pleins, ces clés
-seront placées dans un inventaire masqué jusqu’à ce que la place nécessaire
-soit faite dans l’inventaire principal. Ceci fait, les clés apparaîtront dans
-les sacs du joueur quand il se connectera ou changera de zone.
-
-**[Hauts faits][171]**
+**[Hauts faits][176]**
 
   * L’ours ou la vie ! (nouveau haut fait) : Sauver les quatre prisonniers
 avant qu’ils soient sacrifiés à Zul'Aman, en mode héroïque.
 
-**[Classes : général][172]**
+**[Classes : général][177]**
 
   * Tous les coups critiques des sorts de soins soignent désormais 2 fois plus
 qu'un sort de soins normal (+ 100%), au lieu de 1,5 (+ 50%).
@@ -5790,7 +6596,17 @@ désormais 27% de leurs bonus de force sous forme de score de parade, au lieu
 de 25%. Cette conversion s'applique encore uniquement à la force au-delà de
 leur force de base.
 
-**[![][68]][173] [Chamans][173]**
+  * Corrections générales de bugs de classe
+
+    * Les personnages-joueurs ne devraient plus recevoir à tort un message
+leur indiquant qu'ils viennent d'interrompre l'incantation d'un sort quand ce
+n'est pas le cas.
+
+    * Les barres d'actions ne devraient plus temporairement disparaître
+lorsque les personnages-joueurs qui possèdent une barre de posture montent
+dans un véhicule.
+
+**[![][72]][178] [Chamans][178]**
 
   * Les dégâts de Nova de feu ont été augmentés de 15%.
 
@@ -5799,6 +6615,9 @@ leur force de base.
   * Déchaînement des éléments fait désormais partie de l'école de magie de la
 Nature, et ne peut donc plus être utilisé si cette école de magie est
 verrouillée.
+
+  * Déchaînement du vent inflige désormais 175% des dégâts de l'arme, au lieu
+de 125%.
 
   * Le temps de recharge interne de Bouclier d'eau a été réduit à 3,5 secondes
 pour correspondre à celui des autres boucliers. Le montant de mana rendu au
@@ -5817,6 +6636,11 @@ des dégâts de Nova de feu.
 
       * Orage réduit désormais la vitesse de déplacement des joueurs qu'il
 fait tomber à la renverse de 40% pendant 5 secondes.
+
+    * Amélioration
+
+      * Frappe-tempête inflige désormais 225% des dégâts de l'arme, au lieu de
+125%.
 
     * Restauration
 
@@ -5838,13 +6662,13 @@ lancer Éclair en mouvement.
 
   * Bonus d'ensembles d'armure
 
-    * Le bonus 4 pièces de l'emsemble d'armure JcJ du chaman spécialisé
+    * Le bonus 4 pièces de l'ensemble d'armure JcJ du chaman spécialisé
 Élémentaire (Ensemble d'armure Tonnepoing de gladiateur) a été modifié. Il
 permet désormais à Bouclier de foudre de générer une charge supplémentaire, au
 lieu d'en consommer une, lorsqu'il est déclenché si le chaman reçoit des
 dégâts, jusqu'à un maximum de 3 charges (9 grâce au talent Tonnerre grondant).
 
-**[![][13]][40] [Chasseurs][174]**
+**[![][13]][43] [Chasseurs][179]**
 
   * Les dégâts de Flèches multiples ont été réduits. Ce sort inflige désormais
 120% des dégâts de l'arme au niveau 80 et plus, au lieu de 137%.
@@ -5879,7 +6703,7 @@ suit : le familier court à toute vitesse vers un membre du groupe et réduit
 les dégâts de mêlée ou à distance qui lui sont infligés d’un montant
 correspondant à 50% du total de points de vie du familier.
 
-**[![][61]][175] [Chevaliers de la mort][175]**
+**[![][65]][180] [Chevaliers de la mort][180]**
 
   * Les dégâts de base d'Anéantissement ont été réduits et passent de 160% des
 dégâts de l'arme à 150%.
@@ -5908,7 +6732,12 @@ des points d'expérience ou d'honneur de rendre au moins 20% du maximum de
 points de vie du chevalier de la mort (nécessite toujours Présence de givre ou
 Présence impie).
 
-**[![][69]][176] [Démonistes][177]**
+  * Correction de bugs du chevalier de la mort
+
+    * Le talent Machine à tuer peut maintenant être déclenché par les attaques
+de main gauche en plus des attaques de main droite.
+
+**[![][73]][181] [Démonistes][182]**
 
   * Feu de l'âme est désormais disponible au niveau 20, au lieu du niveau 54.
 
@@ -5923,26 +6752,43 @@ Présence impie).
 
     * Il n'est plus possible de sortir de combat en canalisant Drain d'âme.
 
-**[![][62]][178] [Druides][178]**
+**[![][66]][183] [Druides][183]**
 
   * Les druides gagnent maintenant 1 point de puissance d’attaque par point de
 Force, au lieu de 2. Ils continuent à gagner 2 points de puissance d’attaque
-par point d’Agilité lorsqu’ils sont en forme de félin ou en forme d’ours. Pour
-contrebalancer la perte de dégâts due à ce changement, les modifications
-suivantes ont également été apportées :
+par point d’Agilité lorsqu’ils sont en forme de félin ou en forme d’ours. De
+plus, l'échelle de pondération des améliorations d'équipement en forme de
+félin était plus faible que pour les autres classes, ce qui provoquait une
+grosse chute dans le classement DPS à haut niveau d'équipement. Pour
+contrebalancer la modification sur la Force et améliorer la pondération, les
+modifications suivantes ont également été apportées (tous les chiffres sont
+valables pour les druides de niveau 85) :
 
     * Les dégâts de Morsure féroce ont été augmentés de 15%. De plus, son coût
 de base en énergie a été réduit à 25, et le sort peut utiliser jusqu'à 25
 points d'énergie, pour une augmentation des dégâts pouvant atteindre 100%.
 
     * Les dégâts de Mutilation (Félin), au niveau 80 et plus, ont été
-augmentés et passent de 460% des dégâts de l'arme à 530%.
+augmentés et passent de 460% des dégâts de l'arme à 540%. Le bonus de dégâts a
+été réduit à 302.
+
+    * Les dégâts initiaux de Griffure infligent le même montant de dégâts que
+chaque itération (et sont considérés de la même façon pour tous les calculs en
+combat). Les dégâts périodiques bénéficient de 14,7% de la puissance d'attaque
+par itération au lieu de 12,6%, et les dégâts de base par itération ont été
+réduits et passent de 557 à 56. L'encadré d'aide de Griffure est actuellement
+erroné, mais il reflétera ces modifications dans une prochaine mise à jour.
 
     * Les dégâts de Ravage, au niveau 80 et plus, ont été augmentés et passent
-de 850% des dégâts de l'arme à 975%.
+de 850% des dégâts de l'arme à 950%. Le bonus de dégâts a été réduit à 532.
+
+    * Rugissement sauvage octroie une augmentation de 80% aux dégâts des
+attaques automatiques en mêlée, au lieu de 50%. Le bonus octroyé par le glyphe
+de rugissement sauvage reste inchangé, à 5% de ce total.
 
     * Les dégâts de Lambeau, au niveau 80 et plus, ont été augmentés et
-passent de 450% des dégâts de l'arme à 520%.
+passent de 450% des dégâts de l'arme à 540%. Le bonus de dégâts a été réduit à
+302.
 
   * Sarments et le sort équivalent déclenché par Emprise de la nature
 n'infligent plus de dégâts.
@@ -6076,7 +6922,7 @@ maîtrise aux soins périodiques, Harmonie, est actif.
     * Il n'est plus possible dans certains combats d'utiliser Charge farouche
 à une distance inférieure à la distance minimum normale.
 
-**[![][70]][179] [Guerriers][179]**
+**[![][74]][184] [Guerriers][184]**
 
   * Fulgurance possède désormais un temps de recharge de 1,5 seconde et un
 temps de recharge global (le temps de recharge de la technique Fulgurance
@@ -6106,7 +6952,7 @@ diminuée et passe de 20 à 12%.
     * Il n'est plus possible dans certains combats d'utiliser Charge à une
 distance inférieure à la distance minimum normale.
 
-**[![][64]][180] [Mages][180]**
+**[![][68]][185] [Mages][185]**
 
   * Les dégâts infligés par Déflagration des Arcanes ont été diminués de 5%.
 
@@ -6135,7 +6981,7 @@ deux autres cibles proches.
 commun, en plus des sorts dont ils partagent normalement le rendement
 décroissant.
 
-**[![][65]][181] [Paladins][181]**
+**[![][69]][186] [Paladins][186]**
 
   * Le coût en mana de Lumière divine a été augmenté et passe de 30% de son
 coût en mana de base à 35%.
@@ -6232,7 +7078,7 @@ recharge de Mot de gloire de 5/10 secondes.
       * Glyphe de sceau de vérité : le bonus à l'expertise octroyé par ce
 glyphe fonctionne également quand Sceau de piété est actif.
 
-**[![][66]][182] [Prêtres][182]**
+**[![][70]][187] [Prêtres][187]**
 
   * Les dégâts de Peste dévorante ont été réduits de 12%.
 
@@ -6265,7 +7111,7 @@ n'est plus dépendant d'un rendement décroissant.
     * Les joueurs n'annuleront plus prématurément un sort canalisé lorsqu'ils
 cliqueront sur un Puits de lumière.
 
-**[![][67]][183] [Voleurs][183]**
+**[![][71]][188] [Voleurs][188]**
 
   * Le temps de recharge de Cape d'ombre est maintenant de 2 minutes, au lieu
 de 90 secondes. De plus, Cape d'ombre n'est plus sur le temps de recharge
@@ -6309,13 +7155,59 @@ Promptitude au combat de 15/30 secondes.
       * Les dégâts de Veines sanguinaires sur les cibles affectées par un
 effet de saignement ont été augmentés et passent de 5/10 à 8/16%.
 
-**[Donjons et raids][184]**
+**Monnaies**
 
-  * Le journal de donjon est en passe d’être implémenté. Bien que certains
-éléments de l’interface soient déjà présents dans la version des royaumes de
-test publics, cette fonctionnalité n’est pas encore complète.
+  * Points d'honneur et points de conquête
 
-  * Points de vaillance
+    * Tous les points de conquête présents dans l'onglet Monnaies ont été
+convertis en points d'honneur. Tout point au-dessus du maximum de points de
+conquête doit être dépensé au cours de la semaine prochaine avant le début de
+la saison 10. Lorsque la saison 10 aura commencé, tout point d'honneur
+dépassant la limite de 4000 points sera converti en argent, au taux de 35
+pièces d'argent par point, et envoyé aux personnages.
+
+    * Le montant minimum hebdomadaire de points de conquête que l'on peut
+obtenir en arène est maintenant de 1350 pour une cote d'arène de 1500 ou
+moins. Le montant maximum est désormais de 2700 pour une cote d'arène de 3000
+ou plus. La limite continue de s’ajuster de manière non linéaire entre ces
+deux valeurs. En comparaison, au cours de la saison 9, le montant était
+compris entre 1343 et 3000.
+
+    * Le jeu traite maintenant la limite de points de conquête séparément
+selon qu’il s’agit de champs de bataille ou d’arènes. Les cotes en champs de
+bataille reçoivent un bonus de 22,2% au seuil qu'elles génèrent, ce qui
+signifie que le montant obtenu par la cote en champ de bataille s'étend de
+1650 à 3300. Les joueurs peuvent obtenir un nombre total hebdomadaire de
+points de conquête correspondant à la plus élevée de ces deux limites, mais
+une fois qu’ils ont atteint la limite du champ de bataille ou de l’arène, ils
+ne peuvent plus continuer à obtenir de points dans ce mode de jeu. Les points
+de conquête obtenus lors des appels aux armes de champs de bataille ne sont
+comptabilisés que pour la limite totale de points de conquête.
+
+      * Un exemple : au cours de la première semaine de la saison 10, tout le
+monde commence avec une cote inférieure à 1500 points. Par conséquent, la
+limite pour les champs de bataille cotés sera de 1650 points et celle pour les
+cotes d'arène de 1350 points. Au cours de la première semaine, le personnage-
+joueur gagne suffisamment de matchs d'arène pour atteindre la limite de 1350
+points. Après cela, les victoires en arènes ne confèreront plus de points de
+conquête pour cette semaine. Cependant, le personnage-joueur peut quand même
+obtenir jusqu'à 300 points supplémentaires, mais uniquement en champs de
+bataille cotés ou comme bonus en points de conquête pour les champs de
+bataille aléatoires quotidiens et/ou lors des appels aux armes. La semaine
+suivante, la limite sera recalculée selon les cotes du personnage-joueur, et
+il est possible que la cote d'arènes génère une limite plus élévée. La
+deuxième semaine, la limite du personnage-joueur en arène cotée est de 1800
+points et celle des champs de bataille cotés de 1650. Le personnage-joueur a
+une limite totale de 1800 points de conquête pour la semaine. Il est possible
+d'obtenir jusqu'à 1650 points avec les champs de bataille cotés, mais les
+derniers 150 points doivent provenir d'une source différente.
+
+  * Points de vaillance et points de justice
+
+    * Tous les points de vaillance présents dans l'onglet Monnaies ont été
+convertis en points de justice. Tout point au-dessus du maximum de points de
+justice sera converti en argent, au taux de 47 pièces d'argent par point, et
+envoyé aux personnages.
 
     * Le nombre maximum de points de vaillance que l'on peut obtenir par
 semaine grâce aux donjons et aux raids distribuant ce type de point est
@@ -6328,22 +7220,38 @@ donjons de Gloire aux Zandalari est toujours de 980.
 donjons en mode héroïque est toujours de 490.
 
       * Le nombre maximum de points de vaillance octroyé pour la mort d'un
-boss dans les terres de Feu est de 70 pour les raids de 10 joueurs, et de 90
+boss dans les terres de Feu est de 120 pour les raids de 10 joueurs, et de 140
 pour les raids de 25 joueurs.
 
       * Le nombre maximum de points de vaillance octroyé pour la mort
-d'Occu'thar au bastion de Baradin est de 35 pour les raids de 10 joueurs, et
-de 45 pour les raids de 25 joueurs.
+d'Occu'thar au bastion de Baradin est de 120 pour les raids de 10 joueurs, et
+de 140 pour les raids de 25 joueurs.
 
       * Le nombre de points de vaillance octroyé pour la mort d'un boss en
 mode héroïque au bastion du Crépuscule, à la descente de l'Aile noire, et au
 Trône des quatre vents est de 35 pour les raids de 10 joueurs, et de 45 pour
 les raids de 25 joueurs.
 
-  * Les terres de Feu, un nouveau raid de 10 et 25 joueurs, sont désormais en
-partie disponibles sur les royaumes de test. Veuillez consulter le [forum des
-royaumes publics de test][185] pour obtenir le dernier programme de test des
-raids.
+**[Donjons et raids][189]**
+
+  * Des profils de raid qui permettent aux joueurs de sauvegarder l’agencement
+de l’interface de la fenêtre de raid d’après son type de contenu (10 joueurs,
+25 joueurs, champs de bataille, etc.) ont été implémentés pour une utilisation
+ultérieure.
+
+    * Les joueurs peuvent sélectionner le type de contenu (JcE, JcJ), la
+spécialisation et la taille du groupe. Chaque type de Profil de raid est
+ensuite automatiquement configuré.
+
+    * Cette fonctionnalité est également disponible pour le contenu à
+5 joueurs lorsque l'option Utiliser interface de type raid est sélectionnée
+dans les options d'interface.
+
+    * Les profils de raid peuvent afficher les groupes aussi bien à
+l'horizontale qu'à la verticale.
+
+  * Un bouton Raid a été ajouté à la barre de navigation. Il permet d'accéder
+directement à la fenêtre Raid dans le panneau Social.
 
   * Le bastion de Baradin
 
@@ -6358,9 +7266,12 @@ monstruosité en élémentium, Feludius, Ignacious et Terrastra.
     * Un élémentaire lié de chaque type a été supprimé de la chambre du
 conseil d'ascendants.
 
+    * La technique Givre tourbillonnant du Déluge lié inflige désormais 50% de
+dégâts en moins.
+
     * Arion
 
-      * Les dégâts de Chaîne d'éclair ont été réduits.
+      * La portée et les dégâts de Chaîne d'éclair ont été réduits.
 
     * Cho’gall
 
@@ -6577,7 +7488,27 @@ masque tiki enflammé.
     * La mort du grand prêtre Venoxis supprime le poison des plantes à
 l'entrée du donjon.
 
-**[Guildes][186]**
+  * Correction de bugs des donjons et des raids
+
+    * Les boss sont désormais immunisés contre l'effet rétrécissant du rayon
+rétrécissant gnome.
+
+    * Le haut fait Comportement aberrant ne devrait plus réinitialiser à tort
+le décompte des morts pendant la rencontre avec Maloriak, à la descente de
+l'Aile noire.
+
+    * Brise apaisante d'Anshal ne devrait plus provoquer un comportement
+erratique chez les familiers au Trône des quatre vents.
+
+    * Les icônes des marqueurs de raid sont désormais visibles pour toutes les
+phases de rencontre avec des boss.
+
+**[Guildes][190]**
+
+  * Recherche de guildes
+
+    * Les longs commentaires fonctionnent à présent correctement et leur
+affichage n'est plus tronqué.
 
   * Le montant maximum d'expérience de guilde que l'on peut obtenir par jour a
 été augmenté de 25%.
@@ -6592,25 +7523,90 @@ lieu du niveau 23.
 auprès du vendeur de guilde, a été amélioré. La monture est maintenant moins
 transparente et elle en jette carrément plus.
 
-**[Objets][187]**
+**[Objets][191]**
 
   * Si un joueur gagne un jet de dé grâce au système Le besoin avant la
 cupidité sur un objet Lié quand équipé, cet objet sera lié à ce joueur.
 L'objet ne sera pas lié s'il est gagné grâce à un jet de cupidité.
 
+  * Les objets correspondant au palier 11 coûtent désormais des points de
+justice.
+
   * Les dégâts infligés par Carte de Sombrelune : Ouragan ont été augmentés de
 40% mais ne peuvent plus effectuer de coups critiques, ni subir de
 modifications par le personnage-joueur qui s'en équipe.
 
-  * Bonus d'ensembles d'armure
+  * Le trousseau de clés a été retiré de l’interface utilisateur pour laisser
+la place à d’autres fonctionnalités.
 
-    * Le bonus 2 pièces de l'ensemble d'armure JcJ de Cataclysm axé résilience
-n'est plus cumulable. Si un joueur porte deux fois 2 pièces de 2 ensembles JcJ
-différents de Cataclysm, il ne bénéficie qu'une seule fois du bonus de
-400 points au score de résilience. Cette modification ne s'applique pas aux
-ensembles JcJ antérieurs à cette extension.
+    * Les clés qui n’ont plus d’utilité dans le jeu seront retirées de
+l’inventaire des joueurs. En contrepartie, un montant de pièces d’or
+équivalant au prix de vente de chacune de ces clés sera donné au joueur.
 
-**[Métiers][52]**
+    * Les clés qui sont devenues des objets de quête obsolètes seront retirées
+de l’inventaire des joueurs.
+
+    * Les clés qui pourraient encore être utiles aux joueurs seront placées
+dans l’inventaire principal. Si les sacs du joueur sont pleins, ces clés
+seront placées dans un inventaire masqué jusqu’à ce que la place nécessaire
+soit faite dans l’inventaire principal. Ceci fait, les clés apparaîtront dans
+les sacs du joueur quand il se connectera ou changera de zone.
+
+  * Objets et récompenses JcJ
+
+    * Les objets correspondant à la saison 9 coûtent désormais des points
+d'honneur.
+
+    * Armes de gladiateur
+
+      * Les armes de saison 10 vendues contre des points de conquête ne
+pourront être achetées qu'une fois atteint un montant minimum de points de
+conquête pendant la saison en cours. Par exemple, la pique du gladiateur sans
+pitié coûte 3400 points de conquête. Cependant, les joueurs doivent d'abord
+obtenir un total de 11650 points de conquête au cours de la dixième saison
+pour pouvoir l'acheter.
+
+      * Les armes de saison 9 vendues contre des points d'honneur ne pourront
+être achetées qu'une fois atteint un montant minimum de points d'honneur
+pendant la saison en cours. Par exemple, la pique du gladiateur vicieux coûte
+3400 points d'honneur. Cependant, les joueurs doivent d'abord obtenir un total
+de 18500 points d'honneur au cours de la dixième saison pour pouvoir
+l'acheter.
+
+      * Une fois que le montant minimum de points requis pour acheter des
+armes est atteint, toutes les armes disponibles peuvent être achetées au prix
+indiqué. Le prérequis du nombre de points n'est pas réinitialisé après un
+achat.
+
+      * Les encadrés d'aide des armes chez le vendeur permettent aux joueurs
+de savoir combien de points d'honneur ou de conquête doivent être gagnés au
+cours de la saison pour pouvoir acheter l'objet.
+
+    * Récompenses de champs de bataille cotés
+
+      * De nouvelles montures terrestres JcJ, le loup de guerre vicieux
+(Horde) et le palefroi de guerre vicieux (Alliance), seront offerts en
+récompense aux joueurs qui auront accompli les hauts faits demandant de gagner
+respectivement 75, 150 et 300 champs de bataille cotés, plutôt qu'à ceux qui
+se trouvent dans les 0,5% meilleurs du classement à chaque fin de saison
+d'arène. Ce système de gratification est voulu pour récompenser l'esprit des
+champs de bataille. Une monture liée au compte sera offerte pour chaque haut
+fait débloqué, permettant aux joueurs qui obtiennent 150 et 300 victoires en
+champs de bataille coté de gagner cette monture une seconde et une troisième
+fois. Ces montures supplémentaires peuvent alors être envoyées à des
+personnages secondaires, puisqu'elles sont liées au compte. Les montures sont
+envoyées dès qu'un haut fait correspondant est débloqué et ne correspondent
+pas aux récompenses de fin de saison.
+
+    * Bonus d'ensembles d'armure
+
+      * Le bonus 2 pièces de l'ensemble d'armure JcJ de Cataclysm axé
+résilience n'est plus cumulable. Si un joueur porte deux fois 2 pièces de
+2 ensembles JcJ différents de Cataclysm, il ne bénéficie qu'une seule fois du
+bonus de 400 points au score de résilience. Cette modification ne s'applique
+pas aux ensembles JcJ antérieurs à cette extension.
+
+**[Métiers][192]**
 
   * Ingénierie
 
@@ -6624,15 +7620,22 @@ ce qu'un "compromis" soit trouvé.
     * Les joueurs ne peuvent plus dépecer les cadavres que d'autres joueurs
 sont déjà en train de dépecer ou de fouiller.
 
-**[JcJ][188]**
+**[JcJ][193]**
 
   * Arènes
+
+    * La colonne de valeur d'association personnelle a été supprimée du
+tableau de résultats des arènes.
 
     * L'arène des Valeureux fait de nouveau partie de la rotation des arènes.
 Les joueurs ne commencent plus le match dans les ascenseurs au centre de la
 carte mais dans les salles de départ sur les côtés opposés de l'arène.
 
   * Champs de bataille
+
+    * La colonne de valeur d'association personnelle a été supprimée du
+tableau de résultats des champs de bataille cotés et remplacée par une valeur
+d'association de l'équipe.
 
     * L'Œil du cyclone a été ajouté à la rotation des champs de bataille cotés
 à 10 joueurs. Le système de capture des points façon « tir à la corde » a été
@@ -6646,59 +7649,31 @@ champs de bataille cotés.
 
     * Jeux de guerre
 
-      * De nombreuses améliorations sont apportées à l’interface des jeux de
-guerre, bien que ces changements ne soient pas encore totalement fonctionnels.
+      * De nombreuses améliorations ont été apportées à l’interface des jeux
+de guerre. Cette fonctionnalité dispose désormais de son propre panneau pour
+une meilleure utilisation et seuls les chefs de raid/groupe peuvent désormais
+défier un autre groupe dans un jeu de guerre.
 
-  * Points de conquête
-
-    * La limite inférieure hebdomadaire de points de conquête est maintenant
-de 1500 pour les champs de bataille dont la cote est de 1500 ou moins. La
-limite supérieure reste à 3000 points pour les champs de bataille dont la cote
-est de 3000 ou plus. La limite continue à s’ajuster de manière non linéaire
-entre ces deux valeurs.
-
-    * Le jeu traite maintenant la limite de points de conquête séparément
-selon qu’il s’agit de champs de bataille ou d’arènes. La limite de la cote
-d’arène sera toujours de 2/3 de la limite de la cote de champ de bataille et
-ce, quelle que soit la cote de l’arène en question. Les joueurs peuvent
-obtenir un nombre total hebdomadaire de points de conquête correspondant à la
-plus élevée de ces deux limites, mais une fois qu’ils ont atteint la limite du
-champ de bataille ou de l’arène, ils ne peuvent plus continuer à obtenir de
-points dans ce mode de jeu. Les points de conquête obtenus lors des trêves de
-champs de bataille ne sont comptabilisés que pour la limite totale de points
-de conquête.
-
-  * Armes de gladiateur
-
-    * Les armes de saison 10 vendues contre des points de conquête ne pourront
-être achetées qu'une fois atteint un montant minimum de points de conquête
-pendant la saison en cours. Par exemple, la pique du gladiateur sans pitié
-coûte 3400 points de conquête. Cependant, les joueurs doivent d'abord obtenir
-un total de 11650 points de conquête au cours de la dixième saison pour
-pouvoir l'acheter.
-
-    * Les armes de saison 9 vendues contre des points d'honneur ne pourront
-être achetées qu'une fois atteint un montant minimum de points d'honneur
-pendant la saison en cours. Par exemple, la pique du gladiateur vicieux coûte
-3400 points d'honneur. Cependant, les joueurs doivent d'abord obtenir un total
-de 18500 points d'honneur au cours de la dixième saison pour pouvoir
-l'acheter.
-
-    * Une fois que le montant minimum de points requis pour acheter des armes
-est atteint, toutes les armes disponibles peuvent être achetées au prix
-indiqué. Le prérequis du nombre de points n'est pas réinitialisé après un
-achat.
-
-    * Les encadrés d'aide des armes chez le vendeur permettent aux joueurs de
-savoir combien de points d'honneur ou de conquête doivent être gagnés au cours
-de la saison pour pouvoir acheter l'objet.
-
-**[Quêtes et créatures][189]**
+**[Quêtes et créatures][194]**
 
   * Il n'y a plus de bizarreries dans les coups critiques et les chances
 d'esquive des créatures de bas niveau.
 
-**[Interface utilisateur][190]**
+  * Les créatures afficheront désormais une régénération d'énergie régulière
+pour les personnages-joueurs.
+
+**[Races][195]**
+
+  * Toutes les races de personnage ont désormais un son pour /rugir.
+
+**[Interface utilisateur][196]**
+
+  * La taille de l'écran Options de l'interface utilisateur a été modifiée
+pour correspondre à la taille des écrans Vidéo et Audio. Cette modification
+permet d'avoir un panneau de portraits d'unités plus grand.
+
+  * Les addons ne peuvent plus échanger les objets de façon intelligente en
+utilisant le gestionnaire d'équipement intégré.
 
   * L'ordre suivant lequel les personnages sont listés à l’écran de sélection
 du personnage peut désormais être modifié et sauvegardé.
@@ -6706,48 +7681,71 @@ du personnage peut désormais être modifié et sauvegardé.
   * La barre d'incantation peut maintenant être placée en dessous du portrait
 du personnage.
 
+  * La spécialisation de talents des personnages est maintenant visible au
+survol de la souris sur le tableau des scores des champs de bataille.
+
+  * L'option Renvoyer le familier est maintenant disponible dans les portraits
+d'unités.
+
+  * L'affichage de la durabilité affiche désormais les objets en jaune
+lorsqu'ils sont à moins de 20% de durabilité, au lieu de quand ils sont à
+5 points de durabilité ou moins.
+
+  * La fenêtre Macros et le grimoire peuvent désormais être ouverts en même
+temps, pour permettre une création de macros plus intuitive. La fenêtre Macros
+dispose d'un bouton Enregistrer/Annuler.
+
   * Le pavé de déplacement est une interface de déplacement à la souris qui
 est maintenant intégrée dans l’interface de base.
 
-  * Des profils de raid qui permettent aux joueurs de sauvegarder l’agencement
-de l’interface de la fenêtre de raid d’après son type de contenu (10 joueurs,
-25 joueurs, champs de bataille, etc.) ont été implémentés pour une utilisation
-postérieure.
+  * Il est maintenant plus facile de changer la langue du client du jeu pour
+n'importe quelle langue disponible dans la même région.
 
-**월드 오브 워크래프트 공개 테스트 서버 패치 4.2**
+  * Une cible ou une cible de focalisation peuvent être sélectionnées dans le
+suivi de la minicarte (ne fonctionne pas pour les joueurs ennemis).
+
+  * Les vendeurs indiquent désormais les types de monnaies qu'ils utilisent.
+
+**[Technique][197]**
+
+  * Le launcher Blizzard utilise désormais l'Universal Plug and Play pour
+configurer les ports. Si votre routeur est compatible avec l'UPnP, il ouvrira
+automatiquement les ports nécessaires et vos téléchargements ne seront pas
+limités.
+
+**월드 오브 워크래프트 패치 4.2**
 
 월드 오브 워크래프트의 모든 패치 노트는 다음 경로에서 살펴보실 수 있습니다. [http://kr.battle.net/wow/ko/game
-/patch-notes/ ][191]
+/patch-notes/ ][198]
 
-**[정령의 속박][192]**
+**[정령의 속박][199]**
 
 세계수 놀드랏실에서 벌어진 끔찍한 사건 이후 상서롭지 못한 기운이 감돌고 있습니다. 대족장이었던 스랄을 포함한 대지 고리회와 세나리온 의회의
 일원들은 아제로스를 위해 놀드랏실을 소생시키고 힘을 합치려고 용의 위상들과 뭉쳤습니다. 그렇지만 베일에 가려진 황혼의 망치단 요원들이 의식을
 방해하고, 어둠의 마법으로 스랄을 쓰러뜨려 그 영혼을 정령계의 네 영토에 던져두었다는 소문이 퍼져 나가고 있습니다. 이 끔찍한 소문이
 사실이라면 대지 고리회, 아니 아제로스에서 가장 위대한 용사가 쓰러지고 만 것입니다.
 
-**[재생의 땅과 녹아내린 전초지][193]**
+**[재생의 땅과 녹아내린 전초지][200]**
 
 나이트 엘프와 동맹들이 라그나로스의 공격을 막아냈지만, 하이잘 산을 지키기 위한 노력은 결코 여기서 끝나지 않습니다. 대드루이드 말퓨리온
 스톰레이지는 라그나로스의 영토인 불의 땅을 공격하기 위해, 최근에 정화한 재생의 땅에 있는 말로른의 성소로 동료들을 불러들였습니다. 하이잘의
-수호자들은 굳건한 근거지를 세우기 위해 일단 정령계에 들어갔지만, 정령들이 다시 재생의 땅을 맹렬히 공격하면서 그 계획이 위협받고 있습니다.
+수호자들은 굳건한 근거지를 세우기 위해 일단 정령계로 들어갔지만, 정령들이 다시 재생의 땅을 맹렬히 공격하면서 그 계획이 위협받고 있습니다.
 이런 악재에도 하이잘을 지키는 자들은 흔들리지 않습니다. 하이잘 산의 운명을 쥐고 있는 자가 불의 땅 중심부에 있다는 것을 알기 때문입니다.
 
-**[불의 땅][194]**
+**[불의 땅][201]**
 
 라그나로스와의 전투가 눈앞에 다가왔습니다. 하이잘을 지키기 위한 전투는 이제 라그나로스의 불타는 왕국에서 계속됩니다. 아제로스의 용사들은
 불의 땅을 점령해 나가며, 역사적인 임무가 기다리는 불의 땅 내부 성소 앞까지 진군하였습니다. 라그나로스의 거처, 설퍼론 요새는 배반자
-화염의 드루이드들과 그 비밀스러운 지도자를 비롯해 라그나로스의 가장 충직한 심복들이 견고하게 지키고 있습니다. 이제 숨막히는 불과 재로
-가득한 땅에 과감히 발을 내딛은 영웅들은 어떤 위험도 피해갈 수 없습니다. 앞으로 치뤄질 전투의 결과가 바로 아제로스의 존속을 결정할
+화염의 드루이드들과 그들의 비밀스러운 지도자를 비롯해 라그나로스의 가장 충직한 심복들이 견고하게 지키고 있습니다. 이제 숨막히는 불과 재로
+가득한 땅에 과감히 발을 내딛은 영웅들은 어떤 위험도 피해갈 수 없습니다. 앞으로 치뤄질 전투의 결과가 바로 아제로스의 운명을 결정할
 테니까요.
 
-**[용의 분노 - 타렉고사의 안식][195]**
+**[용의 분노 - 타렉고사의 안식][202]**
 
 어렴풋이 보이는 푸른용군단의 영토, 마력의 탑 너머에선 그 구성원들이 새로운 지도자 선출 문제로 어려움을 겪고 있습니다. 푸른용군단의
-구성원들은 서로 각기 다른 두 후보자인 칼렉고스와 아리고스를 지지하는 파로 각각 나뉘었고, 이 논쟁과 토론을 마무리짓기 위해 푸른용군단은
-아제로스의 희귀한 천체 현상인 월식 기간에 모여 새로운 위상을 최종 선출하기로 하였습니다. 하지만 의식을 앞두고 청동용 아나크로노스는 마력의
-탑 주변에서 사악한 기운을 감지했습니다. 만약 영웅이 나타나 이 어둠의 기운과 그 계략이 무엇인지 밝혀내지 못한다면, 아제로스에 불운이 덮칠
-것입니다.
+구성원들은 서로 다른 두 후보자인 칼렉고스와 아리고스를 지지하는 파로 각각 나뉘었고, 혼란을 잠재우기 위해 푸른용군단은 아제로스의 희귀한
+천체 현상인 월식 기간에 모여 새로운 위상을 최종 선출하기로 하였습니다. 하지만 의식을 앞두고 청동용 아나크로노스는 마력의 탑 주변에서
+사악한 기운을 감지했습니다. 만약 영웅이 나타나 이 어둠의 기운과 그 계략이 무엇인지 밝혀내지 못한다면, 아제로스에 불행이 덮칠 것입니다.
 
 **_목차_**
 
@@ -6759,48 +7757,71 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
   * [직업: 일반][8]
 
-    * [![][196]][10] [죽음의 기사][10], [![][197]][12] [드루이드][12], [![][198]][14]
-[사냥꾼][14], [![][199]][16] [마법사][16], [![][200]][18] [성기사][18],
+    * [![][203]][10] [죽음의 기사][10], [![][204]][12] [드루이드][12], [![][205]][14]
+[사냥꾼][14], [![][206]][16] [마법사][16], [![][207]][18] [성기사][18],
 
-    * [![][201]][20] [사제][20], [![][202]][22] [도적][22], [![][203]][24]
-[주술사][24], [![][204]][26] [흑마법사][26], [![][205]][28] [전사][28]
+    * [![][208]][20] [사제][20], [![][209]][22] [도적][22], [![][210]][24]
+[주술사][24], [![][211]][26] [흑마법사][26], [![][212]][28] [전사][28]
 
-  * [던전 및 공격대][29]
+  * [화폐][29]
 
-  * [길드][30]
+  * [던전 및 공격대][30]
 
-  * [아이템][31]
+  * [길드][31]
 
-  * [전문 기술][32]
+  * [아이템][32]
 
-  * [명예 시스템][33]
+  * [전문 기술][33]
 
-  * [퀘스트 및 몬스터][34]
+  * [명예 시스템][34]
 
-  * [사용자 인터페이스][35]
+  * [퀘스트 및 몬스터][35]
+
+  * [종족][36]
+
+  * [사용자 인터페이스][37]
+
+  * [기술지원][38]
 
 **일반**
 
-  * 이제 모든 종족 캐릭터가 /고함 소리를 낼 수 있습니다.
+  * 새로운 일일 퀘스트: 재생의 땅과 녹아내린 전초지
 
-  * 플레이어가 소지하고 있는 모든 용맹 점수가 정의 점수로 전환되었습니다.
+    * 하이잘에 새로 추가된 다양한 일일 퀘스트를 수행할 수 있습니다. 여러분은 이 일일 퀘스트를 수행해 하이잘의 수호자들이 라그나로스와
+그 부하들을 몰아내고 불의 땅에 전진 기지를 세우는 것을 돕게 됩니다. 재생의 땅과 녹아내린 전초지에서 일일 퀘스트를 수행하려면 하이잘 산
+지역에서 아에시나의 기적과 연계된 퀘스트를 모두 완료해야 합니다. 아에시나의 기적 연계 퀘스트를 모두 완료하면 말로른의 성역에 있는
+마토클로와 대화해 재생의 땅 퀘스트를 수행하세요.
 
-  * 새로 추가되는 사용자 인터페이스의 자리를 확보하기 위해 열쇠고리 칸이 사라집니다.
+  * 새로운 연계 퀘스트: 정령의 속박
 
-    * 이제 사용되지 않는 열쇠는 소지품에서 사라집니다. 각 열쇠는 판매 가격에 따라 골드로 자동 전환됩니다.
+    * 호드 및 얼라이언스의 용감한 85레벨 모험가 여러분은 스랄을 돕는 새로운 연계 퀘스트를 수행할 수 있습니다. 스톰윈드나 오그리마에
+있는 대지제단에서 "세계주술사의 부름" 퀘스트를 수락하면, 스랄을 찾아 놀드랏실 회담이 열리는 장소로 이동하라는 안내를 받을 것입니다.
 
-    * 퀘스트 아이템인 열쇠가 더는 사용되지 않는다면 소지품에서 사라집니다.
+  * 새로운 공격대 던전: 불의 땅
 
-    * 여전히 사용되는 열쇠는 소지품 가방으로 옮겨집니다. 만약 소지품 가방이 가득 찼다면, 이 열쇠는 가방에 충분한 공간이 확보될
-때까지 보이지 않는 별도의 공간에 보관됩니다. 이 열쇠들은 가방에 충분한 공간이 확보되면 플레이어가 접속을 종료하거나 지역을 이동할 때
-소지품으로 옮겨집니다.
+    * 정령계에 위치한 불의 땅은 영웅 및 일반 난이도로 구성된 새로운 10인 및 25인 공격대 던전입니다! 전투로 단련된 호드와
+얼라이언스의 정예 용사들이 하이잘 산의 설퍼론 첨탑을 통해 불의 땅으로 과감히 전진합니다. 지금이 바로 불의 군주 라그나로스와 그의 충복들을
+공격할 기회입니다.
 
-**[업적][206]**
+  * 새로운 전설급 아이템: 용의 분노 - 타렉고사의 안식
 
-  * 구사일생(새로운 업적, 가칭): 줄아만 영웅 난이도에서 네 명의 사로잡힌 정찰병들이 제물로 바쳐지기 전에 모두 구조하면 업적을 달성할
-수 있습니다.
+    * 열정적인 공격대원이라면 이제 일련의 퀘스트를 통해 새로운 전설급 지팡이를 만들 수 있습니다. 지팡이를 손에 넣기 위한 여정을
+시작하려면 먼저 불의 땅에서 녹아내린 군주를 처치해야 합니다. 녹아내린 군주를 처치하고 나면 오그리마의 그롬마쉬 요새에 있는 지라도르미나
+스톰윈드에 위치한 마법사의 성소 꼭대기에 있는 코리도르미에게서 "전설적인 만남" 퀘스트를 받을 수 있습니다. 전설급 아이템 퀘스트를 수행할
+수 있는 직업은 드루이드, 마법사, 사제, 주술사, 흑마법사입니다.
 
-**[직업: 일반][207]**
+  * 새로운 사용자 인터페이스: 던전 도감
+
+    * 던전 관련 정보가 필요하다면 어디서든 게임 화면 하단 메뉴에 새로 생긴 던전 도감 단추를 누르세요. 새로운 시스템인 던전
+도감에서는 우두머리에 대한 배경 지식, 상세한 전투 설명, 사용 능력, 전리품을 확인할 수 있습니다. 현재는 대격변 던전 및 공격대 정보만
+포함되어 있으며, 향후 업데이트를 통해 더 많은 던전 정보가 추가될 계획입니다.
+
+**[업적][213]**
+
+  * 얼마니, 전투곰?(새로운 업적): 줄아만 영웅 난이도에서 네 명의 사로잡힌 정찰병들이 제물로 바쳐지기 전에 모두 구조하면 업적을
+달성할 수 있습니다.
+
+**[직업: 일반][214]**
 
   * 모든 치유 주문이 극대화 효과를 얻을 때의 치유량이 일반치유량의 1.5배(50%)에서 2배(100%)로 증가합니다.
 
@@ -6809,7 +7830,7 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
   * 강화 효과
 
-    * 각 직업이 갖춘 능력 중 아군 대상에게 강화 효과를 주는 능력은 이제 모두 위협 수준을 생성하지 않습니다. 이 변경 사항은 야생의
+    * 각 직업이 갖춘 능력 중 아군 대상에게 강화 효과를 주는 능력은 이제 위협 수준을 전혀 생성하지 않습니다. 이 변경 사항은 야생의
 징표와 신의 권능:인내 등 공격대용 강화 효과, 축복받은 탄력성과 서리의 손가락 등 발동형 강화 효과, 검은 의도와 격분 등 단일 대상 강화
 효과에 적용됩니다. 가시나 소생같이 직접 피해를 주거나 치유해주는 강화 효과에는 이 변경 사항이 적용되지 않으며, 일반적인 위협 수준을
 생성합니다.
@@ -6826,7 +7847,7 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
   * 소환수
 
     * 소환수 태세 중 공격적 태세가 삭제되고 적극적 태세로 교체되었습니다. 적극적 태세는 플레이어가 공격하는 대상을 소환수가 공격하게
-합니다. 소환수는 플레이어가 새로운 대상을 공격하면 몇 초 동안은 기존 공격 대상을 공격합니다.
+합니다. 소환수는 플레이어가 새로운 대상을 몇 초 동안 공격하여 위협 수준을 생성하지 않는 한 대상을 바꾸지 않습니다.
 
     * 소환수를 방어적 태세로 설정하면 소환수가 자신이나 자신의 주인을 공격하는 적만 공격합니다.
 
@@ -6843,7 +7864,13 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
     * 이제 죽음의 기사, 성기사, 전사가 받고 있는 힘 보너스의 27%만큼이 무기 막기 확률로 적용됩니다. 이는 이전의 25%에서
 증가한 수치이며 예전처럼 기본 힘을 넘어선 수치만 계산됩니다.
 
-**[![][196]][208] [죽음의 기사][208]**
+  * 일반 직업 버그 수정
+
+    * 주문 시전을 실제로는 방해하지 못했는데 이를 방해했다는 메시지가 보이는 현상을 수정했습니다.
+
+    * 태세 전환이 가능한 캐릭터가 탈것에 탔을 때 행동 단축바가 순간적으로 사라지던 문제가 해결되었습니다.
+
+**[![][203]][215] [죽음의 기사][215]**
 
   * 절멸의 기본 공격력이 무기 공격력의 160%에서 150%로 감소했습니다.
 
@@ -6853,9 +7880,11 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
       * 갈망의 한기가 이제 1.5초의 시전 시간을 가집니다.
 
+      * 얼어붙은 황무지의 힘으로 증가하는 양손 무기의 공격력이 4/8/12%에서 3/7/10%으로 감소했습니다.
+
     * 부정
 
-      * 부정한 힘으로 증가하는 힘이 5%에서 10%로 증가했습니다.
+      * 부정한 힘으로 증가하는 힘이 5%에서 20%로 증가했습니다.
 
   * 문양
 
@@ -6863,28 +7892,48 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 회복했지만, 이제는 전투에서 대상을 처치하여 경험치나 명예 점수를 얻은 후 15초 내에 사용하는 다음 죽음의 일격으로 죽음의 기사 최대
 생명력의 최소 20%가 회복됩니다. 이 경우에도 여전히 냉기나 부정의 형상이 필요합니다.
 
-**[![][197]][209] [드루이드][209]**
+  * 죽음의 기사 버그 수정
+
+    * 도살기 특성이 주무기뿐 아니라 보조 무기 공격으로도 정상적으로 발동됩니다.
+
+**[![][204]][216] [드루이드][216]**
 
   * 드루이드가 힘 1당 얻는 전투력이 2에서 1로 감소하였습니다. 표범이나 곰으로 변신했을 때에는 예전처럼 민첩성 1당 전투력 2를
-얻습니다.
+얻습니다. 표범 형상은 장비 업그레이드에 따른 능력치 향상 비율이 다른 직업에 비해 낮았는데, 이로 인해 더 높은 레벨의 아이템을 사용할 때
+공격력이 뒤떨어지는 현상이 발생했습니다. 이 힘 능력치 변경에 따른 공격력 감소를 보완하고 능력치 향상 비율을 개선하고자, 다음 사항을
+변경하였습니다. 아래 등장하는 수치는 모두 레벨 85 드루이드 기준입니다.
 
-  * 휘감는 뿌리(자연의 손아귀에 의해 발동한 주문 포함)가 적에게 피해를 주지 않습니다.
-
-  * 흉포한 이빨의 피해량이 15%만큼 증가하였습니다. 더불어 이 기술을 사용하는 데 드는 기본 기력이 25로 감소하였으며, 25까지의
+    * 흉포한 이빨의 피해량이 15%만큼 증가하였습니다. 더불어 이 기술을 사용하는 데 드는 기본 기력이 25로 감소하였으며, 25까지의
 기력을 추가로 소비하여 최대 100%의 추가 피해를 줄 수 있습니다.
 
-  * 정신 자극을 아군에게 사용했을 때 회복되는 마나량이 변경되었습니다. 정신 자극을 받은 아군은 10초 동안 전체 마나의 5%를
-회복합니다. 드루이드 자신에게 정신 자극을 사용했을 때에는 이전과 같이 10초 동안 전체 마나의 20%를 회복합니다.
+    * 80 레벨 이상 드루이드가 표범 변신 상태에서 사용하는 짓이기기의 피해량이 무기 공격력의 460%에서 540%로 증가하였고, 추가
+피해량이 302로 감소하였습니다.
 
-  * 80레벨 이상 드루이드가 표범 변신 상태에서 사용하는 짓이기기의 피해량이 무기 공격력의 460%에서 530%로 증가하였습니다.
+    * 갈퀴 발톱의 최초 피해량이 주기당 피해량과 같아졌으며, 모든 전투 계산에서 똑같이 취급됩니다. 주기당 피해량이 전투력의
+12.6%에서 14.7%로 증가하였으며, 주기당 기본 피해량은 557에서 56으로 감소하였습니다. 현재 이런 변화가 갈퀴 발톱의 툴팁에
+정상적으로 반영되지 않는 문제를 인지하고 있으며, 이는 향후 패치에서 수정할 계획입니다.
 
-  * 청명의 전조 발동으로 얻은 번뜩임 상태의 지속시간이 8초에서 15초로 증가하였습니다.
+    * 80 레벨 이상 드루이드가 사용하는 찢어발기기의 피해량이 무기 공격력의 850%에서 950%로 증가하였으며, 추가 피해량이
+532로 감소하였습니다.
 
-  * 80레벨 이상 드루이드가 사용하는 찢어발기기의 피해량이 무기 공격력의 850%에서 975%로 증가하였습니다.
+    * 야생의 포효를 통해 증가하는 근접 자동 공격의 공격력이 50%에서 80%로 증가하였습니다. 문양: 야생의 포효를 통한 추가
+증가분은 앞서 언급한 총 공격력의 5%로 변함이 없습니다.
 
-  * 80레벨 이상 드루이드가 사용하는 칼날 발톱의 피해량이 무기 공격력의 450%에서 520%로 증가하였습니다.
+    * 80 레벨 이상 드루이드가 사용하는 칼날 발톱의 피해량이 무기 공격력의 450%에서 540%로 증가하였고, 추가 피해량이 302로
+감소하였습니다.
 
-  * 80레벨 이상 드루이드가 표범 변신 상태에서 사용하는 휘둘러치기의 피해량이 무기 공격력의 670%에서 600%로 감소하였습니다.
+  * 휘감는 뿌리 및 자연의 손아귀로 발동되는 휘감는 뿌리 주문이 피해를 주지 않습니다.
+
+  * 정신 자극이 아군 대상의 최대 마나의 5%를 10초에 걸쳐 회복시킵니다. 하지만 드루이드 자신에게 시전했을 때는 여전히 최대 마나의
+20%를 10초에 걸쳐 회복합니다.
+
+  * 청명의 전조로 얻는 번뜩임 강화 효과의 지속 시간이 8초에서 15초로 증가했습니다.
+
+  * 별빛 섬광의 피해가 약 23% 증가하였습니다.
+
+  * 80 레벨 이상 드루이드가 표범 변신 상태에서 사용하는 휘둘러치기의 피해량이 무기 공격력의 670%에서 600%로 감소하였습니다.
+
+  * 천벌의 피해가 약 23% 증가하였습니다.
 
   * 특성 전문화
 
@@ -6895,7 +7944,7 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
       * 진균 번식의 시각 효과가 예전보다 보기 좋게 바뀌었습니다.
 
       * 쏟아지는 달빛이 재설계되었습니다. 달빛 섬광을 시전하면 쏟아지는 달빛 효과를 얻어, 달빛 섬광의 직접 피해가
-15/30/45%만큼 증가하고 소모되는 마나가 15/30/45%만큼 감소합니다. 이 효과는 3번까지 중복되며 3초 동안 지속됩니다. 쏟아지는
+15/30/45%만큼 증가하고 소모되는 마나가 10/20/30%만큼 감소합니다. 이 효과는 3번까지 중복되며 3초 동안 지속됩니다. 쏟아지는
 달빛 효과를 얻었을 때 달빛 섬광을 시전하면 8의 태양 에너지를 얻으며, 태양불꽃을 시전하면 8의 달 에너지를 얻습니다. 이렇게 얻는
 에너지의 양은 특성에 투자한 포인트 수나 쏟아지는 달빛 효과의 중복 횟수에 관계없이 일정합니다. 일월식 상태의 전환 시점을 늦추고 싶다면,
 일월식 막대에 영향을 미치지 않는 기본 기술인 별빛 섬광이나 천벌을 사용해야 합니다.
@@ -6943,14 +7992,28 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
     * 문양: 광폭화를 새기면 광폭화의 지속시간이 5초가 아닌 10초만큼 증가합니다.
 
-    * 문양: 흉포한 이빨이 재설계되어, 이제 플레이어가 기력을 10만큼 사용할 때마다 최대 생명력의 1%를 회복합니다.
+    * 문양: 흉포한 이빨이 재설계되어 소비된 기력 10당 최대 생명력의 1%를 회복합니다.
 
     * 문양: 정신 자극을 새기고 자신이 아닌 아군 대상에게 정신 자극을 시전하면, 정신 자극의 기본 효과와 더불어 시전자가 10초 동안
 전체 마나의 10%를 추가로 회복합니다.
 
-**[![][198]][210] [사냥꾼][210]**
+  * 세트 효과
 
-  * 80레벨 이상 사냥꾼이 사용하는 일제 사격의 피해량이 무기 공격력의 137%에서 120%로 감소하였습니다.
+    * 조화 특성 드루이드의 공격대용 방어구 11단계 4세트 효과인 행성 정렬이 이제 주문 극대화 확률을 총 15%만큼 증가시킵니다.
+3번 사용할 수 있으며, 사용할 때마다 극대화 확률이 5%씩 감소합니다. 기존에는 증가되는 극대화 확률이 99%였고, 사용할 때마다 33%씩
+감소했습니다. 이렇게 변경한 까닭은 현 상태로는 이 세트 효과가 너무 뛰어나 플레이어들이 굳이 12단계 세트에 대한 필요를 느끼지 못했기
+때문입니다. 대신, 위의 드루이드 직업 부분에 적었듯이 별빛 섬광과 천벌의 효과를 상향 조정하였습니다.
+
+    * 회복 특성 드루이드의 공격대용 방어구 11단계 2세트 효과가 새로운 회복 드루이드 특화력과 함께 작동하도록 재설계되었습니다. 이
+세트 효과를 받는 드루이드는 이제 특화력인 화합이 주기적인 치유에 보너스 효과를 줄 때 정신력이 증가합니다.
+
+  * 드루이드 버그 수정
+
+    * 몇몇 우두머리와의 전투에서 드루이드가 최소 사정거리보다 가까이 있는데도 야성의 돌진을 사용할 수 있던 문제가 수정되었습니다.
+
+**[![][205]][217] [사냥꾼][217]**
+
+  * 80 레벨 이상 사냥꾼이 사용하는 일제 사격의 피해량이 무기 공격력의 137%에서 120%로 감소하였습니다.
 
   * 이제 덫의 효과가 적중, 숙련, 주문 관통력, 전투력 등 사냥꾼의 능력치에 따라 정상적으로 증감합니다.
 
@@ -6961,16 +8024,20 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
       * 이제 신중한 조준 특성을 연마하면 대상의 생명력이 90% 이상일 때 치명타 적중률 보너스를 받을 수 있습니다. (예전에는
 80% 이상이었습니다.)
 
+    * 생존
+
+      * 검은 화살의 공격력이 약 40% 정도 증가하였습니다.
+
   * 야수
 
-    * 새로운 희귀 야수 8마리가 추가되어, 특별한 야수를 길들일 기회가 생겼습니다. 가장 강력하고 희귀한 야수인 데스틸락을 최초로
+    * 새로운 희귀 야수 10마리가 추가되어, 특별한 야수를 길들일 기회가 생겼습니다. 가장 강력하고 희귀한 야수인 데스틸락을 최초로
 길들이는 영광은 과연 어느 사냥꾼이 차지하게 될까요? 녹아내린 전초지와 하이잘 재생의 땅에서 일일 퀘스트를 수행하다 보면 새로운 야수를 모두
 만나실 수 있습니다.
 
     * 끈기 야수의 특성인 가로막기가 재설계되었습니다. 야수가 빠른 속도로 파티원에게 달려가 다음 근접 혹은 원거리 공격을 대신 맞고
 야수 전체 생명력의 50%만큼 피해를 감소시킵니다.
 
-**[![][199]][211] [마법사][211]**
+**[![][206]][218] [마법사][218]**
 
   * 비전 작렬의 공격력이 5%만큼 감소했습니다.
 
@@ -6985,21 +8052,21 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
       * 충돌을 통해 살아있는 폭탄이 퍼져나가면 두 명이 추가로 살아있는 폭탄이 되며, 가장 최근에 마법사가 살아있는 폭탄으로 삼은
 대상이 충돌이 적용된 대상과 같다면 살아있는 폭탄의 효과는 사라지지 않습니다. 여러 명이 살아있는 폭탄이 되었을 경우, 살아있는 폭탄의
-효과는 가장 최근에 살아있는 폭탄이 된 대상에 남아 주위의 두 명의 대상을 추가로 살아있는 폭탄으로 만듭니다.
+효과는 가장 최근에 살아있는 폭탄이 된 대상에 남아 주위 두 명의 대상을 추가로 살아있는 폭탄으로 만듭니다.
 
     * 냉기
 
       * 동결과 서리 고리는 이제 서로 점감 효과를 받고 이를 정상적으로 공유합니다.
 
-**[![][200]][212] [성기사][212]**
+**[![][207]][219] [성기사][219]**
 
-  * 천상의 빛 기본 마나 소모량이 30%에서 35%로 증가하였습니다.
+  * 천상의 빛의 마나 소모량이 기본 마나의 30%에서 35%로 증가하였습니다.
 
-  * 빛의 섬광 기본 마나 소모량이 27%에서 31%로 증가하였습니다.
+  * 빛의 섬광의 마나 소모량이 기본 마나의 27%에서 31%로 증가하였습니다.
 
   * 고대 왕의 수호자가 새로 추가된 소환수 태세인 '적극적' 태세로 성기사를 지원합니다.
 
-  * 성스러운 빛의 기본 마나 소모량이 10%에서 12%로 증가하였습니다.
+  * 성스러운 빛의 마나 소모량이 기본 마나의 10%에서 12%로 증가하였습니다.
 
   * 비난, 천상의 보호막, 신의 가호의 아이콘이 새롭게 바뀌었습니다.
 
@@ -7017,7 +8084,11 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 마나를 소비하며 즉시 시전되지 않습니다. 대신 다음 6초 동안 50/100%의 확률로 퇴마 대상이 극대화 효과를 발휘하지 못하게 합니다. 이
 효과는 무효화될 수 있습니다.
 
-      * 신성 충격의 기본 마나 소모량이 8%에서 7%로 감소하였습니다.
+      * 신성 충격의 마나 소모량이 기본 마나의 8%에서 7%로 감소하였습니다.
+
+      * 특화력인 빛나는 치유가 조금 수정되었습니다. 만약 성기사가 자신이 발동시킨 빛나는 치유 효과가 유지되는 중에 새 빛나는 치유를
+발동시키면, 기존에 남은 흡수량과 새로 발동시킨 흡수량이 더해져 총 흡수량이 결정되며, 지속시간이 초기화됩니다. 총 흡수량은 시전한 성기사가
+가진 생명력의 1/3을 초과할 수 없습니다.
 
       * 빛 주입을 연마하면 성스러운 빛과 천상의 빛뿐 아니라, 추가로 빛의 섬광 시전 시간이 0.75/1.5초만큼 감소합니다. 또한
 선고가 더 이상 특정 효과를 발동시키는 유형의 특성이 아니게 되어, 선고의 효과가 발동될 때 사용되던 시각 효과가 빛 주입에 쓰이게
@@ -7044,6 +8115,8 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
     * 징벌
 
+      * 취조로 늘어나는 심문의 지속시간이 50/100/150%에서 66/133/200%로 증가하였습니다.
+
       * 지휘의 문장: 이 특성을 연마하면 정의의 문장을 활성화했을 때 최대 2명이 아닌 근접 대상 모두를 공격합니다.
 
       * 관대한 치유사가 무효화되지 않으며 마법 훔치기로도 훔쳐지지 않습니다. 또한 기존 효과와 더불어, 영광의 서약 재사용 대기시간이
@@ -7053,7 +8126,7 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
     * 문양: 진실의 문장을 새기면 정의의 문장을 활성화했을 때에도 숙련도가 10만큼 증가합니다.
 
-**[![][201]][213] [사제][213]**
+**[![][208]][220] [사제][220]**
 
   * 파멸의 역병: 공격력이 12%만큼 감소하였습니다.
 
@@ -7081,7 +8154,7 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
     * 정신 집중 주문 시전 중에 빛샘을 클릭해도 시전이 중지되지 않습니다.
 
-**[![][202]][214] [도적][214]**
+**[![][209]][221] [도적][221]**
 
   * 그림자 망토의 재사용 대기시간이 90초에서 2분으로 증가하였습니다. 하지만 전역 재사용 대기시간을 발생시키지 않습니다.
 
@@ -7114,13 +8187,15 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
       * 출혈 효과가 걸린 대상 공격 시, 붉은 핏줄로 증가하는 피해가 5/10%에서 8/16%로 증가하였습니다.
 
-**[![][203]][215] [주술사][215]**
+**[![][210]][222] [주술사][222]**
 
   * 불꽃 회오리의 공격력이 15%만큼 증가하였습니다.
 
   * 번개 보호막과 물의 보호막을 무효화할 수 없습니다.
 
   * 정기 폭발이 자연 계열 주문에 속하게 되었습니다. 이제 주술사의 자연 계열 주문이 주문 잠금 되면 정기 폭발을 사용할 수 없습니다.
+
+  * 바람 폭발의 공격력이 무기 공격력의 125%에서 175%로 증가하였습니다.
 
   * 물의 보호막의 내부 재사용 대기시간이 다른 보호막과 마찬가지로 3.5초가 되었으며, 물의 보호막의 사용 효과로 회복되는 마나량이
 50% 감소하였습니다.
@@ -7136,29 +8211,42 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
       * 천둥폭풍으로 밀쳐진 플레이어의 이동 속도가 5초 동안 40% 감소합니다.
 
+    * 고양
+
+      * 폭풍의 일격의 공격력이 무기 공격력의 125%에서 225%로 증가하였습니다.
+
     * 복원
 
       * 물의 보호막 연마가 재설계되어 회생으로 바뀌었습니다. 물의 보호막이 활성화되었을 때, 직접 치유가 극대화 효과를 발휘하면
 마나를 회복합니다. (2 레벨 회생은 과거 물의 보호막 연마가 치유의 물결이나 상급 치유의 물결이 극대화 효과를 발휘했을 때의 약 150%에
-해당하는 효과를 보여주며, 시전 시간이 짧거나 다수를 대상으로 한 주문이라면 그에 맞게 치유량이 감소합니다.)
+해당하는 효과를 보여주며, 시전 시간이 짧거나 다수를 대상으로 한 주문이라면 그에 맞게 마나 회복량이 감소합니다.)
 
       * 마나 해일 토템으로 증가하는 정신력이 400%에서 200%로 감소하였습니다.
 
   * 문양
 
-    * 새 상급 문양인 '문양: 번개 촉발'을 사용하면 이동하면서 번개 화살을 쓸 수 있습니다.
+    * 새 상급 문양인 '문양: 번개 촉발'을 새기면 이동하면서 번개 화살을 쓸 수 있습니다.
 
-**[![][204]][216] [흑마법사][216]**
+  * 세트 효과
+
+    * 정기 주술사의 플레이어 간 전투 방어구(천둥주먹의 검투사) 4세트 효과가 재설계되었습니다. 이제 피해를 입어 번개 보호막이
+발동되면, 구슬이 사라지는 대신 추가 구슬이 생성되며, 최대 3개까지 축적됩니다, 연쇄 천둥 특성이 있다면 9개까지 축적됩니다.
+
+**[![][211]][223] [흑마법사][223]**
 
   * 54 레벨에 배울 수 있던 영혼의 불꽃을 이제 20 레벨에 배울 수 있습니다.
 
   * 영혼 거두기에 새로운 시각 효과가 생겼습니다.
 
+  * 문양
+
+    * 문양: 영혼 바꾸기를 새겼을 때 생기는, 영혼 바꾸기의 재사용 대기시간이 15초에서 30초로 증가하였습니다.
+
   * 흑마법사 버그 수정
 
     * 영혼 흡수 시전 중에 전투 상태를 벗어날 수 없습니다.
 
-**[![][205]][217] [전사][217]**
+**[![][212]][224] [전사][224]**
 
   * 제압에 1.5초의 재사용 대기시간이 생겼으며, 전역 재사용 대기시간의 영향도 받습니다. 피의 맛 특성에 의해 발동한 제압의 재사용
 대기시간은 그대로입니다.
@@ -7178,13 +8266,72 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
       * 쌍수 무기 전문화의 공격력이 10%에서 5%로 감소하였습니다.
 
-**[던전 및 공격대][218]**
+  * 전사 버그 수정
 
-  * 던전 도감 기능을 구현하는 중입니다. 공개 테스트 서버에 이와 관련된 인터페이스가 존재할지라도, 이 기능이 완성된 것은 아님을 유의해
-주십시오.
+    * 몇몇 우두머리와의 전투에서 전사가 최소 사정거리보다 가까이 있는데도 돌격을 사용할 수 있었던 문제가 수정되었습니다.
 
-  * 새로운 10인 및 25인 공격대 지역인 불의 땅이 공개되었으며, 제한적인 테스트가 가능합니다. [공개 테스트 서버
-토론장][219]에서 최신 공격대 테스트 일정을 확인하세요.
+**화폐**
+
+  * 정복 및 명예 점수
+
+    * 캐릭터창의 화폐란에 있는 모든 정복 점수가 명예 점수로 전환되었습니다. 명예 점수 상한선을 초과한 점수는 10 시즌 시작 전에
+사용해야 합니다. 10 시즌은 패치가 적용된 다음주에 시작됩니다. 10 시즌이 시작되면 명예 점수 상한선인 4000점을 초과한 점수는 1점당
+35 실버로 전환되어 해당 캐릭터에게 우편으로 보내집니다.
+
+    * 투기장 평점이 1500 이하일 때 매주 투기장에서 획득할 수 있는 정복 점수의 상한선이 1350으로 변경되었습니다. 투기장 평점이
+3000 이상일 때에는 상한선이 2700입니다. 투기장 상한선은 1350과 2700 사이에서 유동적으로 변경됩니다. (시즌 9에서는 상한선이
+1343과 3000 사이에 있었습니다.)
+
+    * 평점제 전장과 투기장에서 얻을 수 있는 정복 점수의 상한선이 구분됩니다. 전장 평점에 의해 정복 점수 상한선이 산출될 때에는
+22.2%의 보너스가 있습니다. 따라서 평점제 전장 상한선은 1650과 3300 사이에서 정해집니다. 매주 획득할 수 있는 "총 정복 점수
+상한선"은 평점제 전장 상한선과 투기장 상한선 중 높은 값입니다. 하지만 투기장에서 정복 점수를 투기장 상한선까지 얻었거나 평점제 전장에서
+정복 점수를 평점제 전장 상한선까지 얻었다면, 해당 방법으로는 정복 점수를 더 획득할 수 없습니다. 전장 주간을 통해 얻는 정복 점수는 다른
+상한선이 아닌 "총 정복 점수 상한선" 도달 여부에만 영향을 미칩니다.
+
+      * 예시: 시즌 10의 첫 주에는 모든 플레이어가 평점 1500점 아래에서 시즌을 시작합니다. 따라서 전장 평점에 따른 정복 점수
+상한선은 1650점, 투기장 평점에 따른 정복 점수 상한선은 1350점이 될 것입니다. 첫 번째 주에 캐릭터가 투기장 전투에서 여러 번
+승리해 정복 점수를 투기장 상한선인 1350까지 얻었다면, 그 주에는 투기장에서 승리해도 정복 점수를 더 얻지 못합니다. 그러나 총
+상한선까지는 아직 300점을 더 얻을 수 있습니다. 이 점수는 평점제 전장, 전장 주간 참여, 무작위 전장 참여를 통해 획득해야 합니다.
+그다음 주에는 정복 점수 상한선이 캐릭터의 평점에 따라 다시 계산되어, 투기장 평점에 의한 상한선이 전장 평점에 의한 상한선보다 높아질 수도
+있습니다. 둘째 주에 캐릭터의 투기장 정복 점수 상한선이 1800점, 평점제 전장 정복 점수 상한선은 1650점이라고 합시다. 이 캐릭터가
+그 주에 획득할 수 있는 "총 정복 점수 상한선"은 1800점입니다. 1650점까지는 평점제 전장에서 획득할 수 있지만, 나머지 150점은
+다른 방법으로 획득해야만 합니다.
+
+  * 용맹 및 정의 점수
+
+    * 캐릭터창의 화폐란에 있는 모든 용맹 점수가 정의 점수로 전환되었습니다. 정의 점수 상한선을 초과한 점수는 1점당 47 실버로
+전환되어 해당 캐릭터에게 우편으로 보내집니다.
+
+    * 일주일 동안 던전이나 공격대에 참여해 얻을 수 있는 최대 용맹 점수가 일주일에 1250점에서 980점으로 감소했습니다.
+
+      * 잔달라의 봉기 던전을 완료해 보상으로 얻는 최대 용맹 점수는 변함없이 980점입니다.
+
+      * 던전을 영웅 난이도로 완료해 보상으로 얻는 최대 용맹 점수는 변함없이 490점입니다.
+
+      * 불의 땅에서 우두머리 하나를 처치할 때마다 얻는 용맹 점수는 10인 공격대에서 120점, 25인 공격대에서는 140점입니다.
+
+      * 바라딘 요새에서 오쿠타르를 처치해 얻는 용맹 점수는 10인 공격대에서 120점, 25인 공격대에서는 140점입니다.
+
+      * 황혼의 요새, 검은날개 강림지, 네 바람의 왕좌에서 영웅 난이도로 우두머리 하나를 처치할 때마다 얻는 용맹 점수는 10인
+공격대에서 35점, 25인 공격대에서는 45점입니다.
+
+**[던전 및 공격대][225]**
+
+  * 공격대 설정 기능이 도입되었습니다. 공격대 설정을 사용하면 콘텐츠 종류별로(예: 10인 공격대, 25인 공격대, 전장 등) 공격대창의
+사용자 인터페이스 배치를 저장할 수 있습니다.
+
+    * 플레이어가 PvE나 PvP, 특성, 파티 규모 등을 선택하면, 해당 콘텐츠에서 선택한 설정이 자동으로 적용됩니다.
+
+    * 인터페이스 설정에서 공격대창 형태의 파티창 사용을 선택하면 5인 던전 콘텐츠에서도 이용할 수 있습니다.
+
+    * 공격대 설정에서 각 파티를 수직 또는 수평으로 표시할 수 있습니다.
+
+  * 하단 메뉴바에 커뮤니티창의 공격대 항목으로 직접 이동할 수 있는 공격대 버튼이 추가되었습니다.
+
+  * 바라딘 요새
+
+    * 오쿠타르가 우리를 빠져나왔습니다. 바라딘 요새를 점령한 진영의 플레이어는 10인 및 25인 공격대에서 새로운 우두머리인 오쿠타르와
+싸울 수 있습니다.
 
   * 황혼의 요새
 
@@ -7192,9 +8339,11 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
     * 승천자의 성소에 속박된 정령이 종류마다 하나씩 적게 생성됩니다.
 
+    * 속박된 폭우의 냉기 소용돌이가 주는 피해가 50% 감소하였습니다.
+
     * 아리온
 
-      * 연쇄 번개의 공격력이 감소했습니다.
+      * 연쇄 번개의 공격력과 다른 대상에게 옮겨갈 수 있는 사정거리가 감소했습니다.
 
     * 초갈
 
@@ -7367,7 +8516,30 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
       * 바람 한기의 공격력이 20% 줄었으며, 받는 냉기 피해가 1중첩당 5%로 증가하였습니다.
 
-**[길드][220]**
+  * 줄구룹
+
+    * 탈것에 탄 채로 모든 가마솥 강화 효과를 받을 수 있습니다.
+
+    * 대여사제 킬나라를 처치하면 불 뿜는 티키 가면 구간이 비활성화됩니다.
+
+    * 대사제 베녹시스를 처치하면 던전 초반에 등장하는 식물의 독이 제거됩니다.
+
+  * 던전 및 공격대 버그 수정
+
+    * 우두머리들이 이제 노움 난쟁이 광선의 축소 효과에 면역입니다.
+
+    * 검은날개 강림지에서 말로리악과 전투를 벌일 때, 처치한 돌연변이 개수가 비정상적으로 초기화 되어 "돌발 행동" 업적이 달성되지
+않는 문제를 해결하였습니다.
+
+    * 네 바람의 왕좌에서 안샬의 기분 좋은 산들바람이 소환수들을 비정상적으로 행동하게 만들던 문제가 수정되었습니다.
+
+    * 위치 표시기가 이제 모든 우두머리 전투 단계에서 보입니다.
+
+**[길드][226]**
+
+  * 길드 찾기
+
+    * 하실 말씀 란에 긴 문장을 입력해도 끊기지 않고 화면에 정상적으로 표시됩니다.
 
   * 하루에 획득할 수 있는 길드 경험치의 상한선이 25% 증가했습니다.
 
@@ -7377,1789 +8549,2345 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
   * 길드 상인에게서 구매할 수 있는 암흑 불사조의 모습이 개선되었습니다. 이전보다 덜 투명하며 훨씬 더 멋진 모양입니다.
 
-**[아이템][221]**
+**[아이템][227]**
 
   * 착용 시 귀속 아이템에 대해 착용자 우선 주사위 굴림으로 설정된 상태에서 플레이어가 입찰 주사위를 굴려 이겼을 때, 아이템은 해당
 플레이어에게 귀속됩니다. 차비 주사위를 굴려 이겼을 때는 귀속되지 않은 상태로 아이템을 획득합니다.
 
+  * 공격대용 방어구 11단계 아이템을 이제 정의 점수로 구입할 수 있습니다.
+
   * 다크문 카드: 싹쓸바람이 활성화되었을 때의 피해가 40% 증가하였습니다. 하지만 주문 극대화가 발생하지 않으며, 플레이어의 장비에
 의한 강화 효과를 받지 않습니다.
 
-  * 세트 강화 효과
+  * 사용자 인터페이스에 새로운 기능을 구현할 공간을 확보하기 위해 열쇠고리 슬롯이 제거되었습니다.
 
-    * 대격변 플레이어 간 전투 방어구의 2세트 효과인 탄력도 증가가 중복 적용되지 않습니다. 서로 다른 방어구를 2세트씩 착용하더라도
-탄력도 400 상승 효과는 한 번만 적용됩니다. 대격변 이전의 플레이어 간 전투 방어구는 변경되지 않습니다.
+    * 게임에서 사용되지 않는 열쇠는 플레이어의 소지품에서 제거될 것입니다. 이에 대한 보상으로 각 열쇠의 상점 판매 가격과 같은 금액의
+골드가 지급됩니다.
 
-    * 회복 드루이드 11단계 2세트 효과가 재설계되었습니다. 새로운 회복 드루이드의 특화력에 맞추어 작동하여, 이제 화합 특화력에 의해
-주기적인 치유 효과 혜택을 받을 때 정신력이 증가합니다.
+    * 퀘스트 아이템으로 획득해 더는 쓰이지 않는 열쇠는 플레이어의 소지품에서 제거될 것입니다.
 
-    * 정기 주술사용 플레이어 간 전투 방어구(천둥주먹의 검투사 방어구)의 4 세트 효과가 재설계되었습니다. 이제 번개 보호막을 사용 중
-공격을 받으면 번개 구슬이 사라지지 않고 추가로 생성됩니다. 번개 구슬은 최대 3개까지 축적되며, 연쇄 천둥 특성을 배웠다면 최대 9개까지
-축적됩니다.
+    * 플레이어가 아직 사용 중인 열쇠는 일반 소지품 슬롯으로 옮겨집니다. 플레이어의 소지품이 가득 찼을 경우 여유 공간이 확보될 때까지
+가상 공간에 보관됩니다. 그 후 플레이어의 소지품에 공간이 확보되면 플레이어가 접속을 종료하거나 지역을 이동할 때 일반 소지품에 나타납니다.
 
-**[전문 기술][222]**
+  * 플레이어 간 전투 아이템 및 보상
+
+    * 9 시즌 무기를 이제 명예 점수로 구입할 수 있습니다.
+
+    * 검투사 무기
+
+      * 정복 점수로 살 수 있는 10 시즌 무기는 현 시즌에서 일정량의 정복 점수를 획득한 후에야 살 수 있습니다. 예를 들어 무정한
+검투사의 창은 3400의 정복 점수로 살 수 있으나, 그전에 10 시즌에서 총 11650의 정복 점수를 획득해야 합니다.
+
+      * 명예 점수로 살 수 있는 9 시즌 무기는 현 시즌에서 일정량의 명예 점수를 획득한 후에야 살 수 있습니다. 예를 들어 흉포한
+검투사의 창은 3400의 명예 점수로 살 수 있으나, 그전에 10 시즌에서 총 18500의 명예 점수를 획득해야 합니다.
+
+      * 무기를 구매할 수 있는 점수를 한 번 획득하면, 표기된 비용을 지불하고 무기를 구매할 수 있습니다. 다시 일정량의 점수를
+획득해야 하는 것은 아닙니다.
+
+      * 처음 아이템을 구매하기 위해 필요한 정복 또는 명예 점수는, 상인이 판매하는 무기의 툴팁에서 확인할 수 있습니다.
+
+    * 평점제 전장 보상
+
+      * 새로운 플레이어 간 전투 보상으로 지상 탈것인 흉포한 전투늑대(호드)와 흉포한 전투군마(얼라이언스)가 추가되었습니다. 이
+탈것은 투기장 시즌을 기준으로 각 시즌 종료 시 전장 순위 상위 0.5% 이내의 플레이어에게 보상으로 주어지던 기존 방식과는 달리, 평점제
+전장에서 각각 75승, 150승, 300승의 업적을 달성한 플레이어에게 보상으로 지급됩니다. 이 보상 시스템은 전장 정신을 더 고무시키기
+위해 만들어졌습니다. 평점제 전장에서 각 업적을 달성할 때마다 계정 귀속 탈것 1개가 보상으로 주어지며, 150승과 300승 업적을 달성한
+플레이어는 2회째와 3회째에 동일한 탈것을 획득할 수 있습니다. 추가로 획득한 탈것은 계정 귀속 아이템이므로 부 캐릭터에게 보낼 수
+있습니다. 흉포한 전투늑대와 흉포한 전투군마는 시즌 종료 보상과는 별도로 관련 업적 달성 즉시 지급됩니다.
+
+    * 세트 강화 효과
+
+      * 대격변 플레이어 간 전투 방어구의 2세트 효과인 탄력도 증가가 중복 적용되지 않습니다. 서로 다른 방어구를 2세트씩
+착용하더라도 탄력도 400 상승 효과는 한 번만 적용됩니다. 대격변 이전의 플레이어 간 전투 방어구는 변경되지 않습니다.
+
+**[전문 기술][228]**
+
+  * 기계공학
+
+    * 동물보호협회에서 보호 동물 개체 수를 대폭 늘리면서 수많은 토끼와 다람쥐를 보호 동물로 지정했습니다. 따라서 플린트로크의 땅굴쥐는
+“협의”가 이루어지기 전까지 야생 닭을 사용합니다.
 
   * 무두질
 
     * 이미 다른 플레이어가 무두질을 하고 있거나 전리품을 획득하는 시체를 대상으로 무두질을 할 수 없습니다.
 
-**[명예 시스템][223]**
+**[명예 시스템][229]**
 
   * 투기장
+
+    * 투기장 점수판에서 개인의 상대 검색 값이 삭제되었습니다.
 
     * 용맹의 투기장에서 다시 경기할 수 있게 되었습니다. 이제 중앙에 있는 승강기가 아닌, 투기장 양쪽 끝에 있는 시작 장소에서 경기를
 시작하도록 변경되었습니다.
 
   * 전장
 
+    * 평점제 전장의 점수판에서 개인의 상대 검색 값이 팀의 상대 검색 값으로 교체되었습니다.
+
     * 폭풍의 눈을 10인 평점제 전장으로 즐길 수 있습니다. 10 대 10 전투에 더 어울리도록 거점 점령 방식이 아라시 분지처럼
 바뀌었습니다. 이 변경은 폭풍의 눈이 평점제 전장일 때에만 적용되며, 일반적인 폭풍의 눈 전장은 여전히 15인 전장으로서 기존 방식을
 유지합니다.
 
+    * 전쟁노래 협곡이 평점제 전장에 다시 추가되었습니다.
+
     * 모의전
 
-      * 모의전 인터페이스가 여러모로 개선되었습니다. 아직 이 기능들이 완벽하게 작동하지는 않습니다.
+      * 모의전 인터페이스가 여러모로 개선되었습니다. 사용상의 편의를 위해 모의전 창이 구현되었으며, 공격대/파티장만이 다른 파티에
+모의전을 신청할 수 있습니다.
 
-  * 정복 점수
+**[퀘스트 및 몬스터][226]**
 
-    * 전장 평점이 1500 이하일 때 매주 획득할 수 있는 정복 점수의 최소 상한선이 1500으로 변경되었습니다. 전장 평점이 3000
-이상일 때의 최대 상한선은 3000으로 그대로 유지됩니다. 정복 점수 상한선은 이 두 점수 사이에서 비연속적으로 변경됩니다.
+  * 저레벨 몬스터의 주문 극대화 및 치명타 적중률과 회피율이 비정상적으로 적용되던 문제가 수정되었습니다.
 
-    * 게임 내에서 이제 정복 점수의 상한선이 전장과 투기장 각각에서 별도로 측정됩니다. 투기장 평점의 상한선은 언제나 전장 평점의
-2/3로 지정되며, 매주 두 가지 상한선 중 높은 값까지 정복 점수를 획득할 수 있습니다. 하지만 투기장 또는 전장에서의 정복 점수가
-상한선에 도달하면, 해당 지역에서는 정복 점수를 더 이상 획득할 수 없습니다. 전장 주간의 정복 점수 획득량은 총 정복 점수의 상한 한도
-내에서만 적용됩니다.
+  * 특정 몬스터의 기력이 회복되는 상황을 실시간으로 확인할 수 있습니다.
 
-**[퀘스트와 몬스터][220]**
+**[종족][230]**
 
-  * 저레벨 몬스터의 주문 극대화 및 치명타 적중률과 회피율에서 발생하던 문제가 수정되었습니다.
+  * 누락되었던 /고함 소리가 추가되어, 이제 모든 종족 캐릭터의 /고함 소리를 들을 수 있습니다.
 
-**[사용자 인터페이스][220]**
+**[사용자 인터페이스][226]**
+
+  * 인터페이스 설정 창이 그래픽 설정 및 음향 설정 창과 같은 크기로 확대되었습니다. 공격대 설정 화면이 깔끔하게 정돈되어 편리하게
+사용할 수 있습니다.
+
+  * 게임의 장비 관리자 기능을 끌어다 쓰는 외부 인터페이스로 아이템을 교체할 수 없게 되었습니다.
 
   * 캐릭터 선택 창에서 캐릭터 순서를 바꿀 수 있으며, 결과가 저장됩니다.
 
   * 시전바를 캐릭터 초상화 아래로 옮길 수 있습니다.
 
+  * 전장 점수판에 마우스를 올려 캐릭터의 특성 전문화를 확인할 수 있습니다.
+
+  * 개체창에 야수 소환 해제 옵션이 생겼습니다.
+
+  * 아이템 내구도가 일정 수치 이상 떨어질 때, 장비 칸이 노랗게 표시되는 기준이 내구도 5 이하에서 내구도 20% 이하로
+변경되었습니다.
+
+  * 매크로 창과 마법책을 동시에 열 수 있게 되어 보다 직관적인 매크로 생성이 가능해졌습니다. 이와 더불어, 매크로 창에 저장/취소
+단추가 생겼습니다.
+
   * 이동 패드는 마우스 클릭으로 캐릭터가 이동하게 하는 인터페이스로서, 이제 기본 인터페이스 안에 포함됩니다.
 
-  * 공격대 설정 기능이 도입되었습니다. 공격대 설정을 사용하면 콘텐츠 종류별로(예: 10인 공격대, 25인 공격대, 전장 등) 공격대
-창의 사용자 인터페이스 배치를 저장할 수 있습니다.
+  * 대상, 또는 주시 대상이 미니맵에 보이게 설정할 수 있습니다. 적 플레이어는 해당되지 않습니다.
 
-**World of Warcraft PTR Patch 4.2**
+  * 상인들이 자신이 취급하는 화폐 종류를 보여줍니다.
 
-Notes for all World of Warcraft patches can be found [here][1].
+**[기술지원][231]**
 
-**[Elemental Bonds][2]**
+  * 블리자드 런처의 포트 설정에 유니버설 플러그 앤 플레이(UPnP)를 사용하는 기능이 추가되었습니다. 라우터에서 UPnP를 지원한다면,
+필요한 포트를 자동으로 열어 제약 없이 게임을 다운로드할 수 있습니다.
 
-What was to be an auspicious event at the ancient World Tree Nordrassil has
-ended in tragedy. There, members of the Cenarion Circle and Earthen Ring,
-including former warchief Thrall, had gathered with the noble Dragon Aspects
-to unite their powers and restore Nordrassil for the good of Azeroth. Yet word
-has now spread that a shadowy Twilight's Hammer agent interrupted the ceremony
-and struck down Thrall with dark magics... casting his spirit into the four
-domains of the Elemental Plane. If these terrible rumors hold true, the
-Earthen Ring--indeed, all of Azeroth--has lost one of its greatest champions.
+**Обновление игрового мира до версии 4.2**
 
-**[The Regrowth and Molten Front][3]**
+Описания всех обновлений World of Warcraft можно найти [здесь][232].
 
-Although the night elves and their allies repelled Ragnaros's initial invasion
-of Hyjal, their work on the sacred mount is far from over. Archdruid Malfurion
-Stormrage has gathered his comrades at the Sanctuary of Malorne within the
-newly healed Regrowth to invade Ragnaros's domain: the Firelands. Once inside
-the Elemental Plane, Hyjal's defenders hope to establish a permanent
-stronghold. Yet these plans have come under threat by a ferocious new
-elemental assault that has swept through the Regrowth. Despite this setback,
-Hyjal's protectors remain steadfast in their mission, for they know that it is
-in the molten heart of the Firelands that the fate of Mount Hyjal will be
-decided.
+**[Власть стихий][233]**
 
-**[The Firelands][4]**
+То, что должно было стать благим начинанием, обернулось трагедией. Служители
+Земли, участники Круга Кенария, бывший вождь Орды Тралл и благородные аспекты
+драконов собрались, чтобы объединить свои силы и восстановить Древо Жизни
+Нордрассил на благо всего Азерота. Говорят, что таинственный агент Сумеречного
+Молота прервал церемонию и поразил Тралла темной магией, разделив его дух на
+четыре части и отправив их в разные области обители стихий... Если эти ужасные
+слухи – правда, то это значит, что Служители Земли, да и весь Азерот, лишились
+одного из самых великих героев в истории.
 
-The time to strike at Ragnaros draws near. The battle to protect Mount Hyjal
-now rages in the depths of Ragnaros's smoldering realm. As territory is gained
-by Azeroth's defenders and they draw closer to the inner sanctums of the
-Firelands, a monumental task awaits. Ragnaros's lair--Sulfuron Keep--is
-closely guarded by his most loyal servants, including the traitorous Druids of
-the Flame and their mysterious leader. Yet the brave heroes who have ventured
-into this ash-choked domain cannot afford to shy away from any danger. The
-outcome of the battles that lie ahead will determine the very survival of
-Azeroth.
+**[Молодой лес и Огненная передовая][234]**
 
-**[Dragonwrath, Tarecgosa's Rest][5]**
+Несмотря на то, что ночным эльфам и их союзникам удалось отразить первое
+нападение Рагнароса на Хиджал, говорить, что их дела на священной горе
+закончены, еще слишком рано. Верховный друид Малфурион Ярость Бури собрал
+своих товарищей в Святилище Малорна в Молодом лесу, чтобы спланировать
+нападение на владения Рагнароса – Огненные Просторы. Прорвавшись в обитель
+стихий, защитники Хиджала надеются основать там свой аванпост. Однако эти
+планы оказались под угрозой из-за нашествия яростных элементалей, наводнивших
+Молодой лес. Несмотря на это, защитники Хиджала твердо держат свои позиции.
+Теперь судьба горы Хиджал должна решиться в пылающих недрах Огненных
+Просторов.
 
-Uncertainty looms over the blue dragonflight's domain, the Nexus, as its
-members struggle to appoint a new leader. Split between the two likeliest
-successors--Kalecgos and Arygos--the flight has agreed to meet during a rare
-celestial event known as the Embrace in the hopes that a new Aspect will
-finally be chosen. The bronze dragon Anachronos, however, has detected
-something sinister at work around the Nexus, threatening to compromise the
-ceremony. If a hero does not rise to investigate these dark forces and uncover
-their intentions, Anachronos believes that Azeroth's doom is imminent.
+**[Огненные Просторы][235]**
 
-**_Table of Contents_**
+Пришло время нанести удар по самому Рагнаросу. Теперь битва за Хиджал бушует в
+глубинах огненного царства Рагнароса. Шаг за шагом защитники Азерота
+приближаются к твердыне Огненных Просторов, и вскоре им предстоит решить
+главную задачу. Крепость Сульфурона, где скрывается Рагнарос, защищают его
+самые преданные слуги, включая вероломных друидов пламени с их таинственным
+предводителем. Но смельчаки, прорвавшиеся в эти покрытые пеплом земли, не
+имеют права отступить ни перед какой опасностью. Исход предстоящей битвы
+должен определить судьбу всего Азерота.
 
-_Click a link to be taken directly to the corresponding section of the patch
-notes._
+**[Гнев Дракона, вечный покой Таресгосы][236]**
 
-  * [General][6]
+Неопределенность царит в Нексусе, обители синих драконов, поскольку драконы
+никак не могут прийти к согласию в выборе нового лидера. Драконий род
+разделился на две части – одни поддерживают Калесгоса, а другие выступают за
+Аригоса. В связи с этим драконы решили собраться во время редкого небесного
+события – затмения лун Азерота – в надежде, что тогда наконец смогут избрать
+нового аспекта. Однако бронзовый дракон Анахронос почувствовал средоточие
+зловещей магии вокруг Нексуса, грозящее сорвать церемонию. И если не появится
+смелый герой, готовый узнать, что это за злые силы и каковы их цели, то по
+мнению Анахроноса гибель Азерота неизбежна.
 
-  * [Achievements][7]
+**_Содержание_**
 
-  * [Classes: General][8]
+_Щелкните по ссылке для перехода к соответствующему разделу._
 
-    * [![][9]][10] [Death Knights][10], [![][11]][12] [Druids][12],
-[![][13]][14] [Hunters][14], [![][15]][16] [Mages][16], [![][17]][18]
-[Paladins][18],
+  * [Общее][6]
 
-    * [![][19]][20] [Priests][20], [![][21]][22] [Rogues][22], [![][23]][24]
-[Shaman][24], [![][25]][26] [Warlocks][26], [![][27]][28] [Warriors][28]
+  * [Достижения][7]
 
-  * [Dungeons & Raids][29]
+  * [Классы: общее][8]
 
-  * [Guilds][30]
+    * [![][9]][10] [рыцари смерти][10], [![][11]][12] [друиды][12],
+[![][13]][14] [охотники][14], [![][15]][16] [маги][16], [![][17]][18]
+[паладины][18]
 
-  * [Items][31]
+    * [![][19]][20] [жрецы][20], [![][21]][22] [разбойники][22], [![][23]][24]
+[шаманы][24], [![][25]][26] [чернокнижники][26], [![][27]][28] [воины][28]
 
-  * [Professions][32]
+  * [Валюта][29]
 
-  * [PvP][33]
+  * [Подземелья и рейды][30]
 
-  * [Quests & Creatures][34]
+  * [Гильдии][31]
 
-  * [User Interface][35]
+  * [Предметы][32]
 
-**General**
+  * [Профессии][33]
 
-  * All existing Valor Points in the Currency tab have been converted to
-Justice Points.
+  * [PvP][34]
 
-  * The Keyring bag slot has been removed to make room in the user interface
-for new features.
+  * [Расы][36]
 
-    * Keys which no longer serve a purpose in the game will be removed from
-player inventories. Compensation for the keys will be automatically provided
-in the form of each key's vendor sell price in gold.
+  * [Пользовательский интерфейс][37]
 
-    * Keys which are obsolete quest items will be removed from player
-inventories.
+  * [Техническая информация][38]
 
-    * Keys which may still be of use to players will be transferred to regular
-inventory space. If a player's bags are full, these keys will sit in a
-backlogged inventory until sufficient space is made available. Once space is
-opened, the keys will appear in regular inventory upon the player logging out
-or switching zones.
+**Общее**
 
-**[Achievements][36]**
+  * Новые ежедневные задания
 
-  * Bear-ly Made It (new achievement): Save all four prisoners before they are
-sacrificed in Zul'Aman on Heroic difficulty.
+    * На горе Хиджал появилось большое количество абсолютно новых ежедневных
+заданий и наград. Игроки смогут помочь Стражам Хиджала дать отпор приспешникам
+Рагнароса и организовать аванпост в Огненных Просторах! Для того чтобы
+получить доступ к этим заданиям и поучаствовать в развитии событий в Молодом
+лесу, игрокам нужно сначала выполнить задания на горе Хиджал вплоть до задания
+«Чудо в Роще Эссины», после чего поговорить с Матой Коготь в Святилище
+Малорна.
+
+  * Новая цепочка заданий: Власть стихий
+
+    * Для персонажей Орды и Альянса, достигших 85-го уровня, доступна новая
+цепочка заданий, в которой отважные искатели приключений должны спасти Тралла.
+Стартовое задание цепочки, «Зов шамана», за которым последует «Встреча у
+Нордрассила», можно получить в Штормграде или в Оргриммаре, в Восточном или
+Западном святилищах Земли соответственно.
+
+  * Новая рейдовая зона: Огненные просторы
+
+    * Огненные просторы – это совершенно новая рейдовая зона в Обители стихий,
+которая доступна для рейдовых групп из 10 и 25 игроков в нормальном и
+героическом режиме. Закаленные в боях ветераны Орды и Альянса теперь получат
+возможность повергнуть самого Рагнароса Повелителя Огня и его верных
+прислужников, проникнув в их владения через Шпиль Сульфурона на горе Хиджал.
+
+  * Новый легендарный предмет: Гнев Дракона, вечный покой Таресгосы
+
+    * Самые упорные рейдеры получат возможность выполнить цепочку заданий на
+получение нового легендарного посоха для заклинателей. Чтобы приступить к этой
+задаче, игроки должны убить Огненного повелителя в Огненных просторах, после
+чего они смогут получить стартовое задание «Легендарная миссия» у Зирадорми в
+крепости Громмаш в Оргриммаре или у Корридорми в Башне магов в Штормграде.
+Цепочка заданий, посвященная легендарному предмету, будет доступна только
+друидам, магам, жрецам, шаманам и чернокнижникам.
+
+  * Новый элемент пользовательского интерфейса: Атлас подземелий
+
+    * Теперь вся информация о подземельях будет у вас под рукой благодаря
+новому Атласу подземелий. Открыть его можно с помощью кнопки на панели
+навигации, которая работает во всем игровом мире. Атлас содержит историческую
+информацию, подробности боя, способности и добычу с каждого босса, внесенного
+в этот каталог (в настоящий момент он содержит в себе все подземелья и рейды
+дополнения Cataclysm). В следующих обновлениях игры планируется добавить в
+атлас новые подземелья.
+
+**[Достижения][237]**
 
-**[Classes: General][37]**
+  * Появилось новое достижение «Пробежка рысцой», которое можно получить, если
+вы успели спасти всех четверых узников в Зул'Амане в героическом режиме, пока
+их не принесли в жертву.
 
-  * All healing critical strikes now heal for 2 times a normal heal (+100%),
-up from 1.5 times a normal heal (+50%).
+**[Классы: общее][238]**
 
-  * Players are once again free to dance in combat (without causing graphic
-errors). Other animations, such as attacks, will take precedence over dancing.
-The dance animation will be suppressed until the higher priority animation is
-complete. Fun has been unnerfed.
+  * Все критические целительные эффекты теперь восполняют в 2 раза больше
+здоровья по сравнению с обычным исцелением (+100%), а не в 1,5 раза, как
+раньше (+50%).
+
+  * Игроки снова могут танцевать во время битвы и это не вызывает ошибок
+графического отображения. Другие типы анимаций, например, атаки, будут иметь
+приоритет перед анимациями танца. Анимация танца не будет отображаться до тех
+пор, пока не завершатся анимации более высокого приоритета. На удовольствие от
+танца внесенные изменения не повлияли.
 
-  * Buffs
+  * Положительные эффекты
 
-    * All class abilities which place a buff on friendly targets no longer
-generate any threat. This goes for raid-wide buffs like Mark of the Wild and
-Power Word: Fortitude, as well as triggered effects such as Blessed Resilience
-or Fingers of Frost, and single-target buffs like Dark Intent and Hysteria.
-The exception is buffs which directly cause healing or damage, such as Thorns
-or Renew. Abilities such as these still generate normal threat.
+    * Все классовые способности, которые накладывают на дружественные цели
+положительный эффект, больше не увеличивают угрозу. Это относится к рейдовым
+положительным эффектам, например, «Знаку дикой природы» и «Слову силы:
+Стойкость», срабатывающим при определенных условиях эффектам, например,
+«Благословенной устойчивости» и «Ледяным пальцам» и к эффектам, действующим на
+единичную цель, например, «Узам Тьмы» и «Нечестивому бешенству». Исключение
+составляют те положительные эффекты, которые явным образом наносят урон или
+исцеляют, например, «Шипы» или «Обновление». Эти и другие подобные способности
+будут по-прежнему создавать угрозу.
 
-  * Crowd Control
+  * Контроль
+
+    * Принцип действия многих эффектов контроля был изменен таким образом, что
+из-за действия данных эффектов враждебные NPC больше не будут нападать на
+заклинателя. Однако если игрок подойдет слишком близко к NPC, находящемуся под
+действием подобного эффекта, NPC запомнит это и атакует его после окончания
+действия эффекта. Данные изменения реализованы для того, чтобы группам в
+подземельях было проще управлять эффектами контроля и справляться с группами
+враждебных NPC. Изменениям подверглись следующие способности: «Спячка», «Гнев
+деревьев», «Укус виверны» (при нанесении цели урона по-прежнему вызывает
+враждебность), «Замораживающая ловушка», «Превращение», «Покаяние»,
+«Сковывание нежити», «Ослепление», «Сглаз», «Сковать элементаля», «Изгнание» и
+«Соблазн».
+
+  * Питомцы
+
+    * Тип поведения питомца «Агрессия» был заменен типом поведения
+«Поддержка». При использовании этого типа поведения питомец будет атаковать
+цели своего хозяина. Менять цель питомец будет только в том случае, если его
+хозяин атакует новую цель в течение нескольких секунд.
+
+    * При использовании типа поведения «Защита» питомец будет атаковать только
+тех врагов, которые нападают на него или его хозяина.
+
+  * Прерывания произнесений заклинаний
+
+    * Теперь, если игрок попал под действие эффекта прерывания произнесения
+заклинаний, произнося заклинание одной школы, как, например, «Пытка разума»
+или «Ледяная стрела», то он все равно сможет произносить заклинания,
+относящиеся к двум школам, как, например, «Пронзание разума» (школы магии льда
+и темной магии) или «Стрела ледяного огня» (школы магии льда и огня). Если же
+игрок попадет под действие эффекта прерывания произнесения заклинаний, читая
+заклинание, относящееся к двум школам, то прерывание будет действовать на
+заклинания всех соответствующих школ, как и должно быть.
+
+  * Характеристики
+
+    * Ловкость больше не дает паладинам, воинам и рыцарям смерти никаких
+бонусов к вероятности уклонения. Теперь базовая вероятность уклонения для этих
+классов фиксирована и составляет 5%.
+
+    * Теперь у паладинов, воинов и рыцарей смерти бонус от силы (сверх ее
+базового значения) к рейтингу парирования составляет 27%, а не 25%, как
+раньше.
+
+  * Исправленные неполадки
 
-    * Many crowd control abilities no longer cause creatures to attack players
-when they are cast. The creature will not attack the player when the crowd
-control wears off, and nearby creatures will not become hostile to the player
-either. However, if a visible player gets too close to the target creature,
-the creature will remember and attack the player when the crowd control effect
-wears off. The intent is to make it easier for dungeon groups to manage crowd
-control assignments and pulling packs of hostile NPCs. The abilities affected
-by this change are: Hibernate, Entangling Roots, Wyvern Sting (will still
-cause hostility when it begins to deal damage), Freezing Trap, Polymorph,
-Repentance, Shackle Undead, Blind, Hex, Bind Elemental, Banish, Seduction.
+    * Больше игроки не будут получать сообщения о том, что они прервали
+произнесение заклинания, если на самом деле они этого не делали.
 
-  * Pets
+    * Панели команд больше не будут кратковременно пропадать, когда персонаж с
+активной панелью переключения стоек садится в средство передвижения.
 
-    * The Aggressive pet stance has been removed and replaced with the Assist
-stance. This stance will cause the player's pet to attack the player's target.
-The pet will not change targets unless the master attacks a new target for a
-few seconds.
+**[![][9]][239] [Рыцари смерти][239]**
 
-  * Spell Interrupts
+  * Способность «Уничтожение» теперь наносит 150% урона от оружия, а не 160%,
+как раньше.
 
-    * When interrupted while casting a single-school spell such as Mind Flay
-or Frostbolt, players will now be able to cast dual-school spells such as Mind
-Spike (Frost and Shadow schools) or Frostfire Bolt (Frost and Fire schools).
-However, being interrupted while casting a dual-school spell will still
-interrupt all respective schools as intended.
+  * Изменения в талантах
 
-  * Stats
+    * Лед
 
-    * Death knights, paladins, and warriors no longer receive any bonus to
-their chance to dodge from Agility. Their base chance to dodge is now a fixed
-5%.
+      * Теперь произнесение заклинания «Ненасытная стужа» требует времени,
+которое составляет 1,5 секунды.
+
+      * Теперь талант «Власть Ледяных Пустошей» увеличивает урон, наносимый
+двуручным оружием, на 3/7/10%, а не на 4/8/12%, как раньше.
+
+    * Нечестивость
+
+      * Теперь «Нечестивое могущество» увеличивает силу на 20%, а не на 5%,
+как раньше.
+
+    * Символы
 
-    * Death knights, paladins, and warriors now receive 27% of their Strength
-bonuses as parry rating, up from 25%. This conversion still only applies to
-Strength above and beyond their base Strength.
+      * Изменено действие символа темной опеки. Раньше этот символ
+гарантировал, что «Удар смерти» восстановит не менее 15% от запаса здоровья
+рыцаря смерти, находящегося под властью льда или нечестивости. Теперь этот
+символ гарантирует, что «Удар смерти», нанесенный в течение 15 секунд после
+убийства противника, приносящего опыт или очки чести, восстановит минимум 20%
+от максимального запаса здоровья рыцаря смерти (игроку все еще требуется
+находиться под властью льда или нечестивости).
 
-**[![][9]][38] [Death Knights][38]**
+  * Исправления, связанные с рыцарями смерти
+
+    * Теперь талант «Машина для убийств» корректно срабатывает после атак как
+правой, так и левой рукой.
 
-  * Obliterate base damage has been reduced to 150% weapon damage, down from
-160%.
+**[![][11]][240] [Друиды][240]**
+
+  * Теперь за каждую единицу силы друиды получают +1 к силе атаки, а не +2,
+как раньше. Находясь в облике кошки или медведя, друиды продолжают получать +2
+к силе атаки за каждую единицу ловкости. Кроме того, в облике кошки друиды
+получали меньше бонусов за единицу прироста уровня экипировки, чем другие
+классы, и из-за этого все больше отставали по урону. Для компенсации изменения
+силы атаки и улучшения бонусов от прироста уровня экипировки были произведены
+следующие изменения:
+
+    * Урон от способности «Свирепый укус» был увеличен на 15%. Кроме того, для
+применения способности теперь требуется 25 единиц энергии, что меньше, чем
+раньше, а сама она может поглощать до 25 единиц энергии сверх базовой
+стоимости, за счет чего урон может быть увеличен до 100%.
 
-  * Talent Specializations
+    * Урон от способности «Увечье» (облик кошки) для игроков 80-го уровня и
+выше был увеличен. Теперь он составляет 540% урона от оружия, а не 460%, как
+раньше. Дополнительный урон от этой способности был уменьшен до 320.
+
+    * Первоначальный урон от способности «Глубокая рана» теперь равен ее
+периодическому урону за каждый такт при любых условиях. Периодический урон
+теперь увеличен на 14,7% от значения силы атаки, а не на 12,6%, как раньше, а
+базовое значение периодического урона уменьшено с 557 до 56 за такт. Текст
+подсказки способности «Глубокая рана» в данный момент отображается некорректно
+и не отражает данные изменения. Это будет исправлено в одном из следующих
+обновлений.
+
+    * Урон от способности «Накинуться» для игроков 80-го уровня и выше был
+увеличен. Теперь он составляет 950% урона от оружия, а не 850%, как раньше.
+Дополнительный урон от этой способности был уменьшен до 532.
+
+    * Способность «Дикий рев» теперь увеличивает наносимый автоматической
+атакой урон на 80% вместо 50%. Символ дикого рева по-прежнему увеличивает
+данный урон дополнительно на 5%.
+
+    * Урон от способности «Полоснуть» для игроков 80-го уровня и выше был
+увеличен. Теперь он составляет 540% урона от оружия, а не 450%, как раньше.
+Дополнительный урон от этой способности был уменьшен до 302.
+
+  * «Гнев деревьев» и аналогичный ему эффект, срабатывающий после
+использования способности «Хватка природы», больше не наносят урона.
+
+  * Способность «Озарение» теперь позволяет цели восполнять ману в объеме 5%
+от ее максимального запаса за 10 секунд. В случае, если объектом применения
+способности является сам друид, она по-прежнему позволяет восполнять ману в
+объеме 20% от его максимального запаса за 10 секунд.
+
+  * Длительность эффекта «Ясность мысли», вызванного талантом «Знамение
+ясности», теперь составляет 15 секунд, а не 8, как раньше.
+
+  * Урон от заклинания «Звездный огонь» увеличен примерно на 23%.
+
+  * Урон от способности «Размах» (облик кошки) для игроков 80-го уровня и выше
+был уменьшен. Теперь он составляет 600% урона от оружия, а не 670%, как
+раньше.
+
+  * Урон от заклинания «Гнев» увеличен примерно на 23%.
+
+  * Изменения в талантах
+
+    * Баланс
+
+      * Длительность эффекта «Земля и Луна» была увеличена с 12 до 15 секунд.
+
+      * Визуальное отображение эффекта «Микоз» было изменено, теперь оно
+выглядит лучше и меньше мешает игрокам.
+
+      * Изменено действие таланта «Лунный поток». При произнесении заклинания
+«Лунный огонь» друид вызывает эффект «Лунный поток». Он увеличивает прямой
+урон, наносимый заклинанием друида «Лунный огонь», на 15/30/45% и снижает
+затраты маны на его произнесение на 10/20/30%. Эффект суммируется до 3 раз и
+длится 3 секунды. Во время действия эффекта «Лунный поток» при произнесении
+заклинания «Лунный огонь» друид получает 8 единиц солнечной энергии, а при
+произнесении заклинания «Солнечный огонь» – 8 единиц лунной энергии.
+Количество получаемой солнечной или лунной энергии не зависит от количества
+очков, вложенных в этот талант, и количества зарядов «Лунного потока». Если
+друид хочет задержать переход в состояние затмения (или выход из него), то он
+должен использовать одну из двух своих основных атак, которые не имеют влияния
+на скорость наступления затмений (либо «Звездный огонь», либо «Гнев»).
+
+      * У таланта «Столп солнечного света» появился новый визуальный эффект.
+
+      * «Дикий гриб»: после взрыва диких грибов теперь также может сработать
+эффект «Земля и Луна», как это уже делают заклинания «Звездный огонь» и
+«Гнев».
+
+    * Сила зверя
+
+      * По сравнению с другими «танками» урон от способностей друидов,
+используемых в облике медведя, рос слишком быстро с улучшением экипировки,
+поэтому в баланс были внесены некоторые изменения. Все приведенные ниже цифры
+относятся к персонажам 85-го уровня. Для персонажей более низких уровней
+значения будут ниже.
+
+        * Базовый урон от способности «Волшебный огонь» (облик зверя) теперь
+составляет 2950, а не 679, как раньше. Коэффициент силы атаки теперь
+составляет 10,8%, а не 15%, как раньше.
 
-    * Frost
+        * Базовый урон от способности «Трепка» теперь составляет 35, а не 8,
+как раньше. Коэффициент силы атаки теперь составляет 19%, а не 26,4%, как
+раньше.
 
-      * Annihilation now increases Obliterate damage by 12/24/36%, down from
-15/30/45%.
+        * Коэффициент урона от оружия способности «Смять» теперь составляет
+60%, а не 80%, как раньше. За каждый заряд эффекта «Растерзать» эта
+способность теперь наносит 1623 единицы урона, а не 361, как раньше.
 
-      * Hungering Cold now has a 1.5-second cast time.
+        * Способность «Увечье» (облик медведя) теперь наносит 190% урона от
+оружия, а не 260%, как раньше. Величина дополнительного урона теперь
+составляет 3306 единиц, а не 754, как раньше.
 
-    * Unholy
+        * Базовый урон от способности «Размах» теперь составляет 929 единиц, а
+не 215, как раньше. Коэффициент силы атаки теперь составляет 12,3%, а не
+17,1%, как раньше.
 
-      * Unholy Might now increases Strength by 10%, up from 5%.
+        * Базовый начальный урон от способности «Взбучка» теперь составляет
+1042 единицы, а не 339, как раньше. Коэффициент силы атаки для первоначального
+урона был понижен до 9,82% с 19,2%. Базовый периодический урон теперь
+составляет 581 единицу, а не 189, как раньше. Коэффициент силы атаки для
+периодического урона был понижен до 1,67% с 3,26%. Исправлен следующий
+недочет: теперь показатели брони больше не уменьшают периодический урон,
+наносимый этой способностью.
 
-  * Glyphs
+        * Базовый начальный урон от способности «Растерзать» теперь составляет
+3608 единиц, а не 2089, как раньше. Коэффициент силы атаки для первоначального
+урона был понижен до 5,52% с 7,66%. Базовый периодический урон теперь
+составляет 69 единиц, а не 16, как раньше. Коэффициент силы атаки для
+периодического урона был понижен до 0,369% с 0,512%.
 
-    * Glyph of Dark Succor has been redesigned. Rather than placing a 15%
-maximum health floor on Death Strike healing while in Frost or Unholy
-Presence, it causes the next Death Strike within 15 seconds after killing a
-foe that yields experience or Honor Points to heal for at least 20% of the
-death knight's maximum health.
+      * Теперь талант «Безусловный рефлекс» уменьшает получаемый урон на
+9/18%, а не на 6/12%, как раньше.
 
-**[![][11]][39] [Druids][39]**
+    * Исцеление
 
-  * Druids now gain 1 attack power per point of Strength, down from 2. They
-continue to gain 2 attack power per point of Agility while in Cat Form or Bear
-Form.
+      * Искусность «Симбиоз» была удалена из игры и заменена искусностью
+«Гармония». «Гармония» увеличивает прямое исцеление на дополнительные 10% и
+дает бонус 10% к периодическому исцелению в течение 10 секунд после применения
+друидом заклинания прямого исцеления. Каждое очко искусности увеличивает оба
+бонуса на дополнительные 1,25%. С точки зрения этой искусности заклинаниями
+прямого исцеления считаются «Целительное прикосновение», «Покровительство
+Природы», «Быстрое восстановление» и первоначальный целительный эффект
+способности «Восстановление». Все прочее исцеление друида считается
+периодическим.
 
-  * Entangling Roots and the equivalent spell triggered by Nature's Grasp no
-longer deal damage.
+  * Символы
 
-  * Ferocious Bite damage has been increased by 15%. In addition, its base
-cost has been reduced to 25 energy and it can use up to 25 energy, for up to a
-100% damage increase.
+    * Символ берсерка увеличивает время действия способности «Берсерк» на 10
+секунд, а не на 5, как раньше.
 
-  * Innervate now grants an ally target 5% of his or her maximum mana over 10
-seconds, but still grants 20% of the druid's maximum mana over 10 seconds when
-self-cast.
+    * Изменено действие символа свирепого укуса. Теперь благодаря этому
+символу способность «Свирепый укус» позволяет заклинателю восполнять 1% от
+максимального запаса здоровья за каждые 10 единиц энергии, использованные этой
+способностью.
 
-  * Mangle (Cat) damage at level 80 and above has been increased to 530%
-weapon damage, up from 460%.
+    * Теперь, если друид применяет способность «Озарение» к дружественной
+цели, символ озарения позволяет ему восполнять 10% маны от ее максимального
+запаса в дополнение к основным эффектам «Озарения».
 
-  * Omen of Clarity clearcasting buff from now lasts 15 seconds, up from 8
-seconds.
+  * Комплекты предметов
 
-  * Ravage damage at level 80 and above has been increased to 975% weapon
-damage, up from 850%.
+    * Бонус PvE-комплекта из 4 предметов 11-й ступени для друида со
+специализацией «Баланс», «Парад созвездий», теперь повышает вероятность
+критического эффекта заклинаний на 15% и имеет три заряда. С каждым
+срабатыванием вероятность уменьшается на 5% (ранее вероятность повышалась на
+99% и уменьшалась на 33% с каждым критическим ударом). Раньше этот бонус был
+настолько значительным, что мешал игрокам переходить на комплекты 12-й
+ступени. В качестве компенсации был изменен урон от заклинаний «Звездный
+огонь» и «Гнев» (см. раздел «Изменения в талантах»).
 
-  * Shred damage at level 80 and above has been increased to 520% weapon
-damage, up from 450%.
+    * Комплект 11-й ступени из 2 предметов брони для друида со специализацией
+«Исцеление»: этот комплект предметов был переработан, чтобы отвечать новой
+искусности друидов со специализацией «Исцеление». Теперь данный комплект дает
+друидам бонус к духу во время действия бонуса искусности «Гармония».
 
-  * Swipe (Cat) now deals 600% weapon damage at level 80 or higher, down from
-670%.
+  * Исправления, связанные с друидами
 
-  * Talent Specializations
+    * Раньше в некоторых сражениях можно было использовать «Звериный рывок» в
+тех случаях, когда расстояние от друида до цели было меньше минимального
+допустимого значения. Эта неполадка была устранена.
 
-    * Balance
+**[![][13]][241] [Охотники][241]**
 
-      * Earth and Moon's duration has been increased to 15 seconds, up from
-12.
+  * Урон от способности «Залп» был уменьшен. Теперь она наносит 120% урона от
+оружия для игроков 80-го уровня и выше, а не 137%, как раньше.
 
-      * Fungal Growth spell visual effect has been updated to be less visually
-intrusive and more aesthetic.
+  * Характеристики охотника, такие как меткость, мастерство, проникающая
+способность заклинаний и сила атаки, теперь корректно влияют на урон от
+ловушек охотника.
 
-      * Lunar Shower has been redesigned. When casting Moonfire, the druid
-gains Lunar Shower. Lunar Shower increases the direct damage done by Moonfire
-by 15/30/45%, and reduces the mana cost by 10/20/30%. This effect stacks up to
-3 times and lasts 3 seconds. While under the effects of Lunar Shower, Moonfire
-generates 8 Solar Energy, and Sunfire generates 8 Lunar Energy. The amount of
-Lunar/Solar Energy gained does not change based on the number of points spent
-in the talent, or stacks of Lunar Shower. Those druids who wish to delay
-transition in or out of an Eclipse state should now cast the one of their two
-basic attacks which will not move the Eclipse bar (either Starfire or Wrath).
+  * Изменения в талантах
 
-      * Solar Beam has a new spell effect.
+    * Стрельба
 
-      * Wild Mushroom: Detonate can now also trigger Earth and Moon, in
-addition to Starfire and Wrath.
+      * Способность «Верная цель» теперь повышает вероятность критического
+эффекта, если уровень здоровья цели выше 90%, а не 80%.
 
-    * Feral
+    * Выживание
 
-      * Bear damage abilities were scaling too fast with higher gear levels
-compared to other tanks, so the following balance changes have been made. All
-the numbers cited are for level 85 characters; numbers will be lower for
-lower-level characters.
+      * Урон, наносимый «Черной стрелой», был увеличен примерно на 40%.
 
-        * Faerie Fire (Feral) base damage has been raised to 2950, up from
-679. Attack power scaling has been decreased to 10.8%, down from 15%.
+  * Питомцы
 
-        * Maul base damage has been raised to 35, up from 8. Attack power
-scaling has been decreased to 19%, down from 26.4%.
+    * В игру были добавлено 10 новых, редких зверей, каждого из которых будет
+очень сложно приручить. Сможете ли вы стать первым охотником, который укротит
+Мер'тилака, самого редкого и свирепого зверя? Но прежде чем вы получите доступ
+ко всем новым питомцам, вам придется сделать множество ежедневных заданий в
+Молодом лесу и на Огненной передовой.
 
-        * Pulverize weapon damage percent has been decreased to 60%, down from
-80%. Damage per Lacerate application has been increased to 1623, up from 361.
+    * Изменено действие таланта питомца «Вмешательство» (специализация
+«Упорство»). Питомец бросается к участнику группы, снижая урон следующей
+направленной против этого участника атаки ближнего или дальнего боя на 50% от
+общего запаса здоровья питомца.
 
-        * Mangle (Bear) weapon damage percent has been decreased to 190%, down
-from 260%. Bonus damage has been increased to 3306, down from 754.
+**[![][15]][242] [Маги][242]**
 
-        * Swipe base damage has been increased to 929, up from 215. Attack
-power scaling has been decreased to 12.3%, down from 17.1%.
+  * Урон от заклинания «Чародейская вспышка» уменьшен на 5%.
 
-        * Thrash initial base damage has been increased to 1464, up from 339.
-Initial damage attack power scaling has been decreased to 13.8%, down from
-19.2%. Periodic base damage has been increased to 816, up from 189. Periodic
-damage attack power scaling has been decreased to 2.35%, down from 3.26%.
+  * «Огненная глыба»: раньше это заклинание наносило немного больше урона при
+использовании во время срабатывания таланта «Путь огня». Теперь количество
+урона, наносимого этим заклинанием без срабатывания таланта «Путь огня»,
+увеличено, вследствие чего в обоих случаях «Огненная глыба» наносит одинаковое
+количество урона.
 
-        * Lacerate initial base damage has been increased to 3608, up from
-2089. Initial damage attack power scaling has been decreased to 5.52%, down
-from 7.66%. Periodic base damage has been increased to 69, up from 16.
-Periodic damage attack power scaling has been decreased to 0.369%, down from
-0.512%.
+  * Затраты маны на применение заклинания «Чарокрад» выросли на 100%.
 
-      * Natural Reaction damage reduction has been increased to 9/18%, up from
-6/12%.
+  * Изменения в талантах
 
-    * Restoration
+    * Огонь
 
-      * Symbiosis (Mastery) has been removed and replaced with Harmony.
-Harmony increases direct healing by an additional 10%, and casting direct
-healing spells grants an additional 10% bonus to periodic healing for 10
-seconds. Each point of mastery increases each bonus by an additional 1.25%.
-Healing Touch, Nourish, Swiftmend, and the initial heal from Regrowth are
-considered direct healing spells for the purposes of this Mastery. All other
-healing from druid spells is considered periodic.
+      * «Сотрясение»: эффект «Живая бомба», вызванный этим талантом, теперь
+будет распространяться лишь на две дополнительные цели. Если цель подвержена
+последнему наложенному эффекту «Живой бомбы» и также является целью для
+эффекта накладываемого «Сотрясением», то эффект больше не будет сниматься с
+этой цели. Если ли же в момент срабатывания «Сотрясения» под действием «Живой
+бомбы» находится несколько целей, эффект «Живой бомбы» останется активным
+только на той цели, к которой он был применен в последнюю очередь, а также
+будет наложен на две другие ближайшие цели.
 
-  * Glyphs
+    * Лед
 
-    * Glyph of Berserk duration increase is now 10 seconds, up from 5.
+      * Теперь применение одного из заклинаний «Глубокая заморозка» или
+«Кольцо мороза» вызывает снижение действенности повторяющихся эффектов для
+второго в дополнение к тем заклинаниям, на которые они влияли подобным образом
+и раньше.
 
-    * Glyph of Ferocious Bite has been redesigned. It now causes Ferocious
-Bite to heal the caster for 1% of maximum health for each 10 energy used.
+**[![][17]][243] [Паладины][243]**
 
-    * Glyph of Innervate now causes the druid to gain 10% of his or her
-maximum mana over 10 seconds when Innervate is used on a friendly target, in
-addition to Innervate's base effect.
+  * Затраты маны на применение способности «Божественный свет» теперь
+составляют 35% от базового запаса маны, а не 30%, как раньше.
 
-**[![][13]][40] [Hunters][40]**
+  * Затраты маны на применение способности «Вспышка Света» теперь составляют
+31% от базового запаса маны, а не 27%, как раньше.
 
-  * Multi-shot damage has been reduced. It now deals 120% weapon damage at
-level 80 or higher, down from 137%.
+  * Защитник древних королей использует новый тип поведения «Поддержка».
 
-  * Traps now scale with hunter stats such as hit, expertise, spell
-penetration and attack power as intended.
+  * Затраты маны на применение способности «Свет небес» теперь составляют 12%
+от базового запаса маны, а не 10%, как раньше.
 
-  * Pets
+  * У способностей «Укор», «Божественный щит» и «Божественная защита»
+появились новые значки.
 
-    * Intervene (Pet Tenacity) has been redesigned. The pet runs at high speed
-toward a group member, reducing the damage done by the next melee or ranged
-attack made against them equal to 50% of the pet's total health.
+  * Теперь «Печать праведности» срабатывает при любой атаке ближнего боя, а не
+только при атаке, действующей на одну цель. Таким образом, теперь «Печать
+праведности» срабатывает также после использования «Молота праведника» (только
+физический урон) и «Божественной бури». Кроме того, теперь урон от «Печати
+праведности» может быть критическим.
 
-**[![][15]][41] [Mages][41]**
+  * Изменения в талантах
 
-  * Pyroblast cast when Hot Streak is not active was doing slightly less
-damage than the Hot Streak version. Its damage has been increased so that both
-versions of Pyroblast now do the same amount of damage.
+    * Свет
 
-  * Spellsteal mana cost has been increased by 100%.
+      * «Частицу Света» больше нельзя рассеять. Кроме того, теперь при
+использовании заклинания «Свет небес» наделенный «Частицей Света» персонаж
+восстанавливает здоровье в размере 100% от здоровья, восстанавливаемого
+основной целью. Объем здоровья, восстанавливаемого «Частицей Света» при
+использовании других целительных заклинаний, остается 50%.
 
-  * Talent Specializations
+      * Изменено действие таланта «Обличение». Он по-прежнему снижает затраты
+маны на применение заклинания «Экзорцизм». Однако теперь заклинание «Шок
+небес» больше не оказывает никакого влияние на последующее заклинание
+«Экзорцизм» (раньше с вероятностью 25/50% заклинание «Экзорцизм»,
+произнесенное после «Шока небес», произносилось мгновенно и не требовало
+затрат маны). Вместо этого данный талант с вероятностью 50/100% не позволит
+способностям цели «Экзорцизма» вызывать критические эффекты в течение
+последующих 6 секунд. Данный эффект может быть рассеян.
 
-    * Fire
+      * Затраты маны на применение способности «Шок небес» теперь составляют
+7% от базового запаса маны, а не 8%, как раньше.
 
-      * When Impact spreads Living Bomb, it will only be spread to two
-additional targets. The net effect is that if the mage's most recent Living
-Bomb target is the same as their Impact target, that target will no longer
-lose the Living Bomb effect. If Living Bomb is active on multiple targets when
-the Impact effect is cast, Living Bomb will remain active on the most recent
-Living Bomb target, and will be added to two other nearby targets.
+      * Искусность «Озаряющее исцеление» была слегка изменена: теперь когда
+паладин обновляет действующий эффект «Озаряющее исцеление» на цели, новый
+объем поглощения суммируется со старым, и время действия обновляется.
+Количество поглощаемого урона не может превышать 1/3 от здоровья паладина.
 
-    * Frost
+      * Талант «Прилив Света» теперь может сократить время произнесения
+последующего заклинания «Вспышка Света» на 0,75/1,5 секунд в дополнение к
+заклинаниям «Свет небес» и «Божественный свет». Кроме того, этот талант
+получил графическое отображение срабатывания таланта, ранее принадлежавшее
+таланту «Обличение», в связи с изменением действия последнего.
 
-      * Deep Freeze and Ring of Frost will cause diminishing returns on each
-other, in addition to the spells they normally share diminishing returns with.
+      * Теперь талант «Скорость Света» увеличивает скорость передвижения после
+произнесения заклинаний «Святое сияние» и «Божественная защита». Кроме того,
+теперь этот талант уменьшает время восстановления способности «Святое сияние»
+на 13/26/40 секунд, а не на 10/20/30, как раньше.
 
-**[![][17]][42] [Paladins][42]**
+      * Теперь «Путь Света» в дополнение к своим имеющимся эффектам
+увеличивает количество здоровья, восстанавливаемого «Торжеством», на 30%.
 
-  * Divine Light mana cost has been increased to 35% of base mana, up from
-30%.
+    * Защита
 
-  * Flash of Light mana cost has been increased to 31% of base mana, up from
-27%.
+      * У способности «Ревностный защитник» новый визуальный эффект.
 
-  * Holy Light mana cost has been increased to 12% of base mana, up from 10%.
+      * Талант «Под защитой Света» больше не имеет никакого влияния на
+способность «Щит небес».
 
-  * Rebuke, Divine Shield and Divine Protection have new icons.
+      * Затраты маны на применение способности «Молот праведника» теперь
+составляют 10% от базового запаса маны, а не 12%, как раньше, для приведения в
+соответствие со способностью «Удар воина Света».
 
-  * Seal of Righteousness now can be activated by any melee ability, not just
-single target melee abilities. This adds Hammer of the Righteous (the physical
-component) and Divine Storm to the list of abilities that can activate this
-seal. In addition, Seal of Righteousness procs can now be critical effects.
+      * Изменено действие таланта «Щит небес». Теперь этот талант является
+активируемой способностью, не учитываемой в общем времени восстановления. Она
+увеличивает количество блокируемого щитом паладина урона на 20% на 10 секунд и
+имеет время восстановления, составляющее 30 секунд.
 
-  * Talent Specializations
+      * Талант «Мудрое правосудие» теперь срабатывает после любых попыток
+совершить «Правосудие», то есть, даже если «Правосудие» не достигло цели,
+«Мудрое правосудие» все равно восстановит ману паладина. Это было сделано для
+того, чтобы паладины со специализацией талантов «Защита» не испытывали
+недостатка маны, если у них недостаточный рейтинг меткости.
 
-    * Holy
+    * Воздаяние
 
-      * Beacon of Light can no longer be dispelled. In addition, it now
-transfers 100% of the heal from Holy Light, but still 50% of the heal from
-other spells.
+      * Талант «Допрос с пристрастием» теперь увеличивает время действия
+заклинания «Дознание» на 66/133/200%, а не на 50/100/150%, как раньше.
 
-      * Denounce has been redesigned. It still reduces the mana cost of
-Exorcism. However, it no longer has a chance on Holy Shock of making Exorcism
-free and instant. Instead, it has a 50/100% chance to prevent the Exorcism
-target from causing critical effects for the next 6 seconds. This effect can
-be dispelled.
+      * Теперь при изученном таланте «Печать повиновения» способность «Печать
+праведности» будет наносить урон неограниченному количеству дополнительных
+целей в ближнем бою, а не двум, как раньше.
 
-      * Holy Shock mana cost has been decreased to 7% of base mana, down from
-8%.
+      * Эффект «Самоотвержение» больше нельзя рассеять, а также его эффект
+больше не может быть украден при помощи способности «Чарокрад». Кроме того, в
+дополнение к имеющимся эффектам данный талант снижает время восстановления
+заклинания «Торжество» на 5/10 секунд.
 
-      * Infusion of Light can now lower the cast time of Flash of Light by
-0.75/1.5 seconds, in addition to Holy Light and Divine Light. In addition, the
-old Denounce spell overlay effect has been transferred to Infusion of Light
-since Denounce is no longer a proc.
+    * Символы
 
-      * Speed of Light now increases movement speed when Holy Radiance or
-Divine Protection are cast. In addition, this talent now reduces the cooldown
-of Holy Radiance by 13/26/40 seconds, up from 10/20/30.
+      * Символ печати правды: теперь бонус к мастерству, получаемый благодаря
+этому символу, действует и в случае активной «Печати праведности».
 
-      * Walk in the Light now improves Word of Glory healing by 30%, in
-addition to its current effects.
+**[![][19]][244] [Жрецы][244]**
 
-    * Protection
+  * Урон от способности «Всепожирающая чума» был уменьшен на 12%.
 
-      * Ardent Defender has a new spell effect.
+  * Урон от способности «Взрыв разума» был увеличен на 12%.
 
-      * Guarded By The Light no longer interacts with Holy Shield in any way.
+  * Теперь исчадие Тьмы использует тип поведения «Поддержка».
 
-      * Guardian of Ancient Kings uses the new Assist pet stance
-functionality.
+  * Урон от способности «Слово Тьмы: Смерть» был увеличен на 12%.
 
-      * Hammer of the Righteous mana cost has been lowered to 10%, down from
-12% to match Crusader Strike.
+  * Урон от способности «Слово Тьмы: Боль» был уменьшен на 12%.
 
-      * Holy Shield has been redesigned. This talent is now an activated
-ability off the global cooldown. It grants 20% increased block amount to a
-paladin's shield blocks for 10 seconds, with a 30-second cooldown.
+  * Изменения в талантах
 
-      * Judgements of the Wise now procs on attempt rather than on strike,
-which means judgements that miss can still grant mana. This is to help ensure
-Protection paladins are not starved for mana if they aren't capped on hit
-rating.
+    * Тьма
 
-    * Retribution
+      * Урон от способности «Пытка разума» был увеличен на 12%.
 
-      * The Seals of Command talent now makes Seal of Righteousness hit an
-unlimited number of melee targets, instead of only 2 additional targets.
+      * Для применения заклинания «Глубинный ужас» больше не требуется
+находиться лицом к цели, что уравнивает его с прочими эффектами контроля
+мгновенного действия (без задержки, обусловленной расстоянием до противника).
 
-      * Selfless Healer can no longer be dispelled and cannot be stolen via
-Spellsteal; and, in addition to its current effects, it lowers the cooldown of
-Word of Glory by 5/10 seconds.
+      * «Грех и покарание»: теперь эффект паники, накладывающийся на цели
+после рассеивания «Прикосновения вампира», больше не влечет за собой снижения
+действенности повторяющихся эффектов.
 
-  * Glyphs
+      * Урон от способности «Прикосновение вампира» был уменьшен на 12%.
 
-    * Glyph of Seal of Truth expertise bonus now also works when Seal of
-Righteousness is active.
+  * Исправления, связанные со жрецами
 
-**[![][19]][43] [Priests][43]**
+    * Использование колодца Света больше не будет вызывать преждевременного
+прекращения действия поддерживаемых заклинаний.
 
-  * Devouring Plague damage done has been decreased by 12%.
+**[![][21]][245] [Разбойники][245]**
 
-  * Mind Blast damage done has been increased by 12%.
+  * Время восстановления способности «Плащ Теней» теперь составляет 2 минуты,
+а не 90 секунд, как раньше. Кроме того, эта способность теперь не учитывается
+в общем времени восстановления.
 
-  * Shadowfiend uses the new Assist pet stance functionality.
+  * Способности «Боевая готовность» и «Плащ Теней» теперь имеют общее время
+восстановления.
 
-  * Shadow Word: Death damage done has been increased by 12%.
+  * Эффект «Ослепление» теперь действует на NPC в течение 1 минуты, а на
+игровых персонажей – 8 секунд, как и раньше.
 
-  * Shadow Word: Pain damage done has been decreased by 12%.
+  * Теперь отсчет времени восстановления способности «Незаметность» снова
+начинается в тот момент, когда разбойник выходит из состояния незаметности.
 
-  * Talent Specializations
+  * Изменения в талантах
 
-    * Shadow
+    * Ликвидация
 
-      * Mind Flay damage done has been increased by 12%.
+      * Способность «Решимость ликвидатора» теперь увеличивает урон на 20%, а
+не на 15%, как раньше.
 
-      * Sin and Punishment's Vampiric Touch backlash fear effect no longer has
-diminishing returns.
+      * Талант «Тлетворные яды» теперь увеличивает урон от ядов на 12/24/36%,
+а не на 7/14/20%, как раньше.
 
-      * Vampiric Touch damage done has been decreased by 12%.
+    * Бой
 
-  * Priest Bug Fixes
+      * Талант «Жар битвы» теперь повышает силу атаки на 3/6%, а не на 2/4%,
+как раньше.
 
-    * Players will no longer prematurely cancel a channeled spell when
-clicking on the Lightwell.
+      * Теперь «Живучесть» повышает силу атаки на 30%, а не на 25%, как
+раньше.
 
-**[![][21]][44] [Rogues][44]**
+    * Скрытность
 
-  * Cloak of Shadows cooldown is now 2 minutes, up from 90 seconds. In
-addition, Cloak of Shadows is no longer on the global cooldown.
+      * Теперь талант «Неуловимость» сокращает время восстановления
+способности «Плащ Теней» на 15/30 секунд, а не на 10/20, как раньше. Кроме
+того, эта способность сокращает время восстановления способности «Боевая
+готовность» на 15/30 секунд.
 
-  * Combat Readiness and Cloak of Shadows now share a cooldown.
+      * Базовый урон способности «Кровоизлияние» увеличен на 40%.
 
-  * Blind duration against enemy NPCs is now 1 minute, while the duration
-against players remains 8 seconds.
+      * Теперь талант «Вспарывание вен» увеличивает урон, наносимый истекающим
+кровью целям, на 8/16%, а не на 5/10%, как раньше.
 
-  * Stealth now once again begins its cooldown once the rogue leaves Stealth.
+**[![][23]][246] [Шаманы][246]**
 
-  * Talent Specializations
+  * Урон от способности «Кольцо огня» увеличен на 15%.
 
-    * Assassination
+  * «Щит молний» и «Водный щит» больше нельзя рассеять.
 
-      * Assassin's Resolve damage bonus has been increased to 20%, up from
-15%.
+  * Способность «Высвободить чары стихий» теперь относится к магии сил природы
+и поэтому больше не может использоваться, если шаману недоступны заклинания
+этой школы.
 
-      * Vile Poisons now increases poison damage by 12/24/36%, up from
-7/14/20%.
+  * Заклинание «Высвободить чары воздуха» теперь наносит 175% урона от оружия,
+а не 125%.
 
-    * Combat
+  * Минимальное время между срабатываниями эффекта «Водный щит» уменьшено до
+3,5 секунд для приведения в соответствие с другими типами щитов шамана. Объем
+маны, восполняемой при срабатывании «Водного щита», был уменьшен на 50%.
 
-      * Savage Combat now increases attack power by 3/6%, up from 2/4%.
+  * Изменения в талантах
 
-      * Vitality now increases attack power by 30%, up from 25%.
+    * Стихии
 
-    * Subtlety
+      * Теперь при изученном таланте «Зов пламени» способность «Кольцо огня»
+также на 3/6 секунд увеличивает время действия эффекта «Огненный шок» на цели,
+получающие урон от «Кольца огня».
 
-      * Elusiveness now reduces the cooldown of Cloak of Shadows by 15/30
-seconds, up from 10/20, and now also reduces the cooldown of Combat Readiness
-by 15/30 seconds.
+      * Талант «Потоки лавы» теперь увеличивает скорость произнесения
+заклинаний при рассеивании заклинания «Огненный шок» на 30/60/90%, а не на
+10/20/30%, как раньше.
 
-      * Sanguinary Vein damage to bleeding targets has been increased to
-8/16%, from 5/10%.
+      * Талант «Гром и молния» теперь снижает скорость передвижения игроков,
+которых он отбрасывает в сторону, на 40% в течение 5 секунд.
 
-**[![][23]][45] [Shaman][45]**
+    * Совершенствование
 
-  * Fire Nova damage has been increased by 15%.
+      * Теперь «Удар бури» наносит 225% урона от оружия, а не 125%, как
+раньше.
 
-  * Lightning Shield and Water Shield can no longer be dispelled.
+    * Исцеление
 
-  * Unleash Elements is now in the Nature school, and thus can no longer be
-used if a shaman's Nature school has been locked out.
+      * Талант «Улучшенный водный щит» был переработан и теперь называется
+«Упоение». Во время действия «Водного щита» этот талант позволяет
+восстанавливать ману при критическом эффекте исцеляющих заклинаний прямого
+действия (эффект от 2-го уровня «Упоение» приблизительно равен 150% эффекта
+бывшего «Улучшенного водного щита», срабатывавшего при критическом эффекте
+заклинаний «Волна исцеления» или «Великая волна исцеления», и уменьшен на
+соответствующую величину для более быстрых заклинаний или заклинаний,
+применимых к множественным целям).
 
-  * Water Shield has had its internal cooldown reduced to 3.5 seconds, once
-again matching other shields. The amount of mana restored when Water Shield
-procs has been reduced by 50%.
+      * Талант «Прилив маны» теперь повышает дух всего рейда на величину,
+равную 200% духа заклинателя, а не 400%, как раньше.
 
-  * Talent Specializations
+  * Символы
 
-    * Elemental
+    * Символ освобожденной молнии (новый основной символ) теперь позволяет
+произносить заклинание «Молния» в движении.
 
-      * Call of Flame now also causes Fire Nova to add 3/6 seconds to the
-duration of Flame Shock auras on targets that Fire Nova damages.
+  * Комплекты предметов
 
-      * Lava Flows now grants a 30/60/90% haste buff when a Flame Shock effect
-is dispelled, up from 10/20/30%.
+    * Был изменен бонус от 4 предметов из комплекта брони шамана со
+специализацией «Стихии» для PvP (Громовой кулак гладиатора). Теперь благодаря
+этому бонусу, когда шаман получает урон, число зарядов «Щита молний»
+увеличивается вплоть до 3 (или до 9 с изученным талантом «Громовые раскаты»).
 
-      * Thunderstorm now reduces the movement speed of players it knocks back
-by 40% for 5 seconds.
+**[![][25]][247] [Чернокнижники][247]**
 
-    * Restoration
+  * Заклинание «Ожог души» теперь доступно на 20-м уровне, а не на 54-м.
 
-      * Improved Water Shield has been redesigned and renamed Resurgence. When
-Water Shield is active, Resurgence causes critical direct heals to restore
-mana (Resurgence rank 2 is roughly equal to 150% of the old Improved Water
-Shield value when a Healing Wave or Greater Healing Wave critically hits, and
-scaled down accordingly for faster or multi-target spells).
+  * У способности «Жатва душ» появился новый графический эффект.
 
-      * Mana Tide now grants 200% of the caster's Spirit, down from 400%.
+  * Символы
 
-  * Glyphs
+    * Время восстановления, получаемое способностью «Обмен душ» при
+использовании символа обмена душ, увеличено с 15 до 30 секунд.
 
-    * Glyph of Unleashed Lightning (new Prime glyph) allows Lightning Bolt to
-be cast while moving.
+  * Исправления, связанные с чернокнижниками
 
-**[![][25]][46] [Warlocks][46]**
+    * Чернокнижник больше не может выйти из боя во время действия заклинания
+«Похищение души».
 
-  * Soul Harvest has a new spell effect.
+**[![][27]][248] [Воины][248]**
 
-  * Warlock Bug Fixes
+  * Время восстановления способности «Превосходство» теперь составляет 1,5
+секунды и запускает общее время восстановления. Время восстановления
+«Превосходства», срабатывающего в результате действия таланта «Вкус крови», не
+изменилось.
 
-    * It is no longer possible to leave combat while channeling Drain Soul.
+  * Способность «Безрассудство» больше нельзя использовать одновременно со
+способностью «Смертельное спокойствие». Каждая из способностей теперь не может
+быть активирована во время действия другой. Однако применение одной из этих
+способностей не запускает полное время восстановления второй.
 
-**[![][27]][47] [Warriors][47]**
+  * Способности «Возмездие», «Безрассудство» и «Глухая оборона» больше не
+требуют конкретной стойки.
 
-  * Overpower now has a 1.5-second cooldown and global cooldown (Taste for
-Blood's Overpower cooldown has not changed).
+  * Изменения в талантах
 
-  * Retaliation, Recklessness and Shield Wall no longer have stance
-requirements.
+    * Оружие
 
-**[Dungeons & Raids][48]**
+      * Специализация на двуручном оружии теперь увеличивает урон от оружия на
+12%, а не на 20%.
 
-  * Dungeon Journal is in the process of being implemented. While some UI
-elements may exist in the current Public Test Realm build, the feature is not
-yet complete.
+    * Неистовство
 
-  * The Firelands, a new 10- and 25-player raid, is now available for limited
-testing. Please visit the [PTR Discussion forum][49] for the latest raid
-testing schedule.
+      * Специализация на бое двумя руками теперь увеличивает урон от оружия на
+5%, а не на 10%.
 
-  * The Bastion of Twilight
+  * Исправления, связанные с воинами
 
-    * The damage modifier on normal difficulty has been reduced for Arion,
-Elementium Monstrosity, Feludius, Ignacius, and Terrastra.
+    * Раньше в некоторых сражениях можно было использовать «Рывок», когда
+расстояние от воина до цели было меньше минимального допустимого значения. Эта
+неполадка была устранена.
 
-    * One of each type of bound elemental in the Ascendant Council chamber has
-been removed.
+**Валюта**
 
-    * Arion
+  * Очки чести и завоеваний
 
-      * Chain Lightning damage has been reduced.
+    * Все имеющиеся очки завоеваний (указанные на вкладке «Валюта») были
+конвертированы в очки чести. В случае превышения допустимого лимита все
+дополнительные очки должны быть потрачены в течение недели после выхода 4.2 и
+до начала 10-го сезона. Допустимый лимит для очков чести составляет 4000.
+После начала 10-го сезона за каждое дополнительное очко чести игрок получит 35
+серебряных монет. Золото будет отправлено игроку при помощи внутриигровой
+почты.
 
-    * Cho'gall
+    * Минимальное ограничение на количество очков завоеваний, которые можно
+получить в течение недели на аренах, теперь составляет 1350 для игроков,
+имеющих 1500 или меньше очков рейтинга арены. Максимальное количество
+составляет 2700, если у игрока 3000 и более очков рейтинга арены. В промежутке
+между этими двумя значениями предел количества доступных очков продолжает
+изменяться нелинейно. Для сравнения: во время 9-го сезона этот предел
+изменялся в промежутке от 1343 до 3000.
 
-      * Health, melee damage, Health of Corrupting Adherent, Depravity damage,
-Corrupting Crash damage, Flaming Destruction damage, and Unleashed Shadows
-damage have all been reduced by 20%.
+    * Теперь для очков завоеваний, полученных на полях боя и на аренах,
+существуют отдельные максимальные значения. Для рейтинговых полей боя
+ограничение на количество очков будет выше на 22,2%, что означает, что этот
+предел будет изменяться в промежутке от 1650 до 3300 очков. За неделю игроки
+смогут получить количество очков завоеваний, равное максимальному из этих двух
+чисел, но, достигнув одного из двух ограничений (для арен или для полей боя),
+игроки больше не смогут получать очки завоеваний из данного источника. Очки
+завоеваний, полученные на том поле боя, которому посвящены текущие выходные,
+учитываются только в общем максимальном допустимом количестве очков
+завоеваний.
 
-      * Corrupting Crash and Depravity
+      * Пример: в течение первой недели 10-го сезона все игроки начинают с
+рейтингом менее 1500. Таким образом, максимальное количество доступных очков
+для рейтинговых полей боя составит 1650, а максимальное количество доступных
+очков для арены – 1350. Допустим, персонаж одержал достаточное количество
+побед на арене в течение первой недели. После достижения этого значения игрок
+не будет получать очков завоеваний за победы на арене на этой неделе. Тем не
+менее персонаж по-прежнему сможет заработать 300 дополнительных очков, но лишь
+на рейтинговых полях боя либо в качестве бонуса по случаю призыва к оружию на
+поле боя и/или ежедневных побед на случайном поле боя. На следующей неделе
+максимальное количество доступных очков будет пересчитано с учетом рейтинга
+персонажа и, возможно, что оно будет увеличено. Допустим, на следующей неделе
+максимальное количество доступных очков для рейтинга арены составит 1800, а
+для рейтинговых полей боя – 1650. В течение недели персонаж может получить
+всего 1800 очков завоеваний. До 1650 из них могут быть заработаны на
+рейтинговых полях боя, но оставшиеся 150 должны быть получены из другого
+источника.
 
-        * The amount of Corruption they give has been reduced to 5, down from
-10.
+  * Очки доблести и справедливости
 
-      * Corrupted Bite effect caused by Blood of the Old God has been reduced.
+    * Все имеющиеся очки доблести (указанные на вкладке «Валюта») были
+конвертированы в очки справедливости. В случае превышения допустимого лимита
+за каждое дополнительное очко справедливости персонаж получит 47 серебряных
+монет. Золото будет отправлено игроку при помощи внутриигровой почты.
 
-      * Damage taken from Corruption of the Old God per Corrupted Blood has
-been reduced from 3% per stack to 2% per stack.
+    * Максимальное количество очков доблести, которое можно получить за неделю
+во всех подземельях и рейдах, теперь составляет 980 вместо 1250.
 
-      * Debilitating Beam damage has been reduced by 20%.
+      * Максимальное количество очков доблести, которое можно получить за
+прохождение подземелий «Возрождения зандаларов», по-прежнему составляет 980.
 
-      * The duration of Twisted Devotion has been reduced by 25%.
+      * Максимальное количество очков доблести, которое можно получить за
+прохождение подземелий в героическом режиме, по-прежнему составляет 490.
 
-    * Dragon Siblings
+      * Количество очков доблести, которое можно получить за убийство босса в
+Огненных просторах, составляет 120 в рейде для 10 игроков и 140 в рейде для 25
+игроков.
 
-      * Health, melee damage, Twilight Meteorite damage, Devouring Flames,
-Blackout damage, Unstable Twilight damage, Twilight Zone damage, Twilight
-Blast damage, and Fabulous Flames damage have all been reduced by 20%.
+      * Количество очков доблести, которое можно получить за убийство Оку'тара
+в крепости Барадин, составляет 120 в рейде для 10 игроков и 140 в рейде для 25
+игроков.
 
-    * Elementium Monstrosity
+      * Количество очков доблести, которое можно получить за убийство босса в
+Сумеречном бастионе, Твердыне Крыла Тьмы и Троне Четырех Ветров героической
+сложности, составляет 35 в рейде для 10 игроков и 45 в рейде для 25 игроков.
 
-      * Electrical Instability damage has been reduced.
+**[Подземелья и рейды][249]**
 
-    * Feludius
+  * В игру был добавлен интерфейс рейда, с помощью которого можно сохранять
+настройки пользовательского интерфейса для различных типов игры (например, для
+рейдов из 10 человек, рейдов из 25 человек, полей боя и т.д.) для последующего
+использования.
 
-      * Damage due to being frozen while Waterlogged has been reduced.
+    * Игроки могут выбрать режим PvE или PvP, специализацию и размер группы,
+после чего начнется настройка рейдового профиля.
 
-    * Halfus
+    * Данная функция будет доступна группам из 5 игроков после выбора опции
+«Рейдовый интерфейс для группы».
 
-      * Health, melee damage, Fireball/Fireball Barrage damage, Furious Roar
-damage, Scorching Breath damage, and Shadow Nova damage have all been reduced
-by 20%.
+    * В рейдовом профиле можно настроить отображение групп вертикально или
+горизонтально.
 
-      * Nether Scion, Slate Dragon, Storm Rider, Time Warden, and Orphaned
-Emerald Whelp health has been reduced by 20%.
+  * В панель навигации была добавлена кнопка «Рейд», открывающее рейдовое окно
+в панели «Общение».
 
-      * Shadow Nova base cast time has been increased.
+  * Крепость Барадин
 
-    * Ignacious
+    * Оку'тар вырвался из клетки и теперь представляет настоящую угрозу для
+игроков в рейдах для 10 и 25 человек, уже покоривших Тол Барад.
 
-      * Rising Flames now increases damage by 3% per stack, down from 5%.
+  * Сумеречный бастион
 
-    * Terrastra
+    * Теперь на обычном уровне сложности у Аэрона, элементиевого чудовища,
+Аквариона, Огниса и Террастры стал меньше коэффициент урона.
 
-      * Harden Skin now increases physical damage dealt by 20%, down from
-100%.
+    * Из зала Совета Перерожденных теперь убрано по одному элементалю каждого
+типа.
 
-  * Blackwing Descent
+    * Способность обузданного потока «Морозный вихрь» теперь наносит на 50%
+меньше урона.
 
-    * Atramedes
+    * Аэрон
 
-      * Health, melee damage, modulation damage, Roaring Flame Breath damage,
-and Searing Flame damage have all been reduced by 20%.
+      * Урон от заклинания «Цепная молния» был снижен. Расстояние, с которого
+«Цепная молния» может поразить следующего противника, также было уменьшено.
 
-      * Modulation no longer causes Sound in normal difficulty.
+    * Чо’Галл
 
-      * Sound given by Sonar Pulse has been reduced to 3, down from 5.
+      * Здоровье, урон от атак ближнего боя, запас здоровья оскверняющего
+адепта, а также урон от заклинаний «Порочность», «Оскверняющее сокрушение»,
+«Огненное уничтожение» и «Освобожденные тени» были снижены на 20%.
 
-    * Chimaeron
+      * «Оскверняющее сокрушение» и «Порочность»
 
-      * Health has been reduced by 20% and melee damage has been reduced by
-10%.
+        * Количество накладываемых единиц эффекта «Порченая кровь» уменьшено с
+10 до 5.
 
-      * Chimaeron will now only cast two caustic slimes per 30-second cycle.
+      * Отрицательный эффект от способности «Оскверняющий укус», накладываемый
+кровью древнего бога, был снижен.
 
-    * Drakeadon Mongrel
+      * Каждая единица «Порченой крови» увеличивает урон, получаемый от
+эффекта «Порча древнего бога», на 2%, а не на 3%.
 
-      * Time Lapse no longer stuns.
+      * Урон от заклинания «Ослабляющий луч» снижен на 20%.
 
-      * Frost Burn silence is now 3 seconds.
+      * Время действия эффекта «Порочная преданность» снижено на 25%.
 
-    * Dwarven Kings
+    * Тералион и Валиона
 
-      * Whirlwind no longer drops threat.
+      * Здоровье, урон от атак ближнего боя, а также урон от заклинаний
+«Сумеречный метеорит», «Зона сумерек», «Всепоглощающее пламя», «Затмение»,
+«Нестабильный мрак», «Сумеречный взрыв» и «Великое пламя» были снижены на 20%.
 
-      * Execution Sentence now deals damage only.
+    * Элементиевое чудовище
 
-      * Shield of Light absorption has been reduced.
+      * Урон от заклинания «Электрическая нестабильность» был снижен.
 
-    * Magmaw
+    * Акварион
 
-      * Damage and hit points have been reduced by 20%.
+      * Урон от «Заморозки» примененной к цели, находящейся под действием
+заклинания «Промокший насквозь», был снижен.
 
-      * Lava Parasites have been diminished.
+    * Халфий
 
-      * Lava Spew damage, Magma Spit damage, Massive Crash damage, and
-Infectious Vomit damage have all been been reduced.
+      * Здоровье, урон от атак ближнего боя, а также урон от заклинаний
+«Огненный шар», «Залп огненных шаров», «Яростный рев», «Обжигающее дыхание» и
+«Кольцо Тьмы» были снижены на 20%.
 
-      * Mangled Lifeless no longer instantly kills, and its damage has been
-reduced.
+      * Запас здоровья потомка рода Пустоты, сланцевого дракона, штормокрыла,
+стражника времени и осиротевших изумрудных дракончиков был снижен на 20%.
 
-      * Parasitic Infection has been decreased.
+      * Время произнесения заклинания «Кольцо Тьмы» было увеличено.
 
-    * Maloriak
+    * Огнис
 
-      * Health, damage, Aberration health/damage, Arcane Storm damage, Prime
-Subject damage, Flash Freeze/Shatter damage, and Scorching Blast damage have
-all been decreased by 20%.
+      * Теперь заклинание «Занимающееся пламя» увеличивает урон на 3% за
+каждое применение, а не на 5%, как раньше.
 
-      * The Aberration stacking damage buff has been decreased.
+    * Террастра
 
-      * Prime Subjects no longer fixate, and are no longer immune to taunt
-effects.
+      * Теперь заклинание «Каменные доспехи» увеличивает наносимый урон на
+20%, а не на 100%, как раньше.
 
-    * Nefarian
+  * Твердыня Крыла Тьмы
 
-      * Health and melee damage has been reduced by 20%.
+    * Атрамед
 
-      * Animated Bone Warriors take 33 seconds to fall over, down from 50. In
-addition, fewer Animated Bone Warriors spawn.
+      * Здоровье, урон от атак ближнего боя, а также урон от заклинаний
+«Модуляции», «Дыхание ревущего пламени» и «Жгучее пламя» были снижены на 20%.
 
-      * Blast Nova cast time has been increased.
+      * В обычном режиме сложности «Модуляции» больше не усиливают уровень
+шума, издаваемого игроками.
 
-      * Chromatic Prototype health has been reduced by 20%.
+      * Теперь «Ультразвуковой импульс» поднимает уровень шума цели на 3
+единиц, а не на 5, как раньше.
 
-      * Electrocute damage has been reduced by 30%.
+    * Химерон
 
-      * Magma Stacking debuff effect has been reduced by 75%.
+      * Запас здоровья Химерона был снижен на 20%, а урон от его атак ближнего
+боя – на 10%.
 
-      * Nefarian's Shadowblaze cast frequency cannot increase beyond 1 once
-every 15 seconds.
+      * Теперь Химерон будет применять заклинание «Едкая слизь» лишь 2 раза за
+30 секунд.
 
-      * Onyxia health and melee damage has been reduced by 20%.
+    * Дракобель-полукровка
 
-      * Shadowflame Barrage damage has been reduced by 20%.
+      * «Искажение времени» больше не вызывает оглушения.
 
-      * Tail Lash damage has been reduced by 50%.
+      * Теперь «Ледяной ожог» лишает дара речи на 3 секунды.
 
-    * Omnotron Council
+    * Дворфийские короли
 
-      * Health, Melee damage, Electrical Discharge damage, Lightning Conductor
-damage, Health of Poison Bomb, Incineration Security Measure damage, and
-Arcane Annihilator damage have all been reduced by 20%.
+      * Вихрь более не обнуляет значение угрозы.
 
-      * Barrier absorb amount has been increased by 100%.
+      * «Смертный приговор» теперь только наносит урон.
 
-      * The cooldown on Power Conversion (Converted Power chance) has been
-increased.
+      * Величина поглощаемого «Щитом Света» урона снижена.
 
-      * Flamethrower damage has been reduced by 40%.
+    * Магмарь
 
-      * Static Shock caused by Unstable Shield damage and Poison Bomb damage
-has been decreased by 50%.
+      * Запас здоровья и наносимый урон снижены на 20%.
 
-  * Deadmines
+      * Снижено количество лавовых паразитов.
 
-    * Vanessa VanCleef (Heroic difficulty) now has a sweet, sweet voice to
-accompany her dialog.
+      * Снижен урон от заклинаний «Изрыгание лавы», «Сгусток магмы», «Могучее
+сокрушение» и «Заразная рвота».
 
-  * Throne of the Four Winds
+      * Заклинание «Мучительное лишение жизни» больше не вызывает мгновенной
+смерти цели, наносимый им урон был снижен.
 
-    * Al'Akir
+      * Урон от «Заражения паразитами» был снижен.
 
-      * Acid Rain now stacks every 20 seconds, up from 15.
+    * Малориак
 
-      * Electrocute now pulses every 1 second, up from 0.5.
+      * Были снижены запас здоровья Малориака и наносимый им урон, запас
+здоровья аберраций и наносимый ими урон, а также урон, наносимый главными
+помощниками. Кроме того, урон от заклинаний «Ледяная вспышка», «Дробление» и
+«Обжигающий поток» был уменьшен на 20%.
 
-      * Feedback duration has been increased to 30 seconds, up from 20.
+      * Уменьшено повышение урона от суммирующегося эффекта, вызываемого
+аберрациями.
 
-      * Health, damage, and Wind Burst damage have all been reduced by 20%.
+      * Главные помощники больше не фиксируются на цели. Кроме того, они
+больше не являются невосприимчивыми к провокациям.
 
-      * Lightning and Lightning Rod recast time has been increased.
+    * Нефариан
 
-      * Lightning Strike friendly chain damage has been reduced by 50%.
+      * Запас здоровья и наносимый урон снижены на 20%.
 
-      * Static Shock will no longer be used on normal difficulty in phase 1 or
-phase 2.
+      * Время жизни оживших костяных воинов теперь составляет 33 секунды, а не
+50, как раньше. Кроме того, ожившие костяные воины будут появляться в меньших
+количествах.
 
-    * Conclave of the Four Winds
+      * Увеличено время произнесения заклинания «Вспышка огненной звезды».
 
-      * Rohash, Anshal, Nezir melee, Ravenous Creeper health/damage, Ravenous
-Creeper toxic spores damage, Hurricane damage, Sleet Storm damage, Permafrost
-damage , Slicing Gale, and Wind Blast damage have all been reduced by 20%.
+      * Запас здоровья хроматического прообраза снижен на 20%.
 
-      * Gathering Strength cast time has been increased.
+      * Урон от «Электрического удара» снижен на 30%.
 
-      * Ice Patch slow effect is now 5% per stack, up to 10 stacks, down from
-10% per stack, up to 30 stacks, and damage has been reduced by 20%.
+      * Действие суммирующегося отрицательного эффекта «Магма» снижено на 75%.
 
-      * Wind Chill damage has been decreased by 20% and now increases damage
-taken by 5% per stack.
+      * Теперь Нефариан не может произносить заклинание «Пламя тени» чаще, чем
+1 раз в 15 секунд.
 
-**[Guilds][50]**
+      * Запас здоровья Ониксии и ее урон от атак ближнего боя снижены на 20%.
 
-  * The daily guild experience cap has been increased by 25%.
+      * Урон от «Шквала темного пламени» снижен на 20%.
 
-  * The weekly guild reputation cap has been increased by 25%.
+      * Урон от «Удара хвостом» снижен на 50%.
 
-  * The guild experience cap is now removed at level 20, down from level 23.
+    * Защитная система «Омнитрон»
 
-  * The Reins of the Dark Phoenix, purchased from the Guild Vendor, has had
-its art improved. It's now less transparent and indisputably more awesome.
+      * Здоровье, урон от атак ближнего боя, а также урон от заклинаний
+«Электроразряд», «Проводник молний», «Меры безопасности» и «Волшебный
+уничтожитель» снижены на 20%. Также на 20% снижен запас здоровья ядовитой
+бомбы.
 
-**[Items][51]**
+      * Теперь количество поглощаемого «Преградой» урона увеличено на 100%.
 
-  * Darkmoon Card: Hurricane damage done when triggered has been increased by
-40%, however, it can no longer deal critical strikes and no longer receives
-any modifiers to its damage from the equipping player.
+      * Увеличено время восстановления заклинания «Преобразование энергии»
+(уменьшает вероятность появления эффекта «Преобразованная энергия»).
 
-  * Set Bonuses
+      * Урон от «Огнемета» снижен на 40%.
 
-    * The 2-piece resilience bonus from Cataclysm PvP sets no longer stacks.
-If a player wears 2 pieces each from 2 different Cataclysm sets, the player
-will only receive the 400 resilience rating bonus once. This change does not
-apply to PvP sets from prior expansions.
+      * Урон от «Статического шока» (появляющегося в результате ударов по
+«Нестабильному щиту») и урон от «Ядовитой бомбы» были снижены на 50%.
 
-    * The 2-piece Restoration druid tier 11 PvE set bonus has been redesigned
-to work with the new Restoration druid mastery. Druids with this bonus now
-receive the bonus to Spirit while the Harmony mastery bonus to periodic
-healing is active.
+  * Мертвые копи
 
-    * The 4-piece Elemental shaman PvP set bonus (Gladiator's Thunderfist set)
-has been redesigned. It now causes Lightning Shield to generate an extra
-charge, rather than consuming one, when it is triggered by receiving damage,
-up to a maximum of 3 (9 with the Rolling Thunder talent).
+    * Ванесса ван Клиф (только в героическом режиме) теперь появился приятный
+голос.
 
-**[Professions][52]**
+  * Трон Четырех Ветров
 
-  * Skinning
+    * Ал'акир
 
-    * Players can no longer skin corpses already being actively skinned or
-looted by other players.
+      * Теперь урон, наносимый «Кислотным дождем» суммируется каждые 20
+секунд, а не каждые 15, как раньше.
 
-**[PvP][53]**
+      * Теперь «Электрический удар» наносит урон раз в 1 секунду, а не раз в
+0,5 секунд, как раньше.
 
-  * Arenas
+      * Время действия «Ответной реакции» теперь составляет 30 секунд, а не
+20, как раньше.
 
-    * The Ring of Valor has been added to the Arena rotation once again.
-Players no longer start the match on elevators at the center of the map. They
-now begin the match in starting rooms on opposite sides of the Arena.
+      * Запас здоровья Ал'акира, наносимый им урон, а также урон от заклинания
+«Порыв ветра» снижены на 20%.
 
-  * Battlegrounds
+      * Время повторного произнесения заклинаний «Молния» и «Громоотвод» было
+увеличено.
 
-    * Eye of the Storm has been added into the rotation as a 10-man Rated
-Battleground. The tug-of-war style capture points have been replaced with
-Arathi Basin style capture points to better support 10v10 competition. This
-change applies only to Rated Battlegrounds. Eye of the Storm is otherwise
-still a 15-player Battleground with tug-of-war style capture points.
+      * Урон от «Поражения молнией», наносимый дружественными целями в области
+поражения, был снижен вдвое.
 
-    * War Games
+      * На обычном уровне сложности в первой и второй фазах Ал'акир больше не
+будет использовать «Статический шок».
 
-      * Many improvements are being made to the War Games interface, though
-the changes are not yet fully functional.
+    * Конклав Четырех Ветров
 
-  * Conquest Points
+      * Урон от атак ближнего боя Рохаша, Аншала и Незира, запас здоровья
+прожорливых ползунов и наносимый им урон снижены на 20%. Кроме того, на 20%
+снижен урон, наносимый отравляющими спорами прожорливых ползунов, а также урон
+от заклинаний «Ураган», «Вихрь стали», «Вечная мерзлота», «Секущий ветер» и
+«Порыв ветра».
 
-    * The minimum cap on Conquest Points earned per week is now 1500 at 1500
-or less Battleground rating. The maximum cap remains 3000 at 3000 or more
-Battleground rating. The cap continues to scale non-linearly between those two
-points.
+      * Увеличено время произнесения заклинания «Накопление силы».
 
-    * The game now separately tracks different Conquest Point caps for
-Battlegrounds and Arenas. The cap for Arena rating will always be 2/3 of the
-cap for Battleground rating at any given Arena rating. Players may earn a
-total number of Conquest Points per week equal to the higher of these two
-caps, but once players have reached the cap for either Arenas or
-Battlegrounds, they can no longer earn Conquest Points from that source.
-Conquest Points from Battleground holidays only count toward the total
-Conquest Point cap.
+      * Эффект «Область мерзлоты» теперь снижает скорость передвижения целей
+на 5% за каждое применение и может суммироваться до 10 раз (ранее он снижал
+скорость передвижения на 10% за каждое применение и мог суммироваться до 30
+раз). Наносимый им урон снижен на 20%.
 
-**[Quests & Creatures][54]**
+      * Урон от эффекта «Холодный ветер» снижен на 20% и теперь увеличивает
+получаемый урон на 5% за каждое применение.
 
-  * There are no longer oddities in the critical strike and dodge chance of
-lower-level creatures.
+  * Зул'Гуруб
 
-**[User Interface][55]**
+    * Теперь можно пользоваться любыми положительными эффектами от котлов,
+находясь на средстве передвижения.
 
-  * Characters can now be reorganized at the Character Selection screen. This
-feature not yet fully functional and the reorganization of characters doesn't
-save at this time.
+    * Теперь после смерти верховной жрицы Килнары маски тики перестают
+извергать пламя.
 
-  * The cast bar can now be moved to display below the Character frame.
+    * Теперь после смерти верховного жреца Веноксиса облака яда, создаваемые
+растениями у входа в подземелье, рассеиваются.
 
-  * Move Pad is a mouse-click interface for movement which is now built into
-the base interface.
+  * Исправления, связанные с подземельями и рейдами
 
-  * Raid Profiles are in the process of being implemented and are not fully
-functional. Raid Profiles will allow players to save the raid window user
-interface layout based on type of content (i.e. 10-player raids, 25-player
-raids, Battlegrounds, etc.).
+    * Теперь боссов нельзя уменьшить в размерах при помощи «Уменьшающего луча
+гномов».
+
+    * Теперь во время битвы с Малориаком в Твердыне Крыла Тьмы количество
+убитых аберраций будет учитываться корректно, в связи с чем больше не должно
+возникать проблем при получении достижения «Аберрантное поведение».
+
+    * «Мягкий ветерок» Аншала больше не будет причиной непредсказуемого
+поведения боевых спутников в Троне Четырех Ветров.
+
+    * Раньше метки рейда не были видны игрокам, находившимся в других фазах.
+Эта неполадка была устранена.
+
+**[Гильдии][250]**
+
+  * Поиск гильдии
+
+    * Теперь длинные комментарии больше не обрезаются по краю экрана.
+
+  * На 25% увеличено количество опыта, которое гильдия может получить за день.
+
+  * На 25% увеличена репутация в гильдии, которую можно заработать за неделю.
+
+  * Теперь ограничение на опыт, зарабатываемый гильдией, снимается на 20-м
+уровне, а не на 23-м, как раньше.
+
+  * Изменился вид темного феникса, которого можно приобрести у торговца
+гильдейскими предметами. Теперь он не такой прозрачный и, несомненно, выглядит
+гораздо лучше.
+
+**[Предметы][251]**
+
+  * Если игрок побеждает в розыгрыше предмета, выбрав «Мне это нужно», и
+получает предмет, становящийся персональным при надевании, то этот предмет
+становится персональным для этого игрока. Если предмет был выигран с помощью
+броска «Не откажусь», его свойства не меняются.
+
+  * Соответствующие предметы 11-й ступени теперь можно приобрести за очки
+справедливости.
+
+  * Карта Новолуния: Ураган теперь при срабатывании наносит на 40% больше
+урона. Однако теперь она не наносит критического урона и на ее урон больше не
+оказывают влияния эффекты, исходящие от игрока.
+
+  * Связка для хранения ключей была удалена для того, чтобы освободить место
+для новых функций интерфейса.
+
+    * Ключи, которые больше не могут пригодиться в игре, будут удалены из
+предметов игрока. После удаления каждого ключа игрок автоматически получит
+денежную компенсацию в размере стоимости ключа.
+
+    * Ключи, которые раньше были нужны для выполнения заданий, но уже
+устарели, будут удалены из предметов игрока.
+
+    * Ключи, которые все еще могут пригодиться игроку, будут перенесены в
+обычные сумки. Если в сумках игрока нет свободных ячеек, то такие ключи будут
+перенесены в резервный инвентарь до тех пор, пока в сумках не появится
+свободное место. При освобождении ячеек, ключи будут появляться в сумках
+игрока после очередного выхода из игры или перехода из одной зоны в другую.
+
+  * Предметы и награды, связанные с PvP
+
+    * Соответствующие предметы 9-го сезона теперь можно приобрести за очки
+чести.
+
+    * Оружие гладиатора
+
+      * Оружие 10-го сезона, приобретаемое за очки завоеваний, можно будет
+купить только после того, как в течение текущего сезона будет набрана
+требуемая минимальная сумма очков завоевания. Например, для приобретения пики
+беспощадного гладиатора требуется 3400 очков завоевания. Однако прежде чем
+игрок сможет приобрести это оружие, ему будет необходимо заработать 11650
+очков завоевания в течение 10-го сезона.
+
+      * Оружие 9-го сезона, приобретаемое за очки чести, можно будет купить
+только после того, как в течение текущего сезона будет набрана требуемая
+минимальная сумма очков чести. Например, для приобретения пики яростного
+гладиатора требуется 3400 очков чести. Однако прежде чем игрок сможет
+приобрести это оружие, ему будет необходимо заработать 18500 очков чести в
+течение 10-го сезона.
+
+      * По достижении необходимого минимума набранных очков, все доступное
+оружие может быть куплено по соответствующей цене. Набранное значение не
+обнуляется после совершения покупки.
+
+      * Подсказки, выводимые для оружия в окне покупки, помогут игрокам
+узнать, сколько очков завоевания или чести им еще требуется набрать в текущем
+сезоне для того, чтобы совершить покупку.
+
+    * Награды на рейтинговых полях боя
+
+      * В игре появились новые наземные верховые животные – яростный боевой
+волк (Орда) и яростный боевой конь (Альянс). Игроки будут получать их в
+качестве наград за 75, 150 и 300 побед на рейтинговых полях боя, а не за
+попадание в 0,5% лучших к концу сезона, как в случае с аренами. Данная система
+вознаграждений лучше соответствует духу полей боя. За получение первого из
+перечисленных достижений игрок получит одно из этих верховых животных,
+привязанное к его учетной записи. После этого игрок сможет продолжить
+одерживать победы на рейтинговых полях боя и по достижении 150 и 300 побед
+получить второе и третье животное соответственно. Все они будут привязаны к
+учетной записи игрока, в связи с чем игрок сможет передать их своим неосновным
+персонажам. Игроку не придется ждать окончания сезона для получения данных
+наград, они будут вручены ему сразу же после получения соответствующих
+достижений.
+
+    * Комплекты предметов
+
+      * Бонусы к устойчивости от 2 предметов из комплектов брони для PvP
+дополнения Cataclysm больше не суммируются. Если на персонаже надето по два
+комплекта из двух комплектов брони для PvP дополнения Cataclysm, то он получит
++400 к устойчивости всего один раз. Данное изменение не относится к комплектам
+брони для PvP из более ранних дополнений.
+
+**[Профессии][252]**
+
+  * Инженерное дело
+
+    * Недавно Д.Э.Г.О.Ж. взял под свое покровительство большое количество
+существ, в частности кроликов и белок. По этой причине до достижения
+дополнительного соглашения из птицеметов кремневого затвора теперь будут
+вылетать только дикие курицы.
+
+  * Снятие шкур
+
+    * Больше нельзя снимать шкуры с тел, с которых уже снимают шкуру или
+которые обыскивают другие игроки.
+
+**[PvP][253]**
+
+  * Арены
+
+    * Колонка с индивидуальным рейтингом подбора соперников была удалена из
+таблицы результатов боев на арене.
+
+    * В игре снова появилась Арена Доблести. Игроки больше не будут начинать
+бой, находясь на передвижных платформах в центре карты. Теперь в начале
+сражения игроки будут находиться в стартовых помещениях, находящихся в
+противоположных концах арены.
+
+  * Поля боя
+
+    * Колонка с индивидуальным рейтингом подбора соперников была удалена из
+таблицы результатов рейтинговых полей боя и заменена колонкой с командным
+рейтингом подбора соперников.
+
+    * «Око Бури» стало рейтинговым полем боя на 10 игроков. Принцип захвата
+точек был приведен в соответствие с захватом точек в «Низине Арати», чтобы
+лучше соответствовать состязаниям 10 на 10 игроков. Данное изменение относится
+только к рейтинговым полям боя. Помимо этого «Око Бури» по-прежнему остается
+полем боя для 15 игроков, где точки захватываются по принципу «перетягивания
+каната».
+
+    * «Ущелье Песни Войны» теперь снова доступно в игре в виде рейтингового
+поля боя.
+
+    * Маневры
+
+      * В интерфейсе «Маневров» реализовано множество улучшений. Теперь он
+располагается в отдельном окне, что облегчает его использование. Право
+предлагать провести маневры другой группе есть только у того, кто является
+лидером своей группы или рейда.
+
+**[Задания и существа][254]**
+
+  * Устранены проблемы с вероятностью уклонения и критических ударов
+низкороувневых существ.
+
+  * Отображение восполнения энергии существ, видимое игроками, теперь будет
+плавным.
+
+**[Расы][255]**
+
+  * Персонажи всех рас теперь умеют издавать грозный рык по команде
+/бешенство.
+
+**[Пользовательский интерфейс][256]**
+
+  * Был изменен размер панелей интерфейса для соответствия размерам окон
+«Изображение» и «Звук». Это позволит разместить на панели интерфейса более
+крупное окно «Интерфейс рейда».
+
+  * При работе с комплектами экипировки больше нельзя использовать модификации
+для замены предметов.
+
+  * Теперь можно менять местами персонажей в списке на экране выбора персонажа
+и сохранять новый порядок.
+
+  * Теперь можно включить отображение индикатора произнесения заклинаний под
+портретом персонажа.
+
+  * Теперь специализации персонажей отображаются при наведении указателя мыши
+на имя персонажа в таблице результатов полей боя.
+
+  * Рамки портретов теперь содержат функцию «Прогнать питомца»
+
+  * Теперь предметы экипировки персонажа будут выделяться желтым цветом, когда
+уровень прочности предмета достигнет 20%. Раньше это происходило, когда
+уровень прочности предмета достигал 5 ед. и менее.
+
+  * Теперь можно одновременно открыть книгу заклинаний и окно «Макросы», что
+упростит создание макросов. Кроме того, в окне «Макросы» появились кнопки
+«Сохранить» и «Отмена».
+
+  * В интерфейс по умолчанию добавлена панель с кнопками для управления
+перемещением персонажа с помощью мыши.
+
+  * Сменить язык клиента игры на любой из доступных в регионе игрока языков
+теперь стало проще.
+
+  * На миникарте теперь можно выбирать любую обычную или запомненную цель (не
+относится к враждебным игрокам).
+
+  * У торговцев теперь можно узнать, какой тип валюты они используют.
+
+**[Техническая информация][257]**
+
+  * Теперь программа запуска Blizzard использует технологию UPnP (Universal
+Plug and Play) для конфигурирования портов. Если ваш маршрутизатор
+поддерживает UPnP, он автоматически откроет требующиеся порты, после чего у
+вас не будет ограничений на загружаемые данные.
 
 {Body-zhCN}
 
-**World of Warcraft PTR Patch 4.2**
+**魔獸世界客戶端版本4.2**
 
-Notes for all World of Warcraft patches can be found [here][1].
+最新的更新內容請參閱官方網站改版專區:[http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.a
+sp][258].
 
-**[Elemental Bonds][2]**
+**元素桎梏**
 
-What was to be an auspicious event at the ancient World Tree Nordrassil has
-ended in tragedy. There, members of the Cenarion Circle and Earthen Ring,
-including former warchief Thrall, had gathered with the noble Dragon Aspects
-to unite their powers and restore Nordrassil for the good of Azeroth. Yet word
-has now spread that a shadowy Twilight's Hammer agent interrupted the ceremony
-and struck down Thrall with dark magics... casting his spirit into the four
-domains of the Elemental Plane. If these terrible rumors hold true, the
-Earthen Ring--indeed, all of Azeroth--has lost one of its greatest champions.
+在古老的世界之樹諾達希爾召開的原本該是場盛會，卻以悲劇收場。為了拯救艾澤拉斯，塞納里奧議會與陶土議會的成員，包括前任大酋長索爾，與高貴的守護巨龍聚首，打算集
+結力量為艾澤拉斯的未來修補世界之樹。然而，傳言在儀式當中，一位暮光之錘的使者闖了進來，用黑暗的魔法將索爾擊倒，並將他的靈魂流放到元素界域的四個領域。若這可怕
+的傳言是真的，陶土議會—或者應該說是整個艾澤拉斯—失去了一位偉大的勇士。
 
-**[The Regrowth and Molten Front][3]**
+**癒合之地與熔岩前線**
 
-Although the night elves and their allies repelled Ragnaros's initial invasion
-of Hyjal, their work on the sacred mount is far from over. Archdruid Malfurion
-Stormrage has gathered his comrades at the Sanctuary of Malorne within the
-newly healed Regrowth to invade Ragnaros's domain: the Firelands. Once inside
-the Elemental Plane, Hyjal's defenders hope to establish a permanent
-stronghold. Yet these plans have come under threat by a ferocious new
-elemental assault that has swept through the Regrowth. Despite this setback,
-Hyjal's protectors remain steadfast in their mission, for they know that it is
-in the molten heart of the Firelands that the fate of Mount Hyjal will be
-decided.
+儘管夜精靈與他們的盟友擊退了拉格納羅斯在海加爾最初的侵略，他們在這座神聖的山上仍有工作尚未了結。大德魯伊瑪法里恩•怒風在癒合之地的瑪洛尼聖地集結夥伴，策謀進
+軍拉格納羅斯的領地:火源之界。海加爾的保衛者希望一旦攻進那裡，便立即建立一座永久的要塞。然而這些計畫卻因為癒合之地遭受新一波猛烈的元素攻擊而岌岌可危。雖然遭
+到了這樣的挫敗，海加爾的保衛者仍然堅定地執行任務，因為他們知道，海加爾山的命運全繫於火源之界的熔岩前線。
 
-**[The Firelands][4]**
+**火源之界**
 
-The time to strike at Ragnaros draws near. The battle to protect Mount Hyjal
-now rages in the depths of Ragnaros's smoldering realm. As territory is gained
-by Azeroth's defenders and they draw closer to the inner sanctums of the
-Firelands, a monumental task awaits. Ragnaros's lair--Sulfuron Keep--is
-closely guarded by his most loyal servants, including the traitorous Druids of
-the Flame and their mysterious leader. Yet the brave heroes who have ventured
-into this ash-choked domain cannot afford to shy away from any danger. The
-outcome of the battles that lie ahead will determine the very survival of
-Azeroth.
+對拉格納羅斯展開攻擊的時刻已經到來。為了保衛海加爾山，這場戰鬥目前已經深入拉格納羅斯灼熱的領地中。在艾澤拉斯的保衛者們在火源之界攻城掠地，朝它的聖地內部步步
+逼近的同時，一場歷史性的戰役一觸即發。拉格納羅斯死忠的僕從們捍衛著他的巢穴—薩弗隆要塞，裡頭包括叛離的火焰德魯伊與他們神秘莫測的領袖。儘管如此，冒險深入火焰
+領域的勇敢英雄們，面對危險沒有退縮的餘地。因為這場戰役即將決定艾澤拉斯的存亡。
 
-**[Dragonwrath, Tarecgosa's Rest][5]**
+**龍怒，塔瑞克苟莎之眠**
 
-Uncertainty looms over the blue dragonflight's domain, the Nexus, as its
-members struggle to appoint a new leader. Split between the two likeliest
-successors--Kalecgos and Arygos--the flight has agreed to meet during a rare
-celestial event known as the Embrace in the hopes that a new Aspect will
-finally be chosen. The bronze dragon Anachronos, however, has detected
-something sinister at work around the Nexus, threatening to compromise the
-ceremony. If a hero does not rise to investigate these dark forces and uncover
-their intentions, Anachronos believes that Azeroth's doom is imminent.
+藍龍軍團新領袖的任命人選懸而未決，使得軍團的領土奧核之心籠罩在風雨欲來的危機之中。整個軍團分為兩派，各自擁戴呼聲最高的繼承人—卡雷苟斯與亞雷戈斯。他們同意在
+罕見的天象「月擁之刻」時聚會，在其時選出新的守護巨龍。然而，青銅龍安納克羅斯在奧核之心附近偵測到邪惡份子蠢蠢欲動，打算破壞儀式。安納克羅斯相信，若沒有英雄挺
+身調查這些黑暗勢力並揭穿他們的意圖，艾澤拉斯的毀滅就在旦夕之間。
 
-**_Table of Contents_**
+**_目錄_**
 
-_Click a link to be taken directly to the corresponding section of the patch
-notes._
+_點擊連結直接帶你前進至欲閱覽的專區_
 
-  * [General][6]
+  * [一般][6]
 
-  * [Achievements][7]
+  * [成就][7]
 
-  * [Classes: General][8]
+  * [職業：一般][8]
 
-    * [![][9]][10] [Death Knights][10], [![][11]][12] [Druids][12],
-[![][13]][14] [Hunters][14], [![][15]][16] [Mages][16], [![][17]][18]
-[Paladins][18],
+    * [![][9]][10] [死亡騎士][10], [![][11]][12] [德魯伊][12], [![][13]][14]
+[獵人][14], [![][15]][16] [法師][16], [![][17]][18] [聖騎士][18],
 
-    * [![][19]][20] [Priests][20], [![][21]][22] [Rogues][22], [![][23]][24]
-[Shaman][24], [![][25]][26] [Warlocks][26], [![][27]][28] [Warriors][28]
+    * [![][19]][20] [牧師][20], [![][21]][22] [盜賊][22], [![][23]][24] [薩滿][24],
+[![][25]][26] [術士][26], [![][27]][28] [戰士][28]
 
-  * [Dungeons & Raids][29]
+  * [兌換通貨][29]
 
-  * [Guilds][30]
+  * [地城與團隊][30]
 
-  * [Items][31]
+  * [公會][31]
 
-  * [Professions][32]
+  * [物品][32]
 
-  * [PvP][33]
+  * [專業][33]
 
-  * [Quests & Creatures][34]
+  * [PvP][34]
 
-  * [User Interface][35]
+  * [任務和生物][35]
 
-**General**
+  * [種族][36]
 
-  * All existing Valor Points in the Currency tab have been converted to
-Justice Points.
+  * [使用者介面][37]
 
-  * The Keyring bag slot has been removed to make room in the user interface
-for new features.
+  * [技術問題][38]
 
-    * Keys which no longer serve a purpose in the game will be removed from
-player inventories. Compensation for the keys will be automatically provided
-in the form of each key's vendor sell price in gold.
+**一般**
 
-    * Keys which are obsolete quest items will be removed from player
-inventories.
+  * 全新的每日任務:癒合之地與熔岩前線
 
-    * Keys which may still be of use to players will be transferred to regular
-inventory space. If a player's bags are full, these keys will sit in a
-backlogged inventory until sufficient space is made available. Once space is
-opened, the keys will appear in regular inventory upon the player logging out
-or switching zones.
+    * 海加爾山現在推出全新而大量的每日任務與獎勵。在那裡，玩家能幫助海加爾守護者擊退拉格納羅斯的盟友，並在火源之界的前線建立一個前哨基地!若想要參與癒
+合之地與熔岩前線的每日任務，玩家必須進行海加爾山的任務，至少要完成「艾森娜的奇蹟」。一旦完成該任務，玩家便可與瑪洛尼聖地的瑪托克勞交談，來參與癒合之地的活動
+。
 
-**[Achievements][36]**
+  * 全新的任務串:元素桎梏
 
-  * Bear-ly Made It (new achievement): Save all four prisoners before they are
-sacrificed in Zul'Aman on Heroic difficulty.
+    * 85級的部落與聯盟玩家可以進行一條新的任務串，讓勇敢的冒險者們前往搭救索爾。在暴風城或奧格瑪的大地神殿接受「大薩滿的呼喚」這個任務會將玩家引領到
+諾達希爾之巔和索爾那裡。
 
-**[Classes: General][37]**
+  * 全新的團隊地城:火源之界
 
-  * All healing critical strikes now heal for 2 times a normal heal (+100%),
-up from 1.5 times a normal heal (+50%).
+    * 全新的10人及25人團隊地城火源之界位於元素界域之中，普通模式與英雄模式同步推出!身經百戰的部落與聯盟玩家們現在有機會可以通過海加爾山的薩弗隆之
+塔深入拉格納羅斯的領土對他以及他忠實的僕從們發動攻勢。
 
-  * Players are once again free to dance in combat (without causing graphic
-errors). Other animations, such as attacks, will take precedence over dancing.
-The dance animation will be suppressed until the higher priority animation is
-complete. Fun has been unnerfed.
+  * 全新的傳奇物品:龍怒，塔瑞克苟莎之眠
 
-  * Buffs
+    * 團隊地城的玩家們有機會可以完成一系列的任務，製造出全新的傳奇法系法杖。要開始組成法杖的玩家必須先在火源之界殺死一隻熔岩領主。在殺死熔岩領主後，玩
+家就能在奧格瑪的葛羅瑪許堡內找佐拉多爾米或在暴風城的巫師聖所頂部找可里多爾米接受任務「一段傳奇的經歷」。這條傳奇物品的任務串只能由德魯伊、法師、牧師、薩滿及
+術士進行。
 
-    * All class abilities which place a buff on friendly targets no longer
-generate any threat. This goes for raid-wide buffs like Mark of the Wild and
-Power Word: Fortitude, as well as triggered effects such as Blessed Resilience
-or Fingers of Frost, and single-target buffs like Dark Intent and Hysteria.
-The exception is buffs which directly cause healing or damage, such as Thorns
-or Renew. Abilities such as these still generate normal threat.
+  * 全新的使用者介面功能: 地城導覽手冊
 
-  * Crowd Control
+    * 許多地城的資料現在已經透過全新的地城導覽手冊內建在使用者介面當中。這個功能可以在世界的任何地方透過下方新的功能按鈕開啟。首領的背景故事、戰鬥的細
+節、技能和掉落物品都已經加入到這個新系統當中(這包含了全部的浩劫與重生地城與團隊首領)。其他的地城資料計畫將會在未來的更新中加入。
 
-    * Many crowd control abilities no longer cause creatures to attack players
-when they are cast. The creature will not attack the player when the crowd
-control wears off, and nearby creatures will not become hostile to the player
-either. However, if a visible player gets too close to the target creature,
-the creature will remember and attack the player when the crowd control effect
-wears off. The intent is to make it easier for dungeon groups to manage crowd
-control assignments and pulling packs of hostile NPCs. The abilities affected
-by this change are: Hibernate, Entangling Roots, Wyvern Sting (will still
-cause hostility when it begins to deal damage), Freezing Trap, Polymorph,
-Repentance, Shackle Undead, Blind, Hex, Bind Elemental, Banish, Seduction.
+**成就**
 
-  * Pets
+  * 熊熊來不及(新成就):在英雄模式中，在祖阿曼的四名囚犯被獻祭之前，將其全數救出。
 
-    * The Aggressive pet stance has been removed and replaced with the Assist
-stance. This stance will cause the player's pet to attack the player's target.
-The pet will not change targets unless the master attacks a new target for a
-few seconds.
+**職業:一般**
 
-  * Spell Interrupts
+  * 所有極效治療效果現在會從普通治療的1.5倍(+50%)提升為2倍(+100%)。
 
-    * When interrupted while casting a single-school spell such as Mind Flay
-or Frostbolt, players will now be able to cast dual-school spells such as Mind
-Spike (Frost and Shadow schools) or Frostfire Bolt (Frost and Fire schools).
-However, being interrupted while casting a dual-school spell will still
-interrupt all respective schools as intended.
+  * 玩家又可以在戰鬥中跳舞了(而且不會造成繪圖上的錯誤)。然而其他動畫效果，例如攻擊的優先順序將高於跳舞。角色會先完成其他比較重要的動作後才會繼續跳舞。
+被弱化的樂趣回來了。
 
-  * Stats
+  * 增益效果
 
-    * Death knights, paladins, and warriors no longer receive any bonus to
-their chance to dodge from Agility. Their base chance to dodge is now a fixed
-5%.
+    * 所有能在友方目標身上放置增益效果的職業技能將不再產生任何威脅值。這包括了影響全團隊的增益效果，像是野性印記與真言術:韌，以及觸發類型的增益效果，
+像是祝福韌性或冰霜之指，還有單一目標的增益效果，像是黑暗意圖和狂血術。能夠直接造成治療或傷害的增益效果，像是荊棘術或恢復則仍會產生一般的威脅值。
 
-    * Death knights, paladins, and warriors now receive 27% of their Strength
-bonuses as parry rating, up from 25%. This conversion still only applies to
-Strength above and beyond their base Strength.
+  * 控場效果
 
-**[![][9]][38] [Death Knights][38]**
+    * 許多控場技能在施法時不再使生物攻擊玩家。當控場效果結束時，該生物不會攻擊玩家，而且附近的生物也不會對玩家展開攻擊。然而，若目標生物可見的玩家太過
+靠近，該生物將會記得玩家，並在控場效果結束時進行攻擊。這樣的設計是為了讓地城隊伍更容易管理控場任務及拉回複數的敵對生物。此變更將會影響休眠、糾纏根鬚」
+翼龍釘刺(當開始造成傷害時仍會造成威脅)、冰凍陷阱、變形術、 懺悔、束縛不死生物、致盲、妖術、元素束縛、放逐術及誘惑。
 
-  * Obliterate base damage has been reduced to 150% weapon damage, down from
-160%.
+  * 寵物
 
-  * Talent Specializations
+    * 寵物的攻擊型姿態已從遊戲中移除，並由協助型姿態取代。這個姿態會使寵物攻擊玩家的目標。除非主人攻擊新目標經過了幾秒鐘，否則寵物不會改變目標。
 
-    * Frost
+    * 防禦型寵物姿態現在只會使玩家的寵物反擊敵人或攻擊主人的敵人。
 
-      * Annihilation now increases Obliterate damage by 12/24/36%, down from
-15/30/45%.
+  * 中斷法術
 
-      * Hungering Cold now has a 1.5-second cast time.
+    * 當玩家施放單系法術例如精神鞭笞或寒冰箭被打斷時，現可施放雙系法術例如心靈鑽刺(冰霜及暗影系)或霜火箭(冰霜及火焰系)。然而，當施放雙系法術被打斷
+時，仍會使相對應的全部法術系無法使用。
 
-    * Unholy
+  * 屬性
 
-      * Unholy Might now increases Strength by 10%, up from 5%.
+    * 死亡騎士、聖騎士與戰士不再由敏捷提供額外的閃躲機率。他們的基本閃躲機率現在固定為5%。
 
-  * Glyphs
+    * 死亡騎士、聖騎士與戰士現在從力量提供的額外招架等級加成由25%提高為27%。這個轉換仍只應用在超過基礎力量的數值上。
 
-    * Glyph of Dark Succor has been redesigned. Rather than placing a 15%
-maximum health floor on Death Strike healing while in Frost or Unholy
-Presence, it causes the next Death Strike within 15 seconds after killing a
-foe that yields experience or Honor Points to heal for at least 20% of the
-death knight's maximum health.
+  * 一般性職業Bug修正
 
-**[![][11]][39] [Druids][39]**
+    * 玩家不會在他們沒有中斷法術時收到有法術被他們中斷的錯誤訊息。
 
-  * Druids now gain 1 attack power per point of Strength, down from 2. They
-continue to gain 2 attack power per point of Agility while in Cat Form or Bear
-Form.
+    * 有姿態/形態條的玩家不會再因為進入載具而使動作條暫時消失了。
 
-  * Entangling Roots and the equivalent spell triggered by Nature's Grasp no
-longer deal damage.
+**[![][9]][259] [死亡騎士][259]**
 
-  * Ferocious Bite damage has been increased by 15%. In addition, its base
-cost has been reduced to 25 energy and it can use up to 25 energy, for up to a
-100% damage increase.
+  * 滅寂的基礎傷害從160%武器傷害降低為150%。
 
-  * Innervate now grants an ally target 5% of his or her maximum mana over 10
-seconds, but still grants 20% of the druid's maximum mana over 10 seconds when
-self-cast.
+  * 天賦專精
 
-  * Mangle (Cat) damage at level 80 and above has been increased to 530%
-weapon damage, up from 460%.
+    * 冰霜
 
-  * Omen of Clarity clearcasting buff from now lasts 15 seconds, up from 8
-seconds.
+      * 噬溫酷寒現在有1.5秒的施法時間。
 
-  * Ravage damage at level 80 and above has been increased to 975% weapon
-damage, up from 850%.
+      * 冰凍荒原之力的雙手武器傷害加成現從4/8/12%降低為3/7/10%。
 
-  * Shred damage at level 80 and above has been increased to 520% weapon
-damage, up from 450%.
+    * 穢邪
 
-  * Swipe (Cat) now deals 600% weapon damage at level 80 or higher, down from
-670%.
+      * 穢邪之力的力量加成從5%提高為20%。
 
-  * Talent Specializations
+  * 雕紋
 
-    * Balance
+    * 黑暗救贖雕紋已重新設計。過去是當處於冰霜領域或穢邪領域時，施放死亡打擊會治療生命力上限至少15%的生命力，現改為在殺死一個會產生經驗值或榮譽點數
+的敵人後，在15秒內施放下一個死亡打擊會治療死亡騎士生命力上限至少20%(仍然需要處於冰霜領域或穢邪領域)。
 
-      * Earth and Moon's duration has been increased to 15 seconds, up from
-12.
+**[![][11]][260] [德魯伊][260]**
 
-      * Fungal Growth spell visual effect has been updated to be less visually
-intrusive and more aesthetic.
+  * 德魯伊現在每點力量點獲得的攻擊強度從2點降低為1點。當德魯伊在獵豹形態或熊形態時每個敏捷點仍會獲得2點的攻擊強度。此外，獵豹形態由裝備提升的幅度比其
+他職業少，使得在較高物品等級時的輸出落後於其他職業。為了平衡力量上的變更及改善提升的比例，我們做了以下的變動。所有提到的數字皆以85級的德魯伊為準。
 
-      * Lunar Shower has been redesigned. When casting Moonfire, the druid
-gains Lunar Shower. Lunar Shower increases the direct damage done by Moonfire
-by 15/30/45%, and reduces the mana cost by 10/20/30%. This effect stacks up to
-3 times and lasts 3 seconds. While under the effects of Lunar Shower, Moonfire
-generates 8 Solar Energy, and Sunfire generates 8 Lunar Energy. The amount of
-Lunar/Solar Energy gained does not change based on the number of points spent
-in the talent, or stacks of Lunar Shower. Those druids who wish to delay
-transition in or out of an Eclipse state should now cast the one of their two
-basic attacks which will not move the Eclipse bar (either Starfire or Wrath).
+    * 兇猛撕咬傷害提高15%。此外，此技能的基礎消耗降低為25點能量，而且最多能使用額外的25點能量使傷害加成提高到100%。
 
-      * Solar Beam has a new spell effect.
+    * 割碎(獵豹)的傷害從460%的武器傷害提高至540%，額外傷害降低為302點。
 
-      * Wild Mushroom: Detonate can now also trigger Earth and Moon, in
-addition to Starfire and Wrath.
+    * 掃擊在命中時的初始傷害現在與每一跳的傷害一樣(並在戰鬥的計算中視為相同)。其週期性傷害現在每一跳獲得攻擊強度的加成由12.6%提高為14.7%，
+而每一跳的基礎傷害從557點降低為56點。掃擊的提示資訊上並未因應此項改動更新，這會在未來的改版中修正。
 
-    * Feral
+    * 劫掠的傷害從850%的武器傷害提高至975%，而額外的傷害加成降低到532點。
 
-      * Bear damage abilities were scaling too fast with higher gear levels
-compared to other tanks, so the following balance changes have been made. All
-the numbers cited are for level 85 characters; numbers will be lower for
-lower-level characters.
+    * 兇蠻咆哮現在提供給近戰自動攻擊的額外傷害從50%提高為80%。兇蠻咆哮雕紋仍會在那之上再提供5%的額外加成。
 
-        * Faerie Fire (Feral) base damage has been raised to 2950, up from
-679. Attack power scaling has been decreased to 10.8%, down from 15%.
+    * 撕碎的傷害從450%武器傷害提高至540%，而額外的傷害加成降低為302點。
 
-        * Maul base damage has been raised to 35, up from 8. Attack power
-scaling has been decreased to 19%, down from 26.4%.
+  * 糾纏根鬚和其他由自然之握觸發的法術效果不再造成傷害。
 
-        * Pulverize weapon damage percent has been decreased to 60%, down from
-80%. Damage per Lacerate application has been increased to 1623, up from 361.
+  * 啟動現在會在10秒內使一位目標盟友回復法力上限的5%。但當德魯伊對自己施法時仍是在10秒內回復法力上限的20%。
 
-        * Mangle (Bear) weapon damage percent has been decreased to 190%, down
-from 260%. Bonus damage has been increased to 3306, down from 754.
+  * 清晰預兆的節能施法狀態其持續時間從8秒延長為15秒。
 
-        * Swipe base damage has been increased to 929, up from 215. Attack
-power scaling has been decreased to 12.3%, down from 17.1%.
+  * 星火術的傷害提高了大約23%。
 
-        * Thrash initial base damage has been increased to 1464, up from 339.
-Initial damage attack power scaling has been decreased to 13.8%, down from
-19.2%. Periodic base damage has been increased to 816, up from 189. Periodic
-damage attack power scaling has been decreased to 2.35%, down from 3.26%.
+  * 揮擊(獵豹)現在造成的的傷害由670%的武器傷害降低為600%。
 
-        * Lacerate initial base damage has been increased to 3608, up from
-2089. Initial damage attack power scaling has been decreased to 5.52%, down
-from 7.66%. Periodic base damage has been increased to 69, up from 16.
-Periodic damage attack power scaling has been decreased to 0.369%, down from
-0.512%.
+  * 憤怒的傷害提高了大約23%。
 
-      * Natural Reaction damage reduction has been increased to 9/18%, up from
-6/12%.
+  * 天賦專精
 
-    * Restoration
+    * 平衡
 
-      * Symbiosis (Mastery) has been removed and replaced with Harmony.
-Harmony increases direct healing by an additional 10%, and casting direct
-healing spells grants an additional 10% bonus to periodic healing for 10
-seconds. Each point of mastery increases each bonus by an additional 1.25%.
-Healing Touch, Nourish, Swiftmend, and the initial heal from Regrowth are
-considered direct healing spells for the purposes of this Mastery. All other
-healing from druid spells is considered periodic.
+      * 大地新月的持續時間從12秒延長為15秒。
 
-  * Glyphs
+      * 真菌增生法術視覺效果已經更新，使其較不突兀而更具有美感。
 
-    * Glyph of Berserk duration increase is now 10 seconds, up from 5.
+      * 月沐已經重新設計。當施展月火術時，德魯伊獲得月沐效果。月沐讓月火術造成的直接傷害提高15/30/45%，法力消耗降低10/20/30%。此效
+果最多堆疊3次並且持續3秒。在月沐效果下，月火術產生8點日能，日炎術產生8點月能。花費在天賦上的點數並不影響獲得的月能或日能點數，也不影響月沐堆疊的次數。現
+在，若德魯伊希望延後蝕星蔽月狀態的開始或結束，應該施放不會使能量條移動的兩種基本攻擊法術之一(星火術或憤怒)。
 
-    * Glyph of Ferocious Bite has been redesigned. It now causes Ferocious
-Bite to heal the caster for 1% of maximum health for each 10 energy used.
+      * 太陽光束現在有新的法術效果了。
 
-    * Glyph of Innervate now causes the druid to gain 10% of his or her
-maximum mana over 10 seconds when Innervate is used on a friendly target, in
-addition to Innervate's base effect.
+      * 除了星火術和憤怒之外，狂野蘑菇-引爆現在也會觸發大地新月。
 
-**[![][13]][40] [Hunters][40]**
+    * 野性
 
-  * Multi-shot damage has been reduced. It now deals 120% weapon damage at
-level 80 or higher, down from 137%.
+      * 與其他坦克相比，熊的傷害技能隨裝備提升的速度太快，因此做了以下調整。以下數字是以85級的角色為準；低等級的角色數字會低很多。
 
-  * Traps now scale with hunter stats such as hit, expertise, spell
-penetration and attack power as intended.
+        * 精靈之火(野性)的基礎傷害從679點提高為2950點。攻擊強度提供的加成從15%降低為10.8%。
 
-  * Pets
+        * 槌擊的基礎傷害從8點提高為35點。攻擊強度的加成從26.4%降低為19%。
 
-    * Intervene (Pet Tenacity) has been redesigned. The pet runs at high speed
-toward a group member, reducing the damage done by the next melee or ranged
-attack made against them equal to 50% of the pet's total health.
+        * 粉碎的武器傷害百分比從80%降低為60%。每次割裂所造成的傷害從361點提高為1623點。
 
-**[![][15]][41] [Mages][41]**
+        * 割碎(熊)的武器傷害百分比從260%降低為190%。傷害加成從754點提高為3306點。
 
-  * Pyroblast cast when Hot Streak is not active was doing slightly less
-damage than the Hot Streak version. Its damage has been increased so that both
-versions of Pyroblast now do the same amount of damage.
+        * 揮擊的基礎傷害從215點提高為929點。攻擊強度的加成從17.1%降低為12.3%。
 
-  * Spellsteal mana cost has been increased by 100%.
+        * 痛擊的初始基礎傷害從339點提高為1042點。初始傷害的攻擊強度加成從19.2%降低為9.82%。週期性的基礎傷害從189點提高為581
+點。週期性傷害的攻擊強度加成從3.26%降低為1.67%。此外，關於護甲值會降低此技能週期性傷害的bug已被修正。
 
-  * Talent Specializations
+        * 割裂的初始基礎傷害從2089點提高為3608點。初始傷害的攻擊強度加成從7.66%降低為5.52%。週期性基礎傷害從16點提高為69點。
+週期性傷害的攻擊強度加成從0.512%.降低為0.369%。
 
-    * Fire
+      * 自然反應的傷害減免從6/12%提高為9/18%。
 
-      * When Impact spreads Living Bomb, it will only be spread to two
-additional targets. The net effect is that if the mage's most recent Living
-Bomb target is the same as their Impact target, that target will no longer
-lose the Living Bomb effect. If Living Bomb is active on multiple targets when
-the Impact effect is cast, Living Bomb will remain active on the most recent
-Living Bomb target, and will be added to two other nearby targets.
+    * 恢復
 
-    * Frost
+      * 共生(精通)已重新設計。共生現在使你的直接治療法術效果額外提高10%，而且當你施放直接治療法術時會使你的週期性治療法術額外獲得10%的治療加
+成，持續10秒。每一點精通可使治療加成額外提高1.25%。在這個精通的計算方式中，施放治療之觸、滋補術、迅癒，以及癒合的初始治療都視為直接治療法術。德魯伊任
+何其他的治療法術都被視為週期性法術。
 
-      * Deep Freeze and Ring of Frost will cause diminishing returns on each
-other, in addition to the spells they normally share diminishing returns with.
+  * 雕紋
 
-**[![][17]][42] [Paladins][42]**
+    * 狂暴雕紋持續時間現在從5秒延長為10秒。
 
-  * Divine Light mana cost has been increased to 35% of base mana, up from
-30%.
+    * 兇猛撕咬雕紋已重新設計。現為兇猛撕咬每消耗10點能量，會治療施法者生命力上限的1%。
 
-  * Flash of Light mana cost has been increased to 31% of base mana, up from
-27%.
+    * 啟動雕紋現在使啟動除了原有的效果之外，當施放在友方目標身上時，還會讓德魯伊本人在10秒內恢復法力上限的10%。
 
-  * Holy Light mana cost has been increased to 12% of base mana, up from 10%.
+  * •套裝獎勵
 
-  * Rebuke, Divine Shield and Divine Protection have new icons.
+    * 平衡德魯伊4件T11的PvE套裝獎勵，星界連線，現在改為提供15%額外的致命一擊機率，可使用3次，每次使用使機率降低5%，而非提供99%額外的致
+命一擊機率，每次降低33%。此變動是因為這項套裝獎勵的效果太強，使得玩家很難為了提升裝備到T12而換裝。為了彌補，星火術和憤怒已經做出改動(列在德魯伊的職業
+項目之中)。
 
-  * Seal of Righteousness now can be activated by any melee ability, not just
-single target melee abilities. This adds Hammer of the Righteous (the physical
-component) and Divine Storm to the list of abilities that can activate this
-seal. In addition, Seal of Righteousness procs can now be critical effects.
+    * 恢復德魯伊2件T11的PvE
+套裝獎勵已重新設計來符合新的恢復系精通加成。當共生(精通)週期性治療加成的持續時間內，有2件套裝獎勵的德魯伊現在可以獲得額外的精神。
 
-  * Talent Specializations
+  * 德魯伊Bug修正
 
-    * Holy
+    * 現在，在某些戰鬥中已經無法在小於最短距離時使用野性衝鋒。
 
-      * Beacon of Light can no longer be dispelled. In addition, it now
-transfers 100% of the heal from Holy Light, but still 50% of the heal from
-other spells.
+**[![][13]][261] [獵人][261]**
 
-      * Denounce has been redesigned. It still reduces the mana cost of
-Exorcism. However, it no longer has a chance on Holy Shock of making Exorcism
-free and instant. Instead, it has a 50/100% chance to prevent the Exorcism
-target from causing critical effects for the next 6 seconds. This effect can
-be dispelled.
+  * 多重射擊的傷害已被降低。等級80以上造成的武器傷害從137%降低為120%。
 
-      * Holy Shock mana cost has been decreased to 7% of base mana, down from
-8%.
+  * 獵人的屬性如命中、熟練、 法術穿透力與攻擊強度等，現在會影響陷阱的效果。
 
-      * Infusion of Light can now lower the cast time of Flash of Light by
-0.75/1.5 seconds, in addition to Holy Light and Divine Light. In addition, the
-old Denounce spell overlay effect has been transferred to Infusion of Light
-since Denounce is no longer a proc.
+  * 天賦專精
 
-      * Speed of Light now increases movement speed when Holy Radiance or
-Divine Protection are cast. In addition, this talent now reduces the cooldown
-of Holy Radiance by 13/26/40 seconds, up from 10/20/30.
+    * 射擊
 
-      * Walk in the Light now improves Word of Glory healing by 30%, in
-addition to its current effects.
+      * 仔細瞄準現在從對80%以上生命力的目標提供額外的致命一擊機率，提高為90%以上的生命力才提供。
 
-    * Protection
+    * 生存
 
-      * Ardent Defender has a new spell effect.
+      * 黑蝕箭的傷害提高約40%。
 
-      * Guarded By The Light no longer interacts with Holy Shield in any way.
+  * 寵物
 
-      * Guardian of Ancient Kings uses the new Assist pet stance
-functionality.
+    * 新增10隻稀有的野獸以供馴服，馴服每一隻的過程均是獨一無二的挑戰。殆死堤拉克是其中最威猛稀有的一隻。你會是第一位馴服牠的獵人嗎?玩家必須解開海加
+爾山癒合之地與熔岩前線的每日任務領域才能進行馴服這些獨特野獸的挑戰。
 
-      * Hammer of the Righteous mana cost has been lowered to 10%, down from
-12% to match Crusader Strike.
+    * 阻擾(堅毅系寵物)已重新設計。寵物將以極快的速度朝團體成員衝過去，降低下一次近戰或遠程攻擊對該成員造成的傷害，最多相當於寵物最大生命力的50%。
 
-      * Holy Shield has been redesigned. This talent is now an activated
-ability off the global cooldown. It grants 20% increased block amount to a
-paladin's shield blocks for 10 seconds, with a 30-second cooldown.
+**[![][15]][262] [法師][262]**
 
-      * Judgements of the Wise now procs on attempt rather than on strike,
-which means judgements that miss can still grant mana. This is to help ensure
-Protection paladins are not starved for mana if they aren't capped on hit
-rating.
+  * 秘法衝擊造成的傷害降低5%。
 
-    * Retribution
+  * 當焦炎之痕尚未觸發時施放的炎爆術，所造成的傷害比焦炎之痕觸發時稍微少一點。現已提高炎爆術所造成的傷害，使兩種版本的炎爆術造成一樣的傷害。
 
-      * The Seals of Command talent now makes Seal of Righteousness hit an
-unlimited number of melee targets, instead of only 2 additional targets.
+  * 法術竊取所消耗的法力提高了100%。
 
-      * Selfless Healer can no longer be dispelled and cannot be stolen via
-Spellsteal; and, in addition to its current effects, it lowers the cooldown of
-Word of Glory by 5/10 seconds.
+  * 天賦專精
 
-  * Glyphs
+    * 火焰
 
-    * Glyph of Seal of Truth expertise bonus now also works when Seal of
-Righteousness is active.
+      * 當衝擊天賦使活體爆彈擴散時，它只會擴散到額外兩個目標。這使法師在最新的活體爆彈目標與衝擊的目標相同時，該目標將不再喪失活體爆彈的效果。若施放
+衝擊的效果時，多名目標身上有活體爆彈的效果，最新的活體爆彈目標身上將維持有活體爆彈的效果，並擴散到附近的兩名目標身上。
 
-**[![][19]][43] [Priests][43]**
+    * 冰霜
 
-  * Devouring Plague damage done has been decreased by 12%.
+      * 除了其他會共享遞減效果的法術之外，極度冰凍與霜之環也會對彼此造成遞減效應。
 
-  * Mind Blast damage done has been increased by 12%.
+**[![][17]][263] [聖騎士][263]**
 
-  * Shadowfiend uses the new Assist pet stance functionality.
+  * 神聖之光的法力消耗從基礎法力的30%提高為35%。
 
-  * Shadow Word: Death damage done has been increased by 12%.
+  * 聖光閃現的法力消耗從基礎法力的27%提高為31%。
 
-  * Shadow Word: Pain damage done has been decreased by 12%.
+  * 遠古諸王守護者將使用新的協助型寵物姿態。
 
-  * Talent Specializations
+  * 聖光術的法力消耗從基礎法力的10%提高為12%。
 
-    * Shadow
+  * 責難、聖盾術與聖佑術有新圖示。
 
-      * Mind Flay damage done has been increased by 12%.
+  * 現在每一種近戰技能都能啟動正義聖印，不再限於單一目標的近戰技能。這使得公正之錘(視為物理的部分)與神性風暴都成為能觸發這個聖印的技能之一。此外，正義
+聖印觸發的傷害現在可以造成致命效果了。
 
-      * Sin and Punishment's Vampiric Touch backlash fear effect no longer has
-diminishing returns.
+  * 天賦專精
 
-      * Vampiric Touch damage done has been decreased by 12%.
+    * 神聖
 
-  * Priest Bug Fixes
+      * 聖光信標已無法被驅散。此外，它的目標現在能從聖光術獲得100%的治療效果，但是從其他法術仍只能獲得50%的治療效果。
 
-    * Players will no longer prematurely cancel a channeled spell when
-clicking on the Lightwell.
+      * 裁決已重新設計。此法術仍然可以降低驅邪術的法力消耗，可是神聖震擊已不再使驅邪術成為免費而瞬發的法術。現在，裁決改為有50/100%的機率使驅
+邪術的目標在接下來的6秒無法造成致命的效果。此效果可以被驅散。
 
-**[![][21]][44] [Rogues][44]**
+      * 神聖震擊的法力消耗從8%的基礎法力降低為7%。
 
-  * Cloak of Shadows cooldown is now 2 minutes, up from 90 seconds. In
-addition, Cloak of Shadows is no longer on the global cooldown.
+      * 聖光治療(精通)已經稍作調整，若聖騎士重置他自己在目標身上的聖光治療，新的吸收量會增加到舊的吸收量之上，而其效果的持續時間也將重置。能吸收的
+總傷害無法超過施法的聖騎士生命力的1/3。
 
-  * Combat Readiness and Cloak of Shadows now share a cooldown.
+      *
+除了聖光術與神聖之光之外，聖光灌注現在也能縮短聖光閃現的施法時間0.75/1.5秒。此外，因為裁決不再觸發，舊的裁決法術重疊效果已經轉移到聖光灌注上面。
 
-  * Blind duration against enemy NPCs is now 1 minute, while the duration
-against players remains 8 seconds.
+      * 現在，當施放神聖光輝或聖佑術時，光速能提高移動速度。此外，這項天賦現在能使神聖光輝縮短的冷卻時間從10/20/30
+提高為13/26/40秒。
 
-  * Stealth now once again begins its cooldown once the rogue leaves Stealth.
+      * 除了目前的效果之外，光明漫步現在也使榮耀聖言的治療效果提高30%。
 
-  * Talent Specializations
+    * 防護
 
-    * Assassination
+      * 忠誠防衛者有新的法術效果。
 
-      * Assassin's Resolve damage bonus has been increased to 20%, up from
-15%.
+      * 聖光庇護現在不再與神聖之盾有任何形式上的互動作用。
 
-      * Vile Poisons now increases poison damage by 12/24/36%, up from
-7/14/20%.
+      * 公正之錘的法力消耗從12%降低為10%以符合十字軍聖擊的消耗。
 
-    * Combat
+      * 神聖之盾已重新設計。這項天賦現在不觸發共用冷卻時間的啟動技能。神聖之盾讓聖騎士的盾牌格擋值提高20%，持續10秒，並有30秒的冷卻時間。
 
-      * Savage Combat now increases attack power by 3/6%, up from 2/4%.
+      *
+睿智審判現在會在嘗試時，而非命中時觸發。這表示就算審判未命中仍然能獲得法力。這能幫助確保防護系的聖騎士即使命中等級不足也不會因此而極度缺乏法力。
 
-      * Vitality now increases attack power by 30%, up from 25%.
+    * 懲戒
 
-    * Subtlety
+      * 崇高信仰現在會使異端審問的持續時間由延長50/100/150%提高為延長66/133/200%。
 
-      * Elusiveness now reduces the cooldown of Cloak of Shadows by 15/30
-seconds, up from 10/20, and now also reduces the cooldown of Combat Readiness
-by 15/30 seconds.
+      * 命令聖印天賦現能使正義聖印擊中的近戰目標不受限制，而不再只限於2名。
 
-      * Sanguinary Vein damage to bleeding targets has been increased to
-8/16%, from 5/10%.
+      * 無私治療者無法再被驅散，而且無法被法術竊取；此外，除了目前已有的效果之外，它會額外使榮耀聖言的冷卻時間縮短5/10秒。
 
-**[![][23]][45] [Shaman][45]**
+  * 雕紋
 
-  * Fire Nova damage has been increased by 15%.
+    * 真理聖印雕紋提供的熟練加成現在當啟動正義聖印時也有加成效果。
 
-  * Lightning Shield and Water Shield can no longer be dispelled.
+**[![][19]][264] [牧師][264]**
 
-  * Unleash Elements is now in the Nature school, and thus can no longer be
-used if a shaman's Nature school has been locked out.
+  * 噬靈瘟疫所造成的傷害降低12%。
 
-  * Water Shield has had its internal cooldown reduced to 3.5 seconds, once
-again matching other shields. The amount of mana restored when Water Shield
-procs has been reduced by 50%.
+  * 心靈震爆所造成的傷害提高12%。
 
-  * Talent Specializations
+  * 暗影惡魔現在會使用新的協助型功能。
 
-    * Elemental
+  * 暗言術:死所造成的傷害提高12%。
 
-      * Call of Flame now also causes Fire Nova to add 3/6 seconds to the
-duration of Flame Shock auras on targets that Fire Nova damages.
+  * 暗言術:痛所造成的痛傷害降低12%。
 
-      * Lava Flows now grants a 30/60/90% haste buff when a Flame Shock effect
-is dispelled, up from 10/20/30%.
+  * 天賦專精
 
-      * Thunderstorm now reduces the movement speed of players it knocks back
-by 40% for 5 seconds.
+    * 暗影
 
-    * Restoration
+      * 精神鞭笞所造成的傷害提高12%。
 
-      * Improved Water Shield has been redesigned and renamed Resurgence. When
-Water Shield is active, Resurgence causes critical direct heals to restore
-mana (Resurgence rank 2 is roughly equal to 150% of the old Improved Water
-Shield value when a Healing Wave or Greater Healing Wave critically hits, and
-scaled down accordingly for faster or multi-target spells).
+      * 心靈恐慌不再要求施法者面朝前方，與其他非點擊施放的群體控制法術一致。
 
-      * Mana Tide now grants 200% of the caster's Spirit, down from 400%.
+      * 罪與罰的吸血之觸被驅散時造成的恐懼效果不再有遞減效果。
 
-  * Glyphs
+      * 吸血之觸所造成的傷害降低12%。Vampiric Touch damage done has been decreased by 12%.
 
-    * Glyph of Unleashed Lightning (new Prime glyph) allows Lightning Bolt to
-be cast while moving.
+  * 牧師bug修正
 
-**[![][25]][46] [Warlocks][46]**
+    * 玩家不會再因為點擊光束泉而提早取消引導的法術。
 
-  * Soul Harvest has a new spell effect.
+**[![][21]][265] [盜賊][265]**
 
-  * Warlock Bug Fixes
+  * 暗影披風的冷卻時間從90秒延長為2分鐘。此外，暗影披風不再觸發共用冷卻時間。
 
-    * It is no longer possible to leave combat while channeling Drain Soul.
+  * 戰鬥就緒與暗影披風現共享同一個冷卻時間。
 
-**[![][27]][47] [Warriors][47]**
+  * 對敵方NPC的致盲持續時間現為1分鐘，對玩家的持續時間仍為8秒。
 
-  * Overpower now has a 1.5-second cooldown and global cooldown (Taste for
-Blood's Overpower cooldown has not changed).
+  * 現在潛行的冷卻時間再次從盜賊離開潛行時開始計算。
 
-  * Retaliation, Recklessness and Shield Wall no longer have stance
-requirements.
+  * 天賦專精
 
-**[Dungeons & Raids][48]**
+    * 刺殺
 
-  * Dungeon Journal is in the process of being implemented. While some UI
-elements may exist in the current Public Test Realm build, the feature is not
-yet complete.
+      * 刺客的決心傷害加成從15%提高為20%。
 
-  * The Firelands, a new 10- and 25-player raid, is now available for limited
-testing. Please visit the [PTR Discussion forum][49] for the latest raid
-testing schedule.
+      * 惡性毒藥所提供的毒藥傷害加成從7/14/20%提高為12/24/36%。
 
-  * The Bastion of Twilight
+    * 戰鬥
 
-    * The damage modifier on normal difficulty has been reduced for Arion,
-Elementium Monstrosity, Feludius, Ignacius, and Terrastra.
+      * 狠毒戰鬥的攻擊強度加成從2/4%提高為3/6%。
 
-    * One of each type of bound elemental in the Ascendant Council chamber has
-been removed.
+      * 活力的攻擊強度加成從25%提高為30%。
 
-    * Arion
+    * 敏銳
 
-      * Chain Lightning damage has been reduced.
+      * 飄忽不定將暗影披風縮短的冷卻時間由從10/20秒提高為縮短15/30秒，現在同時也使戰鬥就緒的冷卻時間縮短15/30秒。
 
-    * Cho'gall
+      * 出血的基礎傷害提高了40%。
 
-      * Health, melee damage, Health of Corrupting Adherent, Depravity damage,
-Corrupting Crash damage, Flaming Destruction damage, and Unleashed Shadows
-damage have all been reduced by 20%.
+      * 嗜血脈動對流血的目標所造成的傷害從5/10%提高為8/16%。
 
-      * Corrupting Crash and Depravity
+**[![][23]][266] [薩滿][266]**
 
-        * The amount of Corruption they give has been reduced to 5, down from
-10.
+  * 火焰新星所造成的傷害提高15%。
 
-      * Corrupted Bite effect caused by Blood of the Old God has been reduced.
+  * 閃電之盾與水之盾不再可以被驅散。
 
-      * Damage taken from Corruption of the Old God per Corrupted Blood has
-been reduced from 3% per stack to 2% per stack.
+  * 釋放元素現為自然系法術，因此當薩滿的自然系法術被封鎖便無法使用。
 
-      * Debilitating Beam damage has been reduced by 20%.
+  * 水之盾的內部冷卻時間縮短為3.5秒，與其他的護盾一樣。水之盾觸發時恢復的法力降低50%。
 
-      * The duration of Twisted Devotion has been reduced by 25%.
+  * 天賦專精
 
-    * Dragon Siblings
+    * 元素
 
-      * Health, melee damage, Twilight Meteorite damage, Devouring Flames,
-Blackout damage, Unstable Twilight damage, Twilight Zone damage, Twilight
-Blast damage, and Fabulous Flames damage have all been reduced by 20%.
+      * 烈焰呼喚現也讓火焰新星造成傷害的目標其身上的烈焰震擊持續時間延長3/6秒。
 
-    * Elementium Monstrosity
+      * 當烈焰震擊被驅散時，熔岩奔流現提供的加速增益效果從10/20/30%提高為30/60/90%。
 
-      * Electrical Instability damage has been reduced.
+      * 雷霆風暴現在會使被擊退的玩家移動速度降低40%，持續5秒。
 
-    * Feludius
+    * 恢復
 
-      * Damage due to being frozen while Waterlogged has been reduced.
+      * 強化水之盾已重新設計並重新命名為復甦。當水之盾啟動時，復甦會使直接治療造成極效治療效果時恢復法力(在復甦等級2，治療波或強效治療波造成極效治
+療時恢復的法力大約等於原本強化水之盾的150%，而較快速或多目標法術的極效治療回復的法力則會相對地而減少)。
 
-    * Halfus
+      * 法力之潮現在使提高施法者的精神從400%降低為200%。
 
-      * Health, melee damage, Fireball/Fireball Barrage damage, Furious Roar
-damage, Scorching Breath damage, and Shadow Nova damage have all been reduced
-by 20%.
+  * 雕紋
 
-      * Nether Scion, Slate Dragon, Storm Rider, Time Warden, and Orphaned
-Emerald Whelp health has been reduced by 20%.
+    * 釋放閃電雕紋(新的主要雕紋)能讓施法者在移動時施放閃電箭。
 
-      * Shadow Nova base cast time has been increased.
+  * 套裝獎勵
 
-    * Ignacious
+    * 元素薩滿4件PvP套裝獎勵(鬥士的雷霆之拳套裝)已重新設計。現導致閃電之盾在受到傷害時產生額外的閃電球，而非消耗閃電球，最高可到3顆(有轟天雷天
+賦最多可累積9顆。)
 
-      * Rising Flames now increases damage by 3% per stack, down from 5%.
+**[![][25]][267] [術士][267]**
 
-    * Terrastra
+  * 靈魂之火的學習等級從54級降低為20級。
 
-      * Harden Skin now increases physical damage dealt by 20%, down from
-100%.
+  * 靈魂收割現在有新的法術效果。
 
-  * Blackwing Descent
+  * 雕紋
 
-    * Atramedes
+    * 靈魂調換雕紋現在使靈魂調換的冷卻時間從15秒延長為30秒。
 
-      * Health, melee damage, modulation damage, Roaring Flame Breath damage,
-and Searing Flame damage have all been reduced by 20%.
+  * 術士Bug修正
 
-      * Modulation no longer causes Sound in normal difficulty.
+    * 現在已經無法在引導吸取靈魂的狀態下脫離戰鬥。
 
-      * Sound given by Sonar Pulse has been reduced to 3, down from 5.
+**[![][27]][268] [戰士][268]**
 
-    * Chimaeron
+  * 壓制現在有1.5秒的冷卻時間與共用冷卻時間(血腥體驗的壓制其冷卻時間不變)。
 
-      * Health has been reduced by 20% and melee damage has been reduced by
-10%.
+  * 魯莽與沉著殺機現在無法在同時間使用。當其中一個啟動時，另一個便不能使用，但使用其中一個不會使另一個觸發完整的冷卻時間。
 
-      * Chimaeron will now only cast two caustic slimes per 30-second cycle.
+  * 反擊風暴、魯莽與盾牆不再要求特定姿態才能使用。
 
-    * Drakeadon Mongrel
+  * 天賦專精
 
-      * Time Lapse no longer stuns.
+    * 武器
 
-      * Frost Burn silence is now 3 seconds.
+      * 雙手武器專精的武器傷害加成從20%降低為12%。
 
-    * Dwarven Kings
+    * 狂怒
 
-      * Whirlwind no longer drops threat.
+      * 雙武器專精的武器傷害加成從10%降低為5%。
 
-      * Execution Sentence now deals damage only.
+  * 戰士Bug修正
 
-      * Shield of Light absorption has been reduced.
+    * 現在，在某些戰鬥中已經無法在小於最短距離時使用衝鋒。
 
-    * Magmaw
+**兌換通貨**
 
-      * Damage and hit points have been reduced by 20%.
+  * 征服與榮譽點數
 
-      * Lava Parasites have been diminished.
+    * 所有在兌換通貨頁面的現存征服點數都已轉化為榮譽點數。任何超過榮譽點數上限的點數必須在下個星期，也就是第10季開始前用掉。在第10季開始後，所有超
+過4000點上限的點數，每一點會以35枚銀幣的匯率轉化為金幣並郵寄給玩家的角色。
 
-      * Lava Spew damage, Magma Spit damage, Massive Crash damage, and
-Infectious Vomit damage have all been been reduced.
+    * 獲得征服點數的最低每週上限在1500點以下的戰場積分現為1500點；最高的上限仍是3000點以上的戰場積分的3000點。兩個積分之間的上限仍以非
+線性的幅度增加。
 
-      * Mangled Lifeless no longer instantly kills, and its damage has been
-reduced.
+    * 遊戲現在會分開追蹤戰場與競技場不同的征服點數上限。不管競技場積分的高低，競技場的上限總會是積分戰場上限的2/3。玩家每週能獲取的征服點數上限視兩
+者之間何者較高，可是一旦玩家達到戰場或競技場其中一種的征服點數上限，便無法從該來源獲得更多的征服點數。在假日戰場獲得的征服點數只會在總征服點數上限計算。
 
-      * Parasitic Infection has been decreased.
+      * 舉例說明:在第10季的第一週，每個人開始的積分都在1500分以下。所以，積分戰場的上限為1500點，而競技場的上限則是1000點。某角色贏了
+足夠場次的競技場比賽，達到了競技場的1000點上限。在那個時候，競技場的勝利在當週不會再提供征服點數。但是，該角色仍然能從積分戰場或假日及每日隨機戰場獲得最
+多500點的征服點數。下一週的上限會依據該角色的積分重新計算上限，而有可能競技場的積分現在會提供更高的上限。在第二週，該角色的競技場分數上限為1600點，而
+積分戰場的上限為1500點。該角色的總征服點數上限為1600點，最多可從積分戰場獲得1500點征服點數，但是剩下的100點必須從其他來源獲得。
 
-    * Maloriak
+  * 勇氣與正義點數
 
-      * Health, damage, Aberration health/damage, Arcane Storm damage, Prime
-Subject damage, Flash Freeze/Shatter damage, and Scorching Blast damage have
-all been decreased by 20%.
+    * 所有在兌換通貨頁面的現存勇氣點數都已轉化為正義點數。任何超過正義點數上限的點數，每一點會以47枚銀幣的匯率轉化為金幣並郵寄給玩家的角色。
 
-      * The Aberration stacking damage buff has been decreased.
+    * 每週由任何地城及團隊地城能獲得的勇氣點數上限由1250點降低為980點。
 
-      * Prime Subjects no longer fixate, and are no longer immune to taunt
-effects.
+      * 從贊達拉的崛起地城能獲得的最高勇氣點數上限仍為980點。
 
-    * Nefarian
+      * 從完成英雄模式地城能獲得的最高勇氣點數上限仍為490點。
 
-      * Health and melee damage has been reduced by 20%.
+      * 在火源之界擊殺首領獲得的勇氣點數，10人模式為120點，25人模式為140點。
 
-      * Animated Bone Warriors take 33 seconds to fall over, down from 50. In
-addition, fewer Animated Bone Warriors spawn.
+      * 在巴拉丁堡擊殺歐庫薩獲得的勇氣點數，10人模式為120點，25人模式為140點。
 
-      * Blast Nova cast time has been increased.
+      * 在英雄模式下的暮光堡壘、黑翼陷窟、四風王座擊殺首領能獲得的勇氣點數，10人模式為35點，25人模式為45點。
 
-      * Chromatic Prototype health has been reduced by 20%.
+**地城與團隊**
 
-      * Electrocute damage has been reduced by 30%.
+  * 新增團隊檔案，讓玩家根據內容的類別(例如10人團隊、25人團隊、戰場等)來儲存團隊視窗使用者介面的版面以供未來使用。
 
-      * Magma Stacking debuff effect has been reduced by 75%.
+    * 玩家可選擇PvE、PvP、天賦專精和團隊規模。每一個團隊檔案種類接下來會自動進行設定。
 
-      * Nefarian's Shadowblaze cast frequency cannot increase beyond 1 once
-every 15 seconds.
+    * 若玩家在介面選項中勾選「使用團隊風格的隊伍框架」，這項功能也能在5人內容中使用。
 
-      * Onyxia health and melee damage has been reduced by 20%.
+    * 團隊檔案可以橫向或直向地排列隊伍。
 
-      * Shadowflame Barrage damage has been reduced by 20%.
+  * 在功能列上新增了團隊按鈕，能讓玩家直接開啟社交面板中的團隊視窗。
 
-      * Tail Lash damage has been reduced by 50%.
+  * 巴拉丁堡
 
-    * Omnotron Council
+    * 歐庫薩從牢籠中掙脫了，對控制托巴拉德的玩家提供全新的10人及25人首領挑戰。
 
-      * Health, Melee damage, Electrical Discharge damage, Lightning Conductor
-damage, Health of Poison Bomb, Incineration Security Measure damage, and
-Arcane Annihilator damage have all been reduced by 20%.
+  * 暮光堡壘
 
-      * Barrier absorb amount has been increased by 100%.
+    * 已將艾理奧、源質巨怪、 費魯迪厄斯、伊格納修斯與特拉斯特拉在普通模式下的傷害降低。
 
-      * The cooldown on Power Conversion (Converted Power chance) has been
-increased.
+    * 卓越者議會大廳中每一種被禁錮的元素都已經移除一個。
 
-      * Flamethrower damage has been reduced by 40%.
+    * 禁錮的洪水其冰霜旋風技能所造成的傷害降低50%。
 
-      * Static Shock caused by Unstable Shield damage and Poison Bomb damage
-has been decreased by 50%.
+    * 艾理奧
 
-  * Deadmines
+      * 閃電鏈的傷害及距離已被降低。
 
-    * Vanessa VanCleef (Heroic difficulty) now has a sweet, sweet voice to
-accompany her dialog.
+    * 丘加利
 
-  * Throne of the Four Winds
+      * 生命力、近戰傷害、腐化中的擁護者生命力、墮邪之力的傷害、腐化轟擊的傷害、烈炎破壞的傷害與釋放暗影的傷害全部均降低20%。
 
-    * Al'Akir
+      * 腐化轟擊和墮邪之力
 
-      * Acid Rain now stacks every 20 seconds, up from 15.
+        * 這些法術造成的腐化從10降低為5。
 
-      * Electrocute now pulses every 1 second, up from 0.5.
+      * 古神之血所造成的腐化之咬效果已被降低。
 
-      * Feedback duration has been increased to 30 seconds, up from 20.
+      * 由上古之神的腐化每一層堆疊腐化之血所造成的傷害從3%降低為2%。
 
-      * Health, damage, and Wind Burst damage have all been reduced by 20%.
+      * 衰弱光束傷害降低20%。
 
-      * Lightning and Lightning Rod recast time has been increased.
+      * 偏執信仰的持續時間縮短25%。
 
-      * Lightning Strike friendly chain damage has been reduced by 50%.
+    * 龍群氏族
 
-      * Static Shock will no longer be used on normal difficulty in phase 1 or
-phase 2.
+      *
+生命力、近戰傷害、暮光隕星的傷害、吞噬烈焰、昏天暗地的傷害、不穩定的暮光傷害、暮光地帶的傷害、暮光衝擊的傷害與巨大的火焰傷害全部均降低20%。
 
-    * Conclave of the Four Winds
+    * 源質巨怪
 
-      * Rohash, Anshal, Nezir melee, Ravenous Creeper health/damage, Ravenous
-Creeper toxic spores damage, Hurricane damage, Sleet Storm damage, Permafrost
-damage , Slicing Gale, and Wind Blast damage have all been reduced by 20%.
+      * 電暴增效傷害已被降低。
 
-      * Gathering Strength cast time has been increased.
+    * 費魯迪厄斯
 
-      * Ice Patch slow effect is now 5% per stack, up to 10 stacks, down from
-10% per stack, up to 30 stacks, and damage has been reduced by 20%.
+      * 浸濕時因為冰凍所造成的傷害已被降低。
 
-      * Wind Chill damage has been decreased by 20% and now increases damage
-taken by 5% per stack.
+    * 哈福斯
 
-**[Guilds][50]**
+      * 生命力、近戰傷害、火球術/火球彈幕的傷害、狂怒咆哮的傷害、灼燒之息的傷害與暗影新星的傷害全部均已降低20%。
 
-  * The daily guild experience cap has been increased by 25%.
+      * 虛空幼體、石板龍、 風暴騎士、時間看守者與失怙的綠龍寶寶生命力全部均已降低20%。
 
-  * The weekly guild reputation cap has been increased by 25%.
+      * 暗影新星的基礎施法時間已提高。
 
-  * The guild experience cap is now removed at level 20, down from level 23.
+    * 伊格納修斯
 
-  * The Reins of the Dark Phoenix, purchased from the Guild Vendor, has had
-its art improved. It's now less transparent and indisputably more awesome.
+      * 烈焰高漲每次堆疊的傷害從5%降低為3%。
 
-**[Items][51]**
+    * 特拉斯特拉
 
-  * Darkmoon Card: Hurricane damage done when triggered has been increased by
-40%, however, it can no longer deal critical strikes and no longer receives
-any modifiers to its damage from the equipping player.
+      * 硬化外皮造成的物理傷害加成從100%降低為20%。
 
-  * Set Bonuses
+  * 黑翼陷窟
 
-    * The 2-piece resilience bonus from Cataclysm PvP sets no longer stacks.
-If a player wears 2 pieces each from 2 different Cataclysm sets, the player
-will only receive the 400 resilience rating bonus once. This change does not
-apply to PvP sets from prior expansions.
+    * 亞特拉米德
 
-    * The 2-piece Restoration druid tier 11 PvE set bonus has been redesigned
-to work with the new Restoration druid mastery. Druids with this bonus now
-receive the bonus to Spirit while the Harmony mastery bonus to periodic
-healing is active.
+      * 生命力、近戰攻擊、調整的傷害、咆哮焰息的傷害與灼熱烈焰的傷害全部均已降低20%。
 
-    * The 4-piece Elemental shaman PvP set bonus (Gladiator's Thunderfist set)
-has been redesigned. It now causes Lightning Shield to generate an extra
-charge, rather than consuming one, when it is triggered by receiving damage,
-up to a maximum of 3 (9 with the Rolling Thunder talent).
+      * 調整在普通模式下不再提高聲音值。
 
-**[Professions][52]**
+      * 聲納脈衝波造成的聲音值從5降低為3。
 
-  * Skinning
+    * 奇瑪隆
 
-    * Players can no longer skin corpses already being actively skinned or
-looted by other players.
+      * 生命力降低20%，而且近戰傷害降低10%。
 
-**[PvP][53]**
+      * 奇瑪隆現在每30秒週期只施放兩次腐蝕黏液。
 
-  * Arenas
+    * 混種亞龍
 
-    * The Ring of Valor has been added to the Arena rotation once again.
-Players no longer start the match on elevators at the center of the map. They
-now begin the match in starting rooms on opposite sides of the Arena.
+      * 時間流逝不再造成昏迷。
 
-  * Battlegrounds
+      * 冰霜灼燒的沉默現為3秒。
 
-    * Eye of the Storm has been added into the rotation as a 10-man Rated
-Battleground. The tug-of-war style capture points have been replaced with
-Arathi Basin style capture points to better support 10v10 competition. This
-change applies only to Rated Battlegrounds. Eye of the Storm is otherwise
-still a 15-player Battleground with tug-of-war style capture points.
+    * 矮人國王
 
-    * War Games
+      * 旋風斬不再清空威脅值。
 
-      * Many improvements are being made to the War Games interface, though
-the changes are not yet fully functional.
+      * 處決宣判現在只會造成傷害。
 
-  * Conquest Points
+      * 光明之盾的吸收效果已經降低。
 
-    * The minimum cap on Conquest Points earned per week is now 1500 at 1500
-or less Battleground rating. The maximum cap remains 3000 at 3000 or more
-Battleground rating. The cap continues to scale non-linearly between those two
-points.
+    * 熔喉
 
-    * The game now separately tracks different Conquest Point caps for
-Battlegrounds and Arenas. The cap for Arena rating will always be 2/3 of the
-cap for Battleground rating at any given Arena rating. Players may earn a
-total number of Conquest Points per week equal to the higher of these two
-caps, but once players have reached the cap for either Arenas or
-Battlegrounds, they can no longer earn Conquest Points from that source.
-Conquest Points from Battleground holidays only count toward the total
-Conquest Point cap.
+      * 傷害與生命力已降低20%。
 
-**[Quests & Creatures][54]**
+      * 熔岩蟲已經削弱。
 
-  * There are no longer oddities in the critical strike and dodge chance of
-lower-level creatures.
+      * 岩漿噴灑的傷害、岩漿噴吐的傷害、強烈撞擊的傷害與傳染嘔吐的傷害全部均已降低。
 
-**[User Interface][55]**
+      * 死無全屍不再造成瞬殺，而且傷害降低。
 
-  * Characters can now be reorganized at the Character Selection screen. This
-feature not yet fully functional and the reorganization of characters doesn't
-save at this time.
+      * 寄生感染已經被降低。
 
-  * The cast bar can now be moved to display below the Character frame.
+    * 瑪洛里亞克
 
-  * Move Pad is a mouse-click interface for movement which is now built into
-the base interface.
+      * 生命力、傷害、變異怪的生命力/傷害、秘法風暴的傷害、 主要實驗體的傷害、閃霜/粉碎的傷害與灼燒衝擊的傷害全部均已降低20%。
 
-  * Raid Profiles are in the process of being implemented and are not fully
-functional. Raid Profiles will allow players to save the raid window user
-interface layout based on type of content (i.e. 10-player raids, 25-player
-raids, Battlegrounds, etc.).
+      * 變異怪堆疊的傷害增益效果已降低。
+
+      * 主要實驗體不再鎖定目標，而且不再對嘲諷效果免疫。
+
+    * 奈法利安
+
+      * 生命力與近戰傷害降低20%。
+
+      * 復生的白骨戰士倒地的時間從50秒縮短為33秒。此外，復生的白骨戰士生成的數量減少。
+
+      * 衝擊新星的施法時間提高。
+
+      * 炫彩原型體的生命力降低20%。
+
+      * 電擊的傷害降低30%。
+
+      * 熔岩堆疊的減益效果降低75%。
+
+      * 奈法利安的暗影炎施法頻率無法增加到每15秒超過1次。
+
+      * 奧妮克希亞的生命力與近戰傷害降低20%。
+
+      * 暗影之焰幕的傷害降低20%。
+
+      * 尾部鞭擊的傷害降低50%。
+
+    * 全能魔像議會
+
+      * 生命力、近戰攻擊、放電的傷害、避雷針的傷害、毒炸彈的生命力、焚化防禦措施的傷害與秘法殲滅者的傷害全部均已降低20%。
+
+      * 屏障可吸收的傷害值提高100%。
+
+      * 能量轉換術(轉化能量的機率)冷卻時間增加。
+
+      * 火焰噴射器的傷害降低40%。
+
+      * 不穩定盾牌傷害與毒炸彈傷害所造成的靜電震擊降低50%。
+
+  * 死亡礦坑
+
+    * 凡妮莎•范克里夫(英雄模式)現在有了甜美的嗓音來配合她的對話。
+
+  * 四風王座
+
+    * 奧拉基爾
+
+      * 酸雨的堆疊時間現從每15秒提高為每20秒。
+
+      * 電擊的脈衝時間現從每0.5秒提高為每1秒。
+
+      * 回饋的持續時間從20秒提高為30秒。
+
+      * 生命力、傷害與疾風爆發的傷害均降低20%。
+
+      * 閃電與聚雷針重新施法的週期延長了。
+
+      * 閃電之擊對友方目標的連鎖傷害已降低50%。
+
+      * 在普通模式下，階段1或階段2將不再施放靜電震擊。
+
+    * 風之議會
+
+      * 洛哈許、安蕭爾、涅茲爾的近戰攻擊，飢餓的蠕行者的生命力/傷害、飢餓的蠕行者的毒性孢子傷害、颶風的傷害、冰雨風暴的傷害、極寒冰霜的傷害、削骨颶
+風與疾風衝擊的傷害全部均已降低20%
+
+      * 積蓄力量的施法時間已延長。
+
+      * 流冰的緩速效果從每次堆疊10%，最多會堆疊30次，降低為每次堆疊5%，最多會堆疊10次，而且傷害降低20%。
+
+      * 風寒冷卻的傷害降低20%，現在每次堆疊會使受到的傷害提高5%。
+
+  * 祖爾格拉布
+
+    * 現在騎乘坐騎時也能使用所有的大鍋來獲得增益效果。
+
+    * 高階祭司基爾娜拉之死現在會關閉火焰提基面具的機關。
+
+    * 高階祭司溫諾希斯之死現在會將地城入口的植物毒性移除。
+
+  * 地城與團隊Bug修正
+
+    * 首領現在對於地精縮小射線的效果免疫。
+
+    * 現在黑翼陷窟的瑪洛里亞克之戰中，「怪異行為」成就將不會再錯誤地重設擊殺的數量統計。
+
+    * 在四風王座裡，安蕭爾的舒和微風將不會再使戰鬥寵物做出怪異的舉動了。
+
+    * 團隊標記的圖示現在於首領戰中的所有階段都可以看得到了。
+
+**公會**
+
+  * 公會搜尋器
+
+    * 句子較長的註解現在能正常顯示，不會再被截斷。
+
+  * 每日公會能獲得的經驗上限提高25%。
+
+  * 每週公會能獲得的聲望上限提高25%。
+
+  * 公會經驗上限現在從20級移除，原本為23級。
+
+  * 公會商人所販賣的黑暗鳳凰的韁繩已經美化。現在質地不像之前那樣透明，無可否認看起來更棒了。
+
+**物品**
+
+  * 若一名玩家在需求優先的系統中以需求贏得擲骰而獲得裝備綁定的物品，該物品會與玩家靈魂綁定。若此物品經由貪婪擲骰贏得，則將維持不綁定。
+
+  * 商人販賣的T11物品現在可使用正義點數購買。
+
+  * 暗月卡:颶風在觸發時造成的傷害已提高40%，然而卻不再能造成致命一擊，而且此傷害不會再從裝備的玩家獲得任何的傷害加成。
+
+  * 為了在使用者介面上留下更多空間放置新功能，鑰匙圈欄位已移除。
+
+    * 在遊戲中不再具有功用的鑰匙已從玩家的物品欄中移除。玩家將自動獲得每一支鑰匙從商人購得的賣價等值的金幣。
+
+    * 已無效的任務鑰匙會從玩家的物品欄中移除。
+
+    * 對玩家可能仍有用處的鑰匙將會被轉移到平時在使用的背包空間內。若玩家的背包已滿，這些鑰匙將會存放在一個暫時的備用物品欄內，直到玩家擁有足夠的空位。
+一旦擁有空位，這些鑰匙將會在玩家登出或切換地圖區域後出現在玩家的背包內。
+
+  * PvP物品及獎勵
+
+    * 商人販賣的第9季物品現在可使用榮譽點數購買。
+
+    * 鬥士武器
+
+      * 第10季的征服點數武器只有在當季達到需求的最低征服點數總額才能購買。例如，購買殘酷鬥士尖刺只需要3400點征服點數，但玩家必須先在第10季一
+共獲得11650點征服點數後才能進行購買。
+
+      * 第9季的榮譽點數武器只有在當季達到需求的最低榮譽點數總額才能購買。例如，購買兇惡鬥士尖刺只需要3400點榮譽點數，但玩家必須先在第10季一共
+獲得18500點榮譽點數後才能進行購買。
+
+      * 一旦達到購買武器所需的最低點數總額，便可以用所列的價格購買所有可以購買的武器。在購買後，已獲得的點數總額並不會重設。
+
+      * 在商人處的武器，其提示資訊上會告訴玩家當季還需要獲得多少征服或榮譽點數才能購買該物品。
+
+    * 積分戰場獎勵
+
+      * 新的PvP地面坐騎，兇惡戰狼(部落)及兇惡戰駒(聯盟)將會獎勵給完成75場、150場及300場積分戰場勝利的玩家，而不再獎勵給每一季結束時在
+競技場排名前0.5%的玩家。這個獎勵系統是為了鼓勵戰場的精神。每一次完成成就都會獎勵一隻帳號綁定的坐騎，使贏得150場及300場的玩家可以獲得第二及第三隻同
+樣的坐騎。然後這些額外獲得的坐騎可以寄給其他的角色，因為牠們是帳號綁定的。這些坐騎在達到成就時就會自動獲得，無需等到賽季結束。
+
+    * 套裝獎勵
+
+      * 浩劫與重生中的2件PvP套裝韌性加成不會再堆疊了。如果玩家各穿著兩件來自兩套不同的套裝，玩家只會獲得一次400點韌性等級的加成。此項變更並不
+會套用在過去的資料片提供的PvP套裝上。
+
+**專業技能**
+
+  * 工程學
+
+    * D.E.H.T.A.最近將大批的小動物置於他們的保護傘之下，特別是兔子與松鼠。由於這個緣故，燧鎖的發射器被改裝使用野生的雞，直到能達成「協議」。
+
+  * 剝皮
+
+    * 玩家不能再對其他玩家正在剝皮或拾取物品的屍體進行剝皮。
+
+**PvP**
+
+  * 競技場
+
+    * 勇武之環再次加入競技場的出賽場地。玩家將不再由地圖中央的升降機開始比賽。他們現在會由競技場兩側相對的準備房間開始進行戰鬥。
+
+  * 戰場
+
+    * 個人的配對積分欄位已經從積分戰場的分數列表中移除，並由隊伍的配對積分取代。
+
+    * 10人積分戰場已經加入暴風之眼。為更貼近10v10的競爭，佔領式的拉鋸戰已經改為阿拉希盆地的奪旗模式。這個改變只適用於積分戰場。普通的暴風之眼仍
+是佔領式拉鋸戰的15人戰場。
+
+    * 戰歌峽谷已經加回積分戰場當中。
+
+    * 戰爭比賽
+
+      * 戰爭比賽的介面已經做出許多改良。現在它擁有自己的面板以方便使用，而只有團隊/隊伍的隊長能對另外一個隊伍發起戰爭比賽的挑戰。
+
+**任務與生物**
+
+  * 現在，低等級的生物不會再有奇怪的致命或閃躲機率了。
+
+  * 生物現在對玩家顯示的能量回復速度變得順暢了。
+
+**種族**
+
+  * 現在所有的玩家種族都擁有/咆哮的聲音了。
+
+**使用者介面**
+
+  * 介面選項的畫面已經修正了尺寸，以符合影像及音效的尺寸。這使得小型單位框架檔案能有較大的面板。
+
+  * 插件現在無法再聰明地透過內建的裝備管理員進行物品的調換了。
+
+  * 角色選擇畫面上的角色順序現可重新進行排序與儲存。
+
+  * 施法條現可移到角色框架的下方顯示。
+
+  * 角色的天賦專精現在可以在戰場的分數列表上以游標指向名稱來顯示。
+
+  * 現在能在單位框架上執行解散野獸的選項了。
+
+  * 現在角色的耐久度顯示會在裝備耐久度低於20%時顯示黃色，而非在剩下5點的時候才顯示。
+
+  * 巨集視窗和法術書現在可以同時打開，使玩家能夠更加直覺式地製作巨集。此外，巨集視窗現在有一個儲存/取消的按鈕。
+
+  * 點擊滑鼠來進行移動的移動面板現已內建在基本介面當中。
+
+  * 現在可以更簡單地將遊戲客戶端的語言改變為該地區可用的任何語言。
+
+  * 現在可以透過小地圖的追蹤來選取一個目標或專注目標(不包括敵對玩家)。
+
+  * 商人現在會顯示他們接受的兌換通貨種類.
+
+**技術問題**
+
+  * Blizzard下載器現在會運用萬用隨插即用 (UPnP)
+的功能在連接埠的配置上。如果你的路由器支援UPnP，它會自動開啟它需要的連接埠，而你的下載將會不受限制。
 
    [1]: http://us.battle.net/wow/en/game/patch-notes/
 
@@ -9217,393 +10945,493 @@ raids, Battlegrounds, etc.).
 
    [28]: #warriors
 
-   [29]: #dungeons
+   [29]: #currency
 
-   [30]: #guilds
+   [30]: #dungeons
 
-   [31]: #items
+   [31]: #guilds
 
-   [32]: #professions
+   [32]: #items
 
-   [33]: #pvp
+   [33]: #professions
 
-   [34]: #quests
+   [34]: #pvp
 
-   [35]: #ui
+   [35]: #quests
 
-   [36]: http://us.battle.net/wow/en/forum/1011646/
+   [36]: #races
 
-   [37]: http://us.battle.net/wow/en/forum/#forum1033923
+   [37]: #ui
 
-   [38]: http://us.battle.net/wow/en/game/class/death-knight
+   [38]: #technical
 
-   [39]: http://us.battle.net/wow/en/game/class/druid
+   [39]: http://us.battle.net/wow/en/forum/1011646/
 
-   [40]: http://us.battle.net/wow/en/game/class/hunter
+   [40]: http://us.battle.net/wow/en/forum/#forum1033923
 
-   [41]: http://us.battle.net/wow/en/game/class/mage
+   [41]: http://us.battle.net/wow/en/game/class/death-knight
 
-   [42]: http://us.battle.net/wow/en/game/class/paladin
+   [42]: http://us.battle.net/wow/en/game/class/druid
 
-   [43]: http://us.battle.net/wow/en/game/class/priest
+   [43]: http://us.battle.net/wow/en/game/class/hunter
 
-   [44]: http://us.battle.net/wow/en/game/class/rogue
+   [44]: http://us.battle.net/wow/en/game/class/mage
 
-   [45]: http://us.battle.net/wow/en/game/class/shaman
+   [45]: http://us.battle.net/wow/en/game/class/paladin
 
-   [46]: http://us.battle.net/wow/en/game/class/warlock
+   [46]: http://us.battle.net/wow/en/game/class/priest
 
-   [47]: http://us.battle.net/wow/en/game/class/warrior
+   [47]: http://us.battle.net/wow/en/game/class/rogue
 
-   [48]: http://us.battle.net/wow/en/forum/1011645/
+   [48]: http://us.battle.net/wow/en/game/class/shaman
 
-   [49]: http://us.battle.net/wow/en/forum/1181024/
+   [49]: http://us.battle.net/wow/en/game/class/warlock
 
-   [50]: http://us.battle.net/wow/en/forum/2187372/
+   [50]: http://us.battle.net/wow/en/game/class/warrior
 
-   [51]: http://us.battle.net/wow/en/item/
+   [51]: http://us.battle.net/wow/en/forum/1011645/
 
-   [52]: http://us.battle.net/wow/en/forum/1011647/
+   [52]: http://us.battle.net/wow/en/forum/2187372/
 
-   [53]: http://us.battle.net/wow/en/pvp/
+   [53]: http://us.battle.net/wow/en/item/
 
-   [54]: http://us.battle.net/wow/en/forum/1011692/
+   [54]: http://us.battle.net/wow/en/forum/1011647/
 
-   [55]: http://us.battle.net/wow/en/forum/1011693/
+   [55]: http://us.battle.net/wow/en/pvp/
 
-   [56]: http://eu.battle.net/wow/de/game/patch-notes/
+   [56]: http://us.battle.net/wow/en/forum/1011692/
 
-   [57]: http://eu.battle.net/wow/de/blog/2236785#blog
+   [57]: http://us.battle.net/wow/en/game/race/
 
-   [58]: http://eu.battle.net/wow/de/blog/2236784#blog
+   [58]: http://us.battle.net/wow/en/forum/1011693/
 
-   [59]: http://eu.battle.net/wow/de/blog/2219880#blog
+   [59]: http://us.battle.net/wow/en/forum/1011701/
 
-   [60]: http://eu.battle.net/wow/de/blog/2220755#blog
+   [60]: http://eu.battle.net/wow/de/game/patch-notes/
 
-   [61]: http://eu.battle.net/wow/static/images/icons/class/6.gif
+   [61]: http://eu.battle.net/wow/de/blog/2236785#blog
 
-   [62]: http://eu.battle.net/wow/static/images/icons/class/11.gif
+   [62]: http://eu.battle.net/wow/de/blog/2236784#blog
 
-   [63]: http://eu.battle.net/wow/static/images/icons/class/3.gif
+   [63]: http://eu.battle.net/wow/de/blog/2219880#blog
 
-   [64]: http://eu.battle.net/wow/static/images/icons/class/8.gif
+   [64]: http://eu.battle.net/wow/de/blog/2220755#blog
 
-   [65]: http://eu.battle.net/wow/static/images/icons/class/2.gif
+   [65]: http://eu.battle.net/wow/static/images/icons/class/6.gif
 
-   [66]: http://eu.battle.net/wow/static/images/icons/class/5.gif
+   [66]: http://eu.battle.net/wow/static/images/icons/class/11.gif
 
-   [67]: http://eu.battle.net/wow/static/images/icons/class/4.gif
+   [67]: http://eu.battle.net/wow/static/images/icons/class/3.gif
 
-   [68]: http://eu.battle.net/wow/static/images/icons/class/7.gif
+   [68]: http://eu.battle.net/wow/static/images/icons/class/8.gif
 
-   [69]: http://eu.battle.net/wow/static/images/icons/class/9.gif
+   [69]: http://eu.battle.net/wow/static/images/icons/class/2.gif
 
-   [70]: http://eu.battle.net/wow/static/images/icons/class/1.gif
+   [70]: http://eu.battle.net/wow/static/images/icons/class/5.gif
 
-   [71]: http://eu.battle.net/wow/de/forum/878728/
+   [71]: http://eu.battle.net/wow/static/images/icons/class/4.gif
 
-   [72]: http://eu.battle.net/wow/de/forum/
+   [72]: http://eu.battle.net/wow/static/images/icons/class/7.gif
 
-   [73]: http://eu.battle.net/wow/de/game/class/death-knight
+   [73]: http://eu.battle.net/wow/static/images/icons/class/9.gif
 
-   [74]: http://eu.battle.net/wow/de/game/class/druid
+   [74]: http://eu.battle.net/wow/static/images/icons/class/1.gif
 
-   [75]: http://eu.battle.net/wow/de/game/class/hunter
+   [75]: http://eu.battle.net/wow/de/forum/878728/
 
-   [76]: http://eu.battle.net/wow/de/game/class/mage
+   [76]: http://eu.battle.net/wow/de/forum/
 
-   [77]: http://eu.battle.net/wow/de/game/class/paladin
+   [77]: http://eu.battle.net/wow/de/game/class/death-knight
 
-   [78]: http://eu.battle.net/wow/de/game/class/priest
+   [78]: http://eu.battle.net/wow/de/game/class/druid
 
-   [79]: http://eu.battle.net/wow/de/game/class/rogue
+   [79]: http://eu.battle.net/wow/de/game/class/hunter
 
-   [80]: http://eu.battle.net/wow/de/game/class/shaman
+   [80]: http://eu.battle.net/wow/de/game/class/mage
 
-   [81]: http://eu.battle.net/wow/de/game/class/warlock
+   [81]: http://eu.battle.net/wow/de/game/class/paladin
 
-   [82]: http://eu.battle.net/wow/de/game/class/warrior
+   [82]: http://eu.battle.net/wow/de/game/class/priest
 
-   [83]: http://eu.battle.net/wow/de/forum/878731/
+   [83]: http://eu.battle.net/wow/de/game/class/rogue
 
-   [84]: http://eu.battle.net/wow/de/forum/878884/
+   [84]: http://eu.battle.net/wow/de/game/class/shaman
 
-   [85]: http://eu.battle.net/wow/de/forum/878771/
+   [85]: http://eu.battle.net/wow/de/game/class/warlock
 
-   [86]: http://eu.battle.net/wow/de/item/
+   [86]: http://eu.battle.net/wow/de/game/class/warrior
 
-   [87]: http://eu.battle.net/wow/de/forum/878727/
+   [87]: http://eu.battle.net/wow/de/forum/878731/
 
-   [88]: http://eu.battle.net/wow/de/pvp/
+   [88]: http://eu.battle.net/wow/de/forum/878771/
 
-   [89]: http://eu.battle.net/wow/de/forum/878726/
+   [89]: http://eu.battle.net/wow/de/item/
 
-   [90]: http://eu.battle.net/wow/de/forum/878734/
+   [90]: http://eu.battle.net/wow/de/forum/878727/
 
-   [91]: http://eu.battle.net/wow/en/game/patch-notes/
+   [91]: http://eu.battle.net/wow/de/pvp/
 
-   [92]: http://eu.battle.net/wow/en/blog/2658255
+   [92]: http://eu.battle.net/wow/de/forum/878726/
 
-   [93]: http://eu.battle.net/wow/en/blog/2685001
+   [93]: http://eu.battle.net/wow/de/game/race/
 
-   [94]: http://eu.battle.net/wow/en/blog/2682944
+   [94]: http://eu.battle.net/wow/de/forum/878734/
 
-   [95]: http://eu.battle.net/wow/en/blog/2685003
+   [95]: http://eu.battle.net/wow/de/forum/975482/
 
-   [96]: http://eu.battle.net/wow/en/forum/1011646/
+   [96]: http://eu.battle.net/wow/en/game/patch-notes/
 
-   [97]: http://eu.battle.net/wow/en/forum/#forum1033923
+   [97]: http://eu.battle.net/wow/en/blog/2236785
 
-   [98]: http://eu.battle.net/wow/en/game/class/death-knight
+   [98]: http://eu.battle.net/wow/en/blog/2236784
 
-   [99]: http://eu.battle.net/wow/en/game/class/druid
+   [99]: http://eu.battle.net/wow/en/blog/2219880
 
-   [100]: http://eu.battle.net/wow/en/game/class/hunter
+   [100]: http://eu.battle.net/wow/en/forum/874701/
 
-   [101]: http://eu.battle.net/wow/en/game/class/mage
+   [101]: http://eu.battle.net/wow/en/forum/
 
-   [102]: http://eu.battle.net/wow/en/game/class/paladin
+   [102]: http://eu.battle.net/wow/en/game/class/death-knight
 
-   [103]: http://eu.battle.net/wow/en/game/class/priest
+   [103]: http://eu.battle.net/wow/en/game/class/druid
 
-   [104]: http://eu.battle.net/wow/en/game/class/rogue
+   [104]: http://eu.battle.net/wow/en/game/class/hunter
 
-   [105]: http://eu.battle.net/wow/en/game/class/shaman
+   [105]: http://eu.battle.net/wow/en/game/class/mage
 
-   [106]: http://eu.battle.net/wow/en/game/class/warlock
+   [106]: http://eu.battle.net/wow/en/game/class/paladin
 
-   [107]: http://eu.battle.net/wow/en/game/class/warrior
+   [107]: http://eu.battle.net/wow/en/game/class/priest
 
-   [108]: http://eu.battle.net/wow/en/forum/1011645/
+   [108]: http://eu.battle.net/wow/en/game/class/rogue
 
-   [109]: http://eu.battle.net/wow/en/forum/1181024/
+   [109]: http://eu.battle.net/wow/en/game/class/shaman
 
-   [110]: http://eu.battle.net/wow/en/forum/2187372/
+   [110]: http://eu.battle.net/wow/en/game/class/warlock
 
-   [111]: http://eu.battle.net/wow/en/item/
+   [111]: http://eu.battle.net/wow/en/game/class/warrior
 
-   [112]: http://eu.battle.net/wow/en/forum/1011647/
+   [112]: http://eu.battle.net/wow/en/forum/874704/
 
-   [113]: http://eu.battle.net/wow/en/pvp/
+   [113]: http://eu.battle.net/wow/en/forum/874786/
 
-   [114]: http://eu.battle.net/wow/en/forum/1011692/
+   [114]: http://eu.battle.net/wow/en/item/
 
-   [115]: http://eu.battle.net/wow/en/forum/1011693/
+   [115]: http://eu.battle.net/wow/en/forum/874699/
 
-   [116]: http://eu.battle.net/wow/es/game/patch-notes/ptr-patch-notes
+   [116]: http://eu.battle.net/wow/en/pvp/
 
-   [117]: http://eu.battle.net/wow/es/blog/2236785
+   [117]: http://eu.battle.net/wow/en/forum/874700/
 
-   [118]: http://eu.battle.net/wow/es/blog/2236784
+   [118]: http://eu.battle.net/wow/en/game/race/
 
-   [119]: http://eu.battle.net/wow/es/blog/2219880
+   [119]: http://eu.battle.net/wow/en/forum/874706/
 
-   [120]: http://eu.battle.net/wow/es/blog/2220755
+   [120]: http://eu.battle.net/wow/es/game/patch-notes/ptr-patch-notes
 
-   [121]: http://eu.battle.net/wow/es/forum/872827/
+   [121]: http://eu.battle.net/wow/es/blog/2236785
 
-   [122]: http://eu.battle.net/wow/es/forum/#forum872819
+   [122]: http://eu.battle.net/wow/es/blog/2236784
 
-   [123]: http://eu.battle.net/wow/es/game/class/death-knight
+   [123]: http://eu.battle.net/wow/es/blog/2219880
 
-   [124]: http://eu.battle.net/wow/es/game/class/druid
+   [124]: http://eu.battle.net/wow/es/blog/2220755
 
-   [125]: http://eu.battle.net/wow/es/game/class/hunter
+   [125]: http://eu.battle.net/wow/es/forum/872827/
 
-   [126]: http://eu.battle.net/wow/es/game/class/mage
+   [126]: http://eu.battle.net/wow/es/forum/#forum872819
 
-   [127]: http://eu.battle.net/wow/es/game/class/paladin
+   [127]: http://eu.battle.net/wow/es/game/class/death-knight
 
-   [128]: http://eu.battle.net/wow/es/game/class/priest
+   [128]: http://eu.battle.net/wow/es/game/class/druid
 
-   [129]: http://eu.battle.net/wow/es/game/class/rogue
+   [129]: http://eu.battle.net/wow/es/game/class/hunter
 
-   [130]: http://eu.battle.net/wow/es/game/class/shaman
+   [130]: http://eu.battle.net/wow/es/game/class/mage
 
-   [131]: http://eu.battle.net/wow/es/game/class/warlock
+   [131]: http://eu.battle.net/wow/es/game/class/paladin
 
-   [132]: http://eu.battle.net/wow/es/game/class/warrior
+   [132]: http://eu.battle.net/wow/es/game/class/priest
 
-   [133]: http://eu.battle.net/wow/es/forum/880013/
+   [133]: http://eu.battle.net/wow/es/game/class/rogue
 
-   [134]: http://eu.battle.net/wow/es/forum/880074/
+   [134]: http://eu.battle.net/wow/es/game/class/shaman
 
-   [135]: http://eu.battle.net/wow/es/forum/880018/
+   [135]: http://eu.battle.net/wow/es/game/class/warlock
 
-   [136]: http://eu.battle.net/wow/es/item/
+   [136]: http://eu.battle.net/wow/es/game/class/warrior
 
-   [137]: http://eu.battle.net/wow/es/forum/872826/
+   [137]: http://eu.battle.net/wow/es/forum/880013/
 
-   [138]: http://eu.battle.net/wow/es/pvp/
+   [138]: http://eu.battle.net/wow/es/forum/880018/
 
-   [139]: http://eu.battle.net/wow/es/forum/872825/
+   [139]: http://eu.battle.net/wow/es/item/
 
-   [140]: http://eu.battle.net/wow/es/forum/880016/
+   [140]: http://eu.battle.net/wow/es/forum/872826/
 
-   [141]: http://us.battle.net/wow/es/game/patch-notes/ptr-patch-notes
+   [141]: http://eu.battle.net/wow/es/pvp/
 
-   [142]: http://us.battle.net/wow/es/blog/2236785
+   [142]: http://eu.battle.net/wow/es/forum/872825/
 
-   [143]: http://us.battle.net/wow/es/blog/2236784
+   [143]: http://eu.battle.net/wow/es/game/race/
 
-   [144]: http://us.battle.net/wow/es/blog/2219880
+   [144]: http://eu.battle.net/wow/es/forum/880016/
 
-   [145]: http://us.battle.net/wow/es/blog/2220755
+   [145]: http://eu.battle.net/wow/es/forum/975480/
 
-   [146]: http://us.battle.net/wow/es/forum/872827/
+   [146]: http://us.battle.net/wow/es/blog/2705802#blog
 
-   [147]: http://us.battle.net/wow/es/forum/#forum872819
+   [147]: http://us.battle.net/wow/es/blog/2703097#blog
 
-   [148]: http://us.battle.net/wow/es/game/class/death-knight
+   [148]: http://us.battle.net/wow/es/blog/2690299#blog
 
-   [149]: http://us.battle.net/wow/es/game/class/druid
+   [149]: http://us.battle.net/wow/es/blog/2699730#blog
 
-   [150]: http://us.battle.net/wow/es/game/class/hunter
+   [150]: http://us.battle.net/wow/es/forum/1050601/
 
-   [151]: http://us.battle.net/wow/es/game/class/mage
+   [151]: http://us.battle.net/wow/es/forum/#forum1033923
 
-   [152]: http://us.battle.net/wow/es/game/class/paladin
+   [152]: http://us.battle.net/wow/es/game/class/death-knight
 
-   [153]: http://us.battle.net/wow/es/game/class/priest
+   [153]: http://us.battle.net/wow/es/game/class/druid
 
-   [154]: http://us.battle.net/wow/es/game/class/rogue
+   [154]: http://us.battle.net/wow/es/game/class/hunter
 
-   [155]: http://us.battle.net/wow/es/game/class/shaman
+   [155]: http://us.battle.net/wow/es/game/class/mage
 
-   [156]: http://us.battle.net/wow/es/game/class/warlock
+   [156]: http://us.battle.net/wow/es/game/class/paladin
 
-   [157]: http://us.battle.net/wow/es/game/class/warrior
+   [157]: http://us.battle.net/wow/es/game/class/priest
 
-   [158]: http://us.battle.net/wow/es/forum/880013/
+   [158]: http://us.battle.net/wow/es/game/class/rogue
 
-   [159]: http://us.battle.net/wow/es/forum/880074/
+   [159]: http://us.battle.net/wow/es/game/class/shaman
 
-   [160]: http://us.battle.net/wow/es/forum/880018/
+   [160]: http://us.battle.net/wow/es/game/class/warlock
 
-   [161]: http://us.battle.net/wow/es/item/
+   [161]: http://us.battle.net/wow/es/game/class/warrior
 
-   [162]: http://us.battle.net/wow/es/forum/872826/
+   [162]: http://us.battle.net/wow/es/forum/1050609/
 
-   [163]: http://us.battle.net/wow/es/pvp/
+   [163]: http://us.battle.net/wow/es/forum/1050602/
 
-   [164]: http://us.battle.net/wow/es/forum/872825/
+   [164]: http://us.battle.net/wow/es/item/
 
-   [165]: http://us.battle.net/wow/es/forum/880016/
+   [165]: http://us.battle.net/wow/es/forum/1050608/
 
-   [166]: http://eu.battle.net/wow/fr/game/patch-notes/
+   [166]: http://us.battle.net/wow/es/pvp/
 
-   [167]: http://eu.battle.net/wow/fr/blog/2236785
+   [167]: http://us.battle.net/wow/es/forum/1050607/
 
-   [168]: http://eu.battle.net/wow/fr/blog/2236784
+   [168]: http://us.battle.net/wow/es/game/race/
 
-   [169]: http://eu.battle.net/wow/fr/blog/2219880
+   [169]: http://us.battle.net/wow/es/forum/1050875/
 
-   [170]: http://eu.battle.net/wow/fr/blog/2220755
+   [170]: http://us.battle.net/wow/es/forum/1050599/
 
-   [171]: http://eu.battle.net/wow/fr/forum/879115/
+   [171]: http://eu.battle.net/wow/fr/game/patch-notes/
 
-   [172]: http://eu.battle.net/wow/fr/forum/
+   [172]: http://eu.battle.net/wow/fr/blog/2236785
 
-   [173]: http://eu.battle.net/wow/fr/game/class/shaman
+   [173]: http://eu.battle.net/wow/fr/blog/2236784
 
-   [174]: http://eu.battle.net/wow/fr/game/class/hunter
+   [174]: http://eu.battle.net/wow/fr/blog/2219880
 
-   [175]: http://eu.battle.net/wow/fr/game/class/death-knight
+   [175]: http://eu.battle.net/wow/fr/blog/2220755
 
-   [176]: http://eu.battle.net/wow/fr/game/class/warlocks
+   [176]: http://eu.battle.net/wow/fr/forum/879115/
 
-   [177]: http://eu.battle.net/wow/fr/game/class/warlock
+   [177]: http://eu.battle.net/wow/fr/forum/
 
-   [178]: http://eu.battle.net/wow/fr/game/class/druid
+   [178]: http://eu.battle.net/wow/fr/game/class/shaman
 
-   [179]: http://eu.battle.net/wow/fr/game/class/warrior
+   [179]: http://eu.battle.net/wow/fr/game/class/hunter
 
-   [180]: http://eu.battle.net/wow/fr/game/class/mage
+   [180]: http://eu.battle.net/wow/fr/game/class/death-knight
 
-   [181]: http://eu.battle.net/wow/fr/game/class/paladin
+   [181]: http://eu.battle.net/wow/fr/game/class/warlocks
 
-   [182]: http://eu.battle.net/wow/fr/game/class/priest
+   [182]: http://eu.battle.net/wow/fr/game/class/warlock
 
-   [183]: http://eu.battle.net/wow/fr/game/class/rogue
+   [183]: http://eu.battle.net/wow/fr/game/class/druid
 
-   [184]: http://eu.battle.net/wow/fr/forum/879118/
+   [184]: http://eu.battle.net/wow/fr/game/class/warrior
 
-   [185]: http://eu.battle.net/wow/fr/forum/879213/
+   [185]: http://eu.battle.net/wow/fr/game/class/mage
 
-   [186]: http://eu.battle.net/wow/fr/forum/879156/
+   [186]: http://eu.battle.net/wow/fr/game/class/paladin
 
-   [187]: http://eu.battle.net/wow/fr/item/
+   [187]: http://eu.battle.net/wow/fr/game/class/priest
 
-   [188]: http://eu.battle.net/wow/fr/pvp/
+   [188]: http://eu.battle.net/wow/fr/game/class/rogue
 
-   [189]: http://eu.battle.net/wow/fr/forum/879113/
+   [189]: http://eu.battle.net/wow/fr/forum/879118/
 
-   [190]: http://eu.battle.net/wow/fr/forum/879119/
+   [190]: http://eu.battle.net/wow/fr/forum/879156/
 
-   [191]: http://kr.battle.net/wow/ko/game/patch-notes/
+   [191]: http://eu.battle.net/wow/fr/item/
 
-   [192]: http://kr.battle.net/wow/ko/blog/728034#blog
+   [192]: http://eu.battle.net/wow/fr/forum/879114/
 
-   [193]: http://kr.battle.net/wow/ko/blog/736938#blog
+   [193]: http://eu.battle.net/wow/fr/pvp/
 
-   [194]: http://kr.battle.net/wow/ko/blog/736937#blog
+   [194]: http://eu.battle.net/wow/fr/forum/879113/
 
-   [195]: http://kr.battle.net/wow/ko/blog/736936#blog
+   [195]: http://eu.battle.net/wow/fr/game/race/
 
-   [196]: http://kr.battle.net/wow/static/images/icons/class/6.gif
+   [196]: http://eu.battle.net/wow/fr/forum/879119/
 
-   [197]: http://kr.battle.net/wow/static/images/icons/class/11.gif
+   [197]: http://eu.battle.net/wow/fr/forum/879110/
 
-   [198]: http://kr.battle.net/wow/static/images/icons/class/3.gif
+   [198]: http://kr.battle.net/wow/ko/game/patch-notes/
 
-   [199]: http://kr.battle.net/wow/static/images/icons/class/8.gif
+   [199]: http://kr.battle.net/wow/ko/blog/728034#blog
 
-   [200]: http://kr.battle.net/wow/static/images/icons/class/2.gif
+   [200]: http://kr.battle.net/wow/ko/blog/736938#blog
 
-   [201]: http://kr.battle.net/wow/static/images/icons/class/5.gif
+   [201]: http://kr.battle.net/wow/ko/blog/736937#blog
 
-   [202]: http://kr.battle.net/wow/static/images/icons/class/4.gif
+   [202]: http://kr.battle.net/wow/ko/blog/736936#blog
 
-   [203]: http://kr.battle.net/wow/static/images/icons/class/7.gif
+   [203]: http://kr.battle.net/wow/static/images/icons/class/6.gif
 
-   [204]: http://kr.battle.net/wow/static/images/icons/class/9.gif
+   [204]: http://kr.battle.net/wow/static/images/icons/class/11.gif
 
-   [205]: http://kr.battle.net/wow/static/images/icons/class/1.gif
+   [205]: http://kr.battle.net/wow/static/images/icons/class/3.gif
 
-   [206]: http://kr.battle.net/wow/ko/forum/#forum439266
+   [206]: http://kr.battle.net/wow/static/images/icons/class/8.gif
 
-   [207]: http://kr.battle.net/wow/ko/forum/#forum439271
+   [207]: http://kr.battle.net/wow/static/images/icons/class/2.gif
 
-   [208]: http://kr.battle.net/wow/ko/game/class/death-knight
+   [208]: http://kr.battle.net/wow/static/images/icons/class/5.gif
 
-   [209]: http://kr.battle.net/wow/ko/game/class/druid
+   [209]: http://kr.battle.net/wow/static/images/icons/class/4.gif
 
-   [210]: http://kr.battle.net/wow/ko/game/class/hunter
+   [210]: http://kr.battle.net/wow/static/images/icons/class/7.gif
 
-   [211]: http://kr.battle.net/wow/ko/game/class/mage
+   [211]: http://kr.battle.net/wow/static/images/icons/class/9.gif
 
-   [212]: http://kr.battle.net/wow/ko/game/class/paladin
+   [212]: http://kr.battle.net/wow/static/images/icons/class/1.gif
 
-   [213]: http://kr.battle.net/wow/ko/game/class/priest
+   [213]: http://kr.battle.net/wow/ko/forum/#forum439266
 
-   [214]: http://kr.battle.net/wow/ko/game/class/rogue
+   [214]: http://kr.battle.net/wow/ko/forum/#forum439271
 
-   [215]: http://kr.battle.net/wow/ko/game/class/shaman
+   [215]: http://kr.battle.net/wow/ko/game/class/death-knight
 
-   [216]: http://kr.battle.net/wow/ko/game/class/warlock
+   [216]: http://kr.battle.net/wow/ko/game/class/druid
 
-   [217]: http://kr.battle.net/wow/ko/game/class/warrior
+   [217]: http://kr.battle.net/wow/ko/game/class/hunter
 
-   [218]: http://kr.battle.net/wow/ko/forum/439268/
+   [218]: http://kr.battle.net/wow/ko/game/class/mage
 
-   [219]: http://kr.battle.net/wow/ko/forum/596640/
+   [219]: http://kr.battle.net/wow/ko/game/class/paladin
 
-   [220]: http://kr.battle.net/wow/ko/forum/439267/
+   [220]: http://kr.battle.net/wow/ko/game/class/priest
 
-   [221]: http://kr.battle.net/wow/ko/item/
+   [221]: http://kr.battle.net/wow/ko/game/class/rogue
 
-   [222]: http://kr.battle.net/wow/ko/forum/439270/
+   [222]: http://kr.battle.net/wow/ko/game/class/shaman
 
-   [223]: http://kr.battle.net/wow/ko/pvp/
+   [223]: http://kr.battle.net/wow/ko/game/class/warlock
+
+   [224]: http://kr.battle.net/wow/ko/game/class/warrior
+
+   [225]: http://kr.battle.net/wow/ko/forum/439268/
+
+   [226]: http://kr.battle.net/wow/ko/forum/439267/
+
+   [227]: http://kr.battle.net/wow/ko/item/
+
+   [228]: http://kr.battle.net/wow/ko/forum/439270/
+
+   [229]: http://kr.battle.net/wow/ko/pvp/
+
+   [230]: http://kr.battle.net/wow/kr/game/race/
+
+   [231]: http://kr.battle.net/wow/ko/forum/440021/
+
+   [232]: http://eu.battle.net/wow/ru/game/patch-notes/
+
+   [233]: http://eu.battle.net/wow/ru/blog/2236785#blog
+
+   [234]: http://eu.battle.net/wow/ru/blog/2236784#blog
+
+   [235]: http://eu.battle.net/wow/ru/blog/2219880#blog
+
+   [236]: http://eu.battle.net/wow/ru/blog/2220755#blog
+
+   [237]: http://eu.battle.net/wow/ru/forum/896048/
+
+   [238]: http://eu.battle.net/wow/ru/forum/#forum1033923
+
+   [239]: http://eu.battle.net/wow/ru/game/class/death-knight
+
+   [240]: http://eu.battle.net/wow/ru/game/class/druid
+
+   [241]: http://eu.battle.net/wow/ru/game/class/hunter
+
+   [242]: http://eu.battle.net/wow/ru/game/class/mage
+
+   [243]: http://eu.battle.net/wow/ru/game/class/paladin
+
+   [244]: http://eu.battle.net/wow/ru/game/class/priest
+
+   [245]: http://eu.battle.net/wow/ru/game/class/rogue
+
+   [246]: http://eu.battle.net/wow/ru/game/class/shaman
+
+   [247]: http://eu.battle.net/wow/ru/game/class/warlock
+
+   [248]: http://eu.battle.net/wow/ru/game/class/warrior
+
+   [249]: http://eu.battle.net/wow/ru/forum/896073/
+
+   [250]: http://eu.battle.net/wow/ru/forum/896078/
+
+   [251]: http://eu.battle.net/wow/ru/item/
+
+   [252]: http://eu.battle.net/wow/ru/profession/
+
+   [253]: http://eu.battle.net/wow/ru/pvp/
+
+   [254]: http://eu.battle.net/wow/ru/forum/896046/
+
+   [255]: http://eu.battle.net/wow/ru/game/race/
+
+   [256]: http://eu.battle.net/wow/ru/forum/896076/
+
+   [257]: http://eu.battle.net/wow/ru/forum/975483/
+
+   [258]: http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.asp
+
+   [259]: http://www.wowtaiwan.com.tw/03Gameguide/Gameinfo/Classes/deathknight
+/deathknight.asp
+
+   [260]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/druid/druid.asp
+
+   [261]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/hunter/hunter.asp
+
+   [262]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/mage/mage.asp
+
+   [263]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/paladin/paladin.asp
+
+   [264]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/priest/priest.asp
+
+   [265]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/rogue/rogue.asp
+
+   [266]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/shaman/shaman.asp
+
+   [267]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/warlock/warlock.asp
+
+   [268]:
+http://www.wowtaiwan.com.tw/03Gameguide/gameinfo/Classes/warrior/warrior.asp
 
