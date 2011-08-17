@@ -1,168 +1,320 @@
-﻿
-**World of Warcraft Client Patch 4.2.0a**
 
-The latest test realm patch notes can always be found at
-[http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html][1]
+**World of Warcraft Patch 4.2.2**
 
-The latest patch notes can always be found at
-[http://www.worldofwarcraft.com/patchnotes/][2]
+The latest patch notes can always be found at [http://www.worldofwarcraft.com/patchnotes/][1]
 
-We are updating World of Warcraft with a minor bug fix patch. For updated
-information regarding the changes made in this patch, please visit the
-official General forum at:
-[http://forums.worldofwarcraft.com/board.html?sid=1&forumId=10023][3]
+**_Table of Contents_**
 
-**World of Warcraft Client Patch 4.2.0a**
+  * Dungeons & Raids
 
-Die neuesten Patch Notes befinden sich immer auf [http://www.wow-
-europe.com/de/patchnotes/][4]
+  * User Interface
 
-Die neuesten Patch Notes für den Test-Server befinden sich immer auf
-[http://www.wow-europe.com/de/info/underdev/testrealm.html][5]
+  * Technical
 
-Es wird gerade ein Patch aufgespielt, um diverse kleinere Bugs zu beheben. Für
-aktuelle Informationen rund um die Änderungen dieses Patchs besucht bitte
-unser offizielles Forum: [http://forums.wow-
-europe.com/board.html?forumId=11112&sid=3][6]
+**_Dungeons & Raids_**
 
-**World of Warcraft Client Patch 4.2.0a**
+  * Firelands
 
-The latest test realm patch notes can always be found at [http://www.wow-
-europe.com/en/info/underdev/testrealm.html][7]
+    * The visibility of Ragnaros' Dreadflame ability has been increased.
 
-The latest patch notes can always be found at [http://www.wow-
-europe.com/en/patchnotes/][8]
+    * The size of Ragnaros' hit box during the final phase of the Heroic
+encounter has been increased.
 
-We are updating World of Warcraft with a minor bug fix patch. For updated
-information regarding the changes made in this patch, please visit the
-official General forum at: [http://forums.wow-
-europe.com/board.html?forumId=10001&sid=1][9]
+**_User Interface_**
 
-**Parche de cliente de World of Warcraft 4.2.0a**
+  * Raid Frames should now remember whether they were shown or hidden upon
+subsequent logins
 
-Se pueden consultar siempre las últimas notas de parche de reino de pruebas en
-[http://www.wow-europe.com/es/info/underdev/testrealm.html][10]
+**_Technical_**
 
-Se pueden consultar siempre las últimas notas de parche en [http://www.wow-
-europe.com/es/patchnotes/][11]
+  * Players using multiple accounts should now be available to be invited to a
+Real ID Party.
 
-Estamos actualizando World of Warcraft con un pequeño parche para reparar
-ciertos errores. Para obtener información actualizada acerca de los cambios
-que se realizarán en este parche, visitad el foro oficial General que podréis
-ver aquí: [http://forums.wow-europe.com/board.html?forumId=11199&sid=4][12]
+  * Attempts to purchase Arena Season 10 items should no longer sometimes
+cause a client crash. (Korea Only)
 
-**Parche de cliente de World of Warcraft 4.2.0a**
+**World of Warcraft Patch 4.2.2**
 
-Se pueden consultar siempre las últimas notas de parche de reino de pruebas en
-[http://www.worldofwarcraft.com/es/patchnotes/test-realm-patchnotes.html][13]
+Die Patchnotes für alle "World of Warcraft"-Patches befinden sich [hier][2].
 
-Se pueden consultar siempre las últimas notas de parche en
-[http://www.worldofwarcraft.com/es/patchnotes/][14]
+**_Inhalt_**
 
-World of Warcraft será actualizado con un parche menor. Para más información
-acerca de los cambios incluidos en este parche, visita:
-[http://forums.worldofwarcraft.com/board.html?sid=2&forumId=20008][15]
+  * Dungeons & Schlachtzüge
 
-**Mise à jour du client de World of Warcraft 4.2.0a**
+  * Benutzeroberfläche
 
-Les dernières notes de mise à jour des royaumes de test peuvent toujours être
-consultées sur la page [http://www.wow-
-europe.com/fr/info/underdev/testrealm.html][16]
+  * Technischer Support
 
-Les dernières notes de mise à jour peuvent toujours être consultées sur la
-page [http://www.wow-europe.com/fr/patchnotes/][17]
+**_Dungeons & Schlachtzüge_**
 
-Nous allons déployer une mise à jour mineure afin de corriger certains soucis.
-Pour avoir de plus amples informations au sujet des corrections effectuées
-avec cette mise à jour, merci de vous rendre sur les forums officiels :
-[http://forums.wow-europe.com/board.html?forumId=11212&sid=2][18]
+  * Die Feuerlande
 
-**월드 오브 워크래프트 클라이언트 패치 4.2.0a**
+    * Die Sichtbarkeit von Ragnaros' Effekt 'Schreckenslohe' wurde verbessert.
 
-최신 버전의 패치 노트는 다음 경로에서 살펴보실 수 있습니다.
+    * Ragnaros' Hitbox wurde für die letzte Phase der heroischen Begegnung
+vergrößert.
 
-[http://www.worldofwarcraft.co.kr/news/update/patch/][19]
+**_Benutzeroberfläche_**
 
-최신 버전의 테스트 서버 패치 노트는 다음 경로에서 살펴보실 수 있습니다.
+  * Schlachtzugsfenster sollten ab jetzt zwischen Logins ihre
+Anzeigeeigenschaften beibehalten.
 
-[http://www.worldofwarcraft.co.kr/news/update/ptr/patch.html][20]
+**_Technischer Support_**
 
-몇 가지 버그를 수정하고자 월드 오브 워크래프트에 패치를 적용합니다. 이 패치의 변경사항에 관한 자세한 내용은 다음 공식 게시판을 참조해
-주십시오. [http://www.worldofwarcraft.co.kr/community/forum/index.do][21]
+  * Spieler, die mehrere Accounts verwenden, sollte man ab sofort in eine
+Gruppe aus Freunden einladen können.
 
-**Обновление игры World of Warcraft до версии 4.2.0a**
+**World of Warcraft Patch 4.2.2**
 
-Описания последних обновлений тестового сервера всегда можно найти на
-странице: [http://www.wow-europe.com/ru/info/underdev/testrealm.html][22]
+The latest patch notes can always be found at [
+http://www.worldofwarcraft.com/patchnotes/ ][1]
 
-Описания последних обновлений всегда можно найти на странице: [http://www.wow-
-europe.com/ru/patchnotes/index.html][23]
+**_Table of Contents_**
 
-Спешим сообщить, что мы производим экстренное исправление ряда ошибок, имевших
-место в игре. Вы сможете ознакомиться с подробной информацией об этом
-обновлении в разделе "Общие темы" нашего форума: [http://forums.wow-
-europe.com/board.html?forumId=50001&sid=5][24]
+  * Dungeons & Raids
+
+  * User Interface
+
+  * Technical
+
+**_Dungeons & Raids_**
+
+  * Firelands
+
+    * The visibility of Ragnaros' Dreadflame ability has been increased.
+
+    * The size of Ragnaros' hit box during the final phase of the Heroic
+encounter has been increased.
+
+**_User Interface_**
+
+  * Raid Frames should now remember whether they were shown or hidden upon
+subsequent logins
+
+**_Technical_**
+
+  * Players using multiple accounts should now be available to be invited to a
+Real ID Party.
+
+  * Attempts to purchase Arena Season 10 items should no longer sometimes
+cause a client crash. (Korea Only)
+
+**Parche 4.2.2 de World of Warcraft**
+
+Se pueden consultar siempre las últimas notas de parche en:
+[http://eu.battle.net/wow/es/game/patch-notes/4-2-0][3]
+
+**_Índice_**
+
+  * Mazmorras y bandas
+
+  * Interfaz de usuario
+
+  * Apartado técnico
+
+**_Mazmorras y bandas_**
+
+  * Las Tierras de Fuego
+
+    * Se ha aumentado la visibilidad de la facultad Llama aterradora de
+Ragnaros.
+
+    * Se ha aumentado el tamaño del área de golpe de Ragnaros durante la fase
+final del encuentro heroico.
+
+**_Interfaz de usuario_**
+
+  * Ahora los marcos de banda deberían recordar si se mostraban o estaban
+ocultos en las siguientes conexiones.
+
+**_Apartado técnico_**
+
+  * Ahora se debería poder invitar a un grupo con ID real a los jugadores que
+usen varias cuentas.
+
+  * El cliente ya no debería bloquearse algunas veces al intentar comprar
+objetos de arena de la temporada 10 (solo para Corea).
+
+**Parche 4.2.2 de World of Warcraft**
+
+Se pueden consultar siempre las últimas notas de parche en:
+[http://us.battle.net/wow/es/game/patch-notes/4-2-0][4]
+
+**_Índice_**
+
+  * Mazmorras y bandas
+
+  * Interfaz de usuario
+
+  * Apartado técnico
+
+**_Mazmorras y bandas_**
+
+  * Las Tierras de Fuego
+
+    * Se ha aumentado la visibilidad de la facultad Llama aterradora de
+Ragnaros.
+
+    * Se ha aumentado el tamaño del área de golpe de Ragnaros durante la fase
+final del encuentro heroico.
+
+**_Interfaz de usuario_**
+
+  * Ahora los marcos de banda deberían recordar si se mostraban o estaban
+ocultos en las siguientes conexiones.
+
+**_Apartado técnico_**
+
+  * Ahora se debería poder invitar a un grupo con ID real a los jugadores que
+usen varias cuentas.
+
+  * El cliente ya no debería bloquearse algunas veces al intentar comprar
+objetos de arena de la temporada 10 (solo para Corea).
+
+**Mise à jour du client de World of Warcraft 4.2.2**
+
+Les dernières notes de mise à jour peuvent être consultées à l'adresse
+[http://eu.battle.net/wow/fr/game/patch-notes/][5]
+
+**_Table des matières_**
+
+  * Donjons et raids
+
+  * Interface utilisateur
+
+  * Technique
+
+**_Donjons et raids_**
+
+  * Terres de Feu
+
+    * La visibilité de la technique Flammeffroi de Ragnaros a été augmentée.
+
+    * Le masque de collision (hitbox) de Ragnaros en phase finale du combat en
+mode héroïque a été augmenté.
+
+**_Interface utilisateur_**
+
+  * L'interface devrait maintenant garder en mémoire quelles fenêtres de raid
+afficher ou masquer lors des connexions suivantes.
+
+**_Technique_**
+
+  * Les joueurs utilisant plusieurs comptes devraient pouvoir être invités
+dans les groupes d'amis réels.
+
+**월드 오브 워크래프트 패치 4.2.2**
+
+월드 오브 워크래프트의 모든 패치 노트는 다음 경로에서 살펴보실 수 있습니다. [http://kr.battle.net/wow/ko/game
+/patch-notes/ ][6]
+
+**_목차_**
+
+  * 던전 및 공격대
+
+  * 사용자 인터페이스
+
+  * 기술적 문제
+
+**_던전 및 공격대_**
+
+  * 불의 땅
+
+    * 라그나로스가 사용하는 공포의 불길이 더 명확하게 보입니다.
+
+    * 영웅 난이도로 라그나로스와 싸울 때, 마지막 단계에서 라그나로스에게 타격을 줄 수 있는 범위가 더 커졌습니다.
+
+**_사용자 인터페이스_**
+
+  * 다시 로그인하더라도 공격대창의 숨기기 설정이 초기화되지 않습니다.
+
+**_기술적 문제_**
+
+  * 여러 계정을 사용하는 플레이어도 실명 ID 파티원으로 초대할 수 있습니다.
+
+  * 투기장 10 시즌의 최소 정복 점수/명예 점수를 얻지 못한 채 아이템 구매 시도 시 클라이언트가 비정상적으로 종료되는 오류를
+수정했습니다.
+
+**Обновление клиента игры World of Warcraft до версии 4.2.2**
+
+Описания последних обновлений игрового сервера всегда можно найти на странице
+[http://eu.battle.net/wow/ru/game/patch-notes/][7]
+
+**_Содержание_**
+
+  * Подземелья и рейды
+
+  * Пользовательский интерфейс
+
+  * Техническая информация
+
+**_Подземелья и рейды_**
+
+  * Огненные просторы
+
+    * Визуальный эффект способности Рагнароса «Всепожирающее пламя» стал более
+заметным.
+
+    * Увеличено расстояние, с которого можно атаковать Рагнароса в ближнем бою
+во время последней фазы боя в героическом режиме.
+
+**_Пользовательский интерфейс_**
+
+  * Теперь настройки видимости интерфейса рейда сохраняются при выходе из
+игры.
+
+**_Техническая информация_**
+
+  * Теперь игрока, зашедшего в игру с нескольких учетных записей, можно
+пригласить в Подземелья с друзьями по Battle.net.
+
+  * Игра больше не вылетает при попытке приобрести предметы десятого сезона
+арены (только для Кореи).
 
 {Body-zhCN}
 
-**魔獸世界用戶端更新程式4.2.0a**
+**魔獸世界客戶端版本4.2.2**
 
-最新的更新內容請參閱官方網站改版專區:[http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.a
-sp][25]
+最新的更新內容請參閱官方改版專區: [
+http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp ][8]
 
-我們正在進行魔獸世界次要修正程式更新。欲知更新內容， 請至官網討論區：
-[http://forum.wowtaiwan.com.tw/twow_forums_page1.asp][26]
+**_目錄_**
 
-   [1]: http://www.worldofwarcraft.com/patchnotes/test-realm-patchnotes.html
+  * 地城與團隊
 
-   [2]: http://www.worldofwarcraft.com/patchnotes/
+  * 使用者介面
 
-   [3]: http://forums.worldofwarcraft.com/board.html?sid=1&forumId=10023
+  * 技術問題
 
-   [4]: http://www.wow-europe.com/de/patchnotes/
+**_地城與團隊_**
 
-   [5]: http://www.wow-europe.com/de/info/underdev/testrealm.html
+  * 火源之界
 
-   [6]: http://forums.wow-europe.com/board.html?forumId=11112&sid=3
+    * 拉格納羅斯的懼焰可見範圍已提升。
 
-   [7]: http://www.wow-europe.com/en/info/underdev/testrealm.html
+    * 在英雄模式下，拉格納羅斯最後階段的命中區塊(hitbox)判定範圍已增大。
 
-   [8]: http://www.wow-europe.com/en/patchnotes/
+**_使用者介面_**
 
-   [9]: http://forums.wow-europe.com/board.html?forumId=10001&sid=1
+  * 團隊框架現在應該會在未來登入時記得它們原本是顯示或隱藏的。
 
-   [10]: http://www.wow-europe.com/es/info/underdev/testrealm.html
+**_技術問題_**
 
-   [11]: http://www.wow-europe.com/es/patchnotes/
+  * 使用多個帳號的玩家，現在應該可以被邀請到Real ID的隊伍中了。
 
-   [12]: http://forums.wow-europe.com/board.html?forumId=11199&sid=4
+   [1]: http://www.worldofwarcraft.com/patchnotes/
 
-   [13]: http://www.worldofwarcraft.com/es/patchnotes/test-realm-
-patchnotes.html
+   [2]: http://eu.battle.net/wow/de/game/patch-notes/
 
-   [14]: http://www.worldofwarcraft.com/es/patchnotes/
+   [3]: http://eu.battle.net/wow/en/game/patch-notes/
 
-   [15]: http://forums.worldofwarcraft.com/board.html?sid=2&forumId=20008
+   [4]: http://us.battle.net/wow/es/game/patch-notes/
 
-   [16]: http://www.wow-europe.com/fr/info/underdev/testrealm.html
+   [5]: http://eu.battle.net/wow/fr/game/patch-notes/
 
-   [17]: http://www.wow-europe.com/fr/patchnotes/
+   [6]: http://kr.battle.net/wow/ko/game/patch-notes/
 
-   [18]: http://forums.wow-europe.com/board.html?forumId=11212&sid=2
+   [7]: http://eu.battle.net/wow/ru/game/patch-notes/
 
-   [19]: http://www.worldofwarcraft.co.kr/news/update/patch/
-
-   [20]: http://www.worldofwarcraft.co.kr/news/update/ptr/patch.html
-
-   [21]: http://www.worldofwarcraft.co.kr/community/forum/index.do
-
-   [22]: http://www.wow-europe.com/ru/info/underdev/testrealm.html
-
-   [23]: http://www.wow-europe.com/ru/patchnotes/index.html
-
-   [24]: http://forums.wow-europe.com/board.html?forumId=50001&sid=5
-
-   [25]: http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.asp
-
-   [26]: http://forum.wowtaiwan.com.tw/twow_forums_page1.asp
+   [8]: http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp
 
