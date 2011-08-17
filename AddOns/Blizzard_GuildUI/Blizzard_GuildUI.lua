@@ -11,6 +11,9 @@ function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_PERK_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_FACTION");
+	self:RegisterEvent("GUILD_RENAME_REQUIRED");
+	self:RegisterEvent("REQUIRED_GUILD_RENAME_RESULT");
+	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	PanelTemplates_SetNumTabs(self, 5);
 	RequestGuildRewards();
 	QueryGuildXP();
@@ -51,6 +54,8 @@ function GuildFrame_OnShow(self)
 	end
 	GuildRoster();
 	UpdateMicroButtons();
+	GuildNameChangeAlertFrame.topAnchored = true;
+	GuildFrame_CheckName();
 end
 
 function GuildFrame_OnHide(self)
@@ -90,6 +95,15 @@ function GuildFrame_OnEvent(self, event, ...)
 		QueryGuildNews();
 	elseif ( event == "GUILD_PERK_UPDATE" ) then
 		GuildFrame_UpdateLevel();
+	elseif ( event == "GUILD_RENAME_REQUIRED" ) then
+		GuildFrame.hasForcedNameChange = ...;
+		GuildFrame_CheckName();
+	elseif ( event == "REQUIRED_GUILD_RENAME_RESULT" ) then
+		local success = ...
+		if ( success ) then
+			GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
+			GuildFrame_CheckName();
+		end
 	end
 end
 
@@ -147,6 +161,50 @@ function GuildFrame_CheckPermissions()
 		GuildAddMemberButton:Enable();
 	else
 		GuildAddMemberButton:Disable();
+	end
+end
+
+function GuildFrame_CheckName()
+	if ( GuildFrame.hasForcedNameChange ) then
+		local clickableHelp = false
+		GuildNameChangeAlertFrame:Show();
+		
+		if ( IsGuildLeader() ) then
+			GuildNameChangeFrame.gmText:Show();
+			GuildNameChangeFrame.memberText:Hide();
+			GuildNameChangeFrame.button:SetText(ACCEPT);
+			GuildNameChangeFrame.button:SetPoint("TOP", GuildNameChangeFrame.editBox, "BOTTOM", 0, -10);
+			GuildNameChangeFrame.renameText:Show();
+			GuildNameChangeFrame.editBox:Show();
+		else
+			clickableHelp = GuildNameChangeAlertFrame.topAnchored;
+			GuildNameChangeFrame.gmText:Hide();
+			GuildNameChangeFrame.memberText:Show();
+			GuildNameChangeFrame.button:SetText(OKAY);
+			GuildNameChangeFrame.button:SetPoint("TOP", GuildNameChangeFrame.memberText, "BOTTOM", 0, -30);
+			GuildNameChangeFrame.renameText:Hide();
+			GuildNameChangeFrame.editBox:Hide();
+		end
+		
+		
+		if ( clickableHelp ) then
+			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlight);
+			GuildNameChangeAlertFrame:SetPoint("TOP", 15, -4);
+			GuildNameChangeAlertFrame:SetWidth(256);
+			GuildNameChangeAlertFrame:Enable();
+			GuildNameChangeAlertFrame.clickText:Show();
+			GuildNameChangeFrame:Hide();
+		else
+			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlightMedium);
+			GuildNameChangeAlertFrame:SetPoint("TOP", 0, -82);
+			GuildNameChangeAlertFrame:SetWidth(300);
+			GuildNameChangeAlertFrame:Disable();
+			GuildNameChangeAlertFrame.clickText:Hide();
+			GuildNameChangeFrame:Show();
+		end
+	else
+		GuildNameChangeAlertFrame:Hide();
+		GuildNameChangeFrame:Hide();
 	end
 end
 

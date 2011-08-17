@@ -1,7 +1,8 @@
 
 **World of Warcraft Patch 4.2.2**
 
-The latest patch notes can always be found at [http://www.worldofwarcraft.com/patchnotes/][1]
+The latest patch notes can always be found at [
+http://www.worldofwarcraft.com/patchnotes/ ][1]
 
 **_Table of Contents_**
 

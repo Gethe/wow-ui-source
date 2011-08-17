@@ -248,6 +248,10 @@ function UIParent_OnLoad(self)
 	
 	-- Events for Archaeology
 	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
+	
+	-- Events for Trial caps
+	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
+	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
 end
 
 
@@ -376,10 +380,11 @@ function LookingForGuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_LookingForGuildUI");
 end
 
+--[[
 function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
 end
-
+]]
 
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
@@ -1058,7 +1063,7 @@ function UIParent_OnEvent(self, event, ...)
 			ReforgingFrame_Hide();
 		end
 	
-		-- Events for Archaeology
+	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
 		ArchaeologyFrame_LoadUI();
 		if ( ArchaeologyFrame_Show and not ArchaeologyFrame:IsShown()) then
@@ -1066,6 +1071,12 @@ function UIParent_OnEvent(self, event, ...)
 		elseif ( ArchaeologyFrame_Hide ) then
 			ArchaeologyFrame_Hide();
 		end
+		
+	--Events for Trial caps
+	elseif ( event == "TRIAL_CAP_REACHED_MONEY" ) then
+		TrialAccountCapReached_Inform("money");
+	elseif ( event == "TRIAL_CAP_REACHED_LEVEL" ) then
+		TrialAccountCapReached_Inform("level");
 	end
 end
 
@@ -3804,4 +3815,20 @@ function ReverseQuestObjective(text, objectiveType)
 	else
 		return text;
 	end
+end
+
+local displayedCapMessage = false;
+function TrialAccountCapReached_Inform(capType)
+	if ( displayedCapMessage or not IsTrialAccount() ) then
+		return;
+	end
+	
+	
+	local info = ChatTypeInfo.SYSTEM;
+	if ( capType == "level" ) then
+		DEFAULT_CHAT_FRAME:AddMessage(TRIAL_ACCOUNT_LEVEL_CAP_REACHED, info.r, info.g, info.b);
+	elseif ( capType == "money" ) then
+		DEFAULT_CHAT_FRAME:AddMessage(TRIAL_ACCOUNT_MONEY_CAP_REACHED, info.r, info.g, info.b);
+	end
+	displayedCapMessage = true;
 end

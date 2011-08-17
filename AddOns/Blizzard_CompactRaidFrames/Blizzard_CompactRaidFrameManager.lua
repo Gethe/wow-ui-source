@@ -394,11 +394,11 @@ do	--Enclosure to make sure people go through SetSetting
 		if ( value and value ~= "0" ) then
 			manager.container:Show();
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(HIDE);
-			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = "0";
+			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = false;
 		else
 			manager.container:Hide();
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(SHOW);
-			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = "1";
+			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = true;
 		end
 	end
 	

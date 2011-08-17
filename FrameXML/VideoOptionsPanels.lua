@@ -859,6 +859,7 @@ LanguageRegions["enCN"] = 8;
 LanguageRegions["enTW"] = 9;
 LanguageRegions["esMX"] = 10;
 LanguageRegions["ruRU"] = 11;
+LanguageRegions["ptBR"] = 12;
 
 LANGUAGE_TEXT_HEIGHT = 22/512;
 

@@ -237,7 +237,7 @@
 			<TexCoords left="0.00390625" right="0.78125000" top="0.00390625" bottom="0.21484375"/>
 		</HighlightTexture>
 		<ButtonText name="$parentText" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="text">
-			<Size x="140" y="30"/>
+			<Size x="135" y="30"/>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0" y="-1"/>
 			</Anchors>

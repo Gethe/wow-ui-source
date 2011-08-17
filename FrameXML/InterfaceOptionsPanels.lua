@@ -2089,5 +2089,5 @@ HelpPanelOptions = {
 	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT" },
 	scriptErrors = { text = "SHOW_LUA_ERRORS" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
-	enableMovePad = { text = "MOVE_PAD" },
+--	enableMovePad = { text = "MOVE_PAD" },
 }

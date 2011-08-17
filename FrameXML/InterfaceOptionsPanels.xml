@@ -3809,6 +3809,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+<!--	Disable the MovePad due to problem with CRC :/  ... old addon still works
 			<CheckButton name="$parentMovePad" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentColorblindMode" relativePoint="BOTTOMLEFT">
@@ -3838,6 +3839,7 @@
 					</OnEvent>
 				</Scripts>
 			</CheckButton>
+-->
 			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">
 				<Size>
 					<AbsDimension x="128" y="22"/>

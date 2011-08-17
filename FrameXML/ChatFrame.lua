@@ -1467,6 +1467,13 @@ SecureCmdList["CLICK"] = function(msg)
 	end
 end
 
+SecureCmdList["EQUIP_SET"] = function(msg)
+	local set = SecureCmdOptionParse(msg);
+	if ( set and set ~= "" ) then
+		EquipmentManager_EquipSet(set);
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -2256,13 +2263,6 @@ end
 
 SlashCmdList["ACHIEVEMENTUI"] = function(msg)
 	ToggleAchievementFrame();
-end
-
-SlashCmdList["EQUIP_SET"] = function(msg)
-	local set = SecureCmdOptionParse(msg);
-	if ( set and set ~= "" ) then
-		EquipmentManager_EquipSet(set);
-	end
 end
 
 SlashCmdList["SET_TITLE"] = function(msg)
