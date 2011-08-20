@@ -189,15 +189,21 @@ function GuildFrame_CheckName()
 		
 		if ( clickableHelp ) then
 			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlight);
+			GuildNameChangeAlertFrame.alert:ClearAllPoints();
+			GuildNameChangeAlertFrame.alert:SetPoint("BOTTOM", GuildNameChangeAlertFrame, "CENTER", 0, 0);
+			GuildNameChangeAlertFrame.alert:SetWidth(190);
 			GuildNameChangeAlertFrame:SetPoint("TOP", 15, -4);
-			GuildNameChangeAlertFrame:SetWidth(256);
+			GuildNameChangeAlertFrame:SetSize(256, 60);
 			GuildNameChangeAlertFrame:Enable();
 			GuildNameChangeAlertFrame.clickText:Show();
 			GuildNameChangeFrame:Hide();
 		else
 			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlightMedium);
+			GuildNameChangeAlertFrame.alert:ClearAllPoints();
+			GuildNameChangeAlertFrame.alert:SetPoint("CENTER", GuildNameChangeAlertFrame, "CENTER", 0, 0);
+			GuildNameChangeAlertFrame.alert:SetWidth(220);
 			GuildNameChangeAlertFrame:SetPoint("TOP", 0, -82);
-			GuildNameChangeAlertFrame:SetWidth(300);
+			GuildNameChangeAlertFrame:SetSize(300, 40);
 			GuildNameChangeAlertFrame:Disable();
 			GuildNameChangeAlertFrame.clickText:Hide();
 			GuildNameChangeFrame:Show();

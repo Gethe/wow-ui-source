@@ -654,13 +654,13 @@
 						<FontString name="$parentText" inherits="GameFontHighlightLeft" justifyH="CENTER" text="GUILD_NAME_ALERT" parentKey="alert">
 							<Size x="190" y="0"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="2"/>
+								<Anchor point="BOTTOM" relativePoint="CENTER" x="0" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText" inherits="GameFontDisableSmall" justifyH="CENTER" text="CLICK_HERE_FOR_MORE_INFO" parentKey="clickText">
 							<Size x="180" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="2"/>
+								<Anchor point="TOP" relativePoint="CENTER" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentAlertL" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
