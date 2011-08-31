@@ -277,7 +277,7 @@ dans les groupes d'amis réels.
 **魔獸世界客戶端版本4.2.2**
 
 最新的更新內容請參閱官方改版專區: [
-http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp ][8]
+http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.asp ][8]
 
 **_目錄_**
 
@@ -317,5 +317,5 @@ http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp ][8]
 
    [7]: http://eu.battle.net/wow/ru/game/patch-notes/
 
-   [8]: http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp
+   [8]: http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.asp
 
