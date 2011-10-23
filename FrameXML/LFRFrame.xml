@@ -365,7 +365,7 @@
 						<Scripts>
 							<OnClick>
 								local mode, subMode = GetLFGMode();
-								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" ) then
+								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
 									LeaveLFG();
 								else
 									LFRQueueFrame_Join();

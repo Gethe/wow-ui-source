@@ -18,6 +18,14 @@ AUTO_DRAG_TIME = 0.5;				-- in seconds
 
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
 
+CHARACTER_SELECT_LOGOS = {
+	TRIAL = "Interface\\Glues\\Common\\Glues-WoW-StarterLogo",
+	[1] = "Interface\\Glues\\Common\\Glues-WoW-ClassicLogo",
+	[2] = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
+	[3] = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
+	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
+};
+
 function CharacterSelect_OnLoad(self)
 	self:SetSequence(0);
 	self:SetCamera(0);
@@ -166,12 +174,6 @@ function CharacterSelect_OnShow()
 		end
 	end
 	
-	if( IsTrialAccount() ) then
-		CharacterSelectUpgradeAccountButton:Show();
-	else
-		CharacterSelectUpgradeAccountButton:Hide();
-	end
-
 	-- fadein the character select ui
 	GlueFrameFadeIn(CharacterSelectUI, CHARACTER_SELECT_FADE_IN)
 
@@ -180,6 +182,8 @@ function CharacterSelect_OnShow()
 
 	--Clear out the addons selected item
 	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, ALL);
+
+	AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 end
 
 function CharacterSelect_OnHide(self)
@@ -362,6 +366,13 @@ function UpdateCharacterList()
 	local numChars = GetNumCharacters();
 	local index = 1;
 	local coords;
+
+	if ( CharacterSelect.selectLast == 1 ) then
+		CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);
+		CharacterSelect.selectedIndex = numChars;
+		CharacterSelect.selectLast = 0;
+	end
+
 	for i=1, numChars, 1 do
 		local name, race, class, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
@@ -483,13 +494,6 @@ function UpdateCharacterList()
 		CreateCharacterButtonSpecial:Show();
 	else
 		CreateCharacterButtonSpecial:Hide();
-	end
-	
-	if ( CharacterSelect.selectLast == 1 ) then
-		CharacterSelect.selectLast = 0;
-		CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);
-		CharacterSelect_SelectCharacter(numChars, 1);
-		return;
 	end
 
 	if ( (CharacterSelect.selectedIndex == 0) or (CharacterSelect.selectedIndex > numChars) ) then
@@ -822,4 +826,92 @@ function GetIndexFromCharID(charID)
 		end
 	end
 	return 0;
+end
+
+
+ACCOUNT_UPGRADE_FEATURES = {
+	TRIAL = { [1] = { icon = "Interface\\Icons\\achievement_level_70", text = UPGRADE_FEATURE_1 },
+		  [2] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 },
+		  [3] = { icon = "Interface\\Icons\\achievement_zone_hellfirepeninsula_01", text = UPGRADE_FEATURE_3 },
+		  logo = "Interface\\Glues\\Common\\Glues-WoW-ClassicLogo",
+		  banner = { 0.0, 0.777, 0.0, 0.136 }},
+	[1] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_80", text = UPGRADE_FEATURE_4 },
+		  [2] = { icon = "Interface\\Icons\\achievement_boss_lichking", text = UPGRADE_FEATURE_5 },
+		  [3] = { icon = "Interface\\Icons\\achievement_zone_icecrown_01", text = UPGRADE_FEATURE_6 },
+		  logo = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
+		  banner = { 0.0, 0.777, 0.411, 0.546 }},
+	[2] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
+		  [2] = { icon = "Interface\\Glues\\AccountUpgrade\\icon-gob-worg", text = UPGRADE_FEATURE_8 },
+		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
+		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
+		  banner = { 0.0, 0.777, 0.138, 0.272 }},
+}
+
+-- Account upgrade panel
+function AccountUpgradePanel_Update(isExpanded)
+	local tag = nil;
+	if ( IsTrialAccount() ) then
+		tag = "TRIAL";
+	else
+		tag = GetAccountExpansionLevel();
+	end
+
+	if ( CHARACTER_SELECT_LOGOS[tag] ) then
+		CharacterSelectLogo:SetTexture(CHARACTER_SELECT_LOGOS[tag]);
+		CharacterSelectLogo:Show();
+	else
+		CharacterSelectLogo:Hide();
+	end
+
+
+	if ( not CanUpgradeExpansion() or not ACCOUNT_UPGRADE_FEATURES[tag] ) then
+		CharSelectAccountUpgradePanel:Hide();
+		CharSelectAccountUpgradeButton:Hide();
+		CharSelectAccountUpgradeMiniPanel:Hide();
+	else
+		local featureTable = ACCOUNT_UPGRADE_FEATURES[tag];
+		CharSelectAccountUpgradeButton:Show();
+		if ( isExpanded ) then
+			CharSelectAccountUpgradePanel:Show();
+			CharSelectAccountUpgradeMiniPanel:Hide();
+
+			CharSelectAccountUpgradePanel.logo:SetTexture(featureTable.logo);
+			CharSelectAccountUpgradePanel.banner:SetTexCoord(unpack(featureTable.banner));
+
+			local featureFrames = CharSelectAccountUpgradePanel.featureFrames;
+			for i=1, #featureTable do
+				local frame = featureFrames[i];
+				if ( not frame ) then
+					frame = CreateFrame("FRAME", "CharSelectAccountUpgradePanelFeature"..i, CharSelectAccountUpgradePanel, "UpgradeFrameFeatureTemplate");
+					frame:SetPoint("TOPLEFT", featureFrames[i - 1], "BOTTOMLEFT", 0, 0);
+				end
+
+				frame.icon:SetTexture(featureTable[i].icon);
+				frame.text:SetText(featureTable[i].text);
+			end
+			for i=#featureTable + 1, #featureFrames do
+				featureFrames[i]:Hide();
+			end
+
+			CharSelectAccountUpgradeButtonExpandCollapseButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up");
+			CharSelectAccountUpgradeButtonExpandCollapseButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down");
+			CharSelectAccountUpgradeButtonExpandCollapseButton:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled");
+		else
+			CharSelectAccountUpgradePanel:Hide();
+			CharSelectAccountUpgradeMiniPanel:Show();
+
+			CharSelectAccountUpgradeMiniPanel.logo:SetTexture(featureTable.logo);
+			CharSelectAccountUpgradeMiniPanel.banner:SetTexCoord(unpack(featureTable.banner));
+
+			CharSelectAccountUpgradeButtonExpandCollapseButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up");
+			CharSelectAccountUpgradeButtonExpandCollapseButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down");
+			CharSelectAccountUpgradeButtonExpandCollapseButton:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled");
+		end
+	end
+	CharSelectAccountUpgradeButton.isExpanded = isExpanded;
+	SetCVar("expandUpgradePanel", isExpanded and "1" or "0");
+end
+
+function AccountUpgradePanel_ToggleExpandState()
+	AccountUpgradePanel_Update(not CharSelectAccountUpgradeButton.isExpanded);
 end

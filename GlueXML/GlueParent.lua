@@ -503,7 +503,7 @@ end
 
 function UpgradeAccount()
 	PlaySound("gsLoginNewAccount");
-	LaunchURL(AUTH_NO_TIME_URL);
+	LoadURLIndex(2);
 end
 
 function SetLoginScreenModel(model)

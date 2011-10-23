@@ -126,7 +126,7 @@ function DungeonCompletionAlertFrame_ShowAlert()
 	PlaySound("LFG_Rewards");
 	local frame = DungeonCompletionAlertFrame1;
 	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
-	local name, typeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards= GetLFGCompletionReward();
+	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards= GetLFGCompletionReward();
 	
 	
 	--Set up the rewards
@@ -172,7 +172,7 @@ function DungeonCompletionAlertFrame_ShowAlert()
 	--Set up the text and icons.
 	
 	frame.instanceName:SetText(name);
-	if ( typeID == TYPEID_HEROIC_DIFFICULTY ) then
+	if ( subtypeID == LFG_SUBTYPEID_HEROIC ) then
 		frame.heroicIcon:Show();
 		frame.instanceName:SetPoint("TOP", 33, -44);
 	else
@@ -201,7 +201,7 @@ function DungeonCompletionAlertFrameReward_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.rewardID == 0 ) then
 		GameTooltip:AddLine(YOU_RECEIVED);
-		local name, typeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
+		local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
 
 		local moneyAmount = moneyBase + moneyVar * numStrangers;
 		local experienceGained = experienceBase + experienceVar * numStrangers;

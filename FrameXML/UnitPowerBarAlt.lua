@@ -88,7 +88,7 @@ function UnitPowerBarAlt_OnEvent(self, event, ...)
 		if ( arg1 == self.unit and arg2 == "ALTERNATE" ) then
 			local barType, minPower = UnitAlternatePowerInfo(self.unit);
 			if ( not barType or barType == ALT_POWER_TYPE_COUNTER ) then
-				CounterBar_Update(self.counterBar);
+				CounterBar_SetUp(self.counterBar);
 				return;
 			end
 			UnitPowerBarAlt_SetMinMaxPower(self, minPower, UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX));
@@ -188,7 +188,7 @@ function UnitPowerBarAlt_SetUp(self, barID)
 		UnitPowerBarAlt_Pill_SetUp(self);
 	elseif ( barType == ALT_POWER_TYPE_COUNTER ) then
 		self.counterBar:Show();
-		CounterBar_Update(self.counterBar);
+		CounterBar_SetUp(self.counterBar);
 	else
 		error("Currently unhandled bar type: "..(barType or "nil"));
 	end
@@ -225,12 +225,15 @@ function UnitPowerBarAlt_UpdateAll(self)
 		UnitPowerBarAlt_TearDown(self);
 		UnitPowerBarAlt_SetUp(self);
 		
+		local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
 		if ( barType ~= ALT_POWER_TYPE_COUNTER ) then
 			local maxPower = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
 			UnitPowerBarAlt_SetMinMaxPower(self, minPower, maxPower);
 			
-			local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
 			UnitPowerBarAlt_SetPower(self, currentPower, true);
+		else
+			CounterBar_SetUp(self.counterBar);
+			CounterBar_UpdateCount(self.counterBar, currentPower, true);
 		end
 		self:Show();
 	else
@@ -513,15 +516,8 @@ local COUNTERBAR_LEADING_ZERO_INDEX = 11;
 local COUNTERBAR_SLASH_INDEX = 10;
 
 
-function CounterBar_OnShow(self)
-	self:SetPoint("TOP", UIParent, "TOP", 0, -20);
-	if ( not TARGET_FRAME_UNLOCKED and self:GetLeft() < TargetFrame:GetRight() ) then
-		self:SetPoint("TOP", UIParent, "TOP", TargetFrame:GetRight() - self:GetLeft(), -20);
-	end
-end
 
-
-function CounterBar_Update(self)
+function CounterBar_SetUp(self)
 	local useFactional, animNumbers, barType = UnitAlternatePowerCounterInfo(self.unit);
 
 	local maxValue = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
@@ -601,8 +597,8 @@ function CounterBar_GetNumberCoord(digit)
 end
 
 
-function CounterBar_GetDigit(count)
-	if count > 0 then
+function CounterBar_GetDigit(count, isFirstDigit)
+	if count > 0 or isFirstDigit then
 		digit = mod(count, 10);
 	else
 		digit = COUNTERBAR_LEADING_ZERO_INDEX;
@@ -616,7 +612,7 @@ function CounterBar_SetNumbers(self)
 	local count = self.count;
 	for i=self.startIndex,COUNTERBAR_MAX_DIGIT do
 		local digitFrame = self["digit"..i];
-		local digit = CounterBar_GetDigit(count);
+		local digit = CounterBar_GetDigit(count, i==1);
 		count = floor(count/10);
 		
 		l,r,t,b = CounterBar_GetNumberCoord(digit);
@@ -626,12 +622,20 @@ function CounterBar_SetNumbers(self)
 end
 
 
-function CounterBar_UpdateCount(self, newCount)
+function CounterBar_UpdateCount(self, newCount, ignoreAnim)
 	local count1 = self.count;
 	local count2 = min(newCount, self.maxValue);
 	if count1 == count2 then
 		return;
 	end
+	
+	if ignoreAnim then
+		self.count = newCount;
+		CounterBar_SetNumbers(self)
+		return;
+	end
+	
+	
 	self.animUp = count1 < count2;
 	for i=self.startIndex,COUNTERBAR_MAX_DIGIT do
 		local digitFrame = self["digit"..i];
@@ -653,7 +657,6 @@ function CounterBar_UpdateCount(self, newCount)
 		end
 	end
 	
-	--CounterBar_SetNumbers(self); -- clear out any current animations
 	self.lastOnUpdate = self:GetScript("OnUpdate");
 	self:SetScript("OnUpdate", CounterBar_OnUpdate);
 	self.count = newCount;

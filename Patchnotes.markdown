@@ -1,321 +1,3799 @@
 
-**World of Warcraft Patch 4.2.2**
+**World of Warcraft PTR Patch 4.3.0**
 
-The latest patch notes can always be found at [
-http://www.worldofwarcraft.com/patchnotes/ ][1]
+Notes for all World of Warcraft patches can be found [here][1].
+
+These notes will be updated through the course of the testing process. Please
+be aware some changes may not go live until a new PTR build is released."
 
 **_Table of Contents_**
 
-  * Dungeons & Raids
+_Click a link to be taken directly to the corresponding section of the patch
+notes._
 
-  * User Interface
+  * [General][2]
 
-  * Technical
+  * [Achievements][3]
 
-**_Dungeons & Raids_**
+  * [Classes: General][4]
 
-  * Firelands
+    * [![][5]][6] [Death Knights][6], [![][7]][8] [Druids][8], [![][9]][10]
+[Hunters][10], [![][11]][12] [Mages][12], [![][13]][14] [Paladins][14],
 
-    * The visibility of Ragnaros' Dreadflame ability has been increased.
+    * [![][15]][16] [Priests][16], [![][17]][18] [Rogues][18], [![][19]][20]
+[Shaman][20], [![][21]][22] [Warlocks][22], [![][23]][24] [Warriors][24]
 
-    * The size of Ragnaros' hit box during the final phase of the Heroic
-encounter has been increased.
+  * [Dungeons & Raids][25]
 
-**_User Interface_**
+  * [Races][26]
 
-  * Raid Frames should now remember whether they were shown or hidden upon
-subsequent logins
+  * [User Interface][27]
 
-**_Technical_**
+  * [General Bug Fixes][28] (fixes pertaining specifically to the sections
+listed above are noted within those sections)
 
-  * Players using multiple accounts should now be available to be invited to a
-Real ID Party.
+**General**
 
-  * Attempts to purchase Arena Season 10 items should no longer sometimes
-cause a client crash. (Korea Only)
+  * New Dungeon & Raid Content
 
-**World of Warcraft Patch 4.2.2**
+    * End Time is now available for testing. Your participation and feedback
+[here][29] is appreciated.
 
-Die Patchnotes für alle "World of Warcraft"-Patches befinden sich [hier][2].
+    * The new Baradin Hold boss, Alizabal, is now available for testing. Your
+participation and feedback [here][30] is appreciated.
+
+  * [Transmogrification][31]
+
+    * This new feature allows players to customize their gear like never
+before. You'll find Transmogrification, Void Storage, and Reforging vendors in
+Cathedral Square, Stormwind and The Drag, Orgrimmar. The costs associated with
+this service are not yet final.
+
+  * [Void Storage][32]
+
+    * In addition to the bank, players will now have access to a new "deep
+storage" system, allowing characters to free bag space by setting aside
+coveted gear. You'll find Transmogrification, Void Storage, and Reforging
+vendors in Cathedral Square, Stormwind and The Drag, Orgrimmar. The costs
+associated with this service are not yet final.
+
+  * Reforging
+
+    * The former Reforging vendors have been... retired. The ethereals have
+chosen to take over the business and joined their Transmogrification and Void
+Storage service providers. You'll find them in Cathedral Square, Stormwind and
+The Drag, Orgrimmar.
+
+  * Outland & Northrend Quest Flow
+
+    * The amount of experience needed to gain levels 71 through 80 has been
+reduced by approximately 33%.
+
+    * Many Group quests in Outland and Northrend have been re-tuned to allow
+players to complete them solo. They are no longer labeled as Group quests.
+
+    * Relevant questgivers have been moved into Outland and Northrend
+dungeons. The majority of dungeon quests for these zones are now available
+from within their respective dungeons.
+
+  * North American realms (excluding Brazilian, Latin American, and Oceanic
+realms) no longer permit letters with accents in character or guild names.
+Existing character and guild names with special characters will be unaffected
+by this change.
+
+**[Achievements][33]**
+
+  * The achievement Master of Alterac Valley no longer requires the Alterac
+Valley Blitz achievement.
+
+**[Classes: General][34]**
+
+  * All raid and party buffs which grant group members 10% increased attack
+power have been changed slightly. They continue to provide 10% increased
+ranged attack power, but now provide 20% increased melee attack power.
+
+    * Abomination's Might: The melee attack power bonus from this raid buff
+has been increased to 10/20%, up from 5/10%. The ranged attack power bonus
+remains 5/10%.
+
+    * Blessing of Might: The melee attack power bonus from this raid buff has
+been increased to 20%, up from 10%. The ranged attack power bonus remains 10%.
+
+    * Runescroll of Might: The melee attack power bonus from this consumable
+has been increased to 16%, up from 8%. The ranged attack power bonus remains
+8%.
+
+    * Trueshot Aura: The melee attack power bonus from this raid buff has been
+increased to 20%, up from 10%. The ranged attack power bonus remains 10%.
+
+    * Unleashed Rage: The melee attack power bonus from this raid buff has
+been increased to 10/20%, up from 5/10%. The ranged attack power bonus remains
+5/10%.
+
+  * Vengeance for Protection warriors, Protection paladins, Blood death
+knights, and Feral druids has been redesigned slightly. It no longer ramps up
+slowly at the beginning of a fight. Instead, the first melee attack taken by
+the tank generates Vengeance equal to 33% of the damage taken by that attack.
+In addition, as it updates periodically during the fight, it's always set to
+at least 33% of the damage taken by the tank in the last 2 seconds. It still
+climbs from that point at the rate it did previously, still decays when damage
+is not taken, and still cannot exceed a maximum based on the health and
+Stamina of the tank.
+
+  * Threat generated by classes in active tanking modes has been increased to
+500% damage done, up from 300%. This applies to druids in Bear Form, death
+knights in Blood Presence, warriors in Defensive Stance, and paladins with
+Righteous Fury active.
+
+**[![][5]][35] [Death Knights][35]**
+
+  * Death Strike now heals the death knight whether or not the attack misses,
+or is dodged/parried. As a result of this change, Death Strike no longer
+refunds its rune cost if it fails to hit the target, as the death knight will
+still receive the healing effect.
+
+  * Talent Specializations
+
+    * Blood
+
+      * Blade Barrier has been redesigned. It now passively reduces damage
+taken.
+
+      * Bone Shield now has 6 charges, up from 4.
+
+      * Veteran of the Third War now reduces the cooldown of Outbreak by 30
+seconds.
+
+**[![][7]][36] [Druids][36]**
+
+  * Wrath has a new spell effect.
+
+  * Swipe (Cat) has been reduced to 340% weapon damage, down from 415%.
+
+  * Talent Specializations
+
+    * Restoration
+
+      * Wild Growth healing has been reduced by 20%.
+
+  * Glyphs
+
+    * Glyph of Shred has been renamed Glyph of Bloodletting, and now also
+causes Mangle (Cat) to extend the duration of Rip, in addition to its existing
+Shred functionality.
+
+    * Glyph of Wild Growth now also increases the cooldown on Wild Growth by 2
+seconds.
+
+**[![][9]][37] [Hunters][37]**
+
+  * _Coming soon._
+
+**[![][11]][38] [Mages][38]**
+
+  * _Coming soon._
+
+**[![][13]][39] [Paladins][39]**
+
+  * Holy Radiance now has a 3.0-second cast time, no cooldown, and requires a
+player target. That target is imbued with Holy Radiance, which heals them and
+all group members within 10 yards instantly, and continues to heal them by a
+smaller amount every 1 second for 3 seconds.
+
+  * Seal of Insight, when Judged, no longer returns 15% base mana to the
+paladin. Judging Seal of Insight still causes damage, and melee attacks will
+still restore 4% of base mana.
+
+  * Seal of Truth, when Judged, now benefits from a multiplier of 20% per
+stack of Censure, up from 10%.
+
+  * Talent Specializations
+
+    * Holy
+
+      * Clarity of Purpose now also reduces the cast time of Holy Radiance.
+
+      * Illuminated Healing (mastery) now also applies to Holy Radiance.
+
+      * Infusion of Light now applies its cast time reduction from Holy Shock
+critical effects to Holy Radiance, in addition to its current effects.
+
+      * In addition to providing haste, the effect from Judgements of the Pure
+now increases mana regeneration from Spirit by 10/20/30% for 60 seconds.
+
+      * Light of Dawn now affects 6 targets (base effect), up from 5.
+
+      * Paragon of Virtue now lowers the cooldown of Divine Protection by
+15/30 seconds, up from 10/20 seconds.
+
+      * Speed of Light no longer triggers from Holy Radiance and no longer
+lowers the Holy Radiance cooldown. Speed of Light now only triggers from
+Divine Protection.
+
+      * Tower of Radiance, in addition to its current effects, now also causes
+Holy Radiance to always generate 1 charge of Holy Power at all times.
+
+    * Retribution
+
+      * Sanctified Retribution now increases the critical hit chance of Hammer
+of Wrath by 2/4/6%, down from 20/40/60%.
+
+      * Two-Handed Weapon Specialization (passive) now increases damage by
+25%, up from 20%.
+
+  * Glyphs
+
+    * Glyph of Light of Dawn now lowers the number of targets to 4, instead of
+increasing targets to 6, but increases healing by 25%.
+
+**[![][15]][40] [Priests][40]**
+
+  * Divine Hymn now affects 5 targets, up from 3.
+
+  * Talent Specializations
+
+    * Discipline
+
+      * Atonement will now account for the target enemy's combat reach when
+calculating proper range, enabling it to be used on large creatures such as
+Ragnaros and Ala'kir.
+
+      * Divine Aegis has a new spell effect.
+
+    * Holy
+
+      * Spirit of Redemption has been rebuilt to address a few functionality
+issues and make it more responsive. Spirit of Redemption otherwise remains
+unchanged.
+
+      * State of Mind has been redesigned and is now called Heavenly Voice.
+Heavenly Voice increases the healing done by Divine Hymn by 50/100%, and
+reduces the cooldown of Divine Hymn by 2.5/5 minutes.
+
+  * Glyphs
+
+    * Glyph of Circle of Healing now also increases the mana cost of Circle of
+Healing by 20%.
+
+**[![][17]][41] [Rogues][41]**
+
+  * _Coming soon._
+
+**[![][19]][42] [Shaman][42]**
+
+  * Flametongue Weapon no longer increases spell damage. It now increases all
+non-physical damage done by the wielder by 5%.
+
+  * Lightning Bolt has a new spell effect.
+
+  * Wind Shear’s base cooldown has been adjusted to 15 seconds, up from 6
+seconds.
+
+  * Talent Specializations
+
+    * Elemental
+
+      * Call of Flame no longer causes Fire Nova to extend the duration of
+Flame Shock.
+
+      * Earthquake damage has been increased by roughly 75%.
+
+      * Elemental Fury now removes the cooldown from Chain Lightning.
+
+      * Reverberation now reduces the cooldown of Wind Shear by 5/10 seconds,
+up from 0.5/1 second.
+
+    * Enhancement
+
+      * Improved Lava Lash now causes Lava Lash to spread a Flame Shock debuff
+from the target to up to 4 nearby targets. This excludes crowd-controlled
+targets and those who already have a Flame Shock debuff from the shaman.
+
+      * Improved Lava Lash no longer increases base Lava Lash damage by
+15/30%. This increase has been rolled into the base Lava Lash skill.
+
+      * Mental Quickness has been redesigned. Instead of granting the shaman
+spell power, Mental Quickness now causes Enhancement shaman spells to behave
+as though the shaman has spell power equal to 55% of attack power. Enhancement
+shaman spells no longer benefit from spell power from other sources.
+
+      * Maelstrom Weapon can now also proc from fully absorbed melee attacks.
+
+    * Restoration
+
+      * Ancestral Healing now also causes the shaman's heals to increase the
+target's maximum health by 5/10% of the amount healed, up to a maximum of 10%
+of the target's maximum health, for 15 seconds. This effect does not stack if
+multiple Restoration shaman are present, and does not apply to heals from
+procs.
+
+      * Riptide's periodic healing coefficient has been increased by 50%. The
+initial direct heal is unchanged.
+
+**[![][21]][43] [Warlocks][43]**
+
+  * Shadow Bolt has a new spell effect.
+
+  * Talent Specializations
+
+    * Demonology
+
+      * Demonic Knowledge now provides a damage bonus of 20%, up from 15%.
+
+      * Master Demonologist now grants a base bonus of 20% and 2.5% per
+mastery, up from 16% and 2% per mastery.
+
+  * Bug Fixes
+
+    * Fixed a bug that caused Doomguard and Infernal to benefit dramatically
+more than intended from Demonology Mastery.
+
+**[![][23]][44] [Warriors][44]**
+
+  * _Coming soon._
+
+**[Dungeons & Raids][45]**
+
+  * Dungeon Journal entries have been added for the new dungeons: [End
+Time][46], [Well of Eternity][47], [Hour of Twilight][48], and [Dragon
+Soul][49].
+
+  * Players who use Dungeon Finder for a random Heroic dungeon will no longer
+be locked to that instance. Previously, players who entered an instance via
+the Random Dungeon option were then prohibited from queuing for that dungeon
+or entering the instance manually via the portal. Players should now always be
+able to complete a specific Heroic dungeon once per day regardless of any
+random dungeons completed.
+
+  * Ruins of Ahn'qiraj
+
+    * Bosses in Ruins of Ahn'qiraj now drop a rare-quality Scarab Coffer Key
+which can be used to open the Scarab Coffers found within. These keys are
+zone-bound to Ruins of Ahn'qiraj and have a 17-hour expiration. This change
+also applies to Greater Scarab Coffer Keys used to open Large Scarab Coffers.
+
+  * Zul’Gurub
+
+    * Players now only have to kill two of the four initial dungeon bosses
+(High Priest Venoxis, Broodlord Mandokir, High Priestess Kilnara, and Zanzil)
+to face Jin’do the Godbreaker.
+
+  * Zul’Aman
+
+    * Players now only have to kill two of the four Troll avatars before they
+may face Hex Lord Malacrass.
+
+**[Races][50]**
+
+  * The orc racial Blood Fury now increases spell power rather than only spell
+damage.
+
+**[User Interface][51]**
+
+  * Archaeology areas of interest will now show on the mini-map, in addition
+to the World Map.
+
+  * Bag Search
+
+    * A search field has been added to allow players to search bag, bank,
+guild bank, and Void Storage inventories for specific items.
+
+  * Guilds with inactive guild leaders can now usurp the leader under specific
+conditions. More information on this coming soon.
+
+  * The Reforging interface has been updated and improved.
+
+  * Quest Tracking areas or points of interest will now show on the mini-map,
+in addition to the World Map.
+
+  * The World Map now displays the expected character levels for each zone.
+
+  * Added a “promote everyone” checkbox that will automatically make all raid
+members, Raid assistants. This checkbox can be found in the Raid Frame and the
+Unit Frame “pull-out” tab.
+
+  * There are now commands for world markers & unit markers.
+
+  * Added new rotation, zoom, and pan controls are now available in all
+windows with player models in UI frames.
+
+  * Players can now unlearn profession specialization without unlearning the
+profession (Engineering & Alchemy).
+
+  * [Mac] Added functionality to allow using the Command key instead of the
+Control key on Apple keyboards. This can be enabled in Mac Options.
+
+  * [Mac] Added functionality to disable Mac OS system keyboard shortcuts so
+that they do not interfere with keyboard shortcuts in WoW. This can be enabled
+in Mac Options.
+
+**[General Bug Fixes][52]**
+
+  * _Coming soon._
+
+**PTR-Patch 4.3.0 für World of Warcraft**
+
+Die Patchnotes für alle "World of Warcraft"-Patches befinden sich [hier][53].
+
+Diese Patch Notes werden während des Testprozesses ständig aktualisiert. Bitte
+bedenkt, dass manche der hier genannten Änderungen erst sichtbar werden
+könnten, wenn eine neue Version auf den PTR aufgespielt wird.
 
 **_Inhalt_**
 
-  * Dungeons & Schlachtzüge
+_Klickt auf einen Link um direkt zum entsprechenden Abschnitt der Patchnotes
+zu springen._
 
-  * Benutzeroberfläche
+  * [Allgemeines][2]
 
-  * Technischer Support
+  * [Erfolge][3]
 
-**_Dungeons & Schlachtzüge_**
+  * [Klassen: Allgemeines][4]
 
-  * Die Feuerlande
+    * [![][5]][6] [Todesritter][6], [![][7]][8] [Druiden][8], [![][9]][10]
+[Jäger][10], [![][11]][12] [Magier][12], [![][13]][14] [Paladine][14],
 
-    * Die Sichtbarkeit von Ragnaros' Effekt 'Schreckenslohe' wurde verbessert.
+    * [![][15]][16] [Priester][16], [![][17]][18] [Schurken][18],
+[![][19]][20] [Schamanen][20], [![][21]][22] [Hexenmeister][22], [![][23]][24]
+[Krieger][24]
 
-    * Ragnaros' Hitbox wurde für die letzte Phase der heroischen Begegnung
-vergrößert.
+  * [Dungeons & Schlachtzüge][25]
 
-**_Benutzeroberfläche_**
+  * [Völker][26]
 
-  * Schlachtzugsfenster sollten ab jetzt zwischen Logins ihre
-Anzeigeeigenschaften beibehalten.
+  * [Benutzeroberfläche][27]
 
-**_Technischer Support_**
+  * [Allgemeine behobene Fehler][28] (Behobene Fehler, die spezifisch die oben
+genannten Sektionen betreffen, sind in den entsprechenden Sektionen zu finden)
 
-  * Spieler, die mehrere Accounts verwenden, sollte man ab sofort in eine
-Gruppe aus Freunden einladen können.
+**Allgemeines**
 
-**World of Warcraft Patch 4.2.2**
+  * Neue Dungeon- & Schlachtzugsinhalte
 
-The latest patch notes can always be found at [
-http://www.worldofwarcraft.com/patchnotes/ ][1]
+    * Der Dungeon "Endzeit" steht nun zum Test bereit. Wir freuen uns auf
+[eure Beiträge und euer Feedback][54].
+
+    * Der neue Boss in der Baradinfestung, Alizabal, steht nun zum Test
+bereit. Wir freuen uns auf [eure Beiträge und euer Feedback][55].
+
+  * [Transmogrifikation][56]
+
+    * Dieses neue Funktion gestattet es Spielern, Ihre Ausrüstung zu gestalten
+wie nie zuvor. Die Transmogrifikation, das Leerenlager und die
+Umschmiedemeister befinden sich am Kathedralenplatz in Sturmwind sowie in der
+Gasse in Orgrimmar. Die mit diesem Service verbundenen Kosten wurden noch
+nicht festgelegt.
+
+  * [Leerenlager][57]
+
+    * Zusätzlich zur Bank gibt es nun die Möglichkeit, Gegenstände in einem
+neuen Lagersystem zu speichern, das es gestattet liebgewonnene Gegenstände
+aufzubewahren, ohne Taschenplatz zu blockieren. Die Transmogrifikation, das
+Leerenlager und die Umschmiedemeister befinden sich am Kathedralenplatz in
+Sturmwind sowie in der Gasse in Orgrimmar. Die mit diesem Service verbundenen
+Kosten wurden noch nicht festgelegt.
+
+  * Umschmieden
+
+    * Die vorherigen Umschmiedemeister wurd... haben sich zur Ruhe gesetzt.
+Die Astralen haben das Geschäft übernommen und ihre Transmogrifikations- und
+Leerenlagerdienste ebenfalls zur Verfügung gestellt. Sie befinden sich am
+Kathedralenplatz in Sturmwind sowie in der Gasse in Orgrimmar.
+
+  * Questführung in der Scherbenwelt & in Nordend
+
+    * Die Menge an Erfahrung, die für Stufenanstiege im Bereich von 71 bis 80
+benötigt wird, wurde um ungefähr 33% verringert.
+
+    * Viele Gruppenquests in der Scherbenwelt und in Nordend wurden
+umgestaltet, damit sie im Alleingang bewältigt werden können. Sie sind nicht
+mehr als Gruppenquests ausgeschrieben.
+
+    * Relevante Questgeber wurden in die Dungeons der Scherbenwelt und
+Nordends verlegt. Der Großteil der Dungeonquests für die jeweilige Zone ist
+nun im Dungeon selbst erhältlich.
+
+  * Bei der Erstellung von Charakteren oder Gilden sind auf nordamerikanischen
+Realms (mit der Ausnahme von brasilianischen, lateinamerikanischen und
+ozeanischen Realms) keine Zeichen mit Akzenten mehr gestattet. Bestehende
+Charaktere oder Gilden sind von dieser Regelung nicht betroffen.
+
+**[Erfolge][58]**
+
+  * Der Erfolg "Meister des Alteractals" benötigt nicht länger den Erfolg "Der
+Alteracblitz".
+
+**[Klassen: Allgemeines][59]**
+
+  * Alle Schlachtzugs- und Gruppenstärkungszauber, die die Angriffskraft von
+Mitgliedern um 10% erhöhten, wurden leicht abgeändert. Sie verleihen weiterhin
+10% Distanzangriffskraft, jedoch wird die Nahkampfangriffskraft nun um 20%
+erhöht.
+
+    * Stärke der Monstrosität: Der Nahkampfangriffskraftbonus dieses
+Stärkungszaubers wurde von 5/10% auf 10/20% erhöht. Der
+Distanzangriffskraftbonus bleibt bei 5/10%.
+
+    * Segen der Macht: Der Nahkampfangriffskraftbonus dieses Stärkungszaubers
+wurde von 5/10% auf 10/20% erhöht. Der Distanzangriffskraftbonus bleibt bei
+5/10%.
+
+    * Runenschriftrolle der Macht: Der Nahkampfangriffskraftbonus dieses
+Stärkungszaubers wurde von 8% auf 16% erhöht. Der Distanzangriffskraftbonus
+bleibt bei 8%.
+
+    * Aura des Volltreffers: Der Nahkampfangriffskraftbonus dieses
+Stärkungszaubers wurde von 10% auf 20% erhöht. Der Distanzangriffskraftbonus
+bleibt bei 10%.
+
+    * Entfesselte Wut: Der Nahkampfangriffskraftbonus dieses Stärkungszaubers
+wurde von 5/10% auf 10/20% erhöht. Der Distanzangriffskraftbonus bleibt bei
+5/10%.
+
+  * Der Racheeffekt von "Schutz"-Kriegern und -Paladinen, "Blut"-Todesrittern
+und "Wilder Kampf"-Druiden wurde leicht umgestaltet. Bei Kampfbeginn wird der
+Rachewert nicht langsam erhöht. Stattdessen erzeugt der erste vom Tank
+erlittene Nahkampfangriff Rache in Höhe von 33% des durch diesen Angriff
+erlittenen Schadens. Zusätzlich, während der Wert im Laufe des Kampfes stetig
+aktualisiert wird, verbleibt die Mindestmenge bei 33% des vom Tank in den
+letzten 2 Sekunden erlittenen Schadens. Von diesem Punkt an steigt die Rache
+mit der vorherigen Rate und verfällt wieder, wenn kein Schaden erlitten wird.
+Die Rache kann weiterhin nicht den von der Gesundheit und Ausdauer des Tanks
+festgelegten Maximalwert überschreiten.
+
+  * Die von Klassen im Tankmodus erzeugte Bedrohung wurde von 300% auf 500%
+angehoben. Dies trifft auf Folgendes zu: Druiden in Bärengestalt, Todesritter
+in der 'Blutpräsenz', Krieger in der 'Verteidigungshaltung' und Paladine mit
+aktivem 'Zorn der Gerechtigkeit'.
+
+**[![][5]][60] [Todesritter][60]**
+
+  * 'Todesstoß' heilt den Todesritter nun, gleichgültig ob der Angriff
+verfehlt, pariert oder ihm ausgewichen wird. Als Folge dieser Änderung
+erstattet die Fähigkeit 'Todesstoß' ihre Runenkosten nun nicht mehr zurück,
+wenn sie ihr Ziel verfehlt, da der Todesritter trotzdem den Heilungseffekt
+erhält.
+
+  * Talentspezialisierungen
+
+    * Blut
+
+      * 'Klingenbarriere' wurde umgestaltet. Die Fähigkeit verringert nun
+passiv den erlittenen Schaden.
+
+      * 'Knochenschild' hat nun 6 Aufladungen (vorher 4 Aufladungen).
+
+      * 'Veteran des Dritten Krieges' verringert nun die Abklingzeit von
+'Ausbruch' um 30 Sekunden.
+
+**[![][7]][61] [Druiden][61]**
+
+  * 'Zorn' hat einen neuen optischen Effekt.
+
+  * Der von der Fähigkeit 'Prankenhieb (Katze)' verursachte Schaden wurde auf
+340% Waffenschaden verringert (vorher 415%).
+
+  * Talentspezialisierungen
+
+    * Wiederherstellung
+
+      * Die Heilung von 'Wildwuchs' wurde um 20% verringert.
+
+  * Glyphen
+
+    * Glyphe 'Schreddern': Wurde in Glyphe 'Blutvergießen' umbenannt, durch
+die zusätzlich zu den bestehenden Effekten nun auch die Fähigkeit
+'Zerfleischen (Katze)' die Effektdauer von 'Zerfetzen' erhöht.
+
+    * Glyphe 'Wildwuchs': Erhöht nun zusätzlich die Dauer von 'Wildwuchs' um 2
+Sekunden.
+
+**[![][62]][63] [Jäger][63]**
+
+  * _In Arbeit._
+
+**[![][64]][65] [Magier][65]**
+
+  * _In Arbeit._
+
+**[![][66]][67] [Paladine][67]**
+
+  * 'Heiliges Strahlen' hat nun eine Zauberzeit von 3.0 Sek., keine
+Abklingzeit und setzt ein ausgewähltes Ziel voraus. Dieses Ziel wird mit
+'Heiliges Strahlen' erfüllt, wodurch es und alle Gruppenmitglieder innerhalb
+von 10 Metern sofort geheilt werden. Außerdem werden betroffene Ziele für die
+darauffolgenden 3 Sek. pro Sekunde um eine geringere Menge geheilt.
+
+  * 'Siegel der Einsicht' erstattet nach dem 'Richturteil' nicht mehr 15% des
+Grundmanas des Paladins. Das entsprechende 'Richturteil' verursacht noch immer
+Schaden und Nahkampfangriffe stellen weiterhin 4% des Grundmanas wieder her.
+
+  * Das Richturteil von 'Siegel der Wahrheit' erhält nun einen Multiplikator
+von 20% pro Stapel von 'Tadel' auf dem Ziel (vorher 10%).
+
+  * Talentspezialisierungen
+
+    * Heilig
+
+      * 'Klares Ziel' verringert nun auch die Zauberzeit von 'Heiliges
+Strahlen'.
+
+      * 'Erleuchtete Heilung' (Meisterschaft) wirkt sich nun auch auf
+'Heiliges Strahlen' aus.
+
+      * 'Lichtenergie' gewährt nun zusätzlich zu den bisherigen Effekten auch
+für 'Heiliges Strahlen' eine Verringerung der Zauberzeit, nachdem mit
+'Heiliger Schock' ein kritischer Effekt erzielt wurde.
+
+      * Zusätzlich zum Tempo-Bonus gewährt der Effekt von 'Richturteile des
+Reinen' nun auch 60 Sek. lang eine um 10/20/30% erhöhte Manaregeneration durch
+Willenskraft.
+
+      * 'Licht der Morgendämmerung' wirkt sich nun standardmäßig auf 6 Ziele
+aus (vorher 5).
+
+      * 'Tugendhaftes Vorbild' verringert nun die Abklingzeit von 'Göttlicher
+Schutz' um 15/30 Sek. (vorher 10/20 Sek.).
+
+      * 'Geschwindigkeit des Lichts' wird nicht mehr durch 'Heiliges Strahlen'
+ausgelöst und verringert auch nicht mehr die Abklingzeit von 'Heiliges
+Strahlen'. 'Geschwindigkeit des Lichts' wird jetzt nur noch durch 'Göttlicher
+Schutz' ausgelöst.
+
+      * 'Turm der Strahlen' bewirkt nun zusätzlich zu den bestehenden
+Effekten, dass 'Heiliges Strahlen' immer 1 Aufladung Heilige Kraft erzeugt.
+
+    * Vergeltung
+
+      * 'Geweihte Vergeltung' erhöht nun die kritische Trefferchance von
+'Hammer des Zorns' um 2/4/6% (vorher 20/40/60%).
+
+      * 'Zweihandwaffen-Spezialisierung' (passiv) erhöht nun den verursachten
+Schaden um 25% (vorher 20%).
+
+  * Glyphen
+
+    * Die Glyphe 'Licht der Morgendämmerung' verringert nun die Anzahl
+betroffener Ziele auf 4, anstatt sie auf 6 zu erhöhen, erhöht dafür jedoch die
+Heilung um 25%.
+
+**[![][68]][69] [Priester][69]**
+
+  * 'Gotteshymne' heilt nun 5 Ziele (vorher 3).
+
+  * Talentspezialisierungen
+
+    * Disziplin
+
+      * 'Abbitte' bezieht nun die Kampfreichweite des Ziels mit in die
+Berechnung des Wirkungsbereichs ein. Dadurch sollte die Mechanik auch bei
+großen Kreaturen wie Ragnaros und Al'Akir wirksam sein.
+
+      * 'Göttliche Aegis' hat nun einen neuen optischen Effekt.
+
+    * Heilig
+
+      * 'Geist der Erlösung' wurde neu entworfen, um einige Funktionsfehler zu
+beheben und das Talent schneller reagieren zu lassen. Die Grundfunktionen von
+'Geist der Erlösung' bleiben gleich.
+
+      * 'Gemütsruhe' wurde überarbeitet und heißt nun 'Himmlische Stimme'.
+'Himmlische Stimme' erhöht nun die von 'Gotteshymne' hervorgerufene Heilung um
+50/100% und verringert die Abklingzeit von 'Gotteshymne' um 2,5/5 Minuten.
+
+  * Glyphen
+
+    * Die Glyphe 'Kreis der Heilung' erhöht nun auch die Manakosten von 'Kreis
+der Heilung' um 20%.
+
+**[![][70]][71] [Schurken][71]**
+
+  * _In Arbeit._
+
+**[![][72]][73] [Schamanen][73]**
+
+  * 'Waffe der Flammenzunge' erhöht nicht mehr den Zauberschaden. Die
+Fähigkeit erhöht nun sämtlichen vom Schamanen verursachten körperlichen
+Schaden um 5%.
+
+  * 'Blitzschlag' hat nun einen neuen optischen Effekt.
+
+  * Die Grundabklingzeit von 'Windstoß' wurde zu 15 Sek. abgeändert (vorher 6
+Sek.)
+
+  * Talentspezialisierungen
+
+    * Elementarkampf
+
+      * 'Ruf der Flamme' bewirkt nun nicht mehr, dass 'Feuernova' die Dauer
+von 'Flammenschock' zurücksetzt.
+
+      * Der von 'Erdbeben' verursachte Schaden wurde um etwa 75% erhöht.
+
+      * Elementarfuror entfernt nun die Abklingzeit von 'Kettenblitz'.
+
+      * 'Nachklingen' verringert nun die Abklingzeit von 'Windstoß' um 5/10
+Sek. (vorher 0,5/1 Sek.).
+
+    * Verstärkung
+
+      * 'Verbesserte Lavapeitsche' bewirkt nun, dass 'Lavapeitsche' einen
+'Flammenschock'-Effekt auf bis zu 4 Ziele in der Nähe ausbreitet. Davon
+ausgeschlossen sind Ziele, die von Gruppenkontrolleffekten betroffen sind,
+oder Ziele, die bereits von einem 'Flammenschock'-Effekt des Schamanen
+betroffen sind.
+
+      * 'Verbesserte Lavapeitsche' erhöht nicht mehr den Grundschaden von
+'Lavapeitsche' um 15/30%. Diese Erhöhung ist nun Teil des normalen Zaubers
+'Lavapeitsche'.
+
+      * 'Geistige Schnelligkeit' wurde neu entworfen. Anstatt dem Schamanen
+Zaubermacht zu gewähren, bewirkt 'Geistige Schnelligkeit' nun, dass sich
+Zauber von "Verstärkung"-Schamanen so verhalten, als hätte der Schamane
+Zaubermacht in Höhe von 55% seiner Angriffskraft. Die Zauber von
+"Verstärkung"-Schamanen profitieren nicht mehr von anderen Zaubermachtquellen.
+
+      * 'Waffe des Mahlstroms' kann nun auch von Nahkampfangriffen ausgelöst
+werden, die vollständig absorbiert wurden.
+
+    * Wiederherstellung
+
+      * 'Heilung der Ahnen' bewirkt nun, dass die Heilzauber des Schamanen die
+maximale Gesundheit des Ziels 15 Sek. lang um 5/10% der geheilten Menge
+erhöhen. Dieser Effekt kann 10% der maximalen Gesundheit des Ziels nicht
+überschreiten. Dieser Effekt ist nicht stapelbar, wenn mehrere Schamanen
+dasselbe Ziel heilen, und kann nicht von zufällig ausgelösten Heileffekten
+ausgelöst werden.
+
+      * Der Heilkoeffizient der regelmäßigen Heilung von 'Springflut' wurde um
+50% erhöht. Der anfängliche Heileffekt bleibt unverändert.
+
+**[![][74]][75] [Hexenmeister][75]**
+
+  * 'Schattenblitz' hat einen neuen optischen Effekt.
+
+  * Talentspezialisierungen
+
+    * Dämonologie
+
+      * 'Dämonisches Wissen' gewährt nun einen Schadensbonus von 20% (vorher
+15%).
+
+      * 'Meister der Dämonologie' (Meisterschaft) gewährt nun einen Grundbonus
+von 20% und weitere 2,5% pro Punkt Meisterschaft (vorher 16% Grundbonus und 2%
+pro Punkt Meisterschaft).
+
+  * Behobene Fehler
+
+    * Es wurde ein Fehler behoben, bei dem die Verdammniswache und die
+Höllenbestie weitaus mehr als vorgesehen von der Dämonologie-Meisterschaft
+profitiert haben.
+
+**[![][76]][77] [Krieger][77]**
+
+  * _In Arbeit._
+
+**[Dungeons & Schlachtzüge][78]**
+
+  * Dem Dungeonkompendium wurden Einträge für diese neuen Dungeons
+hinzugefügt: [Endzeit][79], [Brunnen der Ewigkeit][80], [Stunde des
+Zwielichts][81], und [Drachenseele][82].
+
+  * Spieler, die den Dungeonbrowser für einen zufälligen Dungeon verwenden,
+werden nicht mehr der jeweiligen Instanz zugewiesen. Bisher konnten Spieler,
+die eine Instanz durch die Option "Zufälliger Dungeon" betraten, diesen
+Dungeon nicht mehr manuell durch das Portal betreten und sich nicht mehr für
+diesen spezifischen Dungeon einreihen. Es sollte Spielern nun immer möglich
+sein, einmal pro Tag einen bestimmten Dungeon abzuschließen, auch wenn bereits
+zufällige Dungeons abgeschlossen wurden.
+
+  * Die Ruinen von Ahn'qiraj
+
+    * Es können nun Skarabäuskastenschlüssel von Bossen in den Ruinen von
+Ahn'qiraj erbeutet werden, mit denen Skarabäuskästen innerhalb des
+Schlachtzugs geöffnet werden können. Diese Schlüssel sind an die Zone gebunden
+und verfallen nach 17 Stunden. Diese Änderung betrifft ebenfalls die großen
+Skarabäuskastenschlüssel, mit denen man große Skarabäuskästen öffnen kann.
+
+  * Zul'Gurub
+
+    * Es müssen nun nur noch zwei der vier Anfangsbosse (Hohepriester Venoxis,
+Blutfürst Mandokir, Hohepriesterin Kilnara und Zanzil) überwunden werden, um
+Jin'do den Götterbrecher herauszufordern.
+
+  * Zul'Aman
+
+    * Es müssen nun nur noch zwei der vier Trollavatare überwunden werden, um
+Hexlord Malacrass herauszufordern.
+
+**[Völker][83]**
+
+  * Die Volksfähigkeit der Orcs, 'Kochendes Blut', erhöht nun die Zaubermacht
+statt nur den Zauberschaden.
+
+**[Benutzeroberfläche][84]**
+
+  * Archäologische Ausgrabungsstätten werden nun zusätzlich zur Weltkarte auch
+auf der Minikarte angezeigt.
+
+  * Taschensuche
+
+    * Es wurde ein Suchfeld hinzugefügt, mit dem Spieler ihre Taschen, Bank,
+Gildenbank und das Leerenlager nach bestimmten Gegenständen durchsuchen
+können.
+
+  * Gilden, deren Gildenmeister inaktiv sind, können diesen nun unter
+bestimmten Bedingungen absetzen. Weitere Informationen hierzu folgen in Kürze.
+
+  * Die Benutzeroberfläche für das Umschmieden wurde aktualisiert und
+verbessert.
+
+  * Über die Questverfolgung hervorgehobene Gebiete oder questrelevante Orte
+werden nun zusätzlich zur Weltkarte auch auf der Minikarte angezeigt.
+
+  * Die Weltkarte zeigt nun die vorgesehenen Charakterstufen jeder Zone an.
+
+  * Es wurde die Option "Alle befördern" hinzugefügt, mit der automatisch alle
+Schlachtzugsteilnehmer zu Schlachtzugsassistenten gemacht werden können. Das
+entsprechende Häkchen kann im ausklappbaren Benutzeroberflächenelement für
+Schlachtzugs- und Einheitenfenster gesetzt werden.
+
+  * Es gibt nun Tastaturbefehle für Umgebungs- und Einheitenmarkierungen.
+
+  * Es wurden neue Rotations-, Zoom- und Kamerawinkelsteuerungen für sämtliche
+Benutzeroberflächenelemente, in denen die Modelle von Spielercharakteren
+dargestellt sind, hinzugefügt.
+
+  * Berufsspezialisierungen können nun verlernt werden, ohne dass der
+entsprechende Beruf ebenfalls verlernt werden muss (Ingenieurskunst und
+Alchemie).
+
+  * [Mac] Es wurde eine Funktion hinzugefügt, die es ermöglicht, die
+Befehlstaste anstelle der Steuerungstaste auf Apple-Tastaturen zu verwenden.
+Diese Funktion kann in den Mac-Optionen aktiviert werden.
+
+  * [Mac] Es wurde eine Funktion hinzugefügt, die es ermöglicht, die
+Tastaturkürzel von Mac OS zu unterdrücken, damit sich diese nicht mit den
+Tastaturkürzeln von World of Warcraft überschneiden. Diese Funktion kann in
+den Mac-Optionen aktiviert werden.
+
+**[Allgemeine behobene Fehler][52]**
+
+  * _In Arbeit._
+
+**World of Warcraft PTR Patch 4.3.0**
+
+Notes for all World of Warcraft patches can be found [here][85].
+
+Visit our [Bug Report forum][86] for a list of known issues.
 
 **_Table of Contents_**
 
-  * Dungeons & Raids
+_Click a link to be taken directly to the corresponding section of the patch
+notes._
 
-  * User Interface
+  * [General][2]
 
-  * Technical
+  * [Achievements][3]
 
-**_Dungeons & Raids_**
+  * [Classes: General][4]
 
-  * Firelands
+    * [![][87]][6] [Death Knights][6], [![][88]][8] [Druids][8], [![][62]][10]
+[Hunters][10], [![][64]][12] [Mages][12], [![][66]][14] [Paladins][14],
 
-    * The visibility of Ragnaros' Dreadflame ability has been increased.
+    * [![][68]][16] [Priests][16], [![][70]][18] [Rogues][18], [![][72]][20]
+[Shaman][20], [![][74]][22] [Warlocks][22], [![][76]][24] [Warriors][24]
 
-    * The size of Ragnaros' hit box during the final phase of the Heroic
-encounter has been increased.
+  * [Dungeons & Raids][25]
 
-**_User Interface_**
+  * [Races][26]
 
-  * Raid Frames should now remember whether they were shown or hidden upon
-subsequent logins
+  * [User Interface][27]
 
-**_Technical_**
+  * [General Bug Fixes][28] (fixes pertaining specifically to the sections
+listed above are noted within those sections)
 
-  * Players using multiple accounts should now be available to be invited to a
-Real ID Party.
+**General**
 
-  * Attempts to purchase Arena Season 10 items should no longer sometimes
-cause a client crash. (Korea Only)
+  * [Transmogrification][89]
 
-**Parche 4.2.2 de World of Warcraft**
+    * This new feature allows players to customize their gear like never
+before. You'll find Transmogrification, Void Storage, and Reforging vendors in
+Cathedral Square, Stormwind and The Drag, Orgrimmar. The costs associated with
+this service are not yet final.
 
-Se pueden consultar siempre las últimas notas de parche en:
-[http://eu.battle.net/wow/es/game/patch-notes/4-2-0][3]
+  * [Void Storage][90]
+
+    * In addition to the bank, players will now have access to a new "deep
+storage" system, allowing characters to free bag space by setting aside
+coveted gear. You'll find Transmogrification, Void Storage, and Reforging
+vendors in Cathedral Square, Stormwind and The Drag, Orgrimmar. The costs
+associated with this service are not yet final.
+
+  * Reforging
+
+    * The former Reforging vendors have been... retired. The ethereals have
+chosen to take over the business and joined their Transmogrification and Void
+Storage service providers. You'll find them in Cathedral Square, Stormwind and
+The Drag, Orgrimmar.
+
+  * Outland & Northrend Quest Flow
+
+    * The amount of experience needed to gain levels 71 through 80 has been
+reduced by approximately 33%.
+
+    * Many Group quests in Outland and Northrend have been re-tuned to allow
+players to complete them solo. They are no longer labeled as Group quests.
+
+    * Relevant questgivers have been moved into Outland and Northrend
+dungeons. The majority of dungeon quests for these zones are now available
+from within their respective dungeons.
+
+  * North American realms (excluding Brazilian, Latin American, and Oceanic
+realms) no longer permit letters with accents in character or guild names.
+Existing character and guild names with special characters will be unaffected
+by this change.
+
+**[Achievements][91]**
+
+  * The achievement Master of Alterac Valley no longer requires the Alterac
+Valley Blitz achievement.
+
+**[Classes: General][92]**
+
+  * All raid and party buffs which grant group members 10% increased attack
+power have been changed slightly. They continue to provide 10% increased
+ranged attack power, but now provide 20% increased melee attack power.
+
+    * Abomination's Might: The melee attack power bonus from this raid buff
+has been increased to 10/20%, up from 5/10%. The ranged attack power bonus
+remains 5/10%.
+
+    * Blessing of Might: The melee attack power bonus from this raid buff has
+been increased to 20%, up from 10%. The ranged attack power bonus remains 10%.
+
+    * Runescroll of Might: The melee attack power bonus from this consumable
+has been increased to 16%, up from 8%. The ranged attack power bonus remains
+8%.
+
+    * Trueshot Aura: The melee attack power bonus from this raid buff has been
+increased to 20%, up from 10%. The ranged attack power bonus remains 10%.
+
+    * Unleashed Rage: The melee attack power bonus from this raid buff has
+been increased to 10/20%, up from 5/10%. The ranged attack power bonus remains
+5/10%.
+
+  * Vengeance for Protection warriors, Protection paladins, Blood death
+knights, and Feral druids has been redesigned slightly. It no longer ramps up
+slowly at the beginning of a fight. Instead, the first melee attack taken by
+the tank generates Vengeance equal to 33% of the damage taken by that attack.
+In addition, as it updates periodically during the fight, it's always set to
+at least 33% of the damage taken by the tank in the last 2 seconds. It still
+climbs from that point at the rate it did previously, still decays when damage
+is not taken, and still cannot exceed a maximum based on the health and
+Stamina of the tank.
+
+  * Threat generated by classes in active tanking modes has been increased to
+500% damage done, up from 300%. This applies to druids in Bear Form, death
+knights in Blood Presence, warriors in Defensive Stance, and paladins with
+Righteous Fury active.
+
+**[![][87]][93] [Death Knights][93]**
+
+  * Death Strike now heals the death knight whether or not the attack misses,
+or is dodged/parried. As a result of this change, Death Strike no longer
+refunds its rune cost if it fails to hit the target, as the death knight will
+still receive the healing effect.
+
+  * Talent Specializations
+
+    * Blood
+
+      * Blade Barrier has been redesigned. It now passively reduces damage
+taken.
+
+      * Bone Shield now has 6 charges, up from 4.
+
+      * Veteran of the Third War now reduces the cooldown of Outbreak by 30
+seconds.
+
+**[![][88]][94] [Druids][94]**
+
+  * Wrath has a new spell effect.
+
+  * Talent Specializations
+
+    * Restoration
+
+      * Wild Growth healing has been reduced by 20%.
+
+  * Glyphs
+
+    * Glyph of Shred has been renamed Glyph of Bloodletting, and now also
+causes Mangle (Cat) to extend the duration of Rip, in addition to its existing
+Shred functionality.
+
+    * Glyph of Wild Growth now also increases the cooldown on Wild Growth by 2
+seconds.
+
+**[![][62]][95] [Hunters][95]**
+
+  * _Coming soon._
+
+**[![][64]][96] [Mages][96]**
+
+  * _Coming soon._
+
+**[![][66]][97] [Paladins][97]**
+
+  * Holy Radiance now has a 3.0-second cast time, no cooldown, and requires a
+player target. That target is imbued with Holy Radiance, which heals them and
+all group members within 10 yards instantly, and continues to heal them by a
+smaller amount every 1 second for 3 seconds.
+
+  * Seal of Insight, when Judged, no longer returns 15% base mana to the
+paladin. Judging Seal of Insight still causes damage, and melee attacks will
+still restore 4% of base mana.
+
+  * Talent Specializations
+
+    * Holy
+
+      * Clarity of Purpose now also reduces the cast time of Holy Radiance.
+
+      * Illuminated Healing (mastery) now also applies to Holy Radiance.
+
+      * Infusion of Light now applies its cast time reduction from Holy Shock
+critical effects to Holy Radiance, in addition to its current effects.
+
+      * In addition to providing haste, the effect from Judgements of the Pure
+now increases mana regeneration from Spirit by 10/20/30% for 60 seconds.
+
+      * Light of Dawn now affects 6 targets (base effect), up from 5.
+
+      * Paragon of Virtue now lowers the cooldown of Divine Protection by
+15/30 seconds, up from 10/20 seconds.
+
+      * Speed of Light no longer triggers from Holy Radiance and no longer
+lowers the Holy Radiance cooldown. Speed of Light now only triggers from
+Divine Protection.
+
+      * Tower of Radiance, in addition to its current effects, now also causes
+Holy Radiance to always generate 1 charge of Holy Power at all times.
+
+  * Glyphs
+
+    * Glyph of Light of Dawn now lowers the number of targets to 4, instead of
+increasing targets to 6, but increases healing by 25%.
+
+**[![][68]][98] [Priests][98]**
+
+  * Divine Hymn now affects 5 targets, up from 3.
+
+  * Talent Specializations
+
+    * Discipline
+
+      * Atonement will now account for the target enemy's combat reach when
+calculating proper range, enabling it to be used on large creatures such as
+Ragnaros and Ala'kir.
+
+      * Divine Aegis has a new spell effect.
+
+    * Holy
+
+      * Spirit of Redemption has been rebuilt to address a few functionality
+issues and make it more responsive. Spirit of Redemption otherwise remains
+unchanged.
+
+      * State of Mind has been redesigned and is now called Heavenly Voice.
+Heavenly Voice increases the healing done by Divine Hymn by 50/100%, and
+reduces the cooldown of Divine Hymn by 2.5/5 minutes.
+
+  * Glyphs
+
+    * Glyph of Circle of Healing now also increases the mana cost of Circle of
+Healing by 20%.
+
+**[![][70]][99] [Rogues][99]**
+
+  * _Coming soon._
+
+**[![][72]][100] [Shaman][100]**
+
+  * Flametongue Weapon no longer increases spell damage. It now increases all
+non-physical damage done by the wielder by 5%.
+
+  * Lightning Bolt has a new spell effect.
+
+  * Wind Shear now has a 25-second base cooldown, up from 6 seconds.
+
+  * Talent Specializations
+
+    * Elemental
+
+      * Call of Flame no longer causes Fire Nova to extend the duration of
+Flame Shock.
+
+      * Earthquake damage has been increased by roughly 75%.
+
+      * Elemental Fury now removes the cooldown from Chain Lightning.
+
+      * Reverberation now reduces the cooldown of Wind Shear by 10/20 seconds,
+up from 0.5/1 second.
+
+    * Enhancement
+
+      * Improved Lava Lash now causes Lava Lash to spread a Flame Shock debuff
+from the target to up to 4 nearby targets. This excludes crowd-controlled
+targets and those who already have a Flame Shock debuff from the shaman.
+
+      * Improved Lava Lash no longer increases base Lava Lash damage by
+15/30%. This increase has been rolled into the base Lava Lash skill.
+
+      * Mental Quickness has been redesigned. Instead of granting the shaman
+spell power, Mental Quickness now causes Enhancement shaman spells to behave
+as though the shaman has spell power equal to 55% of attack power. Enhancement
+shaman spells no longer benefit from spell power from other sources.
+
+    * Restoration
+
+      * Ancestral Healing now also causes the shaman's heals to increase the
+target's maximum health by 5/10% of the amount healed, up to a maximum of 10%
+of the target's maximum health, for 15 seconds. This effect does not stack if
+multiple Restoration shaman are present, and does not apply to heals from
+procs.
+
+      * Riptide's periodic healing coefficient has been increased by 50%. The
+initial direct heal is unchanged.
+
+**[![][74]][101] [Warlocks][101]**
+
+  * Shadow Bolt has a new spell effect.
+
+**[![][76]][102] [Warriors][102]**
+
+  * _Coming soon._
+
+**[Dungeons & Raids][103]**
+
+  * Dungeon Journal entries have been added for the new dungeons: [End
+Time][104], [Well of Eternity][105], [Hour of Twilight][106], and [Dragon
+Soul][107].
+
+  * Bosses in Ruins of Ahn'qiraj now drop a rare-quality Scarab Coffer Key
+which can be used to open the Scarab Coffers found within. These keys are
+zone-bound to Ruins of Ahn'qiraj and have a 17-hour expiration. This change
+also applies to Greater Scarab Coffer Keys used to open Large Scarab Coffers.
+
+**[Races][108]**
+
+  * The orc racial Blood Fury now increases spell power rather than only spell
+damage.
+
+**[User Interface][109]**
+
+  * Archaeology areas of interest will now show on the mini-map, in addition
+to the World Map.
+
+  * Bag Search
+
+    * A search field has been added to allow players to search bag, bank,
+guild bank, and Void Storage inventories for specific items.
+
+  * Guilds with inactive guild leaders can now usurp the leader under specific
+conditions. More information on this coming soon.
+
+  * The Reforging interface has been updated and improved.
+
+  * Quest Tracking areas or points of interest will now show on the mini-map,
+in addition to the World Map.
+
+  * The World Map now displays the expected character levels for each zone.
+
+**[General Bug Fixes][110]**
+
+  * _Coming soon._
+
+**Parche de Reino Público de Pruebas (RPP) de World of Warcraft 4.3.0**
+
+Las notas de todos los parches de World of Warcraft se pueden encontrar
+[aquí][111].
+
+Estas notas se irán actualizando durante el proceso de prueba. Hay que tener
+en cuenta que los cambios podrían no estar disponibles hasta que se lance una
+nueva versión de prueba.
 
 **_Índice_**
 
-  * Mazmorras y bandas
+_Haz clic en un enlace para saltar directamente a la sección correspondiente
+de las notas de parche._
 
-  * Interfaz de usuario
+  * [General][2]
 
-  * Apartado técnico
+  * [Logros][3]
 
-**_Mazmorras y bandas_**
+  * [Clases: General][4]
 
-  * Las Tierras de Fuego
+    * [![][87]][6] [Caballeros de la Muerte][6], [![][88]][8] [Druidas][8],
+[![][62]][10] [Cazadores][10], [![][64]][12] [Magos][12], [![][66]][14]
+[Paladines][14],
 
-    * Se ha aumentado la visibilidad de la facultad Llama aterradora de
-Ragnaros.
+    * [![][68]][16] [Sacerdotes][16], [![][70]][18] [Pícaros][18],
+[![][72]][20] [Chamanes][20], [![][74]][22] [Brujos][22], [![][76]][24]
+[Guerreros][24]
 
-    * Se ha aumentado el tamaño del área de golpe de Ragnaros durante la fase
-final del encuentro heroico.
+  * [Mazmorras y bandas][25]
 
-**_Interfaz de usuario_**
+  * [Razas][26]
 
-  * Ahora los marcos de banda deberían recordar si se mostraban o estaban
-ocultos en las siguientes conexiones.
+  * [Interfaz de usuario][27]
 
-**_Apartado técnico_**
+  * [Corrección de errores generales][28] (los errores que pertenecen
+específicamente a los apartados enumerados anteriormente aparecerán en esos
+apartados)
 
-  * Ahora se debería poder invitar a un grupo con ID real a los jugadores que
-usen varias cuentas.
+**General**
 
-  * El cliente ya no debería bloquearse algunas veces al intentar comprar
-objetos de arena de la temporada 10 (solo para Corea).
+  * Nuevo contenido de mazmorras y bandas
 
-**Parche 4.2.2 de World of Warcraft**
+    * La versión de prueba del Fin de los Días ya está disponible. Agradecemos
+vuestra participación y [comentarios][112].
 
-Se pueden consultar siempre las últimas notas de parche en:
-[http://us.battle.net/wow/es/game/patch-notes/4-2-0][4]
+    * Alizabal, el nuevo jefe del Bastión de Baradin, ya está disponible en la
+versión de prueba. Agradecemos vuestra participación y [comentarios][113].
+
+  * [Transfigurar][114]
+
+    * Esta nueva característica permite a los jugadores personalizar su
+equipamiento como nunca hasta la fecha. Encontraréis vendedores de
+transfigurar, Depósito del vacío y reforjar en la Plaza de la Catedral, en
+Ventormenta y en La Calle Mayor, en Orgrimmar. Los costes asociados a este
+servicio todavía no son definitivos.
+
+  * [Depósito del vacío][115]
+
+    * Además del banco, ahora los jugadores tendrán acceso a un nuevo sistema
+de "almacenamiento profundo", lo que permitirá a los personajes liberar
+espacio en sus bolsas apartando equipamiento codiciado. Encontraréis
+vendedores de transfigurar, Depósito del vacío y reforjar en la Plaza de la
+Catedral, en Ventormenta y en La Calle Mayor, en Orgrimmar. Los costes
+asociados a este servicio todavía no son definitivos.
+
+  * Reforjar
+
+    * Los anteriores vendedores de reforjar se han... retirado. Los etéreos
+han decidido encargarse de continuar con este servicio y se han unido a los
+proveedores de los servicios de transfigurar y de Depósito del vacío. Los
+encontraréis en la Plaza de la Catedral, en Ventormenta y en La Calle Mayor,
+en Orgrimmar.
+
+  * Flujo de misiones en Terrallende y Rasganorte
+
+    * La cantidad de experiencia necesaria para subir niveles desde el nivel
+71 hasta el 80 se ha reducido aproximadamente un 33%.
+
+    * Muchas misiones de grupo en Terrallende y Rasganorte se han recalibrado
+para permitir a los jugadores completarlas en solitario. Ya no aparecen
+etiquetadas como misiones de grupo.
+
+    * Los asignadores de misiones pertinentes se han trasladado a las
+mazmorras de Terrallende y Rasganorte. Ahora la mayoría de las misiones de
+mazmorra para estas zonas están disponibles en el interior de sus respectivas
+mazmorras.
+
+  * Los reinos norteamericanos (excepto los reinos de Brasil, América latina y
+Oceanía) ya no permiten letras con acentos ni en los nombres de personajes ni
+de hermandad. Los nombres de personajes y de hermandad con caracteres
+especiales que ya existían no se verán afectados por este cambio.
+
+**[Logros][116]**
+
+  * El logro Maestro del Valle de Alterac ya no requiere el logro de El rayo
+de Alterac.
+
+**[Clases: General][117]**
+
+  * Se han cambiado ligeramente todos los beneficios de banda y de grupo que
+otorgan a los miembros del grupo un aumento del poder de ataque de un 10%.
+Seguirán otorgando un aumento del poder de ataque a distancia de un 10%, pero
+ahora otorgan un aumento del poder de ataque cuerpo a cuerpo de un 20%.
+
+    * Poderío de abominación: Se ha aumentado el bonus de poder de ataque
+cuerpo a cuerpo de este beneficio de banda a un 10/20%, en vez de un 5/10%. El
+bonus de poder de ataque a distancia sigue siendo de un 5/10%.
+
+    * Bendición de poderío: Se ha aumentado el bonus de poder de ataque cuerpo
+a cuerpo de este beneficio de banda a un 20%, en vez de un 10%. El bonus de
+poder de ataque a distancia sigue siendo de un 10%.
+
+    * Pergamino de runas de poderío: Se ha aumentado el bonus de poder de
+ataque cuerpo a cuerpo de este consumible a un 16%, en vez de un 8%. El bonus
+de poder de ataque a distancia sigue siendo de un 8%.
+
+    * Aura de disparo certero: Se ha aumentado el bonus de poder de ataque
+cuerpo a cuerpo de este beneficio de banda a un 20%, en vez de un 10%. El
+bonus de poder de ataque a distancia sigue siendo de un 10%.
+
+    * Ira desatada: Se ha aumentado el bonus de poder de ataque cuerpo a
+cuerpo de este beneficio de banda a un 10/20%, en vez de un 5/10%. El bonus de
+poder de ataque a distancia sigue siendo de un 5/10%.
+
+  * Se ha rediseñado ligeramente Venganza para los guerreros Protección, los
+paladines Protección, los caballeros de la Muerte Sangre y los druidas Feral.
+Ya no aumenta despacio al inicio de un combate. En cambio, el primer ataque
+cuerpo a cuerpo que recibe el tanque genera una Venganza igual a un 33% del
+daño recibido con ese ataque. Además, dado que se actualiza de forma periódica
+durante la lucha, siempre se establece a un valor que coincide al menos con un
+33% del daño que recibe el tanque en los últimos 2 segundos. Seguirá
+aumentando desde ese punto a la velocidad que lo hacía previamente, seguirá
+disminuyendo si el tanque no recibe daño y seguirá sin poder superar un valor
+máximo basado en la salud y el aguante del tanque.
+
+  * Se ha aumentado la amenaza que generan las clases con modos de tanqueo
+activos a un 500% del daño infligido, en vez de un 300%. Esto se aplica a los
+druidas en Forma de oso, a los caballeros de la Muerte en Presencia de sangre,
+a los guerreros en Actitud defensiva y a los paladines en Furia recta.
+
+**[![][87]][118] [Caballeros de la Muerte][118]**
+
+  * Ahora Golpe letal sana al caballero de la Muerte aunque el ataque falle,
+se esquive o se pare. Como consecuencia de este cambio, Golpe letal ya no
+reembolsa su coste si no consigue alcanzar a su objetivo, ya que el caballero
+de la Muerte recibirá de todos modos el efecto de sanación.
+
+  * Especialización de talentos
+
+    * Sangre
+
+      * Se ha rediseñado Barrera de filos. Ahora reduce de forma pasiva el
+daño recibido.
+
+      * Ahora Escudo óseo tiene 6 cargas, en vez de 4.
+
+      * Ahora Veterano de la Tercera Guerra reduce 30 segundos el tiempo de
+reutilización de Brote.
+
+**[![][88]][119] [Druidas][119]**
+
+  * Cólera tiene un nuevo efecto de hechizo.
+
+  * Flagelo (felino) se ha reducido a un 340% de daño con arma, en vez de un
+415%.
+
+  * Especialización de talentos
+
+    * Restauración
+
+      * Se ha reducido un 20% la sanación de Crecimiento salvaje.
+
+  * Glifos
+
+    * El Glifo de Triturar se ha renombrado como Glifo de Flebotomía, y ahora
+también hace que Destrozar (felino) aumente la duración de Destripar, además
+de su funcionalidad de Triturar.
+
+    * Ahora el Glifo de Crecimiento salvaje también aumenta 2 segundos el
+tiempo de reutilización de Crecimiento salvaje.
+
+**[![][62]][120] [Cazadores][120]**
+
+  * _Próximamente._
+
+**[![][64]][121] [Magos][121]**
+
+  * _Próximamente._
+
+**[![][66]][122] [Paladines][122]**
+
+  * Ahora Radiancia Sagrada tiene un tiempo de lanzamiento de 3,0 segundos, no
+tiene tiempo de reutilización y requiere un jugador como objetivo. Ese
+objetivo estará imbuido de Radiancia Sagrada, lo que lo sanará al instante a
+él y al resto de los miembros del grupo en un radio de 10 metros, y continúa
+sanándolos en menor cantidad cada segundo durante 3 segundos.
+
+  * Sello de Perspicacia, al tener activa la Sentencia, ya no devuelve un 15%
+del maná base al paladín. Sentenciar Sello de Perspicacia todavía inflige
+daño, y los ataques cuerpo a cuerpo seguirán devolviendo un 4% del maná base.
+
+  * Ahora Sello de Verdad, al tener activa la Sentencia, se beneficia de un
+multiplicador de un 20% por acumulación de Censura, en vez de un 10%.
+
+  * Especialización de talentos
+
+    * Sagrado
+
+      * Ahora Claridad de Propósito también reduce el tiempo de lanzamiento de
+Radiancia Sagrada.
+
+      * Ahora Sanación iluminada (maestría) también se aplica a Radiancia
+Sagrada.
+
+      * Ahora Infusión de Luz aplica su reducción del tiempo de lanzamiento a
+Radiancia Sagrada al hacer un crítico con Choque Sagrado, además de sus
+efectos actuales.
+
+      * Ahora además de proporcionar celeridad, el efecto de Sentencias del
+puro aumenta un 10/20/30% la regeneración de maná con el espíritu durante 60
+segundos.
+
+      * Ahora La luz del alba afecta a 6 objetivos (efecto base), en vez de 5.
+
+      * Ahora Dechado de virtudes disminuye el tiempo de reutilización de
+Protección divina 15/30 segundos, en vez de 10/20 segundos.
+
+      * Velocidad de la Luz ya no se activa con Radiancia Sagrada y ya no
+disminuye el tiempo de reutilización de Radiancia Sagrada. Ahora Velocidad de
+la Luz solo se activa a partir de Protección divina.
+
+      * Ahora Torre de Radiancia, además de sus efectos actuales, también
+provoca que Radiancia Sagrada genere siempre 1 carga de Poder Sagrado.
+
+    * Reprensión
+
+      * Ahora Reprensión santificada aumenta un 2/4/6% la probabilidad de
+golpe crítico de Martillo de cólera, en vez de un 20/40/60%.
+
+      * Ahora la especialización en armas de dos manos (pasiva) aumenta un 25%
+el daño, en vez de un 20%.
+
+  * Glifos
+
+    * Ahora el Glifo de Luz del alba disminuye el número de objetivos a 4, en
+vez de aumentar los objetivos a 6, pero aumenta la sanación un 25%.
+
+**[![][68]][123] [Sacerdotes][123]**
+
+  * Ahora Himno divino afecta a 5 objetivos, en vez de 3.
+
+  * Especialización de talentos
+
+    * Disciplina
+
+      * Ahora Contrición tomará en cuenta el alcance de combate del enemigo
+seleccionado al calcular el alcance, lo que permitirá su utilización contra
+criaturas grandes como Ragnaros y Ala'kir.
+
+      * Ahora Égida divina tiene un nuevo efecto de hechizo.
+
+    * Sagrado
+
+      * Se ha reconstruido Espíritu redentor para solucionar algunos problemas
+de funcionalidad y para mejorar su respuesta. Por lo demás, Espíritu redentor
+permanece invariable.
+
+      * Se ha rediseñado Estado de ánimo y ahora se llama Voz celestial. Voz
+celestial aumenta la sanación realizada por Himno divino un 50/100%, y reduce
+el tiempo de reutilización de Himno divino 2,5/5 minutos.
+
+  * Glifos
+
+    * Ahora el Glifo de Círculo de sanación también aumenta un 20% el coste de
+maná de Círculo de sanación.
+
+**[![][70]][124] [Pícaros][124]**
+
+  * _Próximamente._
+
+**[![][72]][125] [Chamanes][125]**
+
+  * Arma Lengua de Fuego ya no aumenta el daño con hechizos. Ahora aumenta un
+5% todo el daño no físico que inflige el portador.
+
+  * Descarga de relámpagos tiene un nuevo efecto de hechizo.
+
+  * El tiempo de reutilización base de Corte de viento se ha ajustado a 15 s,
+en vez de 6 s.
+
+  * Especialización de talentos
+
+    * Elemental
+
+      * Llamada de las llamas ya no hace que Nova de Fuego aumente la duración
+de Choque de llamas.
+
+      * Se ha aumentado aproximadamente un 75% el daño de Terremoto.
+
+      * Ahora Furia elemental elimina el tiempo de reutilización de Cadena de
+relámpagos.
+
+      * Ahora Reverberación reduce 5/10 s el tiempo de reutilización de Corte
+de viento, en vez de 0,5/1 s.
+
+    * Mejora
+
+      * Ahora Latigazo de lava mejorado provoca que Latigazo de lava extienda
+el perjuicio de Choque de llamas del objetivo a un máximo de 4 objetivos
+cercanos. Los objetivos afectados por el control de masas o que ya han
+recibido un perjuicio de Choque de llamas del chamán no se ven afectados.
+
+      * Latigazo de lava mejorado ya no aumenta el daño base de Latigazo de
+lava un 15/30%. Este aumento se ha incluido en la habilidad base de Latigazo
+de lava.
+
+      * Se ha rediseñado Presura mental. En lugar de otorgar al chamán poder
+con hechizos, ahora Presura mental hace que los hechizos de los chamanes
+Mejora actúen como si el chamán tuviese un poder con hechizos equivalente a un
+55% del poder de ataque. Los hechizos de los chamanes Mejora ya no se
+benefician del poder con hechizos de otras fuentes.
+
+      * Ahora Arma vorágine también puede hacer proc con ataques cuerpo a
+cuerpo que se hayan absorbido por completo.
+
+    * Restauración
+
+      * Ahora Sanación ancestral hace que las sanaciones del chamán aumenten
+la salud máxima del objetivo un 5/10% de la cantidad sanada, hasta un máximo
+de un 10% de la salud máxima del objetivo, durante 15 segundos. Este efecto no
+se acumula si hay presentes varios chamanes Restauración, y no se aplica a las
+sanaciones con procs.
+
+      * Se ha aumentado un 50% el coeficiente de sanación periódica de Mareas
+Vivas. La sanación directa inicial no se ha modificado.
+
+**[![][74]][126] [Brujos][126]**
+
+  * Descarga de las Sombras tiene un nuevo efecto de hechizo.
+
+  * Especialización de talentos
+
+    * Demonología
+
+      * Ahora Conocimiento demoníaco otorga un bonus de daño de un 20%, en vez
+de un 15%.
+
+      * Ahora Maestro demonólogo otorga un bonus base de un 20% y un 2,5% por
+maestría, en vez de un 16% y un 2% por maestría.
+
+  * Corrección de errores
+
+    * Se ha corregido un error por el que el guardia apocalíptico y el
+infernal se beneficiaban de maestría en demonología mucho más de lo que se
+pretendía.
+
+**[![][76]][127] [Guerreros][127]**
+
+  * _Próximamente._
+
+**[Mazmorras y bandas][128]**
+
+  * Se han añadido nuevas entradas en la guía de mazmorras sobre las nuevas
+mazmorras: [Fin de los Días][129], [Pozo de la Eternidad][130], [Hora del
+Crepúsculo][131] y [Alma de Dragón][132].
+
+  * Los jugadores que usen el buscador de mazmorras para una mazmorra heroica
+aleatoria ya no tendrán el acceso limitado a esa estancia. Anteriormente, los
+jugadores que entraban en una estancia mediante la opción de mazmorra
+aleatoria ya no podían hacer cola para esa mazmorra ni entrar en la estancia
+manualmente a través del portal. Ahora los jugadores siempre deberían poder
+completar una mazmorra heroica específica una vez al día independientemente de
+las mazmorras aleatorias que hayan completado.
+
+  * Ruinas de Ahn'Qiraj
+
+    * Ahora los jefes en las Ruinas de Ahn'qiraj sueltan una llave del arca
+del escarabajo poco común que puede usarse para abrir las arcas del escarabajo
+que se encuentren en el interior. Estas llaves están ligadas a la zona de las
+Ruinas de Ahn'qiraj y tienen una duración de 17 horas. Este cambio se aplica
+también a las llaves de arcas del escarabajo grande que se usan para abrir
+arcas del Escarabajo grandes.
+
+  * Zul’Gurub
+
+    * Ahora los jugadores solo tienen que matar a 2 de los 4 jefes iniciales
+de mazmorra (sumo sacerdote Venoxis, señor sangriento Mandokir, suma
+sacerdotisa Kilnara y Zanzil) para enfrentarse a Jin'do el Sojuzgadioses.
+
+  * Zul’Aman
+
+    * Ahora los jugadores solo tienen que matar a 2 de los 4 avatares trol
+para poder enfrentarse al señor aojador Malacrass.
+
+**[Razas][133]**
+
+  * Ahora la facultad racial orca Furia sangrienta aumenta el poder con
+hechizos en vez de aumentar solo el daño con hechizos.
+
+**[Interfaz de usuario][134]**
+
+  * Ahora las zonas de interés arqueológico aparecerán en el minimapa además
+de en el mapa del mundo.
+
+  * Búsqueda en bolsas
+
+    * Se ha añadido un campo de búsqueda para permitir a los jugadores buscar
+objetos específicos en los inventarios de bolsa, banco, banco de hermandad y
+Depósito del vacío.
+
+  * Ahora las hermandades con líderes de hermandad inactivos podrán usurpar el
+liderazgo en condiciones específicas. Pronto dispondremos de más información a
+este respecto.
+
+  * Se ha actualizado y mejorado la interfaz de Reforjar.
+
+  * Ahora las zonas de seguimiento de misiones o los puntos de interés
+aparecerán en el minimapa además de en el mapa del mundo.
+
+  * Ahora el mapa del mundo muestra los niveles que se espera de los
+personajes para cada zona.
+
+  * Se ha añadido una casilla "promocionar a todos" que convertirá
+automáticamente a todos los miembros de la banda en ayudantes de banda. Esta
+casilla se encuentra en el marco de banda, en la pestaña "desplegable" del
+marco de unidad.
+
+  * Ahora hay comandos para los marcadores del mundo y de unidad.
+
+  * Se han añadido nuevos controles de rotación, zoom y vista panorámica que
+están disponibles en todas las ventanas con modelos de jugador en los marcos
+de la IU.
+
+  * Ahora los jugadores pueden olvidar la especialización de una profesión sin
+olvidar la profesión (ingeniería y alquimia).
+
+  * [Mac] Se ha añadido una función para poder usar la tecla Command en vez de
+la tecla Control en los teclados Apple. Se puede activar en las Opciones de
+Mac.
+
+  * [Mac] Se ha añadido una función para desactivar los accesos rápidos del
+teclado del sistema operativo de Mac para que no interfieran con los accesos
+rápidos del teclado en WoW. Se puede activar en las Opciones de Mac.
+
+**[Corrección de errores generales][135]**
+
+  * _Próximamente._
+
+**Parche de Reino Público de Pruebas (RPP) de World of Warcraft 4.3.0**
+
+Las notas de todos los parches de World of Warcraft se pueden encontrar
+[aquí][136].
+
+Visita nuestro [foro de Asistencia al cliente][137] para consultar una lista
+de errores conocidos.
 
 **_Índice_**
 
-  * Mazmorras y bandas
+_Haz clic en un enlace para saltar directamente a la sección correspondiente
+de las notas de parche._
 
-  * Interfaz de usuario
+  * [General][2]
 
-  * Apartado técnico
+  * [Logros][3]
 
-**_Mazmorras y bandas_**
+  * [Clases: General][4]
 
-  * Las Tierras de Fuego
+    * [![][5]][6] [Caballeros de la Muerte][6], [![][7]][8] [Druidas][8],
+[![][9]][10] [Cazadores][10], [![][11]][12] [Magos][12], [![][13]][14]
+[Paladines][14],
 
-    * Se ha aumentado la visibilidad de la facultad Llama aterradora de
-Ragnaros.
+    * [![][15]][16] [Sacerdotes][16], [![][17]][18] [Pícaros][18],
+[![][19]][20] [Chamanes][20], [![][21]][22] [Brujos][22], [![][23]][24]
+[Guerreros][24]
 
-    * Se ha aumentado el tamaño del área de golpe de Ragnaros durante la fase
-final del encuentro heroico.
+  * [Mazmorras y bandas][25]
 
-**_Interfaz de usuario_**
+  * [Razas][26]
 
-  * Ahora los marcos de banda deberían recordar si se mostraban o estaban
-ocultos en las siguientes conexiones.
+  * [Interfaz de usuario][27]
 
-**_Apartado técnico_**
+  * [Corrección de errores generales][28] (los errores que pertenecen
+específicamente a los apartados enumerados anteriormente aparecerán en esos
+apartados)
 
-  * Ahora se debería poder invitar a un grupo con ID real a los jugadores que
-usen varias cuentas.
+**General**
 
-  * El cliente ya no debería bloquearse algunas veces al intentar comprar
-objetos de arena de la temporada 10 (solo para Corea).
+  * [Transfigurar][138]
 
-**Mise à jour du client de World of Warcraft 4.2.2**
+    * Esta nueva característica permite a los jugadores personalizar su
+equipamiento como nunca hasta la fecha. Encontraréis vendedores de
+transfigurar, Depósito del vacío y reforjar en la Plaza de la Catedral, en
+Ventormenta y en La Calle Mayor, en Orgrimmar. Los costes asociados a este
+servicio todavía no son definitivos.
 
-Les dernières notes de mise à jour peuvent être consultées à l'adresse
-[http://eu.battle.net/wow/fr/game/patch-notes/][5]
+  * [Depósito del vacío][139]
+
+    * Además del banco, ahora los jugadores tendrán acceso a un nuevo sistema
+de "almacenamiento profundo", lo que permitirá a los personajes liberar
+espacio en sus bolsas apartando equipamiento codiciado. Encontraréis
+vendedores de transfigurar, Depósito del vacío y reforjar en la Plaza de la
+Catedral, en Ventormenta y en La Calle Mayor, en Orgrimmar. Los costes
+asociados a este servicio todavía no son definitivos.
+
+  * Reforjar
+
+    * Los anteriores vendedores de reforjar se han... retirado. Los etéreos
+han decidido encargarse de continuar con este servicio y se han unido a los
+proveedores de los servicios de transfigurar y de Depósito del vacío. Los
+encontraréis en la Plaza de la Catedral, en Ventormenta y en La Calle Mayor,
+en Orgrimmar.
+
+  * Flujo de misiones en Terrallende y Rasganorte
+
+    * La cantidad de experiencia necesaria para subir niveles desde el nivel
+71 hasta el 80 se ha reducido aproximadamente un 33%.
+
+    * Muchas misiones de grupo en Terrallende y Rasganorte se han recalibrado
+para permitir a los jugadores completarlas en solitario. Ya no aparecen
+etiquetadas como misiones de grupo.
+
+    * Los asignadores de misiones pertinentes se han trasladado a las
+mazmorras de Terrallende y Rasganorte. Ahora la mayoría de las misiones de
+mazmorra para estas zonas están disponibles en el interior de sus respectivas
+mazmorras.
+
+  * Los reinos norteamericanos (excepto los reinos de Brasil, América latina y
+Oceanía) ya no permiten letras con acentos ni en los nombres de personajes ni
+de hermandad. Los nombres de personajes y de hermandad con caracteres
+especiales que ya existían no se verán afectados por este cambio.
+
+**[Logros][140]**
+
+  * El logro Maestro del Valle de Alterac ya no requiere el logro de El rayo
+de Alterac.
+
+**[Clases: General][141]**
+
+  * Se han cambiado ligeramente todos los beneficios de banda y de grupo que
+otorgan a los miembros del grupo un aumento del poder de ataque de un 10%.
+Seguirán otorgando un aumento del poder de ataque a distancia de un 10%, pero
+ahora otorgan un aumento del poder de ataque cuerpo a cuerpo de un 20%.
+
+    * Poderío de abominación: Se ha aumentado el bonus de poder de ataque
+cuerpo a cuerpo de este beneficio de banda a un 10/20%, en vez de un 5/10%. El
+bonus de poder de ataque a distancia sigue siendo de un 5/10%.
+
+    * Bendición de poderío: Se ha aumentado el bonus de poder de ataque cuerpo
+a cuerpo de este beneficio de banda a un 20%, en vez de un 10%. El bonus de
+poder de ataque a distancia sigue siendo de un 10%.
+
+    * Pergamino de runas de poderío: Se ha aumentado el bonus de poder de
+ataque cuerpo a cuerpo de este consumible a un 16%, en vez de un 8%. El bonus
+de poder de ataque a distancia sigue siendo de un 8%.
+
+    * Aura de disparo certero: Se ha aumentado el bonus de poder de ataque
+cuerpo a cuerpo de este beneficio de banda a un 20%, en vez de un 10%. El
+bonus de poder de ataque a distancia sigue siendo de un 10%.
+
+    * Ira desatada: Se ha aumentado el bonus de poder de ataque cuerpo a
+cuerpo de este beneficio de banda a un 10/20%, en vez de un 5/10%. El bonus de
+poder de ataque a distancia sigue siendo de un 5/10%.
+
+  * Se ha rediseñado ligeramente Venganza para los guerreros Protección, los
+paladines Protección, los caballeros de la Muerte Sangre y los druidas Feral.
+Ya no aumenta despacio al inicio de un combate. En cambio, el primer ataque
+cuerpo a cuerpo que recibe el tanque genera una Venganza igual a un 33% del
+daño recibido con ese ataque. Además, dado que se actualiza de forma periódica
+durante la lucha, siempre se establece a un valor que coincide al menos con un
+33% del daño que recibe el tanque en los últimos 2 segundos. Seguirá
+aumentando desde ese punto a la velocidad que lo hacía previamente, seguirá
+disminuyendo si el tanque no recibe daño y seguirá sin poder superar un valor
+máximo basado en la salud y el aguante del tanque.
+
+  * Se ha aumentado la amenaza que generan las clases con modos de tanqueo
+activos a un 500% del daño infligido, en vez de un 300%. Esto se aplica a los
+druidas en Forma de oso, a los caballeros de la Muerte en Presencia de sangre,
+a los guerreros en Actitud defensiva y a los paladines en Furia recta.
+
+**[![][5]][142] [Caballeros de la Muerte][142]**
+
+  * Ahora Golpe letal sana al caballero de la Muerte aunque el ataque falle,
+se esquive o se pare. Como consecuencia de este cambio, Golpe letal ya no
+reembolsa su coste si no consigue alcanzar a su objetivo, ya que el caballero
+de la Muerte recibirá de todos modos el efecto de sanación.
+
+  * Especialización de talentos
+
+    * Sangre
+
+      * Se ha rediseñado Barrera de filos. Ahora reduce de forma pasiva el
+daño recibido.
+
+      * Ahora Escudo óseo tiene 6 cargas, en vez de 4.
+
+      * Ahora Veterano de la Tercera Guerra reduce 30 segundos el tiempo de
+reutilización de Brote.
+
+**[![][7]][143] [Druidas][143]**
+
+  * Cólera tiene un nuevo efecto de hechizo.
+
+  * Especialización de talentos
+
+    * Restauración
+
+      * Se ha reducido un 20% la sanación de Crecimiento salvaje.
+
+  * Glifos
+
+    * El Glifo de Triturar se ha renombrado como Glifo de Flebotomía, y ahora
+también hace que Destrozar (felino) aumente la duración de Destripar, además
+de su funcionalidad de Triturar.
+
+    * Ahora el Glifo de Crecimiento salvaje también aumenta 2 segundos el
+tiempo de reutilización de Crecimiento salvaje.
+
+**[![][9]][144] [Cazadores][144]**
+
+  * _Próximamente._
+
+**[![][11]][145] [Magos][145]**
+
+  * _Próximamente._
+
+**[![][13]][146] [Paladines][146]**
+
+  * Ahora Radiancia Sagrada tiene un tiempo de lanzamiento de 3,0 segundos, no
+tiene tiempo de reutilización y requiere un jugador como objetivo. Ese
+objetivo estará imbuido de Radiancia Sagrada, lo que lo sanará al instante a
+él y al resto de los miembros del grupo en un radio de 10 metros, y continúa
+sanándolos en menor cantidad cada segundo durante 3 segundos.
+
+  * Sello de Perspicacia, cuando el paladín está sentenciado, ya no devuelve
+un 15% del maná base al paladín. Sentenciar Sello de Perspicacia todavía
+inflige daño, y los ataques cuerpo a cuerpo seguirán devolviendo un 4% del
+maná base.
+
+  * Especialización de talentos
+
+    * Sagrado
+
+      * Ahora Claridad de Propósito también reduce el tiempo de lanzamiento de
+Radiancia Sagrada.
+
+      * Ahora Sanación iluminada (maestría) también se aplica a Radiancia
+Sagrada.
+
+      * Ahora Infusión de Luz aplica su reducción del tiempo de lanzamiento a
+Radiancia Sagrada al hacer un crítico con Choque Sagrado, además de sus
+efectos actuales.
+
+      * Ahora además de proporcionar celeridad, el efecto de Sentencias del
+puro aumenta un 10/20/30% la regeneración de maná con el espíritu durante 60
+segundos.
+
+      * Ahora La luz del alba afecta a 6 objetivos (efecto base), en vez de 5.
+
+      * Ahora Dechado de virtudes disminuye el tiempo de reutilización de
+Protección divina 15/30 segundos, en vez de 10/20 segundos.
+
+      * Velocidad de la Luz ya no se activa con Radiancia Sagrada y ya no
+disminuye el tiempo de reutilización de Radiancia Sagrada. Ahora Velocidad de
+la Luz solo se activa a partir de Protección divina.
+
+      * Ahora Torre de Radiancia, además de sus efectos actuales, también
+provoca que Radiancia Sagrada genere siempre 1 carga de Poder Sagrado.
+
+  * Glifos
+
+    * Ahora el Glifo de Luz del alba disminuye el número de objetivos a 4, en
+vez de aumentar los objetivos a 6, pero aumenta la sanación un 25%.
+
+**[![][15]][147] [Sacerdotes][147]**
+
+  * Ahora Himno divino afecta a 5 objetivos, en vez de 3.
+
+  * Especialización de talentos
+
+    * Disciplina
+
+      * Ahora Contrición tomará en cuenta el alcance de combate del enemigo
+seleccionado al calcular el alcance, lo que permitirá su utilización contra
+criaturas grandes como Ragnaros y Ala'kir.
+
+      * Ahora Égida divina tiene un nuevo efecto de hechizo.
+
+    * Sagrado
+
+      * Se ha reconstruido Espíritu redentor para solucionar algunos problemas
+de funcionalidad y para mejorar su respuesta. Por lo demás, Espíritu redentor
+permanece invariable.
+
+      * Se ha rediseñado Estado de ánimo y ahora se llama Voz celestial. Voz
+celestial aumenta la sanación realizada por Himno divino un 50/100%, y reduce
+el tiempo de reutilización de Himno divino 2,5/5 minutos.
+
+  * Glifos
+
+    * Ahora el Glifo de Círculo de sanación también aumenta un 20% el coste de
+maná de Círculo de sanación.
+
+**[![][17]][148] [Pícaros][148]**
+
+  * _Próximamente._
+
+**[![][19]][149] [Chamanes][149]**
+
+  * Arma Lengua de Fuego ya no aumenta el daño con hechizos. Ahora aumenta un
+5% todo el daño no físico que inflige el portador.
+
+  * Descarga de relámpagos tiene un nuevo efecto de hechizo.
+
+  * Ahora Corte de viento tiene un tiempo de reutilización base de 25
+segundos, en vez de 6 segundos.
+
+  * Especialización de talentos
+
+    * Elemental
+
+      * Llamada de las llamas ya no hace que Nova de Fuego aumente la duración
+de Choque de llamas.
+
+      * Se ha aumentado aproximadamente un 75% el daño de Terremoto.
+
+      * Ahora Furia elemental elimina el tiempo de reutilización de Cadena de
+relámpagos.
+
+      * Ahora Reverberación reduce el tiempo de reutilización de Corte de
+viento 10/20 segundos, en vez de 0,5/1 segundos.
+
+    * Mejora
+
+      * Ahora Latigazo de lava mejorado provoca que Latigazo de lava extienda
+el perjuicio de Choque de llamas del objetivo a un máximo de 4 objetivos
+cercanos. Los objetivos afectados por el control de masas o que ya han
+recibido un perjuicio de Choque de llamas del chamán no se ven afectados.
+
+      * Latigazo de lava mejorado ya no aumenta el daño base de Latigazo de
+lava un 15/30%. Este aumento se ha incluido en la habilidad base de Latigazo
+de lava.
+
+      * Se ha rediseñado Presura mental. En lugar de otorgar al chamán poder
+con hechizos, ahora Presura mental hace que los hechizos de los chamanes
+Mejora actúen como si el chamán tuviese un poder con hechizos equivalente a un
+55% del poder de ataque. Los hechizos de los chamanes Mejora ya no se
+benefician del poder con hechizos de otras fuentes.
+
+    * Restauración
+
+      * Ahora Sanación ancestral hace que las sanaciones del chamán aumenten
+la salud máxima del objetivo un 5/10% de la cantidad sanada, hasta un máximo
+de un 10% de la salud máxima del objetivo, durante 15 segundos. Este efecto no
+se acumula si hay presentes varios chamanes Restauración, y no se aplica a las
+sanaciones con procs.
+
+      * Se ha aumentado un 50% el coeficiente de sanación periódica de Mareas
+Vivas. La sanación directa inicial no se ha modificado.
+
+**[![][21]][150] [Brujos][150]**
+
+  * Descarga de las Sombras tiene un nuevo efecto de hechizo.
+
+**[![][23]][151] [Guerreros][151]**
+
+  * _Próximamente._
+
+**[Mazmorras y bandas][152]**
+
+  * Se han añadido nuevas entradas en la guía de mazmorras sobre las nuevas
+mazmorras: [Fin de los Días][153], [Pozo de la Eternidad][154], [Hora del
+Crepúsculo][155] y [Alma de Dragón][156].
+
+  * Ahora los jefes en las Ruinas de Ahn'qiraj sueltan una llave del arca del
+escarabajo poco común que puede usarse para abrir las arcas del escarabajo que
+se encuentren en el interior. Estas llaves están ligadas a la zona de las
+Ruinas de Ahn'qiraj y tienen una duración de 17 horas. Este cambio se aplica
+también a las llaves de arcas del escarabajo grande que se usan para abrir
+arcas del escarabajo grandes.
+
+**[Razas][157]**
+
+  * Ahora la facultad racial orca Furia sangrienta aumenta el poder con
+hechizos en vez de aumentar solo el daño con hechizos.
+
+**[Interfaz de usuario][158]**
+
+  * Ahora las zonas de interés arqueológico aparecerán en el minimapa además
+de en el mapa del mundo.
+
+  * Búsqueda en bolsas
+
+    * Se ha añadido un campo de búsqueda para permitir a los jugadores buscar
+objetos específicos en los inventarios de bolsa, banco, banco de hermandad y
+Depósito del vacío.
+
+  * Ahora las hermandades con líderes de hermandad inactivos podrán usurpar el
+liderazgo en condiciones específicas. Pronto dispondremos de más información a
+este respecto.
+
+  * Se ha actualizado y mejorado la interfaz de Reforjar.
+
+  * Ahora las zonas de seguimiento de misiones o los puntos de interés
+aparecerán en el minimapa además de en el mapa del mundo.
+
+  * Ahora el mapa del mundo muestra los niveles que se espera de los
+personajes para cada zona.
+
+**[Corrección de errores generales][159]**
+
+  * _Próximamente._
+
+**Mise à jour des royaumes publics de test de World of Warcraft 4.3.0**
+
+Toutes les notes de mise à jour de World of Warcraft peuvent être consultées
+[ici][160].
+
+Ces notes de mise à jour seront actualisées tout au long du processus de test.
+Veuillez noter que certaines modifications ne seront disponibles qu'à
+l'occasion de la sortie d'une nouvelle version des royaumes publics de test.
 
 **_Table des matières_**
 
-  * Donjons et raids
+_Cliquez sur un lien pour accéder directement au paragraphe correspondant dans
+les notes de mise à jour._
 
-  * Interface utilisateur
+  * [Général][2]
 
-  * Technique
+  * [Hauts faits][3]
 
-**_Donjons et raids_**
+  * [Classes : général][4]
 
-  * Terres de Feu
+    * [![][19]][20] [Chamans][20], [![][9]][10] [Chasseurs][10], [![][5]][6]
+[Chevaliers de la mort][6], [![][21]][22] [Démonistes][22], [![][7]][8]
+[Druides][8],
 
-    * La visibilité de la technique Flammeffroi de Ragnaros a été augmentée.
+    * [![][23]][24] [Guerriers][24], [![][11]][12] [Mages][12], [![][13]][14]
+[Paladins][14], [![][15]][16] [Prêtres][16], [![][17]][18] [Voleurs][18]
 
-    * Le masque de collision (hitbox) de Ragnaros en phase finale du combat en
-mode héroïque a été augmenté.
+  * [Donjons et raids][25]
 
-**_Interface utilisateur_**
+  * [Races][26]
 
-  * L'interface devrait maintenant garder en mémoire quelles fenêtres de raid
-afficher ou masquer lors des connexions suivantes.
+  * [Interface utilisateur][27]
 
-**_Technique_**
+  * [Corrections de bugs générales][28] (Les corrections se rapportant aux
+sujets listés ci-dessus se trouvent dans les sections concernées)
 
-  * Les joueurs utilisant plusieurs comptes devraient pouvoir être invités
-dans les groupes d'amis réels.
+**Général**
 
-**월드 오브 워크래프트 패치 4.2.2**
+  * Nouveau donjon et nouveau contenu de raid
+
+    * La Fin des temps est désormais disponible au test. Nous serions ravis de
+votre participation, et n’hésitez pas à nous faire part de vos impressions
+[ici][161].
+
+    * Le nouveau boss du bastion de Baradin, Alizabal, est désormais
+disponible au test. Nous serions ravis de votre participation, et n’hésitez
+pas à nous faire part de vos impressions [ici][162].
+
+  * [Transmogrification][163]
+
+    * Cette nouvelle fonctionnalité permet aux joueurs de personnaliser leur
+équipement comme jamais auparavant. La transmogrification, la chambre du Vide
+et les retoucheurs se trouvent sur la place de la Cathédrale de Hurlevent et à
+la Herse dans Orgrimmar. Les coûts associés à ce service ne sont pas encore
+définitifs.
+
+  * [Chambre du Vide][164]
+
+    * En plus de la banque, les joueurs auront accès à un nouveau système de
+stockage avancé, permettant aux personnages de libérer de l'espace dans leurs
+sacs en mettant de côté leur équipement. La transmogrification, la chambre du
+Vide et les retoucheurs se trouvent sur la place de la Cathédrale de Hurlevent
+et à la Herse dans Orgrimmar. Les coûts associés à ce service ne sont pas
+encore définitifs.
+
+  * Retouche
+
+    * Les précédents retoucheurs ont été... mis à la retraite. Les éthériens
+ont repris les affaires à leur compte et ont rejoint les fournisseurs des
+services de transmogrification et de chambre du Vide. Les retoucheurs se
+trouvent sur la place de la Cathédrale de Hurlevent et à la Herse dans
+Orgrimmar.
+
+  * Progression des quêtes en Outreterre et au Norfendre
+
+    * Le montant d'expérience nécessaire pour obtenir les niveaux 71 à 80 a
+été réduit d'environ 33%.
+
+    * De nombreuses quêtes de groupe en Outreterre et au Norfendre ont été
+ajustées pour permettre aux joueurs de les accomplir seuls. Ces quêtes ne sont
+plus indiquées comme quêtes de groupe.
+
+    * Les donneurs de quêtes concernés ont été déplacés dans les donjons de
+l'Outreterre et du Norfendre. La majorité des quêtes de donjon de ces régions
+sont maintenant disponibles dans leurs donjons respectifs.
+
+  * Les royaumes nord-américains (à l'exception des royaumes brésiliens,
+océaniques et d'Amérique latine) n'acceptent plus les caractères accentués
+dans les noms de personnage et de guilde. Les personnages et guildes déjà
+existants ne seront pas affectés par cette modification.
+
+**[Hauts faits][165]**
+
+  * Le haut fait Maîtrise de la vallée d'Alterac ne requiert plus la
+validation du haut fait L'Alterac express.
+
+**[Classes : général][166]**
+
+  * Toutes les améliorations de groupe et de raid qui octroient aux membres du
+groupe une augmentation de 10% de la puissance d'attaque ont été légèrement
+modifiées. Elles octroient toujours un bonus de 10% à la puissance d'attaque à
+distance, mais augmentent désormais la puissance d'attaque en mêlée de 20%.
+
+    * Puissance de l'abomination : le bonus à la puissance d'attaque en mêlée
+de cette amélioration de raid a été augmenté à 10/20%, au lieu de 5/10%. Le
+bonus à la puissance d'attaque à distance reste de 5/10%.
+
+    * Bénédiction de puissance : le bonus à la puissance d'attaque en mêlée de
+cette amélioration de raid a été augmenté à 20%, au lieu de 10%. Le bonus à la
+puissance d'attaque à distance reste de 10%.
+
+    * Parchemin runique de puissance : le bonus à la puissance d'attaque en
+mêlée de cet objet consommable a été augmenté à 16%, au lieu de 8%. Le bonus à
+la puissance d'attaque à distance reste de 8%.
+
+    * Aura de précision : le bonus à la puissance d'attaque en mêlée de cette
+amélioration de raid a été augmenté à 20%, au lieu de 10%. Le bonus à la
+puissance d'attaque à distance reste de 10%.
+
+    * Rage libérée : le bonus à la puissance d'attaque en mêlée de cette
+amélioration de raid a été augmenté à 10/20%, au lieu de 5/10%. Le bonus à la
+puissance d'attaque à distance reste de 5/10%.
+
+  * Légère refonte de Vengeance pour les guerriers et paladins spécialisés
+protection, les chevaliers de la mort spécialisés sang et les druides
+farouches : cette technique n'accroît plus aussi lentement en début de combat.
+La première attaque en mêlée subie par le tank génère de la Vengeance à
+hauteur de 33% des dégâts infligés par l'attaque subie. De plus, Vengeance
+s'ajuste régulièrement au cours du combat afin que la technique soit toujours
+égale à au moins 33% des dégâts subis par le tank au cours des 2 dernières
+secondes. La valeur continue ensuite d'augmenter à la même vitesse
+qu'auparavant, diminue toujours lorsque le tank ne subit pas de dégâts et ne
+peut toujours pas dépasser un montant maximum dépendant des points de vie et
+de l'Endurance du tank.
+
+  * La menace générée par les classes en mode de tanking actif a été augmentée
+à 500% des dégâts infligés, au lieu de 300%. Cela s'applique aux druides en
+Forme d'ours, aux chevaliers de la mort en Présence de sang, aux guerriers en
+Posture défensive et aux paladins ayant activé Fureur vertueuse.
+
+**[![][19]][167] [Chamans][167]**
+
+  * Arme Langue de feu n'augmente plus les dégâts des sorts. Cette
+amélioration augmente désormais de 5% les dégâts non physiques infligés par le
+porteur.
+
+  * Eclair dispose d'un nouvel effet visuel.
+
+  * Le temps de recharge de base de Cisaille de vent a été ajusté, et passe de
+6 secondes à 15 secondes.
+
+  * Spécialisations des talents
+
+  * Combat élémentaire
+
+    * Appel des flammes ne permet plus à Nova de feu d'augmenter la durée de
+Horion de flammes.
+
+    * Les dégâts de Séisme ont été augmentés d'environ 75%.
+
+    * Fureur élémentaire supprime le temps de recharge de Chaîne d'éclairs.
+
+    * Réverbération réduit le temps de recharge de Cisaille de vent de 5/10
+secondes, au lieu de 0,5/1 seconde.
+
+  * Amélioration
+
+    * Fouet de lave amélioré permet à Fouet de lave de transmettre
+l'affaiblissement Horion de flammes d'une cible à 4 cibles proches au maximum.
+Les cibles contrôlées et celles ayant déjà un affaiblissement Horion de
+flammes posé par le chaman ne peuvent pas être affectées.
+
+    * Fouet de lave amélioré n'augmente plus les dégâts de base de Fouet de
+lave de 15/30%. Cette augmentation a été intégrée dans la compétence de base
+Fouet de lave.
+
+    * Refonte de Rapidité mentale : au lieu d'octroyer de la puissance des
+sorts au chaman, Rapidité mentale permet maintenant aux sorts du chaman
+spécialisé en amélioration de se comporter comme si la puissance des sorts du
+chaman était équivalente à 55% de sa puissance d'attaque. Les sorts du chaman
+amélioration ne bénéficient plus de la puissance des sorts d'autres sources.
+
+    * Les attaques en mêlée entièrement absorbées déclenchent aussi désormais
+Arme du Maelström.
+
+  * Restauration
+
+    * Guérison ancestrale permet aux soins du chaman d'augmenter les points de
+vie maximums de la cible de 5/10% du montant soigné, jusqu'à un maximum de 10%
+des points de vie maximums de la cible, pendant 15 secondes. Cet effet ne se
+cumule pas si plusieurs chamans restauration sont présents et ne s'applique
+pas aux soins déclenchés aléatoirement.
+
+    * Le coefficient des soins périodiques de Remous a été augmenté de 50%. Le
+sort de soins directs initial n'a pas changé.
+
+**[![][9]][168] [Chasseurs][168]**
+
+  * _À venir._
+
+**[![][5]][169] [Chevaliers de la mort][169]**
+
+  * Frappe de mort soigne désormais le chevalier de la mort, que l'attaque
+touche ou non, qu'elle soit parée ou esquivée. En conséquence, Frappe de mort
+ne rend plus son coût en rune si l'attaque ne touche pas la cible, puisque le
+chevalier de la mort bénéficie toujours de l'effet de soin.
+
+  * Spécialisations des talents
+
+  * Sang
+
+    * Refonte de Barrière de lames : les dégâts subis sont maintenant réduits
+de façon passive.
+
+    * Bouclier d'os dispose désormais de 6 charges, au lieu de 4.
+
+    * Vétéran de la Troisième guerre réduit désormais le temps de recharge de
+Poussée de fièvre de 30 secondes.
+
+**[![][21]][170] [Démonistes][170]**
+
+  * Trait de l'ombre dispose d'un nouvel effet visuel.
+
+  * Spécialisations des talents
+
+    * Démonologie
+
+      * Connaissance démoniaque confère désormais un bonus aux dégâts de 20%,
+au lieu de 15%.
+
+      * Maître démonologue confère désormais un bonus de base de 20% et de
+2,5% par point de maîtrise, au lieu de 16% et 2% par point de maîtrise.
+
+  * Corrections de bugs
+
+    * Correction d'un bug lors duquel Maîtrise de la démonologie augmentait de
+façon exagérée les capacités du Garde funeste et de l'Infernal.
+
+**[![][7]][171] [Druides][171]**
+
+  * Colère dispose d'un nouvel effet visuel.
+
+  * Balayage (Félin) est passé de 415% à 340% des dégâts de l'arme.
+
+  * Spécialisations des talents
+
+    * Restauration
+
+      * Les soins de Croissance sauvage ont été réduits de 20%.
+
+  * Glyphes
+
+    * Glyphe de lambeau a été renommé Glyphe de carnage et permet également à
+Mutilation (Félin) d'augmenter la durée de Déchirure, tout comme le permet
+déjà la technique Lambeau.
+
+    * Glyphe de croissance sauvage augmente également le temps de recharge de
+Croissance sauvage de 2 secondes.
+
+**[![][23]][172] [Guerriers][172]**
+
+  * _À venir._
+
+**[![][11]][173] [Mages][173]**
+
+  * _À venir._
+
+**[![][13]][174] [Paladins][174]**
+
+  * Radiance sacrée a maintenant un temps d'incantation de 3 secondes, pas de
+temps de recharge et requiert d'avoir pour cible un personnage joueur. La
+cible est envahie par la Radiance sacrée, qui la soigne instantanément, ainsi
+que tous les membres du groupe à moins de 10 mètres. Les personnages joueurs
+sont également soignés d'un plus faible montant de points de vie chaque
+seconde pendant 3 secondes.
+
+  * Lorsque Jugement touche un personnage affecté par Sceau de clairvoyance,
+le paladin ne récupère plus 15% du montant de son mana de base. Juger le Sceau
+de clairvoyance inflige toujours des dégâts et les attaques en mêlée rendent
+toujours 4% de son mana de base au paladin.
+
+  * Lorsque Sceau de vérité est appliqué par un Jugement, il bénéficie
+désormais d'un multiplicateur de 20% par charge de Blâme, au lieu de 10%.
+
+  * Spécialisations des talents
+
+    * Sacré
+
+      * Clarté de l'intention réduit également le temps d'incantation de
+Radiance sacrée.
+
+      * La compétence Soins illuminés (maîtrise) s'applique également à
+Radiance sacrée.
+
+      * Imprégnation de lumière applique la réduction du temps d'incantation
+obtenue par les effets critiques de Horion sacré à Radiance sacrée, en plus de
+ses effets précédents.
+
+      * En plus d'octroyer de la hâte, l'effet de Jugements des purs augmente
+également la régénération du mana par l'Esprit de 10/20/30% pendant 60
+secondes.
+
+      * Par défaut, Lumière de l'aube affecte désormais 6 cibles, au lieu de
+5.
+
+      * Parangon de vertu réduit désormais le temps de recharge de Protection
+divine de 15/30 secondes, au lieu de 10/20 secondes.
+
+      * Vitesse de la Lumière n'est plus déclenché par Radiance sacrée et ne
+réduit plus le temps de recharge de Radiance sacrée. Vitesse de la Lumière
+n'est plus déclenché que par Protection divine.
+
+      * Tour de radiance, en plus de ses effets précédents, permet également à
+Radiance sacrée de générer une charge de puissance sacrée à chaque fois.
+
+    * Vindicte
+
+      * Vindicte sanctifiée augmente désormais les chances de coups critiques
+de Marteau de courroux de 2/4/6%, au lieu de 20/40/60%.
+
+      * Spécialisation Arme 2M (Passif) augmente désormais les dégâts de 25%,
+au lieu de 20%.
+
+  * Glyphes
+
+    * Glyphe de lumière de l'aube réduit le nombre de cibles à 4, au lieu de
+l'augmenter à 6, mais augmente les soins prodigués de 25%.
+
+**[![][15]][175] [Prêtres][175]**
+
+  * Hymne divin affecte désormais 5 cibles, au lieu de 3.
+
+  * Spécialisations des talents
+
+    * Discipline
+
+      * Expiation prend désormais en compte la portée de frappe de la cible
+ennemie pour calculer la portée appropriée, ce qui permet de l'utiliser sur
+des créatures imposantes comme Ragnaros et Al'akir.
+
+      * Egide divine dispose d'un nouvel effet visuel.
+
+    * Sacré
+
+      * Des ajustements ont été effectués sur Esprit de rédemption pour
+résoudre quelques soucis de fonctionnalité et rendre ce sort plus réactif.
+Outre ces modifications, Esprit de rédemption ne change pas.
+
+      * Refonte d'Etat d'esprit qui s'appelle désormais Voix céleste. Voix
+céleste augmente les soins prodigués par Hymne divin de 50/100% et réduit le
+temps de recharge d'Hymne divin de 2,5/5 minutes.
+
+  * Glyphes
+
+    * Glyphe de cercle de soins augmente également le coût en mana de Cercle
+de soins de 20%.
+
+**[![][17]][176] [Voleurs][176]**
+
+  * _À venir._
+
+**[Donjons et raids][177]**
+
+  * De nouvelles sections ont été ajoutées au codex des donjons pour les
+nouveaux donjons : [la Fin des temps][178], [le Puits d'Éternité][179],
+[l'Heure du Crépuscule][180] et [l'Âme des dragons][181].
+
+  * Les joueurs qui utilisent l'outil Donjons pour accéder à un donjon
+héroïque aléatoire ne seront plus liés à cette instance. Auparavant, les
+joueurs qui entraient dans une instance par l'intermédiaire de l'option Donjon
+aléatoire ne pouvaient pas s'inscrire en file d'attente pour ce donjon ou
+entrer dans l'instance manuellement par le portail. Les joueurs devraient
+désormais pouvoir terminer un donjon héroïque précis une fois par jour, quels
+que soient les donjons aléatoires terminés.
+
+  * Ruines d'Ahn'qiraj
+
+    * Les boss des ruines d'Ahn'qiraj lâchent en butin une clé de coffre de
+scarabées qui peut être utilisée pour ouvrir les coffres de scarabées trouvés
+dans la zone. Ces clés sont liées aux ruines d'Ahn'Qiraj et s'autodétruisent
+au bout de 17 heures. Cette modification s'applique également aux clés de
+coffre de scarabées supérieur, qui permettent d'ouvrir les coffres de
+scarabées supérieurs.
+
+  * Zul’Gurub
+
+    * Les joueurs ne doivent désormais tuer que deux des quatre bosses
+initiaux du donjon (Le grand prêtre Venoxis, le seigneur sanglant Mandokir, la
+grande prêtresse Kilnara, et Zanzil) pour pouvoir affronter Jin'do le Briseur
+de dieux.
+
+  * Zul’Aman
+
+    * Les joueurs ne doivent désormais tuer que deux des quatre avatars trolls
+avant de pouvoir affronter le seigneur des maléfices Malacrass.
+
+**[Races][182]**
+
+  * Le talent racial Fureur sanguinaire augmente désormais la puissance des
+sorts plutôt qu'uniquement les dégâts des sorts.
+
+**[Interface utilisateur][183]**
+
+  * Les lieux d'intérêt archéologiques sont désormais visibles sur la
+minicarte, en plus de la carte du monde.
+
+  * Recherche dans les sacs
+
+    * Un champ de recherche a été ajouté afin de permettre aux joueurs de
+rechercher des objets spécifiques dans leurs sacs, en banque (personnelle et
+de guilde) et dans la chambre du Vide.
+
+  * Les membres d'une guilde dont le chef est inactif peuvent le remplacer
+sous certaines conditions. Plus d'informations à venir à ce sujet.
+
+  * L'interface de la retouche a été mise à jour et améliorée.
+
+  * Les zones et les points d'intérêt de suivi de quête sont désormais
+visibles sur la minicarte, en plus de la carte du monde.
+
+  * La carte du monde affiche désormais pour chaque région la tranche de
+niveaux attendue pour l'explorer.
+
+  * Ajout d'une case à cocher « promotions générales » qui promouvra
+automatiquement tous les membres de raid assistants de raid. Cette case à
+cocher se trouve dans la fenêtre de raid et l'option « extraire » du portrait
+d'unité.
+
+  * Il existe désormais des commandes pour les marqueurs de terrain et les
+marqueurs d'unités.
+
+  * Ajout d'une nouvelle rotation et d'un nouveau zoom. De plus, de nouvelles
+commandes panoramiques sont désormais disponibles dans toutes les fenêtres
+avec les profils des joueurs dans l'interface utilisateur.
+
+  * Les joueurs peuvent désormais oublier une spécialisation de métier sans
+oublier le métier (Ingénierie et alchimie).
+
+  * [Mac] Ajout d'une fonctionnalité permettant d'utiliser la touche commande
+(Cmd) au lieu de la touche contrôle (Ctrl) sur les clavier Apple. Cette option
+peut être activée via les options Mac.
+
+  * [Mac] Ajout d'une fonctionnalité permettant de désactiver les raccourcis
+clavier de Mac OS pour qu'ils n'interfèrent pas avec les raccourcis clavier de
+WoW. Cette option peut être activée dans les options Mac.
+
+**[Corrections de bugs générales][52]**
+
+  * _À venir._
+
+**월드 오브 워크래프트 공개 테스트 서버 패치 4.3.0**
 
 월드 오브 워크래프트의 모든 패치 노트는 다음 경로에서 살펴보실 수 있습니다. [http://kr.battle.net/wow/ko/game
-/patch-notes/ ][6]
+/patch-notes/][184]
+
+이 패치노트는 테스트 과정을 거쳐 업데이트됩니다. 몇 가지 변경 사항은 공개 테스트용 빌드가 새로 업데이트되기 전까지는 적용되지 않을 수도
+있습니다.
 
 **_목차_**
 
-  * 던전 및 공격대
+_목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니다._
 
-  * 사용자 인터페이스
+  * [일반][2]
 
-  * 기술적 문제
+  * [업적][3]
 
-**_던전 및 공격대_**
+  * [직업: 일반][4]
 
-  * 불의 땅
+    * [![][185]][6] [죽음의 기사][6], [![][186]][8] [드루이드][8], [![][187]][10]
+[사냥꾼][10], [![][188]][12] [마법사][12], [![][189]][14] [성기사][14],
 
-    * 라그나로스가 사용하는 공포의 불길이 더 명확하게 보입니다.
+    * [![][190]][16] [사제][16], [![][191]][18] [도적][18], [![][192]][20]
+[주술사][20], [![][193]][22] [흑마법사][22], [![][194]][24] [전사][24]
 
-    * 영웅 난이도로 라그나로스와 싸울 때, 마지막 단계에서 라그나로스에게 타격을 줄 수 있는 범위가 더 커졌습니다.
+  * [던전 및 공격대][25]
 
-**_사용자 인터페이스_**
+  * [종족][26]
 
-  * 다시 로그인하더라도 공격대창의 숨기기 설정이 초기화되지 않습니다.
+  * [사용자 인터페이스][27]
 
-**_기술적 문제_**
+  * [일반 버그 수정][28] (위에 나열된 항목과 관련된 수정 사항은 각 항목 안에 설명되어 있습니다.)
 
-  * 여러 계정을 사용하는 플레이어도 실명 ID 파티원으로 초대할 수 있습니다.
+**일반**
 
-  * 투기장 10 시즌의 최소 정복 점수/명예 점수를 얻지 못한 채 아이템 구매 시도 시 클라이언트가 비정상적으로 종료되는 오류를
-수정했습니다.
+  * 새로운 던전 및 공격대 콘텐츠
 
-**Обновление клиента игры World of Warcraft до версии 4.2.2**
+    * 이제 시간의 끝을 테스트할 수 있습니다. 테스트에 참여하신 후 [이곳][195]에 의견을 남겨주시면 감사하겠습니다.
 
-Описания последних обновлений игрового сервера всегда можно найти на странице
-[http://eu.battle.net/wow/ru/game/patch-notes/][7]
+    * 바라딘 요새의 새로운 우두머리 몬스터인 알리자발을 테스트할 수 있습니다. 테스트에 참여하신 후 [이곳][195]에 의견을
+남겨주시면 감사하겠습니다.
+
+  * [형상변환][196]
+
+    * 이제껏 볼 수 없었던 방법으로 플레이어가 자신의 장비를 변환시킬 수 있는 기능입니다. 스톰윈드의 대성당 광장과 오그리마의
+골목길에서 형상변환사, 공허 보관사, 재연마사를 만날 수 있습니다. 이 기능을 사용하는 데 필요한 비용은 아직 결정되지 않았습니다.
+
+  * [공허 보관소][197]
+
+    * 기존의 은행과 더불어, 플레이어가 귀중한 장비를 맡겨 놓고 가방의 공간을 확보할 수 있는 또 다른 "저장 전용" 시스템이
+생깁니다. 스톰윈드의 대성당 광장과 오그리마의 골목길에서 형상변환사, 공허 보관사, 재연마사를 만날 수 있습니다. 이 기능을 사용하는 데
+필요한 비용은 아직 결정되지 않았습니다.
+
+  * 재연마
+
+    * 기존의 재연마사들은... 은퇴하였습니다. 에테리얼들이 재연마 사업에 뛰어들기로 결정하고, 형상변환과 공허 보관소 서비스를 함께
+제공하기 시작하였습니다. 스톰윈드의 대성당 광장과 오그리마의 골목길에서 이 전문가들을 만날 수 있습니다.
+
+  * 아웃랜드 및 노스렌드의 퀘스트 흐름
+
+    * 71 레벨에서 80 레벨이 되는 데 필요한 경험치가 약 33% 감소하였습니다.
+
+    * 아웃랜드와 노스렌드의 여러 파티 퀘스트들이 플레이어 혼자서도 진행할 수 있게 재조정되었습니다. 재조정된 퀘스트는 "파티" 퀘스트로
+표시되지 않습니다.
+
+    * 퀘스트 NPC들이 자신과 관련된 아웃랜드와 노스렌드 던전으로 이동하였습니다. 이 지역 던전 퀘스트의 대부분을 각 던전 안에서
+시작할 수 있습니다.
+
+  * 북미 서버(브라질, 중남미, 태평양 서버 제외)에서 캐릭터나 길드 이름에 억양 표시가 포함된 문자를 사용할 수 없습니다. 기존
+캐릭터나 길드 이름에 포함되어 있던 특수 문자는 영향을 받지 않습니다.
+
+**[업적][198]**
+
+  * "알터랙 계곡의 지배자" 업적 요건에서 "알터랙 급습"이 제외되었습니다.
+
+**[직업: 일반][199]**
+
+  * 파티원과 공격대원의 전투력을 10%만큼 증가시켜주는 모든 강화 효과가 약간 변경되었습니다. 원거리 전투력은 전과 같이 10%
+증가하지만, 근접 전투력은 20% 증가합니다.
+
+    * 누더기골렘의 힘: 증가하는 근접 전투력이 5/10%에서 10/20%로 향상되었습니다. 원거리 전투력은 변함없이 5/10%만큼
+증가합니다.
+
+    * 힘의 축복: 증가하는 근접 전투력이 10%에서 20%로 향상되었습니다. 원거리 전투력은 변함없이 10%만큼 증가합니다.
+
+    * 힘의 룬두루마리: 증가하는 근접 전투력이 8%에서 16%로 향상되었습니다. 원거리 전투력은 변함없이 8%만큼 증가합니다.
+
+    * 정조준 오라: 증가하는 근접 전투력이 10%에서 20%로 향상되었습니다. 원거리 전투력은 변함없이 10%만큼 증가합니다.
+
+    * 해방된 분노: 증가하는 근접 전투력이 5/10%에서 10/20%로 향상되었습니다. 원거리 전투력은 변함없이 5/10%만큼
+증가합니다.
+
+  * 방어 전사, 보호 성기사, 혈기 죽음의 기사, 야성 드루이드의 복수심이 재설계되어, 전과는 약간 달라졌습니다. 전투를 시작한 후
+서서히 증가하지 않고, 처음 근접 공격을 받았을 때 받은 피해의 33%만큼 복수심이 생성됩니다. 또한, 전투 중 주기적으로 복수심이 쌓이므로
+적어도 최근 2초 동안 받은 피해의 33%만큼을 유지합니다. 예전과 같은 비율로 효과가 증가하며, 공격을 받지 않을 때는 효과가 약해집니다.
+최대 생명력과 체력의 일정 비율을 초과하지 않는 점도 기존 효과와 같습니다.
+
+  * 방어 전담 역할에 특화된 상태에서 얻을 수 있는 위협 수준이 입힌 피해량의 300%에서 500%로 증가하였습니다. 곰 변신 상태의
+드루이드, 혈기의 형상 상태의 죽음의 기사, 방어 태세의 전사, 정의의 격노 상태의 성기사에게 해당됩니다.
+
+**[![][185]][200] [죽음의 기사][200]**
+
+  * 죽음의 일격이 빗나가거나, 회피되거나, 막혔을 때에도 죽음의 기사의 생명력이 회복됩니다. 이에 따라 죽음의 일격이 대상에 적중하지
+않아도 죽음의 기사는 치유 효과를 받을 수 있으며, 소비한 룬을 돌려받지 못합니다.
+
+  * 특성 전문화
+
+    * 혈기
+
+      * 칼날 보호막이 재설계되어, 받는 피해량을 줄여주는 지속효과가 되었습니다.
+
+      * 뼈의 보호막의 유효 횟수가 4번에서 6번으로 증가하였습니다.
+
+      * 3차 대전쟁의 역전용사가 돌발 열병의 재사용 대기시간을 30초만큼 감소시켜 줍니다.
+
+**[![][186]][201] [드루이드][201]**
+
+  * 천벌의 시각 효과가 새로워졌습니다.
+
+  * 표범 변신 상태에서 사용하는 휘둘러치기의 공격력이 무기 공격력의 415%에서 340%로 감소하였습니다.
+
+  * 특성 전문화
+
+    * 회복
+
+      * 급속 성장의 치유 효과가 20%만큼 감소하였습니다.
+
+  * 문양
+
+    * 문양: 칼날 발톱이 문양: 유혈로 변경되었습니다. 기존 문양의 효과에 더하여, 짓이기기 (표범) 사용 시에도 도려내기의 지속시간이
+초기화됩니다.
+
+    * 문양: 급속 성장을 새기면 급속 성장의 재사용 대기시간이 2초만큼 증가합니다.
+
+**[![][187]][202] [사냥꾼][202]**
+
+  * _곧 공개됩니다._
+
+**[![][188]][203] [마법사][203]**
+
+  * _곧 공개됩니다._
+
+**[![][189]][204] [성기사][204]**
+
+  * 신성한 광휘가 즉시 시전 주문에서 시전 시간 3초가 필요하게 변경됩니다. 또, 아군을 대상으로 지정해야 시전할 수 있으며, 재사용
+대기시간은 없습니다. 지정한 대상은 신성한 광휘에 휩싸여 자신과 주변 10미터 이내의 모든 파티원을 즉시 치유하며, 이후 3초 동안 1초마다
+계속해서 조금씩 치유합니다.
+
+  * 통찰의 문장 사용 시 심판을 사용하면 성기사의 기본 마나의 15%를 회복하던 기능이 사라졌습니다. 심판 사용 시 피해를 입히고, 근접
+공격 시 기본 마나의 4%를 회복하는 기능은 그대로 유지됩니다.
+
+  * 진실의 문장이 활성화되어 있을 때 불신임 효과 하나당 증가하는 심판 피해가 10%에서 20%로 증가하였습니다.
+
+  * 특성
+
+    * 신성
+
+      * 명료한 목적이 신성한 광휘의 시전 시간도 감소시킵니다.
+
+      * 빛나는 치유(특화도)가 신성한 광휘에도 적용됩니다.
+
+      * 빛 주입 특성을 익혔을 때, 신성 충격이 극대화 효과를 발휘하면 기존 주문들과 함께 신성한 광휘의 시전 시간도 단축됩니다.
+
+      * 순결의 심판 사용 시 가속 증가 효과 외에도 60초 동안 정신력으로 인한 마나 회복 속도가 10/20/30% 증가합니다.
+
+      * 여명의 빛이 치유하는 대상이 5명에서 6명으로 증가합니다.
+
+      * 영적인 집중력이 신의 가호의 재사용 대기시간을 기존의 10/20초보다 더 긴 15/30초만큼 감소시킵니다.
+
+      * 빛의 속도는 이제 신성한 광휘에 의해 발동되지 않고 신성한 광휘의 재사용 대시기간도 줄여주지 않습니다. 빛의 속도는 신의
+가호에 의해서만 발동됩니다.
+
+      * 광휘의 탑이 현재 효과 외에 신성한 광휘를 시전할 때 신성한 힘 효과 1개를 얻게 합니다.
+
+    * 징벌
+
+      * 축성의 분노로 증가하는 천벌의 망치의 치명타율이 20/40/60%에서 2/4/6%로 감소했습니다.
+
+      * 양손 무기류 전문화(지속효과)의 공격력이 20%에서 25%로 증가하였습니다.
+
+    * 문양
+
+      * 문양: 여명의 빛 사용 시 여명의 빛이 치유하는 대상이 6명에서 4명으로 감소하지만, 치유 효과가 25% 증가합니다.
+
+**[![][190]][205] [사제][205]**
+
+    * 천상의 찬가가 치유하는 대상이 3명에서 5명으로 증가합니다.
+
+    * 특성
+
+      * 수양
+
+        * 속죄는 이제 적 대상의 근접 전투 범위에 따라 적정 거리를 계산하여 치유 합니다. 알아키르나 라그나로스와 같이 크기가 큰
+적과 싸울때도 치유 효과가 적용됩니다.
+
+        * 신의 보호의 주문 효과가 변경되었습니다.
+
+      * 신성
+
+        * 구원의 영혼이 다시 구현되어 작동 오류가 해결되었으며 반응 속도가 향상되었습니다. 구원의 영혼이 달리 변경되지는
+않았습니다.
+
+        * 마음의 상태가 재설계되어 천상의 목소리로 변경되었습니다. 천상의 목소리는 천상의 찬가의 치유 효과를 50/100%
+증가시키며, 천상의 찬가의 재사용 대기시간을 2.5/5분 감소시킵니다.
+
+    * 문양
+
+      * 문양: 치유의 마법진을 사용하면 치유의 마법진의 마나 소모도 20% 증가합니다.
+
+**[![][191]][206] [도적][206]**
+
+    * _곧 공개됩니다._
+
+**[![][192]][207] [주술사][207]**
+
+    * 불꽃의 무기가 주문 공격력을 증가시키지 않습니다. 대신, 착용자의 모든 비물리 공격력을 5%만큼 증가시킵니다.
+
+    * 번개 화살에 새로운 시각 효과가 생겼습니다.
+
+    * 날카로운 바람의 기본 주문 재사용 대기시간이 6초에서 15초로 증가하였습니다.
+
+    * 특성 전문화
+
+      * 정기
+
+        * 불꽃의 부름을 시전했을 때 불꽃 회오리가 화염 충격의 지속 시간을 증가시키지 않습니다.
+
+        * 지진의 공격력이 약 75%만큼 증가하였습니다.
+
+        * 정기의 격노를 연마하면 연쇄 번개의 재사용 대기시간이 사라집니다.
+
+        * 산울림으로 감소되는 날카로운 바람의 재사용 대기시간이 0.5/1초에서 5/10초로 증가하였습니다.
+
+      * 고양
+
+        * 용암 채찍 연마를 익히면 근처에 있는 최대 4명의 대상에게 화염 충격이 전달됩니다. 단, 군중 제어된 대상과 이미 화염
+충격 효과를 받고 있는 대상은 제외됩니다.
+
+        * 용암 채찍 연마가 이제 용암 채찍의 공격력을 15/30%만큼 증가시키지 않습니다. 대신 용암 채찍 기술의 기본 공격력이
+그만큼 증가하였습니다.
+
+        * 기민한 정신이 재설계되었습니다. 이제 주술사의 주문력을 증가시키지 않고, 고양 주술사의 주문력을 전투력의 55%로
+설정합니다. 고양 주술사의 주문은 다른 능력치로 증가하는 주문력의 영향을 받지 않습니다.
+
+        * 이제 소용돌이치는 무기는 근접 공격이 모두 흡수되더라도 발동합니다.
+
+      * 복원
+
+        * 선인의 치유력 특성을 배우면 주술사의 치유 주문이 15초 동안 대상의 최대 생명력을 치유량의 5/10%만큼, 대상의 최대
+생명력의 10%까지 증가시킵니다.
+
+        * 성난 해일로 발생하는 추가적인 치유 효과가 50%만큼 증가하였습니다. 직접 부여하는 최초의 치유량에는 변함이 없습니다.
+
+**[![][193]][208] [흑마법사][208]**
+
+    * 어둠의 화살에 새 시각 효과가 생겼습니다.
+
+    * 특성 전문화
+
+      * 악마
+
+        * 악마의 지식으로 얻는 주문의 추가 공격력이 15%에서 20%로 증가하였습니다.
+
+        * 악령술의 대가의 기본 공격력 16% 증가, 특화력 1당 공격력 2% 증가 효과가 기본 공격력 20% 증가, 특화력 1당
+공격력 2.5% 증가로 변경되었습니다..
+
+    * 오류 수정
+
+      * 악령술의 대가 사용 시 파멸의 수호병과 지옥불정령이 의도했던 것보다 더 많은 피해를 주던 오류를 수정하였습니다.
+
+**[![][194]][209] [전사][209]**
+
+      * _곧 공개됩니다._
+
+**[던전 및 공격대][210]**
+
+      * 던전 도감에 새 던전이 추가되었습니다. [시간의 끝][211], [영원의 샘][212], [황혼의 시간][213], [용의
+영혼][214].
+
+      * 이제 던전 찾기로 무작위 영웅 던전에 참가해 해당 던전을 완료해도 묶이지 않습니다. 이전에는 무작위 던전 찾기를 이용해 던전에
+입장했던 플레이어가 동일 던전 대기열에 다시 등록하거나, 차원문을 이용해 직접 입장할 수 없었습니다. 이제는 어떤 무작위 던전을 완료했는지에
+상관 없이 특정 영웅 던전을 언제든지 1일 1회 완료할 수 있습니다.
+
+      * 안퀴라즈 폐허
+
+        * 안퀴라즈 폐허의 우두머리에게서 희귀 아이템인 스카라베 상자 열쇠를 획득하여, 폐허 안의 스카라베 상자를 열 수 있습니다.
+(큰 스카라베 상자 열쇠로는 큰 스카라베 상자를 열 수 있습니다.) 이 열쇠들은 안퀴라즈 폐허에 귀속되며, 17시간이 지나면 사용할 수
+없습니다.
+
+      * 줄구룹
+
+        * 이제 4명의 우두머리(대사제 베녹시스, 혈군주 만도키르, 대여사제 킬나라, 잔질) 중 2명만 처치해도 신파괴자 진도와 싸울
+수 있습니다.
+
+      * 줄아만
+
+        * 이제 4명의 트롤 화신 중 2명만 처치해도 사술 군주 말라크라스와 싸울 수 있습니다.
+
+**[종족][215]**
+
+        * 오크의 종족 기술인 피의 격노가 주문 공격력이 아닌 주문력을 올려 줍니다.
+
+**[사용자 인터페이스][216]**
+
+        * 세계 지도뿐 아니라 미니맵에도 고고학 조사 지역이 표시됩니다.
+
+        * 소지품 검색
+
+          * 소지품, 은행, 길드 은행, 공허 보관소에서 특정 아이템을 검색할 수 있도록 검색창이 추가되었습니다.
+
+        * 활동하지 않는 캐릭터가 길드장으로 있는 길드에서는, 특정 조건을 만족하면 길드장을 변경할 수 있습니다. 더 자세한 정보는
+곧 공개됩니다.
+
+        * 재연마 인터페이스가 개선되었습니다.
+
+        * 세계 지도뿐 아니라 미니맵에도 퀘스트 수행 지역이 표시됩니다.
+
+        * 세계 지도에 각 지역의 퀘스트를 수행하기에 적합한 캐릭터 레벨이 함께 표시됩니다.
+
+        * 모든 공격대원들을 자동으로 부공격대장으로 승급시켜주는 '모두 승급' 체크 박스를 추가하였습니다. 이 체크박스는 공격대
+설정창에 있습니다.
+
+        * 개체 표시기와 위치 표시기를 위한 명령어를 추가하였습니다.
+
+        * 모든 사용자 인터페이스 창에 있는 플레이어 모델을 좌우 및 상하 회전, 확대할 수 있도록 관련 사항을 새롭게
+추가하였습니다.
+
+        * 이제 선택한 전문화를 취소하지 않아도 습득했던 전문 기술을 취소할 수 있습니다.(기계공학 및 연금술)
+
+        * [매킨토시] 애플 키보드에 Control 키 대신 Command 키를 사용하는 기능을 추가하였습니다. 이 기능은 Mac
+설정에서 활성화할 수 있습니다.
+
+        * [매킨토시] 월드 오브 워크래프트 키보드 단축키과 충돌하지 않도록 Mac OS 시스템 키보드 단축키를 비활성화시키는 기능이
+추가되었습니다. 이 기능은 Mac 설정에서 활성화할 수 있습니다.
+
+**[일반 버그 수정][217]**
+
+        * _곧 공개됩니다._
+
+**Обновление тестового игрового мира до версии 4.3.0**
+
+Описания всех обновлений World of Warcraft можно найти [здесь][218].
+
+Данное описание будет обновляться по ходу процесса тестирования. Обратите
+внимание на то, что некоторые описанные ниже изменения могут быть недоступны
+до выхода обновления тестового игрового мира.
 
 **_Содержание_**
 
-  * Подземелья и рейды
+_Щелкните по ссылке для перехода к соответствующему разделу._
 
-  * Пользовательский интерфейс
+        * [Общее][2]
 
-  * Техническая информация
+        * [Достижения][3]
 
-**_Подземелья и рейды_**
+        * [Классы: общее][4]
 
-  * Огненные просторы
+          * [![][5]][6] [рыцари смерти][6], [![][7]][8] [друиды][8],
+[![][9]][10] [охотники][10], [![][11]][12] [маги][12], [![][13]][14]
+[паладины][14],
 
-    * Визуальный эффект способности Рагнароса «Всепожирающее пламя» стал более
-заметным.
+          * [![][15]][16] [жрецы][16], [![][17]][18] [разбойники][18],
+[![][19]][20] [шаманы][20], [![][21]][22] [чернокнижники][22], [![][23]][24]
+[воины][24]
 
-    * Увеличено расстояние, с которого можно атаковать Рагнароса в ближнем бою
-во время последней фазы боя в героическом режиме.
+        * [Подземелья и рейды][25]
 
-**_Пользовательский интерфейс_**
+        * [Расы][26]
 
-  * Теперь настройки видимости интерфейса рейда сохраняются при выходе из
-игры.
+        * [Пользовательский интерфейс][27]
 
-**_Техническая информация_**
+        * [Исправленные неполадки][28] (описание исправленных неполадок,
+относящихся непосредственно к перечисленным выше темам, можно найти в
+соответствующих разделах)
 
-  * Теперь игрока, зашедшего в игру с нескольких учетных записей, можно
-пригласить в Подземелья с друзьями по Battle.net.
+**Общее**
 
-  * Игра больше не вылетает при попытке приобрести предметы десятого сезона
-арены (только для Кореи).
+        * Новое в подземельях и рейдах
+
+          * Подземелье «Конец Времен» теперь доступно для тестирования.
+Приглашаем вас поучаствовать в тестировании и оставить свои отзывы
+[здесь][219].
+
+          * В крепости Барадин появился и доступен для тестирования новый босс
+– Ализабаль. Приглашаем вас поучаствовать в тестировании и оставить свои
+отзывы [здесь][220].
+
+        * [Трансмогрификация][221]
+
+          * При помощи этой новой функции игроки смогут модифицировать свое
+снаряжение как никогда раньше. Трансмогрификатора, Хранилище Бездны и
+чародеев-кузнецов можно будет найти у Соборной площади в Штормграде или в
+Оргриммаре, в Волоке. Стоимость данной услуги пока не определена окончательно.
+
+        * [Хранилище Бездны][222]
+
+          * Теперь игроки смогут пользоваться не только банком, но и системой
+долгосрочного хранения, в которую можно будет поместить ценное для персонажа
+снаряжение, освободив тем самым место в сумках. Трансмогрификатора, Хранилище
+Бездны и чародеев-кузнецов можно будет найти у Соборной площади в Штормграде
+или в Оргриммаре, в Волоке. Стоимость данной услуги пока не определена
+окончательно.
+
+        * Чародейская перековка
+
+          * Чародеи-кузнецы отошли от дел. Чародейской перековкой теперь будут
+заниматься эфириалы, которые также будут осуществлять трансмогрификацию и
+предоставят доступ к Хранилищу Бездны. Вы сможете найти их у Соборной площади
+в Штормграде или в Оргриммаре, в Волоке.
+
+        * Задания в Запределье и Нордсколе
+
+          * Количество опыта, необходимое для того, чтобы развить персонажа с
+71-го уровня по 80-й, было уменьшено примерно на 33%.
+
+          * Многие групповые задания в Запределье и Нордсколе были изменены
+таким образом, чтобы игроки могли выполнить их в одиночку. Такие задания
+больше не помечены, как групповые.
+
+          * NPC, выдающие задания, связанные с подземельями, теперь
+переместились в соответствующие подземелья Запределья и Нордскола. Таким
+образом, большую часть подобных заданий можно получить в относящихся к ним
+подземельях.
+
+        * Игроки североамериканских игровых миров (за исключением Бразилии,
+Латинской Америки и Океании) больше не смогут использовать в именах персонажей
+или названиях гильдий диакритические знаки. Эти изменения не затронут уже
+существующие гильдии и персонажей, в названиях и именах которых присутствуют
+специальные символы.
+
+**[Достижения][223]**
+
+        * Для получения достижения «Повелитель Альтеракской долины» больше не
+требуется заработанное достижение «Альтеракский блиц».
+
+**[Классы: общее][224]**
+
+        * Все рейдовые и групповые положительные эффекты, которые обеспечивают
+членам группы увеличение силы атаки на 10%, подверглись небольшим изменениям.
+Теперь они увеличивают силу атаки дальнего боя на 10%, а силу атаки ближнего
+боя – на 20%.
+
+          * Сила поганища: теперь увеличивает силу атаки ближнего боя
+участников группы или рейда на 10/20%, а не на 5/10%, как раньше. Бонус к силе
+атаки дальнего боя остался прежним – 5/10%.
+
+          * Благословение могущества: теперь увеличивает силу атаки ближнего
+боя участников группы или рейда на 20%, а не на 10%, как раньше. Бонус к силе
+атаки дальнего боя остался прежним – 10%.
+
+          * Рунический свиток мощи: теперь этот предмет увеличивает силу атаки
+ближнего боя участников группы или рейда на 16%, а не на 8%, как раньше. Бонус
+к силе атаки дальнего боя остался прежним – 8%.
+
+          * Аура меткого выстрела: теперь этот эффект увеличивает силу атаки
+ближнего боя участников группы или рейда на 20%, а не на 10%, как раньше.
+Бонус к силе атаки дальнего боя остался прежним – 10%.
+
+          * Высвобожденная ярость: теперь этот эффект увеличивает силу атаки
+ближнего боя участников группы или рейда на 10/20%, а не на 5/10%, как раньше.
+Бонус к силе атаки дальнего боя остался прежним – 5/10%.
+
+        * Изменено действие эффекта «Отмщение» для воинов со специализацией
+«Защита», паладинов со специализацией «Защита», рыцарей смерти со
+специализацией «Кровь» и друидов со специализацией «Сила зверя». Теперь сила
+атаки не нарастает медленно в начале битвы. Вместо этого когда «танка» в
+первый раз атакуют в ближнем бою, его сила атаки возрастает на 33% от
+полученного при этой атаке урона. Кроме того, при изменении этого параметра во
+время боя его значение не падает ниже 33% от величины урона, полученного
+«танком» в течение последних 2 секунд. Значение бонуса к силе атаки после
+первой атаки или после порогового значения в 33% изменяется по тем же
+правилам, как и раньше: так же уменьшается, если «танк» не получает урона, и
+по-прежнему не может превышать своего максимального значения, зависящего от
+запаса здоровья и выносливости «танка».
+
+        * Уровень угрозы, создаваемой классами, находящимися в активном режиме
+«танкования» теперь составляет 500% от наносимого урона, а не 300%, как
+раньше. Это относится к рыцарям смерти под властью крови, друидам в облике
+медведя, воинам в оборонительной стойке и паладинам, находящимся под действием
+заклинания «Праведное неистовство».
+
+**[![][5]][225] [Рыцари смерти][225]**
+
+        * «Удар смерти» теперь восстанавливает рыцарю смерти здоровье вне
+зависимости от того, была ли атака успешной или смог ли противник уклониться
+или парировать ее. Как следствие, если атака рыцаря смерти оказалась
+неуспешной (противник уклонился или атака была парирована), затраты рун на нее
+не будут возмещены, но здоровье рыцаря смерти будет восполнено.
+
+        * Изменения в талантах
+
+          * Кровь
+
+            * Изменено действие эффекта «Клинковая ограда». Теперь он является
+пассивным и снижает получаемый урон.
+
+            * Теперь во время действия «Костяного щита» вокруг рыцаря смерти
+вращаются 6 костей, а не 4, как раньше.
+
+            * Талант «Ветеран Третьей войны» теперь на 30 секунд снижает время
+восстановления «Вспышки болезни».
+
+**[![][7]][226] [Друиды][226]**
+
+        * У способности «Гнев» теперь появился новый графический эффект.
+
+        * Урон от способности «Размах» (облик кошки) теперь составляет 340%
+урона от оружия, а не 415%, как раньше.
+
+        * Изменения в талантах
+
+          * Исцеление
+
+            * Целительный эффект «Буйного роста» был снижен на 20%.
+
+        * Символы
+
+          * Символ полосования был переименован и теперь называется символом
+кровопролития. В дополнение к уже существующей функциональности (увеличение
+времени действия на цель способности «Разорвать» при использовании способности
+«Полоснуть») этот символ теперь также увеличивает время действия на цель
+способности «Разорвать» при использовании способности «Увечье».
+
+          * Символ буйного роста теперь также на 2 секунды увеличивает время
+восстановления способности «Буйный рост».
+
+**[![][9]][227] [Охотники][227]**
+
+        * _Информация появится позже._
+
+**[![][11]][228] [Маги][228]**
+
+        * _Информация появится позже._
+
+**[![][13]][229] [Паладины][229]**
+
+        * Теперь на произнесение заклинания «Святое сияние» требуется 3
+секунды, это заклинание не имеет времени восстановления и требует наличия
+игрока в качестве цели. «Святое сияние» мгновенно исцеляет цель и других
+членов группы, находящихся в радиусе до 10 м, а также продолжает восполнять им
+небольшое количество здоровья раз в секунду в течение 3 секунд.
+
+        * Печать прозрения больше не восполняет паладину 15% от его базового
+запаса маны во время высвобождения энергии печати. При высвобождении энергии
+печати паладин по-прежнему наносит противнику урон, а атаки ближнего боя по-
+прежнему восстанавливают 4% базового запаса маны.
+
+        * Теперь при высвобождении энергии «Печати правды» наносимый урон
+увеличивается на 20% за каждый наложенный на цель эффект «Порицание», а не на
+10%, как раньше.
+
+        * Изменения в талантах
+
+          * Свет
+
+            * «Светлые намерения» теперь снижают время произнесения заклинания
+«Святое сияние».
+
+            * «Озаряющее исцеление» (искусность) теперь также действует и на
+«Святое сияние».
+
+            * «Прилив Света» в дополнение к своей существующей
+функциональности теперь также сокращает время произнесения «Святого сияния»
+при критическом эффекте заклинания «Шок небес».
+
+            * В дополнение к увеличению скорости произнесения заклинаний
+«Безупречное правосудие» теперь повышает скорость восполнения маны за счет
+духа на 10/20/30% в течение 60 секунд.
+
+            * Теперь «Свет зари» (без использования символа) исцеляет до 6
+целей, а не до 5, как раньше.
+
+            * Теперь «Образец добродетели» сокращает время восстановления
+заклинания «Божественная защита» на 15/30 секунд, а не на 10/20, как раньше.
+
+            * «Скорость Света» больше не срабатывает после применения «Святого
+сияния» и не сокращает его время восстановления. Теперь «Скорость Света»
+срабатывает только после применения «Божественной защиты».
+
+            * В дополнение к уже существующей функциональности «Средоточие
+света» теперь гарантирует получение 1 заряда энергии Света при применении
+«Святого сияния».
+
+          * Воздаяние
+
+            * Талант «Священный гнев» теперь увеличивает вероятность
+критического эффекта заклинания «Молот гнева» на 2/4/6%, а не на 20/40/60%,
+как раньше.
+
+            * Пассивная способность «Специализация на двуручном оружии» теперь
+увеличивает наносимый урон на 25%, а не на 20%, как раньше.
+
+        * Символы
+
+          * Символ света зари теперь уменьшает количество целей заклинания до
+4, вместо увеличения их до 6, но его целительный эффект увеличен на 25%.
+
+**[![][15]][230] [Жрецы][230]**
+
+        * Теперь способность «Божественный гимн» восстанавливает здоровье 5
+целям, а не 3, как раньше.
+
+        * Изменения в талантах
+
+          * Послушание
+
+            * Теперь при использовании способности «Искупление вины» в бою с
+большими существами вроде Рагнароса и Ал'акира зона досягаемости способности
+будет рассчитываться корректно с учетом расстояния, на котором ведется бой.
+
+            * Заклинание «Божественное покровительство» теперь имеет новый
+графический эффект.
+
+          * Свет
+
+            * Талант «Дух воздаяния» был изменен с тем, чтобы исправить
+некоторые функциональные проблемы и добиться более корректного срабатывания. В
+остальном же действие таланта осталось прежним.
+
+            * Действие таланта «Душевный настрой» было изменено. Теперь он
+называется «Глас небес». Этот талант увеличивает целительный эффект от
+«Божественного гимна» на 50/100% и снижает время восстановления «Божественного
+гимна» на 2,5/5 минут.
+
+        * Символы
+
+          * Теперь символ круга исцеления также на 20% увеличивает затраты
+маны на произнесение заклинания «Круг исцеления».
+
+**[![][17]][231] [Разбойники][231]**
+
+        * _Информация появится позже._
+
+**[![][19]][232] [Шаманы][232]**
+
+        * Эффект «Оружие языка пламени» больше не увеличивает силу наносящих
+урон заклинаний. Теперь он на 5% увеличивает весь нефизический урон, наносимый
+игроком.
+
+        * Заклинание «Молния» теперь имеет новый графический эффект.
+
+        * Базовое время восстановления способности «Пронизывающий ветер»
+теперь составляет 15 секунд, а не 6, как раньше.
+
+        * Изменения в талантах
+
+          * Стихии
+
+            * Талант «Зов пламени» больше не увеличивает время действия
+«Огненного шока» с помощью заклинания «Кольцо огня».
+
+            * Урон, наносимый способностью «Землетрясение» был увеличен
+примерно на 75%.
+
+            * Способность «Цепная молния» при выбранной пассивной способности
+«Неистовство стихий» теперь не имеет времени восстановления.
+
+            * Талант «Отзвук» теперь уменьшает время восстановления
+способности «Пронизывающий ветер» на 5/10 секунд, а не на 0,5/1, как ранее.
+
+          * Совершенствование
+
+            * Теперь талант «Бурное вскипание лавы» влияет на способность
+«Вскипание лавы» следующим образом: это заклинание теперь переносит
+отрицательный эффект «Огненный шок» с основной цели на максимум 4
+второстепенные цели. Под действие заклинания не попадают цели, находящиеся под
+воздействием эффекта контроля или уже пораженные отрицательным эффектом
+«Огненный шок».
+
+            * Талант «Бурное вскипание лавы» больше не повышает базовый урон
+от способности «Вскипание лавы» на 15/30%. Теперь это повышение включено в
+базовые значения способности «Вскипание лавы».
+
+            * Действие таланта «Острота ума» было изменено. Он больше не
+увеличивает силу заклинаний. Вместо этого заклинания шамана
+«Совершенствования» теперь действуют так, как если бы их сила равнялась 55% от
+силы атаки шамана. При этом сила заклинаний шамана «Совершенствования» не
+увеличивается никакими иными способами.
+
+            * Теперь талант «Оружие Водоворота» может также срабатывать после
+полностью поглощенных атак ближнего боя.
+
+          * Исцеление
+
+            * Талант «Защита предков» теперь на 15 секунд увеличивает
+максимальный запас здоровья цели на 5/10% от полученного целью исцеления
+вплоть до 10% от ее максимального здоровья. Если в группе присутствует
+несколько шаманов-целителей, эффект от их заклинаний не будет суммироваться.
+Все вышесказанное не относится к срабатыванию дополнительных эффектов
+исцеления.
+
+            * Коэффициент влияния силы заклинаний на исцеление, получаемое от
+способности «Быстрина», был увеличен на 50%. Изначальное прямое исцеление
+осталось неизменным.
+
+**[![][21]][233] [Чернокнижники][233]**
+
+        * Заклинание «Стрела Тьмы» теперь имеет новый графический эффект.
+
+        * Изменения в талантах
+
+          * Демонология
+
+            * «Демоническое знание» теперь увеличивает урон на 20%, а не на
+15%, как раньше.
+
+            * Базовый бонус от пассивной способности «Мастер-демонолог» теперь
+составляет 20% и 2,5% за каждое очко искусности, а не 16% и 2%, как раньше.
+
+        * Исправленные неполадки
+
+          * Исправлена неполадка, которая позволяла стражнику ужаса и
+инферналу получать гораздо большие бонусы от искусности «Демонология», чем это
+было задумано.
+
+**[![][23]][234] [Воины][234]**
+
+        * _Информация появится позже._
+
+**[Подземелья и рейды][235]**
+
+        * В «Атлас подземелий» были добавлены описания новых подземелий и
+рейда: [Конец Времен][236], [Источник Вечности][237], [Час Сумрака][238] и
+[Душа Дракона][239].
+
+        * Игроки, которые пользуются поиском подземелий для поиска случайного
+героического подземелья, больше не будут сталкиваться с блокировкой этого
+подземелья. Ранее, если игрок входил в случайное подземелье, найденное при
+помощи поиска подземелий, он больше не мог встать в очередь на это же
+подземелье или войти в него обычным способом через портал. Теперь у игроков
+будет возможность ежедневно проходить каждое конкретное героическое подземелье
+вне зависимости от пройденных случайных подземелий.
+
+        * Руины Ан'Киража
+
+          * Теперь с боссов в «Руинах Ан'Киража» можно получить редкие ключи
+от сундука Скарабея, с помощью которых можно открывать сундуки Скарабея. Эти
+ключи можно использовать только в данной игровой зоне. Срок их существования –
+17 часов. Данное изменение затрагивает также и ключи от больших сундуков
+Скарабея, с помощью которых можно открыть большие сундуки Скарабея.
+
+        * Зул’Гуруб
+
+          * Теперь для встречи с Джин'до Низвергателем Богов игрокам нужно
+убить только двух из четырех начальных боссов подземелья (верховного жреца
+Веноксиса, Мандокира Повелителя Крови, верховной жрицы Килнары и Занзила).
+
+        * Зул’Аман
+
+          * Теперь для встречи с Повелителем проклятий Малакрассом игрокам
+нужно убить только две из четырех аватар зверей.
+
+**[Расы][240]**
+
+        * Теперь расовая способность орков «Кровавое неистовство» увеличивает
+силу заклинаний, а не урон, наносимый заклинаниями.
+
+**[Пользовательский интерфейс][241]**
+
+        * Теперь зоны археологических раскопок будут показываться не только на
+карте мира, но и на миникарте.
+
+        * Поиск по сумкам
+
+          * В интерфейс было добавлено поле поиска, которое позволяет
+производить поиск предметов в сумках игрока, его банке, банке гильдии и
+Хранилище Бездны.
+
+        * При определенных обстоятельствах члены гильдии теперь могут сместить
+главу гильдии, в течение долгого времени бывшего неактивным. Дополнительная
+информация появится позже.
+
+        * Интерфейс чародейской перековки был изменен и улучшен.
+
+        * Теперь области отслеживания заданий и ключевые точки будут
+отображаться не только на карте мира, но и на миникарте.
+
+        * Теперь на карте мира будет отображаться ожидаемый уровень персонажей
+для каждой зоны.
+
+        * В интерфейс добавлено поле «Сделать всех помощниками», которое
+позволяет автоматически делать помощниками лидера рейда всех участников рейда.
+Это поле можно найти в меню интерфейса рейда и в выдвигающемся меню рейда.
+
+        * Появились команды для создания меток на полу и меток на целях.
+
+        * Во все окна, в которых отображается модель персонажа, добавлена
+возможность вращения, изменения масштаба и перемещения модели.
+
+        * Теперь игроки могут избавиться от специализации в профессии, не
+избавляясь от самой профессии (инженерное дело и алхимия).
+
+        * [Mac] Добавлена функциональность, которая позволяет использовать
+клавишу Command вместо клавиши Control на клавиатурах Apple. Управлять этими
+настройками можно в «Параметрах Mac».
+
+        * [Mac] Добавлена функциональность, которая позволяет отключать
+комбинации клавиш операционной системы Mac OS, чтобы избежать конфликтов между
+ними и комбинациями клавиш World of Warcraft. Управлять этими настройками
+можно в «Параметрах Mac».
+
+**Общие исправления**
+
+        * _Информация появится позже._
 
 {Body-zhCN}
 
 **魔獸世界客戶端版本4.2.2**
 
 最新的更新內容請參閱官方改版專區: [
-http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.asp ][8]
+http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp ][242]
 
 **_目錄_**
 
-  * 地城與團隊
+        * 地城與團隊
 
-  * 使用者介面
+        * 使用者介面
 
-  * 技術問題
+        * 技術問題
 
 **_地城與團隊_**
 
-  * 火源之界
+        * 火源之界
 
-    * 拉格納羅斯的懼焰可見範圍已提升。
+          * 拉格納羅斯的懼焰可見範圍已提升。
 
-    * 在英雄模式下，拉格納羅斯最後階段的命中區塊(hitbox)判定範圍已增大。
+          * 在英雄模式下，拉格納羅斯最後階段的命中區塊(hitbox)判定範圍已增大。
 
 **_使用者介面_**
 
-  * 團隊框架現在應該會在未來登入時記得它們原本是顯示或隱藏的。
+        * 團隊框架現在應該會在未來登入時記得它們原本是顯示或隱藏的。
 
 **_技術問題_**
 
-  * 使用多個帳號的玩家，現在應該可以被邀請到Real ID的隊伍中了。
+        * 使用多個帳號的玩家，現在應該可以被邀請到Real ID的隊伍中了。
 
-   [1]: http://www.worldofwarcraft.com/patchnotes/
+   [1]: http://us.battle.net/wow/en/game/patch-notes/
 
-   [2]: http://eu.battle.net/wow/de/game/patch-notes/
+   [2]: #general
 
-   [3]: http://eu.battle.net/wow/en/game/patch-notes/
+   [3]: #achievements
 
-   [4]: http://us.battle.net/wow/es/game/patch-notes/
+   [4]: #classes
 
-   [5]: http://eu.battle.net/wow/fr/game/patch-notes/
+   [5]: http://us.battle.net/wow/static/images/icons/class/6.gif
 
-   [6]: http://kr.battle.net/wow/ko/game/patch-notes/
+   [6]: #deathknights
 
-   [7]: http://eu.battle.net/wow/ru/game/patch-notes/
+   [7]: http://us.battle.net/wow/static/images/icons/class/11.gif
 
-   [8]: http://www.wowtaiwan.com.tw/03Gameguide/patchnotes/index.asp
+   [8]: #druids
+
+   [9]: http://us.battle.net/wow/static/images/icons/class/3.gif
+
+   [10]: #hunters
+
+   [11]: http://us.battle.net/wow/static/images/icons/class/8.gif
+
+   [12]: #mages
+
+   [13]: http://us.battle.net/wow/static/images/icons/class/2.gif
+
+   [14]: #paladins
+
+   [15]: http://us.battle.net/wow/static/images/icons/class/5.gif
+
+   [16]: #priests
+
+   [17]: http://us.battle.net/wow/static/images/icons/class/4.gif
+
+   [18]: #rogues
+
+   [19]: http://us.battle.net/wow/static/images/icons/class/7.gif
+
+   [20]: #shaman
+
+   [21]: http://us.battle.net/wow/static/images/icons/class/9.gif
+
+   [22]: #warlocks
+
+   [23]: http://us.battle.net/wow/static/images/icons/class/1.gif
+
+   [24]: #warriors
+
+   [25]: #dungeons
+
+   [26]: #races
+
+   [27]: #ui
+
+   [28]: #bugfixes
+
+   [29]: http://us.battle.net/wow/en/forum/topic/3278809473
+
+   [30]: http://us.battle.net/wow/en/forum/topic/3278813216
+
+   [31]: http://us.battle.net/wow/en/blog/3309048#blog
+
+   [32]: http://us.battle.net/wow/en/blog/3342240
+
+   [33]: http://us.battle.net/wow/en/forum/1011646/
+
+   [34]: http://us.battle.net/wow/en/forum/#forum1033923
+
+   [35]: http://us.battle.net/wow/en/game/class/death-knight
+
+   [36]: http://us.battle.net/wow/en/game/class/druid
+
+   [37]: http://us.battle.net/wow/en/game/class/hunter
+
+   [38]: http://us.battle.net/wow/en/game/class/mage
+
+   [39]: http://us.battle.net/wow/en/game/class/paladin
+
+   [40]: http://us.battle.net/wow/en/game/class/priest
+
+   [41]: http://us.battle.net/wow/en/game/class/rogue
+
+   [42]: http://us.battle.net/wow/en/game/class/shaman
+
+   [43]: http://us.battle.net/wow/en/game/class/warlock
+
+   [44]: http://us.battle.net/wow/en/game/class/warrior
+
+   [45]: http://us.battle.net/wow/en/forum/1011645/
+
+   [46]: http://us.battle.net/wow/en/blog/3502665/Patch_43_Dungeons_Preview
+%2C_Part_One_End_Time-9_19_2011
+
+   [47]: http://us.battle.net/wow/en/blog/3502666/Patch_43_Dungeons_Preview
+%2C_Part_Two_Well_of_Eternity-9_19_2011
+
+   [48]: http://us.battle.net/wow/en/blog/3502667/43_Dungeons_Preview
+%2C_Part_Three_Hour_of_Twilight-9_19_2011
+
+   [49]: http://us.battle.net/wow/en/blog/3516572
+/Patch_43_Raid_Preview_Dragon_Soul-9_19_2011
+
+   [50]: http://us.battle.net/wow/en/game/race/
+
+   [51]: http://us.battle.net/wow/en/forum/1011693/
+
+   [52]: http://us.battle.net/wow/en/forum/1012660/
+
+   [53]: http://eu.battle.net/wow/de/game/patch-notes/
+
+   [54]: http://eu.battle.net/wow/de/forum/topic/2723275887
+
+   [55]: http://eu.battle.net/wow/de/forum/topic/2793389764
+
+   [56]: http://eu.battle.net/wow/de/blog/2808997#blog
+
+   [57]: http://eu.battle.net/wow/de/blog/2817227#blog
+
+   [58]: http://eu.battle.net/wow/de/forum/878728/
+
+   [59]: http://eu.battle.net/wow/de/game/class/
+
+   [60]: http://eu.battle.net/wow/de/game/class/death-knight
+
+   [61]: http://eu.battle.net/wow/de/game/class/druid
+
+   [62]: http://eu.battle.net/wow/static/images/icons/class/3.gif
+
+   [63]: http://eu.battle.net/wow/de/game/class/hunter
+
+   [64]: http://eu.battle.net/wow/static/images/icons/class/8.gif
+
+   [65]: http://eu.battle.net/wow/de/game/class/mage
+
+   [66]: http://eu.battle.net/wow/static/images/icons/class/2.gif
+
+   [67]: http://eu.battle.net/wow/de/game/class/paladin
+
+   [68]: http://eu.battle.net/wow/static/images/icons/class/5.gif
+
+   [69]: http://eu.battle.net/wow/de/game/class/priest
+
+   [70]: http://eu.battle.net/wow/static/images/icons/class/4.gif
+
+   [71]: http://eu.battle.net/wow/de/game/class/rogue
+
+   [72]: http://eu.battle.net/wow/static/images/icons/class/7.gif
+
+   [73]: http://eu.battle.net/wow/de/game/class/shaman
+
+   [74]: http://eu.battle.net/wow/static/images/icons/class/9.gif
+
+   [75]: http://eu.battle.net/wow/de/game/class/warlock
+
+   [76]: http://eu.battle.net/wow/static/images/icons/class/1.gif
+
+   [77]: http://eu.battle.net/wow/de/game/class/warrior
+
+   [78]: http://eu.battle.net/wow/de/forum/1011645/
+
+   [79]: http://eu.battle.net/wow/de/blog/2962205
+
+   [80]:
+http://eu.battle.net/wow/de/blog/2961931/Dungeonvorschau_f%C3%BCr_Patch_43
+,_Teil_Zwei_Brunnen_der_Ewigkeit_-19_09_2011
+
+   [81]:
+http://eu.battle.net/wow/de/blog/2962206/Dungeonvorschau_f%C3%BCr_Patch_43
+,_Teil_Drei_Stunde_des_Zwielichts-19_09_2011
+
+   [82]: http://eu.battle.net/wow/de/blog/2978472/Vorschau_auf_Patch_43_-
+_Drachenseele-20_09_2011
+
+   [83]: http://eu.battle.net/wow/de/game/race/
+
+   [84]: http://eu.battle.net/wow/de/forum/878734/
+
+   [85]: http://eu.battle.net/wow/en/game/patch-notes/
+
+   [86]: http://eu.battle.net/wow/en/forum/
+
+   [87]: http://eu.battle.net/wow/static/images/icons/class/6.gif
+
+   [88]: http://eu.battle.net/wow/static/images/icons/class/11.gif
+
+   [89]: http://eu.battle.net/wow/en/blog/3309048#blog
+
+   [90]: http://eu.battle.net/wow/en/blog/3342240
+
+   [91]: http://eu.battle.net/wow/en/forum/1011646/
+
+   [92]: http://eu.battle.net/wow/en/forum/#forum1033923
+
+   [93]: http://eu.battle.net/wow/en/game/class/death-knight
+
+   [94]: http://eu.battle.net/wow/en/game/class/druid
+
+   [95]: http://eu.battle.net/wow/en/game/class/hunter
+
+   [96]: http://eu.battle.net/wow/en/game/class/mage
+
+   [97]: http://eu.battle.net/wow/en/game/class/paladin
+
+   [98]: http://eu.battle.net/wow/en/game/class/priest
+
+   [99]: http://eu.battle.net/wow/en/game/class/rogue
+
+   [100]: http://eu.battle.net/wow/en/game/class/shaman
+
+   [101]: http://eu.battle.net/wow/en/game/class/warlock
+
+   [102]: http://eu.battle.net/wow/en/game/class/warrior
+
+   [103]: http://eu.battle.net/wow/en/forum/1011645/
+
+   [104]: http://eu.battle.net/wow/en/blog/3502665/Patch_43_Dungeons_Preview
+%2C_Part_One_End_Time-9_19_2011
+
+   [105]: http://eu.battle.net/wow/en/blog/3502666/Patch_43_Dungeons_Preview
+%2C_Part_Two_Well_of_Eternity-9_19_2011
+
+   [106]: http://eu.battle.net/wow/en/blog/3502667/43_Dungeons_Preview
+%2C_Part_Three_Hour_of_Twilight-9_19_2011
+
+   [107]: http://eu.battle.net/wow/en/blog/3516572
+/Patch_43_Raid_Preview_Dragon_Soul-9_19_2011
+
+   [108]: http://eu.battle.net/wow/en/game/race/
+
+   [109]: http://eu.battle.net/wow/en/forum/1011693/
+
+   [110]: http://eu.battle.net/wow/en/forum/1012660/
+
+   [111]: http://eu.battle.net/wow/es/game/patch-notes/
+
+   [112]: http://eu.battle.net/wow/es/forum/topic/2723296004
+
+   [113]: http://eu.battle.net/wow/es/forum/topic/2793449794
+
+   [114]: http://eu.battle.net/wow/es/blog/2808997
+
+   [115]: http://eu.battle.net/wow/es/blog/2817227
+
+   [116]: http://eu.battle.net/wow/es/forum/872827/
+
+   [117]: http://eu.battle.net/wow/es/forum/#forum872819
+
+   [118]: http://eu.battle.net/wow/es/game/class/death-knight
+
+   [119]: http://eu.battle.net/wow/es/game/class/druid
+
+   [120]: http://eu.battle.net/wow/es/game/class/hunter
+
+   [121]: http://eu.battle.net/wow/es/game/class/mage
+
+   [122]: http://eu.battle.net/wow/es/game/class/paladin
+
+   [123]: http://eu.battle.net/wow/es/game/class/priest
+
+   [124]: http://eu.battle.net/wow/es/game/class/rogue
+
+   [125]: http://eu.battle.net/wow/es/game/class/shaman
+
+   [126]: http://eu.battle.net/wow/es/game/class/warlock
+
+   [127]: http://eu.battle.net/wow/es/game/class/warrior
+
+   [128]: http://eu.battle.net/wow/es/forum/880013/
+
+   [129]: http://eu.battle.net/wow/es/blog/2962205
+
+   [130]: http://eu.battle.net/wow/es/blog/2961931
+
+   [131]: http://eu.battle.net/wow/es/blog/2962206
+
+   [132]: http://eu.battle.net/wow/es/blog/2978472
+
+   [133]: http://eu.battle.net/wow/es/game/race/
+
+   [134]: http://eu.battle.net/wow/es/forum/880016/
+
+   [135]: http://eu.battle.net/wow/es/forum/975481/
+
+   [136]: http://us.battle.net/wow/es/game/patch-notes/
+
+   [137]: http://us.battle.net/wow/es/forum/1012660/
+
+   [138]: http://us.battle.net/wow/es/blog/3309048#blog
+
+   [139]: http://us.battle.net/wow/es/blog/3342240
+
+   [140]: http://us.battle.net/wow/es/forum/872827/
+
+   [141]: http://us.battle.net/wow/es/forum/#forum872819
+
+   [142]: http://us.battle.net/wow/es/game/class/death-knight
+
+   [143]: http://us.battle.net/wow/es/game/class/druid
+
+   [144]: http://us.battle.net/wow/es/game/class/hunter
+
+   [145]: http://us.battle.net/wow/es/game/class/mage
+
+   [146]: http://us.battle.net/wow/es/game/class/paladin
+
+   [147]: http://us.battle.net/wow/es/game/class/priest
+
+   [148]: http://us.battle.net/wow/es/game/class/rogue
+
+   [149]: http://us.battle.net/wow/es/game/class/shaman
+
+   [150]: http://us.battle.net/wow/es/game/class/warlock
+
+   [151]: http://us.battle.net/wow/es/game/class/warrior
+
+   [152]: http://us.battle.net/wow/es/forum/880013/
+
+   [153]: http://us.battle.net/wow/es/blog/2962205
+
+   [154]: http://us.battle.net/wow/es/blog/2961931
+
+   [155]: http://us.battle.net/wow/es/blog/2962206
+
+   [156]: http://us.battle.net/wow/es/blog/2978472
+
+   [157]: http://us.battle.net/wow/es/game/race/
+
+   [158]: http://us.battle.net/wow/es/forum/880016/
+
+   [159]: http://us.battle.net/wow/es/forum/975481/
+
+   [160]: http://eu.battle.net/wow/fr/game/patch-notes/
+
+   [161]: http://eu.battle.net/wow/fr/forum/topic/2722996471
+
+   [162]: http://eu.battle.net/wow/fr/forum/topic/2793389750
+
+   [163]: http://eu.battle.net/wow/fr/blog/2808997
+
+   [164]: http://eu.battle.net/wow/fr/blog/2817227
+
+   [165]: http://eu.battle.net/wow/fr/forum/879115/
+
+   [166]: http://eu.battle.net/wow/fr/forum/#forum900516
+
+   [167]: http://eu.battle.net/wow/fr/game/class/shaman
+
+   [168]: http://eu.battle.net/wow/fr/game/class/hunter
+
+   [169]: http://eu.battle.net/wow/fr/game/class/death-knight
+
+   [170]: http://eu.battle.net/wow/fr/game/class/warlock
+
+   [171]: http://eu.battle.net/wow/fr/game/class/druid
+
+   [172]: http://eu.battle.net/wow/fr/game/class/warrior
+
+   [173]: http://eu.battle.net/wow/fr/game/class/mage
+
+   [174]: http://eu.battle.net/wow/fr/game/class/paladin
+
+   [175]: http://eu.battle.net/wow/fr/game/class/priest
+
+   [176]: http://eu.battle.net/wow/fr/game/class/rogue
+
+   [177]: http://eu.battle.net/wow/fr/forum/879118/
+
+   [178]: http://eu.battle.net/wow/fr/blog/2962205
+
+   [179]: http://eu.battle.net/wow/fr/blog/2961931
+
+   [180]: http://eu.battle.net/wow/fr/blog/2962206
+
+   [181]: http://eu.battle.net/wow/fr/blog/2978472
+
+   [182]: http://eu.battle.net/wow/fr/game/race/
+
+   [183]: http://eu.battle.net/wow/fr/forum/879154/
+
+   [184]: http://kr.battle.net/wow/ko/game/patch-notes/
+
+   [185]: http://kr.battle.net/wow/static/images/icons/class/6.gif
+
+   [186]: http://kr.battle.net/wow/static/images/icons/class/11.gif
+
+   [187]: http://kr.battle.net/wow/static/images/icons/class/3.gif
+
+   [188]: http://kr.battle.net/wow/static/images/icons/class/8.gif
+
+   [189]: http://kr.battle.net/wow/static/images/icons/class/2.gif
+
+   [190]: http://kr.battle.net/wow/static/images/icons/class/5.gif
+
+   [191]: http://kr.battle.net/wow/static/images/icons/class/4.gif
+
+   [192]: http://kr.battle.net/wow/static/images/icons/class/7.gif
+
+   [193]: http://kr.battle.net/wow/static/images/icons/class/9.gif
+
+   [194]: http://kr.battle.net/wow/static/images/icons/class/1.gif
+
+   [195]: http://kr.battle.net/wow/ko/forum/596640/
+
+   [196]: http://kr.battle.net/wow/ko/blog/933440
+
+   [197]: http://kr.battle.net/wow/ko/blog/937167
+
+   [198]: http://kr.battle.net/wow/ko/forum/#forum439266
+
+   [199]: http://kr.battle.net/wow/ko/forum/#forum439271
+
+   [200]: http://kr.battle.net/wow/ko/game/class/death-knight
+
+   [201]: http://kr.battle.net/wow/ko/game/class/druid
+
+   [202]: http://kr.battle.net/wow/ko/game/class/hunter
+
+   [203]: http://kr.battle.net/wow/ko/game/class/mage
+
+   [204]: http://kr.battle.net/wow/ko/game/class/paladin
+
+   [205]: http://kr.battle.net/wow/ko/game/class/priest
+
+   [206]: http://kr.battle.net/wow/ko/game/class/rogue
+
+   [207]: http://kr.battle.net/wow/ko/game/class/shaman
+
+   [208]: http://kr.battle.net/wow/ko/game/class/warlock
+
+   [209]: http://kr.battle.net/wow/ko/game/class/warrior
+
+   [210]: http://kr.battle.net/wow/ko/forum/439268/
+
+   [211]: http://kr.battle.net/wow/ko/blog/986382/43_%ED%8C%A8%EC%B9%98_%EB%AF
+%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0_-_%EB%8D%98%EC%A0%84_%EC%A0%9C_1%EB%B6%80__%EC%
+8B%9C%EA%B0%84%EC%9D%98_%EB%81%9D-2011_09_20#blog
+
+   [212]: http://kr.battle.net/wow/ko/blog/986383/43_%ED%8C%A8%EC%B9%98_%EB%AF
+%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0_-_%EB%8D%98%EC%A0%84_%EC%A0%9C_2%EB%B6%80__%EC%
+98%81%EC%9B%90%EC%9D%98_%EC%83%98-2011_09_20#blog
+
+   [213]: http://kr.battle.net/wow/ko/blog/986384/43_%ED%8C%A8%EC%B9%98_%EB%AF
+%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0_-_%EB%8D%98%EC%A0%84_%EC%A0%9C_3%EB%B6%80_%ED%9
+9%A9%ED%98%BC%EC%9D%98_%EC%8B%9C%EA%B0%84-2011_09_20#blog
+
+   [214]: http://kr.battle.net/wow/ko/blog/986386/43_%ED%8C%A8%EC%B9%98_%EB%AF
+%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0_-_%EA%B3%B5%EA%B2%A9%EB%8C%80_%EB%8D%98%EC%A0%8
+4_%EC%9A%A9%EC%9D%98_%EC%98%81%ED%98%BC-2011_09_21#blog
+
+   [215]: http://kr.battle.net/wow/kr/game/race/
+
+   [216]: http://kr.battle.net/wow/ko/forum/439267/
+
+   [217]: http://kr.battle.net/wow/ko/forum/440020/
+
+   [218]: http://eu.battle.net/wow/ru/game/patch-notes/
+
+   [219]: http://eu.battle.net/wow/ru/forum/topic/2793449676
+
+   [220]: http://eu.battle.net/wow/ru/forum/topic/2793449804
+
+   [221]: http://eu.battle.net/wow/ru/blog/2808997
+
+   [222]: http://eu.battle.net/wow/ru/blog/2817227
+
+   [223]: http://eu.battle.net/wow/ru/forum/896048/
+
+   [224]: http://eu.battle.net/wow/ru/forum/#forum1033923
+
+   [225]: http://eu.battle.net/wow/ru/game/class/death-knight
+
+   [226]: http://eu.battle.net/wow/ru/game/class/druid
+
+   [227]: http://eu.battle.net/wow/ru/game/class/hunter
+
+   [228]: http://eu.battle.net/wow/ru/game/class/mage
+
+   [229]: http://eu.battle.net/wow/ru/game/class/paladin
+
+   [230]: http://eu.battle.net/wow/ru/game/class/priest
+
+   [231]: http://eu.battle.net/wow/ru/game/class/rogue
+
+   [232]: http://eu.battle.net/wow/ru/game/class/shaman
+
+   [233]: http://eu.battle.net/wow/ru/game/class/warlock
+
+   [234]: http://eu.battle.net/wow/ru/game/class/warrior
+
+   [235]: http://eu.battle.net/wow/ru/forum/896073/
+
+   [236]: http://eu.battle.net/wow/ru/blog/2962205
+
+   [237]: http://eu.battle.net/wow/ru/blog/2961931
+
+   [238]: http://eu.battle.net/wow/ru/blog/2962206
+
+   [239]: http://eu.battle.net/wow/ru/blog/2978472
+
+   [240]: http://eu.battle.net/wow/ru/game/race/
+
+   [241]: http://eu.battle.net/wow/ru/forum/896076/
+
+   [242]: http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp
 

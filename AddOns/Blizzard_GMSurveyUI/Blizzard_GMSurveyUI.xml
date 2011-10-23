@@ -19,6 +19,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnShow>
+				self:Enable();
+			</OnShow>
 			<OnClick>
 				GMSurveyRadioButton_OnClick(self, button, down);
 			</OnClick>

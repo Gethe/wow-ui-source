@@ -503,7 +503,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="10" y="130"/>
+									<AbsDimension x="10" y="84"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -527,9 +527,23 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="LanguageButton" inherits="GlueButtonSmallTemplateBlue">
+					<Button name="AccountLoginCreateAccountButton" inherits="GlueButtonSmallTemplateBlue" text="CREATE_ACCOUNT">
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="AccountLoginManageAccountButton" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								AccountLogin_ManageAccount();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="LanguageButton" inherits="GlueButtonSmallTemplateBlue">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="AccountLoginCreateAccountButton" relativePoint="TOP">
 								<Offset>
 									<AbsDimension x="0" y="0"/>
 								</Offset>
@@ -551,17 +565,6 @@
 							</OnShow>
 							<OnClick>
 								OptionsFrame_OpenToCategory(VideoOptionsFrame, LANGUAGES_LABEL);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="AccountLoginUpgradeAccountButton" inherits="GlueButtonTemplateBlue" text="UPGRADE_ACCOUNT" hidden="true">
-						<Size x="320" y="60"/>
-						<Anchors>
-							<Anchor point="TOP" x="0" y="-10"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								UpgradeAccount();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -615,67 +618,6 @@
 								else
 									PlaySound("igMainMenuOptionCheckBoxOn");
 								end
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-					</CheckButton>
-					<CheckButton name="AccountLoginShowLauncher">
-						<Size>
-							<AbsDimension x="20" y="20"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="AccountLoginCommunityButton" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="7" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString inherits="GlueFontNormalSmall" text="SHOW_LAUNCHER">
-									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="24" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<FontHeight>
-										<AbsValue val="10"/>
-									</FontHeight>
-									<Shadow>
-										<Offset>
-											<AbsDimension x="1" y="-1"/>
-										</Offset>
-										<Color r="0" g="0" b="0"/>
-									</Shadow>
-									<Color r="1.0" g="0.78" b="0"/>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								if ( GetCVar("showToolsUI") == "1" ) then
-									self:SetChecked(1);
-								else
-									self:SetChecked(0);
-								end
-							</OnLoad>
-							<OnClick>
-								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
-								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
-								end
-								local checked = self:GetChecked();
-								if ( not checked ) then
-									checked = "0";
-								end
-								SetCVar("showToolsUI", checked);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>

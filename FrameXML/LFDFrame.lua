@@ -3,9 +3,6 @@ EXPANSION_LEVEL = GetExpansionLevel(); --This doesn't change while logged in, so
 LFD_MAX_REWARDS = 2;
 
 NUM_LFD_CHOICE_BUTTONS = 15;
-TYPEID_DUNGEON = 1;
-TYPEID_HEROIC_DIFFICULTY = 5;
-TYPEID_RANDOM_DUNGEON = 6;
 
 NUM_LFD_MEMBERS = 5;
 
@@ -102,7 +99,7 @@ end
 
 function LFDQueueFrame_UpdatePortrait()
 	local mode, submode = GetLFGMode();
-	if ( mode == "queued" or mode == "rolecheck" ) then
+	if ( mode == "queued" or mode == "rolecheck" or mode == "suspended" ) then
 		EyeTemplate_StartAnimating(LFDParentFrameEyeFrame);
 	else
 		EyeTemplate_StopAnimating(LFDParentFrameEyeFrame);
@@ -223,7 +220,7 @@ function LFDFrame_UpdateBackfill(forceUpdate)
 		local name, lfgID, typeID = GetPartyLFGBackfillInfo();
 		LFDQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
 		local mode, subMode = GetLFGMode();
-		if ( (forceUpdate or not LFDQueueFrame:IsVisible()) and mode ~= "queued" ) then
+		if ( (forceUpdate or not LFDQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
 			LFDQueueFramePartyBackfill:Show();
 		end
 	else
@@ -305,8 +302,8 @@ function LFDRoleCheckPopup_Update()
 	
 	local displayName;
 	if ( slots == 1 ) then
-		local dungeonType, dungeonID = GetLFGRoleUpdateSlot(1);
-		if ( dungeonType == TYPEID_HEROIC_DIFFICULTY ) then
+		local dungeonID, dungeonType, dungeonSubType = GetLFGRoleUpdateSlot(1);
+		if ( dungeonSubType == LFG_SUBTYPEID_HEROIC ) then
 			displayName = format(HEROIC_PREFIX, select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID)));
 		else
 			displayName = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID));
@@ -333,9 +330,9 @@ function LFDRoleCheckPopupDescription_OnEnter(self)
 	GameTooltip:AddLine(QUEUED_FOR_SHORT);
 	
 	for i=1, slots do
-		local dungeonType, dungeonID = GetLFGRoleUpdateSlot(i);
+		local dungeonID, dungeonType, dungeonSubType = GetLFGRoleUpdateSlot(i);
 		local displayName;
-		if ( dungeonType == TYPEID_HEROIC_DIFFICULTY ) then
+		if ( dungeonSubType == LFG_SUBTYPEID_HEROIC ) then
 			displayName = format(HEROIC_PREFIX, select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID)));
 		else
 			displayName = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID));
@@ -347,7 +344,7 @@ end
 
 --List functions
 function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, submode)
-	local name, typeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
 	button.id = dungeonID;
 	if ( LFGIsIDHeader(dungeonID) ) then
 		
@@ -356,7 +353,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.instanceName:SetPoint("RIGHT", button, "RIGHT", 0, 0);
 		button.level:Hide();
 		
-		if ( typeID == TYPEID_HEROIC_DIFFICULTY ) then
+		if ( subtypeID == LFG_SUBTYPEID_HEROIC ) then
 			button.heroicIcon:Show();
 			button.instanceName:SetPoint("LEFT", button.heroicIcon, "RIGHT", 0, 1);
 		else
@@ -388,7 +385,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		local difficultyColor = GetQuestDifficultyColor(recLevel);
 		button.level:SetFontObject(difficultyColor.font);
 		
-		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFD_IsEmpowered()) then
+		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not LFD_IsEmpowered()) then
 			button.instanceName:SetFontObject(QuestDifficulty_Header);
 		else
 			button.instanceName:SetFontObject(difficultyColor.font);
@@ -409,7 +406,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 	end
 	
 	local enableState= LFGEnabledList;
-	if ( mode == "queued" or mode == "listed" ) then
+	if ( mode == "queued" or mode == "listed" or mode == "suspended" ) then
 		enableState = LFGQueuedForList[dungeonID];
 	else
 		enableState = LFGEnabledList[dungeonID];
@@ -424,7 +421,7 @@ function LFDQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 	end
 	button.enableButton:SetChecked(enableState and enableState ~= 0);
 	
-	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or not LFD_IsEmpowered() ) then
+	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not LFD_IsEmpowered() ) then
 		button.enableButton:Disable();
 	else
 		button.enableButton:Enable();
@@ -574,7 +571,7 @@ function LFDQueueFrameTypeDropDown_SetUp(self)
 end
 
 local function isRandomDungeonDisplayable(id)
-	local name, typeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
 	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
@@ -675,7 +672,7 @@ function LFDQueueFrameRandomRandomList_OnEnter(self)
 		GameTooltip:AddLine(" ");
 		for i=1, numDungeons do
 			local dungeonID = GetDungeonForRandomSlot(randomID, i);
-			local name, typeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
 			local rangeText;
 			if ( minLevel == maxLevel ) then
 				rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);
@@ -811,7 +808,7 @@ end
 
 function LFDQueueFrameFindGroupButton_Update()
 	local mode, subMode = GetLFGMode();
-	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal") then
+	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended") then
 		LFDQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
 		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
@@ -822,7 +819,7 @@ function LFDQueueFrameFindGroupButton_Update()
 	end
 	
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or not LFDQueueFramePartyBackfill:IsVisible() ) then
+		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or mode == "suspended" or not LFDQueueFramePartyBackfill:IsVisible() ) then
 			LFDQueueFrameFindGroupButton:Enable();
 		else
 			LFDQueueFrameFindGroupButton:Disable();
@@ -833,7 +830,7 @@ function LFDQueueFrameFindGroupButton_Update()
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
 	end
 	
-	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" ) then
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" ) then
 		LFDQueueFramePartyBackfillBackfillButton:Enable();
 	else
 		LFDQueueFramePartyBackfillBackfillButton:Disable();
@@ -846,7 +843,7 @@ function LFDQueueFrame_Update()
 	
 	local mode, submode = GetLFGMode();
 	
-	if ( LFD_IsEmpowered() and mode ~= "queued") then
+	if ( LFD_IsEmpowered() and mode ~= "queued" and mode ~= "suspended") then
 		enableList = LFGEnabledList;
 	else
 		enableList = LFGQueuedForList;
@@ -861,7 +858,7 @@ function LFDQueueFrame_Update()
 end
 
 function LFDList_DefaultFilterFunction(dungeonID)
-	local name, typeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
 	local hasHeader = groupID ~= 0;
 	local sufficientExpansion = EXPANSION_LEVEL >= expansionLevel;
 	local level = UnitLevel("player");

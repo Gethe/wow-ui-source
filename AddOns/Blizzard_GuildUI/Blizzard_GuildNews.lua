@@ -130,10 +130,12 @@ function GuildNews_Update(frontPage, numButtons)
 						text1 = text2;	-- only using achievement name
 					end
 				end
-				button.text:SetFormattedText(_G["GUILD_NEWS_FORMAT"..newsType], text1, text2);
-				button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				button.header:Hide();
-				button:Enable();
+				if ( newsType )
+					button.text:SetFormattedText(_G["GUILD_NEWS_FORMAT"..newsType], text1, text2);
+					button.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					button.header:Hide();
+					button:Enable();
+				end
 			end
 			button:Show();
 		else

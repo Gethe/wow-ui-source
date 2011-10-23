@@ -176,7 +176,7 @@ function MiniMapLFG_UpdateIsShown()
 	local mode, submode = GetLFGMode();
 	if ( mode ) then
 		MiniMapLFGFrame:Show();
-		if ( mode == "queued" or mode == "listed" or mode == "rolecheck" ) then
+		if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
 			EyeTemplate_StartAnimating(MiniMapLFGFrame.eye);
 		else
 			EyeTemplate_StopAnimating(MiniMapLFGFrame.eye);
@@ -224,7 +224,7 @@ function MiniMapLFGFrameDropDown_Update()
 		info.text = LEAVE_QUEUE;
 		info.func = RejectProposal;
 		UIDropDownMenu_AddButton(info);
-	elseif ( mode == "queued" ) then
+	elseif ( mode == "queued" or mode == "suspended" ) then
 		info.text = LEAVE_QUEUE;
 		info.func = LeaveLFG;
 		info.disabled = (submode == "unempowered");
@@ -263,7 +263,7 @@ function MiniMapLFGFrame_OnClick(self, button)
 			PlaySound("igCharacterInfoTab");
 			StaticPopupSpecial_Show(LFGDungeonReadyPopup);
 		end
-	elseif ( mode == "queued" or mode == "rolecheck" ) then
+	elseif ( mode == "queued" or mode == "rolecheck" or mode == "suspended" ) then
 		ToggleLFDParentFrame();
 	elseif ( mode == "listed" ) then
 		ToggleFriendsFrame(4);
@@ -308,6 +308,11 @@ function MiniMapLFGFrame_OnEnter(self)
 				end
 			end
 		end
+		GameTooltip:Show();
+	elseif ( mode == "suspended" ) then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		GameTooltip:AddLine(IN_LFG_QUEUE_BUT_SUSPENDED, nil, nil, nil, 1);
 		GameTooltip:Show();
 	end
 end

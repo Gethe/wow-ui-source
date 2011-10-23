@@ -1,6 +1,6 @@
 UIPanelWindows["VoidStorageFrame"] = { area = "doublewide", pushable = 0, width = 726 };
 
-local VOID_STORAGE_UNLOCK_COST = 1000 * 100 * 100;	-- 1000 gold
+local VOID_STORAGE_UNLOCK_COST = 100 * 100 * 100;	-- 100 gold
 local BUTTON_TYPE_DEPOSIT = 1;
 local BUTTON_TYPE_WITHDRAW = 2;
 local BUTTON_TYPE_STORAGE = 3;
@@ -273,7 +273,9 @@ function VoidStorage_UpdateTransferButton(hasWarningDialog)
 		SetMoneyFrameColor("VoidStorageMoneyFrame", "red");
 	else
 		SetMoneyFrameColor("VoidStorageMoneyFrame");
-		if ( cost > 0 and IsVoidStorageReady() ) then
+		local numDeposits = GetNumVoidTransferDeposit();
+		local numWithdrawals = GetNumVoidTransferWithdrawal();
+		if ( ( numDeposits > 0 or numWithdrawals > 0 ) and IsVoidStorageReady() ) then
 			canApply = true;
 		end
 	end

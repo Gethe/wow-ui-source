@@ -400,7 +400,7 @@ end
 
 function GuildXPBar_OnEnter(self)
 	local currentXP, remainingXP, dailyXP, maxDailyXP, _, _, isUncapped = UnitGetGuildXP("player");
-	local nextLevelXP = currentXP + remainingXP;
+	local nextLevelXP = (currentXP + remainingXP) or 1;
 	local percentTotal = tostring(math.ceil((currentXP / nextLevelXP) * 100));
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(GUILD_EXPERIENCE);

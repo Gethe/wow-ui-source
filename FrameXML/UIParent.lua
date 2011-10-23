@@ -3626,7 +3626,7 @@ function LFR_IsEmpowered()
 end
 
 function GetLFGMode()
-	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
+	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
 	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
 	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
 	
@@ -3640,6 +3640,8 @@ function GetLFGMode()
 		return "rolecheck";
 	elseif ( IsListedInLFR() ) then
 		return "listed", (LFR_IsEmpowered() and "empowered" or "unempowered");
+	elseif ( joined ) then
+		return "suspended", (LFD_IsEmpowered() and "empowered" or "unempowered");	--We are "joined" to LFG, but not actually queued right now.
 	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) or IsOnePersonParty()) ) then
 		return "lfgparty";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() ) then

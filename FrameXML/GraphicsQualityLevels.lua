@@ -348,6 +348,9 @@ VideoData["Graphics_ResolutionDropDown"]={
 	},
 	lookup = Graphics_TableLookupSafe,
 	restart = true,
+	capTargets = {
+		"Graphics_MultiSampleDropDown",
+	},
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -379,7 +382,12 @@ VideoData["Graphics_MultiSampleDropDown"]={
 				local settings = { GetMultisampleFormats(Graphics_PrimaryMonitorDropDown:GetValue()) };
 				self.maxValue = #settings / self.TABLENEXT;
 			end
-
+			
+			-- let the C++ code know what the selected resolution is.  this will be used in 
+			-- determining the maximum allowed sample count.  Note that the cvar value will not
+			-- work, because that isn't set until we hit 'apply'
+			SetSelectedScreenResolutionIndex(Graphics_ResolutionDropDown:GetValue());
+			
 			local capMaxValue = self.maxValue;
 			local tooltip;
 			for key, cvar in pairs(self.cvarCaps) do
@@ -389,7 +397,15 @@ VideoData["Graphics_MultiSampleDropDown"]={
 					local capValue = GetMaxMultisampleFormatOnCvar(cvar, cvarValue);
 					capMaxValue = min(capMaxValue, capValue);
 					if ( capValue < self.maxValue ) then
-						local setting = dropDown.data[dropDown:GetValue()].text;
+						local setting;
+						if ( dropDown.data ) then
+							setting = dropDown.data[dropDown:GetValue()].text;
+						elseif ( dropDown.table ) then
+							setting = dropDown.table[dropDown:GetValue()];
+						else
+							setting = cvarValue;
+						end
+						
 						if ( setting ) then
 							if ( tooltip ) then
 								tooltip = tooltip .. "|n" .. string.format(GRAPHICS_OPTIONS_UNAVAILABLE, dropDown.name, setting);
@@ -418,6 +434,7 @@ VideoData["Graphics_MultiSampleDropDown"]={
 	cvarCaps = {
 		Graphics_LiquidDetailDropDown = "waterDetail",
 		Graphics_SunshaftsDropDown = "sunshafts",
+		Graphics_ResolutionDropDown = "gxResolution",
 	},
 	restart = true,
 }

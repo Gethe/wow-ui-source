@@ -88,7 +88,7 @@ function RaidFinderQueueFrame_Join()
 end
 
 function isRaidFinderDungeonDisplayable(id)
-	local name, typeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
 	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
@@ -110,7 +110,7 @@ end
 
 function RaidFinderFrameFindRaidButton_Update()
 	local mode, subMode = GetLFGMode();
-	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal") then
+	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		RaidFinderFrameFindRaidButton:SetText(LEAVE_QUEUE);
 	else
 		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
@@ -121,7 +121,7 @@ function RaidFinderFrameFindRaidButton_Update()
 	end
 	
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or not LFDQueueFramePartyBackfill:IsVisible() ) then
+		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or mode == "suspended" or not LFDQueueFramePartyBackfill:IsVisible() ) then
 			RaidFinderFrameFindRaidButton:Enable();
 		else
 			RaidFinderFrameFindRaidButton:Disable();

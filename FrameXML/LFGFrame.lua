@@ -12,20 +12,28 @@ function LFGDebug(text, ...)
 	end
 end
 
+TYPEID_DUNGEON = 1;
+TYPEID_RANDOM_DUNGEON = 6;
+
+LFG_SUBTYPEID_DUNGEON = 1;
+LFG_SUBTYPEID_HEROIC = 2;
+LFG_SUBTYPEID_RAID = 3;
+
 LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
 	name = 1,
 	typeID = 2,
-	minLevel = 3,
-	maxLevel = 4,
-	recLevel = 5,	--Recommended level
-	minRecLevel = 6,	--Minimum recommended level
-	maxRecLevel = 7,	--Maximum recommended level
-	expansionLevel = 8,
-	groupID = 9,
-	texture = 10,
-	difficulty = 11,
-	maxPlayers = 12,
+	subtypeID = 3,
+	minLevel = 4,
+	maxLevel = 5,
+	recLevel = 6,	--Recommended level
+	minRecLevel = 7,	--Minimum recommended level
+	maxRecLevel = 8,	--Maximum recommended level
+	expansionLevel = 9,
+	groupID = 10,
+	texture = 11,
+	difficulty = 12,
+	maxPlayers = 13,
 }
 
 LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
@@ -162,7 +170,7 @@ function LFG_UpdateLockedOutPanels()
 		LFDQueueFrameNoLFDWhileLFR:Hide();
 	end
 	
-	if ( mode == "queued" or mode == "proposal" or mode == "rolecheck" ) then
+	if ( mode == "queued" or mode == "proposal" or mode == "rolecheck" or mode == "suspended" ) then
 		LFRQueueFrameNoLFRWhileLFD:Show();
 	else
 		LFRQueueFrameNoLFRWhileLFD:Hide();
@@ -315,7 +323,7 @@ end
 
 function LFG_UpdateRolesChangeable()
 	local mode, subMode = GetLFGMode();
-	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" ) then
+	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		LFG_DisableRoleButton(LFDQueueFrameRoleButtonTank, true);
 		LFG_DisableRoleButton(LFRQueueFrameRoleButtonTank, true);
 		
@@ -501,6 +509,10 @@ function LFGSearchStatus_SetMode(mode)
 		LFGSearchStatus.mode = "grouped";
 		LFGSearchStatusIndividualRoleDisplay:Hide();
 		LFGSearchStatusGroupedRoleDisplay:Show();
+	elseif ( mode == "none" ) then
+		LFGSearchStatus.mode = "none";
+		LFGSearchStatusIndividualRoleDisplay:Hide();
+		LFGSearchStatusGroupedRoleDisplay:Hide();
 	else
 		GMError("Unknown mode");
 	end
@@ -546,31 +558,44 @@ end
 
 function LFGSearchStatus_Update()
 	local LFGSearchStatus = LFGSearchStatus;
-	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, instanceType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats();
-	
+	local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats();
+
+
 	LFGSearchStatus_UpdateRoles();
 	
-	local displayHeight = 145;
-	if ( LFGSearchStatus.mode == "grouped" ) then
-		displayHeight = displayHeight + 20;
-	end
+	local displayHeight = 85;
 	
 	if ( not hasData ) then
+		LFGSearchStatus_SetMode("none");
 		LFGSearchStatus:SetHeight(displayHeight);
-		LFGSearchStatus_SetRolesFound(0, 0, 0);
+		LFGSearchStatus_SetRolesFound(0, 0, 0, 0, 0, 0);
 		LFGSearchStatus.statistic:Hide();
 		LFGSearchStatus.elapsedWait:SetFormattedText(TIME_IN_QUEUE, LESS_THAN_ONE_MINUTE);
 		
 		LFGSearchStatus:SetScript("OnUpdate", nil);
 		return;
 	end
+
+	if ( instanceSubType == LFG_SUBTYPEID_RAID ) then
+		displayHeight = displayHeight + 80;
+		LFGSearchStatus_SetMode("grouped");
+	else
+		displayHeight = displayHeight + 60;
+		LFGSearchStatus_SetMode("individual");
+	end
+
+	--FIXME: Just here until we enter role counts into all old LFG dungeons.
+	if ( totalTanks == 0 and totalHealers == 0 and totalDPS == 0 ) then
+		GMError("LFG record has no tanks, healers, or DPS listed.");
+		totalTanks, totalHealers, totalDPS = 1, 1, 3;
+	end
 	
-	if ( instancetype == TYPEID_HEROIC_DIFFICULTY ) then
+	if ( instanceSubType == LFG_SUBTYPEID_HEROIC ) then
 		instanceName = format(HEROIC_PREFIX, instanceName);
 	end
 	
 	--This won't work if we decide the makeup is, say, 3 healers, 1 damage, 1 tank.
-	LFGSearchStatus_SetRolesFound(NUM_TANKS - tankNeeds, NUM_HEALERS - healerNeeds, NUM_DAMAGERS - dpsNeeds);
+	LFGSearchStatus_SetRolesFound(totalTanks - tankNeeds, totalHealers - healerNeeds, totalDPS - dpsNeeds, totalTanks, totalHealers, totalDPS);
 	
 	LFGSearchStatus.queuedTime = queuedTime;
 	local elapsedTime = GetTime() - queuedTime;
@@ -588,7 +613,7 @@ function LFGSearchStatus_Update()
 	LFGSearchStatus:SetScript("OnUpdate", LFGSearchStatus_OnUpdate);
 end
 
-function LFGSearchStatus_SetRolesFound(tanksFound, healersFound, damageFound)
+function LFGSearchStatus_SetRolesFound(tanksFound, healersFound, damageFound, totalTanks, totalHealers, totalDPS)
 	if ( LFGSearchStatus.mode == "individual" ) then
 		LFGSearchStatusPlayer_SetFound(LFGSearchStatusIndividualRoleDisplayTank1, (tanksFound > 0));
 		LFGSearchStatusPlayer_SetFound(LFGSearchStatusIndividualRoleDisplayHealer1, (healersFound > 0));
@@ -597,13 +622,13 @@ function LFGSearchStatus_SetRolesFound(tanksFound, healersFound, damageFound)
 			LFGSearchStatusPlayer_SetFound(_G["LFGSearchStatusIndividualRoleDisplayDamage"..i], i <= damageFound);
 		end
 	else
-		LFGSearchStatusPlayer_SetFound(LFGSearchStatusGroupedRoleDisplayTank, tanksFound == NUM_TANKS);
-		LFGSearchStatusPlayer_SetFound(LFGSearchStatusGroupedRoleDisplayHealer, healersFound == NUM_HEALERS);
-		LFGSearchStatusPlayer_SetFound(LFGSearchStatusGroupedRoleDisplayDamage, damageFound == NUM_DAMAGERS);
+		LFGSearchStatusPlayer_SetFound(LFGSearchStatusGroupedRoleDisplayTank, tanksFound == totalTanks);
+		LFGSearchStatusPlayer_SetFound(LFGSearchStatusGroupedRoleDisplayHealer, healersFound == totalHealers);
+		LFGSearchStatusPlayer_SetFound(LFGSearchStatusGroupedRoleDisplayDamage, damageFound == totalDPS);
 		
-		LFGSearchStatusGroupedRoleDisplayTank.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, tanksFound, NUM_TANKS);
-		LFGSearchStatusGroupedRoleDisplayHealer.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, healersFound, NUM_HEALERS);
-		LFGSearchStatusGroupedRoleDisplayDamage.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, damageFound, NUM_DAMAGERS);
+		LFGSearchStatusGroupedRoleDisplayTank.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, tanksFound, totalTanks);
+		LFGSearchStatusGroupedRoleDisplayHealer.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, healersFound, totalHealers);
+		LFGSearchStatusGroupedRoleDisplayDamage.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, damageFound, totalDPS);
 	end
 end
 
@@ -634,8 +659,7 @@ function LFGDungeonReadyPopup_OnUpdate(self, elapsed)
 end
 
 function LFGDungeonReadyPopup_Update()	
-	local proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader = GetLFGProposal();
-	local isRaid = false;
+	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader = GetLFGProposal();
 	if ( not proposalExists ) then
 		LFGDebug("Proposal Hidden: No proposal exists.");
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
@@ -645,7 +669,7 @@ function LFGDungeonReadyPopup_Update()
 	LFGDungeonReadyPopup.dungeonID = id;
 	
 	if ( hasResponded ) then
-		if ( isRaid ) then
+		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
 			LFGDungeonReadyStatus:Show();
 			LFGDungeonReadyStatusIndividual:Hide();
 			LFGDungeonReadyStatusGrouped:Show();
@@ -852,8 +876,8 @@ function LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, tot
 end
 
 function LFGDungeonReadyDialogInstanceInfo_OnEnter(self)
-	local numBosses = select(8, GetLFGProposal());
-	local isHoliday = select(12, GetLFGProposal());
+	local numBosses = select(9, GetLFGProposal());
+	local isHoliday = select(13, GetLFGProposal());
 	
 	if ( numBosses == 0 or isHoliday) then
 		return;
@@ -1093,7 +1117,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local difficulty;
 	local dungeonDescription;
 	local textureFilename;
-	local dungeonName, _,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday = GetLFGDungeonInfo(dungeonID);
+	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday = GetLFGDungeonInfo(dungeonID);
 	local isHeroic = difficulty > 0;
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	local numRandoms = 4 - GetNumPartyMembers();
@@ -1123,6 +1147,14 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 			parentFrame.rewardsDescription:SetText(LFD_HOLIDAY_REWARD_EXPLANATION2);
 		else
 			parentFrame.rewardsDescription:SetText(LFD_HOLIDAY_REWARD_EXPLANATION1);
+		end
+		parentFrame.title:SetText(dungeonName);
+		parentFrame.description:SetText(dungeonDescription);
+	elseif ( subtypeID == LFG_SUBTYPEID_RAID ) then
+		if ( doneToday ) then --May not actually be today, but whatever this reset period is.
+			parentFrame.rewardsDescription:SetText(RF_REWARD_EXPLANATION2);
+		else
+			parentFrame.rewardsDescription:SetText(RF_REWARD_EXPLANATION1);
 		end
 		parentFrame.title:SetText(dungeonName);
 		parentFrame.description:SetText(dungeonDescription);
@@ -1216,7 +1248,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		parentFrame.xpAmount:Hide();
 	end
 	
-	if ( not isHoliday ) then
+	if ( typeID == TYPEID_RANDOM_DUNGEON ) then
 		parentFrame.randomList:Show();
 		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "RIGHT", 5, 0);
 	else
