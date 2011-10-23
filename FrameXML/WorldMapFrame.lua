@@ -731,14 +731,24 @@ function WorldMapLevelButton_OnClick(self)
 end
 
 function WorldMapLevelUp_OnClick(self)
-	SetDungeonMapLevel(GetCurrentMapDungeonLevel() - 1);
-	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, GetCurrentMapDungeonLevel());
+	CloseDropDownMenus();
+	local currMapLevel = GetCurrentMapDungeonLevel();
+	SetDungeonMapLevel(currMapLevel - 1);
+	local newMapLevel = GetCurrentMapDungeonLevel();
+	if ( currMapLevel ~= newMapLevel ) then
+		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, newMapLevel);
+	end
 	PlaySound("UChatScrollButton");
 end
 
 function WorldMapLevelDown_OnClick(self)
-	SetDungeonMapLevel(GetCurrentMapDungeonLevel() + 1);
-	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, GetCurrentMapDungeonLevel());
+	CloseDropDownMenus();
+	local currMapLevel = GetCurrentMapDungeonLevel();
+	SetDungeonMapLevel(currMapLevel + 1);
+	local newMapLevel = GetCurrentMapDungeonLevel();
+	if ( currMapLevel ~= newMapLevel ) then
+		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, newMapLevel);
+	end
 	PlaySound("UChatScrollButton");
 end
 

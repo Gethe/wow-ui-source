@@ -460,7 +460,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-4"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
@@ -513,6 +513,7 @@
 		<Scripts>
 			<OnLoad function="ExtraActionBar_OnLoad"/>
 			<OnShow function="ExtraActionBar_OnShow"/>
+			<OnHide function="ExtraActionBar_OnHide"/>
 			<OnEvent function="ExtraActionBar_OnEvent"/>
 		</Scripts>
 	</Frame>

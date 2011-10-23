@@ -13,8 +13,11 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 end
 
 function RaidFinderFrame_OnShow(self)
+	RequestLFDPlayerLockInfo();
+	RequestLFDPartyLockInfo();
 	ButtonFrameTemplate_HideAttic(self:GetParent());
 	self:GetParent().TitleText:SetText(RAID_FINDER);
+	RaidFinderFrameFindRaidButton_Update();
 	
 	self:GetParent().Inset:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", 2, 284);
 	self:GetParent().Inset:SetPoint("BOTTOMRIGHT", self:GetParent(), "BOTTOMRIGHT", -2, 26);
@@ -31,10 +34,10 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 	
 	for i=1, GetNumRFDungeons() do
 		local id, name = GetRFDungeonInfo(i);
-		if ( isRaidFinderDungeonDisplayable(id) ) then
-			local isAvailable = IsLFGDungeonJoinable(id);
+		local isAvailable = IsLFGDungeonJoinable(id);
+		if ( isAvailable or isRaidFinderDungeonDisplayable(id) ) then
 			if ( isAvailable ) then
-				info.text = name;
+				info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
 				info.value = id;
 				info.isTitle = nil;
 				info.func = RaidFinderQueueFrameSelectionDropDownButton_OnClick;
@@ -46,7 +49,7 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 				info.tooltipText = nil;
 				UIDropDownMenu_AddButton(info);
 			else
-				info.text = name;
+				info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
 				info.value = id;
 				info.isTitle = nil;
 				info.func = nil;
@@ -69,11 +72,25 @@ end
 function RaidFinderQueueFrame_SetRaid(value)
 	RaidFinderQueueFrame.raid = value;
 	UIDropDownMenu_SetSelectedValue(RaidFinderQueueFrameSelectionDropDown, value);
+	if ( value ) then
+		local name = GetLFGDungeonInfo(value);
+		UIDropDownMenu_SetText(RaidFinderQueueFrameSelectionDropDown, name);
+	end
 	RaidFinderQueueFrameRewards_UpdateFrame();
 end
 
+function RaidFinderQueueFrame_Join()
+	if ( RaidFinderQueueFrame.raid ) then
+		ClearAllLFGDungeons();
+		SetLFGDungeon(RaidFinderQueueFrame.raid);
+		JoinLFG();
+	end
+end
+
 function isRaidFinderDungeonDisplayable(id)
-	return true;
+	local name, typeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local myLevel = UnitLevel("player");
+	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
 
 function RaidFinderFrameRoleCheckButton_OnClick(self)
@@ -88,9 +105,29 @@ function RaidFinderQueueFrame_SetRoles()
 end
 
 function RaidFinderQueueFrameRewards_UpdateFrame()
-	if ( not RaidFinderQueueFrame.raid ) then
-		return;
-	end
-	
 	LFGRewardsFrame_UpdateFrame(RaidFinderQueueFrameScrollFrameChildFrame, RaidFinderQueueFrame.raid, RaidFinderQueueFrameBackground);
 end
+
+function RaidFinderFrameFindRaidButton_Update()
+	local mode, subMode = GetLFGMode();
+	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal") then
+		RaidFinderFrameFindRaidButton:SetText(LEAVE_QUEUE);
+	else
+		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+			RaidFinderFrameFindRaidButton:SetText(JOIN_AS_PARTY);
+		else
+			RaidFinderFrameFindRaidButton:SetText(FIND_A_GROUP);
+		end
+	end
+	
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
+		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or not LFDQueueFramePartyBackfill:IsVisible() ) then
+			RaidFinderFrameFindRaidButton:Enable();
+		else
+			RaidFinderFrameFindRaidButton:Disable();
+		end
+	else
+		RaidFinderFrameFindRaidButton:Disable();
+	end
+end
+

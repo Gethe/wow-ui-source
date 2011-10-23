@@ -157,6 +157,18 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+	<Frame name="ActionBarButtonEventsFrame">
+		<Scripts>
+			<OnLoad function="ActionBarButtonEventsFrame_OnLoad"/>
+			<OnEvent function="ActionBarButtonEventsFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="ActionBarActionEventsFrame">
+		<Scripts>
+			<OnLoad function="ActionBarActionEventsFrame_OnLoad"/>
+			<OnEvent function="ActionBarActionEventsFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
 	<CheckButton name="ActionButton1" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="1">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">

@@ -240,6 +240,12 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						local mode, subMode = GetLFGMode();
+						if ( mode == "queued" or mode == "listed" or mode == "rolecheck" ) then
+							LeaveLFG();
+						else
+							RaidFinderQueueFrame_Join();
+						end
 					</OnClick>
 				</Scripts>
 			</Button>

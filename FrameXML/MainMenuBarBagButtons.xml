@@ -53,7 +53,7 @@
 				end
 			</OnEvent>
 			<OnShow>
-				PaperDollItemSlotButton_OnShow(self);
+				PaperDollItemSlotButton_OnShow(self, true);
 			</OnShow>
 			<OnHide>
 				PaperDollItemSlotButton_OnHide(self);

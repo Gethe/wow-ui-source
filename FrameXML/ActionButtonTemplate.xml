@@ -87,7 +87,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
 				<Size x="36" y="36"/>
 				<Anchors>
 					<Anchor point="CENTER">

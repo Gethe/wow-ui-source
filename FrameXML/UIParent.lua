@@ -567,7 +567,14 @@ end
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
-	if ( event == "VARIABLES_LOADED" ) then
+	if ( event == "CURRENT_SPELL_CAST_CHANGED" and #StaticPopup_DisplayedFrames > 0 ) then
+		if ( arg1 ) then
+			StaticPopup_Hide("BIND_ENCHANT");
+			StaticPopup_Hide("REPLACE_ENCHANT");
+		end
+		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
+		StaticPopup_Hide("END_BOUND_TRADEABLE");
+	elseif ( event == "VARIABLES_LOADED" ) then
 		LocalizeFrames();
 		if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
 			if ( not BattlefieldMinimap ) then
@@ -804,13 +811,6 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("TRADE_REPLACE_ENCHANT", arg1, arg2);
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
-	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
-		if ( arg1 ) then
-			StaticPopup_Hide("BIND_ENCHANT");
-			StaticPopup_Hide("REPLACE_ENCHANT");
-		end
-		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
-		StaticPopup_Hide("END_BOUND_TRADEABLE");
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
 		if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
 			local info = ChatTypeInfo["SYSTEM"];
@@ -1177,8 +1177,9 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
-	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1};
-	["PlayerPowerBarAlt"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1};
+	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
+	["PlayerPowerBarAlt"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, extraActionBarFrame = 1};
+	["ExtraActionBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndShapeshift = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, reputation = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["ShapeshiftBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, reputation = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
@@ -1800,6 +1801,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( PlayerPowerBarAlt:IsShown() ) then
 			tinsert(yOffsetFrames, "playerPowerBarAlt");
 		end
+		if (ExtraActionBarFrame and ExtraActionBarFrame:IsShown() ) then
+			tinsert(yOffsetFrames, "extraActionBarFrame");
+		end
 	end
 	
 	if ( menuBarTop == 55 ) then
@@ -1813,6 +1817,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		if ( value.playerPowerBarAlt ) then
 			value.playerPowerBarAlt = PlayerPowerBarAlt:GetHeight() + 10;
+		end
+		if ( value.extraActionBarFrame and ExtraActionBarFrame ) then
+			value.extraActionBarFrame = ExtraActionBarFrame:GetHeight() + 10;
 		end
 		if ( value.bonusActionBar and BonusActionBarFrame ) then
 			value.bonusActionBar = BonusActionBarFrame:GetHeight() - MainMenuBar:GetHeight();

@@ -83,6 +83,66 @@ function ActionBar_PageDown()
 	ChangeActionBarPage(prevPage);
 end
 
+function ActionBarButtonEventsFrame_OnLoad(self)
+	self.frames = { };
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("ACTIONBAR_SHOWGRID");
+	self:RegisterEvent("ACTIONBAR_HIDEGRID");
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
+	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
+end
+
+function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
+	for k, frame in pairs(self.frames) do
+		ActionButton_OnEvent(frame, event, ...);
+	end
+end
+
+function ActionBarButtonEventsFrame_RegisterFrame(frame)
+	tinsert(ActionBarButtonEventsFrame.frames, frame);
+end
+
+function ActionBarActionEventsFrame_OnLoad(self)
+	self.frames = { };
+	self:RegisterEvent("ACTIONBAR_UPDATE_STATE");
+	self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
+	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("TRADE_SKILL_SHOW");
+	self:RegisterEvent("TRADE_SKILL_CLOSE");
+	self:RegisterEvent("ARCHAEOLOGY_CLOSED");
+	self:RegisterEvent("PLAYER_ENTER_COMBAT");
+	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
+	self:RegisterEvent("START_AUTOREPEAT_SPELL");
+	self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("COMPANION_UPDATE");
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("PET_STABLE_UPDATE");
+	self:RegisterEvent("PET_STABLE_SHOW");
+	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
+	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
+end
+
+function ActionBarActionEventsFrame_OnEvent(self, event, ...)
+	for k, frame in pairs(self.frames) do
+		ActionButton_OnEvent(frame, event, ...);
+	end
+end
+
+function ActionBarActionEventsFrame_RegisterFrame(frame)
+	ActionBarActionEventsFrame.frames[frame] = frame;
+end
+
+function ActionBarActionEventsFrame_UnregisterFrame(frame)
+	ActionBarActionEventsFrame.frames[frame] = nil;
+end
+
 function ActionButton_OnLoad (self)
 	self.flashing = 0;
 	self.flashtime = 0;
@@ -94,13 +154,7 @@ function ActionButton_OnLoad (self)
 	self:SetAttribute("useparent-actionpage", true);
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("ACTIONBAR_SHOWGRID");
-	self:RegisterEvent("ACTIONBAR_HIDEGRID");
-	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
-	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
-	self:RegisterEvent("UPDATE_BINDINGS");
-	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
+	ActionBarButtonEventsFrame_RegisterFrame(self);
 	ActionButton_UpdateAction(self);
 	ActionButton_UpdateHotkeys(self, self.buttonType);
 end
@@ -176,27 +230,7 @@ function ActionButton_Update (self)
 
 	if ( HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
-			self:RegisterEvent("ACTIONBAR_UPDATE_STATE");
-			self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
-			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
-			self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-			self:RegisterEvent("PLAYER_TARGET_CHANGED");
-			self:RegisterEvent("TRADE_SKILL_SHOW");
-			self:RegisterEvent("TRADE_SKILL_CLOSE");
-			self:RegisterEvent("ARCHAEOLOGY_CLOSED");
-			self:RegisterEvent("PLAYER_ENTER_COMBAT");
-			self:RegisterEvent("PLAYER_LEAVE_COMBAT");
-			self:RegisterEvent("START_AUTOREPEAT_SPELL");
-			self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
-			self:RegisterEvent("UNIT_ENTERED_VEHICLE");
-			self:RegisterEvent("UNIT_EXITED_VEHICLE");
-			self:RegisterEvent("COMPANION_UPDATE");
-			self:RegisterEvent("UNIT_INVENTORY_CHANGED");
-			self:RegisterEvent("LEARNED_SPELL_IN_TAB");
-			self:RegisterEvent("PET_STABLE_UPDATE");
-			self:RegisterEvent("PET_STABLE_SHOW");
-			self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
-			self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
+			ActionBarActionEventsFrame_RegisterFrame(self);
 			self.eventsRegistered = true;
 		end
 
@@ -209,27 +243,7 @@ function ActionButton_Update (self)
 		ActionButton_UpdateFlash(self);
 	else
 		if ( self.eventsRegistered ) then
-			self:UnregisterEvent("ACTIONBAR_UPDATE_STATE");
-			self:UnregisterEvent("ACTIONBAR_UPDATE_USABLE");
-			self:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
-			self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
-			self:UnregisterEvent("PLAYER_TARGET_CHANGED");
-			self:UnregisterEvent("TRADE_SKILL_SHOW");
-			self:UnregisterEvent("ARCHAEOLOGY_CLOSED");
-			self:UnregisterEvent("TRADE_SKILL_CLOSE");
-			self:UnregisterEvent("PLAYER_ENTER_COMBAT");
-			self:UnregisterEvent("PLAYER_LEAVE_COMBAT");
-			self:UnregisterEvent("START_AUTOREPEAT_SPELL");
-			self:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
-			self:UnregisterEvent("UNIT_ENTERED_VEHICLE");
-			self:UnregisterEvent("UNIT_EXITED_VEHICLE");
-			self:UnregisterEvent("COMPANION_UPDATE");
-			self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
-			self:UnregisterEvent("LEARNED_SPELL_IN_TAB");
-			self:UnregisterEvent("PET_STABLE_UPDATE");
-			self:UnregisterEvent("PET_STABLE_SHOW");
-			self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
-			self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
+			ActionBarActionEventsFrame_UnregisterFrame(self)
 			self.eventsRegistered = nil;
 		end
 
@@ -372,9 +386,8 @@ function ActionButton_UpdateCount (self)
 end
 
 function ActionButton_UpdateCooldown (self)
-	local cooldown = _G[self:GetName().."Cooldown"];
 	local start, duration, enable = GetActionCooldown(self.action);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
 end
 
 --Overlay stuff

@@ -603,16 +603,11 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								self:RegisterEvent("BAG_UPDATE_COOLDOWN");
-								self:RegisterEvent("BAG_UPDATE");
-								self:RegisterEvent("SPELL_UPDATE_USABLE");
-								self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-								self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 								self.UpdateTooltip = HelpFrameStuckHearthstone_UpdateTooltip;
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 							</OnLoad>
 							<OnEvent>
-								if (self:IsShown()) then
+								if ( self:IsVisible() ) then
 									HelpFrameStuckHearthstone_Update(self);
 								end
 							</OnEvent>

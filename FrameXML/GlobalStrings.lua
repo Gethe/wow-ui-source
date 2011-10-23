@@ -5638,6 +5638,7 @@ LOOT_ROLL_PASSED_SELF_AUTO = "You automatically passed on: %s because you cannot
 LOOT_ROLL_ROLLED_DE = "Disenchant Roll - %d for %s by %s";
 LOOT_ROLL_ROLLED_GREED = "Greed Roll - %d for %s by %s";
 LOOT_ROLL_ROLLED_NEED = "Need Roll - %d for %s by %s";
+LOOT_ROLL_ROLLED_NEED_ROLE_BONUS = "Need Roll - %d for %s by %s + Role Bonus";
 LOOT_ROLL_WON = "%s won: %s";
 LOOT_ROLL_WON_NO_SPAM_DE = "%1$s won: %3$s |cff818181(Disenchant - %2$d)|r";
 LOOT_ROLL_WON_NO_SPAM_GREED = "%1$s won: %3$s |cff818181(Greed - %2$d)|r";

@@ -88,7 +88,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<FontString name="$parentFill" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_EMAIL_OR_CHARACTER" parentKey="fill">
+						<FontString name="$parentFill" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_EMAIL" parentKey="fill">
 							<Anchors>
 								<Anchor point="LEFT" x="3" y="0"/>
 							</Anchors>

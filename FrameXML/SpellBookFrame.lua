@@ -807,7 +807,11 @@ end
 
 function SpellBookCompanionsFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
-	if ( event == "COMPANION_LEARNED" ) then
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		if ( self:IsVisible() ) then
+			SpellBook_UpdateCompanionCooldowns();
+		end	
+	elseif ( event == "COMPANION_LEARNED" ) then
 		if ( not SpellBookFrame:IsVisible() ) then
 			MicroButtonPulse(SpellbookMicroButton, 60);
 		end
@@ -850,10 +854,6 @@ function SpellBookCompanionsFrame_OnEvent(self, event, ...)
 		end
 		if (self:IsVisible()) then
 			SpellBook_UpdateCompanionsFrame();
-		end
-	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
-		if ( self:IsVisible() ) then
-			SpellBook_UpdateCompanionCooldowns();
 		end
 	elseif ( (event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) then
 		SpellBook_UpdateCompanionsFrame();

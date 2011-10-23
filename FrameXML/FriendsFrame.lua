@@ -80,12 +80,6 @@ function FriendsFrame_ShowSubFrame(frameName)
 	end 
 end
 
-function FriendsFrame_SummonButton_OnEvent (self, event, ...)
-	if ( event == "SPELL_UPDATE_COOLDOWN" and self:GetParent().id ) then
-		FriendsFrame_SummonButton_Update(self);
-	end
-end
-
 function FriendsFrame_SummonButton_OnShow (self)
 	FriendsFrame_SummonButton_Update(self);
 end
@@ -212,6 +206,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("BN_DISCONNECTED");
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self.playersInBotRank = 0;
 	self.playerStatusFrame = 1;
 	self.selectedFriend = 1;
@@ -859,7 +854,14 @@ function WhoFrameDropDownButton_OnClick(self)
 end
 
 function FriendsFrame_OnEvent(self, event, ...)
-	if ( event == "FRIENDLIST_SHOW" ) then
+	if ( event == "SPELL_UPDATE_COOLDOWN" and self:IsShown() ) then
+		local buttons = FriendsFrameFriendsScrollFrame.buttons;
+		for _, button in pairs(buttons) do
+			if ( button.summonButton:IsShown() ) then
+				FriendsFrame_SummonButton_Update(button.summonButton);
+			end
+		end
+	elseif ( event == "FRIENDLIST_SHOW" ) then
 		FriendsList_Update();
 		FriendsFrame_Update();
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then

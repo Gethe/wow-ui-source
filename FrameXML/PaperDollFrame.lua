@@ -2279,16 +2279,17 @@ function PaperDollItemSlotButton_OnLoad (self)
 	end
 end
 
-function PaperDollItemSlotButton_OnShow (self)
+function PaperDollItemSlotButton_OnShow (self, isBag)
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:RegisterEvent("MERCHANT_UPDATE");
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
 	self:RegisterEvent("ITEM_LOCK_CHANGED");
 	self:RegisterEvent("CURSOR_UPDATE");
-	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	self:RegisterEvent("SHOW_COMPARE_TOOLTIP");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-
+	if ( not isBag ) then
+		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
+	end
 	PaperDollItemSlotButton_Update(self);
 end
 

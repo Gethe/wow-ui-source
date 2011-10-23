@@ -176,14 +176,10 @@ TRAVEL PASS
 				<Scripts>
 					<OnLoad>
 						_G[self:GetName().."Icon"]:SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
-						self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 						local normalTexture = _G[self:GetName().."NormalTexture"];
 						normalTexture:SetWidth(40);
 						normalTexture:SetHeight(40);
 					</OnLoad>
-					<OnEvent>
-						FriendsFrame_SummonButton_OnEvent(self, event, ...);
-					</OnEvent>
 					<OnShow>
 						FriendsFrame_SummonButton_OnShow(self);
 					</OnShow>

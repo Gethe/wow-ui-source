@@ -550,8 +550,13 @@ function ExtraActionBar_OnShow (self)
 	local _, spellID = GetActionInfo(self.button.action);
 	local texture = ExtraActionStyles[spellID] or ExtraActionStyles["default"];
 	self.button.style:SetTexture("Interface\\UnitPowerBarAlt\\"..texture);
+	UIParent_ManageFramePositions();
 end
 
+
+function ExtraActionBar_OnHide (self)
+	UIParent_ManageFramePositions();
+end
 
 function ExtraActionBar_OnEvent (self, event, ...)
 	if ( event == "UPDATE_EXTRA_ACTIONBAR" ) then

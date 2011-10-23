@@ -131,11 +131,25 @@ function HelpFrame_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
 	GetGMStatus();
+	-- hearthstone button events
+	local button = HelpFrameCharacterStuckHearthstone;
+	button:RegisterEvent("BAG_UPDATE_COOLDOWN");
+	button:RegisterEvent("BAG_UPDATE");
+	button:RegisterEvent("SPELL_UPDATE_USABLE");
+	button:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	button:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");	
 end
 
 function HelpFrame_OnHide(self)
 	PlaySound("igCharacterInfoClose");
 	UpdateMicroButtons();
+	-- hearthstone button events
+	local button = HelpFrameCharacterStuckHearthstone;
+	button:UnregisterEvent("BAG_UPDATE_COOLDOWN");
+	button:UnregisterEvent("BAG_UPDATE");
+	button:UnregisterEvent("SPELL_UPDATE_USABLE");
+	button:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+	button:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
 end
 
 function HelpFrame_OnEvent(self, event, ...)
@@ -1013,6 +1027,4 @@ function KnowledgeBase_ClearSearch(self)
 	self:GetParent().searchButton:Disable();
 	HelpFrame.kbase.hasSearch = false;
 end
-
-
 

@@ -172,6 +172,7 @@ end
 function LFG_UpdateFindGroupButtons()
 	LFDQueueFrameFindGroupButton_Update();
 	LFRQueueFrameFindGroupButton_Update();
+	RaidFinderFrameFindRaidButton_Update();
 end
 
 function LFG_UpdateQueuedList()
@@ -1081,6 +1082,11 @@ end
 function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local parentName = parentFrame:GetName();
 	
+	if ( not dungeonID ) then
+		parentFrame:Hide();
+		return;
+	end
+
 	parentFrame:Show();
 	
 	local holiday;
