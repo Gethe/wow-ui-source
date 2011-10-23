@@ -742,7 +742,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox name="$parentEditBox" letters="33" inherits="InputBoxTemplate" autoFocus="true" parentKey="editBox">
+					<EditBox name="$parentEditBox" letters="24" inherits="InputBoxTemplate" autoFocus="false" parentKey="editBox">
 						<Size x="200" y="20"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentRename" relativePoint="BOTTOM" x="0" y="-10"/>
@@ -1151,6 +1151,39 @@
 								end
 							</OnClick>
 						</Scripts>
+					</Button>
+					<Button name="GuildGMImpeachButton" hidden="true">
+						<Size x="320" y="18"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentHeader1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentLockTexture">
+									<Color r="0.2" g="0.0" b="0.0"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" text="GUILD_IMPEACH_BUTTON_TEXT">
+									<Anchors>
+										<Anchor point="LEFT" x="24" y="-1"/>
+										<Anchor point="RIGHT" x="-8" y="-1"/>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentAlert" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+									<Size x="14" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" x="3" y="-1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("GUILD_IMPEACH");
+							</OnClick>
+						</Scripts>
+						<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 					</Button>
 				</Frames>
 			</Frame>

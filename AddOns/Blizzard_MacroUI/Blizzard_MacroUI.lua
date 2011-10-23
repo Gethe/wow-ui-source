@@ -228,6 +228,11 @@ function MacroButtonContainer_OnLoad(self)
 	end
 end
 
+local _playerSpells = {};
+local _numSpells;
+local _specialIcon;
+local _TotalIcons;
+
 function MacroPopupFrame_OnShow(self)
 	MacroPopupEditBox:SetFocus();
 
@@ -246,6 +251,8 @@ function MacroPopupFrame_OnShow(self)
 	MacroNewButton:Disable();
 	MacroFrameTab1:Disable();
 	MacroFrameTab2:Disable();
+	
+	RefreshPlayerSpellIconInfo();
 end
 
 function MacroPopupFrame_OnHide(self)
@@ -271,9 +278,74 @@ function MacroPopupFrame_OnHide(self)
 	PanelTemplates_UpdateTabs(MacroFrame);
 end
 
+--[[
+RefreshPlayerSpellIconInfo() counts how many uniquely textured spells the player knows and puts them in a table
+]]
+function RefreshPlayerSpellIconInfo()
+
+	_specialIcon = MacroPopupFrame.selectedIconTexture;
+	_numSpells = 0;
+	local index = 1;
+	local numFlyouts = 0;
+	for i = 1, GetNumSpellTabs() do
+		tab, tabTex, offset, numSpells, _ = GetSpellTabInfo(i);
+		offset = offset + 1;
+		tabEnd = offset + numSpells;
+		for j = offset, tabEnd - 1 do
+			--to get spell info by slot, you have to pass in a pet argument
+			local spellType, ID = GetSpellBookItemInfo(j, "player"); 
+			if (not (spellType == "FUTURESPELL" or spellType == "FLYOUT")) then
+				_playerSpells[index] = GetSpellTexture(j, "player"); 
+				index = index + 1;
+				_numSpells = _numSpells + 1;
+			end
+			if (spellType == "FLYOUT") then
+				local _, _, numSlots, isKnown = GetFlyoutInfo(ID);
+				if (isKnown and numSlots > 0) then
+					for k = 1, numSlots do 
+						local spellID, isKnown = GetFlyoutSlotInfo(ID, k)
+						if (isKnown) then
+							_playerSpells[index] = GetSpellTexture(spellID); 
+							index = index + 1;
+							_numSpells = _numSpells + 1;
+						end
+					end
+				end
+			end
+		end
+	end
+	_TotalIcons = _numSpells + GetNumMacroIcons();
+	
+end
+
+--[[
+GetSpellorMacroIconInfo(index) determines the texture and relative index for a given index
+input: an index into a list of the player's spell icons followed by the macro icons
+output: the corresponding texture and its index relative to the join point of the lists
+]]
+function GetSpellorMacroIconInfo(index)
+	if ( not index ) then
+		return;
+	end
+
+	for i = 1, #_playerSpells do
+		if (_playerSpells[i]) then
+			index = index - 1;
+			if (index == 0) then
+				return _playerSpells[i], -i;
+			end
+		end
+	end
+	if (index > GetNumMacroIcons()) then
+		return _specialIcon, index;
+	end
+	return GetMacroIconInfo(index), index;
+end
+
 function MacroPopupFrame_Update(self)
+	RefreshPlayerSpellIconInfo();
 	self = self or MacroPopupFrame;
-	local numMacroIcons = GetNumMacroIcons();
+	local numMacroIcons = _TotalIcons;
 	local macroPopupIcon, macroPopupButton;
 	local macroPopupOffset = FauxScrollFrame_GetOffset(MacroPopupScrollFrame);
 	local index;
@@ -292,7 +364,7 @@ function MacroPopupFrame_Update(self)
 		macroPopupIcon = _G["MacroPopupButton"..i.."Icon"];
 		macroPopupButton = _G["MacroPopupButton"..i];
 		index = (macroPopupOffset * NUM_ICONS_PER_ROW) + i;
-		texture = GetMacroIconInfo(index);
+		texture = GetSpellorMacroIconInfo(index);
 		if ( index <= numMacroIcons ) then
 			macroPopupIcon:SetTexture(texture);
 			macroPopupButton:Show();
@@ -320,12 +392,14 @@ function MacroPopupFrame_CancelEdit()
 end
 
 function MacroPopupOkayButton_Update()
-	if ( (strlen(MacroPopupEditBox:GetText()) > 0) and MacroPopupFrame.selectedIcon ) then
+	local text = MacroPopupEditBox:GetText();
+	text = string.gsub(text, "\"", "");
+	if ( (strlen(text) > 0) and MacroPopupFrame.selectedIcon ) then
 		MacroPopupOkayButton:Enable();
 	else
 		MacroPopupOkayButton:Disable();
 	end
-	if ( MacroPopupFrame.mode == "edit" and (strlen(MacroPopupEditBox:GetText()) > 0) ) then
+	if ( MacroPopupFrame.mode == "edit" and (strlen(text) > 0) ) then
 		MacroPopupOkayButton:Enable();
 	end
 end
@@ -334,7 +408,7 @@ function MacroPopupButton_SelectTexture(selectedIcon)
 	MacroPopupFrame.selectedIcon = selectedIcon;
 	-- Clear out selected texture
 	MacroPopupFrame.selectedIconTexture = nil;
-	MacroFrameSelectedMacroButtonIcon:SetTexture(GetMacroIconInfo(MacroPopupFrame.selectedIcon));
+	MacroFrameSelectedMacroButtonIcon:SetTexture(GetSpellorMacroIconInfo(MacroPopupFrame.selectedIcon));
 	MacroPopupOkayButton_Update();
 	local mode = MacroPopupFrame.mode;
 	MacroPopupFrame.mode = nil;
@@ -348,10 +422,13 @@ end
 
 function MacroPopupOkayButton_OnClick(self, button)
 	local index = 1
+	local _, iconIndex = GetSpellorMacroIconInfo(MacroPopupFrame.selectedIcon);
+	local text = MacroPopupEditBox:GetText();
+	text = string.gsub(text, "\"", "");
 	if ( MacroPopupFrame.mode == "new" ) then
-		index = CreateMacro(MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon, nil, (MacroFrame.macroBase > 0));
+		index = CreateMacro(text, iconIndex, nil, (MacroFrame.macroBase > 0));
 	elseif ( MacroPopupFrame.mode == "edit" ) then
-		index = EditMacro(MacroFrame.selectedMacro, MacroPopupEditBox:GetText(), MacroPopupFrame.selectedIcon);
+		index = EditMacro(MacroFrame.selectedMacro, text, iconIndex);
 	end
 	MacroPopupFrame:Hide();
 	MacroFrame_SelectMacro(index);

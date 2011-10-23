@@ -175,7 +175,7 @@ function BackpackTokenFrame_Update()
 	local watchButton;
 	local name, count, icon;
 	for i=1, MAX_WATCHED_TOKENS do
-		name, count, icon = GetBackpackCurrencyInfo(i);
+		name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
 		if ( name ) then
 			watchButton = _G["BackpackTokenFrameToken"..i];
@@ -185,6 +185,7 @@ function BackpackTokenFrame_Update()
 			else
 				watchButton.count:SetText("*");
 			end
+			watchButton.currencyID = currencyID;
 			watchButton:Show();
 			BackpackTokenFrame.shouldShow = 1;
 			BackpackTokenFrame.numWatchedTokens = i;
@@ -238,40 +239,44 @@ function TokenButton_OnClick(self)
 		end
 	else
 		TokenFrame.selectedToken = self.name:GetText();
+		local linkedToChat = false;
 		if ( IsModifiedClick("CHATLINK") ) then
-			HandleModifiedItemClick(GetCurrencyListLink(self.index));
-		elseif ( IsModifiedClick("TOKENWATCHTOGGLE") ) then
-			TokenFrame.selectedID = self.index;
-			if ( self.isWatched ) then
-				SetCurrencyBackpack(TokenFrame.selectedID, 0);
-				self.isWatched = false;
-			else
-				-- Set an error message if trying to show too many quests
-				if ( GetNumWatchedTokens() >= MAX_WATCHED_TOKENS ) then
-					UIErrorsFrame:AddMessage(format(TOO_MANY_WATCHED_TOKENS, MAX_WATCHED_TOKENS), 1.0, 0.1, 0.1, 1.0);
-					return;
+			linkedToChat = HandleModifiedItemClick(GetCurrencyListLink(self.index));
+		end
+		if ( not linkedToChat ) then
+			if ( IsModifiedClick("TOKENWATCHTOGGLE") ) then
+				TokenFrame.selectedID = self.index;
+				if ( self.isWatched ) then
+					SetCurrencyBackpack(TokenFrame.selectedID, 0);
+					self.isWatched = false;
+				else
+					-- Set an error message if trying to show too many quests
+					if ( GetNumWatchedTokens() >= MAX_WATCHED_TOKENS ) then
+						UIErrorsFrame:AddMessage(format(TOO_MANY_WATCHED_TOKENS, MAX_WATCHED_TOKENS), 1.0, 0.1, 0.1, 1.0);
+						return;
+					end
+					SetCurrencyBackpack(TokenFrame.selectedID, 1);
+					self.isWatched = true;
 				end
-				SetCurrencyBackpack(TokenFrame.selectedID, 1);
-				self.isWatched = true;
-			end
-			if ( TokenFrame.selectedID == self.index ) then
-				TokenFrame_UpdatePopup(self);
-			end
-			BackpackTokenFrame_Update();
-			ManageBackpackTokenFrame();
-		else
-			
-			if ( TokenFramePopup:IsShown() ) then
 				if ( TokenFrame.selectedID == self.index ) then
-					TokenFramePopup:Hide();
+					TokenFrame_UpdatePopup(self);
+				end
+				BackpackTokenFrame_Update();
+				ManageBackpackTokenFrame();
+			else
+				
+				if ( TokenFramePopup:IsShown() ) then
+					if ( TokenFrame.selectedID == self.index ) then
+						TokenFramePopup:Hide();
+					else
+						TokenFramePopup:Show();
+					end
 				else
 					TokenFramePopup:Show();
 				end
-			else
-				TokenFramePopup:Show();
+				TokenFrame.selectedID = self.index;
+				TokenFrame_UpdatePopup(self);
 			end
-			TokenFrame.selectedID = self.index;
-			TokenFrame_UpdatePopup(self);
 		end
 	end
 	TokenFrame_Update();

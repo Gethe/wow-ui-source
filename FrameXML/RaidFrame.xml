@@ -5,9 +5,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="5" y="24"/>
-					</Size>
+					<Size x="5" y="24"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMLEFT"/>
@@ -15,9 +13,7 @@
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="4" y="24"/>
-					</Size>
+					<Size x="4" y="24"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -42,67 +38,33 @@
 		</Layers>
 	</Frame>
 	<Button name="RaidInfoInstanceTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="300" y="30"/>
-		</Size>
+		<Size x="300" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
-					<Size>
-						<AbsDimension x="150" y="1"/>
-					</Size>
+					<Size x="150" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="5" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="5" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentDifficulty" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="difficulty">
-					<Size>
-						<AbsDimension x="160" y="1"/>
-					</Size>
+					<Size x="160" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-10"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentName" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentName" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentReset" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="reset">
-					<Size>
-						<AbsDimension x="150" y="1"/>
-					</Size>
+					<Size x="150" y="1"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="0" y="-11"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentExtended" inherits="GameFontHighlightSmall" text="EXTENDED" justifyH="RIGHT" parentKey="extended">
-					<Size>
-						<AbsDimension x="150" y="1"/>
-					</Size>
+					<Size x="150" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentReset" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-10"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentReset" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentReset" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentReset" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -126,80 +88,91 @@
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT">
-					<Offset>
-						<AbsDimension x="-10" y="-2"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT">
-					<Offset>
-						<AbsDimension x="10" y="-2"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" x="-10" y="-2"/>
+				<Anchor point="BOTTOMRIGHT" x="10" y="-2"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	<Frame name="RaidFrame" setAllPoints="true" hidden="true" parent="FriendsFrame">
+	<Frame name="RaidParentFrame"  toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Frames>
+			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="RAID_FINDER" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset x="19" y="-30"/>
+					</Anchor>
+				</Anchors>
+                <Scripts>
+					<OnClick>
+						RaidFrame:Hide();
+						RaidFinderFrame:Show();
+						PanelTemplates_Tab_OnClick(self, self:GetParent());
+					</OnClick>
+                </Scripts>
+			</Button>
+			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="RAID" id="2">
+				<Anchors>
+                   <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick>
+						RaidFinderFrame:Hide();
+						RaidFrame:Show();
+						PanelTemplates_Tab_OnClick(self, self:GetParent());
+					</OnClick>
+                </Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="RaidParentFrame_OnLoad"/>
+			<OnShow>
+				UpdateMicroButtons();
+			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="RaidFrame" setAllPoints="true" parent="RaidParentFrame" hidden="true">
 		<Frames>
 			<Frame name="RaidFrameNotInRaid" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="RaidFrameRaidDescription" inherits="GameFontNormal" text="RAID_DESCRIPTION" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="300" y="0"/>
-							</Size>
+							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="29" y="-85"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="15" y="-73"/>
 							</Anchors>
 						</FontString>
 						<FontString name="RaidFrameRaidBrowserDescription" inherits="GameFontHighlight" text="RAID_BROWSER_DESCRIPTION" justifyH="CENTER">
-							<Size>
-								<AbsDimension x="300" y="0"/>
-							</Size>
+							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="RaidFrameRaidDescription" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="-0" y="-50"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" relativeTo="RaidFrameRaidDescription" relativePoint="BOTTOM" x="-0" y="-50"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button name="$parentRaidBrowserButton" inherits="UIPanelButtonTemplate2" text="OPEN_RAID_BROWSER">
-						<Size>
-							<AbsDimension x="260" y="22"/>
-						</Size>
+						<Size x="260" y="22"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="RaidFrameRaidBrowserDescription" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="-10"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="RaidFrameRaidBrowserDescription" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								ShowUIPanel(LFRParentFrame);
+								OpenFriendsFrame(4);
 							</OnClick>
 						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>
 			<Button name="RaidFrameConvertToRaidButton" inherits="UIPanelButtonTemplate" text="CONVERT_TO_RAID">
-				<Size>
-					<AbsDimension x="115" y="21"/>
-				</Size>
+				<Size x="115" y="21"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="72" y="-37"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="58" y="-24"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="ConvertToRaid"/>
@@ -209,15 +182,9 @@
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
 			<Button name="RaidFrameRaidInfoButton" inherits="UIPanelButtonTemplate" text="RAID_INFO">
-				<Size>
-					<AbsDimension x="90" y="21"/>
-				</Size>
+				<Size x="90" y="21"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="RaidFrameConvertToRaidButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="65" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="RaidFrameConvertToRaidButton" relativePoint="RIGHT" x="67" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -233,15 +200,9 @@
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
 			<Frame name="RaidInfoFrame" enableMouse="true" hidden="true">
-				<Size>
-					<AbsDimension x="345" y="250"/>
-				</Size>
+				<Size x="345" y="250"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-33" y="-28"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-28"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 					<BackgroundInsets>
@@ -257,76 +218,46 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="RaidInfoDetailHeader" file="Interface\RaidFrame\UI-RaidInfo-Header">
-							<Size>
-								<AbsDimension x="325" y="47"/>
-							</Size>
+							<Size x="325" y="47"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="10" y="-9"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="10" y="-9"/>
 							</Anchors>
 							<TexCoords left="0.18164" right="0.81640" top="0.578125" bottom="0.94531"/>
 						</Texture>
 						<Texture name="RaidInfoDetailFooter" file="Interface\RaidFrame\UI-RaidInfo-Header">
-							<Size>
-								<AbsDimension x="326" y="29"/>
-							</Size>
+							<Size x="326" y="29"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="9" y="9"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="9" y="9"/>
 							</Anchors>
 							<TexCoords left="0.18164" right="0.81640" top="0.08593" bottom="0.3125"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="RaidInfoDetailCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
+							<Size x="32" y="32"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-6" y="-7"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="-6" y="-7"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 							<Size x="256" y="64"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset x="0" y="12"/>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="12"/>
 							</Anchors>
 						</Texture>
 						<FontString name="$parentHeaderText" inherits="GameFontNormal" text="RAID_INFORMATION">
-							<Size>
-								<AbsDimension x="185" y="12"/>
-							</Size>
+							<Size x="185" y="12"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentHeader">
-									<Offset x="0" y="-14"/>
-								</Anchor>
+								<Anchor point="TOP" relativeTo="$parentHeader" x="0" y="-14"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="RaidInfoInstanceLabel" inherits="RaidInfoHeaderTemplate">
-						<Size>
-							<AbsDimension x="173" y="22"/>
-						</Size>
+						<Size x="173" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-31"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="13" y="-31"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -335,15 +266,9 @@
 						</Scripts>
 					</Frame>
 					<Frame name="RaidInfoIDLabel" inherits="RaidInfoHeaderTemplate">
-						<Size>
-							<AbsDimension x="150" y="22"/>
-						</Size>
+						<Size x="150" y="22"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="RaidInfoInstanceLabel" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-1" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="RaidInfoInstanceLabel" relativePoint="RIGHT" x="-1" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -353,31 +278,19 @@
 					</Frame>
 					<Button name="RaidInfoCloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="-3"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" x="-2" y="-3"/>
 						</Anchors>
 					</Button>
 					<ScrollFrame name="RaidInfoScrollFrame" inherits="HybridScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="305" y="157"/>
-						</Size>
+						<Size x="305" y="157"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="16" y="-58"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="16" y="-58"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-										<Offset x="0" y="-13"/>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset x="0" y="14"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-13"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
 								</Anchors>
 								<Scripts>
 									<OnShow>
@@ -409,15 +322,9 @@
 						</Scripts>
 					</ScrollFrame>
 					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate2" text="EXTEND_RAID_LOCK">
-						<Size>
-							<AbsDimension x="200" y="20"/>
-						</Size>
+						<Size x="200" y="20"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="14" y="13"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" x="14" y="13"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="RaidInfoExtendButton_OnClick"/>
@@ -427,15 +334,9 @@
 						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
 					<Button name="RaidInfoCancelButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
-						<Size>
-							<AbsDimension x="90" y="20"/>
-						</Size>
+						<Size x="90" y="20"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-14" y="13"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-14" y="13"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -449,11 +350,6 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						if (GetNumRaidMembers() > 0 ) then
-							RaidInfoFrame:SetPoint("TOPLEFT", "RaidFrame", "TOPRIGHT", -13, -28);
-						else
-							RaidInfoFrame:SetPoint("TOPLEFT", "RaidFrame", "TOPRIGHT", -33, -28);
-						end
 						PlaySound("UChatScrollButton");
 					</OnShow>
 					<OnHide>
@@ -465,9 +361,7 @@
 		<Scripts>
 			<OnLoad function="RaidFrame_OnLoad"/>
 			<OnShow>
-				RaidFrame_Update();
-				RequestRaidInfo();
-				UpdateMicroButtons();
+				RaidFrame_OnShow(self);
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();

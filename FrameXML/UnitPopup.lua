@@ -821,7 +821,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_PROMOTE" ) then
-			if ( isLeader == 0 ) then
+			if ( isLeader == 0 or IsEveryoneAssistant() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( isLeader == 1 ) then
 				if ( UnitIsRaidOfficer(dropdownMenu.unit) ) then
@@ -835,7 +835,7 @@ function UnitPopup_HideButtons ()
 				if ( isLeader == 0  and isAssistant == 1 and UnitIsRaidOfficer(dropdownMenu.unit) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				elseif ( isLeader == 1 or isAssistant == 1 ) then
-					if ( UnitIsPartyLeader(dropdownMenu.unit) or not UnitIsRaidOfficer(dropdownMenu.unit)) then
+					if ( UnitIsPartyLeader(dropdownMenu.unit) or not UnitIsRaidOfficer(dropdownMenu.unit) or IsEveryoneAssistant()) then
 						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 					end
 				end

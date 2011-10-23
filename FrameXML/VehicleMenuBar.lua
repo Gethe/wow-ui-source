@@ -13,6 +13,15 @@ local SkinsData = {
 			yesPitchHeight = 53,
 			noPitchHeight = 53,
 		},
+		["MicroButtons"] = {
+			xOfs = -340,
+			yOfs = 41,
+		},
+		["XpBar"] = {
+			xOfsLeft = 148,
+			xOfsRight = -150,
+			yOfs = 50,
+		},
 		["PitchUpButton"] = {	--Pitch up button
 			height = 36,
 			width = 38,
@@ -24,6 +33,7 @@ local SkinsData = {
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Pitch-Down]],
 			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
 			pitchHidden = 1,
+			forceBellowArt = true,
 		},
 		["PitchDownButton"] = {	--Pitch up button
 			height = 36,
@@ -36,6 +46,7 @@ local SkinsData = {
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-PitchDown-Down]],
 			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
 			pitchHidden = 1,
+			forceBellowArt = true,
 		},
 		["LeaveButton"] = {	--Leave button
 			height = 47,
@@ -47,6 +58,7 @@ local SkinsData = {
 			normalTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Down]],
 			pushedTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
+			forceBellowArt = true,
 		},
 		["ActionButtonFrame"] = {
 			point = "BOTTOMLEFT",
@@ -61,6 +73,7 @@ local SkinsData = {
 			xOfs = 192,
 			yOfs = 3,
 			pitchHidden = 1,
+			forceBellowArt = true,
 		},
 		["PitchSliderBG"] = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Endcap]],
@@ -301,6 +314,15 @@ local SkinsData = {
 			yesPitchHeight = 53,
 			noPitchHeight = 53,
 		},
+		["MicroButtons"] = {
+			xOfs = -365,
+			yOfs = 41,
+		},
+		["XpBar"] = {
+			xOfsLeft = 166,
+			xOfsRight = -166,
+			yOfs = 53,
+		},
 		["PitchUpButton"] = {	--Pitch up button
 			height = 35,
 			width = 34,
@@ -312,6 +334,7 @@ local SkinsData = {
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Pitch-Down]],
 			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
 			pitchHidden = 1,
+			forceBellowArt = true,
 		},
 		["PitchDownButton"] = {	--Pitch up button
 			height = 35,
@@ -324,6 +347,7 @@ local SkinsData = {
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-PitchDown-Down]],
 			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
 			pitchHidden = 1,
+			forceBellowArt = true,
 		},
 		["LeaveButton"] = {	--Leave button
 			height = 47,
@@ -335,6 +359,7 @@ local SkinsData = {
 			normalTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
 			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Down]],
 			pushedTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
+			forceBellowArt = true,
 		},
 		["ActionButtonFrame"] = {
 			point = "BOTTOMLEFT",
@@ -350,6 +375,7 @@ local SkinsData = {
 			xOfs = 204,
 			yOfs = 0,
 			pitchHidden = 1,
+			forceBellowArt = true,
 		},
 		["PitchSliderBG"] = {
 			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Organic]],
@@ -597,6 +623,629 @@ local SkinsData = {
 			texCoord = { 0.7578125, 0.71484375, 0.0, 1.0 },
 		},
 	},
+	["Tree"] = { -- the tree theme
+		["Overall"] = {
+			yesPitchWidth = 970,
+			noPitchWidth = 888,
+			yesPitchHeight = 53,
+			noPitchHeight = 53,
+		},
+		["MicroButtons"] = {
+			xOfs = -340,
+			yOfs = 41,
+		},
+		["XpBar"] = {
+			xOfsLeft = 148,
+			xOfsRight = -150,
+			yOfs = 56,
+		},
+		["PitchUpButton"] = {	--Pitch up button
+			height = 36,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = 150,
+			yOfs = 45,
+			normalTexture = [[Interface\Vehicles\UI-Vehicles-Button-Pitch-Up]],
+			normalTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Pitch-Down]],
+			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pitchHidden = 1,
+			forceAboveArt = true,
+		},
+		["PitchDownButton"] = {	--Pitch up button
+			height = 36,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = 150,
+			yOfs = 7,
+			normalTexture = [[Interface\Vehicles\UI-Vehicles-Button-PitchDown-Up]],
+			normalTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-PitchDown-Down]],
+			pushedTexCoord = { 0.21875, 0.765625, 0.234375, 0.78125 },
+			pitchHidden = 1,
+			forceAboveArt = true,
+		},
+		["LeaveButton"] = {	--Leave button
+			height = 47,
+			width = 50,
+			point = "BOTTOMRIGHT",
+			xOfs = -148,
+			yOfs = 18,
+			normalTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Up]],
+			normalTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
+			pushedTexture = [[Interface\Vehicles\UI-Vehicles-Button-Exit-Down]],
+			pushedTexCoord = { 0.140625, 0.859375, 0.140625, 0.859375 },
+			forceAboveArt = true,
+		},
+		["ActionButtonFrame"] = {
+			point = "BOTTOMLEFT",
+			relativePoint = "BOTTOMRIGHT",
+			xOfs = -733,
+			yOfs = 12,
+		},
+		["PitchSlider"] = {
+			height = 80,
+			width = 23,
+			point = "BOTTOMLEFT",
+			xOfs = 202,
+			yOfs = 3,
+			pitchHidden = 1,
+			forceAboveArt = true,
+		},
+		["PitchSliderBG"] = {
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = {  0.55078125, 0.63671875, 0.33203125, 0.625 },
+			vertexColor = { 0, 0.85, 0.99 },
+		},
+		["PitchSliderOverlayThing"] = {
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.39453125, 0.48046875, 0.33203125, 0.625 },
+		},
+		["PitchSliderMarker"] = {
+			height = 10,
+			width = 10,
+			point = "CENTER",
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.5, 0.5234375, 0.33984375, 0.6171875 },
+			vertexColor = { 1, 0, 0 },
+		},
+		["HealthBar"] = {
+			height = 72,
+			width = 33,
+			point = "BOTTOMLEFT",
+			xOfs = 96,
+			yOfs = 10,
+		},
+		["HealthBarBackground"] = {
+			height = 92,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank-Nature]],
+			texCoord = { 0.5390625, 0.953125, 0.0, 1.0 },
+		},
+		["HealthBarOverlay"] = {
+			height = 92,
+			width = 44,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank-Nature]],
+			texCoord = { 0.015625, 0.4921875, 0.0, 1.0 },
+		},
+		["PowerBar"] = {
+			height = 72,
+			width = 33,
+			point = "BOTTOMRIGHT",
+			xOfs = -98,
+			yOfs = 10,
+		},
+		["PowerBarBackground"] = {
+			height = 92,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank-Nature]],
+			texCoord = { 0.5390625, 0.953125, 0.0, 1.0 },
+		},
+		["PowerBarOverlay"] = {
+			height = 92,
+			width = 44,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\Vehicles\UI-Vehicles-FuelTank-Nature]],
+			texCoord = { 0.015625, 0.4921875, 0.0, 1.0 },
+		},
+		[1] = {	--Left end cap
+			layer = "OVERLAY",
+			height = 110,
+			width = 165,
+			point = "BOTTOMLEFT",
+			xOfs = 0,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Nature]],
+			texCoord = { 0.0, 0.64453125, 0.0, 0.859375 },
+		},
+		[2] = {	--Right end cap
+			layer = "OVERLAY",
+			height = 110,
+			width = 165,
+			point = "BOTTOMRIGHT",
+			xOfs = 0,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Endcap-Nature]],
+			texCoord = { 0.64453125, 0.0, 0.0, 0.859375 },
+		},
+		[3] = {	--Background
+			layer = "BACKGROUND",
+			height = 90,
+			width = 634,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -130,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.0, 2, 0.6484375, 1.0 },
+		},
+		[4] = {	--Top Wood Boarder
+			layer = "ARTWORK",
+			height = 32,
+			width = 614,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -135,
+			yOfs = 75,
+			texture = [[Interface\Vehicles\UI-Vehicles-Frame-Border-Nature]],
+			texCoord = { 0.0, 2.3984375, 0.0, 1.0 },
+		},
+		[5] = {	--MicroButton Shadow
+			layer = "BORDER",
+			height = 82,
+			width = 118,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -217,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.8359375, 0.83203125, 0.32421875, 0.63671875 },
+		},
+		[6] = {	--MicroButton Shadow Right
+			layer = "BORDER",
+			height = 82,
+			width = 11,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -206,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.83203125, 0.87890625, 0.32421875, 0.63671875 },
+		},
+		[7] = {	--MicroButton Shadow Left
+			layer = "BORDER",
+			height = 82,
+			width = 11,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -335,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.7734375, 0.81640625, 0.32421875, 0.63671875 },
+		},
+		[8] = {	--LeaveButton Shadow
+			layer = "BORDER",
+			height = 54,
+			width = 53,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -146,
+			yOfs = 16,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.0, 0.20703125, 0.3671875, 0.578125 },
+		},
+		[9] = {	--Divider
+			layer = "BORDER",
+			height = 89,
+			width = 18,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -346,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.91015625, 0.98046875, 0.296875, 0.64453125 },
+		},
+		[10] = {	--ActionButtons Shadow Right
+			layer = "ARTWORK",
+			height = 73,
+			width = 11,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -365,
+			yOfs = 7,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.71484375, 0.7578125, 0.3359375, 0.62109375 },
+		},
+		[11] = {	--ActionButtons Shadow MID
+			layer = "ARTWORK",
+			height = 73,
+			width = 350,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -376,
+			yOfs = 7,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.69921875, 0.7109375, 0.3359375, 0.62109375 },
+		},
+		[12] = {	--ActionButtons Shadow Left
+			layer = "ARTWORK",
+			height = 73,
+			width = 11,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -726,
+			yOfs = 7,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.65234375, 0.6953125, 0.3359375, 0.62109375 },
+		},
+		--Pitch Textures
+		[13] = {	--Pitch Background
+			layer = "BACKGROUND",
+			height = 90,
+			width = 80,
+			point = "BOTTOMRIGHT",
+			xOfs = -764,
+			yOfs = 0,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.8, 1, 0.6484375, 1.0 },
+			pitchHidden = 1,
+		},
+		[14] = {	--Pitch Top Wood Boarder
+			layer = "ARTWORK",
+			height = 32,
+			width = 70,
+			point = "BOTTOMRIGHT",
+			xOfs = -749,
+			yOfs = 75,
+			texture = [[Interface\Vehicles\UI-Vehicles-Frame-Border-Nature]],
+			texCoord = { 0.7, 1.0, 0.0, 1.0 },
+			pitchHidden = 1,
+		},
+		[15] = {	--Pitch Button Background
+			layer = "ARTWORK",
+			height = 80,
+			width = 42,
+			point = "BOTTOMLEFT",
+			xOfs = 149,
+			yOfs = 4,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.21875, 0.375, 0.3203125, 0.625 },
+			pitchHidden = 1,
+		},
+		[16] = {	--Pitch Button FILL Background
+			layer = "ARTWORK",
+			height = 72,
+			width = 12,
+			point = "BOTTOMLEFT",
+			xOfs = 206,
+			yOfs = 7,
+			texture = [[Interface\Vehicles\UI-Vehicles-Elements-Nature]],
+			texCoord = { 0.5, 0.5234375, 0.33984375, 0.6171875 },
+			vertexColor = { 0.4, 0, 0 },
+			pitchHidden = 1,
+		},
+	},
+	["Darkmoon"] = { -- the tree theme
+		["Overall"] = {
+			yesPitchWidth = 997,
+			noPitchWidth = 915,
+			yesPitchHeight = 53,
+			noPitchHeight = 53,
+		},
+		["MicroButtons"] = {
+			xOfs = -358,
+			yOfs = 41,
+		},
+		["XpBar"] = {
+			xOfsLeft = 148,
+			xOfsRight = -150,
+			yOfs = 60,
+		},
+		["PitchUpButton"] = {	--Pitch up button
+			height = 34,
+			width = 34,
+			point = "BOTTOMLEFT",
+			xOfs = 163,
+			yOfs = 44,
+			normalTexture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			normalTexCoord = { 0.001953125, 0.06835938, 0.4433594, 0.5097656},
+			pushedTexture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			pushedTexCoord = { 0.0703125, 0.1367188, 0.4433594, 0.5097656},
+			pitchHidden = 1,
+			forceAboveArt = true,
+		},
+		["PitchDownButton"] = {	--Pitch up button
+			height = 34,
+			width = 34,
+			point = "BOTTOMLEFT",
+			xOfs = 163,
+			yOfs = 8,
+			normalTexture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			normalTexCoord = { 0.2890625, 0.3554688, 0.5644531, 0.6308594},
+			pushedTexture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			pushedTexCoord = { 0.2890625, 0.3554688, 0.6308594, 0.6972656},
+			pitchHidden = 1,
+			forceAboveArt = true,
+		},
+		["LeaveButton"] = {	--Leave button
+			height = 42,
+			width = 42,
+			point = "BOTTOMRIGHT",
+			xOfs = -160,
+			yOfs = 22,
+			normalTexture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			normalTexCoord = { 0.0859375, 0.1679688, 0.359375, 0.4414063},
+			pushedTexture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			pushedTexCoord = { 0.001953125, 0.08398438, 0.359375, 0.4414063},
+			forceAboveArt = true,
+		},
+		["ActionButtonFrame"] = {
+			point = "BOTTOMLEFT",
+			relativePoint = "BOTTOMRIGHT",
+			xOfs = -753,
+			yOfs = 12,
+		},
+		["PitchSlider"] = {
+			height = 80,
+			width = 23,
+			point = "BOTTOMLEFT",
+			xOfs = 207,
+			yOfs = 3,
+			pitchHidden = 1,
+			forceAboveArt = true,
+		},
+		["PitchSliderBG"] = {
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.1699219, 0.1894531, 0.359375, 0.5039063},
+			vertexColor = { 0, 0, 0, 0 },
+		},
+		["PitchSliderOverlayThing"] = {
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.3515625, 0.4023438, 0.8125, 0.9960938},
+		},
+		["PitchSliderMarker"] = {
+			height = 10,
+			width = 10,
+			point = "CENTER",
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.2734375, 0.2929688, 0.359375, 0.3867188},
+		},
+		["HealthBar"] = {
+			height = 72,
+			width = 33,
+			point = "BOTTOMLEFT",
+			xOfs = 111,
+			yOfs = 10,
+		},
+		["HealthBarBackground"] = {
+			height = 92,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.09765625, 0.1914063, 0.5136719, 0.6972656},
+		},
+		["HealthBarOverlay"] = {
+			height = 92,
+			width = 44,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.001953125, 0.09570313, 0.5136719, 0.6972656},
+		},
+		["PowerBar"] = {
+			height = 72,
+			width = 33,
+			point = "BOTTOMRIGHT",
+			xOfs = -111,
+			yOfs = 10,
+		},
+		["PowerBarBackground"] = {
+			height = 92,
+			width = 38,
+			point = "BOTTOMLEFT",
+			xOfs = -2,
+			yOfs = -9,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.09765625, 0.1914063, 0.5136719, 0.6972656},
+		},
+		["PowerBarOverlay"] = {
+			height = 92,
+			width = 44,
+			point = "BOTTOMLEFT",
+			xOfs = -5,
+			yOfs = -9,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.001953125, 0.09570313, 0.5136719, 0.6972656},
+		},
+		[1] = {	--Left end cap
+			layer = "OVERLAY",
+			height = 152,
+			width = 178,
+			point = "BOTTOMLEFT",
+			xOfs = 0,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.001953125, 0.3496094, 0.6992188, 0.9960938},
+		},
+		[2] = {	--Right end cap
+			layer = "OVERLAY",
+			height = 152,
+			width = 178,
+			point = "BOTTOMRIGHT",
+			xOfs = 0,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.3496094, 0.001953125, 0.6992188, 0.9960938},
+		},
+		[3] = {	--Background
+			layer = "BACKGROUND",
+			height = 94,
+			width = 634,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -140,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0, 1.23828125, 0.1738281, 0.3574219},
+		},
+		[4] = {	--Top Wood Boarder
+			layer = "ARTWORK",
+			height = 32,
+			width = 634,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -140,
+			yOfs = 80,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0, 1.23828125, 0.001953125, 0.07226563},
+		},
+		[5] = {	--MicroButton Shadow
+			layer = "BORDER",
+			height = 86,
+			width = 118,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -235,
+			yOfs = -2,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.34375002, 0.36328128, 0.359375, 0.5234375},
+		},
+		[6] = {	--MicroButton Shadow Right
+			layer = "BORDER",
+			height = 86,
+			width = 20,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -215,
+			yOfs = -2,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.36328128, 0.4023438, 0.359375, 0.5234375},
+		},
+		[7] = {	--MicroButton Shadow Left
+			layer = "BORDER",
+			height = 86,
+			width = 20,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -353,
+			yOfs = -2,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.3046875, 0.34375002, 0.359375, 0.5234375},
+		},
+		[8] = {	--LeaveButton Shadow
+			layer = "BORDER",
+			height = 94,
+			width = 70,
+			point = "BOTTOMRIGHT",
+			xOfs = -145,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.3613281, 0.4980469, 0.5839844, 0.7675781},
+		},
+		[9] = {	--Divider
+			layer = "BORDER",
+			height = 89,
+			width = 18,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -346,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0,0,0,0 },
+		},
+		[10] = {	--ActionButtons Shadow Right
+			layer = "ARTWORK",
+			height = 84,
+			width = 20,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -376,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.36328128, 0.4023438, 0.359375, 0.5234375},
+		},
+		[11] = {	--ActionButtons Shadow MID
+			layer = "ARTWORK",
+			height = 84,
+			width = 350,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -396,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.34375002, 0.36328128, 0.359375, 0.5234375},
+		},
+		[12] = {	--ActionButtons Shadow Left
+			layer = "ARTWORK",
+			height = 84,
+			width = 20,
+			tile = true,
+			point = "BOTTOMRIGHT",
+			xOfs = -746,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.3046875, 0.34375002, 0.359375, 0.5234375},
+		},
+		--Pitch Textures
+		[13] = {	--Pitch Background
+			layer = "BACKGROUND",
+			height = 94,
+			width = 90,
+			point = "BOTTOMRIGHT",
+			xOfs = -774,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = {0.82421875, 1, 0.1738281, 0.3574219},
+			pitchHidden = 1,
+		},
+		[14] = {	--Pitch Top Boarder
+			layer = "ARTWORK",
+			height = 32,
+			width = 90,
+			point = "BOTTOMRIGHT",
+			xOfs = -774,
+			yOfs = 80,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = {0.82421875, 1, 0.001953125, 0.07226563},
+			pitchHidden = 1,
+		},
+		[15] = {	--Pitch Button Background
+			layer = "ARTWORK",
+			height = 94,
+			width = 58,
+			point = "BOTTOMLEFT",
+			xOfs = 149,
+			yOfs = 0,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.5, 0.6132813, 0.359375, 0.5429688},
+			pitchHidden = 1,
+		},
+		[16] = {	--Pitch Button FILL Background
+			layer = "ARTWORK",
+			height = 66,
+			width = 10,
+			point = "BOTTOMLEFT",
+			xOfs = 214,
+			yOfs = 7,
+			texture = [[Interface\PlayerActionBarAlt\DarkMoon]],
+			texCoord = { 0.1699219, 0.1894531, 0.359375, 0.5039063},
+			pitchHidden = 1,
+		},
+	},
 }
 
 local frameCount = { BACKGROUND = 1, BORDER = 1, ARTWORK = 1, OVERLAY = 1};
@@ -643,54 +1292,68 @@ function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 			frame:SetPoint(framedata.point, ( framedata.relativeFrame or frame:GetParent() ) , ( framedata.relativePoint or framedata.point ), ( framedata.xOfs or 0 ) , ( framedata.yOfs or 0 ));
 			
 			frame:SetTexCoord( unpack(framedata.texCoord) );
+			if ( framedata.vertexColor ) then
+				frame:SetVertexColor( unpack(framedata.vertexColor) );
+			else
+				frame:SetVertexColor( 1.0, 1.0, 1.0, 1.0 );
+			end
 		end
 	end
 	
 	for framename, framedata in pairs(skinTable) do	--For buttons
 		if ( type(framename) == "string" and framename ~= "Overall") then
 			frame = _G["VehicleMenuBar"..framename]
-			
-			if ( framedata.height ) then
-				frame:SetHeight(framedata.height);
-				frame:SetWidth(framedata.width);
-			end
-			
-			if ( framedata.normalTexture ) then
-				frame:GetNormalTexture():SetTexture(framedata.normalTexture);
-				frame:GetNormalTexture():SetTexCoord( unpack(framedata.normalTexCoord) );
-			end
-			
-			if ( framedata.pushedTexture ) then
-				frame:GetPushedTexture():SetTexture(framedata.pushedTexture);
-				frame:GetPushedTexture():SetTexCoord( unpack(framedata.pushedTexCoord) );
-			end
-			
-			if ( framedata.texture ) then
-				frame:SetTexture(framedata.texture);
-				frame:SetTexCoord( unpack(framedata.texCoord) );
-			end
-			
-			if ( frame.SetVertexColor ) then
-				if ( framedata.vertexColor ) then
-					frame:SetVertexColor( unpack(framedata.vertexColor) );
-				else
-					frame:SetVertexColor( 1.0, 1.0, 1.0, 1.0 );
+			if ( frame ) then
+				if ( framedata.height ) then
+					frame:SetHeight(framedata.height);
+					frame:SetWidth(framedata.width);
 				end
-			end
+				
+				if ( framedata.normalTexture ) then
+					frame:GetNormalTexture():SetTexture(framedata.normalTexture);
+					frame:GetNormalTexture():SetTexCoord( unpack(framedata.normalTexCoord) );
+				end
+				
+				if ( framedata.pushedTexture ) then
+					frame:GetPushedTexture():SetTexture(framedata.pushedTexture);
+					frame:GetPushedTexture():SetTexCoord( unpack(framedata.pushedTexCoord) );
+				end
+				
+				if ( framedata.texture ) then
+					frame:SetTexture(framedata.texture);
+					frame:SetTexCoord( unpack(framedata.texCoord) );
+				end
+				
+				if ( frame.SetVertexColor ) then
+					if ( framedata.vertexColor ) then
+						frame:SetVertexColor( unpack(framedata.vertexColor) );
+					else
+						frame:SetVertexColor( 1.0, 1.0, 1.0, 1.0 );
+					end
+				end
+				
+				if ( framedata.point ) then
+					frame:ClearAllPoints();
+					frame:SetPoint(framedata.point, ( framedata.relativeFrame or frame:GetParent() ) , ( framedata.relativePoint or framedata.point ), ( framedata.xOfs or 0 ) , ( framedata.yOfs or 0 ));
+				end
+				
+				if ( frame.SetScale ) then
+					frame:SetScale(framedata.scale or 1);
+				end
+				
+				if ( bit.band((framedata.pitchHidden or 0),(pitchVisible or 0)+1) ~= 0 ) then	--0 = never hide. 1 = hide when no pitch slider 2 = hide when pitch slider
+					frame:Hide();
+				else
+					frame:Show();
+				end
 			
-			if ( framedata.point ) then
-				frame:ClearAllPoints();
-				frame:SetPoint(framedata.point, ( framedata.relativeFrame or frame:GetParent() ) , ( framedata.relativePoint or framedata.point ), ( framedata.xOfs or 0 ) , ( framedata.yOfs or 0 ));
-			end
-			
-			if ( frame.SetScale ) then
-				frame:SetScale(framedata.scale or 1);
-			end
-			
-			if ( bit.band((framedata.pitchHidden or 0),(pitchVisible or 0)+1) ~= 0 ) then	--0 = never hide. 1 = hide when no pitch slider 2 = hide when pitch slider
-				frame:Hide();
-			else
-				frame:Show();
+				if ( framedata.forceAboveArt ) then
+					frame:SetFrameLevel(VehicleMenuBarArtFrame:GetFrameLevel() + 1);
+				end
+				
+				if ( framedata.forceBellowArt ) then
+					frame:SetFrameLevel(VehicleMenuBarArtFrame:GetFrameLevel() - 1);
+				end
 			end
 		end
 	end
@@ -723,7 +1386,7 @@ function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
 		SpellbookMicroButton:Hide();
 		TalentMicroButton:Hide();
 		AchievementMicroButton:SetPoint("BOTTOMLEFT", CharacterMicroButton, "BOTTOMRIGHT", -3, 0);
-		LFDMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 20);
+		LFDMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 22);
 	else
 		AchievementMicroButton:SetPoint("BOTTOMLEFT", TalentMicroButton, "BOTTOMRIGHT", -3, 0);
 		LFDMicroButton:SetPoint("BOTTOMLEFT", PVPMicroButton, "BOTTOMRIGHT", -3, 0);
@@ -744,30 +1407,18 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		MainMenuExpBar:ClearAllPoints();
 		MainMenuExpBar:SetPoint("TOP");
 		MainMenuExpBar_SetWidth(EXP_DEFAULT_WIDTH);
-	elseif ( skinName == "Mechanical" ) then
+	else 
+		local skinTable = SkinsData[skinName];
 		for _, frame in pairs(MicroButtons) do
 			frame:SetParent(VehicleMenuBarArtFrame);
 			frame:Show();
 		end
-		MoveMicroButtons("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -340, 41, true);
+		MoveMicroButtons("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", skinTable.MicroButtons.xOfs, skinTable.MicroButtons.yOfs, true);
 		MainMenuExpBar:ClearAllPoints();			
 		MainMenuExpBar:SetParent(VehicleMenuBar);
-		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 148, 50);
-		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -150, 50);
-		MainMenuExpBar_SetWidth(VehicleMenuBar:GetWidth() - 148 - 150);
-		MainMenuExpBar:SetFrameLevel(MainMenuExpBar:GetParent():GetFrameLevel());
-	elseif ( skinName == "Natural" ) then
-	
-		for _, frame in pairs(MicroButtons) do
-			frame:SetParent(VehicleMenuBarArtFrame);
-			frame:Show();
-		end
-		MoveMicroButtons("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", -365, 41, true);
-		MainMenuExpBar:ClearAllPoints();			
-		MainMenuExpBar:SetParent(VehicleMenuBar);
-		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", 166, 53);
-		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -166, 53);
-		MainMenuExpBar_SetWidth(VehicleMenuBar:GetWidth() - 166 - 166);
+		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", skinTable.XpBar.xOfsLeft, skinTable.XpBar.yOfs);
+		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -skinTable.XpBar.xOfsLeft, skinTable.XpBar.yOfs);
+		MainMenuExpBar_SetWidth(VehicleMenuBar:GetWidth() - skinTable.XpBar.xOfsLeft + skinTable.XpBar.xOfsRight);
 		MainMenuExpBar:SetFrameLevel(MainMenuExpBar:GetParent():GetFrameLevel());
 	end
 end

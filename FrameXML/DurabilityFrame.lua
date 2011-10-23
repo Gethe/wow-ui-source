@@ -18,6 +18,7 @@ INVENTORY_ALERT_COLORS[2] = {r = 0.93, g = 0.07, b = 0.07};
 function DurabilityFrame_SetAlerts()
 	local numAlerts = 0;
 	local texture, color, showDurability;
+	local hasLeft, hasRight;
 	for index, value in pairs(INVENTORY_ALERT_STATUS_SLOTS) do
 		texture = _G["Durability"..value.slot];
 		if ( value.slot == "Shield" ) then
@@ -34,6 +35,11 @@ function DurabilityFrame_SetAlerts()
 		if ( color ) then
 			texture:SetVertexColor(color.r, color.g, color.b, 1.0);
 			if ( value.showSeparate ) then
+				if ( value.slot == "Shield" or value.slot == "Ranged" ) then
+					hasRight = true;
+				elseif ( value.slot == "Weapon" ) then
+					hasLeft = true;
+				end
 				texture:Show();			
 			else
 				showDurability = 1;
@@ -55,6 +61,18 @@ function DurabilityFrame_SetAlerts()
 			end
 		end
 	end
+
+	local width = 58;
+	if ( hasRight ) then
+		DurabilityHead:SetPoint("TOPRIGHT", -40, 0);
+		width = width + 20;
+	else
+		DurabilityHead:SetPoint("TOPRIGHT", -20, 0);
+	end
+	if ( hasLeft ) then
+		width = width + 14;
+	end
+	DurabilityFrame:SetWidth(width);
 
 	if ( numAlerts > 0 and (not VehicleSeatIndicator:IsShown()) and ((not ArenaEnemyFrames) or (not ArenaEnemyFrames:IsShown())) ) then
 		DurabilityFrame:Show();

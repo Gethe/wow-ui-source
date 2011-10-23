@@ -207,7 +207,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif ( event == "READY_CHECK" or event == "READY_CHECK_CONFIRM" ) then
 		PlayerFrame_UpdateReadyCheck();
 	elseif ( event == "READY_CHECK_FINISHED" ) then
-		ReadyCheck_Finish(PlayerFrameReadyCheck);
+		ReadyCheck_Finish(PlayerFrameReadyCheck, DEFAULT_READY_CHECK_STAY_TIME);
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			if ( arg2 ) then

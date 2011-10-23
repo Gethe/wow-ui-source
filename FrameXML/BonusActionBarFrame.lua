@@ -224,7 +224,7 @@ function ShowBonusActionBar ()
 				MainMenuBar.microBarX = 552;
 				MainMenuBar.microBarY = 2;
 				shownFrame.slideout:Play(); -- Slide bar out
-				if not MultiBarRight:IsShown() then
+				if SHOW_MULTI_ACTIONBAR_3 then
 					MultiBarRight.slideout:Play(true); -- Slide side bars in
 				end
 			end
@@ -253,7 +253,7 @@ function HideBonusActionBar ()
 				MainMenuBar.microBarY = 2;
 				
 				BonusActionBarFrame.slideout:Play(); -- Slide main bar out
-				if MultiBarRight:IsShown() then
+				if SHOW_MULTI_ACTIONBAR_3 then
 					MultiBarRight.slideout:Play(true); -- Slide side bars in
 				end
 			else
@@ -528,3 +528,63 @@ function PossessButton_OnEnter (self)
 		GameTooltip:SetPossession(id);
 	end
 end
+
+
+
+local ExtraActionStyles = {
+	default = "SpellPush-Frame",
+	[106466] = "SpellPush-Frame-Ysera",
+}
+
+function ExtraActionBar_OnLoad (self)
+	self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
+	self:SetFrameLevel(self:GetFrameLevel() + 2);
+	if ( HasExtraActionBar() ) then
+		self:Show();
+	end
+	self:SetAlpha(0.0)
+end
+
+
+function ExtraActionBar_OnShow (self)
+	local _, spellID = GetActionInfo(self.button.action);
+	local texture = ExtraActionStyles[spellID] or ExtraActionStyles["default"];
+	self.button.style:SetTexture("Interface\\UnitPowerBarAlt\\"..texture);
+end
+
+
+function ExtraActionBar_OnEvent (self, event, ...)
+	if ( event == "UPDATE_EXTRA_ACTIONBAR" ) then
+		if ( HasExtraActionBar() ) then
+			self:Show();
+			self.outro:Stop();
+			self.intro:Play();
+		elseif( self:IsShown() ) then
+			self.intro:Stop();
+			self.outro:Play();
+		end
+	end
+end
+
+function ExtraActionButtonKey(id, isDown)
+	local button = _G["ExtraActionButton"..id];
+	
+	if isDown then
+		if ( button:GetButtonState() == "NORMAL" ) then
+			button:SetButtonState("PUSHED");
+		end
+		if (GetCVarBool("ActionButtonUseKeyDown")) then
+			SecureActionButton_OnClick(button, "LeftButton");
+			ActionButton_UpdateState(button);
+		end
+	else
+		if ( button:GetButtonState() == "PUSHED" ) then
+			button:SetButtonState("NORMAL");
+			if (not GetCVarBool("ActionButtonUseKeyDown")) then
+				SecureActionButton_OnClick(button, "LeftButton");
+				ActionButton_UpdateState(button);
+			end
+		end
+	end
+end
+

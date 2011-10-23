@@ -323,30 +323,30 @@
 							<OnClick>
 								InterfaceOptionsFrame_OpenToCategory(COMPACT_UNIT_FRAME_PROFILES_LABEL);
 								PlaySound("igMainMenuOption");
-								--ToggleFriendsFrame(4);
+								--ToggleRaidFrame();
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate" parentKey="profileSelector">
+					<Frame name="$parentOptionFlowContainer" parentKey="optionsFlowContainer">
+						<Size x="200" y="300"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="-10" y="4"/>
 						</Anchors>
+					</Frame>
+					<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate" parentKey="profileSelector">
 						<Scripts>
 							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp"/>
 						</Scripts>
 					</Frame>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
 						<Size x="200" y="85"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentProfileSelector" relativePoint="BOTTOMLEFT" x="10" y="4"/>
-						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentFooterDelineator" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
 									<Size x="0" y="12"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-										<Anchor point="BOTTOMRIGHT" x="-9" y="0"/>
+										<Anchor point="BOTTOMRIGHT" x="2" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -354,7 +354,7 @@
 						<Frames>
 							<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="9" y="0"/>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="4"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -427,11 +427,8 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Button name="$parentLockedModeToggle" inherits="UIMenuButtonStretchTemplate">
-						<Size x="83" y="20"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="10" y="10"/>
-						</Anchors>
+					<Button name="$parentLockedModeToggle" parentKey="lockedModeToggle" inherits="UIMenuButtonStretchTemplate">
+						<Size x="85" y="20"/>
 						<Scripts>
 							<OnClick>
 								SetRaidProfileOption(GetActiveRaidProfile(), "locked", self.lockMode);
@@ -439,11 +436,8 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentHiddenModeToggle" inherits="UIMenuButtonStretchTemplate">
-						<Size x="83" y="20"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentLockedModeToggle" relativePoint="RIGHT" x="3" y="0"/>
-						</Anchors>
+					<Button name="$parentHiddenModeToggle" parentKey="hiddenModeToggle" inherits="UIMenuButtonStretchTemplate">
+						<Size x="85" y="20"/>
 						<Scripts>
 							<OnClick>
 								SetRaidProfileOption(GetActiveRaidProfile(), "shown", self.shownMode);
@@ -451,17 +445,102 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentLeaderOptions" parentKey="leaderOptions" hidden="true">
-						<Size x="0" y="95"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="$parentLockedModeToggle" relativePoint="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parentHiddenModeToggle" relativePoint="TOPRIGHT"/>
-						</Anchors>
+					<Button name="$parentConvertToRaid" parentKey="convertToRaid" inherits="UIMenuButtonStretchTemplate" text="CONVERT_TO_RAID" hidden="true">
+						<Size x="169" y="20"/>
+						<Scripts>
+							<OnClick>
+								ConvertToRaid();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="$parentRaidMarkers" parentKey="raidMarkers" hidden="true">
+						<Size x="200" y="50"/>
 						<Frames>
+							<Button name="$parentRaidMarker1" inherits="CRFManagerRaidIconButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="25" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarker2" inherits="CRFManagerRaidIconButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRaidMarker1" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarker3" inherits="CRFManagerRaidIconButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRaidMarker2" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarker4" inherits="CRFManagerRaidIconButtonTemplate" id="4">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRaidMarker3" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarker5" inherits="CRFManagerRaidIconButtonTemplate" id="5">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRaidMarker4" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarker6" inherits="CRFManagerRaidIconButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentRaidMarker1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarker7" inherits="CRFManagerRaidIconButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRaidMarker6" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarker8" inherits="CRFManagerRaidIconButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRaidMarker7" relativePoint="RIGHT" x="8" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarkerRemove" inherits="CRFManagerRaidIconButtonTemplate" id="0">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRaidMarker8" relativePoint="RIGHT" x="40" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										local tex = self:GetNormalTexture();
+										tex:ClearAllPoints();
+										tex:SetSize(self:GetSize());
+										tex:SetPoint("CENTER", self, "CENTER", 0, 0);
+									</OnLoad>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame name="$parentLeaderOptions" parentKey="leaderOptions" hidden="true">
+						<Size x="200" y="45"/>
+						<Frames>
+							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL" parentKey="rolePollButton">
+								<Size x="169" y="20"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-5"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										InitiateRolePoll();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK" parentKey="readyCheckButton">
+								<Size x="129" y="20"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentInitiateRolePoll" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										DoReadyCheck();
+									</OnClick>
+								</Scripts>
+							</Button>
 							<Button name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
 								<Size x="40" y="20"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPRIGHT" x="0" y="0"/>
 								</Anchors>
 								<Frames>
 									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown">
@@ -502,86 +581,43 @@
 									</Anchors>
 								</NormalTexture>
 							</Button>
-							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK" parentKey="readyCheckButton">
-								<Size x="0" y="20"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-									<Anchor point="RIGHT" relativeTo="$parentRaidWorldMarkerButton" relativePoint="LEFT" x="-2" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										DoReadyCheck();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL" parentKey="rolePollButton">
-								<Size x="0" y="20"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPLEFT" x="0" y="0"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parentRaidWorldMarkerButton" relativePoint="TOPRIGHT" x="0" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										InitiateRolePoll();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentRaidMarker6" inherits="CRFManagerRaidIconButtonTemplate" id="6">
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeTo="$parentInitiateRolePoll" relativePoint="TOPLEFT" x="5" y="4"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker7" inherits="CRFManagerRaidIconButtonTemplate" id="7">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker6" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker8" inherits="CRFManagerRaidIconButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker7" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarkerRemove" inherits="CRFManagerRaidIconButtonTemplate" id="0">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker8" relativePoint="RIGHT" x="40" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										local tex = self:GetNormalTexture();
-										tex:ClearAllPoints();
-										tex:SetSize(self:GetSize());
-										tex:SetPoint("CENTER", self, "CENTER", 0, 0);
-									</OnLoad>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
-							</Button>
-							<Button name="$parentRaidMarker1" inherits="CRFManagerRaidIconButtonTemplate" id="1">
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeTo="$parentRaidMarker6" relativePoint="TOPLEFT" x="0" y="2"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker2" inherits="CRFManagerRaidIconButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker1" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker3" inherits="CRFManagerRaidIconButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker2" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker4" inherits="CRFManagerRaidIconButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker3" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker5" inherits="CRFManagerRaidIconButtonTemplate" id="5">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker4" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
 						</Frames>
 					</Frame>
+					<CheckButton name="$parentEveryoneIsAssistButton" parentKey="everyoneIsAssistButton" hidden="true" inherits="UICheckButtonTemplate">
+						<Size x="24" y="24"/>
+						<HitRectInsets>
+							<AbsInset left="0" right="-140" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnLoad>
+								_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL_LONG);
+								self:RegisterEvent("RAID_ROSTER_UPDATE");
+								self:RegisterEvent("PARTY_LEADER_CHANGED");
+							</OnLoad>
+							<OnEvent>
+								self:SetChecked(IsEveryoneAssistant());
+								if ( IsRaidLeader() ) then
+									self:Enable();
+									self.text:SetFontObject(GameFontNormalSmall);
+								else
+									self:Disable();
+									self.text:SetFontObject(GameFontDisableSmall);
+								end
+							</OnEvent>
+							<OnClick>
+								SetEveryoneIsAssistant(self:GetChecked());	
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(ALL_ASSIST_DESCRIPTION, nil, nil, nil, nil, true);
+								if ( not self:IsEnabled() ) then
+									GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+								end
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>

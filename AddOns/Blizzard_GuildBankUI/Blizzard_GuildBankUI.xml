@@ -220,11 +220,28 @@
 							</Anchors>
 						</FontString>
 					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true" textureSubLevel="4">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 					</OnLoad>
+					<OnEvent>
+						if ( event == "INVENTORY_SEARCH_UPDATE" and self:IsVisible()) then
+							local _,_,_,_,_,_, filtered = GetGuildBankTabInfo(self:GetParent():GetID());
+							if ( filtered ) then
+								self.searchOverlay:Show();
+							else
+								self.searchOverlay:Hide();
+							end
+
+						end
+					</OnEvent>
 					<OnClick>
 						local currentTab = self:GetParent():GetID();
 						if ( GetCurrentGuildBankTab() ~= currentTab or button == "RightButton" ) then
@@ -1376,4 +1393,11 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+
+	<EditBox name="GuildItemSearchBox" inherits="BagSearchBoxTemplate" parent="GuildBankFrame" letters="15">
+		<Size x="130" y="20"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-15" y="-42"/>
+		</Anchors>
+	</EditBox>
 </Ui>

@@ -105,7 +105,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <PlayerModel name="InspectModelFrame">
+            <PlayerModel name="InspectModelFrame" inherits="ModelWithControlsTemplate">
 				<Size x="231" y="320"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" x="52" y="-66"/>
@@ -204,55 +204,10 @@
 					</Layer>
 				</Layers>
                 <Scripts>
-                    <OnLoad function="Model_OnLoad"/>
-					<OnEvent function="Model_OnEvent"/>
-					<OnMouseUp function="Model_OnMouseUp"/>
-					<OnMouseDown function="Model_OnMouseDown"/>
-					<OnUpdate function="Model_OnUpdate"/>
-					<OnMouseWheel>
-						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PLAYER_ZOOM);
-					</OnMouseWheel>
+					<OnLoad>
+						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
+					</OnLoad>
                 </Scripts>
-				<Frames>
-					<Button name="InspectModelFrameRotateLeftButton">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="4" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								Model_RotateLeft(self:GetParent());
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-					</Button>
-					<Button name="InspectModelFrameRotateRightButton">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="InspectModelFrameRotateLeftButton" relativePoint="TOPRIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								Model_RotateRight(self:GetParent());
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-					</Button>
-				</Frames>
             </PlayerModel>
 			<Frame name="InspectPaperDollItemsFrame" setAllPoints="true">
 				<Frames>

@@ -49,6 +49,8 @@ function ContainerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		updateContainerFrameAnchors();
+	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
+		ContainerFrame_UpdateSearchResults(self);
 	end
 end
 
@@ -104,6 +106,7 @@ function ContainerFrame_OnHide(self)
 	self:UnregisterEvent("ITEM_LOCK_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UnregisterEvent("INVENTORY_SEARCH_UPDATE");
 
 	if ( self:GetID() == 0 ) then
 		MainMenuBarBackpackButton:SetChecked(0);
@@ -149,6 +152,7 @@ function ContainerFrame_OnShow(self)
 	self:RegisterEvent("ITEM_LOCK_CHANGED");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 
 	if ( self:GetID() == 0 ) then
 		MainMenuBarBackpackButton:SetChecked(1);
@@ -272,13 +276,26 @@ function ContainerFrame_Update(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
 	local itemButton;
-	local texture, itemCount, locked, quality, readable;
+	local texture, itemCount, locked, quality, readable, _, isFiltered;
 	local isQuestItem, questId, isActive, questTexture;
 	local tooltipOwner = GameTooltip:GetOwner();
+	
+	--Update Searchbox
+	if ( id == 0 ) then
+		BagItemSearchBox:SetParent(frame);
+		BagItemSearchBox:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -26);
+		BagItemSearchBox.anchorBag = frame;
+		BagItemSearchBox:Show();
+	elseif ( BagItemSearchBox.anchorBag == frame ) then
+		BagItemSearchBox:ClearAllPoints();
+		BagItemSearchBox:Hide();
+		BagItemSearchBox.anchorBag = nil;
+	end
+	
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
-		texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, itemButton:GetID());
+		texture, itemCount, locked, quality, readable, _, _, isFiltered = GetContainerItemInfo(id, itemButton:GetID());
 		isQuestItem, questId, isActive = GetContainerItemQuestInfo(id, itemButton:GetID());
 		
 		SetItemButtonTexture(itemButton, texture);
@@ -308,6 +325,30 @@ function ContainerFrame_Update(frame)
 		if ( itemButton == tooltipOwner ) then
 			itemButton.UpdateTooltip(itemButton);
 		end
+		
+		
+		if ( isFiltered ) then
+			itemButton.searchOverlay:Show();
+		else
+			itemButton.searchOverlay:Hide();
+		end
+	end
+end
+
+function ContainerFrame_UpdateSearchResults(frame)
+	local id = frame:GetID();
+	local name = frame:GetName().."Item";
+	local itemButton;
+	local _, isFiltered;
+	
+	for i=1, frame.size, 1 do
+		itemButton = _G[name..i];
+		_, _, _, _, _, _, _, isFiltered = GetContainerItemInfo(id, itemButton:GetID());	
+		if ( isFiltered ) then
+			itemButton.searchOverlay:Show();
+		else
+			itemButton.searchOverlay:Hide();
+		end
 	end
 end
 
@@ -315,12 +356,10 @@ function ContainerFrame_UpdateLocked(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
 	local itemButton;
-	local texture, itemCount, locked, quality, readable;
+	local _, locked;
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
-		
-		texture, itemCount, locked, quality, readable = GetContainerItemInfo(id, itemButton:GetID());
-
+		_, _, locked = GetContainerItemInfo(id, itemButton:GetID());
 		SetItemButtonDesaturated(itemButton, locked);
 	end
 end
@@ -328,8 +367,7 @@ end
 function ContainerFrame_UpdateLockedItem(frame, slot)
 	local index = frame.size + 1 - slot;
 	local itemButton = _G[frame:GetName().."Item"..index];
-	local texture, itemCount, locked, quality, readable = GetContainerItemInfo(frame:GetID(), itemButton:GetID());
-
+	local _, _, locked = GetContainerItemInfo(frame:GetID(), itemButton:GetID());
 	SetItemButtonDesaturated(itemButton, locked);
 end
 

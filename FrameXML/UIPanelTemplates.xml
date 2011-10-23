@@ -863,26 +863,34 @@
 				self:SetText(SEARCH);
 				self:SetFontObject("GameFontDisable");
 				self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-				self:SetTextInsets(16, 0, 0, 0);
+				self:SetTextInsets(16, 20, 0, 0);
 			</OnLoad>
 			<OnEscapePressed function="EditBox_ClearFocus"/>
 			<OnEditFocusLost>
 				self:HighlightText(0, 0);
+				self:SetFontObject("GameFontDisable");
+				self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 				if ( self:GetText() == "" or self:GetText() == SEARCH ) then
 					self:SetText(SEARCH);
-					self:SetFontObject("GameFontDisable");
-					self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 					self.clearButton:Hide();
 				end
 			</OnEditFocusLost>
 			<OnEditFocusGained>
 				self:HighlightText();
+				self:SetFontObject("ChatFontSmall");
+				self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
 				if ( self:GetText() == SEARCH ) then
-					self:SetFontObject("ChatFontSmall");
-					self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
+					self:SetText("")
 				end
 				self.clearButton:Show();
 			</OnEditFocusGained>
+		</Scripts>
+	</EditBox>
+	<EditBox name="BagSearchBoxTemplate" inherits="SearchBoxTemplate" autoFocus="false" virtual="true">
+		<Scripts>
+			<OnHide function="BagSearch_OnHide"/>
+			<OnTextChanged function="BagSearch_OnTextChanged"/>
+			<OnChar function="BagSearch_OnChar"/>
 		</Scripts>
 	</EditBox>
 	<CheckButton name="UICheckButtonTemplate" virtual="true">
@@ -2770,6 +2778,93 @@
 			</Frame>
 		</Frames>
 	</Frame>
+	
+
+<!--
+*******************************************************************************
+    EtherealFrameTemplate
+	This is a Portrait Frame that also has the Ethereal themed border
+	
+*******************************************************************************
+-->
+	<Frame name="EtherealFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture name="$parentCornerTL" file="Interface\Transmogrify\Textures.png">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="-8"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.00195313" bottom="0.12695313"/>
+				</Texture>
+				<Texture name="$parentCornerTR" file="Interface\Transmogrify\Textures.png">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="-8"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.38476563" bottom="0.50781250"/>
+				</Texture>
+				<Texture name="$parentCornerBL" file="Interface\Transmogrify\Textures.png">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="16"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.25781250" bottom="0.38085938"/>	
+				</Texture>
+				<Texture name="$parentCornerBR" file="Interface\Transmogrify\Textures.png">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="16"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.13085938" bottom="0.25390625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture name="$parentLeftEdge" file="Interface\Transmogrify\VerticalTiles.png" vertTile="true">
+					<Size x="23" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentCornerTL" relativePoint="BOTTOMLEFT" x="3" y="16"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentCornerBL" relativePoint="TOPLEFT" x="3" y="-16"/>
+					</Anchors>
+					<TexCoords left="0.40625000" right="0.76562500" top="0.00000000" bottom="1.00000000"/>
+				</Texture>
+				<Texture name="$parentRightEdge" file="Interface\Transmogrify\VerticalTiles.png" vertTile="true">
+					<Size x="23" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentCornerTR" relativePoint="BOTTOMRIGHT" x="-3" y="16"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentCornerBR" relativePoint="TOPRIGHT" x="-3" y="-16"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.37500000" top="0.00000000" bottom="1.00000000"/>
+				</Texture>
+				<Texture name="$parentTopEdge" file="Interface\Transmogrify\HorizontalTiles.png" horizTile="true">
+					<Size x="64" y="23"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentCornerTL" relativePoint="TOPRIGHT" x="-30" y="-6"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentCornerTR" relativePoint="TOPLEFT" x="30" y="-6"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.40625000" bottom="0.76562500"/>
+				</Texture>
+				<Texture name="$parentBottomEdge" file="Interface\Transmogrify\HorizontalTiles.png" horizTile="true">
+					<Size x="64" y="23"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentCornerBL" relativePoint="BOTTOMRIGHT" x="-30" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentCornerBR" relativePoint="BOTTOMLEFT" x="30" y="4"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.37500000"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitleBg"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBg"/>
+					</Anchors>
+					<Color r="0.302" g="0.102" b="0.204" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 
 <!--
 *******************************************************************************

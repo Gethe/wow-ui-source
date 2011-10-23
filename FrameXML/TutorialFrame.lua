@@ -341,7 +341,7 @@ local DISPLAY_DATA = {
 	[36] = { --TUTORIAL_DURABILITY_LOW
 		tileHeight = 17, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -20},
-		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = 0, yOff = 8, width = 58, height = 90},
+		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = -4, yOff = 8, align2 = "BOTTOMRIGHT", xOff2 = 4, yOff2 = -8},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-RepairCursor", align = "TOP", xOff = 0, yOff = -60},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
@@ -351,7 +351,7 @@ local DISPLAY_DATA = {
 	[37] = { --TUTORIAL_DURABILITY_BROKEN
 		tileHeight = 18, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -20},
-		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = 0, yOff = 8, width = 58, height = 90},
+		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = -4, yOff = 8, align2 = "BOTTOMRIGHT", xOff2 = 4, yOff2 = -8},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-RepairCursor", align = "TOP", xOff = 0, yOff = -60},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
@@ -698,12 +698,21 @@ function TutorialFrame_OnMouseDown(self, button)
 end
 
 function TutorialFrame_CheckNextPrevButtons()
-	if ( GetPrevCompleatedTutorial(TutorialFrame.id) ) then
+	local prevTutorial = GetPrevCompleatedTutorial(TutorialFrame.id);
+	while ( prevTutorial and DISPLAY_DATA[prevTutorial].tileHeight == 0) do
+		prevTutorial = GetPrevCompleatedTutorial(prevTutorial);
+	end
+	if ( prevTutorial ) then
 		TutorialFramePrevButton:Enable();
 	else
 		TutorialFramePrevButton:Disable();
 	end
-	if ( GetNextCompleatedTutorial(TutorialFrame.id) or (getn(TUTORIALFRAME_QUEUE) > 0) ) then
+	
+	local nextTutorial = GetNextCompleatedTutorial(TutorialFrame.id);
+	while ( nextTutorial and DISPLAY_DATA[nextTutorial].tileHeight == 0) do
+		nextTutorial = GetNextCompleatedTutorial(nextTutorial);
+	end	
+	if ( nextTutorial or (getn(TUTORIALFRAME_QUEUE) > 0) ) then
 		TutorialFrameNextButton:Enable();
 	else
 		TutorialFrameNextButton:Disable();
@@ -851,7 +860,11 @@ function TutorialFrame_Update(currentTutorial)
 	-- setup the callout
 	local callOut = displayData.callOut;
 	if(callOut) then
-		TutorialFrameCallOut:SetSize(callOut.width, callOut.height);
+		if ( callOut.align2 ) then
+			TutorialFrameCallOut:SetPoint( callOut.align2, callOut.parent, callOut.align2, callOut.xOff2, callOut.yOff2 );
+		else
+			TutorialFrameCallOut:SetSize(callOut.width, callOut.height);
+		end
 		TutorialFrameCallOut:SetPoint( callOut.align, callOut.parent, callOut.align, callOut.xOff, callOut.yOff );
 		TutorialFrameCallOut:Show();
 		AnimateCallout:Play();

@@ -23,9 +23,7 @@ TRAVEL PASS
 -->	
 
 	<Frame name="FriendsFrameHeaderTemplate" virtual="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="302" y="16"/>
-		</Size>
+		<Size x="302" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="GameFontHighlightLeft">
@@ -38,83 +36,47 @@ TRAVEL PASS
 	</Frame>
 	
 	<Button name="FriendsFrameButtonTemplate" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="298" y="20"/>
-		</Size>
+		<Size x="298" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString inherits="GameFontNormal" parentKey="text" />
 				<Texture name="$parentBackground" parentKey="background">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
 					</Anchors>
 					<Color r="0" g="0.694" b="0.941" a="0.050"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentStatus" file="Interface\FriendsFrame\StatusIcon-Online" parentKey="status">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>	
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="4" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="4" y="-2"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGameIcon" file="Interface\FriendsFrame\Battlenet-WoWicon" parentKey="gameIcon">
-					<Size>
-						<AbsDimension x="28" y="28"/>
-					</Size>	
+					<Size x="28" y="28"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-2" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
-					<Size>
-						<AbsDimension x="248" y="12"/>
-					</Size>
+					<Size x="248" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="20" y="-3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="20" y="-3"/>
 					</Anchors>
 					<Color r="0.510" g="0.773" b="1" />
 				</FontString>
 				<FontString name="$parentCompactInfo" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="compactInfo" hidden="true">
-					<Size>
-						<AbsDimension x="260" y="10"/>
-					</Size>
+					<Size x="260" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="20" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="20" y="-5"/>
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>						
 				<FontString name="$parentInfo" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="info">
-					<Size>
-						<AbsDimension x="260" y="10"/>
-					</Size>				
+					<Size x="260" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
@@ -124,17 +86,13 @@ TRAVEL PASS
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="20" y="-4"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="250" y="12"/>
-					</Size>								
+					<Size x="250" y="12"/>
 					<Color r="0.345" g="0.667" b="0.867" />
 				</FontString>			
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBroadcastIcon" file="Interface\FriendsFrame\BroadcastIcon" parentKey="broadcastIcon" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>	
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parentBroadcastMessage" relativePoint="TOPLEFT" x="-4" y="1"/>
 					</Anchors>						
@@ -178,9 +136,7 @@ TRAVEL PASS
 			<Button name="$parentSummonButton" inherits="ActionButtonTemplate" hidden="true" parentKey="summonButton">
 				<Size x="26" y="26"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-4" y="-4"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -189,38 +145,22 @@ TRAVEL PASS
 					<Layer level="ARTWORK">
 						<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
 						<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
-							<Size>
-								<AbsDimension x="32" y="10"/>
-							</Size>
+							<Size x="32" y="10"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-2" y="-2"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
-							<Size>
-								<AbsDimension x="32" y="10"/>
-							</Size>
+							<Size x="32" y="10"/>
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOM" x="0" y="2"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -229,11 +169,7 @@ TRAVEL PASS
 					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
 						<Size x="28" y="28"/>
 						<Anchors>
-							<Anchor point="CENTER">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="CENTER" x="0" y="-1"/>
 						</Anchors> 
 					</Cooldown>
 				</Frames>
@@ -270,6 +206,12 @@ TRAVEL PASS
 					</OnLeave>
 				</Scripts>
 			</Button>
+			<Button name="$parentSoRButton" inherits="ScrollOfResurrectionButtonTemplate" parentKey="soRButton">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentGameIcon" relativePoint="LEFT" x="-4" y="-1"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -289,38 +231,26 @@ TRAVEL PASS
 	</Button>
 	<!--
 	<Button name="FriendsFrameButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="298" y="31"/>
-		</Size>
+		<Size x="298" y="31"/>
 		<Frames>
 			<Frame name="$parentButtonText" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
 						<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="10" y="-3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="10" y="-3"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentLink" file="Interface/FriendsFrame/UI-FriendsFrame-Link" hidden="true">
 							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<FontString name="$parentLocation" inherits="GameFontNormal" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT"/>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="10" y="-3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="10" y="-3"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
@@ -330,16 +260,12 @@ TRAVEL PASS
 						</FontString>
 						<FontString name="$parentNoteHiddenText" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true">
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT">
-									<Offset x="5" y="0"/>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT" x="5" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentNoteText" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT">
-									<Offset x="2" y="0"/>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="$parentInfo" relativePoint="RIGHT" x="2" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -348,9 +274,7 @@ TRAVEL PASS
 					<Button name="$parentSummonButton" inherits="ActionButtonTemplate">
 						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="LEFT">
-								<Offset x="12" y="1"/>
-							</Anchor>
+							<Anchor point="LEFT" x="12" y="1"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -359,38 +283,22 @@ TRAVEL PASS
 							<Layer level="ARTWORK">
 								<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
 								<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="32" y="10"/>
-									</Size>
+									<Size x="32" y="10"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="-2" y="-2"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
 									<Anchors>
-										<Anchor point="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
-									<Size>
-										<AbsDimension x="32" y="10"/>
-									</Size>
+									<Size x="32" y="10"/>
 									<Anchors>
-										<Anchor point="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOM" x="0" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -399,11 +307,7 @@ TRAVEL PASS
 							<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
 								<Size x="28" y="28"/>
 								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-											<AbsDimension x="0" y="-1"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="CENTER" x="0" y="-1"/>
 								</Anchors> 
 							</Cooldown>
 						</Frames>
@@ -443,9 +347,7 @@ TRAVEL PASS
 					<Button name="$parentNote">
 						<Size x="7" y="8"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="$parentName" relativePoint="LEFT">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="RIGHT" relativeTo="$parentName" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -470,9 +372,7 @@ TRAVEL PASS
 						<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
 							<Size x="7" y="8"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-1" y="0"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-1" y="0"/>
 							</Anchors>
 						</HighlightTexture>
 					</Button>
@@ -492,21 +392,13 @@ TRAVEL PASS
 	</Button>
 	-->
 	<Button name="FriendsFrameIgnoreButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="298" y="16"/>
-		</Size>
+		<Size x="298" y="16"/>
 		<Layers>
 			<Layer level="BORDER">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
-					<Size>
-						<AbsDimension x="288" y="12"/>
-					</Size>
+					<Size x="288" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="10" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="10" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -520,9 +412,7 @@ TRAVEL PASS
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="FriendsFramePendingButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="298" y="82"/>
-		</Size>
+		<Size x="298" y="82"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -537,52 +427,30 @@ TRAVEL PASS
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentBackground" file="Interface\FriendsFrame\PendingFriendNameBG">
-					<Size>
-						<AbsDimension x="290" y="60"/>
-					</Size>
+					<Size x="290" y="60"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name" justifyV="TOP">
-					<Size>
-						<AbsDimension x="235" y="10"/>
-					</Size>
+					<Size x="235" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="12" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="12" y="-7"/>
 					</Anchors>
 					<Color r="0.510" g="0.773" b="1" />
 				</FontString>
 				<FontString name="$parentSent" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="sent">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="20" y="-30"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="20" y="-30"/>
 					</Anchors>
 					<Color r="0.263" g="0.506" b="0.659" />
 				</FontString>
 				<FontString name="$parentMessage" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="message">
-					<Size>
-						<AbsDimension x="260" y="0"/>
-					</Size>
+					<Size x="260" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSent" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentSent" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
@@ -590,15 +458,9 @@ TRAVEL PASS
 		</Layers>
 		<Frames>
 			<Frame name="$parentHighlight" parentKey="highlight" hidden="true">
-				<Size>
-					<AbsDimension x="290" y="60"/>
-				</Size>
+				<Size x="290" y="60"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="0" y="5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
@@ -614,9 +476,7 @@ TRAVEL PASS
 				</Scripts>
 			</Frame>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
-				<Size>
-					<AbsDimension x="98" y="22"/>
-				</Size>
+				<Size x="98" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMessage" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
 				</Anchors>
@@ -628,9 +488,7 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="DECLINE">
-				<Size>
-					<AbsDimension x="98" y="22"/>
-				</Size>
+				<Size x="98" y="22"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="44" y="0"/>
 				</Anchors>
@@ -642,18 +500,14 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 			<Button name="$parentReportButton">
-				<Size>
-					<AbsDimension x="17" y="14"/>
-				</Size>
+				<Size x="17" y="14"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-30" y="-6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\FriendsFrame\ReportSpamIcon" alpha="0.5" parentKey="texture">
-							<Size>
-								<AbsDimension x="28" y="28"/>
-							</Size>
+							<Size x="28" y="28"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="1"/>
 							</Anchors>
@@ -682,18 +536,14 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 			<Button name="$parentBlockButton">
-				<Size>
-					<AbsDimension x="16" y="14"/>
-				</Size>
+				<Size x="16" y="14"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-10" y="-6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\FriendsFrame\BlockCommunicationsIcon" alpha="0.5" parentKey="texture">
-							<Size>
-								<AbsDimension x="28" y="28"/>
-							</Size>
+							<Size x="28" y="28"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-1" y="1"/>
 							</Anchors>
@@ -730,21 +580,13 @@ TRAVEL PASS
 		</Scripts>
 	</Button>
 	<Button name="FriendsFriendsButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="248" y="16"/>
-		</Size>
+		<Size x="248" y="16"/>
 		<Layers>
 			<Layer level="BORDER">
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
-					<Size>
-						<AbsDimension x="240" y="16"/>
-					</Size>
+					<Size x="240" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="6" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="6" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -755,57 +597,31 @@ TRAVEL PASS
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="FriendsFrameWhoButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="298" y="16"/>
-		</Size>
+		<Size x="298" y="16"/>
 		<Layers>
 			<Layer level="BORDER">
 				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="88" y="14"/>
-					</Size>
+					<Size x="88" y="14"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="10" y="-3"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentVariable" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="95" y="14"/>
-					</Size>
+					<Size x="95" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="20" y="14"/>
-					</Size>
+					<Size x="20" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentVariable" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="2" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentVariable" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="80" y="8"/>
-					</Size>
+					<Size x="80" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="12" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="12" y="0"/>
 					</Anchors>
 				</FontString>
 				<!--
@@ -834,46 +650,32 @@ TRAVEL PASS
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
-			<Size>
-				<AbsDimension x="298" y="16"/>
-			</Size>
+			<Size x="298" y="16"/>
 			<Anchors>
-				<Anchor point="TOP">
-					<Offset>
-						<AbsDimension x="5" y="-2"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOP" x="5" y="-2"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
 	<Button name="WhoFrameColumnHeaderTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="10" y="24"/>
-		</Size>
+		<Size x="10" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="5" y="24"/>
-					</Size>
+					<Size x="5" y="24"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="53" y="24"/>
-					</Size>
+					<Size x="53" y="24"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="4" y="24"/>
-					</Size>
+					<Size x="4" y="24"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
 					</Anchors>
@@ -891,26 +693,14 @@ TRAVEL PASS
 		</Scripts>
 		<ButtonText>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="8" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="8" y="0"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
-					<Offset>
-						<AbsDimension x="-2" y="5"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight">
-					<Offset>
-						<AbsDimension x="2" y="-7"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="-2" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="2" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
@@ -923,96 +713,21 @@ TRAVEL PASS
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="FriendsFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
-		</HitRectInsets>
+	<Frame name="FriendsFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="$parentIcon" file="Interface\FriendsFrame\Battlenet-Portrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="FriendsFrameTopLeft" file="Interface\FriendsFrame\UI-FriendsFrame-TopLeft-bnet">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="FriendsFrameTopRight" file="Interface\FriendsFrame\UI-FriendsFrame-TopRight-bnet">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="FriendsFrameBottomLeft" file="Interface\FriendsFrame\UI-FriendsFrame-BotLeft-bnet">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="FriendsFrameBottomRight" file="Interface\FriendsFrame\UI-FriendsFrame-BotRight-bnet">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-5" y="7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="FriendsFrameTitleText" inherits="GameFontNormal">
-					<Size>
-						<AbsDimension x="250" y="16"/>
-					</Size>
+					<Size x="250" y="16"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="3" y="-16"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOM" x="3" y="-16"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1024,27 +739,12 @@ TRAVEL PASS
 					<OnLoad function="TravelPassDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Button name="FriendsFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-30" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Frame name="FriendsTabHeader" setAllPoints="true">
 				<Frames>
 					<Frame name="FriendsFrameBattlenetStatus" hidden="false">
-						<Size>
-							<AbsDimension x="270" y="32"/>
-						</Size>
+						<Size x="270" y="32"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="74" y="-40"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="61" y="-27"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1060,9 +760,7 @@ TRAVEL PASS
 									<Color r="1" g="0" b="0"/>
 								</FontString>
 								<Texture file="Interface\FriendsFrame\PlusManz-BattleNet">
-									<Size>
-										<AbsDimension x="28" y="28"/>
-									</Size>	
+									<Size x="28" y="28"/>
 									<Anchors>
 										<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="-4" y="0"/>
 									</Anchors>
@@ -1084,30 +782,20 @@ TRAVEL PASS
 					</Frame>
 					<Frame name="FriendsFrameStatusDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="56" y="-40"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="43" y="-27"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="$parentStatus" file="Interface\FriendsFrame\StatusIcon-Online">
 									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="24" y="1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="LEFT" x="24" y="1"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Frame name="$parentMouseOver" enableMouse="true">
-								<Size>
-									<AbsDimension x="22" y="23"/>
-								</Size>
+								<Size x="22" y="23"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="16" y="-2"/>
 								</Anchors>
@@ -1125,42 +813,28 @@ TRAVEL PASS
 						</Scripts>
 					</Frame>
 					<EditBox name="FriendsFrameBroadcastInput" letters="127" countInvisibleLetters="true" autoFocus="false" hidden="true">
-						<Size>
-							<AbsDimension x="190" y="20"/>
-						</Size>
+						<Size x="190" y="20"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="FriendsFrameStatusDropDown" relativePoint="RIGHT">
-								<Offset x="14" y="2"/>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="FriendsFrameStatusDropDown" relativePoint="RIGHT" x="14" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="8" y="20"/>
-									</Size>
+									<Size x="8" y="20"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="-21" y="0"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="-21" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
 								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="8" y="20"/>
-									</Size>
+									<Size x="8" y="20"/>
 									<Anchors>
-										<Anchor point="RIGHT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="RIGHT" x="0" y="0"/>
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
 								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="0" y="20"/>
-									</Size>
+									<Size x="0" y="20"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 										<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
@@ -1171,24 +845,16 @@ TRAVEL PASS
 							<Layer level="BORDER">
 								<FontString name="$parentFill" inherits="FriendsFont_UserText" justifyH="LEFT" justifyV="MIDDLE" text="FRIENDS_LIST_ENTER_TEXT">
 									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="3" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="LEFT" x="3" y="0"/>
 									</Anchors>
 									<Color r="0.35" g="0.35" b="0.35"/>
 								</FontString>								
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture file="Interface\FriendsFrame\BroadcastIcon" parentKey="icon">
-									<Size>
-										<AbsDimension x="16" y="16"/>										
-									</Size>
+									<Size x="16" y="16"/>										
 									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
-											<Offset x="-5" y="-1"/>
-										</Anchor>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="-5" y="-1"/>
 									</Anchors>									
 								</Texture>
 							</Layer>
@@ -1238,13 +904,9 @@ TRAVEL PASS
 								</Scripts>
 							</Button>
 							<Button name="$parentClearButton" parentKey="clear" hidden="true">
-								<Size>
-									<AbsDimension x="16" y="16"/>
-								</Size>
+								<Size x="16" y="16"/>
 								<Anchors>
-									<Anchor point="RIGHT">
-										<Offset x="-2" y="0"/>
-									</Anchor>
+									<Anchor point="RIGHT" x="-2" y="0"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
@@ -1274,11 +936,7 @@ TRAVEL PASS
 					</EditBox>
 					<Button name="FriendsTabHeaderTab1" inherits="TabButtonTemplate" text="FRIENDS" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="30" y="-64"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="18" y="-51"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1294,11 +952,7 @@ TRAVEL PASS
 					</Button>
 					<Button name="FriendsTabHeaderTab2" inherits="TabButtonTemplate" text="IGNORE" id="2">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab1" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -1310,11 +964,7 @@ TRAVEL PASS
 					</Button>
 					<Button name="FriendsTabHeaderTab3" inherits="TabButtonTemplate" text="PENDING_INVITE" id="3">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab2" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab2" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -1344,6 +994,25 @@ TRAVEL PASS
 							</OnUpdate>
 						</Scripts>
 					</Frame>
+					<Button name="$parentSoRButton" inherits="ScrollOfResurrectionButtonTemplate" parentKey="soRButton" hidden="true">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
+								self:RegisterEvent("SOR_BY_TEXT_UPDATED");
+							</OnLoad>
+							<OnEvent>
+								if ( CanSendSoRByText() ) then
+									self:Show();
+								else
+									self:Hide();
+								end
+							</OnEvent>
+						</Scripts>
+					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -1356,15 +1025,9 @@ TRAVEL PASS
 			<Frame name="FriendsListFrame" hidden="true" setAllPoints="true">
 				<Frames>				
 					<Button name="FriendsFrameAddFriendButton" inherits="UIPanelButtonTemplate2" text="ADD_FRIEND">
-						<Size>
-							<AbsDimension x="131" y="21"/>
-						</Size>
+						<Size x="131" y="21"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="15" y="81"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame" x="4" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="FriendsFrameAddFriendButton_OnClick"/>
@@ -1375,15 +1038,9 @@ TRAVEL PASS
 						</Scripts>
 					</Button>
 					<Button name="FriendsFrameSendMessageButton" inherits="UIPanelButtonTemplate2" text="SEND_MESSAGE">
-						<Size>
-							<AbsDimension x="131" y="21"/>
-						</Size>
+						<Size x="131" y="21"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="-41" y="81"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="FriendsFrameSendMessageButton_OnClick"/>
@@ -1394,34 +1051,44 @@ TRAVEL PASS
 						</Scripts>
 					</Button>
 					<ScrollFrame name="FriendsFrameFriendsScrollFrame" inherits="HybridScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="302" y="307"/>
-						</Size>
+						<Size x="302" y="307"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="21" y="-100"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="8" y="-87"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture name="FriendsFrameOfflineHeader" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" hidden="true"/>
 							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="29" y="102"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-6" y="5"/>
+									</Anchors>
+									<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
+								</Texture>
+								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="29" y="106"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-6" y="-5"/>
+									</Anchors>
+									<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="29" y="1"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+										<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+									</Anchors>
+									<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
+								</Texture>
+							</Layer>
 						</Layers>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="-47" y="-114"/>
-										</Offset>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="6" y="14"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-14" y="-101"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="12"/>
 								</Anchors>
 							</Slider>
 						</Frames>
@@ -1429,17 +1096,37 @@ TRAVEL PASS
 				</Frames>
 			</Frame>
 			<Frame name="IgnoreListFrame" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="102"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-5" y="-82"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-5" y="25"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Button name="FriendsFrameIgnorePlayerButton" inherits="UIPanelButtonTemplate2" text="IGNORE_PLAYER">
-						<Size>
-							<AbsDimension x="131" y="21"/>
-						</Size>
+						<Size x="131" y="21"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="15" y="81"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame" x="4" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1460,15 +1147,9 @@ TRAVEL PASS
 						</Scripts>
 					</Button>
 					<Button name="FriendsFrameUnsquelchButton" inherits="UIPanelButtonTemplate2" text="REMOVE_PLAYER">
-						<Size>
-							<AbsDimension x="134" y="21"/>
-						</Size>
+						<Size x="134" y="21"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="-38" y="81"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1482,9 +1163,7 @@ TRAVEL PASS
 						</Scripts>
 					</Button>
 					<Button name="FriendsFrameMutePlayerButton" inherits="UIPanelButtonTemplate2" text="MUTE_PLAYER">
-						<Size>
-							<AbsDimension x="110" y="21"/>
-						</Size>
+						<Size x="110" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="FriendsFrameIgnorePlayerButton" relativePoint="RIGHT"/>
 						</Anchors>
@@ -1512,185 +1191,14 @@ TRAVEL PASS
 					<Frame name="FriendsFrameMutedHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Button name="FriendsFrameIgnoreButton1" inherits="FriendsFrameIgnoreButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="21" y="-102"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="8" y="-89"/>
 						</Anchors>
 					</Button>
-					<Button name="FriendsFrameIgnoreButton2" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton1" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton3" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton2" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton4" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton3" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton5" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton4" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton6" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton5" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton7" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton6" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton8" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton7" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton9" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton8" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton10" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton9" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton11" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton10" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton12" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton11" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton13" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton12" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton14" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton13" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton15" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton14" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton16" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton15" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton17" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton16" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton18" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton17" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="FriendsFrameIgnoreButton19" inherits="FriendsFrameIgnoreButtonTemplate">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="FriendsFrameIgnoreButton18" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
+					<!-- Other 18 IgnoreButtons are made in FriendsFrame.lua -->
 					<ScrollFrame name="FriendsFrameIgnoreScrollFrame" inherits="FauxScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="298" y="309"/>
-						</Size>
+						<Size x="298" y="309"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="-65" y="-99"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" x="-65" y="-99"/>
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
@@ -1709,32 +1217,46 @@ TRAVEL PASS
 				</Scripts>
 			</Frame>
 			<Frame name="PendingListFrame" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="102"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-5" y="-82"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-5" y="25"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="10" y="-60"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" x="10" y="-60"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="PendingListFrameDropDown_OnLoad"/>
 						</Scripts>
 					</Frame>
 					<Frame name="PendingListInfoFrame" enableMouse="true" hidden="true">
-						<Size>
-							<AbsDimension x="298" y="309"/>
-						</Size>
+						<Size x="298" y="309"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="22" y="-99"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="22" y="-99"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1770,30 +1292,18 @@ TRAVEL PASS
 									</Anchors>
 								</FontString>
 								<FontString inherits="GameFontHighlight" justifyH="LEFT" text="RID_FRIEND_REQUEST_INFO">
-									<Size>
-										<AbsDimension x="200" y="0"/>
-									</Size>
+									<Size x="200" y="0"/>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-4"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-4"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate2" text="CONTINUE">
-								<Size>
-									<AbsDimension x="131" y="22"/>
-								</Size>
+								<Size x="131" y="22"/>
 								<Anchors>
-									<Anchor point="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="30"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="BOTTOM" x="0" y="30"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -1805,29 +1315,17 @@ TRAVEL PASS
 						</Frames>
 					</Frame>
 					<ScrollFrame name="FriendsFramePendingScrollFrame">
-						<Size>
-							<AbsDimension x="298" y="308"/>
-						</Size>
+						<Size x="298" y="308"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame">
-								<Offset>
-									<AbsDimension x="-65" y="-99"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" x="-33" y="-85"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="scrollBar" hidden="true">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="6" y="-16"/>
-										</Offset>
+										<Offset x="6" y="-16"/>
 									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="6" y="15"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="15"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1867,44 +1365,26 @@ TRAVEL PASS
 						</Scripts>
 						<ScrollChild>
 							<Frame name="$parentScrollChild" parentKey="scrollChild">
-								<Size>
-									<AbsDimension x="10" y="10"/>
-								</Size>
+								<Size x="10" y="10"/>
 								<Frames>
 									<Button name="FriendsFramePendingButton1" inherits="FriendsFramePendingButtonTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPLEFT" x="0" y="0"/>
 										</Anchors>
 									</Button>
 									<Button name="FriendsFramePendingButton2" inherits="FriendsFramePendingButtonTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton1" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 										</Anchors>
 									</Button>
 									<Button name="FriendsFramePendingButton3" inherits="FriendsFramePendingButtonTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton2" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 										</Anchors>
 									</Button>
 									<Button name="FriendsFramePendingButton4" inherits="FriendsFramePendingButtonTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton3" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
+											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 										</Anchors>
 									</Button>
 								</Frames>
@@ -1918,30 +1398,26 @@ TRAVEL PASS
 				</Scripts>
 			</Frame>
 			<Frame name="WhoFrame" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="WhoFrameTotals" inherits="GameFontNormalSmall">
-							<Size>
-								<AbsDimension x="298" y="16"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="-10" y="127"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
+					<Frame name="WhoFrameListInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-80"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="46"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="WhoFrameTotals" inherits="GameFontNormalSmall">
+									<Size x="298" y="16"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="5"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Button name="WhoFrameColumnHeader1" inherits="WhoFrameColumnHeaderTemplate" text="NAME">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-70"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="7" y="-57"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1952,35 +1428,19 @@ TRAVEL PASS
 					</Button>
 					<Button name="WhoFrameColumnHeader2" inherits="WhoFrameColumnHeaderTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader1" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Frames>
 							<Frame name="WhoFrameDropDown" inherits="UIDropDownMenuTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="-15" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="-15" y="0"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
 										<Texture name="WhoFrameDropDownHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="15" y="3"/>
-													</Offset>
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-30" y="-2"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="15" y="3"/>
+												<Anchor point="BOTTOMRIGHT" x="-30" y="-2"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -2014,11 +1474,7 @@ TRAVEL PASS
 					</Button>
 					<Button name="WhoFrameColumnHeader3" inherits="WhoFrameColumnHeaderTemplate" text="LEVEL_ABBR">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader2" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader2" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -2029,11 +1485,7 @@ TRAVEL PASS
 					</Button>
 					<Button name="WhoFrameColumnHeader4" inherits="WhoFrameColumnHeaderTemplate" text="CLASS">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader3" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader3" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -2061,167 +1513,14 @@ TRAVEL PASS
 					-->
 					<Button name="WhoFrameButton1" inherits="FriendsFrameWhoButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrame">
-								<Offset>
-									<AbsDimension x="15" y="-95"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="WhoFrame" x="2" y="-82"/>
 						</Anchors>
 					</Button>
-					<Button name="WhoFrameButton2" inherits="FriendsFrameWhoButtonTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton3" inherits="FriendsFrameWhoButtonTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton4" inherits="FriendsFrameWhoButtonTemplate" id="4">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton5" inherits="FriendsFrameWhoButtonTemplate" id="5">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton4" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton6" inherits="FriendsFrameWhoButtonTemplate" id="6">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton5" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton7" inherits="FriendsFrameWhoButtonTemplate" id="7">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton6" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton8" inherits="FriendsFrameWhoButtonTemplate" id="8">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton7" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton9" inherits="FriendsFrameWhoButtonTemplate" id="9">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton8" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton10" inherits="FriendsFrameWhoButtonTemplate" id="10">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton9" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton11" inherits="FriendsFrameWhoButtonTemplate" id="11">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton10" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton12" inherits="FriendsFrameWhoButtonTemplate" id="12">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton11" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton13" inherits="FriendsFrameWhoButtonTemplate" id="13">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton12" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton14" inherits="FriendsFrameWhoButtonTemplate" id="14">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton13" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton15" inherits="FriendsFrameWhoButtonTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton14" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton16" inherits="FriendsFrameWhoButtonTemplate" id="16">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton15" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="WhoFrameButton17" inherits="FriendsFrameWhoButtonTemplate" id="17">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WhoFrameButton16" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Button>
+					<!-- Other 16 WhoFrameButtons are made in FriendsFrame.lua -->
 					<Button name="WhoFrameGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
-						<Size>
-							<AbsDimension x="120" y="22"/>
-						</Size>
+						<Size x="120" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-40" y="82"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -2230,15 +1529,9 @@ TRAVEL PASS
 						</Scripts>
 					</Button>
 					<Button name="WhoFrameAddFriendButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
-						<Size>
-							<AbsDimension x="120" y="22"/>
-						</Size>
+						<Size x="120" y="22"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="WhoFrameGroupInviteButton" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="RIGHT" relativeTo="WhoFrameGroupInviteButton" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -2247,15 +1540,9 @@ TRAVEL PASS
 						</Scripts>
 					</Button>
 					<Button name="WhoFrameWhoButton" inherits="UIPanelButtonTemplate" text="REFRESH">
-						<Size>
-							<AbsDimension x="85" y="22"/>
-						</Size>
+						<Size x="85" y="22"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="WhoFrameAddFriendButton" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="RIGHT" relativeTo="WhoFrameAddFriendButton" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -2265,16 +1552,16 @@ TRAVEL PASS
 							</OnClick>
 						</Scripts>
 					</Button>
-					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32">
-						<Size>
-							<AbsDimension x="296" y="32"/>
-						</Size>
+					<Frame name="WhoFrameEditBoxInset" inherits="InsetFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="-20" y="100"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="46"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
+						</Anchors>
+					</Frame>
+					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32">
+						<Size x="296" y="32"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="-10" y="20"/>
 						</Anchors>
 						<Scripts>
 							<OnShow function="EditBox_ClearFocus"/>
@@ -2284,15 +1571,9 @@ TRAVEL PASS
 						<FontString inherits="ChatFontNormal" bytes="256"/>
 					</EditBox>
 					<ScrollFrame name="WhoListScrollFrame" inherits="FauxScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="296" y="287"/>
-						</Size>
+						<Size x="296" y="287"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-67" y="-96"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-67" y="-96"/>
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
@@ -2302,28 +1583,16 @@ TRAVEL PASS
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
+									<Size x="31" y="256"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
 									</Anchors>
 									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 								</Texture>
 								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
+									<Size x="31" y="106"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
 									</Anchors>
 									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
 								</Texture>
@@ -2345,11 +1614,7 @@ TRAVEL PASS
 			</Frame>
 			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="FRIENDS">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="11" y="46"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="5" y="-30"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -2361,11 +1626,7 @@ TRAVEL PASS
 			<!--
 			<Button name="FriendsFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="IGNORE">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-14" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT" x="-14" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -2379,11 +1640,7 @@ TRAVEL PASS
 			-->
 			<Button name="FriendsFrameTab2" inherits="FriendsFrameTabTemplate" id="2" text="WHO">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab1" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -2394,11 +1651,7 @@ TRAVEL PASS
 			</Button>
 			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="CHAT">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="FriendsFrame_Update"/>
@@ -2409,7 +1662,7 @@ TRAVEL PASS
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="RAID">
+			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="LOOKING_FOR_RAID">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT">
 						<Offset>
@@ -2421,15 +1674,13 @@ TRAVEL PASS
 					<OnLoad function="FriendsFrame_Update"/>
 					<OnEvent function="FriendsFrame_Update"/>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LOOKING_FOR_RAID, "TOGGLELFRPARENT"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAID_BROWSER, 1);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Frame name="FriendsTooltip" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
-				<Size>
-					<AbsDimension x="200" y="200"/>
-				</Size>
+				<Size x="200" y="200"/>
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<Color r="0" b="0" g="0"/>
 					<EdgeSize>
@@ -2445,27 +1696,21 @@ TRAVEL PASS
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentHeader" inherits="FriendsFont_Normal" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="12" y="-12"/>
 							</Anchors>
 							<Color r="0.510" g="0.773" b="1" />
 						</FontString>
 						<FontString name="$parentToon1Name" inherits="FriendsFont_Small" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentHeader" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentToon1Info" inherits="FriendsFont_Small" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="168" y="0"/>
-							</Size>
+							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon1Name" relativePoint="BOTTOM" x="0" y="-4"/>
@@ -2473,9 +1718,7 @@ TRAVEL PASS
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
 						<FontString name="$parentNoteText" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="158" y="0"/>
-							</Size>
+							<Size x="158" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="30" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon1Info" relativePoint="BOTTOM" x="0" y="-4"/>
@@ -2483,18 +1726,14 @@ TRAVEL PASS
 							<Color r="1.0" g="0.82" b="0"/>
 						</FontString>
 						<Texture name="$parentNoteIcon" file="Interface/FriendsFrame/UI-FriendsFrame-Note">
-							<Size>
-								<AbsDimension x="14" y="12"/>
-							</Size>	
+							<Size x="14" y="12"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeTo="$parentNoteText" relativePoint="TOPLEFT" x="-1" y="0"/>
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</Texture>
 						<FontString name="$parentBroadcastText" inherits="FriendsFont_UserText" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="158" y="0"/>
-							</Size>
+							<Size x="158" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="30" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentNoteText" relativePoint="BOTTOM" x="0" y="-4"/>
@@ -2502,17 +1741,13 @@ TRAVEL PASS
 							<Color r="0.345" g="0.667" b="0.867" />
 						</FontString>
 						<Texture name="$parentBroadcastIcon" file="Interface\FriendsFrame\BroadcastIcon">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>	
+							<Size x="16" y="16"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeTo="$parentBroadcastText" relativePoint="TOPLEFT" x="-2" y="1"/>
 							</Anchors>
 						</Texture>
 						<FontString name="$parentLastOnline" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentBroadcastText" relativePoint="BOTTOM" x="0" y="-4"/>
@@ -2527,18 +1762,14 @@ TRAVEL PASS
 							<Color r="0.996" g="0.882" b="0.361"/>
 						</FontString>
 						<FontString name="$parentToon2Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentOtherToons" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentToon2Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="168" y="0"/>
-							</Size>
+							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon2Name" relativePoint="BOTTOM" x="0" y="-1"/>
@@ -2546,18 +1777,14 @@ TRAVEL PASS
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
 						<FontString name="$parentToon3Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon2Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentToon3Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="168" y="0"/>
-							</Size>
+							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon3Name" relativePoint="BOTTOM" x="0" y="-1"/>
@@ -2565,18 +1792,14 @@ TRAVEL PASS
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
 						<FontString name="$parentToon4Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon3Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentToon4Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="168" y="0"/>
-							</Size>
+							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon4Name" relativePoint="BOTTOM" x="0" y="-1"/>
@@ -2584,18 +1807,14 @@ TRAVEL PASS
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
 						<FontString name="$parentToon5Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon4Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentToon5Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="168" y="0"/>
-							</Size>
+							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon5Name" relativePoint="BOTTOM" x="0" y="-1"/>
@@ -2603,9 +1822,7 @@ TRAVEL PASS
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
 						<FontString name="$parentToonMany" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
-							<Size>
-								<AbsDimension x="176" y="0"/>
-							</Size>
+							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentToon5Info" relativePoint="BOTTOM" x="0" y="-4"/>
@@ -2626,9 +1843,7 @@ TRAVEL PASS
 		</Scripts>
 	</Frame>
 	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
-		<Size>
-			<AbsDimension x="446" y="272"/>
-		</Size>
+		<Size x="446" y="272"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
 				<AbsInset left="11" right="12" top="12" bottom="11"/>
@@ -2642,9 +1857,7 @@ TRAVEL PASS
 		</Backdrop>		
 		<Frames>
 			<Frame name="AddFriendInfoFrame" hidden="true">
-				<Size>
-					<AbsDimension x="446" y="272"/>
-				</Size>
+				<Size x="446" y="272"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -2674,59 +1887,33 @@ TRAVEL PASS
 						</Texture>
 						<FontString name="$parentLeftTitle" inherits="GameFontNormal" justifyH="LEFT" text="BATTLENET_FRIEND">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentLeftFriend">
-									<Offset>
-										<AbsDimension x="-2" y="-6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentLeftFriend" x="-2" y="-6"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentRightTitle" inherits="GameFontNormal" justifyH="LEFT" text="CHARACTER_FRIEND">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentRightFriend">
-									<Offset>
-										<AbsDimension x="-2" y="-6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentRightFriend" x="-2" y="-6"/>
 							</Anchors>
 						</FontString>
 						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="BATTLENET_FRIEND_INFO">
-							<Size>
-								<AbsDimension x="160" y="0"/>
-							</Size>
+							<Size x="160" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeftTitle" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-4"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeftTitle" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="CHARACTER_FRIEND_INFO">
-							<Size>
-								<AbsDimension x="160" y="0"/>
-							</Size>
+							<Size x="160" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentRightTitle" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-4"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentRightTitle" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate2" text="CONTINUE">
-						<Size>
-							<AbsDimension x="131" y="22"/>
-						</Size>
+						<Size x="131" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="30"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="30"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -2738,26 +1925,20 @@ TRAVEL PASS
 				</Frames>
 			</Frame>
 			<Frame name="AddFriendEntryFrame" hidden="true">
-				<Size>
-					<AbsDimension x="384" y="218"/>
-				</Size>
+				<Size x="384" y="218"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture name="$parentLeftIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
-							<Size>
-								<AbsDimension x="40" y="40"/>
-							</Size>
+							<Size x="40" y="40"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="92" y="-50" />
 							</Anchors>
 						</Texture>
 						<Texture name="$parentRightIcon" file="Interface\FriendsFrame\PlusManz-Horde" alpha="0.5" hidden="true">
-							<Size>
-								<AbsDimension x="40" y="40"/>
-							</Size>
+							<Size x="40" y="40"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-82" y="-50" />
 							</Anchors>
@@ -2765,17 +1946,13 @@ TRAVEL PASS
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentLeftFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
-							<Size>
-								<AbsDimension x="36" y="36"/>
-							</Size>
+							<Size x="36" y="36"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentLeftIcon" x="-10" y="-4" />
 							</Anchors>
 						</Texture>
 						<Texture name="$parentRightFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
-							<Size>
-								<AbsDimension x="36" y="36"/>
-							</Size>
+							<Size x="36" y="36"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentRightIcon" x="-10" y="-4" />
 							</Anchors>
@@ -2832,42 +2009,28 @@ TRAVEL PASS
 						</Scripts>
 					</Button>
 					<EditBox name="AddFriendNameEditBox" autoFocus="false" letters="255" inherits="AutoCompleteEditBoxTemplate">
-						<Size>
-							<AbsDimension x="280" y="20"/>
-						</Size>
+						<Size x="280" y="20"/>
 						<Anchors>
-							<Anchor point="TOP">
-								<Offset x="0" y="-130"/>
-							</Anchor>
+							<Anchor point="TOP" x="0" y="-130"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="8" y="20"/>
-									</Size>
+									<Size x="8" y="20"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="-5" y="0"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="-5" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
 								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="8" y="20"/>
-									</Size>
+									<Size x="8" y="20"/>
 									<Anchors>
-										<Anchor point="RIGHT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="RIGHT" x="0" y="0"/>
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
 								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="0" y="20"/>
-									</Size>
+									<Size x="0" y="20"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 										<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
@@ -2878,11 +2041,7 @@ TRAVEL PASS
 							<Layer level="BORDER">
 								<FontString name="$parentFill" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_NAME_OR_EMAIL">
 									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="3" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="LEFT" x="3" y="0"/>
 									</Anchors>
 									<Color r="0.35" g="0.35" b="0.35"/>
 								</FontString>
@@ -2914,30 +2073,20 @@ TRAVEL PASS
 					<Frame name="AddFriendNoteFrame" hidden="true">
 						<Size x="286" y="60"/>
 						<Anchors>
-							<Anchor point="TOP">
-								<Offset x="-2" y="-164"/>
-							</Anchor>
+							<Anchor point="TOP" x="-2" y="-164"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-									<Size>
-										<AbsDimension x="8" y="8"/>
-									</Size>
+									<Size x="8" y="8"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-									<Size>
-										<AbsDimension x="8" y="8"/>
-									</Size>
+									<Size x="8" y="8"/>
 									<Anchors>
-										<Anchor point="TOPRIGHT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="TOPRIGHT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
@@ -2947,23 +2096,15 @@ TRAVEL PASS
 									</Anchors>
 								</Texture>
 								<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-									<Size>
-										<AbsDimension x="8" y="8"/>
-									</Size>
+									<Size x="8" y="8"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-									<Size>
-										<AbsDimension x="8" y="8"/>
-									</Size>
+									<Size x="8" y="8"/>
 									<Anchors>
-										<Anchor point="BOTTOMRIGHT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
@@ -3030,11 +2171,7 @@ TRAVEL PASS
 											<Layer level="BORDER">
 												<FontString name="$parentFill" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_INVITE_NOTE">
 													<Anchors>
-														<Anchor point="LEFT">
-															<Offset>
-																<AbsDimension x="3" y="0"/>
-															</Offset>
-														</Anchor>
+														<Anchor point="LEFT" x="3" y="0"/>
 													</Anchors>
 													<Color r="0.35" g="0.35" b="0.35"/>
 												</FontString>
@@ -3067,30 +2204,18 @@ TRAVEL PASS
 						</Frames>
 					</Frame>		
 					<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ADD_FRIEND">
-						<Size>
-							<AbsDimension x="118" y="22"/>
-						</Size>
+						<Size x="118" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="45" y="30"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" x="45" y="30"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="AddFriendFrame_Accept"/>
 						</Scripts>
 					</Button>
 					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
-						<Size>
-							<AbsDimension x="118" y="22"/>
-						</Size>
+						<Size x="118" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-50" y="30"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-50" y="30"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -3114,9 +2239,7 @@ TRAVEL PASS
 		</Scripts>
 	</Frame>
 	<Frame name="FriendsFriendsFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
-		<Size>
-			<AbsDimension x="314" y="390"/>
-		</Size>
+		<Size x="314" y="390"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="50"/>
 		</Anchors>
@@ -3134,9 +2257,7 @@ TRAVEL PASS
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="FriendsFont_Large" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="270" y="16"/>
-					</Size>
+					<Size x="270" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="26" y="-20"/>
 					</Anchors>
@@ -3147,17 +2268,11 @@ TRAVEL PASS
 		<Frames>
 			<Frame name="FriendsFriendsFrameDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-40"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="8" y="-40"/>
 				</Anchors>
 			</Frame>
 			<Frame name="FriendsFriendsList">
-				<Size>
-					<AbsDimension x="266" y="192"/>
-				</Size>
+				<Size x="266" y="192"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-74"/>
 				</Anchors>
@@ -3181,115 +2296,63 @@ TRAVEL PASS
 			</Frame>
 			<Button name="FriendsFriendsButton1" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsList">
-						<Offset>
-							<AbsDimension x="4" y="-8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsList" x="4" y="-8"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton2" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton1" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton1" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton3" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton2" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton2" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton4" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton3" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton3" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton5" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton4" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton4" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton6" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton5" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton5" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton7" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton6" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton6" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton8" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton7" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton7" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton9" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton8" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton8" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton10" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton9" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton9" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="FriendsFriendsButton11" inherits="FriendsFriendsButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="FriendsFriendsButton10" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="FriendsFriendsButton10" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<ScrollFrame name="FriendsFriendsScrollFrame" inherits="FauxScrollFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsList">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFriendsList">
-						<Offset>
-							<AbsDimension x="-26" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsList" x="0" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFriendsList" x="-26" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
@@ -3323,30 +2386,20 @@ TRAVEL PASS
 			<Frame name="FriendsFriendsNoteFrame">
 				<Size x="262" y="60"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsScrollFrame" relativePoint="BOTTOMLEFT">
-						<Offset x="2" y="-10"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="FriendsFriendsScrollFrame" relativePoint="BOTTOMLEFT" x="2" y="-10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
@@ -3356,23 +2409,15 @@ TRAVEL PASS
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
@@ -3439,11 +2484,7 @@ TRAVEL PASS
 									<Layer level="BORDER">
 										<FontString name="$parentFill" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_INVITE_NOTE">
 											<Anchors>
-												<Anchor point="LEFT">
-													<Offset>
-														<AbsDimension x="3" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" x="3" y="0"/>
 											</Anchors>
 											<Color r="0.35" g="0.35" b="0.35"/>
 										</FontString>
@@ -3473,30 +2514,18 @@ TRAVEL PASS
 				</Frames>
 			</Frame>
 			<Button name="FriendsFriendsSendRequestButton" inherits="UIPanelButtonTemplate2" text="SEND_REQUEST">
-				<Size>
-					<AbsDimension x="118" y="22"/>
-				</Size>
+				<Size x="118" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="30" y="24"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="30" y="24"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="FriendsFriendsFrame_SendRequest"/>
 				</Scripts>
 			</Button>
 			<Button name="FriendsFriendsCloseButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
-				<Size>
-					<AbsDimension x="118" y="22"/>
-				</Size>
+				<Size x="118" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-30" y="24"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="24"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="FriendsFriendsFrame_Close"/>

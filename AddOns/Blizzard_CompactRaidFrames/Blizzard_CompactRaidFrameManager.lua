@@ -28,8 +28,12 @@ function CompactRaidFrameManager_OnLoad(self)
 	CompactRaidFrameContainer_SetGroupFilterFunction(self.container, CRFGroupFilterFunc)
 	CompactRaidFrameManager_UpdateContainerBounds(self);
 	CompactRaidFrameManager_ResizeFrame_Reanchor(self);
+	CompactRaidFrameManager_AttachPartyFrames(self);
 	
 	CompactRaidFrameManager_Collapse(self);
+	
+	--Set up the options flow container
+	FlowContainer_Initialize(self.displayFrame.optionsFlowContainer);
 end
 
 local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", "DisplayPets", "DisplayMainTankAndAssist", "IsShown", "ShowBorders" };
@@ -40,15 +44,16 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_UpdateShown(self);
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 		CompactRaidFrameManager_UpdateLabel(self);
+		CompactRaidFrameManager_UpdateContainerLockVisibility(self);
 	elseif ( event == "UNIT_FLAGS" or event == "PLAYER_FLAGS_CHANGED" ) then
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		CompactRaidFrameManager_UpdateShown(self);
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
-		CompactRaidFrameManager_UpdateLeaderButtonsShown(self);
+		CompactRaidFrameManager_UpdateOptionsFlowContainer(self);
 		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
-		CompactRaidFrameManager_UpdateLeaderButtonsShown(self);
+		CompactRaidFrameManager_UpdateOptionsFlowContainer(self);
 	elseif ( event == "RAID_TARGET_UPDATE" ) then
 		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
@@ -80,11 +85,13 @@ function CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick(self)
 end
 
 function CompactRaidFrameManager_UpdateShown(self)
-	if ( GetDisplayedAllyFrames() == "raid" ) then
+	if ( GetDisplayedAllyFrames() ) then
 		self:Show();
 	else
 		self:Hide();
 	end
+	CompactRaidFrameManager_UpdateOptionsFlowContainer(self);
+	CompactRaidFrameManager_UpdateContainerVisibility();
 end
 
 function CompactRaidFrameManager_UpdateLabel(self)
@@ -117,23 +124,74 @@ function CompactRaidFrameManager_Collapse(self)
 	self.toggleButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 1);
 end
 
-function CompactRaidFrameManager_UpdateLeaderButtonsShown(self)
-	--First, we'll update the overall height as well as which panels are showing.
-	local height = 84;
+function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
+	local container = self.displayFrame.optionsFlowContainer;
+	
+	FlowContainer_RemoveAllObjects(container);
+	FlowContainer_PauseUpdates(container);
+	
+	if ( GetDisplayedAllyFrames() == "raid" ) then
+		FlowContainer_AddObject(container, self.displayFrame.profileSelector);
+		self.displayFrame.profileSelector:Show();
+	else
+		self.displayFrame.profileSelector:Hide();
+	end
+	
 	if ( GetNumRaidMembers() > 0 ) then
-		height = height + self.displayFrame.filterOptions:GetHeight();
+		FlowContainer_AddObject(container, self.displayFrame.filterOptions);
 		self.displayFrame.filterOptions:Show();
 	else
 		self.displayFrame.filterOptions:Hide();
 	end
 	
 	if ( GetNumRaidMembers() == 0 or IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
-		height = height + self.displayFrame.leaderOptions:GetHeight();
+		FlowContainer_AddObject(container, self.displayFrame.raidMarkers);
+		self.displayFrame.raidMarkers:Show();
+	else
+		self.displayFrame.raidMarkers:Hide();
+	end
+	
+	if ( GetNumRaidMembers() == 0 or IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
+		FlowContainer_AddObject(container, self.displayFrame.leaderOptions);
 		self.displayFrame.leaderOptions:Show();
 	else
 		self.displayFrame.leaderOptions:Hide();
 	end
-	self:SetHeight(height);
+	
+	if ( GetNumRaidMembers() == 0 and IsPartyLeader() and not HasLFGRestrictions() ) then
+		FlowContainer_AddLineBreak(container);
+		FlowContainer_AddSpacer(container, 20);
+		FlowContainer_AddObject(container, self.displayFrame.convertToRaid);
+		self.displayFrame.convertToRaid:Show();
+	else
+		self.displayFrame.convertToRaid:Hide();
+	end
+	
+	if ( GetDisplayedAllyFrames() == "raid" ) then
+		FlowContainer_AddLineBreak(container);
+		FlowContainer_AddSpacer(container, 20);
+		FlowContainer_AddObject(container, self.displayFrame.lockedModeToggle);
+		FlowContainer_AddObject(container, self.displayFrame.hiddenModeToggle);
+		self.displayFrame.lockedModeToggle:Show();
+		self.displayFrame.hiddenModeToggle:Show();
+	else
+		self.displayFrame.lockedModeToggle:Hide();
+		self.displayFrame.hiddenModeToggle:Hide();
+	end
+
+	if ( GetNumRaidMembers() ~= 0 and IsRaidLeader() ) then
+		FlowContainer_AddLineBreak(container);
+		FlowContainer_AddSpacer(container, 20);
+		FlowContainer_AddObject(container, self.displayFrame.everyoneIsAssistButton);
+		self.displayFrame.everyoneIsAssistButton:Show();
+	else
+		self.displayFrame.everyoneIsAssistButton:Hide();
+	end
+	
+	FlowContainer_ResumeUpdates(container);
+	
+	local usedX, usedY = FlowContainer_GetUsedBounds(container);
+	self:SetHeight(usedY + 40);
 	
 	--Then, we update which specific buttons are enabled.
 	
@@ -266,7 +324,7 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 	local unit = "target";
 	local disableAll = not CanBeRaidTarget(unit);
 	for i=1, NUM_RAID_ICONS do
-		local button = _G["CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidMarker"..i];	--.... /cry
+		local button = _G["CompactRaidFrameManagerDisplayFrameRaidMarkersRaidMarker"..i];	--.... /cry
 		if ( disableAll or i == GetRaidTargetIndex(unit) ) then
 			button:GetNormalTexture():SetDesaturated(true);
 			button:SetAlpha(0.7);
@@ -278,7 +336,7 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 		end
 	end
 	
-	local removeButton = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidMarkerRemove;
+	local removeButton = CompactRaidFrameManagerDisplayFrameRaidMarkersRaidMarkerRemove;
 	if ( not GetRaidTargetIndex(unit) ) then
 		removeButton:GetNormalTexture():SetDesaturated(true);
 		removeButton:Disable();
@@ -332,13 +390,13 @@ do	--Enclosure to make sure people go through SetSetting
 	local function CompactRaidFrameManager_SetLocked(value)
 		local manager = CompactRaidFrameManager;
 		if ( value and value ~= "0" ) then
-			CompactRaidFrameManager_LockContainer(manager);
 			CompactRaidFrameManagerDisplayFrameLockedModeToggle:SetText(UNLOCK);
 			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = false;
+			CompactRaidFrameManager_UpdateContainerLockVisibility(manager);
 		else
-			CompactRaidFrameManager_UnlockContainer(manager);
 			CompactRaidFrameManagerDisplayFrameLockedModeToggle:SetText(LOCK);
 			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = true;
+			CompactRaidFrameManager_UpdateContainerLockVisibility(manager);
 		end
 	end
 
@@ -392,14 +450,15 @@ do	--Enclosure to make sure people go through SetSetting
 	local function CompactRaidFrameManager_SetIsShown(value)
 		local manager = CompactRaidFrameManager;
 		if ( value and value ~= "0" ) then
-			manager.container:Show();
+			manager.container.enabled = true;
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(HIDE);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = false;
 		else
-			manager.container:Hide();
+			manager.container.enabled = false;
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(SHOW);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = true;
 		end
+		CompactRaidFrameManager_UpdateContainerVisibility();
 	end
 	
 	local function CompactRaidFrameManager_SetBorderShown(value)
@@ -449,6 +508,20 @@ do	--Enclosure to make sure people go through SetSetting
 	end
 end
 
+function CompactRaidFrameManager_UpdateContainerVisibility()
+	local manager = CompactRaidFrameManager;
+	if ( GetDisplayedAllyFrames() == "raid" and manager.container.enabled ) then
+		manager.container:Show();
+	else
+		manager.container:Hide();
+	end
+end
+
+function CompactRaidFrameManager_AttachPartyFrames(manager)
+	PartyMemberFrame1:ClearAllPoints();
+	PartyMemberFrame1:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, -20);
+end
+	
 function CompactRaidFrameManager_ResetContainerPosition()
 	local manager = CompactRaidFrameManager;
 	manager.dynamicContainerPosition = true;
@@ -472,6 +545,14 @@ function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" ins
 		self.containerResizeFrame:SetHeight(top - bottom);
 		
 		CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(self);
+	end
+end
+
+function CompactRaidFrameManager_UpdateContainerLockVisibility(self)
+	if ( GetDisplayedAllyFrames() ~= "raid" or not CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode ) then
+		CompactRaidFrameManager_LockContainer(self);
+	else
+		CompactRaidFrameManager_UnlockContainer(self);
 	end
 end
 

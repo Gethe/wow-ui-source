@@ -243,7 +243,7 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
-			<Button name="VehicleMenuBarPitchSlider" enableMouse="true" frameStrata="LOW">
+			<Button name="VehicleMenuBarPitchSlider" enableMouse="true">
 				<Size>
 					<AbsDimension x="31" y="78"/>
 				</Size>

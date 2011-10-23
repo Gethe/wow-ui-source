@@ -415,7 +415,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentName"  parentKey="name">
+			<Button name="$parentName"  parentKey="name">
 				<Size>
 					<AbsDimension x="215" y="16"/>
 				</Size>
@@ -436,6 +436,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
 					<OnEnter>
 						if ( self.tooltip ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -447,11 +450,11 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
-					<OnMouseUp>
-						ScorePlayer_OnMouseUp(self, button);
-					</OnMouseUp>
+					<OnClick>
+						ScorePlayer_OnClick(self, button);
+					</OnClick>
 				</Scripts>
-			</Frame>
+			</Button>
 		</Frames>
 	</Frame>
 	<Frame name="WorldStateCaptureBarTemplate" virtual="true" toplevel="true" parent="UIParent" hidden="true">

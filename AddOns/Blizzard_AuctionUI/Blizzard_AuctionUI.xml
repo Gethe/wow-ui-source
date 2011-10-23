@@ -354,7 +354,7 @@
 					</ScrollFrame>
 					<ScrollFrame name="BrowseScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size>
-							<AbsDimension x="465" y="306"/>
+							<AbsDimension x="610" y="306"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPRIGHT">
@@ -416,7 +416,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="BrowseLevelSort" inherits="AuctionSortButtonTemplate" text="LEVEL_ABBR">
+					<Button name="BrowseLevelSort" inherits="AuctionSortButtonTemplate" text="REQ_LEVEL_ABBR">
 						<Size>
 							<AbsDimension x="57" y="19"/>
 						</Size>
@@ -956,7 +956,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="BidLevelSort" inherits="AuctionSortButtonTemplate" text="LEVEL_ABBR">
+					<Button name="BidLevelSort" inherits="AuctionSortButtonTemplate" text="REQ_LEVEL_ABBR">
 						<Size>
 							<AbsDimension x="61" y="19"/>
 						</Size>
@@ -1043,7 +1043,7 @@
 					</Button>
 					<ScrollFrame name="BidScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size>
-							<AbsDimension x="625" y="335"/>
+							<AbsDimension x="775" y="335"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPRIGHT">
@@ -1334,7 +1334,7 @@
 						</Scripts>
 					</Button>
 					<ScrollFrame name="AuctionsScrollFrame" inherits="FauxScrollFrameTemplate">
-						<Size x="435" y="339"/>
+						<Size x="575" y="339"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="40" y="-72"/>
 						</Anchors>
@@ -1850,7 +1850,7 @@
 				PlaySound("AuctionWindowClose");
 				StaticPopup_Hide("BUYOUT_AUCTION");
 				StaticPopup_Hide("CANCEL_AUCTION");
-				HideUIPanel(AuctionDressUpFrame);
+				CloseSideDressUpFrame(self);
 				SetAuctionsTabShowing(false);
 				CloseAuctionHouse();
 			</OnHide>

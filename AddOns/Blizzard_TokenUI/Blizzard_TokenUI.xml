@@ -337,6 +337,11 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") ) then
+					HandleModifiedItemClick(GetCurrencyLink(self.currencyID));
+				end
+			</OnClick>
 		</Scripts>
 	</Button>
 	<Frame name="BackpackTokenFrame" parent="UIParent">

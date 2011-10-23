@@ -692,6 +692,7 @@ COMBAT_CONFIG_UNIT_COLORS = {
 
 function ChatConfigFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("CHANNEL_UI_UPDATE");
 end
 
 function ChatConfigFrame_OnEvent(self, event, ...)
@@ -719,6 +720,8 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		-- Default selections
 		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton2);
 		ChatConfig_UpdateCombatTabs(1);
+	elseif ( event == "CHANNEL_UI_UPDATE" ) then
+		ChatConfigCategory_UpdateEnabled();
 	end
 end
 
@@ -1500,6 +1503,14 @@ function ChatConfigCategory_OnClick(self)
 			_G[value]:Hide();
 			_G["ChatConfigCategoryFrameButton"..index]:UnlockHighlight();
 		end
+	end
+end
+
+function ChatConfigCategory_UpdateEnabled()
+	if ( GetChannelList() ) then
+		ChatConfigCategoryFrameButton3:Enable();
+	else
+		ChatConfigCategoryFrameButton3:Disable();
 	end
 end
 

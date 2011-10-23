@@ -1,3 +1,64 @@
+
+ITEM_SEARCHBAR_LIST = {
+	"BagItemSearchBox",
+	"GuildItemSearchBox",
+	"VoidItemSearchBox",
+	"BankItemSearchBox",
+};
+
+function BagSearch_OnHide(self)
+	local allClosed = true;
+	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
+		local bar = _G[barName];
+		if bar and bar ~= self and bar:IsVisible() then
+			allClosed = false;
+		end
+	end
+	if ( allClosed ) then
+		self.clearButton:Click();
+		BagSearch_OnTextChanged(self);
+	end
+end
+
+function BagSearch_OnTextChanged(self, userChanged)
+	local text = self:GetText();
+	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
+		local bar = _G[barName];
+		if bar and bar ~= self then
+			bar:SetText(text);
+		end
+	end
+	
+	if ( text == SEARCH ) then
+		text = "";
+	end
+	SetItemSearch(text);
+	if (text ~= "") then
+		self.clearButton:Show();
+	else
+		self.clearButton:Hide();
+	end
+end
+
+function BagSearch_OnChar(self, text)
+	-- clear focus if the player is repeating keys (ie - trying to move)
+	-- TODO: move into base editbox code?
+	local MIN_REPEAT_CHARACTERS = 4
+	local searchString = self:GetText();
+	if (string.len(searchString) >= MIN_REPEAT_CHARACTERS) then
+		local repeatChar = true;
+		for i=-1, MIN_REPEAT_CHARACTERS-1, -1 do 
+			if ( string.sub(searchString,i,i) ~= string.sub(searchString,i-1,i-1) ) then
+				repeatChar = false;
+				break;
+			end
+		end
+		if ( repeatChar ) then
+			self:ClearFocus();
+		end
+	end
+end
+
 -- functions to manage tab interfaces where only one tab of a group may be selected
 function PanelTemplates_Tab_OnClick(self, frame)
 	PanelTemplates_SetTab(frame, self:GetID())
@@ -300,13 +361,16 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 			_G[self:GetName().."ScrollBar"]:Hide();
 			_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
+			_G[scrollbar:GetName().."ThumbTexture"]:Hide();
 		else
 			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
 			_G[scrollbar:GetName().."ScrollDownButton"]:Show();
 			_G[scrollbar:GetName().."ScrollUpButton"]:Show();
+			if ( not self.noScrollThumb ) then
+				_G[scrollbar:GetName().."ThumbTexture"]:Show();
+			end
 		end
-		_G[scrollbar:GetName().."ThumbTexture"]:Hide();
 	else
 		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
 		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
@@ -732,6 +796,10 @@ function CapProgressBar_SetNotches(capBar, count)
 end
 
 function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, cap2Limit, totalQuantity, totalLimit, hasNoSharedStats)
+	if ( totalLimit == 0) then
+		return;
+	end
+	
 	local barWidth = capBar:GetWidth();
 	local sizePerPoint = barWidth / totalLimit;
 	local progressWidth = totalQuantity * sizePerPoint;

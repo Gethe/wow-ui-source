@@ -25,6 +25,18 @@ function ChannelFrame_OnLoad(self)
 	self:RegisterEvent("CHANNEL_COUNT_UPDATE");
 	self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
 	FauxScrollFrame_SetOffset(ChannelRosterScrollFrame, 0);
+	
+	for i = 2, 20 do
+		local button = CreateFrame("Button", "ChannelButton"..i, ChannelListScrollFrame, "ChannelButtonTemplate");
+		button:SetID(i);
+		button:SetPoint("TOPLEFT", _G["ChannelButton"..(i-1)], "BOTTOMLEFT");
+	end
+	for i = 2, 22 do
+		local button = CreateFrame("Button", "ChannelMemberButton"..i, ChannelRoster, "ChannelRosterButtonTemplate");
+		button:SetID(i);
+		button:SetPoint("TOPLEFT", _G["ChannelMemberButton"..(i-1)], "BOTTOMLEFT");
+	end
+	
 	ChannelFrame_Update();
 end
 
@@ -279,15 +291,15 @@ end
 function ChannelList_SetScroll()
 	local buttonWidth = 130;
 	if ( not ChannelListScrollFrame.scrolling ) then
-		ChannelMemberButton1:SetPoint("TOPLEFT", ChannelFrame, "TOPLEFT", 186, -75);
-		ChannelRoster:SetPoint("TOPLEFT", ChannelFrame, "TOP", 121, -79);
+		ChannelMemberButton1:SetPoint("TOPLEFT", ChannelFrame, "TOPLEFT", 172, -64);
+		ChannelRoster:SetPoint("TOPLEFT", ChannelFrame, "TOP", 109, -68);
 		ChannelListScrollFrameScrollBar:Hide();
 		ChannelListScrollFrameTop:Hide();
 		ChannelListScrollFrameBottom:Hide();
 		buttonWidth = buttonWidth + 10;
 	else
-		ChannelMemberButton1:SetPoint("TOPLEFT", ChannelFrame, "TOPLEFT", 206, -75);
-		ChannelRoster:SetPoint("TOPLEFT", ChannelFrame, "TOP", 97, -77);
+		ChannelMemberButton1:SetPoint("TOPLEFT", ChannelFrame, "TOPLEFT", 192, -64);
+		ChannelRoster:SetPoint("TOPLEFT", ChannelFrame, "TOP", 85, -66);
 		ChannelListScrollFrameScrollBar:Show();
 		ChannelListScrollFrameTop:Show();
 		ChannelListScrollFrameBottom:Show();

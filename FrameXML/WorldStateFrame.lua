@@ -847,19 +847,8 @@ function WorldStateScoreFrame_Update()
 	end
 	
 	-- Count number of players on each side
-	local numHorde = 0;
-	local numAlliance = 0;
-	local _;
-	for i=1, numScores do
-		_, _, _, _, _, faction, _, _, _, _, _, bgRating = GetBattlefieldScore(i);	
-		if ( faction ) then
-			if ( faction == 0 ) then
-				numHorde = numHorde + 1;
-			else
-				numAlliance = numAlliance + 1;
-			end
-		end
-	end
+	local _, _, _, _, numHorde = GetBattlefieldTeamInfo(0);
+	local _, _, _, _, numAlliance = GetBattlefieldTeamInfo(1);
 	
 	-- Set count text and anchor team count to last button shown
 	WorldStateScorePlayerCount:Show();
@@ -988,12 +977,14 @@ end
 -- Report AFK feature
 local AFK_PLAYER_CLICKED = nil;
 
-function ScorePlayer_OnMouseUp(self, mouseButton)
+function ScorePlayer_OnClick(self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
 		if ( not UnitIsUnit(self.name,"player") and UnitInRaid(self.name)) then
 			AFK_PLAYER_CLICKED = self.name;
 			ToggleDropDownMenu(1, nil, ScorePlayerDropDown, self:GetName(), 0, -5);
 		end
+	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+		ChatEdit_InsertLink(self.text:GetText());
 	end
 end
 

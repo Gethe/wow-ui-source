@@ -407,6 +407,7 @@ function CastingBarFrame_SetLook(castBar, look)
 		castBar.barFlash:ClearAllPoints();
 		castBar.barFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
 		castBar.barFlash:SetWidth(0);
+		castBar.barFlash:SetHeight(49);
 		castBar.barFlash:SetPoint("TOPLEFT", -23, 20);
 		castBar.barFlash:SetPoint("TOPRIGHT", 23, 20);
 	end

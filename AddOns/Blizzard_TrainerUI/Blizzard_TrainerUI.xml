@@ -28,6 +28,7 @@
 	
 	
 	<Button name="ClassTrainerSkillButtonTemplate" virtual="true" inherits="UIServiceButtonTemplate">
+		<Size x="298" y="47"/>
 		<Scripts>
 			<OnEnter>
 				self.showingTooltip = true;

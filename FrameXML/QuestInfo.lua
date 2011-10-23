@@ -95,7 +95,6 @@ function QuestInfo_ShowDescriptionText()
 		questDescription = GetQuestText();
 	end	
 	QuestInfoDescriptionText:SetText(questDescription);
-	QuestInfoDescriptionText:SetAlphaGradient(0, 0);	
 	return QuestInfoDescriptionText;
 end
 

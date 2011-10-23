@@ -3307,7 +3307,7 @@ end
 
 function CalendarViewEventInviteListScrollFrame_Update()
 	local buttons = CalendarViewEventInviteListScrollFrame.buttons;
-	local numInvites = CalendarEventGetNumInvites();
+	local numInvites, namesReady = CalendarEventGetNumInvites();
 	local numButtons = #buttons;
 	local buttonHeight = buttons[1]:GetHeight();
 
@@ -3316,6 +3316,12 @@ function CalendarViewEventInviteListScrollFrame_Update()
 	local selectedInviteIndex = CalendarEventGetSelectedInvite();
 	if ( selectedInviteIndex <= 0 ) then
 		selectedInviteIndex = nil;
+	end
+	
+	if ( namesReady ) then
+		CalendarViewEventFrameRetrievingFrame:Hide();
+	else
+		CalendarViewEventFrameRetrievingFrame:Show();
 	end
 
 	local displayedHeight = 0;
@@ -3327,7 +3333,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 		local buttonName = button:GetName();
 		local inviteIndex = i + offset;
 		local name, level, className, classFilename, inviteStatus, modStatus, inviteIsMine = CalendarEventGetInvite(inviteIndex);
-		if ( name ) then
+		if ( namesReady and name ) then
 			button.inviteIndex = inviteIndex;
 			-- setup moderator status
 			local buttonModIcon = _G[buttonName.."ModIcon"];
@@ -4064,13 +4070,19 @@ end
 
 function CalendarCreateEventInviteListScrollFrame_Update()
 	local buttons = CalendarCreateEventInviteListScrollFrame.buttons;
-	local numInvites = CalendarEventGetNumInvites();
+	local numInvites, namesReady = CalendarEventGetNumInvites();
 	local numButtons = #buttons;
 	local buttonHeight = buttons[1]:GetHeight();
 
 	local selectedInviteIndex = CalendarEventGetSelectedInvite();
 	if ( selectedInviteIndex <= 0 ) then
 		selectedInviteIndex = nil;
+	end
+
+	if ( namesReady ) then
+		CalendarCreateEventFrameRetrievingFrame:Hide();
+	else
+		CalendarCreateEventFrameRetrievingFrame:Show();
 	end
 
 	local isEditMode = CalendarCreateEventFrame.mode == "edit";
@@ -4086,7 +4098,7 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 		-- add a flag that stores whether or not we can invite the player to a party; that would make the
 		-- CalendarCreateEventRaidInviteButton code more efficient as well
 		local name, level, className, classFilename, inviteStatus, modStatus, inviteIsMine = CalendarEventGetInvite(inviteIndex);
-		if ( name ) then
+		if ( namesReady and name ) then
 			-- set the button index
 			button.inviteIndex = inviteIndex;
 			-- setup moderator status
@@ -5430,3 +5442,19 @@ function CalendarClassTotalsButton_OnEnter(self)
 	GameTooltip:Show();
 end
 
+function CalendarEventRetrievingFrame_OnUpdate(self, elapsed)
+	if ( not self.timer ) then
+		self.timer = 0.3;
+	elseif ( self.timer < 0 ) then
+		local dotCount = self.dotCount or 0;
+		dotCount = dotCount + 1;
+		if ( dotCount > 3 ) then
+			dotCount = 0;
+		end
+		self.dots:SetText(string.rep(".", dotCount));
+		self.dotCount = dotCount;
+		self.timer = 0.3;
+	else
+		self.timer = self.timer - elapsed;
+	end
+end

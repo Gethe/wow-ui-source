@@ -1451,7 +1451,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="0"/>
+									<AbsDimension x="0" y="2"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1484,7 +1484,7 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 											<Offset>
-												<AbsDimension x="-3" y="5"/>
+												<AbsDimension x="-3" y="3"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1497,7 +1497,7 @@
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 											<Offset>
-												<AbsDimension x="-3" y="-2"/>
+												<AbsDimension x="-3" y="-4"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1514,7 +1514,8 @@
 								self.scrollBarBackground:SetParent(scrollBar);
 								self.scrollBarArtTop:SetParent(scrollBar);
 								self.scrollBarArtBottom:SetParent(scrollBar);
-								
+								scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, -18);
+								scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 14);
 								self.defaultWidth = self:GetWidth();
 								local resizeFunc = function(scrollBar)
 									if ( scrollBar:IsShown() ) then
@@ -1653,14 +1654,14 @@
 					</Anchors>
 					<TexCoords left="0.92675781" right="0.99511719" top="0.12304688" bottom="0.26171875"/>
 				</Texture>
-				<FontString name="$parentTitle" parentKey="title" inherits="GameFontHighlight" justifyH="CENTER">
+				<FontString name="$parentTitle" parentKey="title" inherits="GameFontHighlight" justifyH="CENTER" justifyV="CENTER">
 					<Size>
-						<AbsDimension x="240" y="0"/>
+						<AbsDimension x="240" y="48"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="-34"/>
+								<AbsDimension x="0" y="-24"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

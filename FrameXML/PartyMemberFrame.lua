@@ -376,7 +376,11 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		PartyMemberFrame_UpdateReadyCheck(self);
 	elseif ( event == "READY_CHECK_FINISHED" ) then
 		if (GetPartyMember(self:GetID())) then
-			ReadyCheck_Finish(_G["PartyMemberFrame"..self:GetID().."ReadyCheck"]);
+			local finishTime = DEFAULT_READY_CHECK_STAY_TIME;
+			if ( GetDisplayedAllyFrames() ~= "party" ) then
+				finishTime = 0;
+			end
+			ReadyCheck_Finish(_G["PartyMemberFrame"..self:GetID().."ReadyCheck"], finishTime);
 		end
 	elseif ( event == "VOICE_START") then
 		if ( arg1 == unit ) then

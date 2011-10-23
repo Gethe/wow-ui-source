@@ -169,22 +169,17 @@ local UIDropDownMenu_ButtonInfo = {};
 --Until we get around to making this betterz...
 local UIDropDownMenu_SecureInfo = {};
 
+local wipe = table.wipe;
+
 function UIDropDownMenu_CreateInfo()
 	-- Reuse the same table to prevent memory churn
-	local info;
-	local secure = issecure();
 	
-	if ( secure ) then
-		info = UIDropDownMenu_SecureInfo;
+	if ( issecure() ) then
+		securecall(wipe, UIDropDownMenu_SecureInfo);
+		return UIDropDownMenu_SecureInfo;
 	else
-		info = UIDropDownMenu_ButtonInfo;
+		return wipe(UIDropDownMenu_ButtonInfo);
 	end
-
-	for k,v in pairs(info) do
-		info[k] = nil;
-	end
-
-	return info;
 end
 
 function UIDropDownMenu_CreateFrames(level, index)
@@ -590,6 +585,17 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	end
 end
 
+function UIDropDownMenu_RefreshAll(frame, useValue)
+	for dropdownLevel = UIDROPDOWNMENU_MENU_LEVEL, 2, -1 do
+		local listFrame = _G["DropDownList"..dropdownLevel];
+		if ( listFrame:IsShown() ) then
+			UIDropDownMenu_Refresh(frame, nil, dropdownLevel);
+		end
+	end
+	-- useValue is the text on the dropdown, only needs to be set once
+	UIDropDownMenu_Refresh(frame, useValue, 1);
+end
+
 function UIDropDownMenu_SetIconImage(icon, texture, info)
 	icon:SetTexture(texture);
 	if ( info.tCoordLeft ) then
@@ -712,7 +718,7 @@ function HideDropDownMenu(level)
 	listFrame:Hide();
 end
 
-function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button)
+function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button, autoHideDelay)
 	if ( not level ) then
 		level = 1;
 	end
@@ -869,37 +875,42 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 
 		listFrame.onHide = dropDownFrame.onHide;
 		
-		-- Determine whether the menu is off the screen or not
-		local offscreenY, offscreenX;
-		if ( (y - listFrame:GetHeight()/2) < 0 ) then
-			offscreenY = 1;
-		end
-		if ( listFrame:GetRight() > GetScreenWidth() ) then
-			offscreenX = 1;	
-		end
 		
-		--  If level 1 can only go off the bottom of the screen
+		--  We just move level 1 enough to keep it on the screen. We don't necessarily change the anchors.
 		if ( level == 1 ) then
-			if ( offscreenY and offscreenX ) then
-				point = gsub(point, "TOP(.*)", "BOTTOM%1");
-				point = gsub(point, "(.*)LEFT", "%1RIGHT");
-				relativePoint = gsub(relativePoint, "TOP(.*)", "BOTTOM%1");
-				relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");
-			elseif ( offscreenY ) then
-				point = gsub(point, "TOP(.*)", "BOTTOM%1");
-				relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");
-			elseif ( offscreenX ) then
-				point = gsub(point, "(.*)LEFT", "%1RIGHT");
-				relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");
+			local offLeft = listFrame:GetLeft()/uiScale;
+			local offRight = (GetScreenWidth() - listFrame:GetRight())/uiScale;
+			local offTop = (GetScreenHeight() - listFrame:GetTop())/uiScale;
+			local offBottom = listFrame:GetBottom()/uiScale;
+			
+			local xAddOffset, yAddOffset = 0, 0;
+			if ( offLeft < 0 ) then
+				xAddOffset = -offLeft;
+			elseif ( offRight < 0 ) then
+				xAddOffset = offRight;
+			end
+			
+			if ( offTop < 0 ) then
+				yAddOffset = offTop;
+			elseif ( offBottom < 0 ) then
+				yAddOffset = -offBottom;
 			end
 			
 			listFrame:ClearAllPoints();
 			if ( anchorName == "cursor" ) then
-				listFrame:SetPoint(point, relativeTo, "BOTTOMLEFT", xOffset, yOffset);
+				listFrame:SetPoint(point, relativeTo, relativePoint, xOffset + xAddOffset, yOffset + yAddOffset);
 			else
-				listFrame:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset);
+				listFrame:SetPoint(point, relativeTo, relativePoint, xOffset + xAddOffset, yOffset + yAddOffset);
 			end
 		else
+			-- Determine whether the menu is off the screen or not
+			local offscreenY, offscreenX;
+			if ( (y - listFrame:GetHeight()/2) < 0 ) then
+				offscreenY = 1;
+			end
+			if ( listFrame:GetRight() > GetScreenWidth() ) then
+				offscreenX = 1;	
+			end
 			if ( offscreenY and offscreenX ) then
 				point = gsub(point, "TOP(.*)", "BOTTOM%1");
 				point = gsub(point, "(.*)LEFT", "%1RIGHT");
@@ -926,6 +937,11 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame.parentLevel = tonumber(strmatch(anchorFrame:GetName(), "DropDownList(%d+)"));
 			listFrame.parentID = anchorFrame:GetID();
 			listFrame:SetPoint(point, anchorFrame, relativePoint, xOffset, yOffset);
+		end
+
+		if ( autoHideDelay and tonumber(autoHideDelay)) then
+			listFrame.showTimer = autoHideDelay;
+			listFrame.isCounting = 1;
 		end
 	end
 end

@@ -4,13 +4,14 @@
 	<Script file="TextStatusBar.lua"/>
 	<Include file="PartyFrameTemplates.xml"/>
 	<Button name="PartyMemberFrame1" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="1">
+		<!-- This frame is now anchored by and to the CompactRaidFrameManager.
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
 					<AbsDimension x="10" y="-160"/>
 				</Offset>
 			</Anchor>
-		</Anchors>
+		</Anchors>-->
 	</Button>
 	<Button name="PartyMemberFrame2" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="2">
 		<Anchors>

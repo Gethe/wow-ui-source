@@ -3,7 +3,7 @@
 	<Script file="Timer.lua"/>
 
 	
-	<Frame name="StartTimerBar" virtual="true">
+	<Frame name="StartTimerBar" virtual="true" hidden="true">
 		<Animations>
 			<AnimationGroup parentKey="fadeBarIn">
 				<Alpha target="$parentStatusBar" change="1.0" duration="1.9" order="1"/>
@@ -151,27 +151,19 @@
 				<BarColor r="1" g="0.0" b="0.0" />
 			</StatusBar>
 		</Frames>
+		<Scripts>
+			<OnShow function="StartTimer_OnShow"/>
+		</Scripts>
 	</Frame>
-	
-	
-	
-	
-	<Frame name="TimerTest" toplevel="true" parent="UIParent" inherits="StartTimerBar">
-		<Anchors>
-			<Anchor point="CENTER" x="20" y="20"/>
-		</Anchors>
-	</Frame>
-	
 	
 	<Frame name="TimerTracker" toplevel="true" parent="UIParent" hidden="true">
-		<Size x="5" y="5"/>
+		<Size x="0" y="0"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+			<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad function="TimerTracker_OnLoad"/>
 			<OnEvent function="TimerTracker_OnEvent"/>
 		</Scripts>
 	</Frame>
-
-	</Ui>
+</Ui>

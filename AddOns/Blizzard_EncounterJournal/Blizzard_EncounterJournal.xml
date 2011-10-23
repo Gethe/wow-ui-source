@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="EncounterJournal.lua"/>
+	<Script file="Blizzard_EncounterJournal.lua"/>
 
 	<!-- Tiled textures size=64,512-->
 	<Texture name="_FilterButtonUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
@@ -73,6 +73,10 @@
 	<Texture name="UI-EJ-DungeonGridTab-Shadow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="128" y="15"/>	
 		<TexCoords left="0.65234375" right="0.90234375" top="0.00097656" bottom="0.01562500"/>	
+	</Texture>
+	<Texture name="UI-EJ-ReturnToDefault" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="21" y="20"/>	
+		<TexCoords left="0.90625000" right="0.94726563" top="0.00097656" bottom="0.02050781"/>	
 	</Texture>
 	<Texture name="UI-EJ-AbilityTextBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="256" y="80"/>	
@@ -242,76 +246,79 @@
 		<Size x="64" y="29"/>	
 		<TexCoords left="0.84960938" right="0.97460938" top="0.49023438" bottom="0.51855469"/>	
 	</Texture>
-	<Texture name="UI-EJ-FilterBar" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="320" y="28"/>	
-		<TexCoords left="0.00195313" right="0.62695313" top="0.52441406" bottom="0.55175781"/>	
-	</Texture>
-	<Texture name="UI-EJ-SearchBarHighlightSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="128" y="27"/>	
-		<TexCoords left="0.63085938" right="0.88085938" top="0.52441406" bottom="0.55078125"/>	
-	</Texture>
-	<Texture name="UI-EJ-LootFrame" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="321" y="45"/>	
-		<TexCoords left="0.00195313" right="0.62890625" top="0.55371094" bottom="0.59765625"/>	
+	<Texture name="UI-EJ-DungeonLootFrame" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="369" y="64"/>	
+		<TexCoords left="0.00195313" right="0.72265625" top="0.52441406" bottom="0.58691406"/>	
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-UnSelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="64" y="29"/>	
-		<TexCoords left="0.63281250" right="0.75781250" top="0.55371094" bottom="0.58203125"/>	
+		<TexCoords left="0.72656250" right="0.85156250" top="0.52441406" bottom="0.55273438"/>	
 	</Texture>
 	<Texture name="UI-EJ-Tab-BossIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="48" y="43"/>	
-		<TexCoords left="0.76171875" right="0.85546875" top="0.55371094" bottom="0.59570313"/>	
+		<TexCoords left="0.85546875" right="0.94921875" top="0.52441406" bottom="0.56640625"/>	
+	</Texture>
+	<Texture name="UI-EJ-FilterBar" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="320" y="28"/>	
+		<TexCoords left="0.00195313" right="0.62695313" top="0.58886719" bottom="0.61621094"/>	
+	</Texture>
+	<Texture name="UI-EJ-SearchBarHighlightSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="128" y="27"/>	
+		<TexCoords left="0.63085938" right="0.88085938" top="0.58886719" bottom="0.61523438"/>	
+	</Texture>
+	<Texture name="UI-EJ-LootFrame" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="321" y="45"/>	
+		<TexCoords left="0.00195313" right="0.62890625" top="0.61816406" bottom="0.66210938"/>	
 	</Texture>
 	<Texture name="UI-EJ-Tab-LootIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="48" y="43"/>	
-		<TexCoords left="0.85937500" right="0.95312500" top="0.55371094" bottom="0.59570313"/>	
-	</Texture>
-	<Texture name="UI-EJ-LoreTextCover-Bottom" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="29"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.59960938" bottom="0.62792969"/>	
-	</Texture>
-	<Texture name="UI-EJ-LoreTextCover-Top" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="32"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.62988281" bottom="0.66113281"/>	
-	</Texture>
-	<Texture name="UI-EJ-MainTextCover-Bottom" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="43"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.66308594" bottom="0.70507813"/>	
+		<TexCoords left="0.63281250" right="0.72656250" top="0.61816406" bottom="0.66015625"/>	
 	</Texture>
 	<Texture name="UI-EJ-Tab-LootIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="48" y="43"/>	
-		<TexCoords left="0.75976563" right="0.85351563" top="0.66308594" bottom="0.70507813"/>	
+		<TexCoords left="0.73046875" right="0.82421875" top="0.61816406" bottom="0.66015625"/>	
+	</Texture>
+	<Texture name="UI-EJ-LoreTextCover-Bottom" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="386" y="29"/>	
+		<TexCoords left="0.00195313" right="0.75585938" top="0.66406250" bottom="0.69238281"/>	
+	</Texture>
+	<Texture name="UI-EJ-LoreTextCover-Top" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="386" y="32"/>	
+		<TexCoords left="0.00195313" right="0.75585938" top="0.69433594" bottom="0.72558594"/>	
+	</Texture>
+	<Texture name="UI-EJ-MainTextCover-Bottom" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="386" y="43"/>	
+		<TexCoords left="0.00195313" right="0.75585938" top="0.72753906" bottom="0.76953125"/>	
 	</Texture>
 	<Texture name="UI-EJ-MainTextCover-Top" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="386" y="13"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.70703125" bottom="0.71972656"/>	
+		<TexCoords left="0.00195313" right="0.75585938" top="0.77148438" bottom="0.78417969"/>	
 	</Texture>
 	<Texture name="UI-EJ-MoreTextBelowHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="259" y="17"/>	
-		<TexCoords left="0.00195313" right="0.50781250" top="0.72167969" bottom="0.73828125"/>	
+		<TexCoords left="0.00195313" right="0.50781250" top="0.78613281" bottom="0.80273438"/>	
 	</Texture>
 	<Texture name="UI-EJ-SearchBarHighlightLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="256" y="47"/>	
-		<TexCoords left="0.00195313" right="0.50195313" top="0.74023438" bottom="0.78613281"/>	
+		<TexCoords left="0.00195313" right="0.50195313" top="0.80468750" bottom="0.85058594"/>	
 	</Texture>
 	<Texture name="UI-EJ-ShowMapBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="171" y="50"/>	
-		<TexCoords left="0.00195313" right="0.33593750" top="0.78808594" bottom="0.83691406"/>	
+		<TexCoords left="0.00195313" right="0.33593750" top="0.85253906" bottom="0.90136719"/>	
 	</Texture>
 	<Texture name="UI-EJ-Tab-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="63" y="57"/>	
-		<TexCoords left="0.00195313" right="0.12500000" top="0.83886719" bottom="0.89453125"/>	
+		<TexCoords left="0.00195313" right="0.12500000" top="0.90332031" bottom="0.95898438"/>	
 	</Texture>
 	<Texture name="UI-EJ-Tab-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="63" y="57"/>	
-		<TexCoords left="0.00195313" right="0.12500000" top="0.89648438" bottom="0.95214844"/>	
+		<TexCoords left="0.12890625" right="0.25195313" top="0.90332031" bottom="0.95898438"/>	
 	</Texture>
 	<Texture name="UI-EJ-Tab-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="63" y="57"/>	
-		<TexCoords left="0.12890625" right="0.25195313" top="0.83886719" bottom="0.89453125"/>	
+		<TexCoords left="0.25585938" right="0.37890625" top="0.90332031" bottom="0.95898438"/>	
 	</Texture>
 
-	
 	
 	<CheckButton name="EncounterClassFilterTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="50" y="50"/>
@@ -338,19 +345,20 @@
 		<Scripts>
 			<OnMouseDown>
 				if( self:IsEnabled() == 1 ) then
-					self.bevel:SetPoint("CENTER", self, "CENTER", 2, -2);
-					self.shadow:SetSize(52, 52);
+					self.bevel:Hide();
+					self.shadow:Hide();
 				end
 			</OnMouseDown>
 			<OnMouseUp>
 				if( self:IsEnabled() == 1 ) then
-					self.bevel:SetPoint("CENTER", self, "CENTER", 0, 0);
-					self.shadow:SetSize(58, 58);
+					self.bevel:Show();
+					self.shadow:Show();
 				end
 			</OnMouseUp>
 			<OnClick>
 				EncounterJournal_SetClassFilter(self:GetID(), self.name);
 				self:GetParent():Hide();
+				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
@@ -361,62 +369,12 @@
 		</CheckedTexture>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
 		<PushedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
-			<Size x="55" y="55"/>
+			<Size x="50" y="50"/>
 			<Anchors>
 				<Anchor point="CENTER" x="2" y="-2"/>
 			</Anchors>
 		</PushedTexture>
 	</CheckButton>
-	
-	<Button name="EncounterMapButtonTemplate" virtual="true">
-		<Size x="62" y="61"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentbgImage" parentKey="bgImage">
-					<Size x="45" y="45"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<NormalTexture inherits="UI-EJ-MapButtonLg-Up">
-		</NormalTexture>
-		<PushedTexture inherits="UI-EJ-MapButtonLg-Down">
-		</PushedTexture>
-		<HighlightTexture inherits="UI-EJ-MapButtonLg-Highlight">
-		</HighlightTexture>
-		<Scripts>
-			<OnEnter>
-				if self.tooltipTitle then
-					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-					WorldMapTooltip:SetText(self.tooltipTitle,1,1,1);
-					WorldMapTooltip:AddLine(self.tooltipText, nil, nil, nil, 1);
-					WorldMapTooltip:Show();
-					WorldMapTooltip.EJ_using = true;
-				end
-			</OnEnter>
-			<OnLeave>
-				WorldMapTooltip:Hide();
-				WorldMapTooltip.EJ_using = false;
-			</OnLeave>
-			<OnShow>
-				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
-			</OnShow>
-			<OnClick>
-				if WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE then
-					ToggleFrame(WorldMapFrame);
-				end
-			
-				if not EncounterJournal:IsShown() then
-					ToggleFrame(EncounterJournal);
-				end
-				EncounterJournal_ListInstances();
-				EncounterJournal_DisplayInstance(self.instanceID);
-				EncounterJournal_DisplayEncounter(self.encounterID);
-			</OnClick>
-		</Scripts>
-	</Button>
 	
 	<Button name="EncounterInstanceButtonTemplate" virtual="true">
 		<Size x="174" y="96"/>
@@ -476,6 +434,7 @@
 					return;
 				end
 				EncounterJournal_DisplayInstance(self.instanceID);
+				PlaySound("igSpellBookOpen");
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -531,6 +490,7 @@
 			</OnShow>
 			<OnClick>
 				EncounterJournal_SelectSearch(self:GetID())
+				PlaySound("igSpellBookOpen");
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -594,7 +554,8 @@
 				self.showingTooltip = false;
 			</OnLeave>		
 			<OnClick>
-				EncounterJournal_SelectSearch(self:GetID())
+				EncounterJournal_SelectSearch(self:GetID());
+				PlaySound("igSpellBookOpen");
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -630,6 +591,7 @@
 			</OnEnable>
 			<OnClick>
 				EncounterJournal_DisplayCreature(self);
+				PlaySound("igMainMenuOption");
 			</OnClick>
 			<OnEnter>
 			
@@ -700,7 +662,8 @@
 					end
 					return;
 				end
-				EncounterJournal_DisplayEncounter(self.encounterID)
+				EncounterJournal_DisplayEncounter(self.encounterID);
+				PlaySound("igAbiliityPageTurn");
 			</OnClick>
 			<OnEnter>
 				self.text:SetTextColor(0.973, 0.902, 0.581);
@@ -993,6 +956,7 @@
 									EncounterJournal_DisplayCreature(self);
 								end
 								self:Enable();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1049,6 +1013,7 @@
 					
 						EncounterJournal_ToggleHeaders(self:GetParent())
 						self:GetScript("OnShow")(self);
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 					<OnMouseDown>
 						self.tex.up[1]:Hide();
@@ -1120,12 +1085,17 @@
 				<Texture name="$parentIcon" parentKey="icon">
 					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="LEFT" x="2" y="0"/>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture inherits="UI-EJ-LootFrame">
+				<Texture inherits="UI-EJ-DungeonLootFrame" parentKey="bossTexture">
+					<Anchors>
+						<Anchor point="CENTER" x="24" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="UI-EJ-LootFrame" parentKey="bosslessTexture">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -1133,22 +1103,30 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentName" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="name">
-					<Size x="200" y="12"/>
+					<Size x="250" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="7" y="-7`"/>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="7" y="-7"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSlot" inherits="GameFontBlack" justifyH="LEFT" parentKey="slot">
-					<Size x="90" y="12"/>
+				<FontString name="$parentArmorClass" inherits="GameFontBlack" justifyH="RIGHT" parentKey="armorType">
+					<Size x="0" y="12"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="7" y="5"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentName" relativePoint="TOPLEFT" x="264" y="-30"/>
 					</Anchors>
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
-				<FontString name="$parentArmorClass" inherits="GameFontBlack" justifyH="RIGHT" parentKey="armorType">
-					<Size x="90" y="12"/>
+				<FontString name="$parentSlot" inherits="GameFontBlack" justifyH="LEFT" parentKey="slot">
+					<Size x="0" y="12"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-5" y="7"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="7" y="5"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$parentArmorClass" x="-15" y="0"/>
+					</Anchors>
+					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+				</FontString>
+				<FontString name="$parentBoss" inherits="GameFontBlack" justifyH="LEFT" parentKey="boss">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
@@ -1156,7 +1134,9 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				HandleModifiedItemClick(self.link);
+				if (not HandleModifiedItemClick(self.link)) then
+					EncounterJournal_Loot_OnClick(self);
+				end
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -1384,6 +1364,7 @@
 							</OnShow>
 							<OnClick>
 								EncounterJournal_ShowFullSearch()
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1516,7 +1497,11 @@
 					<OnShow>
 						--always on top
 						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+						PlaySound("igSpellBookOpen");
 					</OnShow>
+					<OnHide>
+						PlaySound("igSpellBookClose");
+					</OnHide>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentNavBar" inherits="NavBarTemplate" parentKey="navBar">
@@ -1607,6 +1592,7 @@
 								dungeonsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 								dungeonsTab.selectedGlow:Hide();
 								EncounterJournal_ListInstances();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1624,6 +1610,7 @@
 								raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 								raidsTab.selectedGlow:Hide();
 								EncounterJournal_ListInstances();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1801,7 +1788,7 @@
 							</ScrollFrame>
 						</Frames>
 					</Frame>
-					<PlayerModel name="$parentModelFrame" parentKey="model">
+					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate">
 						<Size x="390" y="425"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="3" y="-4"/>
@@ -1838,13 +1825,6 @@
 								self:SetCamDistanceScale(1.0);
 								self:GetParent().imageTitle = self.imageTitle;
 							</OnLoad>
-							<OnEvent function="Model_OnEvent"/>
-							<OnUpdate function="Model_OnUpdate"/>
-							<OnMouseDown function="Model_OnMouseDown"/>
-							<OnMouseUp function="Model_OnMouseUp"/>
-							<OnMouseWheel>
-								--Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
-							</OnMouseWheel>
 						</Scripts>
 					</PlayerModel>
 					<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton1">
@@ -1902,8 +1882,8 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<FontString name="$parentEncounterTile" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="encounterTitle">
-									<Size x="0" y="0"/>
+								<FontString name="$parentEncounterTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="encounterTitle">
+									<Size x="0" y="12"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-350" y="-36"/>
 									</Anchors>
@@ -1912,6 +1892,40 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Button name="$parentResetButton" >
+								<Size x="26" y="26"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentEncounterTitle" relativePoint="TOPRIGHT" x="-5" y="11"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture name="$parentTexture" inherits="UI-EJ-ReturnToDefault">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<NormalTexture inherits="UI-EJ-FilterButtonUp"/>
+								<PushedTexture inherits="UI-EJ-FilterButtonDown"/>
+								<HighlightTexture inherits="UI-EJ-FilterButtonHighlight" alphaMode="ADD"/>
+								<Scripts>
+									<OnMouseDown>
+										_G[self:GetName().."Texture"]:SetPoint("CENTER", 1, -1);
+									</OnMouseDown>
+									<OnMouseUp>
+										_G[self:GetName().."Texture"]:SetPoint("CENTER", 0, 0);
+									</OnMouseUp>
+									<OnClick function="EncounterJournal_ResetHeaders"/>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(RETURN_TO_DEFAULT);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
 							<Button name="$parentBossTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="bossTab" id="1">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-12" y="-35"/>
@@ -1973,6 +1987,7 @@
 											self.selected:Hide();
 										end
 										EncounterJournal_Refresh();
+										PlaySound("igMainMenuOptionCheckBoxOn");
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -1986,8 +2001,14 @@
 										self.selected:Show();
 										self:GetParent().diff10man.selected:Hide();
 										EncounterJournal_Refresh();
+										PlaySound("igMainMenuOptionCheckBoxOn");
 									</OnClick>
 								</Scripts>
+								<ButtonText>
+									<Anchors>
+										<Anchor point="CENTER" x="1" y="-1"/>
+									</Anchors>
+								</ButtonText>
 							</Button>
 							<Button name="$parent10ManButton" inherits="EncounterDifficultyTemplate" text="10" parentKey="diff10man">
 								<Anchors>
@@ -2002,25 +2023,15 @@
 										self.selected:Show();
 										self:GetParent().diff25man.selected:Hide();
 										EncounterJournal_Refresh();
+										PlaySound("igMainMenuOptionCheckBoxOn");
 									</OnClick>
 								</Scripts>
 							</Button>
 							<ScrollFrame name="$parentDetailsScrollFrame" parentKey="detailsScroll" inherits="UIPanelScrollFrameCodeTemplate">
-								<Size x="350" y="380"/>
+								<Size x="350" y="383"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
-								<Layers>
-									<!--Layer level="OVERLAY">
-										<Texture>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="0"/>
-												<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-											</Anchors>
-											<Color r="1" a="0.5"/>
-										</Texture>
-									</Layer-->
-								</Layers>
 								<Frames>
 									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
 										<Anchors>
@@ -2055,21 +2066,10 @@
 								</ScrollChild>
 							</ScrollFrame>
 							<ScrollFrame name="$parentLootScrollFrame" parentKey="lootScroll" inherits="HybridScrollFrameTemplate">
-								<Size x="345" y="380"/>
+								<Size x="345" y="383"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<!--Texture>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="0"/>
-												<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-											</Anchors>
-											<Color b="1" a="0.5"/>
-										</Texture-->
-									</Layer>
-								</Layers>
 								<Frames>
 									<Frame name="$parentClassFilterClearFrame" parentKey="classClearFilter" hidden="true" enableMouse="true">
 										<Size x="355" y="28"/>	
@@ -2079,9 +2079,9 @@
 										<Layers>
 											<Layer level="BACKGROUND">
 												<Texture inherits="UI-EJ-FilterBar">
-													<Size x="355" y="28"/>	
+													<Size x="380" y="28"/>	
 													<Anchors>
-														<Anchor point="CENTER" x="0" y="0"/>
+														<Anchor point="CENTER" x="-5" y="0"/>
 													</Anchors>
 												</Texture>
 											</Layer>
@@ -2097,13 +2097,13 @@
 										</Layers>
 										<Frames>
 											<Button name="$parentExitButton">
-												<Size x="17" y="17"/>
+												<Size x="20" y="20"/>
 												<Anchors>
-													<Anchor point="RIGHT" x="-7" y="3"/>
+													<Anchor point="RIGHT" x="-20" y="2"/>
 												</Anchors>
 												<Layers>
 													<Layer level="ARTWORK">
-														<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.5" parentKey="texture">
+														<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.8" parentKey="texture">
 															<Size x="17" y="17"/>
 															<Anchors>
 																<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -2116,7 +2116,7 @@
 														self.texture:SetAlpha(1.0);
 													</OnEnter>
 													<OnLeave>
-														self.texture:SetAlpha(0.5);
+														self.texture:SetAlpha(0.8);
 													</OnLeave>
 													<OnMouseDown>
 														self.texture:SetPoint("TOPLEFT", 1, -1);
@@ -2345,7 +2345,7 @@
 									</Button>
 									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
 										<Anchors>
-											<Anchor point="TOPRIGHT" x="0" y="-17"/>
+											<Anchor point="TOPRIGHT" x="0" y="-18"/>
 											<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
 										</Anchors>
 										<Scripts>

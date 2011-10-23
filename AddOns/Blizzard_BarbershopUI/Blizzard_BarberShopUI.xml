@@ -242,7 +242,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<PlayerModel name="BarberShopAltFormFrame" hidden="true">
+			<PlayerModel name="BarberShopAltFormFrame" hidden="true" inherits="ModelTemplate">
 				<Size>
 					<AbsDimension x="100" y="116"/>
 				</Size>
@@ -275,15 +275,6 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						Model_OnLoad(self);
-					</OnLoad>
-					<OnEvent function="Model_OnEvent"/>
-					<OnUpdate function="Model_OnUpdate"/>
-					<OnMouseUp function="Model_OnMouseUp"/>
-					<OnMouseDown function="Model_OnMouseDown"/>
-				</Scripts>
 			</PlayerModel>
 		</Frames>
 		<Scripts>

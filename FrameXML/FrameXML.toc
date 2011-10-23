@@ -28,6 +28,7 @@ UIPanelTemplates.xml
 SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
+ModelFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml
 SparkleFrame.xml
@@ -66,6 +67,7 @@ ActionButtonTemplate.xml
 ActionBarFrame.xml
 MultiActionBars.xml
 ##ActionWindow.xml
+EquipmentFlyout.xml
 BuffFrame.xml
 CombatFeedback.xml
 UnitPowerBarAlt.xml
@@ -103,6 +105,7 @@ LootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
+ScrollOfResurrection.xml
 FriendsFrame.xml
 RaidFrame.xml
 ChannelFrame.xml
@@ -125,13 +128,13 @@ MailFrame.xml
 PetStable.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
-DressUpFrame.xml
 PVPFrameTemplates.xml
 PVPFrame.xml
 ArenaRegistrarFrame.xml
 LFGFrame.xml
 LFDFrame.xml
 LFRFrame.xml
+RaidFinder.xml
 MovieRecordingProgress.xml
 MacOptionsFrame.xml
 RatingMenuFrame.xml
@@ -160,7 +163,6 @@ GhostFrame.xml
 StreamingFrame.xml
 IconIntroAnimation.xml
 Timer.xml
-EncounterJournal.xml
 
 ## add new modules above here
 LocalizationPost.xml

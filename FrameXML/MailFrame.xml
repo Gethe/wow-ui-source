@@ -167,7 +167,14 @@
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self:RegisterEvent("MAIL_INBOX_UPDATE");
 					</OnLoad>
+					<OnEvent>
+						if (GetMouseFocus() == self) then
+							InboxFrame_Update();
+							InboxFrameItem_OnEnter(self);
+						end
+					</OnEvent>
 					<OnClick>
 						local modifiedClick = IsModifiedClick("MAILAUTOLOOTTOGGLE");
 						if ( modifiedClick ) then

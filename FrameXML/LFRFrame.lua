@@ -21,10 +21,20 @@ function LFRFrame_OnLoad(self)
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	
-	PanelTemplates_SetNumTabs(self, 2);
+	
 	LFRFrame_SetActiveTab(1);
 	
 	self.lastInGroup = GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
+	
+	for i = 2, 19 do
+		local button = CreateFrame("Button", "LFRBrowseFrameListButton"..i, LFRBrowseFrame, "LFRBrowseButtonTemplate");
+		button:SetPoint("TOPLEFT", _G["LFRBrowseFrameListButton"..(i-1)], "BOTTOMLEFT");
+	end
+	for i = 2, 14 do
+		local button = CreateFrame("Button", "LFRQueueFrameSpecificListButton"..i, LFRQueueFrameSpecific, "LFRFrameDungeonChoiceTemplate");
+		button:SetID(i);
+		button:SetPoint("TOPLEFT", _G["LFRQueueFrameSpecificListButton"..(i-1)], "BOTTOMLEFT");
+	end
 end
 
 function LFRFrame_OnEvent(self, event, ...)
@@ -140,12 +150,12 @@ end
 
 function LFRList_SetHeaderEnabled(headerID, isEnabled)
 	for _, dungeonID in pairs(LFRRaidList) do
-		if ( LFGGetDungeonInfoByID(dungeonID)[LFG_RETURN_VALUES.groupID] == headerID ) then
+		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
 			LFRList_SetRaidEnabled(dungeonID, isEnabled);
 		end
 	end
 	for _, dungeonID in pairs(LFRHiddenByCollapseList) do
-		if ( LFGGetDungeonInfoByID(dungeonID)[LFG_RETURN_VALUES.groupID] == headerID ) then
+		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
 			LFRList_SetRaidEnabled(dungeonID, isEnabled);
 		end
 	end
@@ -157,12 +167,12 @@ function LFRList_SetHeaderCollapsed(headerID, isCollapsed)
 	SetLFGHeaderCollapsed(headerID, isCollapsed);
 	LFGCollapseList[headerID] = isCollapsed;
 	for _, dungeonID in pairs(LFRRaidList) do
-		if ( LFGGetDungeonInfoByID(dungeonID)[LFG_RETURN_VALUES.groupID] == headerID ) then
+		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
 			LFGCollapseList[dungeonID] = isCollapsed;
 		end
 	end
 	for _, dungeonID in pairs(LFRHiddenByCollapseList) do
-		if ( LFGGetDungeonInfoByID(dungeonID)[LFG_RETURN_VALUES.groupID] == headerID ) then
+		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
 			LFGCollapseList[dungeonID] = isCollapsed;
 		end
 	end
@@ -171,17 +181,15 @@ end
 
 --List functions
 function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, submode)
-	local info = LFGGetDungeonInfoByID(dungeonID);
+	local name, typeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
 	button.id = dungeonID;
 	if ( LFGIsIDHeader(dungeonID) ) then
-		local name = info[LFG_RETURN_VALUES.name];
-		
 		button.instanceName:SetText(name);
 		button.instanceName:SetFontObject(QuestDifficulty_Header);
 		button.instanceName:SetPoint("RIGHT", button, "RIGHT", 0, 0);
 		button.level:Hide();
 		
-		if ( info[LFG_RETURN_VALUES.typeID] == TYPEID_HEROIC_DIFFICULTY ) then
+		if ( typeID == TYPEID_HEROIC_DIFFICULTY ) then
 			button.heroicIcon:Show();
 			button.instanceName:SetPoint("LEFT", button.heroicIcon, "RIGHT", 0, 1);
 		else
@@ -199,11 +207,6 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		end
 
 	else
-		local name =  info[LFG_RETURN_VALUES.name];
-		local minLevel, maxLevel = info[LFG_RETURN_VALUES.minLevel], info[LFG_RETURN_VALUES.maxLevel];
-		local minRecLevel, maxRecLevel = info[LFG_RETURN_VALUES.minRecLevel], info[LFG_RETURN_VALUES.maxRecLevel];
-		local recLevel = info[LFG_RETURN_VALUES.recLevel];
-		
 		button.instanceName:SetText(name);
 		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
 		
@@ -317,7 +320,6 @@ end
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and
 		(not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
-		local info = LFGGetDungeonInfoByID(queueID);
 		SetLFGDungeon(queueID);
 		return true;
 	end
@@ -361,19 +363,19 @@ function LFRQueueFrame_Update()
 	
 	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
 		
-	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, LFGLockList, LFGDungeonInfo, enableList, LFGCollapseList, LFR_CURRENT_FILTER);
+	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, LFGLockList, enableList, LFGCollapseList, LFR_CURRENT_FILTER);
 	
 	LFRQueueFrameSpecificList_Update();
 end
 
 function LFRList_DefaultFilterFunction(dungeonID)
-	local info = LFGGetDungeonInfoByID(dungeonID)
-	local hasHeader = info[LFG_RETURN_VALUES.groupID] ~= 0;
-	local sufficientExpansion = EXPANSION_LEVEL >= info[LFG_RETURN_VALUES.expansionLevel];
+	local name, typeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+	local hasHeader = groupID ~= 0;
+	local sufficientExpansion = EXPANSION_LEVEL >= expansionLevel;
 	local level = UnitLevel("player");
-	local sufficientLevel = level >= info[LFG_RETURN_VALUES.minLevel] and level <= info[LFG_RETURN_VALUES.maxLevel];
+	local sufficientLevel = level >= minLevel and level <= maxLevel;
 	return (hasHeader and sufficientExpansion and sufficientLevel) and
-		( level - LFR_MAX_SHOWN_LEVEL_DIFF <= info[LFG_RETURN_VALUES.recLevel] or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
+		( level - LFR_MAX_SHOWN_LEVEL_DIFF <= recLevel or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
 end
 
 LFR_CURRENT_FILTER = LFRList_DefaultFilterFunction;
@@ -416,7 +418,7 @@ function GetFullRaidList()
 			tinsert(headerOrder, id);
 			list[tempList[i]] = {};
 		else
-			local parentID = LFGGetDungeonInfoByID(id)[LFG_RETURN_VALUES.groupID];
+			local parentID = select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(id));
 			if ( parentID ~= 0 ) then
 				local parentTable = list[parentID];
 				tinsert(parentTable, id);
@@ -450,7 +452,7 @@ function LFRBrowseFrameRaidDropDown_Initialize(self, level)
 		UIDropDownMenu_AddButton(info);
 		
 		for _, groupID in ipairs(LFR_FULL_RAID_LIST_HEADER_ORDER) do
-			info.text = LFGGetDungeonInfoByID(groupID)[LFG_RETURN_VALUES.name];
+			info.text = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(groupID));
 			info.value = groupID;
 			info.func = nil;
 			info.hasArrow = true;
@@ -459,12 +461,12 @@ function LFRBrowseFrameRaidDropDown_Initialize(self, level)
 		end
 	elseif ( level == 2 ) then
 		for _, dungeonID in ipairs(LFR_FULL_RAID_LIST[UIDROPDOWNMENU_MENU_VALUE]) do
-			local info = LFGGetDungeonInfoByID(dungeonID);
-			if ( info[LFG_RETURN_VALUES.maxPlayers] > 0 ) then
-				local maxPlayers = format(LFD_LEVEL_FORMAT_SINGLE, info[LFG_RETURN_VALUES.maxPlayers]);
-				info.text = maxPlayers.." "..info[LFG_RETURN_VALUES.name];
+			local name, typeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+			if ( maxPlayers > 0 ) then
+				local maxPlayers = format(LFD_LEVEL_FORMAT_SINGLE, maxPlayers);
+				info.text = maxPlayers.." "..name;
 			else
-				info.text = info[LFG_RETURN_VALUES.name];
+				info.text = name;
 			end
 			info.value = dungeonID;
 			info.func = LFRBrowseFrameRaidDropDownButton_OnClick;
@@ -481,7 +483,7 @@ function LFRBrowseFrameRaidDropDownButton_OnClick(self)
 	if ( self.value == "none" ) then
 		SearchLFGLeave();
 	else
-		SearchLFGJoin(LFGGetDungeonInfoByID(self.value)[LFG_RETURN_VALUES.typeID], self.value);
+		SearchLFGJoin(select(LFG_RETURN_VALUES.typeID, GetLFGDungeonInfo(self.value)), self.value);
 	end
 end
 
@@ -489,13 +491,18 @@ function LFRFrame_SetActiveTab(tab)
 	if ( tab == 1 ) then
 		LFRParentFrame.activeTab = 1;
 		LFRQueueFrame:Show();
+		ButtonFrameTemplate_HideAttic(FriendsFrame);
 		LFRBrowseFrame:Hide();
+		LFRParentFrameSideTab1:SetChecked(true);
+		LFRParentFrameSideTab2:SetChecked(false);
 	elseif ( tab == 2 ) then
 		LFRParentFrame.activeTab = 2;
 		LFRBrowseFrame:Show();
+		FriendsFrameInset:SetPoint("TOPLEFT", 4, -83);
 		LFRQueueFrame:Hide();
+		LFRParentFrameSideTab1:SetChecked(false);
+		LFRParentFrameSideTab2:SetChecked(true);
 	end
-	PanelTemplates_SetTab(LFRParentFrame, tab);
 end
 
 function LFRBrowseFrameRefreshButton_OnUpdate(self, elapsed)

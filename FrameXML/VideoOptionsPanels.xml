@@ -1145,9 +1145,6 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "useIPv6";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						if ( not IsIPv6Available() ) then
-							BlizzardOptionsPanel_CheckButton_Disable(self);
-						end
 					</OnLoad>
 					<OnClick function="NetworkOptionsPanel_CheckButton_OnClick"/>
 				</Scripts>

@@ -523,9 +523,9 @@
 					<AbsDimension x="100" y="75"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentAttackOnAssist" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="250" y="-10"/>
+							<AbsDimension x="260" y="-6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -892,9 +892,9 @@
 			</CheckButton>
 			<CheckButton name="$parentemphasizeMySpellEffects" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowSpellPointsAvg" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentShowCloak" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="0" y="-8"/>
+							<AbsDimension x="260" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1094,24 +1094,9 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentAdvancedWorldMap" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMapQuestDifficulty" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "advancedWorldMap";
-						self.setFunc = function () WorldMapFrame_ToggleAdvanced(); end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentWatchFrameWidth" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAdvancedWorldMap" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentMapQuestDifficulty" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-8"/>
 					</Anchor>
 				</Anchors>
@@ -1788,9 +1773,9 @@
 			</Frame>
 			<CheckButton name="$parentGuilds" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="TOPLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="195" y="0"/>
+							<AbsDimension x="260" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1936,7 +1921,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentFriendly" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="60" y="0"/>
+							<AbsDimension x="151" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2036,7 +2021,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-15"/>
+									<AbsDimension x="0" y="-55"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2103,7 +2088,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="195" y="0"/>
+									<AbsDimension x="286" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2168,7 +2153,11 @@
 					</CheckButton>
 					<Frame name="$parentMotionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="$parentEnemies" relativePoint="TOPLEFT" x="-10" y="-2"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-12" y="-22"/>
+								</Offset>
+							</Anchor>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -2187,7 +2176,7 @@
 							<OnLoad>
 								self.type = CONTROLTYPE_DROPDOWN;
 								self:RegisterEvent("PLAYER_ENTERING_WORLD");
-								BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 							<OnEnter>
 								if ( not self.isDisabled ) then
@@ -2329,7 +2318,7 @@
 				<Anchors>				
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetDamage" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="200" y="0"/>
+							<AbsDimension x="260" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2396,10 +2385,8 @@
 			</CheckButton>
 			<Frame name="$parentFCTDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEnableFCT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="180" y="0"/>
-						</Offset>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableFCT" relativePoint="BOTTOMLEFT">
+						<Offset x="-2" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -2422,7 +2409,7 @@
 			<CheckButton name="$parentDodgeParryMiss" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEnableFCT" relativePoint="BOTTOMLEFT">
-						<Offset x="10" y="-2"/>
+						<Offset x="10" y="-30"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -2523,8 +2510,10 @@
 			</CheckButton>
 			<CheckButton name="$parentComboPoints" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCombatState" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentDodgeParryMiss" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="260" y="0"/>
+						</Offset>
 					</Anchor>
 				</Anchors>			
 				<Scripts>
@@ -3080,7 +3069,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowCastableDebuffs" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowAllEnemyDebuffs" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentConsolidateBuffs" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -3091,9 +3080,8 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "showCastableDebuffs";
-						self.uvar = "SHOW_CASTABLE_DEBUFFS";
-						--self.setFunc = BlizzardOptionsPanel_UpdateRaidPullouts;
+						self.cvar = "showAllEnemyDebuffs";
+						self.uvar = "SHOW_ALL_ENEMY_DEBUFFS";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -3809,7 +3797,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-<!--	Disable the MovePad due to problem with CRC :/  ... old addon still works
 			<CheckButton name="$parentMovePad" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentColorblindMode" relativePoint="BOTTOMLEFT">
@@ -3839,7 +3826,6 @@
 					</OnEvent>
 				</Scripts>
 			</CheckButton>
--->
 			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">
 				<Size>
 					<AbsDimension x="128" y="22"/>

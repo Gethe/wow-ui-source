@@ -7,6 +7,8 @@ MacOptionsFrameCheckButtons["MOVIE_RECORDING_ENABLE_RECOVER"] = { index = 5, cva
 MacOptionsFrameCheckButtons["MOVIE_RECORDING_ENABLE_COMPRESSION"] = { index = 6, cvar = "MovieRecordingAutoCompress", tooltipText = MOVIE_RECORDING_ENABLE_COMPRESSION_TOOLTIP};
 MacOptionsFrameCheckButtons["ITUNES_SHOW_FEEDBACK"] = { index = 7, cvar = "iTunesRemoteFeedback", tooltipText = ITUNES_SHOW_FEEDBACK_TOOLTIP};
 MacOptionsFrameCheckButtons["ITUNES_SHOW_ALL_TRACK_CHANGES"] = { index = 8, cvar = "iTunesTrackDisplay", tooltipText = ITUNES_SHOW_ALL_TRACK_CHANGES_TOOLTIP};
+MacOptionsFrameCheckButtons["MAC_DISABLE_OS_SHORTCUTS"] = { index = 9, cvar = "MacDisableOsShortcuts", tooltipText = MAC_DISABLE_OS_SHORTCUTS_TOOLTIP};
+MacOptionsFrameCheckButtons["MAC_SWAP_CONTROL_AND_COMMAND"] = { index = 10, cvar = "MacSwapControlAndCommand", tooltipText = MAC_SWAP_CONTROL_AND_COMMAND_TOOLTIP};
 
 function MacOptionsFrame_OnLoad(self)
 	if(IsMacClient()) then

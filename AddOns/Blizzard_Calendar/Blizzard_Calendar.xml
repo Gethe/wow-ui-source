@@ -911,6 +911,37 @@
 			<Button name="CalendarViewEventCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
 
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
+			<Frame name="$parentRetrievingFrame" enableMouse="true" hidden="true">
+				<Size x="296" y="256"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CalendarViewEventInviteListSection" x="12" y="-64"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.75"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="RETRIEVING_INVITE_LIST">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentDots" inherits="GameFontNormal" text="." parentKey="dots">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(CalendarViewEventInviteListSection:GetFrameLevel() + 10);
+					</OnShow>
+					<OnUpdate function="CalendarEventRetrievingFrame_OnUpdate"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CalendarViewEventFrame_OnLoad"/>
@@ -1361,6 +1392,37 @@
 			<Button name="CalendarCreateEventCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
 
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
+			<Frame name="$parentRetrievingFrame" enableMouse="true" hidden="true">
+				<Size x="296" y="300"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteListSection" x="12" y="-34"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.75"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="RETRIEVING_INVITE_LIST">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentDots" inherits="GameFontNormal" text="." parentKey="dots">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(CalendarCreateEventInviteListSection:GetFrameLevel() + 10);
+					</OnShow>
+					<OnUpdate function="CalendarEventRetrievingFrame_OnUpdate"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CalendarCreateEventFrame_OnLoad"/>
@@ -1807,4 +1869,3 @@
 		</Scripts>
 	</Frame>
 </Ui>
-

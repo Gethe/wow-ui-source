@@ -360,7 +360,7 @@ VideoData["Graphics_MultiSampleDropDown"]={
 		function()
 			return GetMultisampleFormats(Graphics_PrimaryMonitorDropDown:GetValue());
 		end,
-	tablenext = 3;
+	TABLENEXT = 3;
 	readfilter =
 		function(self, colorBits, depthBits, multiSample)
 			return format(VIDEO_OPTIONS_MULTISAMPLE_FORMAT_STRING, multiSample);
@@ -373,6 +373,49 @@ VideoData["Graphics_MultiSampleDropDown"]={
 		function()
 			return GetCurrentMultisampleFormat(Graphics_PrimaryMonitorDropDown:GetValue());
 		end,
+	onCapCheck = 
+		function(self)
+			if ( not self.maxValue ) then
+				local settings = { GetMultisampleFormats(Graphics_PrimaryMonitorDropDown:GetValue()) };
+				self.maxValue = #settings / self.TABLENEXT;
+			end
+
+			local capMaxValue = self.maxValue;
+			local tooltip;
+			for key, cvar in pairs(self.cvarCaps) do
+				local dropDown = _G[key];
+				if ( dropDown ) then
+					local cvarValue = ControlGetCurrentCvarValue(dropDown, cvar);
+					local capValue = GetMaxMultisampleFormatOnCvar(cvar, cvarValue);
+					capMaxValue = min(capMaxValue, capValue);
+					if ( capValue < self.maxValue ) then
+						local setting = dropDown.data[dropDown:GetValue()].text;
+						if ( setting ) then
+							if ( tooltip ) then
+								tooltip = tooltip .. "|n" .. string.format(GRAPHICS_OPTIONS_UNAVAILABLE, dropDown.name, setting);
+							else
+								tooltip = string.format(GRAPHICS_OPTIONS_UNAVAILABLE, dropDown.name, setting);
+							end
+						end
+					end
+				end
+			end
+			if ( self:GetValue() > capMaxValue ) then
+				VideoOptionsDropDownMenu_SetSelectedID(Graphics_MultiSampleDropDown, capMaxValue);
+				Graphics_DropDownRefreshValue(self);
+			end
+			self.capMaxValue = capMaxValue;
+			if ( tooltip ) then
+				self.cappedTooltip = "|cffff2020"..tooltip.."|r";
+			else
+				self.cappedTooltip = nil;
+			end
+			Graphics_PrepareTooltip(self);
+		end,
+	cvarCaps = {
+		Graphics_LiquidDetailDropDown = "waterDetail",
+		Graphics_SunshaftsDropDown = "sunshafts",
+	},
 	restart = true,
 }
 
@@ -381,7 +424,7 @@ VideoData["Graphics_RefreshDropDown"]={
 	name = REFRESH_RATE;
 	description = OPTION_TOOLTIP_REFRESH_RATE,
 	
-	tablenext = 2;
+	TABLENEXT = 2;
 	tablefunction = 
 		function()
 			-- get refresh rates for the currently selected resolution
@@ -835,6 +878,9 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 	dependent = {
 		"Graphics_Quality",
 	},
+	capTargets = {
+		"Graphics_MultiSampleDropDown",
+	}
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -868,6 +914,9 @@ VideoData["Graphics_SunshaftsDropDown"]={
 	dependent = {
 		"Graphics_Quality",
 	},
+	capTargets = {
+		"Graphics_MultiSampleDropDown",
+	}
 }
 
 -------------------------------------------------------------------------------------------------------

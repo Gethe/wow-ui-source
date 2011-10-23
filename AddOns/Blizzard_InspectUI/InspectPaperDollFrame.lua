@@ -17,6 +17,7 @@ function InspectPaperDollFrame_OnEvent(self, event, unit)
 		end
 		if (event == "INSPECT_READY") then
 			InspectPaperDollFrame_SetLevel();
+			InspectPaperDollFrame_UpdateButtons();
 		end
 	end
 end
@@ -49,10 +50,7 @@ function InspectPaperDollFrame_SetLevel()
 	end
 end
 
-function InspectPaperDollFrame_OnShow()
-	ButtonFrameTemplate_HideButtonBar(InspectFrame);
-	InspectModelFrame:SetUnit(InspectFrame.unit);
-	InspectPaperDollFrame_SetLevel();
+function InspectPaperDollFrame_UpdateButtons()
 	InspectPaperDollItemSlotButton_Update(InspectHeadSlot);
 	InspectPaperDollItemSlotButton_Update(InspectNeckSlot);
 	InspectPaperDollItemSlotButton_Update(InspectShoulderSlot);
@@ -72,6 +70,13 @@ function InspectPaperDollFrame_OnShow()
 	InspectPaperDollItemSlotButton_Update(InspectMainHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectSecondaryHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
+end
+
+function InspectPaperDollFrame_OnShow()
+	ButtonFrameTemplate_HideButtonBar(InspectFrame);
+	InspectModelFrame:SetUnit(InspectFrame.unit);
+	InspectPaperDollFrame_SetLevel();
+	InspectPaperDollFrame_UpdateButtons();
 	
 	SetPaperDollBackground(InspectModelFrame, InspectFrame.unit);
 	InspectModelFrameBackgroundTopLeft:SetDesaturated(1);

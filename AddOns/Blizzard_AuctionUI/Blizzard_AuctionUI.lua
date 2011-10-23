@@ -327,6 +327,8 @@ function AuctionFrame_OnShow (self)
 	SetPortraitTexture(AuctionPortraitTexture,"npc");
 	BrowseNoResultsText:SetText(BROWSE_SEARCH_TEXT);
 	PlaySound("AuctionWindowOpen");
+
+	SetUpSideDressUpFrame(self, 840, 1020, "TOPLEFT", "TOPRIGHT", -2, -28);
 end
 
 function AuctionFrameTab_OnClick(self, button, down, index)
@@ -465,6 +467,7 @@ function AuctionFrameBrowse_Reset(self)
 	AuctionFrameBrowse.selectedInvtype = nil;
 	AuctionFrameBrowse.selectedInvtypeIndex = nil;
 
+	BrowseLevelSort:SetText(_G[GetDetailColumnString(AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex)]);
 	AuctionFrameFilters_Update()
 	self:Disable();
 end
@@ -755,6 +758,7 @@ function AuctionFrameFilter_OnClick(self, button)
 		AuctionFrameBrowse.selectedInvtype = self:GetText();
 		AuctionFrameBrowse.selectedInvtypeIndex = self.index;
 	end
+	BrowseLevelSort:SetText(_G[GetDetailColumnString(AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex)]);
 	AuctionFrameFilters_Update()
 end
 
@@ -764,7 +768,7 @@ function AuctionFrameBrowse_Update()
 	local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
 	local displayedPrice, requiredBid;
 	BrowseBidButton:Disable();
 	BrowseBuyoutButton:Disable();
@@ -792,7 +796,7 @@ function AuctionFrameBrowse_Update()
 			button:Show();
 
 			buttonName = "BrowseButton"..i;
-			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", offset + i);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", offset + i);
 			if ( not hasAllInfo ) then	--Bug  145328
 				button:Hide();
 				-- If the last button is empty then set isLastSlotEmpty var
@@ -821,7 +825,7 @@ function AuctionFrameBrowse_Update()
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
 			-- Set level
-			if ( level > UnitLevel("player") ) then
+			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
 				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
 			else
 				_G[buttonName.."Level"]:SetText(level);
@@ -971,7 +975,7 @@ function AuctionFrameBid_Update()
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
 	-- Update sort arrows
@@ -993,7 +997,7 @@ function AuctionFrameBid_Update()
 		else
 			button:Show();
 			buttonName = "BidButton"..i;
-			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("bidder", index);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("bidder", index);
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
 
 			-- Resize button if there isn't a scrollbar
@@ -1017,7 +1021,7 @@ function AuctionFrameBid_Update()
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
 			-- Set level
-			if ( level > UnitLevel("player") ) then
+			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
 				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
 			else
 				_G[buttonName.."Level"]:SetText(level);
@@ -1195,7 +1199,7 @@ function AuctionFrameAuctions_Update()
 	local closingTimeFrame, closingTimeText;
 	local buttonBuyoutFrame, buttonBuyoutMoney;
 	local bidAmountMoneyFrame, bidAmountMoneyFrameLabel;
-	local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus;
 	local pendingDeliveries = false;
 	
 	-- Update sort arrows
@@ -1215,7 +1219,7 @@ function AuctionFrameAuctions_Update()
 		else
 			auction:Show();
 			
-			name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus = GetAuctionItemInfo("owner", offset + i);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus = GetAuctionItemInfo("owner", offset + i);
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
 
 			buttonName = "AuctionsButton"..i;
@@ -1685,9 +1689,14 @@ function SetMaxStackSize()
 end
 
 function UpdateMaximumButtons()
+	local stackSize = AuctionsStackSizeEntry:GetNumber();
+	if ( stackSize == 0 ) then
+		AuctionsStackSizeMaxButton:Enable();
+		AuctionsNumStacksMaxButton:Enable();
+		return;
+	end
 	local stackCount = AuctionsItemButton.stackCount;
 	local totalCount = AuctionsItemButton.totalCount;
-	local stackSize = AuctionsStackSizeEntry:GetNumber();
 	if ( stackSize ~= min(totalCount, stackCount) ) then
 		AuctionsStackSizeMaxButton:Enable();
 	else

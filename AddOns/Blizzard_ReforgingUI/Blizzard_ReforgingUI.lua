@@ -5,7 +5,6 @@ UIPanelWindows["ReforgingFrame"] = { area = "left", pushable = 0};
 
 
 
-
 function ReforgingFrame_Show()
 	ShowUIPanel(ReforgingFrame);
 	if ( not ReforgingFrame:IsShown() ) then
@@ -22,45 +21,37 @@ function ReforgingFrame_OnLoad(self)
 	self:RegisterEvent("FORGE_MASTER_SET_ITEM");
 	self:RegisterEvent("FORGE_MASTER_ITEM_CHANGED");
 	SetPortraitToTexture(ReforgingFramePortrait, "Interface\\Reforging\\Reforge-Portrait");
-	UIDropDownMenu_SetWidth(ReforgingFrameFilterOldStat, 135);
-	UIDropDownMenu_SetWidth(ReforgingFrameFilterNewStat, 135);
-	UIDropDownMenu_JustifyText(ReforgingFrameFilterOldStat, "LEFT");
-	UIDropDownMenu_JustifyText(ReforgingFrameFilterNewStat, "LEFT");
-	ReforgingFrameInset:SetPoint("BOTTOMRIGHT", ReforgingFrameBottomInset, "TOPRIGHT", 0, 4);
-	
+
+	ReforgingFrameTopTileStreaks:Hide();
+	ReforgingFrameTitleBg:SetDrawLayer("BACKGROUND", -1);
 	ReforgingFrameTitleText:SetText(REFORGE);	
+	ReforgingFrameBg:Hide();
+	ReforgingFrameRestoreMessage:SetShadowOffset(0, 0);
 	
-	UIDropDownMenu_Initialize(ReforgingFrameFilterOldStat, ReforgeFrame_FilterOldStat_Initialize);
-	UIDropDownMenu_Initialize(ReforgingFrameFilterNewStat, ReforgeFrame_FilterNewStat_Initialize);
 	MoneyFrame_SetMaxDisplayWidth(ReforgingFrameMoneyFrame, 168);
 	MoneyFrame_SetType(ReforgingFrameMoneyFrame, "REFORGE");
 end
 
 
 function ReforgingFrame_OnShow(self)
+	PlaySound("UI_EtherealWindow_Open");
 	ReforgingFrame_Update(self);
 end
 
 
 function ReforgingFrame_OnHide(self)
+	PlaySound("UI_EtherealWindow_Closed");
 	CloseReforge();
 end
 
 
 function ReforgingFrame_OnEvent(self, event, ...)
 	if event == "FORGE_MASTER_SET_ITEM" then
-		UIDropDownMenu_SetText(ReforgingFrameFilterOldStat, REFORGE_OLD_FILTER_TEXT);
-		UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, GRAY_FONT_COLOR_CODE..REFORGE_NEW_FILTER_TEXT);
-		UIDropDownMenu_DisableDropDown(ReforgingFrameFilterNewStat);
-		ReforgingFrameBottomRedText:SetText("");
-		ReforgingFrameBottomGreenText:SetText("");
 		ReforgingFrame.srcStat = nil;
 		ReforgingFrame.srcValue = nil;
 		ReforgingFrame.destStat = nil;
 		ReforgingFrame.destValue = nil;
-		ReforgingFrameBottomGreenBg:Hide();
-		ReforgingFrameBottomRedBg:Hide();
-		
+		ReforgeFrame_OldStat_Initialize();
 		ReforgingFrame_Update(self);
 	elseif event == "FORGE_MASTER_ITEM_CHANGED" then
 		-- this event can trigger from other item changes, like
@@ -73,25 +64,18 @@ function ReforgingFrame_OnEvent(self, event, ...)
 			else
 				PlaySoundKitID(23291);
 			end
-			self.topInset.invisButton.glow.reforgeAnim:Play();
+			self.glow.reforgeAnim:Play();
 		end
 	end
 end
 
 
 function ReforgingFrame_OnFinishedAnim(self)
-	UIDropDownMenu_SetText(ReforgingFrameFilterOldStat, REFORGE_OLD_FILTER_TEXT);
-	UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, GRAY_FONT_COLOR_CODE..REFORGE_NEW_FILTER_TEXT);
-	UIDropDownMenu_DisableDropDown(ReforgingFrameFilterNewStat);
-	ReforgingFrameBottomRedText:SetText("");
-	ReforgingFrameBottomGreenText:SetText("");
 	ReforgingFrame.srcStat = nil;
 	ReforgingFrame.srcValue = nil;
 	ReforgingFrame.destStat = nil;
 	ReforgingFrame.destValue = nil;
-	ReforgingFrameBottomGreenBg:Hide();
-	ReforgingFrameBottomRedBg:Hide();
-		
+	ReforgeFrame_OldStat_Initialize();
 	ReforgingFrame_Update(self);
 end
 
@@ -100,16 +84,9 @@ function ReforgingFrame_Update(self)
 	CloseDropDownMenus();
 	ReforgingFrameRestoreButton:Disable();
 	ReforgingFrameReforgeButton:Disable();
-	local leftStat = _G["ReforgingFrameLeftStat1"];
-	local rightStat = _G["ReforgingFrameRightStat1"];
-	local index = 1;
-	while leftStat and rightStat do -- this should alwasy be syncd
-		leftStat:Hide();
-		rightStat:Hide();
-		index  = index+1
-		leftStat , rightStat = ReforgingFrame_GetStatRow(index);
-	end
-	ReforgingFrameStatHelpText:Hide();
+	ReforgingFrameReceiptBG:Hide();
+	ReforgingFrameRestoreMessage:Hide();
+	ReforgingFrameLines:Show();
 	
 	local currentReforge, icon, name, quality, bound, cost = GetReforgeItemInfo();
 	if icon then
@@ -120,9 +97,12 @@ function ReforgingFrame_Update(self)
 		ReforgingFrameItemButton.boundStatus:SetText(bound);
 		ReforgingFrameItemButton.missingText:Hide();
 		ReforgingFrame.missingDescription:Hide();
+		ReforgingFrameMissingFadeOut:Hide();
 		ReforgingFrameHorzBar:Show();
 		ReforgingFrameTitleTextLeft:Show();
 		ReforgingFrameTitleTextRight:Show();
+		
+		
 		local stats = {GetReforgeItemStats()};
 		local bonusStatIndex = #stats/3 + 1;
 		local rightStat, leftStat;
@@ -133,60 +113,46 @@ function ReforgingFrame_Update(self)
 			ReforgingFrame.srcName, ReforgingFrame.srcStat, ReforgingFrame.srcValue, ReforgingFrame.destName, 
 			ReforgingFrame.destStat, ReforgingFrame.destValue = GetReforgeOptionInfo(currentReforge);
 		end
-
-		local srcTextColor = NORMAL_FONT_COLOR_CODE;
-		local destTextColor = RED_FONT_COLOR_CODE;
-		local index = 1;
-		for i=1,#stats,3 do
-			leftStat , rightStat = ReforgingFrame_GetStatRow(index, true);
-			if not leftStat then
-				break;
-			end
-			if restoreMode then
-				leftStat , rightStat = rightStat, leftStat;
-				srcTextColor = GREEN_FONT_COLOR_CODE;
-				destTextColor = GREEN_FONT_COLOR_CODE;
-			end
-			
-			leftStat:Show();
-			local name, statID, statValue = stats[i], stats[i+1], stats[i+2];
-			if statID == ReforgingFrame.srcStat then
-				leftStat.text:SetText(srcTextColor.."+"..statValue.." ".. name);
-			else
-				leftStat.text:SetText("+"..statValue.." ".. name);
-			end
-			
-			if ReforgingFrame.destStat then
-				rightStat:Show();
-				if statID == ReforgingFrame.srcStat then
-					rightStat.text:SetText(destTextColor.."+"..(statValue-ReforgingFrame.srcValue).." ".. name);
-				else
-					rightStat.text:SetText("+"..statValue.." ".. name);
-				end
-			end
-			index = index+1;
-		end	
 		
 		if restoreMode then
-			ReforgingFrameInset:SetPoint("TOPLEFT", ReforgingFrameTopInset, "BOTTOMLEFT", 0, -3);
-			ReforgingFrameFilterOldStat:Hide();
-			ReforgingFrameFilterNewStat:Hide();
+			ReforgingFrameReceiptBG:Show();
+			ReforgingFrameRestoreMessage:Show();
+			ReforgingFrameLines:Hide();
 			MoneyFrame_Update(ReforgingFrameMoneyFrame, 0);
 			ReforgingFrameRestoreButton:Enable();
 			ReforgingFrameTitleTextRight:SetText(REFORGE_RESTORE);
+			HideStats();
+			
+			local index = 1;
+			for i=1,#stats,3 do
+				leftStat , rightStat = ReforgingFrame_GetStatRow(index, true);
+				if not leftStat then
+					break;
+				end
+				
+				rightStat:Show();
+				leftStat:Show();
+				rightStat.button:Hide();
+				leftStat.button:Hide();
+				local name, statID, statValue = stats[i], stats[i+1], stats[i+2];
+				if statID == ReforgingFrame.srcStat then --this stat will be restored
+					rightStat.text:SetText(GREEN_FONT_COLOR_CODE.."+"..statValue.." ".. name);
+					leftStat.text:SetText(RED_FONT_COLOR_CODE.."+"..(statValue-ReforgingFrame.srcValue).." "..name.." ("..statValue..")");
+				else
+					rightStat.text:SetText("+"..statValue.." ".. name);
+					leftStat.text:SetText("+"..statValue.." "..name);
+				end
+				index = index+1;
+			end
+			
 			leftStat , _ = ReforgingFrame_GetStatRow(bonusStatIndex, true);
 			if leftStat then
 				leftStat:Show();
-				leftStat.text:SetText(RED_FONT_COLOR_CODE.."+"..ReforgingFrame.destValue.." ".. ReforgingFrame.destName);
+				leftStat.button:Hide();
+				leftStat.text:SetText(GREEN_FONT_COLOR_CODE.."+"..ReforgingFrame.destValue.." ".. ReforgingFrame.destName);
 			end
-			ReforgingFrameBottomGreenText:SetText("+"..ReforgingFrame.srcValue.." "..ReforgingFrame.srcName);
-			ReforgingFrameBottomRedText:SetText("-"..ReforgingFrame.destValue.." "..ReforgingFrame.destName);
-			ReforgingFrameBottomRedBg:Show();
-			ReforgingFrameBottomGreenBg:Show();
+			
 		else --no current reforge 
-			ReforgingFrameInset:SetPoint("TOPLEFT", ReforgingFrameTopInset, "BOTTOMLEFT", 0, -45);
-			ReforgingFrameFilterOldStat:Show();
-			ReforgingFrameFilterNewStat:Show();
 			MoneyFrame_Update(ReforgingFrameMoneyFrame, cost);
 			local enoughMoney = GetMoney() >=  cost;
 			if enoughMoney then
@@ -195,6 +161,7 @@ function ReforgingFrame_Update(self)
 				SetMoneyFrameColor("ReforgingFrameMoneyFrame", "red");
 			end
 			ReforgingFrameTitleTextRight:SetText(REFORGE);
+			
 			if ReforgingFrame.srcStat and ReforgingFrame.destStat then
 				if enoughMoney then
 					ReforgingFrameReforgeButton:Enable();
@@ -202,16 +169,11 @@ function ReforgingFrame_Update(self)
 				_ , rightStat = ReforgingFrame_GetStatRow(bonusStatIndex, true);
 				if rightStat then	
 					rightStat:Show();
-					rightStat.text:SetText(GREEN_FONT_COLOR_CODE.."+"..ReforgingFrame.destValue.." ".. ReforgingFrame.destName);
 				end
-			elseif not ReforgingFrame.destStat then
-				ReforgingFrameBottomGreenText:SetText("");
-				ReforgingFrameStatHelpText:Show();
 			end
 		end
 		
-	else  -- There is no items so hide elements
-		ReforgingFrameInset:SetPoint("TOPLEFT", ReforgingFrameTopInset, "BOTTOMLEFT", 0, -3);
+	else  -- There is no item so hide elements
 		ReforgingFrameItemButtonIconTexture:SetTexture("Interface\\BUTTONS\\UI-Slot-Background");
 		ReforgingFrameItemButtonIconTexture:SetTexCoord( 0, 0.640625, 0, 0.640625);
 		ReforgingFrameItemButton.name:SetText("");
@@ -219,18 +181,25 @@ function ReforgingFrame_Update(self)
 		ReforgingFrameItemButton.missingText:Show();
 		ReforgingFrame.missingDescription:Show();
 		ReforgingFrameHorzBar:Hide();
-		ReforgingFrameFilterOldStat:Hide();
-		ReforgingFrameFilterNewStat:Hide();
 		MoneyFrame_Update(ReforgingFrameMoneyFrame, 0);
-		ReforgingFrameBottomGreenText:SetText("");
-		ReforgingFrameBottomRedText:SetText("");
-		ReforgingFrameBottomGreenBg:Hide();
-		ReforgingFrameBottomRedBg:Hide();
 		ReforgingFrameTitleTextLeft:Hide();
 		ReforgingFrameTitleTextRight:Hide();
+		ReforgingFrameMissingFadeOut:Show();
+		HideStats();
 	end
 end
 
+
+function HideStats()
+	local index = 1;
+	local leftStat , rightStat = ReforgingFrame_GetStatRow(index);
+	while leftStat and rightStat do -- this should always be syncd
+		leftStat:Hide();
+		rightStat:Hide();
+		index  = index + 1;
+		leftStat , rightStat = ReforgingFrame_GetStatRow(index);
+	end
+end
 
 
 
@@ -260,13 +229,13 @@ function ReforgingFrame_GetStatRow(index, tryAdd)
 		if index > REFORGE_MAX_STATS_SHOWN  then
 			return;
 		end
-		leftStat = CreateFrame("FRAME", "ReforgingFrameLeftStat"..index, ReforgingFrame, "ReforgingStatTemplate");
+		leftStat = CreateFrame("CHECKBUTTON", "ReforgingFrameLeftStat"..index, ReforgingFrame, "ReforgingStatTemplate");
 		leftStat:SetPoint("TOP",  _G["ReforgingFrameLeftStat"..(index-1)], "BOTTOM", 0, -1);
-		rightStat = CreateFrame("FRAME", "ReforgingFrameRightStat"..index, ReforgingFrame, "ReforgingStatTemplate");
+		rightStat = CreateFrame("CHECKBUTTON", "ReforgingFrameRightStat"..index, ReforgingFrame, "ReforgingStatTemplate");
 		rightStat:SetPoint("TOP",  _G["ReforgingFrameRightStat"..(index-1)], "BOTTOM", 0, -1);
 		if mod(index, 2) == 0 then
-			leftStat.Bg:Hide();
-			rightStat.Bg:Hide();
+			leftStat.Bg:Show();
+			rightStat.Bg:Show();
 		end
 		leftStat:Hide();
 		rightStat:Hide();
@@ -274,74 +243,211 @@ function ReforgingFrame_GetStatRow(index, tryAdd)
 	return leftStat, rightStat;
 end
 
-
 -----------------------------------------------------------
-------------- Dropdown menu action ---------------
+------------- Stat Changing Goodness ----------------------
 -----------------------------------------------------------
+function Stat_SetButtonChecked(self, checked)
+	self:SetChecked(checked);
+	if ( self:IsEnabled() ) then
+		if (checked) then
+			self.button.disableTex:Hide();
+			self.button.normalTex:Show();
+			self.button.checkedTex:Show();
+		else
+			self.button.disableTex:Hide();
+			self.button.normalTex:Show();
+			self.button.checkedTex:Hide();
+		end
+	end
+end
 
-function ReforgeFrame_FilterOldStat_Set(self, arg1)
-	local name, stat, value = arg1[1], arg1[2], arg1[3];
+function Stat_OnClick(self)
+	if (not self.button:IsShown()) then
+		Stat_SetButtonChecked(self, false);
+		return;
+	end
+
+	if (self.isOld) then -- current stat was selected
+		local name, stat, value, currValue = self.info[1], self.info[2], self.info[3], self.info[4];
+		
+		if (not self:GetChecked()) then
+			ReforgingFrame.srcStat = nil;
+			ReforgingFrame.srcValue = nil;
+			self.text:SetText("+"..currValue.." "..name);
+			ReforgeFrame_NewStat_Initialize(true, stat, value);
+			ReforgingFrame_Update(ReforgingFrame);
+			return;
+		end
+			
+		ReforgingFrame.srcStat = stat;
+		ReforgingFrame.srcValue = value;
+		ReforgingFrame.destStat = nil;
+		ReforgingFrame.destValue = nil;
+		
+		local index = 1;
+		local leftStat, rightStat = ReforgingFrame_GetStatRow(index, false);
+		local rightSelected = nil;
+		while (leftStat and rightStat) do
+			if (leftStat:IsShown()) then 
+				local lname, lstat, lcurrValue = leftStat.info[1], leftStat.info[2], leftStat.info[4]
+				if  (lstat ~= stat) then
+					Stat_SetButtonChecked(leftStat, false);
+					leftStat.text:SetText("+"..lcurrValue.." "..lname);
+				end
+			end
+			if (rightStat:IsShown() and rightStat:GetChecked()) then
+				rightSelected = rightStat;
+			end
+			index = index + 1;
+			leftStat, rightStat = ReforgingFrame_GetStatRow(index, false);
+		end
+		
+		self.text:SetText(RED_FONT_COLOR_CODE.."+"..(currValue-value).." "..name.." ("..currValue..")");
+		
+		ReforgeFrame_NewStat_Initialize()
+		-- if they already had a reforge stat selected, keep it selected
+		if (rightSelected) then
+			Stat_SetButtonChecked(rightSelected, true);
+			rightSelected:Click();
+		end
+	else -- reforge stat was selected
+		
+		if (not ReforgingFrame.srcStat) then
+			Stat_SetButtonChecked(self, false);
+			return;
+		end
 	
-	ReforgingFrame.srcStat = stat;
-	ReforgingFrame.srcValue = value;
-	UIDropDownMenu_EnableDropDown(ReforgingFrameFilterNewStat);
-	UIDropDownMenu_SetText(ReforgingFrameFilterOldStat, "-"..value.." "..name);
-	ReforgingFrame.destStat = nil;
-	ReforgingFrame.destValue = nil;
-	UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, REFORGE_NEW_FILTER_TEXT);
-	ReforgingFrameBottomRedText:SetText("-"..value.." "..name);
-	ReforgingFrameBottomRedBg:Show();
+		local name, stat, value, reforgeID = self.info[1], self.info[2], self.info[3], self.info[4];
+		
+		if (not self:GetChecked()) then
+			ReforgingFrame.destStat = nil;
+			ReforgingFrame.destValue = nil;
+			ReforgingFrame.destName = nil;
+			ReforgingFrame.reforgeID = nil;
+			self.text:SetText("+"..value.." "..name);
+			ReforgingFrame_Update(ReforgingFrame);
+			return;
+		end
+		
+		ReforgingFrame.destStat = stat;
+		ReforgingFrame.destValue = value;
+		ReforgingFrame.destName = name;
+		ReforgingFrame.reforgeID = reforgeID;
+		
+		local index = 1;
+		local _, rightStat = ReforgingFrame_GetStatRow(index, false);
+		while (rightStat and rightStat:IsShown()) do
+			local rname, rstat, rvalue = rightStat.info[1], rightStat.info[2], rightStat.info[3]
+			if  (rstat ~= stat) then
+				Stat_SetButtonChecked(rightStat, false);
+				rightStat.text:SetText("+"..rvalue.." "..rname);
+			end
+			index = index + 1;
+			_, rightStat = ReforgingFrame_GetStatRow(index, false);
+		end
+		
+		self.text:SetText(GREEN_FONT_COLOR_CODE.."+"..value.." "..name);
+	end
 	ReforgingFrame_Update(ReforgingFrame);
 end
 
 
 
-function ReforgeFrame_FilterNewStat_Set(self, arg1)
-	local name, stat, value, reforgeID = arg1[1], arg1[2], arg1[3], arg1[4];
-												
-	ReforgingFrame.destStat = stat;
-	ReforgingFrame.destValue = value;
-	ReforgingFrame.destName = name;
-	ReforgingFrame.reforgeID = reforgeID;
-	UIDropDownMenu_SetText(ReforgingFrameFilterNewStat, "+"..value.." "..name);
-	ReforgingFrameBottomGreenText:SetText("+"..value.." "..name);		
-	ReforgingFrameBottomGreenBg:Show();
-	ReforgingFrame_Update(ReforgingFrame);
-end
-
-
-
-function ReforgeFrame_FilterOldStat_Initialize()
-
-	local stats = {GetSourceReforgeStats()};
-	local info = UIDropDownMenu_CreateInfo();
+function ReforgeFrame_OldStat_Initialize()
+	
+	HideStats();
+	local stats = {GetReforgeItemStats()};
+	local reforgeStats = {GetSourceReforgeStats()};
+	local index = 1;
+	local leftStat;
+	local newStatsSet = false;
+	local numReforgable = 0;
+	local lastStat = nil;
+	
 	for i=1,#stats,3 do
+		leftStat, _ = ReforgingFrame_GetStatRow(index, true);
 		local name, stat, value = stats[i], stats[i+1], stats[i+2];
-		info.text = "-"..value.." "..name;
-		info.arg1 = {name, stat, value};
-		info.checked = (stat == ReforgingFrame.srcStat);
-		info.func = ReforgeFrame_FilterOldStat_Set;
-		UIDropDownMenu_AddButton(info);
+		local currValue = value;
+		local reforgable;
+		for j=1, #reforgeStats, 3 do
+			local rname, rstat, rvalue = reforgeStats[j], reforgeStats[j+1], reforgeStats[j+2];
+			if (rstat == stat) then
+				reforgable = true;
+				value = rvalue;
+				numReforgable = numReforgable + 1;
+				lastStat = leftStat;
+			end
+		end
+		
+		if (reforgable) then
+			leftStat.button:Show();
+			if (not newStatsSet) then
+				ReforgeFrame_NewStat_Initialize(true, stat, value);
+				newStatsSet = true;
+			end
+		else
+			leftStat.button:Hide();
+		end
+
+		leftStat.reforgable = reforgable;
+		leftStat.text:SetText("+"..currValue.." "..name);
+		leftStat.info = {name, stat, value, currValue};
+		leftStat.isOld = true;
+		leftStat:Show();
+		
+		index = index + 1;
+	end
+	
+	-- if there is only one reforgable stat, select it automatically
+	if (numReforgable == 1) then
+		lastStat:Click();
 	end
 end 
 
 
+--[[
+Reset the possible reforge stats
+noneSelected flag is true if a stat to reduce hasn't been selected yet, meaning 
+we want to show the reforge stat names, but not the value you could add
+]]
+function ReforgeFrame_NewStat_Initialize(noneSelected, stat, value)
 
-function ReforgeFrame_FilterNewStat_Initialize()
-
-	if not ReforgingFrame.srcStat or not ReforgingFrame.srcValue then
+	if not noneSelected and (not ReforgingFrame.srcStat or not ReforgingFrame.srcValue) then
 		return
 	end
 	
-	local stats = {GetDestinationReforgeStats(ReforgingFrame.srcStat, ReforgingFrame.srcValue)};	
-	local info = UIDropDownMenu_CreateInfo();
+	local stats;
+	if (noneSelected) then
+		stats = {GetDestinationReforgeStats(stat, value)};
+	else
+		stats = {GetDestinationReforgeStats(ReforgingFrame.srcStat, ReforgingFrame.srcValue)};
+	end
+	
+	ReforgingFrame.destStat = nil;
+	ReforgingFrame.destValue = nil;
+	ReforgingFrame.destName = nil;
+	ReforgingFrame.reforgeID = nil;
+	local index = 1;
+	local rightStat;
+	
 	for i=1,#stats,4 do
+		_, rightStat = ReforgingFrame_GetStatRow(index, true);
 		local name, stat, value, reforgeID = stats[i], stats[i+1], stats[i+2], stats[i+3];
-		info.text = "+"..value.." "..name;
-		info.arg1 = {name, stat, value, reforgeID};
-		info.checked = (stat == ReforgingFrame.destStat);
-		info.func = 	ReforgeFrame_FilterNewStat_Set;
-		UIDropDownMenu_AddButton(info);
+		if (noneSelected) then
+			rightStat.text:SetText(GRAY_FONT_COLOR_CODE.."+0"..FONT_COLOR_CODE_CLOSE.." "..name);
+			rightStat:Disable();
+			rightStat.button:SetAlpha(.5)
+		else
+			rightStat.text:SetText("+"..ReforgingFrame.srcValue.." "..name);
+			rightStat:Enable();
+			rightStat.button:SetAlpha(1)
+		end
+		rightStat.info = {name, stat, value, reforgeID};
+		rightStat.button:Show();
+		Stat_SetButtonChecked(rightStat, false);
+		rightStat:Show();
+		
+		index = index + 1;
 	end
 end 
 

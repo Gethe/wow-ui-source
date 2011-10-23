@@ -19,7 +19,7 @@ function CompactUnitFrameProfiles_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 	
 	if ( event == "COMPACT_UNIT_FRAME_PROFILES_LOADED" ) then
-		self.profilesLoaded = true;
+		--HasLoadedCUFProfiles will now return true.
 		self:UnregisterEvent(event);
 		CompactUnitFrameProfiles_ValidateProfilesLoaded(self);
 	elseif ( event == "VARIABLES_LOADED" ) then
@@ -34,7 +34,7 @@ function CompactUnitFrameProfiles_OnEvent(self, event, ...)
 end
 
 function CompactUnitFrameProfiles_ValidateProfilesLoaded(self)
-	if ( self.profilesLoaded and self.variablesLoaded ) then
+	if ( HasLoadedCUFProfiles() and self.variablesLoaded ) then
 		if ( RaidProfileExists(GetActiveRaidProfile()) ) then
 			CompactUnitFrameProfiles_ActivateRaidProfile(GetActiveRaidProfile());
 		elseif ( GetNumRaidProfiles() == 0 ) then	--If we don't have any profiles, we need to create a new one.
@@ -190,7 +190,7 @@ function CompactUnitFrameProfiles_UpdateNewProfileCreateButton()
 	local button = CompactUnitFrameProfiles.newProfileDialog.createButton;
 	local text = strtrim(CompactUnitFrameProfiles.newProfileDialog.editBox:GetText());
 	
-	if ( text == "" or RaidProfileExists(text) ) then
+	if ( text == "" or RaidProfileExists(text) or strlower(text) == strlower(DEFAULTS) ) then
 		button:Disable();
 	else
 		button:Enable();

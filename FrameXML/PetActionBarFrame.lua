@@ -27,6 +27,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_HIDE");
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self:RegisterEvent("PET_UI_UPDATE");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self.showgrid = 0;
 	PetActionBar_Update(self);
 	if ( PetHasActionBar() ) then
@@ -47,7 +48,7 @@ function PetActionBar_OnEvent (self, event, ...)
 			UnlockPetActionBar();
 			HidePetActionBar();
 		end
-	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" ) then
+	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" or event == "PLAYER_TARGET_CHANGED") then
 		PetActionBar_Update(self);
 	elseif ( (event == "UNIT_FLAGS") or (event == "UNIT_AURA") ) then
 		if ( arg1 == "pet" ) then
@@ -126,13 +127,12 @@ function PetActionBar_Update (self)
 				-- the checked texture looks a little confusing at full alpha (looks like you have an extra ability selected)
 				petActionButton:GetCheckedTexture():SetAlpha(0.5);
 			else
+				PetActionButton_StopFlash(petActionButton);
 				petActionButton:GetCheckedTexture():SetAlpha(1.0);
 			end
 			petActionButton:SetChecked(1);
 		else
-			if ( IsPetAttackAction(i) ) then
-				PetActionButton_StopFlash(petActionButton);
-			end
+			PetActionButton_StopFlash(petActionButton);
 			petActionButton:SetChecked(0);
 		end
 		if ( autoCastAllowed ) then
@@ -154,9 +154,9 @@ function PetActionBar_Update (self)
 		end
 		if ( texture ) then
 			if ( GetPetActionSlotUsable(i) ) then
-				SetDesaturation(petActionIcon, nil);
+				petActionIcon:SetVertexColor(1, 1, 1);
 			else
-				SetDesaturation(petActionIcon, 1);
+				petActionIcon:SetVertexColor(0.4, 0.4, 0.4);
 			end
 			petActionIcon:Show();
 			petActionButton:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");

@@ -1,9 +1,11 @@
 ALTERNATE_POWER_INDEX = 10;
 
-ALT_POWER_TYPE_HORIZONTAL = 0;
-ALT_POWER_TYPE_VERTICAL 	= 1;
-ALT_POWER_TYPE_CIRCULAR		= 2;
+ALT_POWER_TYPE_HORIZONTAL 		= 0;
+ALT_POWER_TYPE_VERTICAL 		= 1;
+ALT_POWER_TYPE_CIRCULAR			= 2;
 ALT_POWER_TYPE_PILL				= 3;
+--Counter bar uses a different frame
+ALT_POWER_TYPE_COUNTER			= 4;
 
 local altPowerBarTextures = {
 	frame = 0,
@@ -14,20 +16,22 @@ local altPowerBarTextures = {
 }
 
 ALT_POWER_TEX_FRAME				= 0;
-ALT_POWER_TEX_BACKGROUND	= 1;
-ALT_POWER_TEX_FILL					= 2;
+ALT_POWER_TEX_BACKGROUND		= 1;
+ALT_POWER_TEX_FILL				= 2;
 ALT_POWER_TEX_SPARK				= 3;
 ALT_POWER_TEX_FLASH				= 4;
 
 ALT_POWER_BAR_PLAYER_SIZES = {	--Everything else is scaled off of this
-	[ALT_POWER_TYPE_HORIZONTAL]	= {x = 256, y = 64},
+	[ALT_POWER_TYPE_HORIZONTAL]		= {x = 256, y = 64},
 	[ALT_POWER_TYPE_VERTICAL]		= {x = 64, y = 128},
 	[ALT_POWER_TYPE_CIRCULAR]		= {x = 128, y = 128},
-	[ALT_POWER_TYPE_PILL]				= {x = 32, y = 64},	--This is the size of a single pill.
+	[ALT_POWER_TYPE_PILL]			= {x = 32, y = 64},	--This is the size of a single pill.
+	[ALT_POWER_TYPE_COUNTER]			= {x = 32, y = 32},
 }
 
 function UnitPowerBarAlt_Initialize(self, unit, scale, updateAllEvent)
 	self.unit = unit;
+	self.counterBar.unit = unit;
 	self.scale = scale;
 	if ( updateAllEvent ) then
 		UnitPowerBarAlt_SetUpdateAllEvent(self, updateAllEvent)
@@ -71,12 +75,22 @@ function UnitPowerBarAlt_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_POWER" ) then
 		if ( arg1 == self.unit and arg2 == "ALTERNATE" ) then
+			local barType, minPower = UnitAlternatePowerInfo(self.unit);
 			local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
-			UnitPowerBarAlt_SetPower(self, currentPower);
+			
+			if ( not barType or barType == ALT_POWER_TYPE_COUNTER ) then
+				CounterBar_UpdateCount(self.counterBar, currentPower);
+			else
+				UnitPowerBarAlt_SetPower(self, currentPower);
+			end
 		end
 	elseif ( event == "UNIT_MAXPOWER" ) then
 		if ( arg1 == self.unit and arg2 == "ALTERNATE" ) then
 			local barType, minPower = UnitAlternatePowerInfo(self.unit);
+			if ( not barType or barType == ALT_POWER_TYPE_COUNTER ) then
+				CounterBar_Update(self.counterBar);
+				return;
+			end
 			UnitPowerBarAlt_SetMinMaxPower(self, minPower, UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX));
 			
 			local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
@@ -112,7 +126,7 @@ end
 function UnitPowerBarAlt_ApplyTextures(frame, unit)
 	for textureName, textureIndex in pairs(altPowerBarTextures) do
 		local texture = frame[textureName];
-		local texturePath, r, g, b = UnitAlternatePowerTextureInfo(unit, textureIndex);
+		local texturePath, r, g, b = UnitAlternatePowerTextureInfo(unit, textureIndex, frame.timerIndex);
 		texture:SetTexture(texturePath);
 		texture:SetVertexColor(r, g, b);
 	end
@@ -129,13 +143,21 @@ function UnitPowerBarAlt_HideTextures(frame)
 end
 
 function UnitPowerBarAlt_HidePills(self)
-	for i=1, #self.pillFrames do
-		self.pillFrames[i]:Hide();
+	if ( self.pillFrames ) then
+		for i=1, #self.pillFrames do
+			self.pillFrames[i]:Hide();
+		end
 	end
 end
 
-function UnitPowerBarAlt_SetUp(self)
-	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(self.unit);
+function UnitPowerBarAlt_SetUp(self, barID)
+	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip;
+	if ( barID ) then
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = GetAlternatePowerInfoByID(barID);
+	else
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(self.unit);
+	end
+	
 	self.startInset = startInset;
 	self.endInset = endInset;
 	self.smooth = smooth;
@@ -164,6 +186,9 @@ function UnitPowerBarAlt_SetUp(self)
 		UnitPowerBarAlt_Circular_SetUp(self);
 	elseif ( barType == ALT_POWER_TYPE_PILL ) then
 		UnitPowerBarAlt_Pill_SetUp(self);
+	elseif ( barType == ALT_POWER_TYPE_COUNTER ) then
+		self.counterBar:Show();
+		CounterBar_Update(self.counterBar);
 	else
 		error("Currently unhandled bar type: "..(barType or "nil"));
 	end
@@ -200,16 +225,18 @@ function UnitPowerBarAlt_UpdateAll(self)
 		UnitPowerBarAlt_TearDown(self);
 		UnitPowerBarAlt_SetUp(self);
 		
-		local maxPower = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
-		UnitPowerBarAlt_SetMinMaxPower(self, minPower, maxPower);
-		
-		local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
-		UnitPowerBarAlt_SetPower(self, currentPower, true);
-		
+		if ( barType ~= ALT_POWER_TYPE_COUNTER ) then
+			local maxPower = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
+			UnitPowerBarAlt_SetMinMaxPower(self, minPower, maxPower);
+			
+			local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
+			UnitPowerBarAlt_SetPower(self, currentPower, true);
+		end
 		self:Show();
 	else
 		UnitPowerBarAlt_TearDown(self);
 		self:Hide();
+		self.counterBar:Hide();
 	end
 end
 
@@ -471,3 +498,317 @@ function UnitPowerBarAltStatus_ToggleFrame(self)
 		self:Hide();
 	end
 end
+
+
+---------------------------------
+------- Counter Bar Code --------
+---------------------------------
+local COUNTERBAR_CHANGE_TIME = 0.2;
+local COUNTERBAR_MAX_DIGIT = 7;
+local COUNTERBAR_COLUMNS = 8;
+local COUNTERBAR_ROWS = 2;
+local COUNTERBAR_NUMBER_WIDTH = 16;
+local COUNTERBAR_NUMBER_HEIGHT = 32;
+local COUNTERBAR_LEADING_ZERO_INDEX = 11;
+local COUNTERBAR_SLASH_INDEX = 10;
+
+
+function CounterBar_OnShow(self)
+	self:SetPoint("TOP", UIParent, "TOP", 0, -20);
+	if ( not TARGET_FRAME_UNLOCKED and self:GetLeft() < TargetFrame:GetRight() ) then
+		self:SetPoint("TOP", UIParent, "TOP", TargetFrame:GetRight() - self:GetLeft(), -20);
+	end
+end
+
+
+function CounterBar_Update(self)
+	local useFactional, animNumbers, barType = UnitAlternatePowerCounterInfo(self.unit);
+
+	local maxValue = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
+	CounterBar_SetStyle(self, useFactional, animNumbers, maxValue);
+	self:RegisterEvent("UNIT_POWER");
+	self:RegisterEvent("UNIT_MAXPOWER");
+	self:Show();
+end
+
+
+function CounterBar_SetStyle(self, useFactional, animNumbers, maxValue)
+	
+	local texturePath, r, g, b;
+	--Set Textures
+	texturePath, r, g, b = UnitAlternatePowerTextureInfo(self.unit, 5, self.timerIndex);
+	for i=1,COUNTERBAR_MAX_DIGIT do
+		local digitFrame = self["digit"..i];
+		digitFrame.number:SetTexture(texturePath);
+		digitFrame.number:SetVertexColor(r, g, b);
+		digitFrame.numberMask:SetTexture(texturePath);
+		digitFrame.numberMask:SetVertexColor(r, g, b);
+		digitFrame:Show();
+	end
+	
+	
+	texturePath, r, g, b = UnitAlternatePowerTextureInfo(self.unit, 0, self.timerIndex);
+	self.BG:SetTexture(texturePath, true, false);
+	self.BG:SetVertexColor(r, g, b);
+	self.BGL:SetTexture(texturePath);
+	self.BGL:SetVertexColor(r, g, b);
+	self.BGR:SetTexture(texturePath);
+	self.BGR:SetVertexColor(r, g, b);
+	self.artTop:SetTexture(texturePath);
+	self.artTop:SetVertexColor(r, g, b);
+	self.artBottom:SetTexture(texturePath);
+	self.artBottom:SetVertexColor(r, g, b);
+	
+	--Set Initial State
+	local maxDigits = ceil(log10(maxValue));
+	local startIndex = 1;
+	if useFactional then
+		local count = maxValue;
+		for i=1,maxDigits+1 do
+			local digitFrame = self["digit"..i];
+			local digit = CounterBar_GetDigit(count);
+			count = floor(count/10);
+			if digit == COUNTERBAR_LEADING_ZERO_INDEX then
+				digit = COUNTERBAR_SLASH_INDEX;
+			end
+			l,r,t,b = CounterBar_GetNumberCoord(digit);
+			digitFrame.number:SetTexCoord(l,r,t,b);
+			digitFrame.numberMask:Hide();
+		end
+		startIndex = startIndex + maxDigits + 1;
+	end
+	
+	for i=startIndex+maxDigits,COUNTERBAR_MAX_DIGIT do
+		self["digit"..i]:Hide();
+	end
+	
+	self:SetWidth((startIndex+maxDigits-1)*COUNTERBAR_NUMBER_WIDTH);
+	self.count = 0;
+	self.maxValue = maxValue;
+	self.fractional = useFactional;
+	self.startIndex = startIndex;
+	CounterBar_SetNumbers(self);
+end
+
+
+function CounterBar_GetNumberCoord(digit)
+	local l,r,t,b;
+	l = (1/COUNTERBAR_COLUMNS) * mod(digit,COUNTERBAR_COLUMNS);
+	r = l + (1/COUNTERBAR_COLUMNS);
+	t = (1/COUNTERBAR_ROWS) * floor(digit/COUNTERBAR_COLUMNS);
+	b = t + (1/COUNTERBAR_ROWS);
+	return l,r,t,b;
+end
+
+
+function CounterBar_GetDigit(count)
+	if count > 0 then
+		digit = mod(count, 10);
+	else
+		digit = COUNTERBAR_LEADING_ZERO_INDEX;
+	end
+	return digit;
+end
+
+
+function CounterBar_SetNumbers(self)
+	local l,r,t,b;
+	local count = self.count;
+	for i=self.startIndex,COUNTERBAR_MAX_DIGIT do
+		local digitFrame = self["digit"..i];
+		local digit = CounterBar_GetDigit(count);
+		count = floor(count/10);
+		
+		l,r,t,b = CounterBar_GetNumberCoord(digit);
+		digitFrame.number:SetTexCoord(l,r,t,b);
+		digitFrame.numberMask:Hide();
+	end
+end
+
+
+function CounterBar_UpdateCount(self, newCount)
+	local count1 = self.count;
+	local count2 = min(newCount, self.maxValue);
+	if count1 == count2 then
+		return;
+	end
+	self.animUp = count1 < count2;
+	for i=self.startIndex,COUNTERBAR_MAX_DIGIT do
+		local digitFrame = self["digit"..i];
+		local digit1, digit2 = CounterBar_GetDigit(count1), CounterBar_GetDigit(count2);
+		count1, count2 = floor(count1/10), floor(count2/10);
+		if digit1 ~= digit2 then
+			digitFrame.numberMask:SetHeight(0);
+			digitFrame.animTime = COUNTERBAR_CHANGE_TIME;
+			digitFrame.numberMask:ClearAllPoints()
+			local l,r,t,b = CounterBar_GetNumberCoord(digit2);
+			if self.animUp then
+				digitFrame.numberMask:SetPoint("BOTTOM", 0 ,0);
+				digitFrame.numberMask:SetTexCoord(l,r,t,t);
+			else
+				digitFrame.numberMask:SetPoint("TOP", 0 ,0);
+				digitFrame.numberMask:SetTexCoord(l,r,b,b);
+			end
+			digitFrame.numberMask:Show();
+		end
+	end
+	
+	--CounterBar_SetNumbers(self); -- clear out any current animations
+	self.lastOnUpdate = self:GetScript("OnUpdate");
+	self:SetScript("OnUpdate", CounterBar_OnUpdate);
+	self.count = newCount;
+end
+
+
+function CounterBar_OnUpdate(self, elapsed)
+	local updatingNumbers = false
+	local l, t, _, b, r;
+
+	for i=1,COUNTERBAR_MAX_DIGIT do
+		local digitFrame = self["digit"..i];
+		if digitFrame.animTime and digitFrame.animTime > 0 then
+			local delta = (elapsed/COUNTERBAR_CHANGE_TIME) * (1/COUNTERBAR_ROWS);
+			local deltaT, deltaB = 0, 0;
+			if not self.animUp then
+				deltaT = -delta;
+				delta = -delta;
+			else
+				deltaB = delta;
+			end
+			
+			--Number shift
+			l, t, _, b, r = digitFrame.number:GetTexCoord();
+			digitFrame.number:SetTexCoord(l,r,t+delta,b+delta);
+			
+			--Mask Shift
+			l, t, _, b, r = digitFrame.numberMask:GetTexCoord();
+			digitFrame.numberMask:SetTexCoord(l,r,t+deltaT,b+deltaB);
+			digitFrame.numberMask:SetHeight(COUNTERBAR_NUMBER_HEIGHT * (1.0 - digitFrame.animTime/COUNTERBAR_CHANGE_TIME));
+			
+			digitFrame.animTime = digitFrame.animTime - elapsed
+			updatingNumbers = true;
+		end
+	end
+	
+	if not updatingNumbers then
+		self:SetScript("OnUpdate", self.lastOnUpdate); -- nil or PlayerBuffTimer_OnUpdate for timers
+		CounterBar_SetNumbers(self)
+	end
+end
+
+
+
+
+---------------------------------
+-------- Buff Timer Code --------
+---------------------------------
+local PlayerBuffTimers = {}
+local numBuffTimers = 0;
+
+
+function PlayerBuffTimerManager_OnLoad(self)
+	self:RegisterEvent("UNIT_POWER_BAR_TIMER_UPDATE");
+	self.unit = "player"
+end
+
+
+function PlayerBuffTimerManager_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( arg1 == self.unit and event == "UNIT_POWER_BAR_TIMER_UPDATE" ) then
+		PlayerBuffTimerManager_UpdateTimers(self);
+	end
+end
+
+
+function PlayerBuffTimerManager_GetTimer(barType)
+	local timerFrame;
+	local isCounter = barType == ALT_POWER_TYPE_COUNTER;
+	
+	for i=1,numBuffTimers do
+		local frame = _G["BuffTimer"..i];
+		if ( frame and not frame:IsShown() and frame.isCounter == isCounter ) then
+			timerFrame = frame;
+			break;
+		end
+	end
+	
+	if ( not timerFrame ) then
+		numBuffTimers = numBuffTimers + 1;
+		if ( isCounter ) then
+			timerFrame = CreateFrame("Frame", "BuffTimer"..numBuffTimers, UIParent, "UnitPowerBarAltCounterTemplate");
+			timerFrame.isCounter = true;
+			
+		else
+			timerFrame = CreateFrame("Frame", "BuffTimer"..numBuffTimers, UIParent, "UnitPowerBarAltTemplate");
+			timerFrame.isCounter = false;
+			timerFrame.scale = 1.0;
+		end
+		timerFrame.unit = "player"
+		timerFrame:SetScript("OnUpdate", PlayerBuffTimer_OnUpdate);
+	end
+	
+	return timerFrame;
+end
+
+
+function PlayerBuffTimer_OnUpdate(self, elapsed)
+	local timeLeft = self.timerExpiration - GetTime();
+	if ( timeLeft >= 0 ) then
+		if ( self.isCounter ) then
+			CounterBar_UpdateCount(self, floor(timeLeft));
+		else
+			UnitPowerBarAlt_SetPower(self, timeLeft, true);
+		end
+	end
+end
+
+
+function PlayerBuffTimerManager_UpdateTimers(self)
+	for _, timer in pairs(PlayerBuffTimers) do
+		timer.flagForHide = true;
+	end
+
+	local index = 1;
+	local anchorFrame = PlayerPowerBarAlt;
+	local duration, expiration, barID, auraID = UnitPowerBarTimerInfo("player", index);
+	while ( barID ) do
+		if ( not PlayerBuffTimers[auraID] ) then -- this timer is new. add it
+			local barType = GetAlternatePowerInfoByID(barID);
+			local timer = PlayerBuffTimerManager_GetTimer(barType);
+			timer.timerIndex = index;
+			if ( timer.isCounter ) then
+				CounterBar_SetStyle(timer, useFactional, animNumbers, duration);
+			else
+				UnitPowerBarAlt_TearDown(timer);
+				UnitPowerBarAlt_SetUp(timer, barID);
+				UnitPowerBarAlt_SetMinMaxPower(timer, 0, duration);
+				UnitPowerBarAlt_SetPower(timer, duration, true);
+			end
+			
+			timer.timerExpiration = expiration;
+			timer:Show();
+			PlayerBuffTimers[auraID] = timer;
+		end
+
+		
+		PlayerBuffTimers[auraID]:SetPoint("BOTTOM", anchorFrame, "TOP", 0, 32);
+		anchorFrame = PlayerBuffTimers[auraID];
+		PlayerBuffTimers[auraID].flagForHide = false;
+		PlayerBuffTimers[auraID].timerIndex = index;
+		index = index + 1;
+		duration, expiration, barID, auraID = UnitPowerBarTimerInfo("player", index);
+	end
+	
+	for auraID, timer in pairs(PlayerBuffTimers) do
+		if ( timer.flagForHide ) then
+			PlayerBuffTimers[auraID] = nil;
+			if ( not timer.isCounter ) then
+				UnitPowerBarAlt_TearDown(timer);
+			end
+			timer:Hide();
+		end
+	end
+end
+
+
+

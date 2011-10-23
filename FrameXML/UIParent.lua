@@ -30,6 +30,8 @@ UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0 };
 UIPanelWindows["LFDParentFrame"] =				{ area = "left",			pushable = 0, 	whileDead = 1 };
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
+UIPanelWindows["RaidParentFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1, extraWidth = 32};
 
 -- Frames NOT using the new Templates
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
@@ -40,7 +42,6 @@ UIPanelWindows["QuestLogDetailFrame"] =			{ area = "left",			pushable = 1, 		xof
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6, 		xoffset = -16, 		yoffset = 12,	width = 425 };
-UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",				pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["CinematicFrame"] =				{ area = "full",				pushable = 0, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
@@ -52,7 +53,6 @@ UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2, 		xoffset = -16, 		yoffset = 12 };
 UIPanelWindows["MinigameFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
-UIPanelWindows["LFRParentFrame"] =				{ area = "left",			pushable = 1, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",		pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 
 local function GetUIPanelWindowInfo(frame, name)
@@ -249,6 +249,14 @@ function UIParent_OnLoad(self)
 	-- Events for Archaeology
 	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
 	
+	-- Events for transmogrify
+	self:RegisterEvent("TRANSMOGRIFY_OPEN");
+	self:RegisterEvent("TRANSMOGRIFY_CLOSE");
+
+	-- Events for void storage
+	self:RegisterEvent("VOID_STORAGE_OPEN");
+	self:RegisterEvent("VOID_STORAGE_CLOSE");
+	
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
@@ -353,6 +361,14 @@ function Reforging_LoadUI()
 	UIParentLoadAddOn("Blizzard_ReforgingUI");
 end
 
+function ItemAlteration_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemAlterationUI");
+end
+
+function VoidStorage_LoadUI()
+	UIParentLoadAddOn("Blizzard_VoidStorageUI");
+end
+
 function ArchaeologyFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_ArchaeologyUI");
 end
@@ -379,6 +395,12 @@ end
 function LookingForGuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_LookingForGuildUI");
 end
+
+function EncounterJournal_LoadUI()
+	UIParentLoadAddOn("Blizzard_EncounterJournal");
+end
+
+
 
 --[[
 function MovePad_LoadUI()
@@ -503,14 +525,6 @@ function ToggleLFDParentFrame()
 	end
 end
 
-function ToggleLFRParentFrame()
-	if ( LFRParentFrame:IsShown() ) then
-		HideUIPanel(LFRParentFrame);
-	else
-		ShowUIPanel(LFRParentFrame);
-	end
-end
-
 function ToggleHelpFrame()
 	if ( HelpFrame:IsShown() ) then
 		HideUIPanel(HelpFrame);
@@ -523,6 +537,24 @@ function ToggleHelpFrame()
 		HelpFrame_ShowFrame();
 	end
 end
+
+function ToggleRaidFrame()
+	if ( RaidParentFrame:IsShown() ) then
+		HideUIPanel(RaidParentFrame);
+	else
+		ShowUIPanel(RaidParentFrame);
+	end
+end
+
+function ToggleEncounterJournal()
+	if ( not EncounterJournal ) then
+		EncounterJournal_LoadUI();
+	end
+	if ( EncounterJournal ) then
+		ToggleFrame(EncounterJournal);
+	end
+end
+
 
 function InspectUnit(unit)
 	InspectFrame_LoadUI();
@@ -1070,6 +1102,28 @@ function UIParent_OnEvent(self, event, ...)
 			ArchaeologyFrame_Show();
 		elseif ( ArchaeologyFrame_Hide ) then
 			ArchaeologyFrame_Hide();
+		end
+		
+	-- Events for Transmogrify UI handling
+	elseif ( event == "TRANSMOGRIFY_OPEN" ) then
+		ItemAlteration_LoadUI();
+		if ( TransmogrifyFrame_Show ) then
+			TransmogrifyFrame_Show();
+		end
+	elseif ( event == "TRANSMOGRIFY_CLOSE" ) then
+		if ( TransmogrifyFrame_Hide ) then
+			TransmogrifyFrame_Hide();
+		end
+
+	-- Events for Void Storage UI handling
+	elseif ( event == "VOID_STORAGE_OPEN" ) then
+		VoidStorage_LoadUI();
+		if ( VoidStorageFrame_Show ) then
+			VoidStorageFrame_Show();
+		end
+	elseif ( event == "VOID_STORAGE_CLOSE" ) then
+		if ( VoidStorageFrame_Hide ) then
+			VoidStorageFrame_Hide();
 		end
 		
 	--Events for Trial caps
@@ -1868,7 +1922,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 	
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
-	local durabilityXOffset = CONTAINER_OFFSET_X;
 	local numBossFrames = 0;
 	if ( Boss1TargetFrame ) then
 		for i = 1, MAX_BOSS_FRAMES do
@@ -1889,12 +1942,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	-- Setup durability offset
 	if ( DurabilityFrame ) then
-		if ( DurabilityShield:IsShown() or DurabilityOffWeapon:IsShown() or DurabilityRanged:IsShown() ) then
-			durabilityXOffset = durabilityXOffset + 20;
-		end
-		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -durabilityXOffset, anchorY);
+		DurabilityFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 		if ( DurabilityFrame:IsShown() ) then
-			anchorY = anchorY - DurabilityFrame:GetHeight() - 10;
+			anchorY = anchorY - DurabilityFrame:GetHeight();
 		end
 	end
 	
@@ -2842,114 +2892,6 @@ function GetMaterialTextColors(material)
 	return textColor, titleColor;
 end
 
-
--- Model --
-
-MODELFRAME_DRAG_ROTATION_CONSTANT = 0.010;
-MODELFRAME_MAX_PLAYER_ZOOM = 0.8;
-MODELFRAME_MAX_PET_ZOOM = 0.7;
-
--- Generic model rotation functions
-function Model_OnLoad (self)
-	self.rotation = 0.61;
-	self:SetRotation(self.rotation);
-	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-end
-
-function Model_OnEvent(self, event, ...)
-	self:RefreshCamera();
-end
-
-function Model_RotateLeft(model, rotationIncrement)
-	if ( not rotationIncrement ) then
-		rotationIncrement = 0.03;
-	end
-	model.rotation = model.rotation - rotationIncrement;
-	model:SetRotation(model.rotation);
-	PlaySound("igInventoryRotateCharacter");
-end
-
-function Model_RotateRight(model, rotationIncrement)
-	if ( not rotationIncrement ) then
-		rotationIncrement = 0.03;
-	end
-	model.rotation = model.rotation + rotationIncrement;
-	model:SetRotation(model.rotation);
-	PlaySound("igInventoryRotateCharacter");
-end
-
-function Model_OnMouseDown(model, button)
-	if ( button == "LeftButton" ) then
-		model.mouseDown = true;
-		model.rotationCursorStart = GetCursorPosition();
-	end
-end
-
-function Model_OnMouseUp(model, button)
-	if ( button == "LeftButton" ) then
-		model.mouseDown = false;
-	end
-end
-
-function Model_OnMouseWheel(self, delta, maxZoom)
-	if (not maxZoom) then
-		maxZoom = MODELFRAME_MAX_PET_ZOOM;
-	end
-	if (not self.zoomLevel) then
-		self.zoomLevel = 0;
-	end
-	self.zoomLevel = self.zoomLevel + delta*0.15;
-	if (self.zoomLevel > maxZoom) then
-		self.zoomLevel = maxZoom;
-	end
-	if (0 > self.zoomLevel) then
-		self.zoomLevel = 0;
-	end
-	self:SetPortraitZoom(self.zoomLevel);
-end
-
-function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
-	if ( not rotationsPerSecond ) then
-		rotationsPerSecond = ROTATIONS_PER_SECOND;
-	end
-	
-	-- Mouse drag rotation
-	if (self.mouseDown) then
-		if ( self.rotationCursorStart ) then
-			local x = GetCursorPosition();
-			local diff = (x - self.rotationCursorStart) * MODELFRAME_DRAG_ROTATION_CONSTANT;
-			self.rotationCursorStart = GetCursorPosition();
-			self.rotation = self.rotation + diff;
-			if ( self.rotation < 0 ) then
-				self.rotation = self.rotation + (2 * PI);
-			end
-			if ( self.rotation > (2 * PI) ) then
-				self.rotation = self.rotation - (2 * PI);
-			end
-			self:SetRotation(self.rotation, false);
-		end
-	end
-	
-	-- Rotate buttons
-	local button = _G[self:GetName().."RotateLeftButton"];
-	if ( button and button:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
-		if ( self.rotation < 0 ) then
-			self.rotation = self.rotation + (2 * PI);
-		end
-		self:SetRotation(self.rotation);
-	end
-	button = _G[self:GetName().."RotateRightButton"];
-	if ( button and button:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
-		if ( self.rotation > (2 * PI) ) then
-			self.rotation = self.rotation - (2 * PI);
-		end
-		self:SetRotation(self.rotation);
-	end
-end
-
 -- Function that handles the escape key functions
 function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
@@ -3065,6 +3007,10 @@ function GetBindingText(name, prefix, returnAbbr)
 		if ( not dashIndex ) then
 			dashIndex = i;
 		else
+			if ( i == 1 ) then
+				-- this means two "-" in a row, so it's "-" in combination with a modifier key
+				count = count - 1;
+			end
 			dashIndex = dashIndex + i;
 		end
 		count = count + 1;
@@ -3462,6 +3408,16 @@ function GetQuestDifficultyColor(level)
 	else
 		return QuestDifficultyColors["trivial"];
 	end
+end
+
+-- takes in a table with r, g, and b entries and converts it to a color string
+function ConvertRGBtoColorString(color)
+	local colorString = "|cff";
+	local r = color.r * 255;
+	local g = color.g * 255;
+	local b = color.b * 255;
+	colorString = colorString..string.format("%2x%2x%2x", r, g, b);
+	return colorString;
 end
 
 function GetDungeonNameWithDifficulty(name, difficultyName)

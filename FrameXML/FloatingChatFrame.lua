@@ -209,7 +209,10 @@ function FCFOptionsDropDown_Initialize(dropDown)
 	end
 	-- Window options
 	info = UIDropDownMenu_CreateInfo();
-	if ( FCF_GetCurrentChatFrame(dropDown) and FCF_GetCurrentChatFrame(dropDown).isLocked ) then
+	local dropDownChatFrame = FCF_GetCurrentChatFrame(dropDown);
+	if ( dropDownChatFrame and dropDownChatFrame ~= DEFAULT_CHAT_FRAME and dropDownChatFrame.isDocked ) then
+		info.text = UNDOCK_WINDOW;
+	elseif ( dropDownChatFrame and dropDownChatFrame.isLocked ) then
 		info.text = UNLOCK_WINDOW;
 	else
 		info.text = LOCK_WINDOW;
@@ -779,6 +782,13 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 	-- Dock the frame by default
 	FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), selectWindow);
 	return chatFrame;
+end
+
+function FCF_RemoveAllMessagesFromChanSender(chatFrame, chanSender)
+	local ids = ChatHistory_GetAllAccessIDsByChanSender(chanSender);
+	for i=1, #ids do
+		chatFrame:RemoveMessagesByExtraData(ids[i]);
+	end
 end
 
 function FCF_GetNumActiveChatFrames()
@@ -1554,6 +1564,28 @@ function FCF_Tab_OnClick(self, button)
 		CURRENT_CHAT_FRAME_ID = self:GetID();
 		ToggleDropDownMenu(1, nil, _G[self:GetName().."DropDown"], self:GetName(), 0, 0);
 		return;
+	end
+	
+	if (button == "MiddleButton") then
+		if ( chatFrame and (chatFrame ~= DEFAULT_CHAT_FRAME and not IsCombatLog(chatFrame)) ) then
+			if ( not chatFrame.isTemporary ) then
+				FCF_PopInWindow(self, chatFrame);
+				return;
+			elseif ( chatFrame.isTemporary and (chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER") ) then
+				FCF_PopInWindow(self, chatFrame);
+				return;
+			elseif ( chatFrame.isTemporary and (chatFrame.chatType == "BN_CONVERSATION" ) ) then
+				if ( GetCVar("conversationMode") == "popout" or GetCVar("conversationMode") == "popout_and_inline" ) then
+					FCF_LeaveConversation(self, chatFrame);
+					return;
+				else
+					FCF_PopInWindow(self, chatFrame);
+					return;
+				end
+			else
+				error(format("Unhandled temporary window type. chatType: %s, chatTarget %s", tostring(chatFrame.chatType), tostring(chatFrame.chatTarget)));
+			end
+		end
 	end
 
 	-- Close all dropdowns

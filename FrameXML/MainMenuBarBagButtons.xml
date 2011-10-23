@@ -31,6 +31,7 @@
 			<OnLoad>
 				PaperDollItemSlotButton_OnLoad(self);
 				self:RegisterEvent("BAG_UPDATE");
+				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 				self.isBag = 1;
 				self.UpdateTooltip = BagSlotButton_OnEnter;
 				_G[self:GetName().."NormalTexture"]:SetWidth(50);
@@ -41,6 +42,12 @@
 			<OnEvent>
 				if ( event == "BAG_UPDATE" ) then
 					PaperDollItemSlotButton_Update(self);
+				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
+					if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
+						self.searchOverlay:Show();
+					else
+						self.searchOverlay:Hide();
+					end
 				else
 					PaperDollItemSlotButton_OnEvent(self, event, ...);
 				end
@@ -103,6 +110,7 @@
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("CVAR_UPDATE");
 				self:RegisterEvent("BAG_UPDATE");
+				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 				_G[self:GetName().."NormalTexture"]:SetWidth(50);
 				_G[self:GetName().."NormalTexture"]:SetHeight(50);
 				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);

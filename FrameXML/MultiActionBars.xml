@@ -1,7 +1,21 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MultiActionBars.lua"/>
-	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+	
+	<CheckButton name="MultiBarButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentFloatingBG" file="Interface\Buttons\UI-Quickslot" alpha="0.4">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-15" y="15"/>
+						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	
+	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
 				self.buttonType = "MULTIACTIONBAR1BUTTON"
@@ -9,7 +23,7 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
 				self.buttonType = "MULTIACTIONBAR2BUTTON"
@@ -17,7 +31,7 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
 				self.buttonType = "MULTIACTIONBAR3BUTTON"
@@ -26,7 +40,7 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
 		<Scripts>
 			<OnLoad>
 				self.buttonType = "MULTIACTIONBAR4BUTTON"

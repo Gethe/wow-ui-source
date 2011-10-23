@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="EquipmentFlyout.lua"/>
+
+	<Texture name="EquipmentFlyoutTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" virtual="true"/>
+	<Button name="EquipmentFlyoutButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnEnter function="EquipmentFlyoutButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnClick function="EquipmentFlyoutButton_OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="EquipmentFlyoutPopoutButtonTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativePoint="RIGHT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="EquipmentFlyoutPopoutButton_OnLoad"/>
+			<OnClick function="EquipmentFlyoutPopoutButton_OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
+	</Button>	
+	<Frame name="EquipmentFlyoutFrame" hidden="true" enableMouse="false" frameStrata="HIGH">
+		<Size x="43" y="43"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-GearManager-ItemButton-Highlight">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="-4" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.78125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentButtons" frameStrata="HIGH" enableMouse="true" parentKey="buttonFrame" clampedToScreen="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="bg1" inherits="EquipmentFlyoutTexture">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-5" y="4"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.numBGs = 1;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="EquipmentFlyout_OnLoad"/>
+			<OnUpdate function="EquipmentFlyout_OnUpdate"/>
+			<OnShow function="EquipmentFlyout_OnShow"/>
+			<OnHide function="EquipmentFlyout_OnHide"/>
+			<OnEvent function="EquipmentFlyout_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

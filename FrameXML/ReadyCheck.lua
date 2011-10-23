@@ -16,7 +16,12 @@ function ShowReadyCheck(initiator, timeLeft)
 			ReadyCheckListenerFrame:Hide();
 		else
 			SetPortraitTexture(ReadyCheckPortrait, initiator);
-			ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
+			if (UnitInRaid("player")) then
+				difficulty = GetRaidDifficulty();
+				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE.."\n"..RAID_DIFFICULTY..": ".._G["RAID_DIFFICULTY"..difficulty], initiator);
+			else
+				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
+			end
 			ReadyCheckListenerFrame:Show();
 		end
 	end
@@ -75,21 +80,29 @@ function ReadyCheck_Confirm(readyCheckFrame, ready)
 	readyCheckFrame:Show();
 end
 
-function ReadyCheck_Finish(readyCheckFrame, fadeTime, onFinishFunc, onFinishFuncArg)
+function ReadyCheck_Finish(readyCheckFrame, finishTime, fadeTime, onFinishFunc, onFinishFuncArg)
 	if ( readyCheckFrame.state == "waiting" ) then
 		_G[readyCheckFrame:GetName().."Texture"]:SetTexture(READY_CHECK_AFK_TEXTURE);
 		readyCheckFrame.state = "afk";
 	end
-
-	readyCheckFrame:SetScript("OnUpdate", ReadyCheck_OnUpdate);
-	readyCheckFrame.finishedTimer = 10;
-	if ( fadeTime ) then
-		readyCheckFrame.fadeTimer = fadeTime;
+	
+	if ( finishTime > 0 ) then
+		readyCheckFrame:SetScript("OnUpdate", ReadyCheck_OnUpdate);
+		readyCheckFrame.finishedTimer = finishTime;
+		if ( fadeTime ) then
+			readyCheckFrame.fadeTimer = fadeTime;
+		else
+			readyCheckFrame.fadeTimer = 1.5;
+		end
+		readyCheckFrame.onFinishFunc = onFinishFunc;
+		readyCheckFrame.onFinishFuncArg = onFinishFuncArg;
 	else
-		readyCheckFrame.fadeTimer = 1.5;
+		readyCheckFrame:Hide();
+		readyCheckFrame.state = nil;
+		if ( onFinishFunc ) then
+			onFinishFunc(onFinishFuncArg);
+		end
 	end
-	readyCheckFrame.onFinishFunc = onFinishFunc;
-	readyCheckFrame.onFinishFuncArg = onFinishFuncArg;
 end
 
 function ReadyCheck_OnUpdate(readyCheckFrame, elapsed)

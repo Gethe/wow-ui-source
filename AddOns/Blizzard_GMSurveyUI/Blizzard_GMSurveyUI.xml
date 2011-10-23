@@ -839,9 +839,13 @@
 				GMSurveyHeader:SetWidth(GMSurveyHeaderText:GetWidth() + 100);
 			</OnLoad>
 			<OnShow>
+				PlaySound("igCharacterInfoOpen");
 				GMSurveyFrame_Update();
 				GMSurveyScrollFrame:SetVerticalScroll(0);
 			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

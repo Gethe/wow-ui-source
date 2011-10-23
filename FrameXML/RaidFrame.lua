@@ -4,6 +4,12 @@ NUM_RAID_GROUPS = 8;
 MEMBERS_PER_RAID_GROUP = 5;
 MAX_RAID_INFOS = 20;
 
+function RaidParentFrame_OnLoad(self)
+	SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetTab(self, 1);
+end
+
 function RaidFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("RAID_ROSTER_UPDATE");
@@ -22,6 +28,15 @@ function RaidFrame_OnLoad(self)
 	RaidFrame_Update();
 
 	RaidFrame.hasRaidInfo = nil;
+end
+
+function RaidFrame_OnShow(self)
+	ButtonFrameTemplate_ShowAttic(self:GetParent());
+	self:GetParent().TitleText:SetText(RAID);
+	
+	RaidFrame_Update();
+	RequestRaidInfo();
+	UpdateMicroButtons();
 end
 
 function RaidFrame_OnEvent(self, event, ...)

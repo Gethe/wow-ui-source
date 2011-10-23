@@ -2,50 +2,30 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RaidUI.lua"/>
 	<Button name="RaidClassButtonTemplate" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="18" y="18"/>
-		</Size>
+		<Size x="18" y="18"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
-					<Size>
-						<AbsDimension x="40" y="40"/>
-					</Size>
+					<Size x="40" y="40"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
-					<Size>
-						<AbsDimension x="18" y="18"/>
-					</Size>
+					<Size x="18" y="18"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="2" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="2" y="-8"/>
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentCount" inherits="NumberFontNormalSmall" text="40" justifyH="RIGHT">
-					<Size>
-						<AbsDimension x="24" y="12"/>
-					</Size>
+					<Size x="24" y="12"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
-							<Offset>
-								<AbsDimension x="2" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>		
@@ -70,22 +50,14 @@
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-			<Size>
-				<AbsDimension x="18" y="18"/>
-			</Size>
+			<Size x="18" y="18"/>
 			<Anchors>
-				<Anchor point="TOP" relativeTo="$parentIconTexture">
-					<Offset>
-						<AbsDimension x="0" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOP" relativeTo="$parentIconTexture" x="0" y="0"/>
 			</Anchors>
 		</HighlightTexture>
     </Button>
 	<Button name="RaidRoleIconTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="16"/>
-		</Size>
+		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTexture" file="Interface\GroupFrame\UI-Group-LeaderIcon"/>
@@ -102,54 +74,34 @@
 		</Scripts>
 	</Button>
 	<Button name="RaidGroupButtonTemplate" parent="RaidFrame" movable="true" inherits="SecureUnitButtonTemplate" clampedToScreen="true" virtual="true">
-		<Size>
-			<AbsDimension x="156" y="14"/>
-		</Size>
+		<Size x="156" y="14"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="55" y="8"/>
-					</Size>
+					<Size x="55" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="29" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT" x="29" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="18" y="8"/>
-					</Size>
+					<Size x="18" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
-							<Offset x="2" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="50" y="8"/>
-					</Size>
+					<Size x="50" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
-							<Offset x="2" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentRank" inherits="RaidRoleIconTemplate">
-				<Size>
-					<AbsDimension x="11" y="11"/>
-				</Size>
+				<Size x="11" y="11"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parent">
-						<Offset x="2" y="0"/>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parent" x="2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -173,13 +125,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentRole" inherits="RaidRoleIconTemplate">
-				<Size>
-					<AbsDimension x="11" y="11"/>
-				</Size>
+				<Size x="11" y="11"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT">
-						<Offset  x="0" y="0"/>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT"  x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -199,15 +147,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentLoot" inherits="RaidRoleIconTemplate">
-				<Size>
-					<AbsDimension x="11" y="11"/>
-				</Size>
+				<Size x="11" y="11"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRole" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRole" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -222,13 +164,9 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
-				<Size>
-					<AbsDimension x="11" y="11"/>
-				</Size>
+				<Size x="11" y="11"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT">
-						<Offset  x="0" y="0"/>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT"  x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>	
@@ -297,18 +235,12 @@
 		</HighlightTexture>
 	</Button>
 	<Button name="RaidGroupSlotTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="156" y="14"/>
-		</Size>
+		<Size x="156" y="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString inherits="GameFontDarkGraySmall" text="EMPTY">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -318,15 +250,11 @@
 		</HighlightTexture>
 	</Button>
 	<Frame name="RaidGroupTemplate" parent="RaidFrame" virtual="true">
-		<Size>
-			<AbsDimension x="162" y="80"/>
-		</Size>
+		<Size x="162" y="80"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\RaidFrame\UI-RaidFrame-GroupOutline">
-					<Size>
-						<AbsDimension x="162" y="80"/>
-					</Size>
+					<Size x="162" y="80"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -336,62 +264,36 @@
 		</Layers>
 		<Frames>
 			<Button name="$parentLabel">
-				<Size>
-					<AbsDimension x="156" y="14"/>
-				</Size>
+				<Size x="156" y="14"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="0" y="14"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="14"/>
 				</Anchors>
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
 			</Button>
 			<Button name="$parentSlot1" inherits="RaidGroupSlotTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="3" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="3" y="-3"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentSlot2" inherits="RaidGroupSlotTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentSlot3" inherits="RaidGroupSlotTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentSlot4" inherits="RaidGroupSlotTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentSlot5" inherits="RaidGroupSlotTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -402,25 +304,17 @@
 		</Scripts>
 	</Frame>
 	<Frame name="RaidAuraFrameTemplate" enableMouse="true" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="12" y="12"/>
-		</Size>
+		<Size x="12" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="-1" y="1"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="1" y="-1"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>	
@@ -456,47 +350,27 @@
 		</Scripts>
 	</Frame>
 	<Frame name="RaidPulloutButtonTemplate" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="70" y="25"/>
-		</Size>
+		<Size x="70" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentName" inherits="GameFontNormalSmall">
-					<Size>
-						<AbsDimension x="65" y="12"/>
-					</Size>
+					<Size x="65" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="2" y="5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="2" y="5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentThreatIndicator" file="Interface\RaidFrame\UI-RaidFrame-Threat" hidden="false">
-					<Size>
-						<AbsDimension x="8" y="8"/>
-					</Size>
+					<Size x="8" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-2" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-2" y="-5"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentVehicleIndicator" file="Interface\Vehicles\UI-Vehicles-Raid-Icon" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="10" y="10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="10" y="10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -505,11 +379,7 @@
 			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
 				<Size x="68" y="6"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="1" y="-11"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="1" y="-11"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -519,15 +389,9 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
-							<Size>
-								<AbsDimension x="70" y="8"/>
-							</Size>
+							<Size x="70" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="-1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="-1" y="-1"/>
 							</Anchors>
 							<TexCoords left="0" right="0.75" top="0" bottom="0.25"/>
 						</Texture>
@@ -545,11 +409,7 @@
 			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
 				<Size x="68" y="6"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentHealthBar" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentHealthBar" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -559,15 +419,9 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
-							<Size>
-								<AbsDimension x="70" y="8"/>
-							</Size>
+							<Size x="70" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="-1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="-1" y="-1"/>
 							</Anchors>
 							<TexCoords left="0" right="0.75" top="0" bottom="0.25"/>
 						</Texture>
@@ -579,9 +433,7 @@
 			<StatusBar name="$parentTarget" drawLayer="ARTWORK" inherits="SecureFrameTemplate, TextStatusBar" enableMouse="false">
 				<Size x="68" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentManaBar" relativePoint="BOTTOM">
-						<Offset x="0" y="-3"/>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentManaBar" relativePoint="BOTTOM" x="0" y="-3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -591,15 +443,9 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentFrame" file="Interface\RaidFrame\UI-RaidFrame-HealthBar" hidden="true">
-							<Size>
-								<AbsDimension x="70" y="16"/>
-							</Size>
+							<Size x="70" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-1" y="1"/>
 							</Anchors>
 							<TexCoords left="0" right="0.75" top="0.5" bottom="1"/>
 						</Texture>
@@ -608,9 +454,7 @@
 						<FontString name="$parentName" inherits="GameFontNormalSmall">
 							<Size x="67" y="12"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -630,24 +474,16 @@
 				<BarColor r="1.0" g="0" b="0"/>
 			</StatusBar>
 			<Frame name="$parentTargetTargetFrame" hidden="true">
-				<Size>
-					<AbsDimension x="90" y="32"/>
-				</Size>
+				<Size x="90" y="32"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="-15"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="6" y="-15"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\RaidFrame\UI-RaidFrame-Arrow">
 							<Size x="32" y="32"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="-16" y="0"/>
-								</Anchor>
+								<Anchor point="LEFT" x="-16" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -678,9 +514,7 @@
 			<StatusBar name="$parentTargetTarget" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" hidden="true">
 				<Size x="68" y="7"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentTargetTargetFrame">
-						<Offset x="0" y="-16"/>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentTargetTargetFrame" x="0" y="-16"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -692,9 +526,7 @@
 						<Texture file="Interface\RaidFrame\UI-RaidFrame-HealthBar">
 							<Size x="70" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset x="-1" y="0"/>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="-1" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.75" top="0.5" bottom="1"/>
 						</Texture>
@@ -704,9 +536,7 @@
 					<Frame>
 						<Size x="68" y="12"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-								<Offset x="0" y="1"/>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="1"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -749,15 +579,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate" hidden="true">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="-5" y="6"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-5" y="6"/>
 				</Anchors>
 				<Scripts>
 					<OnUpdate>
@@ -766,15 +590,9 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
-				<Size>
-					<AbsDimension x="18" y="18"/>
-				</Size>
+				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="8" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -784,38 +602,22 @@
 			</Frame>
 			<Frame name="$parentAura1" inherits="RaidAuraFrameTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="8" y="4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="8" y="4"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentAura2" inherits="RaidAuraFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="1" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentAura1" relativePoint="RIGHT" x="1" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentAura3" inherits="RaidAuraFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAura1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentAura1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentAura4" inherits="RaidAuraFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="1" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentAura3" relativePoint="RIGHT" x="1" y="0"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -836,25 +638,15 @@
 		</Scripts>
 	</Frame>
 	<Button name="RaidPulloutFrameTemplate" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="92" y="10"/>
-		</Size>
+		<Size x="92" y="10"/>
 		<Anchors>
-			<Anchor point="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentName" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -862,11 +654,7 @@
 		<Frames>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -932,36 +720,48 @@
 			</OnMouseUp> 
 		</Scripts>
 	</Button>
-	<Button name="RaidFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="LOOKING_FOR_RAID">
-		<Size>
-			<AbsDimension x="90" y="21"/>
-		</Size>
+	<CheckButton name="RaidFrameAllAssistCheckButton" parent="RaidFrame" motionScriptsWhileDisabled="true" inherits="UICheckButtonTemplate">
+		<Size x="24" y="24"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="71" y="-37"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="58" y="-23"/>
 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="-30" top="0" bottom="0"/>
+		</HitRectInsets>
 		<Scripts>
+			<OnLoad>
+				_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL);
+				self:RegisterEvent("RAID_ROSTER_UPDATE");
+				self:RegisterEvent("PARTY_LEADER_CHANGED");
+			</OnLoad>
+			<OnEvent>
+				self:SetChecked(IsEveryoneAssistant());
+				if ( IsRaidLeader() ) then
+					self:Enable();
+					self.text:SetFontObject(GameFontNormalSmall);
+				else
+					self:Disable();
+					self.text:SetFontObject(GameFontDisableSmall);
+				end
+			</OnEvent>
 			<OnClick>
-				ShowUIPanel(LFRParentFrame);
+				SetEveryoneIsAssistant(self:GetChecked());	
 			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(ALL_ASSIST_DESCRIPTION, nil, nil, nil, nil, true);
+				if ( not self:IsEnabled() ) then
+					GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+				end
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<NormalFont style="GameFontNormalSmall"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisableSmall"/>
-	</Button>
+	</CheckButton>
 	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
-		<Size>
-			<AbsDimension x="90" y="21"/>
-		</Size>
+		<Size x="90" y="21"/>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidFrameRaidBrowserButton" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativeTo="RaidFrameAllAssistCheckButton" relativePoint="TOPRIGHT" x="60" y="-1"/>
 		</Anchors>
 		<Scripts>
 			<OnClick>
@@ -975,191 +775,107 @@
 	</Button>
 	<Button name="RaidClassButton13"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="13">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-36" y="95"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="20"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton12"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="12">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton13" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton13" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton11" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="11">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton12" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton12" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton10" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="10">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton11" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton11" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton9" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="9">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton10" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton10" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton8" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="8">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton9" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton9" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton7" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="7">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton8" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton8" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton6" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="6">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton7" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton7" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton5" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="5">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton6" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton6" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton4" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="4">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton5" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton5" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton3" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="3">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton4" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton4" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton2" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="2">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton3" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton3" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton1" parent="RaidFrame" inherits="RaidClassButtonTemplate" id="1">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="RaidClassButton2" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton2" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Frame name="RaidGroup1" inherits="RaidGroupTemplate" id="1">
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="16" y="-70"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="3" y="-58"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup2" inherits="RaidGroupTemplate" id="2">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup1" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="RaidGroup1" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup3" inherits="RaidGroupTemplate" id="3">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="RaidGroup1" relativePoint="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="-14"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" relativeTo="RaidGroup1" relativePoint="BOTTOM" x="0" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup4" inherits="RaidGroupTemplate" id="4">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup3" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="RaidGroup3" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup5" inherits="RaidGroupTemplate" id="5">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="RaidGroup3" relativePoint="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="-14"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" relativeTo="RaidGroup3" relativePoint="BOTTOM" x="0" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup6" inherits="RaidGroupTemplate" id="6">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup5" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="RaidGroup5" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup7" inherits="RaidGroupTemplate" id="7">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="RaidGroup5" relativePoint="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="-14"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" relativeTo="RaidGroup5" relativePoint="BOTTOM" x="0" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup8" inherits="RaidGroupTemplate" id="8">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup7" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="RaidGroup7" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</Frame>
 	<Button name="RaidGroupButton1" inherits="RaidGroupButtonTemplate" id="1"/>

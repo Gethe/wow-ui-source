@@ -181,7 +181,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<PlayerModel name="PetStableModel">
+			<PlayerModel name="PetStableModel" inherits="ModelWithZoomTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PetStableFrameModelBg" x="2" y="-48"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="PetStableFrameModelBg" x="-3" y="3"/>
@@ -191,13 +191,6 @@
 						Model_OnLoad(self);
 						self:SetCamDistanceScale(1.3);
 					</OnLoad>
-					<OnEvent function="Model_OnEvent"/>
-                    <OnUpdate function="Model_OnUpdate"/>
-					<OnMouseUp function="Model_OnMouseUp"/>
-					<OnMouseDown function="Model_OnMouseDown"/>
-					<OnMouseWheel>
-						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
-					</OnMouseWheel>
                 </Scripts>
 				<Frames>
 					<Button name="PetStableModelRotateLeftButton">

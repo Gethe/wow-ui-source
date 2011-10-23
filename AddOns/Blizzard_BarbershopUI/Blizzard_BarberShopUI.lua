@@ -72,7 +72,7 @@ function BarberShop_UpdateCost()
 end
 
 function BarberShop_UpdateBanner(name)
-	if ( name ) then
+	if ( name and name ~= "" ) then
 		BarberShopBannerFrameCaption:SetText(name);
 	end
 end

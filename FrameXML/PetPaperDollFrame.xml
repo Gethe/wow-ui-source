@@ -119,7 +119,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>
 			</StatusBar>
-			<PlayerModel name="PetModelFrame">
+			<PlayerModel name="PetModelFrame" inherits="ModelWithZoomTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-4"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-4" y="4"/>
@@ -129,13 +129,6 @@
 						Model_OnLoad(self);
 						self:SetCamDistanceScale(1.3);
 					</OnLoad>
-					<OnEvent function="Model_OnEvent"/>
-					<OnUpdate function="Model_OnUpdate"/>
-					<OnMouseDown function="Model_OnMouseDown"/>
-					<OnMouseUp function="Model_OnMouseUp"/>
-					<OnMouseWheel>
-						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
-					</OnMouseWheel>
 				</Scripts>
 				<Frames>
 					<Button name="PetModelFrameRotateLeftButton">

@@ -135,14 +135,14 @@ function UpdateMicroButtons()
 		end
 	end
 	
-	if ( EncounterJournal:IsShown() ) then
+	if ( EncounterJournal and EncounterJournal:IsShown() ) then
 		EJMicroButton:SetButtonState("PUSHED", 1);
 	else
 		EJMicroButton:SetButtonState("NORMAL");
 	end
 	
 	
-	if ( RaidFrame:IsShown() and FriendsFrame:IsShown() ) then
+	if ( RaidParentFrame:IsShown() ) then
 		RaidMicroButton:SetButtonState("PUSHED", 1);
 	else
 		RaidMicroButton:SetButtonState("NORMAL");

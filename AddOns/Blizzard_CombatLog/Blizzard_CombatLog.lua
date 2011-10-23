@@ -336,6 +336,7 @@ local SPELL_POWER_RUNIC_POWER = SPELL_POWER_RUNIC_POWER
 local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS;
 local SPELL_POWER_ECLIPSE = SPELL_POWER_ECLIPSE;
 local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER;
+local SPELL_POWER_ALTERNATE_POWER = SPELL_POWER_ALTERNATE_POWER;
 local SCHOOL_MASK_NONE = SCHOOL_MASK_NONE
 local SCHOOL_MASK_PHYSICAL = SCHOOL_MASK_PHYSICAL
 local SCHOOL_MASK_HOLY = SCHOOL_MASK_HOLY
@@ -1867,7 +1868,7 @@ _G.CombatLog_Color_HighlightColorArray = CombatLog_Color_HighlightColorArray
 --
 -- Returns a string associated with a numeric power type
 --
-local function CombatLog_String_PowerType(powerType, amount)
+local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 	if ( not powerType ) then
 		return "";
 	elseif ( powerType == SPELL_POWER_MANA ) then
@@ -1892,6 +1893,9 @@ local function CombatLog_String_PowerType(powerType, amount)
 		end
 	elseif ( powerType == SPELL_POWER_HOLY_POWER ) then
 		return HOLY_POWER;
+	elseif ( powerType == SPELL_POWER_ALTERNATE_POWER and alternatePowerType ) then
+		local costName = select(12, GetAlternatePowerInfoByID(alternatePowerType));
+		return costName;	--costName could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)
 	end
 end
 _G.CombatLog_String_PowerType = CombatLog_String_PowerType
@@ -2208,6 +2212,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local extraSpellEnabled = false;
 	local valueIsItem = false;
 	local schoolEnabled = true;
+	local withPoints = false;
 
 	-- Get the initial string
 	local schoolString;
@@ -2231,7 +2236,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	-- Damage standard order
 	local amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, overhealing;
 	-- Miss argument order
-	local missType, amountMissed;
+	local missType, isOffHand, amountMissed;
 	-- Aura arguments
 	local auraType; -- BUFF or DEBUFF
 
@@ -2242,6 +2247,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local valueType = 1;  -- 1 = School, 2 = Power Type
 	local extraAmount; -- Used for Drains and Leeches
 	local powerType; -- Used for energizes, drains and leeches
+	local alternatePowerType; -- Used for energizes, drains and leeches
 	local environmentalType; -- Used for environmental damage
 	local message; -- Used for server spell messages
 	local originalEvent = event; -- Used for spell links
@@ -2283,7 +2289,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellName = ACTION_SWING;
 
 		-- Miss type
-		missType, amountMissed = ...;
+		missType, isOffHand, amountMissed = ...;
 
 		-- Result String
 		if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
@@ -2321,7 +2327,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			end
 		elseif ( event == "SPELL_MISSED" ) then 
 			-- Miss type
-			missType,  amountMissed = select(4, ...);
+			missType,  isOffHand, amountMissed = select(4, ...);
 
 			resultEnabled = true;
 			-- Result String
@@ -2366,7 +2372,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			valueType = 2;
 
 			-- Did the heal crit?
-			amount, powerType = select(4, ...);
+			amount, powerType, alternatePowerType = select(4, ...);
 			
 			-- Parse the result string
 			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
@@ -2435,7 +2441,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				amount = amount - overhealing;
 			elseif ( event == "SPELL_PERIODIC_DRAIN" ) then
 				-- Special attacks
-				amount, powerType, extraAmount = select(4, ...);
+				amount, powerType, extraAmount, alternatePowerType = select(4, ...);
 
 				-- Set value type to be a power type
 				valueType = 2;
@@ -2452,13 +2458,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				schoolEnabled = false;
 			elseif ( event == "SPELL_PERIODIC_LEECH" ) then
 				-- Special attacks
-				amount, powerType, extraAmount = select(4, ...);
+				amount, powerType, extraAmount, alternatePowerType = select(4, ...);
 
 				-- Set value type to be a power type
 				valueType = 2;
 
 				-- Result String
-				resultStr = format(_G["ACTION_SPELL_PERIODIC_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType), nil, extraAmount) --"($extraAmount $powerType Gained)"
+				resultStr = format(_G["ACTION_SPELL_PERIODIC_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType, amount, alternatePowerType), nil, extraAmount) --"($extraAmount $powerType Gained)"
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2471,7 +2477,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				valueType = 2;
 
 				-- Did the heal crit?
-				amount, powerType = select(4, ...);
+				amount, powerType, alternatePowerType = select(4, ...);
 				
 				-- Parse the result string
 				--resultStr = _G[textModeString .. "RESULT"];
@@ -2531,7 +2537,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			end
 		elseif ( event == "SPELL_DRAIN" ) then		-- Special Spell effects
 			-- Special attacks
-			amount, powerType, extraAmount = select(4, ...);
+			amount, powerType, extraAmount, alternatePowerType = select(4, ...);
 
 			-- Set value type to be a power type
 			valueType = 2;
@@ -2544,13 +2550,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			schoolEnabled = false;
 		elseif ( event == "SPELL_LEECH" ) then
 			-- Special attacks
-			amount, powerType, extraAmount = select(4, ...);
+			amount, powerType, extraAmount, alternatePowerType = select(4, ...);
 
 			-- Set value type to be a power type
 			valueType = 2;
 
 			-- Result String
-			resultStr = format(_G["ACTION_SPELL_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType), nil, extraAmount)
+			resultStr = format(_G["ACTION_SPELL_LEECH_RESULT"], nil, nil, nil, nil, nil, nil, nil, CombatLog_String_PowerType(powerType, amount, alternatePowerType), nil, extraAmount)
 
 			-- Disable appropriate sections
 			if ( not resultStr ) then
@@ -2685,7 +2691,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			event = format("%s_%s", event, auraType);
 			
 			if ( remainingPoints and settings.fullText ) then
-				event = event.."_WITH_POINTS"
+				withPoints = true;
 			end
 
 			resultEnabled = false;
@@ -2738,7 +2744,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			spellName = ACTION_RANGED;
 
 			-- Miss type
-			missType, amountMissed = select(4,...);
+			missType, isOffHand, amountMissed = select(4,...);
 
 			-- Result String
 			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
@@ -2868,8 +2874,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 	-- Throw away all of the assembled strings and just grab a premade one
 	if ( settings.fullText ) then
-		local formatStringEvent = format("ACTION_%s_FULL_TEXT", event);
-
+		local formatStringEvent;
+		if (withPoints) then
+			formatStringEvent = format("ACTION_%s_WITH_POINTS_FULL_TEXT", event);
+		else
+			formatStringEvent = format("ACTION_%s_FULL_TEXT", event);
+		end
+		
 		-- Get the base string
 		if ( _G[formatStringEvent] ) then
 			formatString = _G[formatStringEvent];
@@ -2999,7 +3010,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		else
 			if ( ( settings.lineColorPriority == 1 and sourceName ) or not destName ) then
 				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
-			elseif ( ( settings.lineColorPriority == 2 and destName ) or not sourceName ) then
+			elseif ( ( settings.lineColorPriority == 2 and destName ) ) then
 				lineColor = CombatLog_Color_ColorArrayByUnitType( destFlags, filterSettings );
 			else
 				lineColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
@@ -3009,7 +3020,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 	-- Power Type
 	if ( powerType ) then
-		powerTypeString =  CombatLog_String_PowerType(powerType, amount);
+		powerTypeString =  CombatLog_String_PowerType(powerType, amount, alternatePowerType);
 		if powerTypeString == BALANCE_NEGATIVE_ENERGY then
 			amount = abs(amount);
 		end

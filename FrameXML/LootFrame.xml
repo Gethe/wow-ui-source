@@ -176,38 +176,23 @@
 			</Button>
 			<Button name="LootButton1" inherits="LootButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="24" y="-80"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="24" y="-80"/>
 				</Anchors>
 			</Button>
+			<!-- anchors not relative - see bug 266687 -->
 			<Button name="LootButton2" inherits="LootButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="LootButton1" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="24" y="-121"/>
 				</Anchors>
 			</Button>
 			<Button name="LootButton3" inherits="LootButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="LootButton2" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="24" y="-162"/>
 				</Anchors>
 			</Button>
 			<Button name="LootButton4" inherits="LootButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="LootButton3" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="24" y="-203"/>
 				</Anchors>
 			</Button>
 			<Button name="LootFrameUpButton">

@@ -151,6 +151,9 @@ function Graphics_PrepareTooltip(self)
 			tooltip = tooltip .. "|n" .. VIDEO_OPTIONS_RECOMMENDED .. HEADER_COLON .. " " .. GREENCOLORCODE .. recommendedValue .. "|r|n";
 		end
 	end
+	if(self.cappedTooltip) then
+		tooltip = tooltip.."|n"..self.cappedTooltip;
+	end
 	if(self.clientRestart == true) then
 		tooltip = tooltip .. "|n|cffff0000" .. VIDEO_OPTIONS_NEED_CLIENTRESTART .. "|r";
 	end
@@ -198,6 +201,29 @@ function ControlSetValue(self, value)
 		self:SetValue(value);
 		self.value = nil;
 		self.newValue = nil;
+	end
+end
+
+function ControlCheckCapTargets(self)
+	for _, name in pairs(self.capTargets) do
+		frame = _G[name];
+		if ( frame and frame.onCapCheck ) then
+			frame.onCapCheck(frame);
+		end
+	end
+end
+
+function ControlGetCurrentCvarValue(self, checkCvar)
+	local value = self.newValue or self:GetValue();
+	if ( self.data and self.data[value] ) then
+		for cvar, cvarValue in pairs(self.data[value].cvars) do
+			if ( cvar == checkCvar ) then
+				return cvarValue;
+			end
+		end
+	else
+		-- this means a custom cvar from config.wtf
+		return GetCVar(checkCvar);
 	end
 end
 
@@ -409,6 +435,9 @@ function VideoOptions_OnClick(self, value)
 			_G[key].isdependtarget = false;
 		end
 	end
+	if ( self.capTargets ) then
+		ControlCheckCapTargets(self);
+	end
 end
 
 function VideoOptionsDropDown_OnClick(self)
@@ -543,15 +572,15 @@ function VideoOptionsDropDown_OnLoad(self)
 				self.table = {};
 				self.tablerefresh = false;
 				if(self.tablefunction ~= nil) then
-					if(self.tablenext == nil) then
-						self.tablenext = 1;
+					if(self.TABLENEXT == nil) then
+						self.TABLENEXT = 1;
 					end
 					local mytable = {self.tablefunction(self)};      -- initialize the table
 					local index = 1;
-					for i=1, #mytable, self.tablenext do
+					for i=1, #mytable, self.TABLENEXT do
 						if(self.readfilter ~= nil) then                	-- data needs special treatment before display
 							local newtable={};
-							for j=1, self.tablenext do
+							for j=1, self.TABLENEXT do
 								newtable[j] = mytable[i+j-1];
 							end
 							self.table[index] = self.readfilter(self, unpack( newtable ));
@@ -591,6 +620,10 @@ function VideoOptionsDropDown_OnLoad(self)
 						-- 	info.colorCode = GREENCOLORCODE;
 						-- end
 					end
+				end
+				if ( self.capMaxValue and mode > self.capMaxValue ) then
+					info.notClickable = true;
+					info.disablecolor = GREYCOLORCODE;
 				end
 				VideoOptionsDropDownMenu_AddButton(info);
 			end
@@ -639,6 +672,9 @@ function VideoOptionsDropDown_OnLoad(self)
 				self.selectedID = index;
 				VideoOptionsDropDownMenu_SetText(self, value);
 				self.warning:Hide();
+				if ( self.capTargets ) then
+					ControlCheckCapTargets(self);
+				end
 			else
 				self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
 				self.warning:Show();
@@ -648,6 +684,9 @@ function VideoOptionsDropDown_OnLoad(self)
 	self.lookup = self.lookup or Graphics_TableLookup;
 	self.RefreshValue = self.RefreshValue or Graphics_ControlRefreshValue;
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+	if ( self.capTargets ) then
+		ControlCheckCapTargets(self);
+	end
 end
 
 function VideoOptionsCheckbox_OnLoad(self)
@@ -860,6 +899,7 @@ LanguageRegions["enTW"] = 9;
 LanguageRegions["esMX"] = 10;
 LanguageRegions["ruRU"] = 11;
 LanguageRegions["ptBR"] = 12;
+LanguageRegions["ptPT"] = 13;
 
 LANGUAGE_TEXT_HEIGHT = 22/512;
 

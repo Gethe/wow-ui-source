@@ -22,71 +22,43 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
-					<Size>
-						<AbsDimension x="0" y="32"/>
-					</Size>
+					<Size x="0" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentFocusLeft" file="Interface\ChatFrame\UI-ChatInputBorderFocus-Left" hidden="true" parentKey="focusLeft">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentFocusRight" file="Interface\ChatFrame\UI-ChatInputBorderFocus-Right" hidden="true" parentKey="focusRight">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentFocusMid" file="Interface\ChatFrame\UI-ChatInputBorderFocus-Mid" horizTile="true" hidden="true" parentKey="focusMid">
-					<Size>
-						<AbsDimension x="0" y="32"/>
-					</Size>
+					<Size x="0" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentFocusLeft" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentFocusRight" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentFocusLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentFocusRight" relativePoint="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -94,11 +66,7 @@
 				<FontString name="$parentHeader" inherits="ChatFontNormal" parentKey="header">
 					<Size x="0" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="15" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="15" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentHeaderSuffix" inherits="ChatFontNormal" parentKey="headerSuffix" text="CHAT_HEADER_SUFFIX">
@@ -110,15 +78,9 @@
 		</Layers>
 		<Frames>
 			<Button name="$parentLanguage" hidden="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-8" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

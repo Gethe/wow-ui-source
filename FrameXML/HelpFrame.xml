@@ -1318,24 +1318,18 @@
 							</Slider>
 						</Frames>
 						<ScrollChild>
-							<Frame>
-								<Size>
-									<AbsDimension x="10" y="10"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="HelpFrameGMResponse_IssueText" inherits="ChatFontNormal" justifyH="LEFT">
-											<Size x="413" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
+							<EditBox name="HelpFrameGMResponse_IssueText" multiLine="true" letters="500" autoFocus="false">
+								<Size x="420" y="220"/>
+								<Scripts>
+									<OnTextChanged>
+										self:GetParent():SetVerticalScroll(0);
+									</OnTextChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+								</Scripts>
+								<FontString inherits="ChatFontNormal"/>
+							</EditBox>
 						</ScrollChild>
 					</ScrollFrame>
 					<ScrollFrame name="$parentScrollFrame2" inherits="UIPanelScrollFrameCodeTemplate">
@@ -1361,24 +1355,18 @@
 							</Slider>
 						</Frames>
 						<ScrollChild>
-							<Frame>
-								<Size>
-									<AbsDimension x="10" y="10"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="HelpFrameGMResponse_GMText" inherits="ChatFontNormal" justifyH="LEFT">
-											<Size x="413" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
+							<EditBox name="HelpFrameGMResponse_GMText" multiLine="true" letters="500" autoFocus="false">
+								<Size x="420" y="220"/>
+								<Scripts>
+									<OnTextChanged>
+										self:GetParent():SetVerticalScroll(0);
+									</OnTextChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+								</Scripts>
+								<FontString inherits="ChatFontNormal"/>
+							</EditBox>
 						</ScrollChild>
 					</ScrollFrame>
 					<Frame>
@@ -1431,6 +1419,9 @@
 				<Scripts>
 					<OnLoad>
 						tinsert(HelpFrameWindows, self);
+						HelpFrameGMResponse_IssueText:Disable();
+						HelpFrameGMResponse_GMText:Disable();
+						
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -1467,7 +1458,7 @@
 			<Anchor point="CENTER" relativeTo="HelpMicroButton" relativePoint="TOPRIGHT" x="-3" y="-26"/>
 		</Anchors>
 		<Frames>
-			<Frame name="$parentTutorial" inherits="GlowBoxTemplate" parentKey="tutorial" enableMouse="true" hidden="true">
+			<Frame name="$parentTutorial" inherits="GlowBoxTemplate" parentKey="tutorial" enableMouse="true" hidden="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="14"/>
@@ -1521,6 +1512,7 @@
 			</OnEnter>
 			<OnLeave>
 				self:SetScript("OnUpdate", nil);
+				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<HitRectInsets>

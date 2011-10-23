@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ReadyCheck.lua"/>
 	<Frame name="ReadyCheckStatusTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentTexture" file="Interface\RaidFrame\ReadyCheck-Waiting" />
@@ -12,38 +10,24 @@
 		</Layers>
 	</Frame>
 	<Frame name="ReadyCheckFrame" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="323" y="97"/>
-		</Size>
+		<Size x="323" y="100"/>
 		<Anchors>
-			<Anchor point="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="-10"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" x="0" y="-10"/>
 		</Anchors>
 		<Frames>
 			<Frame name="ReadyCheckListenerFrame" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="ReadyCheckPortrait">
-							<Size>
-								<AbsDimension x="50" y="50"/>
-							</Size>
+							<Size x="50" y="50"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="7" y="-6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="7" y="-6"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\RaidFrame\UI-ReadyCheckFrame">
-							<Size>
-								<AbsDimension x="323" y="97"/>
-							</Size>
+							<Size x="323" y="97"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
@@ -52,47 +36,33 @@
 						<FontString name="ReadyCheckFrameText" inherits="GameFontNormal" justifyV="MIDDLE">
 							<Size x="240" y="36"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="20" y="-15"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="20" y="-15"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate2" text="READY">
-						<Size>
-							<AbsDimension x="119" y="24"/>
-						</Size>
+						<Size x="119" y="24"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="13" y="-55"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" relativePoint="TOP" x="13" y="-55"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								ConfirmReadyCheck(1);
 								ReadyCheckFrame:Hide();
 							</OnClick>
 						</Scripts>
 					</Button>
 					<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate2" text="NOT_READY">
-						<Size>
-							<AbsDimension x="119" y="24"/>
-						</Size>
+						<Size x="119" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="17" y="-55"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOP" x="17" y="-55"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								ConfirmReadyCheck();
 								ReadyCheckFrame:Hide();
 							</OnClick>

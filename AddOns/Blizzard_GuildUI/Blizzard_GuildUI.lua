@@ -103,6 +103,8 @@ function GuildFrame_OnEvent(self, event, ...)
 		if ( success ) then
 			GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 			GuildFrame_CheckName();
+		else
+			UIErrorsFrame:AddMessage(ERR_GUILD_NAME_INVALID, 1.0, 0.1, 0.1, 1.0);
 		end
 	end
 end
@@ -131,7 +133,9 @@ function GuildFrame_UpdateXP()
 	if ( isUncapped ) then
 		capXP = 0;
 	end
-	GuildBar_SetProgress(GuildXPBar, currentXP, nextLevelXP + currentXP, capXP);
+	if ( nextLevelXP > 0 ) then
+		GuildBar_SetProgress(GuildXPBar, currentXP, nextLevelXP + currentXP, capXP);
+	end
 end
 
 function GuildFrame_UpdateFaction()
@@ -523,6 +527,17 @@ end
 
 function GuildMainFrame_UpdateNewsEvents()
 	local numNews = GetNumGuildNews();
+	local hasImpeachFrame = CanReplaceGuildMaster();
+	if ( hasImpeachFrame ) then
+		GuildGMImpeachButton:Show();
+		GuildUpdatesButton1:ClearAllPoints();
+		GuildUpdatesButton1:SetPoint("TOP", GuildGMImpeachButton, "BOTTOM", 0, 0);
+	else
+		GuildGMImpeachButton:Hide();
+		GuildUpdatesButton1:ClearAllPoints();
+		GuildUpdatesButton1:SetPoint("TOPLEFT", GuildNewPerksFrameHeader1, "BOTTOMLEFT", 0, -4);
+	end
+	
 	if ( GetGuildRosterMOTD() ~= "" ) then
 		numNews = numNews + 1;
 	end
@@ -543,6 +558,10 @@ function GuildMainFrame_UpdateNewsEvents()
 			divider = 9 - maxEvents;
 		else
 			divider = min(4, maxNews) + 1;
+		end
+		
+		if ( hasImpeachFrame and divider > 2 ) then
+			divider = divider-1;
 		end
 	end
 	
@@ -571,7 +590,11 @@ function GuildMainFrame_UpdateNewsEvents()
 	if ( numEvents == 0 ) then
 		GuildUpdatesNoEvents:Show();
 		GuildUpdatesNoEvents:SetPoint("TOP", _G["GuildUpdatesButton"..(divider + 1)]);
-		GuildUpdatesNoEvents:SetHeight((9 - divider) * 18);
+		if ( hasImpeachFrame ) then
+			GuildUpdatesNoEvents:SetPoint("BOTTOM", _G["GuildUpdatesButton8"]);
+		else
+			GuildUpdatesNoEvents:SetPoint("BOTTOM", _G["GuildUpdatesButton9"]);
+		end
 	else
 		GuildUpdatesNoEvents:Hide();
 	end
@@ -590,6 +613,11 @@ function GuildMainFrame_UpdateNewsEvents()
 			GuildInfoEvents_SetButton(button, i);
 			button:Show();
 		end
+	end
+	
+
+	if ( hasImpeachFrame ) then
+		GuildUpdatesButton9:Hide();
 	end
 end
 

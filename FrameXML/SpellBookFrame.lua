@@ -126,7 +126,7 @@ function SpellBookFrame_OnEvent(self, event, ...)
 		local flashFrame = _G["SpellBookSkillLineTab"..tabNum.."Flash"];
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			return;
-		else
+		elseif ( tabNum <= GetNumSpellTabs() ) then
 			if ( flashFrame ) then
 				flashFrame:Show();
 				SpellBookFrame.flashTabs = 1;
@@ -1156,8 +1156,6 @@ function SpellBook_UpdatePetTab(showing)
 	SpellBookFrame_UpdateSpells();
 end
 
-
-
 function UpdateProfessionButton(self)
 	local spellIndex = self:GetID() + self:GetParent().spellOffset;
 	local texture = GetSpellBookItemTexture(spellIndex, SpellBookFrame.bookType);
@@ -1171,8 +1169,6 @@ function UpdateProfessionButton(self)
 		self.spellString:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 	
-	
-	
 	self.iconTexture:SetTexture(texture);
 	local start, duration, enable = GetSpellCooldown(spellIndex, SpellBookFrame.bookType);
 	CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
@@ -1180,6 +1176,12 @@ function UpdateProfessionButton(self)
 		self.iconTexture:SetVertexColor(1.0, 1.0, 1.0);
 	else
 		self.iconTexture:SetVertexColor(0.4, 0.4, 0.4);
+	end
+
+	if ( self:GetParent().specializationIndex >= 0 and self:GetID() == self:GetParent().specializationOffset) then
+		self.unlearn:Show();
+	else
+		self.unlearn:Hide();
 	end
 	
 	self.spellString:SetText(spellName);
@@ -1194,10 +1196,12 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 		
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset = GetProfessionInfo(index);
 		frame.skillName = name;
 		frame.spellOffset = spelloffset;
 		frame.skillLine = skillLine;
+		frame.specializationIndex = specializationIndex;
+		frame.specializationOffset = specializationOffset;
 		
 		frame.statusBar:SetMinMaxValues(1,maxRank);
 		frame.statusBar:SetValue(rank);
@@ -1206,17 +1210,28 @@ function FormatProfession(frame, index)
 		for i=1,#PROFESSION_RANKS do
 		    local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2]; 
 			if maxRank < value then break end
-			prof_title = title;		
+			prof_title = title;
 		end
 		frame.rank:SetText(prof_title);
-		
-		
 		
 		frame.statusBar:Show();
 		if rank == maxRank then
 			frame.statusBar.capRight:Show();
 		else
 			frame.statusBar.capRight:Hide();
+		end
+		-- trial cap
+		if IsTrialAccount() then
+			local _, _, profCap = GetRestrictedAccountData();
+			if rank >= profCap then
+				frame.capped:Show();
+				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..TRIAL_CAPPED;
+			else
+				frame.capped:Hide();
+				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				frame.statusBar.tooltip = nil;
+			end
 		end
 		
 		if frame.icon and texture then
@@ -1258,7 +1273,6 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Show();
 		frame.missingText:Show();
 		
-		
 		if frame.icon then
 			SetPortraitToTexture(frame.icon, "Interface\\Icons\\INV_Scroll_04");	
 			frame.unlearn:Hide();			
@@ -1270,7 +1284,6 @@ function FormatProfession(frame, index)
 		frame.rank:SetText("");
 		frame.professionName:SetText("");		
 	end
-	
 end
 
 

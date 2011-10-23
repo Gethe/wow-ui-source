@@ -20,6 +20,7 @@ ACHIEVEMENTUI_PROGRESSIVEWIDTH = 42;
 ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS = 4;
 
 ACHIEVEMENTUI_MAXCONTENTWIDTH = 330;
+ACHIEVEMENTUI_CRITERIACHECKWIDTH = 20;
 local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
@@ -1339,7 +1340,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
 		objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 	else
-		objectives:SetHeight(0);	
+		objectives:SetHeight(0);
 		AchievementButton_ResetCriteria();
 		AchievementButton_ResetProgressBars();
 		AchievementButton_ResetMiniAchievements();
@@ -1389,6 +1390,7 @@ end
 local criteriaTable = {}
 
 function AchievementButton_ResetCriteria ()
+	AchievementFrameAchievementsObjectives.repCriteria:Hide();
 	AchievementButton_ResetTable(criteriaTable);
 end
 
@@ -1627,7 +1629,6 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	local extraRows = 0;
 	
 	local requiresRep, hasRep, repLevel;
-	objectivesFrame.repCriteria:Hide();
 	if ( not objectivesFrame.completed ) then
 		requiresRep, hasRep, repLevel = GetAchievementGuildRep(id);
 		if ( requiresRep ) then
@@ -1650,6 +1651,13 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		objectivesFrame.mode = ACHIEVEMENTMODE_CRITERIA;
 		objectivesFrame:SetHeight(0);
 		return;
+	end
+	
+	-- text check width
+	if ( not objectivesFrame.textCheckWidth ) then
+		local criteria = AchievementButton_GetCriteria(1);
+		criteria.name:SetText("- ");
+		objectivesFrame.textCheckWidth = criteria.name:GetStringWidth();
 	end
 	
 	local frameLevel = objectivesFrame:GetFrameLevel() + 1;
@@ -1759,23 +1767,24 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				criteria.name:SetShadowOffset(1, -1);
 			end
 			
+			local stringWidth = 0;
 			if ( completed ) then
 				criteria.check:SetPoint("LEFT", 18, -3);
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 0, 2);
 				criteria.check:Show();
 				criteria.name:SetText(criteriaString);
+				stringWidth = criteria.name:GetStringWidth();
 			else
 				criteria.check:SetPoint("LEFT", 0, -3);
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 5, 2);
 				criteria.check:Hide();
 				criteria.name:SetText("- "..criteriaString);
+				stringWidth = criteria.name:GetStringWidth() - objectivesFrame.textCheckWidth;	-- don't want the "- " to be included in the width
 			end
-				
 			criteria:SetParent(objectivesFrame);
 			criteria:Show();
-			local stringWidth = criteria.name:GetStringWidth()
-			criteria:SetWidth(stringWidth + criteria.check:GetWidth());
-			maxCriteriaWidth = max(maxCriteriaWidth, stringWidth + criteria.check:GetWidth());
+			criteria:SetWidth(stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
+			maxCriteriaWidth = max(maxCriteriaWidth, stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
 
 			numRows = numRows + 1;
 		end

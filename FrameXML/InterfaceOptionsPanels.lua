@@ -1514,7 +1514,7 @@ function InterfaceOptionsNameplateMotionDropDown_OnEvent (self, event, ...)
 		self.oldValue = value;
 		self.value = value;
 
-		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_SetWidth(self, 150);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsNameplateMotionDropDown_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, value);
 
@@ -1927,7 +1927,7 @@ BuffsPanelOptions = {
 	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
 	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },	
 	consolidateBuffs = { text = "CONSOLIDATE_BUFFS_TEXT" },	
-	showCastableDebuffs = { text = "SHOW_CASTABLE_DEBUFFS_TEXT" },
+	showAllEnemyDebuffs = { text = "SHOW_ALL_ENEMY_DEBUFFS_TEXT" },
 }
 
 function InterfaceOptionsBuffsPanel_OnLoad (self)
@@ -2089,5 +2089,5 @@ HelpPanelOptions = {
 	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT" },
 	scriptErrors = { text = "SHOW_LUA_ERRORS" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
---	enableMovePad = { text = "MOVE_PAD" },
+	enableMovePad = { text = "MOVE_PAD" },
 }

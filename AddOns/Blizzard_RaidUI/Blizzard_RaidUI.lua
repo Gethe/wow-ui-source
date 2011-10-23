@@ -181,7 +181,6 @@ function RaidGroupFrame_OnEvent(self, event, ...)
 		RaidClassButton_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		RaidFrameReadyCheckButton_Update();
-		RaidFrameRaidBrowserButton_Update();
 		RaidPullout_RenewFrames();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		RaidFrame.showRange = GetCVarBool("showRaidRange");
@@ -248,7 +247,6 @@ function RaidGroupFrame_Update()
 	end
 
 	RaidFrameReadyCheckButton_Update();
-	RaidFrameRaidBrowserButton_Update();
 	if ( RaidFrameReadyCheckButton:IsShown() ) then
 		RaidFrameRaidInfoButton:SetPoint("LEFT", "RaidFrameReadyCheckButton", "RIGHT", 2, 0);
 	end
@@ -524,6 +522,11 @@ function RaidGroupFrame_Update()
 		end
 	end
 	
+	if ( numRaidMembers > 0 ) then
+		RaidFrameAllAssistCheckButton:Show();
+	else
+		RaidFrameAllAssistCheckButton:Hide();
+	end
 	-- Update Class Count Buttons
 	RaidClassButton_Update();
 end
@@ -585,7 +588,7 @@ function RaidGroupFrame_ReadyCheckFinished()
 	local numRaidMembers = GetNumRaidMembers();
 	local readyCheckFrame;
 	for i=1, numRaidMembers do
-		ReadyCheck_Finish(_G["RaidGroupButton"..i.."ReadyCheck"], 1.5, RaidGroupFrame_Update);
+		ReadyCheck_Finish(_G["RaidGroupButton"..i.."ReadyCheck"], DEFAULT_READY_CHECK_STAY_TIME, 1.5, RaidGroupFrame_Update);
 	end
 end
 
@@ -682,7 +685,7 @@ function RaidPullout_ReadyCheckFinished(pulloutFrame)
 	local pulloutButton;
 	for i=1, pulloutFrame.numPulloutButtons do
 		pulloutButton = pulloutFrame.buttons[i];
-		ReadyCheck_Finish(_G[pulloutButton:GetName().."ReadyCheck"], 1.5, RaidPullout_ReadyCheckFinishFunc, pulloutButton);
+		ReadyCheck_Finish(_G[pulloutButton:GetName().."ReadyCheck"], DEFAULT_READY_CHECK_STAY_TIME, 1.5, RaidPullout_ReadyCheckFinishFunc, pulloutButton);
 	end
 end
 
@@ -1507,10 +1510,3 @@ function RaidFrameReadyCheckButton_Update()
 	end
 end
 
-function RaidFrameRaidBrowserButton_Update()
-	if ( GetNumRaidMembers() > 0 ) then
-		RaidFrameRaidBrowserButton:Show();
-	else	
-		RaidFrameRaidBrowserButton:Hide();
-	end
-end

@@ -618,7 +618,12 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
-		self.timeleft = select(4, GetWorldPVPQueueStatus(1));
+		for i = 1, MAX_WORLD_PVP_QUEUES do
+			local status, mapName, queueID, timeleft = GetWorldPVPQueueStatus(i);
+			if ( queueID == self.data ) then
+				self.timeleft = timeleft;
+			end
+		end
 	end,	
 	OnAccept = function(self, battleID)
 		BattlefieldMgrEntryInviteResponse(battleID,1);
@@ -2173,6 +2178,19 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["UNLEARN_SPECIALIZATION"] = {
+	text = UNLEARN_SKILL,
+	button1 = UNLEARN,
+	button2 = CANCEL,
+	OnAccept = function(self, index)
+		UnlearnSpecialization(index);
+	end,
+	timeout = 60,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["XP_LOSS"] = {
 	text = CONFIRM_XP_LOSS,
 	button1 = ACCEPT,
@@ -2962,6 +2980,49 @@ StaticPopupDialogs["CONFIRM_RANK_AUTHENTICATOR_REMOVE"] = {
 	hideOnEscape = 1,
 	whileDead = 1,
 };
+StaticPopupDialogs["VOID_DEPOSIT_CONFIRM"] = {
+	text = VOID_STORAGE_DEPOSIT_CONFIRMATION.."\n"..CONFIRM_CONTINUE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		VoidStorage_UpdateTransferButton();
+	end,
+	OnCancel = function(self)
+		VoidStorage_CloseConfirmationDialog(self.data.slot);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	hasItemFrame = 1
+};
+StaticPopupDialogs["TRANSMOGRIFY_BIND_CONFIRM"] = {
+	text = TRANSMOGRIFY_BIND_CONFIRMATION.."\n"..CONFIRM_CONTINUE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		TransmogrifyFrame_UpdateApplyButton();
+	end,
+	OnCancel = function(self)
+		ClearTransmogrifySlot(self.data.slot);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	hasItemFrame = 1
+};
+
+StaticPopupDialogs["GUILD_IMPEACH"] = {
+	text = GUILD_IMPEACH_POPUP_TEXT ,
+	button1 = GUILD_IMPEACH_POPUP_CONFIRM,
+	button2 = CANCEL,
+	OnAccept = function (self) ReplaceGuildMaster(); end,
+	OnCancel = function (self) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+}
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
@@ -2999,6 +3060,8 @@ function StaticPopup_Resize(dialog, which)
 		width = width + (info.editBoxWidth - 260);
 	elseif ( which == "HELP_TICKET" ) then
 		width = 350;
+	elseif ( which == "GUILD_IMPEACH" ) then
+		width = 375;
 	end
 	if ( width > maxWidthSoFar )  then
 		dialog:SetWidth(width);

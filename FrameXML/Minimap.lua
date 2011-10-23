@@ -5,6 +5,8 @@ MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bo
 MINIMAP_RECORDING_INDICATOR_ON = false;
 
 MINIMAP_EXPANDER_MAXSIZE = 28;
+HUNTER_TRACKING = 1;
+TOWNSFOLK = 2;
 
 function Minimap_OnLoad(self)
 	self.fadeOut = nil;
@@ -257,21 +259,21 @@ function MiniMapLFGFrame_OnClick(self, button)
 		end
 		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", 0, yOffset);
 	elseif ( mode == "proposal" ) then
-		if ( not LFDDungeonReadyPopup:IsShown() ) then
+		if ( not LFGDungeonReadyPopup:IsShown() ) then
 			PlaySound("igCharacterInfoTab");
-			StaticPopupSpecial_Show(LFDDungeonReadyPopup);
+			StaticPopupSpecial_Show(LFGDungeonReadyPopup);
 		end
 	elseif ( mode == "queued" or mode == "rolecheck" ) then
 		ToggleLFDParentFrame();
 	elseif ( mode == "listed" ) then
-		ToggleLFRParentFrame();
+		ToggleFriendsFrame(4);
 	end
 end
 
 function MiniMapLFGFrame_OnEnter(self)
 	local mode, submode = GetLFGMode();
 	if ( mode == "queued" ) then
-		LFDSearchStatus:Show();
+		LFGSearchStatus:Show();
 	elseif ( mode == "proposal" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
@@ -299,7 +301,7 @@ end
 
 function MiniMapLFGFrame_OnLeave(self)
 	GameTooltip:Hide();
-	LFDSearchStatus:Hide();
+	LFGSearchStatus:Hide();
 end
 
 function MinimapButton_OnMouseDown(self, button)
@@ -365,7 +367,7 @@ function MinimapMailFrameUpdate()
 end
 
 function MiniMapTracking_Update()
-	UIDropDownMenu_Refresh(MiniMapTrackingDropDown);
+	UIDropDownMenu_RefreshAll(MiniMapTrackingDropDown);
 end
 
 function MiniMapTrackingDropDown_OnLoad(self)
@@ -395,24 +397,54 @@ function MiniMapTrackingDropDown_IsNoTrackingActive()
 	return true;
 end
 
-function MiniMapTrackingDropDown_Initialize()
-	local name, texture, active, category;
+function MiniMapTrackingDropDown_Initialize(self, level)
+	local name, texture, active, category, nested, numTracking;
 	local count = GetNumTrackingTypes();
 	local info;
+	local _, class = UnitClass("player");
 	
-	info = UIDropDownMenu_CreateInfo();
-	info.text=MINIMAP_TRACKING_NONE;
-	info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
-	info.func = ClearAllTracking;
-	info.icon = nil;
-	info.arg1 = nil;
-	info.isNotRadio = true;
-	info.keepShownOnClick = true;
-	UIDropDownMenu_AddButton(info);
-	
-	for id=1, count do
-		name, texture, active, category  = GetTrackingInfo(id);
+	if (level == 1) then 
+		info = UIDropDownMenu_CreateInfo();
+		info.text=MINIMAP_TRACKING_NONE;
+		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
+		info.func = ClearAllTracking;
+		info.icon = nil;
+		info.arg1 = nil;
+		info.isNotRadio = true;
+		info.keepShownOnClick = true;
+		UIDropDownMenu_AddButton(info, level);
+		
+		if (class == "HUNTER") then --only show hunter dropdown for hunters
+			numTracking = 0;
+			-- make sure there are at least two options in dropdown
+			for id=1, count do
+				name, texture, active, category, nested = GetTrackingInfo(id);
+				if (nested == HUNTER_TRACKING and category == "spell") then
+					numTracking = numTracking + 1;
+				end
+			end
+			if (numTracking > 1) then 
+				info.text = HUNTER_TRACKING_TEXT;
+				info.func =  nil;
+				info.notCheckable = true;
+				info.keepShownOnClick = false;
+				info.hasArrow = true;
+				info.value = 1;
+				UIDropDownMenu_AddButton(info, level)
+			end
+		end
+		
+		info.text = TOWNSFOLK_TRACKING_TEXT;
+		info.func =  nil;
+		info.notCheckable = true;
+		info.keepShownOnClick = false;
+		info.hasArrow = true;
+		info.value = 2;
+		UIDropDownMenu_AddButton(info, level)
+	end
 
+	for id=1, count do
+		name, texture, active, category, nested  = GetTrackingInfo(id);
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
 		info.checked = MiniMapTrackingDropDownButton_IsActive;
@@ -432,8 +464,16 @@ function MiniMapTrackingDropDown_Initialize()
 			info.tCoordTop = 0;
 			info.tCoordBottom = 1;
 		end
-		UIDropDownMenu_AddButton(info);
+		if (level == 1 and 
+			(nested < 0 or -- this tracking shouldn't be nested
+			(nested == HUNTER_TRACKING and class ~= "HUNTER") or 
+			(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
+			UIDropDownMenu_AddButton(info, level);
+		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
+	
 end
 
 function MiniMapTrackingShineFadeIn()
@@ -580,6 +620,9 @@ function GuildInstanceDifficulty_OnEnter(self)
 	elseif ( xpMultiplier > 1 ) then
 		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP, guildName, xpMultiplier * 100), nil, nil, nil, 1);
 	else
+		if ( instanceType == "party" and maxPlayers == 5 ) then
+			numGuildRequired = 4;
+		end
 		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE, numGuildRequired, maxPlayers, guildName), nil, nil, nil, 1);
 	end
 	GameTooltip:Show();

@@ -17,6 +17,8 @@ ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;
 function ItemSocketingFrame_OnLoad(self)
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
 	self:RegisterEvent("SOCKET_INFO_CLOSE");
+	self:RegisterEvent("SOCKET_INFO_ACCEPT");
+	self:RegisterEvent("SOCKET_INFO_SUCCESS");
 	ItemSocketingScrollFrameScrollBarScrollUpButton:SetPoint("BOTTOM", ItemSocketingScrollFrameScrollBar, "TOP", 0, 1);
 	ItemSocketingScrollFrameScrollBarScrollDownButton:SetPoint("TOP", ItemSocketingScrollFrameScrollBar, "BOTTOM", 0, -3);
 	ItemSocketingScrollFrameTop:SetPoint("TOP", ItemSocketingScrollFrameScrollBarScrollUpButton, "TOP", -2, 3);
@@ -34,6 +36,13 @@ function ItemSocketingFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "SOCKET_INFO_CLOSE" ) then
 		HideUIPanel(ItemSocketingFrame);
+	elseif ( event == "SOCKET_INFO_ACCEPT" ) then
+		self.isSocketing = true;
+		ItemSocketingSocketButton_Disable();
+		ItemSocketingFrame_DisableSockets();
+	elseif ( event == "SOCKET_INFO_SUCCESS" ) then
+		self.isSocketing = nil;
+		ItemSocketingFrame_EnableSockets();
 	end
 end
 
@@ -175,8 +184,24 @@ function ItemSocketingFrame_Update()
 	-- Update socket button
 	if ( numNewGems == 0 ) then
 		ItemSocketingSocketButton_Disable();
-	else	
+	elseif ( not ItemSocketingFrame.isSocketing ) then
 		ItemSocketingSocketButton_Enable();
+	end
+end
+
+function ItemSocketingFrame_DisableSockets()
+	for i = 1, MAX_NUM_SOCKETS do
+		local socket = _G["ItemSocketingSocket"..i];
+		socket:Disable();
+		socket.icon:SetDesaturated(true);
+	end
+end
+
+function ItemSocketingFrame_EnableSockets()
+	for i = 1, MAX_NUM_SOCKETS do
+		local socket = _G["ItemSocketingSocket"..i];
+		socket:Enable();
+		socket.icon:SetDesaturated(false);
 	end
 end
 

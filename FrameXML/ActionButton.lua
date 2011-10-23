@@ -125,11 +125,9 @@ function ActionButton_UpdateHotkeys (self, actionButtonType)
 	local text = GetBindingText(key, "KEY_", 1);
     if ( text == "" ) then
         hotkey:SetText(RANGE_INDICATOR);
-        hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
         hotkey:Hide();
     else
         hotkey:SetText(text);
-        hotkey:SetPoint("TOPLEFT", self, "TOPLEFT", -2, -2);
         hotkey:Show();
     end
 end
@@ -148,6 +146,8 @@ function ActionButton_CalculateAction (self, button)
 					offset = BonusActionBarFrame.lastBonusBar;
 				end
 				page = NUM_ACTIONBAR_PAGES + offset;
+			elseif ( self.isExtra ) then
+				page = NUM_ACTIONBAR_PAGES + GetExtraBarOffset();
 			elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
 				page = NUM_ACTIONBAR_PAGES + GetMultiCastBarOffset();
 			end
@@ -242,19 +242,23 @@ function ActionButton_Update (self)
 
 	-- Add a green border if button is an equipped item
 	local border = _G[name.."Border"];
-	if ( IsEquippedAction(action) ) then
-		border:SetVertexColor(0, 1.0, 0, 0.35);
-		border:Show();
-	else
-		border:Hide();
+	if border then
+		if ( IsEquippedAction(action) ) then
+			border:SetVertexColor(0, 1.0, 0, 0.35);
+			border:Show();
+		else
+			border:Hide();
+		end
 	end
 
 	-- Update Action Text
 	local actionName = _G[name.."Name"];
-	if ( not IsConsumableAction(action) and not IsStackableAction(action) ) then
-		actionName:SetText(GetActionText(action));
-	else
-		actionName:SetText("");
+	if actionName then
+		if ( not IsConsumableAction(action) and not IsStackableAction(action) ) then
+			actionName:SetText(GetActionText(action));
+		else
+			actionName:SetText("");
+		end
 	end
 
 	-- Update icon and hotkey text
@@ -262,12 +266,10 @@ function ActionButton_Update (self)
 		icon:SetTexture(texture);
 		icon:Show();
 		self.rangeTimer = -1;
-		self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
 	else
 		icon:Hide();
 		buttonCooldown:Hide();
 		self.rangeTimer = nil;
-		self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
 		local hotkey = _G[name.."HotKey"];
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
@@ -297,8 +299,10 @@ function ActionButton_ShowGrid (button)
 		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
 	end
 
-	_G[button:GetName().."NormalTexture"]:SetVertexColor(1.0, 1.0, 1.0, 0.5);
-
+	if ( _G[button:GetName().."NormalTexture"] ) then
+		_G[button:GetName().."NormalTexture"]:SetVertexColor(1.0, 1.0, 1.0, 0.5);
+	end
+	
 	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
 		button:Show();
 	end
@@ -335,6 +339,10 @@ function ActionButton_UpdateUsable (self)
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
 	local normalTexture = _G[name.."NormalTexture"];
+	if ( not normalTexture ) then
+		return;
+	end
+	
 	local isUsable, notEnoughMana = IsUsableAction(self.action);
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -448,7 +456,7 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_Update(self);
 		return;
 	end
-	if ( event == "ACTIONBAR_PAGE_CHANGED" or event == "UPDATE_BONUS_ACTIONBAR" ) then
+	if ( event == "ACTIONBAR_PAGE_CHANGED" or event == "UPDATE_BONUS_ACTIONBAR" or event == "UPDATE_EXTRA_ACTIONBAR" ) then
 		ActionButton_UpdateAction(self);
 		local actionType, id, subType = GetActionInfo(self.action);
 		if ( actionType == "spell" and id == 0 ) then
@@ -626,6 +634,10 @@ function ActionButton_IsFlashing (self)
 end
 
 function ActionButton_UpdateFlyout(self)
+	if not self.FlyoutArrow then
+		return;
+	end
+
 	local actionType = GetActionInfo(self.action);
 	if (actionType == "flyout") then
 		-- Update border and determine arrow position

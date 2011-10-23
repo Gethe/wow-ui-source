@@ -676,7 +676,13 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(VOICECHAT_DISABLED_TEXT, nil, nil, nil, nil, 1);
+						local stringChoice;
+						if ( Is64BitClient() ) then
+							stringChoice = VOICECHAT_NO_64BIT_TEXT;
+						else
+							stringChoice = VOICECHAT_DISABLED_TEXT;
+						end
+						GameTooltip:SetText(stringChoice, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

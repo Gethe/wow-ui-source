@@ -2,7 +2,6 @@
 CLASS_TRAINER_SKILLS_DISPLAYED = 7;
 CLASS_TRAINER_SCROLL_HEIGHT = 330
 CLASS_TRAINER_SKILL_BUTTON_WIDTH = 318
-CLASS_TRAINER_SKILL_BUTTON_WIDTH = 318
 CLASS_TRAINER_SKILL_BARBUTTON_WIDTH = 298
 CLASS_TRAINER_SKILL_HEIGHT = 47;
 MAX_LEARNABLE_PROFESSIONS = 2;
@@ -62,6 +61,24 @@ function ClassTrainerFrame_OnLoad(self)
 	self.scrollFrame.update = ClassTrainerFrame_Update;
 	self.scrollFrame.stepSize = 12;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "ClassTrainerSkillButtonTemplate", 1, -1, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
+
+	ClassTrainerScrollFrameScrollBar.Show = 
+		function (self)
+			ClassTrainerScrollFrame:SetWidth(CLASS_TRAINER_SKILL_BARBUTTON_WIDTH + 2);
+			for _, button in next, ClassTrainerScrollFrame.buttons do
+				button:SetWidth(CLASS_TRAINER_SKILL_BARBUTTON_WIDTH);
+			end
+			getmetatable(self).__index.Show(self);
+		end
+		
+	ClassTrainerScrollFrameScrollBar.Hide = 
+		function (self)
+			ClassTrainerScrollFrame:SetWidth(CLASS_TRAINER_SKILL_BUTTON_WIDTH + 2);
+			for _, button in next, ClassTrainerScrollFrame.buttons do
+				button:SetWidth(CLASS_TRAINER_SKILL_BUTTON_WIDTH);
+			end
+			getmetatable(self).__index.Hide(self);
+		end	
 end
 
 
@@ -100,8 +117,6 @@ function ClassTrainerFrame_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local displayHeight = CLASS_TRAINER_SCROLL_HEIGHT;
-	local buttonSize = CLASS_TRAINER_SKILL_BARBUTTON_WIDTH;
-	
 	
 	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 	if tradeSkillStepIndex then
@@ -112,9 +127,6 @@ function ClassTrainerFrame_Update()
 		ClassTrainerFrame.bottomInset:Show();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "TOPRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_ATTIC_OFFSET-47);
 		ClassTrainerFrame_SetServiceButton( ClassTrainerFrame.skillStepButton, tradeSkillStepIndex, playerMoney, selected, isTradeSkill );
-		if numTrainerServices <=  CLASS_TRAINER_SKILLS_DISPLAYED-1 then
-			buttonSize = CLASS_TRAINER_SKILL_BUTTON_WIDTH;
-		end
 	else
 		scrollFrame:ClearAllPoints();
 		scrollFrame:SetPoint("TOPLEFT", ClassTrainerFrame.Inset, "TOPLEFT", 5, -5);
@@ -122,9 +134,6 @@ function ClassTrainerFrame_Update()
 		ClassTrainerFrame.bottomInset:Hide();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
 		ClassTrainerFrame.skillStepButton:Hide();
-		if numTrainerServices <=  CLASS_TRAINER_SKILLS_DISPLAYED then
-			buttonSize = CLASS_TRAINER_SKILL_BUTTON_WIDTH;
-		end
 	end
 
 	-- rank status bar
@@ -143,15 +152,12 @@ function ClassTrainerFrame_Update()
 		ClassTrainerStatusBar:Hide();
 	end
 
-	scrollFrame:SetWidth(buttonSize+2);
-
 	-- Fill in the skill buttons
 	for i=1, numButtons do
 		local skillIndex = i + offset;
 		local skillButton = buttons[i]; 
 		if ( skillIndex <= numTrainerServices) then	
 			ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill );
-			skillButton:SetWidth(buttonSize);
 		else
 			skillButton:Hide();
 		end
@@ -222,22 +228,21 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 		skillButton.disabledBG:Hide();
 	end
 	
+	local showMoney = true;
 	if ( requirements ~= "" and serviceType ~= "used" ) then
 		requirements = REQUIRES_LABEL.." "..requirements;
-		skillButton.money:Show();
 	elseif ( serviceType == "used" ) then
 		requirements = ITEM_SPELL_KNOWN;
-		skillButton.money:Hide();
+		showMoney = false;
 	else
 		requirements = "";
-		skillButton.money:Show();
 	end
 	skillButton.name:SetText(serviceName);
 	skillButton.subText:SetText(requirements);
 	
 	
 	local moneyCost, isProfession = GetTrainerServiceCost(skillIndex);
-	if ( moneyCost and moneyCost > 0 ) then
+	if ( showMoney and moneyCost and moneyCost > 0 ) then
 		MoneyFrame_Update(skillButton.money:GetName(), moneyCost);
 		if ( playerMoney >= moneyCost ) then
 			SetMoneyFrameColor(skillButton.money:GetName(), "white");
@@ -245,6 +250,10 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 			SetMoneyFrameColor(skillButton.money:GetName(), "red");
 			unavailable = true;
 		end
+		skillButton.money:Show();
+	else
+		skillButton.money:SetWidth(1);
+		skillButton.money:Hide();
 	end
 	-- Place the highlight and lock the highlight state
 	if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then

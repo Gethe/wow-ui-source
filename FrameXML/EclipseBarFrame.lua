@@ -57,6 +57,10 @@ end
 function EclipseBar_Update(self)
 	local power = UnitPower( self:GetParent().unit, SPELL_POWER_ECLIPSE );
 	local maxPower = UnitPowerMax( self:GetParent().unit, SPELL_POWER_ECLIPSE );
+	if maxPower == 0 then
+		return;--catch divide by zero
+	end
+	
 	if self.showPercent then 
 		self.powerText:SetText(abs(power/maxPower*100).."%");
 	else

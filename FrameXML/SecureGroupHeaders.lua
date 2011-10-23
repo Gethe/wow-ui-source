@@ -99,7 +99,7 @@ local GetFrameHandle = GetFrameHandle;
 local wipe = table.wipe;
 local tinsert = table.insert;
 
-function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunction )
+local function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunction )
 	local configCode = header:GetAttribute("initialConfigFunction") or defaultConfigFunction;
 
 	if ( type(configCode) == "string" ) then
@@ -598,7 +598,7 @@ end
 filter = [STRING] -- a pipe-separated list of aura filter options ("RAID" will be ignored)
 separateOwn = [NUMBER] -- indicate whether buffs you cast yourself should be separated before (1) or after (-1) others. If 0 or nil, no separation is done.
 sortMethod = ["INDEX", "NAME", "TIME"] -- defines how the group is sorted (Default: "INDEX")
-sortDir = ["+", "-"] -- defines the sort order (Default: "+")
+sortDirection = ["+", "-"] -- defines the sort order (Default: "+")
 groupBy = [nil, auraFilter] -- if present, a series of comma-separated filters, appended to the base filter to separate auras into groups within a single stream
 includeWeapons = [nil, NUMBER] -- The aura sub-stream before which to include temporary weapon enchants. If nil or 0, they are ignored.
 consolidateTo = [nil, NUMBER] -- The aura sub-stream before which to place a proxy for the consolidated header. If nil or 0, consolidation is ignored.
@@ -616,11 +616,23 @@ minWidth = [nil, NUMBER] -- the minimum width of the container frame
 minHeight = [nil, NUMBER] -- the minimum height of the container frame
 xOffset = [NUMBER] -- the x-Offset to use when anchoring the unit buttons. This should typically be set to at least the width of your buff template.
 yOffset = [NUMBER] -- the y-Offset to use when anchoring the unit buttons. This should typically be set to at least the height of your buff template.
-wrapAfter = [NUMBER] -- begin a new row or column after this many auras
+wrapAfter = [NUMBER] -- begin a new row or column after this many auras. If 0 or nil, never wrap or limit the first row
 wrapXOffset = [NUMBER] -- the x-offset from one row or column to the next
 wrapYOffset = [NUMBER] -- the y-offset from one row or column to the next
-maxWraps = [NUMBER] -- limit the number of rows or columns
+maxWraps = [NUMBER] -- limit the number of rows or columns. If 0 or nil, the number of rows or columns will not be limited.
 --]]
+
+local function SetupAuraButtonConfiguration( header, newChild, defaultConfigFunction )
+	local configCode = newChild:GetAttribute("initialConfigFunction") or header:GetAttribute("initialConfigFunction") or defaultConfigFunction;
+
+	if ( type(configCode) == "string" ) then
+		local selfHandle = GetFrameHandle(newChild);
+		if ( selfHandle ) then
+			CallRestrictedClosure("self", GetManagedEnvironment(header, true),
+			                      selfHandle, configCode, selfHandle);
+		end
+	end
+end
 
 function SecureAuraHeader_OnLoad(self)
 	self:RegisterEvent("UNIT_AURA");
@@ -661,7 +673,7 @@ local function extractTemplateInfo(template, defaultWidget)
 	local widgetType;
 
 	if ( template ) then
-		template, widgetType = strsplit(",", tostring(template):trim():gsub("%s*,%s*", ","));
+		template, widgetType = strsplit(",", (tostring(template):trim():gsub("%s*,%s*", ",")) );
 		if ( template ~= "" ) then
 			if ( not widgetType or widgetType == "" ) then
 				widgetType = defaultWidget;
@@ -672,6 +684,19 @@ local function extractTemplateInfo(template, defaultWidget)
 	return nil;
 end
 
+local function constructChild(kind, name, parent, template, ...)
+	local new = CreateFrame(kind, name, parent, template);
+	setAttributesWithoutResponse(new, ...);
+	SetupAuraButtonConfiguration(parent, new);
+	return new;
+end
+
+local enchantableSlots = {
+	[1] = "MainHandSlot", 
+	[2] = "SecondaryHandSlot", 
+	[3] = "RangedSlot",
+}
+
 local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 	local point = self:GetAttribute("point") or "TOPRIGHT";
 	local xOffset = tonumber(self:GetAttribute("xOffset")) or 0;
@@ -681,6 +706,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 	local wrapAfter = tonumber(self:GetAttribute("wrapAfter"));
 	if ( wrapAfter == 0 ) then wrapAfter = nil; end
 	local maxWraps = self:GetAttribute("maxWraps");
+	if ( maxWraps == 0 ) then maxWraps = nil; end
 	local minWidth = tonumber(self:GetAttribute("minWidth")) or 0;
 	local minHeight = tonumber(self:GetAttribute("minHeight")) or 0;
 
@@ -698,8 +724,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 			if ( button ) then
 				button:ClearAllPoints();
 			else
-				button = CreateFrame(buffWidget, name and name.."AuraButton"..i, self, buffTemplate);
-				setAttributesWithoutResponse(self, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button));
+				button = constructChild(buffWidget, name and name.."AuraButton"..i, self, buffTemplate, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button));
 			end
 			local buffInfo = auraTable[i];
 			button:SetID(buffInfo.index);
@@ -708,22 +733,13 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 			buttons[i] = button;
 		end
 	end
-	local deadIndex = #buttons + 1;
-	local button = self:GetAttribute("child"..deadIndex);
-	while ( button ) do
-		button:Hide();
-		deadIndex = deadIndex + 1;
-		button = self:GetAttribute("child"..deadIndex)
-	end
 
-	local consolidateProxy = nil;
+	local consolidateProxy = self:GetAttribute("consolidateProxy");
 	if ( consolidateTable ) then
-		consolidateProxy = self:GetAttribute("consolidateProxy");
 		if ( type(consolidateProxy) == 'string' ) then
 			local template, widgetType = extractTemplateInfo(consolidateProxy, "Button");
 			if ( template ) then
-				consolidateProxy = CreateFrame(widgetType, name and name.."ProxyButton", self, template);
-				setAttributesWithoutResponse(self, "consolidateProxy", consolidateProxy, "frameref-proxy", GetFrameHandle(consolidateProxy));
+				consolidateProxy = constructChild(widgetType, name and name.."ProxyButton", self, template, "consolidateProxy", consolidateProxy, "frameref-proxy", GetFrameHandle(consolidateProxy));
 			else
 				consolidateProxy = nil;
 			end
@@ -737,66 +753,39 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 			consolidateProxy:ClearAllPoints();
 		end
 	else
-		local consolidateProxy = self:GetAttribute("consolidateProxy");
 		if ( consolidateProxy and type(consolidateProxy.Hide) == 'function' ) then
 			consolidateProxy:Hide();
 		end
 	end
 	if ( weaponPosition ) then
-		local hasMainHandEnchant, hasOffHandEnchant, _, tempEnchant1, tempEnchant2;
-		hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = GetWeaponEnchantInfo();
+		local hasMainHandEnchant, hasOffHandEnchant, hasRangedEnchant, _;
+		hasMainHandEnchant, _, _, hasOffHandEnchant, _, _, hasRangedEnchant, _, _ = GetWeaponEnchantInfo();
 
-		if ( hasOffHandEnchant ) then
-			tempEnchant2 = self:GetAttribute("tempEnchant2");
-			if ( not tempEnchant2 ) then
-				local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
-				if ( template ) then
-					tempEnchant2 = CreateFrame(widgetType, name and name.."TempEnchant2", self, template);
-					setAttributesWithoutResponse(self, "tempEnchant2", tempEnchant2);
+		for weapon=3,1,-1 do
+			local weaponAttr = "tempEnchant"..weapon
+			local tempEnchant = self:GetAttribute(weaponAttr)
+			if ( (select(weapon, hasMainHandEnchant, hasOffHandEnchant, hasRangedEnchant)) ) then
+				if ( not tempEnchant ) then
+					local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
+					if ( template ) then
+						tempEnchant = constructChild(widgetType, name and name.."TempEnchant"..weapon, self, template, weaponAttr, tempEnchant2);
+					end
 				end
-			end
-			if ( tempEnchant2 ) then
-				tempEnchant2:ClearAllPoints();
-				local slot = GetInventorySlotInfo("MainHandSlot");
-				tempEnchant2:SetAttribute("target-slot", slot);
-				tempEnchant2:SetID(slot);
-				if ( weaponPosition == 0 ) then
-					tinsert(buttons, tempEnchant2);
-				else
-					tinsert(buttons, weaponPosition, tempEnchant2);
+				if ( tempEnchant ) then
+					tempEnchant:ClearAllPoints();
+					local slot = GetInventorySlotInfo(enchantableSlots[weapon]);
+					tempEnchant:SetAttribute("target-slot", slot);
+					tempEnchant:SetID(slot);
+					if ( weaponPosition == 0 ) then
+						tinsert(buttons, tempEnchant);
+					else
+						tinsert(buttons, weaponPosition, tempEnchant);
+					end
 				end
-			end
-		else
-			tempEnchant2 = self:GetAttribute("tempEnchant2");
-			if ( tempEnchant2 and type(tempEnchant2.Hide) == 'function' ) then
-				tempEnchant2:Hide();
-			end
-		end
-
-		if ( hasMainHandEnchant ) then
-			tempEnchant1 = self:GetAttribute("tempEnchant1");
-			if ( not tempEnchant1 ) then
-				local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
-				if ( template ) then
-					tempEnchant1 = CreateFrame(widgetType, name and name.."TempEnchant1", self, template);
-					setAttributesWithoutResponse(self, "tempEnchant1", tempEnchant1);
+			else
+				if ( tempEnchant and type(tempEnchant.Hide) == 'function' ) then
+					tempEnchant:Hide();
 				end
-			end
-			if ( tempEnchant1 ) then
-				tempEnchant1:ClearAllPoints();
-				local slot = GetInventorySlotInfo("MainHandSlot");
-				tempEnchant1:SetAttribute("target-slot", slot);
-				tempEnchant1:SetID(slot);
-				if ( weaponPosition == 0 ) then
-					tinsert(buttons, tempEnchant1);
-				else
-					tinsert(buttons, weaponPosition, tempEnchant1);
-				end
-			end
-		else
-			tempEnchant1 = self:GetAttribute("tempEnchant1");
-			if ( tempEnchant1 and type(tempEnchant1.Hide) == 'function' ) then
-				tempEnchant1:Hide();
 			end
 		end
 	end
@@ -806,17 +795,26 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		display = min(display, wrapAfter * maxWraps);
 	end
 
-	local left, right, top, bottom = math.huge, 0, 0, math.huge;
+	local left, right, top, bottom = math.huge, -math.huge, -math.huge, math.huge;
 	for index=1,display do
 		local button = buttons[index];
+		local wrapAfter = wrapAfter or index
 		local tick, cycle = floor((index - 1) % wrapAfter), floor((index - 1) / wrapAfter);
 		button:SetPoint(point, self, cycle * wrapXOffset + tick * xOffset, cycle * wrapYOffset + tick * yOffset);
 		button:Show();
 		left = min(left, button:GetLeft() or math.huge);
-		right = max(right, button:GetRight() or 0);
-		top = max(top, button:GetTop() or 0);
+		right = max(right, button:GetRight() or -math.huge);
+		top = max(top, button:GetTop() or -math.huge);
 		bottom = min(bottom, button:GetBottom() or math.huge);
 	end
+	local deadIndex = #display + 1;
+	local button = self:GetAttribute("child"..deadIndex);
+	while ( button ) do
+		button:Hide();
+		deadIndex = deadIndex + 1;
+		button = self:GetAttribute("child"..deadIndex)
+	end
+	
 	if ( display >= 1 ) then
 		self:SetWidth(max(right - left, minWidth));
 		self:SetHeight(max(top - bottom, minHeight));
@@ -829,8 +827,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		if ( type(header) == 'string' ) then
 			local template, widgetType = extractTemplateInfo(header, "Frame");
 			if ( template ) then
-				header = CreateFrame(widgetType, name and name.."ProxyHeader", consolidateProxy, template);
-				setAttributesWithoutResponse(self, "consolidateHeader", header);
+				header = constructChild(widgetType, name and name.."ProxyHeader", consolidateProxy, template, "consolidateHeader", header);
 				consolidateProxy:SetAttribute("header", header);
 				consolidateProxy:SetAttribute("frameref-header", GetFrameHandle(header))
 			end
@@ -864,7 +861,7 @@ end
 local sorters = {};
 
 local function sortFactory(key, separateOwn, reverse)
-	if ( separateOwn ) then
+	if ( separateOwn ~= 0 ) then
 		if ( reverse ) then
 			return function (a, b)
 				if ( groupingTable[a.filter] == groupingTable[b.filter] ) then
@@ -928,6 +925,9 @@ function SecureAuraHeader_Update(self)
 	local groupBy = self:GetAttribute("groupBy");
 	local unit = SecureButton_GetUnit(self) or "player";
 	local includeWeapons = tonumber(self:GetAttribute("includeWeapons"));
+	if ( includeWeapons == 0 ) then
+		includeWeapons = nil
+	end
 	local consolidateTo = tonumber(self:GetAttribute("consolidateTo"));
 	local consolidateDuration, consolidateThreshold, consolidateFraction;
 	if ( consolidateTo ) then

@@ -3,7 +3,7 @@
 	<Script file="MacOptionsFrame.lua"/>
 	<Frame name="MacOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="426" y="455"/>
+			<AbsDimension x="426" y="530"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -405,7 +405,7 @@
 			<!-- iTunes Remote section -->
 			<Frame name="MacOptionsITunesRemote" inherits="OptionsBoxTemplate">
 				<Size>
-					<AbsDimension x="400" y="80"/>
+					<AbsDimension x="400" y="70"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="BOTTOMLEFT">
@@ -443,6 +443,47 @@
 				</Frames>
 			</Frame>
 			<!-- End of iTunes Remote section -->
+			
+			<Frame name="MacOptionsFrameMisc" inherits="OptionsBoxTemplate">
+				<Size>
+					<AbsDimension x="400" y="70"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MacOptionsITunesRemote" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						self:SetBackdropColor(0.15, 0.15, 0.15);
+						_G[self:GetName().."Title"]:SetText(MAC_OPTIONS_MISC);
+					</OnLoad>
+				</Scripts>
+				<Frames>
+					<CheckButton name="MacOptionsFrameCheckButton9" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameMisc" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton10" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton9" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<!-- End Miscellaneous section -->
 			
 			<Button name="MacOptionsFrameCancel" inherits="OptionsButtonTemplate" text="CANCEL">
 				<Size>

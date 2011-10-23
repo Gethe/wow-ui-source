@@ -21,6 +21,18 @@ function TimerTracker_OnLoad(self)
 end
 
 
+function StartTimer_OnShow(self)
+	self.time = self.endTime - GetTime();
+	if self.time <= 0 then
+		self:Hide();
+		self.isFree = true;
+	elseif self.startNumbers:IsPlaying() then
+		self.startNumbers:Stop();
+		self.startNumbers:Play();
+	end
+end
+
+
 function TimerTracker_OnEvent(self, event, ...)
 	
 	if event == "START_TIMER" then
@@ -64,6 +76,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer.isFree = false;
 			timer.type = timerType;
 			timer.time = timeSeconds;
+			timer.endTime = GetTime() + timeSeconds;
 			timer.bar:SetMinMaxValues(0, totalTime);
 			timer.style = TIMER_NUMBERS_SETS["BigGold"];
 			
@@ -90,6 +103,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			end
 			timer.updateTime = TIMER_UPDATE_INTERVAL;
 			timer:SetScript("OnUpdate", StartTimer_BigNumberOnUpdate);
+			timer:Show();
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
@@ -108,7 +122,7 @@ end
 
 
 function StartTimer_BigNumberOnUpdate(self, elasped)
-	self.time = self.time - elasped;
+	self.time = self.endTime - GetTime();
 	self.updateTime = self.updateTime - elasped;
 	local minutes, seconds = floor(self.time/60), floor(mod(self.time, 60)); 
 
@@ -132,7 +146,7 @@ end
 
 
 function StartTimer_BarOnlyOnUpdate(self, elasped)
-	self.time = self.time - elasped;
+	self.time = self.endTime - GetTime();
 	local minutes, seconds = floor(self.time/60), mod(self.time, 60); 
 
 	self.bar:SetValue(self.time);
@@ -191,6 +205,7 @@ function StartTimer_SetTexNumbers(self, ...)
 	
 	
 	if numberOffset > 0 then
+		PlaySoundKitID(25477, "SFX", false);
 		digits[1]:ClearAllPoints();
 		if self.anchorCenter then
 			digits[1]:SetPoint("CENTER", UIParent, "CENTER", numberOffset - digits[1].hw, 0);
@@ -224,6 +239,7 @@ function StartTimer_NumberAnimOnFinished(self)
 		self.startNumbers:Play();
 	else
 		self.isFree = true;
+		PlaySoundKitID(25478);
 		self.factionAnim:Play();
 	end
 end

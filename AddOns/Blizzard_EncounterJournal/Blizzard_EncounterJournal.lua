@@ -1,4 +1,4 @@
-
+BOSS_INFO_STRING = "Boss: %s"
 --LOCALIZED CONSTANTS
 EJ_MIN_CHARACTER_SEARCH = 3;
 
@@ -20,8 +20,6 @@ local EJ_STYPE_INSTANCE = 4;
 
 local EJ_NUM_INSTANCE_PER_ROW = 4;
 
-local EJ_QUEST_POI_MINDIS_SQR = 2500;
-
 local EJ_LORE_MAX_HEIGHT = 97;
 local EJ_MAX_SECTION_MOVE = 320;
 
@@ -37,6 +35,11 @@ local EJ_section_openTable = {};
 local EJ_LINK_INSTANCE 		= 0;
 local EJ_LINK_ENCOUNTER		= 1;
 local EJ_LINK_SECTION 		= 3;
+
+
+
+local BOSS_LOOT_BUTTON_HEIGHT = 45;
+local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
 
 
@@ -64,6 +67,7 @@ function EncounterJournal_OnLoad(self)
 	
 	self.encounter.info.lootScroll.update = EncounterJournal_LootUpdate;
 	self.encounter.info.lootScroll.scrollBar.doNotHide = true;
+	self.encounter.info.lootScroll.dynamic = EncounterJournal_LootCalcScroll;
 	HybridScrollFrame_CreateButtons(self.encounter.info.lootScroll, "EncounterItemTemplate", 0, 0);
 	
 	
@@ -100,16 +104,25 @@ function EncounterJournal_OnShow(self)
 	
 	--automatically navigate to the current dungeon if you are in one;
 	local instanceID = EJ_GetCurrentInstance();
-	if instanceID ~= 0 then
+	if instanceID ~= 0 and instanceID ~= EncounterJournal.lastInstance then
 		EncounterJournal_ListInstances();
 		EncounterJournal_DisplayInstance(instanceID);
+		EncounterJournal.lastInstance = instanceID;
 	end
+	
+	
+	local classFilter, classFilterName = EJ_GetClassFilter();
+	EncounterJournal_SetClassFilter(classFilter, classFilterName);
 end
 
 
 function EncounterJournal_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoClose");
+	if self.searchBox.clearButton then
+		self.searchBox.clearButton:Click();
+		EJ_ClearSearch();
+	end
 end
 
 
@@ -244,9 +257,11 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	if EJ_InstanceIsRaid() then
 		self.info.diff10man:Show();
 		self.info.diff25man:Show();
+		self.info.encounterTitle:SetPoint("RIGHT",self.info.diff10man, "LEFT", -20, 0);
 	else
 		self.info.diff10man:Hide();
 		self.info.diff25man:Hide();
+		self.info.encounterTitle:SetPoint("RIGHT", self.info.heroButton, "LEFT", -20, 0);
 	end
 	
 	local iname, description, bgImage, _, loreImage = EJ_GetInstanceInfo();
@@ -620,6 +635,16 @@ function EncounterJournal_ShiftHeaders(index)
 end
 
 
+function EncounterJournal_ResetHeaders()
+	for key,_ in pairs(EJ_section_openTable) do
+		EJ_section_openTable[key] = nil;
+	end
+
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	EncounterJournal_Refresh(EncounterJournal);
+end
+
+
 function EncounterJournal_FocusSection(sectionID)
 	local usedHeaders = EncounterJournal.encounter.usedHeaders;
 	for _, section in pairs(usedHeaders) do
@@ -742,6 +767,7 @@ function EncounterJournal_TabClicked(self, button)
 			info[data.button]:Enable();
 		end
 	end
+	PlaySound("igAbiliityPageTurn");
 end
 
 
@@ -750,10 +776,11 @@ function EncounterJournal_LootCallback(itemID)
 	
 	for i,item in pairs(scrollFrame.buttons) do
 		if item.itemID == itemID then
-			local name, icon, slot, armorType, itemID = EJ_GetLootInfoByIndex(item.index);
+			local name, icon, slot, armorType, itemID, _, encounterID = EJ_GetLootInfoByIndex(item.index);
 			item.name:SetText(name);
 			item.icon:SetTexture(icon);
 			item.slot:SetText(slot);
+			item.boss:SetFormattedText(BOSS_INFO_STRING, EJ_GetEncounterInfo(encounterID));
 			item.armorType:SetText(armorType);
 		end
 	end
@@ -767,17 +794,31 @@ function EncounterJournal_LootUpdate()
 	local item, index;
 	
 	local numLoot = EJ_GetNumLoot();
-	local buttonSize = items[1]:GetHeight();
+	local buttonSize = BOSS_LOOT_BUTTON_HEIGHT;
 	
 	for i = 1,#items do
 		item = items[i];
 		index = offset + i;
 		if index <= numLoot then
-			local name, icon, slot, armorType, itemID, link = EJ_GetLootInfoByIndex(index);
+			if (EncounterJournal.encounterID) then
+				item:SetHeight(BOSS_LOOT_BUTTON_HEIGHT);
+				item.boss:Hide();
+				item.bossTexture:Hide();
+				item.bosslessTexture:Show();
+			else
+				buttonSize = INSTANCE_LOOT_BUTTON_HEIGHT;
+				item:SetHeight(INSTANCE_LOOT_BUTTON_HEIGHT);
+				item.boss:Show();
+				item.bossTexture:Show();
+				item.bosslessTexture:Hide();
+			end
+			local name, icon, slot, armorType, itemID, link, encounterID = EJ_GetLootInfoByIndex(index);
 			item.name:SetText(name);
 			item.icon:SetTexture(icon);
 			item.slot:SetText(slot);
 			item.armorType:SetText(armorType);
+			item.boss:SetFormattedText(BOSS_INFO_STRING, EJ_GetEncounterInfo(encounterID));
+			item.encounterID = encounterID;
 			item.itemID = itemID;
 			item.index = index;
 			item.link = link;
@@ -793,6 +834,19 @@ function EncounterJournal_LootUpdate()
 	
 	local totalHeight = numLoot * buttonSize;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
+end
+
+
+function EncounterJournal_LootCalcScroll(offset)
+	local buttonHeight = BOSS_LOOT_BUTTON_HEIGHT;
+	local numLoot = EJ_GetNumLoot();
+	
+	if (not EncounterJournal.encounterID) then
+		buttonHeight = INSTANCE_LOOT_BUTTON_HEIGHT;
+	end	
+	
+	local index = floor(offset/buttonHeight)
+	return index, offset - (index*buttonHeight);
 end
 
 
@@ -812,6 +866,13 @@ function EncounterJournal_Loot_OnUpdate(self)
 		else
 			ResetCursor();
 		end
+	end
+end
+
+
+function EncounterJournal_Loot_OnClick(self)
+	if (EncounterJournal.encounterID ~= self.encounterID) then
+		EncounterJournal_DisplayEncounter(self.encounterID);
 	end
 end
 
@@ -851,11 +912,14 @@ function EncounterJournal_GetSearchDisplay(index)
 		name = EJ_GetEncounterInfo(id);
 		typeText = ENCOUNTER_JOURNAL_ENCOUNTER;
 		path = EJ_GetInstanceInfo(instanceID);
-		_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID, instanceID);
+		icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature"
+		--_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
 	elseif stype == EJ_STYPE_SECTION then
 		name, _, _, icon, displayInfo = EJ_GetSectionInfo(id)
 		if displayInfo and displayInfo > 0 then
 			typeText = ENCOUNTER_JOURNAL_ENCOUNTER_ADD;
+			displayInfo = nil;
+			icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature"
 		else
 			typeText = ENCOUNTER_JOURNAL_ABILITY;
 		end
@@ -866,13 +930,14 @@ function EncounterJournal_GetSearchDisplay(index)
 		path = EJ_GetInstanceInfo(instanceID).." | "..EJ_GetEncounterInfo(encounterID);
 	elseif stype == EJ_STYPE_CREATURE then
 		for i=1,MAX_CREATURES_PER_ENCOUNTER do
-			local cId, cName, _, cDisplayInfo = EJ_GetCreatureInfo(i, encounterID, instanceID);
+			local cId, cName, _, cDisplayInfo = EJ_GetCreatureInfo(i, encounterID);
 			if cId == id then
 				name = cName
-				displayInfo = cDisplayInfo;
+				--displayInfo = cDisplayInfo;
 				break;
 			end
 		end
+		icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature"
 		typeText = ENCOUNTER_JOURNAL_ENCOUNTER
 		path = EJ_GetInstanceInfo(instanceID).." | "..EJ_GetEncounterInfo(encounterID);
 	end
@@ -991,6 +1056,10 @@ function EncounterJournal_OnSearchTextChanged(self)
 	end
 	EJ_SetSearch(text);
 	
+	if not self:HasFocus() then
+		return;
+	end
+	
 	if EncounterJournal.searchResults:IsShown() then
 		EncounterJournal_ShowFullSearch();
 	else
@@ -1023,98 +1092,6 @@ function EncounterJournal_OnSearchTextChanged(self)
 end
 
 
-function EncounterJournal_AddMapButtons()
-	local left = WorldMapBossButtonFrame:GetLeft();
-	local right = WorldMapBossButtonFrame:GetRight();
-	local top = WorldMapBossButtonFrame:GetTop();
-	local bottom = WorldMapBossButtonFrame:GetBottom();
-
-	if not left or not right or not top or not bottom then
-		--This frame is resizing
-		WorldMapBossButtonFrame.ready = false;
-		WorldMapBossButtonFrame:SetScript("OnUpdate", EncounterJournal_AddMapButtons);
-		return;
-	else
-		WorldMapBossButtonFrame:SetScript("OnUpdate", nil);
-	end
-	
-	local scale = WorldMapDetailFrame:GetScale();
-	local width = WorldMapDetailFrame:GetWidth() * scale;
-	local height = WorldMapDetailFrame:GetHeight() * scale;
-
-	local bossButton, questPOI, displayInfo, _;
-	local index = 1;
-	local x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index);
-	while name do
-		bossButton = _G["EJMapButton"..index];
-		if not bossButton then -- create button
-			bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
-		end
-	
-		bossButton.instanceID = instanceID;
-		bossButton.encounterID = encounterID;
-		bossButton.tooltipTitle = name;
-		bossButton.tooltipText = description;
-		bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", x*width, y*height);
-		_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID, instanceID);
-		bossButton.displayInfo = displayInfo;
-		SetPortraitTexture(bossButton.bgImage, displayInfo);
-		bossButton:Show();
-		index = index + 1;
-		x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index);
-	end
-	
-	bossButton = _G["EJMapButton"..index];
-	while bossButton do
-		bossButton:Hide();
-		index = index + 1;
-		bossButton = _G["EJMapButton"..index];
-	end
-	
-	WorldMapBossButtonFrame.ready = true;
-	EncounterJournal_CheckQuestButtons();
-end
-	
-
-function EncounterJournal_CheckQuestButtons()
-	if not WorldMapBossButtonFrame.ready then
-		return;
-	end
-	
-	--Validate that there are no quest button intersection
-	local questI, bossI = 1, 1;
-	bossButton = _G["EJMapButton"..bossI];
-	questPOI = _G["poiWorldMapPOIFrame1_"..questI];
-	while bossButton and bossButton:IsShown() do
-		while questPOI and questPOI:IsShown() do
-			local qx,qy = questPOI:GetCenter();
-			local bx,by = bossButton:GetCenter();
-			if not qx or not qy or not bx or not by then
-				_G["EJMapButton1"]:SetScript("OnUpdate", EncounterJournal_CheckQuestButtons);
-				return;
-			end
-			
-			local xdis = abs(bx-qx);
-			local ydis = abs(by-qy);
-			local disSqr = xdis*xdis + ydis*ydis;
-			
-			if EJ_QUEST_POI_MINDIS_SQR > disSqr then
-				questPOI:SetPoint("CENTER", bossButton, "BOTTOMRIGHT",  -15, 15);
-			end
-			questI = questI + 1;
-			questPOI = _G["poiWorldMapPOIFrame1_"..questI];
-		end
-		questI = 1;
-		bossI = bossI + 1;
-		bossButton = _G["EJMapButton"..bossI];
-		questPOI = _G["poiWorldMapPOIFrame1_"..questI];
-	end
-	if _G["EJMapButton1"] then
-		_G["EJMapButton1"]:SetScript("OnUpdate", nil);
-	end
-end
-
-
 function EncounterJournal_SetClassFilter(classID, className)
 	local index = 1;
 	local classButton = EncounterJournal.encounter.info.lootScroll.classFilter["class"..index];
@@ -1129,15 +1106,15 @@ function EncounterJournal_SetClassFilter(classID, className)
 		classButton = EncounterJournal.encounter.info.lootScroll.classFilter["class"..index];
 	end
 	
-	if classID then
+	if className and classID and classID > 0 then
 		EncounterJournal.encounter.info.lootScroll.classClearFilter.text:SetText(string.format(EJ_CLASS_FILTER, className));
 		EncounterJournal.encounter.info.lootScroll.classClearFilter:Show();
 		EJ_SetClassLootFilter(classID);
-		EncounterJournal.encounter.info.lootScroll:SetHeight(357);
+		EncounterJournal.encounter.info.lootScroll:SetHeight(360);
 	else
 		EncounterJournal.encounter.info.lootScroll.classClearFilter:Hide();
-		EJ_SetClassLootFilter(-1);
-		EncounterJournal.encounter.info.lootScroll:SetHeight(380);
+		EJ_SetClassLootFilter(0);
+		EncounterJournal.encounter.info.lootScroll:SetHeight(384);
 	end
 	
 	EncounterJournal_LootUpdate();

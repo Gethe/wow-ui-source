@@ -365,7 +365,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="BNET_REPORT_ABUSE_BUTTON">
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="BNET_REPORT_ABUSE_BUTTON_SHORT">
 				<Size>
 					<AbsDimension x="128" y="22"/>
 				</Size>

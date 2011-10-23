@@ -62,6 +62,9 @@
 			<OnLoad>
 				BankFrameBagButton_OnLoad(self);
 			</OnLoad>				
+			<OnEvent>
+				BankFrameBagButton_OnEvent(self, event, ...);
+			</OnEvent>
 			<OnEnter>
 				BankFrameItemButton_OnEnter(self, motion);
 			</OnEnter>
@@ -135,11 +138,7 @@
 				</FontString>
 				<FontString inherits="GameFontNormal" text="ITEMSLOTTEXT">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="-3" y="200"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="-80" y="200"/>
 					</Anchors>
 				</FontString>
 				<FontString inherits="GameFontNormal" text="BAGSLOTTEXT">
@@ -572,4 +571,11 @@
 			<OnHide function="BankFrame_OnHide"/>
 		</Scripts>
 	</Frame>
+
+	<EditBox name="BankItemSearchBox" inherits="BagSearchBoxTemplate" parent="BankFrame" letters="15">
+		<Size x="130" y="20"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-40" y="-45"/>
+		</Anchors>
+	</EditBox>
 </Ui>

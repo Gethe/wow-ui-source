@@ -32,7 +32,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString inherits="GameFontNormal" text="MAIN_MENU">
+				<FontString inherits="GameFontNormal" text="MAINMENU_BUTTON">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="GameMenuFrameHeader">
 							<Offset>

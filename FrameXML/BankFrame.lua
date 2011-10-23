@@ -19,6 +19,17 @@ end
 function BankFrameBagButton_OnLoad (self)
 	self.isBag = 1;
 	BankFrameBaseButton_OnLoad(self);
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+end
+
+function BankFrameBagButton_OnEvent (self, event, ...)
+	if ( event == "INVENTORY_SEARCH_UPDATE" ) then
+		if ( IsContainerFiltered(self:GetID()) ) then
+			self.searchOverlay:Show();
+		else
+			self.searchOverlay:Hide();
+		end
+	end
 end
 
 function BankFrameItemButton_OnEnter (self)
@@ -35,6 +46,7 @@ function BankFrameItemButton_Update (button)
 	local texture = _G[button:GetName().."IconTexture"];
 	local inventoryID = button:GetInventorySlot();
 	local textureName = GetInventoryItemTexture("player",inventoryID);
+	local _, _, _, _, _, _, _, isFiltered = GetContainerItemInfo(BANK_CONTAINER, button:GetID());
 	local slotName = button:GetName();
 	local id;
 	local slotTextureName;
@@ -69,7 +81,13 @@ function BankFrameItemButton_Update (button)
 		texture:Hide();
 		SetItemButtonCount(button,0);
 	end
-
+	
+	if ( isFiltered ) then
+		button.searchOverlay:Show();
+	else
+		button.searchOverlay:Hide();
+	end
+	
 	BankFrameItemButton_UpdateLocked(button);
 	BankFrame_UpdateCooldown(BANK_CONTAINER, button);
 end
@@ -105,6 +123,8 @@ end
 function BankFrame_OnLoad (self)
 	self:RegisterEvent("BANKFRAME_OPENED");
 	self:RegisterEvent("BANKFRAME_CLOSED");
+	self.size = 28;
+	self:SetID(BANK_CONTAINER);
 end
 
 function UpdateBagSlotStatus () 
@@ -179,6 +199,8 @@ function BankFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "PLAYER_MONEY" or event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
 		UpdateBagSlotStatus();
+	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
+		ContainerFrame_UpdateSearchResults(self);
 	end
 end
 
@@ -190,6 +212,7 @@ function BankFrame_OnShow (self)
 	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 
 	local button;
 	for i=1, NUM_BANKGENERIC_SLOTS, 1 do
@@ -212,6 +235,7 @@ function BankFrame_OnHide (self)
 	self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
 	self:UnregisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 	self:UnregisterEvent("PLAYER_MONEY");
+	self:UnregisterEvent("INVENTORY_SEARCH_UPDATE");
 
 	StaticPopup_Hide("CONFIRM_BUY_BANK_SLOT");
 	CloseAllBags(self);

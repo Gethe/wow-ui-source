@@ -392,6 +392,43 @@
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown"/>
+			<Button name="$parentUnlearnButton" parentKey="unlearn" hidden="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>                                 
+				<Anchors>
+					<Anchor point="RIGHT"  relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.texture:SetAlpha(1.0);
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(UNLEARN_SPECIALIZATION_TOOLTIP);                                         
+					</OnEnter>
+					<OnLeave>
+						self.texture:SetAlpha(0.75);
+						GameTooltip_Hide();
+					</OnLeave>
+					<OnMouseDown>
+						self.texture:SetPoint("TOPLEFT", 1, -1);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetPoint("TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnClick>
+						local parent = self:GetParent():GetParent();
+						if ( parent.specializationIndex >= 0 ) then
+							local spellName, subSpellName = GetSpellBookItemName( (parent.spellOffset + parent.specializationOffset), SpellBookFrame.bookType);
+							StaticPopup_Show("UNLEARN_SPECIALIZATION", spellName, nil, parent.specializationIndex);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -432,7 +469,28 @@
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
-	</CheckButton>	
+	</CheckButton>
+	<Frame name="ProfessionTrialCapTemplate" hidden="true" enableMouse="true" virtual="true">
+		<Size>
+			<AbsDimension x="18" y="21"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentLockedIndicator"  file="Interface/LFGFrame/UI-LFG-ICON-LOCK" parentKey="lockedIndicator" setAllPoints="true">
+					<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(TRIAL_CAPPED, RED_FONT_COLOR.r, RED_FONT_COLOR.b, RED_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
 	<CheckButton name="SpellBookCompanionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>
@@ -573,6 +631,17 @@
 		</Layers>		
 		<BarTexture name="$parentBar" file="Interface\Spellbook\Professions-Progress-Fill"/>
 		<!--BarColor r="1" g="1" b="1"/-->
+		<Scripts>
+			<OnEnter>
+				if ( self.tooltip ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
 	</StatusBar>	
 	<Frame name="PrimaryProfessionTemplate" virtual="true">
 		<Size>
@@ -667,7 +736,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
-			</StatusBar>	
+			</StatusBar>
+			<Frame name="$parentCapped" parentKey="capped" inherits="ProfessionTrialCapTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStatusBar" relativePoint="TOPRIGHT" x="14" y="2"/>
+				</Anchors>
+			</Frame>
 			<Button name="$parentUnlearnButton" parentKey="unlearn">
 				<Size>
 					<AbsDimension x="16" y="16"/>
@@ -697,10 +771,8 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 					<OnClick>
-						local dialog = StaticPopup_Show("UNLEARN_SKILL", self:GetParent().skillName);
-						if ( dialog ) then
-							dialog.data = self:GetParent().skillLine;
-						end
+						local parent = self:GetParent();
+						StaticPopup_Show("UNLEARN_SKILL", parent.skillName, nil, parent.skillLine);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -780,7 +852,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
-			</StatusBar>	
+			</StatusBar>
+			<Frame name="$parentCapped" parentKey="capped" inherits="ProfessionTrialCapTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStatusBar" relativePoint="TOPRIGHT" x="14" y="2"/>
+				</Anchors>
+			</Frame>
 		</Frames>			
 	</Frame>
 	
@@ -1285,23 +1362,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<PlayerModel name="SpellBookCompanionModelFrame" useParentLevel="true">
+					<PlayerModel name="SpellBookCompanionModelFrame" useParentLevel="true" inherits="ModelWithZoomTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionsModelFrame" x="15" y="-15"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookCompanionsModelFrame" x="-15" y="15"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								Model_OnLoad(self);
-							</OnLoad>
-							<OnEvent function="Model_OnEvent"/>
-							<OnUpdate function="Model_OnUpdate"/>
-							<OnMouseUp function="Model_OnMouseUp"/>
-							<OnMouseDown function="Model_OnMouseDown"/>
-							<OnMouseWheel>
-								Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PET_ZOOM);
-							</OnMouseWheel>
-						</Scripts>
 						<Frames>
 							<Frame name="SpellBookCompanionModelFrameShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
 							<Button name="SpellBookCompanionModelFrameRotateLeftButton">

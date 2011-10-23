@@ -488,6 +488,24 @@ SECURE_ACTIONS.attribute =
         end
     end;
 
+SECURE_ACTIONS.worldmarker =
+	function(self, unit, button)
+		local marker = tonumber(SecureButton_GetModifiedAttribute(self, "marker", button));
+		local action = SecureButton_GetModifiedAttribute(self, "action", button) or "toggle";
+		if ( action == "set" ) then
+			PlaceRaidMarker(marker or 1);
+		elseif ( action == "clear" ) then
+			ClearRaidMarker(marker);
+		elseif ( action == "toggle" ) then
+			marker = marker or 1;
+			if ( IsRaidMarkerActive(marker) ) then
+				ClearRaidMarker(marker);
+			else
+				PlaceRaidMarker(marker);
+			end
+		end
+	end;
+	
 function SecureActionButton_OnClick(self, button, down)
     -- TODO check with Tom etc if this is kosher
     if (down) then

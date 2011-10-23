@@ -1,7 +1,6 @@
 -- PVP Global Lua Constants
 
 WORLD_PVP_TIME_UPDATE_IINTERVAL = 1;
-MAX_BATTLEFIELD_QUEUES = 2;
 
 BATTLEFIELD_TIMER_DELAY = 3;
 BATTLEFIELD_TIMER_THRESHOLDS = {600, 300, 60, 15};
@@ -10,8 +9,7 @@ BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
 
 CURRENT_BATTLEFIELD_QUEUES = {};
 PREVIOUS_BATTLEFIELD_QUEUES = {};
-MAX_BATTLEFIELD_QUEUES = 2;
-MAX_WORLD_PVP_QUEUES = 1;
+MAX_WORLD_PVP_QUEUES = 2;
 
 
 MAX_ARENA_TEAMS = 3;
@@ -128,6 +126,7 @@ function PVPFrame_OnHide()
 	PVPMicroButton_SetNormal();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoClose");
+	ClearBattlemaster();
 end
 
 
@@ -363,19 +362,21 @@ function PVPFrameConquestBar_OnEnter(self)
 	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
 	
 	local r, g, b = 1, 1, 1;
+	local capped;
 	if ( pointsThisWeek >= maxPointsThisWeek ) then
 		r, g, b = 0.5, 0.5, 0.5;
+		capped = true;
 	end
 	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, pointsThisWeek, maxPointsThisWeek), r, g, b, r, g, b);
 	
-	if ( pointsThisWeek >= maxPointsThisWeek ) then
+	if ( capped or tier2Quantity >= tier2Limit ) then
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		r, g, b = 1, 1, 1;
 	end
 	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_WEEKLY_CAP_FRACTION, tier2Quantity, tier2Limit), r, g, b, r, g, b);	
 	
-	if ( tier1Quantity >= tier1Limit ) then
+	if ( capped or tier1Quantity >= tier1Limit ) then
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		r, g, b = 1, 1, 1;
@@ -718,7 +719,7 @@ function PVPHonor_UpdateQueueStatus()
 		frame.status:Hide();
 	end
 	local factionTexture = "Interface\\PVPFrame\\PVP-Currency-"..UnitFactionGroup("player");
-	for i=1, MAX_BATTLEFIELD_QUEUES do
+	for i=1, GetMaxBattlefieldID() do
 		queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
 		if ( queueStatus ~= "none" ) then
 			for j=1, NUM_DISPLAYED_BATTLEGROUNDS do
@@ -1445,7 +1446,7 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 		BattlefieldIconText:Hide();
 	else
 		local lowestExpiration = 0;
-		for i = 1, MAX_BATTLEFIELD_QUEUES do
+		for i = 1, GetMaxBattlefieldID() do
 			local expiration = GetBattlefieldPortExpiration(i);
 			if ( expiration > 0 ) then
 				if( expiration < lowestExpiration or lowestExpiration == 0 ) then
@@ -1593,7 +1594,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 	
 	local shownHearthAndRes;
 	
-	for i=1, MAX_BATTLEFIELD_QUEUES do
+	for i=1, GetMaxBattlefieldID() do
 		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(i);
 
 		-- Inserts a spacer if it's not the first option... to make it look nice.
@@ -1832,8 +1833,8 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 		MiniMapBattlefieldFrame.inWorldPVPArea = false;
 	end
 	
-	for i=1, MAX_BATTLEFIELD_QUEUES do
-		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue = GetBattlefieldStatus(i);
+	for i=1, GetMaxBattlefieldID() do
+		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue, waitingOnOtherActivity = GetBattlefieldStatus(i);
 		if ( mapName ) then
 			if (  instanceID ~= 0 ) then
 				mapName = mapName.." "..instanceID;
@@ -1919,8 +1920,12 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 					MiniMapBattlefieldFrame.tooltip = tooltip;
 				end
 				
-				if ( not eligibleInQueue ) then
-					MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..PVP_INVALID_QUEUE_STATUS;
+				if ( not eligibleInQueue and status ~= "active" and status ~= "confirm" ) then
+					if ( waitingOnOtherActivity ) then
+						MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..PVP_SUSPENDED_QUEUE_STATUS;
+					else
+						MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..PVP_INVALID_QUEUE_STATUS;
+					end
 				end
 			end
 		end

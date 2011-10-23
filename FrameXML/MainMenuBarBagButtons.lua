@@ -144,6 +144,12 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 				MainMenuBarBackpackButtonCount:Hide();
 			end
 		end
+	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
+		if ( IsContainerFiltered(BACKPACK_CONTAINER) ) then
+			self.searchOverlay:Show();
+		else
+			self.searchOverlay:Hide();
+		end
 	end
 end
 

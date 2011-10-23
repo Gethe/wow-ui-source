@@ -98,7 +98,7 @@
 					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, 1);
 				end
 				GameTooltip:Show();
-				LFDFrameRoleCheckButton_OnEnter(self);
+				LFGFrameRoleCheckButton_OnEnter(self);
 			</OnEnter>
 			<OnClick>
 				if ( self.checkButton:IsEnabled() == 1 ) then
@@ -643,7 +643,6 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 								self.param = LFGUILD_PARAM_TANK;
 								LookingForGuildTankButtonText:SetText(TANK);
 							</OnLoad>
@@ -660,7 +659,6 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 								self.param = LFGUILD_PARAM_HEALER;
 								LookingForGuildHealerButtonText:SetText(HEALER);
 							</OnLoad>
@@ -677,7 +675,6 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 								self.param = LFGUILD_PARAM_DAMAGE;
 								LookingForGuildDamagerButtonText:SetText(DAMAGER);
 							</OnLoad>

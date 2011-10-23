@@ -6,8 +6,71 @@
 	Templates
 *******************************************************************************
 -->
-	<Button name="GuildRewardsButtonTemplate" virtual="true" inherits="UIServiceButtonTemplate">
+	<Button name="GuildRewardsButtonTemplate" virtual="true">
 		<Size x="299" y="47"/>
+		<Frames>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" parentKey="money">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="-7"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="48" y="-7"/>
+						<Anchor point="RIGHT" relativeTo="$parentMoneyFrame" relativePoint="LEFT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE" parentKey="subText">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="48" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
+					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
+				</Texture>
+				<Texture parentKey="lock" file="Interface\GuildFrame\GuildFrame" hidden="true">
+					<Size x="17" y="21"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="disabledBG" hidden="true" alphaMode="MOD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Color r="0.55" g="0.55" b="0.55" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>	
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

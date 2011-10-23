@@ -23,7 +23,7 @@ REPUTATIONFRAME_ROWSPACING = 23;
 function ReputationFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_FACTION");
 	-- Initialize max player level
-	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetAccountExpansionLevel()];
+	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
 	--[[for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		_G["ReputationBar"..i.."FactionStanding"]:SetPoint("CENTER",_G["ReputationBar"..i.."ReputationBar"]);
 	end

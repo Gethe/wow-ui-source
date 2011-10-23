@@ -226,9 +226,9 @@ function TargetFrame_OnEvent (self, event, ...)
 		FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
 		TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
 	elseif ( event == "CVAR_UPDATE" ) then
-		if ( arg1 == "SHOW_CASTABLE_DEBUFFS_TEXT" and self:IsShown() ) then
+		if ( arg1 == "SHOW_ALL_ENEMY_DEBUFFS_TEXT" and self:IsShown() ) then
 			-- have to set uvar manually or it will be the previous value
-			SHOW_CASTABLE_DEBUFFS = GetCVar("showCastableDebuffs");
+			SHOW_ALL_ENEMY_DEBUFFS_TEXT = GetCVar("showAllEnemyDebuffs");
 			TargetFrame_UpdateAuras(self);
 		end		
 	end
@@ -356,7 +356,7 @@ local largeDebuffList = {};
 function TargetFrame_UpdateAuras (self)
 	local frame, frameName;
 	local frameIcon, frameCount, frameCooldown;
-	local name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable;
+	local name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge;
 	local frameStealable;
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
@@ -367,9 +367,9 @@ function TargetFrame_UpdateAuras (self)
 	if ( SHOW_CASTABLE_BUFFS == "1" and canAssist ) then
 		filter = "RAID";
 	end
-		
+	
 	for i = 1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff(self.unit, i, filter);
+		name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge = UnitBuff(self.unit, i, filter);
 		frameName = selfName.."Buff"..i;
 		frame = _G[frameName];
 		if ( not frame ) then
@@ -405,9 +405,9 @@ function TargetFrame_UpdateAuras (self)
 				frameCooldown:Hide();
 			end
 
-			-- Show stealable frame if the target is not a player and the buff is stealable.
+			-- Show stealable frame if the target is not the current player and the buff is stealable.
 			frameStealable = _G[frameName.."Stealable"];
-			if ( not playerIsTarget and isStealable ) then
+			if ( not playerIsTarget and canStealOrPurge ) then
 				frameStealable:Show();
 			else
 				frameStealable:Hide();
@@ -435,61 +435,78 @@ function TargetFrame_UpdateAuras (self)
 	else
 		filter = nil;
 	end
-	for i = 1, MAX_TARGET_DEBUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, i, filter);
-		frameName = selfName.."Debuff"..i;
-		frame = _G[frameName];
-		if ( not frame ) then
-			if ( not icon ) then
-				break;
-			else
-				frame = CreateFrame("Button", frameName, self, "TargetDebuffFrameTemplate");
-				frame.unit = self.unit;
+	
+	local frameNum = 1;
+	local index = 1;
+	
+	while ( frameNum <= (self.maxDebuffs or MAX_TARGET_DEBUFFS) ) do
+		local debuffName = UnitDebuff(self.unit, index, filter);
+		if ( debuffName ) then
+			if ( TargetFrame_ShouldShowDebuff(self.unit, index, filter) ) then
+				name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, index, filter);
+				frameName = selfName.."Debuff"..frameNum;
+				frame = _G[frameName];
+				if ( icon ) then
+					if ( not frame ) then
+						frame = CreateFrame("Button", frameName, self, "TargetDebuffFrameTemplate");
+						frame.unit = self.unit;
+					end
+					frame:SetID(index);
+
+					-- set the icon
+					frameIcon = _G[frameName.."Icon"];
+					frameIcon:SetTexture(icon);
+
+					-- set the count
+					frameCount = _G[frameName.."Count"];
+					if ( count > 1 and self.showAuraCount ) then
+						frameCount:SetText(count);
+						frameCount:Show();
+					else
+						frameCount:Hide();
+					end
+
+					-- Handle cooldowns
+					frameCooldown = _G[frameName.."Cooldown"];
+					if ( duration > 0 ) then
+						frameCooldown:Show();
+						CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
+					else
+						frameCooldown:Hide();
+					end
+
+					-- set debuff type color
+					if ( debuffType ) then
+						color = DebuffTypeColor[debuffType];
+					else
+						color = DebuffTypeColor["none"];
+					end
+					frameBorder = _G[frameName.."Border"];
+					frameBorder:SetVertexColor(color.r, color.g, color.b);
+
+					-- set the debuff to be big if the buff is cast by the player or his pet
+					largeDebuffList[index] = (PLAYER_UNITS[caster]);
+
+					numDebuffs = numDebuffs + 1;
+
+					frame:ClearAllPoints();
+					frame:Show();
+					
+					frameNum = frameNum + 1;
+				end
 			end
-		end
-		if ( icon and ( not self.maxDebuffs or i <= self.maxDebuffs ) and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" or caster == "vehicle") ) then
-			frame:SetID(i);
-
-			-- set the icon
-			frameIcon = _G[frameName.."Icon"];
-			frameIcon:SetTexture(icon);
-
-			-- set the count
-			frameCount = _G[frameName.."Count"];
-			if ( count > 1 and self.showAuraCount ) then
-				frameCount:SetText(count);
-				frameCount:Show();
-			else
-				frameCount:Hide();
-			end
-
-			-- Handle cooldowns
-			frameCooldown = _G[frameName.."Cooldown"];
-			if ( duration > 0 ) then
-				frameCooldown:Show();
-				CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
-			else
-				frameCooldown:Hide();
-			end
-
-			-- set debuff type color
-			if ( debuffType ) then
-				color = DebuffTypeColor[debuffType];
-			else
-				color = DebuffTypeColor["none"];
-			end
-			frameBorder = _G[frameName.."Border"];
-			frameBorder:SetVertexColor(color.r, color.g, color.b);
-
-			-- set the debuff to be big if the buff is cast by the player or his pet
-			largeDebuffList[i] = (PLAYER_UNITS[caster]);
-
-			numDebuffs = numDebuffs + 1;
-
-			frame:ClearAllPoints();
-			frame:Show();
+			index = index + 1;
 		else
+			break;
+		end
+	end
+	
+	for i = frameNum, MAX_TARGET_DEBUFFS do
+		local frame = _G[selfName.."Debuff"..i];
+		if ( frame ) then
 			frame:Hide();
+		else
+			break;
 		end
 	end
 	
@@ -514,6 +531,22 @@ function TargetFrame_UpdateAuras (self)
 	-- update the spell bar position
 	if ( self.spellbar ) then
 		Target_Spellbar_AdjustPosition(self.spellbar);
+	end
+end
+
+function TargetFrame_ShouldShowDebuff(unit, index, filter)
+	--This is an enemy
+	if ( SHOW_ALL_ENEMY_DEBUFFS == "1" or not UnitCanAttack("player", unit) ) then
+		return true;
+	else
+		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff, points1, points2, points3, isCastByPlayer = UnitDebuff(unit, index, filter);
+
+		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, "ENEMY_TARGET");
+		if ( hasCustom ) then
+			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") );
+		else
+			return not isCastByPlayer or unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle";
+		end
 	end
 end
 

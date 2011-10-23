@@ -26,6 +26,7 @@
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalLeft"/>
+		<DisabledFont style="GameFontDisableLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 	</Button>
@@ -564,6 +565,7 @@
 						end
 						ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
 						ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
+						ChatConfigCategory_UpdateEnabled();
 					</OnShow>
 				</Scripts>
 			</Frame>

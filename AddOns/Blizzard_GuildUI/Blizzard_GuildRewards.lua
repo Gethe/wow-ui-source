@@ -1,5 +1,5 @@
-local GUILD_REWARDS_BUTTON_OFFSET = 0;
-local GUILD_REWARDS_BUTTON_HEIGHT = 47;
+GUILD_REWARDS_BUTTON_OFFSET = 0;
+GUILD_REWARDS_BUTTON_HEIGHT = 47;
 GUILD_REWARDS_ACHIEVEMENT_ICON = " |TInterface\\AchievementFrame\\UI-Achievement-Guild:18:16:0:1:512:512:324:344:67:85|t ";
 
 function GuildRewardsFrame_OnLoad(self)
@@ -50,6 +50,9 @@ function GuildRewards_Update()
 				else
 					SetMoneyFrameColor(button.money:GetName(), "red");
 				end
+				button.money:Show();
+			else
+				button.money:Hide();
 			end
 			if ( achievementID and achievementID > 0 ) then
 				local id, name = GetAchievementInfo(achievementID)
@@ -107,6 +110,13 @@ function GuildRewardsButton_OnEnter(self)
 		GameTooltip:AddLine(REQUIRES_GUILD_ACHIEVEMENT, 1, 0, 0, 1);
 		GameTooltip:AddLine(ACHIEVEMENT_COLOR_CODE..name);
 		GameTooltip:AddLine(description, 1, 1, 1, 1);
+	end
+	local _, _, standingID = GetGuildFactionInfo();
+	if ( repLevel > standingID ) then
+		local gender = UnitSex("player");
+		local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
+		GameTooltip:AddLine(" ", 1, 0, 0, 1);
+		GameTooltip:AddLine(string.format(REQUIRES_GUILD_FACTION_TOOLTIP, factionStandingtext), 1, 0, 0, 1);
 	end
 	GameTooltip:Show();
 end

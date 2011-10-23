@@ -139,7 +139,7 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(_G["GUILDRECRUITMENT_ROLE"..self:GetID()], nil, nil, nil, nil, 1);
 				GameTooltip:Show();
-				LFDFrameRoleCheckButton_OnEnter(self);
+				LFGFrameRoleCheckButton_OnEnter(self);
 			</OnEnter>
 			<OnClick>
 				if ( self.checkButton:IsEnabled() == 1 ) then
@@ -525,22 +525,38 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<SimpleHTML name="GuildInfoMOTD" disallowFormatting="true">
+			<ScrollFrame name="$parentMOTDScrollFrame" inherits="MinimalScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="291" y="38"/>
+					<AbsDimension x="284" y="42"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-2"/>
 				</Anchors>
+				<ScrollChild>
+					<SimpleHTML name="GuildInfoMOTD" disallowFormatting="true">
+						<Size>
+							<AbsDimension x="284" y="42"/>
+						</Size>
+						<Scripts>
+							<OnHyperlinkClick>
+								SetItemRef(link, text, button, self);
+							</OnHyperlinkClick>
+						</Scripts>
+						<FontString inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" spacing="2">
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</SimpleHTML>
+				</ScrollChild>
 				<Scripts>
-					<OnHyperlinkClick>
-						SetItemRef(link, text, button, self);
-					</OnHyperlinkClick>
+					<OnLoad>
+						self.scrollBarHideable = true;
+						self.noScrollThumb = true;
+						ScrollBar_AdjustAnchors(GuildInfoFrameInfoMOTDScrollFrameScrollBar, 2, -2);
+						GuildInfoFrameInfoMOTDScrollFrameScrollBar:Hide();
+						ScrollFrame_OnLoad(self);
+					</OnLoad>
 				</Scripts>
-				<FontString inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" spacing="2">
-					<Color r="1" g="1" b="1"/>
-				</FontString>
-			</SimpleHTML>
+			</ScrollFrame>
 			<Frame name="GuildInfoChallenges">
 				<Size x="319" y="108"/>
 				<Anchors>
@@ -925,7 +941,6 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 								self.param = LFGUILD_PARAM_TANK;
 								GuildRecruitmentTankButtonText:SetText(TANK);
 							</OnLoad>
@@ -942,7 +957,6 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 								self.param = LFGUILD_PARAM_HEALER;
 								GuildRecruitmentHealerButtonText:SetText(HEALER);
 							</OnLoad>
@@ -959,7 +973,6 @@
 						<Scripts>
 							<OnLoad>
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 								self.param = LFGUILD_PARAM_DAMAGE;
 								GuildRecruitmentDamagerButtonText:SetText(DAMAGER);
 							</OnLoad>

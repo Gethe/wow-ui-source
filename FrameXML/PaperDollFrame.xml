@@ -1,8 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
     <Script file="PaperDollFrame.lua"/>
-	
-	<Texture name="PaperDollFrameFlyoutTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" virtual="true"/>
+
     <Button name="PaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -16,24 +15,7 @@
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
-			<Button name="$parentPopoutButton" parentKey="popoutButton" hidden="true">
-				<Size>
-					<AbsDimension x="16" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						PaperDollFrameItemPopoutButton_OnLoad(self);
-					</OnLoad>
-					<OnClick>
-						PaperDollFrameItemPopoutButton_OnClick(self);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
-				<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
-			</Button>
+			<Button name="$parentPopoutButton" parentKey="popoutButton" inherits="EquipmentFlyoutPopoutButtonTemplate"/>
 		</Frames>
         <Scripts>
             <OnLoad>
@@ -102,23 +84,6 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="PaperDollFrameItemFlyoutButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
-		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
-		</Frames>
-		<Scripts>
-			<OnEnter>
-				PaperDollFrameItemFlyoutButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
-			<OnClick>
-				PaperDollFrameItemFlyoutButton_OnClick(self, button, down);
-			</OnClick>
-		</Scripts>
-	</Button>	
 	<Button name="PlayerTitleButtonTemplate" virtual="true">
 		<Size x="169" y="22"/>
 		<Anchors>
@@ -631,7 +596,7 @@
 				</Scripts>
 			</ScrollFrame>
 
-			<PlayerModel name="CharacterModelFrame">
+			<PlayerModel name="CharacterModelFrame" inherits="ModelWithControlsTemplate">
                 <Size x="231" y="320"/>
                 <Anchors>
                     <Anchor point="TOPLEFT" x="52" y="-66"/>
@@ -730,58 +695,13 @@
 					</Layer>
 				</Layers>
                 <Scripts>
-                    <OnLoad function="Model_OnLoad"/>
-					<OnEvent function="Model_OnEvent"/>
-                    <OnUpdate function="Model_OnUpdate"/>
-					<OnMouseUp function="CharacterModelFrame_OnMouseUp"/>
-					<OnMouseDown function="Model_OnMouseDown"/>
+					<OnLoad>
+						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM, nil, nil, CharacterModelFrame_OnMouseUp);
+					</OnLoad>
 					<OnReceiveDrag>
 						AutoEquipCursorItem();
 					</OnReceiveDrag>
-					<OnMouseWheel>
-						Model_OnMouseWheel(self, delta, MODELFRAME_MAX_PLAYER_ZOOM);
-					</OnMouseWheel>
                 </Scripts>
-				<Frames>
-					<Button name="CharacterModelFrameRotateLeftButton">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="4" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								Model_RotateLeft(self:GetParent());
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-					</Button>
-					<Button name="CharacterModelFrameRotateRightButton">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterModelFrameRotateLeftButton" relativePoint="TOPRIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-							</OnLoad>
-							<OnClick>
-								Model_RotateRight(self:GetParent());
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-					</Button>
-				</Frames>
             </PlayerModel>
 			<Frame name="PaperDollItemsFrame" setAllPoints="true">
 				<Frames>
@@ -908,56 +828,6 @@
 			<OnHide function="PaperDollFrame_OnHide"/>
         </Scripts>
     </Frame>
-	<Frame name="PaperDollFrameItemFlyout" parent="PaperDollFrame" hidden="true" enableMouse="false" frameStrata="HIGH">
-		<Size x="43" y="43"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-GearManager-ItemButton-Highlight">
-					<Size x="50" y="50"/>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="-4" y="0"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.78125" top="0" bottom="0.78125"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentButtons" frameStrata="HIGH" enableMouse="true" parentKey="buttonFrame" clampedToScreen="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-						<Offset x="0" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="bg1" inherits="PaperDollFrameFlyoutTexture">
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-5" y="4"/>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>					
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.numBGs = 1;
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.buttons = {};
-			</OnLoad>
-			<OnUpdate function="PaperDollFrameItemFlyout_OnUpdate"/>
-			<OnShow function="PaperDollFrameItemFlyout_OnShow"/>
-			<OnHide function="PaperDollFrameItemFlyout_OnHide"/>
-			<OnEvent function="PaperDollFrameItemFlyout_OnEvent"/>
-		</Scripts>
-	</Frame>
 	
 	<Frame name="GearManagerDialogPopup" hidden="true" parent="PaperDollFrame">
 		<Size x="297" y="254"/>

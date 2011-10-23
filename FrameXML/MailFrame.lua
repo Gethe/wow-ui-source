@@ -22,6 +22,7 @@ function MailFrame_OnLoad(self)
 	-- Init pagenum
 	InboxFrame.pageNum = 1;
 	-- Tab Handling code
+	self.maxTabWidth = self:GetWidth() / 3;
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 	-- Register for events

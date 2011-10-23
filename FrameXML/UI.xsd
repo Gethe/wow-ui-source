@@ -14,6 +14,7 @@
 			<xs:enumeration value="CENTER"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="FRAMESTRATA">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="PARENT"/>
@@ -27,6 +28,7 @@
 			<xs:enumeration value="TOOLTIP"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="DRAWLAYER">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="BACKGROUND"/>
@@ -36,6 +38,7 @@
 			<xs:enumeration value="HIGHLIGHT"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="ALPHAMODE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="DISABLE"/>
@@ -45,6 +48,7 @@
 			<xs:enumeration value="MOD"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="OUTLINETYPE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="NONE"/>
@@ -52,6 +56,7 @@
 			<xs:enumeration value="THICK"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="JUSTIFYVTYPE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="TOP"/>
@@ -59,6 +64,7 @@
 			<xs:enumeration value="BOTTOM"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="JUSTIFYHTYPE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="LEFT"/>
@@ -66,18 +72,21 @@
 			<xs:enumeration value="RIGHT"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="INSERTMODE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="TOP"/>
 			<xs:enumeration value="BOTTOM"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="ORIENTATION">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="HORIZONTAL"/>
 			<xs:enumeration value="VERTICAL"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="ATTRIBUTETYPE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="nil"/>
@@ -86,16 +95,19 @@
 			<xs:enumeration value="string"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:element name="AbsValue">
 		<xs:complexType>
 			<xs:attribute name="val" type="xs:int" use="required"/>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:element name="RelValue">
 		<xs:complexType>
 			<xs:attribute name="val" type="xs:float" use="required"/>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:complexType name="Value">
 		<xs:choice minOccurs="0">
 			<xs:element ref="AbsValue"/>
@@ -103,18 +115,21 @@
 		</xs:choice>
 		<xs:attribute name="val" type="xs:int" use="optional"/>
 	</xs:complexType>
+
 	<xs:element name="AbsDimension">
 		<xs:complexType>
 			<xs:attribute name="x" type="xs:int" use="required"/>
 			<xs:attribute name="y" type="xs:int" use="required"/>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:element name="RelDimension">
 		<xs:complexType>
 			<xs:attribute name="x" type="xs:float" use="required"/>
 			<xs:attribute name="y" type="xs:float" use="required"/>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:complexType name="Dimension">
 		<xs:choice minOccurs="0">
 			<xs:element ref="AbsDimension"/>
@@ -123,6 +138,7 @@
 		<xs:attribute name="x" type="xs:int" use="optional"/>
 		<xs:attribute name="y" type="xs:int" use="optional"/>
 	</xs:complexType>
+
 	<xs:element name="AbsInset">
 		<xs:complexType>
 			<xs:attribute name="left" type="xs:int" use="optional"/>
@@ -131,6 +147,7 @@
 			<xs:attribute name="bottom" type="xs:int" use="optional"/>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:element name="RelInset">
 		<xs:complexType>
 			<xs:attribute name="left" type="xs:float" use="required"/>
@@ -139,6 +156,7 @@
 			<xs:attribute name="bottom" type="xs:float" use="required"/>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:complexType name="Inset">
 		<xs:choice minOccurs="0">
 			<xs:element ref="AbsInset"/>
@@ -149,18 +167,21 @@
 		<xs:attribute name="top" type="xs:int" use="optional"/>
 		<xs:attribute name="bottom" type="xs:int" use="optional"/>
 	</xs:complexType>
+
 	<xs:simpleType name="ColorFloat">
 		<xs:restriction base="xs:float">
 			<xs:minInclusive value="0.0"/>
 			<xs:maxInclusive value="1.0"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:complexType name="ColorType">
 		<xs:attribute name="r" type="ColorFloat" use="required"/>
 		<xs:attribute name="g" type="ColorFloat" use="required"/>
 		<xs:attribute name="b" type="ColorFloat" use="required"/>
 		<xs:attribute name="a" type="ColorFloat" default="1.0"/>
 	</xs:complexType>
+
 	<xs:complexType name="ShadowType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -169,6 +190,7 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="GradientType">
 		<xs:sequence>
 			<xs:element name="MinColor" type="ColorType"/>
@@ -176,11 +198,13 @@
 		</xs:sequence>
 		<xs:attribute name="orientation" type="ORIENTATION" default="HORIZONTAL"/>
 	</xs:complexType>
+
 	<xs:complexType name="AttributeType">
 		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:attribute name="type" type="ATTRIBUTETYPE" use="optional" default="string"/>
 		<xs:attribute name="value" type="xs:string" use="optional"/>
 	</xs:complexType>
+
 	<xs:complexType name="AttributesType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -188,9 +212,11 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="ButtonStyleType">
 		<xs:attribute name="style" type="xs:string" use="required"/>
 	</xs:complexType>
+
 	<xs:complexType name="ScriptsType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -260,6 +286,7 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="ScriptType">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
@@ -267,6 +294,7 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+
 	<xs:complexType name="FontType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -285,6 +313,7 @@
 		<xs:attribute name="justifyV" type="JUSTIFYVTYPE" default="MIDDLE"/>
 		<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
 	</xs:complexType>
+
 	<xs:element name="Font">
 		<xs:complexType>
 			<xs:complexContent>
@@ -292,6 +321,7 @@
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:complexType name="LayoutFrameType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -331,6 +361,7 @@
 		<xs:attribute name="parentKey" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="LayoutFrame" type="LayoutFrameType"/>
+
 	<xs:complexType name="BackdropType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -346,6 +377,7 @@
 		<xs:attribute name="tile" type="xs:boolean" default="false"/>
 		<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 	</xs:complexType>
+
 	<xs:complexType name="TextureType">
 		<xs:complexContent>
 			<xs:extension base="LayoutFrameType">
@@ -383,6 +415,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Texture" type="TextureType" substitutionGroup="LayoutFrame"/>
+
 	<xs:complexType name="FontStringType">
 		<xs:complexContent>
 			<xs:extension base="LayoutFrameType">
@@ -415,6 +448,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="FontString" type="FontStringType" substitutionGroup="LayoutFrame"/>
+
 	<xs:complexType name="FrameType">
 		<xs:complexContent>
 			<xs:extension base="LayoutFrameType">
@@ -490,6 +524,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Frame" type="FrameType" substitutionGroup="LayoutFrame"/>
+
 	<xs:complexType name="ButtonType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -516,6 +551,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Button" type="ButtonType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="CheckButtonType">
 		<xs:complexContent>
 			<xs:extension base="ButtonType">
@@ -530,6 +566,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="CheckButton" type="CheckButtonType" substitutionGroup="ui:Button"/>
+
 	<xs:complexType name="StatusBarType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -545,10 +582,12 @@
 				<xs:attribute name="defaultValue" type="xs:float"/>
 				<xs:attribute name="orientation" type="ui:ORIENTATION" default="HORIZONTAL"/>
 				<xs:attribute name="rotatesTexture" type="xs:boolean" default="false"/>
+				<xs:attribute name="reverseFill" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="StatusBar" type="StatusBarType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="SliderType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -567,6 +606,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Slider" type="SliderType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="EditBoxType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -591,6 +631,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="EditBox" type="EditBoxType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="ColorSelectType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -606,6 +647,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="ColorSelect" type="ui:ColorSelectType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="ModelType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -634,6 +676,7 @@
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:Frame"/>
 	<xs:element name="ModelFFX" type="ModelType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="SimpleHTMLType">
 		<xs:complexContent>
 			<xs:extension base="ui:FrameType">
@@ -654,6 +697,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="SimpleHTML" type="ui:SimpleHTMLType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="MessageFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -672,6 +716,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="MessageFrame" type="MessageFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="ScrollingMessageFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -697,6 +742,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="ScrollingMessageFrame" type="ScrollingMessageFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="ScrollFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -715,12 +761,14 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="ScrollFrame" type="ScrollFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="MovieFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="MovieFrame" type="MovieFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:element name="Ui">
 		<xs:complexType>
 			<xs:sequence>
@@ -751,18 +799,21 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:complexType name="WorldFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="WorldFrame" type="WorldFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="GameTooltipType">
 		<xs:complexContent>
 			<xs:extension base="FrameType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="GameTooltip" type="GameTooltipType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="CooldownType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -772,6 +823,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Cooldown" type="CooldownType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="QuestPOIFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -781,6 +833,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="QuestPOIFrame" type="QuestPOIFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="ArchaeologyDigSiteFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -790,6 +843,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="ArchaeologyDigSiteFrame" type="ArchaeologyDigSiteFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="MinimapType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -799,35 +853,41 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Minimap" type="MinimapType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="PlayerModelType">
 		<xs:complexContent>
 			<xs:extension base="ModelType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="PlayerModel" type="PlayerModelType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="DressUpModelType">
 		<xs:complexContent>
 			<xs:extension base="PlayerModelType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="DressUpModel" type="DressUpModelType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="TabardModelType">
 		<xs:complexContent>
 			<xs:extension base="PlayerModelType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="TabardModel" type="TabardModelType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="UnitButtonType">
 		<xs:complexContent>
 			<xs:extension base="ButtonType"/>
 		</xs:complexContent>
 	</xs:complexType>
+
 	<xs:complexType name="TaxiRouteFrameType">
 		<xs:complexContent>
 			<xs:extension base="FrameType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="TaxiRouteFrame" type="TaxiRouteFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:simpleType name="ANIMLOOPTYPE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="NONE"/>
@@ -835,6 +895,7 @@
 			<xs:enumeration value="BOUNCE"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="ANIMSMOOTHTYPE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="NONE"/>
@@ -844,18 +905,21 @@
 			<xs:enumeration value="OUT_IN"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="ANIMCURVETYPE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="NONE"/>
 			<xs:enumeration value="SMOOTH"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="AnimOrderType">
 		<xs:restriction base="xs:int">
 			<xs:minInclusive value="1"/>
 			<xs:maxInclusive value="100"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:complexType name="AnimScriptsType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -868,6 +932,7 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="AnimGroupScriptsType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -881,12 +946,14 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="AnimOriginType">
 		<xs:sequence minOccurs="0">
 			<xs:element name="Offset" type="Dimension"/>
 		</xs:sequence>
 		<xs:attribute name="point" type="FRAMEPOINT" default="CENTER"/>
 	</xs:complexType>
+
 	<xs:complexType name="AnimationType">
 		<xs:sequence>
 			<xs:element name="Scripts" type="AnimScriptsType" minOccurs="0" maxOccurs="unbounded"/>
@@ -903,6 +970,7 @@
 		<xs:attribute name="smoothing" type="ANIMSMOOTHTYPE" default="NONE"/>
 	</xs:complexType>
 	<xs:element name="Animation" type="AnimationType"/>
+
 	<xs:complexType name="TranslationType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
@@ -912,6 +980,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Translation" type="TranslationType" substitutionGroup="Animation"/>
+
 	<xs:complexType name="RotationType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
@@ -924,6 +993,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Rotation" type="RotationType" substitutionGroup="Animation"/>
+
 	<xs:complexType name="ScaleType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
@@ -936,6 +1006,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Scale" type="ScaleType" substitutionGroup="Animation"/>
+
 	<xs:complexType name="AlphaType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
@@ -944,6 +1015,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Alpha" type="AlphaType" substitutionGroup="Animation"/>
+
 	<xs:complexType name="ControlPointsType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -958,6 +1030,7 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:element name="ControlPoints" type="ControlPointsType"/>
+
 	<xs:complexType name="PathType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
@@ -971,6 +1044,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Path" type="PathType" substitutionGroup="Animation"/>
+
 	<xs:complexType name="AnimationGroupType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">

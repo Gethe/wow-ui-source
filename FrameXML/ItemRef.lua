@@ -192,7 +192,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 13) == "pettalentpane" ) then
 		TogglePetTalentFrame();
 		return;
-	elseif ( strsub(link, 1, 7) == "journal" ) then
+	elseif ( strsub(link, 1, 7) == "journal" and EncounterJournal ) then
 		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then
 			EncounterJournal_OpenJournalLink(strsplit(":", link));
 		end
