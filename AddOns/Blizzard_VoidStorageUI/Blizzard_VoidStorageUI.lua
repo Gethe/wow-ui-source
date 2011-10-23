@@ -177,7 +177,7 @@ function VoidStorageFrame_Update()
 end
 
 function VoidStorageFrame_OnHide(self)
-	PlaySound("UI_EtherealWindow_Closed");
+	PlaySound("UI_EtherealWindow_Close");
 	StaticPopup_Hide("VOID_DEPOSIT_CONFIRM");
 	CloseVoidStorageFrame();
 	CloseSideDressUpFrame(self);

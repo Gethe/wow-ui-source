@@ -808,6 +808,11 @@ function NetworkOptionsPanel_OnLoad(self)
 end
 
 function NetworkOptionsPanel_CheckButton_OnClick(self)
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 	BlizzardOptionsPanel_CheckButton_OnClick(self);
 	if ( self.cvar ) then
 		BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetChecked(), self.event);

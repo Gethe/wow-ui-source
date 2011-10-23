@@ -349,9 +349,19 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("UI_Voidstorage_Apply");
+										local numDeposits = GetNumVoidTransferDeposit();
+										local numWithdrawals = GetNumVoidTransferWithdrawal();
 										self:Disable();
-										ExecuteVoidTransfer();
+										if ( ExecuteVoidTransfer() ) then
+											-- was successful so play an appropriate sound
+											if ( numDeposits == 0 ) then
+												PlaySound("UI_VoidStorage_Withdraw");
+											elseif ( numWithdrawals == 0 ) then
+												PlaySound("UI_VoidStorage_Deposit");
+											else
+												PlaySound("UI_VoidStorage_Both");
+											end
+										end
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -489,6 +499,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										SetCVar("lastVoidStorageTutorial", self.currentTutorial);
 										VoidStorageFrame_Update();
 									</OnClick>

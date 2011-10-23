@@ -295,6 +295,19 @@ function MiniMapLFGFrame_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		GameTooltip:AddLine(YOU_ARE_IN_DUNGEON_GROUP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+
+		local dungeonID = GetPartyLFGID();
+		local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID);
+		if ( numCompleted > 0 ) then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(string.format(BOSSES_KILLED, numCompleted, numEncounters));
+			for i=1, numEncounters do
+				local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
+				if ( isKilled ) then
+					GameTooltip:AddLine(bossName, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				end
+			end
+		end
 		GameTooltip:Show();
 	end
 end

@@ -401,8 +401,11 @@ VideoData["Graphics_MultiSampleDropDown"]={
 				end
 			end
 			if ( self:GetValue() > capMaxValue ) then
-				VideoOptionsDropDownMenu_SetSelectedID(Graphics_MultiSampleDropDown, capMaxValue);
-				Graphics_DropDownRefreshValue(self);
+				VideoOptions_OnClick(Graphics_MultiSampleDropDown, capMaxValue);
+				-- update the text on the dropdown
+				local settings = { GetMultisampleFormats(Graphics_PrimaryMonitorDropDown:GetValue()) };
+				local mValue = settings[capMaxValue * self.TABLENEXT];
+				VideoOptionsDropDownMenu_SetText(self, format(VIDEO_OPTIONS_MULTISAMPLE_FORMAT_STRING, mValue));
 			end
 			self.capMaxValue = capMaxValue;
 			if ( tooltip ) then

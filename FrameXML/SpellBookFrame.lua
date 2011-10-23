@@ -1224,11 +1224,11 @@ function FormatProfession(frame, index)
 		if IsTrialAccount() then
 			local _, _, profCap = GetRestrictedAccountData();
 			if rank >= profCap then
-				frame.capped:Show();
+				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..TRIAL_CAPPED;
 			else
-				frame.capped:Hide();
+				frame.statusBar.capped:Hide();
 				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				frame.statusBar.tooltip = nil;
 			end

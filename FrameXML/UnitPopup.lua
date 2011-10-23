@@ -573,8 +573,9 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "WHISPER" ) then
+			local playerName, playerServer = UnitName("player");
 			if ( dropdownMenu.unit ) then
-				if ( canCoop == 0  or dropdownMenu.name == UnitName("player") ) then
+				if ( canCoop == 0  or (dropdownMenu.name == playerName and dropdownMenu.server == playerServer) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
@@ -803,7 +804,8 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;			
 			else
 				-- Hide if already muted.
-				if ( dropdownMenu.name == UnitName("player") or IsMuted(dropdownMenu.name) ) then
+				local playerName, playerServer = UnitName("player");
+				if ( (dropdownMenu.name == playerName and dropdownMenu.server == playerServer) or IsMuted(dropdownMenu.name) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			end
@@ -1334,7 +1336,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "INVITE" ) then
 		InviteUnit(fullname);
 	elseif ( button == "UNINVITE" or button == "VOTE_TO_KICK" ) then
-		UninviteUnit(fullname);
+		UninviteUnit(fullname, nil, 1);
 	elseif ( button == "REMOVE_FRIEND" ) then
 		RemoveFriend(name);
 	elseif ( button == "SET_NOTE" ) then
@@ -1418,7 +1420,7 @@ function UnitPopup_OnClick (self)
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "MASTER_LOOTER" ) then
-		SetLootMethod("master", fullname);
+		SetLootMethod("master", fullname, 1);
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "GROUP_LOOT" ) then
@@ -1477,7 +1479,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "RAID_MAINASSIST" ) then
 		SetPartyAssignment("MAINASSIST", fullname, 1);
 	elseif ( button == "RAID_REMOVE" ) then
-		UninviteUnit(fullname);
+		UninviteUnit(fullname, nil, 1);
 	elseif ( button == "PVP_REPORT_AFK" ) then
 		ReportPlayerIsPVPAFK(fullname);
 	elseif ( button == "RAF_SUMMON" ) then

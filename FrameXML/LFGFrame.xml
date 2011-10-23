@@ -1254,6 +1254,23 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<Frame name="$parentEncounterList" parentKey="encounterList">
+				<Size x="18" y="18"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFGRewardsFrameEncounterList_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<Frame name="$parentSpacer" parentKey="spacer">
 				<Size>
 					<AbsDimension x="2" y="2"/>

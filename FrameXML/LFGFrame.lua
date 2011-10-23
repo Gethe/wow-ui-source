@@ -1212,8 +1212,18 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	
 	if ( not isHoliday ) then
 		parentFrame.randomList:Show();
+		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "RIGHT", 5, 0);
 	else
 		parentFrame.randomList:Hide();
+		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "LEFT", 0, 0);
+	end
+
+	parentFrame.encounterList.dungeonID = dungeonID;
+	local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID);
+	if ( numCompleted > 0 ) then
+		parentFrame.encounterList:Show();
+	else
+		parentFrame.encounterList:Hide();
 	end
 	
 	parentFrame.spacer:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -10);
@@ -1298,4 +1308,19 @@ function LFGRewardsFrame_EstimateRemainingCompletions(dungeonID)
 	end
 
 	return ceil(remainingAllotment / currencyQuantity), isWeekly;
+end
+
+function LFGRewardsFrameEncounterList_OnEnter(self)
+	local dungeonID = self.dungeonID;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:AddLine(BOSSES)
+	for i=1, GetLFGDungeonNumEncounters(dungeonID) do
+		local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
+		if ( isKilled ) then
+			GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		else
+			GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+		end
+	end
+	GameTooltip:Show();
 end

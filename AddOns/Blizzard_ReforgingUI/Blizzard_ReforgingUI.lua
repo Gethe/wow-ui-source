@@ -40,7 +40,7 @@ end
 
 
 function ReforgingFrame_OnHide(self)
-	PlaySound("UI_EtherealWindow_Closed");
+	PlaySound("UI_EtherealWindow_Close");
 	CloseReforge();
 end
 

@@ -805,8 +805,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
-		StaticPopup_Hide("BIND_ENCHANT");
-		StaticPopup_Hide("REPLACE_ENCHANT");
+		if ( arg1 ) then
+			StaticPopup_Hide("BIND_ENCHANT");
+			StaticPopup_Hide("REPLACE_ENCHANT");
+		end
 		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
 		StaticPopup_Hide("END_BOUND_TRADEABLE");
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then

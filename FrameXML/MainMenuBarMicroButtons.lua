@@ -1,3 +1,19 @@
+MICRO_BUTTONS = {
+	"CharacterMicroButton",
+	"SpellbookMicroButton",
+	"TalentMicroButton",
+	"AchievementMicroButton",
+	"QuestLogMicroButton",
+	"GuildMicroButton",
+	"PVPMicroButton",
+	"LFDMicroButton",
+	"EJMicroButton",
+	"RaidMicroButton",
+	"MainMenuMicroButton",
+	"HelpMicroButton",
+	}
+
+
 function LoadMicroButtonTextures(self, name)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
@@ -20,16 +36,9 @@ end
 
 
 function UpdateMicroButtonsParent(parent)
-	CharacterMicroButton:SetParent(parent);
-	SpellbookMicroButton:SetParent(parent);
-	TalentMicroButton:SetParent(parent);
-	QuestLogMicroButton:SetParent(parent);
-	MainMenuMicroButton:SetParent(parent);
-	PVPMicroButton:SetParent(parent);
-	GuildMicroButton:SetParent(parent);
-	LFDMicroButton:SetParent(parent);
-	HelpMicroButton:SetParent(parent);
-	AchievementMicroButton:SetParent(parent);
+	for i=1, #MICRO_BUTTONS do
+		_G[MICRO_BUTTONS[i]]:SetParent(parent);
+	end
 end
 
 function UpdateMicroButtons()

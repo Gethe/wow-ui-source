@@ -1,5 +1,7 @@
 -- GetItemTransmogrifyInfo(item link/item id/item name)
 --   returns: canBeChanged, noChangeReason, canBeSource, noSourceReason
+-- CanTransmogrifyItemWithItem(target item link/target item id/target item name, source item link/source item id/source item name)
+--   returns: canBeTransmogrified, failReason
 
 UIPanelWindows["TransmogrifyFrame"] =	{ area = "left", pushable = 0 };
 
@@ -142,7 +144,7 @@ function TransmogrifyFrame_OnShow(self)
 end
 
 function TransmogrifyFrame_OnHide(self)
-	PlaySound("UI_EtherealWindow_Closed");
+	PlaySound("UI_EtherealWindow_Close");
 	StaticPopup_Hide("TRANSMOGRIFY_BIND_CONFIRM");
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE");

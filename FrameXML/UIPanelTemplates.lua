@@ -43,12 +43,12 @@ end
 function BagSearch_OnChar(self, text)
 	-- clear focus if the player is repeating keys (ie - trying to move)
 	-- TODO: move into base editbox code?
-	local MIN_REPEAT_CHARACTERS = 4
+	local MIN_REPEAT_CHARACTERS = 3
 	local searchString = self:GetText();
-	if (string.len(searchString) >= MIN_REPEAT_CHARACTERS) then
+	if (string.len(searchString) > MIN_REPEAT_CHARACTERS) then
 		local repeatChar = true;
-		for i=-1, MIN_REPEAT_CHARACTERS-1, -1 do 
-			if ( string.sub(searchString,i,i) ~= string.sub(searchString,i-1,i-1) ) then
+		for i=1, MIN_REPEAT_CHARACTERS, 1 do 
+			if ( string.sub(searchString,(0-i), (0-i)) ~= string.sub(searchString,(-1-i),(-1-i)) ) then
 				repeatChar = false;
 				break;
 			end

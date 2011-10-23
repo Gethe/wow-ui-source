@@ -1361,22 +1361,6 @@ function VehicleMenuBar_SetSkin(skinName, pitchVisible)
 	VehicleMenuBar_MoveMicroButtons(skinName);
 end
 
-local MicroButtons = {
-	CharacterMicroButton,
-	SpellbookMicroButton,
-	TalentMicroButton,
-	AchievementMicroButton,
-	QuestLogMicroButton,
-	GuildMicroButton,
-	PVPMicroButton,
-	LFDMicroButton,
-	EJMicroButton,
-	RaidMicroButton,
-	MainMenuMicroButton,
-	HelpMicroButton,
-	}
-	
-	
 function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
 	CharacterMicroButton:ClearAllPoints();
 	CharacterMicroButton:SetPoint(anchor, achorTo, relAnchor, x, y);
@@ -1398,7 +1382,8 @@ end
 	
 function VehicleMenuBar_MoveMicroButtons(skinName)
 	if ( not skinName ) then
-		for _, frame in pairs(MicroButtons) do
+		for _, frameName in pairs(MICRO_BUTTONS) do
+			local frame = _G[frameName];
 			frame:SetParent(MainMenuBarArtFrame);
 			frame:Show();
 		end
@@ -1409,12 +1394,13 @@ function VehicleMenuBar_MoveMicroButtons(skinName)
 		MainMenuExpBar_SetWidth(EXP_DEFAULT_WIDTH);
 	else 
 		local skinTable = SkinsData[skinName];
-		for _, frame in pairs(MicroButtons) do
+		for _, frameName in pairs(MICRO_BUTTONS) do
+			local frame = _G[frameName];
 			frame:SetParent(VehicleMenuBarArtFrame);
 			frame:Show();
 		end
 		MoveMicroButtons("BOTTOMLEFT", VehicleMenuBar, "BOTTOMRIGHT", skinTable.MicroButtons.xOfs, skinTable.MicroButtons.yOfs, true);
-		MainMenuExpBar:ClearAllPoints();			
+		MainMenuExpBar:ClearAllPoints();
 		MainMenuExpBar:SetParent(VehicleMenuBar);
 		MainMenuExpBar:SetPoint("TOPLEFT", VehicleMenuBar, "TOPLEFT", skinTable.XpBar.xOfsLeft, skinTable.XpBar.yOfs);
 		MainMenuExpBar:SetPoint("TOPRIGHT", VehicleMenuBar, "TOPRIGHT", -skinTable.XpBar.xOfsLeft, skinTable.XpBar.yOfs);

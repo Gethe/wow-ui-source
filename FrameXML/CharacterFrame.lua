@@ -156,6 +156,7 @@ function CharacterFrame_Collapse()
 	CharacterFrameInsetRight:Hide();
 	UpdateUIPanelPositions(CharacterFrame);
 	PaperDollFrame_SetLevel();
+	CharacterTrialLevelErrorText:SetPoint("TOP", CharacterLevelText, "BOTTOM", 0, -3);
 end
 
 function CharacterFrame_Expand()
@@ -173,6 +174,11 @@ function CharacterFrame_Expand()
 	CharacterFrameInsetRight:Show();
 	UpdateUIPanelPositions(CharacterFrame);
 	PaperDollFrame_SetLevel();
+	-- trial edition
+	local width = CharacterTrialLevelErrorText:GetWidth();
+	if ( width > 190 ) then
+		CharacterTrialLevelErrorText:SetPoint("TOP", CharacterLevelText, "BOTTOM", -((width-190)/2), -3);
+	end
 end
 
 local function CompareFrameSize(frame1, frame2)

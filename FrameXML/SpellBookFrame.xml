@@ -631,6 +631,13 @@
 		</Layers>		
 		<BarTexture name="$parentBar" file="Interface\Spellbook\Professions-Progress-Fill"/>
 		<!--BarColor r="1" g="1" b="1"/-->
+		<Frames>
+			<Frame name="$parentCapped" parentKey="capped" inherits="ProfessionTrialCapTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="14" y="2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnEnter>
 				if ( self.tooltip ) then
@@ -737,11 +744,6 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
 			</StatusBar>
-			<Frame name="$parentCapped" parentKey="capped" inherits="ProfessionTrialCapTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStatusBar" relativePoint="TOPRIGHT" x="14" y="2"/>
-				</Anchors>
-			</Frame>
 			<Button name="$parentUnlearnButton" parentKey="unlearn">
 				<Size>
 					<AbsDimension x="16" y="16"/>
@@ -853,11 +855,6 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
 			</StatusBar>
-			<Frame name="$parentCapped" parentKey="capped" inherits="ProfessionTrialCapTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStatusBar" relativePoint="TOPRIGHT" x="14" y="2"/>
-				</Anchors>
-			</Frame>
 		</Frames>			
 	</Frame>
 	
