@@ -747,21 +747,25 @@ function PlayerBuffTimerManager_GetTimer(barType)
 			timerFrame.scale = 1.0;
 		end
 		timerFrame.unit = "player"
-		timerFrame:SetScript("OnUpdate", PlayerBuffTimer_OnUpdate);
+		timerFrame:SetScript("OnEvent", nil);
 	end
 	
+	timerFrame:SetScript("OnUpdate", PlayerBuffTimer_OnUpdate);
 	return timerFrame;
 end
 
 
 function PlayerBuffTimer_OnUpdate(self, elapsed)
 	local timeLeft = self.timerExpiration - GetTime();
-	if ( timeLeft >= 0 ) then
-		if ( self.isCounter ) then
-			CounterBar_UpdateCount(self, floor(timeLeft));
-		else
-			UnitPowerBarAlt_SetPower(self, timeLeft, true);
-		end
+	if ( timeLeft <= 0 ) then
+		self:SetScript("OnUpdate", nil);
+		timeLeft = 0;
+	end
+	
+	if ( self.isCounter ) then
+		CounterBar_UpdateCount(self, floor(timeLeft));
+	else
+		UnitPowerBarAlt_SetPower(self, timeLeft, true);
 	end
 end
 

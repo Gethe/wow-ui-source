@@ -158,23 +158,15 @@ end
 
 function AccountLogin_Login()
 	PlaySound("gsLogin");
+	DefaultServerLogin(AccountLoginAccountEdit:GetText(), AccountLoginPasswordEdit:GetText());
+	AccountLoginPasswordEdit:SetText("");
 
-	-- Must occur before DefaultServerLogin so client knows setting of checkbox
 	if ( AccountLoginSaveAccountName:GetChecked() ) then
 		SetSavedAccountName(AccountLoginAccountEdit:GetText());
-		SetAllowTokenCaching(true);
 	else
 		SetSavedAccountName("");
 		SetUsesToken(false);
-		if ( SAVE_ACCOUNT_BUTTON_HIDDEN ) then
-			SetAllowTokenCaching(true);
-		else
-			SetAllowTokenCaching(false);
-		end
 	end
-
-	DefaultServerLogin(AccountLoginAccountEdit:GetText(), AccountLoginPasswordEdit:GetText());
-	AccountLoginPasswordEdit:SetText("");
 end
 
 function AccountLogin_TOS()

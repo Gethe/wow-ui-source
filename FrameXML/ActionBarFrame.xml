@@ -30,10 +30,12 @@
 			</OnReceiveDrag>
 			<OnEnter>
 				ActionButton_SetTooltip(self);
+				ActionBarButtonEventsFrame.tooltipOwner = self;
 				ActionButton_UpdateFlyout(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+				ActionBarButtonEventsFrame.tooltipOwner = nil;
 				ActionButton_UpdateFlyout(self);
 			</OnLeave>
 			<OnUpdate>

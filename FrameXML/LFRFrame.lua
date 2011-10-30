@@ -491,14 +491,14 @@ function LFRFrame_SetActiveTab(tab)
 	if ( tab == 1 ) then
 		LFRParentFrame.activeTab = 1;
 		LFRQueueFrame:Show();
-		ButtonFrameTemplate_HideAttic(FriendsFrame);
+		ButtonFrameTemplate_HideAttic(RaidParentFrame);
 		LFRBrowseFrame:Hide();
 		LFRParentFrameSideTab1:SetChecked(true);
 		LFRParentFrameSideTab2:SetChecked(false);
 	elseif ( tab == 2 ) then
 		LFRParentFrame.activeTab = 2;
 		LFRBrowseFrame:Show();
-		FriendsFrameInset:SetPoint("TOPLEFT", 4, -83);
+		RaidParentFrameInset:SetPoint("TOPLEFT", 4, -83);
 		LFRQueueFrame:Hide();
 		LFRParentFrameSideTab1:SetChecked(false);
 		LFRParentFrameSideTab2:SetChecked(true);

@@ -757,6 +757,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="QuestNPCModelNameTooltipFrame" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameText" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelNameText" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if ( QuestNPCModelNameText:IsTruncated() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOP");
+							GameTooltip:SetText(QuestNPCModelNameText:GetText());
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 			<Frame name="QuestNPCModelTextFrame" hidden="true" useParentLevel="true">
 				<Size x="198" y="64"/>
 				<Anchors>

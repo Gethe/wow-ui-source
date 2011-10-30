@@ -684,9 +684,8 @@ local function extractTemplateInfo(template, defaultWidget)
 	return nil;
 end
 
-local function constructChild(kind, name, parent, template, ...)
+local function constructChild(kind, name, parent, template)
 	local new = CreateFrame(kind, name, parent, template);
-	setAttributesWithoutResponse(new, ...);
 	SetupAuraButtonConfiguration(parent, new);
 	return new;
 end
@@ -724,7 +723,8 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 			if ( button ) then
 				button:ClearAllPoints();
 			else
-				button = constructChild(buffWidget, name and name.."AuraButton"..i, self, buffTemplate, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button));
+				button = constructChild(buffWidget, name and name.."AuraButton"..i, self, buffTemplate);
+				setAttributesWithoutResponse(self, childAttr, button, "frameref-"..childAttr, GetFrameHandle(button)); 
 			end
 			local buffInfo = auraTable[i];
 			button:SetID(buffInfo.index);
@@ -739,7 +739,8 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		if ( type(consolidateProxy) == 'string' ) then
 			local template, widgetType = extractTemplateInfo(consolidateProxy, "Button");
 			if ( template ) then
-				consolidateProxy = constructChild(widgetType, name and name.."ProxyButton", self, template, "consolidateProxy", consolidateProxy, "frameref-proxy", GetFrameHandle(consolidateProxy));
+				consolidateProxy = constructChild(widgetType, name and name.."ProxyButton", self, template);
+				setAttributesWithoutResponse(self, "consolidateProxy", consolidateProxy, "frameref-proxy", GetFrameHandle(consolidateProxy));
 			else
 				consolidateProxy = nil;
 			end
@@ -768,7 +769,8 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 				if ( not tempEnchant ) then
 					local template, widgetType = extractTemplateInfo(self:GetAttribute("weaponTemplate"), "Button");
 					if ( template ) then
-						tempEnchant = constructChild(widgetType, name and name.."TempEnchant"..weapon, self, template, weaponAttr, tempEnchant2);
+						tempEnchant = constructChild(widgetType, name and name.."TempEnchant"..weapon, self, template);
+						setAttributesWithoutResponse(self, weaponAttr, tempEnchant);
 					end
 				end
 				if ( tempEnchant ) then
@@ -827,7 +829,8 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		if ( type(header) == 'string' ) then
 			local template, widgetType = extractTemplateInfo(header, "Frame");
 			if ( template ) then
-				header = constructChild(widgetType, name and name.."ProxyHeader", consolidateProxy, template, "consolidateHeader", header);
+				header = constructChild(widgetType, name and name.."ProxyHeader", consolidateProxy, template);
+				setAttributesWithoutResponse(self, "consolidateHeader", header);
 				consolidateProxy:SetAttribute("header", header);
 				consolidateProxy:SetAttribute("frameref-header", GetFrameHandle(header))
 			end

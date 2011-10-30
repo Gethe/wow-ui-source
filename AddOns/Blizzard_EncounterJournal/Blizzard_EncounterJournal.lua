@@ -38,6 +38,32 @@ local EJ_LINK_SECTION 		= 3;
 
 
 
+local EJ_DIFF_5MAN 				= 1
+local EJ_DIFF_5MAN_HEROIC 		= 2
+
+local EJ_DIFF_10MAN		 		= 1
+local EJ_DIFF_25MAN		 		= 2
+local EJ_DIFF_10MAN_HEROIC 		= 3
+local EJ_DIFF_25MAN_HEROIC 		= 4
+local EJ_DIFF_LFRAID	 		= 5
+
+local EJ_DIFF_DUNGEON_TBL =  
+{
+	[1] = { enumValue = EJ_DIFF_5MAN, size = 5, prefix = PLAYER_DIFFICULTY1},
+	[2] = { enumValue = EJ_DIFF_5MAN_HEROIC, size = 5, prefix = PLAYER_DIFFICULTY2}
+}
+
+local EJ_DIFF_RAID_TBL =  
+{
+	[1] = { enumValue = EJ_DIFF_LFRAID, size = 25, prefix = PLAYER_DIFFICULTY3},
+	[2] = { enumValue = EJ_DIFF_10MAN, size = 10, prefix = PLAYER_DIFFICULTY1},
+	[3] = { enumValue = EJ_DIFF_10MAN_HEROIC, size = 10, prefix = PLAYER_DIFFICULTY2},
+	[4] = { enumValue = EJ_DIFF_25MAN, size = 25, prefix = PLAYER_DIFFICULTY1},
+	[5] = { enumValue = EJ_DIFF_25MAN_HEROIC, size = 25, prefix = PLAYER_DIFFICULTY2}
+}
+
+
+
 local BOSS_LOOT_BUTTON_HEIGHT = 45;
 local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
@@ -75,9 +101,7 @@ function EncounterJournal_OnLoad(self)
 	self.searchResults.scrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.searchResults.scrollFrame, "EncounterSearchLGTemplate", 0, 0);
 	
-	EncounterJournal.isHeroic = false;
-	EncounterJournal.is10Man = true;
-	EJ_SetDifficulty(EncounterJournal.isHeroic, EncounterJournal.is10Man);
+	EJ_SetDifficulty(EJ_DIFF_5MAN);
 	
 	EncounterJournal.searchBox.oldEditLost = EncounterJournal.searchBox:GetScript("OnEditFocusLost");
 	EncounterJournal.searchBox:SetScript("OnEditFocusLost", function(self) self:oldEditLost(); EncounterJournal_HideSearchPreview(); end);
@@ -137,22 +161,18 @@ function EncounterJournal_OnEvent(self, event, ...)
 		end
 	elseif event == "EJ_DIFFICULTY_UPDATE" then
 		--fix the difficulty buttons
-		local isHeroic, is10man = ...;
-		if is10man then
-			EncounterJournal.is10Man = true;
-			EncounterJournal.encounter.info.diff10man.selected:Show();
-			EncounterJournal.encounter.info.diff25man.selected:Hide();
-		else
-			EncounterJournal.is10Man = false;
-			EncounterJournal.encounter.info.diff10man.selected:Hide();
-			EncounterJournal.encounter.info.diff25man.selected:Show();
+		local newDifficulty = ...;
+		local diffList = EJ_DIFF_DUNGEON_TBL;
+		if EJ_InstanceIsRaid() then
+			diffList = EJ_DIFF_RAID_TBL;
 		end
 		
-		EncounterJournal.isHeroic = isHeroic;
-		if isHeroic then
-			EncounterJournal.encounter.info.heroButton.selected:Show();
-		else
-			EncounterJournal.encounter.info.heroButton.selected:Hide();
+		for _, entry in pairs(diffList) do
+			if entry.enumValue == newDifficulty then
+				EncounterJournal.encounter.info.difficulty:SetFormattedText(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
+				EncounterJournal_Refresh();
+				break;
+			end
 		end
 	elseif event == "UNIT_PORTRAIT_UPDATE" then
 		local unit = ...;
@@ -253,16 +273,6 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EJ_SelectInstance(instanceID);
 	EncounterJournal_LootUpdate();
 	EncounterJournal_ClearDetails()
-	
-	if EJ_InstanceIsRaid() then
-		self.info.diff10man:Show();
-		self.info.diff25man:Show();
-		self.info.encounterTitle:SetPoint("RIGHT",self.info.diff10man, "LEFT", -20, 0);
-	else
-		self.info.diff10man:Hide();
-		self.info.diff25man:Hide();
-		self.info.encounterTitle:SetPoint("RIGHT", self.info.heroButton, "LEFT", -20, 0);
-	end
 	
 	local iname, description, bgImage, _, loreImage = EJ_GetInstanceInfo();
 	self.instance.title:SetText(iname);
@@ -384,11 +394,11 @@ function EncounterJournal_DisplayCreature(self)
 	if EncounterJournal.ceatureDisplayID == self.displayInfo then
 		--Don't refresh the same model
 	elseif self.displayInfo then
-		EncounterJournal.encounter.model.imageTitle:SetText(self.name);
 		EncounterJournal.encounter.model:SetDisplayInfo(self.displayInfo);
 		EncounterJournal.ceatureDisplayID = self.displayInfo;
 	end
-	
+		
+	EncounterJournal.encounter.model.imageTitle:SetText(self.name);
 	self:Disable();
 	EncounterJournal.encounter.shownCreatureButton = self;
 end
@@ -641,7 +651,7 @@ function EncounterJournal_ResetHeaders()
 	end
 
 	PlaySound("igMainMenuOptionCheckBoxOn");
-	EncounterJournal_Refresh(EncounterJournal);
+	EncounterJournal_Refresh();
 end
 
 
@@ -891,7 +901,6 @@ end
 
 
 function EncounterJournal_Refresh(self)
-	EJ_SetDifficulty(EncounterJournal.isHeroic, EncounterJournal.is10Man);
 	EncounterJournal_LootUpdate();
 	
 	if EncounterJournal.encounterID then
@@ -947,7 +956,7 @@ end
 
 function EncounterJournal_SelectSearch(index)
 	local _;
-	local id, stype, mask, instanceID, encounterID = EJ_GetSearchResult(index);
+	local id, stype, difficulty, instanceID, encounterID = EJ_GetSearchResult(index);
 	local sectionID, creatureID, itemID;
 	if stype == EJ_STYPE_INSTANCE then
 		instanceID = id;
@@ -959,7 +968,7 @@ function EncounterJournal_SelectSearch(index)
 		creatureID = id;
 	end
 	
-	EncounterJournal_OpenJournal(mask, instanceID, encounterID, sectionID, creatureID, itemID);
+	EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID, creatureID, itemID);
 	EncounterJournal.searchResults:Hide();
 end
 
@@ -1121,21 +1130,21 @@ function EncounterJournal_SetClassFilter(classID, className)
 end
 
 
-function EncounterJournal_OpenJournalLink(tag, jtype, id, mask)
+function EncounterJournal_OpenJournalLink(tag, jtype, id, difficulty)
 	jtype = tonumber(jtype);
 	id = tonumber(id);
-	mask = tonumber(mask);
+	difficulty = tonumber(difficulty);
 	local instanceID, encounterID, sectionID = EJ_HandleLinkPath(jtype, id);
-	EncounterJournal_OpenJournal(mask, instanceID, encounterID, sectionID);
+	EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID);
 end
 
 
-function EncounterJournal_OpenJournal(mask, instanceID, encounterID, sectionID, creatureID, itemID)
+function EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID, creatureID, itemID)
 	ShowUIPanel(EncounterJournal);
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
 		EncounterJournal_DisplayInstance(instanceID);
-		EJ_SetDifficultyByMask(mask);
+		EJ_SetDifficulty(difficulty);
 		if encounterID then
 			if sectionID then
 				EncounterJournal.encounter.info.bossTab:Click();
@@ -1165,6 +1174,32 @@ function EncounterJournal_OpenJournal(mask, instanceID, encounterID, sectionID, 
 		end
 	else
 		EncounterJournal_ListInstances()
+	end
+end
+
+
+function EncounterJournal_SelectDifficulty(self, value)
+	EJ_SetDifficulty(value);
+end
+
+
+function EncounterJournal_DifficultyInit(self, level)
+	local currDifficulty = EJ_GetDifficulty();
+	local diffList = EJ_DIFF_DUNGEON_TBL;
+	if EJ_InstanceIsRaid() then
+		diffList = EJ_DIFF_RAID_TBL;
+	end
+	
+	local info = UIDropDownMenu_CreateInfo();
+	for i=1,#diffList do
+		local entry = diffList[i];
+		if EJ_IsValidInstanceDifficulty(entry.enumValue) then
+			info.func = EncounterJournal_SelectDifficulty;
+			info.text = string.format(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
+			info.arg1 = entry.enumValue;
+			info.checked = currDifficulty == entry.enumValue;
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 end
 

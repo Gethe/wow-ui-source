@@ -305,12 +305,9 @@
 		</Layers>
 	</Button>
 
-	<Frame name="TransmogrifyFrame" toplevel="true" parent="UIParent" hidden="true" inherits="EtherealFrameTemplate">
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
+	<Frame name="TransmogrifyFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Size x="338" y="424"/>
 		<Frames>
-			<Frame name="$parentMouseBlock" setAllPoints="true" enableMouse="true"/>
 			<DressUpModel name="TransmogrifyModelFrame" inherits="ModelWithControlsTemplate">
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1">
@@ -325,7 +322,7 @@
 						<Texture name="$parentLines" file="Interface\Transmogrify\EtherealLines.png" horizTile="true" vertTile="true" alpha="0.1" setAllPoints="true"/>
 					</Layer>
 				</Layers>
-				<Size x="320" y="356"/>
+				<Size x="320" y="358"/>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-30"/>
 				</Anchors>
@@ -335,6 +332,7 @@
 					</OnLoad>
 				</Scripts>
 			</DressUpModel>
+			<Frame name="TransmogrifyArtFrame" setAllPoints="true" inherits="EtherealFrameTemplate"/>
 			<Button name="$parentHeadSlot" parentKey="headSlot" inherits="TransmogrifyLeftSlotButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="21" y="-90"/>
@@ -382,7 +380,7 @@
 			</Button>
 			<Button name="$parentMainHandSlot" inherits="TransmogrifyBottomSlotButtonTemplate" parentKey="mainHand">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="TransmogrifyFrameBottomEdge" relativePoint="TOP" x="-25" y="-3"/>
+					<Anchor point="BOTTOM" relativeTo="TransmogrifyArtFrameBottomEdge" relativePoint="TOP" x="-25" y="-3"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentSecondaryHandSlot" inherits="TransmogrifyBottomSlotButtonTemplate" parentKey="offHand">

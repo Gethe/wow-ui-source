@@ -5,7 +5,7 @@
 
 UIPanelWindows["TransmogrifyFrame"] =	{ area = "left", pushable = 0 };
 
-local buttons = { };
+local BUTTONS = { };
 
 function TransmogrifyFrame_Show()
 	ShowUIPanel(TransmogrifyFrame);
@@ -19,22 +19,22 @@ function TransmogrifyFrame_Hide()
 end
 
 function TransmogrifyFrame_OnLoad(self)
-	TransmogrifyFrameTitleText:SetText(TRANSMOGRIFY);
-	TransmogrifyFrameTitleBg:SetDrawLayer("BACKGROUND", -1);
-	TransmogrifyFrameTopTileStreaks:Hide();
-	SetPortraitToTexture(TransmogrifyFramePortrait, "Interface\\Icons\\INV_Arcane_Orb");
+	TransmogrifyArtFrameTitleText:SetText(TRANSMOGRIFY);
+	TransmogrifyArtFrameTitleBg:SetDrawLayer("BACKGROUND", -1);
+	TransmogrifyArtFrameTopTileStreaks:Hide();
+	TransmogrifyArtFrameBg:Hide();
+	SetPortraitToTexture(TransmogrifyArtFramePortrait, "Interface\\Icons\\INV_Arcane_Orb");
 
 	if ( not UnitHasRelicSlot("player") ) then
-		local button = CreateFrame("BUTTON", "TransmogrifyFrameRangedSlot", self, "TransmogrifyBottomSlotButtonTemplate");
+		local button = CreateFrame("BUTTON", "TransmogrifyFrameRangedSlot", TransmogrifyArtFrame, "TransmogrifyBottomSlotButtonTemplate");
 		button:SetPoint("LEFT", TransmogrifyFrameSecondaryHandSlot, "RIGHT", 14, 0);
-		TransmogrifyFrameMainHandSlot:SetPoint("BOTTOM", TransmogrifyFrameBottomEdge, "TOP", -51, -3);
+		TransmogrifyFrameMainHandSlot:SetPoint("BOTTOM", TransmogrifyArtFrameBottomEdge, "TOP", -51, -3);
 		TransmogrifyFrame.ranged = button;
 	end
 
-	self:SetFrameLevel(3);
-	TransmogrifyModelFrame:SetFrameLevel(2);
-	TransmogrifyFrameMouseBlock:SetFrameLevel(1);
-	TransmogrifyFrameBg:Hide();
+	RaiseFrameLevel(TransmogrifyArtFrame);
+	RaiseFrameLevelByTwo(TransmogrifyFrameButtonFrame);
+	TransmogrifyArtFrameCloseButton:SetScript("OnClick", function() HideUIPanel(TransmogrifyFrame); end);
 	
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
 	self:RegisterEvent("TRANSMOGRIFY_SUCCESS");
@@ -56,6 +56,19 @@ end
 function TransmogrifyFrame_OnEvent(self, event, ...)
 	if ( event == "TRANSMOGRIFY_UPDATE" ) then
 		local slot = ...;
+		-- play sound?
+		local button = BUTTONS[slot];
+		if ( button ) then
+			local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo = GetTransmogrifySlotInfo(button.id);
+			if ( hasUndo ) then
+				PlaySound("UI_Transmogrify_Undo");
+			elseif ( not hasPending ) then
+				if ( button.hadUndo ) then
+					PlaySound("UI_Transmogrify_Redo");
+					button.hadUndo = nil;
+				end
+			end
+		end
 		local dialog = StaticPopup_FindVisible("TRANSMOGRIFY_BIND_CONFIRM");
 		if ( dialog and dialog.data.slot == slot ) then
 			StaticPopup_Hide("TRANSMOGRIFY_BIND_CONFIRM");
@@ -87,12 +100,10 @@ function TransmogrifyFrame_OnEvent(self, event, ...)
 		self:Hide();
 	elseif ( event == "TRANSMOGRIFY_SUCCESS" ) then
 		local slot = ...;
-		for _, button in pairs(buttons) do
-			if ( button.id == slot ) then
-				TransmogrifyFrame_AnimateSlotButton(button);
-				TransmogrifyFrame_UpdateSlotButton(button);
-				return;
-			end
+		local button = BUTTONS[slot];
+		if ( button ) then
+			TransmogrifyFrame_AnimateSlotButton(button);
+			TransmogrifyFrame_UpdateSlotButton(button);
 		end
 	elseif ( event == "TRANSMOGRIFY_BIND_CONFIRM" ) then
 		local slot, itemLink = ...;
@@ -218,7 +229,8 @@ function TransmogrifySlotButton_OnLoad(self)
 	self.defaultTexture = textureName;
 	self.icon:SetTexture(textureName);
 	self.verticalFlyout = VERTICAL_FLYOUTS[id];
-	tinsert(buttons, self);
+	BUTTONS[id] = self;
+	RaiseFrameLevelByTwo(self);
 end
 
 function TransmogrifySlotButton_OnEvent(self, event, ...)
@@ -230,13 +242,10 @@ function TransmogrifySlotButton_OnEvent(self, event, ...)
 end
 
 function TransmogrifySlotButton_OnClick(self, button)
+	local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo = GetTransmogrifySlotInfo(self.id);
+	-- save for sound to play on TRANSMOGRIFY_UPDATE event
+	self.hadUndo = hasUndo;
 	if ( button == "LeftButton" ) then
-		local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo = GetTransmogrifySlotInfo(self.id);
-		if ( hasUndo ) then
-			PlaySound("UI_Transmogrify_Redo");
-		elseif ( isTransmogrified and not hasPending ) then
-			PlaySound("UI_Transmogrify_Undo");
-		end
 		ClickTransmogrifySlot(self.id);
 	elseif ( button == "RightButton" ) then
 		ClearTransmogrifySlot(self.id);
@@ -282,7 +291,7 @@ function TransmogrifySlotButton_OnLeave(self)
 end
 
 function TransmogrifyFrame_Update(self)
-	for _, button in pairs(buttons) do
+	for _, button in pairs(BUTTONS) do
 		TransmogrifyFrame_UpdateSlotButton(button);
 	end
 	local hasWarningDialog = StaticPopup_FindVisible("TRANSMOGRIFY_BIND_CONFIRM");

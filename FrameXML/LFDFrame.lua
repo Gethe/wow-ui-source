@@ -82,7 +82,7 @@ function LFDFrame_OnEvent(self, event, ...)
 			HideUIPanel(LFDParentFrame);
 		end
 	end
-	LFDQueueFrame_UpdatePortrait();
+	--LFDQueueFrame_UpdatePortrait();
 end
 
 function LFDFrame_OnShow(self)
@@ -830,7 +830,7 @@ function LFDQueueFrameFindGroupButton_Update()
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
 	end
 	
-	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" ) then
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" and mode ~= "rolecheck" ) then
 		LFDQueueFramePartyBackfillBackfillButton:Enable();
 	else
 		LFDQueueFramePartyBackfillBackfillButton:Disable();

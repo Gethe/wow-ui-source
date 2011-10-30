@@ -1658,7 +1658,7 @@ TRAVEL PASS
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="LOOKING_FOR_RAID">
+			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="RAID">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT">
 						<Offset>
@@ -1670,7 +1670,7 @@ TRAVEL PASS
 					<OnLoad function="FriendsFrame_Update"/>
 					<OnEvent function="FriendsFrame_Update"/>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LOOKING_FOR_RAID, "TOGGLELFRPARENT"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAID_BROWSER, 1);
+						GameTooltip_AddNewbieTip(self, RAID, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAID, 1);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>

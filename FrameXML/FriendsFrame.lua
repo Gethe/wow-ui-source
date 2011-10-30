@@ -43,6 +43,7 @@ FRIENDS_FRIENDS_MUTUAL = 2;
 FRIENDS_FRIENDS_ALL = 3;
 BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
+BNET_CLIENT_D3 = "D3";
 FRIENDS_TOOLTIP_MAX_TOONS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
@@ -69,11 +70,15 @@ WHOFRAME_DROPDOWN_LIST = {
 	{name = RACE, sortType = "race"}
 };
 
-FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame", "PendingListFrame", "WhoFrame", "ChannelFrame", "LFRParentFrame" };
+FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame", "PendingListFrame", "WhoFrame", "ChannelFrame", "RaidFrame" };
 function FriendsFrame_ShowSubFrame(frameName)
 	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			_G[value]:Show()
+		elseif ( value == "RaidFrame" ) then
+			if ( RaidFrame:GetParent() == FriendsFrame ) then
+				RaidFrame:Hide();
+			end
 		else
 			_G[value]:Hide();
 		end	
@@ -296,9 +301,9 @@ function FriendsFrame_Update()
 			ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
 			FriendsFrameInset:SetPoint("TOPLEFT", 4, -60);
 			FriendsFrameIcon:SetTexture("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
-			FriendsFrameTitleText:SetText(LOOKING_FOR_RAID);
-			FriendsFrame_ShowSubFrame("LFRParentFrame");
-			LFRFrame_SetActiveTab(LFRParentFrame.activeTab);
+			FriendsFrameTitleText:SetText(RAID);
+			ClaimRaidFrame(FriendsFrame);
+			FriendsFrame_ShowSubFrame("RaidFrame");
 		end
 	end
 end
@@ -308,7 +313,13 @@ function FriendsFrame_OnHide()
 	PlaySound("igMainMenuClose");
 	RaidInfoFrame:Hide();
 	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
-		_G[value]:Hide();
+		if ( value == "RaidFrame" ) then
+			if ( RaidFrame:GetParent() == FriendsFrame ) then
+				RaidFrame:Hide();
+			end
+		else
+			_G[value]:Hide();
+		end
 	end
 	FriendsFriendsFrame:Hide();
 end
@@ -1370,6 +1381,9 @@ function FriendsFrame_UpdateFriends()
 					elseif ( client == BNET_CLIENT_SC2 ) then
 						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Sc2icon");
 						infoText = gameText;
+					elseif ( client == BNET_CLIENT_D3 ) then
+						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-D3icon");
+						infoText = gameText;
 					end
 					nameColor = FRIENDS_BNET_NAME_COLOR;
 					button.gameIcon:Show();
@@ -1620,7 +1634,7 @@ function FriendsFrameTooltip_Show(self)
 				end
 				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, text);
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmName), -4);
-			elseif ( client == BNET_CLIENT_SC2 ) then
+			else
 				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, toonName);
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, gameText, -4);
 			end
@@ -1705,7 +1719,7 @@ function FriendsFrameTooltip_Show(self)
 						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
 					end
 					gameText = zoneName;
-				elseif ( client == BNET_CLIENT_SC2 ) then
+				else
 					text = toonName;
 				end
 				FriendsFrameTooltip_SetLine(toonNameString, nil, text);
@@ -2218,9 +2232,12 @@ function TravelPassDropDown_Initialize(self)
 			else
 				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
 			end
-		else
+		elseif ( client == BNET_CLIENT_SC2 ) then
 			restriction = INVITE_RESTRICTION_CLIENT;
 			info.text = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:18|t"..toonName;
+		elseif ( client == BNET_CLIENT_D3 ) then
+			restriction = INVITE_RESTRICTION_CLIENT;
+			info.text = "|TInterface\\ChatFrame\\UI-ChatIcon-D3:18|t"..toonName;
 		end
 		if ( restriction == INVITE_RESTRICTION_NONE ) then
 			info.arg1 = toonID;

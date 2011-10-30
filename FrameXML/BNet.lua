@@ -156,6 +156,8 @@ function BNToastFrame_Show()
 				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-WOW:14:14:0:-1|t"..toonName;
 			elseif ( client == BNET_CLIENT_SC2 ) then
 				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:14:14:0:-1|t"..toonName;
+			elseif ( client == BNET_CLIENT_D3 ) then
+				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-D3:14:14:0:-1|t"..toonName;
 			end
 			middleLine:SetFormattedText(toonName);
 			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);

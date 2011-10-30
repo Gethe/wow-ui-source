@@ -128,6 +128,19 @@ function DungeonCompletionAlertFrame_ShowAlert()
 	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
 	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards= GetLFGCompletionReward();
 	
+	if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+		frame.raidArt:Show();
+		frame.dungeonArt1:Hide();
+		frame.dungeonArt2:Hide();
+		frame.dungeonArt3:Hide();
+		frame.dungeonArt4:Hide();
+	else
+		frame.raidArt:Hide();
+		frame.dungeonArt1:Show();
+		frame.dungeonArt2:Show();
+		frame.dungeonArt3:Show();
+		frame.dungeonArt4:Show();
+	end
 	
 	--Set up the rewards
 	local moneyAmount = moneyBase + moneyVar * numStrangers;

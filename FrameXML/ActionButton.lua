@@ -92,11 +92,18 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
+	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
-	for k, frame in pairs(self.frames) do
-		ActionButton_OnEvent(frame, event, ...);
+	if ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
+		if ( self.tooltipOwner and GameTooltip:GetOwner() == self.tooltipOwner ) then
+			ActionButton_SetTooltip(self.tooltipOwner);
+		end
+	else
+		for k, frame in pairs(self.frames) do
+			ActionButton_OnEvent(frame, event, ...);
+		end
 	end
 end
 
@@ -106,9 +113,9 @@ end
 
 function ActionBarActionEventsFrame_OnLoad(self)
 	self.frames = { };
-	self:RegisterEvent("ACTIONBAR_UPDATE_STATE");
+	--self:RegisterEvent("ACTIONBAR_UPDATE_STATE");			not updating state from lua anymore, see SetActionUIButton
 	self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");
-	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");		not updating cooldown from lua anymore, see SetActionUIButton
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
@@ -216,6 +223,7 @@ function ActionButton_UpdateAction (self)
 	local action = ActionButton_CalculateAction(self);
 	if ( action ~= self.action ) then
 		self.action = action;
+		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
 	end
 end

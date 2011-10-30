@@ -51,6 +51,8 @@
 				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
 				if ( self.permDisabled ) then
 					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, 1);
+				elseif ( self.disabledTooltip and not self:IsEnabled() ) then
+					GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, 1);
 				end
 				GameTooltip:Show();
 				LFGFrameRoleCheckButton_OnEnter(self);
@@ -762,7 +764,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentFiligree" file="Interface\LFGFrame\UI-LFG-FILIGREE">
+						<Texture name="$parentFiligree" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="filigree">
 							<Size>
 								<AbsDimension x="292" y="54"/>
 							</Size>
@@ -772,15 +774,10 @@
 										<AbsDimension x="7" y="-3"/>
 									</Offset>
 								</Anchor>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-7" y="-3"/>
-									</Offset>
-								</Anchor>
 							</Anchors>
 							<TexCoords left="0.02734" right="0.59765" top="0.578125" bottom="1.0"/>
 						</Texture>
-						<Texture name="$parentBottomArt" file="Interface\LFGFrame\UI-LFG-FILIGREE">
+						<Texture name="$parentBottomArt" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="bottomArt">
 							<Size>
 								<AbsDimension x="287" y="72"/>
 							</Size>
@@ -1301,6 +1298,118 @@
 		<Scripts>
 			<OnLoad function="LFGEventFrame_OnLoad"/>
 			<OnEvent function="LFGEventFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LFGInvitePopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size>
+			<AbsDimension x="306" y="180"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="240" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
+				<Size>
+					<AbsDimension x="70" y="70"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="35" y="-55"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
+				<Size>
+					<AbsDimension x="70" y="70"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
+				<Size>
+					<AbsDimension x="70" y="70"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT" motionScriptsWhileDisabled="true">
+				<Size>
+					<AbsDimension x="115" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-3" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGInvitePopupAccept_OnClick"/>
+					<OnEnter>
+						if ( not self:IsEnabled() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+							GameTooltip:SetText(ERR_LFG_NO_ROLES_SELECTED, 1, 0, 0, 1, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="DECLINE">
+				<Size>
+					<AbsDimension x="115" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGInvitePopupDecline_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				LFGInvitePopupRoleButtonTank.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
+				LFGInvitePopupRoleButtonHealer.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
+				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
+			</OnLoad>
+			<OnShow>
+				PlaySound("igPlayerInvite");
+			</OnShow>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

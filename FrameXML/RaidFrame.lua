@@ -6,7 +6,7 @@ MAX_RAID_INFOS = 20;
 
 function RaidParentFrame_OnLoad(self)
 	SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
-	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetNumTabs(self, 3);
 	PanelTemplates_SetTab(self, 1);
 end
 
@@ -28,6 +28,7 @@ function RaidFrame_OnLoad(self)
 	RaidFrame_Update();
 
 	RaidFrame.hasRaidInfo = nil;
+	RaidParentFrame.selectectTab = 1;
 end
 
 function RaidFrame_OnShow(self)
@@ -245,3 +246,30 @@ function RaidInfoExtendButton_OnClick(self)
 	RequestRaidInfo();
 	RaidInfoFrame_Update();
 end
+
+
+
+
+
+
+--4.3 Temp - Chaz
+function ClaimRaidFrame(parent)
+	local currentParent = RaidFrame:GetParent();
+	if currentParent == parent then
+		return;
+	end
+	
+	RaidFrame:SetParent(parent);
+	RaidFrame:ClearAllPoints();
+	RaidFrame:SetPoint("TOPLEFT", 0, 0);
+	RaidFrame:SetPoint("BOTTOMRIGHT", 0, 0);
+	
+	if RaidFrame:IsShown() and currentParent then
+		_G[currentParent:GetName().."Tab1"]:Click();
+	end
+end
+
+
+
+
+

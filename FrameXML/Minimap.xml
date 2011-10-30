@@ -529,6 +529,7 @@
 										self:RegisterEvent("LFG_PROPOSAL_FAILED");
 										self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 										self:RegisterEvent("LFG_PROPOSAL_SHOW");
+										self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
 										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>

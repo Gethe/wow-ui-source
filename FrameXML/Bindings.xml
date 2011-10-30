@@ -709,14 +709,17 @@
 	<Binding name="TOGGLECHATTAB">
 		ToggleFriendsFrame(3);
 	</Binding>
+	<Binding name="TOGGLERAIDFINDER">
+		ToggleRaidFrame(1);
+	</Binding>
 	<Binding name="TOGGLERAIDTAB">
-		ToggleRaidFrame();
+		ToggleRaidFrame(2);
+	</Binding>
+	<Binding name="TOGGLELFRPARENT">
+		ToggleRaidFrame(3);
 	</Binding>
 	<Binding name="TOGGLELFGPARENT"> <!--Keeping the name as the old LFG so that people's bindings aren't reset -->
 		ToggleLFDParentFrame();
-	</Binding>
-	<Binding name="TOGGLELFRPARENT">
-		ToggleFriendsFrame(4);
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES">
 		ToggleWorldStateScoreFrame();

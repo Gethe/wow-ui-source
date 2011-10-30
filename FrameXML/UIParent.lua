@@ -196,6 +196,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
 	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
 	self:RegisterEvent("RAISED_AS_GHOUL");
+	self:RegisterEvent("SOR_START_EXPERIENCE_INCOMPLETE");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -538,11 +539,22 @@ function ToggleHelpFrame()
 	end
 end
 
-function ToggleRaidFrame()
+function ToggleRaidFrame(index)
 	if ( RaidParentFrame:IsShown() ) then
-		HideUIPanel(RaidParentFrame);
+		if ( index and _G["RaidParentFrameTab"..index] ) then
+			if ( index == RaidParentFrame.selectectTab ) then
+				HideUIPanel(RaidParentFrame);
+			end
+		else
+			HideUIPanel(RaidParentFrame);
+		end
 	else
 		ShowUIPanel(RaidParentFrame);
+	end
+	
+	
+	if ( index and _G["RaidParentFrameTab"..index] ) then
+		_G["RaidParentFrameTab"..index]:Click();
 	end
 end
 
@@ -650,9 +662,16 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 		end
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
-		StaticPopup_Show("PARTY_INVITE", arg1);
+		-- if there's a role, it's an LFG invite
+		if ( arg2 or arg3 or arg4 ) then
+			StaticPopupSpecial_Show(LFGInvitePopup);
+			LFGInvitePopup_Update(arg1, arg2, arg3, arg4);
+		else
+			StaticPopup_Show("PARTY_INVITE", arg1);
+		end
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
+		StaticPopupSpecial_Hide(LFGInvitePopup);
 	elseif ( event == "GUILD_INVITE_REQUEST" ) then
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
@@ -1133,6 +1152,9 @@ function UIParent_OnEvent(self, event, ...)
 		TrialAccountCapReached_Inform("money");
 	elseif ( event == "TRIAL_CAP_REACHED_LEVEL" ) then
 		TrialAccountCapReached_Inform("level");
+		
+	elseif( event == "SOR_START_EXPERIENCE_INCOMPLETE" ) then
+		StaticPopup_Show("ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE");
 	end
 end
 

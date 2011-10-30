@@ -96,7 +96,23 @@ function MacOptionsFrame_Load()
 		MacOptionsFrameCheckButton3:SetChecked(0);
 		MacOptionsFrame_DisableCheckBox(MacOptionsFrameCheckButton3);		
 	end
-
+	
+	local disableOSShortcutsButton = _G["MacOptionsFrameCheckButton9"];
+	disableOSShortcutsButton.setFunc = function(checked)
+		if ( (not MacOptions_IsUniversalAccessEnabled()) and (checked == "1")  ) then
+			StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
+			HideUIPanel(MacOptionsFrame);
+			HideUIPanel(GameMenuFrame);
+			_G["MacOptionsFrameCheckButton9"]:SetChecked(0);
+		else
+			MacOptions_SetOSShortcutsDisabled(checked == "1");
+		end
+	end;
+	
+	if ( (not MacOptions_IsUniversalAccessEnabled()) and disableOSShortcutsButton:GetChecked() ) then
+		disableOSShortcutsButton:SetChecked(0);
+		SetCVar("MacDisableOSShortcuts", "0");
+	end
 end
 
 function MacOptionsFrame_Save()

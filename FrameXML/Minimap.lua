@@ -8,6 +8,11 @@ MINIMAP_EXPANDER_MAXSIZE = 28;
 HUNTER_TRACKING = 1;
 TOWNSFOLK = 2;
 
+LFG_EYE_TEXTURES = { };
+LFG_EYE_TEXTURES["default"] = { file = "Interface\\LFGFrame\\LFG-Eye", width = 512, height = 256, frames = 29, iconSize = 64, delay = 0.1 };
+LFG_EYE_TEXTURES["raid"] = { file = "Interface\\LFGFrame\\LFR-Anim", width = 256, height = 256, frames = 16, iconSize = 64, delay = 0.05 };
+LFG_EYE_TEXTURES["unknown"] = { file = "Interface\\LFGFrame\\WaitAnim", width = 128, height = 128, frames = 4, iconSize = 64, delay = 0.25 };
+
 function Minimap_OnLoad(self)
 	self.fadeOut = nil;
 	Minimap:SetPlayerTextureHeight(40);
@@ -157,7 +162,8 @@ function Minimap_ZoomOut()
 end
 
 function EyeTemplate_OnUpdate(self, elapsed)
-	AnimateTexCoords(self.texture, 512, 256, 64, 64, 29, elapsed, 0.1)
+	local textureInfo = LFG_EYE_TEXTURES[self.queueType];
+	AnimateTexCoords(self.texture, textureInfo.width, textureInfo.height, textureInfo.iconSize, textureInfo.iconSize, textureInfo.frames, elapsed, textureInfo.delay)
 end
 
 function EyeTemplate_StartAnimating(eye)
@@ -169,12 +175,38 @@ function EyeTemplate_StopAnimating(eye)
 	if ( eye.texture.frame ) then
 		eye.texture.frame = 1;	--To start the animation over.
 	end
-	eye.texture:SetTexCoord(0, 0.125, 0, .25);
+	local textureInfo = LFG_EYE_TEXTURES[eye.queueType];
+	eye.texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
 end
 
 function MiniMapLFG_UpdateIsShown()
 	local mode, submode = GetLFGMode();
 	if ( mode ) then
+		local _,  _, _, _, _, _, _, _, instanceType, instanceSubType = GetLFGQueueStats();
+		local queueType;
+		if ( instanceType ) then
+			if ( instanceSubType == LFG_SUBTYPEID_RAID ) then
+				queueType = "raid";
+			else
+				queueType = "default";
+			end
+		else
+			queueType = "unknown";
+		end
+		if ( queueType ~= MiniMapLFGFrame.eye.queueType ) then
+			local eye = MiniMapLFGFrame.eye;
+			if ( eye.queueType ) then
+				eye.texture.frame = nil;			-- to clear saved animation settings
+				EyeTemplate_StopAnimating(eye);
+			end
+			eye.texture:SetTexture(LFG_EYE_TEXTURES[queueType].file);
+			eye.queueType = queueType;
+			EyeTemplate_StopAnimating(eye);			-- to set icon to the first frame
+			local frameLevel = MiniMapLFGFrame:GetFrameLevel();
+			if ( eye:GetFrameLevel() >= frameLevel ) then
+				eye:SetFrameLevel(frameLevel - 1);
+			end
+		end
 		MiniMapLFGFrame:Show();
 		if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
 			EyeTemplate_StartAnimating(MiniMapLFGFrame.eye);

@@ -518,7 +518,13 @@ function GuildMainFrame_OnEvent(self, event, ...)
 	end
 	if ( event == "GUILD_PERK_UPDATE" ) then
 		GuildMainFrame_UpdatePerks();
-	elseif ( event == "GUILD_NEWS_UPDATE" or event == "GUILD_ROSTER_UPDATE" or event == "GUILD_MOTD" ) then
+	elseif ( event == "GUILD_NEWS_UPDATE" or event == "GUILD_MOTD" ) then
+		GuildMainFrame_UpdateNewsEvents();
+	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		local arg1 = ...;
+		if ( arg1 ) then
+			GuildRoster();
+		end
 		GuildMainFrame_UpdateNewsEvents();
 	end
 end

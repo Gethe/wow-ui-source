@@ -45,6 +45,20 @@ StaticPopupDialogs["ERROR_CINEMATIC"] = {
 	hideOnEscape = 1,
 }
 
+StaticPopupDialogs["ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE"] = {
+	text = ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE,
+	button1 = OKAY,
+	button2 = nil,
+	timeout = 0,
+	OnAccept = function()
+	end,
+	OnCancel = function()
+	end,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+}
+
 StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	text = CONFIRM_DELETE_EQUIPMENT_SET,
 	button1 = YES,
@@ -159,6 +173,25 @@ StaticPopupDialogs["CONFIRM_RESET_INTERFACE_SETTINGS"] = {
 	hideOnEscape = 1,
 	whileDead = 1,
 }
+
+StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = { 
+	text = MAC_OPEN_UNIVERSAL_ACCESS,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function ()
+		MacOptions_OpenUniversalAccess();
+		ShowUIPanel(MacOptionsFrame);
+	end,
+	OnCancel = function()
+		ShowUIPanel(MacOptionsFrame);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
 
 StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	text = CONFIRM_PURCHASE_TOKEN_ITEM,

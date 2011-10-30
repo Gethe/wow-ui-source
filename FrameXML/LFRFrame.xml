@@ -143,7 +143,7 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	
-	<Frame name="LFRParentFrame" toplevel="true" hidden="true" enableMouse="true" useParentLevel="true" parent="FriendsFrame" setAllPoints="true">
+	<Frame name="LFRParentFrame" toplevel="true" hidden="true" enableMouse="true" useParentLevel="true" parent="RaidParentFrame" setAllPoints="true">
 		<Frames>
 			<Frame name="LFRQueueFrame" useParentLevel="true" setAllPoints="true">
 				<Layers>

@@ -3045,6 +3045,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-WOW:14|t"..toonNameText;
 					elseif ( client == BNET_CLIENT_SC2 ) then
 						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:14|t"..toonNameText;
+					elseif ( client == BNET_CLIENT_D3 ) then
+						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-D3:14|t"..toonNameText;
 					end
 					
 					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s] (%s)|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2, toonNameText);

@@ -159,6 +159,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	LFG_UpdateFindGroupButtons();
 	LFG_UpdateLockedOutPanels();
 	LFDFrame_UpdateBackfill();
+	RaidFinderFrame_UpdateBackfill();
 end
 
 function LFG_UpdateLockedOutPanels()
@@ -658,6 +659,22 @@ function LFGDungeonReadyPopup_OnUpdate(self, elapsed)
 	end
 end
 
+local DUNGEON_BACKDROP_TABLE = {
+	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+	tile = true,
+	tileSize = 32,
+	edgeSize = 32,
+	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
+	
+local RAID_BACKDROP_TABLE = {
+	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",
+	tile = true,
+	tileSize = 32,
+	edgeSize = 32,
+	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
+
 function LFGDungeonReadyPopup_Update()	
 	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader = GetLFGProposal();
 	if ( not proposalExists ) then
@@ -722,6 +739,26 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 118/128);
 			end
 		else
+			if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+				LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\LFR-Texture");
+				LFGDungeonReadyDialog.filigree:SetTexCoord(0.00195313, 0.57617188, 0.58593750, 0.78125000);
+				LFGDungeonReadyDialog.filigree:SetSize(294, 50);
+				LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -8);
+				LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\LFR-Texture");
+				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.00195313, 0.55273438, 0.29296875, 0.57812500);
+				LFGDungeonReadyDialog.bottomArt:SetSize(282, 73);
+				LFGDungeonReadyDialog:SetBackdrop(RAID_BACKDROP_TABLE);
+			else
+				LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
+				LFGDungeonReadyDialog.filigree:SetTexCoord(0.02734, 0.59765, 0.578125, 1.0);
+				LFGDungeonReadyDialog.filigree:SetSize(292, 54);
+				LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -3);
+				LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
+				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
+				LFGDungeonReadyDialog.bottomArt:SetSize(287, 72);
+				LFGDungeonReadyDialog:SetBackdrop(DUNGEON_BACKDROP_TABLE);
+			end
+
 			LFGDungeonReadyDialog.randomInProgress:Hide();
 			LFGDungeonReadyPopup:SetHeight(223);
 			LFGDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
@@ -1132,8 +1169,14 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	--HACK
 	if ( dungeonID == 341 ) then	--Trollpocalypse Heroic
 		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-TROLLPOCALYPSE";
+	elseif ( dungeonID == 434 ) then	--Hour of Twilight Heroic
+		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HourofTwilight";
 	elseif ( textureFilename ~= "" ) then
-		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-HOLIDAY-BACKGROUND-"..textureFilename;
+		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..textureFilename;
+		else
+			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-HOLIDAY-BACKGROUND-"..textureFilename;
+		end
 	elseif ( isHeroic ) then
 		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC";
 	else
@@ -1361,4 +1404,74 @@ function LFGRewardsFrameEncounterList_OnEnter(self)
 		end
 	end
 	GameTooltip:Show();
+end
+
+--
+-- LFR/LFD group invite stuff
+--
+function LFGInvitePopup_UpdateAcceptButton()
+	if ( LFGInvitePopupRoleButtonTank.checkButton:GetChecked() or LFGInvitePopupRoleButtonHealer.checkButton:GetChecked() or LFGInvitePopupRoleButtonDPS.checkButton:GetChecked() ) then
+		LFGInvitePopupAcceptButton:Enable();
+	else
+		LFGInvitePopupAcceptButton:Disable();
+	end
+end
+
+function LFGInvitePopupAccept_OnClick()
+	AcceptGroup(LFGInvitePopupRoleButtonTank.checkButton:GetChecked(), LFGInvitePopupRoleButtonHealer.checkButton:GetChecked(), LFGInvitePopupRoleButtonDPS.checkButton:GetChecked());
+	StaticPopupSpecial_Hide(LFGInvitePopup);
+end
+
+function LFGInvitePopupDecline_OnClick()
+	DeclineGroup();
+	StaticPopupSpecial_Hide(LFGInvitePopup);
+end
+
+function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, roleDamagerAvailable)
+	local self = LFGInvitePopup;
+	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
+	local tankButton = LFGInvitePopupRoleButtonTank;
+	local healerButton = LFGInvitePopupRoleButtonHealer;
+	local damagerButton = LFGInvitePopupRoleButtonDPS;
+	local availableRolesField = 0;
+	LFGInvitePopupText:SetFormattedText(INVITATION, inviter);
+	-- tank
+	if ( not canBeTank ) then
+		LFG_PermanentlyDisableRoleButton(tankButton);
+	elseif ( not roleTankAvailable ) then
+		LFG_DisableRoleButton(tankButton);
+		tankButton.disabledTooltip = LFG_ROLE_UNAVAILABLE;
+	else
+		LFG_EnableRoleButton(tankButton);
+		tankButton.disabledTooltip = nil;
+		availableRolesField = availableRolesField + 2;
+	end
+	-- healer
+	if ( not canBeHealer ) then
+		LFG_PermanentlyDisableRoleButton(healerButton);
+	elseif ( not roleHealerAvailable ) then
+		LFG_DisableRoleButton(healerButton);
+		healerButton.disabledTooltip = LFG_ROLE_UNAVAILABLE;
+	else
+		LFG_EnableRoleButton(healerButton);
+		healerButton.disabledTooltip = nil;
+		availableRolesField = availableRolesField + 4;
+	end
+	-- damage
+	if ( not canBeDamager ) then
+		LFG_PermanentlyDisableRoleButton(damagerButton);
+	elseif ( not roleDamagerAvailable ) then
+		LFG_DisableRoleButton(damagerButton);
+		damagerButton.disabledTooltip = LFG_ROLE_UNAVAILABLE;
+	else
+		LFG_EnableRoleButton(damagerButton);
+		damagerButton.disabledTooltip = nil;
+		availableRolesField = availableRolesField + 8;
+	end	
+	-- if only 1 role is available, check it otherwise check none
+	tankButton.checkButton:SetChecked(availableRolesField == 2);
+	healerButton.checkButton:SetChecked(availableRolesField == 4);
+	damagerButton.checkButton:SetChecked(availableRolesField == 8);
+
+	LFGInvitePopup_UpdateAcceptButton();
 end

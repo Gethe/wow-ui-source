@@ -1,3 +1,5 @@
+MAX_RAID_FINDER_COOLDOWN_NAMES = 8;
+
 function RaidFinderFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
 end
@@ -18,6 +20,7 @@ function RaidFinderFrame_OnShow(self)
 	ButtonFrameTemplate_HideAttic(self:GetParent());
 	self:GetParent().TitleText:SetText(RAID_FINDER);
 	RaidFinderFrameFindRaidButton_Update();
+	RaidFinderFrame_UpdateBackfill(true);
 	
 	self:GetParent().Inset:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", 2, 284);
 	self:GetParent().Inset:SetPoint("BOTTOMRIGHT", self:GetParent(), "BOTTOMRIGHT", -2, 26);
@@ -129,5 +132,164 @@ function RaidFinderFrameFindRaidButton_Update()
 	else
 		RaidFinderFrameFindRaidButton:Disable();
 	end
+
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" and mode ~= "rolecheck" ) then
+		RaidFinderQueueFramePartyBackfillBackfillButton:Enable();
+	else
+		RaidFinderQueueFramePartyBackfillBackfillButton:Disable();
+	end
 end
 
+--Backfill option
+function RaidFinderFrame_UpdateBackfill(forceUpdate)
+	if ( CanPartyLFGBackfill() ) then
+		local name, lfgID, typeID = GetPartyLFGBackfillInfo();
+		RaidFinderQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
+		local mode, subMode = GetLFGMode();
+		if ( (forceUpdate or not RaidFinderQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
+			RaidFinderQueueFramePartyBackfill:Show();
+		end
+	else
+		RaidFinderQueueFramePartyBackfill:Hide();
+	end
+	--LFDQueueFrameRandomCooldownFrame_Update();	--The cooldown frame won't show if the backfill is shown, so we need to update it.
+end
+
+--Cooldown panel
+function RaidFinderQueueFrameCooldownFrame_OnLoad(self)
+	self:SetFrameLevel(RaidFinderQueueFrame:GetFrameLevel() + 9);	--This value also needs to be set when SetParent is called in LFDQueueFrameRandomCooldownFrame_Update.
+	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
+	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+end
+
+function RaidFinderQueueFrameCooldownFrame_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event ~= "UNIT_AURA" or arg1 == "player" or strsub(arg1, 1, 5) == "party" or strsub(arg1, 1, 5) == "raid" ) then
+		RaidFinderQueueFrameCooldownFrame_Update();
+	end
+end
+
+function RaidFinderQueueFrameCooldownFrame_OnUpdate(self, elapsed)
+	local timeRemaining = self.myExpirationTime - GetTime();
+	if ( timeRemaining > 0 ) then
+		self.time:SetText(SecondsToTime(ceil(timeRemaining)));
+	else
+		RaidFinderQueueFrameCooldownFrame_Update();
+	end
+end
+
+function RaidFinderQueueFrameCooldownFrame_Update()
+	local cooldownFrame = RaidFinderQueueFrameCooldownFrame;
+	local shouldShow = false;
+	
+	local cooldownExpiration = GetRFCooldownExpiration();
+	
+	cooldownFrame.myExpirationTime = cooldownExpiration;
+
+	local tokenPrefix = "raid";
+	local numMembers = GetNumRaidMembers();
+	if ( numMembers == 0 ) then
+		tokenPrefix = "party";
+		numMembers = GetNumPartyMembers();
+	end
+	
+	local numCooldowns = 0;
+	for i = 1, numMembers do
+		if ( UnitHasRFCooldown(tokenPrefix..i) and not UnitIsUnit(tokenPrefix..i, "player") ) then
+			numCooldowns = numCooldowns + 1;
+
+			if ( numCooldowns <= MAX_RAID_FINDER_COOLDOWN_NAMES ) then
+				local nameLabel = _G["RaidFinderQueueFrameCooldownFrameName"..numCooldowns];
+				nameLabel:Show();
+
+				local _, classFilename = UnitClass(tokenPrefix..i);
+				local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
+				nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName(tokenPrefix..i));
+			end
+		
+			shouldShow = true;
+		end
+	end
+	for i = numCooldowns + 1, MAX_RAID_FINDER_COOLDOWN_NAMES do
+		local nameLabel = _G["RaidFinderQueueFrameCooldownFrameName"..i];
+		nameLabel:Hide();
+	end
+	
+	local anchorSide = "LEFT";	--Used to center text when we have 4 or fewer players.
+	local anchorOffset = 25;
+	if ( numCooldowns == 0 ) then
+		cooldownFrame.description:SetPoint("TOP", 0, -85);
+		cooldownFrame.additionalPlayersFrame:Hide();
+	elseif ( numCooldowns <= MAX_RAID_FINDER_COOLDOWN_NAMES / 2 ) then
+		cooldownFrame.description:SetPoint("TOP", 0, -30);
+		for i=2, MAX_RAID_FINDER_COOLDOWN_NAMES do
+			local nameLabel = _G["RaidFinderQueueFrameCooldownFrameName"..i];
+			nameLabel:ClearAllPoints();
+			nameLabel:SetPoint("TOP", _G["RaidFinderQueueFrameCooldownFrameName"..(i-1)], "BOTTOM", 0, -5);
+		end
+		cooldownFrame.additionalPlayersFrame:Hide();
+		anchorSide = "";
+		anchorOffset = 0;
+	else
+		if ( numCooldowns > MAX_RAID_FINDER_COOLDOWN_NAMES ) then
+			cooldownFrame.additionalPlayersFrame.text:SetFormattedText(RF_COOLDOWN_ADDITIONAL_PEOPLE, numCooldowns - MAX_RAID_FINDER_COOLDOWN_NAMES);
+			cooldownFrame.additionalPlayersFrame:Show();
+		else
+			cooldownFrame.additionalPlayersFrame:Hide();
+		end
+		cooldownFrame.description:SetPoint("TOP", 0, -30);
+		for i=2, MAX_RAID_FINDER_COOLDOWN_NAMES do
+			local nameLabel = _G["RaidFinderQueueFrameCooldownFrameName"..i];
+			nameLabel:ClearAllPoints();
+			if ( i % 2 == 0 ) then
+				nameLabel:SetPoint("LEFT", _G["RaidFinderQueueFrameCooldownFrameName"..(i-1)], "RIGHT", 15, 0);
+			else
+				nameLabel:SetPoint("TOP", _G["RaidFinderQueueFrameCooldownFrameName"..(i-2)], "BOTTOM", 0, -5);
+			end
+		end
+	end
+
+	RaidFinderQueueFrameCooldownFrameName1:ClearAllPoints();
+	if ( cooldownExpiration and GetTime() < cooldownExpiration ) then
+		shouldShow = true;
+		cooldownFrame.description:SetText(RF_COOLDOWN_YOU);
+		cooldownFrame.time:SetText(SecondsToTime(ceil(cooldownExpiration - GetTime())));
+		cooldownFrame.time:Show();
+		
+		cooldownFrame:SetScript("OnUpdate", RaidFinderQueueFrameCooldownFrame_OnUpdate);
+
+		if ( numCooldowns > 0 ) then
+			cooldownFrame.secondaryDescription:Show();
+			RaidFinderQueueFrameCooldownFrameName1:SetPoint("TOP"..anchorSide, cooldownFrame.secondaryDescription, "BOTTOM"..anchorSide, anchorOffset, -20);
+		else
+			cooldownFrame.secondaryDescription:Hide();
+			RaidFinderQueueFrameCooldownFrameName1:SetPoint("TOP"..anchorSide, cooldownFrame.description, "BOTTOM"..anchorSide, anchorOffset, -20);
+		end
+	else
+		cooldownFrame.description:SetText(RF_COOLDOWN_OTHER);
+		cooldownFrame.time:Hide();
+		
+		cooldownFrame:SetScript("OnUpdate", nil);
+		cooldownFrame.secondaryDescription:Hide();
+		RaidFinderQueueFrameCooldownFrameName1:SetPoint("TOP"..anchorSide, cooldownFrame.description, "BOTTOM"..anchorSide, anchorOffset, -20);
+	end
+	
+	if ( shouldShow and not RaidFinderQueueFramePartyBackfill:IsShown() ) then
+		cooldownFrame:Show();
+	else
+		cooldownFrame:Hide();
+	end
+end
+
+function RaidFinderQueueFrameCooldownAdditionalPlayers_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(ON_COOLDOWN);
+	for i=1, GetNumRaidMembers() do
+		if ( UnitHasRFCooldown("raid"..i) ) then
+			GameTooltip:AddLine(UnitName("raid"..i), 1, 1, 1);
+		end
+	end
+	GameTooltip:Show();
+end

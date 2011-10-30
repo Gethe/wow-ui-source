@@ -103,7 +103,11 @@
 				</Anchors>
                 <Scripts>
 					<OnClick>
-						RaidFrame:Hide();
+						RaidParentFrame.selectectTab = 1;
+						if ( RaidFrame:GetParent() == RaidParentFrame ) then
+							RaidFrame:Hide();
+						end
+						LFRParentFrame:Hide();
 						RaidFinderFrame:Show();
 						PanelTemplates_Tab_OnClick(self, self:GetParent());
 					</OnClick>
@@ -119,11 +123,35 @@
                 </Anchors>
                 <Scripts>
 					<OnClick>
+						RaidParentFrame.selectectTab = 2;
 						RaidFinderFrame:Hide();
+						LFRParentFrame:Hide();
+						ClaimRaidFrame(RaidParentFrame);
 						RaidFrame:Show();
 						PanelTemplates_Tab_OnClick(self, self:GetParent());
 					</OnClick>
                 </Scripts>
+			</Button>
+			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" text="LOOKING_FOR_RAID" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RaidParentFrame.selectectTab = 3;
+						RaidFinderFrame:Hide();
+						if ( RaidFrame:GetParent() == RaidParentFrame ) then
+							RaidFrame:Hide();
+						end
+						LFRParentFrame:Show();
+						LFRFrame_SetActiveTab(LFRParentFrame.activeTab);
+						PanelTemplates_Tab_OnClick(self, self:GetParent());
+					</OnClick>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -136,7 +164,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="RaidFrame" setAllPoints="true" parent="RaidParentFrame" hidden="true">
+	<Frame name="RaidFrame" hidden="true"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
 		<Frames>
 			<Frame name="RaidFrameNotInRaid" setAllPoints="true">
 				<Layers>
@@ -147,27 +175,8 @@
 								<Anchor point="TOPLEFT" x="15" y="-73"/>
 							</Anchors>
 						</FontString>
-						<FontString name="RaidFrameRaidBrowserDescription" inherits="GameFontHighlight" text="RAID_BROWSER_DESCRIPTION" justifyH="CENTER">
-							<Size x="300" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="RaidFrameRaidDescription" relativePoint="BOTTOM" x="-0" y="-50"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Button name="$parentRaidBrowserButton" inherits="UIPanelButtonTemplate2" text="OPEN_RAID_BROWSER">
-						<Size x="260" y="22"/>
-						<Anchors>
-							<Anchor point="TOP" relativeTo="RaidFrameRaidBrowserDescription" relativePoint="BOTTOM" x="0" y="-10"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								OpenFriendsFrame(4);
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
 			</Frame>
 			<Button name="RaidFrameConvertToRaidButton" inherits="UIPanelButtonTemplate" text="CONVERT_TO_RAID">
 				<Size x="115" y="21"/>
@@ -373,3 +382,4 @@
 		</HitRectInsets>
 	</Frame>
 </Ui>
+

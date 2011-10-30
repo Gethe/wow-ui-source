@@ -964,7 +964,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="LowerFrameLevel"/>
+			<OnLoad>
+				self.queueType = "default";
+				LowerFrameLevel(self);
+				self.texture:SetTexCoord(0, 0.125, 0, 0.25);	-- since we're not updating it
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

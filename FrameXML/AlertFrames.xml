@@ -77,28 +77,35 @@
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
-			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+			<Texture file="Interface\LFGFrame\LFR-Texture" parentKey="raidArt">
+				<Size x="310" y="72"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<TexCoords left="0.00195313" right="0.60742188" top="0.00390625" bottom="0.28515625"/>	
+			</Texture>
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt1">
 				<Size x="70" y="72"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
 				</Anchors>
 				<TexCoords left="0" right="0.546875" top="0.28515" bottom="0.5664"/>
 			</Texture>
-			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt2">
 				<Size x="15" y="72"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<TexCoords left="0.5546875" right="0.671875" top="0.28515" bottom="0.5664"/>
 			</Texture>
-			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt3">
 				<Size x="127" y="72"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="69" y="0"/>
 				</Anchors>
 				<TexCoords left="0" right="0.9921875" top="0" bottom="0.28125"/>
 			</Texture>
-			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+			<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST" parentKey="dungeonArt4">
 				<Size x="127" y="72"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-14" y="0"/>
