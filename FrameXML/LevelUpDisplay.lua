@@ -107,12 +107,9 @@ LEVEL_UP_TYPES = {
  ------ HACKS BELOW		
  ------ HACKS BELOW
  
- 	["Teleports"] 			= {	icon="Interface\\Icons\\INV_Misc_Coin_01",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=LEVEL_UP_DUALSPEC,
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2..LEVEL_UP_DUAL_SPEC_LINK
-									},
+ 	["Teleports"] 			= {	spellID=109424	},
+	["PortalsHorde"]		= {	spellID=109400	},
+	["PortalsAlliance"]		= {	spellID=109401	},
 									
  	["LockMount1"] 			= {	spellID=5784	},
  	["LockMount2"] 			= {	spellID=23161	},
@@ -151,9 +148,15 @@ LEVEL_UP_TYPES = {
 
 LEVEL_UP_CLASS_HACKS = {
 	
-	["MAGE"] 		= {
+	["MAGEHorde"] 		= {
 							--  Level  = {unlock}
 								[24] = {"Teleports"},
+								[42] = {"PortalsHorde"},
+							},
+	["MAGEAlliance"]	= {
+							--  Level  = {unlock}
+								[24] = {"Teleports"},
+								[42] = {"PortalsAlliance"},
 							},
 
 
@@ -193,6 +196,16 @@ LEVEL_UP_CLASS_HACKS = {
 								[20] = {"PaliMount1"},
 								[40] = {"PaliMount2", "Plate"},
 							},
+	["PALADINTauren"]	= {
+							--  Level  = {unlock}
+								[20] = {"PaliMountTauren1"},
+								[40] = {"PaliMountTauren2", "Plate"},
+							},	
+	["PALADINDraenei"]	= {
+							--  Level  = {unlock}
+								[20] = {"PaliMountDraenei1"},
+								[40] = {"PaliMountDraenei2", "Plate"},
+							},	
 }
 
 
@@ -258,9 +271,10 @@ function LevelUpDisplay_BuildCharacterList(self)
 	
 	
 		-- This loop is LEVEL_UP_CLASS_HACKS
-	local race, file = UnitRace("player");
+	local race, raceFile = UnitRace("player");
 	local _, class = UnitClass("player");
-	local hackTable = LEVEL_UP_CLASS_HACKS[class..race] or LEVEL_UP_CLASS_HACKS[class];
+	local factionName = UnitFactionGroup("player");
+	local hackTable = LEVEL_UP_CLASS_HACKS[class..raceFile] or LEVEL_UP_CLASS_HACKS[class..factionName] or LEVEL_UP_CLASS_HACKS[class];
 	if  hackTable and hackTable[self.level] then
 		hackTable = hackTable[self.level];
 		for _,spelltype in pairs(hackTable) do

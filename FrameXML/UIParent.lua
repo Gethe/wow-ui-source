@@ -123,6 +123,7 @@ end
 function UIParent_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
+	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
 	self:RegisterEvent("PLAYER_ALIVE");
 	self:RegisterEvent("PLAYER_UNGHOST");
 	self:RegisterEvent("RESURRECT_REQUEST");
@@ -615,9 +616,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_DEAD" ) then
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
-			if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
-				StaticPopup_Show("DEATH");
-			end
+		end
+		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
+			StaticPopup_Show("DEATH");
+		end
+	elseif ( event == "SELF_RES_SPELL_CHANGED" ) then
+		if ( StaticPopup_Visible("DEATH") ) then
+			StaticPopup_Show("DEATH"); --If we're already showing a death prompt, we should refresh it.
 		end
 	elseif ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");

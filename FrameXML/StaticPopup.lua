@@ -1265,6 +1265,7 @@ StaticPopupDialogs["DEATH"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
+	noCancelOnReuse = 1,
 	cancels = "RECOVER_CORPSE"
 };
 StaticPopupDialogs["RESURRECT"] = {

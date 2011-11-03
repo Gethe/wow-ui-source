@@ -739,26 +739,6 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 118/128);
 			end
 		else
-			if ( subtypeID == LFG_SUBTYPEID_RAID ) then
-				LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\LFR-Texture");
-				LFGDungeonReadyDialog.filigree:SetTexCoord(0.00195313, 0.57617188, 0.58593750, 0.78125000);
-				LFGDungeonReadyDialog.filigree:SetSize(294, 50);
-				LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -8);
-				LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\LFR-Texture");
-				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.00195313, 0.55273438, 0.29296875, 0.57812500);
-				LFGDungeonReadyDialog.bottomArt:SetSize(282, 73);
-				LFGDungeonReadyDialog:SetBackdrop(RAID_BACKDROP_TABLE);
-			else
-				LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
-				LFGDungeonReadyDialog.filigree:SetTexCoord(0.02734, 0.59765, 0.578125, 1.0);
-				LFGDungeonReadyDialog.filigree:SetSize(292, 54);
-				LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -3);
-				LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
-				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
-				LFGDungeonReadyDialog.bottomArt:SetSize(287, 72);
-				LFGDungeonReadyDialog:SetBackdrop(DUNGEON_BACKDROP_TABLE);
-			end
-
 			LFGDungeonReadyDialog.randomInProgress:Hide();
 			LFGDungeonReadyPopup:SetHeight(223);
 			LFGDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
@@ -770,6 +750,26 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.label:SetText(SPECIFIC_DUNGEON_IS_READY);
 			LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, totalEncounters);
 			LFGDungeonReadyDialog.instanceInfo:Show();
+		end
+
+		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+			LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\LFR-Texture");
+			LFGDungeonReadyDialog.filigree:SetTexCoord(0.00195313, 0.57617188, 0.58593750, 0.78125000);
+			LFGDungeonReadyDialog.filigree:SetSize(294, 50);
+			LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -8);
+			LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\LFR-Texture");
+			LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.00195313, 0.55273438, 0.29296875, 0.57812500);
+			LFGDungeonReadyDialog.bottomArt:SetSize(282, 73);
+			LFGDungeonReadyDialog:SetBackdrop(RAID_BACKDROP_TABLE);
+		else
+			LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
+			LFGDungeonReadyDialog.filigree:SetTexCoord(0.02734, 0.59765, 0.578125, 1.0);
+			LFGDungeonReadyDialog.filigree:SetSize(292, 54);
+			LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -3);
+			LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
+			LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
+			LFGDungeonReadyDialog.bottomArt:SetSize(287, 72);
+			LFGDungeonReadyDialog:SetBackdrop(DUNGEON_BACKDROP_TABLE);
 		end
 
 		
@@ -1170,10 +1170,10 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	if ( dungeonID == 341 ) then	--Trollpocalypse Heroic
 		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-TROLLPOCALYPSE";
 	elseif ( dungeonID == 434 ) then	--Hour of Twilight Heroic
-		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HourofTwilight";
+		backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HourofTwilightQ";
 	elseif ( textureFilename ~= "" ) then
 		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
-			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..textureFilename;
+			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..textureFilename.."Q";
 		else
 			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-HOLIDAY-BACKGROUND-"..textureFilename;
 		end

@@ -296,7 +296,12 @@ function MiniMapLFGFrame_OnClick(self, button)
 			StaticPopupSpecial_Show(LFGDungeonReadyPopup);
 		end
 	elseif ( mode == "queued" or mode == "rolecheck" or mode == "suspended" ) then
-		ToggleLFDParentFrame();
+		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, isRaidFinder = GetLFGInfoServer();
+		if ( isRaidFinder ) then
+			ToggleRaidFrame(1);
+		else
+			ToggleLFDParentFrame();
+		end
 	elseif ( mode == "listed" ) then
 		ToggleFriendsFrame(4);
 	end

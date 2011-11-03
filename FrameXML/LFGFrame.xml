@@ -322,18 +322,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentStatistic" justifyH="CENTER" justifyV="MIDDLE" inherits="GameFontNormal" parentKey="statistic">
-					<Size>
-						<AbsDimension x="330" y="25"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-90"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentElapsedWaitTime" justifyH="CENTER" inherits="GameFontNormal" parentKey="elapsedWait">
 					<Anchors>
 						<Anchor point="BOTTOM">
@@ -341,6 +329,14 @@
 								<AbsDimension x="0" y="38"/>
 							</Offset>
 						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatistic" justifyH="CENTER" justifyV="MIDDLE" inherits="GameFontNormal" parentKey="statistic">
+					<Size>
+						<AbsDimension x="330" y="25"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentElapsedWaitTime" relativePoint="TOP" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentLookingFor" justifyH="CENTER" inherits="GameFontHighlight" text="SEARCHING_FOR_GROUPS_NEEDS">
