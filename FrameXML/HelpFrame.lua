@@ -333,21 +333,25 @@ function HelpFrameStuckHearthstone_UpdateTooltip(self)
 end
 
 function HelpFrameStuckHearthstone_Update(self)
+	local hearthstoneID = PlayerHasHearthstone();
 	local cooldown = self.Cooldown;
-	local start, duration, enable = GetItemCooldown(HEARTHSTONE_ITEM_ID);
+	local start, duration, enable = GetItemCooldown(hearthstoneID or 0);
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
-	if ( duration > 0 and enable == 0 ) then
+	if (not hearthstoneID or duration > 0 and enable == 0) then
 		self.IconTexture:SetVertexColor(0.4, 0.4, 0.4);
 	else
 		self.IconTexture:SetVertexColor(1, 1, 1);
 	end
-	
-	if (PlayerHasHearthstone()) then
+
+	if (hearthstoneID) then
 		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD");
 		self.IconTexture:SetDesaturated(false);
+		local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(hearthstoneID);
+		self.IconTexture:SetTexture(texture);
 	else
 		self:SetHighlightTexture(nil);
 		self.IconTexture:SetDesaturated(true);
+		self.IconTexture:SetTexture("Interface\\Icons\\inv_misc_rune_01");
 	end
 	
 	if (GameTooltip:GetOwner() == self) then

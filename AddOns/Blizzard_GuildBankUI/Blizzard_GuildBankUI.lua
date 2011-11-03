@@ -784,8 +784,18 @@ function GuildBankFrame_UpdateTabInfo(tab)
 end
 
 --Popup functions
+local GB_ICON_FILENAMES = {};
+
+function GuildBankPopupFrame_RefreshIconList ()
+	GB_ICON_FILENAMES = {};
+	GB_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
+
+	GetMacroItemIcons(GB_ICON_FILENAMES);
+	GetMacroIcons(GB_ICON_FILENAMES);
+end
+
 function GuildBankPopupFrame_Update(tab)
-	local numguildBankIcons = GetNumMacroItemIcons();
+	local numguildBankIcons = #GB_ICON_FILENAMES;
 	local guildBankPopupIcon, guildBankPopupButton;
 	local guildBankPopupOffset = FauxScrollFrame_GetOffset(GuildBankPopupScrollFrame);
 	local index;
@@ -798,9 +808,9 @@ function GuildBankPopupFrame_Update(tab)
 		guildBankPopupIcon = _G["GuildBankPopupButton"..i.."Icon"];
 		guildBankPopupButton = _G["GuildBankPopupButton"..i];
 		index = (guildBankPopupOffset * NUM_GUILDBANK_ICONS_PER_ROW) + i;
-		texture = GetMacroItemIconInfo(index);
+		texture = GB_ICON_FILENAMES[index];
 		if ( index <= numguildBankIcons ) then
-			guildBankPopupIcon:SetTexture(texture);
+			guildBankPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
 			guildBankPopupButton:Show();
 		else
 			guildBankPopupIcon:SetTexture("");
@@ -822,7 +832,7 @@ function GuildBankPopupFrame_Update(tab)
 	--Only do this if the player hasn't clicked on an icon or the icon is not visible
 	if ( not GuildBankPopupFrame.selectedIcon ) then
 		for i=1, numguildBankIcons do
-			texture = GetMacroItemIconInfo(i);
+			texture = GB_ICON_FILENAMES[i];
 			if ( tabTexture == texture ) then
 				GuildBankPopupFrame.selectedIcon = i;
 				break;
@@ -841,6 +851,13 @@ function GuildBankPopupFrame_OnShow(self)
 	end
 	GuildBankPopupEditBox:SetText(name);
 	GuildBankPopupFrame.selectedIcon = nil;
+	GuildBankPopupFrame_RefreshIconList();
+end
+
+function GuildBankPopupFrame_OnHide(self)
+	PlaySound("igCharacterInfoTab");
+	GB_ICON_FILENAMES = nil;
+	collectgarbage();
 end
 
 function GuildBankPopupButton_OnClick(self, button)
@@ -856,7 +873,7 @@ function GuildBankPopupOkayButton_OnClick(self)
 	if ( not name or name == "" ) then
 		name = format(GUILDBANK_TAB_NUMBER, tab);
 	end
-	SetGuildBankTabInfo(tab, name, GuildBankPopupFrame.selectedIcon);
+	SetGuildBankTabInfo(tab, name, GB_ICON_FILENAMES[GuildBankPopupFrame.selectedIcon]);
 	GuildBankPopupFrame:Hide();
 end
 

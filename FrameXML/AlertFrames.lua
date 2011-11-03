@@ -85,6 +85,11 @@ function GuildChallengeAlertFrame_FixAnchors()
 		end
 	end
 	
+	local frame = MissingLootFrame;
+	if ( frame:IsShown() ) then
+		GuildChallengeAlertFrame:SetPoint("BOTTOM", frame, "TOP", 0, 10);
+	end
+
 	GuildChallengeAlertFrame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
 end
 
@@ -116,6 +121,11 @@ function DungeonCompletionAlertFrame_FixAnchors()
 			DungeonCompletionAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
 			return;
 		end
+	end
+	
+	local frame = MissingLootFrame;
+	if ( frame:IsShown() ) then
+		DungeonCompletionAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);	
 	end
 	
 	DungeonCompletionAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
@@ -254,6 +264,11 @@ function AchievementAlertFrame_FixAnchors ()
 			AchievementAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
 			return;
 		end
+	end
+	
+	local frame = MissingLootFrame;
+	if ( frame:IsShown() ) then
+		AchievementAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);	
 	end
 	
 	AchievementAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);

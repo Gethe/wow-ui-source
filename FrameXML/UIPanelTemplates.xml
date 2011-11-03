@@ -859,31 +859,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:SetText(SEARCH);
-				self:SetFontObject("GameFontDisable");
-				self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-				self:SetTextInsets(16, 20, 0, 0);
-			</OnLoad>
+			<OnLoad function="SearchBoxTemplate_OnLoad"/>
 			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost>
-				self:HighlightText(0, 0);
-				self:SetFontObject("GameFontDisable");
-				self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-				if ( self:GetText() == "" or self:GetText() == SEARCH ) then
-					self:SetText(SEARCH);
-					self.clearButton:Hide();
-				end
-			</OnEditFocusLost>
-			<OnEditFocusGained>
-				self:HighlightText();
-				self:SetFontObject("ChatFontSmall");
-				self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
-				if ( self:GetText() == SEARCH ) then
-					self:SetText("")
-				end
-				self.clearButton:Show();
-			</OnEditFocusGained>
+			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
+			<OnEditFocusGained function="SerachBoxTemplate_OnEditFocusGained"/>
 		</Scripts>
 	</EditBox>
 	<EditBox name="BagSearchBoxTemplate" inherits="SearchBoxTemplate" autoFocus="false" virtual="true">
@@ -891,6 +870,9 @@
 			<OnHide function="BagSearch_OnHide"/>
 			<OnTextChanged function="BagSearch_OnTextChanged"/>
 			<OnChar function="BagSearch_OnChar"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost function="BagSearch_OnEditFocusLost"/>
+			<OnEditFocusGained function="BagSearch_OnEditFocusGained"/>
 		</Scripts>
 	</EditBox>
 	<CheckButton name="UICheckButtonTemplate" virtual="true">

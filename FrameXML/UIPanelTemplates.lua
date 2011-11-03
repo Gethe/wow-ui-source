@@ -1,4 +1,31 @@
 
+function SearchBoxTemplate_OnLoad(self)
+	self:SetText(SEARCH);
+	self:SetFontObject("GameFontDisable");
+	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+	self:SetTextInsets(16, 20, 0, 0);
+end
+
+function SearchBoxTemplate_OnEditFocusLost(self)
+	self:HighlightText(0, 0);
+	self:SetFontObject("GameFontDisable");
+	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+	if ( self:GetText() == "" or self:GetText() == SEARCH ) then
+		self:SetText(SEARCH);
+		self.clearButton:Hide();
+	end
+end
+
+function SerachBoxTemplate_OnEditFocusGained(self)
+	self:HighlightText();
+	self:SetFontObject("ChatFontSmall");
+	self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
+	if ( self:GetText() == SEARCH ) then
+		self:SetText("")
+	end
+	self.clearButton:Show();
+end
+
 ITEM_SEARCHBAR_LIST = {
 	"BagItemSearchBox",
 	"GuildItemSearchBox",
@@ -22,13 +49,6 @@ end
 
 function BagSearch_OnTextChanged(self, userChanged)
 	local text = self:GetText();
-	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
-		local bar = _G[barName];
-		if bar and bar ~= self then
-			bar:SetText(text);
-		end
-	end
-	
 	if ( text == SEARCH ) then
 		text = "";
 	end
@@ -55,6 +75,29 @@ function BagSearch_OnChar(self, text)
 		end
 		if ( repeatChar ) then
 			self:ClearFocus();
+		end
+	end
+end
+
+function BagSearch_OnEditFocusGained(self)
+	SerachBoxTemplate_OnEditFocusGained(self);
+
+	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
+		local bar = _G[barName];
+		if bar and bar ~= self then
+			bar:SetText(SEARCH);
+		end
+	end
+end
+
+function BagSearch_OnEditFocusLost(self)
+	SerachBoxTemplate_OnEditFocusGained(self);
+
+	local search = self:GetText();
+	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
+		local bar = _G[barName];
+		if bar and bar ~= self then
+			bar:SetText(search);
 		end
 	end
 end

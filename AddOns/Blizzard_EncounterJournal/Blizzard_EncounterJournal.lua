@@ -132,6 +132,10 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal_ListInstances();
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
+	elseif ( EncounterJournal.queuedPortraitUpdate ) then
+		-- fixes portraits when switching between fullscreen and windowed mode
+		EncounterJournal_UpdatePortraits();
+		EncounterJournal.queuedPortraitUpdate = false;
 	end
 	
 	
@@ -200,6 +204,8 @@ function EncounterJournal_UpdatePortraits()
 				SetPortraitTexture(header.button.portrait.icon, header.button.portrait.displayInfo);
 			end
 		end
+	else
+		EncounterJournal.queuedPortraitUpdate = true;
 	end
 	if ( WorldMapFrame:IsShown() ) then
 		local index = 1;

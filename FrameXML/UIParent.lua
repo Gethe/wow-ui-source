@@ -198,7 +198,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LEVEL_GRANT_PROPOSED");
 	self:RegisterEvent("RAISED_AS_GHOUL");
 	self:RegisterEvent("SOR_START_EXPERIENCE_INCOMPLETE");
-
+	self:RegisterEvent("MISSING_OUT_ON_LOOT");
+	
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
@@ -893,6 +894,8 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 			dialog.data2 = arg2;
 		end
+	elseif ( event == "MISSING_OUT_ON_LOOT" ) then
+		MissingLootFrame_Show();
 	elseif ( event == "CONFIRM_DISENCHANT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
@@ -1202,6 +1205,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiBarRight"] = {baseY = 98, reputation = 1, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT"};
 	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, reputation = 1};
 	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
+	["MissingLootFrame"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, vehicleMenuBar = vehicleMenuBarTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
@@ -3650,6 +3654,30 @@ end
 function LFR_IsEmpowered()
 	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
 		not (IsPartyLeader() or IsRaidLeader()) );
+end
+
+function GetLFGModeType()
+	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, isRaidFinder = GetLFGInfoServer();
+	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
+
+	if ( proposalExists ) then
+		return (subtypeID == LFG_SUBTYPEID_RAID) and "raid" or "default";
+	elseif ( queued ) then
+		return isRaidFinder and "raid" or "default";
+	elseif ( roleCheckInProgress ) then
+		local _, _, subtypeID = GetLFGRoleUpdateSlot(1);
+		return (subtypeID == LFG_SUBTYPEID_RAID) and "raid" or "default";
+	elseif ( IsListedInLFR() ) then
+		return "default";
+	elseif ( joined ) then
+		return isRaidFinder and "raid" or "default";
+	elseif ( IsPartyLFG() ) then
+		local subtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(GetPartyLFGID()));
+		return (subtypeID == LFG_SUBTYPEID_RAID) and "raid" or "default";
+	else
+		return "unknown"
+	end
 end
 
 function GetLFGMode()

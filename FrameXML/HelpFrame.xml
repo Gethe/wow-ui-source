@@ -595,7 +595,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentIconTexture" setAllPoints="true" parentKey="IconTexture" file="Interface\Icons\inv_misc_rune_01"/>
+								<Texture name="$parentIconTexture" setAllPoints="true" parentKey="IconTexture"/>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -620,9 +620,10 @@
 								HelpFrameStuckHearthstone_Update(self);
 							</OnShow>
 							<OnEnter>
+								local hearthstoneID = PlayerHasHearthstone();
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								if (PlayerHasHearthstone()) then
-									GameTooltip:SetInventoryItemByID(HEARTHSTONE_ITEM_ID);
+								if (hearthstoneID) then
+									GameTooltip:SetInventoryItemByID(hearthstoneID);
 									GameTooltip:Show();
 								else
 									GameTooltip:SetText(HELPFRAME_STUCK_HEARTHSTONE_MISSING);

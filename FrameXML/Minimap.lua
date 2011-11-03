@@ -182,16 +182,11 @@ end
 function MiniMapLFG_UpdateIsShown()
 	local mode, submode = GetLFGMode();
 	if ( mode ) then
-		local _,  _, _, _, _, _, _, _, instanceType, instanceSubType = GetLFGQueueStats();
 		local queueType;
-		if ( instanceType ) then
-			if ( instanceSubType == LFG_SUBTYPEID_RAID ) then
-				queueType = "raid";
-			else
-				queueType = "default";
-			end
-		else
+		if ( mode == "queued" and not GetLFGQueueStats() ) then
 			queueType = "unknown";
+		else
+			queueType = GetLFGModeType();
 		end
 		if ( queueType ~= MiniMapLFGFrame.eye.queueType ) then
 			local eye = MiniMapLFGFrame.eye;
@@ -309,28 +304,45 @@ end
 
 function MiniMapLFGFrame_OnEnter(self)
 	local mode, submode = GetLFGMode();
+	local queueType = GetLFGModeType();
 	if ( mode == "queued" ) then
 		LFGSearchStatus:Show();
 	elseif ( mode == "proposal" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		if ( queueType == "raid" ) then
+			GameTooltip:SetText(LOOKING_FOR_RAID);
+		else
+			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		end
 		GameTooltip:AddLine(DUNGEON_GROUP_FOUND_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(CLICK_HERE_FOR_MORE_INFO, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:Show();
 	elseif ( mode == "rolecheck" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		if ( queueType == "raid" ) then
+			GameTooltip:SetText(LOOKING_FOR_RAID);
+		else
+			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		end
 		GameTooltip:AddLine(ROLE_CHECK_IN_PROGRESS_TOOLTIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:Show();
 	elseif ( mode == "listed" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetText(LOOKING_FOR_RAID);
+		if ( queueType == "raid" ) then
+			GameTooltip:SetText(LOOKING_FOR_RAID);
+		else
+			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		end
 		GameTooltip:AddLine(YOU_ARE_LISTED_IN_LFR, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 		GameTooltip:Show();
 	elseif ( mode == "lfgparty" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		if ( queueType == "raid" ) then
+			GameTooltip:SetText(LOOKING_FOR_RAID);
+		else
+			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		end
 		GameTooltip:AddLine(YOU_ARE_IN_DUNGEON_GROUP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
 
 		local dungeonID = GetPartyLFGID();
@@ -348,7 +360,11 @@ function MiniMapLFGFrame_OnEnter(self)
 		GameTooltip:Show();
 	elseif ( mode == "suspended" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		if ( queueType == "raid" ) then
+			GameTooltip:SetText(LOOKING_FOR_RAID);
+		else
+			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
+		end
 		GameTooltip:AddLine(IN_LFG_QUEUE_BUT_SUSPENDED, nil, nil, nil, 1);
 		GameTooltip:Show();
 	end

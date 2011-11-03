@@ -227,6 +227,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 		if ( arg1 == "player" ) then
 			if ( self.state == "vehicle" ) then
 				PlayerFrame_AnimateOut(self);
+			else
+				self.updatePetFrame = true;
 			end
 		end
 	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
@@ -311,6 +313,10 @@ function PlayerFrame_UpdateArt(self)
 		else
 			PlayerFrame_ToPlayerArt(self);
 		end
+	elseif ( self.updatePetFrame ) then
+		-- leaving a vehicle that didn't change player art
+		self.updatePetFrame = false;
+		PetFrame_Update(PetFrame);
 	end
 end
 

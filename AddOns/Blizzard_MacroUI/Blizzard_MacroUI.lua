@@ -272,7 +272,8 @@ function MacroPopupFrame_OnHide(self)
 	end
 	-- Enable tabs
 	PanelTemplates_UpdateTabs(MacroFrame);
-	MACRO_ICON_FILENAMES = {};
+	MACRO_ICON_FILENAMES = nil;
+	collectgarbage();
 end
 
 --[[
@@ -311,6 +312,7 @@ function RefreshPlayerSpellIconInfo()
 		end
 	end
 	GetMacroIcons( MACRO_ICON_FILENAMES );
+	GetMacroItemIcons( MACRO_ICON_FILENAMES );
 end
 
 function GetSpellorMacroIconInfo(index)

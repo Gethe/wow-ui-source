@@ -3120,6 +3120,7 @@ NUM_GEARSET_ICONS_SHOWN = 15;
 NUM_GEARSET_ICONS_PER_ROW = 5;
 NUM_GEARSET_ICON_ROWS = 3;
 GEARSET_ICON_ROW_HEIGHT = 36;
+local EM_ICON_FILENAMES = {};
 
 function GearManagerDialogPopup_OnLoad (self)
 	self.buttons = {};
@@ -3156,11 +3157,6 @@ function GearManagerDialogPopup_OnLoad (self)
 	end
 end
 
-local _equippedItems = {};
-local _numItems;
-local _specialIcon;
-local _TotalItems;
-
 function GearManagerDialogPopup_OnShow (self)
 	PlaySound("igCharacterInfoOpen");
 	self.name = nil;
@@ -3175,6 +3171,8 @@ function GearManagerDialogPopup_OnHide (self)
 	if (not PaperDollEquipmentManagerPane.selectedSetName) then
 		PaperDollFrame_ClearIgnoredSlots();
 	end
+	EM_ICON_FILENAMES = nil;
+	collectgarbage();
 end
 
 function RecalculateGearManagerDialogPopup(setName, iconTexture)
@@ -3200,27 +3198,24 @@ function RecalculateGearManagerDialogPopup(setName, iconTexture)
 	to display it. Issue ID: 171220
 	]]
 	RefreshEquipmentSetIconInfo();
-	_TotalItems = GetNumMacroIcons() + _numItems;
-	_specialIcon = nil;
+	local totalItems = #EM_ICON_FILENAMES;
 	local texture, _;
 	if(popup.selectedTexture) then
 		local foundIndex = nil;
-		for index=1, _TotalItems do
-			texture, _ = GetEquipmentSetIconInfo(index);
+		for index=1, totalItems do
+			texture = GetEquipmentSetIconInfo(index);
 			if ( texture == popup.selectedTexture ) then
 				foundIndex = index;
 				break;
 			end
 		end
 		if (foundIndex == nil) then
-			_specialIcon = popup.selectedTexture;
-			_TotalItems = _TotalItems + 1;
-			foundIndex = _TotalItems;
-		else
-			_specialIcon = nil;
+
+			foundIndex = 1;
+
 		end
 		-- now make it so we always display at least NUM_GEARSET_ICON_ROWS of data
-		local offsetnumIcons = floor((_TotalItems-1)/NUM_GEARSET_ICONS_PER_ROW);
+		local offsetnumIcons = floor((totalItems-1)/NUM_GEARSET_ICONS_PER_ROW);
 		local offset = floor((foundIndex-1) / NUM_GEARSET_ICONS_PER_ROW);
 		offset = offset + min((NUM_GEARSET_ICON_ROWS-1), offsetnumIcons-offset) - (NUM_GEARSET_ICON_ROWS-1);
 		if(foundIndex<=NUM_GEARSET_ICONS_SHOWN) then
@@ -3237,24 +3232,32 @@ end
 RefreshEquipmentSetIconInfo() counts how many uniquely textured inventory items the player has equipped. 
 ]]
 function RefreshEquipmentSetIconInfo ()
-	_numItems = 0;
+	EM_ICON_FILENAMES = {};
+	EM_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
+	local index = 2;
+
 	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-		_equippedItems[i] = GetInventoryItemTexture("player", i);
-		if(_equippedItems[i]) then
-			_numItems = _numItems + 1;
-			--[[
-			Currently checks all for duplicates, even though only rings, trinkets, and weapons may be duplicated. 
-			This version is clean and maintainable.
-			]]
-			for j=INVSLOT_FIRST_EQUIPPED, (i-1) do
-				if(_equippedItems[i] == _equippedItems[j]) then
-					_equippedItems[i] = nil;
-					_numItems = _numItems - 1;
-					break;
+		local itemTexture = GetInventoryItemTexture("player", i);
+		if ( itemTexture ) then
+			EM_ICON_FILENAMES[index] = gsub( strupper(itemTexture), "INTERFACE\\ICONS\\", "" );
+			if(EM_ICON_FILENAMES[index]) then
+				index = index + 1;
+				--[[
+				Currently checks all for duplicates, even though only rings, trinkets, and weapons may be duplicated. 
+				This version is clean and maintainable.
+				]]
+				for j=INVSLOT_FIRST_EQUIPPED, (index-1) do
+					if(EM_ICON_FILENAMES[index] == EM_ICON_FILENAMES[j]) then
+						EM_ICON_FILENAMES[index] = nil;
+						index = index - 1;
+						break;
+					end
 				end
 			end
 		end
 	end
+	GetMacroItemIcons(EM_ICON_FILENAMES);
+	GetMacroIcons(EM_ICON_FILENAMES);
 end
 
 
@@ -3265,18 +3268,8 @@ GetEquipmentSetIconInfo(index) determines the texture and real index of a regula
 			and positive for the macro items//
 ]]
 function GetEquipmentSetIconInfo(index)
-	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-		if (_equippedItems[i]) then
-			index = index - 1;
-			if ( index == 0 ) then
-				return _equippedItems[i], -i;
-			end
-		end
-	end
-	if(index>GetNumMacroIcons()) then
-		return _specialIcon, index;
-	end
-	return GetMacroIconInfo(index), index;
+	return EM_ICON_FILENAMES[index];
+
 end
 
 function GearManagerDialogPopup_Update ()
@@ -3291,10 +3284,10 @@ function GearManagerDialogPopup_Update ()
 	for i=1, NUM_GEARSET_ICONS_SHOWN do
 		local button = buttons[i];
 		index = (offset * NUM_GEARSET_ICONS_PER_ROW) + i;
-		if ( index <= _TotalItems ) then
-			texture, _ = GetEquipmentSetIconInfo(index);
+		if ( index <= #EM_ICON_FILENAMES ) then
+			texture = GetEquipmentSetIconInfo(index);
 			-- button.name:SetText(index); --dcw
-			button.icon:SetTexture(texture);
+			button.icon:SetTexture("INTERFACE\\ICONS\\"..texture);
 			button:Show();
 			if ( index == popup.selectedIcon ) then
 				button:SetChecked(1);
@@ -3312,7 +3305,7 @@ function GearManagerDialogPopup_Update ()
 	end
 	
 	-- Scrollbar stuff
-	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(_TotalItems / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
+	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(#EM_ICON_FILENAMES / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
 end
 
 function GearManagerDialogPopupOkay_Update ()
@@ -3328,9 +3321,8 @@ end
 
 function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	local popup = GearManagerDialogPopup;
-	
-	local _, iconIndex = GetEquipmentSetIconInfo(popup.selectedIcon);
-	
+	local iconTexture = GetEquipmentSetIconInfo(popup.selectedIcon);
+
 	if ( GetEquipmentSetInfoByName(popup.name) ) then	
 		if (popup.isEdit and popup.name ~= popup.origName)  then
 			-- Not allowed to overwrite an existing set by doing a rename
@@ -3340,7 +3332,7 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
 			if ( dialog ) then
 				dialog.data = popup.name;
-				dialog.selectedIcon = iconIndex;
+				dialog.selectedIcon = popup.selectedIcon;
 			else
 				UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 			end
@@ -3354,10 +3346,10 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	if (popup.isEdit) then
 		--Modifying a set
 		PaperDollEquipmentManagerPane.selectedSetName = popup.name;
-		ModifyEquipmentSet(popup.origName, popup.name, iconIndex);
+		ModifyEquipmentSet(popup.origName, popup.name, iconTexture);
 	else
 		-- Saving a new set
-		SaveEquipmentSet(popup.name, iconIndex);
+		SaveEquipmentSet(popup.name, iconTexture);
 	end
 	popup:Hide();
 end
