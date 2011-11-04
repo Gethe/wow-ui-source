@@ -79,6 +79,35 @@ function RaidFrame_OnEvent(self, event, ...)
 	end
 end
 
+function RaidParentFrame_SetView(tab)
+	if ( tab == 1 ) then
+		RaidParentFrame.selectectTab = 1;
+		if ( RaidFrame:GetParent() == RaidParentFrame ) then
+			RaidFrame:Hide();
+		end
+		LFRParentFrame:Hide();
+		RaidFinderFrame:Show();
+		PanelTemplates_Tab_OnClick(RaidParentFrameTab1, RaidParentFrame);
+	end
+	if ( tab == 2 ) then
+		RaidParentFrame.selectectTab = 2;
+		RaidFinderFrame:Hide();
+		LFRParentFrame:Hide();
+		ClaimRaidFrame(RaidParentFrame);
+		RaidFrame:Show();
+		PanelTemplates_Tab_OnClick(RaidParentFrameTab2, RaidParentFrame);
+	elseif ( tab == 3 ) then
+		RaidParentFrame.selectectTab = 3;
+		RaidFinderFrame:Hide();
+		if ( RaidFrame:GetParent() == RaidParentFrame ) then
+			RaidFrame:Hide();
+		end
+		LFRParentFrame:Show();
+		LFRFrame_SetActiveTab(LFRParentFrame.activeTab);
+		PanelTemplates_Tab_OnClick(RaidParentFrameTab3, RaidParentFrame);
+	end
+end
+
 function RaidFrame_Update()
 	-- If not in a raid hide all the UI and just display raid explanation text
 	if ( GetNumRaidMembers() == 0 ) then
@@ -265,7 +294,16 @@ function ClaimRaidFrame(parent)
 	RaidFrame:SetPoint("BOTTOMRIGHT", 0, 0);
 	
 	if RaidFrame:IsShown() and currentParent then
-		_G[currentParent:GetName().."Tab1"]:Click();
+		-- more hackiness - Serban
+		if ( currentParent == RaidParentFrame ) then
+			if ( RaidParentFrameTab1:IsEnabled() ) then
+				RaidParentFrame_SetView(1);
+			else
+				RaidParentFrame_SetView(3);
+			end
+		else
+			_G[currentParent:GetName().."Tab1"]:Click();
+		end
 	end
 end
 

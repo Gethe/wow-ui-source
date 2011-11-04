@@ -52,7 +52,7 @@ function LFRFrame_OnEvent(self, event, ...)
 			LFRQueueFrameComment:ClearFocus();
 			SetLFGComment("");
 		end
-		if ( not LFR_IsEmpowered() or (not LFRQueueFrameComment:HasFocus() and LFRQueueFrameComment:GetText() == "") ) then
+		if ( not RaidBrowser_IsEmpowered() or (not LFRQueueFrameComment:HasFocus() and LFRQueueFrameComment:GetText() == "") ) then
 			if ( joined ) then
 				LFRQueueFrameComment:SetText(lfgComment);
 				if ( strtrim(lfgComment) == "" ) then
@@ -84,10 +84,21 @@ function LFRQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( LFR_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "rolecheck" and mode ~= "suspended" and (not LFRRaidList or LFRRaidList[1])) then --During the proposal, they must use the proposal buttons to leave the queue.
+	local queueType = GetLFGModeType();
+	if ( RaidBrowser_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "rolecheck" and mode ~= "suspended" and (not LFRRaidList or LFRRaidList[1])) then --During the proposal, they must use the proposal buttons to leave the queue.
 		LFRQueueFrameFindGroupButton:Enable();
 		LFRQueueFrameAcceptCommentButton:Enable();
 		LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Enable();
+	elseif ( queueType == "raid" ) then
+		LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:SetText(LEAVE_QUEUE);
+		LFRQueueFrameFindGroupButton:Disable();
+		if ( LFD_IsEmpowered() ) then
+			LFRQueueFrameAcceptCommentButton:Enable();
+			LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Enable();
+		else
+			LFRQueueFrameAcceptCommentButton:Disable();
+			LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Disable();
+		end	
 	else
 		LFRQueueFrameFindGroupButton:Disable();
 		LFRQueueFrameAcceptCommentButton:Disable();
@@ -222,7 +233,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		local difficultyColor = GetQuestDifficultyColor(recLevel);
 		button.level:SetFontObject(difficultyColor.font);
 		
-		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not LFR_IsEmpowered()) then
+		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered()) then
 			button.instanceName:SetFontObject(QuestDifficulty_Header);
 		else
 			button.instanceName:SetFontObject(difficultyColor.font);
@@ -274,7 +285,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.enableButton:SetChecked(enableState);
 	end
 	
-	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not LFR_IsEmpowered() ) then
+	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered() ) then
 		button.enableButton:Disable();
 	else
 		button.enableButton:Enable();
@@ -355,7 +366,7 @@ function LFRQueueFrame_Update()
 	local enableList;
 	
 	local mode, submode = GetLFGMode();
-	if ( LFR_IsEmpowered() and mode ~= "listed") then
+	if ( RaidBrowser_IsEmpowered() and mode ~= "listed") then
 		enableList = LFGEnabledList;
 	else
 		enableList = LFGQueuedForList;

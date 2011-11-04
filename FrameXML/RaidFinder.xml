@@ -331,7 +331,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" parentKey="description" inherits="GameFontNormal" text="RF_COOLDOWN_OTHER" justifyH="CENTER">
+								<FontString name="$parentDescription" parentKey="description" inherits="GameFontNormal" justifyH="CENTER">
 									<Size>
 										<AbsDimension x="300" y="0"/>
 									</Size>
@@ -352,7 +352,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentSecondaryDescription" parentKey="secondaryDescription" inherits="GameFontNormal" text="RF_COOLDOWN_OTHER" justifyH="CENTER">
+								<FontString name="$parentSecondaryDescription" parentKey="secondaryDescription" inherits="GameFontNormal" text="RF_DESERTER_OTHER" justifyH="CENTER">
 									<Size>
 										<AbsDimension x="300" y="0"/>
 									</Size>
@@ -434,6 +434,69 @@
 						<Scripts>
 							<OnLoad function="RaidFinderQueueFrameCooldownFrame_OnLoad"/>
 							<OnEvent function="RaidFinderQueueFrameCooldownFrame_OnEvent"/>
+							<OnShow>
+								RaidFinderFrameFindRaidButton_Update();
+							</OnShow>
+							<OnHide>
+								RaidFinderFrameFindRaidButton_Update();
+							</OnHide>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentIneligibleFrame" hidden="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="330" y="257"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-6" y="27"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" text="" justifyH="CENTER" parentKey="description">
+									<Size>
+										<AbsDimension x="300" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="-0" y="-70"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" parentKey="leaveQueueButton">
+								<Size>
+									<AbsDimension x="153" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										LeaveLFG();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(RaidFinderQueueFrameCooldownFrame:GetFrameLevel() + 2);
+							</OnLoad>
 						</Scripts>
 					</Frame>
 				</Frames>

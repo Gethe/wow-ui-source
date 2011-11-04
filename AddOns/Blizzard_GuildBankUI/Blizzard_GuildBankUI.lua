@@ -801,7 +801,7 @@ function GuildBankPopupFrame_Update(tab)
 	local index;
 	
 	local _, tabTexture  = GetGuildBankTabInfo(GetCurrentGuildBankTab());
-	
+	tabTexture = gsub( strupper(tabTexture), "INTERFACE\\ICONS\\", "")
 	-- Icon list
 	local texture;
 	for i=1, NUM_GUILDBANK_ICONS_SHOWN do
@@ -873,7 +873,13 @@ function GuildBankPopupOkayButton_OnClick(self)
 	if ( not name or name == "" ) then
 		name = format(GUILDBANK_TAB_NUMBER, tab);
 	end
-	SetGuildBankTabInfo(tab, name, GB_ICON_FILENAMES[GuildBankPopupFrame.selectedIcon]);
+	local iconTexture = GB_ICON_FILENAMES[GuildBankPopupFrame.selectedIcon];
+	if ( not iconTexture ) then
+		local _, texture = GetGuildBankTabInfo(tab);
+		iconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
+	end
+		
+	SetGuildBankTabInfo(tab, name, iconTexture);
 	GuildBankPopupFrame:Hide();
 end
 

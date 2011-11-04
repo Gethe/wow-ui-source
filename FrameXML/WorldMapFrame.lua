@@ -94,6 +94,7 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_POI_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("REQUEST_CEMETERY_LIST_RESPONSE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
@@ -235,6 +236,8 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		else
 			WorldMapShowDigSites:Hide();
 		end
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		EncounterJournal_UpdateMapButtonPortraits();
 	end
 end
 
@@ -2440,7 +2443,20 @@ function EncounterJournal_AddMapButtons()
 	WorldMapBossButtonFrame.ready = true;
 	EncounterJournal_CheckQuestButtons();
 end
-	
+
+--- For EJ boss butons
+--- For EJ boss butons	
+function EncounterJournal_UpdateMapButtonPortraits()
+	if ( WorldMapFrame:IsShown() ) then
+		local index = 1;
+		local bossButton = _G["EJMapButton"..index];
+		while ( bossButton and bossButton:IsShown() ) do
+			SetPortraitTexture(bossButton.bgImage, bossButton.displayInfo);
+			index = index + 1;
+			bossButton = _G["EJMapButton"..index];
+		end
+	end
+end
 
 --- For EJ boss butons
 --- For EJ boss butons

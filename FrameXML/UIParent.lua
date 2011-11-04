@@ -3647,11 +3647,25 @@ function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridW
 end
 
 function LFD_IsEmpowered()
-	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
-		not (IsPartyLeader() or IsRaidLeader()) ) or HasLFGRestrictions();
+	--Solo players are always empowered.
+	if ( GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 ) then
+		return true;
+	end
+
+	--The leader may always queue/dequeue
+	if ( IsPartyLeader() or IsRaidLeader() ) then
+		return true;
+	end
+
+	--In DF groups, anyone may queue/dequeue. In RF groups, the leader or assistants may queue/dequeue.
+	if ( HasLFGRestrictions() and (GetNumRaidMembers() == 0 or IsRaidOfficer()) ) then
+		return true;
+	end
+
+	return false;
 end
 
-function LFR_IsEmpowered()
+function RaidBrowser_IsEmpowered()
 	return not ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and
 		not (IsPartyLeader() or IsRaidLeader()) );
 end
@@ -3694,7 +3708,7 @@ function GetLFGMode()
 	elseif ( roleCheckInProgress ) then
 		return "rolecheck";
 	elseif ( IsListedInLFR() ) then
-		return "listed", (LFR_IsEmpowered() and "empowered" or "unempowered");
+		return "listed", (RaidBrowser_IsEmpowered() and "empowered" or "unempowered");
 	elseif ( joined ) then
 		return "suspended", (LFD_IsEmpowered() and "empowered" or "unempowered");	--We are "joined" to LFG, but not actually queued right now.
 	elseif ( IsPartyLFG() and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0) or IsOnePersonParty()) ) then

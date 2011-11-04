@@ -101,36 +101,27 @@
 						<Offset x="19" y="-30"/>
 					</Anchor>
 				</Anchors>
-                <Scripts>
+				<Scripts>
 					<OnClick>
-						RaidParentFrame.selectectTab = 1;
-						if ( RaidFrame:GetParent() == RaidParentFrame ) then
-							RaidFrame:Hide();
-						end
-						LFRParentFrame:Hide();
-						RaidFinderFrame:Show();
-						PanelTemplates_Tab_OnClick(self, self:GetParent());
+						PlaySound("igCharacterInfoTab");
+						RaidParentFrame_SetView(1);
 					</OnClick>
-                </Scripts>
+				</Scripts>
 			</Button>
 			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="RAID" id="2">
 				<Anchors>
-                   <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-16" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
+				   <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+					<Offset>
+					    <AbsDimension x="-16" y="0"/>
+					</Offset>
+				    </Anchor>
+				</Anchors>
+				<Scripts>
 					<OnClick>
-						RaidParentFrame.selectectTab = 2;
-						RaidFinderFrame:Hide();
-						LFRParentFrame:Hide();
-						ClaimRaidFrame(RaidParentFrame);
-						RaidFrame:Show();
-						PanelTemplates_Tab_OnClick(self, self:GetParent());
+						PlaySound("igCharacterInfoTab");
+						RaidParentFrame_SetView(2);
 					</OnClick>
-                </Scripts>
+				</Scripts>
 			</Button>
 			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" text="LOOKING_FOR_RAID" id="3">
 				<Anchors>
@@ -142,14 +133,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						RaidParentFrame.selectectTab = 3;
-						RaidFinderFrame:Hide();
-						if ( RaidFrame:GetParent() == RaidParentFrame ) then
-							RaidFrame:Hide();
-						end
-						LFRParentFrame:Show();
-						LFRFrame_SetActiveTab(LFRParentFrame.activeTab);
-						PanelTemplates_Tab_OnClick(self, self:GetParent());
+						PlaySound("igCharacterInfoTab");
+						RaidParentFrame_SetView(3);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -158,9 +143,14 @@
 			<OnLoad function="RaidParentFrame_OnLoad"/>
 			<OnShow>
 				UpdateMicroButtons();
+				PlaySound("igCharacterInfoOpen");
+				RequestLFDPlayerLockInfo(); --This info coming back might affect the tab state.
+				RequestLFDPartyLockInfo();
+				RaidFinderFrame_UpdateTab();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
+				PlaySound("igCharacterInfoClose");
 			</OnHide>
 		</Scripts>
 	</Frame>

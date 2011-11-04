@@ -1569,7 +1569,7 @@ TRAVEL PASS
 					<ScrollFrame name="WhoListScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size x="296" y="287"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-67" y="-96"/>
+							<Anchor point="TOPRIGHT" relativeTo="WhoFrame" relativePoint="TOPRIGHT" x="-33" y="-87"/>
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>

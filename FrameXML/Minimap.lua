@@ -179,7 +179,7 @@ function EyeTemplate_StopAnimating(eye)
 	eye.texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
 end
 
-function MiniMapLFG_UpdateIsShown()
+function MiniMapLFG_Update()
 	local mode, submode = GetLFGMode();
 	if ( mode ) then
 		local queueType;
@@ -208,6 +208,20 @@ function MiniMapLFG_UpdateIsShown()
 		else
 			EyeTemplate_StopAnimating(MiniMapLFGFrame.eye);
 		end
+
+		if ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
+			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(GetPartyLFGID());
+			local numPlayers = max(GetNumPartyMembers() + 1, GetNumRaidMembers());
+			if ( numPlayers < maxPlayers ) then
+				MiniMapLFGFrame.groupSize:Show();
+				MiniMapLFGFrame.groupSize:SetText(numPlayers);
+			else
+				MiniMapLFGFrame.groupSize:Hide();
+			end
+		else
+			MiniMapLFGFrame.groupSize:Hide();
+		end
+
 	else
 		MiniMapLFGFrame:Hide();
 	end

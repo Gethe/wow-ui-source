@@ -1,4 +1,3 @@
-BOSS_INFO_STRING = "Boss: %s"
 --LOCALIZED CONSTANTS
 EJ_MIN_CHARACTER_SEARCH = 3;
 
@@ -132,6 +131,11 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal_ListInstances();
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
+		local _, _, difficultyIndex = GetInstanceInfo();
+		if IsPartyLFG() and GetNumRaidMembers() > 0 then
+			difficultyIndex = EJ_DIFF_LFRAID;
+		end
+		EJ_SetDifficulty(difficultyIndex);
 	elseif ( EncounterJournal.queuedPortraitUpdate ) then
 		-- fixes portraits when switching between fullscreen and windowed mode
 		EncounterJournal_UpdatePortraits();
@@ -206,15 +210,6 @@ function EncounterJournal_UpdatePortraits()
 		end
 	else
 		EncounterJournal.queuedPortraitUpdate = true;
-	end
-	if ( WorldMapFrame:IsShown() ) then
-		local index = 1;
-		local bossButton = _G["EJMapButton"..index];
-		while ( bossButton and bossButton:IsShown() ) do
-			SetPortraitTexture(bossButton.bgImage, bossButton.displayInfo);
-			index = index + 1;
-			bossButton = _G["EJMapButton"..index];
-		end
 	end
 end
 

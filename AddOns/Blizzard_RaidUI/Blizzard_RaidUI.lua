@@ -619,9 +619,10 @@ function RaidGroupButton_OnDragStart(raidButton)
 		return;
 	end
 	local cursorX, cursorY = GetCursorPosition();
+	local uiScale = UIParent:GetScale();
 	raidButton:StartMoving();
 	raidButton:ClearAllPoints();
-	raidButton:SetPoint("CENTER", UIPARENT, "BOTTOMLEFT", cursorX, cursorY);
+	raidButton:SetPoint("CENTER", UIPARENT, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale);
 	MOVING_RAID_MEMBER = raidButton;
 	SetRaidRosterSelection(raidButton.id);
 end

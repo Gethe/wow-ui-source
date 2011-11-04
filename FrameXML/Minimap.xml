@@ -503,6 +503,11 @@
 												</Anchor>
 											</Anchors>
 										</Texture>
+										<FontString name="$parentGroupSize" inherits="NumberFontNormalYellow" hidden="true" parentKey="groupSize">
+											<Anchors>
+												<Anchor point="CENTER" x="1" y="0"/>
+											</Anchors>
+										</FontString>
 									</Layer>
 								</Layers>
 								<Frames>
@@ -530,11 +535,13 @@
 										self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 										self:RegisterEvent("LFG_PROPOSAL_SHOW");
 										self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
+										self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+										self:RegisterEvent("RAID_ROSTER_UPDATE");
 										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>
 									<OnClick function="MiniMapLFGFrame_OnClick"/>
-									<OnEvent function="MiniMapLFG_UpdateIsShown"/>
+									<OnEvent function="MiniMapLFG_Update"/>
 									<OnEnter function="MiniMapLFGFrame_OnEnter"/>
 									<OnLeave function="MiniMapLFGFrame_OnLeave"/>
 								</Scripts>						

@@ -238,7 +238,7 @@
 									</OnUpdate>
 									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 									<OnEditFocusGained>
-										if ( LFR_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
+										if ( RaidBrowser_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
 											LFRQueueFrameCommentExplanation:Hide();
 										else
 											self:ClearFocus();
@@ -291,7 +291,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								if ( LFR_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
+								if ( RaidBrowser_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
 									LFRQueueFrameComment:SetFocus();
 								end
 							</OnClick>
@@ -662,6 +662,7 @@
 			<OnEvent function="LFRFrame_OnEvent"/>
 			<OnShow>
 				LFRBrowseFrame.timeToClear = nil;	--Never clear browsing while shown.
+				RaidParentFrame.TitleText:SetText(LOOKING_FOR_RAID);
 			</OnShow>
 			<OnHide>
 				LFRBrowseFrame.timeToClear = 40;	--Clear all browsing after 40 seconds of being hidden.

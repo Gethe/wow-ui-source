@@ -773,6 +773,12 @@
 						<Scripts>
 							<OnLoad function="LFDQueueFrameRandomCooldownFrame_OnLoad"/>
 							<OnEvent function="LFDQueueFrameRandomCooldownFrame_OnEvent"/>
+							<OnShow>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnShow>
+							<OnHide>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnHide>
 						</Scripts>
 					</Frame>
 					<Frame name="$parentPartyBackfill" hidden="true" enableMouse="true">

@@ -1500,7 +1500,12 @@
 				self:RegisterEvent("UPDATE_TICKET");
 			</OnLoad>
 			<OnClick>
-				HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
+				if ( TicketStatusFrame.hasGMSurvey ) then
+					GMSurveyFrame_LoadUI();
+					ShowUIPanel(GMSurveyFrame);
+				else
+					HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
+				end
 			</OnClick>
 			<OnEvent function="HelpOpenTicketButton_OnEvent"/>
 			<OnEnter>

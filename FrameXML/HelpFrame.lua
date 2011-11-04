@@ -185,6 +185,10 @@ function HelpFrame_OnEvent(self, event, ...)
 		else
 			-- the player does not have a ticket
 			haveTicket = false;
+			haveResponse = false;
+			if ( not TicketStatusFrame.hasGMSurvey ) then
+				TicketStatusFrame:Hide();
+			end
 		end
 		HelpFrame_SetTicketEntry();
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
@@ -451,6 +455,12 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
 		GameTooltip:Show();
+	elseif ( haveResponse ) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOP");
+		GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
+	elseif ( TicketStatusFrame.hasGMSurvey ) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOP");
+		GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
 	end
 end
 
@@ -460,7 +470,7 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 		-- ticketOpenTime,   time_t that this ticket was created
 		-- oldestTicketTime, time_t of the oldest unassigned ticket in the region.
 		-- updateTime,       age in seconds (freshness) of our ticket wait time estimates from the GM dept
-		if ( (category or self.hasGMSurvey) and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
+		if ( (category or TicketStatusFrame.hasGMSurvey) and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
 			self:Show();
 			self.titleText = TICKET_STATUS;
 			local statusText;

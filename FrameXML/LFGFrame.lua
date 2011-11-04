@@ -78,6 +78,8 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 	
 	self:RegisterEvent("VARIABLES_LOADED");
+
+	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	
 	--These just update states (roles changeable, buttons clickable, etc.)
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
@@ -91,6 +93,11 @@ LFGQueuedForList = {};
 function LFGEventFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_UPDATE" ) then
 		LFG_UpdateQueuedList();
+		local mode, subMode = GetLFGMode();
+		if ( mode == "queued" ) then --We're now queued, remove the popup.
+			self.queuedContinueName = nil;
+			StaticPopup_Hide("LFG_OFFER_CONTINUE");
+		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		LFG_UpdateQueuedList();
 		LFG_UpdateRoleCheckboxes();
@@ -101,15 +108,34 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		LFG_UpdateQueuedList();
 		LFG_UpdateFramesIfShown();
 		if ( not CanPartyLFGBackfill() ) then
+			self.queuedContinueName = nil;
 			StaticPopup_Hide("LFG_OFFER_CONTINUE");
 		end
 	elseif ( event == "LFG_OFFER_CONTINUE" ) then
 		local displayName, lfgID, typeID = ...;
-		local dialog = StaticPopup_Show("LFG_OFFER_CONTINUE", NORMAL_FONT_COLOR_CODE..displayName.."|r");
-		if ( dialog ) then
-			dialog.data = lfgID;
-			dialog.data2 = typeID;
+		if ( not UnitAffectingCombat("player") ) then
+			local dialog = StaticPopup_Show("LFG_OFFER_CONTINUE", NORMAL_FONT_COLOR_CODE..displayName.."|r");
+			if ( dialog ) then
+				dialog.data = lfgID;
+				dialog.data2 = typeID;
+			end
+		else
+			self.queuedContinueName = displayName;
+			self.queuedContinueLfgID = lfgID;
+			self.queuedContinueTypeID = typeID;
 		end
+	elseif ( event == "PLAYER_REGEN_ENABLED" ) then
+		if ( self.queuedContinueName ) then
+			if ( CanPartyLFGBackfill() ) then --Make sure we can still backfill.
+				local dialog = StaticPopup_Show("LFG_OFFER_CONTINUE", NORMAL_FONT_COLOR_CODE..self.queuedContinueName.."|r");
+				if ( dialog ) then
+					dialog.data = self.queuedContinueLfgID;
+					dialog.data2 = self.queuedContinueTypeID;
+				end
+			end
+			self.queuedContinueName = nil;
+		end
+		return;	--We don't need to update anything else on this event
 	elseif ( event == "LFG_ROLE_CHECK_ROLE_CHOSEN" ) then
 		local player, isTank, isHealer, isDamage = ...;
 
@@ -153,6 +179,8 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_PROPOSAL_SUCCEEDED" ) then
 		LFGDebug("Proposal Hidden: Proposal succeeded.");
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
+	elseif ( event == "LFG_ROLE_CHECK_HIDE" ) then
+		LFG_UpdateFramesIfShown();
 	end
 	
 	LFG_UpdateRolesChangeable();
@@ -167,6 +195,15 @@ function LFG_UpdateLockedOutPanels()
 	
 	if ( mode == "listed" ) then
 		LFDQueueFrameNoLFDWhileLFR:Show();
+		LFDQueueFrameNoLFDWhileLFRDescription:SetText(NO_LFD_WHILE_LFR);
+	elseif ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
+		local queueType = GetLFGModeType();
+		if ( queueType == "raid" ) then
+			LFDQueueFrameNoLFDWhileLFR:Show();
+			LFDQueueFrameNoLFDWhileLFRDescription:SetText(NO_LFD_WHILE_RF);
+		else
+			LFDQueueFrameNoLFDWhileLFR:Hide();
+		end
 	else
 		LFDQueueFrameNoLFDWhileLFR:Hide();
 	end
@@ -187,7 +224,7 @@ end
 function LFG_UpdateQueuedList()
 	GetLFGQueuedList(LFGQueuedForList);
 	LFG_UpdateFramesIfShown();
-	MiniMapLFG_UpdateIsShown();
+	MiniMapLFG_Update();
 end
 
 function LFG_UpdateFramesIfShown()
@@ -327,14 +364,18 @@ function LFG_UpdateRolesChangeable()
 	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		LFG_DisableRoleButton(LFDQueueFrameRoleButtonTank, true);
 		LFG_DisableRoleButton(LFRQueueFrameRoleButtonTank, true);
+		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonTank, true);
 		
 		LFG_DisableRoleButton(LFDQueueFrameRoleButtonHealer, true);
 		LFG_DisableRoleButton(LFRQueueFrameRoleButtonHealer, true);
+		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonHealer, true);
 		
 		LFG_DisableRoleButton(LFDQueueFrameRoleButtonDPS, true);
 		LFG_DisableRoleButton(LFRQueueFrameRoleButtonDPS, true);
+		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonDPS, true);
 		
 		LFG_DisableRoleButton(LFDQueueFrameRoleButtonLeader, true);
+		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonLeader, true);
 	else
 		LFG_UpdateAvailableRoles();
 	end
@@ -1217,7 +1258,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local itemButtonIndex = 1;
 	for i=1, numRewards do
 		local name, texture, numItems = GetLFGDungeonRewardInfo(dungeonID, i);
-		lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, itemButtonIndex, i, name, texture, numItems, nil);
+		lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, i, name, texture, numItems, nil);
 		itemButtonIndex = itemButtonIndex + 1;
 	end
 	
@@ -1226,7 +1267,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		if ( eligible and ((tankChecked and forTank) or (healerChecked and forHealer) or (damageChecked and forDamage)) ) then
 			for rewardIndex=1, itemCount do
 				local name, texture, numItems = GetLFGDungeonShortageRewardInfo(dungeonID, shortageIndex, rewardIndex);
-				lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, itemButtonIndex, rewardIndex, name, texture, numItems, shortageIndex, forTank, forHealer, forDamage);
+				lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, rewardIndex, name, texture, numItems, shortageIndex, forTank, forHealer, forDamage);
 				itemButtonIndex = itemButtonIndex + 1;
 			end
 		end
@@ -1310,7 +1351,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	parentFrame.spacer:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -10);
 end
 
-function LFGRewardsFrame_SetItemButton(parentFrame, index, id, name, texture, numItems, shortageIndex, showTankIcon, showHealerIcon, showDamageIcon)
+function LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, index, id, name, texture, numItems, shortageIndex, showTankIcon, showHealerIcon, showDamageIcon)
 	local parentName = parentFrame:GetName();
 	local frame = _G[parentName.."Item"..index];
 	if ( not frame ) then
@@ -1328,6 +1369,7 @@ function LFGRewardsFrame_SetItemButton(parentFrame, index, id, name, texture, nu
 	SetItemButtonTexture(frame, texture);
 	SetItemButtonCount(frame, numItems);
 	frame.shortageIndex = shortageIndex;
+	frame.dungeonID = dungeonID;
 	
 	if ( shortageIndex ) then
 		frame.shortageBorder:Show();

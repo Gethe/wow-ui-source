@@ -1467,6 +1467,7 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	
 	if ( not keepUpdating ) then
 		PVPTimerFrame:SetScript("OnUpdate", nil);
+		PVPTimerFrame.updating = false;
 		return;
 	end
 	
@@ -1896,6 +1897,7 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 				end
 				showRightClickText = 1;
 				PVPTimerFrame:SetScript("OnUpdate", PVPTimerFrame_OnUpdate);
+				PVPTimerFrame.updating = true;
 			elseif ( status == "active" ) then
 				-- In the battleground
 				if ( teamSize ~= 0 ) then
@@ -1904,11 +1906,12 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 					tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
 				end
 				BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
-				if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
+				if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 and not PVPTimerFrame.updating ) then
 					PVPTimerFrame:SetScript("OnUpdate", PVPTimerFrame_OnUpdate);
+					PVPTimerFrame.updating = true;
+					BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
+					PREVIOUS_BATTLEFIELD_MOD = 0;
 				end
-				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
-				PREVIOUS_BATTLEFIELD_MOD = 0;
 				MiniMapBattlefieldFrame.status = status;
 			elseif ( status == "error" ) then
 				-- Should never happen haha

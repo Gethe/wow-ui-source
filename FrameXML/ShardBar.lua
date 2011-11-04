@@ -43,7 +43,7 @@ function ShardBar_OnLoad (self)
 		self:SetAlpha(0);
 	end
 	
-	self:RegisterEvent("UNIT_POWER");
+	self:RegisterEvent("UNIT_POWER_FREQUENT");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 end
@@ -54,7 +54,7 @@ function ShardBar_OnEvent (self, event, arg1, arg2)
 		ShardBar_Update();	
 	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
 		ShardBar_Update();	
-	elseif ( (event == "UNIT_POWER") and (arg1 == self:GetParent().unit) ) then
+	elseif ( (event == "UNIT_POWER_FREQUENT") and (arg1 == self:GetParent().unit) ) then
 		if ( arg2 == "SOUL_SHARDS" ) then
 			ShardBar_Update();
 		end

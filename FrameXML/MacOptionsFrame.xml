@@ -660,6 +660,7 @@
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						MovieRecording_DeleteMovie(MacOptionsCompressFrameFileName:GetText());
 						MacOptionsCompressFrame:Hide();
+						MovieRecording_SearchUncompressedMovie(false);						
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -678,6 +679,7 @@
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						MacOptionsCompressFrame:Hide();
+						MovieRecording_SearchUncompressedMovie(false);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -713,9 +715,6 @@
 				MacOptionsCompressFrame_OnShow();
 				self:Show();
 			</OnEvent>
-			<OnHide>
-				MovieRecording_SearchUncompressedMovie(false);
-			</OnHide>
 		</Scripts>
 	</Frame>	
 	<Frame name="MacOptionsCancelFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">

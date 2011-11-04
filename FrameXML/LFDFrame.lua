@@ -27,7 +27,7 @@ function LFDFrame_OnLoad(self)
 	--self:RegisterEvent("LFG_PROPOSAL_SHOW");
 	--self:RegisterEvent("LFG_PROPOSAL_FAILED");
 	--self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
-	self:RegisterEvent("LFG_UPDATE");
+	--self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
 	self:RegisterEvent("LFG_ROLE_CHECK_HIDE");
@@ -217,11 +217,16 @@ end
 --Backfill option
 function LFDFrame_UpdateBackfill(forceUpdate)
 	if ( CanPartyLFGBackfill() ) then
-		local name, lfgID, typeID = GetPartyLFGBackfillInfo();
-		LFDQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
-		local mode, subMode = GetLFGMode();
-		if ( (forceUpdate or not LFDQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
-			LFDQueueFramePartyBackfill:Show();
+		local currentSubtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(GetPartyLFGID()));
+		if ( currentSubtypeID ~= LFG_SUBTYPEID_RAID ) then
+			local name, lfgID, typeID = GetPartyLFGBackfillInfo();
+			LFDQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
+			local mode, subMode = GetLFGMode();
+			if ( (forceUpdate or not LFDQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
+				LFDQueueFramePartyBackfill:Show();
+			end
+		else
+			LFDQueueFramePartyBackfill:Hide();
 		end
 	else
 		LFDQueueFramePartyBackfill:Hide();
@@ -808,7 +813,8 @@ end
 
 function LFDQueueFrameFindGroupButton_Update()
 	local mode, subMode = GetLFGMode();
-	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended") then
+	local queueType = GetLFGModeType();
+	if ( queueType == "default" and ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) ) then
 		LFDQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
 		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
@@ -818,8 +824,20 @@ function LFDQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		if ( mode == "queued" or mode =="proposal" or mode == "rolecheck" or mode == "suspended" or not LFDQueueFramePartyBackfill:IsVisible() ) then
+	if ( queueType == "raid" and mode ) then	-- if queued for raid finder
+		if ( mode == "proposal" or mode == "queued" or mode == "rolecheck" or mode == "suspended" ) then
+			LFDQueueFrameFindGroupButton:Disable();
+			if ( LFD_IsEmpowered() ) then
+				LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
+			else
+				LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
+			end
+		else
+			LFDQueueFrameFindGroupButton:Enable();
+		end
+	elseif ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
+		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
+			or (not LFDQueueFramePartyBackfill:IsVisible() and not LFDQueueFrameCooldownFrame:IsVisible()) ) then
 			LFDQueueFrameFindGroupButton:Enable();
 		else
 			LFDQueueFrameFindGroupButton:Disable();

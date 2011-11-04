@@ -373,13 +373,13 @@
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Raid");
 				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(RAID, "TOGGLERAIDTAB");
-				self.newbieText = NEWBIE_TOOLTIP_RAID;
+				self.tooltipText = MicroButtonTooltipText(RAID_FINDER, "TOGGLERAIDFINDER");
+				self.newbieText = NEWBIE_TOOLTIP_RAID_FINDER;
 				self.minLevel = SHOW_LFD_LEVEL;
 			</OnLoad>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(RAID, "TOGGLERAIDTAB");
-				self.newbieText = NEWBIE_TOOLTIP_RAIDTAB;
+				self.tooltipText = MicroButtonTooltipText(RAID_FINDER, "TOGGLERAIDFINDER");
+				self.newbieText = NEWBIE_TOOLTIP_RAID_FINDER;
 			</OnEvent>
 			<OnClick>
 				ToggleRaidFrame();

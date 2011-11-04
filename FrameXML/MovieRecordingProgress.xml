@@ -113,6 +113,7 @@
 			</OnLoad>
 			<OnEvent>
 				self:Show();
+				MovieRecording_SearchUncompressedMovie(false);
 			</OnEvent>
 			<OnUpdate function="MovieRecordingProgress_OnUpdate"/>
 		</Scripts>

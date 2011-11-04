@@ -1083,9 +1083,9 @@
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				if ( self.shortageIndex ) then
-					GameTooltip:SetLFGDungeonShortageReward(LFDQueueFrame.type, self.shortageIndex, self:GetID());
+					GameTooltip:SetLFGDungeonShortageReward(self.dungeonID, self.shortageIndex, self:GetID());
 				else
-					GameTooltip:SetLFGDungeonReward(LFDQueueFrame.type, self:GetID());
+					GameTooltip:SetLFGDungeonReward(self.dungeonID, self:GetID());
 				end
 				CursorUpdate(self);
 			</OnEnter>
@@ -1098,9 +1098,9 @@
 			</OnUpdate>
 			<OnClick>
 				if ( self.shortageIndex ) then
-					HandleModifiedItemClick(GetLFGDungeonShortageRewardLink(LFDQueueFrame.type, self.shortageIndex, self:GetID()));
+					HandleModifiedItemClick(GetLFGDungeonShortageRewardLink(self.dungeonID, self.shortageIndex, self:GetID()));
 				else
-					HandleModifiedItemClick(GetLFGDungeonRewardLink(LFDQueueFrame.type, self:GetID()));
+					HandleModifiedItemClick(GetLFGDungeonRewardLink(self.dungeonID, self:GetID()));
 				end
 			</OnClick>
 		</Scripts>
