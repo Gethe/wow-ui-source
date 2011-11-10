@@ -649,6 +649,49 @@ ICON_TAG_LIST =
 	[strlower(RAID_TARGET_8)] = 8,
 }
 
+GROUP_TAG_LIST =
+{
+	[strlower(GROUP1_CHAT_TAG1)] 	= 1,
+	[strlower(GROUP1_CHAT_TAG2)] 	= 1,
+	[strlower(GROUP2_CHAT_TAG1)] 	= 2,
+	[strlower(GROUP2_CHAT_TAG2)] 	= 2,
+	[strlower(GROUP3_CHAT_TAG1)] 	= 3,
+	[strlower(GROUP3_CHAT_TAG2)] 	= 3,
+	[strlower(GROUP4_CHAT_TAG1)] 	= 4,
+	[strlower(GROUP4_CHAT_TAG2)] 	= 4,
+	[strlower(GROUP5_CHAT_TAG1)] 	= 5,
+	[strlower(GROUP5_CHAT_TAG2)] 	= 5,
+	[strlower(GROUP6_CHAT_TAG1)] 	= 6,
+	[strlower(GROUP6_CHAT_TAG2)] 	= 6,
+	[strlower(GROUP7_CHAT_TAG1)] 	= 7,
+	[strlower(GROUP7_CHAT_TAG2)] 	= 7,
+	[strlower(GROUP8_CHAT_TAG1)] 	= 8,
+	[strlower(GROUP8_CHAT_TAG2)] 	= 8,
+
+	--Language independent:
+	["g1"]				= 1;
+	["g2"]				= 2;
+	["g3"]				= 3;
+	["g4"]				= 4;
+	["g5"]				= 5;
+	["g6"]				= 6;
+	["g7"]				= 7;
+	["g8"]				= 8;
+};
+
+GROUP_LANGUAGE_INDEPENDENT_STRINGS =
+{
+	"g1",
+	"g2",
+	"g3",
+	"g4",
+	"g5",
+	"g6",
+	"g7",
+	"g8",
+};
+
+
 -- Arena Team Helper Function
 function ArenaTeam_GetTeamSizeID(teamsizearg)
 	local teamname, teamsize, id;
@@ -1556,6 +1599,7 @@ end
 SlashCmdList["REPLY"] = function(msg, editBox)
 	local lastTell = ChatEdit_GetLastTellTarget();
 	if ( lastTell ~= "" ) then
+		msg = SubstituteChatMessageBeforeSend(msg);
 		SendChatMessage(msg, "WHISPER", editBox.language, lastTell);
 	else
 		-- error message
@@ -2028,6 +2072,7 @@ SlashCmdList["WHO"] = function(msg)
 end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)
+	msg = SubstituteChatMessageBeforeSend(msg);
 	SendChatMessage(msg, "CHANNEL", editBox.language, editBox:GetAttribute("channelTarget"));
 end
 
@@ -3118,11 +3163,25 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			
 			-- Search for icon links and replace them with texture links.
-			local term;
 			for tag in string.gmatch(arg1, "%b{}") do
-				term = strlower(string.gsub(tag, "[{}]", ""));
+				local term = strlower(string.gsub(tag, "[{}]", ""));
 				if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
 					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
+				elseif ( GROUP_TAG_LIST[term] ) then
+					local groupIndex = GROUP_TAG_LIST[term];
+					local groupList = "[";
+					for i=1, GetNumRaidMembers() do
+						local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
+						if ( subgroup == groupIndex ) then
+							local classColorTable = RAID_CLASS_COLORS[classFileName];
+							if ( classColorTable ) then
+								name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
+							end
+							groupList = groupList..(groupList == "[" and "" or PLAYER_LIST_DELIMITER)..name;
+						end
+					end
+					groupList = groupList.."]";
+					arg1 = string.gsub(arg1, tag, groupList);
 				end
 			end
 			
@@ -3935,6 +3994,7 @@ function ChatEdit_SendText(editBox, addHistory)
 	local type = editBox:GetAttribute("chatType");
 	local text = editBox:GetText();
 	if ( strfind(text, "%s*[^%s]+") ) then
+		text = SubstituteChatMessageBeforeSend(text);
 		--BN_WHISPER FIXME
 		if ( type == "WHISPER") then
 			local target = editBox:GetAttribute("tellTarget");
@@ -4251,6 +4311,17 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 	-- Reset the chat type and clear the edit box's contents
 	ChatEdit_OnEscapePressed(editBox);
 	return;
+end
+
+function SubstituteChatMessageBeforeSend(msg)
+	for tag in string.gmatch(msg, "%b{}") do
+		local term = strlower(string.gsub(tag, "[{}]", ""));
+		if ( GROUP_TAG_LIST[term] ) then
+			local groupIndex = GROUP_TAG_LIST[term];
+			msg = string.gsub(msg, tag, "{"..GROUP_LANGUAGE_INDEPENDENT_STRINGS[groupIndex].."}");
+		end
+	end
+	return msg;
 end
 
 local tellTargetExtractionAutoComplete = AUTOCOMPLETE_LIST.ALL;

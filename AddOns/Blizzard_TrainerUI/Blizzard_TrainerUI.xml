@@ -80,7 +80,7 @@
 					<Layer level="ARTWORK">
 						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="rankText">
 							<Anchors>
-								<Anchor point="CENTER" relativeTo="TradeSkillRankFrame">
+								<Anchor point="CENTER" relativeTo="ClassTrainerStatusBar">
 									<Offset>
 										<AbsDimension x="0" y="0"/>
 									</Offset>

@@ -52,7 +52,8 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	[1002] = "LEVEL_TOO_HIGH",
 	[1022] = "QUEST_NOT_COMPLETED",
 	[1025] = "MISSING_ITEM",
-	
+	[1034] = "ACHIEVEMENT_NOT_COMPLETED",
+	[10000] = "TEMPORARILY_DISABLED",
 }
 
 LFG_ROLE_SHORTAGE_RARE = 1;
@@ -67,6 +68,7 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
+	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	
 	self:RegisterEvent("LFG_OFFER_CONTINUE");
@@ -87,6 +89,7 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("LFG_BOOT_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_ROLE_UPDATE");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
+	self:RegisterEvent("LFG_INVALID_ERROR_MESSAGE");
 end
 
 LFGQueuedForList = {};
@@ -94,19 +97,21 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_UPDATE" ) then
 		LFG_UpdateQueuedList();
 		local mode, subMode = GetLFGMode();
-		if ( mode == "queued" ) then --We're now queued, remove the popup.
+		if ( mode == "queued" ) then --We're now queued, remove the backfill popup.
 			self.queuedContinueName = nil;
 			StaticPopup_Hide("LFG_OFFER_CONTINUE");
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		LFG_UpdateQueuedList();
 		LFG_UpdateRoleCheckboxes();
+		LFG_DisplayGroupLeaderWarning(self);
 	elseif ( event == "LFG_LOCK_INFO_RECEIVED" ) then
 		LFGLockList = GetLFDChoiceLockedState();
 		LFG_UpdateFramesIfShown();
-	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
 		LFG_UpdateQueuedList();
 		LFG_UpdateFramesIfShown();
+		LFG_DisplayGroupLeaderWarning(self);
 		if ( not CanPartyLFGBackfill() ) then
 			self.queuedContinueName = nil;
 			StaticPopup_Hide("LFG_OFFER_CONTINUE");
@@ -181,6 +186,10 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 	elseif ( event == "LFG_ROLE_CHECK_HIDE" ) then
 		LFG_UpdateFramesIfShown();
+	elseif ( event == "LFG_INVALID_ERROR_MESSAGE" ) then
+		local reason, reasonArg1, reasonArg2 = ...;
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(format(_G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reason] or "OTHER")], "",reasonArg1, reasonArg2), info.r, info.g, info.b, info.id);
 	end
 	
 	LFG_UpdateRolesChangeable();
@@ -188,6 +197,38 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	LFG_UpdateLockedOutPanels();
 	LFDFrame_UpdateBackfill();
 	RaidFinderFrame_UpdateBackfill();
+end
+
+function LFG_DisplayGroupLeaderWarning(eventFrame)
+	if ( not HasLFGRestrictions() or not IsInLFGDungeon() ) then
+		--We only want to display the message if we're actually in the dungeon.
+		return;
+	end
+
+	local leaderName;
+	local numRaidMembers = GetNumRaidMembers();
+	local numPartyMembers = GetNumPartyMembers();
+
+	if ( numRaidMembers == 0 and numPartyMembers == 0 ) then
+		return;
+	elseif ( numRaidMembers ~= 0 ) then
+		for i=1, numRaidMembers do
+			local name, rank = GetRaidRosterInfo(i);
+			if ( rank == 2 ) then
+				leaderName = name;
+			end
+		end
+	elseif ( IsPartyLeader("player") ) then
+		leaderName = UnitName("player");
+	else
+		leaderName = UnitName("party"..GetPartyLeaderIndex());
+	end
+
+	if ( eventFrame.lastLeader ~= leaderName ) then
+		--We'll hold this message a little bit longer than most.
+		RaidNotice_AddMessage(RaidWarningFrame, format(LFG_LEADER_CHANGED_WARNING, leaderName), ChatTypeInfo["RAID_WARNING"], 18);
+	end
+	eventFrame.lastLeader = leaderName;
 end
 
 function LFG_UpdateLockedOutPanels()
@@ -511,9 +552,12 @@ end
 
 function LFGConstructDeclinedMessage(dungeonID)
 	local returnVal;
+	local hasTimeRestriction = false;
 	for i=1, GetLFDLockPlayerCount() do
 		local playerName, lockedReason, subReason1, subReason2 = GetLFDLockInfo(dungeonID, i);
-		if ( lockedReason ~= 0 ) then
+		if ( lockedReason == 1029 or lockedReason == 1030 ) then --WRONG_TIME_RANGE or WRONG_TIME
+			hasTimeRestriction = true;
+		elseif ( lockedReason ~= 0 ) then
 			local who;
 			if ( i == 1 ) then
 				who = "SELF_";
@@ -526,6 +570,11 @@ function LFGConstructDeclinedMessage(dungeonID)
 				returnVal = format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName, subReason1, subReason2);
 			end
 		end
+	end
+	if ( hasTimeRestriction ) then
+		--Since time applies for all players, no reason to display it once for each.
+		--We may have to change this if we let players group with their past selves via time travel.
+		return INSTANCE_UNAVAILABLE_OTHER_TOO_SOON;	
 	end
 	return returnVal;
 end

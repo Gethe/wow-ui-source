@@ -215,9 +215,9 @@
 
 					<CheckButton name="MacOptionsFrameCheckButton1" inherits="OptionsCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameResolutionDropDown" relativePoint="TOPRIGHT">
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="2" y="3"/>
+									<AbsDimension x="170" y="-20"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

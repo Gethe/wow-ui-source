@@ -46,15 +46,15 @@ listed above are noted within those sections)
     * Hour of Twilight is now available for testing. Your participation and
 feedback [here][32] is appreciated.
 
+    * Well of Eternity is now available for testing. Your participation and
+feedback [here][33] is appreciated.
+
     * The new Baradin Hold boss, Alizabal, is now available for testing. Your
-participation and feedback [here][33] is appreciated.
+participation and feedback [here][34] is appreciated.
 
     * Dragon Soul is now available for testing. Your participation and
 feedback is appreciated. For the latest testing schedule, please visit the PTR
-Discussion forum [here.][34]
-
-    * Well of Eternity is now available for testing. Your participation and
-feedback [here][35] is appreciated.
+Discussion forum [here.][35]
 
   * [Raid Finder][36]
 
@@ -106,6 +106,9 @@ by this change.
 
   * The achievement Master of Alterac Valley no longer requires the Alterac
 Valley Blitz achievement.
+
+  * The achievement Tol Barad Veteran now requires 25 victories in Tol Barad,
+down from 100.
 
 **[Classes: General][41]**
 
@@ -159,6 +162,9 @@ still receive the healing effect.
 
   * Blood Presence now provides an armor bonus of 55%, up from 30%.
 
+  * Death Knight pets now properly inherit their master’s crit and spell
+penetration stats.
+
   * Talent Specializations
 
     * Blood
@@ -172,6 +178,9 @@ taken.
 seconds.
 
     * Unholy
+
+      * The gargoyle called by Summon Gargoyle should exclusively use its
+ranged attack regardless of range to the target.
 
       * Unholy Might now increases Strength by 25%, up from 20%.
 
@@ -372,6 +381,9 @@ Flame Shock.
 
       * Reverberation now reduces the cooldown of Wind Shear by 5/10 seconds,
 up from 0.5/1 second.
+
+      * Shamanism now increases the spell power benefit to Lightning Bolt,
+Lava Burst, and Chain Lightning by 36%, up from 32%.
 
     * Enhancement
 
@@ -3539,13 +3551,13 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
     * 이제 황혼의 시간을 테스트할 수 있습니다. 테스트에 참여하신 후 [이곳][222]에 의견을 남겨주시면 감사하겠습니다.
 
+    * 이제 영원의 샘을 테스트할 수 있습니다. 테스트에 참여하신 후 [이곳][222]에 의견을 남겨주시면 감사하겠습니다.
+
     * 바라딘 요새의 새로운 우두머리 몬스터인 알리자발을 테스트할 수 있습니다. 테스트에 참여하신 후 [이곳][222]에 의견을
 남겨주시면 감사하겠습니다.
 
     * 이제 용의 영혼을 테스트할 수 있습니다. 테스트에 참여하신 후 의견을 남겨주시면 감사하겠습니다. 최신 공개 테스트 일정을 보려면
 [공개 테스트 서버 토론장][223]을 방문해 보십시오.
-
-    * 이제 영원의 샘을 테스트할 수 있습니다. 테스트에 참여하신 후 [이곳][222]에 의견을 남겨주시면 감사하겠습니다.
 
   * [공격대 찾기][36]
 
@@ -3585,6 +3597,8 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
   * "알터랙 계곡의 지배자" 업적 요건에서 "알터랙 급습"이 제외되었습니다.
 
+  * "톨 바라드 역전용사" 업적 요건이 톨 바라드 전투 100승에서 25승으로 감소했습니다.
+
 **[직업: 일반][228]**
 
   * 파티원과 공격대원의 전투력을 10%만큼 증가시켜주는 모든 강화 효과가 약간 변경되었습니다. 원거리 전투력은 전과 같이 10%
@@ -3620,6 +3634,8 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
   * 혈기의 형상으로 얻는 추가 방어도가 30%에서 55%로 증가하였습니다.
 
+  * 죽음의 기사의 주문 관통력과 치명타율 수치가 소환수에게도 올바르게 적용됩니다.
+
   * 특성 전문화
 
     * 혈기
@@ -3631,6 +3647,8 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
       * 3차 대전쟁의 역전용사가 돌발 열병의 재사용 대기시간을 30초만큼 감소시켜 줍니다.
 
     * 부정
+
+      * 가고일 부르기로 소환한 가고일은 공격 대상과의 거리에 상관 없이 원거리 공격만을 사용합니다.
 
       * 부정의 힘으로 증가하는 힘이 20%에서 25%로 증가하였습니다.
 
@@ -3730,8 +3748,8 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
 
       * 광휘의 탑이 현재 효과 외에 신성한 광휘를 시전할 때 신성한 힘 효과 1개를 얻게 합니다.
 
-      * 빛의 봉화는 신성 충격, 빛의 섬광, 천상의 빛, 여명의 빛 시전 시 50%의 치유량을, 성스러운 빛 시전 시 100%의
-치유량을 이전합니다. 신성한 광휘나 시민의 수호자 등, 다른 종류의 치유 주문은 치유를 이전하지 않습니다.
+      * 빛의 봉화는 영광의 서약, 신성 충격, 빛의 섬광, 천상의 빛, 여명의 빛 시전 시 50%의 치유량을, 성스러운 빛 시전 시
+100%의 치유량을 이전합니다. 신성한 광휘나 시민의 수호자 등, 다른 종류의 치유 주문은 치유를 이전하지 않습니다.
 
     * 징벌
 
@@ -3794,6 +3812,8 @@ _목차의 링크를 누르면 원하는 부분을 바로 보실 수 있습니�
       * 정기의 격노를 연마하면 연쇄 번개의 재사용 대기시간이 사라집니다.
 
       * 산울림으로 감소되는 날카로운 바람의 재사용 대기시간이 0.5/1초에서 5/10초로 증가하였습니다.
+
+      * 주술의 힘으로 향상되는 번개 화살, 용암 폭발, 연쇄 번개의 주문력이 32%에서 36%로 증가하였습니다.
 
     * 고양
 
@@ -4002,11 +4022,11 @@ _Щелкните по ссылке для перехода к соответс�
 [здесь][251].
 
     * Рейд «Душа Дракона» открыт для тестирования. Ждем ваших отзывов!
-Актуальное расписание тестирования размещено [на форуме][34] тестового
+Актуальное расписание тестирования размещено [на форуме][35] тестового
 игрового мира.
 
     * Рейд «Источник Вечности» открыт для тестирования. Просим размещать свои
-отзывы [здесь][35].
+отзывы [здесь][33].
 
   * [Поиск рейда][36]
 
@@ -4666,11 +4686,11 @@ http://www.wowtaiwan.com.tw/03Gameguide/patchnotes.index.asp ][272]
 
    [32]: http://us.battle.net/wow/en/forum/topic/3278903875
 
-   [33]: http://us.battle.net/wow/en/forum/topic/3278813216
+   [33]: http://us.battle.net/wow/en/forum/topic/3392859330
 
-   [34]: http://us.battle.net/wow/en/forum/1181024/
+   [34]: http://us.battle.net/wow/en/forum/topic/3278813216
 
-   [35]: http://us.battle.net/wow/en/forum/topic/3392859330
+   [35]: http://us.battle.net/wow/en/forum/1181024/
 
    [36]: http://us.battle.net/wow/en/blog/3608426
 

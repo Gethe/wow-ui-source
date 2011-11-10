@@ -333,7 +333,18 @@ end
 
 function VoidStorageItemButton_OnClick(self, button)
 	if ( IsModifiedClick() ) then
-		HandleModifiedItemClick(GetVoidItemHyperlinkString(self.slot));
+		local itemID;
+		if ( self.buttonType == BUTTON_TYPE_DEPOSIT ) then
+			itemID = GetVoidTransferDepositInfo(self.slot);
+		elseif ( self.buttonType == BUTTON_TYPE_STORAGE ) then
+			itemID = GetVoidItemInfo(self.slot);
+		elseif ( self.buttonType == BUTTON_TYPE_WITHDRAW ) then
+			itemID = GetVoidTransferWithdrawalInfo(self.slot);
+		end
+		if ( itemID ) then
+			local _, itemLink = GetItemInfo(itemID);
+			HandleModifiedItemClick(itemLink);
+		end
 	else
 		local isRightClick = (button == "RightButton");
 		if ( self.buttonType == BUTTON_TYPE_DEPOSIT ) then

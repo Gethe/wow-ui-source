@@ -1351,7 +1351,7 @@
 							</Slider>
 						</Frames>
 						<ScrollChild>
-							<EditBox name="HelpFrameGMResponse_GMText" multiLine="true" letters="500" autoFocus="false">
+							<EditBox name="HelpFrameGMResponse_GMText" multiLine="true" autoFocus="false">
 								<Size x="420" y="220"/>
 								<Scripts>
 									<OnTextChanged>

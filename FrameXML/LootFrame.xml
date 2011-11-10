@@ -616,7 +616,7 @@
 			</OnUpdate>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetMissingLootItemLink(self.index));
+					HandleModifiedItemClick(GetMissingLootItemLink(self:GetID()));
 				end
 			</OnClick>
 		</Scripts>

@@ -293,8 +293,8 @@ function RefreshPlayerSpellIconInfo()
 		for j = offset, tabEnd - 1 do
 			--to get spell info by slot, you have to pass in a pet argument
 			local spellType, ID = GetSpellBookItemInfo(j, "player"); 
-			if (not (spellType == "FUTURESPELL" or spellType == "FLYOUT")) then
-				local spellTexture = strupper(GetSpellTexture(j, "player"));
+			if (spellType ~= "FUTURESPELL") then
+				local spellTexture = strupper(GetSpellBookItemTexture(j, "player"));
 				if ( not string.match( spellTexture, "INTERFACE\\BUTTONS\\") ) then
 					MACRO_ICON_FILENAMES[index] = gsub( spellTexture, "INTERFACE\\ICONS\\", "");
 					index = index + 1;

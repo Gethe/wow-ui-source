@@ -17,7 +17,11 @@ function ShowReadyCheck(initiator, timeLeft)
 		else
 			SetPortraitTexture(ReadyCheckPortrait, initiator);
 			if (UnitInRaid("player")) then
-				difficulty = GetRaidDifficulty();
+				if ( IsPartyLFG() ) then
+					difficulty = 2;		-- 25 normal for Raid Finder
+				else
+					difficulty = GetRaidDifficulty();
+				end
 				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE.."\n"..RAID_DIFFICULTY..": ".._G["RAID_DIFFICULTY"..difficulty], initiator);
 			else
 				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);

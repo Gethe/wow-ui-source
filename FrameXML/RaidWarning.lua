@@ -119,6 +119,21 @@ function RaidWarningFrame_OnEvent(self, event, message)
 			if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
 				-- Using 0 as the height to make the texture match the font height
 				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
+			elseif ( GROUP_TAG_LIST[term] ) then
+				local groupIndex = GROUP_TAG_LIST[term];
+				local groupList = "[";
+				for i=1, GetNumRaidMembers() do
+					local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
+					if ( subgroup == groupIndex ) then
+						local classColorTable = RAID_CLASS_COLORS[classFileName];
+						if ( classColorTable ) then
+							name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
+						end
+						groupList = groupList..(groupList == "[" and "" or PLAYER_LIST_DELIMITER)..name;
+					end
+				end
+				groupList = groupList.."]";
+				message = string.gsub(message, tag, groupList);
 			end
 		end		
 		

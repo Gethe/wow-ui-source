@@ -168,7 +168,9 @@ function LFDQueueFrameCapBar_OnEnter(self)
 		if ( periodPurseQuantity >= periodPurseLimit ) then
 			r, g, b = 0.5, 0.5, 0.5;
 		end
-		GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity, periodPurseLimit), r, g, b, r, g, b);
+		GameTooltip:AddLine(format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity, periodPurseLimit), r, g, b);
+		--We once again have only a single cap, so removing this for now.
+		--[[GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity, periodPurseLimit), r, g, b, r, g, b);
 		GameTooltip:AddDoubleLine(" -"..FROM_RAID, format(CURRENCY_WEEKLY_CAP_FRACTION, periodPurseQuantity - overallQuantity, periodPurseLimit), r, g, b, r, g, b);
 		
 		if ( overallQuantity >= overallLimit ) then
@@ -181,6 +183,7 @@ function LFDQueueFrameCapBar_OnEnter(self)
 			r, g, b = 0.5, 0.5, 0.5;
 		end
 		GameTooltip:AddDoubleLine("   -"..format(FROM_A_DUNGEON, tier1Name), format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
+		--]]
 	end
 	GameTooltip:Show();
 end

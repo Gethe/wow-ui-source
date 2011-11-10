@@ -735,6 +735,10 @@ function CRFSort_Group(token1, token2)
 		local id1 = tonumber(string.sub(token1, 5));
 		local id2 = tonumber(string.sub(token2, 5));
 		
+		if ( not id1 or not id2 ) then
+			return id1;
+		end
+
 		local _, _, subgroup1 = GetRaidRosterInfo(id1);
 		local _, _, subgroup2 = GetRaidRosterInfo(id2);
 		
