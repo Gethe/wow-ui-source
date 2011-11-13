@@ -324,7 +324,7 @@ function MiniMapLFGFrame_OnEnter(self)
 	elseif ( mode == "proposal" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		if ( queueType == "raid" ) then
-			GameTooltip:SetText(LOOKING_FOR_RAID);
+			GameTooltip:SetText(RAID_FINDER);
 		else
 			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		end
@@ -335,7 +335,7 @@ function MiniMapLFGFrame_OnEnter(self)
 	elseif ( mode == "rolecheck" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		if ( queueType == "raid" ) then
-			GameTooltip:SetText(LOOKING_FOR_RAID);
+			GameTooltip:SetText(RAID_FINDER);
 		else
 			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		end
@@ -353,7 +353,7 @@ function MiniMapLFGFrame_OnEnter(self)
 	elseif ( mode == "lfgparty" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		if ( queueType == "raid" ) then
-			GameTooltip:SetText(LOOKING_FOR_RAID);
+			GameTooltip:SetText(RAID_FINDER);
 		else
 			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		end
@@ -363,7 +363,7 @@ function MiniMapLFGFrame_OnEnter(self)
 		local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID);
 		if ( numCompleted > 0 ) then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(string.format(BOSSES_KILLED, numCompleted, numEncounters));
+			GameTooltip:AddLine(ERR_LOOT_GONE);
 			for i=1, numEncounters do
 				local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
 				if ( isKilled ) then
@@ -375,7 +375,7 @@ function MiniMapLFGFrame_OnEnter(self)
 	elseif ( mode == "suspended" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		if ( queueType == "raid" ) then
-			GameTooltip:SetText(LOOKING_FOR_RAID);
+			GameTooltip:SetText(RAID_FINDER);
 		else
 			GameTooltip:SetText(LOOKING_FOR_DUNGEON);
 		end

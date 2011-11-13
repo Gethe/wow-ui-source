@@ -388,6 +388,7 @@ function GuildRoster_UpdateTradeSkills()
 	
 	for i = 1, numButtons do
 		button = buttons[i];
+		button.soRButton:Hide();
 		index = offset + i;
 		if ( index <= numTradeSkill ) then
 			button.guildIndex = index;

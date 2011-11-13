@@ -188,9 +188,9 @@ function ShowBonusActionBar ()
 		local barInfo = BonusActionBarGetBarInfo(barType);
 	
 		local shownFrame = MainMenuBar;
-		if not BonusActionBarFrame:IsShown() then
-			SetupBonusActionBar();
-		elseif not MainMenuBar:IsShown() then
+		
+		SetupBonusActionBar();
+		if not MainMenuBar:IsShown() then
 			shownFrame = BonusActionBarFrame;
 		end
 		

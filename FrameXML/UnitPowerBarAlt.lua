@@ -711,6 +711,7 @@ local numBuffTimers = 0;
 
 function PlayerBuffTimerManager_OnLoad(self)
 	self:RegisterEvent("UNIT_POWER_BAR_TIMER_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self.unit = "player"
 end
 
@@ -718,6 +719,8 @@ end
 function PlayerBuffTimerManager_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( arg1 == self.unit and event == "UNIT_POWER_BAR_TIMER_UPDATE" ) then
+		PlayerBuffTimerManager_UpdateTimers(self);
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		PlayerBuffTimerManager_UpdateTimers(self);
 	end
 end

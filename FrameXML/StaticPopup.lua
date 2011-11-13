@@ -1,6 +1,7 @@
 StaticPopup_DisplayedFrames = { };
 
 STATICPOPUP_NUMDIALOGS = 4;
+STATICPOPUP_TIMEOUT = 60;
 STATICPOPUP_TEXTURE_ALERT = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew";
 STATICPOPUP_TEXTURE_ALERTGEAR = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertOther";
 StaticPopupDialogs = { };
@@ -1286,7 +1287,7 @@ StaticPopupDialogs["RESURRECT"] = {
 			StaticPopup_Show("DEATH");
 		end
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	cancels = "DEATH",
 	interruptCinematic = 1,
@@ -1312,7 +1313,7 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 			StaticPopup_Show("DEATH");
 		end
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	cancels = "DEATH",
 	interruptCinematic = 1,
@@ -1336,7 +1337,7 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 			StaticPopup_Show("DEATH");
 		end
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	cancels = "DEATH",
 	interruptCinematic = 1,
@@ -1378,7 +1379,7 @@ StaticPopupDialogs["TRADE"] = {
 	OnCancel = function(self)
 		CancelTrade();
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["PARTY_INVITE"] = {
@@ -1402,7 +1403,7 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 			self:Hide();
 		end
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1
 };
@@ -1457,7 +1458,7 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 		local name = data;
 		DeclineInvite(name);
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1
 };
@@ -1476,7 +1477,7 @@ StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
 	OnHide = function()
 		DeclineLevelGrant();
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1
 };
@@ -1534,7 +1535,7 @@ StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = {
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1
 };
@@ -1549,7 +1550,7 @@ StaticPopupDialogs["ARENA_TEAM_INVITE"] = {
 	OnCancel = function(self)
 		DeclineArenaTeam();
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1
 };
@@ -2189,7 +2190,7 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 	OnCancel = function(self)
 		CancelDuel();
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
 };
 StaticPopupDialogs["DUEL_OUTOFBOUNDS"] = {
@@ -2206,7 +2207,7 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 			TradeSkillFrame_Hide();
 		end
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	exclusive = 1,
 	whileDead = 1,
 	showAlert = 1,
@@ -2219,7 +2220,7 @@ StaticPopupDialogs["UNLEARN_SPECIALIZATION"] = {
 	OnAccept = function(self, index)
 		UnlearnSpecialization(index);
 	end,
-	timeout = 60,
+	timeout = STATICPOPUP_TIMEOUT,
 	exclusive = 1,
 	whileDead = 1,
 	showAlert = 1,

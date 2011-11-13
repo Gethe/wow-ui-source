@@ -75,6 +75,9 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateHealth(self);
 			CompactUnitFrame_UpdateStatusText(self);
 			CompactUnitFrame_UpdateHealPrediction(self);
+			if ( event == "UNIT_HEALTH" ) then	--To make sure we fix 283903 (some sort of race condition). Try removing later.
+				CompactUnitFrame_UpdateHealthColor(self);
+			end
 		elseif ( event == "UNIT_MAXPOWER" ) then
 			CompactUnitFrame_UpdateMaxPower(self);
 			CompactUnitFrame_UpdatePower(self);
@@ -283,7 +286,10 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 			end
 		end
 	end
-	frame.healthBar:SetStatusBarColor(r, g, b);
+	if ( r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b ) then
+		frame.healthBar:SetStatusBarColor(r, g, b);
+		frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
+	end
 end
 
 function CompactUnitFrame_UpdateMaxHealth(frame)

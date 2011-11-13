@@ -144,12 +144,14 @@ function DungeonCompletionAlertFrame_ShowAlert()
 		frame.dungeonArt2:Hide();
 		frame.dungeonArt3:Hide();
 		frame.dungeonArt4:Hide();
+		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 26, 18);
 	else
 		frame.raidArt:Hide();
 		frame.dungeonArt1:Show();
 		frame.dungeonArt2:Show();
 		frame.dungeonArt3:Show();
 		frame.dungeonArt4:Show();
+		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 13, 13);
 	end
 	
 	--Set up the rewards

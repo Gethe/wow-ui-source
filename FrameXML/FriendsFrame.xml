@@ -999,6 +999,11 @@ TRAVEL PASS
 							<OnLoad>
 								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
 								self:RegisterEvent("SOR_BY_TEXT_UPDATED");
+								if ( CanSendSoRByText() ) then
+									self:Show();
+								else
+									self:Hide();
+								end
 							</OnLoad>
 							<OnEvent>
 								if ( CanSendSoRByText() ) then

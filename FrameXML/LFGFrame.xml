@@ -1403,6 +1403,7 @@
 			<OnShow>
 				PlaySound("igPlayerInvite");
 			</OnShow>
+			<OnUpdate function="LFGInvitePopup_OnUpdate"/>
 			<OnHide>
 				PlaySound("igMainMenuClose");
 			</OnHide>

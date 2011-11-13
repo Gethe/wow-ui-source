@@ -200,18 +200,21 @@ function LFGEventFrame_OnEvent(self, event, ...)
 end
 
 function LFG_DisplayGroupLeaderWarning(eventFrame)
-	if ( not HasLFGRestrictions() or not IsInLFGDungeon() ) then
+	local numRaidMembers = GetNumRaidMembers();
+	local numPartyMembers = GetNumPartyMembers();
+	if ( not HasLFGRestrictions() or (numRaidMembers == 0 and numPartyMembers == 0) ) then
+		eventFrame.lastLeader = nil;
+		return;
+	end
+
+	if ( not IsInLFGDungeon() ) then
 		--We only want to display the message if we're actually in the dungeon.
 		return;
 	end
 
 	local leaderName;
-	local numRaidMembers = GetNumRaidMembers();
-	local numPartyMembers = GetNumPartyMembers();
 
-	if ( numRaidMembers == 0 and numPartyMembers == 0 ) then
-		return;
-	elseif ( numRaidMembers ~= 0 ) then
+	if ( numRaidMembers ~= 0 ) then
 		for i=1, numRaidMembers do
 			local name, rank = GetRaidRosterInfo(i);
 			if ( rank == 2 ) then
@@ -227,6 +230,11 @@ function LFG_DisplayGroupLeaderWarning(eventFrame)
 	if ( eventFrame.lastLeader ~= leaderName ) then
 		--We'll hold this message a little bit longer than most.
 		RaidNotice_AddMessage(RaidWarningFrame, format(LFG_LEADER_CHANGED_WARNING, leaderName), ChatTypeInfo["RAID_WARNING"], 18);
+		if ( not eventFrame.lastLeader ) then
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(format(LFG_LEADER_CHANGED_WARNING, leaderName), info.r, info.g, info.b, info.id);
+		end
+
 	end
 	eventFrame.lastLeader = leaderName;
 end
@@ -1484,17 +1492,19 @@ end
 
 function LFGRewardsFrameEncounterList_OnEnter(self)
 	local dungeonID = self.dungeonID;
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:AddLine(BOSSES)
-	for i=1, GetLFGDungeonNumEncounters(dungeonID) do
-		local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
-		if ( isKilled ) then
-			GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		else
-			GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID);
+
+	if ( numCompleted > 0 ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:AddLine(ERR_LOOT_GONE);
+		for i=1, numEncounters do
+			local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
+			if ( isKilled ) then
+				GameTooltip:AddLine(bossName, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			end
 		end
+		GameTooltip:Show();
 	end
-	GameTooltip:Show();
 end
 
 --
@@ -1525,6 +1535,7 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 	local healerButton = LFGInvitePopupRoleButtonHealer;
 	local damagerButton = LFGInvitePopupRoleButtonDPS;
 	local availableRolesField = 0;
+	self.timeOut = STATICPOPUP_TIMEOUT;
 	LFGInvitePopupText:SetFormattedText(INVITATION, inviter);
 	-- tank
 	if ( not canBeTank ) then
@@ -1565,4 +1576,11 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 	damagerButton.checkButton:SetChecked(availableRolesField == 8);
 
 	LFGInvitePopup_UpdateAcceptButton();
+end
+
+function LFGInvitePopup_OnUpdate(self, elapsed)
+	self.timeOut = self.timeOut - elapsed;
+	if ( self.timeOut <= 0 ) then
+		LFGInvitePopupDecline_OnClick();
+	end
 end

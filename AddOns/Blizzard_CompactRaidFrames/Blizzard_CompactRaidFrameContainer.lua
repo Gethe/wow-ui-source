@@ -343,6 +343,7 @@ function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
 		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
 		frame.applyFunc = applyFunc;
 		CompactUnitFrame_SetUpFrame(frame, info.setUpFunc);
+		CompactUnitFrame_SetUpdateAllEvent(frame, "RAID_ROSTER_UPDATE");
 		frame.unusedFunc = self.unitFrameUnusedFunc;
 		tinsert(self.frameUpdateList[info.updateList], frame);
 		CompactRaidFrameReservation_RegisterReservation(self.frameReservations[frameType], frame, mapping);
