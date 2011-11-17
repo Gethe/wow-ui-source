@@ -91,6 +91,8 @@
 							<Size x="12" y="12"/>	
 							<TexCoords left="0.00195313" right="0.02539063" top="0.64062500" bottom="0.73437500"/>
 						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture file="Interface\Reforging\Reforge-Texture"  parentKey="checkedTex" hidden="true">
 							<Size x="17" y="17"/>	
 							<TexCoords left="0.02929688" right="0.06250000" top="0.66406250" bottom="0.79687500"/>

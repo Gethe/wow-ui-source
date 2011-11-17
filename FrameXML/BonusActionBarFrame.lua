@@ -81,6 +81,7 @@ BonusActionBarTypes =  {
 
 function BonusActionBar_OnLoad (self)
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	self.mode = "none";
 	self.completed = 1;
@@ -98,6 +99,8 @@ function BonusActionBar_OnEvent (self, event, ...)
 		else
 			HideBonusActionBar();
 		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		SetupBonusActionBar();
 	end
 end
 
@@ -128,6 +131,7 @@ function SetupBonusActionBar()
 	
 	for i=1,NUM_BONUS_ACTION_SLOTS do
 		local button = _G["BonusActionButton"..i];
+		ActionButton_UpdateAction (button);
 		local actionType, id, subType = GetActionInfo(button.action);
 		button:SetSize(barInfo.buttonSize, barInfo.buttonSize);
 		if (id and id ~= 0 and i <= barInfo.numButtons) then
@@ -188,8 +192,7 @@ function ShowBonusActionBar ()
 		local barInfo = BonusActionBarGetBarInfo(barType);
 	
 		local shownFrame = MainMenuBar;
-		
-		SetupBonusActionBar();
+
 		if not MainMenuBar:IsShown() then
 			shownFrame = BonusActionBarFrame;
 		end

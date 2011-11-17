@@ -166,10 +166,10 @@ function ReforgingFrame_Update(self)
 				if enoughMoney then
 					ReforgingFrameReforgeButton:Enable();
 				end
-				_ , rightStat = ReforgingFrame_GetStatRow(bonusStatIndex, true);
-				if rightStat then	
-					rightStat:Show();
-				end
+				--_ , rightStat = ReforgingFrame_GetStatRow(bonusStatIndex, true);
+				--if rightStat then	
+				--	rightStat:Show();
+				--end
 			end
 		end
 		
