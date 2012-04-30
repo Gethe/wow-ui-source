@@ -504,4 +504,70 @@
 			<OnLoad function="WatchFrameDropDown_OnLoad"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="WatchFrameScenarioFrame" hidden="true">
+		<Size x="201" y="59"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="bg">
+					<Size x="201" y="59"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.12304688" right="0.51562500" top="0.24414063" bottom="0.35937500"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="finalBg">
+					<Size x="193" y="51"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.12304688" right="0.50000000" top="0.14062500" bottom="0.24023438"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="flag">
+					<Size x="48" y="47"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.02539063" right="0.11914063" top="0.07617188" bottom="0.16796875"/>
+				</Texture>
+				<FontString inherits="QuestTitleFont" text="Stage 2" parentKey="stageLevel">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="56" y="-9"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="gfg" justifyH="LEFT" justifyV="TOP" parentKey="stageName">
+					<Size x="136" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.stageLevel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="stage1">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM" x="-38" y="3"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.01757813" top="0.00195313" bottom="0.01757813"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.numTexStages = 1;
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

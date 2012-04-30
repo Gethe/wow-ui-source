@@ -94,7 +94,9 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
-local groupFrames = { "LFDParentFrame", "RaidFinderFrame" }
+SCENARIOS_SHOW_LEVEL = 90;
+
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "ScenarioFinderFrame" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
@@ -104,15 +106,33 @@ function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.groupButton3.name:SetText("Scenarios");
 	-- disable
-	local button = self.groupButton3;
-	button.bg:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
-	SetDesaturation(button.icon, true);
-	SetDesaturation(button.ring, true);
-	button.name:SetFontObject("GameFontDisableLarge");
-	button:Disable();
+	if ( UnitLevel("player") < SCENARIOS_SHOW_LEVEL ) then
+		local button = self.groupButton3;
+		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
+		SetDesaturation(button.icon, true);
+		SetDesaturation(button.ring, true);
+		button.name:SetFontObject("GameFontDisableLarge");
+		button:Disable();
+		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
+		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
+	end
 	-- set up accessors
 	self.getSelection = GroupFinderFrame_GetSelection;
 	self.update = GroupFinderFrame_Update;
+end
+
+function GroupFinderFrame_OnEvent(self, event, ...)
+	local level = ...;
+	if ( level >= SCENARIOS_SHOW_LEVEL ) then
+		local button = self.groupButton3;
+		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+		SetDesaturation(button.icon, false);
+		SetDesaturation(button.ring, false);
+		button.name:SetFontObject("GameFontNormalLarge");
+		button:Enable();
+		GroupFinderFrame:SetScript("OnEvent", nil);
+		GroupFinderFrame:UnregisterEvent("PLAYER_LEVEL_UP");		
+	end
 end
 
 function GroupFinderFrame_GetSelection(self)

@@ -1116,3 +1116,210 @@ end
 function TutorialFrame_ClearQueue()
 	TUTORIALFRAME_QUEUE = { };
 end
+
+
+HELP_PLATE_BUTTONS = {};
+function HelpPlate_GetButton()
+	local frame;
+	local i = 1;
+	for i=1, #HELP_PLATE_BUTTONS do
+		local button = HELP_PLATE_BUTTONS[i];
+		if ( not button:IsShown() ) then
+			frame = button;
+			break;
+		end
+	end
+
+	if ( not frame ) then
+		frame = CreateFrame( "Button", "HelpPlateButton"..i, HelpPlate, "HelpPlateButton" );
+		frame.box = CreateFrame( "Frame", "HelpPlateBox"..i, HelpPlate, "HelpPlateBox" );
+		table.insert( HELP_PLATE_BUTTONS, frame );
+	end
+	frame.tooltipDir = "RIGHT";
+	return frame;
+end
+
+function HelpPlate_FindNextButton(prevButton)
+	local found = false;
+	for i=1, #HELP_PLATE_BUTTONS do
+		local button = HELP_PLATE_BUTTONS[i];
+		if ( found ) then
+			return button;
+		end
+
+		if ( button:IsShown() and button == prevButton ) then
+			found = true;
+		end
+	end
+end
+
+HELP_PLATE_CURRENT_PLATE = nil;
+function HelpPlate_Show( self, parent, mainHelpButton )
+	if ( HELP_PLATE_CURRENT_PLATE ) then
+		HelpPlate_Hide();
+	end
+
+	HELP_PLATE_CURRENT_PLATE = self;
+	HELP_PLATE_CURRENT_PLATE.mainHelpButton = mainHelpButton;
+	for i = 1, #self do
+		if ( not self[i].MinLevel or (UnitLevel("player") >= self[i].MinLevel) ) then
+			local button = HelpPlate_GetButton();
+			button:ClearAllPoints();
+			button:SetPoint( "TOPLEFT", HelpPlate, "TOPLEFT", self[i].ButtonPos.x, self[i].ButtonPos.y );
+			button.tooltipDir = self[i].ToolTipDir;
+			button.toolTipText = self[i].ToolTipText;
+			button:Show();
+			
+			button.box:ClearAllPoints();
+			button.box:SetSize( self[i].HighLightBox.width, self[i].HighLightBox.height );
+			button.box:SetPoint( "TOPLEFT", HelpPlate, "TOPLEFT", self[i].HighLightBox.x, self[i].HighLightBox.y );
+			button.box.BG:Show();
+			button.box:Show();
+			
+			if ( not HelpPlateButtonFlare.button ) then
+				HelpPlateButtonFlare.button = button;
+			end
+		end
+	end
+	HelpPlate:SetPoint( "TOPLEFT", parent, "TOPLEFT", self.FramePos.x, self.FramePos.y );
+	HelpPlate:SetSize( self.FrameSize.width, self.FrameSize.height );
+	HelpPlate:Show();
+end
+
+function HelpPlate_Hide()
+	if ( HELP_PLATE_CURRENT_PLATE ) then
+		for i = 1, #HELP_PLATE_BUTTONS do
+			local button = HELP_PLATE_BUTTONS[i];
+			button.tooltipDir = "RIGHT";
+			button:Hide();
+			button.box:Hide();
+		end
+		HelpPlate:Hide();
+	end
+	HELP_PLATE_CURRENT_PLATE = nil;
+	HelpPlateButtonFlare.button = nil;
+	HelpPlateButtonFlare.Pulse:Stop();
+	HelpPlateButtonFlare:Hide();
+end
+
+function HelpPlate_IsShowing(plate)
+	return (HELP_PLATE_CURRENT_PLATE == plate);
+end
+
+function Main_HelpPlate_Button_OnEnter(self)
+	HelpPlateTooltip.ArrowRIGHT:Show();
+	HelpPlateTooltip.ArrowGlowRIGHT:Show();
+	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
+	HelpPlateTooltip.Text:SetText("Click this to toggle on/off the help system for this frame.")
+	HelpPlateTooltip:Show();
+end
+
+function Main_HelpPlate_Button_OnLeave(self)
+	HelpPlateTooltip.ArrowRIGHT:Hide();
+	HelpPlateTooltip.ArrowGlowRIGHT:Hide();
+	HelpPlateTooltip:ClearAllPoints();
+	HelpPlateTooltip:Hide();
+end
+
+function HelpPlate_Button_OnFinished(self)
+	if ( HelpPlateButtonFlare.button == self.parent ) then
+		HelpPlate_ButtonFlareOn(self.parent);
+	end
+end
+
+function HelpPlate_Button_OnLoad(self)
+	self.animGroup_Show = self:CreateAnimationGroup();
+	self.animGroup_Show.translate = self.animGroup_Show:CreateAnimation("Translation");
+
+	self.animGroup_Show:SetScript("OnFinished", HelpPlate_Button_OnFinished);
+	self.animGroup_Show.parent = self;
+--[[
+	self.animGroup_Pulse = self:CreateAnimationGroup();
+	self.animGroup_Pulse:SetLooping("BOUNCE");
+	self.animGroup_Pulse.alpha = self.animGroup_Show:CreateAnimation("Alpha");
+	self.animGroup_Pulse.alpha:SetSmoothing("IN_OUT");
+	self.animGroup_Pulse.scale = self.animGroup_Show:CreateAnimation("Scale");
+]]
+end
+
+function HelpPlate_Button_OnShow(self)
+	local point, relative, relPoint, xOff, yOff = self:GetPoint();
+	self.animGroup_Show.translate:SetOffset( (-1*xOff), (-1*yOff) );
+	self.animGroup_Show.translate:SetDuration(0.5);
+	self.animGroup_Show:Play(true);
+end
+
+function HelpPlate_Button_OnEnter(self)
+	HelpPlate_TooltipHide();
+
+	if ( self.tooltipDir == "UP" ) then
+		HelpPlateTooltip.ArrowUP:Show();
+		HelpPlateTooltip.ArrowGlowUP:Show();
+		HelpPlateTooltip:SetPoint("BOTTOM", self, "TOP", 0, 10);
+	elseif ( self.tooltipDir == "DOWN" ) then
+		HelpPlateTooltip.ArrowDOWN:Show();
+		HelpPlateTooltip.ArrowGlowDOWN:Show();
+		HelpPlateTooltip:SetPoint("TOP", self, "BOTTOM", 0, -10);
+	elseif ( self.tooltipDir == "LEFT" ) then
+		HelpPlateTooltip.ArrowLEFT:Show();
+		HelpPlateTooltip.ArrowGlowLEFT:Show();
+		HelpPlateTooltip:SetPoint("RIGHT", self, "LEFT", -10, 0);
+	elseif ( self.tooltipDir == "RIGHT" ) then
+		HelpPlateTooltip.ArrowRIGHT:Show();
+		HelpPlateTooltip.ArrowGlowRIGHT:Show();
+		HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
+	end
+	HelpPlateTooltip.Text:SetText(self.toolTipText)
+	HelpPlateTooltip:Show();
+	self.box.BG:Hide();
+	HelpPlate_ButtonFlareOff(self);
+end
+
+function HelpPlate_Button_OnLeave(self)
+	HelpPlate_TooltipHide();
+	self.box.BG:Show();
+	if ( HelpPlateButtonFlare.button == self or not HelpPlateButtonFlare.button ) then
+		HelpPlate_ButtonFlareOn( HelpPlate_FindNextButton(HelpPlateButtonFlare.button) );
+	end
+end
+
+function HelpPlate_TooltipHide()
+	HelpPlateTooltip.ArrowUP:Hide();
+	HelpPlateTooltip.ArrowGlowUP:Hide();
+	HelpPlateTooltip.ArrowDOWN:Hide();
+	HelpPlateTooltip.ArrowGlowDOWN:Hide();
+	HelpPlateTooltip.ArrowLEFT:Hide();
+	HelpPlateTooltip.ArrowGlowLEFT:Hide();
+	HelpPlateTooltip.ArrowRIGHT:Hide();
+	HelpPlateTooltip.ArrowGlowRIGHT:Hide();
+	HelpPlateTooltip:ClearAllPoints();
+	HelpPlateTooltip:Hide();
+end
+
+function HelpPlate_ButtonFlareOn(button)
+	if( HelpPlateButtonFlare.button ) then
+		HelpPlateButtonFlare.button:SetSize(46,46);
+	end
+
+	HelpPlateButtonFlare.button = button;
+	HelpPlateButtonFlare:ClearAllPoints();
+	if ( button ) then
+		button:SetSize(55,55);
+		HelpPlateButtonFlare:SetPoint("CENTER", button);
+		HelpPlateButtonFlare:Show();
+		HelpPlateButtonFlare.Pulse:Play();
+	else
+		HelpPlateButtonFlare:SetPoint("CENTER", HELP_PLATE_CURRENT_PLATE.mainHelpButton);
+		HelpPlateButtonFlare:Show();
+		HelpPlateButtonFlare.Pulse:Play();
+		Main_HelpPlate_Button_OnEnter(HELP_PLATE_CURRENT_PLATE.mainHelpButton);
+	end
+end
+
+function HelpPlate_ButtonFlareOff(button)
+	if( HelpPlateButtonFlare.button == button ) then
+--		HelpPlateButtonFlare.button:SetSize(46,46);
+		HelpPlateButtonFlare.Pulse:Stop();
+		HelpPlateButtonFlare:Hide();
+	end
+end

@@ -195,6 +195,11 @@
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
+	<Font name="NumberFont_Normal_Med" font="Fonts\ARIALN.TTF" virtual="true" >
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
 	<Font name="NumberFont_Outline_Med" font="Fonts\ARIALN.TTF" outline="NORMAL" virtual="true" >
 		<FontHeight>
 			<AbsValue val="14"/>
@@ -234,6 +239,12 @@
 		<Color r="1" g=".82" b="0"/>
 	</Font>
 	<Font name="DestinyFontLarge" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="18"/>
+		</FontHeight>
+		<Color r="0.1" g="0.1" b="0.1"/>
+	</Font>
+	<Font name="CoreAbilityFont" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<FontHeight>
 			<AbsValue val="18"/>
 		</FontHeight>

@@ -1,5 +1,6 @@
 TOOLTIP_UPDATE_TIME = 0.2;
 ROTATIONS_PER_SECOND = .5;
+BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
 -- Alpha animation stuff
 FADEFRAMES = {};
@@ -23,14 +24,14 @@ UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 
 
 -- Frames using the new Templates
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
-UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1, width = 575, height = 545 };
+UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, width = 575, height = 545 };
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605, height = 580 };
 UIPanelWindows["PVPFrame"] =					{ area = "left",			pushable = 1,	whileDead = 1};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 0, 	whileDead = 1, width = 563};
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
-UIPanelWindows["PetJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
+UIPanelWindows["PetJournalParent"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
 UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 7};
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
@@ -47,7 +48,7 @@ UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2};
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1, extraWidth = 32};
-UIPanelWindows["RaidParentFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
 
 
 -- Frames NOT using the new Templates
@@ -270,6 +271,10 @@ function UIParent_OnLoad(self)
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
+
+	-- Events for black market
+	self:RegisterEvent("BLACK_MARKET_OPEN");
+	self:RegisterEvent("BLACK_MARKET_CLOSE");
 end
 
 
@@ -412,6 +417,10 @@ end
 
 function PetJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_PetJournal");
+end
+
+function BlackMarket_LoadUI()
+	UIParentLoadAddOn("Blizzard_BlackMarketUI");
 end
 
 
@@ -608,11 +617,11 @@ end
 
 
 function TogglePetJournal()
-	if ( not PetJournal ) then
+	if ( not PetJournalParent ) then
 		PetJournal_LoadUI();
 	end
-	if ( PetJournal ) then
-		ToggleFrame(PetJournal);
+	if ( PetJournalParent ) then
+		ToggleFrame(PetJournalParent);
 	end
 end
 
@@ -819,7 +828,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("LEVEL_GRANT_PROPOSED");
 		
 		local _, instanceType = IsInInstance();
-		if ( instanceType == "arena" ) then
+		if ( instanceType == "arena" or instanceType == "pvp") then
 			Arena_LoadUI();
 		end
 		if ( UnitIsGhost("player") ) then
@@ -991,10 +1000,10 @@ function UIParent_OnEvent(self, event, ...)
 			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
 			-- open the talent UI to the player's active talent group...just so the player knows
 			-- exactly which talent spec he is wiping
-			TalentFrame_LoadUI();
-			if ( PlayerTalentFrame_Open ) then
-				PlayerTalentFrame_Open(GetActiveSpecGroup());
-			end
+--			TalentFrame_LoadUI();
+--			if ( PlayerTalentFrame_Open ) then
+--				PlayerTalentFrame_Open(GetActiveSpecGroup());
+--			end
 		end
 	elseif ( event == "CONFIRM_BINDER" ) then
 		StaticPopup_Show("CONFIRM_BINDER", arg1);
@@ -1233,6 +1242,18 @@ function UIParent_OnEvent(self, event, ...)
 		
 	elseif( event == "SOR_START_EXPERIENCE_INCOMPLETE" ) then
 		StaticPopup_Show("ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE");
+		
+	-- Events for Black Market UI handling
+	elseif ( event == "BLACK_MARKET_OPEN" ) then
+		BlackMarket_LoadUI();
+		if ( BlackMarketFrame_Show ) then
+			BlackMarketFrame_Show();
+		end
+	elseif ( event == "BLACK_MARKET_CLOSE" ) then
+		if ( BlackMarketFrame_Hide ) then
+			BlackMarketFrame_Hide();
+		end
+
 	end
 end
 
@@ -2031,21 +2052,17 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
 	local numBossFrames = 0;
-	if ( Boss1TargetFrame ) then
-		for i = 1, MAX_BOSS_FRAMES do
-			if ( _G["Boss"..i.."TargetFrame"]:IsShown() ) then
-				numBossFrames = numBossFrames + 1;
-			else
-				break;
-			end
+	for i = 1, MAX_BOSS_FRAMES do
+		if ( _G["Boss"..i.."TargetFrame"]:IsShown() ) then
+			numBossFrames = i;
 		end
-		if ( numBossFrames > 0 ) then
-			if ( rightActionBars > 1 ) then
-				anchorY = min(anchorY, buffsAnchorY);
-			end
-			Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY * 1.333);	-- by 1.333 because it's 0.75 scale
-			anchorY = anchorY - numBossFrames * 68 + 4;
+	end
+	if ( numBossFrames > 0 ) then
+		if ( rightActionBars > 1 ) then
+			anchorY = min(anchorY, buffsAnchorY);
 		end
+		Boss1TargetFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -(CONTAINER_OFFSET_X * 1.3) + 60, anchorY * 1.333);	-- by 1.333 because it's 0.75 scale
+		anchorY = anchorY - (numBossFrames * (68 + BOSS_FRAME_CASTBAR_HEIGHT) + BOSS_FRAME_CASTBAR_HEIGHT);
 	end
 	
 	-- Setup durability offset
@@ -3961,35 +3978,34 @@ function AbbreviateLargeNumbers(value)
 end
 
 function BreakUpLargeNumbers(value)
-	decimal = value - math.floor(value);
-	value = math.floor(value);
-	if ( decimal > 0 ) then
-		decimal = math.floor(decimal * 100);
-		if (IsEuropeanNumbers()) then
-			decimal = ","..decimal;
-		else
-			decimal = "."..decimal;
-		end
-	else
-		decimal = "";
-	end
-	local strLen = strlen(value);
 	local retString = "";
+	if ( value < 1000 ) then
+		if ( (value - math.floor(value)) == 0) then
+			return value;
+		end
+		local decimal = (math.floor(value*100));
+		retString = string.sub(decimal, 1, -3);
+		if (IsEuropeanNumbers()) then
+			retString = retString..",";
+		else
+			retString = retString..".";
+		end
+		retString = retString..string.sub(decimal, -2);
+		return retString;
+	end
+
+	value = math.floor(value);
+	local strLen = strlen(value);
 	if ( GetCVarBool("breakUpLargeNumbers") ) then
 		if ( strLen > 6 ) then
 			retString = string.sub(value, 1, -7)..LARGE_NUMBER_SEPERATOR;
-			decimal = ""; -- don't show decimal if number is large.
 		end
 		if ( strLen > 3 ) then
 			retString = retString..string.sub(value, -6, -4)..LARGE_NUMBER_SEPERATOR;
-			decimal = ""; -- don't show decimal if number is large.
 		end
-		retString = retString..string.sub(value, -3, -1)..decimal;
+		retString = retString..string.sub(value, -3, -1);
 	else
-		if ( strLen > 3 ) then
-			decimal = ""; -- don't show decimal if number is large.
-		end
-		retString = value..decimal;
+		retString = value;
 	end
 	return retString;
 end

@@ -1239,6 +1239,12 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
+						<Texture name="$parentBNIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" parentKey="BNicon" hidden="true">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="$parentIcon" x="-2" y="-4"/>
+							</Anchors>
+						</Texture>
 						<FontString name="$parentPoints" inherits="AchievementPointsFont" parentKey="points">
 							<Size x="42" y="16"/>
 							<Anchors>
@@ -1498,6 +1504,12 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
+						<Texture name="$parentBNIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" parentKey="BNicon" hidden="true">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="$parentIcon" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
 						<FontString name="$parentPoints" inherits="GameFontNormal" text="60" parentKey="points">
 							<Anchors>
 								<Anchor point="CENTER">
@@ -1799,6 +1811,12 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
+								<Texture name="$parentBNIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" parentKey="BNicon" hidden="true">
+									<Size x="18" y="18"/>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="$parentIcon" x="-2" y="-4"/>
+									</Anchors>
+								</Texture>
 								<FontString name="$parentPoints" inherits="GameFontNormalSmall" text="60" parentKey="points">
 									<Anchors>
 										<Anchor point="CENTER">

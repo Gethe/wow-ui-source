@@ -63,12 +63,20 @@
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+					if ( self.isBossBuff ) then
+						GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+					else
+						GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+					end
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+					if ( self.isBossBuff ) then
+						GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+					else
+						GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+					end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

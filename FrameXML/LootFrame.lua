@@ -326,6 +326,19 @@ function GroupLootContainer_RemoveFrame(self, frame)
 	GroupLootContainer_Update(self);
 end
 
+function GroupLootContainer_ReplaceFrame(self, oldFrame, newFrame)
+	for k, v in pairs(self.rollFrames) do
+		if ( v == oldFrame ) then
+			v:Hide();
+			self.rollFrames[k] = newFrame;
+			GroupLootContainer_Update(self);
+			newFrame:Show();
+			return true;
+		end
+	end
+	return false;	--Didn't find a frame to replace.
+end
+
 function GroupLootContainer_Update(self)
 	local lastIdx = nil;
 
@@ -333,7 +346,7 @@ function GroupLootContainer_Update(self)
 		local frame = self.rollFrames[i];
 		if ( frame ) then
 			frame:ClearAllPoints();
-			frame:SetPoint("BOTTOM", self, "BOTTOM", 0, self.reservedSize * (i-1));
+			frame:SetPoint("CENTER", self, "BOTTOM", 0, self.reservedSize * (i-1 + 0.5));
 			lastIdx = i;
 		end
 	end
@@ -453,13 +466,6 @@ function GroupLootFrame_DisableLootButton(button)
 	SetDesaturation(button:GetNormalTexture(), true);
 end
 
-local itemQualityBorder = {
-	[ITEM_QUALITY_UNCOMMON] = {0.17968750, 0.23632813, 0.74218750, 0.96875000},
-	[ITEM_QUALITY_RARE] = {0.86718750, 0.92382813, 0.00390625, 0.23046875},
-	[ITEM_QUALITY_EPIC] = {0.92578125, 0.98242188, 0.00390625, 0.23046875},
-	[ITEM_QUALITY_LEGENDARY] = {0.80859375, 0.86523438, 0.00390625, 0.23046875},
-};
-
 function GroupLootFrame_OnShow(self)
 	AlertFrame_FixAnchors();
 	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired = GetLootRollItemInfo(self.rollID);
@@ -469,7 +475,7 @@ function GroupLootFrame_OnShow(self)
 	end
 	
 	self.IconFrame.Icon:SetTexture(texture);
-	local borderTexCoord = itemQualityBorder[quality] or itemQualityBorder[ITEM_QUALITY_UNCOMMON];
+	local borderTexCoord = LOOT_BORDER_QUALITY_COORDS[quality] or LOOT_BORDER_QUALITY_COORDS[ITEM_QUALITY_UNCOMMON];
 	self.IconFrame.Border:SetTexCoord(unpack(borderTexCoord));
 	self.Name:SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];
@@ -535,56 +541,121 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration)
 	if ( count == 0 ) then
 		return;
 	end
+
+	--Stop any animations that might still be playing
+	frame.StartRollAnim:Stop();
+
 	frame.state = "prompt";
 	frame.spellID = spellID;
 	frame.endTime = time() + duration;
 	frame.remaining = duration;
+
 	icon = "Interface\\Icons\\"..icon;
 	local numRequired = 1;
-	frame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);
+	frame.PromptFrame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);
 	frame.CurrentCountFrame.Text:SetFormattedText(BONUS_ROLL_CURRENT_COUNT, count, icon);
-	frame.Timer:SetMinMaxValues(0, duration);
-	frame.Timer:SetValue(duration);
+	frame.PromptFrame.Timer:SetMinMaxValues(0, duration);
+	frame.PromptFrame.Timer:SetValue(duration);
+	frame.PromptFrame:Show();
+	frame.RollingFrame:Hide();
 	GroupLootContainer_AddFrame(GroupLootContainer, frame);
 end
 
 function BonusRollFrame_CloseBonusRoll()
 	local frame = BonusRollFrame;
-	GroupLootContainer_RemoveFrame(GroupLootContainer, frame);
+	if ( frame.state == "prompt" ) then
+		GroupLootContainer_RemoveFrame(GroupLootContainer, frame);
+	end
 end
 
 function BonusRollFrame_OnLoad(self)
 	self:RegisterEvent("BONUS_ROLL_STARTED");
 	self:RegisterEvent("BONUS_ROLL_FAILED");
-	self:RegisterEvent("BONUS_ROLL_RESULTS");
+	self:RegisterEvent("BONUS_ROLL_RESULT");
 end
 
-function BonusRollFrame_OnEvent(self)
+function BonusRollFrame_OnEvent(self, event, ...)
 	if ( event == "BONUS_ROLL_FAILED" ) then
-		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+		--Do something?
 	elseif ( event == "BONUS_ROLL_STARTED" ) then
-		
+		self.state = "rolling";
+		self.animFrame = 0;
+		self.animTime = 0;
+		self.RollingFrame.LootSpinner:Show();
+		self.RollingFrame.LootSpinnerFinal:Hide();
+		self.StartRollAnim:Play();
+	elseif ( event == "BONUS_ROLL_RESULT" ) then
+		local rewardType, rewardLink, rewardQuantity = ...;
+		self.state = "slowing";
+		self.rewardType = rewardType;
+		self.rewardLink = rewardLink;
+		self.rewardQuantity = rewardQuantity;
+		self.StartRollAnim:Finish();
 	end
 end
+
+local finalAnimFrame = {
+	item = 2,
+	currency = 6,
+	money = 6,
+}
+
+local finalTextureTexCoords = {
+	item = {0.59570313, 0.62597656, 0.875, 0.9921875},
+	currency = {0.56347656, 0.59375, 0.875, 0.9921875},
+	money = {0.56347656, 0.59375, 0.875, 0.9921875},
+}
 
 function BonusRollFrame_OnUpdate(self, elapsed)
 	if ( self.state == "prompt" ) then
 		self.remaining = self.remaining - elapsed;
-		self.Timer:SetValue(max(0, self.remaining));
+		self.PromptFrame.Timer:SetValue(max(0, self.remaining));
+	elseif ( self.state == "rolling" ) then
+		self.animTime = self.animTime + elapsed;
+		if ( self.animTime > 0.05 ) then
+			BonusRollFrame_AdvanceLootSpinnerAnim(self);
+		end
+	elseif ( self.state == "slowing" ) then
+		self.animTime = self.animTime + elapsed;
+		if ( self.animFrame == finalAnimFrame[self.rewardType] ) then
+			self.state = "finishing";
+			self.RollingFrame.LootSpinner:Hide();
+			self.RollingFrame.LootSpinnerFinal:Show();
+			self.RollingFrame.LootSpinnerFinal:SetTexCoord(unpack(finalTextureTexCoords[self.rewardType]));
+			self.RollingFrame.LootSpinnerFinalText:SetText(_G["BONUS_ROLL_REWARD_"..string.upper(self.rewardType)]);
+			self.FinishRollAnim:Play();
+		elseif ( self.animTime > 0.1 ) then --Slow it down
+			BonusRollFrame_AdvanceLootSpinnerAnim(self);
+		end
 	end
 end
 
-function BonusRollFrame_Update(self)
-	if ( self.state == "prompt" ) then
-
-	end
+function BonusRollFrame_AdvanceLootSpinnerAnim(self)
+	self.animTime = 0;
+	self.animFrame = (self.animFrame + 1) % 8;
+	local top = floor(self.animFrame / 4) * 0.5;
+	local left = (self.animFrame % 4) * 0.25;
+	self.RollingFrame.LootSpinner:SetTexCoord(left, left + 0.25, top, top + 0.5);
 end
 
 function BonusRollFrame_OnShow(self)
-	self.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
+	self.PromptFrame.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
+	self.BlackBackgroundHoist:SetFrameLevel(self.PromptFrame.Timer:GetFrameLevel() - 1);
 	--Update the remaining time in case we were hidden for some reason
 	if ( self.state == "prompt" ) then
 		self.remaining = self.endTime - time();
+	end
+end
+
+function BonusRollFrame_FinishedFading(self)
+	if ( self.rewardType == "item" ) then
+		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity);
+		AlertFrame_AnimateIn(BonusRollLootWonFrame);
+	elseif ( self.rewardType == "money" ) then
+		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
+		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
+		AlertFrame_AnimateIn(BonusRollMoneyWonFrame);
 	end
 end
 

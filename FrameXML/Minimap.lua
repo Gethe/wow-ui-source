@@ -514,7 +514,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 				info.notCheckable = true;
 				info.keepShownOnClick = false;
 				info.hasArrow = true;
-				info.value = 1;
+				info.value = HUNTER_TRACKING;
 				UIDropDownMenu_AddButton(info, level)
 			end
 		end
@@ -524,7 +524,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		info.notCheckable = true;
 		info.keepShownOnClick = false;
 		info.hasArrow = true;
-		info.value = 2;
+		info.value = TOWNSFOLK;
 		UIDropDownMenu_AddButton(info, level)
 	end
 

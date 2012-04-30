@@ -49,7 +49,7 @@ function BuffFrame_OnEvent(self, event, ...)
 			BuffFrame_Update();
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
-		if ShouldShowRaidBuffTray() then
+		if ShouldShowConsolidatedBuffFrame() then
 			ConsolidatedBuffs:Show();
 		else
 			ConsolidatedBuffs:Hide();
@@ -268,7 +268,7 @@ function AuraButton_Update(buttonName, index, filter)
 			GameTooltip:SetUnitAura(PlayerFrame.unit, index, filter);
 		end
 
-		if ( shouldConsolidate  and ShouldShowRaidBuffTray() ) then		
+		if ( shouldConsolidate  and ShouldShowConsolidatedBuffFrame() ) then		
 			buff.consolidated = true; --TODO: Consider ignoreing these alltogether.
 			buff:Hide();
 		end
@@ -325,7 +325,7 @@ function BuffFrame_UpdateAllBuffAnchors()
 	local numAuraRows = 0;
 	local slack = BuffFrame.numEnchants;
 	
-	if ShouldShowRaidBuffTray() then
+	if ShouldShowConsolidatedBuffFrame() then
 		slack = slack + 1;	-- one icon for all consolidated buffs
 	end
 	
@@ -383,7 +383,7 @@ end
 
 function DebuffButton_UpdateAnchors(buttonName, index)
 	local numBuffs = BUFF_ACTUAL_DISPLAY + BuffFrame.numEnchants;
-	if ShouldShowRaidBuffTray() then
+	if ShouldShowConsolidatedBuffFrame() then
 		numBuffs = numBuffs + 1; -- consolidated buffs
 	end
 	
@@ -540,6 +540,6 @@ function ConsolidatedBuffs_OnHide(self)
 end
 
 
-function ShouldShowRaidBuffTray()
-	return IsInGroup();
+function ShouldShowConsolidatedBuffFrame()
+	return IsInGroup() and GetCVarBool("consolidateBuffs");
 end

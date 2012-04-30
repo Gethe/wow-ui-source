@@ -374,7 +374,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="RaidMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="CompanionsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -384,30 +384,23 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				LoadMicroButtonTextures(self, "Raid");
+				LoadMicroButtonTextures(self, "Mounts");
 				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(RAID_FINDER, "TOGGLERAIDFINDER");
-				self.newbieText = NEWBIE_TOOLTIP_RAID_FINDER;
-				self.minLevel = SHOW_LFD_LEVEL;
-				if (IsBlizzCon()) then
-					self:Disable();
-				end
+				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLECOMPANIONJOURNAL");
+				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 			</OnLoad>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(RAID_FINDER, "TOGGLERAIDFINDER");
-				self.newbieText = NEWBIE_TOOLTIP_RAID_FINDER;
-				if (IsBlizzCon()) then
-					return;
-				end
+				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLECOMPANIONJOURNAL");
+				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 			</OnEvent>
 			<OnClick>
-				ToggleRaidFrame();
+				TogglePetJournal();
 			</OnClick>
 		</Scripts>
 	</Button>
 	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="RaidMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="CompanionsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>

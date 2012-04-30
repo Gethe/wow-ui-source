@@ -1,0 +1,164 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Font name="ChatFontNormalKO" font="Fonts\2002.TTF" spacing="3" alternateTo="ChatFontNormal" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+				<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="ChatFontNormalZH" font="Fonts\ARHei.ttf" alternateTo="ChatFontNormal" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalKO" font="Fonts\2002.TTF" alternateTo="GameFontNormal" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontNormal" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalRU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontNormal" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="FriendsFont_NormalKO" font="Fonts\2002.TTF" alternateTo="FriendsFont_Normal" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="FriendsFont_SmallKO" font="Fonts\2002.TTF" alternateTo="FriendsFont_Small" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
+	<Font name="FriendsFont_LargeKO" font="Fonts\2002.TTF" alternateTo="FriendsFont_Large" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="FriendsFont_NormalZH" font="Fonts\ARKai_T.ttf" alternateTo="FriendsFont_Normal" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	<Font name="FriendsFont_SmallZH" font="Fonts\ARKai_T.ttf" alternateTo="FriendsFont_Small" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	<Font name="FriendsFont_LargeZH" font="Fonts\ARKai_T.ttf" alternateTo="FriendsFont_Large" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="17"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="FriendsFont_NormalRU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="FriendsFont_Normal" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="FriendsFont_SmallRU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="FriendsFont_Small" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
+	<Font name="FriendsFont_LargeRU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="FriendsFont_Large" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+</Ui>

@@ -161,6 +161,7 @@ info.fontObject = [FONT] -- font object replacement for Normal and Highlight
 info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
 info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
 info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
+info.leftPadding = [nil, NUMBER] -- Number of pixels to pad the button on the left side
 info.minWidth = [nil, NUMBER] -- Minimum width for this line
 ]]
 
@@ -420,6 +421,9 @@ function UIDropDownMenu_AddButton(info, level)
 	-- If no open frame then set the frame to the currently initialized frame
 	frame = frame or UIDROPDOWNMENU_INIT_MENU;
 
+	if ( info.leftPadding ) then
+		xPos = xPos + info.leftPadding;
+	end
 	button:SetPoint("TOPLEFT", button:GetParent(), "TOPLEFT", xPos, yPos);
 
 	-- See if button is selected by id or name

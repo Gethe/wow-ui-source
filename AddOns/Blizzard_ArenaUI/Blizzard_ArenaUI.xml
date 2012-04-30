@@ -357,6 +357,12 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentPVPIcon" hidden="true">
+									<Size x="40" y="40"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="-12" y="-10"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -467,47 +473,32 @@
 		<Frames>
 			<Button name="ArenaEnemyFrame1" inherits="ArenaEnemyFrameTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP"/>
+					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</Button>
 			<Button name="ArenaEnemyFrame2" inherits="ArenaEnemyFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame1" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="ArenaEnemyFrame1" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</Button>
 			<Button name="ArenaEnemyFrame3" inherits="ArenaEnemyFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame2" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="ArenaEnemyFrame2" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</Button>
 			<Button name="ArenaEnemyFrame4" inherits="ArenaEnemyFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame3" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="ArenaEnemyFrame3" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</Button>
 			<Button name="ArenaEnemyFrame5" inherits="ArenaEnemyFrameTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame4" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="ArenaEnemyFrame4" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</Button>
 			<Frame name="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true">

@@ -542,6 +542,12 @@
 			<OnShow function="MerchantFrame_OnShow"/>
 			<OnEvent function="MerchantFrame_OnEvent"/>
 			<OnUpdate>
+				if ( self.update == true ) then
+					self.update = false;
+					if ( self:IsVisible() ) then
+						MerchantFrame_Update();
+					end
+				end
 				if ( MerchantFrame.itemHover ) then
 					if ( IsModifiedClick("DRESSUP") ) then
 						ShowInspectCursor();

@@ -40,8 +40,8 @@
 		<Frames>
 			<Frame name="TaxiRouteMap">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TaxiFrameInsetBg"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="TaxiFrameInsetBg"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.InsetBg"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBg"/>
 				</Anchors>
 			</Frame>
 		</Frames>

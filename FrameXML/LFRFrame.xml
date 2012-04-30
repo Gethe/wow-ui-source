@@ -322,9 +322,9 @@
 							</Frame>
 							<!-- Other 13 ListButtons are made in LFRFrame_OnLoad -->
 							<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Size x="295" y="230"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="2"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parentListButton14" relativePoint="BOTTOMRIGHT" x="1" y="-2"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
@@ -578,9 +578,9 @@
 					</Button>
 					<!-- Other 18 ListButtons are made in LFRFrame_OnLoad -->
 					<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size x="295" y="308"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="0"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parentListButton19" relativePoint="BOTTOMRIGHT" x="5" y="-2"/>
+							<Anchor point="TOPLEFT" x="12" y="-87"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">

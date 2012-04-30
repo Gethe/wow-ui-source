@@ -231,6 +231,15 @@
 	<Font name="SubSpellFont" inherits="SpellFont_Small" virtual="true">
 		<Color r="0.35" g="0.2" b="0"/>
 	</Font>
+	<Font name="NewSubSpellFont" inherits="SubSpellFont" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="0.82" g="0.7" b="0.54"/>
+	</Font>
 
 	<Font name="DialogButtonNormalText" inherits="SystemFont_Large" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>

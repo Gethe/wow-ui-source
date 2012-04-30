@@ -1,10 +1,15 @@
 MAX_ACHIEVEMENT_ALERTS = 2;
+LOOT_WON_ALERT_FRAMES = {};
+MONEY_WON_ALERT_FRAMES = {};
 
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
+	self:RegisterEvent("CRITERIA_EARNED");
 	self:RegisterEvent("LFG_COMPLETION_REWARD");
 	self:RegisterEvent("GUILD_CHALLENGE_COMPLETED");
 	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
+	self:RegisterEvent("LOOT_ITEM_ROLL_WON");
+	self:RegisterEvent("SHOW_LOOT_TOAST");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -16,22 +21,48 @@ function AlertFrame_OnEvent (self, event, ...)
 		end
 		
 		AchievementAlertFrame_ShowAlert(id);
+	elseif ( event == "CRITERIA_EARNED" ) then
+		local id, criteria = ...;
+		
+		if ( not AchievementFrame ) then
+			AchievementFrame_LoadUI();
+		end
+		
+		CriteriaAlertFrame_ShowAlert(id, criteria);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
-		DungeonCompletionAlertFrame_ShowAlert();
+		if ( C_Scenario.IsInScenario() ) then
+			ScenarioAlertFrame_ShowAlert();
+		else
+			DungeonCompletionAlertFrame_ShowAlert();
+		end
 	elseif ( event == "GUILD_CHALLENGE_COMPLETED" ) then
 		GuildChallengeAlertFrame_ShowAlert(...);
 	elseif ( event == "CHALLENGE_MODE_COMPLETED" ) then
 		ChallengeModeAlertFrame_ShowAlert();
+	elseif ( event == "LOOT_ITEM_ROLL_WON" ) then
+		local itemLink, quantity, rollType, roll = ...;
+		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
+	elseif ( event == "SHOW_LOOT_TOAST" ) then
+		local typeIdentifier, itemLink, quantity = ...;
+		if ( typeIdentifier == "item" ) then
+			LootWonAlertFrame_ShowAlert(itemLink, quantity);
+		elseif ( typeIdentifier == "money" ) then
+			MoneyWonAlertFrame_ShowAlert(quantity);
+		end
 	end
 end
 
 function AlertFrame_AnimateIn(frame)
 	frame:Show();
 	frame.animIn:Play();
-	frame.glow:Show();
-	frame.glow.animIn:Play();
-	frame.shine:Show();
-	frame.shine.animIn:Play();
+	if ( frame.glow ) then
+		frame.glow:Show();
+		frame.glow.animIn:Play();
+	end
+	if ( frame.shine ) then
+		frame.shine:Show();
+		frame.shine.animIn:Play();
+	end
 	frame.waitAndAnimOut:Stop();	--Just in case it's already animating out, but we want to reinstate it.
 	if ( frame:IsMouseOver() ) then
 		frame.waitAndAnimOut.animOut:SetStartDelay(1);
@@ -54,9 +85,13 @@ end
 function AlertFrame_FixAnchors()
 	local alertAnchor = AlertFrame;
 	alertAnchor = AlertFrame_SetLootAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetLootWonAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetMoneyWonAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetAchievementAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetCriteriaAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetChallengeModeAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetDungeonCompletionAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetScenarioAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGuildChallengeAnchors(alertAnchor);
 end
 
@@ -76,11 +111,47 @@ function AlertFrame_SetLootAnchors(alertAnchor)
 	return alertAnchor;
 end
 
+function AlertFrame_SetLootWonAnchors(alertAnchor)
+	for i=1, #LOOT_WON_ALERT_FRAMES do
+		local frame = LOOT_WON_ALERT_FRAMES[i];
+		if ( frame:IsShown() ) then
+			frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+			alertAnchor = frame;
+		end
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetMoneyWonAnchors(alertAnchor)
+	for i=1, #MONEY_WON_ALERT_FRAMES do
+		local frame = MONEY_WON_ALERT_FRAMES[i];
+		if ( frame:IsShown() ) then
+			frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+			alertAnchor = frame;
+		end
+	end
+	return alertAnchor;
+end
+
 function AlertFrame_SetAchievementAnchors(alertAnchor)
 	-- skip work if there hasn't been an achievement toast yet
 	if ( AchievementAlertFrame1 ) then
 		for i = 1, MAX_ACHIEVEMENT_ALERTS do
 			local frame = _G["AchievementAlertFrame"..i];
+			if ( frame and frame:IsShown() ) then
+				frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+				alertAnchor = frame;
+			end
+		end
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetCriteriaAnchors(alertAnchor)
+	-- skip work if there hasn't been an criteria toast yet
+	if ( CriteriaAlertFrame1 ) then
+		for i = 1, MAX_ACHIEVEMENT_ALERTS do
+			local frame = _G["CriteriaAlertFrame"..i];
 			if ( frame and frame:IsShown() ) then
 				frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 				alertAnchor = frame;
@@ -101,6 +172,15 @@ end
 
 function AlertFrame_SetDungeonCompletionAnchors(alertAnchor)
 	local frame = DungeonCompletionAlertFrame1;
+	if ( frame:IsShown() ) then
+		frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = frame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetScenarioAnchors(alertAnchor)
+	local frame = ScenarioAlertFrame1;
 	if ( frame:IsShown() ) then
 		frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 		alertAnchor = frame;
@@ -315,6 +395,62 @@ function ChallengeModeAlertFrame_ShowAlert()
 	AlertFrame_FixAnchors();
 end
 
+-- [[ ScenarioAlertFrame ]] --
+SCENARIO_MAX_REWARDS = 1;
+function ScenarioAlertFrame_ShowAlert()
+	PlaySound("LFG_Rewards");
+	local frame = ScenarioAlertFrame1;
+	--For now we only have 1 scenario alert frame
+	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
+	
+	--Set up the rewards
+	local moneyAmount = moneyBase + moneyVar * numStrangers;
+	local experienceGained = experienceBase + experienceVar * numStrangers;
+
+	local rewardsOffset = 0;
+
+	if ( moneyAmount > 0 or experienceGained > 0 ) then --hasMiscReward ) then
+		SetPortraitToTexture(frame.reward1.texture, "Interface\\Icons\\inv_misc_coin_02");
+		frame.reward1.rewardID = 0;
+		frame.reward1:Show();
+
+		rewardsOffset = 1;
+	end
+
+	for i = 1, numRewards do
+		local frameID = (i + rewardsOffset);
+		local reward = _G["ScenarioAlertFrame1Reward"..frameID];
+		if ( not reward ) then
+			reward = CreateFrame("FRAME", "ScenarioAlertFrame1Reward"..frameID, ChallengeModeAlertFrame1, "DungeonCompletionAlertFrameRewardTemplate");
+			SCENARIO_MAX_REWARDS = frameID;
+		end
+		DungeonCompletionAlertFrameReward_SetReward(reward, i);
+	end
+
+	local usedButtons = numRewards + rewardsOffset;
+	--Hide the unused ones
+	for i = usedButtons + 1, SCENARIO_MAX_REWARDS do
+		_G["ScenarioAlertFrame1Reward"..i]:Hide();
+	end
+
+	if ( usedButtons > 0 ) then
+		--Set up positions
+		local spacing = 36;
+		frame.reward1:SetPoint("TOP", frame, "TOP", -spacing/2 * usedButtons + 41, 8);
+		for i = 2, usedButtons do
+			_G["ScenarioAlertFrame1Reward"..i]:SetPoint("CENTER", "ScenarioAlertFrame1Reward"..(i - 1), "CENTER", spacing, 0);
+		end
+	end
+
+	--Set up the text and icon
+	local scenarioName = C_Scenario.GetInfo();
+	frame.dungeonName:SetText(scenarioName);
+	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
+
+	AlertFrame_AnimateIn(frame)
+	AlertFrame_FixAnchors();
+end
+
 function ChallengeModeAlertFrameReward_SetReward(frame, index)
 	local itemID, name, texturePath, quantity, isCurrency = GetChallengeModeCompletionReward(index);
 	SetPortraitToTexture(frame.texture, texturePath);
@@ -477,6 +613,53 @@ function AchievementAlertFrame_GetAlertFrame()
 	return nil;
 end
 
+function CriteriaAlertFrame_ShowAlert (achievementID, criteriaID)
+	local frame = CriteriaAlertFrame_GetAlertFrame();
+	if ( not frame ) then
+		-- We ran out of frames! Bail!
+		return;
+	end
+	
+	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch = GetAchievementInfo(achievementID);
+	local criteriaString = GetAchievementCriteriaInfoByID(achievementID, criteriaID);
+	
+	local frameName = frame:GetName();
+	local displayName = _G[frameName.."Name"];
+	
+	displayName:SetText(criteriaString);
+	
+	_G[frameName.."IconTexture"]:SetTexture(icon);
+	
+	frame.id = achievementID;
+	
+	AlertFrame_AnimateIn(frame);
+	
+	AlertFrame_FixAnchors();
+end
+
+function CriteriaAlertFrame_GetAlertFrame()
+	local name, frame, previousFrame;
+	for i=1, MAX_ACHIEVEMENT_ALERTS do
+		name = "CriteriaAlertFrame"..i;
+		frame = _G[name];
+		if ( frame ) then
+			if ( not frame:IsShown() ) then
+				return frame;
+			end
+		else
+			frame = CreateFrame("Button", name, UIParent, "CriteriaAlertFrameTemplate");
+			if ( not previousFrame ) then
+				frame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
+			else
+				frame:SetPoint("BOTTOM", previousFrame, "TOP", 0, -10);
+			end
+			return frame;
+		end
+		previousFrame = frame;
+	end
+	return nil;
+end
+
 function AchievementAlertFrame_OnClick (self)
 	local id = self.id;
 	if ( not id ) then
@@ -496,37 +679,78 @@ function AchievementAlertFrame_OnClick (self)
 	AchievementFrame_SelectAchievement(id)
 end
 
-function AchievementAlertFrame_OnHide (self)
+-- [[ LootWonAlertFrameTemplate ]] --
+
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll)
+	local frame;
+	for i=1, #LOOT_WON_ALERT_FRAMES do
+		local lootWon = LOOT_WON_ALERT_FRAMES[i];
+		if ( not lootWon:IsShown() ) then
+			frame = lootWon;
+			break;
+		end
+	end
+
+	if ( not frame ) then
+		frame = CreateFrame("Button", nil, UIParent, "LootWonAlertFrameTemplate");
+		table.insert(LOOT_WON_ALERT_FRAMES, frame);
+	end
+
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll);
+	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
 
---
--- Test
---
+-- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll)
+	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
+	self.Icon:SetTexture(itemTexture);
+	self.ItemName:SetText(itemName);
+	local color = ITEM_QUALITY_COLORS[itemRarity];
+	self.ItemName:SetVertexColor(color.r, color.g, color.b);
+	self.IconBorder:SetTexCoord(unpack(LOOT_BORDER_QUALITY_COORDS[itemRarity] or LOOT_BORDER_QUALITY_COORDS[ITEM_QUALITY_UNCOMMON]));
 
-function AlertTest()
-	local old = GetLFGCompletionReward;
-	GetLFGCompletionReward = newGetLFGCompletionReward;
-	AlertFrame_OnEvent(AlertFrame, "ACHIEVEMENT_EARNED", 45)
-	AlertFrame_OnEvent(AlertFrame, "ACHIEVEMENT_EARNED", 46)
-	AlertFrame_OnEvent(AlertFrame, "LFG_COMPLETION_REWARD")
-	AlertFrame_OnEvent(AlertFrame, "GUILD_CHALLENGE_COMPLETED", 1, 2, 7)
-	AlertFrame_OnEvent(AlertFrame, "CHALLENGE_MODE_COMPLETED");
-	GetLFGCompletionReward = old;
-end
-
-function newGetLFGCompletionReward()
-	return "Test", 0, 0, "Love", 1000000, 0, 0, 0, 0, 2;
-end
-
-function oldGetChallengeModeCompletionInfo()
-	return 960, 3, 999123, 1500000, 2;
-end
-
-function oldGetChallengeModeCompletionReward(index)
-	if ( index == 1 ) then
-		return 395, "Justice Points", "Interface\\Icons\\INV_Boots_Cloth_ChallengePriest_D_01", 113, true;
-	elseif ( index == 2 ) then
-		return 8190, "Hanzo Sword", "Interface\\Icons\\INV_Misc_Bag_FelclothBag", 1, false;
+	if ( rollType == LOOT_ROLL_TYPE_NEED ) then
+		self.RollTypeIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up");
+		self.RollValue:SetText(roll);
+		self.RollTypeIcon:Show();
+		self.RollValue:Show();
+	elseif ( rollType == LOOT_ROLL_TYPE_GREED ) then
+		self.RollTypeIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Coin-Up");
+		self.RollValue:SetText(roll);
+		self.RollTypeIcon:Show();
+		self.RollValue:Show();
+	else
+		self.RollTypeIcon:Hide();
+		self.RollValue:Hide();
 	end
+
+	self.hyperlink = itemLink;
 end
+
+-- [[ MoneyWonAlertFrameTemplate ]] --
+
+function MoneyWonAlertFrame_ShowAlert(amount)
+	local frame;
+	for i=1, #MONEY_WON_ALERT_FRAMES do
+		local moneyWon = MONEY_WON_ALERT_FRAMES[i];
+		if ( not moneyWon:IsShown() ) then
+			frame = moneyWon;
+			break;
+		end
+	end
+	
+	if ( not frame ) then
+		frame = CreateFrame("Button", nil, UIParent, "MoneyWonAlertFrameTemplate");
+		table.insert(MONEY_WON_ALERT_FRAMES, frame);
+	end
+
+	MoneyWonAlertFrame_SetUp(frame, amount);
+	AlertFrame_AnimateIn(frame);
+	AlertFrame_FixAnchors();
+end
+
+function MoneyWonAlertFrame_SetUp(self, amount)
+	self.Amount:SetText(GetMoneyString(amount));
+end
+

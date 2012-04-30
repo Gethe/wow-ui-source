@@ -64,9 +64,9 @@ UnitPopupButtons["REPORT_BAD_NAME"] = { text = REPORT_BAD_NAME, dist = 0 };
 UnitPopupButtons["REPORT_CHEATING"] = { text = REPORT_CHEATING, dist = 0 };
 
 UnitPopupButtons["DUNGEON_DIFFICULTY"] = { text = DUNGEON_DIFFICULTY, dist = 0,  nested = 1 };
-UnitPopupButtons["DUNGEON_DIFFICULTY1"] = { text = DUNGEON_DIFFICULTY1, dist = 0, checkable = 1 };
-UnitPopupButtons["DUNGEON_DIFFICULTY2"] = { text = DUNGEON_DIFFICULTY2, dist = 0, checkable = 1 };
---UnitPopupButtons["DUNGEON_DIFFICULTY3"] = { text = DUNGEON_DIFFICULTY3, dist = 0 };
+UnitPopupButtons["DUNGEON_DIFFICULTY1"] = { text = DUNGEON_DIFFICULTY1, dist = 0, checkable = 1, difficultyID = 1 };
+UnitPopupButtons["DUNGEON_DIFFICULTY2"] = { text = DUNGEON_DIFFICULTY2, dist = 0, checkable = 1, difficultyID = 2 };
+UnitPopupButtons["DUNGEON_DIFFICULTY3"] = { text = CHALLENGE_MODE, dist = 0, checkable = 1, difficultyID = 8 };
 
 UnitPopupButtons["RAID_DIFFICULTY"] = { text = RAID_DIFFICULTY, dist = 0,  nested = 1};
 UnitPopupButtons["RAID_DIFFICULTY1"] = { text = RAID_DIFFICULTY1, dist = 0, checkable = 1 };
@@ -74,9 +74,6 @@ UnitPopupButtons["RAID_DIFFICULTY2"] = { text = RAID_DIFFICULTY2, dist = 0, chec
 UnitPopupButtons["RAID_DIFFICULTY3"] = { text = RAID_DIFFICULTY3, dist = 0, checkable = 1 };
 UnitPopupButtons["RAID_DIFFICULTY4"] = { text = RAID_DIFFICULTY4, dist = 0, checkable = 1 };
 
-UnitPopupButtons["CHALLENGE_MODE"] = { text = CHALLENGE_MODE, dist = 0,  nested = 1};
-UnitPopupButtons["CHALLENGE_MODE_ENABLE"] = { text = ENABLE, dist = 0, checkable = 1 };
-UnitPopupButtons["CHALLENGE_MODE_DISABLE"] = { text = DISABLE, dist = 0, checkable = 1 };
 
 UnitPopupButtons["PVP_FLAG"] = { text = PVP_FLAG, dist = 0, nested = 1};
 UnitPopupButtons["PVP_ENABLE"] = { text = ENABLE, dist = 0, checkable = 1, checkable = 1 };
@@ -170,7 +167,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "CHALLENGE_MODE", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
+UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
@@ -196,9 +193,8 @@ UnitPopupMenus["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER"
 UnitPopupMenus["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" };
 UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"};
 UnitPopupMenus["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_CHEATING" };
-UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2" };
+UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" };
 UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "RAID_DIFFICULTY4" };
-UnitPopupMenus["CHALLENGE_MODE"] = { "CHALLENGE_MODE_ENABLE", "CHALLENGE_MODE_DISABLE"};
 UnitPopupMenus["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" };
 UnitPopupMenus["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" };
 UnitPopupMenus["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" , "TARGET_FRAME_BUFFS_ON_TOP"};
@@ -290,10 +286,8 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	if ( instanceType == "none" ) then
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
 		UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;		
-		UnitPopupButtons["CHALLENGE_MODE"].nested = 1;
 	else
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = nil;
-		UnitPopupButtons["CHALLENGE_MODE"].nested = nil;
 		if ( allowedRaidDifficultyChange ) then
 			UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;
 		else
@@ -350,28 +344,8 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 						info.checked = 1;
 					end
 				elseif ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(value) > 18)) then
-					local dungeonDifficulty = GetDungeonDifficulty();
-					if ( dungeonDifficulty == index ) then
-						info.checked = 1;
-					end
-					local inParty = 0;
-					if ( IsInGroup() ) then
-						inParty = 1;
-					end
-					local isLeader = 0;
-					if ( UnitIsGroupLeader("player") ) then
-						isLeader = 1;
-					end
-					local inInstance, instanceType = IsInInstance();
-					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
-						info.disabled = 1;	
-					end
-				elseif ( strsub(value, 1, 14) ==  "CHALLENGE_MODE" and (strlen(value) > 14)) then
-					local challengeMode = GetChallengeMode();
-					if ( challengeMode and strsub(value, 16, 21) == "ENABLE" ) then
-						info.checked = 1;
-					end
-					if ( not challengeMode and strsub(value, 16, 22) == "DISABLE" ) then
+					local dungeonDifficultyID = GetDungeonDifficultyID();
+					if ( dungeonDifficultyID == UnitPopupButtons[value].difficultyID ) then
 						info.checked = 1;
 					end
 					local inParty = 0;
@@ -749,7 +723,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "VOTE_TO_KICK" ) then
-			if ( (inParty == 0) or (instanceType == "pvp") or (instanceType == "arena") or (not HasLFGRestrictions()) ) then
+			if ( (inParty == 0) or (instanceType == "pvp") or (instanceType == "arena") or (not HasLFGRestrictions()) or IsInScenarioGroup() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
@@ -850,11 +824,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUNGEON_DIFFICULTY" ) then
-			if ( UnitLevel("player") < 65 and GetDungeonDifficulty() == 1 ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "CHALLENGE_MODE" ) then
-			if ( UnitLevel("player") < 90 ) then
+			if ( UnitLevel("player") < 65 and GetDungeonDifficultyID() == 1 ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_DIFFICULTY" ) then
@@ -1302,12 +1272,6 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( allowedRaidDifficultyChange and allowedRaidDifficultyChange == value ) then
 							enable = 1;
 						end
-					elseif ( value == "CHALLENGE_MODE" and inInstance ) then
-						enable = 0;
-					elseif ( ( strsub(value, 1, 14) == "CHALLENGE_MODE" ) and ( strlen(value) > 14 ) ) then
-						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or HasLFGRestrictions() ) then
-							enable = 0;	
-						end
 					elseif ( value == "CONVERT_TO_PARTY" ) then
 						if ( GetNumGroupMembers() > MEMBERS_PER_RAID_GROUP ) then
 							enable = 0;
@@ -1543,14 +1507,8 @@ function UnitPopup_OnClick (self)
 		SetOptOutOfLoot(nil);
 		CloseDropDownMenus();
 	elseif ( strsub(button, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(button) > 18) ) then
-		local dungeonDifficulty = tonumber( strsub(button,19,19) );
-		SetDungeonDifficulty(dungeonDifficulty);
-	elseif ( button == "CHALLENGE_MODE_ENABLE" ) then
-		SetChallengeMode(1);
-		CloseDropDownMenus();
-	elseif ( button == "CHALLENGE_MODE_DISABLE" ) then
-		SetChallengeMode(nil);
-		CloseDropDownMenus();
+		local dungeonDifficultyID = UnitPopupButtons[button].difficultyID;
+		SetDungeonDifficultyID(dungeonDifficultyID);
 	elseif ( strsub(button, 1, 15) == "RAID_DIFFICULTY" and (strlen(button) > 15) ) then
 		local raidDifficulty = tonumber( strsub(button,16,16) );
 		SetRaidDifficulty(raidDifficulty);

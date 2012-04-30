@@ -189,6 +189,15 @@ MoneyTypeInfo["GUILDBANKCASHFLOW"] = {
 	showSmallerCoins = "Backpack",
 };
 
+MoneyTypeInfo["BLACKMARKET"] = {
+	UpdateFunc = function(self)
+		return self.staticMoney;
+	end,
+	showSmallerCoins = nil,
+	fixedWidth = 1,
+	collapse = 1,
+};
+
 function MoneyFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("PLAYER_TRADE_MONEY");
@@ -327,6 +336,7 @@ function MoneyFrame_Update(frameName, money)
 
 	-- Breakdown the money into denominations
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
+	local goldDisplay = BreakUpLargeNumbers(gold);
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = mod(money, COPPER_PER_SILVER);
 
@@ -355,7 +365,7 @@ function MoneyFrame_Update(frameName, money)
 			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 		end
-		goldButton:SetText(gold .. GOLD_AMOUNT_SYMBOL);
+		goldButton:SetText(goldDisplay .. GOLD_AMOUNT_SYMBOL);
 		goldButton:SetWidth(goldButton:GetTextWidth());
 		goldButton:Show();
 		silverButton:SetText(silver .. SILVER_AMOUNT_SYMBOL);
@@ -378,7 +388,7 @@ function MoneyFrame_Update(frameName, money)
 			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 		end
-		goldButton:SetText(gold);
+		goldButton:SetText(goldDisplay);
 		goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);
 		goldButton:Show();
 		silverButton:SetText(silver);

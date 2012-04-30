@@ -26,7 +26,7 @@ function SharedPetBattleAbilityTooltip_OnLoad(self)
 	self.weakAgainstTextures = { self.WeakAgainstType1 };
 end
 
-function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
+function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalText)
 	local abilityID = abilityInfo:GetAbilityID();
 	if ( not abilityID ) then
 		return;
@@ -58,6 +58,16 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
 		self.CurrentCooldown:Hide();
 	end
 
+	--Any additional text the callers wants us to display
+	if ( additionalText ) then
+		self.AdditionalText:SetText(additionalText);
+		self.AdditionalText:SetPoint("TOPLEFT", bottom, "BOTTOMLEFT", 0, -5);
+		self.AdditionalText:Show();
+		bottom = self.AdditionalText;
+	else
+		self.AdditionalText:Hide();
+	end
+
 	--Update description
 	local description = SharedPetAbilityTooltip_ParseText(abilityInfo, unparsedDescription);
 	self.Description:SetText(description);
@@ -66,9 +76,11 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
 
 	--Update ability type
 	if ( petType and petType > 0 ) then
+		self.Name:SetPoint("LEFT", self.AbilityPetType, "RIGHT", 5, 0);
 		self.AbilityPetType:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[petType]);
 		self.AbilityPetType:Show();
 	else
+		self.Name:SetPoint("LEFT", self, "TOPLEFT", 11, -26);
 		self.AbilityPetType:Hide();
 	end
 
@@ -131,9 +143,16 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
 		end
 	end
 
-	
-	--TODO: Might error if no top or bottom
-	self:SetHeight(self:GetTop() - bottom:GetBottom() + 10);
+	--We haven't updated frame rects yet, so we'll alpha out the frame and update the size (and show it) next frame.
+	self.bottomFrame = bottom;
+	self:SetAlpha(0);
+	self:SetScript("OnUpdate", SharedPetBattleAbilityTooltip_UpdateSize);
+end
+
+function SharedPetBattleAbilityTooltip_UpdateSize(self)
+	self:SetScript("OnUpdate", nil);
+	self:SetHeight(self:GetTop() - self.bottomFrame:GetBottom() + 10);
+	self:SetAlpha(1);
 end
 
 --Enclosure for parsing tooltips

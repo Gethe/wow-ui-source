@@ -12,6 +12,14 @@ function MoneyInputFrame_ClearFocus(moneyFrame)
 	_G[moneyFrame:GetName().."Copper"]:ClearFocus();
 end
 
+function MoneyInputFrame_SetGoldOnly(moneyFrame, set)
+	if ( set ) then
+		moneyFrame.goldOnly = true;
+	else
+		moneyFrame.goldOnly = nil;
+	end
+end
+
 function MoneyInputFrame_GetCopper(moneyFrame)
 	local totalCopper = 0;
 	local copper = _G[moneyFrame:GetName().."Copper"]:GetText();
@@ -43,15 +51,20 @@ function MoneyInputFrame_SetCopper(moneyFrame, money)
 	local editbox = nil;
 
 	moneyFrame.expectChanges = 0;
-	editbox = _G[moneyFrame:GetName().."Copper"];
-	if ( editbox:GetNumber() ~= copper ) then
-		editbox:SetNumber(copper);
-		moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
-	end
-	editbox = _G[moneyFrame:GetName().."Silver"];
-	if ( editbox:GetNumber() ~= silver ) then
-		editbox:SetNumber(silver);
-		moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
+	if ( moneyFrame.goldOnly) then
+		_G[moneyFrame:GetName().."Copper"]:Hide();
+		_G[moneyFrame:GetName().."Silver"]:Hide();
+	else
+		editbox = _G[moneyFrame:GetName().."Copper"];
+		if ( editbox:GetNumber() ~= copper ) then
+			editbox:SetNumber(copper);
+			moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
+		end
+		editbox = _G[moneyFrame:GetName().."Silver"];
+		if ( editbox:GetNumber() ~= silver ) then
+			editbox:SetNumber(silver);
+			moneyFrame.expectChanges = moneyFrame.expectChanges + 1;
+		end
 	end
 	editbox = _G[moneyFrame:GetName().."Gold"];
 	if ( editbox:GetNumber() ~= gold ) then
@@ -98,6 +111,14 @@ function MoneyInputFrame_OnTextChanged(self)
 	if ( moneyFrame.onValueChangedFunc ) then
 		moneyFrame.onValueChangedFunc();
 	end
+	if ( moneyFrame.goldOnly ) then
+		moneyFrame.silver:Hide();
+		moneyFrame.copper:Hide();
+		if ( self.expandOnDigits ) then
+			moneyFrame.fixedSilver:Hide();
+			moneyFrame.fixedCopper:Hide();
+		end
+	end
 end
 
 function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
@@ -106,7 +127,10 @@ function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
 	goldFrame.minWidth = width;
 	goldFrame.expandOnDigits = expandOnDigits;
 	goldFrame:SetWidth(width);
-	
+	if ( frame.goldOnly ) then
+		return;
+	end
+
 	local frameName = frame:GetName();
 	local coinFrame;
 	-- silver
@@ -165,6 +189,18 @@ function MoneyInputFrame_OnShow(moneyFrame)
 			moneyFrame.fixedSilver.label:Hide();
 			moneyFrame.fixedCopper.label:Hide();
 		end		
+	end
+	if ( moneyFrame.goldOnly ) then
+		moneyFrame.copper.texture:Hide();
+		moneyFrame.silver.texture:Hide();
+		moneyFrame.copper.label:Hide();
+		moneyFrame.silver.label:Hide();
+		if ( moneyFrame.gold.expandOnDigits ) then
+			moneyFrame.fixedSilver.texture:Hide();
+			moneyFrame.fixedCopper.texture:Hide();
+			moneyFrame.fixedSilver.label:Hide();
+			moneyFrame.fixedCopper.label:Hide();
+		end
 	end
 end
 

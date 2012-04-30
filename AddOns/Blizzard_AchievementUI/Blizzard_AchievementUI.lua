@@ -1194,7 +1194,7 @@ function AchievementButton_ToggleTracking (id)
 end
 	
 function AchievementButton_DisplayAchievement (button, category, achievement, selectionID)
-	local id, name, points, completed, month, day, year, description, flags, icon, rewardText = GetAchievementInfo(category, achievement);
+	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, achievement);
 	if ( not id ) then
 		button:Hide();
 		return;
@@ -1222,6 +1222,12 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		else
 			button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 		end
+
+		button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
+		button.shield.points:SetShown(not (completed and not wasEarnedByMe));
+		button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
+		button.shield.earnedBy = earnedBy;
+
 		button.shield.id = id;
 		button.description:SetText(description);
 		button.hiddenDescription:SetText(description);
@@ -2124,7 +2130,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 		
 		if ( i <= numAchievements ) then
 			achievementID = select(i, ...);
-			id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
+			id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
 			button.label:SetText(name);
 			button.description:SetText(description);
 			AchievementShield_SetPoints(points, button.shield.points, GameFontNormal, GameFontNormalSmall);
@@ -2133,6 +2139,12 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			else
 				button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 			end
+
+			button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
+			button.shield.points:SetShown(not (completed and not wasEarnedByMe));
+			button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
+			button.shield.earnedBy = earnedBy;
+
 			button.icon.texture:SetTexture(icon);
 			button.id = id;
 
@@ -2157,11 +2169,10 @@ function AchievementFrameSummary_UpdateAchievements(...)
 				if ( not achievementID ) then
 					break;
 				end
-				id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
+				id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
 				if ( completed ) then
 					defaultAchievementCount = defaultAchievementCount+1;
 				else
-					id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(achievementID);
 					button.label:SetText(name);
 					button.description:SetText(description);
 					AchievementShield_SetPoints(points, button.shield.points, GameFontNormal, GameFontNormalSmall);
@@ -2170,6 +2181,10 @@ function AchievementFrameSummary_UpdateAchievements(...)
 					else
 						button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 					end
+					button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
+					button.shield.points:SetShown(not (completed and not wasEarnedByMe));
+					button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
+					button.shield.earnedBy = earnedBy;
 					button.icon.texture:SetTexture(icon);
 					button.id = id;
 					if ( month ) then
@@ -2734,7 +2749,7 @@ ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1 = GameFontNormalSmall;
 ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT2 = GameFontNormalSmall;
 
 function AchievementFrameComparison_DisplayAchievement (button, category, index)
-	local id, name, points, completed, month, day, year, description, flags, icon, rewardText = GetAchievementInfo(category, index);
+	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, index);
 	if ( not id ) then
 		button:Hide();
 		return;
@@ -2770,6 +2785,11 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		end
 		AchievementShield_SetPoints(points, player.shield.points, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT1, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT2);
 		AchievementShield_SetPoints(points, friend.shield.points, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT2);
+
+		player.shield.BNicon:SetShown(completed and not wasEarnedByMe);
+		player.shield.points:SetShown(not (completed and not wasEarnedByMe));
+		player.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
+		player.shield.earnedBy = earnedBy;
 		
 		if ( completed and not player.completed ) then
 			player.completed = true;
@@ -3180,6 +3200,11 @@ function AchievementMeta_OnLeave(self)
 end
 
 function AchievementShield_OnEnter(self)
+	if ( self.earnedBy and not self.wasEarnedByMe ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(format(ACHIEVEMENT_EARNED_BY,self.earnedBy));
+		return;
+	end
 	-- pass-through to the achievement button
 	local parent = self:GetParent();
 	local func = parent:GetScript("OnEnter");

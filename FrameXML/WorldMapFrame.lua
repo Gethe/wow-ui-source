@@ -91,6 +91,7 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("REQUEST_CEMETERY_LIST_RESPONSE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("ARTIFACT_DIG_SITE_UPDATED");
 	
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
@@ -192,6 +193,10 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" ) then
 		if ( not self.blockWorldMapUpdate and self:IsShown() ) then
 			WorldMapFrame_UpdateMap();
+		end
+	elseif ( event == "ARTIFACT_DIG_SITE_UPDATED" ) then
+		if ( self:IsShown() ) then
+			RefreshWorldMap();
 		end
 	elseif ( event == "CLOSE_WORLD_MAP" ) then
 		HideUIPanel(self);

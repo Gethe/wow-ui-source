@@ -402,107 +402,21 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="QuestLogCount">
+			<Frame name="QuestLogCount" inherits="InsetFrameTemplate3">
 				<Size x="120" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-33"/>
+				</Anchors>
 				<!-- anchors are set in QuestLog_UpdateQuestCount -->
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="QuestLogCountTopRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="8"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.25"/>
-						</Texture>
-						<Texture name="QuestLogCountBottomRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="8"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0.375" bottom="0.625"/>
-						</Texture>
-						<Texture name="QuestLogCountRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="0"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="QuestLogCountTopRight" relativePoint="BOTTOM"/>
-								<Anchor point="BOTTOM" relativeTo="QuestLogCountBottomRight" relativePoint="TOP"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0.25" bottom="0.375"/>
-						</Texture>
-						<Texture name="QuestLogCountTopLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="8"/>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.25"/>
-						</Texture>
-						<Texture name="QuestLogCountBottomLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="8"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0.375" bottom="0.625"/>
-						</Texture>
-						<Texture name="QuestLogCountLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogCountTopLeft" relativePoint="BOTTOMLEFT"/>
-								<Anchor point="BOTTOMLEFT" relativeTo="QuestLogCountBottomLeft" relativePoint="TOPLEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0.25" bottom="0.375"/>
-						</Texture>
-						<Texture name="QuestLogCountTopMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="100" y="8"/>
-							<Anchors>								
-								<Anchor point="RIGHT" relativeTo="QuestLogCountTopRight" relativePoint="LEFT"/>
-								<Anchor point="LEFT" relativeTo="QuestLogCountTopLeft" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.25"/>
-						</Texture>
-						<Texture name="QuestLogCountMiddleMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="100" y="4"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogCountTopLeft" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="QuestLogCountBottomRight" relativePoint="TOPLEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0.25" bottom="0.375"/>
-						</Texture>
-						<Texture name="QuestLogCountBottomMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="100" y="8"/>
-							<Anchors>								
-								<Anchor point="RIGHT" relativeTo="QuestLogCountBottomRight" relativePoint="LEFT"/>
-								<Anchor point="LEFT" relativeTo="QuestLogCountBottomLeft" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0.375" bottom="0.625"/>
-						</Texture>
+					<Layer level="ARTWORK">
 						<FontString name="QuestLogQuestCount" inherits="GameFontNormalSmall">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="QuestLogCountTopRight" relativePoint="BOTTOMLEFT" x="1" y="3"/>
-							</Anchors>
-						</FontString>
-						<FontString name="QuestLogDailyQuestCount" inherits="GameFontNormalSmall">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="QuestLogQuestCount" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTopRight" relativePoint="BOTTOMLEFT" x="1" y="3"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Frame name="QuestLogDailyQuestCountMouseOverFrame" enableMouse="true">
-						<Size x="5" y="12"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="QuestLogDailyQuestCount"/>
-							<Anchor point="RIGHT" relativeTo="QuestLogDailyQuestCount"/>
-						</Anchors>
-						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(format(QUEST_LOG_DAILY_TOOLTIP, GetMaxDailyQuests(), SecondsToTime(GetQuestResetTime(), nil, 1)));
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Frame>
-				</Frames>
 			</Frame>
 			<ScrollFrame name="QuestLogScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="305" y="403"/>

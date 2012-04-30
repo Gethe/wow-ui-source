@@ -132,61 +132,13 @@ function LFRFrameRoleCheckButton_OnClick(self)
 end
 
 function LFRQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
-	local parent = self:GetParent();
-	local dungeonID = parent.id;
-	local isChecked = self:GetChecked();
-	
-	PlaySound(isChecked and "igMainMenuOptionCheckBoxOff" or "igMainMenuOptionCheckBoxOff");
-	if ( LFGIsIDHeader(dungeonID) ) then
-		LFRList_SetHeaderEnabled(dungeonID, isChecked);
-	elseif ( LFR_CanQueueForMultiple() ) then
-		LFRList_SetRaidEnabled(dungeonID, isChecked);
-		LFGListUpdateHeaderEnabledAndLockedStates(LFRRaidList, LFGEnabledList, LFGLockList, LFRHiddenByCollapseList);
-	else
-		LFRQueueFrame.selectedLFM = dungeonID;
-	end
-	
+	LFGDungeonListCheckButton_OnClick(self, LFRRaidList, LFRHiddenByCollapseList);
 	LFRQueueFrameSpecificList_Update();
 end
 
 function LFRQueueFrameExpandOrCollapseButton_OnClick(self, button)
 	local parent = self:GetParent();
-	LFRList_SetHeaderCollapsed(parent.id, not parent.isCollapsed);
-end
-
-function LFRList_SetRaidEnabled(dungeonID, isEnabled)
-	SetLFGDungeonEnabled(dungeonID, isEnabled);
-	LFGEnabledList[dungeonID] = not not isEnabled;	--Change to true/false
-end
-
-function LFRList_SetHeaderEnabled(headerID, isEnabled)
-	for _, dungeonID in pairs(LFRRaidList) do
-		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
-			LFRList_SetRaidEnabled(dungeonID, isEnabled);
-		end
-	end
-	for _, dungeonID in pairs(LFRHiddenByCollapseList) do
-		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
-			LFRList_SetRaidEnabled(dungeonID, isEnabled);
-		end
-	end
-	LFGEnabledList[headerID] = not not isEnabled; --Change to true/false
-end
-
-
-function LFRList_SetHeaderCollapsed(headerID, isCollapsed)
-	SetLFGHeaderCollapsed(headerID, isCollapsed);
-	LFGCollapseList[headerID] = isCollapsed;
-	for _, dungeonID in pairs(LFRRaidList) do
-		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
-			LFGCollapseList[dungeonID] = isCollapsed;
-		end
-	end
-	for _, dungeonID in pairs(LFRHiddenByCollapseList) do
-		if ( select(LFG_RETURN_VALUES.groupID, GetLFGDungeonInfo(dungeonID)) == headerID ) then
-			LFGCollapseList[dungeonID] = isCollapsed;
-		end
-	end
+	LFGDungeonList_SetHeaderCollapsed(self:GetParent(), LFRRaidList, LFRHiddenByCollapseList);
 	LFRQueueFrame_Update();
 end
 
@@ -363,33 +315,23 @@ end
 
 LFRHiddenByCollapseList = {};
 function LFRQueueFrame_Update()
-	local enableList;
+	local useLFGQueuedForList;
 	
 	local mode, submode = GetLFGMode();
 	if ( RaidBrowser_IsEmpowered() and mode ~= "listed") then
-		enableList = LFGEnabledList;
+		useLFGQueuedForList = false;
 	else
-		enableList = LFGQueuedForList;
+		useLFGQueuedForList = true;
 	end
 	
 	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
 		
-	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, LFGLockList, enableList, LFGCollapseList, LFR_CURRENT_FILTER);
+	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, useLFGQueuedForList, LFR_CURRENT_FILTER, LFR_MAX_SHOWN_LEVEL_DIFF);
 	
 	LFRQueueFrameSpecificList_Update();
 end
 
-function LFRList_DefaultFilterFunction(dungeonID)
-	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
-	local hasHeader = groupID ~= 0;
-	local sufficientExpansion = EXPANSION_LEVEL >= expansionLevel;
-	local level = UnitLevel("player");
-	local sufficientLevel = level >= minLevel and level <= maxLevel;
-	return (hasHeader and sufficientExpansion and sufficientLevel) and
-		( level - LFR_MAX_SHOWN_LEVEL_DIFF <= recLevel or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
-end
-
-LFR_CURRENT_FILTER = LFRList_DefaultFilterFunction;
+LFR_CURRENT_FILTER = LFGList_DefaultFilterFunction;
 
 -----------------------------------------------------------------------
 -----------------------LFR Browsing--------------------------------

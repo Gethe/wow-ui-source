@@ -1236,7 +1236,7 @@ function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 	end
 	local text;	
 	if ( offhandSpeed ) then
-		text =  BreakUpLargeNumbers(speed).." / ".. BreakUpLargeNumbers(offhandSpeed);
+		text =  BreakUpLargeNumbers(speed).." / ".. offhandSpeed;
 	else
 		text =  BreakUpLargeNumbers(speed);
 	end
@@ -1252,8 +1252,23 @@ function PaperDollFrame_SetAttackPower(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 	local base, posBuff, negBuff = UnitAttackPower(unit);
 
-	PaperDollFormatStat(MELEE_ATTACK_POWER, base, posBuff, negBuff, statFrame, text);
 	local damageBonus =  BreakUpLargeNumbers(max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER);
+	local spellPower = 0;
+	if (GetOverrideAPBySpellPower() ~= nil) then
+		local holySchool = 2;
+		-- Start at 2 to skip physical damage
+		spellPower = GetSpellBonusDamage(holySchool);		
+		for i=(holySchool+1), MAX_SPELL_SCHOOLS do
+			spellPower = min(spellPower, GetSpellBonusDamage(i));
+		end
+		spellPower = min(spellPower, GetSpellBonusHealing()) * GetOverrideAPBySpellPower();
+
+		PaperDollFormatStat(MELEE_ATTACK_POWER, spellPower, 0, 0, statFrame, text);
+		damageBonus = BreakUpLargeNumbers(spellPower / ATTACK_POWER_MAGIC_NUMBER);
+	else
+		PaperDollFormatStat(MELEE_ATTACK_POWER, base, posBuff, negBuff, statFrame, text);
+	end
+	
 	local effectiveAP = max(0,base + posBuff + negBuff);
 	if (GetOverrideSpellPowerByAP() ~= nil) then
 		statFrame.tooltip2 = format(MELEE_ATTACK_POWER_SPELL_POWER_TOOLTIP, damageBonus, BreakUpLargeNumbers(effectiveAP * GetOverrideSpellPowerByAP() + 0.5));
@@ -2028,12 +2043,12 @@ function Mastery_OnEnter(statFrame)
 	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
 	
 	local _, class = UnitClass("player");
-	local mastery = GetMastery();
-	local masteryBonus = GetCombatRatingBonus(CR_MASTERY);
+	local mastery, bonusCoeff = GetMasteryEffect();
+	local masteryBonus = GetCombatRatingBonus(CR_MASTERY) * bonusCoeff;
 	
-	local title = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_MASTERY).." "..format("%.2F", mastery)..FONT_COLOR_CODE_CLOSE;
+	local title = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_MASTERY).." "..format("%.2F%%", mastery)..FONT_COLOR_CODE_CLOSE;
 	if (masteryBonus > 0) then
-		title = title..HIGHLIGHT_FONT_COLOR_CODE.." ("..format("%.2F", mastery-masteryBonus)..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..format("%.2F", masteryBonus)..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
+		title = title..HIGHLIGHT_FONT_COLOR_CODE.." ("..format("%.2F%%", mastery-masteryBonus)..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..format("%.2F%%", masteryBonus)..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
 	end
 	GameTooltip:SetText(title);
 	
@@ -2069,8 +2084,8 @@ function PaperDollFrame_SetMastery(statFrame, unit)
 	
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_MASTERY));
 	local text = _G[statFrame:GetName().."StatText"];
-	local mastery = GetMastery();
-	mastery = format("%.2F", mastery);
+	local mastery = GetMasteryEffect();
+	mastery = format("%.2F%%", mastery);
 	text:SetText(mastery);
 	statFrame:SetScript("OnEnter", Mastery_OnEnter);
 	statFrame:Show();

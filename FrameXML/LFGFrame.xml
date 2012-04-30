@@ -710,6 +710,25 @@
 							</Frame>
 						</Frames>
 					</Frame>
+					<Frame name="$parentRoleless">
+						<Size x="306" y="55"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentReady" inherits="LFGDungeonReadyStatusRoleWithCountTemplate" parentKey="ready">
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.ready.texture:SetTexCoord(0.5234375, 0.78125, 0, 0.2578125);
+								self.ready.statusIcon:Hide();
+							</OnLoad>
+						</Scripts>
+					</Frame>					
 				</Frames>
 			</Frame>
 			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true">
@@ -947,7 +966,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR">
+								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR" parentKey="underline">
 									<Size>
 										<AbsDimension x="170" y="40"/>
 									</Size>

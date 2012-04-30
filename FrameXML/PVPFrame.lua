@@ -331,7 +331,7 @@ function PVPFrame_UpdateCurrency(self)
 		if ( currencyID == CONQUEST_CURRENCY ) then
 			PVPFrameCurrency:Hide();
 			PVPFrameConquestBar:Show();
-			local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+			local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek = GetPVPRewards();
 			-- if BG limit is below arena, swap them
 			if ( tier2Limit < tier1Limit ) then
 				tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
@@ -363,7 +363,7 @@ function PVPFrameConquestBar_OnEnter(self)
 	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
 	GameTooltip:AddLine(" ");
 
-	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek = GetPVPRewards();
 	
 	local r, g, b = 1, 1, 1;
 	local capped;
@@ -393,7 +393,7 @@ end
 function PVPFrameConquestBarMarker_OnEnter(self)
 	local isTier1 = self:GetID() == 1;
 
-	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek = GetPVPRewards();
 	local tier2tooltip = PVP_CURRENCY_CAP_RATEDBG;
 	local tier1tooltip = PVP_CURRENCY_CAP_ARENA;
 	-- if BG limit is below arena, swap them

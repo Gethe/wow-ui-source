@@ -104,7 +104,7 @@ end
 
 function ArenaEnemyFrames_UpdateVisible()
 	local _, instanceType = IsInInstance();
-	if ( ArenaEnemyFrames.show and (instanceType == "arena")) then
+	if ( ArenaEnemyFrames.show and ((instanceType == "arena") or (GetNumArenaOpponents() > 0))) then
 		ArenaEnemyFrames:Show();
 	else
 		ArenaEnemyFrames:Hide();
@@ -150,6 +150,19 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 	if( class ) then
 		self.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 		self.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
+	end
+	
+	-- When not in an arena, show their faction icon (these are really flag carriers, not arena opponents)
+	local _, instanceType = IsInInstance();
+	local factionGroup, factionName = UnitFactionGroup(self.unit);
+	local pvpIcon = _G[self:GetName() .. "PVPIcon"];
+	if ( factionGroup and factionGroup ~= "Neutral" and instanceType ~= "arena" ) then
+		pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+		pvpIcon:Show();
+		self:SetPoint("RIGHT", self:GetParent(), "RIGHT", -18, 0);
+	else
+		pvpIcon:Hide();
+		self:SetPoint("RIGHT", self:GetParent(), "RIGHT", -2, 0);
 	end
 
 	ArenaEnemyFrames_UpdateVisible();
@@ -199,6 +212,7 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 				self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
 				UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
 			end
+			ArenaEnemyFrame_UpdatePet(self);
 			UpdateArenaEnemyBackground();
 			UIParent_ManageFramePositions();
 		elseif ( arg2 == "unseen" ) then

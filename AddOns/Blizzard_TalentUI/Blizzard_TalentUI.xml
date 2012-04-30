@@ -279,10 +279,9 @@
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
-			<OnClick>
-				PlayerTalentFrameSpecialization.spellsScroll.ScrollBar:SetValue(0);
-				PlayerTalentFrame_UpdateSpecFrame(PlayerTalentFrameSpecialization, self:GetID());
-			</OnClick>
+			<OnEnter function="SpecButton_OnEnter"/>
+			<OnLeave function="SpecButton_OnLeave"/>
+			<OnClick function="SpecButton_OnClick"/>
 		</Scripts>
 	</Button>
 	
@@ -386,67 +385,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentTutorialButton" inherits="UIPanelInfoButton">
-				<Anchors>
-					<Anchor point="TOPLEFT"  x="60" y="-3" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlayerTalentFrame_ToggleTutorial();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame name="$parentTutorialFrame" frameStrata="HIGH" enableMouse="true" parentKey="tutorialFrame" hidden="true">
-				<Size x="644" y="446"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="-20"/>
-				</Anchors>
-				<Frames>
-					<Frame name="$parentBox" inherits="GlowBoxTemplate" parentKey="box">
-						<Size x="544" y="372"/>
-						<Anchors>
-							<Anchor point="TOP" x="0" y="-24"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="$parentTitle" inherits="GameFontHighlightLarge" parentKey="title">
-									<Size x="460" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-24"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentFirstTimeText" inherits="GameFontNormalMed3" parentKey="firstTimeText">
-									<Size x="460" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-30"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentDescription" inherits="GameFontHighlightMedium" parentKey="description" justifyH="left" spacing="2">
-									<Size x="460" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentFirstTimeText" relativePoint="BOTTOM" x="0" y="-16"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-					<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="$parentBox" x="4" y="4"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlayerTalentFrame_ToggleTutorial();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnMouseWheel>
-						-- need this to keep scrollframes from getting mousewheel actions
-					</OnMouseWheel>
-				</Scripts>
-			</Frame>
 			<Button name="PlayerTalentFrameActivateButton" inherits="UIPanelButtonTemplate" text="TALENT_SPEC_ACTIVATE">
 				<Size x="80" y="22"/>
 				<Anchors>
@@ -481,6 +419,15 @@
 			<Button name="PlayerTalentFrameTab3" inherits="PlayerGlyphTabTemplate" text="GLYPHS" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PlayerTalentFrameTab4" inherits="PlayerTalentTabTemplate" text="PET_SPECIALIZATION" hidden="true" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab3" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-15" y="0"/>
 						</Offset>
@@ -524,7 +471,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="PlayerTalentFrameSpecialization" useParentLevel="true" parent="PlayerTalentFrame">
+	<Frame name="SpecializationFrameTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
 			<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
@@ -579,6 +526,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" x="39" y="20" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlayerTalentFrame_ToggleTutorial();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="LEARN" parentKey="learnButton">
 				<Size x="98" y="22"/>
 				<Anchors>
@@ -596,7 +553,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, PlayerTalentFrameSpecialization.previewSpec);
+						StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -858,8 +815,17 @@
 				</ScrollChild>
 			</ScrollFrame>
 		</Frames>
+	</Frame>
+
+	<Frame name="PlayerTalentFrameSpecialization" inherits="SpecializationFrameTemplate" useParentLevel="true" parent="PlayerTalentFrame">
 		<Scripts>
 			<OnLoad function="PlayerTalentFrameSpec_OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="PlayerTalentFramePetSpecialization" inherits="SpecializationFrameTemplate" useParentLevel="true" parent="PlayerTalentFrame">
+		<Scripts>
+			<OnLoad function="PlayerTalentFrame_PetSpec_OnLoad"/>
 		</Scripts>
 	</Frame>
 	
@@ -929,6 +895,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" x="39" y="20" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlayerTalentFrame_ToggleTutorial();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Frame name="$parentTalentRow1" inherits="PlayerTalentRowTemplate" parentKey="tier1" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-17"/>

@@ -580,7 +580,7 @@ function CompactUnitFrame_UpdateBuffs(frame)
 	while ( frameNum <= frame.maxBuffs ) do
 		local buffName = UnitBuff(frame.displayedUnit, index, filter);
 		if ( buffName ) then
-			if ( CompactUnitFrame_UtilShouldDisplayBuff(frame.displayedUnit, index, filter) ) then
+			if ( CompactUnitFrame_UtilShouldDisplayBuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossAura(frame.displayedUnit, index, filter, true) ) then
 				local buffFrame = frame.buffFrames[frameNum];
 				CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter);
 				frameNum = frameNum + 1;
@@ -606,14 +606,32 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 	local frameNum = 1;
 	local filter = nil;
 	local maxDebuffs = frame.maxDebuffs;
-	--First, we go through displaying boss debuffs.
+	--Show both Boss buffs & debuffs in the debuff location
+	--First, we go through all the debuffs looking for any boss flagged ones.
 	while ( frameNum <= maxDebuffs ) do
 		local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
 		if ( debuffName ) then
-			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter) ) then
+			if ( CompactUnitFrame_UtilIsBossAura(frame.displayedUnit, index, filter, false) ) then
 				local debuffFrame = frame.debuffFrames[frameNum];
-				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
-				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, true);
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, true, false);
+				frameNum = frameNum + 1;
+				--Boss debuffs are about twice as big as normal debuffs, so display one less.
+				local bossDebuffScale = (debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE)/debuffFrame.baseSize
+				maxDebuffs = maxDebuffs - (bossDebuffScale - 1);
+			end
+		else
+			break;
+		end
+		index = index + 1;
+	end
+	--Then we go through all the buffs looking for any boss flagged ones.
+	index = 1;
+	while ( frameNum <= maxDebuffs ) do
+		local debuffName = UnitBuff(frame.displayedUnit, index, filter);
+		if ( debuffName ) then
+			if ( CompactUnitFrame_UtilIsBossAura(frame.displayedUnit, index, filter, true) ) then
+				local debuffFrame = frame.debuffFrames[frameNum];
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, true, true);
 				frameNum = frameNum + 1;
 				--Boss debuffs are about twice as big as normal debuffs, so display one less.
 				local bossDebuffScale = (debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE)/debuffFrame.baseSize
@@ -632,8 +650,7 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 		if ( debuffName ) then
 			if ( CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter) ) then
 				local debuffFrame = frame.debuffFrames[frameNum];
-				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
-				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, false, false);
 				frameNum = frameNum + 1;
 			end
 		else
@@ -652,11 +669,10 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 	while ( frameNum <= maxDebuffs ) do
 		local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
 		if ( debuffName ) then
-			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter) and
+			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossAura(frame.displayedUnit, index, filter, false) and
 				not CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter)) then
 				local debuffFrame = frame.debuffFrames[frameNum];
-				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
-				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, false, false);
 				frameNum = frameNum + 1;
 			end
 		else
@@ -751,7 +767,7 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
 end
 
 function CompactUnitFrame_UtilShouldDisplayDebuff(unit, index, filter)
-	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff = UnitDebuff(unit, index, filter);
+	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossAura = UnitDebuff(unit, index, filter);
 	
 	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT");
 	if ( hasCustom ) then
@@ -761,13 +777,19 @@ function CompactUnitFrame_UtilShouldDisplayDebuff(unit, index, filter)
 	end
 end
 
-function CompactUnitFrame_UtilIsBossDebuff(unit, index, filter)
-	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff = UnitDebuff(unit, index, filter);
-	return isBossDebuff;
+function CompactUnitFrame_UtilIsBossAura(unit, index, filter, checkAsBuff)
+	-- make sure you are using the correct index here!	allAurasIndex ~= debuffIndex
+	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossAura;
+	if (checkAsBuff) then
+		name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossAura = UnitBuff(unit, index, filter);
+	else
+		name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossAura = UnitDebuff(unit, index, filter);
+	end
+	return isBossAura;
 end
 
 function CompactUnitFrame_UtilIsPriorityDebuff(unit, index, filter)
-	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff = UnitDebuff(unit, index, filter);
+	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossAura = UnitDebuff(unit, index, filter);
 	
 	local _, classFilename = UnitClass("player");
 	if ( classFilename == "PALADIN" ) then
@@ -789,16 +811,16 @@ function CompactUnitFrame_HideAllDebuffs(frame)
 	end
 end
 
-function CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, isBossDebuff)
-	if ( isBossDebuff ) then
-		debuffFrame:SetSize(debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE, debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE);
+function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBossAura, isBossBuff)
+	-- make sure you are using the correct index here!
+	--isBossAura says make this look large.
+	--isBossBuff looks in HELPFULL auras otherwise it looks in HARMFULL ones
+	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId;
+	if (isBossBuff) then
+		name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId = UnitBuff(unit, index, filter);
 	else
-		debuffFrame:SetSize(debuffFrame.baseSize, debuffFrame.baseSize);
+		name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId = UnitDebuff(unit, index, filter);
 	end
-end
-
-function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter)
-	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId = UnitDebuff(unit, index, filter);
 	debuffFrame.filter = filter;
 	debuffFrame.icon:SetTexture(icon);
 	if ( count > 1 ) then
@@ -822,6 +844,13 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter)
 	
 	local color = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
 	debuffFrame.border:SetVertexColor(color.r, color.g, color.b);
+
+	debuffFrame.isBossBuff = isBossBuff;
+	if ( isBossAura ) then
+		debuffFrame:SetSize(debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE, debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE);
+	else
+		debuffFrame:SetSize(debuffFrame.baseSize, debuffFrame.baseSize);
+	end
 	
 	debuffFrame:Show();
 end

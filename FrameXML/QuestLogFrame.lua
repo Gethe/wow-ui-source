@@ -551,30 +551,6 @@ function QuestLog_UpdateQuestCount(numQuests)
 	else
 		QuestLogQuestCount:SetFormattedText(QUEST_LOG_COUNT_TEMPLATE, "|cffffffff", numQuests, MAX_QUESTLOG_QUESTS);
 	end
-	
-	local textHeight = 12;
-	local hPadding = 15;
-	local vPadding = 8;
-	local dailyQuestsComplete = GetDailyQuestsCompleted();
-	local parent = QuestLogCount:GetParent();
-	local width = QuestLogQuestCount:GetWidth();
-
-	if ( dailyQuestsComplete > 0 ) then
-		QuestLogDailyQuestCount:SetFormattedText(QUEST_LOG_DAILY_COUNT_TEMPLATE, dailyQuestsComplete, GetMaxDailyQuests());
-		QuestLogDailyQuestCount:Show();
-		QuestLogDailyQuestCountMouseOverFrame:Show();
-		if ( QuestLogDailyQuestCount:GetWidth() > width ) then
-			width = QuestLogDailyQuestCount:GetWidth();
-		end
-		QuestLogCount:SetHeight(textHeight*2+vPadding);
-		QuestLogCount:SetPoint("TOPLEFT", parent, "TOPLEFT", 70, -28);
-	else
-		QuestLogDailyQuestCount:Hide();
-		QuestLogDailyQuestCountMouseOverFrame:Hide();
-		QuestLogCount:SetHeight(textHeight+vPadding);
-		QuestLogCount:SetPoint("TOPLEFT", parent, "TOPLEFT", 70, -31);
-	end
-	QuestLogCount:SetWidth(width+hPadding);
 end
 
 function QuestLog_UpdateQuestDetails(resetScrollBar)

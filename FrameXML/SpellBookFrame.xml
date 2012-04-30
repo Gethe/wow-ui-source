@@ -367,7 +367,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSubSpellName" inherits="SubSpellFont" justifyH="LEFT" justifyV="TOP" parentKey="subSpellString">
+				<FontString name="$parentSubSpellName" inherits="NewSubSpellFont" justifyH="LEFT" justifyV="TOP" parentKey="subSpellString">
 					<Size>
 						<AbsDimension x="95" y="28"/>
 					</Size>
@@ -378,7 +378,6 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0"/>
 				</FontString>
 			</Layer>		
 			<Layer level="BACKGROUND">
@@ -499,90 +498,6 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<CheckButton name="SpellBookCompanionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\Spellbook\Spellbook-Mounts" parentKey="Background">
-					<Size x="43" y="43"/>
-					<!-- <TexCoords left="0.71093750" right="0.79492188" top="0.00390625" bottom="0.17187500"/> --> <!-- Companion -->
-					<!-- <TexCoords left="0.62304688" right="0.70703125" top="0.00390625" bottom="0.17187500"/> --> <!-- Mount -->
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextBackground" inherits="Spellbook-TextBackground" parentKey="TextBackground">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-4" y="-5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentIconTextureBg" setAllPoints="true" hidden="true" parentKey="IconTextureBg">
-					<Color r="0.40" g="0.20" b="0"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true" parentKey="IconTexture"/>
-				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT" parentKey="SpellName">
-					<Size>
-						<AbsDimension x="96" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="6" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentActiveTexture" file="Interface\Buttons\CheckButtonHilight" parentKey="ActiveTexture" alphaMode="ADD"/>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				SpellBookCompanionButton_OnLoad(self);
-			</OnLoad>
-			<PreClick>
-				self:SetChecked(0);
-			</PreClick>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					SpellBookCompanionButton_OnModifiedClick(self, button);
-				else
-					SpellBookCompanionButton_OnClick(self, button);
-				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
-			</OnClick>
-			<OnDragStart>
-				SpellBookCompanionButton_OnDrag(self);
-			</OnDragStart>
-			<OnReceiveDrag>
-				SpellBookCompanionButton_OnDrag(self);
-			</OnReceiveDrag>
-			<OnEnter>
-				SpellBookCompanionButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-Button-Outline" alphaMode="ADD">
-			<Size x="66" y="66"/>
-			<Anchors>
-				<Anchor point="CENTER" x="0" y="0"/>
-			</Anchors>
-		</CheckedTexture>
-	</CheckButton>
 	<StatusBar name="ProfessionStatusBarTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="95" y="16"/>
@@ -865,6 +780,84 @@
 			</StatusBar>
 		</Frames>			
 	</Frame>
+	<CheckButton name="CoreAbilitySpellTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="46" y="46"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture" parentKey="iconTexture">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Spellbook\RotationIconFrame">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentSpellName" inherits="SystemFont_Large" justifyH="LEFT" parentKey="Name">
+					<Size x="300" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-4"/>
+					</Anchors>
+					<Color r="0.1" g="0.1" b="0.1"/>
+				</FontString>
+				<FontString name="$parentInfoText" inherits="SystemFont_Med1" maxLines="2" justifyH="LEFT" justifyV="TOP" parentKey="InfoText">
+					<Size x="360" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+					<Color r="0.1" g="0.1" b="0.1"/>
+				</FontString>
+			</Layer>		
+		</Layers>
+<!--
+		<Scripts>
+			<OnLoad>
+				SpellButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				SpellButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<PreClick>
+				self:SetChecked(0);
+			</PreClick>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					SpellButton_OnModifiedClick(self, button);
+				else
+					SpellButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnShow>			
+				SpellButton_OnShow(self);
+			</OnShow>
+			<OnHide>
+				SpellButton_OnHide(self);
+			</OnHide>
+			<OnDragStart>
+				SpellButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				SpellButton_OnDrag(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				SpellButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+-->
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
 	
 	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
 		<Size>
@@ -885,6 +878,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SpellBookFrame" x="39" y="20" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellBook_ToggleTutorial();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="SpellBookFrameTabButton1" inherits="SpellBookFrameTabButtonTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
@@ -1337,213 +1340,43 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame name="SpellBookCompanionsFrame">
+			<Frame name="SpellBookCoreAbilitiesFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellBookFrame" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="SpellBookCompanionsModelFrame" inherits="Spellbook-MountModelFrame">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="124" y="-54"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString name="SpellBookCompanionsPageText" inherits="GameFontBlack" justifyH="RIGHT">
-							<Size>
-								<AbsDimension x="102" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-110" y="38"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<Color r="0.25" g="0.12" b="0"/>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<PlayerModel name="SpellBookCompanionModelFrame" useParentLevel="true" inherits="ModelWithZoomTemplate">
+				</Anchors>	
+				<Frames>				
+					<Frame parentArray="Abilities" name="PrimaryCoreAbility1" inherits="CoreAbilitySpellTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionsModelFrame" x="15" y="-15"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookCompanionsModelFrame" x="-15" y="15"/>
+							<Anchor point="TOPLEFT" x="90" y="-80"/>
 						</Anchors>
-						<Frames>
-							<Frame name="SpellBookCompanionModelFrameShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
-							<Button name="SpellBookCompanionModelFrameRotateLeftButton">
-								<Size x="35" y="35"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="6" y="-6"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-									</OnLoad>
-									<OnClick>
-										Model_RotateLeft(SpellBookCompanionModelFrame);
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-							</Button>
-							<Button name="SpellBookCompanionModelFrameRotateRightButton">
-								<Size>
-									<AbsDimension x="35" y="35"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionModelFrameRotateLeftButton" relativePoint="TOPRIGHT"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-									</OnLoad>
-									<OnClick>
-										Model_RotateRight(SpellBookCompanionModelFrame);
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-							</Button>
-						</Frames>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString name="SpellBookCompanionSelectedName" inherits="GameFontHighlightLarge">
-									<Size x="280" y="0"/>
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="30"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</PlayerModel>
-					<Button name="SpellBookCompanionSummonButton" inherits="UIPanelButtonTemplate" text="SUMMON">
-						<Size x="120" y="22"/>
+					</Frame>
+					<Frame parentArray="Abilities" name="PrimaryCoreAbility2" inherits="CoreAbilitySpellTemplate">
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="4" relativeTo="SpellBookCompanionModelFrame" />
+							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility1" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
-						<Scripts>
-							<OnClick function="SpellBookCompanionSummonButton_OnClick"/>
-						</Scripts>
-					</Button>
-					<CheckButton name="SpellBookCompanionButton1" inherits="SpellBookCompanionButtonTemplate" id="1">
+					</Frame>
+					<Frame parentArray="Abilities" name="PrimaryCoreAbility3" inherits="CoreAbilitySpellTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="76" y="-282"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility2" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton2" inherits="SpellBookCompanionButtonTemplate" id="2">
+					</Frame>
+					<Frame parentArray="Abilities" name="PrimaryCoreAbility4" inherits="CoreAbilitySpellTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton1">
-								<Offset>
-									<AbsDimension x="150" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility3" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton3" inherits="SpellBookCompanionButtonTemplate" id="3">
+					</Frame>
+					<Frame parentArray="Abilities" name="PrimaryCoreAbility5" inherits="CoreAbilitySpellTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton2">
-								<Offset>
-									<AbsDimension x="150" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility4" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton4" inherits="SpellBookCompanionButtonTemplate" id="4">
+					</Frame>
+					<Frame parentArray="Abilities" name="PrimaryCoreAbility6" inherits="CoreAbilitySpellTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility5" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton5" inherits="SpellBookCompanionButtonTemplate" id="5">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton6" inherits="SpellBookCompanionButtonTemplate" id="6">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton7" inherits="SpellBookCompanionButtonTemplate" id="7">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton4" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton8" inherits="SpellBookCompanionButtonTemplate" id="8">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton5" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton9" inherits="SpellBookCompanionButtonTemplate" id="9">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton6" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton10" inherits="SpellBookCompanionButtonTemplate" id="10">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton7" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton11" inherits="SpellBookCompanionButtonTemplate" id="11">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton8" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="SpellBookCompanionButton12" inherits="SpellBookCompanionButtonTemplate" id="12">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookCompanionButton9" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
+					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad function="SpellBookCompanionsFrame_OnLoad"/>
-					<OnEvent function="SpellBookCompanionsFrame_OnEvent"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

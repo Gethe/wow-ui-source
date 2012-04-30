@@ -1,0 +1,6 @@
+## Interface: 50001
+## Title: Black Market UI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_BlackMarketUI.xml
+Localization.lua

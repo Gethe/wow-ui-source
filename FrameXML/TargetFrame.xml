@@ -497,6 +497,7 @@
 				else
 					BossTargetFrame_OnLoad(self, "boss"..id);
 				end
+				TargetFrame_CreateSpellbar(self, nil, true);
 			</OnLoad>
 		</Scripts>
 	</Button>
@@ -664,6 +665,14 @@
 			<OnEvent function="Target_Spellbar_OnEvent"/>
 		</Scripts>
 	</StatusBar>
+	<StatusBar name="BossSpellBarTemplate" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="120" y="10"/>
+		</Size>
+		<Scripts>
+			<OnEvent function="Target_Spellbar_OnEvent"/>
+		</Scripts>
+	</StatusBar>
 			
 	<Button name="TargetFrame" inherits="TargetFrameTemplate" movable="true">
 		<Anchors>
@@ -760,7 +769,7 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss1TargetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="0" y="10"/>
+					<AbsDimension x="0" y="-30"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -769,7 +778,7 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss2TargetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="0" y="10"/>
+					<AbsDimension x="0" y="-30"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -778,7 +787,7 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss3TargetFrame" relativePoint="BOTTOMLEFT">
 				<Offset>
-					<AbsDimension x="0" y="10"/>
+					<AbsDimension x="0" y="-30"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

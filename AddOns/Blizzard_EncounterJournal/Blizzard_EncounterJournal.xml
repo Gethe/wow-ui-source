@@ -1530,7 +1530,6 @@
 								<Anchor point="TOPLEFT" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0" right="0.763671875" top="0" bottom="0.82421875"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -1549,19 +1548,7 @@
 							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-35" y="-45"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								self:GetParent().currTab = 2;
-							
-								self:Disable();
-								self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-								self.selectedGlow:Show();
-								local dungeonsTab = self:GetParent().dungeonsTab;
-								dungeonsTab:Enable();
-								dungeonsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-								dungeonsTab.selectedGlow:Hide();
-								EncounterJournal_ListInstances();
-								PlaySound("igMainMenuOptionCheckBoxOn");
-							</OnClick>
+							<OnClick function="EJRaidTab_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="$parentDungeonTab" inherits="EncounterTierTabTemplate" text="DUNGEONS" parentKey="dungeonsTab">
@@ -1569,19 +1556,7 @@
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentRaidTab" relativePoint="BOTTOMLEFT" x="-35" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								self:GetParent().currTab = 1;
-								
-								self:Disable();
-								self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-								self.selectedGlow:Show();
-								local raidsTab = self:GetParent().raidsTab;
-								raidsTab:Enable();
-								raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-								raidsTab.selectedGlow:Hide();
-								EncounterJournal_ListInstances();
-								PlaySound("igMainMenuOptionCheckBoxOn");
-							</OnClick>
+							<OnClick function="EJDungeonTab_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">

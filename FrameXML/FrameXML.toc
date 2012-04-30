@@ -4,6 +4,7 @@ GlobalStrings.lua
 Constants.lua
 Fonts.xml
 FontStyles.xml
+FontStyleOverrides.xml
 Localization.xml
 
 ## add snippets independent of modules here
@@ -134,6 +135,7 @@ LFGFrame.xml
 LFDFrame.xml
 LFRFrame.xml
 RaidFinder.xml
+ScenarioFinder.xml
 MovieRecordingProgress.xml
 MacOptionsFrame.xml
 RatingMenuFrame.xml

@@ -57,7 +57,7 @@ function CombatFeedback_OnCombatEvent(self, event, flags, amount, type)
 				g = 1.0;
 				b = 0.0;
 			end
-			text = amount;
+			text = BreakUpLargeNumbers(amount);
 		elseif ( flags == "ABSORB" ) then
 			fontHeight = fontHeight * 0.75;
 			text = CombatFeedbackText["ABSORB"];
@@ -74,7 +74,7 @@ function CombatFeedback_OnCombatEvent(self, event, flags, amount, type)
 		fontHeight = fontHeight * 0.75;
 		text = CombatFeedbackText[event];
 	elseif ( event == "HEAL" ) then
-		text = amount;
+		text = BreakUpLargeNumbers(amount);
 		r = 0.0;
 		g = 1.0;
 		b = 0.0;
@@ -82,7 +82,7 @@ function CombatFeedback_OnCombatEvent(self, event, flags, amount, type)
 			fontHeight = fontHeight * 1.5;
 		end
 	elseif ( event == "ENERGIZE" ) then
-		text = amount;
+		text = BreakUpLargeNumbers(amount);
 		r = 0.41;
 		g = 0.8;
 		b = 0.94;

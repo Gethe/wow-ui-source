@@ -61,6 +61,14 @@ local EJ_DIFF_RAID_TBL =
 	[5] = { enumValue = EJ_DIFF_25MAN_HEROIC, size = 25, prefix = PLAYER_DIFFICULTY2}
 }
 
+local EJ_TIER_DATA =
+{
+	[1] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Classic", r = 1.0, g = 0.8, b = 0.0},
+	[2] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-BurningCrusade", r = 0.6, g = 0.8, b = 0.0},
+	[3] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-WrathoftheLichKing", r = 0.2, g = 0.8, b = 1.0},
+	[4] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Cataclysm", r = 1.0, g = 0.4, b = 0.0},
+	[5] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-MistsofPandaria", r = 0.0, g = 0.6, b = 0.2},
+}
 
 
 local BOSS_LOOT_BUTTON_HEIGHT = 45;
@@ -141,6 +149,11 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal_UpdatePortraits();
 		EncounterJournal.queuedPortraitUpdate = false;
 	end
+
+	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+	EncounterJournal.instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+	EncounterJournal.instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	EncounterJournal.instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 end
 
 
@@ -1190,6 +1203,39 @@ function EncounterJournal_DifficultyInit(self, level)
 	end
 end
 
+function EJRaidTab_OnClick(self)
+	self:GetParent().currTab = 2;
+
+	self:Disable();
+	self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+	self.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	self.selectedGlow:Show();
+
+	local dungeonsTab = self:GetParent().dungeonsTab;
+	dungeonsTab:Enable();
+	dungeonsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	dungeonsTab.selectedGlow:Hide();
+	EncounterJournal_ListInstances();
+	PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+function EJDungeonTab_OnClick(self)
+	self:GetParent().currTab = 1;
+	
+	self:Disable();
+	self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+	self.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	self.selectedGlow:Show();
+
+	local raidsTab = self:GetParent().raidsTab;
+	raidsTab:Enable();
+	raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	raidsTab.selectedGlow:Hide();
+	EncounterJournal_ListInstances();
+	PlaySound("igMainMenuOptionCheckBoxOn");
+end
 
 function EJTierDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, EJTierDropDown_Initialize, "MENU");
@@ -1204,7 +1250,6 @@ function EJTierDropDown_Initialize(self, level)
 		info.text = EJ_GetTierInfo(i);
 		info.func = EncounterJournal_TierDropDown_Select
 		info.checked = i == currTier;
-		info.isNotRadio = true;
 		info.arg1 = i;
 		UIDropDownMenu_AddButton(info, level)
 	end
@@ -1215,27 +1260,31 @@ function EncounterJournal_TierDropDown_Select(self, tier)
 	EJ_SelectTier(tier);
 	EncounterJournal.instanceSelect.tabs[1].grayBox:Hide();
 	EncounterJournal.instanceSelect.tabs[2].grayBox:Hide();
+
+	local tierData = EJ_TIER_DATA[tier];
+	EncounterJournal.instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+	EncounterJournal.instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	EncounterJournal.instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	
 	EncounterJournal_ListInstances();
 end
 
 
-function EncounterJournal_SetFilter(self, lootEnum)
-	EJ_SetLootFilter(lootEnum);
+function EncounterJournal_SetFilter(self, classID, specID)
+	EJ_SetLootFilter(classID, specID);
+	CloseDropDownMenus(1);
 	EncounterJournal_LootUpdate();
 end
 
 
 function EncounterJournal_UpdateFilterString()
-	local name;
-	local currFilter = EJ_GetLootFilter();
+	local name, _;
+	local classID, specID = EJ_GetLootFilter();
 
-	if currFilter == LE_LOOT_FILTER_CLASS then
-		name = UnitClass("player");
-	elseif currFilter == LE_LOOT_FILTER_BOE then
-		name = ITEM_BIND_ON_EQUIP;
-	elseif currFilter ~= LE_LOOT_FILTER_ALL then -- Spec
-		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1);
-		name = specName;
+	if (specID > 0) then
+		_, name = GetSpecializationInfoByID(specID)
+	elseif (classID > 0) then
+		name = GetClassInfoByID(classID);
 	end
 	
 	if name then
@@ -1248,38 +1297,75 @@ function EncounterJournal_UpdateFilterString()
 	end
 end
 
-function EncounterJournal_InitLootFilter()
+local CLASS_DROPDOWN = 1;
+function EncounterJournal_InitLootFilter(self, level)
+	local filterClassID, filterSpecID = EJ_GetLootFilter();
+	local classDisplayName, classTag, classID;
 	local info = UIDropDownMenu_CreateInfo();
-	local currFilter = EJ_GetLootFilter();
-	local className = UnitClass("player");
+	info.keepShownOnClick = nil;
 
+	if (UIDROPDOWNMENU_MENU_VALUE == CLASS_DROPDOWN) then 
+		info.text = ALL_CLASSES;
+		info.checked = (filterClassID == 0);
+		info.arg1 = 0;
+		info.arg2 = 0;
+		info.func = EncounterJournal_SetFilter;
+		UIDropDownMenu_AddButton(info, level);
 
-	info.text = ALL;
-	info.checked = currFilter == LE_LOOT_FILTER_ALL;
-	info.arg1 = LE_LOOT_FILTER_ALL;
-	info.func = EncounterJournal_SetFilter;
-	UIDropDownMenu_AddButton(info);
-	
-	
-	info.text = className;
-	info.checked = currFilter == LE_LOOT_FILTER_CLASS;
-	info.arg1 = LE_LOOT_FILTER_CLASS;
-	UIDropDownMenu_AddButton(info);
-	
-	
-	local numSpecs = GetNumSpecializations();
-	for i = 1, numSpecs do
-		local _, name, _, icon = GetSpecializationInfo(i);
-		info.text = name;
-		info.arg1 = LE_LOOT_FILTER_SPEC1 + i - 1;
-		info.checked = currFilter == (LE_LOOT_FILTER_SPEC1 + i - 1);
-		UIDropDownMenu_AddButton(info);
+		local numClasses = GetNumClasses();
+		for i = 1, numClasses do
+			classDisplayName, classTag, classID = GetClassInfo(i);
+			info.text = classDisplayName;
+			info.checked = (filterClassID == classID);
+			info.arg1 = classID;
+			info.arg2 = 0;
+			info.func = EncounterJournal_SetFilter;
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
-	
-	info.text = ITEM_BIND_ON_EQUIP;
-	info.checked = currFilter == LE_LOOT_FILTER_BOE;
-	info.arg1 = LE_LOOT_FILTER_BOE;
-	UIDropDownMenu_AddButton(info);
+
+	if (level == 1) then 
+		info.text = CLASS;
+		info.func =  nil;
+		info.notCheckable = true;
+		info.hasArrow = true;
+		info.value = CLASS_DROPDOWN;
+		UIDropDownMenu_AddButton(info, level)
+		
+		if ( filterClassID > 0 ) then
+			classDisplayName, classTag, classID = GetClassInfoByID(filterClassID);
+		else
+			classDisplayName, classTag, classID = UnitClass("player");
+		end
+		info.text = classDisplayName;
+		info.notCheckable = true;
+		info.arg1 = nil;
+		info.arg2 = nil;
+		info.func =  nil;
+		info.hasArrow = false;
+		UIDropDownMenu_AddButton(info, level);
+		
+		info.notCheckable = nil;
+		local numSpecs = GetNumSpecializationsForClassID(classID);
+		for i = 1, numSpecs do
+			local specID, specName = GetSpecializationInfoForClassID(classID, i);
+			info.leftPadding = 10;
+			info.text = specName;
+			info.checked = (filterSpecID == specID);
+			info.arg1 = classID;
+			info.arg2 = specID;
+			info.func = EncounterJournal_SetFilter;
+			UIDropDownMenu_AddButton(info, level);
+		end
+
+		info.text = ALL_SPECS;
+		info.leftPadding = 10;
+		info.checked = (classID == filterClassID) and (filterSpecID == 0);
+		info.arg1 = classID;
+		info.arg2 = 0;
+		info.func = EncounterJournal_SetFilter;
+		UIDropDownMenu_AddButton(info, level);
+	end
 end
 
 

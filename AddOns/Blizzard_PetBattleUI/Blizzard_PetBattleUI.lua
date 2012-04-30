@@ -19,19 +19,6 @@ PET_BATTLE_WEATHER_TEXTURES = {
 	[235] = "Interface\\PetBattles\\Weather-Rain",
 };
 
-PET_BATTLE_PET_TYPE_PASSIVES = {
-	238,	--Humanoid - Recovery
-	245,	--Dragon - Execute
-	239,	--Flying - Swiftness
-	242,	--Undead - Damned
-	236,	--Critter - Elusive
-	243,	--Magical - Spellshield
-	241,	--Elemental - Weather Immune
-	237,	--Beast - Enrage
-	240,	--Aquatic - Purity
-	244,	--Mechanical - Failsafe
-};
-
 --------------------------------------------
 -------------Pet Battle Frame---------------
 --------------------------------------------
@@ -69,8 +56,8 @@ end
 
 function PetBattleFrame_UpdateInstructions(self)
 	local battleState = C_PetBattles.GetBattleState();
-	if ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE or
-		battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) then
+	if ( ( ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) ) and 
+		( not C_PetBattles.GetSelectedAction() ) ) then
 		self.BottomFrame.FlowFrame.SelectPetInstruction:Show();
 	else
 		self.BottomFrame.FlowFrame.SelectPetInstruction:Hide();
@@ -89,7 +76,8 @@ end
 
 function PetBattleFrame_UpdatePetSelectionFrame(self)
 	local battleState = C_PetBattles.GetBattleState();
-	if ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) then
+	if ( ( ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) ) and
+		( not C_PetBattles.GetSelectedAction() ) ) then
 		PetBattlePetSelectionFrame_Show(PetBattleFrame.BottomFrame.PetSelectionFrame);
 	else
 		PetBattlePetSelectionFrame_Hide(PetBattleFrame.BottomFrame.PetSelectionFrame);
@@ -182,8 +170,10 @@ function PetBattleFrame_UpdateAssignedUnitFrames(self)
 	PetBattleAuraHolder_SetUnit(self.EnemyDebuffFrame, LE_BATTLE_PET_ENEMY, activeEnemy);
 	PetBattleAuraHolder_SetUnit(self.AllyBuffFrame, LE_BATTLE_PET_ALLY, activeAlly);
 	PetBattleAuraHolder_SetUnit(self.AllyDebuffFrame, LE_BATTLE_PET_ALLY, activeAlly);
-	PetBattleAuraHolder_SetUnit(self.EnemyPadAuraFrame, LE_BATTLE_PET_ENEMY, PET_BATTLE_PAD_INDEX);
-	PetBattleAuraHolder_SetUnit(self.AllyPadAuraFrame, LE_BATTLE_PET_ALLY, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.EnemyPadBuffFrame, LE_BATTLE_PET_ENEMY, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.EnemyPadDebuffFrame, LE_BATTLE_PET_ENEMY, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.AllyPadBuffFrame, LE_BATTLE_PET_ALLY, PET_BATTLE_PAD_INDEX);
+	PetBattleAuraHolder_SetUnit(self.AllyPadDebuffFrame, LE_BATTLE_PET_ALLY, PET_BATTLE_PAD_INDEX);
 end
 
 function PetBattleFrame_Remove(self)
@@ -477,7 +467,7 @@ function PetBattleAbilityButton_OnEnter(self)
 	local petIndex = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
 	if ( self:GetEffectiveAlpha() > 0 and C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()) ) then
 		PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
-		PetBattlePrimaryAbilityTooltip:Show();
+		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
 	else
 		PetBattlePrimaryAbilityTooltip:Hide();
 	end
@@ -600,7 +590,7 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 	--Update the XP bar
 	if ( self.XPBar ) then
 		local xp, maxXp = C_PetBattles.GetXP(petOwner, petIndex);
-		self.XPBar:SetWidth(max((xp / maxXp) * self.xpBarWidth, 1));
+		self.XPBar:SetWidth(max((xp / max(maxXp,1)) * self.xpBarWidth, 1));
 	end
 
 	--Update the XP text
@@ -1028,6 +1018,13 @@ function PetBattleAuraHolder_Update(self)
 		return;
 	end
 
+	local growsTo = self.growsToDirection;
+	local numPerRow = self.numPerRow;
+	local growsFrom = "LEFT";
+	if ( growsTo == "LEFT" ) then
+		growsFrom = "RIGHT";
+	end
+
 	local nextFrame = 1;
 	for i=1, C_PetBattles.GetNumAuras(self.petOwner, self.petIndex) do
 		local auraID, instanceID, turnsRemaining, isBuff = C_PetBattles.GetAuraInfo(self.petOwner, self.petIndex, i);
@@ -1041,22 +1038,25 @@ function PetBattleAuraHolder_Update(self)
 
 				--Anchor the new frame
 				if ( nextFrame == 1 ) then
-					frame:SetPoint("TOP", self, "TOP", 0, 0);
+					frame:SetPoint("TOP"..growsFrom, self, "TOP"..growsFrom, 0, 0);
+				elseif ( (nextFrame - 1) % numPerRow == 0 ) then
+					frame:SetPoint("TOP"..growsFrom, self.frames[nextFrame - numPerRow], "BOTTOM"..growsFrom, 0, 0);
 				else
-					frame:SetPoint("TOP", self.frames[nextFrame - 1], "BOTTOM", 0, 0);
+					frame:SetPoint("TOP"..growsFrom, self.frames[nextFrame - 1], "TOP"..growsTo, 0, 0);
 				end
 			end
 
 			--Update the actual aura
 			local id, name, icon, maxCooldown, description = C_PetBattles.GetAbilityInfoByID(auraID);
+
 			if ( isBuff ) then
-				frame.Name:SetFontObject(GameFontGreen);
+				frame.DebuffBorder:Hide();
 			else
-				frame.Name:SetFontObject(GameFontRed);
+				frame.DebuffBorder:Show();
 			end
-			frame.Name:SetText(name);
+
 			frame.Icon:SetTexture(icon);
-			frame.Duration:SetText(turnsRemaining);
+			frame.Duration:SetFormattedText(PET_BATTLE_AURA_TURNS_REMAINING, turnsRemaining);
 			frame.auraIndex = i;
 			frame:Show();
 
@@ -1066,7 +1066,8 @@ function PetBattleAuraHolder_Update(self)
 
 	if ( nextFrame > 1 ) then
 		--We have at least one aura displayed
-		self:SetHeight(self.frames[1]:GetHeight() * (nextFrame - 1));
+		local numRows = math.floor((nextFrame - 2) / numPerRow) + 1; -- -2, 1 for this being the "next", not "previous" frame, 1 for 0-based math.
+		self:SetHeight(self.frames[1]:GetHeight() * numRows);
 		self:Show();
 	else
 		--Empty
@@ -1081,8 +1082,13 @@ end
 
 function PetBattleAura_OnEnter(self)
 	local parent = self:GetParent();
+	local isEnemy = (parent.petOwner == LE_BATTLE_PET_ENEMY);
 	PetBattleAbilityTooltip_SetAura(parent.petOwner, parent.petIndex, self.auraIndex);
-	PetBattlePrimaryAbilityTooltip:Show();
+	if ( isEnemy ) then
+		PetBattleAbilityTooltip_Show("TOPRIGHT", self, "BOTTOMLEFT", 15, 5);
+	else
+		PetBattleAbilityTooltip_Show("TOPLEFT", self, "BOTTOMRIGHT", -15, 5);
+	end
 end
 
 function PetBattleAura_OnLeave(self)
@@ -1220,6 +1226,15 @@ function PetBattleAbilityTooltip_SetAuraID(petOwner, petIndex, auraID)
 	PET_BATTLE_AURA_ID_INFO.petIndex = petIndex;
 	PET_BATTLE_AURA_ID_INFO.auraID = auraID;
 	SharedPetBattleAbilityTooltip_SetAbility(PetBattlePrimaryAbilityTooltip, PET_BATTLE_AURA_ID_INFO);
+end
+
+----------------------------------------------
+-------Pet Battle Ability Tooltip Funcs-------
+----------------------------------------------
+function PetBattleAbilityTooltip_Show(anchorPoint, anchorTo, relativePoint, xOffset, yOffset)
+	PetBattlePrimaryAbilityTooltip:ClearAllPoints();
+	PetBattlePrimaryAbilityTooltip:SetPoint(anchorPoint, anchorTo, relativePoint, xOffset, yOffset);
+	PetBattlePrimaryAbilityTooltip:Show();
 end
 
 ----------------------------------------------

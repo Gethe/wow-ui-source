@@ -1926,7 +1926,8 @@ end
 BuffsPanelOptions = {
 	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT" },
 	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
-	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
+	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },	
+	consolidateBuffs = { text = "CONSOLIDATE_BUFFS_TEXT" },	
 	showAllEnemyDebuffs = { text = "SHOW_ALL_ENEMY_DEBUFFS_TEXT" },
 }
 
@@ -2086,7 +2087,6 @@ HelpPanelOptions = {
 	showTutorials = { text = "SHOW_TUTORIALS" },
 	showGameTips = { text = "SHOW_TIPOFTHEDAY_TEXT" },
 	UberTooltips = { text = "USE_UBERTOOLTIPS" },
-	showNewbieTips = { text = "SHOW_NEWBIE_TIPS_TEXT" },
 	scriptErrors = { text = "SHOW_LUA_ERRORS" },
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	enableMovePad = { text = "MOVE_PAD" },

@@ -26,11 +26,11 @@ end
 
 function TaxiFrame_OnEvent(self, event, ...)
 	if ( event == "TAXIMAP_OPENED" ) then
-		TaxiFrameTitleText:SetText(FLIGHT_MAP);
+		self.TitleText:SetText(FLIGHT_MAP);
 
 		-- Set the texture coords on the map
-		TaxiFrameInsetBg:SetTexCoord(0,1,0,1);
-		SetTaxiMap(TaxiFrameInsetBg);
+		self.InsetBg:SetTexCoord(0,1,0,1);
+		SetTaxiMap(self.InsetBg);
 
 		-- Show the taxi node map and buttons
 		local num_nodes = NumTaxiNodes();
@@ -75,7 +75,7 @@ function TaxiFrame_OnEvent(self, event, ...)
 				end
 				-- set the button position
 				button:ClearAllPoints();
-				button:SetPoint("CENTER", "TaxiFrameInsetBg", "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
+				button:SetPoint("CENTER", self.InsetBg, "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
 				button:SetNormalTexture(TaxiButtonTypes[type].file);
 				button:Show();
 			else

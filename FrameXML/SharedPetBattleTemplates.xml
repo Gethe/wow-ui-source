@@ -29,6 +29,7 @@ UI.xsd">
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontHighlightLarge" text="NAME">
 					<Anchors>
+						<!--Anchor changed in SetAbility-->
 						<Anchor point="LEFT" relativeKey="$parent.AbilityPetType" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
@@ -42,7 +43,13 @@ UI.xsd">
 						<Anchor point="TOPLEFT" relativeKey="$parent.MaxCooldown" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Description" inherits="GameFontNormal" justifyH="LEFT" text="DESCRIPTION">
+				<FontString parentKey="AdditionalText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="239" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CurrentCooldown" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="239" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CurrentCooldown" relativePoint="BOTTOMLEFT" x="5" y="-5"/>

@@ -171,8 +171,8 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 		leftButton = self.controlFrame.rotateLeftButton;
 		rightButton = self.controlFrame.rotateRightButton;
 	else
-		leftButton = _G[self:GetName().."RotateLeftButton"];
-		rightButton = _G[self:GetName().."RotateRightButton"];
+		leftButton = self.RotateLeftButton or _G[self:GetName().."RotateLeftButton"];
+		rightButton = self.RotateRightButton or _G[self:GetName().."RotateRightButton"];
 	end
 
 	if ( leftButton and leftButton:GetButtonState() == "PUSHED" ) then

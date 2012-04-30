@@ -8,7 +8,7 @@ MICRO_BUTTONS = {
 	"PVPMicroButton",
 	"LFDMicroButton",
 	"EJMicroButton",
-	"RaidMicroButton",
+	"CompanionsMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
 	}
@@ -170,16 +170,13 @@ function UpdateMicroButtons()
 	else
 		EJMicroButton:SetButtonState("NORMAL");
 	end
-	
-	
-	if ( RaidParentFrame and RaidParentFrame:IsShown() ) then
-		RaidMicroButton:Enable();
-		RaidMicroButton:SetButtonState("PUSHED", 1);
-	elseif ( factionGroup == "Neutral" ) then
-		RaidMicroButton:Disable();
+
+	if ( PetJournalParent and PetJournalParent:IsShown() ) then
+		CompanionsMicroButton:Enable();
+		CompanionsMicroButton:SetButtonState("PUSHED", 1);
 	else
-		RaidMicroButton:Enable();
-		RaidMicroButton:SetButtonState("NORMAL");
+		CompanionsMicroButton:Enable();
+		CompanionsMicroButton:SetButtonState("NORMAL");
 	end
 end
 

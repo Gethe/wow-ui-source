@@ -7,6 +7,7 @@
 	<Scripts>
 		<OnEnter function="AlertFrame_StopOutAnimation"/>
 		<OnLeave function="AlertFrame_ResumeOutAnimation"/>
+		<OnHide function="AlertFrame_FixAnchors"/>
 	</Scripts>
 </Frame>
 
@@ -461,7 +462,131 @@
 		<OnClick>
 			AchievementAlertFrame_OnClick(self, button, down);
 		</OnClick>
-		<OnHide function="AchievementAlertFrame_OnHide"/>
+	</Scripts>
+</Button>
+
+<Button name="CriteriaAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<Size x="256" y="52"/>
+	<Anchors>
+		<Anchor point="BOTTOM" x="0" y="0"/>
+	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Alert-Background-Mini">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Texture>
+			<FontString name="$parentUnlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_PROGRESSED">
+				<Size x="200" y="0"/>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="0" y="-14"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentName" inherits="GameFontHighlight" text="For the Alliance!">
+				<Size x="200" y="0"/>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="0" y="-28"/>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+				<Size x="257" y="52"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+			</Texture>
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+				<Size x="67" y="52"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="210" offsetY="0" duration="0.85" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>		
+	</Layers>
+	<Frames>
+		<Frame name="$parentIcon">
+			<Size x="116" y="116"/>
+			<Anchors>
+				<Anchor point="LEFT" x="-65" y="0"/>
+			</Anchors>		
+			<Layers>
+				<Layer level="BORDER">
+					<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" x="-1" y="1"/>
+						</Anchors>
+						<Size x="116" y="116"/>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture name="$parentTexture">
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+						<Size x="50" y="50"/>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture name="$parentOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+						<Anchors>
+							<Anchor point="CENTER" x="-1" y="2"/>
+						</Anchors>
+						<Size x="72" y="72"/>
+						<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+					</Texture>
+				</Layer>
+			</Layers>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnLoad function="AchievementAlertFrame_OnLoad"/>
+		<OnClick function="AchievementAlertFrame_OnClick"/>
 	</Scripts>
 </Button>
 
@@ -621,8 +746,8 @@
 	</Animations>
 	<Layers>
 		<Layer level="BACKGROUND">
-			<Texture file="Interface\Challenges\challenges-main" virtual="true" setAllPoints="true">
-				<TexCoords left="0.00097656" right="0.30468750" top="0.52148438" bottom="0.67382813"/>	
+			<Texture file="Interface\Challenges\challenges-main" setAllPoints="true">
+				<TexCoords left="0.00097656" right="0.30468750" top="0.52148438" bottom="0.67382813"/>
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
@@ -643,7 +768,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
-			<FontString inherits="GameFontWhiteTiny" text="Challenge Complete!">
+			<FontString inherits="GameFontWhiteTiny" text="CHALLENGE_MODE_COMPLETED">
 				<Size x="200" y="12"/>
 				<Anchors>
 					<Anchor point="TOP">
@@ -700,9 +825,9 @@
 		<Frame name="$parentGlowFrame" setAllPoints="true" enableMouse="false" parentKey="glowFrame">
 			<Layers>
 				<Layer level="OVERLAY">
-					<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+					<Texture name="$parentGlow" file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" hidden="true" parentKey="glow">
 						<Size>
-							<AbsDimension x="384" y="167"/>
+							<AbsDimension x="327" y="94"/>
 						</Size>
 						<Anchors>
 							<Anchor point="CENTER">
@@ -720,7 +845,7 @@
 								</Scripts>
 							</AnimationGroup>
 						</Animations>
-						<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+						<TexCoords left="0.12304688" right="0.76171875" top="0.72070313" bottom="0.90429688"/>
 					</Texture>
 				</Layer>
 			</Layers>
@@ -739,15 +864,336 @@
 	</Scripts>
 </Button>
 
-<Button name="DungeonCompletionAlertFrame1" inherits="DungeonCompletionAlertFrameTemplate">
+<Button name="ScenarioAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<Size x="311" y="78"/>
+	<Anchors>
+		<Anchor point="BOTTOM" x="0" y="128"/>
+	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND" textureSubLevel="-1">
+			<Texture file="Interface\Scenarios\ScenariosParts">
+				<Size x="47" y="52"/>
+				<Anchors>
+					<Anchor point="LEFT" x="15" y="0"/>
+				</Anchors>
+				<TexCoords left="0.02539063" right="0.11718750" top="0.17187500" bottom="0.27343750"/>
+			</Texture>
+		</Layer>
+		<Layer level="BACKGROUND">
+			<Texture name="$parentDungeonTexture" parentKey="dungeonTexture">
+				<Size x="45" y="45"/>
+				<Anchors>
+					<Anchor point="LEFT" x="17" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture file="Interface\Scenarios\ScenariosParts" setAllPoints="true">
+				<TexCoords left="0.12304688" right="0.73046875" top="0.56445313" bottom="0.71679688"/>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString inherits="GameFontWhiteTiny" text="SCENARIO_COMPLETED">
+				<Size x="200" y="12"/>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="20" y="-22"/>
+					</Anchor>
+				</Anchors>
+				<Color r="0.973" g="0.937" b="0.580"/>
+			</FontString>
+			<FontString inherits="GameFontHighlight" parentKey="dungeonName">
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-40"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+				<Size>
+					<AbsDimension x="67" y="72"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame name="$parentReward1" inherits="DungeonCompletionAlertFrameRewardTemplate" parentKey="reward1"/>
+		<Frame name="$parentGlowFrame" setAllPoints="true" enableMouse="false" parentKey="glowFrame">
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="$parentGlow" file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" hidden="true" parentKey="glow">
+						<Size>
+							<AbsDimension x="327" y="94"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Animations>
+							<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+								<Alpha change="1" duration="0.2" order="1"/>
+								<Alpha change="-1" duration="0.5" order="2"/>
+								<Scripts>
+									<OnFinished>
+										self:GetParent():Hide();
+									</OnFinished>
+								</Scripts>
+							</AnimationGroup>
+						</Animations>
+						<TexCoords left="0.12304688" right="0.76171875" top="0.72070313" bottom="0.90429688"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad function="RaiseFrameLevel"/>
+			</Scripts>
+		</Frame>
+	</Frames>
 	<Scripts>
-		<OnHide function="AlertFrame_FixAnchors"/>
+		<OnLoad>
+			self.glow = self.glowFrame.glow;
+		</OnLoad>
 	</Scripts>
 </Button>
 
-<Button name="ChallengeModeAlertFrame1" inherits="ChallengeModeAlertFrameTemplate">
+<Button name="MoneyWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<Size x="249" y="71"/>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<!--PerPlayerLoot-Gold-->
+			<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
+				<TexCoords left="0.56347656" right="0.80664063" top="0.28906250" bottom="0.56640625"/>	
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Coin_02">
+				<Size x="38" y="38"/>
+				<Anchors>
+					<Anchor point="LEFT" x="16" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<!--ItemBorder-Gold-->
+			<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+				<Size x="45" y="45"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+				</Anchors>
+				<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>	
+			</Texture>
+			<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="YOU_WON_LABEL">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="7" y="-1"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Amount" inherits="GameFontHighlightLarge" justifyH="LEFT">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="10" y="7"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+</Button>
+
+<Button name="LootWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<Size x="276" y="96"/>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" file="Interface\LootFrame\LootToast">
+				<Size x="276" y="96"/>
+				<Anchor>
+					<Anchor point="CENTER"/>
+				</Anchor>
+				<TexCoords left="0.28222656" right="0.55175781" top="0.57812500" bottom="0.95312500"/>	
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture parentKey="Icon">
+				<Size x="52" y="52"/>
+				<Anchors>
+					<Anchor point="LEFT" x="23" y="-2"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Texture>
+			<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="YOU_WON_LABEL">
+				<Size x="110" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="7" y="5"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="MIDDLE">
+				<Size x="167" y="33"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-25" y="23"/>
+				</Anchors>
+			</FontString>
+			<Texture parentKey="RollTypeIcon" file="Interface\Buttons\UI-GroupLoot-Dice-Up">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-20" y="-18"/>
+				</Anchors>
+			</Texture>
+			<FontString parentKey="RollValue" inherits="GameFontGreen" justifyH="RIGHT">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RollTypeIcon" relativePoint="LEFT" x="-3" y="2"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<!--LootWin-Glow-->
+			<Texture name="$parentGlow" file="Interface\LootFrame\LootToast" alphaMode="ADD" hidden="true" parentKey="glow">
+				<Size>
+					<AbsDimension x="286" y="109"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.00097656" right="0.28027344" top="0.00390625" bottom="0.42968750"/>	
+			</Texture>
+			<!--LootWin-Sheen-->
+			<Texture name="$parentShine" file="Interface\LootFrame\LootToast" alphaMode="ADD" hidden="true" parentKey="shine">
+				<Size>
+					<AbsDimension x="171" y="75"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="-10" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.1" order="1"/>
+						<Translation offsetX="165" offsetY="0" duration="0.425" order="2"/>
+						<Alpha startDelay="0.175" change="-1" duration="0.25" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.56347656" right="0.73046875" top="0.57421875" bottom="0.86718750"/>	
+			</Texture>
+		</Layer>		
+	</Layers>
 	<Scripts>
-		<OnHide function="AlertFrame_FixAnchors"/>
+		<OnEnter>
+			AlertFrame_StopOutAnimation(self);
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetHyperlink(self.hyperlink);
+			GameTooltip:Show();
+		</OnEnter>
+		<OnLeave>
+			AlertFrame_ResumeOutAnimation(self);
+			GameTooltip:Hide();
+		</OnLeave>
+	</Scripts>
+</Button>
+
+<Button name="DungeonCompletionAlertFrame1" inherits="DungeonCompletionAlertFrameTemplate"/>
+
+<Button name="ChallengeModeAlertFrame1" inherits="ChallengeModeAlertFrameTemplate"/>
+
+<Button name="ScenarioAlertFrame1" inherits="ScenarioAlertFrameTemplate"/>
+
+<Button name="LootWonAlertFrame1" inherits="LootWonAlertFrameTemplate">
+	<Scripts>
+		<OnLoad>
+			table.insert(LOOT_WON_ALERT_FRAMES, self);
+		</OnLoad>
+	</Scripts>
+</Button>
+
+<Button name="MoneyWonAlertFrame1" inherits="MoneyWonAlertFrameTemplate">
+	<Scripts>
+		<OnLoad>
+			table.insert(MONEY_WON_ALERT_FRAMES, self);
+		</OnLoad>
 	</Scripts>
 </Button>
 

@@ -14,59 +14,35 @@
 			<OnEvent function="PetBattleUnitFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PetBattleEnemyAuraTemplate" virtual="true">
-		<Size x="222" y="32"/>
+	<Frame name="PetBattleAuraTemplate" virtual="true">
+		<Size x="60" y="49"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="24" y="24"/>
+					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-3" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontGreen" justifyH="RIGHT" justifyV="MIDDLE">
-					<Size x="120" y="33"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-2" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Duration" inherits="NumberFontNormal">
+				<FontString parentKey="Duration" inherits="GameFontHighlight" justifyH="CENTER" justifyV="TOP">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter function="PetBattleAura_OnEnter"/>
-			<OnLeave function="PetBattleAura_OnLeave"/>
-		</Scripts>
-	</Frame>
-	<Frame name="PetBattleAllyAuraTemplate" virtual="true">
-		<Size x="222" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="24" y="24"/>
+				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size>
+						<AbsDimension x="33" y="32"/>
+					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="3" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 					</Anchors>
-				</Texture>
-				<FontString parentKey="Name" inherits="GameFontGreen" justifyH="LEFT" justifyV="MIDDLE">
-					<Size x="120" y="33"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Duration" inherits="NumberFontNormal">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-				</FontString>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+					<Color r="1" g="0" b="0"/>
+				</Texture>	
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -783,74 +759,72 @@
 					<OnEvent function="PetBattleWeatherFrame_OnEvent"/>
 					<OnEnter>
 						PetBattleAbilityTooltip_SetAura(LE_BATTLE_PET_WEATHER, PET_BATTLE_PAD_INDEX, 1);
-						PetBattlePrimaryAbilityTooltip:Show();
+						PetBattleAbilityTooltip_Show("TOP", self, "BOTTOM", 0, 0);
 					</OnEnter>
 					<OnLeave>
 						PetBattlePrimaryAbilityTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="EnemyPadAuraFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
+			<Frame parentKey="EnemyPadBuffFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
 				<Size x="222" y="1"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.TopArtRight" relativePoint="BOTTOMRIGHT" x="-270" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopArtRight" relativePoint="BOTTOMRIGHT" x="-400" y="20"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" inherits="Buff-BG" alpha="0.7">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="20" y="0"/>
-							</Anchors>
-							<TexCoords left="0.78027344" right="0.56347656" top="0.28320313" bottom="0.34570313"/>	
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="PET_BATTLE_AREA_EFFECT" justifyH="RIGHT">
-							<Size x="160" y="16"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-32" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.template="PetBattleEnemyAuraTemplate";
+						self.growsToDirection = "RIGHT";
+						self.numPerRow = 2;
+						self.template = "PetBattleAuraTemplate";
 						self.displayBuffs = true;
+						self.displayDebuffs = false;
+						PetBattleAuraHolder_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="EnemyPadDebuffFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
+				<Size x="222" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EnemyPadBuffFrame" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.growsToDirection = "RIGHT";
+						self.numPerRow = 2;
+						self.template = "PetBattleAuraTemplate";
+						self.displayBuffs = false;
 						self.displayDebuffs = true;
 						PetBattleAuraHolder_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="AllyPadAuraFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
+			<Frame parentKey="AllyPadBuffFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
 				<Size x="222" y="1"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TopArtLeft" relativePoint="BOTTOMLEFT" x="270" y="0"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TopArtLeft" relativePoint="BOTTOMLEFT" x="400" y="20"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" inherits="Buff-BG" alpha="0.7">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="20" y="0"/>
-							</Anchors>
-							<TexCoords left="0.78027344" right="0.56347656" top="0.28320313" bottom="0.34570313"/>	
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="PET_BATTLE_AREA_EFFECT" justifyH="LEFT">
-							<Size x="160" y="16"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="32" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.template="PetBattleAllyAuraTemplate";
+						self.growsToDirection = "LEFT";
+						self.numPerRow = 2;
+						self.template = "PetBattleAuraTemplate";
 						self.displayBuffs = true;
+						self.displayDebuffs = false;
+						PetBattleAuraHolder_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="AllyPadDebuffFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
+				<Size x="222" y="1"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.AllyPadBuffFrame" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.growsToDirection = "LEFT";
+						self.numPerRow = 2;
+						self.template = "PetBattleAuraTemplate";
+						self.displayBuffs = false;
 						self.displayDebuffs = true;
 						PetBattleAuraHolder_OnLoad(self);
 					</OnLoad>
@@ -859,22 +833,13 @@
 			<Frame parentKey="EnemyBuffFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
 				<Size x="222" y="1"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.TopArtRight" relativePoint="BOTTOMRIGHT" x="-70" y="15"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TopArtRight" relativePoint="BOTTOMRIGHT" x="-70" y="20"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" inherits="Buff-BG" alpha="0.7">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="8"/>
-								<Anchor point="BOTTOMRIGHT" x="20" y="0"/>
-							</Anchors>
-							<TexCoords left="0.78027344" right="0.56347656" top="0.28320313" bottom="0.34570313"/>	
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.template = "PetBattleEnemyAuraTemplate";
+						self.growsToDirection = "LEFT";
+						self.numPerRow = 3;
+						self.template = "PetBattleAuraTemplate";
 						self.displayBuffs = true;
 						self.displayDebuffs = false;
 						PetBattleAuraHolder_OnLoad(self);
@@ -886,20 +851,11 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.EnemyBuffFrame" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" inherits="Buff-BG" alpha="0.7">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="8"/>
-								<Anchor point="BOTTOMRIGHT" x="20" y="0"/>
-							</Anchors>
-							<TexCoords left="0.78027344" right="0.56347656" top="0.28320313" bottom="0.34570313"/>	
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.template = "PetBattleEnemyAuraTemplate";
+						self.growsToDirection = "LEFT";
+						self.numPerRow = 3;
+						self.template = "PetBattleAuraTemplate";
 						self.displayBuffs = false;
 						self.displayDebuffs = true;
 						PetBattleAuraHolder_OnLoad(self);
@@ -909,21 +865,13 @@
 			<Frame parentKey="AllyBuffFrame" inherits="PetBattleAuraHolderTemplate" hidden="true">
 				<Size x="222" y="1"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TopArtLeft" relativePoint="BOTTOMLEFT" x="70" y="15"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopArtLeft" relativePoint="BOTTOMLEFT" x="70" y="20"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" inherits="Buff-BG" alpha="0.7">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="0" y="8"/>
-								<Anchor point="BOTTOMLEFT" x="-20" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.template = "PetBattleAllyAuraTemplate";
+						self.growsToDirection = "RIGHT";
+						self.numPerRow = 3;
+						self.template = "PetBattleAuraTemplate";
 						self.displayBuffs = true;
 						self.displayDebuffs = false;
 						PetBattleAuraHolder_OnLoad(self);
@@ -935,19 +883,11 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.AllyBuffFrame" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" inherits="Buff-BG" alpha="0.7">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="0" y="8"/>
-								<Anchor point="BOTTOMLEFT" x="-20" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.template = "PetBattleAllyAuraTemplate";
+						self.growsToDirection = "RIGHT";
+						self.numPerRow = 3;
+						self.template = "PetBattleAuraTemplate";
 						self.displayBuffs = false;
 						self.displayDebuffs = true;
 						PetBattleAuraHolder_OnLoad(self);
@@ -1049,7 +989,7 @@
 							<OnEnter>
 								local parent = self:GetParent();
 								PetBattleAbilityTooltip_SetAuraID(parent.petOwner, parent.petIndex, self.auraID);
-								PetBattlePrimaryAbilityTooltip:Show();
+								PetBattleAbilityTooltip_Show("TOPLEFT", self, "BOTTOMRIGHT", 0, 0);
 							</OnEnter>
 							<OnLeave>
 								PetBattlePrimaryAbilityTooltip:Hide();
@@ -1169,7 +1109,7 @@
 							<OnEnter>
 								local parent = self:GetParent();
 								PetBattleAbilityTooltip_SetAuraID(parent.petOwner, parent.petIndex, self.auraID);
-								PetBattlePrimaryAbilityTooltip:Show();
+								PetBattleAbilityTooltip_Show("TOPRIGHT", self, "BOTTOMLEFT", 0, 0);
 							</OnEnter>
 							<OnLeave>
 								PetBattlePrimaryAbilityTooltip:Hide();

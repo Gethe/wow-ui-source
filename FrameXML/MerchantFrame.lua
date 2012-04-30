@@ -22,9 +22,7 @@ end
 
 function MerchantFrame_OnEvent(self, event, ...)
 	if ( event == "MERCHANT_UPDATE" ) then
-		if ( self:IsVisible() ) then
-			MerchantFrame_Update();
-		end
+		self.update = true;
 	elseif ( event == "MERCHANT_CLOSED" ) then
 		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 		HideUIPanel(self);
@@ -780,7 +778,7 @@ function MerchantFrame_UpdateFilterString()
 		name = UnitClass("player");
 	elseif currFilter == LE_LOOT_FILTER_BOE then
 		name = ITEM_BIND_ON_EQUIP;
-	elseif currFilter ~= LE_LOOT_FILTER_ALL then -- Spec
+	else -- Spec
 		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1);
 		name = specName;
 	end
@@ -793,16 +791,17 @@ function MerchantFrame_InitFilter()
 	local currFilter = GetMerchantFilter();
 	local className = UnitClass("player");
 
-
+--[[
 	info.text = ALL;
 	info.checked = currFilter == LE_LOOT_FILTER_ALL;
 	info.arg1 = LE_LOOT_FILTER_ALL;
 	info.func = MerchantFrame_SetFilter;
 	UIDropDownMenu_AddButton(info);
-	
+]]
+	info.func = MerchantFrame_SetFilter;
 	
 	info.text = className;
-	info.checked = currFilter == LE_LOOT_FILTER_CLASS;
+	info.checked = (currFilter ~= LE_LOOT_FILTER_BOE);
 	info.arg1 = LE_LOOT_FILTER_CLASS;
 	UIDropDownMenu_AddButton(info);
 	
@@ -813,9 +812,17 @@ function MerchantFrame_InitFilter()
 		info.text = name;
 		info.arg1 = LE_LOOT_FILTER_SPEC1 + i - 1;
 		info.checked = currFilter == (LE_LOOT_FILTER_SPEC1 + i - 1);
+		info.leftPadding = 10;
 		UIDropDownMenu_AddButton(info);
 	end
+
+	info.text = ALL_SPECS;
+	info.checked = currFilter == LE_LOOT_FILTER_CLASS;
+	info.arg1 = LE_LOOT_FILTER_CLASS;
+	info.func = MerchantFrame_SetFilter;
+	UIDropDownMenu_AddButton(info);
 	
+	info.leftPadding = nil;
 	info.text = ITEM_BIND_ON_EQUIP;
 	info.checked = currFilter == LE_LOOT_FILTER_BOE;
 	info.arg1 = LE_LOOT_FILTER_BOE;

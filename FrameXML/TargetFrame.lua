@@ -927,9 +927,15 @@ function TargetofTargetHealthCheck(self)
 	end
 end
 
-function TargetFrame_CreateSpellbar(self, event)
+function TargetFrame_CreateSpellbar(self, event, boss)
 	local name = self:GetName().."SpellBar";
-	local spellbar = CreateFrame("STATUSBAR", name, self, "TargetSpellBarTemplate");
+	local spellbar;
+	if ( boss ) then
+		spellbar = CreateFrame("STATUSBAR", name, self, "BossSpellBarTemplate");
+	else
+		spellbar = CreateFrame("STATUSBAR", name, self, "TargetSpellBarTemplate");
+	end
+	spellbar.boss = boss;
 	spellbar:SetFrameLevel(_G[self:GetName().."TextureFrame"]:GetFrameLevel() - 1);
 	self.spellbar = spellbar;
 	self.auraRows = 0;
@@ -994,9 +1000,10 @@ function Target_Spellbar_OnEvent(self, event, ...)
 end
 
 function Target_Spellbar_AdjustPosition(self)
-	-- this may need to be reworked, but it covers all cases within 3 conditionals
 	local parentFrame = self:GetParent();
-	if ( parentFrame.haveToT ) then
+	if ( self.boss ) then
+		self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 10 );
+	elseif ( parentFrame.haveToT ) then
 		if ( self.buffsOnTop or parentFrame.auraRows <= 1 ) then
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -21 );
 		else

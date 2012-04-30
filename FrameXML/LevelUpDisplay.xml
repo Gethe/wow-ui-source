@@ -105,7 +105,12 @@
 				<Alpha change="-1" duration="1.0" order="1" />
 				<Scripts>
 					<OnFinished>
-						LevelUpDisplay:Hide();
+						local parent = LevelUpDisplay;
+						if ( parent.extraFrame ) then
+							parent.extraFrame:Hide();
+							parent.extraFrame = nil;
+						end
+						parent:Hide();
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -116,10 +121,10 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentBlackBg">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentBlackBg" parentKey="blackBg">
 					<Animations>
 						<AnimationGroup parentKey="grow">
-							<Scale scaleX="1.0" scaleY="0.001" duration="0.0" startDelay="1.5" order="1">
+							<Scale scaleX="1.0" scaleY="0.001" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
 								 <Origin point="BOTTOM">
 									<Offset x="0" y="0"/>
 								 </Origin>
@@ -143,13 +148,8 @@
 				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine2" parentKey="gLine2">
 					<Animations>
 						<AnimationGroup parentKey="grow">
-							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1"/>
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1"/>
 							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
-							<Scripts>
-								<OnPlay>
-									LevelUpDisplayBlackBg.grow:Play();
-								</OnPlay>
-							</Scripts>
 						</AnimationGroup>
 					</Animations>
 					<Anchors>
@@ -164,7 +164,7 @@
 					<Size x="418" y="7"/>
 					<Animations>
 						<AnimationGroup parentKey="grow">
-							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1"/>
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1"/>
 							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
 							<Scripts>
 								<OnPlay>
@@ -211,6 +211,115 @@
 								<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
 							</Anchors>
 						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentScenarioFrame" parentKey="scenarioFrame" alpha="0">
+				<Animations>
+					<AnimationGroup parentKey="newStage">
+						<Alpha change="1" duration="0.7" endDelay="1.5" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplay.scenarioFiligree:Show();
+								LevelUpDisplay.extraFrame = LevelUpDisplay.scenarioFiligree;
+								LevelUpDisplayGLine.grow:Play();
+								LevelUpDisplay.scenarioBits.fadeIn:Play();
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimOut();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Size x="418" y="72"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="DestinyFontHuge" justifyH="CENTER" parentKey="level">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-14"/>
+							</Anchors>
+							<Color r="1" g="0.914" b="0.682"/>
+						</FontString>
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="name">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="8"/>
+							</Anchors>
+							<Color r="1" g="0.831" b="0.381"/>
+						</FontString>
+						<FontString name="ao" inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="description">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-12"/>
+							</Anchors>
+							<Color r="1" g="0.831" b="0.381"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="scenarioBits" alpha="0" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="fadeIn">
+						<Alpha change="1" duration="0.7" startDelay="0.7" endDelay="0.8" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
+							<Size x="249" y="31"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+							<TexCoords left="0.12304688" right="0.60937500" top="0.07617188" bottom="0.13671875"/>
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
+							<Size x="249" y="31"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.12304688" right="0.60937500" top="0.13671875" bottom="0.07617188"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+							<TexCoords left="0.12304688" right="0.86914063" top="0.36328125" bottom="0.43164063"/>
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.12304688" right="0.86914063" top="0.43164063" bottom="0.36328125"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="scenarioFiligree" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="61" y="19"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="4"/>
+							</Anchors>
+							<TexCoords left="0.08007813" right="0.19921875" top="0.02148438" bottom="0.05859375"/>
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="61" y="19"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+							<TexCoords left="0.08007813" right="0.19921875" top="0.05859375" bottom="0.02148438"/>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
