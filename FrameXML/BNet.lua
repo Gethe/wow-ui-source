@@ -407,3 +407,60 @@ function BNet_SendReport()
 	local comments = BNetReportFrameCommentBox:GetText();
 	BNReportPlayer(reportFrame.presenceID, reportFrame.type, comments);
 end
+
+
+
+--This is used to track time played for an alert in Korea
+--This is used to track time played for an alert in Korea
+--This is used to track time played for an alert in Korea
+
+
+function TimeAlert_OnEvent(self, event, arg1)
+	if( not TimeAlertFrame:IsShown() ) then
+		TimeAlert_Start(arg1);
+	end
+end
+
+function TimeAlert_Start(time)
+	TimeAlertFrame:Show();
+	TimeAlertFrame.animIn:Play();
+	TimeAlertFrame:SetScript("OnUpdate", TimeAlert_OnUpdate);
+	TimeAlertFrame.timer = time / 1000;
+
+	BNToastFrame_UpdateAnchor(true);
+end
+
+
+function TimeAlert_Close()
+	TimeAlertFrame:SetScript("OnUpdate", nil);
+	TimeAlertFrame:Hide();
+end
+
+function TimeAlert_OnUpdate(self, elapsed)
+	TimeAlertFrame.timer = TimeAlertFrame.timer - elapsed;
+	if ( TimeAlertFrame.timer < 0 ) then
+		TimeAlertFrame.animOut:Play();
+		TimeAlertFrame.timer = 1000000;
+	end
+	
+	TimeAlertFrameText:SetFormattedText(TIME_PLAYED_ALERT, SecondsToTime(GetSessionTime(), true, true));
+	TimeAlertFrame:SetHeight(TimeAlertFrameBG:GetHeight());
+	
+	BNToastFrame_UpdateAnchor();
+	if ( BNToastFrame.topSide ) then
+		if ( BNToastFrame:IsShown() ) then
+			TimeAlertFrame:SetPoint("BOTTOM", BNToastFrame, "TOP", 0, 10);
+		else
+			TimeAlertFrame:SetPoint("BOTTOM", BNToastFrame, "BOTTOM", 0, 0);
+		end
+	else
+		if ( BNToastFrame:IsShown() ) then
+			TimeAlertFrame:SetPoint("TOP", BNToastFrame, "BOTTOM", 0, -10);
+		else
+			TimeAlertFrame:SetPoint("TOP", BNToastFrame, "TOP", 0, 0);
+		end
+	end
+end
+
+
+

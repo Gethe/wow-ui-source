@@ -32,6 +32,15 @@ function StartTimer_OnShow(self)
 	end
 end
 
+function GetPlayerFactionGroup()
+	local factionGroup = UnitFactionGroup("player");
+	-- this might be a rated BG or wargame and if so the player's faction might be altered
+	if ( not IsActiveBattlefieldArena() ) then
+		factionGroup = PLAYER_FACTION_GROUP[GetBattlefieldArenaFaction()];
+	end
+	
+	return factionGroup
+end
 
 function TimerTracker_OnEvent(self, event, ...)
 	
@@ -48,11 +57,19 @@ function TimerTracker_OnEvent(self, event, ...)
 				break;
 			end
 		end
-		
+
 		if isTimerRuning then
 			-- don't interupt the final count down
 			if not timer.startNumbers:IsPlaying() then
 				timer.time = timeSeconds;
+			end
+			
+			local factionGroup = GetPlayerFactionGroup();
+
+			if ( not timer.factionGroup or (timer.factionGroup ~= factionGroup) ) then
+				timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
+				timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
+				timer.factionGroup = factionGroup;
 			end
 		else
 			for a,b in pairs(self.timerList) do
@@ -92,15 +109,12 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer.glow1:SetTexture(timer.style.texture.."Glow");
 			timer.glow2:SetTexture(timer.style.texture.."Glow");
 			
-			local factionGroup = UnitFactionGroup("player");
-			-- this might be a rated BG or wargame and if so the player's faction might be altered
-			if ( not IsActiveBattlefieldArena() ) then
-				factionGroup = PLAYER_FACTION_GROUP[GetBattlefieldArenaFaction()];
-			end
+			local factionGroup = GetPlayerFactionGroup();
 			if ( factionGroup ) then
 				timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
 				timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
 			end
+			timer.factionGroup = factionGroup;
 			timer.updateTime = TIMER_UPDATE_INTERVAL;
 			timer:SetScript("OnUpdate", StartTimer_BigNumberOnUpdate);
 			timer:Show();

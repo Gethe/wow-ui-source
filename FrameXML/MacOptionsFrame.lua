@@ -137,6 +137,10 @@ function MacOptionsFrame_Save()
 		SetCVar(value.cvar, value.value, index);
 	end
 	
+	if (not MovieRecordingSupported()) then
+		return;
+	end
+
 	local resolution, xIndex, width;
 	resolution = UIDropDownMenu_GetSelectedValue(MacOptionsFrameResolutionDropDown);
 	xIndex = strfind(resolution, "x");

@@ -109,7 +109,7 @@ end
 local maxPerSecond = 0.7;
 local minPerSecond = 0.3;
 function UnitPowerBarAlt_OnUpdate(self, elapsed)
-	if ( self.smooth and self.value ~= self.displayedValue ) then
+	if ( self.smooth and  self.value and self.displayedValue and self.value ~= self.displayedValue ) then
 		local minPerSecond = max(minPerSecond, 1/self.range);	--Make sure we're moving at least 1 unit/second (will only matter if our maximum power is 3 or less);
 		
 		local diff = self.displayedValue - self.value;

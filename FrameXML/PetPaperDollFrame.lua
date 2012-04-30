@@ -105,7 +105,10 @@ function PetPaperDollFrame_OnShow(self)
 	CharacterFrameExpandButton.collapseTooltip = PET_STATS_COLLAPSE_TOOLTIP;
 	CharacterFrameExpandButton.expandTooltip = PET_STATS_EXPAND_TOOLTIP;
 	
-	PaperDoll_InitStatCategories(PETPAPERDOLL_STATCATEGORY_DEFAULTORDER, "petStatCategoryOrder", "petStatCategoriesCollapsed", "pet");
+	local hasPetUI, canGainXP = HasPetUI();
+	if ( hasPetUI ) then --We've already decided that we're going to be hidden, but it hasn't happened yet.
+		PaperDoll_InitStatCategories(PETPAPERDOLL_STATCATEGORY_DEFAULTORDER, "petStatCategoryOrder", "petStatCategoriesCollapsed", "pet");
+	end
 	
 	PetPaperDollFrame_Update();
 end

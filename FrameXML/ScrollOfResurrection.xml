@@ -213,7 +213,7 @@
 							</OnLoad>
 						</Scripts>
 						<ScrollChild>
-							<EditBox name="$parentEditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false" parentKey="editBox">
+							<EditBox name="$parentEditBox" multiLine="true" letters="250" countInvisibleLetters="true" autoFocus="false" parentKey="editBox">
 								<Size x="258" y="1"/>
 								<Layers>
 									<Layer level="BORDER">

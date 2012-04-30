@@ -411,4 +411,95 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+
+	<Frame name="TimeAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Animations>
+			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+				<Alpha change="-1" duration="0" order="1"/>
+				<Alpha change="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="animOut">
+				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							TimeAlert_Close();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Size x="250" y="50"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="FriendsFont_Normal" justifyH="LEFT">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+					<Color r="0.510" g="0.773" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentBG" useParentLevel="true">
+				<Size x="250" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOM" relativeTo="$parentText" x="0" y="-10"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\FriendsFrame\UI-Toast-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="12"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="12"/>
+					</EdgeSize>
+				</Backdrop>
+			</Frame>
+			<Frame name="$parentGlowFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentText" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentText" x="5" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentGlow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" hidden="true" parentKey="glow">
+							<Size>
+								<AbsDimension x="252" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-1" y="3"/>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="1" y="-3"/>
+								</Anchor>
+							</Anchors>
+							<Animations>
+								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+									<Alpha change="1" duration="0.2" order="1"/>
+									<Alpha change="-1" duration="0.5" order="2"/>
+									<Scripts>
+										<OnFinished>
+											self:GetParent():Hide();
+										</OnFinished>
+									</Scripts>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("SESSION_TIME_ALERT");
+			</OnLoad>
+			<OnEvent function="TimeAlert_OnEvent"/>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -197,7 +197,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentCapBar" inherits="CapProgressBarTemplate">
+					<Frame name="$parentCapBar" inherits="CapProgressBarTemplate" hidden="true">
 						<Size>
 							<AbsDimension x="254" y="20"/>
 						</Size>

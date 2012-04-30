@@ -226,10 +226,12 @@ function TargetFrame_OnEvent (self, event, ...)
 		FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
 		TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
 	elseif ( event == "CVAR_UPDATE" ) then
-		if ( arg1 == "SHOW_ALL_ENEMY_DEBUFFS_TEXT" and self:IsShown() ) then
+		if ( arg1 == "SHOW_ALL_ENEMY_DEBUFFS_TEXT" ) then
 			-- have to set uvar manually or it will be the previous value
-			SHOW_ALL_ENEMY_DEBUFFS_TEXT = GetCVar("showAllEnemyDebuffs");
-			TargetFrame_UpdateAuras(self);
+			SHOW_ALL_ENEMY_DEBUFFS = GetCVar("showAllEnemyDebuffs");
+			if ( self:IsShown() ) then
+				TargetFrame_UpdateAuras(self);
+			end
 		end		
 	end
 end
