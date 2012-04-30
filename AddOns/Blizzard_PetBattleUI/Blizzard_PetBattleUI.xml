@@ -1,0 +1,1155 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_PetBattleUI.lua"/>
+
+	<Texture name="DebugTexture" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
+	</Texture>
+	<Texture name="DebugTextureBlack" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Texture>
+	<Frame name="PetBattleUnitFrame" virtual="true">
+		<Scripts>
+			<OnLoad function="PetBattleUnitFrame_OnLoad"/>
+			<OnEvent function="PetBattleUnitFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Button name="PetBattlePetSelectionButtonTemplate" inherits="PetBattleUnitFrame" virtual="true">
+		<Size x="192" y="200"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Framing" inherits="BattleBar-SwapPetFrame">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="29" y="29"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="19" y="13"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HealthBarBG">
+					<Size x="128" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="ActualHealthBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
+					<Size x="128" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="1" b="0"/>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="-3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="NumberFontNormalYellow" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="-2" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="HealthText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="HealthDivider">
+					<Size x="128" y="2"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarBG" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarBG" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="DeadOverlay">
+					<Size x="171" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Framing" relativePoint="CENTER" x="1" y="-15"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SelectedTexture" inherits="BattleBar-SwapPetFrame-Highlight">
+					<Anchors>
+						<Anchor point="BOTTOM" x="2" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MouseoverHighlight" inherits="BattleBar-SwapPetFrame-Highlight" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="2" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="BorderDead" inherits="BattleBar-SwapPetFrame-DeadIcon">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<PlayerModel parentKey="PetModel">
+				<Size x="250" y="210"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-40" y="20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Shadow" inherits="BattleBar-SwapPetShadow" alpha="0.8">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-40" y="-40"/>
+								<Anchor point="TOPRIGHT" x="40" y="40"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+			</PlayerModel>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.healthBarWidth = 128;
+				self.showWhenDeadList = { self.DeadOverlay };
+				PetBattleUnitFrame_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				C_PetBattles.ChangePet(self:GetID());
+				PetBattlePetSelectionFrame_Hide(PetBattleFrame.BottomFrame.PetSelectionFrame);
+			</OnClick>
+			<OnEnter>
+				PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "BOTTOM", self, "TOP", 0, 0);
+				PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
+				PetBattlePrimaryUnitTooltip:Show();
+				if ( C_PetBattles.GetHealth(self.petOwner, self.petIndex) ~= 0 ) then
+					self.MouseoverHighlight:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
+					PetBattlePrimaryUnitTooltip:Hide();
+				end
+				self.MouseoverHighlight:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="PetBattleMiniUnitFrameAlly" inherits="PetBattleUnitFrame" virtual="true" hidden="true">
+		<Size x="38" y="38"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HealthBarBG">
+					<Size x="35" y="7"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="2" y="1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="ActualHealthBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
+					<Size x="35" y="7"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="2" y="1"/>
+					</Anchors>
+					<Color r="0" g="1" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="BorderAlive" inherits="BackupPet-Frame">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderDead" inherits="BackupPet-DeadFrame">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="HealthDivider">
+					<Size x="35" y="2"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.HealthBarBG" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.healthBarWidth = 35;
+				PetBattleUnitFrame_OnLoad(self);
+				self.hideWhenDeadList = { self.HealthBarBG, self.HealthDivider };
+			</OnLoad>
+			<OnEnter>
+				PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPLEFT", self, "TOPRIGHT", 0, 0);
+				PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
+				PetBattlePrimaryUnitTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
+					PetBattlePrimaryUnitTooltip:Hide();
+				end
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="PetBattleMiniUnitFrameEnemy" inherits="PetBattleUnitFrame" virtual="true" hidden="true">
+		<Size x="38" y="38"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HealthBarBG">
+					<Size x="35" y="7"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="2" y="1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="ActualHealthBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
+					<Size x="35" y="7"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+					</Anchors>
+					<Color r="0" g="1" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="BorderAlive" inherits="BackupPet-Frame">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderDead" inherits="BackupPet-DeadFrame">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="HealthDivider">
+					<Size x="35" y="2"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.HealthBarBG" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.healthBarWidth = 38;
+				PetBattleUnitFrame_OnLoad(self);
+				self.hideWhenDeadList = { self.HealthBarBG, self.HealthDivider };
+			</OnLoad>
+			<OnEnter>
+				PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPRIGHT", self, "TOPLEFT", 0, 0);
+				PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
+				PetBattlePrimaryUnitTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
+					PetBattlePrimaryUnitTooltip:Hide();
+				end
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Frame name="PetBattleUnitTooltipTemplate" inherits="PetBattleUnitFrame" virtual="true" hidden="true">
+		<Size x="260" y="190"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Size x="160" y="33"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="7" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SpeciesName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="7" y="-21"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="HealthBorder">
+					<Size x="232" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="-1" y="-6"/>
+					</Anchors>
+					<Color r="0.3" g="0.3" b="0.3"/>
+				</Texture>
+				<Texture parentKey="XPBorder">
+					<Size x="232" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBorder" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+					<Color r="0.3" g="0.3" b="0.3"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="HealthBG">
+					<Size x="230" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBorder" relativePoint="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+				<Texture parentKey="XPBG">
+					<Size x="230" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.XPBorder" relativePoint="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="ActualHealthBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
+					<Size x="230" y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBG" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="1" b="0"/>
+				</Texture>
+				<Texture parentKey="XPBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
+					<Size x="230" y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.XPBG" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.08203125" g="0.2578125" b="0.6640625"/> <!--That's right, no SigFigs. I'm sticking it to the man.-->
+				</Texture>
+				<Texture parentKey="Delimiter">
+					<Size x="250" y="2"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.XPBG" relativePoint="BOTTOM" x="0" y="-15"/>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2"/>
+				</Texture>
+				<FontString parentKey="StatsLabel" inherits="GameFontNormal" text="PET_BATTLE_STATS_LABEL" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Delimiter" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AbilitiesLabel" inherits="GameFontNormal" text="PET_BATTLE_ABILITIES_LABEL" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Delimiter" relativePoint="BOTTOMLEFT" x="90" y="-8"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="AttackIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StatsLabel" relativePoint="BOTTOMLEFT" x="3" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.5" top="0.0" bottom="0.5"/>
+				</Texture>
+				<FontString parentKey="AttackAmount" inherits="GameFontHighlightLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AttackIcon" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="DefenseIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AttackIcon" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0.0" bottom="0.5"/>
+				</Texture>
+				<FontString parentKey="DefenseAmount" inherits="GameFontHighlightLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.DefenseIcon" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="SpeedIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DefenseIcon" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
+				</Texture>
+				<FontString parentKey="SpeedAmount" inherits="GameFontHighlightLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SpeedIcon" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="AbilityIcon1">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesLabel" relativePoint="BOTTOMLEFT" x="3" y="-6"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="AbilityName1" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="120" y="28"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AbilityIcon1" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="AbilityIcon2">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AbilityIcon1" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="AbilityName2" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="120" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AbilityIcon2" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="AbilityIcon3">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AbilityIcon2" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="AbilityName3" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="120" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AbilityIcon3" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WeakToLabel" inherits="GameFontNormal" text="PET_BATTLE_WEAK_TO_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Delimiter" relativePoint="BOTTOMLEFT" x="110" y="-8"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="WeakTo1" file="Interface\PetBattles\PetIcon-Magical">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeakToLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+				<Texture parentKey="WeakTo2" file="Interface\PetBattles\PetIcon-Critter">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.WeakTo1" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+				<FontString parentKey="ResistantToLabel" inherits="GameFontNormal" text="PET_BATTLE_RESISTANT_TO_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeakToLabel" relativePoint="BOTTOMLEFT" x="0" y="-40"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ResistantTo1" file="Interface\PetBattles\PetIcon-Magical">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ResistantToLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+				<Texture parentKey="ResistantTo2" file="Interface\PetBattles\PetIcon-Critter">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ResistantTo1" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="HealthText" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ActualHealthBar" relativePoint="LEFT" x="100" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="XPText" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.XPBar" relativePoint="LEFT" x="100" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="NumberFontNormalYellow" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PetType">
+				<Size x="33" y="33"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true">
+							<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PetBattleUnitTooltip_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Button name="PetBattleActionButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="52" y="52"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="CooldownShadow" inherits="BattleBar-Countdown-Shadow" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Cooldown" inherits="GameFont_Gigantic" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedHighlight" inherits="BattleBar-Button-Highlight" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-18" y="18"/>
+				<Anchor point="BOTTOMRIGHT" x="18" y="-18"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<Scripts>
+			<OnEvent function="PetBattleActionButton_OnEvent"/>
+		</Scripts>
+	</Button>
+	<Button name="PetBattleAbilityButtonTemplate" inherits="PetBattleActionButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnLoad function="PetBattleAbilityButton_OnLoad"/>
+			<OnClick function="PetBattleAbilityButton_OnClick"/>
+			<OnEnter function="PetBattleAbilityButton_OnEnter"/>
+			<OnLeave function="PetBattleAbilityButton_OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="PetBattleOpeningFrame" parent="UIParent" setAllPoints="true" hidden="true">
+		<Frames>
+			<Frame parentKey="MyPet">
+				<Size x="120" y="400"/>
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PetBanner">
+						<Size x="410" y="70"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" inherits="DebugTexture" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon">
+									<Size x="70" y="70"/>
+									<Anchors>
+										<Anchor point="LEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Name" inherits="GameFontNormalLarge" text="PET NAME HERE">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<PlayerModel parentKey="PetModel">
+						<Size x="410" y="1024"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.PetBanner" relativePoint="TOP" x="0" y="40"/>
+						</Anchors>
+					</PlayerModel>
+				</Frames>
+			</Frame>
+			<Frame parentKey="EnemyPet">
+				<Size x="120" y="400"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PetBanner">
+						<Size x="410" y="70"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" inherits="DebugTexture" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon">
+									<Size x="70" y="70"/>
+									<Anchors>
+										<Anchor point="RIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-10" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<PlayerModel parentKey="PetModel">
+						<Size x="410" y="1024"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.PetBanner" relativePoint="TOP" x="0" y="40"/>
+						</Anchors>
+					</PlayerModel>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PetBattleOpeningFrame_OnLoad"/>
+			<OnEvent function="PetBattleOpeningFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PetBattleFrame" parent="UIParent" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopArtLeft" inherits="BattleHUD-Top">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopArtRight" inherits="BattleHUD-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.56152344" right="0.00097656" top="0.00195313" bottom="0.23242188"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="TopVersus" inherits="BattleHUD-Versus">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ActiveAlly" inherits="PetBattleUnitFrame">
+				<Size x="270" y="80"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopArtLeft" relativePoint="TOPLEFT" x="115" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Size x="68" y="68"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="13" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Border" inherits="MainPet-Frame">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="HealthBarBG" inherits="MainPet-HealthBarBG">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="76" y="6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="LevelUnderlay" inherits="MainPet-LevelBubble">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="-3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ActualHealthBar" inherits="MainPet-HealthBarFill">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.HealthBarBG" relativePoint="LEFT" x="5" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="HealthBarFrame" inherits="MainPet-HealthBarFrame">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" relativePoint="CENTER" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="HealthText" inherits="GameFontHighlightLarge" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Level" inherits="GameFontNormalSmall" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LevelUnderlay"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="PetType">
+						<Size x="36" y="36"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="12"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" inherits="MainPet-PetFamilyFrame" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon">
+									<Size x="33" y="33"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<TexCoords left="0.49218750" right="0.79687500" top="0.50390625" bottom="0.65625000"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.healthBarWidth = 145;
+						PetBattleUnitFrame_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
+						PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
+						PetBattlePrimaryUnitTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
+							PetBattlePrimaryUnitTooltip:Hide();
+						end
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button parentKey="ActiveEnemy" inherits="PetBattleUnitFrame">
+				<Size x="270" y="80"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TopArtRight" relativePoint="TOPRIGHT" x="-115" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Size x="68" y="68"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="-13" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Border" inherits="MainPet-Frame">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="HealthBarBG" inherits="MainPet-HealthBarBG">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-76" y="6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="LevelUnderlay" inherits="MainPet-LevelBubble">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ActualHealthBar" inherits="MainPet-HealthBarFill">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.HealthBarBG" relativePoint="RIGHT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="HealthBarFrame" inherits="MainPet-HealthBarFrame">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" relativePoint="CENTER" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="HealthText" inherits="GameFontHighlightLarge" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Level" inherits="GameFontNormalSmall" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LevelUnderlay"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="PetType">
+						<Size x="36" y="36"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="2" y="12"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" inherits="MainPet-PetFamilyFrame" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon">
+									<Size x="33" y="33"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.healthBarWidth = 145;
+						PetBattleUnitFrame_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+						PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
+						PetBattlePrimaryUnitTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
+							PetBattlePrimaryUnitTooltip:Hide();
+						end
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button parentKey="Ally2" inherits="PetBattleMiniUnitFrameAlly">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopArtLeft" relativePoint="TOPLEFT" x="65" y="-2"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Ally3" inherits="PetBattleMiniUnitFrameAlly">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Ally2" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Enemy2" inherits="PetBattleMiniUnitFrameEnemy">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TopArtRight" relativePoint="TOPRIGHT" x="-65" y="-2"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Enemy3" inherits="PetBattleMiniUnitFrameEnemy">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Enemy2" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="BottomFrame">
+				<Size x="500" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="RightEndCap" inherits="BattleBar-EndCap">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="55" y="24"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="LeftEndCap" inherits="BattleBar-EndCap">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-55" y="24"/>
+							</Anchors>
+							<TexCoords left="0.90136719" right="0.77734375" top="0.42578125" bottom="0.66992188"/>	
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" inherits="_BattleBar-Mid">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.LeftEndCap" relativePoint="TOPLEFT" x="50" y="0"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.RightEndCap" relativePoint="TOPRIGHT" x="-50" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="PetSelectionFrame" hidden="true">
+						<Size x="200" y="60"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="20"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="Pet1" inherits="PetBattlePetSelectionButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="20" y="0"/>
+								</Anchors>
+							</Button>
+							<Button parentKey="Pet2" inherits="PetBattlePetSelectionButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Pet1" relativePoint="RIGHT" x="10" y="0"/>
+								</Anchors>
+							</Button>
+							<Button parentKey="Pet3" inherits="PetBattlePetSelectionButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Pet2" relativePoint="RIGHT" x="10" y="0"/>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame parentKey="TurnTimer">
+						<Size x="473" y="27"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="TimerBG" inherits="Timer-BG"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Bar" inherits="Timer-Fill">
+									<Anchors>
+										<Anchor point="LEFT" x="108" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="ArtFrame" inherits="Timer-Frame">
+									<Anchors>
+										<Anchor point="CENTER" x="41" y="0"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="TimerText" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="40" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="SkipButton" inherits="UIPanelButtonTemplate" text="PET_BATTLE_PASS">
+								<Size x="80" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" x="25" y="0"/>
+								</Anchors>							
+								<Scripts>
+									<OnLoad>
+										PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SKIP);
+									</OnLoad>
+									<OnClick>
+										C_PetBattles.SkipTurn();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnUpdate function="PetBattleFrameTurnTimer_OnUpdate"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="FlowFrame">
+						<Size x="1024" y="56"/>
+						<Anchors>
+							<Anchor point="LEFT" x="35" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="LeftEndCap" inherits="BattleBar-ButtonBG-EndCap">
+									<Anchors>
+										<Anchor point="LEFT" x="-25" y="0"/>
+									</Anchors>
+									<TexCoords left="0.90332031" right="0.87988281" top="0.81250000" bottom="0.96484375"/>	
+								</Texture>
+								<Texture parentKey="RightEndCap" inherits="BattleBar-ButtonBG-EndCap">
+									<Anchors>
+										<Anchor point="RIGHT" x="15" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture inherits="_BattleBar-ButtonBGMid">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.LeftEndCap" relativePoint="TOPRIGHT" x="0" y="0"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.RightEndCap" relativePoint="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<CheckButton parentKey="SwitchPetButton" inherits="PetBattleActionButtonTemplate">
+						<!--Anchored in code via the FlowFrame-->
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="AdditionalIcon" inherits="BattleBar-SwapPetIcon">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SWITCH_PET);
+								self.Icon:SetTexture("Interface\\Icons\\INV_BOX_BIRDCAGE_01");
+								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
+							</OnLoad>
+							<OnClick>
+								local selectionFrame = self:GetParent().PetSelectionFrame;
+								local battleState = C_PetBattles.GetBattleState();
+								local selectedActionType = C_PetBattles.GetSelectedAction();
+								local mustSwap = ( ( not selectedActionType ) or ( selectedActionType == BATTLE_PET_ACTION_NONE ) ) and ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS );
+								if ( selectionFrame:IsShown() and ( not mustSwap ) ) then
+									PetBattlePetSelectionFrame_Hide(selectionFrame);
+								else
+									PetBattlePetSelectionFrame_Show(selectionFrame);
+								end
+							</OnClick>
+						</Scripts>
+						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+					</CheckButton>
+					<Button parentKey="CatchButton" inherits="PetBattleActionButtonTemplate">
+						<!--Anchored in code via the FlowFrame-->
+						<Scripts>
+							<OnLoad>
+								PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_TRAP);
+								self.Icon:SetTexture("Interface\\Icons\\ABILITY_HUNTER_TRAPLAUNCHER");
+								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
+							</OnLoad>
+							<OnClick function="PetBattleCatchButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="ForfeitButton" inherits="PetBattleActionButtonTemplate">
+						<!--Anchored in code via the FlowFrame-->
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetTexture("Interface\\Icons\\ACHIEVEMENT_BG_GETXFLAGS_NO_DIE");
+								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
+							</OnLoad>
+							<OnClick function="PetBattleForfeitButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Delimiter">
+						<!--Anchored in code via the FlowFrame-->
+						<Size x="15" y="56"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture inherits="BattleBar-ButtonBG-Divider">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="2"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="MicroButtonFrame">
+						<Size x="140" y="56"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="-30" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="LeftEndCap" inherits="BattleBar-ButtonBG-EndCap">
+									<Anchors>
+										<Anchor point="LEFT" x="-25" y="0"/>
+									</Anchors>
+									<TexCoords left="0.90332031" right="0.87988281" top="0.81250000" bottom="0.96484375"/>	
+								</Texture>
+								<Texture parentKey="RightEndCap" inherits="BattleBar-ButtonBG-EndCap">
+									<Anchors>
+										<Anchor point="RIGHT" x="20" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture inherits="_BattleBar-ButtonBGMid">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.LeftEndCap" relativePoint="TOPRIGHT" x="0" y="0"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.RightEndCap" relativePoint="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								UpdateMicroButtonsParent(self);
+								MoveMicroButtons("TOPLEFT", self, "TOPLEFT", -10, 27, true);
+							</OnShow>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PetBattleFrame_OnLoad"/>
+			<OnEvent function="PetBattleFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PetBattlePrimaryUnitTooltip" inherits="PetBattleUnitTooltipTemplate"/>
+	<Frame name="PetBattlePrimaryAbilityTooltip" inherits="SharedPetBattleAbilityTooltipTemplate">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-5" y="120"/>
+		</Anchors>
+	</Frame>
+</Ui>

@@ -356,7 +356,7 @@
 			</OnEnter>
 			<OnClick>
 				if ( self.isEvent ) then
-					GuildInfoEventButton_OnClick(self, button);
+					GuildEventButton_OnClick(self, button);
 				else
 					GuildNewsButton_OnClick(self, button);
 				end
@@ -758,7 +758,7 @@
 							</OnEditFocusGained>
 						</Scripts>
 					</EditBox>
-					<Button name="$parentButton" inherits="UIPanelButtonTemplate2" text="ACCEPT" parentKey="button">
+					<Button name="$parentButton" inherits="UIPanelButtonTemplate" text="ACCEPT" parentKey="button">
 						<Size x="80" y="22"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentEditBox" relativePoint="BOTTOM" x="0" y="-10"/>

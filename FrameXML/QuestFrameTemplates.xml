@@ -1,80 +1,40 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Frame name="QuestFramePanelTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
+		<Size x="384" y="512"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+				<Texture name="$parentBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="512" y="512"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>		
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight" name="$parentBotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>	
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentMaterialTopLeft">
-					<Size>
-						<AbsDimension x="239" y="241"/>
-					</Size>
+					<Size x="239" y="241"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="21" y="-75"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialTopRight">
-					<Size>
-						<AbsDimension x="64" y="241"/>
-					</Size>
+					<Size x="64" y="241"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotLeft">
-					<Size>
-						<AbsDimension x="239" y="128"/>
-					</Size>
+					<Size x="239" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotRight">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
+					<Size x="64" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
@@ -161,21 +121,13 @@
 		</Scripts>
 	</Button>
 	<Button name="QuestTitleButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="300" y="16"/>
-		</Size>
+		<Size x="300" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="4" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="4" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -187,15 +139,9 @@
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 		<ButtonText>
-			<Size>
-				<AbsDimension x="275" y="0"/>
-			</Size>
+			<Size x="275" y="0"/>
 			<Anchors>
-				<Anchor point="TOPLEFT">
-					<Offset>
-						<AbsDimension x="20" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" x="20" y="0"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="QuestFontLeft"/>
@@ -247,20 +193,12 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentReceiveText" inherits="QuestFont" text="EXPERIENCE_COLON">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentPoints" inherits="NumberFontNormalLarge" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentReceiveText" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="15" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentReceiveText" relativePoint="RIGHT" x="15" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -272,20 +210,12 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentFaction" inherits="QuestFont">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentAmount" inherits="NumberFontNormalLarge" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentFaction" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="15" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentFaction" relativePoint="RIGHT" x="15" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -298,35 +228,27 @@
 				<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Note_02">
 					<Size x="39" y="39"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentTitleFrameLeft" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size x="4" y="40"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
-							<Offset x="2" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 					<TexCoords left="0.078125" right="0.1171875" top="0.15625" bottom="0.828125"/>
 				</Texture>
 				<Texture name="$parentTitleFrameCenter" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size x="200" y="40"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTitleFrameLeft" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentTitleFrameLeft" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.1171875" right="0.828125" top="0.15625" bottom="0.828125"/>
 				</Texture>
 				<Texture file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size x="11" y="40"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTitleFrameCenter" relativePoint="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentTitleFrameCenter" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.828125" right="0.9140625" top="0.15625" bottom="0.828125"/>
 				</Texture>
@@ -335,19 +257,47 @@
 				<FontString name="$parentTitleLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="REWARD_TITLE">
 					<Size x="200" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitleFrameLeft">
-							<Offset x="8" y="-9"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitleFrameLeft" x="8" y="-9"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentTitle" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitleLabel" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitleLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
- </Ui>
+	<ScrollFrame name="QuestScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Size x="300" y="334"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="102"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+					</Anchors>
+					<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="106"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
+					<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ScrollFrame>
+</Ui>

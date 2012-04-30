@@ -10,21 +10,14 @@ function CompactUnitFrame_OnLoad(self)
 	end
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("UNIT_HEALTH");
-	self:RegisterEvent("UNIT_MAXHEALTH");
-	self:RegisterEvent("UNIT_POWER");
-	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterEvent("UNIT_POWER_BAR_SHOW");
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
-	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("UNIT_CONNECTION");
-	self:RegisterEvent("UNIT_HEAL_PREDICTION");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
@@ -34,8 +27,8 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT");
 	self:RegisterEvent("INCOMING_RESURRECT_CHANGED");
+	-- also see CompactUnitFrame_UpdateUnitEvents for more events
 	
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
@@ -75,9 +68,6 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateHealth(self);
 			CompactUnitFrame_UpdateStatusText(self);
 			CompactUnitFrame_UpdateHealPrediction(self);
-			if ( event == "UNIT_HEALTH" ) then	--To make sure we fix 283903 (some sort of race condition). Try removing later.
-				CompactUnitFrame_UpdateHealthColor(self);
-			end
 		elseif ( event == "UNIT_MAXPOWER" ) then
 			CompactUnitFrame_UpdateMaxPower(self);
 			CompactUnitFrame_UpdatePower(self);
@@ -172,7 +162,24 @@ end
 
 function CompactUnitFrame_RegisterEvents(frame)
 	frame:SetScript("OnEvent", CompactUnitFrame_OnEvent);
+	CompactUnitFrame_UpdateUnitEvents(frame);
 	frame:SetScript("OnUpdate", CompactUnitFrame_OnUpdate);
+end
+
+function CompactUnitFrame_UpdateUnitEvents(frame)
+	local unit = frame.unit;
+	local displayedUnit;
+	if ( unit ~= frame.displayedUnit ) then
+		displayedUnit = frame.displayedUnit;
+	end
+	frame:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_POWER", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)
@@ -249,12 +256,14 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 			local prefix, id, suffix = string.match(frame.unit, "([^%d]+)([%d]*)(.*)")
 			frame.displayedUnit = prefix.."pet"..id..suffix;
 			frame:SetAttribute("unit", frame.displayedUnit);
+			CompactUnitFrame_UpdateUnitEvents(frame);
 		end
 	else
 		if ( frame.inVehicle ) then
 			frame.inVehicle = false;
 			frame.displayedUnit = frame.unit;
 			frame:SetAttribute("unit", frame.displayedUnit);
+			CompactUnitFrame_UpdateUnitEvents(frame);
 		end
 	end
 end
@@ -640,21 +649,21 @@ function CompactUnitFrame_UpdateDebuffs(frame)
 	index = 1;
 	--Now, we display all normal debuffs.
 	if ( frame.optionTable.displayNonBossDebuffs ) then
-		while ( frameNum <= maxDebuffs ) do
-			local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
-			if ( debuffName ) then
-				if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter) and
-					not CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter)) then
-					local debuffFrame = frame.debuffFrames[frameNum];
-					CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
-					CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
-					frameNum = frameNum + 1;
-				end
-			else
-				break;
+	while ( frameNum <= maxDebuffs ) do
+		local debuffName = UnitDebuff(frame.displayedUnit, index, filter);
+		if ( debuffName ) then
+			if ( CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossDebuff(frame.displayedUnit, index, filter) and
+				not CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter)) then
+				local debuffFrame = frame.debuffFrames[frameNum];
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter);
+				CompactUnitFrame_UtilSetDebuffBossDebuff(debuffFrame, false);
+				frameNum = frameNum + 1;
 			end
-			index = index + 1;
+		else
+			break;
 		end
+		index = index + 1;
+	end
 	end
 	
 	for i=frameNum, frame.maxDebuffs do

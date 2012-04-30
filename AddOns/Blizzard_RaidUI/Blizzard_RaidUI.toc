@@ -1,7 +1,0 @@
-## Interface: 40300
-## Title: Blizzard Raid UI
-## Secure: 1
-## LoadOnDemand: 1
-## SavedVariablesPerCharacter: RAID_PULLOUT_POSITIONS, RAID_SINGLE_POSITIONS
-Blizzard_RaidUI.xml
-Localization.lua

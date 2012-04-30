@@ -85,6 +85,16 @@ function FlowContainer_GetUsedBounds(container)	--Return x, y
 	end
 end
 
+function FlowContainer_SetStartingOffset(container, xOffset, yOffset)
+	if ( container.flowOrientation == "horizontal" ) then
+		container.startingSecondaryOffset = xOffset;
+		container.startingPrimaryOffset = -yOffset;
+	else
+		container.startingSecondaryOffset = -yOffset;
+		container.startingPrimaryOffset = xOffset;
+	end
+end
+
 --:GetWidth() and :GetHeight() are used in this function. --meta-comment: Comment added in case anyone ever searches all files for these.
 function FlowContainer_DoLayout(container)
 	if ( container.flowPauseUpdates ) then
@@ -107,7 +117,7 @@ function FlowContainer_DoLayout(container)
 	
 	--To make things easier to understand, I'll comment this as if it was horizontal. To see the vertical comments, just turn your head 90 degrees.
 	local currentSecondaryLine, currentPrimaryLine = 1, 1;
-	local currentSecondaryOffset, currentPrimaryOffset = 0, 0;
+	local currentSecondaryOffset, currentPrimaryOffset = container.startingSecondaryOffset or 0, container.startingPrimaryOffset or 0;
 	local lineMaxSize = 0;
 	local maxSecondaryOffset = 0;
 	local atomicAddStart = nil;

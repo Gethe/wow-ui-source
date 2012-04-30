@@ -29,7 +29,7 @@ end
 
 
 function IsNormalActionBarState()
-	return MainMenuBar.state == "player" or (MainMenuBar.state=="bonus" and MainMenuBar:IsShown());
+	return MainMenuBar:IsShown();
 end
 
 function MultiActionBar_Update ()

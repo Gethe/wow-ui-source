@@ -734,7 +734,7 @@ function VideoOptionsPanel_OnShow(self)
 end
 
 function Graphics_OnLoad (self)
-	if(IsGMClient() and InGlue()) then
+	if(nil and IsGMClient() and InGlue()) then
 		local qualityNames =
 		{
 			VIDEO_QUALITY_LABEL1,

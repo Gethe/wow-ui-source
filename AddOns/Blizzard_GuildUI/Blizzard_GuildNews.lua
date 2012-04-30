@@ -185,7 +185,7 @@ function GuildNewsButton_OnEnter(self)
 		for i = 1, GetAchievementNumCriteria(achievementId) do
 			local criteriaString, _, _, _, _, _, flags = GetAchievementCriteriaInfo(achievementId, i);
 			-- skip progress bars
-			if ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) ~= ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
+			if ( bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) ~= EVALUATION_TREE_FLAG_PROGRESS_BAR ) then
 				if ( leftCriteria ) then
 					if ( firstCriteria ) then
 						GameTooltip:AddLine(" ");

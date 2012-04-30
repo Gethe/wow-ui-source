@@ -1,9 +1,0 @@
-## Interface: 40300
-## Title: Blizzard Dungeon Journal
-## Notes:  Show Boss Info
-## Secure: 1
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-Blizzard_EncounterJournal.xml
-Localization.lua

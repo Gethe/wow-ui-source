@@ -19,16 +19,18 @@ function TotemFrame_Update()
 	end
 	
 	local hasPet = PetFrame and PetFrame:IsShown();
-	if ( class == "PALADIN" or class == "WARLOCK" or class == "DEATHKNIGHT"  ) then
+	if ( class == "PALADIN" or class == "DEATHKNIGHT"  ) then
 		if ( hasPet ) then
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
 		else
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 67, -63);
 		end
+	elseif ( class == "WARLOCK" ) then
+		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
 	elseif ( class == "DRUID" ) then
 		local form  = GetShapeshiftFormID();
 		if ( form == MOONKIN_FORM or not form ) then
-			if ( GetPrimaryTalentTree() == 1 ) then
+			if ( GetSpecialization() == 1 ) then
 				TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 115, -88);
 			else
 				TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);
@@ -38,6 +40,10 @@ function TotemFrame_Update()
 		else
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);
 		end
+	elseif ( class == "MONK" ) then
+		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
+	elseif ( class == "MAGE" ) then
+		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 50, -75);
 	elseif ( hasPet  and class ~= "SHAMAN" ) then
 		TotemFrame:Hide();
 		return;

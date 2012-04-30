@@ -12,7 +12,7 @@ end
 
 function ShowPartyFrame()
 	for i=1, MAX_PARTY_MEMBERS, 1 do
-		if ( GetPartyMember(i) ) then
+		if ( UnitExists("party"..i) ) then
 			_G["PartyMemberFrame"..i]:Show();
 		end
 	end
@@ -80,14 +80,12 @@ function PartyMemberFrame_OnLoad (self)
 	PartyMemberFrame_UpdateMember(self);
 	PartyMemberFrame_UpdateLeader(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	self:RegisterEvent("MUTELIST_UPDATE");
 	self:RegisterEvent("IGNORELIST_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
-	self:RegisterEvent("UNIT_AURA");
-	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("VOICE_START");
 	self:RegisterEvent("VOICE_STOP");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -101,11 +99,13 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("UNIT_PHASE");
-
+	local id = self:GetID();
+	self:RegisterUnitEvent("UNIT_AURA", "party"..id, "partypet"..id);
+	self:RegisterUnitEvent("UNIT_PET",  "party"..id, "partypet"..id);
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
 	end
-	SecureUnitButton_OnLoad(self, "party"..self:GetID(), showmenu);
+	SecureUnitButton_OnLoad(self, "party"..id, showmenu);
 	
 	PartyMemberFrame_UpdateArt(self);
 end
@@ -117,7 +117,7 @@ function PartyMemberFrame_UpdateMember (self)
 		return;
 	end
 	local id = self:GetID();
-	if ( GetPartyMember(id) ) then
+	if ( UnitExists("party"..id) ) then
 		self:Show();
 
 		UnitFrame_Update(self);
@@ -191,7 +191,7 @@ function PartyMemberFrame_UpdateLeader (self)
 	local leaderIcon = _G["PartyMemberFrame"..id.."LeaderIcon"];
 	local guideIcon = _G["PartyMemberFrame"..id.."GuideIcon"];
 
-	if( GetPartyLeaderIndex() == id ) then
+	if( UnitIsGroupLeader("party"..id) ) then
 		if ( HasLFGRestrictions() ) then
 			guideIcon:Show();
 			leaderIcon:Hide();
@@ -213,7 +213,7 @@ function PartyMemberFrame_UpdatePvPStatus (self)
 	if ( UnitIsPVPFreeForAll(unit) ) then
 		icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
 		icon:Show();	
-	elseif ( factionGroup and UnitIsPVP(unit) ) then
+	elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(unit) ) then
 		icon:SetTexture("Interface\\GroupFrame\\UI-Group-PVP-"..factionGroup);
 		icon:Show();
 	else
@@ -247,7 +247,7 @@ function PartyMemberFrame_UpdateVoiceStatus (self)
 	
 	if ( (instanceType == "pvp") or (instanceType == "arena") ) then
 		mode = "Battleground";
-	elseif ( GetNumRaidMembers() > 0 ) then
+	elseif ( IsInRaid() ) then
 		mode = "raid";
 	else
 		mode = "party";
@@ -326,11 +326,11 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	local speaker = _G[self:GetName().."SpeakerFrame"];
 	
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( GetPartyMember(self:GetID()) ) then
+		if ( UnitExists("party"..self:GetID()) ) then
 			PartyMemberFrame_UpdateMember(self);
 			PartyMemberFrame_UpdateOnlineStatus(self);
 		end
-	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);
@@ -375,7 +375,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		 event == "READY_CHECK_CONFIRM" ) then
 		PartyMemberFrame_UpdateReadyCheck(self);
 	elseif ( event == "READY_CHECK_FINISHED" ) then
-		if (GetPartyMember(self:GetID())) then
+		if (UnitExists("party"..self:GetID())) then
 			local finishTime = DEFAULT_READY_CHECK_STAY_TIME;
 			if ( GetDisplayedAllyFrames() ~= "party" ) then
 				finishTime = 0;
@@ -555,12 +555,12 @@ function UpdatePartyMemberBackground ()
 	if ( not PartyMemberBackground ) then
 		return;
 	end
-	local numMembers = GetNumPartyMembers();
+	local numMembers = GetNumSubgroupMembers();
 	if ( numMembers > 0 and SHOW_PARTY_BACKGROUND == "1" and GetDisplayedAllyFrames() == "party" ) then
 		if ( _G["PartyMemberFrame"..numMembers.."PetFrame"]:IsShown() ) then
-			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -21);
+			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..numMembers, "BOTTOMLEFT", -5, -21);
 		else
-			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..GetNumPartyMembers(), "BOTTOMLEFT", -5, -5);
+			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..numMembers, "BOTTOMLEFT", -5, -5);
 		end
 		PartyMemberBackground:Show();
 	else

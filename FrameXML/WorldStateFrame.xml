@@ -1089,7 +1089,7 @@
 					<OnClick function="WorldStateScoreFrameTab_OnClick"/>
 				</Scripts>
             </Button>
-			<Button name="WorldStateScoreFrameLeaveButton" inherits="UIPanelButtonTemplate2" text="LEAVE_BATTLEGROUND">
+			<Button name="WorldStateScoreFrameLeaveButton" inherits="UIPanelButtonTemplate" text="LEAVE_BATTLEGROUND">
 				<Size>
 					<AbsDimension x="153" y="21"/>
 				</Size>

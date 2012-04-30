@@ -78,7 +78,7 @@ StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	button2 = NO,
 	OnAccept = function (self)
 		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-		if ( talentGroup == GetActiveTalentGroup() ) then
+		if ( talentGroup == GetActiveSpecGroup() ) then
 			RemoveGlyphFromSocket(self.data.id);
 		end
 	end,
@@ -1248,7 +1248,7 @@ StaticPopupDialogs["DEATH"] = {
 		end
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( IsFalling() and (not IsOutOfBounds()) ) then
+		if ( (IsFalling() and (not IsOutOfBounds())) or IsEncounterInProgress() ) then
 			self.button1:Disable();
 			self.button2:Disable();
 		elseif ( HasSoulstone() ) then	--Bug ID 153643

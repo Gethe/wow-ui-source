@@ -273,7 +273,7 @@
 	</Button>
 
 	<!-- Calendar Event Templates -->
-	<Button name="CalendarEventButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
+	<Button name="CalendarEventButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Size x="95" y="22"/>
 	</Button>
 	<Button name="CalendarEventCloseButtonTemplate" inherits="CalendarCloseButtonTemplate" virtual="true">

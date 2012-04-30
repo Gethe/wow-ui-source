@@ -19,12 +19,12 @@ local heroicIcon = "|TInterface\\LFGFrame\\UI-LFG-ICON-HEROIC:16:13:-5:-3:32:32:
 function LFRFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_LFG_LIST");
 	self:RegisterEvent("LFG_UPDATE");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	
 	
 	LFRFrame_SetActiveTab(1);
 	
-	self.lastInGroup = GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
+	self.lastInGroup = IsInGroup();
 	
 	for i = 2, 19 do
 		local button = CreateFrame("Button", "LFRBrowseFrameListButton"..i, LFRBrowseFrame, "LFRBrowseButtonTemplate");
@@ -42,9 +42,9 @@ function LFRFrame_OnEvent(self, event, ...)
 		if ( LFRBrowseFrame:IsVisible() ) then
 			LFRBrowseFrameList_Update();
 		end
-	elseif ( event == "LFG_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "LFG_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
 		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
-		local inGroup = GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
+		local inGroup = IsInGroup();
 		if ( inGroup ~= self.lastInGroup ) then
 			self.lastInGroup = inGroup;
 			LFRQueueFrameComment:SetText("");
@@ -69,7 +69,7 @@ end
 function LFRQueueFrameFindGroupButton_Update()
 	local mode, subMode = GetLFGMode();
 	if ( mode == "listed" ) then
-		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+		if ( IsInGroup() ) then
 			LFRQueueFrameFindGroupButton:SetText(UNLIST_MY_GROUP);
 			LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:SetText(UNLIST_MY_GROUP);
 		else
@@ -77,7 +77,7 @@ function LFRQueueFrameFindGroupButton_Update()
 			LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:SetText(UNLIST_ME);
 		end
 	else
-		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+		if ( IsInGroup() ) then
 			LFRQueueFrameFindGroupButton:SetText(LIST_MY_GROUP);
 		else
 			LFRQueueFrameFindGroupButton:SetText(LIST_ME);
@@ -107,7 +107,7 @@ function LFRQueueFrameFindGroupButton_Update()
 end
 
 function LFR_CanQueueForLockedInstances()
-	return GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0;
+	return IsInGroup();
 end
 
 function LFR_CanQueueForRaidLockedInstances()
@@ -115,7 +115,7 @@ function LFR_CanQueueForRaidLockedInstances()
 end
 
 function LFR_CanQueueForMultiple()
-	return (GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0);
+	return (not IsInGroup());
 end
 
 function LFRQueueFrame_SetRoles()

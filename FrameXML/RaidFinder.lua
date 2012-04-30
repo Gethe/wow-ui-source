@@ -18,16 +18,15 @@ end
 function RaidFinderFrame_OnShow(self)
 	RequestLFDPlayerLockInfo();
 	RequestLFDPartyLockInfo();
-	ButtonFrameTemplate_HideAttic(self:GetParent());
-	self:GetParent().TitleText:SetText(RAID_FINDER);
 	RaidFinderFrameFindRaidButton_Update();
 	RaidFinderFrame_UpdateBackfill(true);
-	self:GetParent().Inset:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", 2, 284);
-	self:GetParent().Inset:SetPoint("BOTTOMRIGHT", self:GetParent(), "BOTTOMRIGHT", -2, 26);
 	RaidFinderFrame_UpdateTab();
+	PlaySound("igCharacterInfoOpen");
 end
 
+-- unused now, might need this logic for Group Finder
 function RaidFinderFrame_UpdateTab()
+	--[[
 	local enableTab = false;
 	local isPlayerEligible = false;
 	for i = 1, GetNumRFDungeons() do
@@ -61,6 +60,7 @@ function RaidFinderFrame_UpdateTab()
 			RaidParentFrame_SetView(2);
 		end
 	end
+	]]--
 end
 
 -- returns true if the inelibile frame is shown
@@ -99,7 +99,7 @@ function RaidFinderQueueFrameIneligibleFrame_UpdateFrame(self)
 			end
 		else
 			self.description:SetText(NO_RF_WHILE_LFR);
-			if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+			if ( IsInGroup() ) then
 				self.leaveQueueButton:SetText(UNLIST_MY_GROUP);
 			else
 				self.leaveQueueButton:SetText(UNLIST_ME);
@@ -225,7 +225,7 @@ function RaidFinderFrameFindRaidButton_Update()
 	if ( queueType == "raid" and ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) ) then
 		RaidFinderFrameFindRaidButton:SetText(LEAVE_QUEUE);
 	else
-		if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+		if ( IsInGroup() ) then
 			RaidFinderFrameFindRaidButton:SetText(JOIN_AS_PARTY);
 		else
 			RaidFinderFrameFindRaidButton:SetText(FIND_A_GROUP);
@@ -286,7 +286,7 @@ function RaidFinderQueueFrameCooldownFrame_OnLoad(self)
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
 	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 end
 
 function RaidFinderQueueFrameCooldownFrame_OnEvent(self, event, ...)
@@ -313,11 +313,14 @@ function RaidFinderQueueFrameCooldownFrame_Update()
 	
 	cooldownFrame.myExpirationTime = cooldownExpiration;
 
-	local tokenPrefix = "raid";
-	local numMembers = GetNumRaidMembers();
-	if ( numMembers == 0 ) then
+	local tokenPrefix;
+	local numMembers;
+	if ( IsInRaid() ) then
+		tokenPrefix = "raid";
+		numMembers = GetNumGroupMembers();
+	else
 		tokenPrefix = "party";
-		numMembers = GetNumPartyMembers();
+		numMembers = GetNumSubgroupMembers();
 	end
 	
 	local numCooldowns = 0;
@@ -411,9 +414,11 @@ end
 function RaidFinderQueueFrameCooldownAdditionalPlayers_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(DESERTER);
-	for i=1, GetNumRaidMembers() do
-		if ( UnitHasLFGDeserter("raid"..i) ) then
-			GameTooltip:AddLine(UnitName("raid"..i), 1, 1, 1);
+	if ( IsInRaid() ) then
+		for i=1, GetNumGroupMembers() do
+			if ( UnitHasLFGDeserter("raid"..i) ) then
+				GameTooltip:AddLine(UnitName("raid"..i), 1, 1, 1);
+			end
 		end
 	end
 	GameTooltip:Show();

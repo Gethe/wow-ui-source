@@ -3,9 +3,6 @@ CASTING_BAR_FLASH_STEP = 0.2;
 CASTING_BAR_HOLD_TIME = 1;
 
 function CastingBarFrame_OnLoad (self, unit, showTradeSkills, showShield)
-	self:RegisterEvent("UNIT_SPELLCAST_START");
-	self:RegisterEvent("UNIT_SPELLCAST_STOP");
-	self:RegisterEvent("UNIT_SPELLCAST_FAILED");
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED");
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
@@ -14,6 +11,9 @@ function CastingBarFrame_OnLoad (self, unit, showTradeSkills, showShield)
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
 	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
+	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
 
 	self.unit = unit;
 	self.showTradeSkills = showTradeSkills;

@@ -197,7 +197,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("MUTELIST_UPDATE");
 	self:RegisterEvent("WHO_LIST_UPDATE");
 	self:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED");
 	self:RegisterEvent("BN_FRIEND_INFO_CHANGED");
@@ -875,7 +875,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "FRIENDLIST_SHOW" ) then
 		FriendsList_Update();
 		FriendsFrame_Update();
-	elseif ( event == "FRIENDLIST_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
 		FriendsList_Update();
 	elseif ( event == "BN_FRIEND_LIST_SIZE_CHANGED" or event == "BN_FRIEND_INFO_CHANGED" ) then
 		BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
@@ -1075,6 +1075,10 @@ function FriendsFrame_GroupInvite()
 end
 
 function ToggleFriendsFrame(tab)
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	if ( not tab ) then
 		if ( FriendsFrame:IsShown() ) then
 			HideUIPanel(FriendsFrame);
@@ -1114,6 +1118,10 @@ function WhoFrameEditBox_OnEnterPressed(self)
 end
 
 function ToggleFriendsPanel()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	local friendsTabShown =
 		FriendsFrame:IsShown() and
 		PanelTemplates_GetSelectedTab(FriendsFrame) == 1 and
@@ -1138,6 +1146,10 @@ function ShowWhoPanel()
 end
 
 function ToggleIgnorePanel()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	local ignoreTabShown =
 		FriendsFrame:IsShown() and
 		PanelTemplates_GetSelectedTab(FriendsFrame) == 1 and
@@ -2130,8 +2142,8 @@ function CanGroupWithAccount(presenceID)
 end
 
 function FriendsFrame_HasInvitePermission()
-	if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
-		if ( not IsPartyLeader() and not IsRaidOfficer() ) then
+	if ( IsInGroup() ) then
+		if ( not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") ) then
 			return false;
 		end
 	end

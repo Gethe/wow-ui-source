@@ -483,12 +483,12 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentRace9" relativePoint="TOPRIGHT" x="13"/>
 						</Anchors>
 					</Button>
-					<Button name="$parentRace11" inherits="ArchaeologyRaceTemplate" id="10" parentKey="race11">
+					<Button name="$parentRace11" inherits="ArchaeologyRaceTemplate" id="11" parentKey="race11">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRace10" relativePoint="TOPRIGHT" x="13"/>
 						</Anchors>
 					</Button>
-					<Button name="$parentRace12" inherits="ArchaeologyRaceTemplate" id="10" parentKey="race12">
+					<Button name="$parentRace12" inherits="ArchaeologyRaceTemplate" id="12" parentKey="race12">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRace11" relativePoint="TOPRIGHT" x="13"/>
 						</Anchors>
@@ -748,7 +748,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentBackButton" inherits="UIPanelButtonTemplate2" text="BACK" parentKey="backButton">
+					<Button name="$parentBackButton" inherits="UIPanelButtonTemplate" text="BACK" parentKey="backButton">
 						<Size x="80" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="30" y="40"/>
@@ -789,7 +789,7 @@
 									<Anchor point="LEFT" relativeTo="$parentKeystone3" relativePoint="RIGHT" x="10"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentSolveButton" inherits="UIPanelButtonTemplate2" text="SOLVE" parentKey="solveButton">
+							<Button name="$parentSolveButton" inherits="UIPanelButtonTemplate" text="SOLVE" parentKey="solveButton">
 								<Size x="90" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-10" y="20"/>

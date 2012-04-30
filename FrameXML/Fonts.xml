@@ -233,6 +233,18 @@
 		</FontHeight>
 		<Color r="1" g=".82" b="0"/>
 	</Font>
+	<Font name="DestinyFontLarge" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="18"/>
+		</FontHeight>
+		<Color r="0.1" g="0.1" b="0.1"/>
+	</Font>
+	<Font name="DestinyFontHuge" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="32"/>
+		</FontHeight>
+		<Color r="0.1" g="0.1" b="0.1"/>
+	</Font>
 	<Font name="QuestFont_Shadow_Small" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<Shadow>
 			<Offset>

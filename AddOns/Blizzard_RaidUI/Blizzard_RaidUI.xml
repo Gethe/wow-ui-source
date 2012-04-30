@@ -188,7 +188,7 @@
 				end
 			</OnClick>
 			<OnDragStart>
-				if ( IsRaidLeader() or IsRaidOfficer() ) then
+				if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 					if ( IsShiftKeyDown() ) then
 						--self.keypressed = "1";
 						--RaidPulloutButton_OnDragStart(RaidPullout_GeneratePulloutFrame(self.name, nil));
@@ -201,7 +201,7 @@
 				end
 			</OnDragStart>
 			<OnDragStop>
-				if ( IsRaidLeader() or IsRaidOfficer() ) then
+				if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 					if ( self.keypressed ) then
 						RaidPulloutStopMoving();
 					else
@@ -211,18 +211,7 @@
 					RaidPulloutStopMoving();
 				end
 			</OnDragStop>
-			<OnEnter>
-				RaidGroupButton_OnEnter(self);
-				if ( RaidFrame:IsMouseOver() ) then
-					GameTooltip:AddLine("\n");
-					if ( IsRaidLeader() or IsRaidOfficer() ) then
-						GameTooltip:AddLine(TOOLTIP_RAID_SHIFT_TIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
-					else
-						GameTooltip:AddLine(TOOLTIP_RAID_DRAG_TIP, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
-					end
-					GameTooltip:Show();
-				end
-			</OnEnter>
+			<OnEnter function="RaidGroupButton_OnEnter"/>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
@@ -688,7 +677,7 @@
 		</HitRectInsets>
 		<Scripts>
 			<OnLoad>
-				self:RegisterEvent("RAID_ROSTER_UPDATE");
+				self:RegisterEvent("GROUP_ROSTER_UPDATE");
 				self:RegisterEvent("UNIT_PET");
 				self:RegisterEvent("UNIT_NAME_UPDATE");
 				self:RegisterEvent("READY_CHECK");
@@ -731,12 +720,12 @@
 		<Scripts>
 			<OnLoad>
 				_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL);
-				self:RegisterEvent("RAID_ROSTER_UPDATE");
+				self:RegisterEvent("GROUP_ROSTER_UPDATE");
 				self:RegisterEvent("PARTY_LEADER_CHANGED");
 			</OnLoad>
 			<OnEvent>
 				self:SetChecked(IsEveryoneAssistant());
-				if ( IsRaidLeader() ) then
+				if ( UnitIsGroupLeader("player") ) then
 					self:Enable();
 					self.text:SetFontObject(GameFontNormalSmall);
 				else
@@ -773,9 +762,14 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
+	<Button name="RaidClassButton14"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="16"/>
+		</Anchors>
+	</Button>
 	<Button name="RaidClassButton13"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="13">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="20"/>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton14" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton12"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="12">

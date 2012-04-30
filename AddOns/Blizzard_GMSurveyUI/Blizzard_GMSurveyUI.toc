@@ -1,6 +1,0 @@
-## Interface: 40300
-## Title: Blizzard GM Survey UI
-## Secure: 1
-## LoadOnDemand: 1
-Blizzard_GMSurveyUI.xml
-Localization.lua

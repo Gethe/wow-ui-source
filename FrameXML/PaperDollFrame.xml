@@ -495,8 +495,8 @@
 							<OnEvent>
 								if ( event == "UNIT_PORTRAIT_UPDATE" ) then
 									local unit = ...;
-									if ( unit == "player" ) then
-										SetPortraitTexture(self.Icon, unit);
+									if ( not unit or unit == "player" ) then
+										SetPortraitTexture(self.Icon, "player");
 									end
 								elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 									SetPortraitTexture(self.Icon, "player");
@@ -789,7 +789,7 @@
 					</Button>
 					<Button name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="106" y="16"/>
+							<Anchor point="BOTTOMLEFT" x="130" y="16"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -805,13 +805,27 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture inherits="Char-Slot-Bottom-Right">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 					</Button>
 					<Button name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterSecondaryHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
+							<Anchor point="BOTTOMLEFT" x="130" y="16"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
+								<Texture inherits="Char-Slot-Bottom-Left">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="$parentFrame" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
 								<Texture inherits="Char-Slot-Bottom-Right">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>

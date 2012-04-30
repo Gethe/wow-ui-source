@@ -365,7 +365,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="BNET_REPORT_ABUSE_BUTTON_SHORT">
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="BNET_REPORT_ABUSE_BUTTON_SHORT">
 				<Size>
 					<AbsDimension x="128" y="22"/>
 				</Size>
@@ -380,7 +380,7 @@
 					<OnClick function="BNet_ConfirmReport"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
 					<AbsDimension x="128" y="22"/>
 				</Size>

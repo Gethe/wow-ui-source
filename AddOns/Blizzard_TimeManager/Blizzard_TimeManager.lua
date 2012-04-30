@@ -133,6 +133,9 @@ function TimeManagerFrame_OnLoad(self)
 	else
 		UIDropDownMenu_SetWidth(TimeManagerAlarmAMPMDropDown, 40, 40);
 	end
+	
+	--get rid of button bar at bottom
+	ButtonFrameTemplate_HideButtonBar(self);
 
 	TimeManager_Update();
 end

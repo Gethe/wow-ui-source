@@ -508,8 +508,8 @@
 					</OnClick>
 					<OnEnter>
 						if not self:IsEnabled() and PVPConquestFrame:IsShown() then
-							local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
-							if IsPartyLeader() or groupSize == 1 then
+							local groupSize = GetNumGroupMembers();
+							if UnitIsGroupLeader("player") or groupSize == 1 then
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(PVP_NO_QUEUE_GROUP, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
 							else
@@ -1699,7 +1699,7 @@
 				<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>
@@ -1717,7 +1717,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="DECLINE">
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>

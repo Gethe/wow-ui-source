@@ -465,7 +465,7 @@ TRAVEL PASS
 					</OnUpdate>
 				</Scripts>
 			</Frame>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="98" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMessage" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
@@ -477,7 +477,7 @@ TRAVEL PASS
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="DECLINE">
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size x="98" y="22"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="44" y="0"/>
@@ -1038,7 +1038,7 @@ TRAVEL PASS
 			</Frame>
 			<Frame name="FriendsListFrame" hidden="true" setAllPoints="true">
 				<Frames>				
-					<Button name="FriendsFrameAddFriendButton" inherits="UIPanelButtonTemplate2" text="ADD_FRIEND">
+					<Button name="FriendsFrameAddFriendButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
 						<Size x="131" y="21"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame" x="4" y="4"/>
@@ -1051,7 +1051,7 @@ TRAVEL PASS
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<Button name="FriendsFrameSendMessageButton" inherits="UIPanelButtonTemplate2" text="SEND_MESSAGE">
+					<Button name="FriendsFrameSendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
 						<Size x="131" y="21"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame" x="-6" y="4"/>
@@ -1137,7 +1137,7 @@ TRAVEL PASS
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="FriendsFrameIgnorePlayerButton" inherits="UIPanelButtonTemplate2" text="IGNORE_PLAYER">
+					<Button name="FriendsFrameIgnorePlayerButton" inherits="UIPanelButtonTemplate" text="IGNORE_PLAYER">
 						<Size x="131" y="21"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="FriendsFrame" x="4" y="4"/>
@@ -1160,7 +1160,7 @@ TRAVEL PASS
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<Button name="FriendsFrameUnsquelchButton" inherits="UIPanelButtonTemplate2" text="REMOVE_PLAYER">
+					<Button name="FriendsFrameUnsquelchButton" inherits="UIPanelButtonTemplate" text="REMOVE_PLAYER">
 						<Size x="134" y="21"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsFrame" x="-6" y="4"/>
@@ -1176,7 +1176,7 @@ TRAVEL PASS
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<Button name="FriendsFrameMutePlayerButton" inherits="UIPanelButtonTemplate2" text="MUTE_PLAYER">
+					<Button name="FriendsFrameMutePlayerButton" inherits="UIPanelButtonTemplate" text="MUTE_PLAYER">
 						<Size x="110" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="FriendsFrameIgnorePlayerButton" relativePoint="RIGHT"/>
@@ -1314,7 +1314,7 @@ TRAVEL PASS
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate2" text="CONTINUE">
+							<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
 								<Size x="131" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="30"/>
@@ -1924,7 +1924,7 @@ TRAVEL PASS
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate2" text="CONTINUE">
+					<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
 						<Size x="131" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="30"/>
@@ -2217,7 +2217,7 @@ TRAVEL PASS
 							</ScrollFrame>
 						</Frames>
 					</Frame>		
-					<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ADD_FRIEND">
+					<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
 						<Size x="118" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="45" y="30"/>
@@ -2226,7 +2226,7 @@ TRAVEL PASS
 							<OnClick function="AddFriendFrame_Accept"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="118" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-50" y="30"/>
@@ -2527,7 +2527,7 @@ TRAVEL PASS
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button name="FriendsFriendsSendRequestButton" inherits="UIPanelButtonTemplate2" text="SEND_REQUEST">
+			<Button name="FriendsFriendsSendRequestButton" inherits="UIPanelButtonTemplate" text="SEND_REQUEST">
 				<Size x="118" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="24"/>
@@ -2536,7 +2536,7 @@ TRAVEL PASS
 					<OnClick function="FriendsFriendsFrame_SendRequest"/>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFriendsCloseButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
+			<Button name="FriendsFriendsCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="118" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="24"/>

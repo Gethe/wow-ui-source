@@ -33,6 +33,8 @@ local ModelSettings = {
 	["WorgenMaleAlt"] = { panMaxLeft = -0.4, panMaxRight = 0.4, panMaxTop = 1.3, panMaxBottom = -0.3, panValue = 37 },
 	["WorgenFemale"] = { panMaxLeft = -0.4, panMaxRight = 0.6, panMaxTop = 1.4, panMaxBottom = -0.4, panValue = 25 },
 	["WorgenFemaleAlt"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 1.2, panMaxBottom = -0.2, panValue = 45 },
+	["PandarenMale"] = { panMaxLeft = -0.7, panMaxRight = 0.9, panMaxTop = 1.1, panMaxBottom = -0.5, panValue = 31 },
+	["PandarenFemale"] = { panMaxLeft = -0.5, panMaxRight = 0.6, panMaxTop = 1.3, panMaxBottom = -0.4, panValue = 32 },	
 }
 
 local _, playerRaceSex = UnitRace("player");
@@ -262,12 +264,14 @@ end
 function SetDressUpBackground()
 	local race, fileName = UnitRace("player");
 	local texture = DressUpTexturePath(fileName);
-	DressUpBackgroundTopLeft:SetTexture(texture..1);
-	DressUpBackgroundTopRight:SetTexture(texture..2);
-	DressUpBackgroundBotLeft:SetTexture(texture..3);
-	DressUpBackgroundBotRight:SetTexture(texture..4);
-	SideDressUpFrameBackgroundTop:SetTexture(texture..1);
-	SideDressUpFrameBackgroundBot:SetTexture(texture..3);
+	
+	--Temp Pandaren HACK
+	--DressUpBackgroundTopLeft:SetTexture(texture..1);
+	--DressUpBackgroundTopRight:SetTexture(texture..2);
+	--DressUpBackgroundBotLeft:SetTexture(texture..3);
+	--DressUpBackgroundBotRight:SetTexture(texture..4);
+	--SideDressUpFrameBackgroundTop:SetTexture(texture..1);
+	--SideDressUpFrameBackgroundBot:SetTexture(texture..3);
 end
 
 function SideDressUpFrame_OnShow(self)

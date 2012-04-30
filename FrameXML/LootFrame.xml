@@ -5,41 +5,23 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIconQuestTexture">
-					<Size>
-						<AbsDimension x="37" y="38"/>
-					</Size>
+					<Size x="37" y="38"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-					<Size>
-						<AbsDimension x="130" y="62"/>
-					</Size>
+					<Size x="130" y="62"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="30" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="30" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="93" y="38"/>
-					</Size>
+					<Size x="93" y="38"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="8" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -72,9 +54,7 @@
 		</Scripts>
 	</Button>
 	<Button name="LootRollButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-			<Size>
-				<AbsDimension x="32" y="32"/>
-			</Size>
+			<Size x="32" y="32"/>
 			<Scripts>
 				<OnClick>
 					RollOnLoot(self:GetParent().rollID, self:GetID());
@@ -92,119 +72,63 @@
 				</OnLeave>
 			</Scripts>
 		</Button>
-	<Frame name="LootFrame" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="256" y="256"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<TitleRegion setAllPoints="true"/>
-		<HitRectInsets>
-			<AbsInset left="0" right="70" top="0" bottom="0"/>
-		</HitRectInsets>
+	<Frame name="LootFrame" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
+		<Size x="170" y="240"/>
+
 		<Layers>
-			<Layer level="BORDER">
+			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="LootFramePortraitOverlay" file="Interface\TargetingFrame\TargetDead">
-					<Size>
-						<AbsDimension x="58" y="58"/>
-					</Size>
+					<Size x="58" y="58"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\LootFrame\UI-LootPanel"/>
 				<FontString inherits="GameFontNormal" text="ITEMS">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="-12" y="102"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="12" y="108"/>
 					</Anchors>
 				</FontString>
 				<FontString name="LootFramePrev" inherits="GameFontNormal" text="PREV">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="57" y="27"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="45" y="18"/>
+	
 					</Anchors>
 				</FontString>
 				<FontString name="LootFrameNext" inherits="GameFontNormal" text="NEXT">
 					<Anchors>
-              <Anchor point="BOTTOMRIGHT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT">
-              <Offset>
-                <AbsDimension x="142" y="27"/>
-              </Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="127" y="18"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="LootCloseButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-81" y="-26"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						HideUIPanel(LootFrame);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-			</Button>
 			<Button name="LootButton1" inherits="LootButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-80"/>
+					<Anchor point="TOPLEFT" x="9" y="-68"/>
 				</Anchors>
 			</Button>
 			<!-- anchors not relative - see bug 266687 -->
 			<Button name="LootButton2" inherits="LootButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-121"/>
+					<Anchor point="TOPLEFT" x="9" y="-109"/>
 				</Anchors>
 			</Button>
 			<Button name="LootButton3" inherits="LootButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-162"/>
+					<Anchor point="TOPLEFT" x="9" y="-150"/>
 				</Anchors>
 			</Button>
 			<Button name="LootButton4" inherits="LootButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-203"/>
+					<Anchor point="TOPLEFT" x="9" y="-193"/>
 				</Anchors>
 			</Button>
 			<Button name="LootFrameUpButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="25" y="16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="8" y="6"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="LootFrame_PageUp"/>
@@ -215,15 +139,9 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="LootFrameDownButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-          <Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="143" y="16"/>
-            </Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="130" y="6"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="LootFrame_PageDown"/>
@@ -250,93 +168,53 @@
 		</Scripts>
 	</Frame>
 	<Frame name="GroupLootFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="253" y="84"/>
-		</Size>
+		<Size x="253" y="84"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
-					<Size>
-						<AbsDimension x="128" y="64"/>
-					</Size>
+					<Size x="128" y="64"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-9" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-9" y="-10"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="90" y="30"/>
-					</Size>
+					<Size x="90" y="30"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-5" y="5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentDecoration" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" hidden="true">
-					<Size>
-						<AbsDimension x="120" y="120"/>
-					</Size>
+					<Size x="120" y="120"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-30" y="15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-30" y="15"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-6" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentIconFrame" enableMouse="true">
-				<Size>
-					<AbsDimension x="34" y="34"/>
-				</Size>
+				<Size x="34" y="34"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture">
-						<Offset>
-							<AbsDimension x="15" y="-15"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" x="15" y="-15"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="$parentIcon">
-							<Size>
-								<AbsDimension x="34" y="34"/>
-							</Size>
+							<Size x="34" y="34"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
@@ -345,11 +223,7 @@
 					<Layer level="OVERLAY">
 						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-5" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -381,11 +255,7 @@
 			</Button>
 			<Button name="$parentPassButton" inherits="UIPanelCloseButton" parentKey="passButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="5" y="5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT" x="5" y="5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -402,11 +272,7 @@
 			</Button>
 			<Button name="$parentRollButton" inherits="LootRollButtonTemplate" parentKey="needButton" id="1">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-48" y="-14"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-48" y="-14"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -420,11 +286,7 @@
 			</Button>
 			<Button name="$parentGreedButton" inherits="LootRollButtonTemplate" parentKey="greedButton" id="2">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentRollButton" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-2" y="2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentRollButton" relativePoint="BOTTOM" x="-2" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -438,11 +300,7 @@
 			</Button>
 			<Button name="$parentDisenchantButton" inherits="LootRollButtonTemplate" parentKey="disenchantButton" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentGreedButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="3" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentGreedButton" relativePoint="RIGHT" x="3" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -455,28 +313,16 @@
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>
 			</Button>
 			<StatusBar name="$parentTimer" drawLayer="BACKGROUND" minValue="0" maxValue="60000" defaultValue="0">
-				<Size>
-					<AbsDimension x="152" y="10"/>
-				</Size>
+				<Size x="152" y="10"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="13" y="10"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" relativePoint="BOTTOMLEFT" x="13" y="10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size>
-								<AbsDimension x="156" y="20"/>
-							</Size>
+							<Size x="156" y="20"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="5"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="5"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -514,38 +360,22 @@
 	</Frame>
 	<Frame name="GroupLootFrame1" inherits="GroupLootFrameTemplate" id="1">
 		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="60"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" x="0" y="60"/>
 		</Anchors>
 	</Frame>
 	<Frame name="GroupLootFrame2" inherits="GroupLootFrameTemplate" id="2">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GroupLootFrame1" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="15"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="GroupLootFrame1" relativePoint="TOP" x="0" y="15"/>
 		</Anchors>
 	</Frame>
 	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GroupLootFrame2" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="15"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="GroupLootFrame2" relativePoint="TOP" x="0" y="15"/>
 		</Anchors>
 	</Frame>
 	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GroupLootFrame3" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="15"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="GroupLootFrame3" relativePoint="TOP" x="0" y="15"/>
 		</Anchors>
 	</Frame>
 

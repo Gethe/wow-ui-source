@@ -5,10 +5,9 @@ local SPELLFLYOUT_FINAL_SPACING = 4;
 
 
 function SpellFlyoutButton_OnClick(self)
-	if (self.spellID) then
-		if (CastSpellByID(self.spellID)) then
-			self:GetParent():Hide();
-		end
+	if (self.spellName) then
+		CastSpellByName(self.spellName);
+		self:GetParent():Hide();
 	end
 end
 
@@ -166,7 +165,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	local prevButton = nil;
 	local numButtons = 0;
 	for i=1, numSlots do
-		local spellID, isKnown = GetFlyoutSlotInfo(flyoutID, i);
+		local spellID, isKnown, spellName = GetFlyoutSlotInfo(flyoutID, i);
 		local visible = true;
 		
 		-- Ignore Call Pet spells if there isn't a pet in that slot
@@ -212,6 +211,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			
 			_G[button:GetName().."Icon"]:SetTexture(GetSpellTexture(spellID));
 			button.spellID = spellID;
+			button.spellName = spellName;
 			SpellFlyoutButton_UpdateCooldown(button);
 			SpellFlyoutButton_UpdateState(button);
 			SpellFlyoutButton_UpdateUsable(button);

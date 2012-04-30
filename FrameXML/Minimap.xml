@@ -260,11 +260,16 @@
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 								self:SetFrameLevel(self:GetFrameLevel()+1);
 								MiniMapBattlefieldFrame.timeInQueue = 0;
-								MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
-								MiniMapBattlefieldIcon:SetTexCoord(0, 1, 0, 1);
-								MiniMapBattlefieldIcon:SetWidth(32);
-								MiniMapBattlefieldIcon:SetHeight(32);
-								MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 0);
+								local factionGroup = UnitFactionGroup("player");
+								if(factionGroup ~= nil) then 
+									MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..factionGroup);
+									MiniMapBattlefieldIcon:SetTexCoord(0, 1, 0, 1);
+									MiniMapBattlefieldIcon:SetWidth(32);
+									MiniMapBattlefieldIcon:SetHeight(32);
+									MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 0);
+								else
+									MiniMapBattlefieldIcon:Hide();
+								end
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -535,8 +540,7 @@
 										self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 										self:RegisterEvent("LFG_PROPOSAL_SHOW");
 										self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
-										self:RegisterEvent("PARTY_MEMBERS_CHANGED");
-										self:RegisterEvent("RAID_ROSTER_UPDATE");
+										self:RegisterEvent("GROUP_ROSTER_UPDATE");
 										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 										self:SetFrameLevel(self:GetFrameLevel()+1)
 									</OnLoad>
@@ -722,7 +726,7 @@
 					<OnLoad>
 						self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
 						self:RegisterEvent("UPDATE_INSTANCE_INFO");
-						self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+						self:RegisterEvent("GROUP_ROSTER_UPDATE");
 						self:RegisterEvent("PLAYER_GUILD_UPDATE");
 						self:RegisterEvent("PARTY_MEMBER_ENABLE");
 						self:RegisterEvent("PARTY_MEMBER_DISABLE");

@@ -203,9 +203,9 @@
 						<AbsDimension x="119" y="41"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
+						<Anchor point="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="-106" y="-22"/>
+								<AbsDimension x="7" y="35"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -741,7 +741,6 @@
 				TargetFrame_CreateSpellbar(self, "PLAYER_FOCUS_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "focus-target");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");
-				self:RegisterEvent("VARIABLES_LOADED");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnDragStart function="FocusFrame_OnDragStart"/>

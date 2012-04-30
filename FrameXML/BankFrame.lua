@@ -125,6 +125,35 @@ function BankFrame_OnLoad (self)
 	self:RegisterEvent("BANKFRAME_CLOSED");
 	self.size = 28;
 	self:SetID(BANK_CONTAINER);
+	
+	--Create bank item buttons, button background textures, and rivets between buttons
+	for i = 2, 28 do
+		local button = CreateFrame("Button", "BankFrameItem"..i, BankFrame, "BankItemButtonGenericTemplate");
+		button:SetID(i);
+		if ((i%7) == 1) then
+			button:SetPoint("TOPLEFT", _G["BankFrameItem"..(i-7)], "BOTTOMLEFT", 0, -7);
+		else
+			button:SetPoint("TOPLEFT", _G["BankFrameItem"..(i-1)], "TOPRIGHT", 12, 0);
+		end
+	end
+	for i = 1, 28 do
+		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
+		texture:SetPoint("TOPLEFT", _G["BankFrameItem"..i], "TOPLEFT", -6, 5);
+		texture:SetPoint("BOTTOMRIGHT", _G["BankFrameItem"..i], "BOTTOMRIGHT", 6, -7);
+	end
+	for i = 1, 7 do
+		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
+		texture:SetPoint("TOPLEFT", _G["BankFrameBag"..i], "TOPLEFT", -6, 5);
+		texture:SetPoint("BOTTOMRIGHT", _G["BankFrameBag"..i], "BOTTOMRIGHT", 6, -7);
+	end
+	for i = 1, 20 do
+		if ((i%7) ~= 0) then
+			local texture = self:CreateTexture(nil, "BORDER", "Bank-Rivet");
+			texture:SetPoint("TOPLEFT", _G["BankFrameItem"..i], "BOTTOMRIGHT", 0, 2);
+			texture:SetPoint("BOTTOMRIGHT", _G["BankFrameItem"..i], "BOTTOMRIGHT", 12, -10);
+		end
+	end
+	
 end
 
 function UpdateBagSlotStatus () 

@@ -1,114 +1,45 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ItemTextFrame.lua"/>
-	<Frame name="ItemTextFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="70"/>
-		</HitRectInsets>
+	<Frame name="ItemTextFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture file="Interface\Spellbook\Spellbook-Icon">
-					<Size>
-						<AbsDimension x="58" y="58"/>
-					</Size>
+					<Size x="58" y="58"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\ItemTextFrame\UI-ItemText-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+			<Layer level="BACKGROUND">
+				<Texture name="InboxFrameBg" file="Interface\MailFrame\UI-MailFrameBG">
+					<Size x="512" y="512"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\ItemTextFrame\UI-ItemText-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-256"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="-256"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="ItemTextMaterialTopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="21" y="-75"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
 				<Texture name="ItemTextMaterialTopRight">
-					<Size>
-						<AbsDimension x="64" y="256"/>
-					</Size>
+					<Size x="64" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="ItemTextMaterialTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="ItemTextMaterialBotLeft">
-					<Size>
-						<AbsDimension x="256" y="128"/>
-					</Size>
+					<Size x="256" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="ItemTextMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="ItemTextMaterialBotRight">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
+					<Size x="64" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="ItemTextMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
@@ -116,77 +47,45 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="ItemTextTitleText" inherits="GameFontNormal">
-					<Size>
-						<AbsDimension x="224" y="14"/>
-					</Size>
+					<Size x="224" y="14"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="6" y="230"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="15" y="200"/>
 					</Anchors>
 				</FontString>
 				<FontString name="ItemTextCurrentPage" inherits="GameFontNormal">
-					<Size>
-						<AbsDimension x="192" y="0"/>
-					</Size>
+					<Size x="192" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="10" y="-50"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="20" y="-35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<ScrollFrame name="ItemTextScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="280" y="355"/>
-				</Size>
+				<Size x="280" y="355"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-66" y="-76"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-33" y="-63"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="28" y="256"/>
-							</Size>
+							<Size x="28" y="256"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="5"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
 							</Anchors>
 							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="28" y="107"/>
-							</Size>
+							<Size x="28" y="107"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="-3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>
 							</Anchors>
 							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentMiddle">
-							<Size>
-								<AbsDimension x="25" y="365"/>
-							</Size>
+							<Size x="25" y="365"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeTo="$parentTop"/>
 							</Anchors>
@@ -196,20 +95,12 @@
 				</Layers>
 				<ScrollChild>
 					<Frame name="ItemTextPageScrollChild">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Frames>
 							<SimpleHTML name="ItemTextPageText">
-								<Size>
-									<AbsDimension x="270" y="304"/>
-								</Size>
+								<Size x="270" y="304"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-15"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="0" y="-15"/>
 								</Anchors>
 								<FontString inherits="ItemTextFontNormal"/>
 							</SimpleHTML>
@@ -218,22 +109,14 @@
 				</ScrollChild>
 			</ScrollFrame>
 			<StatusBar name="ItemTextStatusBar" hidden="true">
-				<Size>
-					<AbsDimension x="250" y="21"/>
-				</Size>
+				<Size x="250" y="21"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="ItemTextFrame">
-						<Offset>
-							<AbsDimension x="-5" y="128"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" relativeTo="ItemTextFrame" x="-5" y="128"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size>
-								<AbsDimension x="256" y="23"/>
-							</Size>
+							<Size x="256" y="23"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -248,15 +131,9 @@
 				<BarColor r="0.25" g="0.75" b="0.25"/>
 			</StatusBar>
 			<Button name="ItemTextPrevPageButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="90" y="-56"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="75" y="-41"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -279,15 +156,9 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="ItemTextNextPageButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-55" y="-56"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-23" y="-41"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -308,24 +179,6 @@
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-			<Button name="ItemTextCloseButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-45" y="-26"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

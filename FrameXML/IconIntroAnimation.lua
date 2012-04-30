@@ -1,5 +1,7 @@
 
 
+--This File is responsible for animating spells to the actionbar
+
 function IconIntroTracker_OnLoad(self)
 	self.iconList = {};
 	self:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
@@ -28,13 +30,9 @@ function IconIntroTracker_OnEvent(self, event, ...)
 		
 		freeIcon:ClearAllPoints();
 		
-		if BonusActionBarFrame:IsShown() then
-			freeIcon:SetPoint("CENTER", _G["BonusActionButton"..slotPos], 0, 0);
-			freeIcon:SetFrameLevel(_G["BonusActionBarFrame"]:GetFrameLevel()+5);
-		else
-			freeIcon:SetPoint("CENTER", _G["ActionButton"..slotPos], 0, 0);
-			freeIcon:SetFrameLevel(_G["ActionButton"..slotPos]:GetFrameLevel()+1);
-		end
+		freeIcon:SetPoint("CENTER", _G["ActionButton"..slotPos], 0, 0);
+		freeIcon:SetFrameLevel(_G["ActionButton"..slotPos]:GetFrameLevel()+1);
+		
 		freeIcon.icon.flyin:Play(1);
 		freeIcon.isFree = false;
 	end

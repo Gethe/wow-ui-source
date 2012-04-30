@@ -211,7 +211,7 @@ function MiniMapLFG_Update()
 
 		if ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
 			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(GetPartyLFGID());
-			local numPlayers = max(GetNumPartyMembers() + 1, GetNumRaidMembers());
+			local numPlayers = GetNumGroupMembers();
 			if ( numPlayers < maxPlayers ) then
 				MiniMapLFGFrame.groupSize:Show();
 				MiniMapLFGFrame.groupSize:SetText(numPlayers);
@@ -247,7 +247,7 @@ function MiniMapLFGFrameDropDown_Update()
 			info.text = TELEPORT_OUT_OF_DUNGEON;
 			info.func = MiniMapLFGFrame_TeleportOut;
 			addButton = true;
-		elseif ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) then
+		elseif ( IsInGroup() ) then
 			info.text = TELEPORT_TO_DUNGEON;
 			info.func = MiniMapLFGFrame_TeleportIn;
 			addButton = true;
@@ -271,7 +271,7 @@ function MiniMapLFGFrameDropDown_Update()
 		info.disabled = (submode == "unempowered");
 		UIDropDownMenu_AddButton(info);
 	elseif ( mode == "listed" ) then
-		if ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) then
+		if ( IsInGroup() ) then
 			info.text = UNLIST_MY_GROUP;
 		else
 			info.text = UNLIST_ME;

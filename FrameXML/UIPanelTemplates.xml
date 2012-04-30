@@ -16,48 +16,30 @@
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Button name="UIPanelButtonTemplate" virtual="true">
-		<ButtonText name="$parentText"/>
-		<NormalFont style="GameFontNormal"/>
-		<HighlightFont style="GameFontHighlight"/>
-		<DisabledFont style="GameFontDisable"/>
-		<NormalTexture inherits="UIPanelButtonUpTexture"/>
-		<PushedTexture inherits="UIPanelButtonDownTexture"/>
-		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
-		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-	</Button>
-	<Button name="UIPanelButtonTemplate2" virtual="true">
-		<Size>
-			<AbsDimension x="40" y="22"/>
-		</Size>
+		<Size x="40" y="22"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size>
-						<AbsDimension x="12" y="22"/>
-					</Size>
+				<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
+					<Size x="12" y="22"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size>
-						<AbsDimension x="12" y="22"/>
-					</Size>
+				<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
+					<Size x="12" y="22"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size>
-						<AbsDimension x="12" y="22"/>
-					</Size>
+				<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
+					<Size x="12" y="22"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875"/>
 				</Texture>
@@ -66,48 +48,42 @@
 		<Scripts>
 			<OnLoad>
 				if ( not self:IsEnabled() ) then
-					local name = self:GetName();
-					_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
 				end
 			</OnLoad>
 			<OnMouseDown>
 				if ( self:IsEnabled() ) then
-					local name = self:GetName();
-					_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 				end
 			</OnMouseDown>
 			<OnMouseUp>
 				if ( self:IsEnabled() ) then
-					local name = self:GetName();
-					_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 				end
 			</OnMouseUp>
 			<OnShow>
 				if ( self:IsEnabled() ) then
 					-- we need to reset our textures just in case we were hidden before a mouse up fired
-					local name = self:GetName();
-					_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 				end
 			</OnShow>
 			<OnDisable>
-				local name = self:GetName();
-				_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
 			</OnDisable>
 			<OnEnable>
-				local name = self:GetName();
-				_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 			</OnEnable>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then
@@ -998,7 +974,7 @@
 			</Anchors>
 		</HighlightTexture>
     </Button>
-	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
+	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="144" y="21"/>
 		</Size>
@@ -2883,7 +2859,7 @@
 	"MagicButton_OnLoad" from within your script.
 *******************************************************************************
 -->
-	<Button name="MagicButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
+	<Button name="MagicButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Size x="80" y="22"/>
 		<Scripts>
 			<OnLoad function="MagicButton_OnLoad" />
@@ -3189,7 +3165,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-
+	
 <!--
 *******************************************************************************
     Frame Template Examples
@@ -3262,4 +3238,45 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	
+	<!--
+*******************************************************************************
+    Gold edge designed to go around money frames
+*******************************************************************************
+-->
+	
+	<Frame name="ThinGoldEdgeTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Moneyframe">
+					<Size x="7" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.953125" right="0.9921875" top="0" bottom="0.296875"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Moneyframe">
+					<Size x="7" y="20"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0546875" top="0" bottom="0.296875"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Moneyframe">
+					<Size x="80" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.9921875" top="0.3125" bottom="0.609375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 </Ui>

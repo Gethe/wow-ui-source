@@ -548,12 +548,9 @@
 			</Anchor>
 		</Anchors>
 		<Animations>
-			<AnimationGroup parentKey="slideout">
+			<AnimationGroup parentKey="slideOut">
 				<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
 				<Scripts>
-					<OnPlay>
-						MultiBarRight:Show();
-					</OnPlay>
 					<OnFinished>
 						if not MainMenuBar:IsShown() then
 							MultiBarRight:Hide();

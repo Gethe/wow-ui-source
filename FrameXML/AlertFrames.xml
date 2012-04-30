@@ -492,7 +492,7 @@
 				<Anchors>
 					<Anchor point="LEFT" x="14" y="0"/>
 				</Anchors>
-				<TexCoords left="0.03027344" right="0.06640625" top="0.30468750" bottom="0.58593750"/>
+				<TexCoords left="0.06054688" right="0.13281250" top="0.00390625" bottom="0.14453125"/>
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
@@ -501,14 +501,14 @@
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>
-				<TexCoords left="0.06835938" right="0.33203125" top="0.00781250" bottom="0.53125000"/>
+				<TexCoords left="0.13671875" right="0.66406250" top="0.00390625" bottom="0.26562500"/>
 			</Texture>
 			<Texture name="$parentEmblemBorder" file="Interface\GuildFrame\GuildChallenges">
 				<Size x="37" y="36"/>
 				<Anchors>
 					<Anchor point="LEFT" x="14" y="0"/>
 				</Anchors>
-				<TexCoords left="0.03027344" right="0.06640625" top="0.00781250" bottom="0.28906250"/>
+				<TexCoords left="0.06054688" right="0.13281250" top="0.15234375" bottom="0.29296875"/>
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">

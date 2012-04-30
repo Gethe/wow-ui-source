@@ -354,11 +354,14 @@
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
+		</xs:choice minOccurs="0">
+			<xs:attribute name="parentKey" type="xs:string"/>
+			<xs:attribute name="parentArray" type="xs:string"/>
+		</xs:choice>
 		<xs:attribute name="inherits" type="xs:string"/>
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="setAllPoints" type="xs:boolean" default="false"/>
 		<xs:attribute name="hidden" type="xs:boolean" default="false"/>
-		<xs:attribute name="parentKey" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="LayoutFrame" type="LayoutFrameType"/>
 

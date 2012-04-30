@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_BindingUI.lua"/>
-	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIPanelButtonTemplate2" virtual="true">
+	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				KeyBindingButton_OnClick(self, button, down);

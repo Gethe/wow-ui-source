@@ -1279,7 +1279,7 @@
 							</OnTextChanged>
 						</Scripts>
 					</EditBox>
-					<Button name="CalendarCreateEventInviteButton" inherits="UIPanelButtonTemplate2" text="INVITE">
+					<Button name="CalendarCreateEventInviteButton" inherits="UIPanelButtonTemplate" text="INVITE">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteEdit" relativePoint="TOPRIGHT">
 								<Offset x="0" y="1"/>
@@ -1295,7 +1295,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Button name="CalendarCreateEventMassInviteButton" inherits="UIPanelButtonTemplate2" text="CALENDAR_MASS_INVITE">
+			<Button name="CalendarCreateEventMassInviteButton" inherits="UIPanelButtonTemplate" text="CALENDAR_MASS_INVITE">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset x="12" y="12"/>
@@ -1332,7 +1332,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="CalendarCreateEventRaidInviteButton" inherits="UIPanelButtonTemplate2" text="CALENDAR_INVITE_MEMBERS">
+			<Button name="CalendarCreateEventRaidInviteButton" inherits="UIPanelButtonTemplate" text="CALENDAR_INVITE_MEMBERS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset x="12" y="12"/>

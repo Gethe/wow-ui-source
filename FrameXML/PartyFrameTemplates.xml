@@ -304,7 +304,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						UnitPowerBarAlt_Initialize(self, "party"..self:GetParent():GetID(), 0.5, "PARTY_MEMBERS_CHANGED");
+						UnitPowerBarAlt_Initialize(self, "party"..self:GetParent():GetID(), 0.5, "GROUP_ROSTER_UPDATE");
 					</OnLoad>
 				</Scripts>
 			</Frame>

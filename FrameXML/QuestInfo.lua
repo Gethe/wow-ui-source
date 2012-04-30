@@ -411,7 +411,10 @@ function QuestInfo_ShowRewards()
 			end
 			rewardsCount = rewardsCount + 1;
 		end
-		if ( QuestInfoFrame.chooseItems ) then
+		if ( numQuestChoices == 1 ) then
+			QuestInfoFrame.chooseItems = nil
+			itemChooseText:SetText(REWARD_ITEMS_ONLY);
+		elseif ( QuestInfoFrame.chooseItems ) then
 			itemChooseText:SetText(REWARD_CHOOSE);
 		else
 			itemChooseText:SetText(REWARD_CHOICES);
@@ -426,6 +429,7 @@ function QuestInfo_ShowRewards()
 		local learnSpellText = QuestInfoSpellLearnText;
 		learnSpellText:Show();
 		learnSpellText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 3, -5);
+		lastFrame = learnSpellText;
 
 		if ( QuestInfoFrame.questLog ) then
 			texture, name, isTradeskillSpell, isSpellLearned = GetQuestLogRewardSpell();
@@ -446,7 +450,7 @@ function QuestInfo_ShowRewards()
 		-- For the tooltip
 		questItem.Icon:SetTexture(texture);
 		questItem.Name:SetText(name);
-		questItem:SetPoint("TOPLEFT", learnSpellText, "BOTTOMLEFT", -3, -5);
+		questItem:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", -3, -5);
 		lastFrame = questItem;
 	else
 		QuestInfoRewardSpell:Hide();
@@ -464,7 +468,7 @@ function QuestInfo_ShowRewards()
 			QuestInfoMoneyFrame:Show();
 		end
 		-- XP rewards
-		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoXPFrame", xp, "Points", lastFrame);		
+		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoXPFrame", BreakUpLargeNumbers(xp), "Points", lastFrame);		
 		-- Talent rewards
 		lastFrame = QuestInfo_ToggleRewardElement("QuestInfoTalentFrame", talents, "Points", lastFrame);
 		if (QuestInfoTalentFrame:IsShown()) then
@@ -601,7 +605,7 @@ end
 
 QUEST_TEMPLATE_DETAIL1 = { questLog = nil, chooseItems = nil, tooltip = nil,
 	elements = {
-		QuestInfo_ShowTitle, 5, -10,
+		QuestInfo_ShowTitle, 10, -10,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowFadingFrame, 0, -5
 	}

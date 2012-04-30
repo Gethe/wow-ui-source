@@ -3414,7 +3414,7 @@ function(self, event, ...)
 		end
 	end
 );
-COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
+--COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
 --COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 
 --[[
@@ -3547,6 +3547,9 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 		COMBATLOG:UnregisterEvent("COMBAT_LOG_EVENT");
 		return hide and hide(self)
 	end)	
+	if ( COMBATLOG:IsShown() ) then
+		COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
+	end
 	
 	FCF_SetButtonSide(COMBATLOG, COMBATLOG.buttonSide, true);
 end
@@ -3749,9 +3752,9 @@ end
 
 function ShowQuickButton(filter)
 	if ( filter.hasQuickButton ) then
-		if ( GetNumRaidMembers() > 0 ) then
+		if ( IsInRaid() ) then
 			return filter.quickButtonDisplay.raid;
-		elseif ( GetNumPartyMembers() > 0 ) then
+		elseif ( IsInGroup() ) then
 			return filter.quickButtonDisplay.party;
 		else
 			return filter.quickButtonDisplay.solo;

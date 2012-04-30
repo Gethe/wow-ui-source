@@ -2,17 +2,6 @@ local GUILD_BUTTON_HEIGHT = 84;
 local GUILD_COMMENT_HEIGHT = 50;
 local GUILD_COMMENT_BORDER = 10;
 
-local GUILD_EVENT_TEXTURES = {
-	--[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
-	--[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
-	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
-	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
-	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
-	--[CALENDAR_EVENTTYPE_HEROIC_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
-};
-local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
-
-local CHALLENGE_SECTIONS = { "GuildInfoChallengesDungeon", "GuildInfoChallengesRaid", "GuildInfoChallengesRatedBG" };
 local INTEREST_TYPES = {"QUEST", "DUNGEON", "RAID", "PVP", "RP"};
 
 function GuildInfoFrame_OnLoad(self)
@@ -102,33 +91,15 @@ end
 --*******************************************************************************
 
 function GuildInfoFrameInfo_OnLoad(self)
-	GuildInfoEventsContainer.update = GuildInfoEvents_Update;
-	HybridScrollFrame_CreateButtons(GuildInfoEventsContainer, "GuildNewsButtonTemplate", 0, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
-	local buttons = GuildInfoEventsContainer.buttons;
-	for i = 1, #buttons do
-		buttons[i].isEvent = true;
-	end
-
 	local fontString = GuildInfoEditMOTDButton:GetFontString();
 	GuildInfoEditMOTDButton:SetHeight(fontString:GetHeight() + 4);
 	GuildInfoEditMOTDButton:SetWidth(fontString:GetWidth() + 4);
 	fontString = GuildInfoEditDetailsButton:GetFontString();
 	GuildInfoEditDetailsButton:SetHeight(fontString:GetHeight() + 4);
 	GuildInfoEditDetailsButton:SetWidth(fontString:GetWidth() + 4);	
-	fontString = GuildInfoEditEventButton:GetFontString();
-	GuildInfoEditEventButton:SetHeight(fontString:GetHeight() + 4);
-	GuildInfoEditEventButton:SetWidth(fontString:GetWidth() + 4);
-	
-	-- faction icon
-	if ( GetGuildFactionGroup() == 0 ) then  -- horde
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
-	else  -- alliance
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP02";
-	end
 end
 
 function GuildInfoFrameInfo_OnShow(self)
-	GuildInfoEvents_Update();
 	GuildInfoFrame_UpdatePermissions();	
 	GuildInfoFrame_UpdateText();
 end
@@ -143,11 +114,6 @@ function GuildInfoFrame_UpdatePermissions()
 		GuildInfoEditDetailsButton:Show();
 	else
 		GuildInfoEditDetailsButton:Hide();
-	end
-	if ( CanEditGuildEvent() and not GuildInfoChallenges:IsShown() ) then
-		GuildInfoEditEventButton:Show();
-	else
-		GuildInfoEditEventButton:Hide();
 	end
 	local guildInfoFrame = GuildInfoFrame;
 	if ( IsGuildLeader() ) then
@@ -201,143 +167,21 @@ function GuildInfoFrame_UpdateText(infoText)
 	GuildInfoDetailsFrameScrollBarScrollUpButton:Disable();
 end
 
-function GuildInfoEvents_Update()
-	local scrollFrame = GuildInfoEventsContainer;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-	local button, index;
-	local numEvents = CalendarGetNumGuildEvents();
-	
-	if ( numEvents > 0 ) then
-		GuildInfoNoEvents:Hide();
-	else
-		GuildInfoNoEvents:Show();
-	end
-
-	for i = 1, numButtons do
-		button = buttons[i];
-		index = offset + i;
-		if ( index <= numEvents ) then
-			GuildInfoEvents_SetButton(button, index);
-			button:Show();
-		else
-			button:Hide();
-		end
-	end
-	local totalHeight = numEvents * scrollFrame.buttonHeight;
-	local displayedHeight = numButtons * scrollFrame.buttonHeight;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-	GuildFrame_UpdateScrollFrameWidth(scrollFrame);
-end
-
-local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
-function GuildInfoEvents_SetButton(button, eventIndex)
-	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, textureName = CalendarGetGuildEventInfo(eventIndex);
-	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
-	local displayDay;
-	
-	if ( today["day"] == day and today["month"] == month ) then
-		displayDay = NORMAL_FONT_COLOR_CODE..GUILD_EVENT_TODAY..FONT_COLOR_CODE_CLOSE;
-	else
-		local year = today["year"];
-		-- if in December and looking at an event in January
-		if ( month < today["month"] ) then
-			year = year + 1;
-		end
-		local eventTime = time{year = year, month = month, day = day};
-		if ( eventTime - time() < SIX_DAYS ) then
-			displayDay = CALENDAR_WEEKDAY_NAMES[weekday];
-		else
-			displayDay = string.format(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday], day, month);
-		end
-	end
-
-	button.text:SetFormattedText(GUILD_EVENT_FORMAT, displayDay, displayTime, title);
-	button.index = eventIndex;
-	-- icon
-	if ( button.icon.type ~= "event" ) then
-		button.icon.type = "event"
-		button.icon:SetTexCoord(0, 1, 0, 1);
-		button.icon:SetWidth(14);
-		button.icon:SetHeight(14);
-	end
-	if ( GUILD_EVENT_TEXTURES[eventType] ) then
-		button.icon:SetTexture(GUILD_EVENT_TEXTURES[eventType]);
-	else
-		button.icon:SetTexture(GUILD_EVENT_TEXTURE_PATH..textureName);
-	end	
-end
-
-function GuildInfoEventButton_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		if ( CalendarFrame and CalendarFrame:IsShown() ) then
-			-- if the calendar is already open we need to do some work that's normally happening in CalendarFrame_OnShow
-			local weekday, month, day, year = CalendarGetDate();
-			CalendarSetAbsMonth(month, year);
-		else
-			ToggleCalendar();
-		end
-		local monthOffset, day, eventIndex = CalendarGetGuildEventSelectionInfo(self.index);
-		CalendarSetMonth(monthOffset);
-		-- need to highlight the proper day/event in calendar
-		local _, _, _, firstDay = CalendarGetMonth();
-		local buttonIndex = day + firstDay - CALENDAR_FIRST_WEEKDAY;
-		if ( firstDay < CALENDAR_FIRST_WEEKDAY ) then
-			buttonIndex = buttonIndex + 7;
-		end
-		local dayButton = _G["CalendarDayButton"..buttonIndex];
-		CalendarDayButton_Click(dayButton);
-		if ( eventIndex <= 4 ) then -- can only see 4 events per day
-			local eventButton = _G["CalendarDayButton"..buttonIndex.."EventButton"..eventIndex];
-			CalendarDayEventButton_Click(eventButton, true);	-- true to open the event
-		else
-			CalendarFrame_SetSelectedEvent();	-- clears any event highlights
-			CalendarOpenEvent(0, day, eventIndex);
-		end
-	end
-end
-
 function GuildInfoFrame_UpdateChallenges()
 	local numChallenges = GetNumGuildChallenges();
-	if ( numChallenges == 0 ) then
-		GuildInfoFrameInfoHeader1Label:SetText(EVENTS_LABEL);
-		GuildInfoChallenges:Hide();
-		GuildInfoEventsContainer:Show();
-		GuildInfoChallenges:Hide();
-		GuildInfoChallengesDungeonTexture:Hide();
-		GuildInfoChallengesRaidTexture:Hide();
-		GuildInfoChallengesRatedBGTexture:Hide();
-		if ( CanEditGuildEvent() ) then
-			GuildInfoEditEventButton:Show();
-		end
-	else
-		-- if for some reason events were showing, switch
-		if ( not GuildInfoChallenges:IsShown() ) then
-			GuildInfoFrameInfoHeader1Label:SetText(GUILD_FRAME_CHALLENGES);
-			GuildInfoChallenges:Show();
-			GuildInfoEventsContainer:Hide();
-			GuildInfoChallengesDungeonTexture:Show();
-			GuildInfoChallengesRaidTexture:Show();
-			GuildInfoChallengesRatedBGTexture:Show();
-			GuildInfoEditEventButton:Hide();
-		end
-		for i = 1, numChallenges do
-			local index, current, max = GetGuildChallengeInfo(i);
-			if ( CHALLENGE_SECTIONS[index] ) then
-				if ( current == max ) then
-					SetDesaturation(_G[CHALLENGE_SECTIONS[index].."Texture"], true);
-					_G[CHALLENGE_SECTIONS[index].."Count"]:Hide();
-					_G[CHALLENGE_SECTIONS[index].."Check"]:Show();
-					_G[CHALLENGE_SECTIONS[index].."Label"]:SetTextColor(0.1, 1, 0.1);
-				else
-					SetDesaturation(_G[CHALLENGE_SECTIONS[index].."Texture"], false);
-					_G[CHALLENGE_SECTIONS[index].."Count"]:Show();
-					_G[CHALLENGE_SECTIONS[index].."Count"]:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, current, max);
-					_G[CHALLENGE_SECTIONS[index].."Check"]:Hide();
-					_G[CHALLENGE_SECTIONS[index].."Label"]:SetTextColor(1, 1, 1);
-				end
+	for i = 1, numChallenges do
+		local index, current, max = GetGuildChallengeInfo(i);
+		local frame = _G["GuildInfoFrameInfoChallenge"..i];
+		if ( frame ) then
+			if ( current == max ) then
+				frame.count:Hide();
+				frame.check:Show();
+				frame.label:SetTextColor(0.1, 1, 0.1);
+			else
+				frame.count:Show();
+				frame.count:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, current, max);
+				frame.check:Hide();
+				frame.label:SetTextColor(1, 1, 1);
 			end
 		end
 	end

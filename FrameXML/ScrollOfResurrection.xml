@@ -194,7 +194,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button inherits="UIPanelButtonTemplate2" name="$parentAcceptButton" text="ACCEPT" motionScriptsWhileDisabled="true" parentKey="acceptButton">
+			<Button inherits="UIPanelButtonTemplate" name="$parentAcceptButton" text="ACCEPT" motionScriptsWhileDisabled="true" parentKey="acceptButton">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="15" y="15"/>
@@ -221,7 +221,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button inherits="UIPanelButtonTemplate2" name="$parentCancelButton" text="CANCEL">
+			<Button inherits="UIPanelButtonTemplate" name="$parentCancelButton" text="CANCEL">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHt" x="-15" y="15"/>
@@ -464,7 +464,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="118" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="45" y="30"/>
@@ -473,7 +473,7 @@
 					<OnClick function="ScrollOfResurrectionAcceptButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="118" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-50" y="30"/>

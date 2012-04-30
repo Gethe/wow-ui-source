@@ -112,7 +112,7 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 		TradeSkillFrame_Update();
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		local arg1 = ...;
-		if ( arg1 == "player" ) then
+		if ( not arg1 or arg1 == "player" ) then
 			SetPortraitTexture(TradeSkillFramePortrait, "player");
 		end
 	elseif ( event == "UPDATE_TRADESKILL_RECAST" ) then
@@ -944,11 +944,11 @@ function TradeSkillLinkDropDown_Init(self, level)
 	
 	info.text = PARTY;
 	info.arg1 = SLASH_PARTY1;
-	info.disabled = GetNumPartyMembers() == 0;
+	info.disabled = GetNumSubgroupMembers() == 0;
 	UIDropDownMenu_AddButton(info);
 	
 	info.text = RAID;
-	info.disabled = GetNumRaidMembers() == 0;
+	info.disabled = not IsInRaid();
 	info.arg1 = SLASH_RAID1;
 	UIDropDownMenu_AddButton(info);
 	-- info.text = SAY;

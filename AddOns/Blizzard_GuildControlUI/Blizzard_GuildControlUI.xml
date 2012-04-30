@@ -394,7 +394,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Button name="$parentNewButton" inherits="UIPanelButtonTemplate2" text="GUILD_NEW_RANK" parentKey="newButton">
+					<Button name="$parentNewButton" inherits="UIPanelButtonTemplate" text="GUILD_NEW_RANK" parentKey="newButton">
 						<Size x="110" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="7" y="7"/>
@@ -403,7 +403,7 @@
 							<OnClick function="GuildControlUI_AddRankButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentDupButton" inherits="UIPanelButtonTemplate2" text="GUILD_DUP_RANK" parentKey="dupButton" hidden="true">
+					<Button name="$parentDupButton" inherits="UIPanelButtonTemplate" text="GUILD_DUP_RANK" parentKey="dupButton" hidden="true">
 						<Size x="110" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT"  x="-7" y="7"/>

@@ -1,0 +1,142 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="PriestBar.lua"/>
+  
+	<Frame name="ShadowOrbTemplate" virtual="true">
+		<Size x="38" y="37"/>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha target="$parentBg" change="0.5" duration="0.2" order="1"/>
+				<Alpha target="$parentHighlight" change="1" duration="0.2" order="1"/>
+				<Alpha target="$parentOrb" change="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" change="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" change="-1" duration="0.25" order="2"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().orb:SetAlpha(0.5);
+						self:GetParent().orb:Show();
+						self:GetParent().highlight:SetAlpha(0.5);
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().orb:SetAlpha(1.0);
+						self:GetParent().bg:SetAlpha(1.0);
+						self:GetParent().highlight:SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="animOut">
+				<Alpha target="$parentBg" change="-0.5" duration="0.2" order="1"/>
+				<Alpha target="$parentHighlight" change="-1" duration="0.2" order="1"/>
+				<Alpha target="$parentOrb" change="-1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" change="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" change="-1" duration="0.25" order="2"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().glow:SetAlpha(1);
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().orb:SetAlpha(0.0);
+						self:GetParent().bg:SetAlpha(0.5);
+						self:GetParent().highlight:SetAlpha(0);
+						self:GetParent().glow:SetAlpha(0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" file="Interface\PlayerFrame\Priest-ShadowUI" parentKey="bg" alpha="0.5">
+					<Size x="38" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.30078125" right="0.44921875" top="0.44531250" bottom="0.73437500"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentOrb" file="Interface\PlayerFrame\Priest-ShadowUI" parentKey="orb" alpha="0">
+					<Size x="38" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.45703125" right="0.60546875" top="0.44531250" bottom="0.73437500"/>
+				</Texture>
+				<Texture name="$parentHighlight" file="Interface\PlayerFrame\Priest-ShadowUI" parentKey="highlight" alpha="0">
+					<Size x="74" y="44"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.29296875" top="0.44531250" bottom="0.78906250"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlow" file="Interface\PlayerFrame\Priest-ShadowUI" parentKey="glow" alpha="0" alphaMode="ADD">
+					<Size x="38" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.45703125" right="0.60546875" top="0.44531250" bottom="0.73437500"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="PriestBarFrame" parent="PlayerFrame" toplevel="true" hidden="true" enableMouse="true">
+		<Size>
+		  <AbsDimension x="159" y="54"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="53" y="37"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="28" right="33" top="2" bottom="22"/>
+		</HitRectInsets>
+		<Animations>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha change="1" duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\PlayerFrame\Priest-ShadowUI" setAllPoints="true">
+					<TexCoords left="0.00390625" right="0.62500000" top="0.00781250" bottom="0.42968750"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentOrb1" inherits="ShadowOrbTemplate" parentKey="orb1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="26" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentOrb2" inherits="ShadowOrbTemplate" parentKey="orb2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentOrb1" relativePoint="RIGHT" x="-5" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentOrb3" inherits="ShadowOrbTemplate" parentKey="orb3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentOrb2" relativePoint="RIGHT" x="-5" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PriestBarFrame_OnLoad"/>
+			<OnEvent function="PriestBarFrame_OnEvent"/>
+			<OnEnter>
+				GameTooltip_SetDefaultAnchor(GameTooltip, self);
+				GameTooltip:SetText(SHADOW_ORBS, 1, 1, 1);
+				GameTooltip:AddLine(SHADOW_ORBS_TOOLTIP, nil, nil, nil, true);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+</Ui>

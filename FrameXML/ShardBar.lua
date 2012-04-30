@@ -1,6 +1,196 @@
-SHARD_BAR_NUM_SHARDS = 3;
-SHARDBAR_SHOW_LEVEL = 10;
+local WARLOCK_POWER_FILLBAR = {
+	Demonology 			= { left = 0.03906250, right = 0.55468750, top = 0.10546875, bottom = 0.19921875, width = 132, fileWidth = 256 };
+	DemonologyActivated	= { left = 0.03906250, right = 0.55468750, top = 0.00390625, bottom = 0.09765625, width = 132, fileWidth = 256 };
+	Destruction			= { left = 0.30078125, right = 0.37890625, top = 0.32812500, bottom = 0.67187500, height = 22, fileHeight = 64 };
+};
+local MAX_POWER_PER_EMBER = 10;
 
+-- GENERAL WARLOCK
+function WarlockPowerFrame_OnLoad(self)
+	local _, class = UnitClass("player");
+	if ( class == "WARLOCK" ) then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+		self:RegisterEvent("UNIT_DISPLAYPOWER");
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player", "vehicle");	
+		self:RegisterEvent("PLAYER_TALENT_UPDATE");
+		--self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+		ShardBarFrame.shardCount = 3;
+		BurningEmbersBarFrame.emberCount = 3;
+		BurningEmbersBarFrame.displayedPower = 0;
+		DemonicFuryBarFrame.displayedPower = 0;
+		WarlockPowerFrame_SetUpCurrentPower(self);
+	end
+end
+
+function WarlockPowerFrame_OnEvent(self, event, arg1, arg2)
+	-- update events
+	if ( self.activeBar ) then
+		if ( (event == "UNIT_POWER_FREQUENT") and (arg1 == WarlockPowerFrame:GetParent().unit) ) then
+			self.activeBar:OnEvent(arg2);
+			return;
+		elseif ( event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD" ) then
+			self.activeBar:OnEvent();
+			return;
+		end
+	end
+	-- power specific events
+	if ( event == "UNIT_AURA" and (arg1 == WarlockPowerFrame:GetParent().unit) ) then
+		DemonicFuryBar_CheckAndSetState();
+	elseif ( event == "SPELLS_CHANGED" ) then
+		if ( IsSpellKnown(self.reqSpellID) ) then
+			self:UnregisterEvent("SPELLS_CHANGED");
+			self.reqSpellID = nil;
+			-- clear spec to force reevaluation
+			self.spec = nil;
+			WarlockPowerFrame_SetUpCurrentPower(self, true);
+		end
+	elseif ( self.activeBar and event == "CVAR_UPDATE" and ( arg1 == "STATUS_TEXT_PLAYER" or arg1 == "STATUS_TEXT_PERCENT" ) ) then
+		DemonicFuryBar_CheckStatusCVars(self.activeBar);
+		self.activeBar:OnEvent(nil, true);
+	-- power may have changed
+	elseif ( event == "PLAYER_TALENT_UPDATE" ) then
+		WarlockPowerFrame_SetUpCurrentPower(self, true);
+	end
+end
+
+-- this function might be called to reshow the power bar, like after leaving a vehicle
+function WarlockPowerFrame_SetUpCurrentPower(self, shouldAnim)
+	self = self or WarlockPowerFrame;
+	local doShow = false;
+	local doAnim = false;
+	local spec = GetSpecialization();
+	if ( spec == SPEC_WARLOCK_AFFLICTION ) then
+		-- set up Affliction
+		if ( self.spec ~= spec ) then
+			-- tear down Demonic and Destruction
+			DemonicFuryBarFrame:Hide();
+			self:UnregisterEvent("UNIT_AURA");
+			self:UnregisterEvent("CVAR_UPDATE");
+			BurningEmbersBarFrame:Hide();
+			self:UnregisterEvent("SPELLS_CHANGED");
+			self:SetScript("OnUpdate", nil);
+			-- set up Affliction
+			-- only show shard bar if soulburn is known
+			if ( IsSpellKnown(WARLOCK_SOULBURN) ) then
+				self.activeBar = ShardBarFrame;
+				self.activeBar.OnEvent = ShardBar_Update;
+				ShardBarFrame:Show();
+				if ( shouldAnim ) then
+					doAnim = true;
+				end
+			else
+				self.activeBar = nil;
+				self:RegisterEvent("SPELLS_CHANGED");
+				self.reqSpellID = WARLOCK_SOULBURN;
+			end
+		end
+		doShow = true;
+	elseif ( spec == SPEC_WARLOCK_DESTRUCTION ) then
+		-- set up Destruction
+		if ( self.spec ~= spec ) then
+			-- tear down Affliction and Demonic
+			DemonicFuryBarFrame:Hide();
+			self:UnregisterEvent("UNIT_AURA");
+			self:UnregisterEvent("CVAR_UPDATE");
+			ShardBarFrame:Hide();
+			self:UnregisterEvent("SPELLS_CHANGED");
+			-- set up Destruction
+			-- only show if burning embers is known
+			if ( IsSpellKnown(WARLOCK_BURNING_EMBERS) ) then
+				self.activeBar = BurningEmbersBarFrame;
+				self.activeBar.OnEvent = BurningEmbersBar_Update;
+				self.activeBar.SetPower = BurningEmbersBar_SetPower;
+				self:SetScript("OnUpdate", WarlockPowerFrame_OnUpdate);
+				BurningEmbersBarFrame:Show();
+				if ( shouldAnim ) then
+					doAnim = true;
+				end
+			else
+				self.activeBar = nil;
+				self:SetScript("OnUpdate", nil);
+				self:RegisterEvent("SPELLS_CHANGED");
+				self.reqSpellID = WARLOCK_BURNING_EMBERS;
+			end
+		end
+		doShow = true;
+	elseif ( spec == SPEC_WARLOCK_DEMONOLOGY ) then
+		if ( self.spec ~= spec ) then
+			-- tear down Affliction and Destruction
+			ShardBarFrame:Hide();
+			BurningEmbersBarFrame:Hide();
+			self:UnregisterEvent("SPELLS_CHANGED");
+			-- set up Demonic
+			self.activeBar = DemonicFuryBarFrame;
+			self.activeBar.OnEvent = DemonicFuryBar_Update;
+			self.activeBar.SetPower = DemonicFuryBar_SetPower;
+			self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
+			self:RegisterEvent("CVAR_UPDATE");
+			self:SetScript("OnUpdate", WarlockPowerFrame_OnUpdate);
+			DemonicFuryBar_CheckStatusCVars(self.activeBar);
+			DemonicFuryBarFrame:Show();
+			if ( shouldAnim ) then
+				doAnim = true;
+			end
+		end
+		DemonicFuryBar_CheckAndSetState();
+		doShow = true;
+	else
+		-- no spec
+		self.activeBar = nil;
+		self:UnregisterEvent("SPELLS_CHANGED");
+		self:UnregisterEvent("UNIT_AURA");
+		self:UnregisterEvent("CVAR_UPDATE");
+		self:Hide();
+	end
+	
+	self.spec = spec;
+	if ( doShow ) then
+		self:Show();
+		if ( doAnim ) then
+			self:SetAlpha(0);
+			self.showAnim:Play();
+		end
+		if ( self.activeBar ) then
+			self.activeBar:OnEvent(nil, true);	-- forces instant update instead of smooth progress
+		end
+	end
+end
+
+function WarlockPowerFrame_UpdateFill(texture, texData, value, maxValue)
+	if ( value <= 0 ) then
+		texture:Hide();
+	elseif ( value >= maxValue ) then
+		texture:SetTexCoord(texData["left"], texData["right"], texData["top"], texData["bottom"]);
+		if ( texData.width ) then
+			texture:SetWidth(texData["width"]);
+		else
+			texture:SetHeight(texData["height"]);
+		end
+		texture:Show();
+	else
+		if ( texData.width ) then
+			local texWidth = (value / maxValue) * texData["width"];
+			local right = texData["left"] + texWidth / texData["fileWidth"];
+			texture:SetTexCoord(texData["left"], right, texData["top"], texData["bottom"]);
+			texture:SetWidth(texWidth);
+		else
+			local texHeight = (value / maxValue) * texData["height"];
+			local top = texData["bottom"] - texHeight / texData["fileHeight"];
+			texture:SetTexCoord(texData["left"], texData["right"], top, texData["bottom"]);
+			texture:SetHeight(texHeight);
+		end
+		texture:Show();
+	end
+end
+
+function WarlockPowerFrame_OnUpdate(self, elapsed)
+	local activeBar = self.activeBar;
+	if ( activeBar.power and activeBar.power ~= activeBar.displayedPower ) then
+		activeBar:SetPower(GetSmoothProgressChange(activeBar.power, activeBar.displayedPower, activeBar.maxPower, elapsed));
+	end
+end
+
+-- AFFLICTION
 function ShardBar_SetShard(self, active)
 	if ( active ) then
 		if (self.animOut:IsPlaying()) then
@@ -23,47 +213,166 @@ function ShardBar_SetShard(self, active)
 	end
 end
 
-function ShardBar_Update()
-	local numShards = UnitPower( ShardBarFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
-	for i=1,SHARD_BAR_NUM_SHARDS do
+function ShardBar_Update(self, powerType)
+	if ( powerType and powerType ~= "SOUL_SHARDS" ) then
+		return;
+	end
+
+	local numShards = UnitPower( WarlockPowerFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
+	local maxShards = UnitPowerMax( WarlockPowerFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
+	-- if max shards changed, show/hide the 4th and update anchors 
+	if ( self.shardCount ~= maxShards ) then
+		if ( maxShards == 3 ) then
+			self.shard1:SetPoint("TOPLEFT", 0, 0);
+			self.shard2:SetPoint("TOPLEFT", self.shard1, "TOPLEFT", 35, 0);
+			self.shard3:SetPoint("TOPLEFT", self.shard2, "TOPLEFT", 35, 0);
+			self.shard4:Hide();
+		else
+			self.shard1:SetPoint("TOPLEFT", -10, 0);
+			self.shard2:SetPoint("TOPLEFT", self.shard1, "TOPLEFT", 30, 0);
+			self.shard3:SetPoint("TOPLEFT", self.shard2, "TOPLEFT", 30, 0);
+			self.shard4:Show();
+		end
+		self.shardCount = maxShards;
+	end
+	-- update individual shard display
+	for i = 1, maxShards do
 		local shard = _G["ShardBarFrameShard"..i];
 		local shouldShow = i <= numShards;
 		ShardBar_SetShard(shard, shouldShow);
 	end
 end
 
+-- DEMONOLOGY
 
-function ShardBar_OnLoad (self)
-	-- Disable rune frame if not a Warlock.
-	local _, class = UnitClass("player");	
-	if ( class ~= "WARLOCK" ) then
-		self:Hide();
-	elseif UnitLevel("player") < SHARDBAR_SHOW_LEVEL then
-		self:RegisterEvent("PLAYER_LEVEL_UP");
-		self:SetAlpha(0);
+function DemonicFuryBar_Update(self, powerType, forceUpdate)
+	if ( powerType and powerType ~= "DEMONIC_FURY" ) then
+		return;
 	end
-	
-	self:RegisterEvent("UNIT_POWER_FREQUENT");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("UNIT_DISPLAYPOWER");
+	self.power = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
+	self.maxPower = UnitPowerMax("player", SPELL_POWER_DEMONIC_FURY);
+	if ( forceUpdate ) then
+		DemonicFuryBar_SetPower(self, self.power);
+	end
 end
 
+function DemonicFuryBar_SetPower(self, power)
+	self.displayedPower = power;
+	local texData;
+	if ( self.activated ) then
+		texData = WARLOCK_POWER_FILLBAR["DemonologyActivated"];
+	else
+		texData = WARLOCK_POWER_FILLBAR["Demonology"];
+	end
+	WarlockPowerFrame_UpdateFill(self.fill, texData, power, self.maxPower);
+	if ( self.showPercent and self.maxPower > 0 ) then
+		self.powerText:SetText(floor(abs(power/self.maxPower*100)).."%");
+	else
+		self.powerText:SetText(floor(abs(power)));
+	end
+end
 
-function ShardBar_OnEvent (self, event, arg1, arg2)
-	if ( event == "UNIT_DISPLAYPOWER" ) then
-		ShardBar_Update();	
-	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
-		ShardBar_Update();	
-	elseif ( (event == "UNIT_POWER_FREQUENT") and (arg1 == self:GetParent().unit) ) then
-		if ( arg2 == "SOUL_SHARDS" ) then
-			ShardBar_Update();
+function DemonicFuryBar_CheckAndSetState()
+	local activated = false;
+	local index = 1;
+	local name, _, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", index);
+	while spellId do
+		if ( spellId == WARLOCK_METAMORPHOSIS ) then
+			activated = true;
+			break;
 		end
-	elseif( event ==  "PLAYER_LEVEL_UP" ) then
-		local level = arg1;
-		if level >= SHARDBAR_SHOW_LEVEL then
-			self:UnregisterEvent("PLAYER_LEVEL_UP");
-			self.showAnim:Play();
-			ShardBar_Update();
+		name, _, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", index);
+		index = index + 1
+	end
+	local frame = DemonicFuryBarFrame;
+	if ( activated and not frame.activated ) then
+		frame.activated = true;
+		frame.bar:SetTexCoord(0.03906250, 0.69921875, 0.30859375, 0.51171875);
+		frame.notch:SetTexCoord(0.00390625, 0.03125000, 0.00390625, 0.08984375);
+		DemonicFuryBar_Update(frame);
+	elseif ( not activated and frame.activated ) then
+		frame.activated = nil;
+		frame.bar:SetTexCoord(0.03906250, 0.69921875, 0.51953125, 0.72265625);
+		frame.notch:SetTexCoord(0.00390625, 0.03125000, 0.09765625, 0.18359375);
+		DemonicFuryBar_Update(frame);
+	end
+end
+
+function DemonicFuryBar_CheckStatusCVars(self)
+	self.showPercent = GetCVarBool("statusTextPercentage");
+	if ( GetCVarBool("playerStatusText") ) then
+		self.powerText:Show();
+		self.lockShow = true;
+	else
+		self.powerText:Hide();
+		self.lockShow = false;
+	end
+end
+
+-- DESTRUCTION
+
+function BurningEmbersBar_Update(self, powerType, forceUpdate)
+	if ( powerType and powerType ~= "BURNING_EMBERS" ) then
+		return;
+	end
+
+	local maxPower = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS);
+	local power = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
+	local numEmbers = floor(maxPower / MAX_POWER_PER_EMBER);
+
+	if ( self.emberCount ~= numEmbers ) then
+		if ( numEmbers == 3 ) then
+			self.ember1:SetPoint("TOPLEFT", 17, 7);
+			self.ember2:SetPoint("LEFT", self.ember1, 40, 0);
+			self.ember3:SetPoint("LEFT", self.ember2, 40, 0);
+			self.ember4.fire:Hide();
+			self.ember4.active = false;
+			self.ember4:Hide();
+		else
+			self.ember1:SetPoint("TOPLEFT", 16, 7);
+			self.ember2:SetPoint("LEFT", self.ember1, 26, 0);
+			self.ember3:SetPoint("LEFT", self.ember2, 26, 0);
+			self.ember4:Show();
 		end
+		self.emberCount = numEmbers;
+	end
+	self.power = power;
+	self.maxPower = maxPower;
+	if ( forceUpdate ) then
+		BurningEmbersBar_SetPower(self, power);
+	end
+end
+
+function BurningEmbersBar_SetPower(self, power)
+	self.displayedPower = power;
+	for i = 1, self.emberCount do
+		local ember = self["ember"..i];
+		WarlockPowerFrame_UpdateFill(ember.fill, WARLOCK_POWER_FILLBAR["Destruction"], power, MAX_POWER_PER_EMBER);
+
+		-- animate?
+		if ( power >= MAX_POWER_PER_EMBER ) then
+			if (ember.animOut:IsPlaying()) then
+				ember.animOut:Stop();
+			end
+			
+			if (not ember.active and not ember.animIn:IsPlaying()) then
+				ember.animIn:Play();
+				ember.active = true;
+				ember.fire:Show();
+			end
+		else
+			if (ember.animIn:IsPlaying()) then
+				ember.animIn:Stop();
+			end
+			
+			if (ember.active and not ember.animOut:IsPlaying()) then
+				ember.animOut:Play();
+				ember.active = false;
+				ember.fire:Hide();
+			end
+		end
+		
+		-- leftover for the other embers
+		power = power - MAX_POWER_PER_EMBER;
 	end
 end

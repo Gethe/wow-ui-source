@@ -41,9 +41,23 @@ function UpdateMicroButtonsParent(parent)
 	end
 end
 
+function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
+	CharacterMicroButton:ClearAllPoints();
+	CharacterMicroButton:SetPoint(anchor, achorTo, relAnchor, x, y);
+	PVPMicroButton:ClearAllPoints();
+	if ( isStacked ) then
+		PVPMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 24);
+	else
+		PVPMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0);
+	end
+	UpdateMicroButtons();
+end
+
 function UpdateMicroButtons()
 	local playerLevel = UnitLevel("player");
-	if ( CharacterFrame:IsShown() ) then
+	local factionGroup = UnitFactionGroup("player");
+
+	if ( CharacterFrame and CharacterFrame:IsShown() ) then
 		CharacterMicroButton:SetButtonState("PUSHED", 1);
 		CharacterMicroButton_SetPushed();
 	else
@@ -51,7 +65,7 @@ function UpdateMicroButtons()
 		CharacterMicroButton_SetNormal();
 	end
 	
-	if ( SpellBookFrame:IsShown() ) then
+	if ( SpellBookFrame and SpellBookFrame:IsShown() ) then
 		SpellbookMicroButton:SetButtonState("PUSHED", 1);
 	else
 		SpellbookMicroButton:SetButtonState("NORMAL");
@@ -60,21 +74,17 @@ function UpdateMicroButtons()
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", 1);
 	else
-		if (GetNumTalentPoints() == 0) then
-			TalentMicroButton:Disable();
-		else
-			TalentMicroButton:Enable();
-			TalentMicroButton:SetButtonState("NORMAL");
-		end
+		TalentMicroButton:Enable();
+		TalentMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( QuestLogFrame:IsShown() ) then
+	if (  QuestLogFrame and QuestLogFrame:IsShown() ) then
 		QuestLogMicroButton:SetButtonState("PUSHED", 1);
 	else
 		QuestLogMicroButton:SetButtonState("NORMAL");
 	end
 	
-	if ( ( GameMenuFrame:IsShown() ) 
+	if ( ( GameMenuFrame and GameMenuFrame:IsShown() ) 
 		or ( InterfaceOptionsFrame:IsShown()) 
 		or ( KeyBindingFrame and KeyBindingFrame:IsShown()) 
 		or ( MacroFrame and MacroFrame:IsShown()) ) then
@@ -88,22 +98,29 @@ function UpdateMicroButtons()
 	if ( PVPFrame and PVPFrame:IsShown() ) then
 		PVPMicroButton:SetButtonState("PUSHED", 1);
 		PVPMicroButton_SetPushed();
-	else
-		if ( playerLevel < PVPMicroButton.minLevel ) then
+	elseif ( PVPFrame ) then
+		if ( playerLevel < PVPMicroButton.minLevel or factionGroup == "Neutral" ) then
 			PVPMicroButton:Disable();
 		else
 			PVPMicroButton:Enable();
 			PVPMicroButton:SetButtonState("NORMAL");
 			PVPMicroButton_SetNormal();
 		end
+	else
+		PVPMicroButton:Enable();
+		PVPMicroButton:SetButtonState("NORMAL");
 	end
 
 	GuildMicroButton_UpdateTabard();
-	if ( ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() ) ) then
+	if ( IsTrialAccount() or factionGroup == "Neutral" ) then
+		GuildMicroButton:Disable();
+	elseif ( ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() ) ) then
+		GuildMicroButton:Enable();
 		GuildMicroButton:SetButtonState("PUSHED", 1);
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
 		GuildMicroButtonTabard:SetAlpha(0.70);
-	elseif ( not IsTrialAccount() ) then
+	else
+		GuildMicroButton:Enable();
 		GuildMicroButton:SetButtonState("NORMAL");
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
 		GuildMicroButtonTabard:SetAlpha(1);	
@@ -116,10 +133,10 @@ function UpdateMicroButtons()
 		end
 	end
 	
-	if ( LFDParentFrame:IsShown() ) then
+	if ( PVEFrame and PVEFrame:IsShown() ) then
 		LFDMicroButton:SetButtonState("PUSHED", 1);
 	else
-		if ( playerLevel < LFDMicroButton.minLevel ) then
+		if ( playerLevel < LFDMicroButton.minLevel or factionGroup == "Neutral" ) then
 			LFDMicroButton:Disable();
 		else
 			LFDMicroButton:Enable();
@@ -127,7 +144,7 @@ function UpdateMicroButtons()
 		end
 	end
 
-	if ( HelpFrame:IsShown() ) then
+	if ( HelpFrame and HelpFrame:IsShown() ) then
 		HelpMicroButton:SetButtonState("PUSHED", 1);
 	else
 		HelpMicroButton:SetButtonState("NORMAL");
@@ -151,9 +168,13 @@ function UpdateMicroButtons()
 	end
 	
 	
-	if ( RaidParentFrame:IsShown() ) then
+	if ( RaidParentFrame and RaidParentFrame:IsShown() ) then
+		RaidMicroButton:Enable();
 		RaidMicroButton:SetButtonState("PUSHED", 1);
+	elseif ( factionGroup == "Neutral" ) then
+		RaidMicroButton:Disable();
 	else
+		RaidMicroButton:Enable();
 		RaidMicroButton:SetButtonState("NORMAL");
 	end
 end
@@ -175,6 +196,10 @@ function AchievementMicroButton_OnEvent(self, event, ...)
 end
 
 function GuildMicroButton_OnEvent(self, event, ...)
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	if ( event == "UPDATE_BINDINGS" ) then
 		if ( IsInGuild() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
@@ -229,8 +254,8 @@ end
 function CharacterMicroButton_OnEvent(self, event, ...)
 	if ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		local unit = ...;
-		if ( unit == "player" ) then
-			SetPortraitTexture(MicroButtonPortrait, unit);
+		if ( not unit or unit == "player" ) then
+			SetPortraitTexture(MicroButtonPortrait, "player");
 		end
 		return;
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
@@ -262,9 +287,13 @@ end
 
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
-		if ( not (PlayerTalentFrame and PlayerTalentFrame:IsShown()) and GetNextTalentLevel() == level) then
+		if ( not (PlayerTalentFrame and PlayerTalentFrame:IsShown())) then
 			MicroButtonPulse(self);
 		end
 		if (level == SHOW_TALENT_LEVEL) then
@@ -276,11 +305,11 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		UpdateMicroButtons();
 		
 		-- On the first update from the server, flash the button if there are unspent points
-		-- Small hack: GetNumTalentTabs should return 0 if talents haven't been initialized yet
-		if (not self.receivedUpdate and GetNumTalentTabs(false, false) > 0) then
+		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
+		if (not self.receivedUpdate and GetNumSpecializations(false) > 0) then
 			self.receivedUpdate = true;
-			local activeSpec = GetActiveTalentGroup(false, false);
-			if (GetUnspentTalentPoints(false, false, activeSpec) > 0) then
+			local activeSpec = GetActiveSpecGroup(false);
+			if (GetNumUnspentTalents() > 0) then
 				MicroButtonPulse(self);
 			end
 		end

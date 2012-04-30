@@ -45,7 +45,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
 				<Offset>
@@ -101,7 +101,7 @@
 			<OnEvent function="CharacterMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
-	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -122,7 +122,7 @@
 			</OnEnter>
 		</Scripts>
 	</Button>
-	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -145,12 +145,15 @@
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnClick function="ToggleTalentFrame"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
-	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -174,7 +177,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -196,7 +199,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -246,6 +249,9 @@
 					self:Disable();
 					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT;
 				end
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent function="GuildMicroButton_OnEvent"/>
 			<OnClick>
@@ -253,7 +259,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="PVPMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="PVPMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -285,14 +291,20 @@
 				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
 				self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
 				local factionGroup = UnitFactionGroup("player");
-				if ( factionGroup ) then
+				if ( factionGroup and factionGroup ~= "Neutral" ) then
 					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
 				self.minLevel = SHOW_PVP_LEVEL;
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent>
+				if (IsBlizzCon()) then
+					return;
+				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
 			</OnEvent>
@@ -336,7 +348,7 @@
 			</OnDisable>
 		</Scripts>
 	</Button>
-	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="PVPMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -351,17 +363,23 @@
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 				self.minLevel = SHOW_LFD_LEVEL;
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent>
+				if (IsBlizzCon()) then
+					return;
+				end
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
 			<OnClick>
-				ToggleLFDParentFrame();
+				PVEFrame_ToggleFrame();
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="RaidMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="RaidMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -376,17 +394,23 @@
 				self.tooltipText = MicroButtonTooltipText(RAID_FINDER, "TOGGLERAIDFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_RAID_FINDER;
 				self.minLevel = SHOW_LFD_LEVEL;
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent>
 				self.tooltipText = MicroButtonTooltipText(RAID_FINDER, "TOGGLERAIDFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_RAID_FINDER;
+				if (IsBlizzCon()) then
+					return;
+				end
 			</OnEvent>
 			<OnClick>
 				ToggleRaidFrame();
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -401,17 +425,23 @@
 				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
 				self.minLevel = SHOW_LFD_LEVEL;
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent>
 				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
+				if (IsBlizzCon()) then
+					return;
+				end
 			</OnEvent>
 			<OnClick>
 				ToggleEncounterJournal();
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame">
+	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -571,7 +601,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" parent="MainMenuBarArtFrame" hidden="false">
+	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="false">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>

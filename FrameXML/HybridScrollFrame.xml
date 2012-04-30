@@ -122,18 +122,6 @@
 		<Size>
 			<AbsDimension x="20" y="0"/>
 		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="-18"/>
-				</Offset>
-			</Anchor>
-			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="16"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG">

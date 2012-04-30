@@ -3,8 +3,9 @@ local talentSpecInfoCache = {};
 
 function InspectTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetTalentLink(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
-			InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		--local link = GetTalentLink(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
+		local link = GetTalentLink(self:GetID(),
+			InspectTalentFrame.inspect, InspectTalentFrame.talentGroup);
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
@@ -13,19 +14,21 @@ end
 
 function InspectTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
-			InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		--GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
+		GameTooltip:SetTalent(self:GetID(),
+			InspectTalentFrame.inspect, InspectTalentFrame.talentGroup);
 	end
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
-		InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+	--GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
+	GameTooltip:SetTalent(self:GetID(),
+		InspectTalentFrame.inspect, InspectTalentFrame.talentGroup);
 end
 
 function InspectTalentFrame_UpdateTabs()
-	local numTabs = GetNumTalentTabs(InspectTalentFrame.inspect, InspectTalentFrame.pet);
+	local numTabs = GetNumSpecializations(InspectTalentFrame.inspect);
 	local selectedTab = PanelTemplates_GetSelectedTab(InspectTalentFrame);
 	local tab;
 	for i = 1, MAX_TALENT_TABS do
@@ -33,7 +36,7 @@ function InspectTalentFrame_UpdateTabs()
 		if ( tab ) then
 			talentSpecInfoCache[i] = talentSpecInfoCache[i] or { };
 			if ( i <= numTabs ) then
-				local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+				local id, name, description, icon, background = GetSpecializationInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.talentGroup);
 				if ( i == selectedTab ) then
 					-- If tab is the selected tab set the points spent info
 					local displayPointsSpent = pointsSpent + previewPointsSpent;
@@ -54,7 +57,7 @@ end
 
 function InspectTalentFrame_Update()
 
-	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
+	InspectTalentFrame.talentGroup = GetActiveSpecGroup(InspectTalentFrame.inspect);
 	InspectTalentFrame.unit = InspectFrame.unit;
 
 	-- update spec info first
@@ -80,8 +83,8 @@ function InspectTalentFrame_Update()
 	TalentFrame_Update(InspectTalentFrame);
 	
 	-- Update unspent talent point text
-	local unspentTalentPoints = TalentFrame_GetUnspentTalentPoints(InspectTalentFrame);
-	InspectTalentFrameTalentPointsText:SetFormattedText(UNSPENT_TALENT_POINTS, HIGHLIGHT_FONT_COLOR_CODE..unspentTalentPoints..FONT_COLOR_CODE_CLOSE);
+	--local unspentTalentPoints = TalentFrame_GetUnspentTalentPoints(InspectTalentFrame);
+	--InspectTalentFrameTalentPointsText:SetFormattedText(UNSPENT_TALENT_POINTS, HIGHLIGHT_FONT_COLOR_CODE..unspentTalentPoints..FONT_COLOR_CODE_CLOSE);
 end
 
 function InspectTalentFrame_OnLoad(self)

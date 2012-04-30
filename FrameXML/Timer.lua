@@ -66,10 +66,12 @@ function TimerTracker_OnEvent(self, event, ...)
 			
 			local factionGroup = GetPlayerFactionGroup();
 
-			if ( not timer.factionGroup or (timer.factionGroup ~= factionGroup) ) then
-				timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
-				timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
-				timer.factionGroup = factionGroup;
+			if ( factionGroup ~= "Neutral" ) then
+				if ( not timer.factionGroup or (timer.factionGroup ~= factionGroup) ) then
+					timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
+					timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
+					timer.factionGroup = factionGroup;
+				end
 			end
 		else
 			for a,b in pairs(self.timerList) do
@@ -110,7 +112,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer.glow2:SetTexture(timer.style.texture.."Glow");
 			
 			local factionGroup = GetPlayerFactionGroup();
-			if ( factionGroup ) then
+			if ( factionGroup and factionGroup ~= "Neutral" ) then
 				timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
 				timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
 			end

@@ -89,7 +89,7 @@ function ArchaeologyFrame_OnLoad(self)
 	end	
 	
 	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup ) then
+	if ( factionGroup and factionGroup ~= "Neutral" ) then
 		if ( factionGroup == "Alliance" ) then
 			self.tab1.factionIcon:SetTexCoord(0.31250000, 0.36914063, 0.79296875, 0.93359375);
 			self.factionIcon:SetTexCoord(0.41992188, 0.47265625, 0.45703125, 0.58593750);

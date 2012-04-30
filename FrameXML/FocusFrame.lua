@@ -17,7 +17,7 @@ function FocusFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 
@@ -79,7 +79,7 @@ function FocusFrame_OnEvent (self, event, ...)
 		if ( arg1 == "focus" ) then
 			FocusFrame_UpdateAuras(self);
 		end
-	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		TargetofFocus_Update();
 		FocusFrame_CheckFaction(self);
 	elseif ( event == "RAID_TARGET_UPDATE" ) then
@@ -196,10 +196,10 @@ function TargetofFocus_Update (self, elapsed)
 	local show;
 	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists("focus") and UnitExists("focus-target") and --[[( not UnitIsUnit(PlayerFrame.unit, "focus") ) and ]]( UnitHealth("focus") > 0 ) ) then
 		if ( ( SHOW_TARGET_OF_TARGET_STATE == "5" ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "4" and ( (GetNumRaidMembers() > 0) or (GetNumPartyMembers() > 0) ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "3" and ( (GetNumRaidMembers() == 0) and (GetNumPartyMembers() == 0) ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "2" and ( (GetNumPartyMembers() > 0) and (GetNumRaidMembers() == 0) ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "1" and ( GetNumRaidMembers() > 0 ) ) ) then
+		     ( SHOW_TARGET_OF_TARGET_STATE == "4" and ( IsInGroup() )) or
+		     ( SHOW_TARGET_OF_TARGET_STATE == "3" and ( not IsInGroup()) ) or
+		     ( SHOW_TARGET_OF_TARGET_STATE == "2" and ( IsInGroup() and not IsInRaid()) ) or
+		     ( SHOW_TARGET_OF_TARGET_STATE == "1" and ( IsInRaid() ) )) then
 			show = true;
 		end
 	end

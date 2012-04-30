@@ -1,6 +1,10 @@
 LOOTFRAME_NUMBUTTONS = 4;
 NUM_GROUP_LOOT_FRAMES = 4;
 MASTER_LOOT_THREHOLD = 4;
+LOOT_SLOT_NONE = 0;
+LOOT_SLOT_ITEM = 1;
+LOOT_SLOT_MONEY = 2;
+LOOT_SLOT_CURRENCY = 3;
 
 function LootFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_OPENED");
@@ -9,6 +13,8 @@ function LootFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_CLOSED");
 	self:RegisterEvent("OPEN_MASTER_LOOT_LIST");
 	self:RegisterEvent("UPDATE_MASTER_LOOT_LIST");
+	--hide button bar
+	ButtonFrameTemplate_HideButtonBar(self);
 end
 
 function LootFrame_OnEvent(self, event, ...)
@@ -103,7 +109,7 @@ function LootFrame_UpdateButton(index)
 	local button = _G["LootButton"..index];
 		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 		if ( slot <= numLootItems ) then	
-			if ( (LootSlotIsItem(slot) or LootSlotIsCoin(slot) or LootSlotIsCurrency(slot)) and index <= numLootToShow ) then
+			if ( LootSlotHasItem(slot) and index <= numLootToShow ) then
 				local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
 				local text = _G["LootButton"..index.."Text"];
 				if ( texture ) then
@@ -256,12 +262,13 @@ end
 
 function LootItem_OnEnter(self)
 	local slot = ((LOOTFRAME_NUMBUTTONS - 1) * (LootFrame.page - 1)) + self:GetID();
-	if ( LootSlotIsItem(slot) ) then
+	local slotType = GetLootSlotType(slot);
+	if ( slotType == LOOT_SLOT_ITEM ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetLootItem(slot);
 		CursorUpdate(self);
 	end
-	if ( LootSlotIsCurrency(slot) ) then
+	if ( slotType == LOOT_SLOT_CURRENCY ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetLootCurrency(slot);
 		CursorUpdate(self);
@@ -293,7 +300,7 @@ function GroupLootDropDown_Initialize()
 		return;
 	end
 	
-	if ( GetNumRaidMembers() > 0 ) then
+	if ( IsInRaid() ) then
 		-- In a raid
 		info.isTitle = 1;
 		info.text = GIVE_LOOT;

@@ -829,7 +829,7 @@
 						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
 						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
-					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate2" text="ENTER_DUNGEON">
+					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate" text="ENTER_DUNGEON" parentKey="enterButton">
 						<Size>
 							<AbsDimension x="115" y="22"/>
 						</Size>
@@ -847,7 +847,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LEAVE_QUEUE">
+					<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE">
 						<Size>
 							<AbsDimension x="115" y="22"/>
 						</Size>
@@ -1362,7 +1362,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT" motionScriptsWhileDisabled="true">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>
@@ -1382,7 +1382,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="DECLINE">
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>

@@ -1229,6 +1229,25 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame enableMouse="true" parentKey="grayBox" hidden="true">
+				<Size x="140" y="55"/>	
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Size x="134" y="26"/>	
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<Color a="0.6"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<NormalFont style="GameFontNormalLarge"/>
 		<ButtonText>
 			<Anchors>
@@ -1572,7 +1591,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentTier" inherits="QuestFont_Super_Huge" text="EXPANSION_NAME3" justifyH="LEFT" parentKey="tier">
-							<Size x="300" y="0"/>
+							<Size x="0" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="10" y="-15"/>
 							</Anchors>
@@ -1587,6 +1606,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								self:GetParent().currTab = 2;
+							
 								self:Disable();
 								self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 								self.selectedGlow:Show();
@@ -1605,6 +1626,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								self:GetParent().currTab = 1;
+								
 								self:Disable();
 								self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 								self.selectedGlow:Show();
@@ -1617,10 +1640,25 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentTierDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="tierDropDown" hidden="true">
+					<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="-2" y="-6"/>
+							<Anchor point="LEFT" relativeTo="$parentTier" relativePoint="RIGHT" x="10" y="0"/>
 						</Anchors>
+						<Scripts>
+							<OnClick> 
+								ToggleDropDownMenu(1, nil, EJTierDropDown, self:GetName(), 74, 15);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Frame name="EJTierDropDown" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad function="EJTierDropDown_OnLoad"/>
+						</Scripts>
 					</Frame>
 					<ScrollFrame name="$parentScrollFrame" parentKey="scroll" inherits="UIPanelScrollFrameCodeTemplate">
 						<Size x="785" y="377"/>
@@ -2186,7 +2224,7 @@
 									<Frame name="$parentClassFilterFrame" parentKey="classFilter" hidden="true" enableMouse="true">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="0" y="0"/>
-											<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-25" y="-170"/>
+											<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-25" y="-220"/>
 										</Anchors>
 										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 											<EdgeSize>
@@ -2258,6 +2296,11 @@
 											<CheckButton name="$parentClass10" inherits="EncounterClassFilterTemplate" parentKey="class10" id="10">
 												<Anchors>
 													<Anchor point="TOP" relativeTo="$parentClass5" relativePoint="BOTTOM" x="0" y="-8"/>
+												</Anchors>
+											</CheckButton>
+											<CheckButton name="$parentClass11" inherits="EncounterClassFilterTemplate" parentKey="class11" id="11">
+												<Anchors>
+													<Anchor point="TOP" relativeTo="$parentClass6" relativePoint="BOTTOM" x="0" y="-8"/>
 												</Anchors>
 											</CheckButton>
 										</Frames>

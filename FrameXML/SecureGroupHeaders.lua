@@ -39,12 +39,12 @@ columnAnchorPoint = [STRING] - the anchor point of each new column (ie. use LEFT
 --]]
 
 function SecureGroupHeader_OnLoad(self)
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 end
 
 function SecureGroupHeader_OnEvent(self, event, ...)
-	if ( (event == "PARTY_MEMBERS_CHANGED" or event == "UNIT_NAME_UPDATE") and self:IsVisible() ) then
+	if ( (event == "GROUP_ROSTER_UPDATE" or event == "UNIT_NAME_UPDATE") and self:IsVisible() ) then
 		SecureGroupHeader_Update(self);
 	end
 end
@@ -245,11 +245,11 @@ end
 local function GetGroupHeaderType(self)
 	local kind, start, stop;
 
-	local nRaid = GetNumRaidMembers();
-	local nParty = GetNumPartyMembers();
-	if ( nRaid > 0 and self:GetAttribute("showRaid") ) then
+	local nRaid = GetNumGroupMembers();
+	local nParty = GetNumSubgroupMembers();
+	if ( IsInRaid() and self:GetAttribute("showRaid") ) then
 		kind = "RAID";
-	elseif ( (nRaid > 0 or nParty > 0) and self:GetAttribute("showParty") ) then
+	elseif ( IsInGroup() and self:GetAttribute("showParty") ) then
 		kind = "PARTY";
 	elseif ( self:GetAttribute("showSolo") ) then
 		kind = "SOLO";
@@ -466,13 +466,13 @@ filterOnPet = [BOOLEAN] - if true, then pet names are used when sorting/filterin
 --]]
 
 function SecureGroupPetHeader_OnLoad(self)
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PET");
 end
 
 function SecureGroupPetHeader_OnEvent(self, event, ...)
-	if ( (event == "PARTY_MEMBERS_CHANGED" or event == "UNIT_NAME_UPDATE" or event == "UNIT_PET") and self:IsVisible() ) then
+	if ( (event == "GROUP_ROSTER_UPDATE" or event == "UNIT_NAME_UPDATE" or event == "UNIT_PET") and self:IsVisible() ) then
 		SecureGroupPetHeader_Update(self);
 	end
 end

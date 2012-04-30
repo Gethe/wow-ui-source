@@ -256,15 +256,15 @@ function LevelUpDisplay_BuildCharacterList(self)
 	end
 	
 	
-	if  self.level == GetNextTalentLevel(self.level-1)  then
-		self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["TalentPoint"]
-	end
+	--if  self.level == GetNextTalentLevel(self.level-1)  then
+	--	self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["TalentPoint"]
+	--end
 	
 	
 	local spells = {GetCurrentLevelSpells(self.level)};
 	for _,spell in pairs(spells) do		
 		name, _, icon = GetSpellInfo(spell);
-		self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
+		self.unlockList[#self.unlockList +1] = { entryType = "spell", text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
 																link=LEVEL_UP_ABILITY2.." "..GetSpellLink(spell)
 															};
 	end	
@@ -298,7 +298,7 @@ function LevelUpDisplay_BuildCharacterList(self)
 	local features = {GetCurrentLevelFeatures(self.level)};
 	for _,feature in pairs(features) do		
 		name, _, icon = GetSpellInfo(feature);
-		self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_FEATURE, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
+		self.unlockList[#self.unlockList +1] = { entryType = "spell", text = name, subText = LEVEL_UP_FEATURE, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																link=LEVEL_UP_FEATURE2.." "..GetSpellLink(feature)
 															};
 	end	
@@ -309,9 +309,6 @@ end
 function LevelUpDisplay_BuildPetList(self)
 	local name, icon = "","";
 	self.unlockList = {};
-	if  self.level == GetNextPetTalentLevel(self.level-1)  then
-		self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["PetTalentPoint"]
-	end
 
 	-- TODO: Pet Spells
 	
@@ -520,7 +517,9 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType)
 	end
 	self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 	for _,skill in pairs(chatLevelUP.unlockList) do
-		self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
+		if skill.entryType ~= "spell" then
+			self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
+		end
 	end
 	
 	if levelUpType == LEVEL_UP_TYPE_CHARACTER and (level == 25 or level == 50 or level == 75) then

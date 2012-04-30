@@ -12,14 +12,13 @@ function CompactRaidFrameManager_OnLoad(self)
 	
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	
 	self.containerResizeFrame:SetMinResize(self.container:GetWidth(), MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2);
 	self.dynamicContainerPosition = true;
@@ -40,7 +39,7 @@ local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", 
 function CompactRaidFrameManager_OnEvent(self, event, ...)
 	if ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
 		CompactRaidFrameManager_UpdateContainerBounds(self);
-	elseif ( event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		CompactRaidFrameManager_UpdateShown(self);
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 		CompactRaidFrameManager_UpdateLabel(self);
@@ -95,7 +94,7 @@ function CompactRaidFrameManager_UpdateShown(self)
 end
 
 function CompactRaidFrameManager_UpdateLabel(self)
-	if ( GetNumRaidMembers() > 0 ) then
+	if ( IsInRaid() ) then
 		self.displayFrame.label:SetText(RAID_MEMBERS);
 	else
 		self.displayFrame.label:SetText(PARTY_MEMBERS);
@@ -137,28 +136,28 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 		self.displayFrame.profileSelector:Hide();
 	end
 	
-	if ( GetNumRaidMembers() > 0 ) then
+	if ( IsInRaid() ) then
 		FlowContainer_AddObject(container, self.displayFrame.filterOptions);
 		self.displayFrame.filterOptions:Show();
 	else
 		self.displayFrame.filterOptions:Hide();
 	end
 	
-	if ( GetNumRaidMembers() == 0 or IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
+	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 		FlowContainer_AddObject(container, self.displayFrame.raidMarkers);
 		self.displayFrame.raidMarkers:Show();
 	else
 		self.displayFrame.raidMarkers:Hide();
 	end
 	
-	if ( GetNumRaidMembers() == 0 or IsPartyLeader() or IsRaidLeader() or IsRaidOfficer() ) then
+	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 		FlowContainer_AddObject(container, self.displayFrame.leaderOptions);
 		self.displayFrame.leaderOptions:Show();
 	else
 		self.displayFrame.leaderOptions:Hide();
 	end
 	
-	if ( GetNumRaidMembers() == 0 and IsPartyLeader() and not HasLFGRestrictions() ) then
+	if ( not IsInRaid() and UnitIsGroupLeader("player") and not HasLFGRestrictions() ) then
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
 		FlowContainer_AddObject(container, self.displayFrame.convertToRaid);
@@ -179,7 +178,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 		self.displayFrame.hiddenModeToggle:Hide();
 	end
 
-	if ( GetNumRaidMembers() ~= 0 and IsRaidLeader() ) then
+	if ( IsInRaid() and UnitIsGroupLeader("player") ) then
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
 		FlowContainer_AddObject(container, self.displayFrame.everyoneIsAssistButton);
@@ -196,7 +195,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 	--Then, we update which specific buttons are enabled.
 	
 	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
-	if ( (GetNumRaidMembers() > 0 and (IsRaidLeader() or IsRaidOfficer())) or (GetNumPartyMembers() > 0 and IsPartyLeader() and not HasLFGRestrictions()) ) then
+	if ( IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 		self.displayFrame.leaderOptions.rolePollButton:Enable();
 		self.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
 	else
@@ -205,7 +204,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 	end
 	
 	--Any sort of leader may initiate a ready check.
-	if ( (GetNumRaidMembers() > 0 and (IsRaidLeader() or IsRaidOfficer())) or (GetNumPartyMembers() > 0 and IsPartyLeader()) ) then
+	if ( IsInGroup() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 		self.displayFrame.leaderOptions.readyCheckButton:Enable();
 		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(1);
 	else
@@ -731,7 +730,7 @@ end
 -------------Utility functions-------------
 --Functions used for sorting and such
 function CRFSort_Group(token1, token2)
-	if ( GetNumRaidMembers() > 0 ) then
+	if ( IsInRaid() ) then
 		local id1 = tonumber(string.sub(token1, 5));
 		local id2 = tonumber(string.sub(token2, 5));
 		
@@ -833,7 +832,7 @@ function CRFFlowFilterFunc(token)
 		return false;
 	end
 	
-	if ( GetNumRaidMembers() <= 0 ) then	--We don't filter unless we're in a raid.
+	if ( not IsInRaid() ) then	--We don't filter unless we're in a raid.
 		return true;
 	end
 	
@@ -884,8 +883,8 @@ end
 
 function CRF_CountStuff()
 	CRF_ResetCountedStuff();
-	if ( GetNumRaidMembers() > 0 ) then
-		for i=1, GetNumRaidMembers() do
+	if ( IsInRaid() ) then
+		for i=1, GetNumGroupMembers() do
 			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, assignedRole = GetRaidRosterInfo(i);	--Weird that we have 2 role return values, but... oh well
 			if ( name ) then
 				CRF_AddToCount(isDead, assignedRole);
@@ -893,7 +892,7 @@ function CRF_CountStuff()
 		end
 	else
 		CRF_AddToCount(UnitIsDeadOrGhost("player") , UnitGroupRolesAssigned("player"));
-		for i=1, GetNumPartyMembers() do
+		for i=1, GetNumSubgroupMembers() do
 			local unit = "party"..i;
 			CRF_AddToCount(UnitIsDeadOrGhost(unit), UnitGroupRolesAssigned(unit));
 		end

@@ -226,10 +226,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	-- Hide buyback related items
 	MerchantItem11:Hide();
 	MerchantItem12:Hide();
-	BuybackFrameTopLeft:Hide();
-	BuybackFrameTopRight:Hide();
-	BuybackFrameBotLeft:Hide();
-	BuybackFrameBotRight:Hide();
+	BuybackBG:Hide();
 
 	-- Position merchant items
 	MerchantItem3:SetPoint("TOPLEFT", "MerchantItem1", "BOTTOMLEFT", 0, -8);
@@ -278,10 +275,7 @@ function MerchantFrame_UpdateBuybackInfo()
 	-- Show Buyback specific items
 	MerchantItem11:Show();
 	MerchantItem12:Show();
-	BuybackFrameTopLeft:Show();
-	BuybackFrameTopRight:Show();
-	BuybackFrameBotLeft:Show();
-	BuybackFrameBotRight:Show();
+	BuybackBG:Show();
 
 	-- Position buyback items
 	MerchantItem3:SetPoint("TOPLEFT", "MerchantItem1", "BOTTOMLEFT", 0, -15);
@@ -578,9 +572,9 @@ function MerchantFrame_UpdateRepairButtons()
 			MerchantRepairItemButton:SetHeight(32);
 			MerchantRepairItemButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", -4, 0);
 
-			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 115, 89);
+			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 100, 30);
 			MerchantRepairText:ClearAllPoints();
-			MerchantRepairText:SetPoint("CENTER", MerchantFrame, "BOTTOMLEFT", 97, 129);
+			MerchantRepairText:SetPoint("CENTER", MerchantFrame, "BOTTOMLEFT", 80, 68);
 			MerchantGuildBankRepairButton:Show();
 		else
 			MerchantRepairAllButton:SetWidth(36);
@@ -589,9 +583,9 @@ function MerchantFrame_UpdateRepairButtons()
 			MerchantRepairItemButton:SetHeight(36);
 			MerchantRepairItemButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", -2, 0);
 
-			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 172, 91);
+			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 160, 32);
 			MerchantRepairText:ClearAllPoints();
-			MerchantRepairText:SetPoint("BOTTOMLEFT", MerchantFrame, "BOTTOMLEFT", 26, 103);
+			MerchantRepairText:SetPoint("BOTTOMLEFT", MerchantFrame, "BOTTOMLEFT", 14, 45);
 			MerchantGuildBankRepairButton:Hide();
 		end
 		MerchantRepairText:Show();
@@ -610,18 +604,20 @@ function MerchantFrame_UpdateCurrencies()
 	
 	if ( #currencies == 0 ) then	-- common case
 		MerchantFrame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
-		MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -36, 67);
+		MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -4, 8);
 		MerchantMoneyFrame:Show();
-		MerchantFrameExtraCurrencyTex:Hide();
+		MerchantExtraCurrencyInset:Hide();
+		MerchantExtraCurrencyBg:Hide();
 	else
 		MerchantFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
-		MerchantFrameExtraCurrencyTex:Show();
+		MerchantExtraCurrencyInset:Show();
+		MerchantExtraCurrencyBg:Show();
 		MerchantFrame_OrderCurrencies(currencies);
 		local numCurrencies = #currencies;
 		if ( numCurrencies > 3 ) then
 			MerchantMoneyFrame:Hide();
 		else
-			MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -201, 67);
+			MerchantMoneyFrame:SetPoint("BOTTOMRIGHT", -169, 8);
 			MerchantMoneyFrame:Show();
 		end
 		for index = 1, numCurrencies do
@@ -631,9 +627,9 @@ function MerchantFrame_UpdateCurrencies()
 				tokenButton = CreateFrame("BUTTON", "MerchantToken"..index, MerchantFrame, "BackpackTokenTemplate");
 				-- token display order is: 6 5 4 | 3 2 1
 				if ( index == 1 ) then
-					tokenButton:SetPoint("BOTTOMRIGHT", -48, 67);
+					tokenButton:SetPoint("BOTTOMRIGHT", -16, 8);
 				elseif ( index == 4 ) then
-					tokenButton:SetPoint("BOTTOMLEFT", 121, 67);
+					tokenButton:SetPoint("BOTTOMLEFT", 89, 8);
 				else
 					tokenButton:SetPoint("RIGHT", _G["MerchantToken"..index - 1], "LEFT", 0, 0);
 				end

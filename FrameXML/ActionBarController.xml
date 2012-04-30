@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Include file="MainMenuBarMicroButtons.xml"/>
+	<Include file="MainMenuBar.xml"/>
+	<Include file="ActionButtonTemplate.xml"/>
+	<Include file="ActionBarFrame.xml"/>
+	<Include file="MultiActionBars.xml"/>
+	<Include file="OverrideActionBar.xml"/>
+	<Include file="StanceBar.xml"/>
+	<Include file="ExtraActionBar.xml"/>
+	<Include file="PossessActionBar.xml"/>
+	
+	<Script file="ActionBarController.lua"/>
+	<Frame name="ActionBarController" parent="UIParent">
+		<Scripts>
+			<OnLoad function="ActionBarController_OnLoad"/>
+			<OnEvent function="ActionBarController_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -357,7 +357,7 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
+					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate" text="LIST_ME">
 						<Size x="125" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="5" y="4"/>
@@ -373,7 +373,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentAcceptCommentButton" inherits="UIPanelButtonTemplate2" text="ACCEPT_COMMENT">
+					<Button name="$parentAcceptCommentButton" inherits="UIPanelButtonTemplate" text="ACCEPT_COMMENT">
 						<Size x="115" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
@@ -410,7 +410,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LEAVE_QUEUE">
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE">
 								<Size x="153" y="22"/>
 								<Anchors>
 									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
@@ -582,6 +582,32 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parentListButton19" relativePoint="BOTTOMRIGHT" x="5" y="-2"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="29" y="102"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="LFRBrowseFrame" relativePoint="TOPRIGHT" x="-33" y="-82"/>
+									</Anchors>
+									<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
+								</Texture>
+								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="29" y="106"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="LFRBrowseFrame" relativePoint="BOTTOMRIGHT" x="-33" y="27"/>
+									</Anchors>
+									<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size x="29" y="1"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+										<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+									</Anchors>
+									<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
 								FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRBrowseFrameList_Update);
@@ -589,7 +615,7 @@
 							<OnShow function="RefreshLFGList"/>
 						</Scripts>
 					</ScrollFrame>
-					<Button name="$parentSendMessageButton" inherits="UIPanelButtonTemplate2" text="SEND_MESSAGE">
+					<Button name="$parentSendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
 						<Size x="113" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="5" y="4"/>
@@ -601,7 +627,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentInviteButton" inherits="UIPanelButtonTemplate2" text="INVITE">
+					<Button name="$parentInviteButton" inherits="UIPanelButtonTemplate" text="INVITE">
 						<Size x="100" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentSendMessageButton" relativePoint="RIGHT" x="3" y="0"/>
@@ -613,7 +639,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentRefreshButton" inherits="UIPanelButtonTemplate2" text="REFRESH">
+					<Button name="$parentRefreshButton" inherits="UIPanelButtonTemplate" text="REFRESH">
 						<Size x="104" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentInviteButton" relativePoint="RIGHT" x="3" y="0"/>

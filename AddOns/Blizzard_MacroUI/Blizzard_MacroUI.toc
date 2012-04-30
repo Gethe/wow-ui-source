@@ -1,6 +1,0 @@
-## Interface: 40300
-## Title: Blizzard Macro UI
-## Secure: 1
-## LoadOnDemand: 1
-Blizzard_MacroUI.xml
-Localization.lua

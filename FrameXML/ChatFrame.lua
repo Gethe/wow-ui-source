@@ -1133,17 +1133,17 @@ end
 
 -- Allow friendly names for glyph slots (needs to be local)
 local GLYPH_SLOTS = {
-    minor1 = GLYPH_ID_MINOR_1;
-    minor2 = GLYPH_ID_MINOR_2;
-    minor3 = GLYPH_ID_MINOR_3;
+	minor1 = GLYPH_ID_MINOR_1;
+	minor2 = GLYPH_ID_MINOR_2;
+	minor3 = GLYPH_ID_MINOR_3;
 
-    major1 = GLYPH_ID_MAJOR_1;
-    major2 = GLYPH_ID_MAJOR_2;
-    major3 = GLYPH_ID_MAJOR_3;
+	major1 = GLYPH_ID_MAJOR_1;
+	major2 = GLYPH_ID_MAJOR_2;
+	major3 = GLYPH_ID_MAJOR_3;
 
-    prime1 = GLYPH_ID_PRIME_1;
-    prime2 = GLYPH_ID_PRIME_2;
-    prime3 = GLYPH_ID_PRIME_3;
+--	prime1 = GLYPH_ID_PRIME_1;
+--	prime2 = GLYPH_ID_PRIME_2;
+--	prime3 = GLYPH_ID_PRIME_3;
 };
 
 SecureCmdList["CASTGLYPH"] = function(msg)
@@ -1428,8 +1428,9 @@ SecureCmdList["PET_FOLLOW"] = function(msg)
 end
 
 SecureCmdList["PET_MOVE_TO"] = function(msg)
-	if ( SecureCmdOptionParse(msg) ) then
-		PetMoveTo();
+	local action, target = SecureCmdOptionParse(msg);
+	if ( action ) then
+		PetMoveTo(target);
 	end
 end
 
@@ -1600,7 +1601,7 @@ SlashCmdList["REPLY"] = function(msg, editBox)
 	local lastTell = ChatEdit_GetLastTellTarget();
 	if ( lastTell ~= "" ) then
 		msg = SubstituteChatMessageBeforeSend(msg);
-		SendChatMessage(msg, "WHISPER", editBox.language, lastTell);
+		SendChatMessage(msg, "WHISPER", editBox.languageID, lastTell);
 	else
 		-- error message
 	end
@@ -2073,7 +2074,7 @@ end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)
 	msg = SubstituteChatMessageBeforeSend(msg);
-	SendChatMessage(msg, "CHANNEL", editBox.language, editBox:GetAttribute("channelTarget"));
+	SendChatMessage(msg, "CHANNEL", editBox.languageID, editBox:GetAttribute("channelTarget"));
 end
 
 SlashCmdList["FRIENDS"] = function(msg)
@@ -2212,7 +2213,7 @@ SlashCmdList["RAID_INFO"] = function(msg)
 end
 
 SlashCmdList["READYCHECK"] = function(msg)
-	if ( ((IsRaidLeader() or IsRaidOfficer()) and GetNumRaidMembers() > 0) or (IsPartyLeader() and GetNumPartyMembers() > 0) ) then
+	if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 		DoReadyCheck();
 	end
 end
@@ -2342,7 +2343,7 @@ SlashCmdList["USE_TALENT_SPEC"] = function(msg)
 	if ( group ) then
 		local groupNumber = tonumber(group);
 		if ( groupNumber ) then
-			SetActiveTalentGroup(groupNumber);
+			SetActiveSpecGroup(groupNumber);
 		end
 	end
 end
@@ -2502,6 +2503,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2722,6 +2724,9 @@ end
 
 function ChatFrame_ConfigEventHandler(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.defaultLanguage = GetDefaultLanguage();
+		return true;
+	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
 		return true;
 	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
@@ -3170,7 +3175,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				elseif ( GROUP_TAG_LIST[term] ) then
 					local groupIndex = GROUP_TAG_LIST[term];
 					local groupList = "[";
-					for i=1, GetNumRaidMembers() do
+					for i=1, GetNumGroupMembers() do
 						local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
 						if ( subgroup == groupIndex ) then
 							local classColorTable = RAID_CLASS_COLORS[classFileName];
@@ -3361,9 +3366,9 @@ function ChatFrame_OpenChat(text, chatFrame)
 	editBox.text = text;
 
 	if ( editBox:GetAttribute("chatType") == editBox:GetAttribute("stickyType") ) then
-		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (GetNumPartyMembers() == 0) or
-		(editBox:GetAttribute("stickyType") == "RAID") and (GetNumRaidMembers() == 0) or
-		(editBox:GetAttribute("stickyType") == "BATTLEGROUND") and (GetNumRaidMembers() == 0) ) then
+		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (not IsInGroup()) or
+		(editBox:GetAttribute("stickyType") == "RAID") and (not IsInRaid()) or
+		(editBox:GetAttribute("stickyType") == "BATTLEGROUND") and (not IsInRaid())) then
 			editBox:SetAttribute("chatType", "SAY");
 		end
 	end
@@ -3656,13 +3661,13 @@ function ChatEdit_ResetChatType(self)
 	if ( self:GetAttribute("chatType") == "PARTY" and UnitName("party1") == "" ) then
 		self:SetAttribute("chatType", "SAY");
 	end
-	if ( self:GetAttribute("chatType") == "RAID" and (GetNumRaidMembers() == 0) ) then
+	if ( self:GetAttribute("chatType") == "RAID" and (not IsInRaid()) ) then
 		self:SetAttribute("chatType", "SAY");
 	end
 	if ( (self:GetAttribute("chatType") == "GUILD" or self:GetAttribute("chatType") == "OFFICER") and not IsInGuild() ) then
 		self:SetAttribute("chatType", "SAY");
 	end
-	if ( self:GetAttribute("chatType") == "BATTLEGROUND" and (GetNumRaidMembers() == 0) ) then
+	if ( self:GetAttribute("chatType") == "BATTLEGROUND" and (not IsInRaid()) ) then
 		self:SetAttribute("chatType", "SAY");
 	end
 	self.lastTabComplete = nil;
@@ -3999,7 +4004,7 @@ function ChatEdit_SendText(editBox, addHistory)
 		if ( type == "WHISPER") then
 			local target = editBox:GetAttribute("tellTarget");
 			ChatEdit_SetLastToldTarget(target);
-			SendChatMessage(text, type, editBox.language, target);
+			SendChatMessage(text, type, editBox.languageID, target);
 		elseif ( type == "BN_WHISPER" ) then
 			local target = editBox:GetAttribute("tellTarget");
 			local presenceID = BNet_GetPresenceID(target);
@@ -4014,9 +4019,9 @@ function ChatEdit_SendText(editBox, addHistory)
 			local target = tonumber(editBox:GetAttribute("channelTarget"));
 			BNSendConversationMessage(target, text);
 		elseif ( type == "CHANNEL") then
-			SendChatMessage(text, type, editBox.language, editBox:GetAttribute("channelTarget"));
+			SendChatMessage(text, type, editBox.languageID, editBox:GetAttribute("channelTarget"));
 		else
-			SendChatMessage(text, type, editBox.language);
+			SendChatMessage(text, type, editBox.languageID);
 		end
 		if ( addHistory ) then
 			ChatEdit_AddHistory(editBox);
@@ -4543,6 +4548,7 @@ function LanguageMenu_OnLoad(self)
 	self.parentMenu = "ChatMenu";
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LANGUAGE_LIST_CHANGED");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 end
 
 function VoiceMacroMenu_Click(self)
@@ -4559,7 +4565,7 @@ function LanguageMenu_OnEvent(self, event, ...)
 		self:Hide();
 		UIMenu_Initialize(self);
 		LanguageMenu_LoadLanguages(self);
-		self:GetParent().chatFrame.editBox.language = GetDefaultLanguage();
+		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetDefaultLanguage();
 		return;
 	end
 	if ( event == "LANGUAGE_LIST_CHANGED" ) then
@@ -4568,30 +4574,35 @@ function LanguageMenu_OnEvent(self, event, ...)
 		LanguageMenu_LoadLanguages(self);
 		return;
 	end
+	if ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
+		self:Hide();
+		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetDefaultLanguage();
+		return;
+	end
 end
 
 function LanguageMenu_LoadLanguages(self)
 	local numLanguages = GetNumLanguages();
 	local i;
-	local editBoxLanguage = self:GetParent().chatFrame.editBox.language;
+	local editBoxLanguageID = self:GetParent().chatFrame.editBox.languageID;
 	local languageKnown = false;
 	for i = 1, numLanguages, 1 do
-		local language = GetLanguageByIndex(i);
+		local language, languageID = GetLanguageByIndex(i);
 		UIMenu_AddButton(self, language, nil, LanguageMenu_Click);
-		if ( language == editBoxLanguage ) then
+		if ( languageID == editBoxLanguageID ) then
 			languageKnown = true;
 		end
 	end
 	
 	if ( languageKnown ~= true ) then
-		self:GetParent().chatFrame.editBox.language = GetLanguageByIndex(1);
+		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetLanguageByIndex(1);
 	end
 	
 	UIMenu_AutoSize(self);
 end
 
 function LanguageMenu_Click(self)
-	self:GetParent():GetParent().chatFrame.editBox.language = GetLanguageByIndex(self:GetID());
+	self:GetParent():GetParent().chatFrame.editBox.language, self:GetParent():GetParent().chatFrame.editBox.languageID = GetLanguageByIndex(self:GetID());
 	ChatMenu:Hide();
 end
 

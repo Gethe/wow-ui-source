@@ -19,7 +19,6 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED");
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("UNIT_FLAGS");
-	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PET_BAR_UPDATE");
 	self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_SHOWGRID");
@@ -28,6 +27,8 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
+	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self.showgrid = 0;
 	PetActionBar_Update(self);
 	if ( PetHasActionBar() ) then
@@ -38,10 +39,9 @@ end
 
 function PetActionBar_OnEvent (self, event, ...)
 	local arg1 = ...;
-	
-	if ( event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") or event == "PET_UI_UPDATE") then
-		PetActionBar_Update(self);
+	if ( event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") or event == "PET_UI_UPDATE" or event == "UPDATE_VEHICLE_ACTIONBAR") then
 		if ( PetHasActionBar() and UnitIsVisible("pet") ) then
+			PetActionBar_Update(self);
 			ShowPetActionBar();
 			LockPetActionBar();
 		else
@@ -65,8 +65,8 @@ function PetActionBar_OnEvent (self, event, ...)
 	end
 end
 
-function PetActionBarFrame_IsAboveShapeshift(ignoreShowing)
-	return ( ((ShapeshiftBarFrame and GetNumShapeshiftForms() > 0) or (MultiCastActionBarFrame and HasMultiCastActionBar()) or
+function PetActionBarFrame_IsAboveStance(ignoreShowing)
+	return ( ((StanceBarFrame and GetNumShapeshiftForms() > 0) or (MultiCastActionBarFrame and HasMultiCastActionBar()) or
 		(MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown())) and
 		(not MultiBarBottomLeft:IsShown() and MultiBarBottomRight:IsShown()) and
 		(ignoreShowing or (PetActionBarFrame and PetActionBarFrame:IsShown())))
@@ -187,11 +187,11 @@ function PetActionBar_UpdateCooldowns()
 end
 
 function PetActionBar_UpdatePositionValues()
-	if ( PetActionBarFrame_IsAboveShapeshift(true) ) then
+	if ( PetActionBarFrame_IsAboveStance(true) ) then
 		PETACTIONBAR_XPOS = 36;
 	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
 		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
-	elseif ( ShapeshiftBarFrame and GetNumShapeshiftForms() > 0 ) then
+	elseif ( StanceBarFrame and GetNumShapeshiftForms() > 0 ) then
 		PETACTIONBAR_XPOS = 500;
 	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
 		PETACTIONBAR_XPOS = 500;

@@ -1,5 +1,0 @@
-## Interface: 40300
-## Title: Blizzard_ClientSavedVariables
-## Secure: 1
-## LoadOnDemand: 0
-## SavedVariablesPerCharacter: TARGET_FRAME_UNLOCKED, PLAYER_FRAME_UNLOCKED, TARGET_FRAME_BUFFS_ON_TOP, PLAYER_FRAME_CASTBARS_SHOWN,

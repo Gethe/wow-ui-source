@@ -90,7 +90,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>
@@ -105,7 +105,7 @@
 					<OnClick function="LFDRoleCheckPopupAccept_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="DECLINE">
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>
@@ -155,8 +155,11 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<Frame name="LFDParentFrame" toplevel="true" hidden="true" enableMouse="true" inherits="ButtonFrameTemplate" parent="UIParent">
-		<Size x="338" y="482"/>
+	<Frame name="LFDParentFrame" toplevel="true" hidden="true" parent="GroupFinderFrame">
+		<Size x="338" y="428"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="224" y="0"/>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentRoleBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
@@ -166,8 +169,33 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="false">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-23" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+				</Anchors>
+			</Frame>
 			<Frame name="LFDQueueFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
@@ -184,36 +212,8 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
-						<FontString name="$parentTitleText" inherits="GameFontNormal" text="LOOKING_FOR_DUNGEON">
-							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="12" y="-5"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentCapBar" inherits="CapProgressBarTemplate" hidden="true">
-						<Size>
-							<AbsDimension x="254" y="20"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOP" x="20" y="-40"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CapProgressBar_SetNotches(self, 5);
-								self.cap1Marker:SetScript("OnEnter", LFDQueueFrameCapBarCapMarker_OnEnter);
-								self.cap2Marker:SetScript("OnEnter", LFDQueueFrameCapBarCapMarker_OnEnter);
-							</OnLoad>
-							<OnEnter function="LFDQueueFrameCapBar_OnEnter"/>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Frame>
 					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="2">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
@@ -599,9 +599,9 @@
 							<AbsDimension x="135" y="22"/>
 						</Size>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
+							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="4" y="4"/>
+									<AbsDimension x="0" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -613,23 +613,6 @@
 								else
 									LFDQueueFrame_Join();
 								end
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentCancelButton" inherits="MagicButtonTemplate" text="CLOSE">
-						<Size>
-							<AbsDimension x="112" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-7" y="4"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HideUIPanel(self:GetParent():GetParent())
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -814,7 +797,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate2" text="YES">
+							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate" text="YES">
 								<Size>
 									<AbsDimension x="153" y="22"/>
 								</Size>
@@ -832,7 +815,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate2" text="HIDE">
+							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate" text="HIDE">
 								<Size>
 									<AbsDimension x="153" y="22"/>
 								</Size>
@@ -896,7 +879,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" text="LIST_ME">
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LIST_ME">
 								<Size>
 									<AbsDimension x="153" y="22"/>
 								</Size>
@@ -923,15 +906,10 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						UpdateMicroButtons();
 						PlaySound("igCharacterInfoOpen");
 						RequestLFDPlayerLockInfo();
 						RequestLFDPartyLockInfo();
 					</OnShow>
-					<OnHide>
-						UpdateMicroButtons();
-						PlaySound("igCharacterInfoClose");
-					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -939,42 +917,6 @@
 			<OnLoad function="LFDFrame_OnLoad"/>
 			<OnEvent function="LFDFrame_OnEvent"/>
 			<OnShow function="LFDFrame_OnShow"/>
-			<OnHide function="LFDFrame_OnHide"/>
-		</Scripts>
-	</Frame>
-	<Frame name="LFDParentFrameEyeFrame" inherits="EyeTemplate" hidden="false" parent="LFDParentFrame">
-		<Size>
-			<AbsDimension x="64" y="64"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="-8" y="9"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.queueType = "default";
-				LowerFrameLevel(self);
-				self.texture:SetTexCoord(0, 0.125, 0, 0.25);	-- since we're not updating it
-			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -1,5 +1,5 @@
-GLYPH_STRING = { PRIME_GLYPH, MAJOR_GLYPH, MINOR_GLYPH}
-GLYPH_STRING_PLURAL = { PRIME_GLYPHS, MAJOR_GLYPHS, MINOR_GLYPHS}
+GLYPH_STRING = { MAJOR_GLYPH, MINOR_GLYPH}
+GLYPH_STRING_PLURAL = { MAJOR_GLYPHS, MINOR_GLYPHS}
 
 GLYPH_HEADER_BUTTON_HEIGHT = 23;
 GLYPH_BUTTON_HEIGHT = 40;
@@ -10,53 +10,44 @@ GLYPH_FILTER_UNKNOWN = 16;
 
 
 GLYPH_TYPE_INFO = {};
-GLYPH_TYPE_INFO[GLYPH_TYPE_PRIME] =  {
-	ring = { size = 82, left = 0.85839844, right = 0.93847656, top = 0.22265625, bottom = 0.30273438 };
-	highlight = { size = 96, left = 0.85839844, right = 0.95214844, top = 0.30468750, bottom = 0.39843750 };
-}
 GLYPH_TYPE_INFO[GLYPH_TYPE_MAJOR] =  {
-	ring = { size = 66, left = 0.85839844, right = 0.92285156, top = 0.00097656, bottom = 0.06542969 };
-	highlight = { size = 80, left = 0.85839844, right = 0.93652344, top = 0.06738281, bottom = 0.14550781 };
+	ring = { size = 84, left = 0.00390625, right = 0.33203125, top = 0.27539063, bottom = 0.43945313 };
+	highlight = { size = 98, left = 0.54296875, right = 0.92578125, top = 0.00195313, bottom = 0.19335938 };
 }
 GLYPH_TYPE_INFO[GLYPH_TYPE_MINOR] =  {
-	ring = { size = 61, left = 0.92480469, right = 0.98437500, top = 0.00097656, bottom = 0.06054688 };
-	highlight = { size = 75, left = 0.85839844, right = 0.93164063, top = 0.14746094, bottom = 0.22070313 };
+	ring = { size = 68, left = 0.33984375, right = 0.60546875, top = 0.27539063, bottom = 0.40820313 };
+	highlight = { size = 82, left = 0.61328125, right = 0.93359375, top = 0.27539063, bottom = 0.43554688 };
 }
 
 local slotAnimations = {};
 ---local TOPLEFT, TOP, TOPRIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT = 3, 1, 5, 4, 2, 6;
-slotAnimations[1] = {  ["xStart"] = 0, ["xStop"] = -85, ["yStart"] = -12, ["yStop"] =   60};
-slotAnimations[2] = {  ["xStart"] = 0, ["xStop"] = -13, ["yStart"] = -12, ["yStop"] = 100};
-slotAnimations[3] = {  ["xStart"] = 0, ["xStop"] =  59, ["yStart"] = -12, ["yStop"] =   60};
-slotAnimations[4] = {  ["xStart"] = 0, ["xStop"] = -13, ["yStart"] = -12, ["yStop"] =  -124};
-slotAnimations[5] = {  ["xStart"] = 0, ["xStop"] = -87, ["yStart"] = -12, ["yStop"] =  -27};
-slotAnimations[6] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] =  -27};
-slotAnimations[7] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] = -27};
-slotAnimations[8] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] = -27};
-slotAnimations[9] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -6, ["yStop"] = -27};
+slotAnimations[1] = {  ["xStart"] = 0, ["xStop"] = -13, ["yStart"] = -12, ["yStop"] =  -124};
+slotAnimations[2] = {  ["xStart"] = 0, ["xStop"] = -87, ["yStart"] = -12, ["yStop"] =  -27};
+slotAnimations[3] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] =  -27};
+slotAnimations[4] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] = -27};
+slotAnimations[5] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -12, ["yStop"] = -27};
+slotAnimations[6] = {  ["xStart"] = 0, ["xStop"] =  61, ["yStart"] = -6, ["yStop"] = -27};
 
 
-local GLYPH_SPARKLE_SIZES = 3;
 local GLYPH_DURATION_MODIFIERS = { 1.25, 1.5, 1.8 };
 
 
 function GlyphFrame_Toggle ()
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_ToggleGlyphFrame ) then
-		PlayerTalentFrame_ToggleGlyphFrame(GetActiveTalentGroup());
+		PlayerTalentFrame_ToggleGlyphFrame(GetActiveSpecGroup());
 	end
 end
 
 function GlyphFrame_Open ()
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_OpenGlyphFrame ) then
-		PlayerTalentFrame_OpenGlyphFrame(GetActiveTalentGroup());
+		PlayerTalentFrame_OpenGlyphFrame(GetActiveSpecGroup());
 	end
 end
 
 function GlyphFrame_OnLoad (self)
 	local name = self:GetName();
-	self.sparkleFrame = SparkleFrame:New(self);
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("GLYPH_ADDED");
 	self:RegisterEvent("GLYPH_REMOVED");
@@ -75,22 +66,15 @@ end
 function GlyphFrame_OnShow (self)
 	GlyphFrame_Update(self);
 	ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
-	PlayerTalentFrameInset:SetPoint("BOTTOMRIGHT",  -197,  PANEL_INSET_BOTTOM_OFFSET);
-	PlayerTalentFrameActivateButton:SetPoint( "TOpRIGHT", -205, -35);
+	PlayerTalentFrameInset:SetPoint("BOTTOMRIGHT",  -197,  PANEL_INSET_BOTTOM_BUTTON_OFFSET);
+--	PlayerTalentFrameActivateButton:SetPoint( "BOTTOMRIGHT", -5, 4);
 	SetGlyphNameFilter("");
 	GlyphFrame_UpdateGlyphList ();
-
-	_G["PlayerTalentFrame".."BtnCornerLeft"]:Hide();
-	_G["PlayerTalentFrame".."BtnCornerRight"]:Hide();
 end
 
 function GlyphFrame_OnHide (self)
-	ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
 	ButtonFrameTemplate_ShowButtonBar(PlayerTalentFrame);
-	PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
-	
-	_G["PlayerTalentFrame".."BtnCornerLeft"]:Show();
-	_G["PlayerTalentFrame".."BtnCornerRight"]:Show();
+--	PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
 end
 
 function GlyphFrame_OnEnter (self)
@@ -154,26 +138,23 @@ function GlyphFrame_OnEvent (self, event, ...)
 end
 
 
-function GlyphFrame_OnUpdate (self, elapsed)
-	-- for i = 1, #slotAnimations do
-		-- local animation = slotAnimations[i];
-		-- if ( animation.glyph and not (animation.sparkle and animation.sparkle.animGroup:IsPlaying()) ) then
-			-- local sparkleSize = math.random(GLYPH_SPARKLE_SIZES);
-			-- GlyphFrame_StartSlotAnimation(i, sparkleSize * GLYPH_DURATION_MODIFIERS[sparkleSize], sparkleSize);
-		-- end
-	-- end
-end
-
 function GlyphFrame_PulseGlow ()
 	GlyphFrame.glow.pulse:Play();
 end
 
 function GlyphFrame_Update (self)
-	local isActiveTalentGroup =
-		PlayerTalentFrame and not PlayerTalentFrame.pet and
-		PlayerTalentFrame.talentGroup == GetActiveTalentGroup(PlayerTalentFrame.pet);
+	local isActiveTalentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup == GetActiveSpecGroup();
 	
 	SetDesaturation(GlyphFrame.background, not isActiveTalentGroup);
+	SetDesaturation(GlyphFrame.levelOverlay1, not isActiveTalentGroup);
+	SetDesaturation(GlyphFrame.levelOverlay2, not isActiveTalentGroup);
+	if ( isActiveTalentGroup ) then
+		GlyphFrame.levelOverlayText1:SetTextColor(0.2, 0.1, 0.09, 0.8);
+		GlyphFrame.levelOverlayText2:SetTextColor(0.2, 0.1, 0.09, 0.8);
+	else
+		GlyphFrame.levelOverlayText1:SetTextColor(0.2, 0.2, 0.2, 0.8);
+		GlyphFrame.levelOverlayText2:SetTextColor(0.2, 0.2, 0.2, 0.8);
+	end
 
 	for i = 1, NUM_GLYPH_SLOTS do
 		local glyph = _G["GlyphFrameGlyph"..i];
@@ -197,6 +178,25 @@ function GlyphFrame_Update (self)
 		self.clearInfo.name:SetText("");
 		self.clearInfo.count:SetText("");
 		self.clearInfo.icon:SetTexture("");
+	end
+
+	-- spec icon
+	local specialization = GetSpecialization(_, _, PlayerTalentFrame.talentGroup);
+	if ( specialization ) then
+		local _, _, _, icon = GetSpecializationInfo(specialization, nil, PlayerTalentFrame.talentGroup);
+		local specIcon = GlyphFrame.specIcon;
+		GlyphFrame.specRing:Show();
+		specIcon:Show();
+		SetPortraitToTexture(specIcon, icon);
+		SetDesaturation(specIcon, true);
+		if ( isActiveTalentGroup ) then
+			SetDesaturation(GlyphFrame.specRing, false);
+		else
+			SetDesaturation(GlyphFrame.specRing, true);
+		end
+	else
+		GlyphFrame.specRing:Hide();
+		GlyphFrame.specIcon:Hide();
 	end
 end
 
@@ -282,9 +282,9 @@ function GlyphFrame_UpdateGlyphList ()
 		end
 	end
 	
-	local totalHeight = (numGlyphs-3) * (GLYPH_BUTTON_HEIGHT + 0);
-	totalHeight = totalHeight + (3 * (GLYPH_HEADER_BUTTON_HEIGHT + 0));
-	HybridScrollFrame_Update(scrollFrame, totalHeight+5, 330);
+	local totalHeight = (numGlyphs-2) * (GLYPH_BUTTON_HEIGHT + 0);
+	totalHeight = totalHeight + (2 * (GLYPH_HEADER_BUTTON_HEIGHT + 0));
+	HybridScrollFrame_Update(scrollFrame, totalHeight+10, 330);
 	
 	local known =  IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
 	local unknown =  IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
@@ -318,51 +318,6 @@ function GlyphFrame_CalculateScroll(offset)
 		else
 			heightLeft = heightLeft - buttonHeight;
 		end
-	end
-end
-
-
-function GlyphFrame_StartSlotAnimation (slotID, duration, size)
-	local animation = slotAnimations[slotID];
-	-- init texture to animate
-	local sparkleName = "GlyphFrameSparkle"..slotID;
-	local sparkle = _G[sparkleName];
-	if ( not sparkle ) then
-		sparkle = GlyphFrame:CreateTexture(sparkleName, "OVERLAY", "GlyphSparkleTexture");
-		sparkle.slotID = slotID;
-	end
-	
-	local template;
-	if ( size == 1 ) then
-		template = "SparkleTextureSmall";
-	elseif ( size == 2 ) then
-		template = "SparkleTextureKindaSmall";
-	else
-		template = "SparkleTextureNormal";
-	end
-	local sparkleDim = SparkleDimensions[template];
-	sparkle:SetHeight(sparkleDim.height);
-	sparkle:SetWidth(sparkleDim.width);
-	sparkle:SetPoint("CENTER", GlyphFrame.background, "CENTER", animation.xStart, animation.yStart);
-	sparkle:Show();
-
-	-- init animation
-	local offsetX, offsetY = animation.xStop - animation.xStart, animation.yStop - animation.yStart;
-	local animGroupAnim = sparkle.animGroup;
-	animGroupAnim.translate:SetOffset(offsetX, offsetY);
-	animGroupAnim.translate:SetDuration(duration);
-	animGroupAnim:Play();
-
-	animation.sparkle = sparkle;
-end
-
-
-function GlyphFrame_StopSlotAnimation (slotID)
-	local animation = slotAnimations[slotID];
-	if ( animation.sparkle ) then
-		animation.sparkle.animGroup:Stop();
-		animation.sparkle:Hide();
-		animation.sparkle = nil;
 	end
 end
 
@@ -460,17 +415,9 @@ function GlyphFrameGlyph_UpdateSlot (self)
 	
 	if ( not enabled ) then
 		slotAnimation.glyph = nil;
-		if ( slotAnimation.sparkle ) then
-			slotAnimation.sparkle:StopAnimating();
-			slotAnimation.sparkle:Hide();
-		end
 		self:Hide();
 	elseif ( not glyphSpell ) then
 		slotAnimation.glyph = nil;
-		if ( slotAnimation.sparkle ) then
-			slotAnimation.sparkle:StopAnimating();
-			slotAnimation.sparkle:Hide();
-		end
 		self.spell = nil;
 		self.glyph:SetTexture("");
 		self:Show();
@@ -530,14 +477,12 @@ function GlyphFrameGlyph_OnClick (self, button)
 		if link then
 			ChatEdit_InsertLink(link);
 		end
-	elseif talentGroup == GetActiveTalentGroup()  then
+	elseif talentGroup == GetActiveSpecGroup()  then
 		if button == "RightButton" then
-			if  IsShiftKeyDown() then
-				local glyphName;
-				if ( glyphSpell ) then
-					glyphName = GetSpellInfo(glyphSpell);
-					local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = id});
-				end
+			local glyphName;
+			if ( glyphSpell ) then
+				glyphName = GetSpellInfo(glyphSpell);
+				local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = id});
 			end
 		elseif  GlyphMatchesSocket(id)  then
 			if glyphSpell then

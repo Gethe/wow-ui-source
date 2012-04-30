@@ -1,9 +1,0 @@
-## Interface: 40300
-## Title: Blizzard Glyph UI
-## Notes:  Get some cool tats and mod your spells.
-## Secure: 1
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-Blizzard_GlyphUI.xml
-Localization.lua

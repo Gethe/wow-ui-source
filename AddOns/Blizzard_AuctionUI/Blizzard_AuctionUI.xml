@@ -1533,7 +1533,7 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
-					<Button name="AuctionsStackSizeMaxButton" inherits="UIPanelButtonTemplate2" text="MAXIMUM" hidden="true">
+					<Button name="AuctionsStackSizeMaxButton" inherits="UIPanelButtonTemplate" text="MAXIMUM" hidden="true">
 						<Size x="100" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="AuctionsStackSizeEntry" relativePoint="RIGHT" x="5" y="1"/>
@@ -1618,7 +1618,7 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
-					<Button name="AuctionsNumStacksMaxButton" inherits="UIPanelButtonTemplate2" text="MAXIMUM" hidden="true">
+					<Button name="AuctionsNumStacksMaxButton" inherits="UIPanelButtonTemplate" text="MAXIMUM" hidden="true">
 						<Size x="100" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="AuctionsNumStacksEntry" relativePoint="RIGHT" x="5" y="1"/>
@@ -1773,7 +1773,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="AuctionsCancelAuctionButton" inherits="UIPanelButtonTemplate2" text="CANCEL_AUCTION">
+					<Button name="AuctionsCancelAuctionButton" inherits="UIPanelButtonTemplate" text="CANCEL_AUCTION">
 						<Size>
 							<AbsDimension x="126" y="22"/>
 						</Size>
@@ -1792,7 +1792,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="AuctionsCreateAuctionButton" inherits="UIPanelButtonTemplate2" text="CREATE_AUCTION">
+					<Button name="AuctionsCreateAuctionButton" inherits="UIPanelButtonTemplate" text="CREATE_AUCTION">
 						<Size>
 							<AbsDimension x="191" y="20"/>
 						</Size>

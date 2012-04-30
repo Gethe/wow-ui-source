@@ -1,6 +1,5 @@
 UIPanelWindows["VoidStorageFrame"] = { area = "doublewide", pushable = 0, width = 726 };
 
-local VOID_STORAGE_UNLOCK_COST = 100 * 100 * 100;	-- 100 gold
 local BUTTON_TYPE_DEPOSIT = 1;
 local BUTTON_TYPE_WITHDRAW = 2;
 local BUTTON_TYPE_STORAGE = 3;
@@ -160,14 +159,15 @@ function VoidStorageFrame_Update()
 			VoidStorageHelpBox:Show();
 		end
 	else
-		if ( VOID_STORAGE_UNLOCK_COST > GetMoney() ) then
+		local voidStorageUnlockCost = GetVoidUnlockCost();
+		if ( voidStorageUnlockCost > GetMoney() ) then
 			SetMoneyFrameColor("VoidStoragePurchaseMoneyFrame", "red");
 			VoidStoragePurchaseButton:Disable();
 		else
 			SetMoneyFrameColor("VoidStoragePurchaseMoneyFrame");
 			VoidStoragePurchaseButton:Enable();
 		end
-		MoneyFrame_Update("VoidStoragePurchaseMoneyFrame", VOID_STORAGE_UNLOCK_COST);
+		MoneyFrame_Update("VoidStoragePurchaseMoneyFrame", voidStorageUnlockCost);
 		VoidStoragePurchaseFrame:SetHeight(VoidStoragePurchaseFrameDescription:GetHeight() + 156);
 		local width = max(VoidStoragePurchaseFrameLabel:GetWidth(), VoidStoragePurchaseFrameDescription:GetWidth());
 		VoidStoragePurchaseFrame:SetWidth(min(550, width + 164));

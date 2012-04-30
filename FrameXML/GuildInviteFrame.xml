@@ -110,7 +110,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button name="$parentJoinButton" inherits="UIPanelButtonTemplate2" text="GUILD_INVITE_JOIN">
+			<Button name="$parentJoinButton" inherits="UIPanelButtonTemplate" text="GUILD_INVITE_JOIN">
 				<Size x="110" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="24" y="24"/>
@@ -123,7 +123,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate2" text="GUILD_INVITE_DECLINE">
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="GUILD_INVITE_DECLINE">
 				<Size x="140" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-24" y="24"/>

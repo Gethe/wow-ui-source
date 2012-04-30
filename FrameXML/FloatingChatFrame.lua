@@ -65,6 +65,11 @@ function FloatingChatFrame_OnLoad(self)
 	local chatTab = _G[self:GetName().."Tab"];
 	chatTab.mouseOverAlpha = CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA;
 	chatTab.noMouseAlpha = CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA;
+
+	FRAMELOCK_STATES.PETBATTLEOPENING[self:GetName()] = "hidden";
+	FRAMELOCK_STATES.PETBATTLEOPENING[chatTab:GetName()] = "hidden";
+	UpdateFrameLock(self);
+	UpdateFrameLock(chatTab);
 end
 
 function FloatingChatFrame_OnEvent(self, event, ...)

@@ -1,93 +1,58 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GuildRegistrarFrame.lua"/>
-	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
- 		<Size>
- 			<AbsDimension x="384" y="512"/>
- 		</Size>
- 		<Anchors>
- 			<Anchor point="TOPLEFT">
- 				<Offset>
- 					<AbsDimension x="0" y="-104"/>
- 				</Offset>
- 			</Anchor>
- 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="70"/>
-		</HitRectInsets>
+	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND">
                 <Texture name="GuildRegistrarFramePortrait">
-                    <Size>
-                        <AbsDimension x="60" y="60"/>
-                    </Size>
+                    <Size x="60" y="60"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-6"/>
-                            </Offset>
-                        </Anchor>
+                        <Anchor point="TOPLEFT" x="7" y="-6"/>
                     </Anchors>
                 </Texture>
+				<Texture name="GuildRegistrarFrameBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="512" y="512"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
+					</Anchors>
+				</Texture>
             </Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>		
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
 				<FontString name="GuildRegistrarText" inherits="QuestFont" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="270" y="0"/>
-					</Size>
+					<Size x="270" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="10" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="102"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-3" y="-59"/>
+					</Anchors>
+					<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="106"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-3" y="25"/>
+					</Anchors>
+					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="31" y="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
+					<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+				</Texture>
 			</Layer>
 		</Layers> 
  		<Frames>
 			<Frame name="GuildRegistrarNpcNameFrame">
-				<Size>
-					<AbsDimension x="300" y="14"/>
-				</Size>
+				<Size x="300" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GuildRegistrarFrame" relativePoint="TOP">
-						<Offset>
-							<AbsDimension x="0" y="-23"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GuildRegistrarFrame" relativePoint="TOP" x="0" y="-4"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -98,55 +63,22 @@
                      <OnLoad function="RaiseFrameLevelByTwo"/>
                 </Scripts>
 			</Frame>
-			<Button name="GuildRegistrarFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="GuildRegistrarFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-42" y="-30"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Frame name="GuildRegistrarGreetingFrame" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="AvailableServicesText" inherits="QuestTitleFont" text="AVAILABLE_SERVICES" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="300" y="0"/>
-							</Size>
+							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="35" y="-100"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="20" y="-70"/>
 							</Anchors>
 						</FontString>
-						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
-							<Size>
-								<AbsDimension x="128" y="64"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="22" y="68"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button name="GuildRegistrarFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-						<Size>
-							<AbsDimension x="75" y="22"/>
-						</Size>
+						<Size x="75" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-40" y="72"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -156,11 +88,7 @@
 					</Button>
 					<Button name="GuildRegistrarButton1" inherits="QuestTitleButtonTemplate" text="GUILD_CHARTER_PURCHASE">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="AvailableServicesText" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="-10" y="-10"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="AvailableServicesText" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="GuildRegistrar_ShowPurchaseFrame"/>
@@ -192,24 +120,14 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="GuildRegistrarPurchaseText" inherits="QuestFont" text="GUILD_REGISTRAR_PURCHASE_TEXT" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="270" y="0"/>
-							</Size>
+							<Size x="270" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="35" y="-95"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="20" y="-70"/>
 							</Anchors>
 						</FontString>
 						<FontString name="GuildRegistrarCostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="GuildRegistrarPurchaseText" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-5"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="GuildRegistrarPurchaseText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -217,11 +135,7 @@
 				<Frames>
 					<Frame name="GuildRegistrarMoneyFrame" inherits="MoneyFrameTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildRegistrarCostLabel" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="15" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="GuildRegistrarCostLabel" relativePoint="RIGHT" x="15" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -231,15 +145,9 @@
 						</Scripts>
 					</Frame>
 					<Button name="GuildRegistrarFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-						<Size>
-							<AbsDimension x="75" y="22"/>
-						</Size>
+						<Size x="75" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-40" y="72"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -248,15 +156,9 @@
 						</Scripts>
 					</Button>
 					<Button name="GuildRegistrarFramePurchaseButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="PURCHASE">
-						<Size>
-							<AbsDimension x="85" y="22"/>
-						</Size>
+						<Size x="85" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="GuildRegistrarFrame">
-								<Offset>
-									<AbsDimension x="22" y="72"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildRegistrarFrame" x="6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -285,41 +187,23 @@
 						</Scripts>
 					</Button>
 					<EditBox name="GuildRegistrarFrameEditBox" letters="24" historyLines="1">
-						<Size>
-							<AbsDimension x="130" y="32"/>
-						</Size>
+						<Size x="130" y="32"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GuildRegistrarCostLabel" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="GuildRegistrarCostLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-									<Size>
-										<AbsDimension x="75" y="32"/>
-									</Size>
+									<Size x="75" y="32"/>
 									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="-10" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="LEFT" x="-10" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
 								</Texture>
 								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-									<Size>
-										<AbsDimension x="75" y="32"/>
-									</Size>
+									<Size x="75" y="32"/>
 									<Anchors>
-										<Anchor point="RIGHT">
-											<Offset>
-												<AbsDimension x="10" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="RIGHT" x="10" y="0"/>
 									</Anchors>
 									<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
 								</Texture>

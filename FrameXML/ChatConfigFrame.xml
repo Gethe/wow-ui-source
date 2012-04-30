@@ -1944,8 +1944,7 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								self:RegisterEvent("PARTY_MEMBERS_CHANGED");
-								self:RegisterEvent("RAID_ROSTER_UPDATE");
+								self:RegisterEvent("GROUP_ROSTER_UPDATE");
 							</OnLoad>
 							<OnEvent>
 								if ( Blizzard_CombatLog_Update_QuickButtons ) then	--The function is in an AddOn, so we want to make sure it is loaded before calling it.

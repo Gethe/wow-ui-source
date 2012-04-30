@@ -72,13 +72,13 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	if ( self.showClassification ) then
 		self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 	end
-	self:RegisterEvent("UNIT_AURA");
 	if ( self.showLeader ) then
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	end
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
-	
+	self:RegisterUnitEvent("UNIT_AURA", unit);
+
 	local frameLevel = _G[thisName.."TextureFrame"]:GetFrameLevel();
 
 	local showmenu;
@@ -114,7 +114,7 @@ function TargetFrame_Update (self)
 		end
 		TargetFrame_CheckDead(self);
 		if ( self.showLeader ) then
-			if ( UnitIsPartyLeader(self.unit) and (UnitInParty(self.unit) or UnitInRaid(self.unit)) ) then
+			if ( UnitIsGroupLeader(self.unit) and (UnitInParty(self.unit) or UnitInRaid(self.unit)) ) then
 				if ( HasLFGRestrictions() ) then
 					self.leaderIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
 					self.leaderIcon:SetTexCoord(0, 0.296875, 0.015625, 0.3125);
@@ -192,13 +192,13 @@ function TargetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		if ( arg1 == self.unit ) then
-			if ( UnitIsPartyLeader(self.unit) ) then
+			if ( UnitIsGroupLeader(self.unit) ) then
 				self.leaderIcon:Show();
 			else
 				self.leaderIcon:Hide();
 			end
 		end
-	elseif ( event == "PARTY_MEMBERS_CHANGED" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if (self.unit == "focus") then
 			TargetFrame_Update(self);
 			-- If this is the focus frame, clear focus if the unit no longer exists
@@ -222,9 +222,6 @@ function TargetFrame_OnEvent (self, event, ...)
 			self:Hide();
 		end
 		CloseDropDownMenus();
-	elseif ( event == "VARIABLES_LOADED" ) then
-		FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
-		TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
 	elseif ( event == "CVAR_UPDATE" ) then
 		if ( arg1 == "SHOW_ALL_ENEMY_DEBUFFS_TEXT" ) then
 			-- have to set uvar manually or it will be the previous value
@@ -234,6 +231,14 @@ function TargetFrame_OnEvent (self, event, ...)
 			end
 		end		
 	end
+end
+
+function TargetFrame_OnVariablesLoaded()
+	TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
+	TargetFrame_UpdateBuffsOnTop();
+
+	FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
+	FocusFrame_UpdateBuffsOnTop();
 end
 
 function TargetFrame_OnHide (self)
@@ -284,7 +289,7 @@ function TargetFrame_CheckFaction (self)
 		if ( UnitIsPVPFreeForAll(self.unit) ) then
 			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
 			self.pvpIcon:Show();
-		elseif ( factionGroup and UnitIsPVP(self.unit) ) then
+		elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit) ) then
 			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 			self.pvpIcon:Show();
 		else
@@ -294,18 +299,26 @@ function TargetFrame_CheckFaction (self)
 end
 
 function TargetFrame_CheckClassification (self, forceNormalTexture)
-	local texture;
 	local classification = UnitClassification(self.unit);
-	if ( classification == "worldboss" or classification == "elite" ) then
-		texture = "Interface\\TargetingFrame\\UI-TargetingFrame-Elite";
+	self.nameBackground:Show();
+
+	if ( forceNormalTexture ) then
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
+	elseif ( classification == "minus" ) then
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Minus");
+		self.nameBackground:Hide();
+		forceNormalTexture = true;
+	elseif ( classification == "worldboss" or classification == "elite" ) then
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
 	elseif ( classification == "rareelite" ) then
-		texture = "Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite";
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite");
 	elseif ( classification == "rare" ) then
-		texture = "Interface\\TargetingFrame\\UI-TargetingFrame-Rare";
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 	end
-	if ( texture and not forceNormalTexture) then
-		self.borderTexture:SetTexture(texture);
+		
+	if ( not forceNormalTexture) then
 		self.haveElite = true;
+		TargetFrameBackground:SetSize(119,41);
 		if ( self.threatIndicator ) then
 			self.threatIndicator:SetTexCoord(0, 0.9453125, 0.181640625, 0.400390625);
 			self.threatIndicator:SetWidth(242);
@@ -313,8 +326,8 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -22, 9);
 		end		
 	else
-		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
 		self.haveElite = nil;
+		TargetFrameBackground:SetSize(119,25);
 		if ( self.threatIndicator ) then
 			self.threatIndicator:SetTexCoord(0, 0.9453125, 0, 0.181640625);
 			self.threatIndicator:SetWidth(242);
@@ -371,8 +384,9 @@ function TargetFrame_UpdateAuras (self)
 	end
 	
 	for i = 1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge = UnitBuff(self.unit, i, filter);
-		frameName = selfName.."Buff"..i;
+		name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId = UnitBuff(self.unit, i, filter);
+		
+		frameName = selfName.."Buff"..(i);
 		frame = _G[frameName];
 		if ( not frame ) then
 			if ( not icon ) then
@@ -515,7 +529,7 @@ function TargetFrame_UpdateAuras (self)
 	self.auraRows = 0;
 	
 	local mirrorAurasVertically = false;
-	if ( self == TargetFrame and TARGET_FRAME_BUFFS_ON_TOP ) then
+	if ( self.buffsOnTop ) then
 		mirrorAurasVertically = true;
 	end
 	local haveTargetofTarget;
@@ -834,10 +848,10 @@ function TargetofTarget_Update(self, elapsed)
 	local parent = self:GetParent();
 	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
 		if ( ( SHOW_TARGET_OF_TARGET_STATE == "5" ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "4" and ( (GetNumRaidMembers() > 0) or (GetNumPartyMembers() > 0) ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "3" and ( (GetNumRaidMembers() == 0) and (GetNumPartyMembers() == 0) ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "2" and ( (GetNumPartyMembers() > 0) and (GetNumRaidMembers() == 0) ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "1" and ( GetNumRaidMembers() > 0 ) ) ) then
+		     ( SHOW_TARGET_OF_TARGET_STATE == "4" and ( IsInGroup() ) ) or
+		     ( SHOW_TARGET_OF_TARGET_STATE == "3" and ( not IsInGroup() ) ) or
+		     ( SHOW_TARGET_OF_TARGET_STATE == "2" and ( IsInGroup() and not IsInRaid() ) ) or
+		     ( SHOW_TARGET_OF_TARGET_STATE == "1" and ( IsInRaid() ) ) ) then
 			show = true;
 		end
 	end
@@ -963,19 +977,19 @@ function Target_Spellbar_AdjustPosition(self)
 	-- this may need to be reworked, but it covers all cases within 3 conditionals
 	local parentFrame = self:GetParent();
 	if ( parentFrame.haveToT ) then
-		if ( TARGET_FRAME_BUFFS_ON_TOP or parentFrame.auraRows <= 1 ) then
+		if ( self.buffsOnTop or parentFrame.auraRows <= 1 ) then
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -21 );
 		else
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		end
 	elseif ( parentFrame.haveElite ) then
-		if ( TARGET_FRAME_BUFFS_ON_TOP or parentFrame.auraRows <= 1 ) then
+		if ( self.buffsOnTop or parentFrame.auraRows <= 1 ) then
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -5 );
 		else
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		end
 	else
-		if ( (not TARGET_FRAME_BUFFS_ON_TOP) and parentFrame.auraRows > 0 ) then
+		if ( (not self.buffsOnTop) and parentFrame.auraRows > 0 ) then
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		else
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 7 );
@@ -1008,8 +1022,17 @@ function TargetFrame_ResetUserPlacedPosition()
 	TargetFrame:SetUserPlaced(false);
 	TargetFrame:SetClampedToScreen(false);
 	TARGET_FRAME_BUFFS_ON_TOP = false;
-	TargetFrame_UpdateAuras(TargetFrame);
+	TargetFrame_UpdateBuffsOnTop();
 	TargetFrame_SetLocked(true);
+end
+
+function TargetFrame_UpdateBuffsOnTop()
+	if ( TARGET_FRAME_BUFFS_ON_TOP ) then
+		TargetFrame.buffsOnTop = true;
+	else
+		TargetFrame.buffsOnTop = false;
+	end
+	TargetFrame_UpdateAuras(TargetFrame);
 end
 
 -- *********************************************************************************
@@ -1143,4 +1166,13 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		FocusFrame.showAuraCount = true;
 		TargetFrame_Update(FocusFrame);
 	end
+end
+
+function FocusFrame_UpdateBuffsOnTop()
+	if ( FOCUS_FRAME_BUFFS_ON_TOP ) then
+		FocusFrame.buffsOnTop = true;
+	else
+		FocusFrame.buffsOnTop = false;
+	end
+	TargetFrame_UpdateAuras(FocusFrame);
 end

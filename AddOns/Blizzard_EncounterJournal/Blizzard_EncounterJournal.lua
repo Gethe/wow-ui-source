@@ -79,14 +79,7 @@ function EncounterJournal_OnLoad(self)
 	self.encounter.usedHeaders = {};
 	
 	self.encounter.infoFrame = self.encounter.info.detailsScroll.child;
-	self.encounter.info.detailsScroll.ScrollBar.scrollStep = 30;
-	
-	
-	-- UIDropDownMenu_SetWidth(self.instanceSelect.tierDropDown, 170);
-	-- UIDropDownMenu_SetText(self.instanceSelect.tierDropDown, "Pick A Dungeon");
-	-- UIDropDownMenu_JustifyText(self.instanceSelect.tierDropDown, "LEFT");
-	-- UIDropDownMenu_Initialize(self.instanceSelect.tierDropDown, EncounterJournal_TierDropDown_Init);
-	
+	self.encounter.info.detailsScroll.ScrollBar.scrollStep = 30;	
 	
 	self.encounter.info.bossTab:Click();
 	
@@ -113,11 +106,14 @@ function EncounterJournal_OnLoad(self)
 		listFunc = EJNAV_ListInstance,
 	}
 	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
-	EncounterJournal_ListInstances();
 	
 	EncounterJournal.instanceSelect.dungeonsTab:Disable();
 	EncounterJournal.instanceSelect.dungeonsTab.selectedGlow:Show();
 	EncounterJournal.instanceSelect.raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+
+	EncounterJournal.instanceSelect.tabs = {EncounterJournal.instanceSelect.dungeonsTab, EncounterJournal.instanceSelect.raidsTab};
+	EncounterJournal.instanceSelect.currTab = 1;
+	EncounterJournal_ListInstances();
 end
 
 
@@ -132,7 +128,7 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
 		local _, _, difficultyIndex = GetInstanceInfo();
-		if IsPartyLFG() and GetNumRaidMembers() > 0 then
+		if IsPartyLFG() and IsInRaid() then
 			difficultyIndex = EJ_DIFF_LFRAID;
 		end
 		EJ_SetDifficulty(difficultyIndex);
@@ -213,8 +209,9 @@ function EncounterJournal_UpdatePortraits()
 	end
 end
 
-
+local infinateLoopPolice = false; --design migh make a tier that has no instances at all sigh
 function EncounterJournal_ListInstances()
+	EncounterJournal.instanceSelect.tier:SetText(EJ_GetTierInfo(EJ_GetCurrentTier()));
 	NavBar_Reset(EncounterJournal.navBar);
 	EncounterJournal.encounter:Hide();
 	EncounterJournal.instanceSelect:Show();
@@ -225,6 +222,19 @@ function EncounterJournal_ListInstances()
 	local index = 1;
 	local instanceID, name, description, _, buttonImage, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
 	local instanceButton;
+	
+	--No instances in this tab
+	if not instanceID and not infinateLoopPolice then
+		--disable this tab and select the other one.
+		local nextTab = mod(EncounterJournal.instanceSelect.currTab, 2) + 1;
+		EncounterJournal.instanceSelect.tabs[EncounterJournal.instanceSelect.currTab].grayBox:Show();
+		EncounterJournal.instanceSelect.tabs[nextTab]:Click();
+		infinateLoopPolice = true;
+		EncounterJournal_ListInstances()
+		return;
+	end
+	infinateLoopPolice = false;
+	
 	while instanceID do
 		instanceButton = self["instance"..index];
 		if not instanceButton then -- create button
@@ -258,6 +268,16 @@ function EncounterJournal_ListInstances()
 		instanceButton:Hide();
 		index = index + 1;
 		instanceButton = self["instance"..index];
+	end
+	
+	
+	--check if the other tab is empty
+	local instanceText = EJ_GetInstanceByIndex(index, not showRaid);
+	--No instances in the other tab
+	if not instanceText then
+		--disable the other tab.
+		local nextTab = mod(EncounterJournal.instanceSelect.currTab, 2) + 1;
+		EncounterJournal.instanceSelect.tabs[nextTab].grayBox:Show();
 	end
 end
 
@@ -759,12 +779,6 @@ function EncounterJournal_ClearDetails()
 end
 
 
-function EncounterJournal_TierDropDown_Select(self, instanceID, name)
-	EncounterJournal_DisplayInstance(instanceID);
-	UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, name);
-end
-
-
 function EncounterJournal_TabClicked(self, button)
 	local tabType = self:GetID();
 	local info = EncounterJournal.encounter.info;
@@ -864,7 +878,7 @@ end
 function EncounterJournal_Loot_OnUpdate(self)
 	if GameTooltip:IsOwned(self) then
 		if IsModifiedClick("COMPAREITEMS") or
-				 (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) then
+				 (GetCVarBool("alwaysCompareItems") and not IsEquippedItem(self.itemID)) then
 			GameTooltip_ShowCompareItem();
 		else
 			ShoppingTooltip1:Hide();
@@ -1202,6 +1216,34 @@ function EncounterJournal_DifficultyInit(self, level)
 			UIDropDownMenu_AddButton(info);
 		end
 	end
+end
+
+
+function EJTierDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, EJTierDropDown_Initialize, "MENU");
+end
+
+
+function EJTierDropDown_Initialize(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	local numTiers = EJ_GetNumTiers();
+	local currTier = EJ_GetCurrentTier();
+	for i=1,numTiers do
+		info.text = EJ_GetTierInfo(i);
+		info.func = EncounterJournal_TierDropDown_Select
+		info.checked = i == currTier;
+		info.isNotRadio = true;
+		info.arg1 = i;
+		UIDropDownMenu_AddButton(info, level)
+	end
+end
+
+
+function EncounterJournal_TierDropDown_Select(self, tier)
+	EJ_SelectTier(tier);
+	EncounterJournal.instanceSelect.tabs[1].grayBox:Hide();
+	EncounterJournal.instanceSelect.tabs[2].grayBox:Hide();
+	EncounterJournal_ListInstances();
 end
 
 

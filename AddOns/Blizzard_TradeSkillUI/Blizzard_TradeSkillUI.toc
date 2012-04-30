@@ -1,6 +1,0 @@
-## Interface: 40300
-## Title: Blizzard Trade Skill UI
-## Secure: 1
-## LoadOnDemand: 1
-Blizzard_TradeSkillUI.xml
-Localization.lua

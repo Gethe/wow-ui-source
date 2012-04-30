@@ -1722,7 +1722,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			
 			metaCriteria:SetParent(objectivesFrame);
 			metaCriteria:Show();
-		elseif ( bit.band(flags, ACHIEVEMENT_CRITERIA_PROGRESS_BAR) == ACHIEVEMENT_CRITERIA_PROGRESS_BAR ) then
+		elseif ( bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR ) then
 			-- Display this criteria as a progress bar!
 			progressBars = progressBars + 1;
 			local progressBar = AchievementButton_GetProgressBar(progressBars);

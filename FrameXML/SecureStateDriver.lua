@@ -193,6 +193,5 @@ SecureStateDriverManager:RegisterEvent("PLAYER_FOCUS_CHANGED");
 SecureStateDriverManager:RegisterEvent("PLAYER_REGEN_DISABLED");
 SecureStateDriverManager:RegisterEvent("PLAYER_REGEN_ENABLED");
 SecureStateDriverManager:RegisterEvent("UNIT_PET");
-SecureStateDriverManager:RegisterEvent("RAID_ROSTER_UPDATE");
-SecureStateDriverManager:RegisterEvent("PARTY_MEMBERS_CHANGED");
+SecureStateDriverManager:RegisterEvent("GROUP_ROSTER_UPDATE");
 -- Deliberately ignoring mouseover and others' target changes because they change so much

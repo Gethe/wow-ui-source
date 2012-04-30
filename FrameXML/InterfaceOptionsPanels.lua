@@ -1775,7 +1775,7 @@ function BlizzardOptionsPanel_UpdateDebuffFrames()
 	TargetofTarget_Update(frame.totFrame);
 	-- Party frames and their pets
 	for i = 1, MAX_PARTY_MEMBERS do
-		if ( GetPartyMember(i) ) then
+		if ( UnitExists("party"..i) ) then
 			frame = _G["PartyMemberFrame"..i];
 			PartyMemberFrame_UpdateMember(frame);
 			PartyMemberFrame_UpdatePet(frame);
@@ -1926,8 +1926,7 @@ end
 BuffsPanelOptions = {
 	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT" },
 	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
-	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },	
-	consolidateBuffs = { text = "CONSOLIDATE_BUFFS_TEXT" },	
+	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
 	showAllEnemyDebuffs = { text = "SHOW_ALL_ENEMY_DEBUFFS_TEXT" },
 }
 

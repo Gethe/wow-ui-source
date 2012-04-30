@@ -1181,7 +1181,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="SEND_LABEL">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="SEND_LABEL">
 				<Size>
 					<AbsDimension x="118" y="22"/>
 				</Size>
@@ -1196,7 +1196,7 @@
 					<OnClick function="GuildFinderRequestMembershipFrame_SendRequest"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
 					<AbsDimension x="118" y="22"/>
 				</Size>

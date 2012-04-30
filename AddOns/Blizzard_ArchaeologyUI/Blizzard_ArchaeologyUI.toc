@@ -1,6 +1,0 @@
-## Interface: 40300
-## Title: Blizzard Archaeology UI
-## Secure: 1
-## LoadOnDemand: 1
-Blizzard_ArchaeologyUI.xml
-Localization.lua

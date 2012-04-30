@@ -1,7 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="RaidFinder.lua"/>
-	<Frame name="RaidFinderFrame" useParentLevel="true" setAllPoints="true" parent="RaidParentFrame">
+	<Frame name="RaidFinderFrame" useParentLevel="true" parent="GroupFinderFrame" hidden="true">
+		<Size x="338" y="428"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="224" y="0"/>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<!--Texture name="$parentRoleBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
@@ -22,15 +26,39 @@
 					</Gradient>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="false">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-23" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentRoleInset" useParentLevel="true" inherits="InsetFrameTemplate">
+			<Frame name="$parentRoleInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-26" />
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-6" y="-107" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-6" y="-109" />
 				</Anchors>
 			</Frame>
-			<Frame name="RaidFinderQueueFrame" setAllPoints="true">
+			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Size x="217" y="496"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-144" />
+					<Anchor point="BOTTOMRIGHT" x="-4" y="26" />
+				</Anchors>
+			</Frame>
+			<Frame name="RaidFinderQueueFrame">
+				<Size x="338" y="428"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-2"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-BACKGROUND-QUESTPAPER">
@@ -52,7 +80,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="50" y="334"/>
+									<AbsDimension x="50" y="336"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -123,7 +151,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="117" y="283"/>
+									<AbsDimension x="117" y="287"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -264,7 +292,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate2" text="YES">
+							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate" text="YES">
 								<Size>
 									<AbsDimension x="153" y="22"/>
 								</Size>
@@ -282,7 +310,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate2" text="HIDE">
+							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate" text="HIDE">
 								<Size>
 									<AbsDimension x="153" y="22"/>
 								</Size>
@@ -475,7 +503,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate2" parentKey="leaveQueueButton">
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" parentKey="leaveQueueButton">
 								<Size>
 									<AbsDimension x="153" y="22"/>
 								</Size>
@@ -504,7 +532,7 @@
 			<Button name="$parentFindRaidButton" inherits="MagicButtonTemplate" text="FIND_RAID">
 				<Size x="135" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOM" x="0" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -514,19 +542,6 @@
 						else
 							RaidFinderQueueFrame_Join();
 						end
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentCancelButton" inherits="MagicButtonTemplate" text="CLOSE">
-				<Size>
-					<AbsDimension x="112" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent():GetParent())
 					</OnClick>
 				</Scripts>
 			</Button>

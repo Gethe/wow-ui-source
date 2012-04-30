@@ -5,27 +5,21 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTop" file="Interface\TradeFrame\UI-TradeFrame-Highlight">
-					<Size>
-						<AbsDimension x="161" y="16"/>
-					</Size>
+					<Size x="161" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.62890625" top="0" bottom="0.0625"/>
 				</Texture>
 				<Texture name="$parentBottom" file="Interface\TradeFrame\UI-TradeFrame-Highlight">
-					<Size>
-						<AbsDimension x="161" y="16"/>
-					</Size>
+					<Size x="161" y="16"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.62890625" top="0.9375" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentMiddle" file="Interface\TradeFrame\UI-TradeFrame-Highlight">
-					<Size>
-						<AbsDimension x="161" y="10"/>
-					</Size>
+					<Size x="161" y="10"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
 						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
@@ -42,39 +36,21 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-13" y="13"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-13" y="13"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-					<Size>
-						<AbsDimension x="124" y="64"/>
-					</Size>
+					<Size x="124" y="64"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-20" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-20" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="90" y="30"/>
-					</Size>
+					<Size x="90" y="30"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameFrame">
-							<Offset>
-								<AbsDimension x="15" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentNameFrame" x="15" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -162,326 +138,212 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="TradeFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="35" top="0" bottom="72"/>
-		</HitRectInsets>
+
+	<Frame name="TradeFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="344" y="446"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="TradeFrameRecipientPortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="TradeFramePlayerPortrait">
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="183" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>
 				</Texture>
-				<Texture name="TradeFramePlayerPortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="TradeFrameRecipientPortrait">
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="TradeFrame" relativePoint="TOPRIGHT" x="-180" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="TradeRecipientPortraitFrame" inherits="UI-Frame-Portrait" parentKey="portraitFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TradeFrameRecipientPortrait" x="-6" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture name="TradeRecipientBotLeftCorner" inherits="UI-Frame-BotCornerLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="TradeFrame" relativePoint="BOTTOMRIGHT" x="-178" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture name="TradeRecipientLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TradeRecipientPortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeTo="TradeRecipientBotLeftCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="TradeRecipientBG" >
+					<Color r="1" g="1" b="1" a=".15"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TradeFrame" relativePoint="TOPRIGHT" x="-172" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\TradeFrame\UI-TradeFrame-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TradeFrame\UI-TradeFrame-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TradeFrame\UI-TradeFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\TradeFrame\UI-TradeFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
 				<FontString name="TradeFrameRecipientNameText" inherits="GameFontNormal" text="Player Name">
-					<Size>
-						<AbsDimension x="80" y="12"/>
-					</Size>
+					<Size x="80" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame">
-							<Offset>
-								<AbsDimension x="245" y="-17"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="230" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="TradeFramePlayerNameText" inherits="GameFontNormal" text="Recipient Name">
-					<Size>
-						<AbsDimension x="100" y="12"/>
-					</Size>
+					<Size x="100" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame">
-							<Offset>
-								<AbsDimension x="75" y="-17"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="65" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="TradeFramePlayerEnchantText" inherits="GameFontHighlightSmall" text="TRADEFRAME_ENCHANT_SLOT_LABEL">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame">
-							<Offset>
-								<AbsDimension x="26" y="-374"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="15" y="-360"/>
 					</Anchors>
 				</FontString>
 				<FontString name="TradeFrameRecipientEnchantText" inherits="GameFontHighlightSmall" text="TRADEFRAME_ENCHANT_SLOT_LABEL">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="TradeFramePlayerEnchantText">
-							<Offset>
-								<AbsDimension x="170" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="TradeFramePlayerEnchantText" x="166" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="TradeHighlightPlayer" inherits="TradeHighlightTemplate">
-				<Size>
-					<AbsDimension x="161" y="266"/>
-				</Size>
+				<Size x="150" y="266"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeFrame">
-						<Offset>
-							<AbsDimension x="19" y="-100"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="6" y="-85"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeHighlightRecipient" inherits="TradeHighlightTemplate">
-				<Size>
-					<AbsDimension x="161" y="266"/>
-				</Size>
+				<Size x="150" y="266"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="189" y="-100"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="176" y="-85"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeHighlightPlayerEnchant" inherits="TradeHighlightTemplate">
-				<Size>
-					<AbsDimension x="161" y="61"/>
-				</Size>
+				<Size x="150" y="61"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeHighlightPlayer" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeHighlightPlayer" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeHighlightRecipientEnchant" inherits="TradeHighlightTemplate">
-				<Size>
-					<AbsDimension x="161" y="61"/>
-				</Size>
+				<Size x="150" y="61"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeHighlightRecipient" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeHighlightRecipient" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Frame name="TradeRecipientItemsInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="175" y="-83"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-352"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeRecipientItem1" inherits="RecipientTradeItemTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="195" y="-104"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="182" y="-89"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeRecipientItem2" inherits="RecipientTradeItemTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem1" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeRecipientItem3" inherits="RecipientTradeItemTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem2" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeRecipientItem4" inherits="RecipientTradeItemTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem3" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeRecipientItem5" inherits="RecipientTradeItemTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem4" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem4" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeRecipientItem6" inherits="RecipientTradeItemTemplate" id="6">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem5" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem5" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Frame>
+			<Frame name="TradeRecipientEnchantInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="175" y="-354"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-418"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradeRecipientItem7" inherits="RecipientTradeItemTemplate" id="7">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem6" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-28"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeRecipientItem6" relativePoint="BOTTOMLEFT" x="0" y="-28"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\TradeFrame\UI-TradeFrame-EnchantIcon">
-							<Size>
-								<AbsDimension x="62" y="62"/>
-							</Size>
+							<Size x="62" y="62"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame name="TradePlayerItemsInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-83"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="166" y="-352"/>
+				</Anchors>
+			</Frame>
 			<Frame name="TradePlayerItem1" inherits="PlayerTradeItemTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="26" y="-104"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="14" y="-89"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradePlayerItem2" inherits="PlayerTradeItemTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem1" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradePlayerItem3" inherits="PlayerTradeItemTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem2" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradePlayerItem4" inherits="PlayerTradeItemTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem3" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradePlayerItem5" inherits="PlayerTradeItemTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem4" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem4" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradePlayerItem6" inherits="PlayerTradeItemTemplate" id="6">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem5" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem5" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+				</Anchors>
+			</Frame>
+			<Frame name="TradePlayerEnchantInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-354"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="166" y="-418"/>
 				</Anchors>
 			</Frame>
 			<Frame name="TradePlayerItem7" inherits="PlayerTradeItemTemplate" id="7">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem6" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-28"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradePlayerItem6" relativePoint="BOTTOMLEFT" x="0" y="-28"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\TradeFrame\UI-TradeFrame-EnchantIcon">
-							<Size>
-								<AbsDimension x="62" y="62"/>
-							</Size>
+							<Size x="62" y="62"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -499,15 +361,9 @@
 				</Scripts>
 			</Frame>
 			<Button name="TradeFrameTradeButton" inherits="UIPanelButtonTemplate" text="TRADE">
-				<Size>
-					<AbsDimension x="85" y="22"/>
-				</Size>
+				<Size x="85" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-113" y="55"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="BOTTOMRIGHT" x="-85" y="5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="AcceptTrade"/>
@@ -518,15 +374,9 @@
 				<DisabledFont style="GameFontDisable"/>
 			</Button>
 			<Button name="TradeFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="77" y="22"/>
-				</Size>
+				<Size x="77" y="22"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeFrameTradeButton" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="3" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="TradeFrameTradeButton" relativePoint="TOPRIGHT" x="3" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="TradeFrameCancelButton_OnClick"/>
@@ -536,22 +386,15 @@
 				<HighlightFont style="GameFontHighlight"/>
 				<DisabledFont style="GameFontDisable"/>
 			</Button>
-			<Button name="TradeFrameCloseButton" inherits="UIPanelCloseButton">
+			<Frame name="TradePlayerInputMoneyInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="TradeFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-25" y="-8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="4" y="-58"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="166" y="-82"/>
 				</Anchors>
-			</Button>
+			</Frame>
 			<Frame name="TradePlayerInputMoneyFrame" inherits="MoneyInputFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="24" y="-73"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="11" y="-61"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -564,13 +407,22 @@
 					</OnEvent>
 				</Scripts>
 			</Frame>
+			<Frame name="TradeRecipientMoneyInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="175" y="-58"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-81"/>
+				</Anchors>
+			</Frame>
+			<Frame name="TradeRecipientMoneyBg" inherits="ThinGoldEdgeTemplate" >
+				<Size x="120" y="30"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="TradeFrame" relativePoint="TOPRIGHT" x="-7" y="-60"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="TradeFrame" relativePoint="TOPRIGHT" x="-168" y="-80"/>
+				</Anchors>
+			</Frame>
 			<Frame name="TradeRecipientMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-30" y="-78"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="TradeFrame" relativePoint="TOPRIGHT" x="-5" y="-64"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

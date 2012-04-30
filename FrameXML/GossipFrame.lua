@@ -4,6 +4,7 @@ NUMGOSSIPBUTTONS = 32;
 function GossipFrame_OnLoad(self)
 	self:RegisterEvent("GOSSIP_SHOW");
 	self:RegisterEvent("GOSSIP_CLOSED");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 end
 
 function GossipFrame_OnEvent(self, event, ...)
@@ -24,9 +25,12 @@ function GossipFrame_OnEvent(self, event, ...)
 				return;
 			end
 		end
+		NPCFriendshipStatusBar_Update(self);
 		GossipFrameUpdate();
 	elseif ( event == "GOSSIP_CLOSED" ) then
 		HideUIPanel(self);
+	elseif ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
+		GossipFrameUpdate();
 	end
 end
 
@@ -113,7 +117,9 @@ function GossipFrameActiveQuestsUpdate(...)
 	local titleButton;
 	local titleIndex = 1;
 	local titleButtonIcon;
-	for i=1, select("#", ...), 4 do
+	local numActiveQuestData = select("#", ...);
+	GossipFrame.hasActiveQuests = (numActiveQuestData > 0);
+	for i=1, numActiveQuestData, 4 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
@@ -169,4 +175,27 @@ end
 
 function GossipResize(titleButton)
 	titleButton:SetHeight( titleButton:GetTextHeight() + 2);
+end
+
+function NPCFriendshipStatusBar_Update(frame)
+	local id, rep, maxRep, text, texture = GetFriendshipReputation();
+	if ( id and id > 0 ) then
+		local statusBar = NPCFriendshipStatusBar;
+		statusBar:SetParent(frame);
+		statusBar:SetMinMaxValues(0, maxRep);
+		statusBar:SetValue(rep);
+		statusBar:Show();
+	else
+		NPCFriendshipStatusBar:Hide();
+	end
+end
+
+function NPCFriendshipStatusBar_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+	local name = UnitName("npc");
+	local _, rep, maxRep, text = GetFriendshipReputation();
+	GameTooltip:SetText(name, 1, 1, 1);
+	GameTooltip:AddLine(text, nil, nil, nil, true);
+	GameTooltip:AddLine(rep.." / "..maxRep, 1, 1, 1, true);
+	GameTooltip:Show();
 end

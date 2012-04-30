@@ -102,7 +102,11 @@ end
 
 
 function TogglePVPFrame()
-	if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
+	if (IsBlizzCon()) then
+		return;
+	end
+
+	if ( UnitLevel("player") >= SHOW_PVP_LEVEL and not IsPlayerNeutral()) then
 			ToggleFrame(PVPFrame);
 	end
 end
@@ -454,6 +458,9 @@ function PVPFrame_TabClicked(self)
 	PVPFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
 	PVPFrame.topInset:Hide();
 	local factionGroup = UnitFactionGroup("player");
+	if(factionGroup == nil) then
+		return;
+	end;
 	
 	if index == 1 then -- Honor Page
 		PVPFrame.panel1:Show();
@@ -718,7 +725,12 @@ function PVPHonor_UpdateQueueStatus()
 		frame = _G["PVPHonorFrameBgButton"..i];
 		frame.status:Hide();
 	end
-	local factionTexture = "Interface\\PVPFrame\\PVP-Currency-"..UnitFactionGroup("player");
+	
+	local factionGroup = UnitFactionGroup("player");
+	if(factionGroup == nil) then
+		return;
+	end
+	local factionTexture = "Interface\\PVPFrame\\PVP-Currency-"..factionGroup;
 	for i=1, GetMaxBattlefieldID() do
 		queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
 		if ( queueStatus ~= "none" ) then
@@ -746,8 +758,7 @@ function PVPHonorFrame_OnLoad(self)
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 end
 
@@ -766,7 +777,7 @@ function PVPHonorFrame_OnEvent(self, event, ...)
 		if ( self.selectedButtonIndex ) then
 			PVPHonorFrame_ResetInfo();
 		end
-	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		PVPHonorFrame_UpdateGroupAvailable();
 	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
 		PVPHonor_UpdateRandomInfo();
@@ -780,7 +791,7 @@ function PVPHonorFrame_OnShow(self)
 end
 
 function PVPHonorFrame_UpdateGroupAvailable()
-	if ( ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) and IsPartyLeader() ) then
+	if ( IsInGroup() and UnitIsGroupLeader("player") ) then
 		-- If this is true then can join as a group
 		PVPFrameRightButton:Enable();
 	else
@@ -802,8 +813,7 @@ function PVPConquestFrame_OnLoad(self)
 	self.ratedbgButton:SetWidth(321);
 	
 	
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
@@ -811,9 +821,11 @@ function PVPConquestFrame_OnLoad(self)
 	
 	
 	local factionGroup = UnitFactionGroup("player");
-	self.infoButton.factionIcon = _G["PVPConquestFrameInfoButtonInfoIcon"..factionGroup];
-	self.infoButton.factionIcon:Show();
-	self.winReward.arenaSymbol:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+	if(factionGroup ~= nil and factionGroup ~= "Neutral") then
+		self.infoButton.factionIcon = _G["PVPConquestFrameInfoButtonInfoIcon"..factionGroup];
+		self.infoButton.factionIcon:Show();
+		self.winReward.arenaSymbol:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+	end
 end
 
 
@@ -827,7 +839,7 @@ end
 
 
 function PVPConquestFrame_Update(self)
-	local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
+	local groupSize = GetNumGroupMembers();
 	local validGroup = false;
 	local reward = 0;
 	local _, size;
@@ -955,7 +967,7 @@ function PVPConquestFrame_Update(self)
 		
 		self.infoButton.wins:SetText(WINS);
 		self.infoButton.losses:SetText(LOSSES);
-		if IsPartyLeader() then
+		if UnitIsGroupLeader("player") then
 			PVPFrameLeftButton:Enable();
 		else
 			PVPFrameLeftButton:Disable();
@@ -1644,7 +1656,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 				info.func = function (self, ...) AcceptBattlefieldPort(...) end;
 				info.arg1 = i;
 				info.notCheckable = 1;
-				info.disabled = registeredMatch and not (IsPartyLeader() or IsRaidLeader());
+				info.disabled = registeredMatch and not UnitIsGroupLeader("player");
 				UIDropDownMenu_AddButton(info);
 
 			elseif ( status == "confirm" ) then
@@ -1976,10 +1988,9 @@ end
 
 function WarGamesFrame_OnLoad(self)
 	self.scrollFrame.scrollBar.doNotHide = true;
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");		-- for leadership changes
-	self:RegisterAllEvents();
 	self.scrollFrame.update = WarGamesFrame_Update;
 	self.scrollFrame.dynamic =  WarGamesFrame_GetTopButton;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "WarGameButtonTemplate", 0, -1);
@@ -2159,13 +2170,13 @@ end
 function WarGameStartButton_GetErrorTooltip()
 	local name, pvpType, collapsed, id, minPlayers, maxPlayers = GetWarGameTypeInfo(GetSelectedWarGameType());
 	if ( name ) then
-		if ( not UnitIsPartyLeader("player") ) then
+		if ( not UnitIsGroupLeader("player") ) then
 			return WARGAME_REQ_LEADER;
 		end	
-		if ( not UnitIsPartyLeader("target") or UnitIsUnit("player", "target") ) then
+		if ( not UnitIsGroupLeader("target") or UnitIsUnit("player", "target") ) then
 			return WARGAME_REQ_TARGET;
 		end
-		local groupSize = max(GetNumPartyMembers()+1, GetNumRaidMembers());
+		local groupSize = GetNumGroupMembers();
 		-- how about a nice game of arena?
 		if ( pvpType == INSTANCE_TYPE_ARENA ) then
 			if ( groupSize ~= 2 and groupSize ~= 3 and groupSize ~= 5 ) then

@@ -108,18 +108,22 @@ end
 
 local maxPerSecond = 0.7;
 local minPerSecond = 0.3;
+function GetSmoothProgressChange(value, displayedValue, range, elapsed)
+	local minPerSecond = max(minPerSecond, 1/range);	--Make sure we're moving at least 1 unit/second (will only matter if our maximum power is 3 or less);
+	
+	local diff = displayedValue - value;
+	local diffRatio = diff / range;
+	local change = range * ((minPerSecond/abs(diffRatio) + maxPerSecond - minPerSecond) * diffRatio) * elapsed;
+	if ( abs(change) > abs(diff) or abs(diffRatio) < 0.01 ) then
+		return value;
+	else
+		return displayedValue - change;
+	end
+end
+
 function UnitPowerBarAlt_OnUpdate(self, elapsed)
 	if ( self.smooth and  self.value and self.displayedValue and self.value ~= self.displayedValue ) then
-		local minPerSecond = max(minPerSecond, 1/self.range);	--Make sure we're moving at least 1 unit/second (will only matter if our maximum power is 3 or less);
-		
-		local diff = self.displayedValue - self.value;
-		local diffRatio = diff / self.range;
-		local change = self.range * ((minPerSecond/abs(diffRatio) + maxPerSecond - minPerSecond) * diffRatio) * elapsed;
-		if ( abs(change) > abs(diff) or abs(diffRatio) < 0.01 ) then
-			UnitPowerBarAlt_SetDisplayedPower(self, self.value);
-		else
-			UnitPowerBarAlt_SetDisplayedPower(self, self.displayedValue - change);
-		end
+		UnitPowerBarAlt_SetDisplayedPower(self, GetSmoothProgressChange(self.value, self.displayedValue, self.range, elapsed));
 	end
 end
 
@@ -205,8 +209,8 @@ function UnitPowerBarAlt_SetUp(self, barID)
 		self.flash:SetBlendMode("ADD");
 	end
 	
-	self:RegisterEvent("UNIT_POWER");
-	self:RegisterEvent("UNIT_MAXPOWER");
+	self:RegisterUnitEvent("UNIT_POWER", self.unit);
+	self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit);
 end
 
 

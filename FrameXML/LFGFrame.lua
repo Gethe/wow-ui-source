@@ -68,8 +68,7 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	
 	self:RegisterEvent("LFG_OFFER_CONTINUE");
 	self:RegisterEvent("LFG_ROLE_CHECK_ROLE_CHOSEN");
@@ -108,7 +107,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_LOCK_INFO_RECEIVED" ) then
 		LFGLockList = GetLFDChoiceLockedState();
 		LFG_UpdateFramesIfShown();
-	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		LFG_UpdateQueuedList();
 		LFG_UpdateFramesIfShown();
 		LFG_DisplayGroupLeaderWarning(self);
@@ -200,9 +199,8 @@ function LFGEventFrame_OnEvent(self, event, ...)
 end
 
 function LFG_DisplayGroupLeaderWarning(eventFrame)
-	local numRaidMembers = GetNumRaidMembers();
-	local numPartyMembers = GetNumPartyMembers();
-	if ( not HasLFGRestrictions() or (numRaidMembers == 0 and numPartyMembers == 0) ) then
+	local numRaidMembers = GetNumGroupMembers();
+	if ( not HasLFGRestrictions() or not IsInGroup() ) then
 		eventFrame.lastLeader = nil;
 		return;
 	end
@@ -214,17 +212,22 @@ function LFG_DisplayGroupLeaderWarning(eventFrame)
 
 	local leaderName;
 
-	if ( numRaidMembers ~= 0 ) then
+	if ( IsInRaid() ) then
 		for i=1, numRaidMembers do
 			local name, rank = GetRaidRosterInfo(i);
 			if ( rank == 2 ) then
 				leaderName = name;
 			end
 		end
-	elseif ( IsPartyLeader("player") ) then
+	elseif ( UnitIsGroupLeader("player") ) then
 		leaderName = UnitName("player");
 	else
-		leaderName = UnitName("party"..GetPartyLeaderIndex());
+		for i=1, GetNumSubgroupMembers() do
+			if ( UnitIsGroupLeader("party"..i) ) then
+				leaderName = UnitName("party"..i);
+				break;
+			end
+		end
 	end
 
 	if ( eventFrame.lastLeader ~= leaderName ) then
@@ -277,7 +280,7 @@ function LFG_UpdateQueuedList()
 end
 
 function LFG_UpdateFramesIfShown()
-	if ( LFDParentFrame:IsShown() ) then
+	if ( LFDParentFrame:IsVisible() ) then
 		LFDQueueFrame_Update();
 	end
 	if ( LFRParentFrame:IsVisible() ) then
@@ -376,7 +379,7 @@ function LFG_UpdateAvailableRoles()
 		LFG_PermanentlyDisableRoleButton(RaidFinderQueueFrameRoleButtonDPS);
 	end
 	
-	local canChangeLeader = (GetNumPartyMembers() == 0 or IsPartyLeader()) and (GetNumRaidMembers() == 0 or IsRaidLeader());
+	local canChangeLeader = (not IsInGroup() or UnitIsGroupLeader("player"));
 	if ( canChangeLeader ) then
 		LFG_EnableRoleButton(LFDQueueFrameRoleButtonLeader);
 		LFG_EnableRoleButton(RaidFinderQueueFrameRoleButtonLeader);
@@ -783,6 +786,12 @@ function LFGDungeonReadyPopup_Update()
 	
 	LFGDungeonReadyPopup.dungeonID = id;
 	
+	if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+		LFGDungeonReadyDialog.enterButton:SetText(ENTER_RAID);
+	else
+		LFGDungeonReadyDialog.enterButton:SetText(ENTER_DUNGEON);
+	end
+
 	if ( hasResponded ) then
 		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
 			LFGDungeonReadyStatus:Show();
@@ -886,7 +895,7 @@ end
 function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	
-	local numRandoms = 4 - GetNumPartyMembers();
+	local numRandoms = 4 - GetNumSubgroupMembers();
 	local moneyAmount = moneyBase + moneyVar * numRandoms;
 	local experienceGained = experienceBase + experienceVar * numRandoms;
 	
@@ -981,7 +990,7 @@ function LFGDungeonReadyDialogReward_OnEnter(self, dungeonID)
 	if ( self.rewardType == "misc" ) then
 		GameTooltip:AddLine(REWARD_ITEMS_ONLY);
 		local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(LFGDungeonReadyPopup.dungeonID);
-		local numRandoms = 4 - GetNumPartyMembers();
+		local numRandoms = 4 - GetNumSubgroupMembers();
 		local moneyAmount = moneyBase + moneyVar * numRandoms;
 		local experienceGained = experienceBase + experienceVar * numRandoms;
 		
@@ -1255,7 +1264,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday = GetLFGDungeonInfo(dungeonID);
 	local isHeroic = difficulty > 0;
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
-	local numRandoms = 4 - GetNumPartyMembers();
+	local numRandoms = 4 - GetNumSubgroupMembers();
 	local moneyAmount = moneyBase + moneyVar * numRandoms;
 	local experienceGained = experienceBase + experienceVar * numRandoms;
 

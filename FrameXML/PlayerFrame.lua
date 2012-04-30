@@ -12,21 +12,18 @@ function PlayerFrame_OnLoad(self)
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
 	self:RegisterEvent("UNIT_LEVEL");
-	self:RegisterEvent("UNIT_COMBAT");
 	self:RegisterEvent("UNIT_FACTION");
-	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_ENTER_COMBAT");
 	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	self:RegisterEvent("VOICE_START");
 	self:RegisterEvent("VOICE_STOP");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
@@ -37,7 +34,9 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("VARIABLES_LOADED");
-	
+	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
+	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
+
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
@@ -64,7 +63,7 @@ function PlayerFrame_Update ()
 end
 
 function PlayerFrame_UpdatePartyLeader()
-	if ( IsPartyLeader() ) then
+	if ( UnitIsGroupLeader("player") ) then
 		if ( HasLFGRestrictions() ) then
 			PlayerGuideIcon:Show();
 			PlayerLeaderIcon:Hide();
@@ -80,7 +79,7 @@ function PlayerFrame_UpdatePartyLeader()
 	local lootMethod;
 	local lootMaster;
 	lootMethod, lootMaster = GetLootMethod();
-	if ( lootMaster == 0 and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
+	if ( lootMaster == 0 and IsInGroup() ) then
 		PlayerMasterIcon:Show();
 	else
 		PlayerMasterIcon:Hide();
@@ -103,7 +102,7 @@ function PlayerFrame_UpdatePvPStatus()
 		
 		PlayerPVPTimerText:Hide();
 		PlayerPVPTimerText.timeLeft = nil;
-	elseif ( factionGroup and UnitIsPVP("player") ) then
+	elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP("player") ) then
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound("igPVPUpdate");
 		end
@@ -181,7 +180,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		CombatFeedback_StopFullscreenStatus();
 	elseif ( event == "PLAYER_UPDATE_RESTING" ) then
 		PlayerFrame_UpdateStatus();
-	elseif ( event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
+	elseif ( event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" ) then
 		PlayerFrame_UpdateGroupIndicator();
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdateReadyCheck();
@@ -189,7 +188,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		local lootMethod;
 		local lootMaster;
 		lootMethod, lootMaster = GetLootMethod();
-		if ( lootMaster == 0 and ((GetNumPartyMembers() > 0) or (GetNumRaidMembers() > 0)) ) then
+		if ( lootMaster == 0 and IsInGroup() ) then
 			PlayerMasterIcon:Show();
 		else
 			PlayerMasterIcon:Hide();
@@ -504,13 +503,13 @@ end
 function PlayerFrame_UpdateGroupIndicator()
 	PlayerFrameGroupIndicator:Hide();
 	local name, rank, subgroup;
-	if ( GetNumRaidMembers() == 0 ) then
+	if ( not IsInRaid() ) then
 		PlayerFrameGroupIndicator:Hide();
 		return;
 	end
-	local numRaidMembers = GetNumRaidMembers();
+	local numGroupMembers = GetNumGroupMembers();
 	for i=1, MAX_RAID_MEMBERS do
-		if ( i <= numRaidMembers ) then
+		if ( i <= numGroupMembers ) then
 			name, rank, subgroup = GetRaidRosterInfo(i);
 			-- Set the player's group number indicator
 			if ( name == UnitName("player") ) then
@@ -656,7 +655,7 @@ function PlayerFrame_ShowVehicleTexture()
 	
 	local _, class = UnitClass("player");	
 	if ( class == "WARLOCK" ) then
-		ShardBarFrame:Hide();
+		WarlockPowerFrame:Hide();
 	elseif ( class == "SHAMAN" ) then
 		TotemFrame:Hide();
 	elseif ( class == "DRUID" ) then
@@ -665,6 +664,8 @@ function PlayerFrame_ShowVehicleTexture()
 		PaladinPowerBar:Hide();
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Hide();
+	elseif ( class == "PRIEST" ) then
+		PriestBarFrame:Hide();
 	end
 end
 
@@ -674,7 +675,7 @@ function PlayerFrame_HideVehicleTexture()
 	
 	local _, class = UnitClass("player");	
 	if ( class == "WARLOCK" ) then
-		ShardBarFrame:Show();
+		WarlockPowerFrame_SetUpCurrentPower();
 	elseif ( class == "SHAMAN" ) then
 		TotemFrame_Update();
 	elseif ( class == "DRUID" ) then
@@ -683,6 +684,8 @@ function PlayerFrame_HideVehicleTexture()
 		PaladinPowerBar:Show();
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Show();
+	elseif ( class == "PRIEST" ) then
+		PriestBarFrame_CheckAndShow();
 	end
 end
 

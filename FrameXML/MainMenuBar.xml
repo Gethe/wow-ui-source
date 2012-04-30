@@ -2,15 +2,15 @@
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBar.lua"/>
 	<Frame name="MainMenuBar" enableMouse="true" parent="UIParent">
-				<Animations>
-			<AnimationGroup parentKey="slideout">
+		<Animations>
+			<AnimationGroup parentKey="slideOut">
 				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
 				<Scripts>
-					<OnPlay>
-						MainMenuBar:Show();
-					</OnPlay>
 					<OnFinished>
-						ActionBar_AnimTransitionFinished(MainMenuBar);
+						if MainMenuBar.hideOnFinish then
+							MainMenuBar:Hide();
+						end
+						ValidateActionBarTransition();
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -30,8 +30,7 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 				<Layers>
-					
-					<!-- Patchwerk INFO
+																				<!-- Patchwerk INFO
 					<Texture name="UI-VehicleXP-Divider.png" >
 						<Size x="9" y="10"/>	
 						<TexCoords left="0.01562500" right="0.15625000" top="0.01562500" bottom="0.17187500"/>	
@@ -122,7 +121,7 @@
 							<OnLoad>
 								MainMenuExpBar.lockShow = 0;
 								SetTextStatusBarText(MainMenuExpBar, MainMenuBarExpText);
-								MainMenuExpBar_Update();
+								ExpBar_Update();
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -142,14 +141,14 @@
 						if ( event == "CVAR_UPDATE" ) then
 							TextStatusBar_OnEvent(self, event, ...);
 						else
-							MainMenuExpBar_Update();
+							ExpBar_Update();
 						end
 					</OnEvent>
 					<OnShow>
 						if ( GetCVar("xpBarText") == "1" ) then
 							TextStatusBar_UpdateTextString(self);
 						end
-					</OnShow>					
+					</OnShow>
 					<OnEnter>
 						TextStatusBar_UpdateTextString(self);
 						ShowTextStatusBarText(self);
@@ -164,6 +163,7 @@
 						
 						GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
 						GameTooltip.canAddRestStateLine = 1;
+						ExhaustionToolTipText();
 					</OnEnter>
 					<OnLeave>
 						HideTextStatusBarText(self);
@@ -345,41 +345,15 @@
 					<OnEvent function="MainMenuBar_OnEvent"/>
 				</Scripts>
 			</Frame>
-			<Button name="MainMenuBarVehicleLeaveButton" hidden="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="MainMenuBarVehicleLeaveButton_OnLoad"/>
-					<OnEvent function="MainMenuBarVehicleLeaveButton_OnEvent"/>
-					<OnClick function="VehicleExit"/>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
-					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
-					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
-				</PushedTexture>
-				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
-					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
-				</HighlightTexture>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				RaiseFrameLevel(MainMenuBarArtFrame);
 			</OnLoad>
+			<OnShow>
+				UpdateMicroButtonsParent(MainMenuBarArtFrame);
+				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 550, 2, false);
+			</OnShow>
 		</Scripts>
 	</Frame>
 	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="DIALOG">

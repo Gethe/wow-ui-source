@@ -17,12 +17,12 @@ function PetFrame_OnLoad (self)
 	CombatFeedback_Initialize(self, PetHitIndicator, 30);
 	PetFrame_Update(self);
 	self:RegisterEvent("UNIT_PET");
-	self:RegisterEvent("UNIT_COMBAT");
-	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PET_ATTACK_START");
 	self:RegisterEvent("PET_ATTACK_STOP");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PET_RENAMEABLE");
+	self:RegisterUnitEvent("UNIT_COMBAT", "pet", "player");
+	self:RegisterUnitEvent("UNIT_AURA", "pet", "player");
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
 	end
@@ -34,9 +34,13 @@ function PetFrame_OnLoad (self)
 	elseif ( class == "SHAMAN" or class == "DRUID" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
 	elseif ( class == "WARLOCK" ) then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -80);
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
 	elseif ( class == "PALADIN" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+	elseif ( class == "PRIEST" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+	elseif ( class == "MONK" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 90, -100);
 	end
 end
 

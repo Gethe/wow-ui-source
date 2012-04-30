@@ -26,7 +26,7 @@ ECLIPSE_MARKER_COORDS["moon"] 	= { 1.0, 0.914, 0.641, 0.82 };
 
 
 function EclipseBar_UpdateShown(self)
-	if VehicleMenuBar:IsShown() then
+	if OverrideActionBar:IsShown() then
 		return;
 	end
 
@@ -35,7 +35,7 @@ function EclipseBar_UpdateShown(self)
 	local form  = GetShapeshiftFormID();
 	
 	if  class == "DRUID" and (form == MOONKIN_FORM or not form) then
-		if GetPrimaryTalentTree() == 1 then
+		if GetSpecialization() == 1 then
 			self.showPercent = GetCVarBool("statusTextPercentage");	
 			if GetCVarBool("playerStatusText") then
 				self.powerText:Show();
@@ -78,9 +78,9 @@ end
 function EclipseBar_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
-	self:RegisterEvent("CVAR_UPDATE");	
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("ECLIPSE_DIRECTION_CHANGE");
+	self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
 end
 
 

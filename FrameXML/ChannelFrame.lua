@@ -14,9 +14,8 @@ local rosterFrame;
 
 function ChannelFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("CHANNEL_UI_UPDATE");
 	self:RegisterEvent("MUTELIST_UPDATE");
 	self:RegisterEvent("IGNORELIST_UPDATE");
@@ -42,7 +41,7 @@ end
 
 function ChannelFrame_OnEvent(self, event, ...)
 	local arg1, arg2, arg3 = ...;
-	if ( event == "PLAYER_ENTERING_WORLD" or event == "CHANNEL_UI_UPDATE" or event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED" or event == "RAID_ROSTER_UPDATE" ) then
+	if ( event == "PLAYER_ENTERING_WORLD" or event == "CHANNEL_UI_UPDATE" or event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" ) then
 		ChannelFrame_Update();
 	elseif ( event == "CHANNEL_FLAGS_UPDATED" ) then
 		if ( arg1 == ChannelListDropDown.clicked ) then

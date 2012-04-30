@@ -122,7 +122,7 @@ function RaidWarningFrame_OnEvent(self, event, message)
 			elseif ( GROUP_TAG_LIST[term] ) then
 				local groupIndex = GROUP_TAG_LIST[term];
 				local groupList = "[";
-				for i=1, GetNumRaidMembers() do
+				for i=1, GetNumGroupMembers() do
 					local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
 					if ( subgroup == groupIndex ) then
 						local classColorTable = RAID_CLASS_COLORS[classFileName];

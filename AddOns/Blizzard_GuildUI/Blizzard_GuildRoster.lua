@@ -17,6 +17,7 @@ local GUILD_ROSTER_COLUMNS = {
 	pvp = { "level", "class", "name", "bgrating", "arenarating" },
 	achievement = { "level", "class", "wideName", "achievement" },
 	tradeskill = { "wideName", "zone", "skill" },
+	reputation = { "level", "class", "wideName", "reputation" },
 };
 
 -- global for localization changes
@@ -35,6 +36,7 @@ GUILD_ROSTER_COLUMN_DATA = {
 	totalxp = { width = 144, text = GUILD_XP_TOTAL, stringJustify="RIGHT", hasBar = true },
 	achievement = { width = 144, text = ACHIEVEMENT_POINTS, stringJustify="RIGHT", sortType="achievementpoints", hasBar = true },
 	skill = { width = 63, text = SKILL_POINTS_ABBR, stringJustify="LEFT" },
+	reputation = { width = 144, text = REPUTATION, stringJustify="LEFT" },
 };
 
 local MOBILE_BUSY_ICON = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t";
@@ -233,7 +235,7 @@ function GuildRoster_Update()
 	for i = 1, numButtons do
 		button = buttons[i];		
 		index = offset + i;
-		local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, canSoR = GetGuildRosterInfo(index);
+		local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, canSoR, repStanding = GetGuildRosterInfo(index);
 		
 		if ( name and index <= visibleMembers ) then
 			button.guildIndex = index;
@@ -320,6 +322,11 @@ function GuildRoster_Update()
 					button.barTexture:Hide();
 				end
 				GuildRosterButton_SetStringText(button.barLabel, "#"..achievementRank, online);
+			elseif ( currentGuildView == "reputation" ) then
+				GuildRosterButton_SetStringText(button.string1, level, online)
+				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
+				GuildRosterButton_SetStringText(button.string2, displayedName, online, classFileName);
+				GuildRosterButton_SetStringText(button.string3, GetText("FACTION_STANDING_LABEL"..repStanding, gender), online);
 			end
 			button:Show();
 			if ( mod(index, 2) == 0 ) then
@@ -583,6 +590,9 @@ function GuildRosterViewDropdown_Initialize()
 	info.text = TRADE_SKILLS;
 	info.value = "tradeskill";
 	UIDropDownMenu_AddButton(info);	
+	info.text = GUILD_REPUTATION;
+	info.value = "reputation";
+	UIDropDownMenu_AddButton(info);
 	
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
 end

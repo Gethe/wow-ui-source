@@ -2,49 +2,6 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GuildInfo.lua"/>
 
-<!-- patchwerk	
-<Texture name="ChallengeCompleteCheckmark.png" >
-	<Size x="28" y="24"/>
-	<TexCoords left="0.00097656" right="0.02832031" top="0.00781250" bottom="0.19531250"/>	
-</Texture>
-<Texture name="GuildChallengeToast-IconBorder.png" >
-	<Size x="37" y="36"/>
-	<TexCoords left="0.03027344" right="0.06640625" top="0.00781250" bottom="0.28906250"/>	
-</Texture>
-<Texture name="GuildChallengeToast-IconBG.png" >
-	<Size x="37" y="36"/>
-	<TexCoords left="0.03027344" right="0.06640625" top="0.30468750" bottom="0.58593750"/>	
-</Texture>
-<Texture name="GuildChallengeToast.png" >
-	<Size x="270" y="67"/>
-	<TexCoords left="0.06835938" right="0.33203125" top="0.00781250" bottom="0.53125000"/>	
-</Texture>
-<Texture name="DungeonBG.png" >
-	<Size x="321" y="36"/>
-	<TexCoords left="0.33398438" right="0.64746094" top="0.00781250" bottom="0.28906250"/>	
-</Texture>
-<Texture name="DungeonBG-Cleared.png" >
-	<Size x="321" y="36"/>
-	<TexCoords left="0.33398438" right="0.64746094" top="0.30468750" bottom="0.58593750"/>	
-</Texture>
-<Texture name="RatedBG.png" >
-	<Size x="321" y="36"/>
-	<TexCoords left="0.33398438" right="0.64746094" top="0.60156250" bottom="0.88281250"/>	
-</Texture>
-<Texture name="RaidBG-Cleared.png" >
-	<Size x="321" y="36"/>
-	<TexCoords left="0.64941406" right="0.96289063" top="0.00781250" bottom="0.28906250"/>	
-</Texture>
-<Texture name="RaidBG.png" >
-	<Size x="321" y="36"/>
-	<TexCoords left="0.64941406" right="0.96289063" top="0.30468750" bottom="0.58593750"/>	
-</Texture>
-<Texture name="RatedBG-Cleared.png" >
-	<Size x="321" y="36"/>
-	<TexCoords left="0.64941406" right="0.96289063" top="0.60156250" bottom="0.88281250"/>	
-</Texture>
--->
-
 <!--
 *******************************************************************************
 	Templates
@@ -280,49 +237,52 @@
 		</HighlightTexture>
 	</Button>
 	<Frame name="GuildChallengeTemplate" enableMouse="true" virtual="true">
+		<Size x="319" y="21"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentLabel" inherits="GameFontHighlight">
+				<FontString inherits="GameFontHighlight" parentKey="label">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parent" x="18" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentCount" inherits="GameFontNormalLarge">
+				<FontString inherits="GameFontNormal" parentKey="count">
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parent" x="-12" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentCheck" file="Interface\GuildFrame\GuildChallenges" hidden="true">
+				<Texture file="Interface\GuildFrame\GuildChallenges" hidden="true" parentKey="check">
 					<Size x="28" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parent" x="-8" y="0"/>
 					</Anchors>	
-					<TexCoords left="0.00097656" right="0.02832031" top="0.00781250" bottom="0.19531250"/>	
+					<TexCoords left="0.00195313" right="0.05664063" top="0.00390625" bottom="0.09765625"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				_G[self:GetName().."Label"]:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
+				self.label:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
 			</OnLoad>
 			<OnEnter>
 				local index, current, max, xp, gold, maxGold = GetGuildChallengeInfo(self:GetID());
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, 1, 1);
-				GameTooltip:AddLine(" ")
-				if ( GetGuildLevel() == MAX_GUILD_LEVEL ) then
-					local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
-					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, 1, 1);
-				else
-					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_XP, xp), 1, 1, 1, 1, 1);
-					if ( gold > 0 ) then
-						local goldString = GetMoneyString(gold * COPPER_PER_SILVER * SILVER_PER_GOLD);
-						GameTooltip:AddLine(goldString, 1, 1, 1, 1, 1);
+				if ( index ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
+					GameTooltip:AddLine(" ")
+					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, 1, 1);
+					GameTooltip:AddLine(" ")
+					if ( GetGuildLevel() == MAX_GUILD_LEVEL ) then
+						local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, 1, 1);
+					else
+						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_XP, xp), 1, 1, 1, 1, 1);
+						if ( gold > 0 ) then
+							local goldString = GetMoneyString(gold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+							GameTooltip:AddLine(goldString, 1, 1, 1, 1, 1);
+						end
 					end
+					GameTooltip:Show();
 				end
-				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -410,7 +370,7 @@
 					<Anchors>
 						<Anchor point="LEFT" x="-3" y="0"/>
 						<Anchor point="RIGHT" x="-69" y="0"/>
-						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="-145"/>
+						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="-146"/>
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
@@ -430,7 +390,7 @@
 					<Anchors>
 						<Anchor point="LEFT" x="-3" y="0"/>
 						<Anchor point="RIGHT" x="-69" y="0"/>
-						<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="129"/>	
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="128"/>
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
@@ -475,26 +435,12 @@
 					</Anchors>
 					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
 				</Texture>
-				<Texture name="GuildInfoChallengesDungeonTexture" file="Interface\GuildFrame\GuildChallenges">
-					<Size x="319" y="36"/>
+				<Texture file="Interface\GuildFrame\GuildChallenges">	<!-- challenges BG -->
+					<Size x="319" y="109"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-25"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentHeader1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.33398438" right="0.64746094" top="0.00781250" bottom="0.28906250"/>	
-				</Texture>
-				<Texture name="GuildInfoChallengesRaidTexture" file="Interface\GuildFrame\GuildChallenges">
-					<Size x="319" y="36"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="GuildInfoChallengesDungeonTexture" relativePoint="BOTTOM"/>
-					</Anchors>
-					<TexCoords left="0.64941406" right="0.96289063" top="0.30468750" bottom="0.58593750"/>	
-				</Texture>
-				<Texture name="GuildInfoChallengesRatedBGTexture" file="Interface\GuildFrame\GuildChallenges">
-					<Size x="319" y="36"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="GuildInfoChallengesRaidTexture" relativePoint="BOTTOM"/>
-					</Anchors>
-					<TexCoords left="0.33398438" right="0.64746094" top="0.60156250" bottom="0.88281250"/>
+					<TexCoords left="0.13671875" right="0.75976563" top="0.27343750" bottom="0.69921875"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -557,66 +503,32 @@
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
-			<Frame name="GuildInfoChallenges">
-				<Size x="319" y="108"/>
+			<!-- id is what controls the challenge type. buttons not necessarily in order by id. -->
+			<Frame name="$parentChallenge1" inherits="GuildChallengeTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="4" y="-25"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="GuildInfoFrameInfoHeader1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString inherits="GameFontNormalSmall" text="GUILD_CHALLENGES_THIS_WEEK">
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="GuildInfoFrameInfoHeader1" x="-8" y="0"/>								
-							</Anchors>
-							<Color r="0.973" g="0.937" b="0.580"/>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="$parentDungeon" inherits="GuildChallengeTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="GuildInfoChallengesDungeonTexture" relativePoint="TOPRIGHT" x="0" y="0"/>
-							<Anchor point="BOTTOMLEFT" relativeTo="GuildInfoChallengesDungeonTexture" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentRaid" inherits="GuildChallengeTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="GuildInfoChallengesRaidTexture" relativePoint="TOPRIGHT" x="0" y="0"/>
-							<Anchor point="BOTTOMLEFT" relativeTo="GuildInfoChallengesRaidTexture" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentRatedBG" inherits="GuildChallengeTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="GuildInfoChallengesRatedBGTexture" relativePoint="TOPRIGHT" x="0" y="0"/>
-							<Anchor point="BOTTOMLEFT" relativeTo="GuildInfoChallengesRatedBGTexture" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Frame>					
-				</Frames>
 			</Frame>
-			<Button name="GuildInfoEditEventButton" text="GUILD_CREATE_EVENT_LINK" hidden="true">
+			<Frame name="$parentChallenge4" inherits="GuildChallengeTemplate" id="4">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentHeader1" x="-8" y="0"/>
+					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						Calendar_LoadUI();
-						if ( Calendar_Show ) then
-							Calendar_Show();
-						end
-					</OnClick>
-				</Scripts>
-				<ButtonText>
-					<Anchors>
-						<Anchor point="RIGHT" x="-2" y="0"/>
-					</Anchors>
-					<Color r="0.973" g="0.937" b="0.580"/>
-				</ButtonText>
-				<NormalFont style="GameFontNormalSmall"/>
-			</Button>
+			</Frame>
+			<Frame name="$parentChallenge5" inherits="GuildChallengeTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentChallenge4" relativePoint="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentChallenge2" inherits="GuildChallengeTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentChallenge5" relativePoint="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentChallenge3" inherits="GuildChallengeTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+			</Frame>
 			<Button name="GuildInfoEditMOTDButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentHeader2" x="-8" y="0"/>
@@ -651,28 +563,9 @@
 				</ButtonText>
 				<NormalFont style="GameFontNormalSmall"/>
 			</Button>
-			<ScrollFrame name="GuildInfoEventsContainer" inherits="MinimalHybridScrollFrameTemplate" hidden="true">
-				<Size x="298" y="108"/>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="4" y="-25"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString	name="GuildInfoNoEvents" inherits="GameFontDisable" text="GUILD_NO_GUILD_EVENTS">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</ScrollFrame>
 			<ScrollFrame name="GuildInfoDetailsFrame" inherits="MinimalScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="284" y="86"/>
+					<AbsDimension x="284" y="85"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHeader3" relativePoint="BOTTOMLEFT" x="14" y="-1"/>
@@ -1382,7 +1275,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate2" text="ACCEPT">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="90" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="24" y="16"/>
@@ -1391,7 +1284,7 @@
 					<OnClick function="GuildTextEditFrame_OnAccept"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
+			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="90" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-24" y="16"/>
@@ -1484,7 +1377,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
+			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="90" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-24" y="16"/>

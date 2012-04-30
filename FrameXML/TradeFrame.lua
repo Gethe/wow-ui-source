@@ -10,6 +10,11 @@ function TradeFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_PLAYER_ITEM_CHANGED");
 	self:RegisterEvent("TRADE_ACCEPT_UPDATE");
 	self:RegisterEvent("TRADE_POTENTIAL_BIND_ENCHANT");
+	TradeFrameInset:SetPoint("TOPLEFT", 4, -440);
+	TradeRecipientItemsInsetBg:SetAlpha(0.1);
+	TradeRecipientMoneyInsetBg:SetAlpha(0);
+	TradeRecipientEnchantInsetBg:SetAlpha(0.1);
+	TradeRecipientMoneyBg:SetAlpha(0.6);
 end
 
 function TradeFrame_OnShow(self)

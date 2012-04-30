@@ -95,7 +95,7 @@
 	</Button>
 	<Frame name="RaidParentFrame"  toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Frames>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="RAID_FINDER" id="1">
+			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="RAID" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset x="19" y="-30"/>
@@ -108,24 +108,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="RAID" id="2">
+			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="LOOKING_FOR_RAID" id="2">
 				<Anchors>
-				   <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
-					<Offset>
-					    <AbsDimension x="-16" y="0"/>
-					</Offset>
-				    </Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound("igCharacterInfoTab");
-						RaidParentFrame_SetView(2);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" text="LOOKING_FOR_RAID" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-16" y="0"/>
 						</Offset>
@@ -134,7 +119,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igCharacterInfoTab");
-						RaidParentFrame_SetView(3);
+						RaidParentFrame_SetView(2);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -154,7 +139,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="RaidFrame" hidden="true"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
+	<Frame name="RaidFrame"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
 		<Frames>
 			<Frame name="RaidFrameNotInRaid" setAllPoints="true">
 				<Layers>
@@ -320,7 +305,7 @@
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>
-					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate2" text="EXTEND_RAID_LOCK">
+					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate" text="EXTEND_RAID_LOCK">
 						<Size x="200" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="14" y="13"/>
@@ -332,7 +317,7 @@
 						<HighlightFont style="GameFontHighlightSmall"/>
 						<DisabledFont style="GameFontDisableSmall"/>
 					</Button>
-					<Button name="RaidInfoCancelButton" inherits="UIPanelButtonTemplate2" text="CLOSE">
+					<Button name="RaidInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size x="90" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-14" y="13"/>

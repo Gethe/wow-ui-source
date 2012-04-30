@@ -342,7 +342,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="VoidStorageTransferButton" inherits="UIPanelButtonTemplate2" text="TRANSFER">
+							<Button name="VoidStorageTransferButton" inherits="UIPanelButtonTemplate" text="TRANSFER">
 								<Size x="143" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="2"/>
@@ -492,7 +492,7 @@
 									<Anchor point="TOP" relativePoint="BOTTOM" y="1"/>
 								</Anchors>
 							</Frame>
-							<Button name="$parentButton" inherits="UIPanelButtonTemplate2" text="OKAY">
+							<Button name="$parentButton" inherits="UIPanelButtonTemplate" text="OKAY">
 								<Size x="110" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="12"/>
@@ -608,7 +608,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="VoidStoragePurchaseButton" inherits="UIPanelButtonTemplate2" text="UNLOCK_VOID_STORAGE">
+							<Button name="VoidStoragePurchaseButton" inherits="UIPanelButtonTemplate" text="UNLOCK_VOID_STORAGE">
 								<Size x="204" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="36"/>

@@ -29,51 +29,21 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<Frame name="MacroFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size x="384" y="512"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="0" y="-104"/>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="34" top="0" bottom="75"/>
-		</HitRectInsets>
+	<Frame name="MacroFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="424"/>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
 					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-6"/>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size x="128" y="256"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroFrame-BotLeft">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroFrame-BotRight">
-					<Size x="128" y="256"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
 				<FontString inherits="GameFontNormal" text="CREATE_MACROS">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="MacroFrame" x="0" y="-17"/>
+						<Anchor point="TOP" relativeTo="MacroFrame" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -81,7 +51,7 @@
 				<Texture name="MacroHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size x="256" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-220"/>
+						<Anchor point="TOPLEFT" x="2" y="-210"/>
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
@@ -95,7 +65,7 @@
 				<Texture name="MacroFrameSelectedMacroBackground" file="Interface\Buttons\UI-EmptySlot">
 					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-228"/>
+						<Anchor point="TOPLEFT" x="5" y="-218"/>
 					</Anchors>
 				</Texture>
 				<FontString name="MacroFrameSelectedMacroName" inherits="GameFontNormalLarge" justifyH="LEFT">
@@ -112,7 +82,7 @@
 				<FontString name="MacroFrameCharLimitText" inherits="GameFontHighlightSmall">
 					<Size x="0" y="10"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="-15" y="105"/>
+						<Anchor point="BOTTOM" x="-15" y="30"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -132,7 +102,7 @@
 			<ScrollFrame name="MacroButtonScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="294" y="146"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="23" y="-76"/>
+					<Anchor point="TOPLEFT" x="12" y="-66"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -175,7 +145,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate2" text="CHANGE_MACRO_NAME_ICON">
+			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
 				<Size x="170" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" x="55" y="-30"/>
@@ -223,7 +193,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacroCancelButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate2" text="CANCEL">
+			<Button name="MacroCancelButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="MacroFrameScrollFrame" relativePoint="TOPRIGHT" x="25" y="10"/>
@@ -232,7 +202,7 @@
 					<OnClick function="MacroFrameCancelButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="MacroSaveButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate2" text="SAVE">
+			<Button name="MacroSaveButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeTo="MacroCancelButton" relativePoint="TOP" x="0" y="15"/>
@@ -244,7 +214,7 @@
 			<Frame name="MacroFrameTextBackground">
 				<Size x="322" y="95"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MacroFrame" x="18" y="-300"/>
+					<Anchor point="TOPLEFT" relativeTo="MacroFrame" x="6" y="-289"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
@@ -266,7 +236,7 @@
 			</Frame>
 			<Button name="MacroFrameTab1" inherits="TabButtonTemplate" text="GENERAL_MACROS" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="65" y="-39"/>
+					<Anchor point="TOPLEFT" x="51" y="-28"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -311,7 +281,7 @@
 			<Button name="MacroDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="MacroFrame" x="17" y="79"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="MacroFrame" x="4" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -322,7 +292,7 @@
 			<Button name="MacroNewButton" inherits="UIPanelButtonTemplate" text="NEW">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="MacroFrame" relativePoint="TOPLEFT" x="222" y="-422"/>
+					<Anchor point="BOTTOMRIGHT" x="-82" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="MacroNewButton_OnClick"/>
@@ -331,16 +301,11 @@
 			<Button name="MacroExitButton" inherits="UIPanelButtonTemplate" text="EXIT">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="MacroFrame" relativePoint="TOPLEFT" x="303" y="-422"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
 				</Scripts>
-			</Button>
-			<Button name="MacroFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="MacroFrame" relativePoint="TOPRIGHT" x="-29" y="-8"/>
-				</Anchors>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -352,7 +317,7 @@
 	<Frame name="MacroPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="297" y="298"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="MacroFrame" relativePoint="TOPRIGHT" x="-40" y="-40"/>
+			<Anchor point="TOPLEFT" relativeTo="MacroFrame" relativePoint="TOPRIGHT" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -403,7 +368,7 @@
 						<Texture name="MacroPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
 							<Size x="12" y="29"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-11" y="3"/>
+								<Anchor point="TOPLEFT" x="-11" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
 						</Texture>
@@ -548,6 +513,7 @@
 			<CheckButton name="MacroPopupButton20" inherits="MacroPopupButtonTemplate" id="20">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="MacroPopupButton19" relativePoint="RIGHT" x="10" y="0"/>
+
 				</Anchors>
 			</CheckButton>
 			<Button name="MacroPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">

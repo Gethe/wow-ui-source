@@ -1,12 +1,12 @@
 function CompactRaidGroup_OnLoad(self)
 	self.title:Disable();
 	
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
 end
 
 function CompactRaidGroup_OnEvent(self, event, ...)
-	if ( event == "RAID_ROSTER_UPDATE" ) then
+	if ( event == "GROUP_ROSTER_UPDATE" ) then
 		CompactRaidGroup_UpdateUnits(self);
 	end
 end
@@ -40,7 +40,7 @@ function CompactRaidGroup_InitializeForGroup(frame, groupIndex)
 	for i=1, MEMBERS_PER_RAID_GROUP do
 		local unitFrame = _G[frame:GetName().."Member"..i];
 		CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
-		CompactUnitFrame_SetUpdateAllEvent(unitFrame, "RAID_ROSTER_UPDATE");
+		CompactUnitFrame_SetUpdateAllEvent(unitFrame, "GROUP_ROSTER_UPDATE");
 	end
 	CompactRaidGroup_UpdateUnits(frame);
 	frame.title:SetFormattedText(GROUP_NUMBER, groupIndex);
@@ -49,17 +49,20 @@ end
 function CompactRaidGroup_UpdateUnits(frame)
 	local groupIndex = frame:GetID();
 	local frameIndex = 1;
-	for i=1, GetNumRaidMembers() do
-		local name, rank, subgroup = GetRaidRosterInfo(i);
-		if ( subgroup == groupIndex and frameIndex <= MEMBERS_PER_RAID_GROUP ) then
-			CompactUnitFrame_SetUnit(_G[frame:GetName().."Member"..frameIndex], "raid"..i);
-			frameIndex = frameIndex + 1;
+
+	if ( IsInRaid() ) then
+		for i=1, GetNumGroupMembers() do
+			local name, rank, subgroup = GetRaidRosterInfo(i);
+			if ( subgroup == groupIndex and frameIndex <= MEMBERS_PER_RAID_GROUP ) then
+				CompactUnitFrame_SetUnit(_G[frame:GetName().."Member"..frameIndex], "raid"..i);
+				frameIndex = frameIndex + 1;
+			end
 		end
-	end
-	
-	for i=frameIndex, MEMBERS_PER_RAID_GROUP do
-		local unitFrame = _G[frame:GetName().."Member"..i];
-		CompactUnitFrame_SetUnit(unitFrame, nil);
+		
+		for i=frameIndex, MEMBERS_PER_RAID_GROUP do
+			local unitFrame = _G[frame:GetName().."Member"..i];
+			CompactUnitFrame_SetUnit(unitFrame, nil);
+		end
 	end
 end
 

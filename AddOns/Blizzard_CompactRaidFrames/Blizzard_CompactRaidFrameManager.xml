@@ -591,12 +591,12 @@
 						<Scripts>
 							<OnLoad>
 								_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL_LONG);
-								self:RegisterEvent("RAID_ROSTER_UPDATE");
+								self:RegisterEvent("GROUP_ROSTER_UPDATE");
 								self:RegisterEvent("PARTY_LEADER_CHANGED");
 							</OnLoad>
 							<OnEvent>
 								self:SetChecked(IsEveryoneAssistant());
-								if ( IsRaidLeader() ) then
+								if ( UnitIsGroupLeader("player") ) then
 									self:Enable();
 									self.text:SetFontObject(GameFontNormalSmall);
 								else
