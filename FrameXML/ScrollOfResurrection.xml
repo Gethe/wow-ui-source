@@ -485,5 +485,10 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = true;
+			</OnLoad>
+		</Scripts>
 	</Frame>
 </Ui>

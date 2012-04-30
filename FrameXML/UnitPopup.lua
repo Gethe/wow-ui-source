@@ -1401,7 +1401,11 @@ function UnitPopup_OnClick (self)
 		else
 			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
 			local info = ChatTypeInfo["SYSTEM"];
-			dropdownFrame.chatFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
+			if ( dropdownFrame.chatFrame ) then
+				dropdownFrame.chatFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
+			else
+				DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
+			end
 		end
 	elseif ( button == "REPORT_CHEATING" ) then
 		if ( GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled() ) then
@@ -1409,7 +1413,11 @@ function UnitPopup_OnClick (self)
 		else
 			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
 			local info = ChatTypeInfo["SYSTEM"];
-			dropdownFrame.chatFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
+			if ( dropdownFrame.chatFrame ) then
+				dropdownFrame.chatFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
+			else
+				DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
+			end
 		end
 	elseif ( button == "POP_OUT_CHAT" ) then
 		FCF_OpenTemporaryWindow(dropdownFrame.chatType, dropdownFrame.chatTarget, dropdownFrame.chatFrame, true);
