@@ -70,7 +70,7 @@ function ToggleSpellBook(bookType)
 	end
 
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum()
-	if ( tutorial and not GetCVarBitfield( "closedInfoFrames", tutorial ) ) then
+	if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) and GetCVarBool("showTutorials") ) then
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
 			HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", tutorial, true );

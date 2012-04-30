@@ -1,9 +1,11 @@
 
 local CURRENT_ACTION_BAR_STATE
 
+function ActionBarController_GetCurrentActionBarState()
+	return CURRENT_ACTION_BAR_STATE;
+end
 
 function ActionBarController_OnLoad(self)
-
 
 	--ManyBars
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");

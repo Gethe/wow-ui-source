@@ -69,6 +69,41 @@ function MainMenuBar_OnEvent(self, event, ...)
 	end
 end
 
+function MainMenuBarVehicleLeaveButton_OnLoad(self)
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("VEHICLE_UPDATE");
+end
+
+function MainMenuBarVehicleLeaveButton_OnEvent(self, event, ...)
+	MainMenuBarVehicleLeaveButton_Update();
+end
+
+function MainMenuBarVehicleLeaveButton_Update()
+	if ( CanExitVehicle() and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN ) then
+		MainMenuBarVehicleLeaveButton:ClearAllPoints();
+		if ( IsPossessBarVisible() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessButton2, "RIGHT", 30, 0);
+		elseif ( GetNumShapeshiftForms() > 0 ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "StanceButton"..GetNumShapeshiftForms(), "RIGHT", 30, 0);
+		elseif ( HasMultiCastActionBar() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", MultiCastActionBarFrame, "RIGHT", 30, 0);
+		else
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessBarFrame, "LEFT", 10, 0);
+		end
+
+		MainMenuBarVehicleLeaveButton:Show();
+		ShowPetActionBar(true);
+	else
+		MainMenuBarVehicleLeaveButton:Hide();
+		ShowPetActionBar(true);
+	end
+
+	UIParent_ManageFramePositions();
+end
+
 function ExhaustionTick_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_XP_UPDATE");

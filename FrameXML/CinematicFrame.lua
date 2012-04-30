@@ -38,7 +38,7 @@ function CinematicFrame_OnKeyDown(self, key)
 	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
 		if ( self.isRealCinematic and IsGMClient() ) then
 			StopCinematic();
-		elseif ( self.isRealCinematic or CanExitVehicle() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
+		elseif ( self.isRealCinematic or CanExitVehicle() or CanCancelScene() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
 			self.closeDialog:Show();
 		end
 	elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
@@ -49,6 +49,8 @@ end
 function CinematicFrame_CancelCinematic()
 	if ( CinematicFrame.isRealCinematic ) then
 		StopCinematic();
+	elseif ( CanCancelScene() ) then
+		CancelScene();
 	else
 		VehicleExit();
 	end

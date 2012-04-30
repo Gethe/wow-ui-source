@@ -580,7 +580,7 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 	if ( self.SelectedTexture ) then
 		if ( battleState ~= LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE and
 			battleState ~= LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS and
-			C_PetBattles:GetActivePet(petOwner) == petIndex ) then
+			C_PetBattles.GetActivePet(petOwner) == petIndex ) then
 			self.SelectedTexture:Show();
 		else
 			self.SelectedTexture:Hide();

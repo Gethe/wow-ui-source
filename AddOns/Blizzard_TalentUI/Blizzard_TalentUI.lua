@@ -922,7 +922,7 @@ function PlayerTalentFrameTab_OnClick(self)
 	
 	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		if ( tutorial and not GetCVarBitfield( "closedInfoFrames", tutorial ) ) then
+		if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) and GetCVarBool("showTutorials")) then
 			HelpPlate_Show( helpPlate, PlayerTalentFrame, mainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", tutorial, true );
 		else

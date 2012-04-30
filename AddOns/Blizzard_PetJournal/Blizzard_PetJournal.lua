@@ -542,9 +542,9 @@ end
 function PetJournal_UpdatePetCard(self)
 	PetJournal.SpellSelect:Hide();
 
-	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, sourceText, _;		
+	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, sourceText, description, _;		
 	if PetJournal.pcPetID then
-		speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID, sourceText = C_PetJournal.GetPetInfoByPetID(PetJournal.pcPetID);
+		speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID, sourceText, description = C_PetJournal.GetPetInfoByPetID(PetJournal.pcPetID);
 		self.level:SetText(level);
 		self.level:Show();
 		self.levelBG:Show();
@@ -562,7 +562,7 @@ function PetJournal_UpdatePetCard(self)
 		self.statsFrame.rarityValue:SetText(rarity);
 	else
 		speciesID = PetJournal.pcSpeciesID;
-		name, icon, petType, creatureID, sourceText = C_PetJournal.GetPetInfoBySpeciesID(PetJournal.pcSpeciesID);
+		name, icon, petType, creatureID, sourceText, description = C_PetJournal.GetPetInfoBySpeciesID(PetJournal.pcSpeciesID);
 		self.level:Hide();
 		self.levelBG:Hide();
 		self.xpBar:Hide();
@@ -589,6 +589,12 @@ function PetJournal_UpdatePetCard(self)
 	self.icon:SetTexture(icon);
 
 	self.Location.sourceText = sourceText;
+	if ( description ~= "" ) then
+		self.Location.description = format([["%s"]], description);
+	else
+		self.Location.description = nil;
+	end
+	self.Location.speciesName = name;
 	
 	self.model:Show();
 	if displayID and displayID ~= 0 and displayID ~= self.displayID then

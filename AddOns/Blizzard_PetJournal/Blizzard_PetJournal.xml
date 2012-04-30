@@ -1254,9 +1254,13 @@
 					</OnShow>
 					<OnEnter>
 						if ( self.sourceText and self.sourceText ~= "" ) then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
-							GameTooltip:SetText(SOURCE);
-							GameTooltip:AddLine(self.sourceText, 1, 1, 1);
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -10, 10);
+							GameTooltip:SetText(self.speciesName, 1, 1, 1);
+							GameTooltip:AddLine(self.sourceText, 1, 1, 1, true);
+							if ( self.description and self.description ~= "" ) then
+								GameTooltip:AddLine(" ");
+								GameTooltip:AddLine(self.description, nil, nil, nil, true);
+							end
 							GameTooltip:Show();
 						end
 					</OnEnter>
@@ -1620,7 +1624,7 @@
 			<Frame name="$parentPetCardList" parentKey="PetCardList" enableMouse="true" hidden="true">
 				<Size x="296" y="382"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="-2" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-2" y="-23"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="MainCard" inherits="PetCardTemplate">
