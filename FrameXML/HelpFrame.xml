@@ -186,7 +186,7 @@
 				<Texture name="$parentIcon" file="Interface\Icons\Ability_ThunderClap" parentKey="icon">
 					<Size x="57" y="57"/>
 					<Anchors>
-						<Anchor point="LEFT" x="0" y="1"/>
+						<Anchor point="LEFT" x="3" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentSelected" file="Interface\HelpFrame\HelpButtons" parentKey="selected" hidden="true">
@@ -223,7 +223,10 @@
 			</OnMouseUp>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
-				HelpFrame_SetSelectedButton(self);
+				local data = HelpFrameNavTbl[self:GetID()];
+				if ( not data.noSelection ) then
+					HelpFrame_SetSelectedButton(self);
+				end
 				HelpFrame_SetFrameByKey(self:GetID());
 			</OnClick>
 		</Scripts>
@@ -237,7 +240,7 @@
 			<TexCoords left="0.00390625" right="0.78125000" top="0.00390625" bottom="0.21484375"/>
 		</HighlightTexture>
 		<ButtonText name="$parentText" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="text">
-			<Size x="135" y="30"/>
+			<Size x="130" y="30"/>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0" y="-1"/>
 			</Anchors>
@@ -424,22 +427,27 @@
 			</Button>
 			<Button name="$parentButton2" inherits="HelpFrameButtonTemplate" parentKey="button2" id="2">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-10"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton3" inherits="HelpFrameButtonTemplate" parentKey="button3" id="3">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-35"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton4" inherits="HelpFrameButtonTemplate" parentKey="button4" id="4">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton5" inherits="HelpFrameButtonTemplate" parentKey="button5" id="5">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton3" inherits="HelpFrameButtonTemplate" parentKey="button3" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="-25"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton4" inherits="HelpFrameButtonTemplate" parentKey="button4" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton16" inherits="HelpFrameButtonTemplate" parentKey="button16" id="16">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton6" inherits="HelpFrameButtonTemplate" parentKey="button6" id="6">
@@ -644,93 +652,238 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentReportLag" hidden="true" parentKey="lag">
+			<Frame name="$parentReportBug" hidden="true" parentKey="bug">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="5" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-5" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_LAG_TITLE" justifyH="LEFT">
-							<Size x="450" y="0"/>
+						<FontString name="$parentTitle" parentKey="title" inherits="GameFontNormalLarge" text="HELPFRAME_REPORT_BUG_TITLE" justifyH="LEFT">
+							<Size x="0" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="15" y="-15"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_LAG_TEXT1" justifyH="LEFT">
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_REPORT_BUG_TEXT1" justifyH="LEFT">
 							<Size x="450" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentLoot" inherits="HelpFrameButtonTemplate" text="BUTTON_LAG_LOOT" id="7">
+					<Button name="$parentSubmit" inherits="GameMenuButtonTemplate" text="SUBMIT" parentKey="submitButton">
+						<Size x="160" y="30"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT" x="15" y="-45"/>
+							<Anchor point="BOTTOM" x="0" y="15"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								HelpReportLag("Loot");
-							</OnClick>
+							<OnClick function="HelpFrameReportBugSubmit_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentAuctionHouse" inherits="HelpFrameButtonTemplate" text="BUTTON_LAG_AUCTIONHOUSE" id="8">
+					<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+						<Size x="435" y="150"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentLoot" relativePoint="RIGHT" x="20" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="70"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpReportLag("AuctionHouse");
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentMail" inherits="HelpFrameButtonTemplate" text="BUTTON_LAG_MAIL" id="9">
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentCharacterCount" inherits="GameFontDisableLarge" parentKey="charCount">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-15" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-13" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-13" y="16"/>
+								</Anchors>
+							</Slider>
+						</Frames>
+						<ScrollChild>
+							<EditBox name="HelpFrameReportBugEditBox" multiLine="true" letters="500" autoFocus="false">
+								<Size x="420" y="220"/>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+										self:GetParent().charCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
+										if self:GetNumLetters() > 0 then
+											self.submitButton:Enable();
+										end
+									</OnTextChanged>
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnShow function="EditBox_SetFocus"/>
+								</Scripts>
+								<FontString inherits="ChatFontNormal"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+					<Frame>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentLoot" relativePoint="BOTTOM" x="0" y="-15"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame" x="-7" y="7"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame" x="7" y="-7"/>
 						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
 						<Scripts>
-							<OnClick>
-								HelpReportLag("Mail");
-							</OnClick>
+							<OnLoad>
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(0, 0, 0);
+							</OnLoad>
 						</Scripts>
-					</Button>
-					<Button name="$parentChat" inherits="HelpFrameButtonTemplate" text="BUTTON_LAG_CHAT" id="10">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentAuctionHouse" relativePoint="BOTTOM" x="0" y="-15"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpReportLag("Chat");
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentMovement" inherits="HelpFrameButtonTemplate" text="BUTTON_LAG_MOVEMENT" id="11">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentMail" relativePoint="BOTTOM" x="0" y="-15"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpReportLag("Movement");
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentSpell" inherits="HelpFrameButtonTemplate" text="BUTTON_LAG_SPELL" id="12">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentChat" relativePoint="BOTTOM" x="0" y="-15"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								HelpReportLag("Spell");
-							</OnClick>
-						</Scripts>
-					</Button>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
 						tinsert(HelpFrameWindows, self);
+						self.editbox = HelpFrameReportBugEditBox;
+						self.editbox.submitButton = self.submitButton;
 					</OnLoad>
+					<OnShow>
+						if self.editbox:GetNumLetters() > 0 then
+							self.submitButton:Enable();
+						else
+							self.submitButton:Disable();
+						end
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSubmitSuggestion" hidden="true" parentKey="suggestion">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="5" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-5" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" parentKey="title" inherits="GameFontNormalLarge" text="HELPFRAME_SUBMIT_SUGGESTION_TITLE" justifyH="LEFT">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="15" y="-15"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_SUBMIT_SUGGESTION_TEXT1" justifyH="LEFT">
+							<Size x="450" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentLegalDisclaimer" inherits="GameFontHighlight" text="HELPFRAME_SUBMIT_SUGGESTION_LEGAL" justifyH="LEFT" justifyV="BOTTOM">
+							<Size x="450" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentSubmit" inherits="GameMenuButtonTemplate" text="SUBMIT" parentKey="submitButton">
+						<Size x="160" y="30"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="15"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="HelpFrameSubmitSuggestionSubmit_OnClick"/>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+						<Size x="435" y="120"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="130"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentCharacterCount" inherits="GameFontDisableLarge" parentKey="charCount">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-15" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-13" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-13" y="16"/>
+								</Anchors>
+							</Slider>
+						</Frames>
+						<ScrollChild>
+							<EditBox name="HelpFrameSubmitSuggestionEditBox" multiLine="true" letters="500" autoFocus="false">
+								<Size x="420" y="220"/>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+										self:GetParent().charCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
+										if self:GetNumLetters() > 0 then
+											self.submitButton:Enable();
+										end
+									</OnTextChanged>
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnShow function="EditBox_SetFocus"/>
+								</Scripts>
+								<FontString inherits="ChatFontNormal"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+					<Frame>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame" x="-7" y="7"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame" x="7" y="-7"/>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(0, 0, 0);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						tinsert(HelpFrameWindows, self);
+						self.editbox = HelpFrameSubmitSuggestionEditBox;
+						self.editbox.submitButton = self.submitButton;
+					</OnLoad>
+					<OnShow>
+						if self.editbox:GetNumLetters() > 0 then
+							self.submitButton:Enable();
+						else
+							self.submitButton:Disable();
+						end
+					</OnShow>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentOpenTicketHelp" hidden="true" parentKey="ticketHelp">
@@ -767,14 +920,19 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentTopIssues" inherits="HelpFrameButtonTemplate" id="13">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentText3" relativePoint="BOTTOM" x="0" y="-40"/>
-						</Anchors>
-					</Button>
 					<Button name="$parentOpenTicket" parentKey="ticketButton" inherits="HelpFrameButtonTemplate" id="14">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentTopIssues" relativePoint="BOTTOM" x="0" y="-20"/>
+							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="10"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentTopIssues" inherits="HelpFrameButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parentOpenTicket" relativePoint="TOP" x="0" y="10"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemRestoration" inherits="HelpFrameButtonTemplate" id="17">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parentTopIssues" relativePoint="TOP" x="0" y="10"/>
 						</Anchors>
 					</Button>
 					<Button name="GMChatOpenLog" inherits="GameMenuButtonTemplate" text="GM_CHAT_OPEN">
@@ -923,34 +1081,68 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentReportAbuse" hidden="true" parentKey="report">
+			<Frame name="$parentReportPlayer" hidden="true" parentKey="report">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="5" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-5" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="BNET_REPORT_ABUSE_BUTTON" justifyH="LEFT">
+						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_REPORT_PLAYER_TITLE" justifyH="LEFT">
 							<Size x="0" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="15" y="-15"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_REPORT_ABUSE_HELP" justifyH="LEFT">
+						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_REPORT_PLAYER_TEXT1" justifyH="LEFT">
 							<Size x="450" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 							</Anchors>
 						</FontString>
+						<Texture name="$parentExampleTexture" file="Interface\HelpFrame\ReportHarrasment-HelpImage">
+							<Size x="512" y="256"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentText1" relativePoint="BOTTOM" x="10" y="-20"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString name="$parentExampleChat" inherits="ChatFontNormal" text="HELPFRAME_REPORT_PLAYER_EXAMPLE_CHAT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentExampleTexture" relativePoint="TOPLEFT" x="52" y="-91"/>
+							</Anchors>
+							<Color r="1" g="0.50196" b="1"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentExampleTargetName" inherits="GameFontNormalSmall" text="HELPFRAME_REPORT_PLAYER_EXAMPLE_TARGET_NAME">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentExampleTexture" relativePoint="TOPLEFT" x="336" y="-76"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentExampleChatRightClick" inherits="GameFontNormalLarge" text="HELPFRAME_REPORT_PLAYER_RIGHT_CLICK">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentExampleTexture" relativePoint="TOPLEFT" x="69" y="-17"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentExampleTargetRightClick" inherits="GameFontNormalLarge" text="HELPFRAME_REPORT_PLAYER_RIGHT_CLICK">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentExampleTexture" relativePoint="TOPLEFT" x="305" y="-17"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentExampleChatClickLocation" inherits="GameFontHighlight" text="HELPFRAME_REPORT_PLAYER_EXAMPLE_CHAT_CLICK_LOCATION">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentExampleTexture" relativePoint="TOPLEFT" x="69" y="-36"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentExampleTargetClickLocation" inherits="GameFontHighlight" text="HELPFRAME_REPORT_PLAYER_EXAMPLE_TARGET_CLICK_LOCATION">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentExampleTexture" relativePoint="TOPLEFT" x="305" y="-36"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Button name="$parentOpenTicket" parentKey="ticketButton" inherits="HelpFrameButtonTemplate" id="14">
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="60"/>
-						</Anchors>
-					</Button>
-				</Frames>
 				<Scripts>
 					<OnLoad>
 						tinsert(HelpFrameWindows, self);
@@ -1427,14 +1619,7 @@
 				<Texture file="Interface\HelpFrame\CS_HelpTextures">
 					<Size x="229" y="45"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="5"/>
-					</Anchors>
-					<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
-				</Texture>
-				<Texture file="Interface\HelpFrame\CS_HelpTextures">
-					<Size x="229" y="45"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="5"/>
+						<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="10"/>
 					</Anchors>
 					<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
 				</Texture>
@@ -1613,6 +1798,411 @@
 			<OnEvent function="TicketStatusFrame_OnEvent"/>
 			<OnShow function="TicketStatusFrame_OnShow"/>
 			<OnHide function="TicketStatusFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="ReportPlayerNameDialog" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Size x="344" y="364"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="REPORT_PLAYER_NAME_TITLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText1" inherits="GameFontHighlight" text="REPORT_PLAYER_NAME_TEXT1" justifyH="LEFT">
+					<Size x="305" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentPlayerNameCheckButton" inherits="UIRadioButtonTemplate" id="1" parentKey="playerNameCheckButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT" x="15" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.reportType = PLAYER_REPORT_TYPE_BAD_PLAYER_NAME;
+						self.text:SetFontObject(GameFontHighlight);
+						self.text:SetText(BAD_PLAYER_NAME);
+					</OnLoad>
+					<OnClick>
+						HelpFrame_SetReportPlayerNameSelection(self.reportType);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentGuildNameCheckButton" inherits="UIRadioButtonTemplate" id="2" parentKey="guildNameCheckButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayerNameCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.reportType = PLAYER_REPORT_TYPE_BAD_GUILD_NAME;
+						self.text:SetFontObject(GameFontHighlight);
+						self.text:SetText(BAD_GUILD_NAME);
+					</OnLoad>
+					<OnClick>
+						HelpFrame_SetReportPlayerNameSelection(self.reportType);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentArenaTeamNameCheckButton" inherits="UIRadioButtonTemplate" id="3" parentKey="arenaNameCheckButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGuildNameCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.reportType = PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME;
+						self.text:SetFontObject(GameFontHighlight);
+						self.text:SetText(BAD_ARENA_TEAM_NAME);
+					</OnLoad>
+					<OnClick>
+						HelpFrame_SetReportPlayerNameSelection(self.reportType);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentCommentFrame" parentKey="CommentFrame">
+				<Size x="300" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="70"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentFocusButton" setAllPoints="true" parentKey="FocusButton">
+						<Scripts>
+							<OnClick>
+								self:GetParent().EditBox:SetFocus();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<EditBox name="$parentEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="EditBox" autoFocus="false">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="InformationText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="REPORT_PLAYER_NAME_EDITBOX_INFO"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEditFocusGained>
+								self:GetParent().FocusButton:Hide();
+								self.InformationText:Hide();
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								self:GetParent().FocusButton:Show();
+								if ( self:GetText() == "" ) then
+									self.InformationText:Show();
+								end
+							</OnEditFocusLost>
+							<OnEnterPressed>
+								--Don't allow line breaks
+							</OnEnterPressed>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="REPORT_PLAYER" parentKey="reportButton">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						ReportPlayer(parent.reportType, parent.target, parent.CommentFrame.EditBox:GetText());
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = true;
+				self:SetBackdropColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="ReportCheatingDialog" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Size x="344" y="310"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="REPORT_CHEATING_TITLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText1" inherits="GameFontHighlight" text="REPORT_CHEATING_TEXT1" justifyH="LEFT">
+					<Size x="305" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentCommentFrame" parentKey="CommentFrame">
+				<Size x="300" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="70"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+							<Size>
+								<AbsDimension x="8" y="8"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentFocusButton" setAllPoints="true" parentKey="FocusButton">
+						<Scripts>
+							<OnClick>
+								self:GetParent().EditBox:SetFocus();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<EditBox name="$parentEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="EditBox" autoFocus="false">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="InformationText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="REPORT_CHEATING_EDITBOX_INFO"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEditFocusGained>
+								self:GetParent().FocusButton:Hide();
+								self.InformationText:Hide();
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								self:GetParent().FocusButton:Show();
+								if ( self:GetText() == "" ) then
+									self.InformationText:Show();
+								end
+							</OnEditFocusLost>
+							<OnEnterPressed>
+								--Don't allow line breaks
+							</OnEnterPressed>
+							<OnTextChanged>
+								if ( self:GetText() ~= "" ) then
+									self:GetParent():GetParent().reportButton:Enable();
+								else
+									self:GetParent():GetParent().reportButton:Disable();
+								end
+							</OnTextChanged>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="REPORT_PLAYER" parentKey="reportButton">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ReportPlayer(PLAYER_REPORT_TYPE_CHEATING, self:GetParent().target, self:GetParent().CommentFrame.EditBox:GetText());
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = true;
+				self:SetBackdropColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>
