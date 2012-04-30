@@ -937,10 +937,25 @@ StaticPopupDialogs["CONFIRM_REPORT_SPAM_CHAT"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, lineID)
-		ComplainChat(lineID);
+		ReportPlayer(PLAYER_REPORT_TYPE_SPAM, lineID);
+		--ComplainChat(lineID);
 	end,
 	timeout = 0,
 	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_REPORT_BAD_LANGUAGE_CHAT"] = {
+	text = REPORT_BAD_LANGUAGE_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, lineID)
+		ReportPlayer(PLAYER_REPORT_TYPE_LANGUAGE, lineID);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
 	hideOnEscape = 1
 };
 
@@ -3058,6 +3073,16 @@ StaticPopupDialogs["GUILD_IMPEACH"] = {
 	timeout = 0,
 	exclusive = 1,
 }
+
+StaticPopupDialogs["CONFIRM_LAUNCH_URL"] = {
+	text = CONFIRM_LAUNCH_URL,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self, data) LoadURLIndex(data); end,
+	hideOnEscape = 1,
+	timeout = 0,
+}
+
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];

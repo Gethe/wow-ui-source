@@ -16,11 +16,11 @@ HelpFrameNavTbl[3] = {	text = HELPFRAME_STUCK_TITLE,
 						icon ="Interface\\HelpFrame\\HelpIcon-CharacterStuck",
 						frame = "stuck"
 					};
-HelpFrameNavTbl[4] = {	text = HELPFRAME_LAG_TITLE, 
-						icon="Interface\\HelpFrame\\HelpIcon-ReportLag",
-						frame = "lag"
+HelpFrameNavTbl[4] = {	text = HELPFRAME_REPORT_BUG_TITLE, 
+						icon="Interface\\HelpFrame\\HelpIcon-Bug",
+						frame = "bug"
 					};
-HelpFrameNavTbl[5] = {	text = BNET_REPORT_ABUSE_BUTTON, 
+HelpFrameNavTbl[5] = {	text = HELPFRAME_REPORT_PLAYER_TITLE, 
 						icon="Interface\\HelpFrame\\HelpIcon-ReportAbuse",
 						frame = "report"
 					};
@@ -28,7 +28,6 @@ HelpFrameNavTbl[6] = {	text = HELP_TICKET_OPEN,
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
 						frame = "ticketHelp"
 					};					
-HELPFRAME_NAV_COUNT = 6;
 
 --LAG REPORITNG BUTTONS					
 HelpFrameNavTbl[7] = {	icon ="Interface\\HelpFrame\\ReportLagIcon-Loot",
@@ -72,8 +71,18 @@ HelpFrameNavTbl[15] = {	text = HELP_TICKET_OPEN,
 						frame = "GM_response"
 					};
 
+HelpFrameNavTbl[16] = {	text = HELPFRAME_SUBMIT_SUGGESTION_TITLE, 
+						icon ="Interface\\HelpFrame\\HelpIcon-Suggestion",
+						frame = "suggestion"
+					};					
+HelpFrameNavTbl[17]	= { text = HELPFRAME_ITEM_RESTORATION,
+						icon ="Interface\\HelpFrame\\HelpIcon-ItemRestoration",
+						func = function() StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, 3) end,
+						noSelection = true,
+					};
 
-KBASE_BUTTON_HEIGHT = 28; -- This is button hieght plus the offset
+
+KBASE_BUTTON_HEIGHT = 28; -- This is button height plus the offset
 KBASE_NUM_ARTICLES_PER_PAGE = 100; -- Obsolete
 
 
@@ -84,9 +93,10 @@ HELPFRAME_START_PAGE			= 1; -- KNOWLEDGE_BASE;
 HELPFRAME_KNOWLEDGE_BASE		= 1; 
 HELPFRAME_ACCOUNT_SECURITY		= 2;
 HELPFRAME_CARACTER_STUCK		= 3;
-HELPFRAME_REPORT_LAG			= 4;
+HELPFRAME_SUBMIT_BUG			= 4;
 HELPFRAME_REPORT_ABUSE			= 5;
 HELPFRAME_OPEN_TICKET			= 6;
+HELPFRAME_SUBMIT_SUGGESTION		= 16;
 
 HELPFRAME_SUBMIT_TICKET			= 14;
 HELPFRAME_GM_RESPONSE			= 15;
@@ -114,6 +124,9 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_TICKET");
 	self:RegisterEvent("GMSURVEY_DISPLAY");
 	self:RegisterEvent("GMRESPONSE_RECEIVED");
+	self:RegisterEvent("QUICK_TICKET_SYSTEM_STATUS");
+	self:RegisterEvent("ITEM_RESTORATION_BUTTON_STATUS");
+	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
 	
 	
 	self.leftInset.Bg:SetTexture("Interface\\HelpFrame\\Tileable-Parchment", true, true);
@@ -125,6 +138,9 @@ function HelpFrame_OnLoad(self)
 	self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
 	self.Bg:SetHorizTile(true);
 	self.Bg:SetVertTile(true);
+
+	HelpFrame_UpdateQuickTicketSystemStatus();
+	HelpFrame_UpdateItemRestorationButtonStatus();
 end
 
 function HelpFrame_OnShow(self)
@@ -138,6 +154,7 @@ function HelpFrame_OnShow(self)
 	button:RegisterEvent("SPELL_UPDATE_USABLE");
 	button:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	button:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");	
+	HelpFrame_UpdateQuickTicketSystemStatus();
 end
 
 function HelpFrame_OnHide(self)
@@ -214,6 +231,33 @@ function HelpFrame_OnEvent(self, event, ...)
 			HelpFrame_SetFrameByKey(HELPFRAME_GM_RESPONSE);
 			HelpFrame_SetSelectedButton(HelpFrameButton6);
 		end
+	elseif ( event == "QUICK_TICKET_SYSTEM_STATUS" or event == "QUICK_TICKET_THROTTLE_CHANGED" ) then
+		HelpFrame_UpdateQuickTicketSystemStatus();
+	elseif ( event == "ITEM_RESTORATION_BUTTON_STATUS" ) then
+		HelpFrame_UpdateItemRestorationButtonStatus();
+	end
+end
+
+function HelpFrame_UpdateQuickTicketSystemStatus()
+	local enabled = GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled();
+	if ( enabled ) then
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_BUG], true);
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_SUGGESTION], true);
+	else
+		if ( HelpFrame.selectedId == HELPFRAME_SUBMIT_BUG or HelpFrame.selectedId == HELPFRAME_SUBMIT_SUGGESTION ) then
+			HelpFrame.button1:Click();
+		end
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_BUG], false);
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_SUGGESTION], false);
+	end
+end
+
+function HelpFrame_UpdateItemRestorationButtonStatus()
+	local enabled = GMItemRestorationButtonEnabled();
+	if ( enabled ) then
+		HelpFrameOpenTicketHelpItemRestoration:Show();
+	else
+		HelpFrameOpenTicketHelpItemRestoration:Hide();
 	end
 end
 
@@ -283,15 +327,15 @@ function HelpFrame_SetFrameByKey(key)
 		showFrame:Show();
 	end
 	if data.func then
-		_G[data.func]();
+		if ( type(data.func) == "function" ) then
+			data.func();
+		else
+			_G[data.func]();
+		end
 	end
 end
 
 function HelpFrame_SetSelectedButton(button)
-	-- if button:GetID() > HELPFRAME_NAV_COUNT then
-		-- return; -- do not set selected if this is an internal button ie report spell lag
-	-- end
-
 	button.selected:Show();
 	if HelpFrame.disabledButton and HelpFrame.disabledButton ~= button then
 		HelpFrame.disabledButton.selected:Hide();
@@ -306,7 +350,6 @@ function HelpFrame_SetTicketButtonText(text)
 	HelpFrame.button6:SetText(text);
 	HelpFrame.asec.ticketButton:SetText(text);
 	HelpFrame.ticketHelp.ticketButton:SetText(text);
-	HelpFrame.report.ticketButton:SetText(text);
 end
 
 function HelpFrame_SetTicketEntry()
@@ -326,6 +369,67 @@ function HelpFrame_SetTicketEntry()
 			HelpFrame_SetTicketButtonText(HELP_TICKET_OPEN);
 		end
 	end
+end
+
+function HelpFrame_SetButtonEnabled(button, enabled)
+	if ( enabled ) then
+		button:Enable();
+		button:GetNormalTexture():SetDesaturated(0);
+		button.icon:SetDesaturated(0);
+		button.icon:SetVertexColor(1, 1, 1);
+		button.text:SetFontObject(GameFontNormalMed3);
+	else
+		button:Disable();
+		button:GetNormalTexture():SetDesaturated(1);
+		button.icon:SetDesaturated(1);
+		button.icon:SetVertexColor(0.5, 0.5, 0.5);
+		button.text:SetFontObject(GameFontDisableMed3);
+	end
+end
+
+function HelpFrame_ShowReportPlayerNameDialog(target)
+	local frame = ReportPlayerNameDialog;
+	if ( type(target) == "string" ) then
+		SetPendingReportTarget(target);
+		target = "pending";
+	end
+	frame.target = target;
+	frame.reportType = nil;
+	frame.CommentFrame.EditBox:SetText("");
+	frame.CommentFrame.EditBox.InformationText:Show();
+	HelpFrame_UpdateReportPlayerNameDialog();
+	StaticPopupSpecial_Show(frame);
+end
+
+function HelpFrame_SetReportPlayerNameSelection(reportType)
+	local frame = ReportPlayerNameDialog;
+	frame.reportType = reportType;
+	HelpFrame_UpdateReportPlayerNameDialog();
+end
+
+function HelpFrame_UpdateReportPlayerNameDialog()
+	local frame = ReportPlayerNameDialog;
+	frame.playerNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_PLAYER_NAME);
+	frame.guildNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_GUILD_NAME);
+	frame.arenaNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME);
+
+	if ( frame.reportType ) then
+		frame.reportButton:Enable();
+	else
+		frame.reportButton:Disable();
+	end
+end
+
+function HelpFrame_ShowReportCheatingDialog(target)
+	local frame = ReportCheatingDialog;
+	if ( type(target) == "string" ) then
+		SetPendingReportTarget(target);
+		target = "pending";
+	end
+	frame.target = target;
+	frame.CommentFrame.EditBox:SetText("");
+	frame.CommentFrame.EditBox.InformationText:Show();
+	StaticPopupSpecial_Show(frame);
 end
 
 --
@@ -393,6 +497,27 @@ function HelpFrameOpenTicketSubmit_OnClick()
 	HideUIPanel(HelpFrame);
 end
 
+
+--
+-- HelpFrameSubmitBug
+-- 
+
+function HelpFrameReportBugSubmit_OnClick()
+	local bugText = HelpFrameReportBugEditBox:GetText();
+	GMSubmitBug(bugText);
+	HelpFrameReportBugEditBox:SetText("");
+	HideUIPanel(HelpFrame);
+end
+
+--
+-- HelpFrameSubmitSuggestion
+-- 
+function HelpFrameSubmitSuggestionSubmit_OnClick()
+	local suggestionText = HelpFrameSubmitSuggestionEditBox:GetText();
+	GMSubmitSuggestion(suggestionText);
+	HelpFrameSubmitSuggestionEditBox:SetText("");
+	HideUIPanel(HelpFrame);
+end
 
 --
 -- HelpFrameViewResponseButton
