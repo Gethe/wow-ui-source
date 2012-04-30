@@ -498,6 +498,18 @@ StaticPopupDialogs["CONFIRM_RESET_INSTANCES"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["CONFIRM_RESET_CHALLENGE_MODE"] = {
+	text = CONFIRM_RESET_CHALLENGE_MODE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		ResetChallengeMode();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["CONFIRM_GUILD_DISBAND"] = {
 	text = CONFIRM_GUILD_DISBAND,
 	button1 = YES,
@@ -2224,6 +2236,20 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 StaticPopupDialogs["DUEL_OUTOFBOUNDS"] = {
 	text = DUEL_OUTOFBOUNDS_TIMER,
 	timeout = 10,
+};
+StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
+	text = PET_BATTLE_PVP_DUEL_REQUESTED,
+	button1 = ACCEPT,
+	button2 = DECLINE,
+	sound = "igPlayerInvite",
+	OnAccept = function(self)
+		C_PetBattles.AcceptPVPDuel();
+	end,
+	OnCancel = function(self)
+		C_PetBattles.CancelPVPDuel();
+	end,
+	timeout = STATICPOPUP_TIMEOUT,
+	hideOnEscape = 1
 };
 StaticPopupDialogs["UNLEARN_SKILL"] = {
 	text = UNLEARN_SKILL,

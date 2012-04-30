@@ -1,0 +1,6 @@
+## Interface: 50001
+## Title: Blizzard Challenges UI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_ChallengesUI.xml
+Localization.lua

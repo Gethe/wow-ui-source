@@ -9,8 +9,6 @@ function InspectFrame_Show(unit)
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		InspectSwitchTabs(1);
-		ShowUIPanel(InspectFrame);
-		InspectFrame_UpdateTabs();
 	end
 end
 
@@ -19,6 +17,7 @@ function InspectFrame_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("INSPECT_READY");
 	self.unit = nil;
 
 	-- Tab Handling code
@@ -27,7 +26,14 @@ function InspectFrame_OnLoad(self)
 	self.TitleText:SetFontObject("GameFontHighlight");
 end
 
-function InspectFrame_OnEvent(self, event, ...)
+function InspectFrame_OnEvent(self, event, unit, ...)
+
+	if(event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
+		ShowUIPanel(InspectFrame);
+		InspectFrame_UpdateTabs();
+	end
+
+
 	if ( not self:IsShown() ) then
 		return;
 	end
@@ -90,9 +96,6 @@ function InspectFrame_OnHide(self)
 end
 
 function InspectFrame_OnUpdate(self)
-	if ( not UnitIsVisible(self.unit) ) then
-		HideUIPanel(InspectFrame);
-	end
 end		
 
 function InspectSwitchTabs(newID)
@@ -103,7 +106,6 @@ function InspectSwitchTabs(newID)
 			oldFrame:Hide();
 		end
 		PanelTemplates_SetTab(InspectFrame, newID);
-		ShowUIPanel(InspectFrame);
 		newFrame:Show();
 	end
 end
@@ -132,7 +134,7 @@ function InspectFrame_UpdateTabs()
 	end
 	
 	-- Guild tab
-	local guildName = GetGuildInfo(InspectFrame.unit);
+	local _, _, _, guildName = GetInspectGuildInfo(InspectFrame.unit);
 	if ( guildName and guildName ~= "" ) then
 		PanelTemplates_EnableTab(InspectFrame, 4);
 	else

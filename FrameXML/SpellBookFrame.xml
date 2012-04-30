@@ -170,12 +170,17 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" inherits="Spellbook-EmptySlot">
+				<Texture name="$parentBackground" inherits="Spellbook-EmptySlot" parentKey="EmptySlot">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentTextBackground" inherits="Spellbook-TextBackground" parentKey="TextBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-4" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextBackground2" inherits="Spellbook-TextBackground" parentKey="TextBackground2">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-4" y="-5"/>
 					</Anchors>
@@ -311,6 +316,7 @@
 				self:SetChecked(0);
 			</PreClick>
 			<OnClick>
+				if (self.isPassive) then return end;
 				if ( IsModifiedClick() ) then
 					SpellButton_OnModifiedClick(self, button);
 				else
@@ -324,9 +330,11 @@
 				SpellButton_OnHide(self);
 			</OnHide>
 			<OnDragStart>
+				if (self.isPassive) then return end;
 				SpellButton_OnDrag(self, button);
 			</OnDragStart>
 			<OnReceiveDrag>
+				if (self.isPassive) then return end;
 				SpellButton_OnDrag(self);
 			</OnReceiveDrag>
 			<OnEnter>

@@ -12,12 +12,13 @@ UNITPOPUP_SPACER_SPACING = 6;
 UnitPopupButtons = { };
 UnitPopupButtons["CANCEL"] = { text = CANCEL, dist = 0, space = 1 };
 UnitPopupButtons["TRADE"] = { text = TRADE, dist = 2 };
-UnitPopupButtons["INSPECT"] = { text = INSPECT, dist = 1 };
+UnitPopupButtons["INSPECT"] = { text = INSPECT, dist = 0 };
 UnitPopupButtons["ACHIEVEMENTS"] = { text = COMPARE_ACHIEVEMENTS, dist = 1 };
 UnitPopupButtons["TARGET"] = { text = TARGET, dist = 0 };
 UnitPopupButtons["IGNORE"]	= { text = IGNORE, dist = 0 };
 UnitPopupButtons["POP_OUT_CHAT"] = { text = MOVE_TO_WHISPER_WINDOW, dist = 0 };
 UnitPopupButtons["DUEL"] = { text = DUEL, dist = 3, space = 1 };
+UnitPopupButtons["PET_BATTLE_PVP_DUEL"] = { text = PET_BATTLE_PVP_DUEL, dist = 5, space = 1 };
 UnitPopupButtons["WHISPER"]	= { text = WHISPER, dist = 0 };
 UnitPopupButtons["INVITE"]	= { text = PARTY_INVITE, dist = 0 };
 UnitPopupButtons["UNINVITE"] = { text = PARTY_UNINVITE, dist = 0 };
@@ -52,6 +53,7 @@ UnitPopupButtons["MASTER_LOOTER"] = { text = LOOT_MASTER_LOOTER, dist = 0 };
 UnitPopupButtons["GROUP_LOOT"] = { text = LOOT_GROUP_LOOT, dist = 0 };
 UnitPopupButtons["NEED_BEFORE_GREED"] = { text = LOOT_NEED_BEFORE_GREED, dist = 0 };
 UnitPopupButtons["RESET_INSTANCES"] = { text = RESET_INSTANCES, dist = 0 };
+UnitPopupButtons["RESET_CHALLENGE_MODE"] = { text = RESET_CHALLENGE_MODE, dist = 0 };
 UnitPopupButtons["CONVERT_TO_RAID"] = { text = CONVERT_TO_RAID, dist = 0 };
 UnitPopupButtons["CONVERT_TO_PARTY"] = { text = CONVERT_TO_PARTY, dist = 0 };
 
@@ -168,11 +170,11 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "CHALLENGE_MODE", "RESET_INSTANCES", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
+UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "CHALLENGE_MODE", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
-UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
-UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
-UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
+UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
+UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
+UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["RAID"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET_NOTE", "IGNORE", "REPORT_PLAYER", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
@@ -633,6 +635,10 @@ function UnitPopup_HideButtons ()
 			if ( UnitCanAttack("player", dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
+		elseif ( value == "PET_BATTLE_PVP_DUEL" ) then
+			if ( not UnitCanPetBattle("player", dropdownMenu.unit) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
 		elseif ( value == "INSPECT" or value == "ACHIEVEMENTS" ) then
 			if ( not dropdownMenu.unit or UnitCanAttack("player", dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -837,6 +843,10 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "RESET_INSTANCES" ) then
 			if ( ( inParty == 1 and isLeader == 0 ) or inInstance) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "RESET_CHALLENGE_MODE" ) then
+			if ( not inInstance or not GetChallengeMode() or ( inParty == 1 and isLeader == 0 ) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUNGEON_DIFFICULTY" ) then
@@ -1197,7 +1207,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					end
-					
+
 					if ( value == "TRADE" ) then
 						if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
 							enable = 0;
@@ -1247,6 +1257,10 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "DUEL" ) then
+						if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
+							enable = 0;
+						end
+					elseif ( value == "PET_BATTLE_PVP_DUEL" ) then
 						if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownFrame.unit) ) then
 							enable = 0;
 						end
@@ -1422,6 +1436,8 @@ function UnitPopup_OnClick (self)
 		FCF_OpenTemporaryWindow(dropdownFrame.chatType, dropdownFrame.chatTarget, dropdownFrame.chatFrame, true);
 	elseif ( button == "DUEL" ) then
 		StartDuel(unit, 1);
+	elseif ( button == "PET_BATTLE_PVP_DUEL" ) then
+		C_PetBattles.StartPVPDuel(unit, 1);
 	elseif ( button == "INVITE" ) then
 		InviteToGroup(fullname);
 	elseif ( button == "UNINVITE" or button == "VOTE_TO_KICK" ) then
@@ -1550,6 +1566,8 @@ function UnitPopup_OnClick (self)
 		ConvertToParty();
 	elseif ( button == "RESET_INSTANCES" ) then
 		StaticPopup_Show("CONFIRM_RESET_INSTANCES");
+	elseif ( button == "RESET_CHALLENGE_MODE" ) then
+		StaticPopup_Show("CONFIRM_RESET_CHALLENGE_MODE");
 	elseif ( button == "FOLLOW" ) then
 		FollowUnit(fullname, 1);
 	elseif ( button == "MUTE" ) then

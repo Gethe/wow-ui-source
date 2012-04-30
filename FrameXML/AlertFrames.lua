@@ -4,6 +4,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("LFG_COMPLETION_REWARD");
 	self:RegisterEvent("GUILD_CHALLENGE_COMPLETED");
+	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -19,13 +20,9 @@ function AlertFrame_OnEvent (self, event, ...)
 		DungeonCompletionAlertFrame_ShowAlert();
 	elseif ( event == "GUILD_CHALLENGE_COMPLETED" ) then
 		GuildChallengeAlertFrame_ShowAlert(...);
+	elseif ( event == "CHALLENGE_MODE_COMPLETED" ) then
+		ChallengeModeAlertFrame_ShowAlert();
 	end
-end
-
-function AlertFrame_FixAnchors()
-	AchievementAlertFrame_FixAnchors();
-	DungeonCompletionAlertFrame_FixAnchors();
-	GuildChallengeAlertFrame_FixAnchors();
 end
 
 function AlertFrame_AnimateIn(frame)
@@ -53,6 +50,73 @@ function AlertFrame_ResumeOutAnimation(frame)
 	frame.waitAndAnimOut:Play();
 end
 
+-- [[ Anchoring ]] --
+function AlertFrame_FixAnchors()
+	local alertAnchor = AlertFrame;
+	alertAnchor = AlertFrame_SetLootAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetAchievementAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetChallengeModeAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetDungeonCompletionAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGuildChallengeAnchors(alertAnchor);
+end
+
+function AlertFrame_SetLootAnchors(alertAnchor)
+	-- this doesn't need to actually reanchor anything... yet
+	-- normal loot
+	local frame = GroupLootContainer;
+	if ( frame:IsShown() ) then
+		return frame;
+	end
+	-- LFR loot
+	frame = MissingLootFrame;
+	if ( frame:IsShown() ) then
+		return frame;
+	end
+
+	return alertAnchor;
+end
+
+function AlertFrame_SetAchievementAnchors(alertAnchor)
+	-- skip work if there hasn't been an achievement toast yet
+	if ( AchievementAlertFrame1 ) then
+		for i = 1, MAX_ACHIEVEMENT_ALERTS do
+			local frame = _G["AchievementAlertFrame"..i];
+			if ( frame and frame:IsShown() ) then
+				frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+				alertAnchor = frame;
+			end
+		end
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetChallengeModeAnchors(alertAnchor)
+	local frame = ChallengeModeAlertFrame1;
+	if ( frame:IsShown() ) then
+		frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = frame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetDungeonCompletionAnchors(alertAnchor)
+	local frame = DungeonCompletionAlertFrame1;
+	if ( frame:IsShown() ) then
+		frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = frame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetGuildChallengeAnchors(alertAnchor)
+	local frame = GuildChallengeAlertFrame;
+	if ( frame:IsShown() ) then
+		frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = frame;
+	end
+	return alertAnchor;
+end
+
 -- [[ GuildChallengeAlertFrame ]] --
 function GuildChallengeAlertFrame_ShowAlert(...)
 	local challengeType, count, max = ...;
@@ -61,36 +125,6 @@ function GuildChallengeAlertFrame_ShowAlert(...)
 	SetLargeGuildTabardTextures("player", GuildChallengeAlertFrameEmblemIcon, GuildChallengeAlertFrameEmblemBackground, GuildChallengeAlertFrameEmblemBorder);
 	AlertFrame_AnimateIn(GuildChallengeAlertFrame);
 	AlertFrame_FixAnchors();
-end
-
-function GuildChallengeAlertFrame_FixAnchors()
-	if (  DungeonCompletionAlertFrame1:IsShown() ) then
-		GuildChallengeAlertFrame:SetPoint("BOTTOM",  DungeonCompletionAlertFrame1, "TOP", 0, 10);
-		return;
-	end
-	
-	for i=MAX_ACHIEVEMENT_ALERTS, 1, -1 do
-		local frame = _G["AchievementAlertFrame"..i];
-		if ( frame and frame:IsShown() ) then
-			GuildChallengeAlertFrame:SetPoint("BOTTOM", frame, "TOP", 0, 10);
-			return;
-		end
-	end
-	
-	for i=NUM_GROUP_LOOT_FRAMES, 1, -1 do
-		local frame = _G["GroupLootFrame"..i];
-		if ( frame and frame:IsShown() ) then
-			GuildChallengeAlertFrame:SetPoint("BOTTOM", frame, "TOP", 0, 10);
-			return;
-		end
-	end
-	
-	local frame = MissingLootFrame;
-	if ( frame:IsShown() ) then
-		GuildChallengeAlertFrame:SetPoint("BOTTOM", frame, "TOP", 0, 10);
-	end
-
-	GuildChallengeAlertFrame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
 end
 
 function GuildChallengeAlertFrame_OnClick(self)
@@ -104,31 +138,6 @@ end
 -- [[ DungeonCompletionAlertFrame ]] --
 function DungeonCompletionAlertFrame_OnLoad (self)
 	self.glow = self.glowFrame.glow;
-end
-
-function DungeonCompletionAlertFrame_FixAnchors()
-	for i=MAX_ACHIEVEMENT_ALERTS, 1, -1 do
-		local frame = _G["AchievementAlertFrame"..i];
-		if ( frame and frame:IsShown() ) then
-			DungeonCompletionAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
-			return;
-		end
-	end
-	
-	for i=NUM_GROUP_LOOT_FRAMES, 1, -1 do
-		local frame = _G["GroupLootFrame"..i];
-		if ( frame and frame:IsShown() ) then
-			DungeonCompletionAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
-			return;
-		end
-	end
-	
-	local frame = MissingLootFrame;
-	if ( frame:IsShown() ) then
-		DungeonCompletionAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);	
-	end
-	
-	DungeonCompletionAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
 end
 
 DUNGEON_COMPLETION_MAX_REWARDS = 1;
@@ -248,32 +257,98 @@ function DungeonCompletionAlertFrameReward_OnLeave(frame)
 	GameTooltip:Hide();
 end
 
+-- [[ ChallengeModeAlertFrame ]] --
+CHALLENGE_MODE_MAX_REWARDS = 1;
+function ChallengeModeAlertFrame_ShowAlert()
+	PlaySound("LFG_Rewards");
+	local frame = ChallengeModeAlertFrame1;
+	--For now we only have 1 challenge mode alert frame
+	local mapID, medal, completionTime, moneyAmount, numRewards = GetChallengeModeCompletionInfo();
+	frame.mapID = mapID;
+
+	--Set up the rewards
+	local rewardsOffset = 0;
+
+	if ( moneyAmount > 0 ) then
+		SetPortraitToTexture(frame.reward1.texture, "Interface\\Icons\\inv_misc_coin_02");
+		frame.reward1.itemID = 0;
+		frame.reward1:Show();
+		rewardsOffset = 1;
+	end
+
+	for i = 1, numRewards do
+		local frameID = (i + rewardsOffset);
+		local reward = _G["ChallengeModeAlertFrame1Reward"..frameID];
+		if ( not reward ) then
+			reward = CreateFrame("FRAME", "ChallengeModeAlertFrame1Reward"..frameID, ChallengeModeAlertFrame1, "ChallengeModeAlertFrameRewardTemplate");
+			CHALLENGE_MODE_MAX_REWARDS = frameID;
+		end
+		ChallengeModeAlertFrameReward_SetReward(reward, i);
+	end
+
+	local usedButtons = numRewards + rewardsOffset;
+	--Hide the unused ones
+	for i = usedButtons + 1, CHALLENGE_MODE_MAX_REWARDS do
+		_G["ChallengeModeAlertFrame1Reward"..i]:Hide();
+	end
+
+	if ( usedButtons > 0 ) then
+		--Set up positions
+		local spacing = 36;
+		frame.reward1:SetPoint("TOP", frame, "TOP", -spacing/2 * usedButtons + 41, 10);
+		for i = 2, usedButtons do
+			_G["ChallengeModeAlertFrame1Reward"..i]:SetPoint("CENTER", "ChallengeModeAlertFrame1Reward"..(i - 1), "CENTER", spacing, 0);
+		end
+	end
+
+	--Set up the text and icon
+	if ( not medal or medal == CHALLENGE_MEDAL_NONE ) then
+		frame.medalIcon:Hide();
+	else
+		SetChallengeModeMedalTexture(frame.medalIcon, medal);
+		frame.medalIcon:Show();
+	end
+	frame.time:SetText(GetTimeStringFromSeconds(completionTime, true));
+	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-ZULGURUB");
+
+	AlertFrame_AnimateIn(frame)
+	AlertFrame_FixAnchors();
+end
+
+function ChallengeModeAlertFrameReward_SetReward(frame, index)
+	local itemID, name, texturePath, quantity, isCurrency = GetChallengeModeCompletionReward(index);
+	SetPortraitToTexture(frame.texture, texturePath);
+	frame.itemID = itemID;
+	frame.isCurrency = isCurrency;
+	frame:Show();
+end
+
+function ChallengeModeAlertFrameReward_OnEnter(self)
+	AlertFrame_StopOutAnimation(self:GetParent());
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( self.itemID == 0 ) then
+		local _, _, _, moneyAmount = GetChallengeModeCompletionInfo();
+		if ( moneyAmount > 0 ) then
+			GameTooltip:AddLine(YOU_RECEIVED);
+			SetTooltipMoney(GameTooltip, moneyAmount, nil);
+		end
+	elseif ( self.isCurrency ) then
+		GameTooltip:SetCurrencyByID(self.itemID);
+	else
+		GameTooltip:SetItemByID(self.itemID);
+	end
+	GameTooltip:Show();
+end
+
+function ChallengeModeAlertFrameReward_OnLeave(frame)
+	AlertFrame_ResumeOutAnimation(frame:GetParent());
+	GameTooltip:Hide();
+end
+
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_OnLoad (self)
 	self:RegisterForClicks("LeftButtonUp");
-end
-
-function AchievementAlertFrame_FixAnchors ()
-	-- Temporary (here's hoping) workaround so that achievement alerts are anchored to loot roll windows. Eventually we want one system to handle placement for both alerts.
-	if ( not AchievementAlertFrame1 ) then
-		-- We haven't displayed any achievement alerts yet, so there's nothing to reanchor (read: this got called by LootFrame.lua)
-		return;
-	end
-	
-	for i=NUM_GROUP_LOOT_FRAMES, 1, -1  do
-		local frame = _G["GroupLootFrame"..i];
-		if ( frame and frame:IsShown() ) then
-			AchievementAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);
-			return;
-		end
-	end
-	
-	local frame = MissingLootFrame;
-	if ( frame:IsShown() ) then
-		AchievementAlertFrame1:SetPoint("BOTTOM", frame, "TOP", 0, 10);	
-	end
-	
-	AchievementAlertFrame1:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 128);
 end
 
 function AchievementAlertFrame_ShowAlert (achievementID)
@@ -423,4 +498,35 @@ end
 
 function AchievementAlertFrame_OnHide (self)
 	AlertFrame_FixAnchors();
+end
+
+--
+-- Test
+--
+
+function AlertTest()
+	local old = GetLFGCompletionReward;
+	GetLFGCompletionReward = newGetLFGCompletionReward;
+	AlertFrame_OnEvent(AlertFrame, "ACHIEVEMENT_EARNED", 45)
+	AlertFrame_OnEvent(AlertFrame, "ACHIEVEMENT_EARNED", 46)
+	AlertFrame_OnEvent(AlertFrame, "LFG_COMPLETION_REWARD")
+	AlertFrame_OnEvent(AlertFrame, "GUILD_CHALLENGE_COMPLETED", 1, 2, 7)
+	AlertFrame_OnEvent(AlertFrame, "CHALLENGE_MODE_COMPLETED");
+	GetLFGCompletionReward = old;
+end
+
+function newGetLFGCompletionReward()
+	return "Test", 0, 0, "Love", 1000000, 0, 0, 0, 0, 2;
+end
+
+function oldGetChallengeModeCompletionInfo()
+	return 960, 3, 999123, 1500000, 2;
+end
+
+function oldGetChallengeModeCompletionReward(index)
+	if ( index == 1 ) then
+		return 395, "Justice Points", "Interface\\Icons\\INV_Boots_Cloth_ChallengePriest_D_01", 113, true;
+	elseif ( index == 2 ) then
+		return 8190, "Hanzo Sword", "Interface\\Icons\\INV_Misc_Bag_FelclothBag", 1, false;
+	end
 end

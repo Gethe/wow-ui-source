@@ -562,7 +562,7 @@
 					</Button>
 				</Frames>
 			</PlayerModel>
-			<StatusBar name="$parentStatusBar" parentKey="statusBar">
+			<StatusBar name="$parentStatusBar" parentKey="xpBar">
 				<Size x="165" y="11"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="16" y="0"/>
@@ -1022,7 +1022,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<StatusBar name="$parentStatusBar" parentKey="xpbar">
+			<StatusBar name="$parentStatusBar" parentKey="xpBar">
 				<Size x="130" y="11"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="14" y="4"/>

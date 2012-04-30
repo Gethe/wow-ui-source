@@ -15,7 +15,7 @@ function InspectPaperDollFrame_OnEvent(self, event, unit)
 			end
 			return;
 		end
-		if (event == "INSPECT_READY") then
+		if (event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
 			InspectPaperDollFrame_SetLevel();
 			InspectPaperDollFrame_UpdateButtons();
 		end

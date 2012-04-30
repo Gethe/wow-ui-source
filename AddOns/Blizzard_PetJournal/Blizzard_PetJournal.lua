@@ -35,12 +35,26 @@ StaticPopupDialogs["BATTLE_PET_RENAME"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["BATTLE_PET_PUT_IN_CAGE"] = {
+	text = PET_PUT_IN_CAGE_LABEL,
+	button1 = OKAY,
+	button2 = CANCEL,
+	maxLetters = 30,
+	OnAccept = function(self)
+		C_PetJournal.CagePetByID(PetJournal.menuPetID);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 
 function PetJournal_OnLoad(self)
 	PetJournalTitleText:SetText(PET_JOURNAL);
 	SetPortraitToTexture(PetJournalPortrait,"Interface\\Icons\\spell_magic_polymorphrabbit");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
+	self:RegisterEvent("PET_JOURNAL_PET_DELETED");
 	self:RegisterEvent("BATTLE_PET_CURSOR_CLEAR");
 	
 	
@@ -79,7 +93,15 @@ end
 
 
 function PetJournal_OnEvent(self, event, ...)
-	if event == "PET_JOURNAL_LIST_UPDATE" then
+	if event == "PET_JOURNAL_PET_DELETED" then
+		local petID = ...;
+		if(PetJournal.pcPetID == petID) then
+			PetJournal_HidePetCard();
+		end
+		PetJournal_FindPetCardIndex();
+		PetJournal_UpdatePetList();
+		PetJournal_UpdatePetLoadOut();
+	elseif event == "PET_JOURNAL_LIST_UPDATE" then
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetList();
 	elseif event == "BATTLE_PET_CURSOR_CLEAR" then
@@ -239,6 +261,10 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.petID = petID;
 			loadoutPlate.speciesID = speciesID;
 			loadoutPlate.helpFrame:Hide();
+
+			loadoutPlate.xpBar:SetMinMaxValues(0, maxXp);
+			loadoutPlate.xpBar:SetValue(xp);
+			loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_VERBOSE, xp, maxXp);
 			
 			PetJournal_UpdatePetAbility(loadoutPlate.spell1, ability1ID, petID, speciesID);
 			PetJournal_UpdatePetAbility(loadoutPlate.spell2, ability2ID, petID, speciesID);
@@ -412,7 +438,10 @@ function PetJournal_UpdatePetCard(self)
 		self.level:SetText(level);
 		self.level:Show();
 		self.levelBG:Show();
-		self.xpbar:Show();
+		self.xpBar:Show();
+		self.xpBar:SetMinMaxValues(0, maxXp);
+		self.xpBar:SetValue(xp);
+		self.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_VERBOSE, xp, maxXp);
 		
 		--Stats
 		self.statsFrame:Show();
@@ -426,7 +455,7 @@ function PetJournal_UpdatePetCard(self)
 		name, icon, petType, creatureID = C_PetJournal.GetPetInfoBySpeciesID(PetJournal.pcSpeciesID);
 		self.level:Hide();
 		self.levelBG:Hide();
-		self.xpbar:Hide();
+		self.xpBar:Hide();
 		self.statsFrame:Hide();
 	end
 	
@@ -597,6 +626,12 @@ function PetOptionsMenu_Init(self, level)
 	info.text = BATTLE_PET_RELEASE;
 	info.func = nil
 	UIDropDownMenu_AddButton(info, level)
+
+	if(PetJournal.menuPetID and C_PetJournal.PetIsTradable(PetJournal.menuPetID)) then
+		info.text = BATTLE_PET_PUT_IN_CAGE;
+		info.func =  	function() StaticPopup_Show("BATTLE_PET_PUT_IN_CAGE"); end 
+		UIDropDownMenu_AddButton(info, level)
+	end
 	
 	info.text = CANCEL
 	UIDropDownMenu_AddButton(info, level)

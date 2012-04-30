@@ -2173,9 +2173,9 @@ function WarGameStartButton_GetErrorTooltip()
 		if ( not UnitIsGroupLeader("player") ) then
 			return WARGAME_REQ_LEADER;
 		end	
-		if ( not UnitIsGroupLeader("target") or UnitIsUnit("player", "target") ) then
-			return WARGAME_REQ_TARGET;
-		end
+		--if ( not UnitIsGroupLeader("target") or UnitIsUnit("player", "target") ) then
+		--	return WARGAME_REQ_TARGET;
+		--end
 		local groupSize = GetNumGroupMembers();
 		-- how about a nice game of arena?
 		if ( pvpType == INSTANCE_TYPE_ARENA ) then

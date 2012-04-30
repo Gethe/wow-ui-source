@@ -1399,21 +1399,10 @@ function WatchFrame_GetCurrentMapQuests()
 end
 
 function WatchFrameQuestPOI_OnClick(self, button)
-	if ( button == "RightButton" ) then	
-		WORLDMAP_SETTINGS.selectedQuestId = self.questId;
-		QuestPOI_SelectButtonByQuestId("WatchFrameLines", self.questId, true);
-		SetSuperTrackedQuestID(self.questId);
-		PlaySound("igMainMenuOptionCheckBoxOn");
-	else
-		if ( WorldMapFrame:IsShown() ) then
-			if ( WORLDMAP_SETTINGS.selectedQuestId == self.questId ) then
-				HideUIPanel(WorldMapFrame);
-				return;
-			end
-			PlaySound("igMainMenuOptionCheckBoxOn");
-		end
-		WorldMap_OpenToQuest(self.questId);
-	end
+	WORLDMAP_SETTINGS.selectedQuestId = self.questId;
+	QuestPOI_SelectButtonByQuestId("WatchFrameLines", self.questId, true);
+	SetSuperTrackedQuestID(self.questId);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function WatchFrame_SetWidth(width)

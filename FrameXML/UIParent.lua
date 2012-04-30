@@ -159,6 +159,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
 	self:RegisterEvent("DUEL_INBOUNDS");
 	self:RegisterEvent("DUEL_FINISHED");
+	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED");
+	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUEST_CANCEL");
 	self:RegisterEvent("TRADE_REQUEST_CANCEL");
 	self:RegisterEvent("CONFIRM_XP_LOSS");
 	self:RegisterEvent("CORPSE_IN_RANGE");
@@ -839,6 +841,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DUEL_FINISHED" ) then
 		StaticPopup_Hide("DUEL_REQUESTED");
 		StaticPopup_Hide("DUEL_OUTOFBOUNDS");
+	elseif ( event == "PET_BATTLE_PVP_DUEL_REQUESTED" ) then
+		StaticPopup_Show("PET_BATTLE_PVP_DUEL_REQUESTED", arg1);
+	elseif ( event == "PET_BATTLE_PVP_DUEL_REQUEST_CANCEL" ) then
+		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED");
 	elseif ( event == "TRADE_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("TRADE");
 	elseif ( event == "CONFIRM_XP_LOSS" ) then
@@ -947,14 +953,19 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "MISSING_OUT_ON_LOOT" ) then
 		MissingLootFrame_Show();
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
-		local spellID = arg1;
-		local type = arg2;
-		local text = arg3;
-		local duration = arg4;
-		StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
+		local spellID, confirmType, text, duration = ...;
+		if ( confirmType == CONFIRMATION_PROMPT_BONUS_ROLL ) then
+			BonusRollFrame_StartBonusRoll(spellID, text, duration);
+		else
+			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
+		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
-		local spellID = arg1;
-		StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
+		local spellID, confirmType = ...;
+		if ( confirmType == CONFIRMATION_PROMPT_BONUS_ROLL ) then
+			BonusRollFrame_CloseBonusRoll();
+		else
+			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
+		end
 	elseif ( event == "CONFIRM_DISENCHANT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
@@ -1263,7 +1274,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiBarBottomLeft"] = {baseY = 17, reputation = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
 	["MultiBarRight"] = {baseY = 98, reputation = 1, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT"};
 	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, bonusActionBar = 1, reputation = 1};
-	["GroupLootFrame1"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
+	["GroupLootContainer"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
 	["MissingLootFrame"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, bonusActionBar = 1, pet = 1, reputation = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, bonusActionBar = 1, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, bonusActionBar = 1, pet = 1, reputation = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
@@ -3352,7 +3363,7 @@ function CanGroupInvite()
 end
 
 function InviteToGroup(name)
-	if ( not IsInRaid() and GetNumGroupMembers() >= MAX_PARTY_MEMBERS) then
+	if ( not IsInRaid() and GetNumGroupMembers() > MAX_PARTY_MEMBERS) then
 		local dialog = StaticPopup_Show("CONVERT_TO_RAID");
 		if ( dialog ) then
 			dialog.data = UnitName(name);
@@ -4013,9 +4024,22 @@ function SetChallengeModeMedalTexture(icon, medal, size, leftOffset, yOffset)
 	end
 end
 
-function GetTimeStringFromSeconds(seconds)
+function GetTimeStringFromSeconds(timeAmount, hasMS)
+	local seconds, ms;
+	-- milliseconds
+	if ( hasMS ) then
+		seconds = floor(timeAmount / 1000);
+		ms = timeAmount - seconds * 1000;
+	else
+		seconds = timeAmount;
+	end
+
 	local hours = floor(seconds / 3600);
 	local minutes = floor((seconds / 60) - (hours * 60));
 	seconds = seconds - hours * 3600 - minutes * 60;
-	return format("%.2d:%.2d:%.2d", hours, minutes, seconds);
+	if ( hasMS ) then
+		return format("%.2d:%.2d:%.2d.%.3d", hours, minutes, seconds, ms);
+	else
+		return format("%.2d:%.2d:%.2d", hours, minutes, seconds);
+	end
 end

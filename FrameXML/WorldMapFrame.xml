@@ -460,7 +460,28 @@
 					<OnUpdate function="ArchaeologyDigSiteFrame_OnUpdate"/>
 				</Scripts>
 			</ArchaeologyDigSiteFrame>
-			<Button name="WorldMapButton">
+      <ScenarioPOIFrame name="ScenarioPOIFrame">
+        <Size x="1002" y="668"/>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="WorldMapBlobFrameTexture" setAllPoints="true" />
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self:SetFillAlpha(128);
+            self:SetFillTexture("Interface\\WorldMap\\UI-ArchaeologyBlob-Inside");
+            self:SetBorderTexture("Interface\\WorldMap\\UI-ArchaeologyBlob-Outside");
+            self:EnableSmoothing(true);
+            --self:SetNumSplinePoints(30);
+            self:SetBorderScalar(0.5);
+          </OnLoad>
+        </Scripts>
+      </ScenarioPOIFrame>
+      <Button name="WorldMapButton">
 				<Size x="1002" y="668"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
@@ -536,6 +557,8 @@
 					<Frame name="WorldMapRaid40" inherits="WorldMapRaidUnitTemplate" id="40"/>
 					<Frame name="WorldMapFlag1" inherits="WorldMapFlagTemplate" id="1"/>
 					<Frame name="WorldMapFlag2" inherits="WorldMapFlagTemplate" id="2"/>
+					<Frame name="WorldMapFlag3" inherits="WorldMapFlagTemplate" id="3"/>
+					<Frame name="WorldMapFlag4" inherits="WorldMapFlagTemplate" id="4"/>
 					<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate"/>
 					<Frame name="WorldMapDeathRelease" inherits="WorldMapCorpseTemplate">
 						<Scripts>

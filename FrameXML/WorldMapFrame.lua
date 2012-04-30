@@ -83,7 +83,6 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
 	self:RegisterEvent("CLOSE_WORLD_MAP");
-	self:RegisterEvent("WORLD_MAP_NAME_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
@@ -239,8 +238,6 @@ function WorldMapFrame_OnEvent(self, event, ...)
 end
 
 function WorldMapFrame_OnUpdate(self)
-	RequestBattlefieldPositions();
-
 	local nextBattleTime = GetOutdoorPVPWaitTime();
 	if ( nextBattleTime and not IsInInstance()) then
 		local battleSec = mod(nextBattleTime, 60);
@@ -1053,22 +1050,6 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			end
 		end
 	end
-	-- Position Team Members
-	local numTeamMembers = GetNumBattlefieldPositions();
-	for i=playerCount+1, MAX_RAID_MEMBERS do
-		local partyX, partyY, name = GetBattlefieldPosition(i - playerCount);
-		local partyMemberFrame = _G["WorldMapRaid"..i];
-		if ( partyX == 0 and partyY == 0 ) then
-			partyMemberFrame:Hide();
-		else
-			partyX = partyX * WorldMapDetailFrame:GetWidth();
-			partyY = -partyY * WorldMapDetailFrame:GetHeight();
-			partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
-			partyMemberFrame.name = name;
-			partyMemberFrame.unit = nil;
-			partyMemberFrame:Show();
-		end
-	end
 
 	-- Position flags
 	local numFlags = GetNumBattlefieldFlagPositions();
@@ -1744,6 +1725,8 @@ function WorldMapFrame_UpdateMap(questId)
 end
 
 function ArchaeologyDigSiteFrame_OnUpdate()
+	ScenarioPOIFrame:DrawNone();
+	ScenarioPOIFrame:DrawAll();
 	WorldMapArchaeologyDigSites:DrawNone();
 	local numEntries = ArchaeologyMapUpdateAll();
 	for i = 1, numEntries do

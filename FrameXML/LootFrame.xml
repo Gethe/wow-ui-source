@@ -167,53 +167,174 @@
 			<OnLoad function="GroupLootDropDown_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="GroupLootFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
-		<Size x="253" y="84"/>
+	<Frame name="BonusRollFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="286" y="76"/>	
 		<Layers>
+			<Layer level="BACKGROUND">
+				<!--BonusRoll-Toast-->
+				<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
+					<TexCoords left="0.28222656" right="0.56152344" top="0.00390625" bottom="0.30078125"/>	
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
-					<Size x="64" y="64"/>
+				<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Dice_02">
+					<Size x="36" y="36"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="14" y="-15"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
-					<Size x="128" y="64"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-9" y="-10"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
-					<Size x="90" y="30"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="5"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentDecoration" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" hidden="true">
-					<Size x="120" y="120"/>
+				<!--ItemBorder-Gold-->
+				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-30" y="15"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
-				</Texture>
-				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
-					</Anchors>
+					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>	
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentIconFrame" enableMouse="true">
-				<Size x="34" y="34"/>
+			<Frame parentKey="InfoFrame">
+				<Size x="135" y="38"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" justifyH="LEFT" text="BONUS_LOOT_LABEL">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Cost" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="LEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" x="15" y="-15"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="60" y="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="CurrentCountFrame">
+				<Size x="82" y="18"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentIcon">
+						<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="RIGHT" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyByID(BONUS_ROLL_REQUIRED_CURRENCY);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<StatusBar parentKey="Timer" drawLayer="ARTWORK" minValue="0" maxValue="60000" defaultValue="0">
+				<Size x="190" y="9"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="6" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" setAllPoints="true">
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture parentKey="Bar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarColor r="1.0" g="1.0" b="0" />
+			</StatusBar>
+			<Button parentKey="RollButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-48" y="-16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AcceptSpellConfirmationPrompt(self:GetParent().spellID);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
+			</Button>
+			<Button parentKey="PassButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RollButton" relativePoint="RIGHT" x="5" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						DeclineSpellConfirmationPrompt(self:GetParent().spellID);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Pass-Down"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BonusRollFrame_OnLoad"/>
+			<OnEvent function="BonusRollFrame_OnEvent"/>
+			<OnShow function="BonusRollFrame_OnShow"/>
+			<OnUpdate function="BonusRollFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	<Frame name="GroupLootFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="277" y="67"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!--LootFrame-Background-->
+				<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
+					<TexCoords left="0.28222656" right="0.55273438" top="0.30859375" bottom="0.57031250"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" file="Interface\LootFrame\LootToast">
+					<Size x="286" y="76"/>	
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.28027344" top="0.43750000" bottom="0.73437500"/>	
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" text="Item Name" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="125" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="60" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="IconFrame" enableMouse="true">
+				<Size x="34" y="34"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="10" y="-13"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
 							<Size x="34" y="34"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
@@ -221,11 +342,17 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+						<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 							</Anchors>
 						</FontString>
+						<Texture parentKey="Border" file="Interface\LootFrame\LootToast">
+							<Size x="42" y="42"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -253,26 +380,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentPassButton" inherits="UIPanelCloseButton" parentKey="passButton">
+			<Button parentKey="NeedButton" inherits="LootRollButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT" x="5" y="5"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						RollOnLoot(self:GetParent().rollID, 0);
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(PASS);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Button>
-			<Button name="$parentRollButton" inherits="LootRollButtonTemplate" parentKey="needButton" id="1">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-48" y="-14"/>
+					<Anchor point="TOPRIGHT" x="-43" y="-6"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -284,9 +394,23 @@
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
 			</Button>
-			<Button name="$parentGreedButton" inherits="LootRollButtonTemplate" parentKey="greedButton" id="2">
+			<Button parentKey="PassButton" inherits="LootRollButtonTemplate" id="0">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentRollButton" relativePoint="BOTTOM" x="-2" y="2"/>
+					<Anchor point="LEFT" relativeKey="$parent.NeedButton" relativePoint="RIGHT" x="5" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.tooltipText=PASS;
+						self.newbieText=LOOT_PASS_NEWBIE;
+					</OnLoad>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Pass-Down"/>
+			</Button>
+			<Button parentKey="GreedButton" inherits="LootRollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.NeedButton" relativePoint="BOTTOM" x="-2" y="1"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -298,9 +422,9 @@
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Coin-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Coin-Down"/>
 			</Button>
-			<Button name="$parentDisenchantButton" inherits="LootRollButtonTemplate" parentKey="disenchantButton" id="3">
+			<Button parentKey="DisenchantButton" inherits="LootRollButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentGreedButton" relativePoint="RIGHT" x="3" y="3"/>
+					<Anchor point="LEFT" relativeKey="$parent.GreedButton" relativePoint="RIGHT" x="5" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -312,18 +436,15 @@
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-DE-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>
 			</Button>
-			<StatusBar name="$parentTimer" drawLayer="BACKGROUND" minValue="0" maxValue="60000" defaultValue="0">
-				<Size x="152" y="10"/>
+			<StatusBar parentKey="Timer" drawLayer="ARTWORK" minValue="0" maxValue="60000" defaultValue="0">
+				<Size x="190" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" relativePoint="BOTTOMLEFT" x="13" y="10"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="3" y="2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="156" y="20"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="5"/>
-							</Anchors>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" setAllPoints="true">
+							<Color r="0" g="0" b="0"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -332,21 +453,10 @@
 						GroupLootFrame_OnUpdate(self, elapsed);
 					</OnUpdate>
 				</Scripts>
-				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarTexture parentKey="Bar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="1.0" g="1.0" b="0" />
 			</StatusBar>
 		</Frames>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("CANCEL_LOOT_ROLL");
@@ -358,26 +468,20 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="GroupLootFrame1" inherits="GroupLootFrameTemplate" id="1">
+	<Frame name="GroupLootContainer" parent="UIParent" hidden="true">
+		<Size x="256" y="1"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="60"/>
 		</Anchors>
+		<Scripts>
+			<OnLoad function="GroupLootContainer_OnLoad"/>
+		</Scripts>
 	</Frame>
-	<Frame name="GroupLootFrame2" inherits="GroupLootFrameTemplate" id="2">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GroupLootFrame1" relativePoint="TOP" x="0" y="15"/>
-		</Anchors>
-	</Frame>
-	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GroupLootFrame2" relativePoint="TOP" x="0" y="15"/>
-		</Anchors>
-	</Frame>
-	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GroupLootFrame3" relativePoint="TOP" x="0" y="15"/>
-		</Anchors>
-	</Frame>
+	<Frame name="GroupLootFrame1" inherits="GroupLootFrameTemplate" id="1"/>
+	<Frame name="GroupLootFrame2" inherits="GroupLootFrameTemplate" id="2"/>
+	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3"/>
+	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4"/>
+	<Frame name="BonusRollFrame" inherits="BonusRollFrameTemplate"/>
 
 	<Button name="MissingLootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">	
 		<Layers>

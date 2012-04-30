@@ -262,6 +262,9 @@ function SpellBookFrame_Update()
 	if(tabUpdate) then
 		tabUpdate()
 	end
+
+	SpellBookPage1:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
+	SpellBookPage2:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
 end
 
 function SpellBookFrame_UpdateSpells ()
@@ -404,20 +407,24 @@ function SpellButton_OnEnter(self)
 	end
 end
 
-function SpellButton_OnClick(self, button) 
+function SpellButton_OnClick(self, button)
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
 		return;
 	end
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
-		ToggleSpellAutocast(slot, SpellBookFrame.bookType);
+		if ( not self.isOffSpec ) then
+			ToggleSpellAutocast(slot, SpellBookFrame.bookType);
+		end
 	else
 		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 		if (slotType == "FLYOUT") then
-			SpellFlyout:Toggle(id, self, "RIGHT", 1);
+			SpellFlyout:Toggle(id, self, "RIGHT", 1, false, self.isOffSpec);
 			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
 		else
-			CastSpell(slot, SpellBookFrame.bookType);
+			if ( not self.isOffSpec ) then
+				CastSpell(slot, SpellBookFrame.bookType);
+			end
 		end
 		SpellButton_UpdateSelection(self);
 	end
@@ -496,9 +503,10 @@ function SpellButton_UpdateButton(self)
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 1;
 	end
-	local temp, texture, offset, numSlots = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
+	local temp, texture, offset, numSlots, isGuild, isOffSpec = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
 	SpellBookFrame.selectedSkillLineOffset = offset;
+	self.isOffSpec = isOffSpec;
 	
 	if (not self.SpellName.shadowX) then
 		self.SpellName.shadowX, self.SpellName.shadowY = self.SpellName:GetShadowOffset();
@@ -537,6 +545,11 @@ function SpellButton_UpdateButton(self)
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
 		self.FlyoutArrow:Hide();
+		if (isOffSpec) then
+			self.TextBackground:SetDesaturated(isOffSpec);
+			self.TextBackground2:SetDesaturated(isOffSpec);
+			self.EmptySlot:SetDesaturated(isOffSpec);
+		end
 		return;
 	else
 		self:Enable();
@@ -596,25 +609,8 @@ function SpellButton_UpdateButton(self)
 
 	local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType);
-	if ( isPassive ) then
-		highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
-		spellString:SetTextColor(PASSIVE_SPELL_FONT_COLOR.r, PASSIVE_SPELL_FONT_COLOR.g, PASSIVE_SPELL_FONT_COLOR.b);
-	else
-		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
-		spellString:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	end
-	iconTexture:SetTexture(texture);
-	spellString:SetText(spellName);
-	subSpellString:SetText(subSpellName);
+	self.isPassive = isPassive;
 
-	-- If there is no spell sub-name, move the bottom row of text up
-	if ( subSpellName == "" ) then
-		self.SpellSubName:SetHeight(6);
-	else
-		self.SpellSubName:SetHeight(0);
-	end
-
-	iconTexture:Show();
 	if (not (slotType == "FUTURESPELL")) then
 		slotFrame:Show();
 		self.UnlearnedFrame:Hide();
@@ -629,6 +625,7 @@ function SpellButton_UpdateButton(self)
 		self.SpellName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
 		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 4);
+		self.SpellSubName:SetTextColor(0, 0, 0);
 
 		-- For spells that are on cooldown.  This must be done here because otherwise "SetDesaturated(0)" above will override this on low-end video cards.
 		--local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
@@ -652,6 +649,7 @@ function SpellButton_UpdateButton(self)
 			self.TrainTextBackground:Hide();
 			self.TrainBook:Hide();
 			self.SpellName:SetTextColor(0.25, 0.12, 0);
+			self.SpellSubName:SetTextColor(0.25, 0.12, 0);
 			self.SpellName:SetShadowOffset(0, 0);
 			self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 6);
 		else
@@ -664,6 +662,7 @@ function SpellButton_UpdateButton(self)
 			self.SpellName:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
 			self.SpellName:SetPoint("LEFT", self, "RIGHT", 24, 8);
+			self.SpellSubName:SetTextColor(0, 0, 0);
 		end
 	end
 	
@@ -674,9 +673,57 @@ function SpellButton_UpdateButton(self)
 		self.FlyoutArrow:Hide();
 	end
 	
+	local specName, className = IsSpellClassOrSpec(slot, SpellBookFrame.bookType);
+	if ( subSpellName == "" ) then
+		if ( specName ) then
+			subSpellName = specName;
+--		elseif ( className ) then
+--			subSpellName = className;
+		elseif ( isPassive ) then
+			subSpellName = SPELL_PASSIVE;
+		end
+	end			
+
+	if ( isPassive ) then
+		highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
+--		spellString:SetTextColor(PASSIVE_SPELL_FONT_COLOR.r, PASSIVE_SPELL_FONT_COLOR.g, PASSIVE_SPELL_FONT_COLOR.b);
+		slotFrame:Hide();
+		self.UnlearnedFrame:Hide();
+	else
+		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
+--		spellString:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+
+	-- If there is no spell sub-name, move the bottom row of text up
+	if ( subSpellName == "" ) then
+		self.SpellSubName:SetHeight(6);
+	else
+		self.SpellSubName:SetHeight(0);
+	end
+
+	iconTexture:SetTexture(texture);
+	spellString:SetText(spellName);
+	subSpellString:SetText(subSpellName);
+	iconTexture:Show();
 	spellString:Show();
 	subSpellString:Show();
-	SpellButton_UpdateSelection(self);
+	
+	-- set all the desaturated offspec pages
+	slotFrame:SetDesaturated(isOffSpec);
+	self.TextBackground:SetDesaturated(isOffSpec);
+	self.TextBackground2:SetDesaturated(isOffSpec);
+	self.EmptySlot:SetDesaturated(isOffSpec);
+	self.FlyoutArrow:SetDesaturated(isOffSpec);
+	if (isOffSpec) then
+		iconTexture:SetDesaturated(isOffSpec);
+		self.SpellName:SetTextColor(0.75, 0.75, 0.75);
+		autoCastableTexture:Hide();
+		SpellBook_ReleaseAutoCastShine(self.shine);
+		self.shine = nil;
+		self:SetChecked("false");
+	else
+		SpellButton_UpdateSelection(self);
+	end
 end
 
 function SpellBookPrevPageButton_OnClick()
@@ -1097,15 +1144,18 @@ function SpellBookFrame_UpdateSkillLineTabs()
 		local skillLineTab = _G["SpellBookSkillLineTab"..i];
 		local prevTab = _G["SpellBookSkillLineTab"..i-1];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			local name, texture, _, _, isGuild = GetSpellTabInfo(i);
+			local name, texture, _, _, isGuild, isOffSpec = GetSpellTabInfo(i);
 			skillLineTab:SetNormalTexture(texture);
 			skillLineTab.tooltip = name;
 			skillLineTab:Show();
+			skillLineTab.isOffSpec = isOffSpec;
 			
 			-- Guild tab gets additional space
 			if (prevTab) then
 				if (isGuild) then
 					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -46);
+				elseif (isOffSpec and not prevTab.isOffSpec) then
+					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -33);
 				else
 					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -17);
 				end

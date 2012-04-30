@@ -125,6 +125,11 @@
 					<Anchor point="LEFT" relativeTo="$parentLightEnergy3" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</Frame>
+			<Frame name="$parentLightEnergy5" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy5" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLightEnergy4" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="MonkHarmonyBar_OnLoad"/>

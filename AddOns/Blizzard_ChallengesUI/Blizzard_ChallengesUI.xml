@@ -1,0 +1,394 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ChallengesUI.lua"/>
+
+	<Button name="ChallengesDungeonButtonTemplate" virtual="true">
+		<Size x="208" y="32"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="selectedTex" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+					</Anchors>
+					<Color r="1" g="0.824" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="medal">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="LEFT" x="7" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="text" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="151" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="45" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="2" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+			</Anchors>
+			<Color r="0.243" g="0.570" b="1"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				self.text:SetFontObject("GameFontHighlight");
+			</OnEnter>
+			<OnLeave>
+				if ( not self.selectedTex:IsShown() ) then
+					self.text:SetFontObject("GameFontNormal");
+				end
+			</OnLeave>
+			<OnMouseDown>
+				self.text:SetPoint("LEFT", 46, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.text:SetPoint("LEFT", 45, 0);
+			</OnMouseUp>
+			<OnClick function="ChallengesFrameDungeonButton_OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="ChallengesItemRewardTemplate" inherits="LargeItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				if ( self.isCurrency ) then
+					GameTooltip:SetCurrencyByID(self.itemID);
+				else
+					GameTooltip:SetItemByID(self.itemID);
+				end
+				CursorUpdate(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnClick>
+				if ( self.isCurrency ) then
+					HandleModifiedItemClick(GetCurrencyLink(self.itemID));
+				else
+					local _, link = GetItemInfo(self.itemID);
+					HandleModifiedItemClick(link);
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="ChallengeRewardRowTemplate" virtual="true">
+		<Size x="147" y="41"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="medalIcon">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItemButton1" inherits="ChallengesItemRewardTemplate" parentKey="item1">
+				<Anchors>
+					<Anchor point="LEFT" x="35" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItemButton2" inherits="ChallengesItemRewardTemplate" parentKey="item2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentItemButton1" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<Frame name="ChallengesFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
+		<Frames>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Size x="342" y="402"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-22" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDetails" parentKey="details">
+				<Size x="339" y="402"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-22" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Challenges\challenges-tempdungeonbg" parentKey="bg">
+							<Size x="560" y="560"/>
+							<Anchors>
+								<Anchor point="TOP" x="112" y="-4" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString inherits="QuestFont_Shadow_Huge" parentKey="mapName">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="8" y="-14" />
+							</Anchors>
+							<Color r="1" g="0.82" b="0" />
+							<Shadow>
+								<Color r="0" g="0" b="0" />
+							</Shadow>
+						</FontString>
+						<FontString name="$parentRanking" inherits="QuestFont_Shadow_Small" text="RANKING">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-20" y="-60" />
+							</Anchors>
+							<Color r="1" g="0.82" b="0" />
+							<Shadow>
+								<Color r="0" g="0" b="0" />
+							</Shadow>
+						</FontString>
+						<Texture name="$parentGoldMedal" file="Interface\Challenges\challenges-gold" parentKey="medal3">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parentRanking" relativePoint="BOTTOMRIGHT" x="3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentSilverMedal" file="Interface\Challenges\challenges-silver" parentKey="medal2">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentGoldMedal" relativePoint="BOTTOM" x="0" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentCopperMedal" file="Interface\Challenges\challenges-copper" parentKey="medal1">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentSilverMedal" relativePoint="BOTTOM" x="0" y="-2"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentGoldTime" inherits="GameFontHighlight" parentKey="time3">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentGoldMedal" relativePoint="LEFT" x="-5" y="1"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentSilverTime" inherits="GameFontHighlight" parentKey="time2">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentSilverMedal" relativePoint="LEFT" x="-5" y="1"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentCopperTime" inherits="GameFontHighlight" parentKey="time1">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentCopperMedal" relativePoint="LEFT" x="-5" y="1"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentBestMedal" file="Interface\Challenges\challenges-silver" parentKey="bestMedal">
+							<Size x="140" y="140"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-24"/>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontNormalMed3" text="CHALLENGES_NO_MEDAL" parentKey="noMedal">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentBestMedal"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentLine1">
+							<Size x="339" y="1"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-2" y="0"/>
+								<Anchor point="TOP" relativeTo="$parentCopperMedal" relativePoint="BOTTOM" x="0" y="-18"/>
+							</Anchors>
+							<Color r="0.74" g="0.52" b="0.06"/>
+						</Texture>
+						<Texture name="$parentLine2">
+							<Size x="339" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentLine1" relativePoint="BOTTOM" x="0" y="-59"/>
+							</Anchors>
+							<Color r="0.74" g="0.52" b="0.06"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture file="Interface\Common\bluemenu-shadowcovers">		<!-- shadow -->
+							<Size x="84" y="324"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-4" y="-39" />
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.66406250" top="0.35156250" bottom="0.70019531"/>
+						</Texture>
+						<Texture file="Interface\Common\bluemenu-vert" vertTile="true">		<!-- gold line -->
+							<Size x="5" y="403"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="1" y="0" />
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.04687500" top="0" bottom="1"/>
+						</Texture>
+						<Texture file="Interface\Challenges\challenges-main">	<!-- black fade for self times -->
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLine1" relativePoint="BOTTOMLEFT" x="1" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentLine2" relativePoint="TOPRIGHT" x="-2" y="1"/>
+							</Anchors>
+							<TexCoords left="0.00097656" right="0.32617188" top="0.34960938" bottom="0.46875000"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<FontString name="$parentRecordTimeLabel" inherits="GameFontNormalHuge" text="CHALLENGES_RECORD_TIME">
+							<Anchors>
+								<Anchor point="LEFT" x="158" y="0"/>
+								<Anchor point="TOP" relativeTo="$parentLine1" relativePoint="BOTTOM" x="0" y="-12"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightMedium" text="CHALLENGES_LASTRUN_TIME">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentRecordTimeLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentRecordTime" inherits="GameFontNormalHuge" text="00:00:00" parentKey="recordTime">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentLine1" relativePoint="BOTTOM" x="-78" y="-12"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightMedium" text="00:00:00" parentKey="lastRunTime">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentRecordTime" relativePoint="BOTTOM" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentRewardsLabel" inherits="QuestFont_Shadow_Huge" text="REWARDS">
+							<Anchors>
+								<Anchor point="LEFT" x="7" y="0"/>
+								<Anchor point="TOP" relativeTo="$parentLine2" relativePoint="BOTTOM" x="0" y="-9"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" />
+							<Shadow>
+								<Color r="0" g="0" b="0" />
+							</Shadow>
+						</FontString>
+						<Texture name="$parentRewardMedal1" parentKey="rewardMedal1">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="-254"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRewardMedal2" parentKey="rewardMedal2">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentRewardMedal1" relativePoint="BOTTOM" x="0" y="-16"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRewardMedal3" parentKey="rewardMedal3">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentRewardMedal2" relativePoint="BOTTOM" x="0" y="-16"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentDungeonButton1" inherits="ChallengesDungeonButtonTemplate" parentKey="button1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-64"/>
+				</Anchors>
+			</Button>
+			<Frame name="$parentRewardRow1" inherits="ChallengeRewardRowTemplate" parentKey="rewardRow1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDetails" x="1" y="-252"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRewardRow2" inherits="ChallengeRewardRowTemplate" parentKey="rewardRow2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow1" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Common\UI-TooltipDivider" alpha="0.5">
+							<Size x="326" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="4" y="10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentRewardRow3" inherits="ChallengeRewardRowTemplate" parentKey="rewardRow3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow2" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Common\UI-TooltipDivider" alpha="0.5">
+							<Size x="326" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="4" y="10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button inherits="UIGoldBorderButtonTemplate" text="LEADERBOARD" hidden="true">
+				<Size x="105" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-13" y="-32"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevel"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ChallengesFrame_OnLoad"/>
+			<OnShow	function="ChallengesFrame_OnShow"/>
+			<OnEvent function="ChallengesFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ChallengesLeaderboardFrame" inherits="TranslucentFrameTemplate" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="338" y="444"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+ 		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentTopBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-12"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-12" y="-55"/>
+					</Anchors>
+				</Texture>
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-62"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" >
+				<FontString name="$parentTitle" text="GUILDCONTROL" font="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-28"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentHbar" inherits="HorizontalBarTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOP"  relativeTo="$parentTopBg" relativePoint="BOTTOM" x="0" y="1"/>
+					<Anchor point="LEFT"  x="8" y="0"/>
+					<Anchor point="RIGHT"  x="-8" y="0"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset x="-7" y="-7"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

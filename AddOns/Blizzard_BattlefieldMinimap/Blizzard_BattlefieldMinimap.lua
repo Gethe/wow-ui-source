@@ -360,22 +360,6 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				end
 			end
 		end
-		-- Position Team Members
-		local numTeamMembers = GetNumBattlefieldPositions();
-		for i=playerCount+1, MAX_RAID_MEMBERS do
-			local partyX, partyY, name = GetBattlefieldPosition(i - playerCount);
-			local partyMemberFrame = _G["BattlefieldMinimapRaid"..i];
-			if ( partyX == 0 and partyY == 0 ) then
-				partyMemberFrame:Hide();
-			else
-				partyX = partyX * BattlefieldMinimap:GetWidth();
-				partyY = -partyY * BattlefieldMinimap:GetHeight();
-				partyMemberFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", partyX, partyY);
-				partyMemberFrame.name = name;
-				partyMemberFrame.unit = nil;
-				partyMemberFrame:Show();
-			end
-		end
 
 		-- Position flags
 		local numFlags = GetNumBattlefieldFlagPositions();

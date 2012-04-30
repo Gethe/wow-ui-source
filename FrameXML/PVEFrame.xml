@@ -220,7 +220,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="211" y="3" />
 							</Anchors>
-							<TexCoords left="0.00781250" right="0.04687500" top="0.00000000" bottom="1.00000000"/>
+							<TexCoords left="0.00781250" right="0.04687500" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 				</Layers>

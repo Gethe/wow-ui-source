@@ -76,6 +76,7 @@ ChatTypeInfo["RAID_LEADER"]								= { sticky = 0, flashTab = false, flashTabOnG
 ChatTypeInfo["RAID_WARNING"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["QUEST_BOSS_EMOTE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["FILTERED"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BATTLEGROUND"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BATTLEGROUND_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false };

@@ -636,7 +636,7 @@ function MiniMapInstanceDifficulty_Update()
 				end
 				allowedRaidDifficulty = "RAID_DIFFICULTY"..allowedRaidDifficulty;
 			end
-			if ( difficulty > 2 ) then
+			if ( difficulty == 5 or difficulty == 6 ) then  -- FIX ME REAL
 				isHeroic = true;
 			end
 		end

@@ -9,7 +9,6 @@ local panels = {
 function PVEFrame_OnLoad(self)
 	RaiseFrameLevel(self.shadows);
 	PanelTemplates_SetNumTabs(self, 2);
-	PanelTemplates_DisableTab(self, 2);
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)

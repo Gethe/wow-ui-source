@@ -1,7 +1,6 @@
 
 
 MONKHARMONYBAR_SHOW_LEVEL = 0;
-MONKHARMONYBAR_MAX_COUNT = 4;
 
 function MonkHarmonyBar_SetEnergy(self, active)
 	if ( active ) then
@@ -23,11 +22,29 @@ function MonkHarmonyBar_SetEnergy(self, active)
 	end
 end
 
-
 function MonkHarmonyBar_Update(self)
 	local light = UnitPower( MonkHarmonyBar:GetParent().unit, SPELL_POWER_LIGHT_FORCE );
 
-	for i=1,MONKHARMONYBAR_MAX_COUNT do
+	-- if max light changed, show/hide the 5th and update anchors 
+	local maxLight = UnitPowerMax( MonkHarmonyBar:GetParent().unit, SPELL_POWER_LIGHT_FORCE );
+	if ( self.maxLight ~= maxLight ) then
+		if ( maxLight == 4 ) then
+			self.lightEnergy1:SetPoint("LEFT", -44, -1);
+			self.lightEnergy2:SetPoint("LEFT", self.lightEnergy1, "RIGHT", 6, 0);
+			self.lightEnergy3:SetPoint("LEFT", self.lightEnergy2, "RIGHT", 6, 0);
+			self.lightEnergy4:SetPoint("LEFT", self.lightEnergy3, "RIGHT", 6, 0);
+			self.lightEnergy5:Hide();
+		else
+			self.lightEnergy1:SetPoint("LEFT", -46, -1);
+			self.lightEnergy2:SetPoint("LEFT", self.lightEnergy1, "RIGHT", 1, 0);
+			self.lightEnergy3:SetPoint("LEFT", self.lightEnergy2, "RIGHT", 1, 0);
+			self.lightEnergy4:SetPoint("LEFT", self.lightEnergy3, "RIGHT", 1, 0);
+			self.lightEnergy5:Show();
+		end
+		self.maxLight = maxLight;
+	end
+	
+	for i = 1, self.maxLight do
 		MonkHarmonyBar_SetEnergy(self["lightEnergy"..i], i<=light);
 	end
 end
@@ -44,6 +61,7 @@ function MonkHarmonyBar_OnLoad (self)
 		self:RegisterEvent("PLAYER_LEVEL_UP");
 		self:SetAlpha(0);
 	end
+	self.maxLight = 4;
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");

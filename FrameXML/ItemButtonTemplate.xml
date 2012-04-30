@@ -108,7 +108,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIconTexture">
+				<Texture name="$parentIconTexture" parentKey="icon">
 					<Size>
 						<AbsDimension x="39" y="39"/>
 					</Size>
@@ -132,7 +132,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="name">
 					<Size>
 						<AbsDimension x="90" y="36"/>
 					</Size>
@@ -146,7 +146,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
 							<Offset>

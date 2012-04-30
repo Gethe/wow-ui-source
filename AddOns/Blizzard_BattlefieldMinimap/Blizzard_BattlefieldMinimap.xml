@@ -418,6 +418,16 @@
 				<AbsDimension x="18" y="18"/>
 			</Size>
 		</Frame>
+		<Frame name="BattlefieldMinimapFlag3" inherits="WorldMapFlagTemplate" id="3">
+			<Size>
+				<AbsDimension x="18" y="18"/>
+			</Size>
+		</Frame>
+		<Frame name="BattlefieldMinimapFlag4" inherits="WorldMapFlagTemplate" id="4">
+			<Size>
+				<AbsDimension x="18" y="18"/>
+			</Size>
+		</Frame>
 	</Frames>
 	<Scripts>
 		<OnLoad function="BattlefieldMinimap_OnLoad"/>

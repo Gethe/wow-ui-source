@@ -23,7 +23,6 @@
 				FCF_OnUpdate(elapsed);
 				ButtonPulse_OnUpdate(elapsed);
 				UnitPopup_OnUpdate(elapsed);
-				RequestBattlefieldPositions(elapsed);
 				AnimatedShine_OnUpdate(elapsed);
 				AutoCastShine_OnUpdate(nil, elapsed);
 				LFRBrowseFrame_OnUpdateAlways(elapsed);
