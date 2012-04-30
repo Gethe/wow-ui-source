@@ -202,12 +202,6 @@ TRAVEL PASS
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentSoRButton" inherits="ScrollOfResurrectionButtonTemplate" parentKey="soRButton">
-				<Size x="22" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentGameIcon" relativePoint="LEFT" x="-4" y="-1"/>
-				</Anchors>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -990,11 +984,16 @@ TRAVEL PASS
 							</OnUpdate>
 						</Scripts>
 					</Frame>
-					<Button name="$parentSoRButton" inherits="ScrollOfResurrectionButtonTemplate" parentKey="soRButton" hidden="true">
+					<Button name="$parentSoRButton" parentKey="soRButton" hidden="true">
 						<Size x="26" y="26"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentIcon" parentKey="icon"/>
+							</Layer>
+						</Layers>
 						<Scripts>
 							<OnLoad>
 								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
@@ -1005,6 +1004,18 @@ TRAVEL PASS
 									self:Hide();
 								end
 							</OnLoad>
+							<OnClick>
+								ScrollOfResurrectionButton_OnClick(self);
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(SEND_SCROLL_OF_RESURRECTION);
+								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, 1);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
 							<OnEvent>
 								if ( CanSendSoRByText() ) then
 									self:Show();
@@ -1013,6 +1024,8 @@ TRAVEL PASS
 								end
 							</OnEvent>
 						</Scripts>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
 					</Button>
 				</Frames>
 				<Scripts>

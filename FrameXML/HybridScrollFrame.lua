@@ -141,7 +141,7 @@ function HybridScrollFrame_SetOffset (self, offset)
 	local scrollHeight = 0;
 	
 	local largeButtonTop = self.largeButtonTop
-	if ( self.dynamic ) then
+	if ( self.dynamic ) then --This is for frames where buttons will have different heights
 		if ( offset < buttonHeight ) then
 			-- a little optimization
 			element = 0;

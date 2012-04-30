@@ -169,12 +169,6 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentSoRButton" inherits="ScrollOfResurrectionButtonTemplate" hidden="true" parentKey="soRButton">
-				<Size x="18" y="18"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>

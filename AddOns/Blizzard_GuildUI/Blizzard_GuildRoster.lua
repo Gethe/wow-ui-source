@@ -235,13 +235,6 @@ function GuildRoster_Update()
 		index = offset + i;
 		local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, canSoR = GetGuildRosterInfo(index);
 		
-		button.soRButton:Hide();
-		if ( canSoR ) then
-			button.soRButton.type = "guild";
-			button.soRButton.target = index;
-			button.soRButton.text = name;
-		end
-		
 		if ( name and index <= visibleMembers ) then
 			button.guildIndex = index;
 			local displayedName = name;
@@ -259,31 +252,17 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string1, level, online)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, displayedName, online, classFileName)
-				if ( canSoR ) then
-					button.soRButton:Show();
-					GuildRosterButton_SetStringText(button.string3, SOR_INACTIVE, false)
-				else
-					button.soRButton:Hide();
-					GuildRosterButton_SetStringText(button.string3, isMobile and REMOTE_CHAT or zone, online)
-					button.string3:Show();
-				end
+				GuildRosterButton_SetStringText(button.string3, isMobile and REMOTE_CHAT or zone, online)
 				
 			elseif ( currentGuildView == "guildStatus" ) then
 				GuildRosterButton_SetStringText(button.string1, displayedName, online, classFileName)
 				GuildRosterButton_SetStringText(button.string2, rank, online)
 				GuildRosterButton_SetStringText(button.string3, note, online)
 				
-				if ( canSoR ) then
-					button.soRButton:Show();
-					button.string4:Hide();
+				if ( online ) then
+					GuildRosterButton_SetStringText(button.string4, GUILD_ONLINE_LABEL, online);					
 				else
-					button.soRButton:Hide();
-					button.string4:Show();
-					if ( online ) then
-						GuildRosterButton_SetStringText(button.string4, GUILD_ONLINE_LABEL, online);					
-					else
-						GuildRosterButton_SetStringText(button.string4, GuildRoster_GetLastOnline(index), online);
-					end
+					GuildRosterButton_SetStringText(button.string4, GuildRoster_GetLastOnline(index), online);
 				end
 			elseif ( currentGuildView == "weeklyxp" ) then
 				local weeklyXP, totalXP, weeklyRank, totalRank = GetGuildRosterContribution(index);
@@ -403,7 +382,6 @@ function GuildRoster_UpdateTradeSkills()
 	
 	for i = 1, numButtons do
 		button = buttons[i];
-		button.soRButton:Hide();
 		index = offset + i;
 		if ( index <= numTradeSkill ) then
 			button.guildIndex = index;
@@ -507,8 +485,6 @@ function GuildRoster_SetView(view)
 	local stringOffset = 0;
 	local haveIcon, haveBar;
 	
-	local soROffset = 0;
-	local soRSide = "CENTER";
 	-- set up columns
 	for columnIndex = 1, GUILD_ROSTER_MAX_COLUMNS do
 		local columnButton = _G["GuildRosterColumnButton"..columnIndex];
@@ -530,13 +506,6 @@ function GuildRoster_SetView(view)
 				-- store string data for processing
 				columnData["stringOffset"] = stringOffset;
 				table.insert(stringsInfo, columnData);
-			end
-			if ( view == "playerStatus" and columnIndex == 4 ) then
-				soROffset = stringOffset + columnData.width - 5;
-				soRSide = "RIGHT";
-			elseif ( view == "guildStatus" and columnIndex == 4 ) then
-				soROffset = stringOffset + 5;
-				soRSide = "LEFT";
 			end
 			stringOffset = stringOffset + columnData.width - 2;
 			haveBar = haveBar or columnData.hasBar;
@@ -563,8 +532,6 @@ function GuildRoster_SetView(view)
 				fontString:Hide();
 			end
 		end
-		button.soRButton:ClearAllPoints();
-		button.soRButton:SetPoint(soRSide, button, "LEFT", soROffset, 0);
 		
 		if ( haveIcon ) then
 			button.icon:Show();

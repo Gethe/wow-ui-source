@@ -1340,7 +1340,6 @@ function FriendsFrame_UpdateFriends()
 				end
 				infoText = area;
 				button.gameIcon:Hide();
-				button.soRButton:Hide();
 				FriendsFrame_SummonButton_Update(button.summonButton);
 			elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 				local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(FriendButtons[index].id);
@@ -1407,14 +1406,6 @@ function FriendsFrame_UpdateFriends()
 					else
 						infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
 					end
-				end
-				if ( canSoR ) then
-					button.soRButton:Show();
-					button.soRButton.type = "bn";
-					button.soRButton.target = presenceID;
-					button.soRButton.text = nameText;
-				else
-					button.soRButton:Hide();
 				end
 				FriendsFrame_SummonButton_Update(button.summonButton);
 			else	-- header
