@@ -26,6 +26,7 @@ FRAMELOCK_STATES = {
 		PartyMemberFrame3	= "hidden",
 		PartyMemberFrame4	= "hidden",
 		ConsolidatedBuffs	= "hidden",
+		BuffFrame			= "hidden",
 	},
 };
 

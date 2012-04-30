@@ -582,8 +582,7 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "INVITE" ) then
 			if ( dropdownMenu.unit ) then
-				local _, server = UnitName(dropdownMenu.unit);
-				if ( canCoop == 0  or UnitIsUnit("player", dropdownMenu.unit) or (server and server ~= "") ) then
+				if ( canCoop == 0  or UnitIsUnit("player", dropdownMenu.unit) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
@@ -1208,7 +1207,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "INVITE" ) then
-						if ( (inParty == 1 and (isLeader == 0 and isAssistant == 0)) or currentDropDown.server ) then
+						if ( inParty == 1 and (isLeader == 0 and isAssistant == 0) ) then
 							enable = 0;
 						end
 					elseif ( value == "UNINVITE" ) then

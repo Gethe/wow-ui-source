@@ -16,25 +16,25 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentMaterialTopLeft">
-					<Size x="239" y="241"/>
+					<Size x="239" y="300"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialTopRight">
-					<Size x="64" y="241"/>
+					<Size x="64" y="300"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotLeft">
-					<Size x="239" y="128"/>
+					<Size x="239" y="138"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotRight">
-					<Size x="64" y="128"/>
+					<Size x="64" y="138"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>

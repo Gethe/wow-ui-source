@@ -4,11 +4,12 @@ abilityInfo should be defined with the following functions:
 {
 	:GetAbilityID()		- returns the ID of the ability
 	:GetCooldown()		- returns the current cooldown remaining on the ability (0 if this tooltip is not associated with a battle).
+	:GetRemainingDuration() - returns the remaining duration of an aura (0 if this is not an aura).
 	:IsInBattle()		- returns true if this tooltip is associated with a particular battle (and we can get the target's info)
 	:GetHealth(target)	- returns the current health of the associated unit. If not in a battle, returns the max health for self and 0 any other tokens.
 	:GetMaxHealth(target)- returns the max health of the associated unit. If not in a battle, returns 0 for all tokens but self.
 	:GetAttackStat(target)	- returns the value of the attack stat of the pet
-	:GetSpeedState(target)	- returns the value of the speed stat of the pet
+	:GetSpeedStat(target)	- returns the value of the speed stat of the pet
 	:GetState(stateID, target) - returns the value of a stat associated with a unit. If not associated with a battle, return 0.
 
 	Values for target are:
@@ -20,6 +21,9 @@ abilityInfo should be defined with the following functions:
 function SharedPetBattleAbilityTooltip_OnLoad(self)
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+
+	self.strongAgainstTextures = { self.StrongAgainstType1 };
+	self.weakAgainstTextures = { self.WeakAgainstType1 };
 end
 
 function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
@@ -82,23 +86,35 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
 		for i=1, C_PetBattles.GetNumPetTypes() do
 			local modifier = C_PetBattles.GetAttackModifier(petType, i);
 			if ( modifier > 1 ) then
-				local icon = self["StrongAgainstType"..nextStrongIndex];
+				local icon = self.strongAgainstTextures[nextStrongIndex];
+				if ( not icon ) then
+					self.strongAgainstTextures[nextStrongIndex] = self:CreateTexture(nil, "ARTWORK", "SharedPetBattleStrengthPetTypeTemplate");
+					icon = self.strongAgainstTextures[nextStrongIndex];
+					icon:ClearAllPoints();
+					icon:SetPoint("LEFT", self.strongAgainstTextures[nextStrongIndex - 1], "RIGHT", 2, 0);
+				end
 				icon:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[i]);
 				icon:Show();
 				nextStrongIndex = nextStrongIndex + 1;
 			elseif ( modifier < 1 ) then
-				local icon = self["WeakAgainstType"..nextWeakIndex];
+				local icon = self.weakAgainstTextures[nextWeakIndex];
+				if ( not icon ) then
+					self.weakAgainstTextures[nextWeakIndex] = self:CreateTexture(nil, "ARTWORK", "SharedPetBattleStrengthPetTypeTemplate");
+					icon = self.weakAgainstTextures[nextWeakIndex];
+					icon:ClearAllPoints();
+					icon:SetPoint("LEFT", self.weakAgainstTextures[nextWeakIndex - 1], "RIGHT", 2, 0);
+				end
 				icon:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[i]);
 				icon:Show();
 				nextWeakIndex = nextWeakIndex + 1;
 			end
 		end
 
-		for i=nextStrongIndex, MAX_NUM_PET_BATTLE_ATTACK_MODIFIERS do
-			self["StrongAgainstType"..i]:Hide();
+		for i=nextStrongIndex, #self.strongAgainstTextures do
+			self.strongAgainstTextures[i]:Hide();
 		end
-		for i=nextWeakIndex, MAX_NUM_PET_BATTLE_ATTACK_MODIFIERS do
-			self["WeakAgainstType"..i]:Hide();
+		for i=nextWeakIndex, #self.weakAgainstTextures do
+			self.weakAgainstTextures[i]:Hide();
 		end
 	else
 		self.StrongAgainstIcon:Hide();
@@ -107,9 +123,11 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
 		self.WeakAgainstIcon:Hide();
 		self.WeakAgainstLabel:Hide();
 		self.Delimiter2:Hide();
-		for i=1, MAX_NUM_PET_BATTLE_ATTACK_MODIFIERS do
-			self["StrongAgainstType"..i]:Hide();
-			self["WeakAgainstType"..i]:Hide();
+		for _, texture in pairs(self.strongAgainstTextures) do
+			texture:Hide();
+		end
+		for _, texture in pairs(self.weakAgainstTextures) do
+			texture:Hide();
 		end
 	end
 
@@ -130,6 +148,18 @@ do
 	end
 
 	local parserEnv = {
+		--Constants
+		SELF = "self",
+		ENEMY = "enemy",
+		AURAWEARER = "aurawearer",
+		AURACASTER = "auracaster",
+
+		PROC_ON_APPLY = PET_BATTLE_EVENT_ON_APPLY,
+		PROC_ON_DAMAGE_TAKEN = PET_BATTLE_EVENT_ON_DAMAGE_TAKEN,
+		PROC_ON_DAMAGE_DEALT = PET_BATTLE_EVENT_ON_DAMAGE_DEALT,
+		PROC_ON_HEAL_TAKEN = PET_BATTLE_EVENT_ON_HEAL_TAKEN,
+		PROC_ON_HEAL_DEALT = PET_BATTLE_EVENT_ON_HEAL_DEALT,
+
 		--Utility functions
 		ceil = math.ceil,
 		floor = math.floor,
@@ -166,10 +196,9 @@ do
 					if ( not target ) then
 						target = "default";
 					end
-					--TODO - add once states are implemented on the client.
-					return 0;
+					return parsedAbilityInfo:GetState(stateID, target);
 				end,
-		attack = function(target)
+		power = function(target)
 					if ( not target ) then
 						target = "default";
 					end
@@ -196,8 +225,11 @@ do
 		isInBattle = function()
 					return parsedAbilityInfo:IsInBattle();
 				end,
-		numTurns = function()
-					local id, name, icon, maxCooldown, description, numTurns = C_PetBattles.GetAbilityInfoByID(parsedAbilityInfo:GetAbilityID());
+		numTurns = function(abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					local id, name, icon, maxCooldown, description, numTurns = C_PetBattles.GetAbilityInfoByID(abilityID);
 					return numTurns;
 				end,
 		currentCooldown = function()
@@ -220,12 +252,28 @@ do
 		petTypeName = function(petType)
 					return _G["BATTLE_PET_NAME_"..petType]
 				end,
+		remainingDuration = function()
+					return parsedAbilityInfo:GetRemainingDuration();
+				end,
+		getProcIndex = function(procType, abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					local turnIndex = C_PetBattles.GetAbilityProcTurnIndex(abilityID, procType);
+					if ( not turnIndex ) then
+						error("No such proc type: "..tostring(procType));
+					end
+					return turnIndex;
+				end,
 	};
 	
 	--Aliases
-	parserEnv.AttackBonus = function() return (1 + 0.05 * parserEnv.attack()); end;
+	parserEnv.AttackBonus = function() return (1 + 0.05 * parserEnv.power()); end;
+	parserEnv.HealingBonus = function() return (1 + 0.05 * parserEnv.power()); end;
 	parserEnv.StandardDamage = function(...) return parserEnv.floor(parserEnv.points(...) * parserEnv.AttackBonus()); end;
+	parserEnv.StandardHealing = function(...) return parserEnv.floor(parserEnv.points(...) * parserEnv.HealingBonus()); end;
 	parserEnv.OnlyInBattle = function(text) if ( parserEnv.isInBattle() ) then return text else return ""; end end;
+	parserEnv.School = function(abilityID) return parserEnv.petTypeName(parserEnv.abilityPetType(abilityID)); end;
 
 	--Don't allow designers to accidentally change the environment
 	local safeEnv = {};

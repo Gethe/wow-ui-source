@@ -167,7 +167,7 @@
 				if self.index then
 					GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 					GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
-					GameTooltip:SetUnitBuff(PlayerFrame.unit, self.index);
+					GameTooltip:SetUnitBuff(PlayerFrame.unit, self.name);
 				end
 			</OnEnter>
 			<OnLeave>

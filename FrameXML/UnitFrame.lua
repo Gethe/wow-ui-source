@@ -524,7 +524,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 			end
 
 			if ( numericIndicator ) then
-				if ( ShowNumericThreat() ) then
+				if ( ShowNumericThreat() and not (UnitClassification(indicator.unit) == "minus") ) then
 					local isTanking, status, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
 					local display = rawPercentage;
 					if ( isTanking ) then

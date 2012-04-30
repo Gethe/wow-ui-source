@@ -3,14 +3,24 @@
 	<Script file="Blizzard_TalentUI.lua"/>
 	
 	<Button name="PlayerSpecSpellTemplate" virtual="true">
-		<Size x="32" y="32"/>
+		<Size x="70" y="70"/>
 		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRing" parentKey="ring" file="Interface\TalentFrame\spec-filagree" setAllPoints="true">
+					<TexCoords left="0.00390625" right="0.27734375" top="0.48437500" bottom="0.75781250"/>	
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" parentKey="icon" setAllPoints="true"/>
-				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" parentKey="name">
-					<Size x="136" y="0"/>
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="56" y="56"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT" x="10" y="-3"/>
+						<Anchor point="CENTER" relativeTo="$parentRing" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" justifyV="CENTER" parentKey="name">
+					<Size x="115" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="7" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSubText" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP" parentKey="subText">
@@ -20,22 +30,6 @@
 					</Anchors>
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentGoldBorder" inherits="Talent-GoldMedal-Border" hidden="true">
-					<Size x="36" y="36"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\Common\icon-shadow" alpha="0.6">
-					<Size x="53" y="53"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -545,7 +539,7 @@
 					<TexCoords left="0.00390625" right="0.82421875" top="0.18554688" bottom="0.58984375"/>
 				</Texture>
 				<Texture file="Interface\TalentFrame\spec-paper-bg" parentKey="bg">
-					<Size x="519" y="488"/>
+					<Size x="550" y="488"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="217" y="2"/>
 					</Anchors>
@@ -585,11 +579,21 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="LEARN">
+			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="LEARN" parentKey="learnButton">
 				<Size x="98" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="-212" y="-22"/>
+					<Anchor point="BOTTOM" x="0" y="-22"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="bb" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" parentKey="Flash" hidden="true">
+							<Size x="150" y="60"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-7" y="7"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnClick>
 						StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, PlayerTalentFrameSpecialization.previewSpec);
@@ -673,18 +677,13 @@
 				</Layers>
 			</Frame>
 			<ScrollFrame name="$parentSpellScrollFrame" parentKey="spellsScroll" inherits="UIPanelScrollFrameCodeTemplate">
-				<Size x="395" y="416"/>
+				<Size x="420" y="410"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="217" y="0"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture setAllPoints="true" hidden="true">
-							<Color r="0" g="1" b="0"/>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
 							<Size>
 								<AbsDimension x="27" y="120"/>
 							</Size>
@@ -697,7 +696,7 @@
 							</Anchors>
 							<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 						</Texture>
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
 							<Size>
 								<AbsDimension x="27" y="123"/>
 							</Size>
@@ -710,7 +709,7 @@
 							</Anchors>
 							<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
 						</Texture>
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
 							<Size>
 								<AbsDimension x="27" y="200"/>
 							</Size>
@@ -722,7 +721,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 								<Offset>
@@ -739,67 +738,119 @@
 				</Frames>
 				<ScrollChild>
 					<Frame name="$parentScrollChild" parentKey="child">
-						<Size x="430" y="20"/>
+						<Size x="420" y="410"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
+							<Layer level="BORDER" textureSubLevel="1">
+								<Texture parentKey="gradient" >
+									<Size x="430" y="200"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+									<Color r="0.306" g="0.133" b="0.031"/>
+									<Gradient orientation="VERTICAL">
+										<MaxColor r="1" g="1" b="1" a="0.8"/>
+										<MinColor r="1" g="1" b="1" a="0.0"/>
+									</Gradient>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="2">
+								<Texture name="top-scrollworkLeft" parentKey="scrollwork_topleft" file="Interface\TalentFrame\spec-filagree" alpha="0.6">
+									<Size x="153" y="84"/>	
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.60156250" right="0.00390625" top="0.00390625" bottom="0.33203125"/>	
+								</Texture>
+								<Texture name="top-scrollworkRight" parentKey="scrollwork_topright" file="Interface\TalentFrame\spec-filagree" alpha="0.6">
+									<Size x="153" y="84"/>	
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.00390625" right="0.60156250" top="0.00390625" bottom="0.33203125"/>	
+								</Texture>
+								<Texture name="bottom-scrollworkLeft" parentKey="scrollwork_bottomleft" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
+									<Size x="95" y="55"/>	
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="5" y="0"/>
+									</Anchors>
+									<TexCoords left="0.60937500" right="0.98046875" top="0.00390625" bottom="0.21875000"/>	
+								</Texture>
+								<Texture name="bottom-scrollworkRight" parentKey="scrollwork_bottomright" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
+									<Size x="95" y="55"/>	
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-5" y="0"/>
+									</Anchors>
+									<TexCoords left="0.98046875" right="0.60937500" top="0.00390625" bottom="0.21875000"/>	
+								</Texture>
+							</Layer>
 							<Layer level="ARTWORK">
-								<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" alpha="1" parentKey="ring">
+								<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
 									<Size x="101" y="101"/>	
 									<Anchors>
-										<Anchor point="TOPLEFT" x="1" y="-3"/>
+										<Anchor point="TOPLEFT" x="5" y="-3"/>
 									</Anchors>
 									<TexCoords left="0.00390625" right="0.49218750" top="0.00195313" bottom="0.24609375"/>
 								</Texture>
-								<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="LEFT" parentKey="specName">
+								<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
 									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="3"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="3" y="3"/>
 									</Anchors>
 									<Color r="1" g="1" b="1"/>
 								</FontString>
 								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="roleIcon">
-									<Size x="24" y="24"/>
+									<Size x="30" y="30"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentSpecName" relativePoint="BOTTOMLEFT" x="-2" y="-3" />
+										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="5" y="-3" />
 									</Anchors>
 								</Texture>
-								<FontString inherits="GameFontBlack" parentKey="roleName">
+								<FontString inherits="GameFontHighlightLarge" parentKey="roleName">
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentRoleIcon" relativePoint="RIGHT" x="3" y="1" />
 									</Anchors>
-									<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 								</FontString>
-								<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
-									<Size x="360" y="0"/>
+								<FontString name="$parentDescription" inherits="GameFontWhite" justifyH="LEFT" parentKey="description">
+									<Size x="370" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="BOTTOMLEFT" x="17" y="-8"/>
+										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
 									</Anchors>
-									<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 								</FontString>
-								<Texture alpha="0.2">	<!-- thin horizontal line -->
-									<Size x="0" y="1"/>
-									<Anchors>
-										<Anchor point="LEFT" x="16" y="0"/>
-										<Anchor point="RIGHT" x="-49" y="0"/>
-										<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-13"/>
-									</Anchors>
-									<Color r="0" g="0" b="0"/>
-								</Texture>
 							</Layer>
-							<Layer level="BORDER">
+							<Layer level="BORDER" textureSubLevel="3">
 								<Texture name="$parentSpecIcon" parentKey="specIcon">
 									<Size x="70" y="70"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentRing" x="-1" y="1" />
 									</Anchors>
 								</Texture>
+								<FontString name="$parentAbilities" parentKey="coreabilities" inherits="GameFontBlackMedium" justifyH="CENTER" text="CORE_ABILITIES">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-160"/>
+									</Anchors>
+									<Color r="0.878" g="0.714" b="0.314"/>
+								</FontString>
+								<Texture name="seperator-scrollworkLeft" parentKey="scrollwork_left" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
+									<Size x="104" y="35"/>	
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="$parentAbilities" relativePoint="LEFT" x="-10" y="3"/>
+									</Anchors>
+									<TexCoords left="0.00390625" right="0.41015625" top="0.33984375" bottom="0.47656250"/>	
+								</Texture>
+								<Texture name="seperator-scrollworkRight" parentKey="scrollwork_right" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
+									<Size x="104" y="35"/>	
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentAbilities" relativePoint="RIGHT" x="10" y="3"/>
+									</Anchors>
+									<TexCoords left="0.41015625" right="0.00390625" top="0.33984375" bottom="0.47656250"/>	
+								</Texture>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Button name="$parentAbility1" inherits="PlayerSpecSpellTemplate" parentKey="abilityButton1">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT" x="-4" y="-36"/>
+									<Anchor point="TOPLEFT" x="25" y="-185"/>
 								</Anchors>
 							</Button>
 						</Frames>

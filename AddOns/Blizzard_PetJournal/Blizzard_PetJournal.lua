@@ -6,6 +6,36 @@ local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
 
 
+
+StaticPopupDialogs["BATTLE_PET_RENAME"] = {
+	text = PET_RENAME_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 16,
+	OnAccept = function(self)
+		local text = self.editBox:GetText();
+		C_PetJournal.SetCustomName(PetJournal.menuPetID, text);
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent();
+		local text = parent.editBox:GetText();
+		C_PetJournal.SetCustomName(PetJournal.menuPetID, text);
+		parent:Hide();
+	end,
+	OnShow = function(self)
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+
 function PetJournal_OnLoad(self)
 	PetJournalTitleText:SetText(PET_JOURNAL);
 	SetPortraitToTexture(PetJournalPortrait,"Interface\\Icons\\spell_magic_polymorphrabbit");
@@ -16,11 +46,12 @@ function PetJournal_OnLoad(self)
 	
 	self.listScroll.update = PetJournal_UpdatePetList;
 	self.listScroll.scrollBar.doNotHide = true;
-	HybridScrollFrame_CreateButtons(self.listScroll, "CompanionListButtonTemplate", 0, 0);
+	HybridScrollFrame_CreateButtons(self.listScroll, "CompanionListButtonTemplate", 44, 0);
 	
 	
 	--PanelTemplates_DeselectTab(PetJournalTab2);
 	PetJournal.isWild = false;
+	UIDropDownMenu_Initialize(self.petOptionsMenu, PetOptionsMenu_Init, "MENU");
 end
 
 
@@ -72,11 +103,13 @@ function PetJournal_OnTabClick(isWild)
 end
 
 
-function PetJournal_UpdatePetAbility(AbilityFrame, abilityID)
+function PetJournal_UpdatePetAbility(AbilityFrame, abilityID, petID, speciesID)
 
 	local name, icon, typeEnum = C_PetJournal.GetPetAbilityInfo(abilityID);
 	AbilityFrame.icon:SetTexture(icon);
 	AbilityFrame.abilityID = abilityID;
+	AbilityFrame.petID = petID;
+	AbilityFrame.speciesID = speciesID;
 	AbilityFrame.selected:Hide();
 end
 
@@ -122,17 +155,20 @@ function PetJournal_ShowPetSelect(self)
 	local spellIndex1 = abilityIndex;
 	local spellIndex2 = spellIndex1 + 3;
 	
-	if PetJournal.SpellSelect:IsShown() and 
-		PetJournal.SpellSelect.slotIndex == slotIndex and 
-		PetJournal.SpellSelect.abilityIndex == abilityIndex then
-		PetJournal.SpellSelect:Hide();
-		self.selected:Hide();
-		return;
+	if PetJournal.SpellSelect:IsShown() then 
+		if PetJournal.SpellSelect.slotIndex == slotIndex and 
+			PetJournal.SpellSelect.abilityIndex == abilityIndex then
+			PetJournal.SpellSelect:Hide();
+			self.selected:Hide();
+			return;
+		else
+			PetJournal.Loadout["Pet"..PetJournal.SpellSelect.slotIndex]["spell"..PetJournal.SpellSelect.abilityIndex].selected:Hide();
+		end
 	end
-	
 	self.selected:Show();
 	PetJournal.SpellSelect.slotIndex = slotIndex;
 	PetJournal.SpellSelect.abilityIndex = abilityIndex;
+	PetJournal_HideAbilityTooltip();
 	
 	--Setup spell one
 	local name, icon, petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex1]);
@@ -142,6 +178,8 @@ function PetJournal_ShowPetSelect(self)
 	PetJournal.SpellSelect.Spell1.slotIndex = slotIndex;
 	PetJournal.SpellSelect.Spell1.abilityIndex = abilityIndex;
 	PetJournal.SpellSelect.Spell1.abilityID = abilities[spellIndex1];
+	PetJournal.SpellSelect.Spell1.petID = slotFrame.petID;
+	PetJournal.SpellSelect.Spell1.speciesID = slotFrame.speciesID;
 	--Setup spell two
 	name, icon, petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex2]);
 	PetJournal.SpellSelect.Spell2.name:SetText(name);
@@ -150,6 +188,8 @@ function PetJournal_ShowPetSelect(self)
 	PetJournal.SpellSelect.Spell2.slotIndex = slotIndex;
 	PetJournal.SpellSelect.Spell2.abilityIndex = abilityIndex;
 	PetJournal.SpellSelect.Spell2.abilityID = abilities[spellIndex2];
+	PetJournal.SpellSelect.Spell2.petID = slotFrame.petID;
+	PetJournal.SpellSelect.Spell2.speciesID = slotFrame.speciesID;
 	
 	
 	PetJournal.SpellSelect.Spell1.selected:Hide();
@@ -162,6 +202,7 @@ function PetJournal_ShowPetSelect(self)
 	
 	PetJournal.SpellSelect:SetPoint("TOP", slotFrame, "BOTTOM", 0, 35);
 	PetJournal.SpellSelect:Show();
+	PetJournal_ShowAbilityCompareTooltip(abilities[spellIndex1], abilities[spellIndex2], slotFrame.speciesID, slotFrame.petID)
 end
 
 
@@ -172,7 +213,16 @@ function PetJournal_UpdatePetLoadOut()
 		local petID, ability1ID, ability2ID, ability3ID = C_PetJournal.GetPetLoadOutInfo(i);
 		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
 		if name then
-			loadoutPlate.name:SetText(name);
+			if customName then
+				loadoutPlate.name:SetText(customName);
+				loadoutPlate.name:SetHeight(12);
+				loadoutPlate.subName:Show();
+				loadoutPlate.subName:SetText(name);
+			else
+				loadoutPlate.name:SetText(name);
+				loadoutPlate.name:SetHeight(30);
+				loadoutPlate.subName:Hide();
+			end
 			loadoutPlate.level:SetText(level);
 			loadoutPlate.icon:SetTexture(icon);
 			
@@ -190,9 +240,9 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.speciesID = speciesID;
 			loadoutPlate.helpFrame:Hide();
 			
-			PetJournal_UpdatePetAbility(loadoutPlate.spell1, ability1ID);
-			PetJournal_UpdatePetAbility(loadoutPlate.spell2, ability2ID);
-			PetJournal_UpdatePetAbility(loadoutPlate.spell3, ability3ID);
+			PetJournal_UpdatePetAbility(loadoutPlate.spell1, ability1ID, petID, speciesID);
+			PetJournal_UpdatePetAbility(loadoutPlate.spell2, ability2ID, petID, speciesID);
+			PetJournal_UpdatePetAbility(loadoutPlate.spell3, ability3ID, petID, speciesID);
 			PetJournal_UpdatePetAbilityList(loadoutPlate)
 		else
 			loadoutPlate.helpFrame:Show();
@@ -214,7 +264,8 @@ function PetJournal_UpdatePetList()
 	
 	local isWild = PetJournal.isWild;
 	
-	local numPets = C_PetJournal.GetNumPets(isWild);
+	local numPets, numOwned = C_PetJournal.GetNumPets(isWild);
+	PetJournal.petCount:SetFormattedText(MAX_BATTLE_PET_TEXT, numOwned);
 	
 	for i = 1,#petButtons do
 		pet = petButtons[i];
@@ -222,7 +273,16 @@ function PetJournal_UpdatePetList()
 		if index <= numPets then
 			local petID, speciesID, isOwned, customName, level, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByIndex(index, isWild);
 			
-			pet.name:SetText(name);
+			if customName then
+				pet.name:SetText(customName);
+				pet.name:SetHeight(12);
+				pet.subName:Show();
+				pet.subName:SetText(name);
+			else
+				pet.name:SetText(name);
+				pet.name:SetHeight(30);
+				pet.subName:Hide();
+			end
 			pet.icon:SetTexture(icon);
 			pet.petTypeIcon:SetTexture(GetPetTypeTexture(petType));
 			
@@ -235,20 +295,21 @@ function PetJournal_UpdatePetList()
 				pet.level:Show();
 				pet.level:SetText(level);
 				pet.icon:SetDesaturated(0);
-				pet.name:SetFontObject("GameFontHighlight");
+				pet.name:SetFontObject("GameFontNormal");
 				pet.petTypeIcon:SetDesaturated(0);
-				pet:Enable();
+				pet.dragButton:Enable();
 			else
 				pet.levelBG:Hide();
 				pet.level:Hide();
 				pet.icon:SetDesaturated(1);
 				pet.name:SetFontObject("GameFontDisable");
 				pet.petTypeIcon:SetDesaturated(1);
-				pet:Disable();
+				pet.dragButton:Disable();
 			end
 			pet.petID = petID;
 			pet.speciesID = speciesID;
 			pet.index = index;
+			pet.owned = isOwned;
 			pet:Show();
 			if pet.showingTooltip then
 				GameTooltip:SetItemByID(petID);
@@ -257,16 +318,10 @@ function PetJournal_UpdatePetList()
 			--Update Petcard Button
 			if PetJournal.pcIndex == index then
 				pet.selected = true;
-				pet.previewButton:Show();
-				pet.previewButton.selectedTexture:Show();
 				pet.selectedTexture:Show();
 			else
 				pet.selected = false;
-				pet.previewButton.selectedTexture:Hide()
 				pet.selectedTexture:Hide()
-				if not pet:IsMouseOver() then
-					pet.previewButton:Hide()
-				end
 			end
 		else
 			pet:Hide();
@@ -275,23 +330,6 @@ function PetJournal_UpdatePetList()
 	
 	local totalHeight = numPets * COMPANION_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
-end
-
-
-function PetJournal_UpdatePetCardToggleButtons()
-	local petButtons = PetJournal.listScroll.buttons;
-	local pet;
-	
-	for i = 1,#petButtons do
-		pet = petButtons[i];
-		if not pet.selected then
-			if not pet:IsMouseOver() then
-				pet.previewButton:Hide();
-			else
-				pet.previewButton:Show();
-			end
-		end
-	end
 end
 
 
@@ -307,10 +345,11 @@ end
 
 
 function PetJournal_OnPetDragStart(self)
-	C_PetJournal.PickupPet(self.petID, PetJournal.isWild);
+	C_PetJournal.PickupPet(self:GetParent().petID, PetJournal.isWild);
 	PetJournal.Loadout.Pet1.setButton:Show();
 	PetJournal.Loadout.Pet2.setButton:Show();
 	PetJournal.Loadout.Pet3.setButton:Show();
+	PetJournal_HidePetCard()
 end
 
 
@@ -340,6 +379,7 @@ function PetJournal_TogglePetCard(index)
 	end
 end
 
+
 function PetJournal_FindPetCardIndex()
 	PetJournal.pcIndex = nil;
 	local numPets = C_PetJournal.GetNumPets(PetJournal.isWild);
@@ -353,6 +393,7 @@ function PetJournal_FindPetCardIndex()
 	end
 end
 
+
 function PetJournal_HidePetCard()
 	PetJournal.PetCardList:Hide();
 	PetJournal.pcIndex = nil;
@@ -361,7 +402,10 @@ function PetJournal_HidePetCard()
 	PetJournal_UpdatePetList();
 end
 
+
 function PetJournal_UpdatePetCard(self)
+	PetJournal.SpellSelect:Hide();
+
 	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, _;		
 	if PetJournal.pcPetID then
 		speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(PetJournal.pcPetID);
@@ -369,15 +413,33 @@ function PetJournal_UpdatePetCard(self)
 		self.level:Show();
 		self.levelBG:Show();
 		self.xpbar:Show();
+		
+		--Stats
+		self.statsFrame:Show();
+		local health, attack, speed, rarity = C_PetJournal.GetPetStats(PetJournal.pcPetID);
+		self.statsFrame.healthValue:SetText(health);
+		self.statsFrame.attackValue:SetText(attack);
+		self.statsFrame.speedValue:SetText(speed);
+		self.statsFrame.rarityValue:SetText(rarity);
 	else
 		speciesID = PetJournal.pcSpeciesID;
 		name, icon, petType, creatureID = C_PetJournal.GetPetInfoBySpeciesID(PetJournal.pcSpeciesID);
 		self.level:Hide();
 		self.levelBG:Hide();
 		self.xpbar:Hide();
+		self.statsFrame:Hide();
 	end
 	
-	self.name:SetText(customName or name);
+	if customName then
+		self.name:SetText(customName);
+		self.name:SetHeight(12);
+		self.subName:Show();
+		self.subName:SetText(name);
+	else
+		self.name:SetText(name);
+		self.name:SetHeight(30);
+		self.subName:Hide();
+	end
 	
 	self.icon:SetTexture(icon);
 	
@@ -401,6 +463,9 @@ function PetJournal_UpdatePetCard(self)
 			spellFrame.name:SetText(name);
 			spellFrame.icon:SetTexture(icon);
 			spellFrame.petTypeIcon:SetTexture(GetPetTypeTexture(petType) );
+			spellFrame.abilityID = abilities[i];
+			spellFrame.petID = PetJournal.pcPetID;
+			spellFrame.speciesID = speciesID;
 			spellFrame:Show();
 		else
 			spellFrame:Hide();
@@ -513,3 +578,155 @@ function PetJournalFilterDropDown_Initialize(self, level)
 end
 
 
+function PetOptionsMenu_Init(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	
+	info.text = BATTLE_PET_SUMMON
+	info.func = function() C_PetJournal.SummonPetByID(PetJournal.menuPetID); end
+	UIDropDownMenu_AddButton(info, level)
+	
+	info.text = BATTLE_PET_RENAME
+	info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME"); end 
+	UIDropDownMenu_AddButton(info, level)
+		
+	info.text = BATTLE_PET_FAVORITE;--BATTLE_PET_UNFAVORITE
+	info.func = nil
+	UIDropDownMenu_AddButton(info, level)
+	
+	info.text = BATTLE_PET_RELEASE;
+	info.func = nil
+	UIDropDownMenu_AddButton(info, level)
+	
+	info.text = CANCEL
+	UIDropDownMenu_AddButton(info, level)
+end
+
+---------------------------------------
+-------Ability Tooltip stuff-----------
+---------------------------------------
+
+local PET_JOURNAL_ABILITY_INFO = {};
+
+function PET_JOURNAL_ABILITY_INFO:GetAbilityID()
+	return self.abilityID;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetCooldown()
+	return 0;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetRemainingDuration()
+	return 0;
+end
+
+function PET_JOURNAL_ABILITY_INFO:IsInBattle()
+	return false;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetHealth(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+	else
+		--Do something with self.speciesID.
+	end
+	--TODO: return max health
+	return 100;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetMaxHealth(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+	else
+		--Do something with self.speciesID.
+	end
+	--TODO: return max health
+	return 100;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetAttackStat(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+	else
+		--Do something with self.speciesID.
+	end
+	--TODO: return attack stat
+	return 0;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetSpeedStat(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+	else
+		--Do something with self.speciesID.
+	end
+	--TODO: return speed stat
+	return 0;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetState(stateID, target)
+	return 0;
+end
+
+function PET_JOURNAL_ABILITY_INFO:EnsureTarget(target)
+	if ( target == "default" ) then
+		target = "self";
+	end
+	if ( target ~= "self" ) then
+		GMError("Only \"self\" unit supported in journal");
+	end
+end
+
+
+function PetJournal_ShowAbilityTooltip(self, abilityID, speciesID, petID)
+	if ( abilityID and abilityID > 0 ) then
+		PET_JOURNAL_ABILITY_INFO.abilityID = abilityID;
+		PET_JOURNAL_ABILITY_INFO.speciesID = speciesID;
+		PET_JOURNAL_ABILITY_INFO.petID = petID;
+		PetJournalPrimaryAbilityTooltip:ClearAllPoints();
+		PetJournalPrimaryAbilityTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 5, 0);
+		PetJournalPrimaryAbilityTooltip.anchoredTo = self;
+		SharedPetBattleAbilityTooltip_SetAbility(PetJournalPrimaryAbilityTooltip, PET_JOURNAL_ABILITY_INFO);
+		PetJournalPrimaryAbilityTooltip:Show();
+	end
+end
+
+
+local CompareInfo1 = {};
+local CompareInfo2 = {};
+setmetatable(CompareInfo1, {__index = PET_JOURNAL_ABILITY_INFO});
+setmetatable(CompareInfo2, {__index = PET_JOURNAL_ABILITY_INFO});
+function PetJournal_ShowAbilityCompareTooltip(abilityID1, abilityID2, speciesID, petID)
+	if ( abilityID1 and abilityID2 ) then
+		CompareInfo1.abilityID = abilityID1;
+		CompareInfo1.speciesID = speciesID;
+		CompareInfo1.petID = petID;
+		
+		CompareInfo2.abilityID = abilityID2;
+		CompareInfo2.speciesID = speciesID;
+		CompareInfo2.petID = petID;
+		
+		
+		
+		PetJournalSecondaryAbilityTooltip:ClearAllPoints();
+		PetJournalSecondaryAbilityTooltip:SetPoint("TOPLEFT", PetJournal.SpellSelect, "RIGHT", -15, 0);
+		PetJournalPrimaryAbilityTooltip:ClearAllPoints();
+		PetJournalPrimaryAbilityTooltip:SetPoint("BOTTOM", PetJournalSecondaryAbilityTooltip, "TOP", 0, 5);
+		
+		PetJournalPrimaryAbilityTooltip.anchoredTo = PetJournal.SpellSelect;
+		SharedPetBattleAbilityTooltip_SetAbility(PetJournalPrimaryAbilityTooltip, CompareInfo1);
+		SharedPetBattleAbilityTooltip_SetAbility(PetJournalSecondaryAbilityTooltip, CompareInfo2);
+		PetJournalPrimaryAbilityTooltip:Show();
+		PetJournalSecondaryAbilityTooltip:Show();
+	end
+end
+
+function PetJournal_HideAbilityTooltip(self)
+	if ( PetJournalPrimaryAbilityTooltip.anchoredTo == self or not self ) then
+		PetJournalPrimaryAbilityTooltip:Hide();
+	end
+end

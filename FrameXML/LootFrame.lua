@@ -276,7 +276,8 @@ function LootItem_OnEnter(self)
 end
 
 function GroupLootDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, GroupLootDropDown_Initialize, "MENU");
+	UIDropDownMenu_Initialize(self, nil, "MENU");
+	self.initialize = GroupLootDropDown_Initialize;
 end
 
 function GroupLootDropDown_Initialize()
@@ -286,7 +287,7 @@ function GroupLootDropDown_Initialize()
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		local lastIndex = UIDROPDOWNMENU_MENU_VALUE + 5 - 1;
 		for i=UIDROPDOWNMENU_MENU_VALUE, lastIndex do
-			candidate = GetMasterLootCandidate(i);
+			candidate = GetMasterLootCandidate(LootFrame.selectedSlot, i);
 			if ( candidate ) then
 				-- Add candidate button
 				info.text = candidate;
@@ -310,7 +311,7 @@ function GroupLootDropDown_Initialize()
 
 		for i=1, 40, 5 do
 			for j=i, i+4 do
-				candidate = GetMasterLootCandidate(j);
+				candidate = GetMasterLootCandidate(LootFrame.selectedSlot, j);
 				if ( candidate ) then
 					-- Add raid group
 					info.isTitle = nil;
@@ -328,7 +329,7 @@ function GroupLootDropDown_Initialize()
 	else
 		-- In a party
 		for i=1, MAX_PARTY_MEMBERS+1, 1 do
-			candidate = GetMasterLootCandidate(i);
+			candidate = GetMasterLootCandidate(LootFrame.selectedSlot, i);
 			if ( candidate ) then
 				-- Add candidate button
 				info.text = candidate;

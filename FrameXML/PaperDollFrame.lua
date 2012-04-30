@@ -981,7 +981,7 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 	local totalBonus = (fullDamage - baseDamage);
 	local damagePerSecond = (max(fullDamage,1) / speed);
-	local damageTooltip = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
+	local damageTooltip = displayMinLarge.." - "..displayMaxLarge;
 	
 	local colorPos = "|cff20ff20";
 	local colorNeg = "|cffff2020";
@@ -1036,7 +1036,7 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 		local offhandBaseDamage = (minOffHandDamage + maxOffHandDamage) * 0.5;
 		local offhandFullDamage = (offhandBaseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 		local offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
-		local offhandDamageTooltip = max(floor(minOffHandDamage),1).." - "..max(ceil(maxOffHandDamage),1);
+		local offhandDamageTooltip = BreakUpLargeNumbers(max(floor(minOffHandDamage),1)).." - "..BreakUpLargeNumbers(max(ceil(maxOffHandDamage),1));
 		if ( physicalBonusPos > 0 ) then
 			offhandDamageTooltip = offhandDamageTooltip..colorPos.." +"..physicalBonusPos.."|r";
 		end
@@ -1560,7 +1560,7 @@ function PaperDollFrame_SetMeleeCritChance(statFrame, unit)
 	critChance = format("%.2F%%", critChance);
 	text:SetText(critChance);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, MELEE_CRIT_CHANCE).." "..critChance..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_CRIT_MELEE_TOOLTIP, GetCombatRating(CR_CRIT_MELEE), GetCombatRatingBonus(CR_CRIT_MELEE));
+	statFrame.tooltip2 = format(CR_CRIT_MELEE_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_CRIT_MELEE)), GetCombatRatingBonus(CR_CRIT_MELEE));
 end
 
 function PaperDollFrame_SetRangedCritChance(statFrame, unit)
@@ -1575,7 +1575,7 @@ function PaperDollFrame_SetRangedCritChance(statFrame, unit)
 	critChance = format("%.2F%%", critChance);
 	text:SetText(critChance);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, RANGED_CRIT_CHANCE).." "..critChance..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_CRIT_RANGED_TOOLTIP, GetCombatRating(CR_CRIT_RANGED), GetCombatRatingBonus(CR_CRIT_RANGED));
+	statFrame.tooltip2 = format(CR_CRIT_RANGED_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_CRIT_RANGED)), GetCombatRatingBonus(CR_CRIT_RANGED));
 end
 
 function MeleeHitChance_OnEnter(statFrame)
@@ -2207,7 +2207,7 @@ function CharacterSpellCritChance_OnEnter (self)
 			GameTooltip:AddTexture("Interface\\PaperDollInfoFrame\\SpellSchoolIcon"..i);
 		end
 	end
-	GameTooltip:AddLine(format(CR_CRIT_SPELL_TOOLTIP, GetCombatRating(CR_CRIT_SPELL), GetCombatRatingBonus(CR_CRIT_SPELL)));
+	GameTooltip:AddLine(format(CR_CRIT_SPELL_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_CRIT_SPELL)), GetCombatRatingBonus(CR_CRIT_SPELL)));
 	GameTooltip:Show();
 end
 

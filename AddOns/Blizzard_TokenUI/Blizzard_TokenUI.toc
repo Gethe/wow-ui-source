@@ -1,0 +1,6 @@
+## Interface: 50001
+## Title: Blizzard_TokenUI
+## Secure: 1
+Blizzard_TokenUI.lua
+Blizzard_TokenUI.xml
+Localization.lua

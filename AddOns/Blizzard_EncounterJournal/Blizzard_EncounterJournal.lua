@@ -67,7 +67,6 @@ local BOSS_LOOT_BUTTON_HEIGHT = 45;
 local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
 
-
 function EncounterJournal_OnLoad(self)
 	EncounterJournalTitleText:SetText(ENCOUNTER_JOURNAL);
 	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
@@ -114,12 +113,17 @@ function EncounterJournal_OnLoad(self)
 	EncounterJournal.instanceSelect.tabs = {EncounterJournal.instanceSelect.dungeonsTab, EncounterJournal.instanceSelect.raidsTab};
 	EncounterJournal.instanceSelect.currTab = 1;
 	EncounterJournal_ListInstances();
+	
+	
+	UIDropDownMenu_Initialize(self.encounter.info.lootScroll.lootFilter, EncounterJournal_InitLootFilter, "MENU");
 end
 
 
 function EncounterJournal_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
+	EJ_ResetLootFilter();
+	EncounterJournal_LootUpdate()
 	
 	--automatically navigate to the current dungeon if you are in one;
 	local instanceID = EJ_GetCurrentInstance();
@@ -137,10 +141,6 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal_UpdatePortraits();
 		EncounterJournal.queuedPortraitUpdate = false;
 	end
-	
-	
-	local classFilter, classFilterName = EJ_GetClassFilter();
-	EncounterJournal_SetClassFilter(classFilter, classFilterName);
 end
 
 
@@ -813,6 +813,7 @@ end
 
 
 function EncounterJournal_LootUpdate()
+	EncounterJournal_UpdateFilterString();
 	local scrollFrame = EncounterJournal.encounter.info.lootScroll;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local items = scrollFrame.buttons;
@@ -1116,35 +1117,6 @@ function EncounterJournal_OnSearchTextChanged(self)
 end
 
 
-function EncounterJournal_SetClassFilter(classID, className)
-	local index = 1;
-	local classButton = EncounterJournal.encounter.info.lootScroll.classFilter["class"..index];
-
-	while classButton do
-		if classButton:GetID() == classID then
-			classButton:SetChecked(true);
-		else
-			classButton:SetChecked(false);
-		end
-		index = index + 1;
-		classButton = EncounterJournal.encounter.info.lootScroll.classFilter["class"..index];
-	end
-	
-	if className and classID and classID > 0 then
-		EncounterJournal.encounter.info.lootScroll.classClearFilter.text:SetText(string.format(EJ_CLASS_FILTER, className));
-		EncounterJournal.encounter.info.lootScroll.classClearFilter:Show();
-		EJ_SetClassLootFilter(classID);
-		EncounterJournal.encounter.info.lootScroll:SetHeight(360);
-	else
-		EncounterJournal.encounter.info.lootScroll.classClearFilter:Hide();
-		EJ_SetClassLootFilter(0);
-		EncounterJournal.encounter.info.lootScroll:SetHeight(384);
-	end
-	
-	EncounterJournal_LootUpdate();
-end
-
-
 function EncounterJournal_OpenJournalLink(tag, jtype, id, difficulty)
 	jtype = tonumber(jtype);
 	id = tonumber(id);
@@ -1245,6 +1217,72 @@ function EncounterJournal_TierDropDown_Select(self, tier)
 	EncounterJournal.instanceSelect.tabs[2].grayBox:Hide();
 	EncounterJournal_ListInstances();
 end
+
+
+function EncounterJournal_SetFilter(self, lootEnum)
+	EJ_SetLootFilter(lootEnum);
+	EncounterJournal_LootUpdate();
+end
+
+
+function EncounterJournal_UpdateFilterString()
+	local name;
+	local currFilter = EJ_GetLootFilter();
+
+	if currFilter == LE_LOOT_FILTER_CLASS then
+		name = UnitClass("player");
+	elseif currFilter == LE_LOOT_FILTER_BOE then
+		name = ITEM_BIND_ON_EQUIP;
+	elseif currFilter ~= LE_LOOT_FILTER_ALL then -- Spec
+		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1);
+		name = specName;
+	end
+	
+	if name then
+		EncounterJournal.encounter.info.lootScroll.classClearFilter.text:SetText(string.format(EJ_CLASS_FILTER, name));
+		EncounterJournal.encounter.info.lootScroll.classClearFilter:Show();
+		EncounterJournal.encounter.info.lootScroll:SetHeight(360);
+	else
+		EncounterJournal.encounter.info.lootScroll.classClearFilter:Hide();
+		EncounterJournal.encounter.info.lootScroll:SetHeight(384);
+	end
+end
+
+function EncounterJournal_InitLootFilter()
+	local info = UIDropDownMenu_CreateInfo();
+	local currFilter = EJ_GetLootFilter();
+	local className = UnitClass("player");
+
+
+	info.text = ALL;
+	info.checked = currFilter == LE_LOOT_FILTER_ALL;
+	info.arg1 = LE_LOOT_FILTER_ALL;
+	info.func = EncounterJournal_SetFilter;
+	UIDropDownMenu_AddButton(info);
+	
+	
+	info.text = className;
+	info.checked = currFilter == LE_LOOT_FILTER_CLASS;
+	info.arg1 = LE_LOOT_FILTER_CLASS;
+	UIDropDownMenu_AddButton(info);
+	
+	
+	local numSpecs = GetNumSpecializations();
+	for i = 1, numSpecs do
+		local _, name, _, icon = GetSpecializationInfo(i);
+		info.text = name;
+		info.arg1 = LE_LOOT_FILTER_SPEC1 + i - 1;
+		info.checked = currFilter == (LE_LOOT_FILTER_SPEC1 + i - 1);
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	info.text = ITEM_BIND_ON_EQUIP;
+	info.checked = currFilter == LE_LOOT_FILTER_BOE;
+	info.arg1 = LE_LOOT_FILTER_BOE;
+	UIDropDownMenu_AddButton(info);
+end
+
+
 
 
 ----------------------------------------

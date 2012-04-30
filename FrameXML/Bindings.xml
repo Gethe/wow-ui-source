@@ -1374,5 +1374,4 @@
 	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
 	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>
 	<ModifiedClick action="TRADESEARCHADD" default="SHIFT"/>
-	<ModifiedClick action="CASTAOEONTARGET" default="CTRL"/>
 </Bindings>

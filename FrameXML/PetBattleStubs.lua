@@ -151,13 +151,13 @@ end
 function C_PetBattles.GetActivePet(petOwner)
 	return petOwner == LE_BATTLE_PET_ALLY and PBDEBUG_ACTIVE_ALLY or PBDEBUG_ACTIVE_ENEMY;
 end
-]]
+
 
 function C_PetBattles.GetLevel(petOwner, petIndex)
 	return DEBUG_PET_INFO[petOwner][petIndex][DEBUG_PET_INDEX.LEVEL];
 end
 
---[[
+
 function C_PetBattles.GetHealth(petOwner, petIndex)
 	return DEBUG_PET_INFO[petOwner][petIndex][DEBUG_PET_INDEX.CURRENTHEALTH];
 end
@@ -218,13 +218,11 @@ function C_PetBattles.ChangePet(petIndex)
 	PBDEBUG_ACTIVE_ALLY = petIndex;
 	PBSignalEvent("PET_BATTLE_PET_CHANGED", LE_BATTLE_PET_ALLY);
 end
-]]
 
 function C_PetBattles.GetXP(petIndex)
 	return 25 * petIndex, 100;
 end
 
---[[
 function C_PetBattles.GetPetStats(petOwner, petIndex)
 	return petOwner + petIndex * 1, petOwner + petIndex * 2, petOwner + petIndex * 3;
 end
@@ -234,6 +232,7 @@ function C_PetBattles.GetNumPetTypes()
 	return 10;
 end
 
+--[[
 function C_PetBattles.GetAttackModifier(attackType, defenseType)
 	local numTypes = C_PetBattles.GetNumPetTypes();
 	local offset = (defenseType - attackType) % numTypes;
@@ -251,7 +250,6 @@ function C_PetBattles.IsInRoundPlayback()
 	return PBDebugFrame.inPlayback;
 end
 
---[[
 function C_PetBattles.GetSelectedAction()
 	return LE_BATTLE_PET_ACTION_ABILITY, 2;
 end

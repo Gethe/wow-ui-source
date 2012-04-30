@@ -1,0 +1,7 @@
+## Interface: 50001
+## Title: Blizzard_GMChatUI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_GMChatUI.lua
+Blizzard_GMChatUI.xml
+Localization.lua

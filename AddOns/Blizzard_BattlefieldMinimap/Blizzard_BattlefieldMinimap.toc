@@ -1,0 +1,7 @@
+## Interface: 50001
+## Title: Blizzard Battlefield Minimap
+## Secure: 1
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: BattlefieldMinimapOptions
+Blizzard_BattlefieldMinimap.xml
+Localization.lua

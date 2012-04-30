@@ -446,7 +446,7 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame()
-	if (IsBlizzCon()) then
+	if (IsBlizzCon() or (UnitLevel("player") < SHOW_SPEC_LEVEL)) then
 		return;
 	end
 
@@ -3943,6 +3943,8 @@ function AbbreviateLargeNumbers(value)
 		retString = string.sub(value, 1, -7)..SECOND_NUMBER_CAP;
 	elseif ( strLen > 5 ) then
 		retString = string.sub(value, 1, -4)..FIRST_NUMBER_CAP;
+	elseif (strLen > 3 ) then
+		retString = BreakUpLargeNumbers(value);
 	end
 	return retString;
 end
@@ -3962,15 +3964,22 @@ function BreakUpLargeNumbers(value)
 	end
 	local strLen = strlen(value);
 	local retString = "";
-	if ( strLen > 6 ) then
-		retString = string.sub(value, 1, -7)..LARGE_NUMBER_SEPERATOR;
-		decimal = ""; -- don't show decimal if number is large.
+	if ( GetCVarBool("breakUpLargeNumbers") ) then
+		if ( strLen > 6 ) then
+			retString = string.sub(value, 1, -7)..LARGE_NUMBER_SEPERATOR;
+			decimal = ""; -- don't show decimal if number is large.
+		end
+		if ( strLen > 3 ) then
+			retString = retString..string.sub(value, -6, -4)..LARGE_NUMBER_SEPERATOR;
+			decimal = ""; -- don't show decimal if number is large.
+		end
+		retString = retString..string.sub(value, -3, -1)..decimal;
+	else
+		if ( strLen > 3 ) then
+			decimal = ""; -- don't show decimal if number is large.
+		end
+		retString = value..decimal;
 	end
-	if ( strLen > 3 ) then
-		retString = retString..string.sub(value, -6, -4)..LARGE_NUMBER_SEPERATOR;
-		decimal = ""; -- don't show decimal if number is large.
-	end
-	retString = retString..string.sub(value, -3, -1)..decimal;
 	return retString;
 end
 

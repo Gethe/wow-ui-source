@@ -1,0 +1,10 @@
+## Interface: 50001
+## Title: Blizzard Inspect UI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_InspectUI.xml
+InspectPaperDollFrame.xml
+InspectPVPFrame.xml
+InspectTalentFrame.xml
+InspectGuildFrame.xml
+Localization.lua

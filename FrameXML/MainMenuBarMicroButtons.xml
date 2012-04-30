@@ -136,12 +136,7 @@
 				self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
 				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
 				
-				local _, class = UnitClass("player");
-				if (class == "DEATHKNIGHT") then
-					self.disabledTooltip = TALENTS_UNAVAILABLE_TOOLTIP;
-				else
-					self.minLevel = SHOW_TALENT_LEVEL;
-				end
+				self.minLevel = SHOW_SPEC_LEVEL;
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
@@ -626,7 +621,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString name="TalentMicroButtonAlertText" inherits="GameFontHighlightLeft" justifyV="TOP" text="TALENT_MICRO_BUTTON_TUTORIAL" >
+				<FontString name="TalentMicroButtonAlertText" inherits="GameFontHighlightLeft" justifyV="TOP" text="TALENT_MICRO_BUTTON_SPEC_TUTORIAL" >
 					<Size x="188" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-24"/>

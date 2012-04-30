@@ -160,46 +160,72 @@ end
 TALENT_HEADER_DEFAULT_Y = -36;
 TALENT_HEADER_CHOOSE_SPEC_Y = -28;
 
+-- Hardcoded spell id's for spec display
+SPEC_SPELLS_DISPLAY = {}
+SPEC_SPELLS_DISPLAY[62] = { 30451,10, 114664,10, 44425,10, 79684,10 }; --Arcane
+SPEC_SPELLS_DISPLAY[63] = {  133,10, 11366,10, 108853,10, 11129,10 }; --Fire
+SPEC_SPELLS_DISPLAY[64] = { 116,10, 31687,10, 112965,10, 30455,10 }; --Frost
+
+SPEC_SPELLS_DISPLAY[65] = { 20473,10, 85673,10, 82327,10, 53563,10 }; --Holy
+SPEC_SPELLS_DISPLAY[66] = { 35395,10, 20271,10, 31935,10, 53600,10 }; --Protection
+SPEC_SPELLS_DISPLAY[70] = { 35395,10, 20271,10, 85256,10, 87138,10, 24275,10 }; --Retribution
+
+SPEC_SPELLS_DISPLAY[71] = { 12294,10, 7384,10, 1464,10, 86346,10 }; --Arms
+SPEC_SPELLS_DISPLAY[72] = { 23881,10, 23588,10, 100130,10, 85288,10 }; --Fury
+SPEC_SPELLS_DISPLAY[73] = { 23922,10, 20243,10, 6572,10, 2565,10 }; --Protection
+
+SPEC_SPELLS_DISPLAY[102] = { 5176,10, 2912,10, 78674,10, 8921,10, 79577,10 }; --Balance
+SPEC_SPELLS_DISPLAY[103] = { 33876,10, 1822,10, 1079,10, 5221,10, 52610,10 }; --Feral
+SPEC_SPELLS_DISPLAY[104] = { 33878,10, 33745,10, 62606,10, 22842,10 }; --Guardian
+SPEC_SPELLS_DISPLAY[105] = { 774,10, 33763,10, 18562,10, 5185,10 }; --Restoration
+
+SPEC_SPELLS_DISPLAY[250] = { 49998,10, 55050,10, 56815,10, 55253,10, 48982,10, 49028,10 }; --Blood
+SPEC_SPELLS_DISPLAY[251] = { 49143,10, 49184,10, 49020,10, 51271,10 }; --Frost
+SPEC_SPELLS_DISPLAY[252] = { 55090,10, 85948,10, 49572,10, 63560,10 }; --Unholy
+
+SPEC_SPELLS_DISPLAY[253] = { 34026,10, 77767,10, 3044,10, 19574,10 }; --Beastmaster
+SPEC_SPELLS_DISPLAY[254] = { 19434,10, 56641,10, 3044,10, 53209,10 }; --Marksmanship
+SPEC_SPELLS_DISPLAY[255] = { 53301,10, 77767,10, 3674,10, 63458,10 }; --Survival
+
+SPEC_SPELLS_DISPLAY[256] = { 17,10, 109964,10, 2061,10, 47515,10, 62618,10 }; --Discipline
+SPEC_SPELLS_DISPLAY[257] = { 34861,10, 81206,10, 2061,10, 724,10, 64843,10 }; --Holy
+SPEC_SPELLS_DISPLAY[258] = { 589,10, 15407,10, 8092,10, 34914,10, 78204,10 }; --Shadow
+
+SPEC_SPELLS_DISPLAY[259] = { 1329,10, 32645,10, 79134,10, 79140,10 }; --Assassination
+SPEC_SPELLS_DISPLAY[260] = { 13877,10, 84617,10, 35551,10, 51690,10 }; --Combat
+SPEC_SPELLS_DISPLAY[261] = { 53,10, 16511,10, 91023,10, 51713,10 }; --Subtlety
+
+SPEC_SPELLS_DISPLAY[262] = { 403,10, 51505,10, 88766,10, 61882,10 }; --Elemental
+SPEC_SPELLS_DISPLAY[263] = { 86629,10, 17364,10, 51530,10, 60103,10, 51533,10 }; --Enhancement
+SPEC_SPELLS_DISPLAY[264] = { 974,10, 61295,10, 77472,10, 98008,10 }; --Restoration
+
+SPEC_SPELLS_DISPLAY[265] = { 172,10, 980,10, 30108,10, 103103,10, 1120,10, 74434,10 }; --Affliction
+SPEC_SPELLS_DISPLAY[266] = { 103958,10, 104315,10, 109151,10, 105174,10, 105224,10, 30146,10 }; --Demonology
+SPEC_SPELLS_DISPLAY[267] = { 348,10, 17962,10, 29722,10, 6353,10, 111546,10, 108647,10  }; --Destruction
+
+SPEC_SPELLS_DISPLAY[268] = { 115307,10, 115180,10, 115181,10, 115295,10 }; --Brewmaster
+SPEC_SPELLS_DISPLAY[269] = { 100780,10, 100787,10, 100784,10, 113656,10  }; --Windwalker
+SPEC_SPELLS_DISPLAY[270] = { 115175,10, 115098,10, 116694,10, 116670,10 }; --Mistweaver
+
 
 -- PlayerTalentFrame
 
 function PlayerTalentFrame_Toggle(suggestedTalentGroup)
-	local hidden;
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 	if ( not PlayerTalentFrame:IsShown() ) then
 		ShowUIPanel(PlayerTalentFrame);
-		hidden = false;
-		TalentMicroButtonAlert:Hide();
-	else
-		if ( selectedTab == TALENT_SPECIALIZATION_TAB) then
-			-- if a talent tab is selected then toggle the frame off
-			HideUIPanel(PlayerTalentFrame);
-			hidden = true;
-		elseif (selectedTab == TALENTS_TAB) then
-			HideUIPanel(PlayerTalentFrame);
-			hidden = true;
+		if ( selectedTab ) then
+			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);
 		else
-			hidden = false;
-		end
-	end
-	if ( not hidden ) then
-		-- open the spec with the requested talent group (or the current talent group if the selected
-		-- spec has one)
-		for _, index in ipairs(TALENT_SORT_ORDER) do
-			local spec = specs[index];
-			if (spec.talentGroup == suggestedTalentGroup ) then
-				PlayerSpecTab_OnClick(specTabs[index]);
-				if ( not talentTabSelected ) then
-					PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENT_SPECIALIZATION_TAB]);
-				end
-				break;
+			if ( not GetSpecialization() ) then
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENT_SPECIALIZATION_TAB]);
+			else
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 			end
 		end
-		
-		-- Select specialization Talents tab
-		if (selectedTab ~= TALENT_SPECIALIZATION_TAB) then
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENT_SPECIALIZATION_TAB]);
-		end		
+		TalentMicroButtonAlert:Hide();
+	else
+		HideUIPanel(PlayerTalentFrame);
 	end
 end
 
@@ -207,7 +233,7 @@ function PlayerTalentFrame_Open(talentGroup)
 	ShowUIPanel(PlayerTalentFrame);
 
 	-- Show the talents tab
-	PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENT_SPECIALIZATION_TAB]);
+	PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 	
 	-- open the spec with the requested talent group
 	for index, spec in next, specs do
@@ -361,8 +387,12 @@ function PlayerTalentFrame_OnShow(self)
 
 	if ( not self.hasBeenShown ) then
 		-- The first time the frame is shown, select your active spec
-		PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_TALENT_SPEC]);
 		self.hasBeenShown = true;
+		if ( not GetSpecialization() ) then
+			PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_TALENT_SPEC]);
+		else
+			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+		end
 	else
 		PlayerTalentFrame_Refresh();
 	end
@@ -615,7 +645,7 @@ function PlayerTalentFrame_ToggleTutorial(forceShow)
 	local tutorial = tutorialFrame.tutorial;
 	if ( forceShow or not tutorialFrame:IsShown() ) then
 		local title, firstTimeText, description;
-		local itemName = GetGlyphClearInfo();
+		local itemName = GetGlyphClearInfo() or "";
 		if ( tutorial == LE_FRAME_TUTORIAL_GLYPH ) then
 			title = CHOOSE_GLYPHS;
 			firstTimeText = CHOOSE_GLYPHS_NOW;
@@ -743,6 +773,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame) or TALENT_SPECIALIZATION_TAB;
 	local numVisibleTabs = 0;
 	local tab;
+	playerLevel = playerLevel or UnitLevel("player");
 
 	-- setup specialization tab
 	talentTabWidthCache[TALENT_SPECIALIZATION_TAB] = 0;
@@ -757,31 +788,37 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	end
 	
 	-- setup talents talents tab
+	local meetsTalentLevel = playerLevel >= SHOW_TALENT_LEVEL;
 	talentTabWidthCache[TALENTS_TAB] = 0;
 	tab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
 	if ( tab ) then
-		tab:Show();
-		firstShownTab = firstShownTab or tab;
-		PanelTemplates_TabResize(tab, 0);
-		talentTabWidthCache[TALENTS_TAB] = PanelTemplates_GetTabWidth(tab);
-		totalTabWidth = totalTabWidth + talentTabWidthCache[TALENTS_TAB];
-		numVisibleTabs = numVisibleTabs+1;
+		if ( meetsTalentLevel ) then
+			tab:Show();
+			firstShownTab = firstShownTab or tab;
+			PanelTemplates_TabResize(tab, 0);
+			talentTabWidthCache[TALENTS_TAB] = PanelTemplates_GetTabWidth(tab);
+			totalTabWidth = totalTabWidth + talentTabWidthCache[TALENTS_TAB];
+			numVisibleTabs = numVisibleTabs+1;
+		else
+			tab:Hide();
+		end
 	end
 
 	-- setup glyph tab
-	playerLevel = playerLevel or UnitLevel("player");
 	local meetsGlyphLevel = playerLevel >= SHOW_INSCRIPTION_LEVEL;
 	tab = _G["PlayerTalentFrameTab"..GLYPH_TALENT_TAB];
-	if ( meetsGlyphLevel ) then
-		tab:Show();
-		firstShownTab = firstShownTab or tab;
-		PanelTemplates_TabResize(tab, 0);
-		talentTabWidthCache[GLYPH_TALENT_TAB] = PanelTemplates_GetTabWidth(tab);
-		totalTabWidth = totalTabWidth + talentTabWidthCache[GLYPH_TALENT_TAB];
-		numVisibleTabs = numVisibleTabs+1;
-	else
-		tab:Hide();
-		talentTabWidthCache[GLYPH_TALENT_TAB] = 0;
+	if ( tab ) then
+		if ( meetsGlyphLevel ) then
+			tab:Show();
+			firstShownTab = firstShownTab or tab;
+			PanelTemplates_TabResize(tab, 0);
+			talentTabWidthCache[GLYPH_TALENT_TAB] = PanelTemplates_GetTabWidth(tab);
+			totalTabWidth = totalTabWidth + talentTabWidthCache[GLYPH_TALENT_TAB];
+			numVisibleTabs = numVisibleTabs+1;
+		else
+			tab:Hide();
+			talentTabWidthCache[GLYPH_TALENT_TAB] = 0;
+		end
 	end
 
 	-- select the first shown tab if the selected tab does not exist for the selected spec
@@ -854,6 +891,9 @@ function PlayerTalentTab_OnLoad(self)
 	PlayerTalentFrameTab_OnLoad(self);
 
 	self:RegisterEvent("PLAYER_LEVEL_UP");
+	if (UnitLevel("player") == SHOW_TALENT_LEVEL and (GetNumUnspentTalents() > 0) and (self:GetID() == TALENTS_TAB)) then
+		SetButtonPulse(self, 60, 0.75);
+	end
 end
 
 function PlayerTalentTab_OnClick(self)
@@ -1067,7 +1107,6 @@ function PlayerSpecTab_OnClick(self)
 	end
 
 	-- update the talent frame
-	PlayerTalentFrameSpecialization.spellsScroll.ScrollBar:SetValue(0);
 	PlayerTalentFrame_Refresh();
 end
 
@@ -1096,11 +1135,6 @@ function PlayerTalentFrame_CreateSpecSpellButton(index)
 	local scrollChild = PlayerTalentFrameSpecialization.spellsScroll.child;
 	local frame = CreateFrame("BUTTON", scrollChild:GetName().."Ability"..index, scrollChild, "PlayerSpecSpellTemplate");
 	scrollChild["abilityButton"..index] = frame;
-	if ( mod(index, 2) == 0 ) then
-		frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 161, 0);
-	else
-		frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, -18);
-	end
 	return frame;
 end
 
@@ -1164,75 +1198,81 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		self.bg:SetDesaturated(true);
 		scrollChild.description:SetTextColor(0.75, 0.75, 0.75);
 		scrollChild.roleName:SetTextColor(0.75, 0.75, 0.75);
+		scrollChild.coreabilities:SetTextColor(0.75, 0.75, 0.75);
 		scrollChild.specIcon:SetDesaturated(true);
 		scrollChild.roleIcon:SetDesaturated(true);
 		scrollChild.ring:SetDesaturated(true);
+		scrollChild.gradient:SetDesaturated(true);
+		scrollChild.scrollwork_left:SetDesaturated(true);
+		scrollChild.scrollwork_right:SetDesaturated(true);
+		scrollChild.scrollwork_topleft:SetDesaturated(true);
+		scrollChild.scrollwork_topright:SetDesaturated(true);
+		scrollChild.scrollwork_bottomleft:SetDesaturated(true);
+		scrollChild.scrollwork_bottomright:SetDesaturated(true);
 	elseif ( not disable and self.disabled ) then
 		self.disabled = false;
 		self.bg:SetDesaturated(false);
-		scrollChild.description:SetTextColor(0.25, 0.1484375, 0.02);
-		scrollChild.roleName:SetTextColor(0.25, 0.1484375, 0.02);
+		scrollChild.description:SetTextColor(1.0, 1.0, 1.0);
+		scrollChild.roleName:SetTextColor(1.0, 1.0, 1.0);
+		scrollChild.coreabilities:SetTextColor(0.878, 0.714, 0.314);
 		scrollChild.specIcon:SetDesaturated(false);
 		scrollChild.roleIcon:SetDesaturated(false);
 		scrollChild.ring:SetDesaturated(false);	
+		scrollChild.gradient:SetDesaturated(false);
+		scrollChild.scrollwork_left:SetDesaturated(false);
+		scrollChild.scrollwork_right:SetDesaturated(false);
+		scrollChild.scrollwork_topleft:SetDesaturated(false);
+		scrollChild.scrollwork_topright:SetDesaturated(false);
+		scrollChild.scrollwork_bottomleft:SetDesaturated(false);
+		scrollChild.scrollwork_bottomright:SetDesaturated(false);
 	end
 	-- disable Learn button
-	if ( playerTalentSpec or disable ) then
-		PlayerTalentFrameSpecializationLearnButton:Disable();
+	if ( playerTalentSpec or disable or UnitLevel("player") < SHOW_SPEC_LEVEL ) then
+		PlayerTalentFrameSpecialization.learnButton:Disable();
+		UIFrameFlashStop(PlayerTalentFrameSpecialization.learnButton.Flash);
 	else
-		PlayerTalentFrameSpecializationLearnButton:Enable();
+		PlayerTalentFrameSpecialization.learnButton:Enable();
+		UIFrameFlash(PlayerTalentFrameSpecialization.learnButton.Flash, 0.7, 0.7, -1);
 	end	
 	
 	-- set up spells
-	index = 1
-	local bonuses =  {GetSpecializationSpells(shownSpec)};
+	index = 1;
+	local bonuses = SPEC_SPELLS_DISPLAY[id];
+	if ( not bonuses ) then
+		bonuses =  {GetSpecializationSpells(shownSpec)};
+	end
 	for i=1,#bonuses,2 do
 		local frame = scrollChild["abilityButton"..index];
 		if not frame then
 			frame = PlayerTalentFrame_CreateSpecSpellButton(index);
 		end
-	
-		local name, subname, icon = GetSpellInfo(bonuses[i]);
-		frame.icon:SetTexture(icon);
+		if ( mod(index, 2) == 0 ) then
+			frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
+		else
+			if ((#bonuses/2) > 4 ) then
+				frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, 0);
+			else
+				frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, -20);
+			end
+		end
+
+		local name, subname = GetSpellInfo(bonuses[i]);
+		local _, icon = GetSpellTexture(bonuses[i]);
+		SetPortraitToTexture(frame.icon, icon);
 		frame.name:SetText(name);
-		frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, bonuses[i+1]);
 		frame.spellID = bonuses[i];
 		frame.extraTooltip = nil;
 		if ( disable ) then
 			frame.icon:SetDesaturated(true);
+			frame.ring:SetDesaturated(true);
 			frame.subText:SetTextColor(0.75, 0.75, 0.75);
 		else
 			frame.icon:SetDesaturated(false);
+			frame.ring:SetDesaturated(false);
 			frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
 		end
 		frame:Show();
 		index = index + 1;
-	end
-	
-	-- Update spell button for mastery
-	local masterySpell = GetSpecializationMasterySpells(shownSpec);
-	if (masterySpell) then
-		local _, class = UnitClass("player");
-		frame = scrollChild["abilityButton"..index];
-		if ( not frame ) then
-			frame = PlayerTalentFrame_CreateSpecSpellButton(index);
-		end
-		
-		--Override icon to Mastery icon
-		local name, subname, icon = GetSpellInfo(masterySpell);
-		frame.icon:SetTexture(icon);
-		frame.name:SetFormattedText(TALENT_MASTERY_LABEL, name);
-		frame.spellID = masterySpell;
-		frame.spellID2 = masterySpell2;
-		if ( disable ) then
-			frame.icon:SetDesaturated(true);
-			frame.subText:SetTextColor(0.75, 0.75, 0.75);
-		else
-			frame.icon:SetDesaturated(false);
-			frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
-		end
-		frame:Show();
-		index = index+1;
 	end
 
 	-- hide unused spell buttons

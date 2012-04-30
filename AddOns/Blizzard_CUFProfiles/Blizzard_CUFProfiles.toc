@@ -1,0 +1,6 @@
+## Interface: 50001
+## Title: Blizzard_CUFProfiles
+## Secure: 1
+## LoadOnDemand: 0
+
+Blizzard_CompactUnitFrameProfiles.xml

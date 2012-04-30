@@ -74,8 +74,12 @@ function UpdateMicroButtons()
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", 1);
 	else
-		TalentMicroButton:Enable();
-		TalentMicroButton:SetButtonState("NORMAL");
+		if ( playerLevel < SHOW_SPEC_LEVEL ) then
+			TalentMicroButton:Disable();
+		else
+			TalentMicroButton:Enable();
+			TalentMicroButton:SetButtonState("NORMAL");
+		end
 	end
 
 	if (  QuestLogFrame and QuestLogFrame:IsShown() ) then
@@ -293,11 +297,14 @@ function TalentMicroButton_OnEvent(self, event, ...)
 
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
-		if ( not (PlayerTalentFrame and PlayerTalentFrame:IsShown())) then
+		if (level == SHOW_SPEC_LEVEL) then
 			MicroButtonPulse(self);
-		end
-		if (level == SHOW_TALENT_LEVEL) then
-			TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_TUTORIAL);
+			TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
+		elseif (level == SHOW_TALENT_LEVEL) then
+			MicroButtonPulse(self);
+			TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
 			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
 			TalentMicroButtonAlert:Show();
 		end
@@ -308,8 +315,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
 		if (not self.receivedUpdate and GetNumSpecializations(false) > 0) then
 			self.receivedUpdate = true;
-			local activeSpec = GetActiveSpecGroup(false);
-			if (GetNumUnspentTalents() > 0) then
+			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or GetNumUnspentTalents() > 0)) then
 				MicroButtonPulse(self);
 			end
 		end

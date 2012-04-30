@@ -320,62 +320,6 @@
 	</Texture>
 
 	
-	<CheckButton name="EncounterClassFilterTemplate" virtual="true" motionScriptsWhileDisabled="true">
-		<Size x="50" y="50"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentShadow" parentKey="shadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-IconShadow">
-					<Size x="70" y="70"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="0.85"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBevelEdge" parentKey="bevel" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights">
-					<Size x="50" y="50"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnMouseDown>
-				if( self:IsEnabled() == 1 ) then
-					self.bevel:Hide();
-					self.shadow:Hide();
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if( self:IsEnabled() == 1 ) then
-					self.bevel:Show();
-					self.shadow:Show();
-				end
-			</OnMouseUp>
-			<OnClick>
-				EncounterJournal_SetClassFilter(self:GetID(), self.name);
-				self:GetParent():Hide();
-				PlaySound("igMainMenuOptionCheckBoxOn");
-			</OnClick>
-		</Scripts>
-		<HighlightTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
-			<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
-		</HighlightTexture>
-		<CheckedTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
-			<TexCoords left="0.5" right="1" top="0" bottom="0.5"/>
-		</CheckedTexture>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
-		<PushedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
-			<Size x="50" y="50"/>
-			<Anchors>
-				<Anchor point="CENTER" x="2" y="-2"/>
-			</Anchors>
-		</PushedTexture>
-	</CheckButton>
-	
 	<Button name="EncounterInstanceButtonTemplate" virtual="true">
 		<Size x="174" y="96"/>
 		<Layers>
@@ -2214,119 +2158,15 @@
 														self.texture:SetPoint("TOPLEFT", 0, 0);
 													</OnMouseUp>
 													<OnClick> 
-														EncounterJournal_SetClassFilter();--Clear
+														EJ_ResetLootFilter();
+														EncounterJournal_LootUpdate();
 														self:GetParent():Hide();
 													</OnClick>
 												</Scripts>
 											</Button>
 										</Frames>
 									</Frame>
-									<Frame name="$parentClassFilterFrame" parentKey="classFilter" hidden="true" enableMouse="true">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="0" y="0"/>
-											<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-25" y="-220"/>
-										</Anchors>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<BackgroundInsets>
-												<AbsInset left="5" right="5" top="5" bottom="5"/>
-											</BackgroundInsets>
-										</Backdrop>
-										<Layers>
-											<Layer level="OVERLAY">
-												<FontString inherits="GameFontNormalMed3" text="CLASS">
-													<Size x="0" y="0"/>
-													<Anchors>
-														<Anchor point="TOP" x="0" y="-15"/>
-													</Anchors>
-												</FontString>
-											</Layer>
-										</Layers>
-										<Frames>
-											<CheckButton name="$parentClass1" inherits="EncounterClassFilterTemplate" parentKey="class1" id="1">
-												<Anchors>
-													<Anchor point="TOPLEFT" x="20" y="-40"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass2" inherits="EncounterClassFilterTemplate" parentKey="class2" id="2">
-												<Anchors>
-													<Anchor point="LEFT" relativeTo="$parentClass1" relativePoint="RIGHT" x="8" y="0"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass3" inherits="EncounterClassFilterTemplate" parentKey="class3" id="3">
-												<Anchors>
-													<Anchor point="LEFT" relativeTo="$parentClass2" relativePoint="RIGHT" x="8" y="0"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass4" inherits="EncounterClassFilterTemplate" parentKey="class4" id="4">
-												<Anchors>
-													<Anchor point="LEFT" relativeTo="$parentClass3" relativePoint="RIGHT" x="8" y="0"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass5" inherits="EncounterClassFilterTemplate" parentKey="class5" id="5">
-												<Anchors>
-													<Anchor point="LEFT" relativeTo="$parentClass4" relativePoint="RIGHT" x="8" y="0"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass6" inherits="EncounterClassFilterTemplate" parentKey="class6" id="6">
-												<Anchors>
-													<Anchor point="TOP" relativeTo="$parentClass1" relativePoint="BOTTOM" x="0" y="-8"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass7" inherits="EncounterClassFilterTemplate" parentKey="class7" id="7">
-												<Anchors>
-													<Anchor point="TOP" relativeTo="$parentClass2" relativePoint="BOTTOM" x="0" y="-8"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass8" inherits="EncounterClassFilterTemplate" parentKey="class8" id="8">
-												<Anchors>
-													<Anchor point="TOP" relativeTo="$parentClass3" relativePoint="BOTTOM" x="0" y="-8"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass9" inherits="EncounterClassFilterTemplate" parentKey="class9" id="9">
-												<Anchors>
-													<Anchor point="TOP" relativeTo="$parentClass4" relativePoint="BOTTOM" x="0" y="-8"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass10" inherits="EncounterClassFilterTemplate" parentKey="class10" id="10">
-												<Anchors>
-													<Anchor point="TOP" relativeTo="$parentClass5" relativePoint="BOTTOM" x="0" y="-8"/>
-												</Anchors>
-											</CheckButton>
-											<CheckButton name="$parentClass11" inherits="EncounterClassFilterTemplate" parentKey="class11" id="11">
-												<Anchors>
-													<Anchor point="TOP" relativeTo="$parentClass6" relativePoint="BOTTOM" x="0" y="-8"/>
-												</Anchors>
-											</CheckButton>
-										</Frames>
-										<Scripts>
-											<OnShow>
-												self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
-												self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
-											</OnShow>
-											<OnLoad>
-												local classes = {EJ_GetAvailableClasses()};
-												local name, class;
-												for i=1,#classes,2 do
-													name = classes[i];
-													class = classes[i+1];
-													
-													local coords = CLASS_ICON_TCOORDS[class];
-													local button = self["class"..floor((i+1)/2)];
-													button.name = name;
-													
-													button:GetNormalTexture():SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-													button:GetPushedTexture():SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-												end
-											</OnLoad>
-										</Scripts>
-									</Frame>
-									<Button name="$parentFilter" parentKey="filter" text="GEAR_FILTER">
+									<Button name="$parentFilterToggle" parentKey="filter" text="GEAR_FILTER">
 										<Size x="75" y="26"/>
 										<HitRectInsets>
 											<AbsInset left="-13" right="-13" top="0" bottom="0"/>
@@ -2389,11 +2229,7 @@
 										</ButtonText>
 										<Scripts>
 											<OnClick>
-												if not self:GetParent().classFilter:IsShown() then
-													self:GetParent().classFilter:Show();
-												else
-													self:GetParent().classFilter:Hide();
-												end
+												ToggleDropDownMenu(1, nil, self:GetParent().lootFilter, self, 5, 0);
 												PlaySound("igMainMenuOption");
 											</OnClick>
 											<OnLoad>
@@ -2438,6 +2274,12 @@
 											</OnMouseUp>
 										</Scripts>
 									</Button>
+									<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="lootFilter">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="0" y="-28"/>
+										</Anchors>
+									</Frame>
+		
 									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
 										<Anchors>
 											<Anchor point="TOPRIGHT" x="0" y="-18"/>
@@ -2454,9 +2296,6 @@
 									<OnShow>
 										EncounterJournal_LootUpdate();
 									</OnShow>
-									<OnHide>
-										self.classFilter:Hide();
-									</OnHide>
 								</Scripts>
 							</ScrollFrame>
 						</Frames>

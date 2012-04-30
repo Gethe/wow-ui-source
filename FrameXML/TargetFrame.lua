@@ -301,12 +301,15 @@ end
 function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);
 	self.nameBackground:Show();
+	self.manabar:Show();
+	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
 
 	if ( forceNormalTexture ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
 	elseif ( classification == "minus" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Minus");
 		self.nameBackground:Hide();
+		self.manabar:Hide();
 		forceNormalTexture = true;
 	elseif ( classification == "worldboss" or classification == "elite" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
@@ -319,7 +322,30 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 		forceNormalTexture = true;
 	end
 		
-	if ( not forceNormalTexture) then
+	if ( forceNormalTexture ) then
+		self.haveElite = nil;
+		if ( classification == "minus" ) then
+			TargetFrameBackground:SetSize(119,12);
+			TargetFrameBackground:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, 47);
+		else
+			TargetFrameBackground:SetSize(119,25);
+			TargetFrameBackground:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, 35);
+		end
+		if ( self.threatIndicator ) then
+			if ( classification == "minus" ) then
+				self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Minus-Flash");
+				self.threatIndicator:SetTexCoord(0, 1, 0, 1);
+				self.threatIndicator:SetWidth(256);
+				self.threatIndicator:SetHeight(128);
+				self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
+			else
+				self.threatIndicator:SetTexCoord(0, 0.9453125, 0, 0.181640625);
+				self.threatIndicator:SetWidth(242);
+				self.threatIndicator:SetHeight(93);
+				self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
+			end
+		end	
+	else
 		self.haveElite = true;
 		TargetFrameBackground:SetSize(119,41);
 		if ( self.threatIndicator ) then
@@ -328,15 +354,6 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 			self.threatIndicator:SetHeight(112);
 			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -22, 9);
 		end		
-	else
-		self.haveElite = nil;
-		TargetFrameBackground:SetSize(119,25);
-		if ( self.threatIndicator ) then
-			self.threatIndicator:SetTexCoord(0, 0.9453125, 0, 0.181640625);
-			self.threatIndicator:SetWidth(242);
-			self.threatIndicator:SetHeight(93);
-			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0);
-		end	
 	end
 	
 	if (self.questIcon) then

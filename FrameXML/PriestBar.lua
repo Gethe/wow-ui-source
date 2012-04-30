@@ -1,4 +1,4 @@
-SHADOW_ORBS_SHOW_LEVEL = 80;
+SHADOW_ORBS_SHOW_LEVEL = 10;
 PRIEST_BAR_NUM_ORBS = 3;
 
 function PriestBarFrame_OnLoad(self)

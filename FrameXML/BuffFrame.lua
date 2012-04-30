@@ -114,29 +114,15 @@ function RaidBuffTray_Update()
 	for i=1,NUM_LE_RAID_BUFF_TYPES do
 		local name, rank, texture, duration, expiration, spellId, slot = GetRaidBuffTrayAuraInfo(i);
 		local buff = ConsolidatedBuffsTooltip["Buff"..i];
-		if name then
+		if name then  
 			buff.index = slot;
+			buff.name = name;
 			buff.icon:SetTexture(texture);
 			buff.label:SetFontObject(GameFontNormalSmall);
-			if ( duration > 0 and expiration and SHOW_BUFF_DURATIONS == "1" ) then
-				if ( not buff.timeLeft ) then
-					buff:SetScript("OnUpdate", RaidTray_Buff_OnUpdate);
-				end			
-				buff.timeLeft = expiration - GetTime();
-				buff.expirationTime = expiration;	
-			else
-				if ( buff.timeLeft ) then
-					buff:SetScript("OnUpdate", nil);
-				end
-				buff.timeLeft = nil;
-				buff.label:SetText(buff.labelString);
-			end
 			numBufs = numBufs + 1;
 		else
-			if ( buff.timeLeft ) then
-				buff:SetScript("OnUpdate", nil);
-			end
 			buff.index = nil;
+			buff.name = nil;
 			buff.icon:SetTexture("Interface\\Common\\buff-bg");
 			buff.label:SetFontObject(GameFontDisableSmall);			
 			buff.label:SetText(buff.labelString);
