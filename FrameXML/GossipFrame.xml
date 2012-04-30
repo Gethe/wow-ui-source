@@ -62,6 +62,7 @@
 		<NormalFont style="QuestFontLeft"/>
 	</Button>
 	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="ARTWORK">
                 <Texture name="GossipFramePortrait">
@@ -73,7 +74,7 @@
             </Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="GossipFrameBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="512"/>
+					<Size x="510" y="620"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
@@ -117,7 +118,7 @@
 						</Scripts>
 					</Button>
 					<ScrollFrame name="GossipGreetingScrollFrame" inherits="UIPanelScrollFrameTemplate">
-						<Size x="300" y="334"/>
+						<Size x="300" y="403"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GossipFrame" x="5" y="-65"/>
 						</Anchors>
@@ -149,7 +150,7 @@
 						</Layers>
 						<ScrollChild>
 							<Frame name="GossipGreetingScrollChildFrame">
-								<Size x="300" y="334"/>
+								<Size x="300" y="403"/>
 								<Layers>
 									<Layer>
 										<FontString name="GossipGreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">

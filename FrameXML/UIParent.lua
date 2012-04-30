@@ -202,6 +202,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("RAISED_AS_GHOUL");
 	self:RegisterEvent("SOR_START_EXPERIENCE_INCOMPLETE");
 	self:RegisterEvent("MISSING_OUT_ON_LOOT");
+	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
+	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -944,6 +946,15 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "MISSING_OUT_ON_LOOT" ) then
 		MissingLootFrame_Show();
+	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
+		local spellID = arg1;
+		local type = arg2;
+		local text = arg3;
+		local duration = arg4;
+		StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
+	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
+		local spellID = arg1;
+		StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
 	elseif ( event == "CONFIRM_DISENCHANT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
@@ -3340,6 +3351,17 @@ function CanGroupInvite()
 	end
 end
 
+function InviteToGroup(name)
+	if ( not IsInRaid() and GetNumGroupMembers() >= MAX_PARTY_MEMBERS) then
+		local dialog = StaticPopup_Show("CONVERT_TO_RAID");
+		if ( dialog ) then
+			dialog.data = UnitName(name);
+		end
+	else
+		InviteUnit(name);
+	end
+end
+
 function UnitHasMana(unit)
 	if ( UnitPowerMax(unit, SPELL_POWER_MANA) > 0 ) then
 		return 1;
@@ -3950,4 +3972,41 @@ function BreakUpLargeNumbers(value)
 	end
 	retString = retString..string.sub(value, -3, -1)..decimal;
 	return retString;
+end
+
+function SetChallengeModeMedalTexture(icon, medal, size, leftOffset, yOffset)
+	if ( not medal or medal == CHALLENGE_MEDAL_NONE ) then
+		icon:SetTexture("Interface\\Challenges\\challenges-main");
+		icon:SetTexCoord(0.93847656, 0.94726563, 0.00195313, 0.02148438);
+		icon:SetSize(9, 10);
+		if ( size and leftOffset ) then
+			-- since this texture is smaller, it needs to be set further in to be centered relative to normal medal
+			local diff = (size - 9) / 2;
+			icon:SetPoint("LEFT", leftOffset + diff, yOffset);
+		end
+	else
+		local texture;
+		if ( medal == CHALLENGE_MEDAL_COPPER ) then
+			texture = "Interface\\Challenges\\challenges-copper";
+		elseif ( medal == CHALLENGE_MEDAL_SILVER ) then
+			texture = "Interface\\Challenges\\challenges-silver";
+		elseif ( medal == CHALLENGE_MEDAL_GOLD ) then
+			texture = "Interface\\Challenges\\challenges-gold";
+		end
+		icon:SetTexture(texture);
+		icon:SetTexCoord(0, 1, 0, 1);
+		if ( size ) then
+			icon:SetSize(size, size);
+		end
+		if ( leftOffset ) then
+			icon:SetPoint("LEFT", leftOffset, yOffset);
+		end
+	end
+end
+
+function GetTimeStringFromSeconds(seconds)
+	local hours = floor(seconds / 3600);
+	local minutes = floor((seconds / 60) - (hours * 60));
+	seconds = seconds - hours * 3600 - minutes * 60;
+	return format("%.2d:%.2d:%.2d", hours, minutes, seconds);
 end

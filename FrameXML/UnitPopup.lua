@@ -288,8 +288,10 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	if ( instanceType == "none" ) then
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
 		UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;		
+		UnitPopupButtons["CHALLENGE_MODE"].nested = 1;
 	else
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = nil;
+		UnitPopupButtons["CHALLENGE_MODE"].nested = nil;
 		if ( allowedRaidDifficultyChange ) then
 			UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;
 		else
@@ -1287,6 +1289,12 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( allowedRaidDifficultyChange and allowedRaidDifficultyChange == value ) then
 							enable = 1;
 						end
+					elseif ( value == "CHALLENGE_MODE" and inInstance ) then
+						enable = 0;
+					elseif ( ( strsub(value, 1, 14) == "CHALLENGE_MODE" ) and ( strlen(value) > 14 ) ) then
+						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or HasLFGRestrictions() ) then
+							enable = 0;	
+						end
 					elseif ( value == "CONVERT_TO_PARTY" ) then
 						if ( GetNumGroupMembers() > MEMBERS_PER_RAID_GROUP ) then
 							enable = 0;
@@ -1408,7 +1416,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "DUEL" ) then
 		StartDuel(unit, 1);
 	elseif ( button == "INVITE" ) then
-		InviteUnit(fullname);
+		InviteToGroup(fullname);
 	elseif ( button == "UNINVITE" or button == "VOTE_TO_KICK" ) then
 		UninviteUnit(fullname, nil, 1);
 	elseif ( button == "REMOVE_FRIEND" ) then

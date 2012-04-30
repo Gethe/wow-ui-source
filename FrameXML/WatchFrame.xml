@@ -254,12 +254,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="WatchFrameLinesAutoQuestShadow" inherits="QuestTracker-Shadow" parentKey="AutoQuestShadow" hidden="true">
+						<Texture name="WatchFrameLinesShadow" inherits="QuestTracker-Shadow" parentKey="Shadow" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-40" y="8"/>
 							</Anchors>
 							<Animations>
-								<AnimationGroup name="WatchFrameLinesAutoQuestShadowFadeIn" parentKey="FadeIn">
+								<AnimationGroup name="WatchFrameLinesShadowFadeIn" parentKey="FadeIn">
 									<Alpha change="-1" duration="0" order="1"/>
 									<Alpha change="1" duration="0.5" order="2"/>
 								</AnimationGroup>

@@ -1583,7 +1583,7 @@ SlashCmdList["INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
-	InviteUnit(msg);
+	InviteToGroup(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)

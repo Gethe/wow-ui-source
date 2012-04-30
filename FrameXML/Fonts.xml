@@ -311,7 +311,7 @@
 		</Shadow>
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="FriendsFont_Normal" font="Fonts\FRIENDS.TTF" virtual="true">
+	<Font name="FriendsFont_Normal" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<Shadow>
 			<Offset>
 				<AbsDimension x="1" y="-1"/>
@@ -322,7 +322,7 @@
 			<AbsValue val="12"/>
 		</FontHeight>
 	</Font>
-	<Font name="FriendsFont_Small" font="Fonts\FRIENDS.TTF" virtual="true">
+	<Font name="FriendsFont_Small" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<Shadow>
 			<Offset>
 				<AbsDimension x="1" y="-1"/>
@@ -333,7 +333,7 @@
 			<AbsValue val="10"/>
 		</FontHeight>
 	</Font>
-	<Font name="FriendsFont_Large" font="Fonts\FRIENDS.TTF" virtual="true">
+	<Font name="FriendsFont_Large" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<Shadow>
 			<Offset>
 				<AbsDimension x="1" y="-1"/>

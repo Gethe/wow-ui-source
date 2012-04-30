@@ -1538,7 +1538,7 @@ TRAVEL PASS
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InviteUnit(WhoFrame.selectedName);
+								InviteToGroup(WhoFrame.selectedName);
 							</OnClick>
 						</Scripts>
 					</Button>

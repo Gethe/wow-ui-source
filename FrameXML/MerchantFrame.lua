@@ -15,6 +15,9 @@ function MerchantFrame_OnLoad(self)
 	PanelTemplates_SetTab(self, 1);
 	
 	MoneyFrame_SetMaxDisplayWidth(MerchantMoneyFrame, 160);
+	
+	UIDropDownMenu_SetWidth(self.lootFilter, 95);
+	UIDropDownMenu_Initialize(self.lootFilter, MerchantFrame_InitFilter);
 end
 
 function MerchantFrame_OnEvent(self, event, ...)
@@ -49,8 +52,9 @@ function MerchantFrame_OnShow(self)
 	MerchantFrame_UpdateCanRepairAll();
 	MerchantFrame_UpdateGuildBankRepair();
 	PanelTemplates_SetTab(MerchantFrame, 1);
-	MerchantFrame_Update();
+	ResetSetMerchantFilter();
 	
+	MerchantFrame_Update();
 	PlaySound("igCharacterInfoOpen");
 end
 
@@ -67,6 +71,7 @@ function MerchantFrame_OnHide(self)
 end
 
 function MerchantFrame_Update()
+	MerchantFrame_UpdateFilterString()
 	if ( MerchantFrame.selectedTab == 1 ) then
 		MerchantFrame_UpdateMerchantInfo();
 	else
@@ -757,3 +762,63 @@ function MerchantFrame_UpdateCurrencyAmounts()
 		end
 	end
 end
+
+
+function MerchantFrame_SetFilter(self, classIndex)
+	SetMerchantFilter(classIndex);
+	MerchantFrame.page = 1;
+	if MerchantFrame:IsVisible() then
+		MerchantFrame_Update();
+	end
+end
+
+function MerchantFrame_UpdateFilterString()
+	local name = ALL;
+	local currFilter = GetMerchantFilter();
+
+	if currFilter == LE_LOOT_FILTER_CLASS then
+		name = UnitClass("player");
+	elseif currFilter == LE_LOOT_FILTER_BOE then
+		name = ITEM_BIND_ON_EQUIP;
+	elseif currFilter ~= LE_LOOT_FILTER_ALL then -- Spec
+		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1);
+		name = specName;
+	end
+	
+	UIDropDownMenu_SetText(MerchantFrame.lootFilter, name);
+end
+
+function MerchantFrame_InitFilter()
+	local info = UIDropDownMenu_CreateInfo();
+	local currFilter = GetMerchantFilter();
+	local className = UnitClass("player");
+
+
+	info.text = ALL;
+	info.checked = currFilter == LE_LOOT_FILTER_ALL;
+	info.arg1 = LE_LOOT_FILTER_ALL;
+	info.func = MerchantFrame_SetFilter;
+	UIDropDownMenu_AddButton(info);
+	
+	
+	info.text = className;
+	info.checked = currFilter == LE_LOOT_FILTER_CLASS;
+	info.arg1 = LE_LOOT_FILTER_CLASS;
+	UIDropDownMenu_AddButton(info);
+	
+	
+	local numSpecs = GetNumSpecializations();
+	for i = 1, numSpecs do
+		local _, name, _, icon = GetSpecializationInfo(i);
+		info.text = name;
+		info.arg1 = LE_LOOT_FILTER_SPEC1 + i - 1;
+		info.checked = currFilter == (LE_LOOT_FILTER_SPEC1 + i - 1);
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	info.text = ITEM_BIND_ON_EQUIP;
+	info.checked = currFilter == LE_LOOT_FILTER_BOE;
+	info.arg1 = LE_LOOT_FILTER_BOE;
+	UIDropDownMenu_AddButton(info);
+end
+

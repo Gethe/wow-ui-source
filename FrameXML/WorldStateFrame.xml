@@ -1181,4 +1181,85 @@
 			<OnUpdate function="RequestBattlefieldScoreData"/>
 		</Scripts>
 	</Frame>
+	<Frame name="WorldStateChallengeModeTimer" hidden="true">
+		<Size x="198" y="55"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\Challenges\challenges-main">
+					<Size x="207" y="64"/>	
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.71972656" right="0.92187500" top="0.21289063" bottom="0.33789063"/>	
+				</Texture>			
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Challenges\challenges-silver" parentKey="medalIcon">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="-2"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="QuestFont_Shadow_Huge" text="TOTAL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="53" y="-9"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0" g="0" b="0" />
+					</Shadow>										
+					<Color r="0.87" g="0.80" b="0.61"/>
+				</FontString>
+				<FontString inherits="QuestFont_Shadow_Huge" justifyH="LEFT" parentKey="timeElapsed">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="118" y="-9"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0" g="0" b="0" />
+					</Shadow>					
+					<Color r="0.87" g="0.80" b="0.61"/>
+				</FontString>				
+			</Layer>			
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="statusBar">
+				<Size>
+					<AbsDimension x="133" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" x="22" y="9"/>
+				</Anchors>				
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\Challenges\challenges-main">
+							<Size x="140" y="23"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00097656" right="0.13769531" top="0.47265625" bottom="0.51757813"/>	
+						</Texture>
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="timeLeft">
+							<Anchors>
+								<Anchor point="LEFT" x="42" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetStatusBarColor(0, 0.33, 0.61);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnUpdate function="WorldStateChallengeModeTimer_OnUpdate"/>
+		</Scripts>
+	</Frame>	
+
 </Ui>

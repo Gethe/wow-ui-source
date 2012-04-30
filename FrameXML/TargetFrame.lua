@@ -314,6 +314,9 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite");
 	elseif ( classification == "rare" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
+	else
+		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
+		forceNormalTexture = true;
 	end
 		
 	if ( not forceNormalTexture) then

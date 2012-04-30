@@ -958,7 +958,7 @@ local function _CalendarFrame_InviteToRaid(maxInviteCount)
 			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
 			 inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED or
 			 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP) ) then
-			InviteUnit(name);
+			InviteToGroup(name);
 			inviteCount = inviteCount + 1;
 		end
 		i = i + 1;
@@ -4300,7 +4300,7 @@ function CalendarInviteContextMenu_ClearModerator()
 end
 
 function CalendarInviteContextMenu_InviteToGroup(self)
-	InviteUnit(self.value);
+	InviteToGroup(self.value);
 end
 
 function CalendarInviteStatusContextMenu_OnLoad(self)
@@ -5409,7 +5409,7 @@ function CalendarInviteToGroupDropDown_Confirmed_OnClick(self)
 		name, level, className, classFilename, inviteStatus, modStatus = CalendarEventGetInvite(i);
 		if ( not UnitInParty(name) and not UnitInRaid(name) and
 			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED) ) then
-			InviteUnit(name);
+			InviteToGroup(name);
 		end
 	end
 end
@@ -5419,7 +5419,7 @@ function CalendarInviteToGroupDropDown_All_OnClick(self)
 	for i = 1, inviteCount do
 		local name = CalendarEventGetInvite(i);
 		if ( not UnitInParty(name) and not UnitInRaid(name) ) then
-			InviteUnit(name);
+			InviteToGroup(name);
 		end
 	end
 end

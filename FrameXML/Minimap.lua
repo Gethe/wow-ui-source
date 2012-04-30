@@ -610,7 +610,11 @@ end
 
 function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
-	if ( IS_GUILD_GROUP or ((instanceType == "party" or instanceType == "raid") and not (difficulty == 1 and maxPlayers == 5)) ) then
+	if ( instanceType == "party" and GetChallengeMode() ) then
+		MiniMapChallengeMode:Show();
+		MiniMapInstanceDifficulty:Hide();
+		GuildInstanceDifficulty:Hide();	
+	elseif ( IS_GUILD_GROUP or ((instanceType == "party" or instanceType == "raid") and not (difficulty == 1 and maxPlayers == 5)) ) then
 		local isHeroic = false;
 		if ( instanceType == "party" and difficulty == 2 ) then
 			isHeroic = true;
@@ -663,6 +667,7 @@ function MiniMapInstanceDifficulty_Update()
 			MiniMapInstanceDifficulty:Hide();
 			SetSmallGuildTabardTextures("player", GuildInstanceDifficulty.emblem, GuildInstanceDifficulty.background, GuildInstanceDifficulty.border);
 			GuildInstanceDifficulty:Show();
+			MiniMapChallengeMode:Hide();
 		else
 			MiniMapInstanceDifficultyText:SetText(maxPlayers);
 			-- the 1 looks a little off when text is centered
@@ -679,10 +684,12 @@ function MiniMapInstanceDifficulty_Update()
 			end
 			MiniMapInstanceDifficulty:Show();
 			GuildInstanceDifficulty:Hide();
+			MiniMapChallengeMode:Hide();
 		end
 	else
 		MiniMapInstanceDifficulty:Hide();
 		GuildInstanceDifficulty:Hide();
+		MiniMapChallengeMode:Hide();
 	end
 end
 

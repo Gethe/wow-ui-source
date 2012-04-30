@@ -135,6 +135,7 @@
 		</Frames>
 	</Frame>
 	<Frame name="QuestLogDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="496"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
@@ -149,7 +150,7 @@
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="512"/>
+					<Size x="512" y="620"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-62"/>
 					</Anchors>
@@ -172,7 +173,7 @@
 				</Anchors>
 			</Frame>
 			<ScrollFrame name="QuestLogDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size x="298" y="333"/>
+				<Size x="298" y="403"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="-55"/>
 				</Anchors>
@@ -204,7 +205,7 @@
 				</Layers>
 				<ScrollChild>
 					<Frame name="QuestLogDetailScrollChildFrame">
-						<Size x="298" y="333"/>
+						<Size x="298" y="403"/>
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
@@ -216,7 +217,7 @@
 		</Scripts>
 	</Frame>
 	<Frame name="QuestLogFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
-		<Size x="667" y="426"/>
+		<Size x="667" y="496"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
@@ -231,13 +232,13 @@
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="512"/>
+					<Size x="510" y="620"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="336" y="-62"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentBookBg" file="Interface\QuestFrame\QuestBookBG">
-					<Size x="512" y="512"/>
+					<Size x="510" y="620"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-63"/>
 					</Anchors>
@@ -355,7 +356,7 @@
 				</Scripts>
 			</Button>
 			<Frame name="EmptyQuestLogFrame" hidden="true">
-				<Size x="302" y="356"/>
+				<Size x="302" y="396"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-63"/>
 				</Anchors>
@@ -369,9 +370,8 @@
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentBackgroundBottomLeft" file="Interface\QuestFrame\UI-QuestLog-Empty-BotLeft">
-							<Size x="256" y="106"/>
+							<Size x="256" y="190"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
 								<Anchor point="TOPRIGHT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.828125"/>
@@ -385,9 +385,8 @@
 							<TexCoords left="0.0" right="0.71875" top="0.0" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentBackgroundBottomRight" file="Interface\QuestFrame\UI-QuestLog-Empty-BotRight">
-							<Size x="46" y="106"/>
+							<Size x="46" y="190"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
 								<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.71875" top="0.0" bottom="0.828125"/>
@@ -506,7 +505,7 @@
 				</Frames>
 			</Frame>
 			<ScrollFrame name="QuestLogScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Size x="305" y="335"/>
+				<Size x="305" y="403"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="6" y="-64n"/>
 				</Anchors>

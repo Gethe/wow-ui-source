@@ -191,13 +191,11 @@ end
 function C_PetBattles.IsSkipAvailable()
 	return false;
 end
-]]
 
 function C_PetBattles.GetMasterAbilityInfo()
 	return unpack(DEBUG_ABILITY_INFO.MASTER);
 end
 
---[[
 function C_PetBattles.IsWaitingOnOpponent()
 	return not not (C_PetBattles.GetSelectedAction());
 	--return PBDebugFrame.skippedTurn;
@@ -226,9 +224,11 @@ function C_PetBattles.GetXP(petIndex)
 	return 25 * petIndex, 100;
 end
 
+--[[
 function C_PetBattles.GetPetStats(petOwner, petIndex)
 	return petOwner + petIndex * 1, petOwner + petIndex * 2, petOwner + petIndex * 3;
 end
+]]
 
 function C_PetBattles.GetNumPetTypes()
 	return 10;

@@ -635,7 +635,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound("UChatScrollButton");
-								InviteUnit(LFRBrowseFrame.selectedName);
+								InviteToGroup(LFRBrowseFrame.selectedName);
 							</OnClick>
 						</Scripts>
 					</Button>

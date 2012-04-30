@@ -8,7 +8,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="512"/>
+					<Size x="510" y="620"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
@@ -269,7 +269,7 @@
 		</Layers>
 	</Frame>
 	<ScrollFrame name="QuestScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Size x="300" y="334"/>
+		<Size x="300" y="403"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>
 		</Anchors>

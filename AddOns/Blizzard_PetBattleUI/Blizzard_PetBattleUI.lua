@@ -111,6 +111,7 @@ end
 
 function PetBattleFrame_UpdateAssignedUnitFrames(self)
 	local activeAlly = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
+	local activeEnemy = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
 
 	PetBattleUnitFrame_SetUnit(self.ActiveAlly, LE_BATTLE_PET_ALLY, activeAlly);
 	local nextIndex = 2;
@@ -121,7 +122,6 @@ function PetBattleFrame_UpdateAssignedUnitFrames(self)
 		end
 	end
 
-	local activeEnemy = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
 	PetBattleUnitFrame_SetUnit(self.ActiveEnemy, LE_BATTLE_PET_ENEMY, activeEnemy);
 	nextIndex = 2;
 	for i=1, NUM_BATTLE_PETS_IN_BATTLE do
@@ -130,6 +130,11 @@ function PetBattleFrame_UpdateAssignedUnitFrames(self)
 			nextIndex = nextIndex + 1;
 		end
 	end
+
+	PetBattleAuraHolder_SetUnit(self.EnemyBuffFrame, LE_BATTLE_PET_ENEMY, activeEnemy);
+	PetBattleAuraHolder_SetUnit(self.EnemyDebuffFrame, LE_BATTLE_PET_ENEMY, activeEnemy);
+	PetBattleAuraHolder_SetUnit(self.AllyBuffFrame, LE_BATTLE_PET_ALLY, activeAlly);
+	PetBattleAuraHolder_SetUnit(self.AllyDebuffFrame, LE_BATTLE_PET_ALLY, activeAlly);
 end
 
 function PetBattleFrame_Remove(self)
@@ -245,7 +250,7 @@ function PetBattleActionButton_UpdateState(self)
 	local actionType = self.actionType;
 	local actionIndex = self.actionIndex;
 
-	local usable, cooldown, hasSelected, isSelected, isLocked;
+	local _, usable, cooldown, hasSelected, isSelected, isLocked;
 	local selectedActionType, selectedActionIndex = C_PetBattles.GetSelectedAction();
 
 	--Decide whether we have a selected action and if it's this button.
@@ -258,8 +263,9 @@ function PetBattleActionButton_UpdateState(self)
 
 	--Set up usable/cooldown/locked for each action type.
 	if ( actionType == LE_BATTLE_PET_ACTION_ABILITY ) then
-		local name, icon, isUsable, currentCooldown = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
+		local _, name, icon = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
 		if ( name ) then
+			local isUsable, currentCooldown = C_PetBattles.GetAbilityState(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
 			usable, cooldown = isUsable, currentCooldown;
 		else
 			isLocked = true;
@@ -378,7 +384,7 @@ end
 
 function PetBattleAbilityButton_UpdateIcons(self)
 	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	local name, icon, usable, currentCooldown = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
+	local id, name, icon = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
 	if ( not icon ) then
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark";
 	end
@@ -394,8 +400,12 @@ end
 
 function PetBattleAbilityButton_OnEnter(self)
 	local petIndex = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
-	PetBattlePrimaryAbilityTooltip:Show();
+	if ( C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()) ) then
+		PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
+		PetBattlePrimaryAbilityTooltip:Show();
+	else
+		PetBattlePrimaryAbilityTooltip:Hide();
+	end
 end
 
 function PetBattleAbilityButton_OnLeave(self)
@@ -586,14 +596,13 @@ function PetBattleUnitTooltip_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
-local MAX_NUM_PET_BATTLE_ATTACK_MODIFIERS = 2;
 function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	PetBattleUnitFrame_SetUnit(self, petOwner, petIndex);
 
 	local height = 193;
-	local attack, defense, speed = C_PetBattles.GetPetStats(petOwner, petIndex);
+	local attack = C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_ATTACK);
+	local speed = C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_SPEED);
 	self.AttackAmount:SetText(attack);
-	self.DefenseAmount:SetText(defense);
 	self.SpeedAmount:SetText(speed);
 
 	if ( petOwner == LE_BATTLE_PET_ALLY ) then
@@ -608,7 +617,7 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		--Show and update abilities
 		self.AbilitiesLabel:Show();
 		for i=1, NUM_BATTLE_PET_ABILITIES do
-			local name, texture = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
+			local id, name, texture = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
 			local abilityIcon = self["AbilityIcon"..i];
 			local abilityName = self["AbilityName"..i];
 			abilityIcon:SetTexture(texture);
@@ -676,6 +685,7 @@ end
 
 function PetBattleUnitTooltip_Attach(self, point, frame, relativePoint, xOffset, yOffset)
 	self:SetParent(frame);
+	self:SetFrameStrata("TOOLTIP");
 	self:ClearAllPoints();
 	self:SetPoint(point, frame, relativePoint, xOffset, yOffset);
 end
@@ -684,19 +694,68 @@ end
 ---------Pet Battle Ability Tooltip---------
 --------------------------------------------
 PET_BATTLE_ABILITY_INFO = {};
-function PET_BATTLE_ABILITY_INFO:GetName()
-	local name, icon, usable, currentCooldown, maxCooldown = C_PetBattles.GetAbilityInfo(self.petOwner, self.petIndex, self.abilityIndex);
-	return name;
+
+function PET_BATTLE_ABILITY_INFO:GetCooldown()
+	local isUsable, currentCooldown = C_PetBattles.GetAbilityState(self.petOwner, self.petIndex, self.abilityIndex);
+	return currentCooldown;
 end
 
-function PET_BATTLE_ABILITY_INFO:GetMaxCooldown()
-	local name, icon, usable, currentCooldown, maxCooldown = C_PetBattles.GetAbilityInfo(self.petOwner, self.petIndex, self.abilityIndex);
-	return maxCooldown;
+function PET_BATTLE_ABILITY_INFO:GetAbilityID()
+	local id = C_PetBattles.GetAbilityInfo(self.petOwner, self.petIndex, self.abilityIndex);
+	return id;
 end
 
-function PET_BATTLE_ABILITY_INFO:GetDescription()
-	local name, icon, usable, currentCooldown, maxCooldown, description = C_PetBattles.GetAbilityInfo(self.petOwner, self.petIndex, self.abilityIndex);
-	return description;
+function PET_BATTLE_ABILITY_INFO:IsInBattle()
+	return true;
+end
+
+function PET_BATTLE_ABILITY_INFO:GetMaxHealth(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetMaxHealth(petOwner, petIndex);
+end
+
+function PET_BATTLE_ABILITY_INFO:GetHealth(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetHealth(petOwner, petIndex);
+end
+
+function PET_BATTLE_ABILITY_INFO:GetAttackStat(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_ATTACK);
+end
+
+function PET_BATTLE_ABILITY_INFO:GetSpeedStat(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_SPEED);
+end
+
+function PET_BATTLE_ABILITY_INFO:GetState(stateID, target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetStateValue(petOwner, petIndex, stateID);
+end
+
+--For use by other functions here
+function PET_BATTLE_ABILITY_INFO:GetUnitFromToken(target)
+	if ( target == "default" ) then
+		target = "self";
+	end
+
+	if ( target == "self" ) then
+		return self.petOwner, self.petIndex;
+	elseif ( target == "enemy" ) then
+		local owner = PetBattleUtil_GetOtherPlayer(self.petOwner);
+		return owner, C_PetBattles.GetActivePet(owner);
+	else
+		error("Unsupported token: "..tostring(target));
+	end
+end
+
+function PetBattleUtil_GetOtherPlayer(player)
+	if ( player == LE_BATTLE_PET_ALLY ) then
+		return LE_BATTLE_PET_ENEMY;
+	elseif ( player == LE_BATTLE_PET_ENEMY ) then
+		return LE_BATTLE_PET_ALLY;
+	end
 end
 
 
@@ -772,4 +831,165 @@ function PetBattleOpeningFrame_UpdatePanel(panel, petOwner, petIndex)
 	panel.PetBanner.Name:SetText(C_PetBattles.GetName(petOwner, petIndex));
 
 	SetPortraitToTexture(panel.PetBanner.Icon, C_PetBattles.GetIcon(petOwner, petIndex));
+end
+
+----------------------------------------------
+------------Pet Battle Aura Holder------------
+----------------------------------------------
+function PetBattleAuraHolder_OnLoad(self)
+	if ( not self.template ) then
+		GMError("Must provide template for PetBattleAuraHolder");
+	end
+	if ( not self.displayBuffs and not self.displayDebuffs ) then
+		GMError("Neither buffs nor nebuffs are displayed in a PetBattleAuraHolder");
+	end
+
+	self.frames = {};
+
+	self:RegisterEvent("PET_BATTLE_AURA_APPLIED");
+	self:RegisterEvent("PET_BATTLE_AURA_CANCELED");
+	self:RegisterEvent("PET_BATTLE_AURA_CHANGED");
+end
+
+function PetBattleAuraHolder_OnEvent(self, event, ...)
+	if ( event == "PET_BATTLE_AURA_APPLIED" or event == "PET_BATTLE_AURA_CANCELED" or event == "PET_BATTLE_AURA_CHANGED" ) then
+		local petOwner, petIndex, instanceID = ...;
+		if ( petOwner == self.petOwner and petIndex == self.petIndex ) then
+			PetBattleAuraHolder_Update(self);
+		end
+	end
+end
+
+function PetBattleAuraHolder_SetUnit(self, petOwner, petIndex)
+	self.petOwner = petOwner;
+	self.petIndex = petIndex;
+	PetBattleAuraHolder_Update(self);
+end
+
+function PetBattleAuraHolder_Update(self)
+	if ( not self.petOwner or not self.petIndex ) then
+		self:Hide();
+		return;
+	end
+
+	local nextFrame = 1;
+	for i=1, C_PetBattles.GetNumAuras(self.petOwner, self.petIndex) do
+		local auraID, instanceID, turnsRemaining, isBuff = C_PetBattles.GetAuraInfo(self.petOwner, self.petIndex, i);
+		if ( (isBuff and self.displayBuffs) or (not isBuff and self.displayDebuffs) ) then
+			--We want to display this frame.
+			local frame = self.frames[nextFrame];
+			if ( not frame ) then
+				--No frame, create one
+				self.frames[nextFrame] = CreateFrame("FRAME", nil, self, self.template);
+				frame = self.frames[nextFrame];
+
+				--Anchor the new frame
+				if ( nextFrame == 1 ) then
+					frame:SetPoint("TOP", self, "TOP", 0, 0);
+				else
+					frame:SetPoint("TOP", self.frames[nextFrame - 1], "BOTTOM", 0, 0);
+				end
+			end
+
+			--Update the actual aura
+			local id, name, icon, maxCooldown, description = C_PetBattles.GetAbilityInfoByID(auraID);
+			if ( isBuff ) then
+				frame.Name:SetFontObject(GameFontGreen);
+			else
+				frame.Name:SetFontObject(GameFontRed);
+			end
+			frame.Name:SetText(name);
+			frame.Icon:SetTexture(icon);
+			frame.Duration:SetText(turnsRemaining);
+			frame.auraIndex = i;
+			frame:Show();
+
+			nextFrame = nextFrame + 1;
+		end
+	end
+
+	if ( nextFrame > 1 ) then
+		--We have at least one aura displayed
+		self:SetHeight(self.frames[1]:GetHeight() * (nextFrame - 1));
+		self:Show();
+	else
+		--Empty
+		self:SetHeight(1);
+		self:Hide();
+	end
+
+	for i=nextFrame, #self.frames do
+		self.frames[i]:Hide();
+	end
+end
+
+function PetBattleAura_OnEnter(self)
+	local parent = self:GetParent();
+	PetBattleAbilityTooltip_SetAura(parent.petOwner, parent.petIndex, self.auraIndex);
+	PetBattlePrimaryAbilityTooltip:Show();
+end
+
+function PetBattleAura_OnLeave(self)
+	PetBattlePrimaryAbilityTooltip:Hide();
+end
+
+PET_BATTLE_AURA_INFO = {};
+function PET_BATTLE_AURA_INFO:GetAbilityID()
+	local auraID, instanceID, turnsRemaining, isBuff = C_PetBattles.GetAuraInfo(self.petOwner, self.petIndex, self.auraIndex);
+	return auraID;
+end
+
+function PET_BATTLE_AURA_INFO:GetCooldown()
+	return 0;
+end
+
+function PET_BATTLE_AURA_INFO:IsInBattle()
+	return true;
+end
+
+function PET_BATTLE_AURA_INFO:GetMaxHealth(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetMaxHealth(petOwner, petIndex);
+end
+
+function PET_BATTLE_AURA_INFO:GetHealth(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetHealth(petOwner, petIndex);
+end
+
+function PET_BATTLE_AURA_INFO:GetAttackStat(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_ATTACK);
+end
+
+function PET_BATTLE_AURA_INFO:GetSpeedStat(target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_SPEED);
+end
+
+function PET_BATTLE_AURA_INFO:GetState(stateID, target)
+	local petOwner, petIndex = self:GetUnitFromToken(target);
+	return C_PetBattles.GetStateValue(petOwner, petIndex, stateID);
+end
+
+function PET_BATTLE_AURA_INFO:GetUnitFromToken(target)
+	if ( target == "default" ) then
+		target = "aurawearer";
+	end
+
+	if ( target == "aurawearer" ) then
+		return self.petOwner, self.petIndex;
+	elseif ( target == "auracaster" ) then
+		--TODO: return the actual caster
+		error("JSEGAL - Support auracaster");
+	else
+		error("Unsupported token: "..tostring(target));
+	end
+end
+
+function PetBattleAbilityTooltip_SetAura(petOwner, petIndex, auraIndex)
+	PET_BATTLE_AURA_INFO.petOwner = petOwner;
+	PET_BATTLE_AURA_INFO.petIndex = petIndex;
+	PET_BATTLE_AURA_INFO.auraIndex = auraIndex;
+	SharedPetBattleAbilityTooltip_SetAbility(PetBattlePrimaryAbilityTooltip, PET_BATTLE_AURA_INFO);
 end

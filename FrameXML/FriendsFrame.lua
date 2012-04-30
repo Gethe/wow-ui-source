@@ -1070,7 +1070,7 @@ end
 
 function FriendsFrame_GroupInvite()
 	local name = GetFriendInfo(FriendsFrame.selectedFriend);
-	InviteUnit(name);
+	InviteToGroup(name);
 	PlaySound("UChatScrollButton");
 end
 

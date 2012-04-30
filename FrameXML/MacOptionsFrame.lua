@@ -334,8 +334,8 @@ function MacOptionsFrame_SetDefaults()
 	for index, value in pairs(MacOptionsFrameCheckButtons) do
 		checkButton = _G["MacOptionsFrameCheckButton"..value.index];
 		checkButton:SetChecked(GetCVarDefault(value.cvar));
-	end
-	if(not MovieRecording_IsCursorRecordingSupported()) then
+	end    
+	if((not MovieRecordingSupported()) or (not MovieRecording_IsCursorRecordingSupported())) then
 		local button = _G["MacOptionsFrameCheckButton3"];
 		button:SetChecked(0);
 		MacOptionsFrame_DisableCheckBox(button);

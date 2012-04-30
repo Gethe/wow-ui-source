@@ -125,7 +125,7 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	for i = 1, MAX_TALENT_TABS do
 		cache[i] = cache[i] or { };
 		if ( i <= numTabs ) then
-			local id, name, description, icon, background = GetSpecializationInfo(i, inspect, talentGroup);
+			local id, name, description, icon, background = GetSpecializationInfo(i, inspect);
 
 			-- cache the info we care about
 			cache[i].name = name;

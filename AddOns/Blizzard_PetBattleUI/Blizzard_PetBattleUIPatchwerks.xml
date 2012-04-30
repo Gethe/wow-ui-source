@@ -69,6 +69,7 @@
 		<Size x="222" y="32"/>	
 		<TexCoords left="0.56347656" right="0.78027344" top="0.28320313" bottom="0.34570313"/>	
 	</Texture>
+	<!--These are now separate textures so that we don't have to load up this entire patchwerk for the Pet Journal
 	<Texture name="BattleBar-AbilityBadge-Strong" file="Interface\PetBattles\PetBattleHud" virtual="true" >
 		<Size x="29" y="28"/>	
 		<TexCoords left="0.78222656" right="0.81054688" top="0.28320313" bottom="0.33789063"/>	
@@ -76,7 +77,7 @@
 	<Texture name="BattleBar-AbilityBadge-Weak" file="Interface\PetBattles\PetBattleHud" virtual="true" >
 		<Size x="29" y="28"/>	
 		<TexCoords left="0.81250000" right="0.84082031" top="0.28320313" bottom="0.33789063"/>	
-	</Texture>
+	</Texture>-->
 	<Texture name="Start-VersusSplash" file="Interface\PetBattles\PetBattleHud" virtual="true" >
 		<Size x="217" y="212"/>	
 		<TexCoords left="0.56347656" right="0.77539063" top="0.34960938" bottom="0.76367188"/>	

@@ -809,6 +809,22 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
+			<Frame name="MiniMapChallengeMode" hidden="true" enableMouse="true">
+				<Size x="27" y="36"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="28" y="-23"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Challenges\challenges-minimap-banner">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -818,8 +834,10 @@
 				self:RegisterEvent("ZONE_CHANGED_INDOORS");
 				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 				Minimap_UpdateRotationSetting();
-				MiniMapInstanceDifficulty:SetFrameLevel(self:GetFrameLevel() + 10);
-				GuildInstanceDifficulty:SetFrameLevel(self:GetFrameLevel() + 10);
+				local raisedFrameLevel = self:GetFrameLevel() + 10;
+				MiniMapInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
+				GuildInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
+				MiniMapChallengeMode:SetFrameLevel(raisedFrameLevel);
 			</OnLoad>
 			<OnEvent function="Minimap_Update"/>
 		</Scripts>

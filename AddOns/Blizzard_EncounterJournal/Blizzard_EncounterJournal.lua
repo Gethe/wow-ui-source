@@ -272,7 +272,7 @@ function EncounterJournal_ListInstances()
 	
 	
 	--check if the other tab is empty
-	local instanceText = EJ_GetInstanceByIndex(index, not showRaid);
+	local instanceText = EJ_GetInstanceByIndex(1, not showRaid);
 	--No instances in the other tab
 	if not instanceText then
 		--disable the other tab.

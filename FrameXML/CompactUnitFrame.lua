@@ -228,7 +228,7 @@ end
 --Update Functions
 function CompactUnitFrame_UpdateAll(frame)
 	CompactUnitFrame_UpdateInVehicle(frame);
-	CompactUnitFrame_UpateVisible(frame);
+	CompactUnitFrame_UpdateVisible(frame);
 	if ( UnitExists(frame.displayedUnit) ) then
 		CompactUnitFrame_UpdateMaxHealth(frame);
 		CompactUnitFrame_UpdateHealth(frame);
@@ -268,7 +268,7 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 	end
 end
 
-function CompactUnitFrame_UpateVisible(frame)
+function CompactUnitFrame_UpdateVisible(frame)
 	if ( UnitExists(frame.unit) or UnitExists(frame.displayedUnit) ) then
 		frame:Show();
 	else

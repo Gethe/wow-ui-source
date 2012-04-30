@@ -2,9 +2,18 @@
 --[[
 abilityInfo should be defined with the following functions:
 {
-	:GetName()			- returns the name of the ability
-	:GetMaxCooldown()	- returns the maximum cooldown of this ability
-	:GetDescription()	- returns the description of the ability
+	:GetAbilityID()		- returns the ID of the ability
+	:GetCooldown()		- returns the current cooldown remaining on the ability (0 if this tooltip is not associated with a battle).
+	:IsInBattle()		- returns true if this tooltip is associated with a particular battle (and we can get the target's info)
+	:GetHealth(target)	- returns the current health of the associated unit. If not in a battle, returns the max health for self and 0 any other tokens.
+	:GetMaxHealth(target)- returns the max health of the associated unit. If not in a battle, returns 0 for all tokens but self.
+	:GetAttackStat(target)	- returns the value of the attack stat of the pet
+	:GetSpeedState(target)	- returns the value of the speed stat of the pet
+	:GetState(stateID, target) - returns the value of a stat associated with a unit. If not associated with a battle, return 0.
+
+	Values for target are:
+	For abilities: self(default), enemy
+	For auras: aurawearer(default), auracaster
 }
 --]]
 
@@ -14,19 +23,234 @@ function SharedPetBattleAbilityTooltip_OnLoad(self)
 end
 
 function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo)
-	self.Name:SetText(abilityInfo:GetName());
-	self.Description:SetText(abilityInfo:GetDescription());
+	local abilityID = abilityInfo:GetAbilityID();
+	if ( not abilityID ) then
+		return;
+	end
 
-	local maxCooldown = abilityInfo:GetMaxCooldown();
+	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType = C_PetBattles.GetAbilityInfoByID(abilityID);
+
+	local bottom = self.AbilityPetType;
+
+	--Update name
+	self.Name:SetText(name);
+
+	--Update cooldown
 	if ( maxCooldown > 0 ) then
 		self.MaxCooldown:SetFormattedText(PET_BATTLE_TURN_COOLDOWN, maxCooldown);
 		self.MaxCooldown:Show();
-		self.Description:SetPoint("TOPLEFT", self.MaxCooldown, "BOTTOMLEFT", 0, -5);
+		bottom = self.MaxCooldown;
 	else
 		self.MaxCooldown:Hide();
-		self.Description:SetPoint("TOPLEFT", self.Name, "BOTTOMLEFT", 0, -5);
 	end
 
+	--Current cooldown remaining
+	local currentCooldown = abilityInfo:GetCooldown();
+	if ( currentCooldown > 0 ) then
+		self.CurrentCooldown:SetFormattedText(PET_BATTLE_TURN_CURRENT_COOLDOWN, currentCooldown);
+		self.CurrentCooldown:Show();
+		bottom = self.CurrentCooldown;
+	else
+		self.CurrentCooldown:Hide();
+	end
+
+	--Update description
+	local description = SharedPetAbilityTooltip_ParseText(abilityInfo, unparsedDescription);
+	self.Description:SetText(description);
+	self.Description:SetPoint("TOPLEFT", bottom, "BOTTOMLEFT", 0, -5);
+	bottom = self.Description;
+
+	--Update ability type
+	if ( petType and petType > 0 ) then
+		self.AbilityPetType:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[petType]);
+		self.AbilityPetType:Show();
+	else
+		self.AbilityPetType:Hide();
+	end
+
+	--Update weaknesses/strengths
+	if ( petType ) then --TODO: change this once we have flag to disable display of this
+		bottom = self.WeakAgainstIcon;
+		self.StrongAgainstIcon:Show();
+		self.StrongAgainstLabel:Show();
+		self.Delimiter1:Show();
+		self.WeakAgainstIcon:Show();
+		self.WeakAgainstLabel:Show();
+		self.Delimiter2:Show();
+
+		local nextStrongIndex, nextWeakIndex = 1, 1;
+		for i=1, C_PetBattles.GetNumPetTypes() do
+			local modifier = C_PetBattles.GetAttackModifier(petType, i);
+			if ( modifier > 1 ) then
+				local icon = self["StrongAgainstType"..nextStrongIndex];
+				icon:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[i]);
+				icon:Show();
+				nextStrongIndex = nextStrongIndex + 1;
+			elseif ( modifier < 1 ) then
+				local icon = self["WeakAgainstType"..nextWeakIndex];
+				icon:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[i]);
+				icon:Show();
+				nextWeakIndex = nextWeakIndex + 1;
+			end
+		end
+
+		for i=nextStrongIndex, MAX_NUM_PET_BATTLE_ATTACK_MODIFIERS do
+			self["StrongAgainstType"..i]:Hide();
+		end
+		for i=nextWeakIndex, MAX_NUM_PET_BATTLE_ATTACK_MODIFIERS do
+			self["WeakAgainstType"..i]:Hide();
+		end
+	else
+		self.StrongAgainstIcon:Hide();
+		self.StrongAgainstLabel:Hide();
+		self.Delimiter1:Hide();
+		self.WeakAgainstIcon:Hide();
+		self.WeakAgainstLabel:Hide();
+		self.Delimiter2:Hide();
+		for i=1, MAX_NUM_PET_BATTLE_ATTACK_MODIFIERS do
+			self["StrongAgainstType"..i]:Hide();
+			self["WeakAgainstType"..i]:Hide();
+		end
+	end
+
+	
 	--TODO: Might error if no top or bottom
-	self:SetHeight(self:GetTop() - self.Description:GetBottom() + 10);
+	self:SetHeight(self:GetTop() - bottom:GetBottom() + 10);
 end
+
+--Enclosure for parsing tooltips
+--We use Lua to parse our tooltips instead of writing a custom parser to save development time.
+--TODO: Look into caching returns to decrease garbage collection.
+do
+	local parsedAbilityInfo;
+	function SharedPetAbilityTooltip_ParseText(abilityInfo, unparsed)
+		parsedAbilityInfo = abilityInfo;
+		local parsed = string.gsub(unparsed, "%b[]", SharedPetAbilityTooltip_ParseExpression);
+		return parsed;
+	end
+
+	local parserEnv = {
+		--Utility functions
+		ceil = math.ceil,
+		floor = math.floor,
+		abs = math.abs,
+		min = math.min,
+		max = math.max,
+		cond = function(conditional, onTrue, onFalse) if ( conditional ) then return onTrue; else return onFalse; end end,
+		clamp = function(value, minClamp, maxClamp) return min(max(value, minClamp), maxClamp); end,
+
+
+		--Data fetching functions
+		points = function(turnIndex, effectIndex, abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					local points, accuracy, duration = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex);
+					return points;
+				end,
+		accuracy = function(turnIndex, effectIndex, abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					local points, accuracy, duration = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex);
+					return accuracy;
+				end,
+		duration = function(turnIndex, effectIndex, abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					local points, accuracy, duration = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex);
+					return duration;
+				end,
+		state = function(stateID, target)
+					if ( not target ) then
+						target = "default";
+					end
+					--TODO - add once states are implemented on the client.
+					return 0;
+				end,
+		attack = function(target)
+					if ( not target ) then
+						target = "default";
+					end
+					return parsedAbilityInfo:GetAttackStat(target);
+				end,
+		speed = function(target)
+					if ( not target ) then
+						target = "default";
+					end
+					return parsedAbilityInfo:GetSpeedStat(target);
+				end,
+		maxHealth = function(target)
+					if ( not target ) then
+						target = "default";
+					end
+					return parsedAbilityInfo:GetMaxHealth(target);
+				end,
+		health = function(target)
+					if ( not target ) then
+						target = "default";
+					end
+					return parsedAbilityInfo:GetHealth(target);
+				end,
+		isInBattle = function()
+					return parsedAbilityInfo:IsInBattle();
+				end,
+		numTurns = function()
+					local id, name, icon, maxCooldown, description, numTurns = C_PetBattles.GetAbilityInfoByID(parsedAbilityInfo:GetAbilityID());
+					return numTurns;
+				end,
+		currentCooldown = function()
+					return parsedAbilityInfo:GetCurrentCooldown();
+				end,
+		maxCooldown = function(abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					local id, name, icon, maxCooldown, description, numTurns = C_PetBattles.GetAbilityInfoByID(abilityID);
+					return maxCooldown;
+				end,
+		abilityPetType = function(abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					local id, name, icon, maxCooldown, description, numTurns, petType = C_PetBattles.GetAbilityInfoByID(abilityID);
+					return petType;
+				end,
+		petTypeName = function(petType)
+					return _G["BATTLE_PET_NAME_"..petType]
+				end,
+	};
+	
+	--Aliases
+	parserEnv.AttackBonus = function() return (1 + 0.05 * parserEnv.attack()); end;
+	parserEnv.StandardDamage = function(...) return parserEnv.floor(parserEnv.points(...) * parserEnv.AttackBonus()); end;
+	parserEnv.OnlyInBattle = function(text) if ( parserEnv.isInBattle() ) then return text else return ""; end end;
+
+	--Don't allow designers to accidentally change the environment
+	local safeEnv = {};
+	setmetatable(safeEnv, { __index = parserEnv, __newindex = function() end });
+
+	function SharedPetAbilityTooltip_ParseExpression(expression)
+		--Load the expression, chopping off the [] on the side.
+		local expr = loadstring("return ("..string.sub(expression, 2, -2)..")");
+		if ( expr ) then
+			--Set the environment up to restrict functions
+			setfenv(expr, safeEnv);
+
+			--Don't let designer errors cause us to stop execution
+			local success, repl = pcall(expr);
+			if ( success ) then
+				return repl;
+			elseif ( IsGMClient() ) then
+				local err = string.match(repl, ":%d+: (.*)");
+				return "[DATA ERROR: "..err.."]";
+			else
+				return "DATA ERROR";
+			end
+		else
+			return "PARSING ERROR";
+		end
+	end
+end
+

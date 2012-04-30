@@ -385,16 +385,29 @@ function WatchFrame_Update (self)
 	local maxLineWidth;
 	local numObjectives;
 	local totalObjectives = 0;
+	local totalPopUps = 0;
 	
 	WatchFrame_ResetLinkButtons();
 	
 	for i = 1, #WATCHFRAME_OBJECTIVEHANDLERS do
-		nextAnchor, maxLineWidth, numObjectives = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, nextAnchor, maxHeight, maxFrameWidth);
+		nextAnchor, maxLineWidth, numObjectives, numPopUps = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, nextAnchor, maxHeight, maxFrameWidth);
 		maxWidth = max(maxLineWidth, maxWidth);
-		totalObjectives = totalObjectives + numObjectives
+		totalObjectives = totalObjectives + numObjectives;
+		totalPopUps = totalPopUps + numPopUps;
 	end
+	
 	--disabled for now, might make it an option
 	--lineFrame:SetWidth(min(maxWidth, maxFrameWidth));
+	
+	-- shadow
+	if ( totalPopUps > 0) then
+		if (not lineFrame.Shadow:IsShown()) then
+			lineFrame.Shadow:Show();
+			lineFrame.Shadow.FadeIn:Play();
+		end
+	else
+		lineFrame.Shadow:Hide();
+	end
 	
 	if ( totalObjectives > 0 ) then
 		WatchFrameHeader:Show();
@@ -423,7 +436,7 @@ function WatchFrame_Update (self)
 	self.updating = nil;
 end
 
-function WatchFrame_AddObjectiveHandler (func)
+function WatchFrame_AddObjectiveHandler (func, index)
 	local numFunctions = #WATCHFRAME_OBJECTIVEHANDLERS
 	for i = 1, numFunctions do
 		if ( WATCHFRAME_OBJECTIVEHANDLERS[i] == func ) then
@@ -431,7 +444,11 @@ function WatchFrame_AddObjectiveHandler (func)
 		end
 	end
 	
-	tinsert(WATCHFRAME_OBJECTIVEHANDLERS, func);
+	if ( index ) then
+		tinsert(WATCHFRAME_OBJECTIVEHANDLERS, index, func);
+	else
+		tinsert(WATCHFRAME_OBJECTIVEHANDLERS, func);
+	end
 	return true;
 end
 
@@ -490,7 +507,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, nextAnchor, maxHeight, frameW
 			WatchFrameLines_RemoveUpdateFunction(WatchFrame_HandleQuestTimerUpdate);
 			WATCHFRAME_NUM_TIMERS = 0;
 		end
-		return nextAnchor, 0, 0;
+		return nextAnchor, 0, 0, 0;
 	end
 	
 	WatchFrame_ResetTimerLines();
@@ -538,7 +555,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, nextAnchor, maxHeight, frameW
 	end
 	
 	WatchFrame_ReleaseUnusedTimerLines();
-	return nextAnchor, maxWidth, 0;
+	return nextAnchor, maxWidth, 0, 0;
 end
 
 function WatchFrame_HandleQuestTimerUpdate ()
@@ -797,7 +814,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 	end
 
 	WatchFrame_ReleaseUnusedAchievementLines();
-	return previousLine or nextAnchor, maxWidth, numTrackedAchievements;
+	return previousLine or nextAnchor, maxWidth, numTrackedAchievements, 0;
 end
 
 function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, frameWidth)
@@ -1011,7 +1028,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 		QuestPOI_SelectButtonByQuestId("WatchFrameLines", WORLDMAP_SETTINGS.selectedQuestId, true);	
 	end
 	
-	return lastLine or nextAnchor, maxWidth, numQuestWatches;	
+	return lastLine or nextAnchor, maxWidth, numQuestWatches, 0;
 end
 
 function WatchFrameLines_OnUpdate (self, elapsed)
@@ -1648,16 +1665,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 		_G["WatchFrameAutoQuestPopUp"..i]:Hide();
 	end
 	
-	if (numPopUps > 0) then
-		if (not lineFrame.AutoQuestShadow:IsShown()) then
-			lineFrame.AutoQuestShadow:Show();
-			lineFrame.AutoQuestShadow.FadeIn:Play();
-		end
-	else
-		lineFrame.AutoQuestShadow:Hide();
-	end
-	
-	return nextAnchor, maxWidth, 0;
+	return nextAnchor, maxWidth, 0, numPopUps;
 end
 
 function WatchFrameAutoQuest_OnUpdate(frame, timestep)
@@ -1665,8 +1673,8 @@ function WatchFrameAutoQuest_OnUpdate(frame, timestep)
 	local scrollStart = 65;
 	local scrollEnd = -9;
 	
-	-- Pause animation while the AutoQuestShadow is animating
-	if (WatchFrameLinesAutoQuestShadow.FadeIn:IsPlaying()) then
+	-- Pause animation while the lineframe shadow is animating
+	if (WatchFrameLinesShadow.FadeIn:IsPlaying()) then
 		return;
 	end
 	

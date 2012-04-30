@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI.xsd">
 	<Script file="SharedPetBattleTemplates.lua"/>
-	<Frame name="SharedPetBattleAbilityTooltipTemplate" virtual="true" hidden="true">
+	<Frame name="SharedPetBattleAbilityTooltipTemplate" frameStrata="TOOLTIP" virtual="true" hidden="true">
 		<Size x="260" y="90"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
@@ -16,22 +16,98 @@ UI.xsd">
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontHighlightLarge" text="NAME">
+				<Texture parentKey="AbilityPetType">
+					<Size x="33" y="33"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="11" y="-10"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlightLarge" text="NAME">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AbilityPetType" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="MaxCooldown" inherits="GameFontHighlight" text="MAX_COOLDOWN">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AbilityPetType" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CurrentCooldown" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MaxCooldown" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameFontNormal" justifyH="LEFT" text="DESCRIPTION">
 					<Size x="239" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.MaxCooldown" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CurrentCooldown" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="Delimiter1">
+					<Size x="250" y="2"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-7"/>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2"/>
+				</Texture>
+				<Texture parentKey="StrongAgainstIcon" file="Interface\PetBattles\BattleBar-AbilityBadge-Strong">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Delimiter1" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="StrongAgainstLabel" inherits="GameFontHighlight" text="PET_BATTLE_EFFECTIVENESS_VS">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StrongAgainstIcon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="StrongAgainstType1">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StrongAgainstLabel" relativePoint="RIGHT" x="5" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+				<Texture parentKey="StrongAgainstType2">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StrongAgainstType1" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+				<Texture parentKey="Delimiter2">
+					<Size x="250" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StrongAgainstIcon" relativePoint="BOTTOMLEFT" x="-5" y="-5"/>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2"/>
+				</Texture>
+				<Texture parentKey="WeakAgainstIcon" file="Interface\PetBattles\BattleBar-AbilityBadge-Weak">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Delimiter2" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="WeakAgainstLabel" inherits="GameFontHighlight" text="PET_BATTLE_EFFECTIVENESS_VS">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.WeakAgainstIcon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="WeakAgainstType1">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.WeakAgainstLabel" relativePoint="RIGHT" x="5" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
+				<Texture parentKey="WeakAgainstType2">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.WeakAgainstType1" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

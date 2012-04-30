@@ -639,10 +639,12 @@ function QuestLog_SetSelection(questIndex)
 	if ( questIndex == 0 ) then
 		QuestLogFrame.selectedIndex = nil;
 		HideUIPanel(QuestLogDetailFrame);
-		QuestLogDetailScrollFrame:Hide();
+		QuestLogDetailScrollChildFrame:Hide();
 		QuestLogFrameCompleteButton:Hide();
 		QuestFrame_HideQuestPortrait();
 		return;
+	else
+		QuestLogDetailScrollChildFrame:Show();
 	end
 
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questIndex);
@@ -844,7 +846,6 @@ function QuestLogDetailFrame_AttachToQuestLog()
 	QuestLogDetailScrollFrame:SetParent(QuestLogFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -33, -65);
-	QuestLogDetailScrollFrame:SetHeight(333);
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -13);
 	QuestLog_UpdatePortrait();
 end
@@ -859,7 +860,6 @@ function QuestLogDetailFrame_DetachFromQuestLog()
 	QuestLogDetailScrollFrame:SetParent(QuestLogDetailFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPLEFT", QuestLogDetailFrame, "TOPLEFT", 8, -65);
-	QuestLogDetailScrollFrame:SetHeight(331);
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -14);
 	QuestLog_UpdatePortrait();
 end

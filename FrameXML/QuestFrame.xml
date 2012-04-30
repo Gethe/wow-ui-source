@@ -37,7 +37,7 @@
 	</Texture>
 
 	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
-		<Size x="338" y="427"/>
+		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="ARTWORK">
                 <Texture name="QuestFramePortrait">
@@ -112,7 +112,7 @@
 						<ScrollChild>
 							<Frame name="QuestProgressScrollChildFrame">
 								<Size>
-									<AbsDimension x="300" y="334"/>
+									<AbsDimension x="300" y="403"/>
 								</Size>
 								<Layers>
 									<Layer level="BACKGROUND">
@@ -243,6 +243,7 @@
 				</Scripts>
  			</Frame>
 			<Frame name="QuestFrameDetailPanel" inherits="QuestFramePanelTemplate" hidden="true">
+				<Size x="338" y="496"/>
  				<Frames>
 					<Button name="QuestFrameDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 						<Size x="78" y="22"/>
@@ -265,7 +266,7 @@
 					<ScrollFrame name="QuestDetailScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestDetailScrollChildFrame">
-								<Size x="300" y="334"/>
+								<Size x="300" y="403"/>
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
@@ -290,7 +291,7 @@
 					<ScrollFrame name="QuestGreetingScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestGreetingScrollChildFrame">
-								<Size x="300" y="334"/>
+								<Size x="300" y="403"/>
 								<Layers>
 									<Layer>
 										<FontString name="GreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">

@@ -36,7 +36,7 @@ function InspectTalentFrame_UpdateTabs()
 		if ( tab ) then
 			talentSpecInfoCache[i] = talentSpecInfoCache[i] or { };
 			if ( i <= numTabs ) then
-				local id, name, description, icon, background = GetSpecializationInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.talentGroup);
+				local id, name, description, icon, background = GetSpecializationInfo(i, InspectTalentFrame.inspect);
 				if ( i == selectedTab ) then
 					-- If tab is the selected tab set the points spent info
 					local displayPointsSpent = pointsSpent + previewPointsSpent;
