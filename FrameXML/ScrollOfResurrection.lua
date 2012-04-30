@@ -42,6 +42,7 @@ function ScrollOfResurrectionSelection_OnLoad(self)
 	self.list.scrollFrame.scrollBar.trackBG:Hide();
 	self.list.scrollFrame.scrollBar.doNotHide = true;
 	self.list.scrollFrame.update = ScrollOfResurrectionSelectionList_Update;
+	self.exclusive = true;
 	HybridScrollFrame_CreateButtons(self.list.scrollFrame, "ScrollOfResurrectionSelectionButtonTemplate");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("SOR_COUNTS_UPDATED");
