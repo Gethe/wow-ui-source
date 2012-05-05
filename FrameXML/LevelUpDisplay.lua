@@ -5,12 +5,12 @@ LEVEL_UP_TYPE_SCENARIO = "scenario";
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
-	[10] = {"TalentsUnlocked", "BGsUnlocked"},
-	[15] = {"LFDUnlocked",},
-	[25] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
-	[30] = {"DuelSpec"},
-	[50] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
-	[75] = {"GlyphPrime"},--,"GlyphMajor", "GlyphMinor"},
+	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
+	[15] = {"TalentsUnlocked","LFDUnlocked"},
+	[25] = {"Glyphs"},
+	[30] = {"DualSpec"},
+	[50] = {"GlyphSlots"},
+	[75] = {"GlyphSlots"},
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
@@ -61,6 +61,13 @@ LEVEL_UP_TYPES = {
 										link=PET_LEVEL_UP_TALENTPOINT_LINK;
 									},
 									
+	["SpecializationUnlocked"] 	= {	icon="Interface\\Icons\\Ability_Marksmanship",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=SPECIALIZATION,
+										subText=LEVEL_UP_FEATURE,
+										link=LEVEL_UP_FEATURE2..LEVEL_UP_SPECIALIZATION_LINK
+									},
+									
 	["TalentsUnlocked"] 	= {	icon="Interface\\Icons\\Ability_Marksmanship",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=TALENT_POINTS,
@@ -82,35 +89,27 @@ LEVEL_UP_TYPES = {
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_LFD_LINK
 									},
 
-	["GlyphPrime"] 				= {	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
+	["Glyphs"]				= {	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=GLYPHS,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_GLYPH3_LINK
+										link=LEVEL_UP_GLYPHSLOT_LINK
 									},
 
-	["GlyphMajor"] 				= {	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
+	["GlyphSlots"]			= {	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
 										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GLYPHS,
+										text=GLYPH_SLOTS,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_GLYPH1_LINK
+										link=LEVEL_UP_GLYPHSLOT_LINK
 									},
 
-	["GlyphMinor"] 				= {	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GLYPHS,
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_GLYPH2_LINK
-									},
-
-
-	["DuelSpec"] 			= {	icon="Interface\\Icons\\INV_Misc_Coin_01",
+	["DualSpec"] 			= {	icon="Interface\\Icons\\INV_Misc_Coin_01",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=LEVEL_UP_DUALSPEC,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_DUAL_SPEC_LINK
 									},
-
+				
 
 ------ HACKS BELOW		
  ------ HACKS BELOW		
@@ -287,7 +286,22 @@ function LevelUpDisplay_BuildCharacterList(self)
 															};
 	end	
 	
-	
+	local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
+	local dungeons = {GetCurrentLevelDungeons(self.level)};
+	for _,dungeon in pairs(dungeons) do
+		name, icon, link = GetDungeonInfo(dungeon);
+		if link then -- link can come back as nil if there's no Dungeon Journal entry
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																		link = LEVEL_UP_DUNGEON2.." "..link
+																	};
+		else
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																		link = LEVEL_UP_DUNGEON2.." "..name
+																	};
+		end
+	end
+
+
 		-- This loop is LEVEL_UP_CLASS_HACKS
 	local race, raceFile = UnitRace("player");
 	local _, class = UnitClass("player");
@@ -352,7 +366,7 @@ end
 
 function LevelUpDisplay_OnShow(self)
 	if ( not IsPlayerInWorld() ) then
-		-- this is pretty the zoning-into-a-scenario case
+		-- this is pretty much the zoning-into-a-scenario case
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 		return;
 	end
@@ -370,6 +384,7 @@ function LevelUpDisplay_OnShow(self)
 				end
 				self.scenarioFrame.name:SetText(stageName);
 				self.scenarioFrame.description:SetText(stageDescription);
+				LevelUpDisplay:SetPoint("TOP", 0, -250);
 				playAnim = self.scenarioFrame.newStage;
 			end
 		else
@@ -388,6 +403,7 @@ function LevelUpDisplay_OnShow(self)
 				self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
 			end
+			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.levelFrame.levelUp;
 		end
 	end
@@ -571,11 +587,6 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType)
 		if skill.entryType ~= "spell" then
 			self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
 		end
-	end
-	
-	if levelUpType == LEVEL_UP_TYPE_CHARACTER and (level == 25 or level == 50 or level == 75) then
-		self:AddMessage(LEVEL_UP_GLYPH1_LINK, info.r, info.g, info.b, info.id);
-		self:AddMessage(LEVEL_UP_GLYPH2_LINK, info.r, info.g, info.b, info.id);
 	end
 end
 

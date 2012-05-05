@@ -707,16 +707,14 @@ function WorldMapLevelDropDown_Initialize()
 	
 	local usesTerrainMap = DungeonUsesTerrainMap();
 	local floorMapCount, firstFloor = GetNumDungeonMapLevels();
-	if (usesTerrainMap) then
-		floorMapCount = floorMapCount - 1;
-	end
+
 	local lastFloor = firstFloor + floorMapCount - 1;
 	for i=firstFloor, lastFloor do
 		local floorNum = i;
 		if (usesTerrainMap) then
 			floorNum = i - 1;
 		end
-		
+
 		local floorname =_G["DUNGEON_FLOOR_" .. mapname .. floorNum];
 		info.text = floorname or string.format(FLOOR_NUMBER, i - firstFloor + 1);
 		info.func = WorldMapLevelButton_OnClick;

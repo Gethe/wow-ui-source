@@ -982,6 +982,7 @@
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="name">
+									<Size x="240" y="0"/>
 									<Anchors>
 										<Anchor point="TOP">
 											<Offset>

@@ -625,16 +625,16 @@ function MiniMapInstanceDifficulty_Update()
 				--	isHeroic = true;
 				--end
 				-- if modified difficulty is normal then you are allowed to select heroic, and vice-versa
-				if ( selectedRaidDifficulty == 1 ) then
-					allowedRaidDifficulty = 3;
-				elseif ( selectedRaidDifficulty == 2 ) then
-					allowedRaidDifficulty = 4;
-				elseif ( selectedRaidDifficulty == 3 ) then
-					allowedRaidDifficulty = 1;
+				if ( selectedRaidDifficulty == 3 ) then
+					allowedRaidDifficulty = 5;
 				elseif ( selectedRaidDifficulty == 4 ) then
-					allowedRaidDifficulty = 2;
+					allowedRaidDifficulty = 6;
+				elseif ( selectedRaidDifficulty == 5 ) then
+					allowedRaidDifficulty = 3;
+				elseif ( selectedRaidDifficulty == 6 ) then
+					allowedRaidDifficulty = 4;
 				end
-				allowedRaidDifficulty = "RAID_DIFFICULTY"..allowedRaidDifficulty;
+				allowedRaidDifficulty = "RAID_DIFFICULTY"..(allowedRaidDifficulty - 2);	-- TEMP FIX
 			end
 			if ( difficulty == 5 or difficulty == 6 ) then  -- FIX ME REAL
 				isHeroic = true;

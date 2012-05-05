@@ -144,6 +144,14 @@
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
+	<CheckButton name="CoreAbilitiesSkillLineTabTemplate" inherits="SpellBookSkillLineTabTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36"/>
+		</Anchors>
+		<Scripts>
+			<OnClick function="SpellBookCoreAbilitiesTab_OnClick"/>
+		</Scripts>
+	</CheckButton>
 	<Button name="SpellBookFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true" hidden="true">
 		<Scripts>
 			<OnClick>
@@ -316,10 +324,10 @@
 				self:SetChecked(0);
 			</PreClick>
 			<OnClick>
-				if (self.isPassive) then return end;
 				if ( IsModifiedClick() ) then
 					SpellButton_OnModifiedClick(self, button);
 				else
+					if (self.isPassive) then return end;
 					SpellButton_OnClick(self, button);
 				end
 			</OnClick>
@@ -781,81 +789,89 @@
 		</Frames>			
 	</Frame>
 	<CheckButton name="CoreAbilitySpellTemplate" inherits="SecureFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="46" y="46"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="EmptySlot" inherits="Spellbook-EmptySlot">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentIconTexture" parentKey="iconTexture">
-					<Size x="46" y="46"/>
+				<Texture parentKey="iconTexture">
+					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\Spellbook\RotationIconFrame">
-					<Size x="64" y="64"/>
+				<Texture parentKey="ActiveTexture" inherits="Spellbook-SlotFrame">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="1.5"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentSpellName" inherits="SystemFont_Large" justifyH="LEFT" parentKey="Name">
+				<Texture parentKey="FutureTexture" inherits="Spellbook-UnlearnedSlot" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="1.5" y="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="SystemFont_Large" justifyH="LEFT">
 					<Size x="300" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-4"/>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="15" y="-4"/>
 					</Anchors>
 					<Color r="0.1" g="0.1" b="0.1"/>
 				</FontString>
-				<FontString name="$parentInfoText" inherits="SystemFont_Med1" maxLines="2" justifyH="LEFT" justifyV="TOP" parentKey="InfoText">
+				<FontString parentKey="InfoText" inherits="SystemFont_Med1" maxLines="2" justifyH="LEFT" justifyV="TOP">
 					<Size x="360" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 					<Color r="0.1" g="0.1" b="0.1"/>
 				</FontString>
-			</Layer>		
+				<FontString parentKey="RequiredLevel" inherits="GameFontBlackSmall" justifyH="LEFT">
+					<Size x="360" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InfoText" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+					<Color r="0.25" g="0.12" b="0"/>
+				</FontString>
+			</Layer>
 		</Layers>
-<!--
 		<Scripts>
 			<OnLoad>
-				SpellButton_OnLoad(self);
+				self:RegisterForDrag("LeftButton");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnEvent>
-				SpellButton_OnEvent(self, event, ...);
-			</OnEvent>
-			<PreClick>
-				self:SetChecked(0);
-			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					SpellButton_OnModifiedClick(self, button);
+					ChatEdit_InsertLink(GetSpellLink(self.spellID));
 				else
-					SpellButton_OnClick(self, button);
+					ClearCursor()
 				end
 			</OnClick>
-			<OnShow>			
-				SpellButton_OnShow(self);
-			</OnShow>
-			<OnHide>
-				SpellButton_OnHide(self);
-			</OnHide>
 			<OnDragStart>
-				SpellButton_OnDrag(self, button);
+				if ( self.draggable ) then
+					PickupSpell(self.spellID);
+				end
 			</OnDragStart>
 			<OnReceiveDrag>
-				SpellButton_OnDrag(self);
+				if ( self.draggable ) then
+					PickupSpell(self.spellID);
+				end
 			</OnReceiveDrag>
 			<OnEnter>
-				SpellButton_OnEnter(self, motion);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetSpellByID(self.spellID);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
--->
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	
@@ -1346,36 +1362,16 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>	
 				<Frames>				
-					<Frame parentArray="Abilities" name="PrimaryCoreAbility1" inherits="CoreAbilitySpellTemplate">
+					<Button parentArray="Abilities" inherits="CoreAbilitySpellTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="90" y="-80"/>
+							<Anchor point="TOPLEFT" x="100" y="-72"/>
 						</Anchors>
-					</Frame>
-					<Frame parentArray="Abilities" name="PrimaryCoreAbility2" inherits="CoreAbilitySpellTemplate">
+					</Button>
+					<CheckButton parentArray="SpecTabs" inherits="CoreAbilitiesSkillLineTabTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility1" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-53"/>
 						</Anchors>
-					</Frame>
-					<Frame parentArray="Abilities" name="PrimaryCoreAbility3" inherits="CoreAbilitySpellTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility2" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-						</Anchors>
-					</Frame>
-					<Frame parentArray="Abilities" name="PrimaryCoreAbility4" inherits="CoreAbilitySpellTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility3" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-						</Anchors>
-					</Frame>
-					<Frame parentArray="Abilities" name="PrimaryCoreAbility5" inherits="CoreAbilitySpellTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility4" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-						</Anchors>
-					</Frame>
-					<Frame parentArray="Abilities" name="PrimaryCoreAbility6" inherits="CoreAbilitySpellTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PrimaryCoreAbility5" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-						</Anchors>
-					</Frame>
+					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>

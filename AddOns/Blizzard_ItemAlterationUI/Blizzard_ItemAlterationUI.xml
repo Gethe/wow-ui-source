@@ -380,7 +380,7 @@
 			</Button>
 			<Button name="$parentMainHandSlot" inherits="TransmogrifyBottomSlotButtonTemplate" parentKey="mainHand">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="TransmogrifyArtFrameBottomEdge" relativePoint="TOP" x="-25" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TransmogrifyArtFrameBottomEdge" relativePoint="TOP" x="0" y="-3"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentSecondaryHandSlot" inherits="TransmogrifyBottomSlotButtonTemplate" parentKey="offHand">

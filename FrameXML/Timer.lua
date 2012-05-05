@@ -1,8 +1,9 @@
 TIMER_MINUTES_DISPLAY = "%d:%02d"
 
-TIMER_MEDIUM_MARKER = 11;
-TIMER_LARGE_MARKER = 6;
-TIMER_UPDATE_INTERVAL = 10;
+local TIMER_DATA = {
+	[1] = { mediumMarker = 11, largeMarker = 6, updateInterval = 10 },
+	[2] = { mediumMarker = 100, largeMarker = 100, updateInterval = 100 },
+};
 
 TIMER_NUMBERS_SETS = {};
 TIMER_NUMBERS_SETS["BigGold"]  = {	texture = "Interface\\Timer\\BigTimerNumbers", 
@@ -47,17 +48,17 @@ function TimerTracker_OnEvent(self, event, ...)
 		local timerType, timeSeconds, totalTime  = ...;
 		local timer;
 		local numTimers = 0;
-		local isTimerRuning = false;
+		local isTimerRunning = false;
 		
 		for a,b in pairs(self.timerList) do
 			if b.type == timerType and not b.isFree then
 				timer = b;
-				isTimerRuning = true;
+				isTimerRunning = true;
 				break;
 			end
 		end
 
-		if isTimerRuning then
+		if isTimerRunning then
 			-- don't interupt the final count down
 			if not timer.startNumbers:IsPlaying() then
 				timer.time = timeSeconds;
@@ -116,7 +117,7 @@ function TimerTracker_OnEvent(self, event, ...)
 				timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
 			end
 			timer.factionGroup = factionGroup;
-			timer.updateTime = TIMER_UPDATE_INTERVAL;
+			timer.updateTime = TIMER_DATA[timer.type].updateInterval;
 			timer:SetScript("OnUpdate", StartTimer_BigNumberOnUpdate);
 			timer:Show();
 		end
@@ -136,22 +137,29 @@ function TimerTracker_OnEvent(self, event, ...)
 end
 
 
-function StartTimer_BigNumberOnUpdate(self, elasped)
+function StartTimer_BigNumberOnUpdate(self, elapsed)
 	self.time = self.endTime - GetTime();
-	self.updateTime = self.updateTime - elasped;
+	self.updateTime = self.updateTime - elapsed;
 	local minutes, seconds = floor(self.time/60), floor(mod(self.time, 60)); 
 
-	if self.time < TIMER_MEDIUM_MARKER then
-		self.fadeBarOut:Play();
-		self.barShowing = false;
+	if ( self.time < TIMER_DATA[self.type].mediumMarker ) then
 		self.anchorCenter = false;
+		if self.time < TIMER_DATA[self.type].largeMarker then
+			StartTimer_SwitchToLargeDisplay(self);
+		end
 		self:SetScript("OnUpdate", nil);
+		if ( self.barShowing ) then
+			self.barShowing = false;
+			self.fadeBarOut:Play();
+		else
+			self.startNumbers:Play();
+		end
 	elseif not self.barShowing then
 		self.fadeBarIn:Play();
 		self.barShowing = true;
 	elseif self.updateTime <= 0 then
 		QueryWorldCountdownTimer(self.type);
-		self.updateTime = TIMER_UPDATE_INTERVAL;
+		self.updateTime = TIMER_DATA[self.type].updateInterval;
 	end
 
 	self.bar:SetValue(self.time);
@@ -159,7 +167,7 @@ function StartTimer_BigNumberOnUpdate(self, elasped)
 end
 
 
-function StartTimer_BarOnlyOnUpdate(self, elasped)
+function StartTimer_BarOnlyOnUpdate(self, elapsed)
 	self.time = self.endTime - GetTime();
 	local minutes, seconds = floor(self.time/60), mod(self.time, 60); 
 
@@ -239,20 +247,24 @@ end
 function StartTimer_NumberAnimOnFinished(self)
 	self.time = self.time - 1;
 	if self.time > 0 then
-		if self.time < TIMER_LARGE_MARKER then
-			if not self.anchorCenter then
-				self.anchorCenter = true;
-				--This is to compensate texture size not affecting GetWidth() right away.
-				self.digit1.width, self.digit2.width = self.style.w, self.style.w;
-				self.digit1:SetSize(self.style.w, self.style.h);
-				self.digit2:SetSize(self.style.w, self.style.h);
-			end
-		end
-	
+		if self.time < TIMER_DATA[self.type].largeMarker then
+			StartTimer_SwitchToLargeDisplay(self);
+		end	
 		self.startNumbers:Play();
 	else
+		self.anchorCenter = false;
 		self.isFree = true;
 		PlaySoundKitID(25478);
 		self.factionAnim:Play();
+	end
+end
+
+function StartTimer_SwitchToLargeDisplay(self)
+	if not self.anchorCenter then
+		self.anchorCenter = true;
+		--This is to compensate texture size not affecting GetWidth() right away.
+		self.digit1.width, self.digit2.width = self.style.w, self.style.w;
+		self.digit1:SetSize(self.style.w, self.style.h);
+		self.digit2:SetSize(self.style.w, self.style.h);
 	end
 end

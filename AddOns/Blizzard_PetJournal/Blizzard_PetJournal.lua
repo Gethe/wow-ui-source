@@ -5,7 +5,7 @@ local MOUNT_BUTTON_HEIGHT = 46;
 local MAX_ACTIVE_PETS = 3;
 local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
-
+local MAX_PET_LEVEL = 25;
 
 
 StaticPopupDialogs["BATTLE_PET_RENAME"] = {
@@ -43,6 +43,19 @@ StaticPopupDialogs["BATTLE_PET_PUT_IN_CAGE"] = {
 	maxLetters = 30,
 	OnAccept = function(self)
 		C_PetJournal.CagePetByID(PetJournal.menuPetID);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
+	text = PET_RELEASE_LABEL,
+	button1 = OKAY,
+	button2 = CANCEL,
+	maxLetters = 30,
+	OnAccept = function(self)
+		C_PetJournal.ReleasePetByID(PetJournal.menuPetID);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -279,9 +292,9 @@ function PetJournal_UpdatePetLoadOut()
 	PetJournal.SpellSelect:Hide();
 	for i=1,MAX_ACTIVE_PETS do
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
-		local petID, ability1ID, ability2ID, ability3ID = C_PetJournal.GetPetLoadOutInfo(i);
-		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
-		if name then
+		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
+		if (petID > 0) then
+			local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
 
 			--Find out how many abilities are usable due to level
@@ -305,6 +318,16 @@ function PetJournal_UpdatePetLoadOut()
 				ability3ID = loadoutPlate.abilities[3];
 				C_PetJournal.SetAbility(i, 3, ability3ID);
 			end
+			loadoutPlate.name:Show();
+			loadoutPlate.subName:Show();
+			loadoutPlate.level:Show();
+			loadoutPlate.icon:Show();
+			loadoutPlate.shadows:Show();
+			loadoutPlate.iconBorder:Show();
+			loadoutPlate.abilitiesLabel:Show();
+			loadoutPlate.spell1:Show();
+			loadoutPlate.spell2:Show();
+			loadoutPlate.spell3:Show();
 
 			if customName then
 				loadoutPlate.name:SetText(customName);
@@ -332,7 +355,12 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.petID = petID;
 			loadoutPlate.speciesID = speciesID;
 			loadoutPlate.helpFrame:Hide();
-
+			if(level < MAX_PET_LEVEL) then
+				loadoutPlate.xpBar:Show();
+			else
+				loadoutPlate.xpBar:Hide();
+			end
+				
 			loadoutPlate.xpBar:SetMinMaxValues(0, maxXp);
 			loadoutPlate.xpBar:SetValue(xp);
 			loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_VERBOSE, xp, maxXp);
@@ -352,8 +380,23 @@ function PetJournal_UpdatePetLoadOut()
 				loadoutPlate.spell3:Enable();
 			end
 		else
-			loadoutPlate.helpFrame:Show();
-			loadoutPlate.model:Hide();
+			loadoutPlate.name:Hide();
+			loadoutPlate.subName:Hide();
+			loadoutPlate.level:Hide();
+			loadoutPlate.icon:Hide();
+			loadoutPlate.model:Hide();			
+			loadoutPlate.xpBar:Hide();
+			loadoutPlate.spell1:Hide();
+			loadoutPlate.spell2:Hide();
+			loadoutPlate.spell3:Hide();
+			loadoutPlate.shadows:Hide();
+			loadoutPlate.iconBorder:Hide();
+			loadoutPlate.abilitiesLabel:Hide();
+			if(locked) then
+				loadoutPlate.helpFrame:Show();
+			else
+				loadoutPlate.helpFrame:Hide();
+			end
 		end
 	end
 	
@@ -473,10 +516,16 @@ end
 
 function PetJournalDragButton_OnDragStart(self)
 	C_PetJournal.PickupPet(self:GetParent().petID, PetJournal.isWild);
-	PetJournal.Loadout.Pet1.setButton:Show();
-	PetJournal.Loadout.Pet2.setButton:Show();
-	PetJournal.Loadout.Pet3.setButton:Show();
-	PetJournal_HidePetCard()
+
+	for i=1,MAX_ACTIVE_PETS do
+		local loadoutPlate = PetJournal.Loadout["Pet"..i];
+		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
+		if(locked) then
+			PetJournal.Loadout["Pet"..i].setButton:Hide();
+		else
+			PetJournal.Loadout["Pet"..i].setButton:Show();
+		end
+	end
 end
 
 function PetJournal_ShowPetDropdown(index, anchorTo, offsetX, offsetY)
@@ -748,7 +797,7 @@ function PetOptionsMenu_Init(self, level)
 	UIDropDownMenu_AddButton(info, level)
 	
 	info.text = BATTLE_PET_RELEASE;
-	info.func = function() C_PetJournal.ReleasePetByID(PetJournal.menuPetID); end
+	info.func = function() StaticPopup_Show("BATTLE_PET_RELEASE"); end
 	UIDropDownMenu_AddButton(info, level)
 
 	if(PetJournal.menuPetID and C_PetJournal.PetIsTradable(PetJournal.menuPetID)) then

@@ -33,8 +33,22 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnDragStart>
+				if ( not self.disabled ) then
+					PickupSpell(self.spellID);
+				end
+			</OnDragStart>
+			<OnReceiveDrag>
+				if ( not self.disabled ) then
+					PickupSpell(self.spellID);
+				end
+			</OnReceiveDrag>
 			<OnEnter>
-				if self.spellID then
+				if ( self.spellID ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetSpellByID(self.spellID);
 					if ( self.extraTooltip ) then

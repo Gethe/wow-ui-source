@@ -25,13 +25,6 @@ function TransmogrifyFrame_OnLoad(self)
 	TransmogrifyArtFrameBg:Hide();
 	SetPortraitToTexture(TransmogrifyArtFramePortrait, "Interface\\Icons\\INV_Arcane_Orb");
 
-	if ( not UnitHasRelicSlot("player") ) then
-		local button = CreateFrame("BUTTON", "TransmogrifyFrameRangedSlot", TransmogrifyFrame, "TransmogrifyBottomSlotButtonTemplate");
-		button:SetPoint("LEFT", TransmogrifyFrameSecondaryHandSlot, "RIGHT", 14, 0);
-		TransmogrifyFrameMainHandSlot:SetPoint("BOTTOM", TransmogrifyArtFrameBottomEdge, "TOP", -51, -3);
-		TransmogrifyFrame.ranged = button;
-	end
-
 	RaiseFrameLevel(TransmogrifyArtFrame);
 	RaiseFrameLevelByTwo(TransmogrifyFrameButtonFrame);
 	TransmogrifyArtFrameCloseButton:SetScript("OnClick", function() HideUIPanel(TransmogrifyFrame); end);

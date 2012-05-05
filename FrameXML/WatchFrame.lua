@@ -26,6 +26,7 @@ WATCHFRAME_CRITERIA_PER_ACHIEVEMENT = 5;
 
 WATCHFRAME_NUM_TIMERS = 0;
 WATCHFRAME_NUM_ITEMS = 0;
+WATCHFRAME_NUM_POPUPS = 0;
 
 WATCHFRAME_OBJECTIVEHANDLERS = {};
 WATCHFRAME_TIMEDCRITERIA = {};
@@ -215,6 +216,7 @@ local function WatchFrame_GetScenarioLine()
 	end
 
 	line:Reset();
+	line:SetParent(WatchFrameScenarioFrame);
 	scenarioLineIndex = scenarioLineIndex + 1;
 	return line;
 end
@@ -228,6 +230,7 @@ local function WatchFrame_ReleaseUnusedScenarioLines()
 	for i = scenarioLineIndex, #WATCHFRAME_SCENARIOLINES do
 		line = WATCHFRAME_SCENARIOLINES[i];
 		line:Hide();
+		line:SetParent(WatchFrameLines);
 		line.frameCache:ReleaseFrame(line);
 		WATCHFRAME_SCENARIOLINES[i] = nil;
 	end
@@ -301,8 +304,15 @@ function WatchFrame_OnEvent (self, event, ...)
 		end
 		
 		WatchFrame_Update();
-	elseif ( event == "ITEM_PUSH" or event == "SCENARIO_UPDATE" ) then
+	elseif ( event == "ITEM_PUSH" ) then
 		WatchFrame_Update();
+	elseif ( event == "SCENARIO_UPDATE" ) then
+		local newStep = ...;
+		if ( newStep ) then
+			WatchFrame_Expand(self);
+		else
+			WatchFrame_Update();
+		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		if ( not WorldMapFrame:IsShown() and WatchFrame.showObjectives ) then
 			SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
@@ -415,7 +425,7 @@ function WatchFrame_Update (self)
 	local maxLineWidth;
 	local numObjectives;
 	local totalObjectives = 0;
-	local totalPopUps = 0;
+	WATCHFRAME_NUM_POPUPS = 0;
 	
 	WatchFrame_ResetLinkButtons();
 	
@@ -423,14 +433,14 @@ function WatchFrame_Update (self)
 		nextAnchor, maxLineWidth, numObjectives, numPopUps = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, nextAnchor, maxHeight, maxFrameWidth);
 		maxWidth = max(maxLineWidth, maxWidth);
 		totalObjectives = totalObjectives + numObjectives;
-		totalPopUps = totalPopUps + numPopUps;
+		WATCHFRAME_NUM_POPUPS = WATCHFRAME_NUM_POPUPS + numPopUps;
 	end
 	
 	--disabled for now, might make it an option
 	--lineFrame:SetWidth(min(maxWidth, maxFrameWidth));
 	
 	-- shadow
-	if ( totalPopUps > 0) then
+	if ( WATCHFRAME_NUM_POPUPS > 0) then
 		if (not lineFrame.Shadow:IsShown()) then
 			lineFrame.Shadow:Show();
 			lineFrame.Shadow.FadeIn:Play();
@@ -861,11 +871,12 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local numPOINumeric = 0;
 	local numPOICompleteIn = 0;
 	local numPOICompleteOut = 0;
-	
+
 	local text, finished, objectiveType;
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID;
+	local numValidQuests = 0;
 
 	local maxWidth = 0;
 	local lineWidth = 0;
@@ -890,10 +901,20 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 		SetSuperTrackedQuestID(0);
 	end
 	
+	local inScenario = C_Scenario.IsInScenario();
+
 	for i = 1, numQuestWatches do
+		local validQuest = false;
 		WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
 		questIndex = GetQuestIndexForWatch(i);
 		if ( questIndex ) then
+			-- don't show non-scenario quests in scenarios
+			if ( not inScenario or GetQuestLogQuestType(questIndex) == QUEST_TYPE_SCENARIO ) then
+				validQuest = true;
+			end
+		end
+		if ( validQuest ) then
+			numValidQuests = numValidQuests + 1;
 			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent = GetQuestLogTitle(questIndex);
 			
 			if (WORLDMAP_SETTINGS and GetSuperTrackedQuestID() == 0) then
@@ -1059,7 +1080,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 		QuestPOI_SelectButtonByQuestId("WatchFrameLines", WORLDMAP_SETTINGS.selectedQuestId, true);	
 	end
 	
-	return lastLine or nextAnchor, maxWidth, numQuestWatches, 0;
+	return lastLine or nextAnchor, maxWidth, numValidQuests, 0;
 end
 
 function WatchFrameLines_OnUpdate (self, elapsed)
@@ -1602,7 +1623,7 @@ function WatchFrameAutoQuest_GetOrCreateFrame(parent, index)
 		return _G["WatchFrameAutoQuestPopUp"..index];
 	end
 	local frame = CreateFrame("SCROLLFRAME", "WatchFrameAutoQuestPopUp"..index, parent, "WatchFrameAutoQuestPopUpTemplate");	
-	frame.index = index;
+	frame.isFirst = (index == 1 and WATCHFRAME_NUM_POPUPS == 0);	-- used by slide-in animation
 	numPopUpFrames = numPopUpFrames+1;
 	return frame;
 end
@@ -1631,7 +1652,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 			if (not frame.questId) then
 				-- Only show the animation for new notifications
 				frame.ScrollChild.Flash:Hide();
-				WatchFrameAutoQuest_SlideIn(frame, 0.4);
+				WatchFrame_SlideInFrame(frame, "AUTOQUEST");
 			end
 			
 			if (isComplete and popUpType == "COMPLETE") then
@@ -1688,51 +1709,11 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 	return nextAnchor, maxWidth, 0, numPopUps;
 end
 
-function WatchFrameAutoQuest_OnUpdate(frame, timestep)
-	local height = 72;
-	local scrollStart = 65;
-	local scrollEnd = -9;
-	
-	-- Pause animation while the lineframe shadow is animating
-	if (WatchFrameLinesShadow.FadeIn:IsPlaying()) then
-		return;
-	end
-	
-	-- The first pop-up needs to include the WATCHFRAME_TYPE_OFFSET in the animation
-	if (frame.index == 1) then
-		height = height + WATCHFRAME_TYPE_OFFSET;
-		scrollEnd = scrollEnd - WATCHFRAME_TYPE_OFFSET;
-	end
-	
-	frame.totalTime = frame.totalTime+timestep;
-	if (frame.totalTime > frame.slideInTime) then
-		frame.totalTime = frame.slideInTime;
-	end
-	
-	local scrollPos = scrollEnd;
-	if (frame.slideInTime and frame.slideInTime > 0) then
-		height = height*(frame.totalTime/frame.slideInTime);
-		scrollPos = scrollStart + (scrollEnd-scrollStart)*(frame.totalTime/frame.slideInTime);
-	end
-	frame:SetHeight(height);
-	frame:UpdateScrollChildRect();
-	frame:SetVerticalScroll(floor(scrollPos+0.5));
-	
-	if (frame.totalTime >= frame.slideInTime) then
-		frame:SetScript("OnUpdate", nil);
-		WatchFrame_Update();
-		frame.ScrollChild.Shine:Show();
-		frame.ScrollChild.IconShine:Show();
-		frame.ScrollChild.Shine.Flash:Play();
-		frame.ScrollChild.IconShine.Flash:Play();
-	end
-end
-
-function WatchFrameAutoQuest_SlideIn(frame, slideInTime)
-	frame.totalTime = 0;
-	frame.slideInTime = slideInTime;
-	frame:SetHeight(1);
-	frame:SetScript("OnUpdate", WatchFrameAutoQuest_OnUpdate);
+function WatchFrameAutoQuest_OnFinishSlideIn(frame)
+	frame.ScrollChild.Shine:Show();
+	frame.ScrollChild.IconShine:Show();
+	frame.ScrollChild.Shine.Flash:Play();
+	frame.ScrollChild.IconShine.Flash:Play();
 end
 
 function WatchFrameAutoQuest_AddPopUp(questId, type)
@@ -1757,6 +1738,8 @@ end
 --------------------------------------------------------------------------------------------
 -- Scenario
 --------------------------------------------------------------------------------------------
+local SCENARIO_POPUP_BASE_HEIGHT = 83;
+
 function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, frameWidth)
 	WatchFrame_ResetScenarioLines();
 	-- for return values
@@ -1764,17 +1747,18 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 	local numObjectives = 0;
 	local numPopups = 0;
 	
-	local frame = WatchFrameScenarioFrame;
+	local popupFrame = WatchFrameScenarioPopUpFrame;
 	local name, currentStage, numStages = C_Scenario.GetInfo();
 	if ( currentStage > 0 and currentStage <= numStages ) then
-		frame:SetParent(lineFrame);
-		frame:ClearAllPoints();
+		popupFrame:SetParent(lineFrame);
+		popupFrame:ClearAllPoints();
 		if (nextAnchor) then
-			frame:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+			popupFrame:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
 		else
-			frame:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET + 4)
+			popupFrame:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET + 4)
 		end
-		frame:Show();
+		popupFrame:Show();
+		local frame = WatchFrameScenarioFrame;
 		nextAnchor = frame;
 		WATCHFRAME_SETLINES_NUMLINES = 0;	-- without a normal header this wouldn't get reset
 		-- step info
@@ -1787,8 +1771,14 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 			frame.finalBg:Hide();
 		end
 		frame.stageName:SetText(stageName);
+		if ( frame.stageName:GetStringWidth() > frame.stageName:GetWrappedWidth() ) then
+			frame.stageLevel:SetPoint("TOPLEFT", 15, -10);
+		else
+			frame.stageLevel:SetPoint("TOPLEFT", 15, -18);
+		end
 		WatchFrameScenario_SetProgressDots(currentStage, numStages);
 		-- criteria info
+		local contentHeight = SCENARIO_POPUP_BASE_HEIGHT;
 		for i = 1, numCriteria do
 			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID = C_Scenario.GetCriteriaInfo(i);
 			if ( not criteriaCompleted ) then
@@ -1802,15 +1792,27 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, DASH_SHOW);
 				end
 				line:Show();
+				contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING;
 				nextAnchor = line;
 			end
 		end
+		WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].height = contentHeight;
+		WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].scrollStart = contentHeight;
+		-- slide in only if new stage
+		if ( popupFrame.stage == currentStage ) then
+			popupFrame:SetHeight(contentHeight);
+		else
+			WatchFrame_SlideInFrame(popupFrame, "SCENARIO");
+		end
+		popupFrame.stage = currentStage;
 		-- done
 		width = frame:GetWidth();
 		numObjectives = 1;
 		numPopups = 1;
+		nextAnchor = popupFrame;
 	else
-		frame:Hide();
+		popupFrame:Hide();
+		popupFrame.stage = 0;
 	end
 
 	WatchFrame_ReleaseUnusedScenarioLines();
@@ -1819,11 +1821,13 @@ end
 
 function WatchFrameScenario_SetProgressDots(currentStage, numStages)
 	local frame = WatchFrameScenarioFrame;
+	local xOffset = (numStages - 1) * -9;	-- want the dots centered
+	frame.stage1:SetPoint("CENTER", WatchFrameScenarioFrame, "BOTTOM", xOffset, 3);
 	-- create new stage textures if needed
 	for i = frame.numTexStages + 1, numStages do
 		local texture = frame:CreateTexture(nil, "ARTWORK");
 		texture:SetTexture("Interface\\Scenarios\\ScenariosParts");
-		texture:SetPoint("CENTER", frame["stage"..(i - 1)], "CENTER", 19, 0);
+		texture:SetPoint("CENTER", frame["stage"..(i - 1)], "CENTER", 18, 0);
 		frame["stage"..i] = texture;
 	end
 	frame.numTexStages = max(frame.numTexStages, numStages);
@@ -1856,6 +1860,62 @@ function WatchFrameScenario_SetProgressDots(currentStage, numStages)
 				texture.stage = stageState;
 			end
 			texture:Show();
+		end
+	end
+end
+
+--------------------------------------------------------------------------------------------
+-- Slide-in Animations
+--------------------------------------------------------------------------------------------
+WATCHFRAME_SLIDEIN_ANIMATIONS = {
+	["AUTOQUEST"] = { height = 72, scrollStart = 65, scrollEnd = -9, slideInTime = 0.4, onFinishFunc = WatchFrameAutoQuest_OnFinishSlideIn },
+	["SCENARIO"] = { height = nil, scrollStart = nil, scrollEnd = 0, slideInTime = 0.4 },	-- various content heights, nil values must be set
+};
+
+function WatchFrame_SlideInFrame(frame, animType)
+	frame.totalTime = 0;
+	frame.animData = WATCHFRAME_SLIDEIN_ANIMATIONS[animType];
+	frame.slideInTime = frame.animData.slideInTime;
+	frame:SetHeight(1);
+	frame:SetScript("OnUpdate", WatchFrameSlideInFrame_OnUpdate);
+end
+
+function WatchFrameSlideInFrame_OnUpdate(frame, timestep)
+	local animData = frame.animData;
+	local height = animData.height;
+	local scrollStart = animData.scrollStart;
+	local scrollEnd = animData.scrollEnd;
+
+	-- Pause animation while the lineframe shadow is animating
+	if (WatchFrameLinesShadow.FadeIn:IsPlaying()) then
+		return;
+	end
+
+	-- The first pop-up needs to include the WATCHFRAME_TYPE_OFFSET in the animation
+	if (frame.isFirst) then
+		height = height + WATCHFRAME_TYPE_OFFSET;
+		scrollEnd = scrollEnd - WATCHFRAME_TYPE_OFFSET;
+	end
+
+	frame.totalTime = frame.totalTime+timestep;
+	if (frame.totalTime > animData.slideInTime) then
+		frame.totalTime = animData.slideInTime;
+	end
+
+	local scrollPos = scrollEnd;
+	if (animData.slideInTime and animData.slideInTime > 0) then
+		height = height*(frame.totalTime/animData.slideInTime);
+		scrollPos = scrollStart + (scrollEnd-scrollStart)*(frame.totalTime/animData.slideInTime);
+	end
+	frame:SetHeight(height);
+	frame:UpdateScrollChildRect();
+	frame:SetVerticalScroll(floor(scrollPos+0.5));
+
+	if (frame.totalTime >= animData.slideInTime) then
+		frame:SetScript("OnUpdate", nil);
+		WatchFrame_Update();
+		if ( animData.onFinishFunc ) then
+			animData.onFinishFunc(frame);
 		end
 	end
 end

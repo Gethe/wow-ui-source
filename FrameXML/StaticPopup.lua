@@ -2634,6 +2634,7 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 		end
 	end,
 	hasMoneyFrame = 1,
+	exclusive = 1,
 	timeout = 0,
 	hideOnEscape = 1
 };

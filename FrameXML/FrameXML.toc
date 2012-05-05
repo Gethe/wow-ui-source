@@ -167,6 +167,7 @@ MonkHarmonyBar.xml
 DestinyFrame.xml
 PriestBar.xml
 SharedPetBattleTemplates.xml
+LootHistory.xml
 
 ## add new modules above here
 LocalizationPost.xml

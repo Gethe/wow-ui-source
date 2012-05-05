@@ -829,13 +829,17 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyPopup:SetHeight(LFGDungeonReadyStatus:GetHeight());
 			end
 		elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
-			LFGDungeonReadyStatus:Show();
-			LFGDungeonReadyStatusIndividual:Hide();
-			LFGDungeonReadyStatusGrouped:Hide();
-			LFGDungeonReadyStatusRoleless:Show();
 			LFGDungeonReadyDialog:Hide();
-			
-			LFGDungeonReadyStatusRoleless_UpdateCount(LFGDungeonReadyStatusRoleless.ready, numMembers);
+			-- there may be solo scenarios
+			if ( numMembers > 1 ) then
+				LFGDungeonReadyStatus:Show();
+				LFGDungeonReadyStatusIndividual:Hide();
+				LFGDungeonReadyStatusGrouped:Hide();
+				LFGDungeonReadyStatusRoleless:Show();
+				LFGDungeonReadyStatusRoleless_UpdateCount(LFGDungeonReadyStatusRoleless.ready, numMembers);
+			else
+				LFGDungeonReadyStatus:Hide();
+			end
 		else
 			LFGDungeonReadyStatus:Show();
 			LFGDungeonReadyStatusGrouped:Hide();

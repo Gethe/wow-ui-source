@@ -3847,6 +3847,7 @@
 					</OnShow>
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
+						CVarBitfield("closedInfoFrames",""); -- reset the help plates too
 						ResetTutorials();
 						TutorialFrame_ClearQueue();
 						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "ShowTutorials"];

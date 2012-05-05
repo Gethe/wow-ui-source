@@ -332,17 +332,8 @@ function PVPFrame_UpdateCurrency(self)
 			PVPFrameCurrency:Hide();
 			PVPFrameConquestBar:Show();
 			local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek = GetPVPRewards();
-			-- if BG limit is below arena, swap them
-			if ( tier2Limit < tier1Limit ) then
-				tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
-				tier1Limit, tier2Limit = tier2Limit, tier1Limit;
-			end
-			-- if the higher limit is the max, drop one tier
-			if ( tier2Limit == maxPointsThisWeek ) then
-				tier2Quantity = nil;
-				tier2Limit = nil;
-			end
-			CapProgressBar_Update(PVPFrameConquestBar, tier1Quantity, tier1Limit, tier2Quantity, tier2Limit, pointsThisWeek, maxPointsThisWeek);
+			-- just want a plain bar
+			CapProgressBar_Update(PVPFrameConquestBar, 0, 0, nil, nil, pointsThisWeek, maxPointsThisWeek);
 			PVPFrameConquestBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
 		else
 			PVPFrameCurrency:Show();
@@ -386,6 +377,13 @@ function PVPFrameConquestBar_OnEnter(self)
 		r, g, b = 1, 1, 1;
 	end
 	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
+
+	if ( capped or randomPointsThisWeek >= maxRandomPointsThisWeek ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_RANDOMBG, format(CURRENCY_WEEKLY_CAP_FRACTION, randomPointsThisWeek, maxRandomPointsThisWeek), r, g, b, r, g, b);
 
 	GameTooltip:Show();
 end

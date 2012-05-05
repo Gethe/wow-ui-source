@@ -217,7 +217,7 @@
 			<Frame name="$parentScenarioFrame" parentKey="scenarioFrame" alpha="0">
 				<Animations>
 					<AnimationGroup parentKey="newStage">
-						<Alpha change="1" duration="0.7" endDelay="1.5" order="1"/>
+						<Alpha change="1" duration="0.7" endDelay="4.5" order="1"/>
 						<Alpha change="-1" duration="0.5" order="2"/>
 						<Scripts>
 							<OnPlay>
@@ -264,7 +264,7 @@
 			<Frame parentKey="scenarioBits" alpha="0" setAllPoints="true">
 				<Animations>
 					<AnimationGroup parentKey="fadeIn">
-						<Alpha change="1" duration="0.7" startDelay="0.7" endDelay="0.8" order="1"/>
+						<Alpha change="1" duration="0.7" startDelay="0.7" endDelay="3.8" order="1"/>
 						<Alpha change="-1" duration="0.5" order="2"/>
 					</AnimationGroup>
 				</Animations>
@@ -282,7 +282,7 @@
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.60937500" top="0.13671875" bottom="0.07617188"/>
+							<TexCoords left="0.12304688" right="0.60937500" bottom="0.07617188" top="0.13671875"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
@@ -291,14 +291,14 @@
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.86914063" top="0.36328125" bottom="0.43164063"/>
+							<TexCoords left="0.12304688" right="0.86914063" top="0.27929688" bottom="0.34765625"/>
 						</Texture>
 						<Texture file="Interface\Scenarios\ScenariosParts">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.86914063" top="0.43164063" bottom="0.36328125"/>
+							<TexCoords left="0.12304688" right="0.86914063" top="0.34765625" bottom="0.27929688"/>
 						</Texture>
 					</Layer>
 				</Layers>

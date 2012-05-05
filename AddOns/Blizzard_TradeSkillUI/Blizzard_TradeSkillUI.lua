@@ -294,7 +294,7 @@ function TradeSkillFrame_Update()
 					skillButtonText:SetWidth(textWidth);
 					skillButtonCount:SetText("");
 				else
-					skillName = indentPrefix..skillNamePrefix..skillName;
+					skillName = skillNamePrefix..skillName;
 					skillButtonCount:SetText("["..numAvailable.."]");
 					TradeSkillFrameDummyString:SetText(skillName);
 					nameWidth = TradeSkillFrameDummyString:GetWidth();

@@ -904,7 +904,7 @@
 		</Layer>
 		<Layer level="BORDER">
 			<Texture file="Interface\Scenarios\ScenariosParts" setAllPoints="true">
-				<TexCoords left="0.12304688" right="0.73046875" top="0.56445313" bottom="0.71679688"/>
+				<TexCoords left="0.12304688" right="0.73046875" top="0.50585938" bottom="0.65820313"/>
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
@@ -918,8 +918,9 @@
 				<Color r="0.973" g="0.937" b="0.580"/>
 			</FontString>
 			<FontString inherits="GameFontHighlight" parentKey="dungeonName">
+				<Size x="200" y="0"/>
 				<Anchors>
-					<Anchor point="TOP" x="20" y="-40"/>
+					<Anchor point="CENTER" relativePoint="TOP" x="20" y="-46"/>
 				</Anchors>
 			</FontString>
 		</Layer>
@@ -974,7 +975,7 @@
 								</Scripts>
 							</AnimationGroup>
 						</Animations>
-						<TexCoords left="0.12304688" right="0.76171875" top="0.72070313" bottom="0.90429688"/>
+						<TexCoords left="0.12304688" right="0.76171875" top="0.66210938" bottom="0.84570313"/>
 					</Texture>
 				</Layer>
 			</Layers>

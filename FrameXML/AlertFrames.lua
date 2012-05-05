@@ -443,8 +443,7 @@ function ScenarioAlertFrame_ShowAlert()
 	end
 
 	--Set up the text and icon
-	local scenarioName = C_Scenario.GetInfo();
-	frame.dungeonName:SetText(scenarioName);
+	frame.dungeonName:SetText(name);
 	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
 
 	AlertFrame_AnimateIn(frame)

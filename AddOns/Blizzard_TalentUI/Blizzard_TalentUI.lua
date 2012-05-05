@@ -446,6 +446,7 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 				event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" ) then
 			PlayerTalentFrame_ClearTalentSelections();
 			PlayerTalentFrame_Refresh();
+			SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
 		elseif ( event == "UNIT_LEVEL") then
 			if ( selectedSpec ) then
 				local arg1 = ...;
@@ -1350,11 +1351,19 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		frame.name:SetText(name);
 		frame.spellID = bonuses[i];
 		frame.extraTooltip = nil;
+		local level = GetSpellLevelLearned(bonuses[i]);
+		if ( level and level > UnitLevel("player") ) then
+			frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
+		else
+			frame.subText:SetText("");
+		end
 		if ( disable ) then
+			frame.disabled = true;
 			frame.icon:SetDesaturated(true);
 			frame.ring:SetDesaturated(true);
 			frame.subText:SetTextColor(0.75, 0.75, 0.75);
 		else
+			frame.disabled = false;
 			frame.icon:SetDesaturated(false);
 			frame.ring:SetDesaturated(false);
 			frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
@@ -1367,6 +1376,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	frame = scrollChild["abilityButton"..index];
 	while frame do
 		frame:Hide();
+		frame.spellID = nil;
 		index = index + 1;
 		frame = scrollChild["abilityButton"..index];
 	end

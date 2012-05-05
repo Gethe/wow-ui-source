@@ -103,8 +103,8 @@ function GroupFinderFrame_OnLoad(self)
 	self.groupButton1.name:SetText(LOOKING_FOR_DUNGEON);
 	SetPortraitToTexture(self.groupButton2.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	self.groupButton2.name:SetText(RAID_FINDER);
-	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Achievement_General_StayClassy");
-	self.groupButton3.name:SetText("Scenarios");
+	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Icon_Scenarios");
+	self.groupButton3.name:SetText(SCENARIOS);
 	-- disable
 	if ( UnitLevel("player") < SCENARIOS_SHOW_LEVEL ) then
 		local button = self.groupButton3;

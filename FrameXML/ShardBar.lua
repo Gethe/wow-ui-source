@@ -37,7 +37,7 @@ function WarlockPowerFrame_OnEvent(self, event, arg1, arg2)
 	if ( event == "UNIT_AURA" and (arg1 == WarlockPowerFrame:GetParent().unit) ) then
 		DemonicFuryBar_CheckAndSetState();
 	elseif ( event == "SPELLS_CHANGED" ) then
-		if ( IsSpellKnown(self.reqSpellID) ) then
+		if ( IsPlayerSpell(self.reqSpellID) ) then
 			self:UnregisterEvent("SPELLS_CHANGED");
 			self.reqSpellID = nil;
 			-- clear spec to force reevaluation
@@ -71,7 +71,7 @@ function WarlockPowerFrame_SetUpCurrentPower(self, shouldAnim)
 			self:SetScript("OnUpdate", nil);
 			-- set up Affliction
 			-- only show shard bar if soulburn is known
-			if ( IsSpellKnown(WARLOCK_SOULBURN) ) then
+			if ( IsPlayerSpell(WARLOCK_SOULBURN) ) then
 				self.activeBar = ShardBarFrame;
 				self.activeBar.OnEvent = ShardBar_Update;
 				ShardBarFrame:Show();
@@ -96,7 +96,7 @@ function WarlockPowerFrame_SetUpCurrentPower(self, shouldAnim)
 			self:UnregisterEvent("SPELLS_CHANGED");
 			-- set up Destruction
 			-- only show if burning embers is known
-			if ( IsSpellKnown(WARLOCK_BURNING_EMBERS) ) then
+			if ( IsPlayerSpell(WARLOCK_BURNING_EMBERS) ) then
 				self.activeBar = BurningEmbersBarFrame;
 				self.activeBar.OnEvent = BurningEmbersBar_Update;
 				self.activeBar.SetPower = BurningEmbersBar_SetPower;
@@ -316,8 +316,8 @@ function BurningEmbersBar_Update(self, powerType, forceUpdate)
 		return;
 	end
 
-	local maxPower = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS);
-	local power = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
+	local maxPower = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS, true);
+	local power = UnitPower("player", SPELL_POWER_BURNING_EMBERS, true);
 	local numEmbers = floor(maxPower / MAX_POWER_PER_EMBER);
 
 	if ( self.emberCount ~= numEmbers ) then
