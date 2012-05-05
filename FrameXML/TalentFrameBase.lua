@@ -15,6 +15,7 @@ local max = max;
 local huge = math.huge;
 local rshift = bit.rshift;
 
+inspectedUnit = nil;
 
 function TalentFrame_Load(TalentFrame)
 	TalentFrame.TALENT_BRANCH_ARRAY={};
@@ -41,18 +42,27 @@ function TalentFrame_Update(TalentFrame)
 	local disable;
 	if ( TalentFrame.inspect ) then
 		-- even though we have inspection data for more than one talent group, we're only showing one for now
-		disable = true;
+		disable = false;
 	else
 		disable = ( TalentFrame.talentGroup ~= GetActiveSpecGroup(TalentFrame.inspect) );
 	end
-	TalentFrame.bg:SetDesaturated(disable);
+	if(TalentFrame.bg ~= nil) then
+		TalentFrame.bg:SetDesaturated(disable);
+	end
+	
+	testTalent = GetInspectTalent(inspectedUnit, 1);
+	
+	local classDisplayName, class, classID;
+	if( TalentFrame.inspect ) then
+		 classDisplayName, class, classID = UnitClass(inspectedUnit); 
+	end
 	
 	local rowAvailable = true;
 	local numTalentSelections = 0;
 	for i=1, MAX_NUM_TALENTS do
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, selected, available = GetTalentInfo(i, TalentFrame.inspect, TalentFrame.talentGroup);
+			local name, iconTexture, tier, column, selected, available = GetTalentInfo(i, TalentFrame.inspect, TalentFrame.talentGroup, inspectedUnit, classID);
 			local button = TalentFrame["tier"..tier]["talent"..column];
 			local talentRow = TalentFrame["tier"..tier];
 			
@@ -60,58 +70,81 @@ function TalentFrame_Update(TalentFrame)
 				button:SetID(i);
 
 				SetItemButtonTexture(button, iconTexture);
-				button.name:SetText(name);
-				
-				if( selected ) then
-					button.knownSelection:Show();
-					button.knownSelection:SetDesaturated(disable);
-				else
-					button.knownSelection:Hide();
+				if(button.name ~= nil) then
+					button.name:SetText(name);
 				end
 				
-				if ( not available or disable ) then
-					SetDesaturation(button.icon, true);
-					button.highlight:SetAlpha(0);
-					button.learnSelection:Hide();
-					rowAvailable = false;
-				else
-					SetDesaturation(button.icon, false);
-					button.highlight:SetAlpha(1);
-					if ( talentRow.selectionId == i ) then
-						button.learnSelection:Show();
-						numTalentSelections = numTalentSelections + 1;
+				if(button.knownSelection ~= nil) then
+					if( selected ) then
+						button.knownSelection:Show();
+						button.knownSelection:SetDesaturated(disable);
 					else
-						button.learnSelection:Hide();
+						button.knownSelection:Hide();
 					end
 				end
+				
+				if( TalentFrame.inspect ) then
+					if ( selected ) then
+						SetDesaturation(button.icon, false);
+						--button.highlight:SetAlpha(1);
+						button.border:Show();
+					else
+						SetDesaturation(button.icon, true);
+						--button.highlight:SetAlpha(0);
+						button.border:Hide();
+					end
+				else
+					if ( not available or disable ) then
+						SetDesaturation(button.icon, true);
+						button.highlight:SetAlpha(0);
+						button.learnSelection:Hide();
+						rowAvailable = false;
+					else
+						SetDesaturation(button.icon, false);
+						button.highlight:SetAlpha(1);
+						if ( talentRow.selectionId == i ) then
+							button.learnSelection:Show();
+							numTalentSelections = numTalentSelections + 1;
+						else
+							button.learnSelection:Hide();
+						end
+					end
+				end
+				
 				button:Show();
 			elseif (button) then
 				button:Hide();
 			end
 
 			-- do tier level number after every row
-			if ( mod(i, NUM_TALENT_COLUMNS) == 0 ) then
-				if ( rowAvailable ) then
-					talentRow.level:SetTextColor(1, 0.82, 0);
-				else
-					talentRow.level:SetTextColor(0.5, 0.5, 0.5);
+			if(talentRow.level ~= nil) then
+				if ( mod(i, NUM_TALENT_COLUMNS) == 0 ) then
+					if ( rowAvailable ) then
+						talentRow.level:SetTextColor(1, 0.82, 0);
+					else
+						talentRow.level:SetTextColor(0.5, 0.5, 0.5);
+					end
+					rowAvailable = true;
 				end
-				rowAvailable = true;
 			end
 		end
 	end
-	if ( numTalentSelections > 0 ) then
-		TalentFrame.learnButton:Enable();
-		UIFrameFlash(TalentFrame.learnButton.Flash, 0.7, 0.7, -1);
-	else
-		TalentFrame.learnButton:Disable();
-		UIFrameFlashStop(TalentFrame.learnButton.Flash);
+	if(TalentFrame.learnButton ~= nil) then
+		if ( numTalentSelections > 0 ) then
+			TalentFrame.learnButton:Enable();
+			UIFrameFlash(TalentFrame.learnButton.Flash, 0.7, 0.7, -1);
+		else
+			TalentFrame.learnButton:Disable();
+			UIFrameFlashStop(TalentFrame.learnButton.Flash);
+		end
 	end
-	local numUnspentTalents = GetNumUnspentTalents();
-	if ( not disable and numUnspentTalents > 0 ) then
-		TalentFrame.unspentText:SetFormattedText(PLAYER_UNSPENT_TALENT_POINTS, numUnspentTalents);
-	else
-		TalentFrame.unspentText:SetText("");
+	if(TalentFrame.unspentText ~= nil) then
+		local numUnspentTalents = GetNumUnspentTalents();
+		if ( not disable and numUnspentTalents > 0 ) then
+			TalentFrame.unspentText:SetFormattedText(PLAYER_UNSPENT_TALENT_POINTS, numUnspentTalents);
+		else
+			TalentFrame.unspentText:SetText("");
+		end
 	end
 end
 

@@ -1,282 +1,282 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="InspectTalentFrame.lua"/>
-	<Frame name="InspectTalentFrame" setAllPoints="true" useParentLevel="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4">
+	<Script file="Blizzard_GlyphUI.lua"/>
+	
+	<!-- Talent button template, taken from PlayerTalentButtonTemplate in Blizzard_TalentUI.xml -->
+	<Button name="InspectTalentButtonTemplate" virtual="true">
+		<Size x="64" y="64"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="InspectTalentFrameBackgroundTopLeft">
-					<Size x="274" y="258"/>
+				<Texture name="$parentIconTexture" parentKey="icon">
+					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectFrameInset" x="3" y="-3"/>
+						<Anchor point="CENTER" x="-1" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="InspectTalentFrameBackgroundTopRight">
-					<Size x="69" y="258"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
+					<Size x="31" y="30"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="CENTER" x="-1" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="InspectTalentFrameBackgroundBottomLeft">
-					<Size x="274" y="129"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" parentKey="border">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				InspectTalentFrameTalent_OnEnter(self);
+			</OnEnter> 
+			<OnLeave>
+				GameTooltip_Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<!-- Row of player talents, taken from PlayerTalentRowTemplate in Blizzard_TalentUI.xml -->
+	<Frame name="InspectTalentRowTemplate" virtual="true">
+		<Size x="627" y="50"/>
+		<Frames>
+			<Button name="$parentTalent1" inherits="InspectTalentButtonTemplate" parentKey="talent1">
+				<Anchors>
+					<Anchor point="LEFT" x="-10" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTalent2" inherits="InspectTalentButtonTemplate" parentKey="talent2">
+				<Anchors>
+					<Anchor point="LEFT" x="40" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTalent3" inherits="InspectTalentButtonTemplate" parentKey="talent3">
+				<Anchors>
+					<Anchor point="LEFT" x="90" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<!-- Glyphy icons (major and minor), taken from GlyphTemplate in Blizzard_GlyphUI.xml, line 138 -->
+	<Button name="InspectGlyphTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup looping="REPEAT" parentKey="glow">
+				<Alpha target="$parentHighlight"  change="0.5" duration="0.8" smoothing="IN_OUT" order="1"/>
+				<Alpha target="$parentHighlight" change="-0.5" duration="0.8" smoothing="IN_OUT" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Size x="72" y="72"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentGlyph" parentKey="glyph">
+					<Size x="57" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="InspectTalentFrameBackgroundBottomRight">
-					<Size  x="69" y="129"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentHighlight" file="Interface\TalentFrame\glyph-main" alphaMode="ADD" parentKey="highlight">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRing" file="Interface\TalentFrame\glyph-main" parentKey="ring">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button name="$parentTab1" inherits="TabButtonTemplate" text="OK" id="1">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="InspectFrameInset" relativePoint="TOPLEFT" x="60" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
-						InspectTalentFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab2" inherits="TabButtonTemplate" text="OK" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
-						InspectTalentFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab3" inherits="TabButtonTemplate" text="OK" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
-						InspectTalentFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame name="InspectTalentFramePointsBar">
-				<Size x="331" y="18"/>
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset x="5" y="0"/>
-					</Anchor>
-					<Anchor point="RIGHT">
-						<Offset x="-6" y="0"/>
-					</Anchor>
-					<Anchor point="BOTTOM">
-						<Offset x="0" y="6"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentBorderLeft" file="Interface\Buttons\UI-Button-Borders2">
-							<Size x="6" y="18"/>
-							<Anchors>
-								<Anchor point="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0" right="0.01171875" top="0.421875" bottom="0.5625"/>
-						</Texture>
-						<Texture name="$parentBorderRight" file="Interface\Buttons\UI-Button-Borders2">
-							<Size x="6" y="18"/>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.3046875" right="0.31640625" top="0.421875" bottom="0.5625"/>
-						</Texture>
-						<Texture name="$parentBorderMiddle" file="Interface\Buttons\UI-Button-Borders2">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBorderLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderRight" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-							<TexCoords left="0.01171875" right="0.3046875" top="0.421875" bottom="0.5625"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString name="InspectTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyH="LEFT">
-							<Size x="0" y="15"/>
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="12" y="1"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="InspectTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyH="RIGHT">
-							<Size x="0" y="15"/>
-							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="-12" y="1"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter function="InspectTalentFramePointsBar_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<ScrollFrame name="InspectTalentFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="296" y="332"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-64"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOM" relativeTo="InspectTalentFramePointsBar" relativePoint="TOP">
-						<Offset x="0" y="0"/>
-					</Anchor>
-				</Anchors>
-				<ScrollChild>
-					<Frame name="InspectTalentFrameScrollChildFrame">
-						<Size>
-							<AbsDimension x="320" y="50"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="InspectTalentFrameBranch1" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch2" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch3" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch4" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch5" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch6" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch7" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch8" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch9" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch10" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch11" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch12" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch13" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch14" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch15" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch16" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch17" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch18" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch19" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch20" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch21" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch22" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch23" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch24" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch25" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch26" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch27" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch28" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch29" inherits="TalentBranchTemplate"/>
-								<Texture name="InspectTalentFrameBranch30" inherits="TalentBranchTemplate"/>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="InspectTalentFrameTalent1" inherits="TalentButtonTemplate" id="1"/>
-							<Button name="InspectTalentFrameTalent2" inherits="TalentButtonTemplate" id="2"/>
-							<Button name="InspectTalentFrameTalent3" inherits="TalentButtonTemplate" id="3"/>
-							<Button name="InspectTalentFrameTalent4" inherits="TalentButtonTemplate" id="4"/>
-							<Button name="InspectTalentFrameTalent5" inherits="TalentButtonTemplate" id="5"/>
-							<Button name="InspectTalentFrameTalent6" inherits="TalentButtonTemplate" id="6"/>
-							<Button name="InspectTalentFrameTalent7" inherits="TalentButtonTemplate" id="7"/>
-							<Button name="InspectTalentFrameTalent8" inherits="TalentButtonTemplate" id="8"/>
-							<Button name="InspectTalentFrameTalent9" inherits="TalentButtonTemplate" id="9"/>
-							<Button name="InspectTalentFrameTalent10" inherits="TalentButtonTemplate" id="10"/>
-							<Button name="InspectTalentFrameTalent11" inherits="TalentButtonTemplate" id="11"/>
-							<Button name="InspectTalentFrameTalent12" inherits="TalentButtonTemplate" id="12"/>
-							<Button name="InspectTalentFrameTalent13" inherits="TalentButtonTemplate" id="13"/>
-							<Button name="InspectTalentFrameTalent14" inherits="TalentButtonTemplate" id="14"/>
-							<Button name="InspectTalentFrameTalent15" inherits="TalentButtonTemplate" id="15"/>
-							<Button name="InspectTalentFrameTalent16" inherits="TalentButtonTemplate" id="16"/>
-							<Button name="InspectTalentFrameTalent17" inherits="TalentButtonTemplate" id="17"/>
-							<Button name="InspectTalentFrameTalent18" inherits="TalentButtonTemplate" id="18"/>
-							<Button name="InspectTalentFrameTalent19" inherits="TalentButtonTemplate" id="19"/>
-							<Button name="InspectTalentFrameTalent20" inherits="TalentButtonTemplate" id="20"/>
-							<Button name="InspectTalentFrameTalent21" inherits="TalentButtonTemplate" id="21"/>
-							<Button name="InspectTalentFrameTalent22" inherits="TalentButtonTemplate" id="22"/>
-							<Button name="InspectTalentFrameTalent23" inherits="TalentButtonTemplate" id="23"/>
-							<Button name="InspectTalentFrameTalent24" inherits="TalentButtonTemplate" id="24"/>
-							<Button name="InspectTalentFrameTalent25" inherits="TalentButtonTemplate" id="25"/>
-							<Button name="InspectTalentFrameTalent26" inherits="TalentButtonTemplate" id="26"/>
-							<Button name="InspectTalentFrameTalent27" inherits="TalentButtonTemplate" id="27"/>
-							<Button name="InspectTalentFrameTalent28" inherits="TalentButtonTemplate" id="28"/>
-
-							<Frame name="InspectTalentFrameArrowFrame" setAllPoints="true">
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture name="InspectTalentFrameArrow1" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow2" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow3" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow4" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow5" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow6" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow7" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow8" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow9" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow10" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow11" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow12" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow13" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow14" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow15" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow16" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow17" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow18" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow19" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow20" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow21" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow22" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow23" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow24" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow25" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow26" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow27" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow28" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow29" inherits="TalentArrowTemplate"/>
-										<Texture name="InspectTalentFrameArrow30" inherits="TalentArrowTemplate"/>
-									</Layer>
-								</Layers>
-							</Frame>
-						</Frames>
-					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
-			<Frame name="InspectTalentFrameScrollButtonOverlay" parent="InspectTalentFrameScrollFrameScrollBarScrollDownButton" hidden="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\Buttons\UI-ScrollBar-Button-Overlay" setAllPoints="true" alphaMode="ADD"/>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 		<Scripts>
-			<OnShow function="InspectTalentFrame_OnShow"/>
-			<OnHide function="InspectTalentFrame_OnHide"/>
-			<OnLoad function="InspectTalentFrame_OnLoad"/>
-			<OnEvent function="InspectTalentFrame_OnEvent"/>
+			<OnLoad function="InspectGlyphFrameGlyph_OnLoad"/>
+			<OnShow function="InspectGlyphFrameGlyph_UpdateSlot"/>
+			<!-- <OnClick function="InspectGlyphFrameGlyph_OnClick"/> -->
+			<OnEnter function="InspectGlyphFrameGlyph_OnEnter"/>
+			<OnLeave function="InspectGlyphFrameGlyph_OnLeave"/>
+			<OnUpdate function="InspectGlyphFrameGlyph_OnUpdate"/>
 		</Scripts>
+	</Button>
+	
+	<Frame name="InspectTalentFrame" setAllPoints="true" useParentLevel="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4">
+		<Layers>
+			<!-- Blue background behind spec ring -->
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture file="Interface\Common\bluemenu-main">
+					<Size x="325" y="70"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-64" />
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.82421875" top="0.18554688" bottom="0.58984375"/>
+				</Texture>
+			</Layer>
+			<!-- Gold border bar separating blue and black areas-->
+			<Layer level="BORDER">
+				<Texture file="Interface\TalentFrame\talent-horiz" horizTile="true">
+					<Size x="0" y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="7" y="-130"/>
+						<Anchor point="TOPRIGHT" x="-9" y="-130"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.05468750" bottom="0.14062500"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Specialization -->
+			<Frame name="Specialization" parentKey="InspectSpec">
+				<Size x="300" y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-45"/>
+				</Anchors>
+				<Layers>
+					
+					<Layer level="ARTWORK">
+						<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
+							<Size x="101" y="101"/>	
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-3"/>
+							</Anchors>
+							<TexCoords left="0.00390625" right="0.49218750" top="0.00195313" bottom="0.24609375"/>
+						</Texture>
+						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="1"/>
+							</Anchors>
+							<Color r="0.984375" g="0.828125" b="0"/>
+						</FontString>
+						<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="roleIcon">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-5" y="-3" />
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontHighlightMedium" parentKey="roleName">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentRoleIcon" relativePoint="RIGHT" x="3" y="1" />
+							</Anchors>
+							<Color r="0.48828125" g="0.50390625" b="0.515625"/>
+						</FontString>
+						<FontString name="$parentDescription" inherits="GameFontWhite" justifyH="LEFT" parentKey="description">
+							<Size x="370" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture name="$parentSpecIcon" parentKey="specIcon">
+							<Size x="70" y="70"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentRing" x="-1" y="1" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow function="InspectTalentFrameSpec_OnShow"/>
+					<OnEnter function="InspectTalentFrameSpec_OnEnter"/>
+					<OnLeave function="InspectTalentFrameSpec_OnLeave"/>
+				</Scripts>
+			</Frame>
+			
+			<!-- Talents -->
+			<Frame name="Talents" parentKey="InspectTalents">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentTalentRow1" inherits="InspectTalentRowTemplate" parentKey="tier1" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-142"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow2" inherits="InspectTalentRowTemplate" parentKey="tier2" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow3" inherits="InspectTalentRowTemplate" parentKey="tier3" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow4" inherits="InspectTalentRowTemplate" parentKey="tier4" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow5" inherits="InspectTalentRowTemplate" parentKey="tier5" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow6" inherits="InspectTalentRowTemplate" parentKey="tier6" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow function="InspectTalentFrameTalents_OnShow"/>
+					<OnLoad function="InspectTalentFrameTalents_OnLoad"/>
+				</Scripts>
+			</Frame>
+			
+			<!-- Glyphs -->
+			<Frame name="InspectGlyphs" parentKey="InspectGlyphs">
+			<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="180" y="-150"/>
+				</Anchors>
+				<Frames>
+					<!-- Minor Glyphs -->
+					<Button name="$parentGlyph1" parentKey="Glyph1" inherits="InspectGlyphTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="65" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph3" parentKey="Glyph3" inherits="InspectGlyphTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="65" y="-90"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph5" parentKey="Glyph5" inherits="InspectGlyphTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="65" y="-180"/>
+						</Anchors>
+					</Button>	
+					
+					<!-- Major Glyphs -->
+					<Button name="$parentGlyph2" parentKey="Glyph2" inherits="InspectGlyphTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph4" parentKey="Glyph4" inherits="InspectGlyphTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-90"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph6" parentKey="Glyph6" inherits="InspectGlyphTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-180"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			
+		</Frames>
 	</Frame>
 </Ui>

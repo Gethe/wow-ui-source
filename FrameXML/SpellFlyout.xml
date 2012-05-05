@@ -7,7 +7,7 @@
 		<TexCoords left="0.01562500" right="0.59375000" top="0.74218750" bottom="0.91406250"/>	
 	</Texture>
 	
-	<CheckButton name="SpellFlyoutButtonTemplate" inherits="ActionButtonTemplate,SecureFrameTemplate" virtual="true"> 
+	<CheckButton name="SpellFlyoutButtonTemplate" inherits="ActionButtonTemplate,SecureFrameTemplate" virtual="true" motionScriptsWhileDisabled="true"> 
 		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
 		<Size x="28" y="28"/>
 		<Scripts>

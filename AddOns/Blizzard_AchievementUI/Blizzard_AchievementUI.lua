@@ -12,6 +12,11 @@ ACHIEVEMENTUI_REDBORDER_G = 0.15;
 ACHIEVEMENTUI_REDBORDER_B = 0.05;
 ACHIEVEMENTUI_REDBORDER_A = 1;
 
+ACHIEVEMENTUI_BLUEBORDER_R = 0.129;
+ACHIEVEMENTUI_BLUEBORDER_G = 0.671;
+ACHIEVEMENTUI_BLUEBORDER_B = 0.875;
+ACHIEVEMENTUI_BLUEBORDER_A = 1;
+
 ACHIEVEMENTUI_CATEGORIESWIDTH = 175;
 
 ACHIEVEMENTUI_PROGRESSIVEHEIGHT = 50;
@@ -1016,11 +1021,11 @@ function AchievementButton_UpdatePlusMinusTexture (button)
 	
 	if ( display ) then
 		button.plusMinus:Show();
-		if ( button.collapsed and button.saturated ) then
+		if ( button.collapsed and button.saturatedStyle ) then
 			button.plusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
 		elseif ( button.collapsed ) then
 			button.plusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
-		elseif ( button.saturated ) then
+		elseif ( button.saturatedStyle ) then
 			button.plusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
 		else
 			button.plusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
@@ -1070,14 +1075,26 @@ function AchievementButton_Expand (self, height)
 end
 
 function AchievementButton_Saturate (self)
-	self.saturated = true;	
 	if ( IN_GUILD_VIEW ) then
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal");
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 		self.titleBar:SetTexCoord(0, 1, 0.83203125, 0.91015625);
+		self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 		self.shield.points:SetVertexColor(0, 1, 0);
+		self.saturatedStyle = "guild";
 	else
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-		self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
+		if ( self.accountWide ) then
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
+			self.titleBar:SetTexCoord(0, 1, 0, 0.375);
+			self:SetBackdropBorderColor(ACHIEVEMENTUI_BLUEBORDER_R, ACHIEVEMENTUI_BLUEBORDER_G, ACHIEVEMENTUI_BLUEBORDER_B, ACHIEVEMENTUI_BLUEBORDER_A);
+			self.saturatedStyle = "account";
+		else
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
+			self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
+			self.saturatedStyle = "normal";
+		end
 		self.shield.points:SetVertexColor(1, 1, 1);
 	end
 	self.glow:SetVertexColor(1.0, 1.0, 1.0);
@@ -1088,17 +1105,23 @@ function AchievementButton_Saturate (self)
 	self.description:SetTextColor(0, 0, 0, 1);
 	self.description:SetShadowOffset(0, 0);
 	AchievementButton_UpdatePlusMinusTexture(self);
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 end
 
 function AchievementButton_Desaturate (self)
-	self.saturated = nil;
+	self.saturatedStyle = nil;
 	if ( IN_GUILD_VIEW ) then
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal-Desaturated");
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 		self.titleBar:SetTexCoord(0, 1, 0.74609375, 0.82421875);
 	else
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-		self.titleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
+		if ( self.accountWide ) then
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
+			self.titleBar:SetTexCoord(0, 1, 0.40625, 0.78125);
+		else
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			self.titleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
+		end
 	end
 	self.glow:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
@@ -1129,7 +1152,6 @@ function AchievementButton_OnLoad (self)
 	self.Desaturate = AchievementButton_Desaturate;
 	
 	self:Collapse();
-	self:Desaturate();
 end
 
 function AchievementButton_OnClick (self, button, down, ignoreModifiers)
@@ -1206,6 +1228,20 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 	button.element = true;
 	
 	if ( button.id ~= id ) then
+		local saturatedStyle;
+		if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
+			button.accountIcon:Show();
+			button.accountWide = true;
+			saturatedStyle = "account";
+		else
+			button.accountIcon:Hide();
+			button.accountWide = nil;
+			if ( IN_GUILD_VIEW ) then
+				saturatedStyle = "guild";
+			else
+				saturatedStyle = "normal";
+			end
+		end
 		button.id = id;
 		button.label:SetWidth(ACHIEVEMENTBUTTON_LABELWIDTH);
 		button.label:SetText(name)
@@ -1223,23 +1259,30 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 			button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 		end
 
-		button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
-		button.shield.points:SetShown(not (completed and not wasEarnedByMe));
-		button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
-		button.shield.earnedBy = earnedBy;
+		if ( isGuild ) then
+			button.shield.BNicon:Hide();
+			button.shield.points:Show();
+			button.shield.wasEarnedByMe = nil;
+			button.shield.earnedBy = nil;
+		else
+			button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
+			button.shield.points:SetShown(not (completed and not wasEarnedByMe));
+			button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
+			button.shield.earnedBy = earnedBy;
+		end
 
 		button.shield.id = id;
 		button.description:SetText(description);
 		button.hiddenDescription:SetText(description);
 		button.numLines = ceil(button.hiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
 		button.icon.texture:SetTexture(icon);
-		if ( completed and not button.completed ) then
+		if ( completed ) then
 			button.completed = true;
 			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 			button.dateCompleted:Show();
-			button:Saturate();
-		elseif ( completed ) then
-			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+			if ( button.saturatedStyle ~= saturatedStyle ) then
+				button:Saturate();
+			end
 		else
 			button.completed = nil;
 			button.dateCompleted:Hide();
@@ -2125,12 +2168,29 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			if ( not buttons ) then
 				buttons = AchievementFrameSummaryAchievements.buttons;
 			end
+			button.isSummary = true;
 			AchievementFrameSummary_LocalizeButton(button);
 		end;
 		
 		if ( i <= numAchievements ) then
 			achievementID = select(i, ...);
 			id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
+
+			local saturatedStyle;
+			if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
+				button.accountIcon:Show();
+				button.accountWide = true;
+				saturatedStyle = "account";
+			else
+				button.accountIcon:Hide();
+				button.accountWide = nil;
+				if ( IN_GUILD_VIEW ) then
+					saturatedStyle = "guild";
+				else
+					saturatedStyle = "normal";
+				end
+			end
+
 			button.label:SetText(name);
 			button.description:SetText(description);
 			AchievementShield_SetPoints(points, button.shield.points, GameFontNormal, GameFontNormalSmall);
@@ -2140,10 +2200,17 @@ function AchievementFrameSummary_UpdateAchievements(...)
 				button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 			end
 
-			button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
-			button.shield.points:SetShown(not (completed and not wasEarnedByMe));
-			button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
-			button.shield.earnedBy = earnedBy;
+			if ( isGuild ) then
+				button.shield.BNicon:Hide();
+				button.shield.points:Show();
+				button.shield.wasEarnedByMe = nil;
+				button.shield.earnedBy = nil;
+			else
+				button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
+				button.shield.points:SetShown(not (completed and not wasEarnedByMe));
+				button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
+				button.shield.earnedBy = earnedBy;
+			end
 
 			button.icon.texture:SetTexture(icon);
 			button.id = id;
@@ -2154,7 +2221,9 @@ function AchievementFrameSummary_UpdateAchievements(...)
 				button.dateCompleted:SetText("");
 			end
 			
-			button:Saturate();
+			if ( button.saturatedStyle ~= saturatedStyle ) then
+				button:Saturate();
+			end
 			button.tooltipTitle = nil;
 			button:Show();
 		else
@@ -2220,7 +2289,6 @@ function AchievementFrameSummaryAchievement_OnLoad(self)
 	AchievementComparisonPlayerButton_OnLoad(self);
 	AchievementFrameSummaryAchievements.buttons = AchievementFrameSummaryAchievements.buttons or {};
 	tinsert(AchievementFrameSummaryAchievements.buttons, self);
-	self:Saturate();
 	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, 0.5);
 	self.titleBar:SetVertexColor(1,1,1,0.5);
 	self.dateCompleted:Show();
@@ -2764,10 +2832,22 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 	
 	if ( button.id ~= id ) then
 		button.id = id;
-		
+
 		local player = button.player;
 		local friend = button.friend;
-		
+
+		local saturatedStyle = "normal";
+		if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
+			button.accountIcon:Show();
+			player.accountWide = true;
+			friend.accountWide = true;
+			saturatedStyle = "account";
+		else
+			button.accountIcon:Hide();
+			player.accountWide = nil;
+			friend.accountWide = nil;
+		end
+
 		local friendCompleted, friendMonth, friendDay, friendYear = GetAchievementComparisonInfo(id);
 		player.label:SetText(name);		
 	
@@ -2791,25 +2871,25 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		player.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
 		player.shield.earnedBy = earnedBy;
 		
-		if ( completed and not player.completed ) then
+		if ( completed ) then
 			player.completed = true;
 			player.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 			player.dateCompleted:Show();
-			player:Saturate();
-		elseif ( completed ) then
-			player.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+			if ( player.saturatedStyle ~= saturatedStyle ) then
+				player:Saturate();
+			end
 		else
 			player.completed = nil;
 			player.dateCompleted:Hide();
 			player:Desaturate();
 		end
 		
-		if ( friendCompleted and not friend.completed ) then
+		if ( friendCompleted ) then
 			friend.completed = true;
 			friend.status:SetText(string.format(SHORTDATE, friendDay, friendMonth, friendYear));
-			friend:Saturate();
-		elseif ( friendCompleted ) then
-			friend.status:SetText(string.format(SHORTDATE, friendDay, friendMonth, friendYear));
+			if ( friend.saturatedStyle ~= saturatedStyle ) then
+				friend:Saturate();
+			end
 		else
 			friend.completed = nil;
 			friend.status:SetText(INCOMPLETE);
@@ -3004,12 +3084,32 @@ function AchievementComparisonPlayerButton_Saturate (self)
 	local name = self:GetName();
 	if ( IN_GUILD_VIEW ) then
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal");
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 		self.titleBar:SetTexCoord(0, 1, 0.83203125, 0.91015625);
+		self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 		self.shield.points:SetVertexColor(0, 1, 0);
+		self.saturatedStyle = "guild";
 	else
-		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
-		self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
+		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");	
 		self.shield.points:SetVertexColor(1, 1, 1);
+		if ( self.accountWide ) then
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
+			self.titleBar:SetTexCoord(0, 1, 0, 0.375);
+			self:SetBackdropBorderColor(ACHIEVEMENTUI_BLUEBORDER_R, ACHIEVEMENTUI_BLUEBORDER_G, ACHIEVEMENTUI_BLUEBORDER_B, ACHIEVEMENTUI_BLUEBORDER_A);
+			self.saturatedStyle = "account";
+		else
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			self.titleBar:SetTexCoord(0, 1, 0.66015625, 0.73828125);
+			self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);			
+			self.saturatedStyle = "normal";
+		end
+	end
+	if ( self.isSummary ) then
+		if ( self.accountWide ) then
+			self.titleBar:SetAlpha(1);
+		else
+			self.titleBar:SetAlpha(0.5);
+		end
 	end
 	self.glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
@@ -3017,17 +3117,31 @@ function AchievementComparisonPlayerButton_Saturate (self)
 	self.label:SetVertexColor(1, 1, 1);
 	self.description:SetTextColor(0, 0, 0, 1);
 	self.description:SetShadowOffset(0, 0);
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 end
 
 function AchievementComparisonPlayerButton_Desaturate (self)
+	self.saturatedStyle = nil;
 	local name = self:GetName();
 	if ( IN_GUILD_VIEW ) then
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-GuildAchievement-Parchment-Horizontal-Desaturated");
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
 		self.titleBar:SetTexCoord(0, 1, 0.74609375, 0.82421875);
 	else
 		self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
-		self.titleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
+		if ( self.accountWide ) then
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
+			self.titleBar:SetTexCoord(0, 1, 0.40625, 0.78125);
+		else
+			self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+			self.titleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
+		end
+	end
+	if ( self.isSummary ) then
+		if ( self.accountWide ) then
+			self.titleBar:SetAlpha(1);
+		else
+			self.titleBar:SetAlpha(0.5);
+		end
 	end
 	self.glow:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
@@ -3051,18 +3165,34 @@ function AchievementComparisonPlayerButton_OnLoad (self)
 end
 
 function AchievementComparisonFriendButton_Saturate (self)
-	self.titleBar:SetTexCoord(0.3, 0.575, 0.66015625, 0.73828125);
+	if ( self.accountWide ) then
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
+		self.titleBar:SetTexCoord(0.3, 0.575, 0, 0.375);
+		self.saturatedStyle = "account";
+		self:SetBackdropBorderColor(ACHIEVEMENTUI_BLUEBORDER_R, ACHIEVEMENTUI_BLUEBORDER_G, ACHIEVEMENTUI_BLUEBORDER_B, ACHIEVEMENTUI_BLUEBORDER_A);
+	else
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		self.titleBar:SetTexCoord(0.3, 0.575, 0.66015625, 0.73828125);
+		self.saturatedStyle = "normal";
+		self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
+	end
 	self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal");
 	self.glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
 	self.shield.points:SetVertexColor(1, 1, 1);
 	self.status:SetVertexColor(1, .82, 0);
-	self:SetBackdropBorderColor(ACHIEVEMENTUI_REDBORDER_R, ACHIEVEMENTUI_REDBORDER_G, ACHIEVEMENTUI_REDBORDER_B, ACHIEVEMENTUI_REDBORDER_A);
 end
 
 function AchievementComparisonFriendButton_Desaturate (self)
-	self.titleBar:SetTexCoord(0.3, 0.575, 0.74609375, 0.82421875);
+	self.saturatedStyle = nil;
+	if ( self.accountWide ) then
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\AccountLevel-AchievementHeader");
+		self.titleBar:SetTexCoord(0.3, 0.575, 0.40625, 0.78125);
+	else
+		self.titleBar:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		self.titleBar:SetTexCoord(0.3, 0.575, 0.74609375, 0.82421875);
+	end
 	self.background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated");
 	self.glow:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();

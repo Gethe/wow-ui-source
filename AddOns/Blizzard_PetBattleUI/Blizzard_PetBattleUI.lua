@@ -141,7 +141,12 @@ function PetBattleFrame_UpdateActionBarLayout(self)
 end
 
 function PetBattleAbilityButton_OnClick(self)
-	C_PetBattles.UseAbility(self:GetID());
+	if ( IsModifiedClick() ) then
+		local abilityID = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), self:GetID());
+		HandleModifiedItemClick(GetBattlePetAbilityHyperlink(abilityID));
+	else
+		C_PetBattles.UseAbility(self:GetID());
+	end
 end
 
 function PetBattleFrame_UpdateAssignedUnitFrames(self)
@@ -695,8 +700,8 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	PetBattleUnitFrame_SetUnit(self, petOwner, petIndex);
 
 	local height = 193;
-	local attack = C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_ATTACK);
-	local speed = C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_SPEED);
+	local attack = C_PetBattles.GetPower(petOwner, petIndex);
+	local speed = C_PetBattles.GetSpeed(petOwner, petIndex);
 	self.AttackAmount:SetText(attack);
 	self.SpeedAmount:SetText(speed);
 
@@ -834,12 +839,12 @@ end
 
 function PET_BATTLE_ABILITY_INFO:GetAttackStat(target)
 	local petOwner, petIndex = self:GetUnitFromToken(target);
-	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_ATTACK);
+	return C_PetBattles.GetPower(petOwner, petIndex);
 end
 
 function PET_BATTLE_ABILITY_INFO:GetSpeedStat(target)
 	local petOwner, petIndex = self:GetUnitFromToken(target);
-	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_SPEED);
+	return C_PetBattles.GetSpeed(petOwner, petIndex);
 end
 
 function PET_BATTLE_ABILITY_INFO:GetState(stateID, target)
@@ -1126,12 +1131,12 @@ end
 
 function PET_BATTLE_AURA_INFO:GetAttackStat(target)
 	local petOwner, petIndex = self:GetUnitFromToken(target);
-	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_ATTACK);
+	return C_PetBattles.GetPower(petOwner, petIndex);
 end
 
 function PET_BATTLE_AURA_INFO:GetSpeedStat(target)
 	local petOwner, petIndex = self:GetUnitFromToken(target);
-	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_SPEED);
+	return C_PetBattles.GetSpeed(petOwner, petIndex);
 end
 
 function PET_BATTLE_AURA_INFO:GetState(stateID, target)
@@ -1193,12 +1198,12 @@ end
 
 function PET_BATTLE_AURA_ID_INFO:GetAttackStat(target)
 	local petOwner, petIndex = self:GetUnitFromToken(target);
-	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_ATTACK);
+	return C_PetBattles.GetPower(petOwner, petIndex);
 end
 
 function PET_BATTLE_AURA_ID_INFO:GetSpeedStat(target)
 	local petOwner, petIndex = self:GetUnitFromToken(target);
-	return C_PetBattles.GetStateValue(petOwner, petIndex, PET_BATTLE_STATE_SPEED);
+	return C_PetBattles.GetSpeed(petOwner, petIndex);
 end
 
 function PET_BATTLE_AURA_ID_INFO:GetState(stateID, target)

@@ -201,6 +201,19 @@ function SetItemRef(link, text, button, chatFrame)
 		local _, index = strsplit(":", link);
 		LoadURLIndex(tonumber(index));
 		return;
+	elseif ( strsub(link, 1, 11) == "lootHistory" ) then
+		local _, rollID = strsplit(":", link);
+		LootHistoryFrame_OpenToRoll(LootHistoryFrame, tonumber(rollID), chatFrame);
+		return;
+	elseif ( strsub(link, 1, 13) == "battlePetAbil" ) then
+		local _, abilityID = strsplit(":", link);
+		if ( IsModifiedClick() ) then
+			local fixedLink = GetFixedLink(text);
+			HandleModifiedItemClick(fixedLink);
+		else
+			FloatingPetBattleAbility_Show(tonumber(abilityID));
+		end
+		return;
 	end
     
 	if ( IsModifiedClick() ) then
@@ -232,9 +245,21 @@ function GetFixedLink(text)
 		elseif ( strsub(text, startLink + 2, startLink + 13) == "instancelock" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff8000%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 8) == "journal" ) then
-			return gsub(text, "(|H.+|h.+|h)", "|cff66bbff%1|r", 1);
+			return (gsub(text, "(|H.+|h.+|h)", "|cff66bbff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 14) == "battlePetAbil" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cff4e96f7%1|r", 1));
 		end
 	end
 	--Nothing to change.
 	return text;
+end
+
+function GetBattlePetAbilityHyperlink(abilityID)
+	local id, name = C_PetBattles.GetAbilityInfoByID(abilityID);
+	if ( name ) then
+		return format("|cff4e96f7|HbattlePetAbil:%d|h[%s]|h|r", abilityID, name);
+	else
+		GMError("Attempt to link ability when we don't have record.");
+		return "";
+	end
 end

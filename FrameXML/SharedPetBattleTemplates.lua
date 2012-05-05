@@ -76,10 +76,12 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 
 	--Update ability type
 	if ( petType and petType > 0 ) then
+		self.Name:SetSize(190, 32);
 		self.Name:SetPoint("LEFT", self.AbilityPetType, "RIGHT", 5, 0);
 		self.AbilityPetType:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[petType]);
 		self.AbilityPetType:Show();
 	else
+		self.Name:SetSize(223, 32);
 		self.Name:SetPoint("LEFT", self, "TOPLEFT", 11, -26);
 		self.AbilityPetType:Hide();
 	end

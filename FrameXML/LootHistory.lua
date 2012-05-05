@@ -8,6 +8,7 @@ function LootHistoryFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_HISTORY_FULL_UPDATE");
 	self:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE");
 	self:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED");
+	self:RegisterEvent("LOOT_HISTORY_AUTO_SHOW");
 
 	LootHistoryFrame_FullUpdate(self);
 end
@@ -20,6 +21,8 @@ function LootHistoryFrame_OnEvent(self, event, ...)
 	elseif ( event == "LOOT_HISTORY_ROLL_CHANGED" ) then
 		local itemIdx, playerIdx = ...;
 		LootHistoryFrame_UpdatePlayerRoll(self, itemIdx, playerIdx);
+	elseif ( event == "LOOT_HISTORY_AUTO_SHOW" ) then
+		LootHistoryFrame:Show();
 	end
 end
 
@@ -58,6 +61,9 @@ function LootHistoryFrame_FullUpdate(self)
 		else
 			previous = frame;
 		end
+	end
+	for i=numItems + 1, #self.itemFrames do
+		self.itemFrames[i]:Hide();
 	end
 end
 
@@ -230,7 +236,7 @@ function LootHistoryFrame_UpdatePlayerFrame(self, playerFrame)
 		playerFrame.RollIcon:SetPoint("RIGHT", playerFrame, "RIGHT", -2, -1);
 	else
 		playerFrame.RollText:SetText(roll);
-		playerFrame.RollIcon:SetPoint("RIGHT", playerFrame.RollText, "LEFT", 0, -1);
+		playerFrame.RollIcon:SetPoint("RIGHT", playerFrame.RollText, "LEFT", 2, -1);
 	end
 
 	if ( isWinner ) then
@@ -249,3 +255,36 @@ function LootHistoryFrame_UpdatePlayerRoll(self, itemIdx, playerIdx)
 		end
 	end
 end
+
+function LootHistoryFrame_OpenToRoll(self, requestedRollID, errorTarget)
+	local numItems = C_LootHistory.GetNumItems();
+	for i=1, numItems do
+		local rollID, itemLink, numPlayers, isDone, winnerIdx = C_LootHistory.GetItem(i);
+		if ( requestedRollID == rollID ) then
+			--Collapse all other rolls
+			table.wipe(self.expandedRolls);
+			self.expandedRolls[rollID] = true;
+
+			--Update the frame
+			LootHistoryFrame_FullUpdate(self);
+
+			--Show the frame
+			self:Show();
+			self.ScrollFrame:UpdateScrollChildRect();
+
+			--Scroll to the correct item
+			local offset = 2 + 37 * (i - 1);
+			offset = min(offset, self.ScrollFrame:GetVerticalScrollRange());
+			self.ScrollFrame:SetVerticalScroll(offset);
+			return;
+		end
+	end
+
+	--We didn't find this item
+	if ( errorTarget ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		errorTarget:AddMessage(ERR_LOOT_HISTORY_EXPIRED, info.r, info.g, info.b);
+	end
+	UIErrorsFrame:AddMessage(ERR_LOOT_HISTORY_EXPIRED, 1.0, 0.1, 0.1, 1.0);
+end
+

@@ -182,7 +182,9 @@ size=1024,1024
 			</OnLoad>
 			<OnEvent function="DestinyFrame_OnEvent"/>
 			<OnKeyDown>
-				-- just an empty function to block keys
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
+					self:Hide();
+				end
 			</OnKeyDown>
 		</Scripts>
 	</Frame>

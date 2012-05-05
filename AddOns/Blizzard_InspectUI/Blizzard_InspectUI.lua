@@ -6,9 +6,12 @@ UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, };
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
 	if ( CanInspect(unit, true) ) then
+		inspectedUnit = unit;
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		InspectSwitchTabs(1);
+	else
+		inspectedUnit = nil;
 	end
 end
 
@@ -19,6 +22,7 @@ function InspectFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("INSPECT_READY");
 	self.unit = nil;
+	inspectedUnit = nil;
 
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 4);
@@ -122,15 +126,13 @@ function InspectFrame_UpdateTabs()
 	
 	-- Talent tab
 	local level = UnitLevel(InspectFrame.unit);
-	local SO_MUCH_CHAZ = 102023
-	if ( level > 0 and level < SO_MUCH_CHAZ ) then
+	if ( level < 10 ) then
 		PanelTemplates_DisableTab(InspectFrame, 3);
 		if ( PanelTemplates_GetSelectedTab(InspectFrame) == 3 ) then
 			InspectSwitchTabs(1);
 		end
 	else
 		PanelTemplates_EnableTab(InspectFrame, 3);
-		InspectTalentFrame_UpdateTabs();
 	end
 	
 	-- Guild tab

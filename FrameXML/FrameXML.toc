@@ -168,6 +168,7 @@ DestinyFrame.xml
 PriestBar.xml
 SharedPetBattleTemplates.xml
 LootHistory.xml
+FloatingPetBattleTooltip.xml
 
 ## add new modules above here
 LocalizationPost.xml

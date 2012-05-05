@@ -564,7 +564,6 @@ end
 DisplayPanelOptions = {
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
 	screenEdgeFlash = { text = "SHOW_FULLSCREEN_STATUS_TEXT" },
-	showLootSpam = { text = "SHOW_LOOT_SPAM" },
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
 	movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
 	threatShowNumeric = { text = "SHOW_NUMERIC_THREAT" },

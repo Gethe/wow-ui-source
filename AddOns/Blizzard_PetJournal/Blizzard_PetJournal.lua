@@ -6,6 +6,7 @@ local MAX_ACTIVE_PETS = 3;
 local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 25;
+local UNLOCK_ACHIEVEMENTS = {"6461", "6554", "6555"};
 
 
 StaticPopupDialogs["BATTLE_PET_RENAME"] = {
@@ -355,6 +356,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.petID = petID;
 			loadoutPlate.speciesID = speciesID;
 			loadoutPlate.helpFrame:Hide();
+			loadoutPlate.achievementButton:Hide();
 			if(level < MAX_PET_LEVEL) then
 				loadoutPlate.xpBar:Show();
 			else
@@ -371,13 +373,31 @@ function PetJournal_UpdatePetLoadOut()
 
 			--Only show flyouts if the person already has the first 3 abilities.
 			if ( numUsableAbilities < 3 ) then
-				loadoutPlate.spell1:Disable();
-				loadoutPlate.spell2:Disable();
-				loadoutPlate.spell3:Disable();
+				loadoutPlate.spell1.enabled = false;
+				loadoutPlate.spell2.enabled = false;
+				loadoutPlate.spell3.enabled = false;
+				loadoutPlate.spell1:GetHighlightTexture():SetAlpha(0);
+				loadoutPlate.spell2:GetHighlightTexture():SetAlpha(0);
+				loadoutPlate.spell3:GetHighlightTexture():SetAlpha(0);
+				loadoutPlate.spell1:GetPushedTexture():SetAlpha(0);
+				loadoutPlate.spell2:GetPushedTexture():SetAlpha(0);
+				loadoutPlate.spell3:GetPushedTexture():SetAlpha(0);
+				loadoutPlate.spell1.FlyoutArrow:Hide();
+				loadoutPlate.spell2.FlyoutArrow:Hide();
+				loadoutPlate.spell3.FlyoutArrow:Hide();
 			else
-				loadoutPlate.spell1:Enable();
-				loadoutPlate.spell2:Enable();
-				loadoutPlate.spell3:Enable();
+				loadoutPlate.spell1.enabled = true;
+				loadoutPlate.spell2.enabled = true;
+				loadoutPlate.spell3.enabled = true;
+				loadoutPlate.spell1:GetHighlightTexture():SetAlpha(1);
+				loadoutPlate.spell2:GetHighlightTexture():SetAlpha(1);
+				loadoutPlate.spell3:GetHighlightTexture():SetAlpha(1);
+				loadoutPlate.spell1:GetPushedTexture():SetAlpha(1);
+				loadoutPlate.spell2:GetPushedTexture():SetAlpha(1);
+				loadoutPlate.spell3:GetPushedTexture():SetAlpha(1);
+				loadoutPlate.spell1.FlyoutArrow:Show();
+				loadoutPlate.spell2.FlyoutArrow:Show();
+				loadoutPlate.spell3.FlyoutArrow:Show();
 			end
 		else
 			loadoutPlate.name:Hide();
@@ -393,9 +413,15 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.iconBorder:Hide();
 			loadoutPlate.abilitiesLabel:Hide();
 			if(locked) then
+				loadoutPlate.helpFrame.slotinfo:SetText(format(BATTLE_PET_SLOT, i));
+				loadoutPlate.helpFrame.text:SetText(_G["BATTLE_PET_UNLOCK_HELP_"..i]);
+				loadoutPlate.achievementButton:SetText(GetAchievementLink(UNLOCK_ACHIEVEMENTS[i]));
+				loadoutPlate.achievementButton:Show();
+				loadoutPlate.achievementButton.achievementID = UNLOCK_ACHIEVEMENTS[i];
 				loadoutPlate.helpFrame:Show();
 			else
 				loadoutPlate.helpFrame:Hide();
+				loadoutPlate.achievementButton:Hide();
 			end
 		end
 	end
@@ -403,6 +429,15 @@ function PetJournal_UpdatePetLoadOut()
 	PetJournal.Loadout.Pet1.setButton:Hide();
 	PetJournal.Loadout.Pet2.setButton:Hide();
 	PetJournal.Loadout.Pet3.setButton:Hide();
+end
+
+
+function PetJournal_ShowAchievement(self)
+	AchievementFrame_LoadUI();
+	if (not AchievementFrame:IsShown()) then
+		ToggleAchievementFrame();
+	end
+	AchievementFrame_SelectAchievement(self.achievementID, true);
 end
 
 
@@ -604,11 +639,11 @@ function PetJournal_UpdatePetCard(self)
 		
 		--Stats
 		self.statsFrame:Show();
-		local health, attack, speed, rarity = C_PetJournal.GetPetStats(PetJournal.pcPetID);
-		self.statsFrame.healthValue:SetText(health);
+		local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(PetJournal.pcPetID);
+		self.statsFrame.healthValue:SetText(health.."("..maxHealth..")");
 		self.statsFrame.attackValue:SetText(attack);
 		self.statsFrame.speedValue:SetText(speed);
-		self.statsFrame.rarityValue:SetText(rarity);
+		self.statsFrame.rarityValue:SetText(_G["BATTLE_PET_BREED_QUALITY"..rarity]);
 	else
 		speciesID = PetJournal.pcSpeciesID;
 		name, icon, petType, creatureID, sourceText, description = C_PetJournal.GetPetInfoBySpeciesID(PetJournal.pcSpeciesID);
@@ -885,7 +920,7 @@ function PET_JOURNAL_ABILITY_INFO:EnsureTarget(target)
 		target = "self";
 	end
 	if ( target ~= "self" ) then
-		GMError("Only \"self\" unit supported in journal");
+		GMError("Only \"self\" unit supported out of combat");
 	end
 end
 

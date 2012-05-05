@@ -350,6 +350,12 @@
 								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-120" y="-12"/>
 							</Anchors>
 						</Texture>
+						<Texture name="$parentPetBattleIcon" file="Interface\TargetingFrame\PetBadge-Beast" hidden="true">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="RIGHT" x="-44" y="10"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>

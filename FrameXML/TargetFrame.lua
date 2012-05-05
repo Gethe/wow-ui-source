@@ -38,6 +38,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.questIcon = _G[thisName.."TextureFrameQuestIcon"];
 	self.levelText = _G[thisName.."TextureFrameLevelText"];
 	self.deadText = _G[thisName.."TextureFrameDeadText"];
+	self.petBattleIcon = _G[thisName.."TextureFramePetBattleIcon"];
 	self.TOT_AURA_ROW_WIDTH = TOT_AURA_ROW_WIDTH;
 	-- set simple frame
 	if ( not self.showLevel ) then
@@ -130,6 +131,10 @@ function TargetFrame_Update (self)
 		TargetFrame_UpdateAuras(self);
 		if ( self.portrait ) then
 			self.portrait:SetAlpha(1.0);
+		end
+		TargetFrame_CheckBattlePet(self);
+		if ( self.petBattleIcon ) then
+			self.petBattleIcon:SetAlpha(1.0);
 		end
 	end
 end
@@ -252,6 +257,12 @@ function TargetFrame_CheckLevel (self)
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
+	elseif ( UnitIsBattlePet(self.unit) ) then
+		local petLevel = UnitBattlePetLevel(self.unit);
+		self.levelText:SetVertexColor(1.0, 0.82, 0.0);
+		self.levelText:SetText( petLevel.."-");
+		self.levelText:Show();
+		self.highLevelTexture:Hide();
 	elseif ( targetLevel > 0 ) then
 		-- Normal level target
 		self.levelText:SetText(targetLevel);
@@ -297,6 +308,17 @@ function TargetFrame_CheckFaction (self)
 		end
 	end
 end
+
+function TargetFrame_CheckBattlePet(self)
+	if ( UnitIsBattlePet(self.unit) ) then
+		local petType = UnitBattlePetType(self.unit);
+		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..petType);
+		self.petBattleIcon:Show();
+	else
+		self.petBattleIcon:Hide();
+	end
+end
+	
 
 function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);

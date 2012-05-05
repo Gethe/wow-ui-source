@@ -14,7 +14,6 @@ MAX_WHOS_FROM_SERVER = 50;
 FRIENDS_SCROLLFRAME_HEIGHT = 307;
 FRIENDS_BUTTON_HEADER_HEIGHT = 16;
 FRIENDS_BUTTON_NORMAL_HEIGHT = 34;
-FRIENDS_BUTTON_LARGE_HEIGHT = 48;
 FRIENDS_BUTTON_TYPE_HEADER = 1;
 FRIENDS_BUTTON_TYPE_BNET = 2;
 FRIENDS_BUTTON_TYPE_WOW = 3;
@@ -56,10 +55,6 @@ local INVITE_RESTRICTION_INFO = 4;
 local INVITE_RESTRICTION_NONE = 5;
 
 local FriendButtons = { count = 0 };
-local BNetBroadcasts = { };
-local totalScrollHeight = 0;
-local numOnlineBroadcasts = 0;
-local numOfflineBroadcasts = 0;
 local PendingInvitesNew = { };
 local playerRealmName;
 local playerFactionGroup;
@@ -219,7 +214,6 @@ function FriendsFrame_OnLoad(self)
 	-- friends list
 	local scrollFrame = FriendsFrameFriendsScrollFrame;
 	scrollFrame.update = FriendsFrame_UpdateFriends;
-	scrollFrame.dynamic = FriendsFrame_GetTopButton;
 	FriendsFrameFriendsScrollFrameScrollBarTrack:Hide();
 	FriendsFrameFriendsScrollFrameScrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(scrollFrame, "FriendsFrameButtonTemplate");
@@ -335,21 +329,11 @@ function FriendsList_Update()
 		return;
 	end
 
-	local buttonCount = numBNetTotal + numWoWTotal;
 	local haveHeader;
-	
-	totalScrollHeight = 0;	
-	if ( numBNetOnline > 0 or numWoWOnline > 0 ) then
-		totalScrollHeight = totalScrollHeight + (numBNetOnline + numWoWOnline) * FRIENDS_BUTTON_NORMAL_HEIGHT + numOnlineBroadcasts * (FRIENDS_BUTTON_LARGE_HEIGHT - FRIENDS_BUTTON_NORMAL_HEIGHT);
-	end
-	if ( numBNetOffline > 0 or numWoWOffline > 0 ) then
-		totalScrollHeight = totalScrollHeight + (numBNetOffline + numWoWOffline) * FRIENDS_BUTTON_NORMAL_HEIGHT + numOfflineBroadcasts * (FRIENDS_BUTTON_LARGE_HEIGHT - FRIENDS_BUTTON_NORMAL_HEIGHT);
-		-- use a header if there are online and offline friends
-		if ( numBNetOnline > 0 or numWoWOnline > 0 ) then
-			haveHeader = true;
-			buttonCount = buttonCount + 1;
-			totalScrollHeight = totalScrollHeight + FRIENDS_BUTTON_HEADER_HEIGHT;
-		end
+	local buttonCount = numBNetTotal + numWoWTotal;
+	if ( (numBNetOnline > 0 or numWoWOnline > 0) and (numBNetOffline > 0 or numWoWOffline > 0) ) then
+		haveHeader = true;
+		buttonCount = buttonCount + 1;
 	end
 	if ( buttonCount > #FriendButtons ) then
 		for i = #FriendButtons + 1, buttonCount do
@@ -374,6 +358,11 @@ function FriendsList_Update()
 	if ( haveHeader ) then
 		index = index + 1;
 		FriendButtons[index].buttonType = FRIENDS_BUTTON_TYPE_HEADER;
+		-- we can have a single button of different height than the others in a hybrid scrollframe
+		-- even though the header is smaller than the other buttons, it will still work if we "expand" it
+		HybridScrollFrame_ExpandButton(FriendsFrameFriendsScrollFrame, (numBNetOnline + numWoWOnline) * FRIENDS_BUTTON_NORMAL_HEIGHT, FRIENDS_BUTTON_HEADER_HEIGHT);
+	else
+		HybridScrollFrame_CollapseButton(FriendsFrameFriendsScrollFrame);
 	end
 	-- offline Battlenet friends
 	for i = 1, numBNetOffline do
@@ -878,10 +867,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
 		FriendsList_Update();
 	elseif ( event == "BN_FRIEND_LIST_SIZE_CHANGED" or event == "BN_FRIEND_INFO_CHANGED" ) then
-		BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
-		if(not BNetBroadcasts) then
-			BNetBroadcasts = { };
-		end
 		FriendsList_Update();
 		-- update Friends of Friends
 		local presenceID = ...;
@@ -894,10 +879,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		local arg1 = ...;
 		if ( arg1 ) then	--There is no presenceID given if this is ourself.
-			BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
-			if(not BNetBroadcasts) then
-				BNetBroadcasts = { };
-			end
 			FriendsList_Update();
 		else
 			FriendsFrameBroadcastInput_UpdateDisplay();
@@ -1208,10 +1189,6 @@ end
 function FriendsFrame_CheckBattlenetStatus()
 	if ( BNFeaturesEnabled() ) then
 		if ( BNConnected() ) then
-			BNetBroadcasts, numOnlineBroadcasts, numOfflineBroadcasts = BNGetCustomMessageTable(BNetBroadcasts);
-			if(not BNetBroadcasts) then
-				BNetBroadcasts = { };
-			end
 			playerRealmName = GetRealmName();
 			playerFactionGroup = UnitFactionGroup("player");
 			FriendsFrameBattlenetStatus:Hide();
@@ -1219,8 +1196,6 @@ function FriendsFrame_CheckBattlenetStatus()
 			FriendsFrameBroadcastInput:Show();
 			FriendsFrameBroadcastInput_UpdateDisplay();
 		else
-			numOnlineBroadcasts = 0;
-			numOfflineBroadcasts = 0;
 			FriendsFrameBattlenetStatus:Show();
 			FriendsFrameStatusDropDown:Hide();
 			FriendsFrameBroadcastInput:Hide();
@@ -1232,77 +1207,6 @@ function FriendsFrame_CheckBattlenetStatus()
 		end
 		-- has its own check if it is being shown, after it updates the count on the FriendsMicroButton
 		FriendsList_Update();
-	end
-end
-
-function FriendsFrame_GetTopButton(offset)
-	local heightLeft = offset;
-	local priorHeight = 0;
-	local buttonHeight;	
-	local numBNetTotal, numBNetOnline = BNGetNumFriends();
-	local numBNetOffline = numBNetTotal - numBNetOnline;
-	local numWoWTotal, numWoWOnline = GetNumFriends();
-	local numWoWOffline = numWoWTotal - numWoWOnline;	
-	local buttonIndex = 0;
-
-	-- online
-	if ( numBNetOnline + numWoWOnline > 0 ) then
-		local totalBNOnlineHeight = numBNetOnline * FRIENDS_BUTTON_NORMAL_HEIGHT + numOnlineBroadcasts * (FRIENDS_BUTTON_LARGE_HEIGHT - FRIENDS_BUTTON_NORMAL_HEIGHT);
-		if ( heightLeft < totalBNOnlineHeight ) then
-			for i = 1, numBNetOnline do
-				if ( BNetBroadcasts[i] ) then
-					buttonHeight = FRIENDS_BUTTON_LARGE_HEIGHT;
-				else
-					buttonHeight = FRIENDS_BUTTON_NORMAL_HEIGHT;
-				end
-				if ( (heightLeft - buttonHeight) < 1 ) then
-					return i + buttonIndex - 1, heightLeft;
-				else
-					heightLeft = heightLeft - buttonHeight;
-				end
-			end
-		end
-		heightLeft = heightLeft - totalBNOnlineHeight;
-		buttonIndex = buttonIndex + numBNetOnline;
-		if ( heightLeft < numWoWOnline * FRIENDS_BUTTON_NORMAL_HEIGHT ) then
-			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT);
-			return buttonIndex + index, heightLeft - (index * FRIENDS_BUTTON_NORMAL_HEIGHT);
-		end
-		heightLeft = heightLeft - numWoWOnline * FRIENDS_BUTTON_NORMAL_HEIGHT;
-		buttonIndex = buttonIndex + numWoWOnline;
-	end
-	-- offline 
-	if (  numBNetOffline + numWoWOffline > 0  ) then
-		-- check header first
-		if ( numBNetOnline + numWoWOnline > 0 ) then
-			if ( heightLeft < FRIENDS_BUTTON_HEADER_HEIGHT ) then
-				return buttonIndex, heightLeft;
-			else
-				heightLeft = heightLeft - FRIENDS_BUTTON_HEADER_HEIGHT;
-			end
-			buttonIndex = buttonIndex + 1;
-		end
-		local totalBNOfflineHeight = numBNetOffline * FRIENDS_BUTTON_NORMAL_HEIGHT + numOfflineBroadcasts * (FRIENDS_BUTTON_LARGE_HEIGHT - FRIENDS_BUTTON_NORMAL_HEIGHT);
-		if ( heightLeft < totalBNOfflineHeight ) then
-			for i = 1, numBNetOffline do
-				if ( BNetBroadcasts[numBNetOnline + i] ) then
-					buttonHeight = FRIENDS_BUTTON_LARGE_HEIGHT;
-				else
-					buttonHeight = FRIENDS_BUTTON_NORMAL_HEIGHT;
-				end
-				if ( (heightLeft - buttonHeight) < 1 ) then
-					return i + buttonIndex - 1, heightLeft;
-				else
-					heightLeft = heightLeft - buttonHeight;
-				end
-			end
-		end
-		heightLeft = heightLeft - totalBNOfflineHeight;
-		buttonIndex = buttonIndex + numBNetOffline;
-		if ( heightLeft < numWoWOffline * FRIENDS_BUTTON_NORMAL_HEIGHT ) then
-			local index = math.floor(heightLeft / FRIENDS_BUTTON_NORMAL_HEIGHT);
-			return buttonIndex + index, heightLeft - (index * FRIENDS_BUTTON_NORMAL_HEIGHT);
-		end
 	end
 end
 
@@ -1321,12 +1225,12 @@ function FriendsFrame_UpdateFriends()
 	local hasTravelPass = HasTravelPass();
 	local hasTravelPassButton;
 	local canInvite = FriendsFrame_HasInvitePermission();
-	
+
 	FriendsFrameOfflineHeader:Hide();
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i;
-		if ( index <= numFriendButtons and usedHeight < FRIENDS_SCROLLFRAME_HEIGHT ) then
+		if ( index <= numFriendButtons ) then
 			button.buttonType = FriendButtons[index].buttonType;
 			button.id = FriendButtons[index].id;
 			hasTravelPassButton = false;
@@ -1445,17 +1349,7 @@ function FriendsFrame_UpdateFriends()
 				button.name:SetText(nameText);
 				button.name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
 				button.info:SetText(infoText);
-				-- don't display a broadcast if the BNetBroadcasts data is out of sync
-				if ( broadcastText and broadcastText ~= "" and BNetBroadcasts[FriendButtons[index].id] ) then
-					height = FRIENDS_BUTTON_LARGE_HEIGHT;
-					button.broadcastMessage:SetText(broadcastText);
-					button.broadcastMessage:Show();
-					button.broadcastIcon:Show();
-				else
-					height = FRIENDS_BUTTON_NORMAL_HEIGHT;
-					button.broadcastMessage:Hide();
-					button.broadcastIcon:Hide();
-				end
+				height = FRIENDS_BUTTON_NORMAL_HEIGHT;
 				button:Show();
 			else
 				button:Hide();
@@ -1466,12 +1360,7 @@ function FriendsFrame_UpdateFriends()
 			end
 			-- set heights
 			button:SetHeight(height);
-			-- Calculate the used height without using the first button. When scrolling down,
-			--  we're not going to get an update until the first button scrolls off,
-			-- and so the buttons coming into view at the bottom have to be set up.
-			if ( i > 1 ) then
-				usedHeight = usedHeight + height;
-			end
+			usedHeight = usedHeight + height;
 			if ( GetMouseFocus() == button ) then
 				FriendsFrameTooltip_Show(button);
 			end
@@ -1479,7 +1368,9 @@ function FriendsFrame_UpdateFriends()
 			button:Hide();
 		end
 	end
-	HybridScrollFrame_Update(scrollFrame, totalScrollHeight, min(FRIENDS_SCROLLFRAME_HEIGHT, numButtons * scrollFrame.buttonHeight));	
+	local headerHeight = scrollFrame.largeButtonHeight or 0;
+	local totalHeight = numFriendButtons * FRIENDS_BUTTON_NORMAL_HEIGHT - headerHeight;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
 end
 
 function FriendsFrameStatusDropDown_OnLoad(self)

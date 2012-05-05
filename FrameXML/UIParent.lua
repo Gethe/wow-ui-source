@@ -161,6 +161,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("DUEL_INBOUNDS");
 	self:RegisterEvent("DUEL_FINISHED");
 	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH");
 	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUEST_CANCEL");
 	self:RegisterEvent("TRADE_REQUEST_CANCEL");
 	self:RegisterEvent("CONFIRM_XP_LOSS");
@@ -854,6 +855,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("PET_BATTLE_PVP_DUEL_REQUESTED", arg1);
 	elseif ( event == "PET_BATTLE_PVP_DUEL_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED");
+	elseif ( event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" ) then
+		StaticPopup_Show("PET_BATTLE_QUEUE_PROPOSE_MATCH");
 	elseif ( event == "TRADE_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("TRADE");
 	elseif ( event == "CONFIRM_XP_LOSS" ) then
@@ -3985,11 +3988,7 @@ function BreakUpLargeNumbers(value)
 		end
 		local decimal = (math.floor(value*100));
 		retString = string.sub(decimal, 1, -3);
-		if (IsEuropeanNumbers()) then
-			retString = retString..",";
-		else
-			retString = retString..".";
-		end
+		retString = retString..DECIMAL_SEPERATOR;
 		retString = retString..string.sub(decimal, -2);
 		return retString;
 	end

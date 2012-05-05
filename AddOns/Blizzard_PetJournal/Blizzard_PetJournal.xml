@@ -508,8 +508,8 @@
 			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					--SpellButton_OnModifiedClick(self, button);
-				else
+					HandleModifiedItemClick(GetBattlePetAbilityHyperlink(self.abilityID));
+				elseif ( self.enabled ) then
 					PetJournal_ShowPetSelect(self);
 				end
 			</OnClick>
@@ -521,12 +521,6 @@
 			<OnLeave>
 				PetJournal_HideAbilityTooltip(self);
 			</OnLeave>
-			<OnDisable>
-				self.FlyoutArrow:Hide();
-			</OnDisable>
-			<OnEnable>
-				self.FlyoutArrow:Show();
-			</OnEnable>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -624,13 +618,39 @@
 							<TexCoords left="0.00097656" right="0.39257813" top="0.30468750" bottom="0.46679688"/>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentSlotInfo" inherits="GameFontNormal" text="BATTLE_PET_SLOT_1" justifyH="LEFT" parentKey="slotinfo">
+							<Size x="210" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent" x="57" y="-15"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentSlotLocked" inherits="GameFontHighlightLarge" text="PET_STABLE_SLOT_LOCKED" justifyH="LEFT" parentKey="slotlock">
+							<Size x="210" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentSlotInfo" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText" inherits="GameFontHighlight" text="BATTLE_PET_UNLOCK_HELP_1" justifyH="CENTER" parentKey="text">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
 				</Layers>
-				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
-					</OnShow>
-				</Scripts>
 			</Frame>
+			<Button name="$parentAchievementButton" parentKey="achievementButton">
+				<Size x="371" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentHelpFrameText" relativePoint="BOTTOM" x="0" y="-2"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalLarge"/>
+				<Scripts>
+					<OnClick>
+						PetJournal_ShowAchievement(self)
+					</OnClick>
+				</Scripts>
+			</Button>
 			<PlayerModel name="$parentModelFrame" useParentLevel="true" parentKey="model">
 				<Size x="150" y="140"/>
 				<Anchors>
@@ -830,6 +850,11 @@
 			<OnLeave>
 				PetJournal_HideAbilityTooltip(self);
 			</OnLeave>			
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					HandleModifiedItemClick(GetBattlePetAbilityHyperlink(self.abilityID));
+				end
+			</OnClick>
 		</Scripts>
 	</Button>
 
@@ -1297,9 +1322,13 @@
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 		<Scripts>
 			<OnClick>
-				C_PetJournal.SetAbility(self.slotIndex, self.abilityIndex, self.abilityID);
-				PetJournal_UpdatePetLoadOut();
-				self:GetParent():Hide();
+				if ( IsModifiedClick() ) then
+					HandleModifiedItemClick(GetBattlePetAbilityHyperlink(self.abilityID));
+				else
+					C_PetJournal.SetAbility(self.slotIndex, self.abilityIndex, self.abilityID);
+					PetJournal_UpdatePetLoadOut();
+					self:GetParent():Hide();
+				end
 			</OnClick>
 			<OnEnter>
 				PetJournal_ShowAbilityTooltip(self, self.abilityID, self.speciesID, self.petID, self.additionalText);
@@ -1644,6 +1673,11 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						C_PetBattles.StartPVPMatchmaking();
+					</OnClick>
+				</Scripts>
 			</Button>
 			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON" disabled="true">
 				<Size x="160" y="22"/>

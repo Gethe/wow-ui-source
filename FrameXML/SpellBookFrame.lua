@@ -40,6 +40,7 @@ PROFESSION_RANKS[4] = {300, ARTISAN};
 PROFESSION_RANKS[5] = {375, MASTER};
 PROFESSION_RANKS[6] = {450, GRAND_MASTER};
 PROFESSION_RANKS[7] = {525, ILLUSTRIOUS};
+PROFESSION_RANKS[8] = {600, ZEN_MASTER};
 
 
 
@@ -414,16 +415,16 @@ function SpellButton_OnClick(self, button)
 		return;
 	end
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
-		if ( not self.isOffSpec ) then
+		if ( self.offSpecID == 0 ) then
 			ToggleSpellAutocast(slot, SpellBookFrame.bookType);
 		end
 	else
 		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 		if (slotType == "FLYOUT") then
-			SpellFlyout:Toggle(id, self, "RIGHT", 1, false, self.isOffSpec);
+			SpellFlyout:Toggle(id, self, "RIGHT", 1, false, self.offSpecID, true);
 			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
 		else
-			if ( not self.isOffSpec ) then
+			if ( self.offSpecID == 0 ) then
 				CastSpell(slot, SpellBookFrame.bookType);
 			end
 		end
@@ -504,10 +505,11 @@ function SpellButton_UpdateButton(self)
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 2;
 	end
-	local temp, texture, offset, numSlots, isGuild, isOffSpec = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
+	local temp, texture, offset, numSlots, isGuild, offSpecID = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
 	SpellBookFrame.selectedSkillLineOffset = offset;
-	self.isOffSpec = isOffSpec;
+	local isOffSpec = (offSpecID ~= 0);
+	self.offSpecID = offSpecID;
 	
 	if (not self.SpellName.shadowX) then
 		self.SpellName.shadowX, self.SpellName.shadowY = self.SpellName:GetShadowOffset();
@@ -828,7 +830,8 @@ function SpellBookFrame_UpdateSkillLineTabs()
 		local skillLineTab = _G["SpellBookSkillLineTab"..i];
 		local prevTab = _G["SpellBookSkillLineTab"..i-1];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			local name, texture, _, _, isGuild, isOffSpec = GetSpellTabInfo(i);
+			local name, texture, _, _, isGuild, offSpecID = GetSpellTabInfo(i);
+			local isOffSpec = (offSpecID ~= 0);
 			skillLineTab:SetNormalTexture(texture);
 			skillLineTab.tooltip = name;
 			skillLineTab:Show();
@@ -1113,7 +1116,7 @@ SPEC_CORE_ABILITY_DISPLAY[70] = {	20271,	35395,	879,	84963,	85256,	24275,	}; --R
 
 SPEC_CORE_ABILITY_DISPLAY[256] = {	33076,	47540,	2061,	2050,	109964,	17		}; --Discipline
 SPEC_CORE_ABILITY_DISPLAY[257] = {	33076,	139,	2061,	2050,	2060,			}; --Holy
-SPEC_CORE_ABILITY_DISPLAY[258] = {	589,	34914,	8092,	15407,	78204,	32379,	}; --Shadow
+SPEC_CORE_ABILITY_DISPLAY[258] = {	589,	34914,	8092,	15407,	2944,	32379,	}; --Shadow
 
 SPEC_CORE_ABILITY_DISPLAY[259] = {	1329,	1943,	5171,	32645,	111240,	}; --Assassination
 SPEC_CORE_ABILITY_DISPLAY[260] = {	1752,	84617,	5171,	2098,			}; --Combat

@@ -719,7 +719,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
-			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or HasLFGRestrictions() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or HasLFGRestrictions() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "VOTE_TO_KICK" ) then
@@ -727,7 +727,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
-			if ( inParty == 0 or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+			if ( inParty == 0 or (instanceType == "pvp") or (instanceType == "arena") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FREE_FOR_ALL" ) then
@@ -889,7 +889,7 @@ function UnitPopup_HideButtons ()
 		elseif ( value == "RAID_REMOVE" ) then
 			if ( HasLFGRestrictions() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( ( isLeader == 0 and isAssistant == 0 ) or not dropdownMenu.name or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then			
+			elseif ( ( isLeader == 0 and isAssistant == 0 ) or not dropdownMenu.name or (instanceType == "pvp") or (instanceType == "arena") ) then			
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( isLeader == 0 and isAssistant == 1 and UnitIsGroupAssistant(dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -1191,7 +1191,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "UNINVITE" ) then
-						if ( inParty == 0 or (isLeader == 0) or HasLFGRestrictions() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+						if ( inParty == 0 or (isLeader == 0) or HasLFGRestrictions() or (instanceType == "pvp") or (instanceType == "arena") ) then
 							enable = 0;
 						end
 					elseif ( value == "BN_INVITE" ) then

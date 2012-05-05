@@ -2259,6 +2259,20 @@ StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
 	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["PET_BATTLE_QUEUE_PROPOSE_MATCH"] = {
+	text = PET_BATTLE_QUEUE_PROPOSE_MATCH,
+	button1 = ACCEPT,
+	button2 = DECLINE,
+	sound = "igPlayerInvite",
+	OnAccept = function(self)
+		C_PetBattles.AcceptPVPMatchmaking();
+	end,
+	OnCancel = function(self)
+		C_PetBattles.CancelPVPMatchmaking();
+	end,
+	timeout = STATICPOPUP_TIMEOUT,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["UNLEARN_SKILL"] = {
 	text = UNLEARN_SKILL,
 	button1 = UNLEARN,

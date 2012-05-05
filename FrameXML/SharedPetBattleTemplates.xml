@@ -5,19 +5,8 @@ UI.xsd">
 		<Size x="32" y="32"/>
 		<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
 	</Texture>
-	<Frame name="SharedPetBattleAbilityTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true">
+	<Frame name="SharedPetBattleAbilityTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
 		<Size x="260" y="90"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="AbilityPetType">
@@ -27,9 +16,10 @@ UI.xsd">
 					</Anchors>
 					<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontHighlightLarge" text="NAME">
+				<FontString parentKey="Name" inherits="GameFontHighlightLarge" text="NAME" justifyH="LEFT" justifyV="MIDDLE">
+					<!--Size and Anchor changed in SetAbility-->
+					<Size x="190" y="32"/>
 					<Anchors>
-						<!--Anchor changed in SetAbility-->
 						<Anchor point="LEFT" relativeKey="$parent.AbilityPetType" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
@@ -56,7 +46,7 @@ UI.xsd">
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Delimiter1">
-					<Size x="250" y="2"/>
+					<Size x="251" y="2"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-7"/>
 					</Anchors>
@@ -79,7 +69,7 @@ UI.xsd">
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Delimiter2">
-					<Size x="250" y="2"/>
+					<Size x="251" y="2"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.StrongAgainstIcon" relativePoint="BOTTOMLEFT" x="-5" y="-5"/>
 					</Anchors>
