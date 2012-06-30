@@ -145,7 +145,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="ParchmentFrame-Top" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
+				<Texture parentKey="ParchmentFrame-Top" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
 					<Size x="256" y="42"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-21"/>
@@ -153,7 +153,7 @@
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.37500000" bottom="0.70312500"/>	
 				</Texture>
-				<Texture name="ParchmentFrame-Bottom" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
+				<Texture parentKey="ParchmentFrame-Bottom" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
 					<Size x="256" y="22"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="2" y="3"/>
@@ -161,7 +161,7 @@
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.18750000" bottom="0.35937500"/>	
 				</Texture>
-				<Texture name="ParchmentFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketParchmentFrame-Left" vertTile="true">
+				<Texture parentKey="ParchmentFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketParchementFrame-Left" vertTile="true">
 					<Size x="9" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-62"/>
@@ -169,7 +169,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.75" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="ParchmentFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketParchmentFrame-Left" vertTile="true">
+				<Texture parentKey="ParchmentFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketParchementFrame-Left" vertTile="true">
 					<Size x="5" y="128"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-4" y="-62"/>
@@ -177,112 +177,112 @@
 					</Anchors>
 					<TexCoords left="0" right="0.75" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="SocketFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+				<Texture parentKey="SocketFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
 					<Size x="158" y="51"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="11" y="26"/>
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.62109375" top="0.00390625" bottom="0.20312500"/>	
 				</Texture>
-				<Texture name="SocketFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+				<Texture parentKey="SocketFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
 					<Size x="158" y="51"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-11" y="26"/>
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.62109375" top="0.21093750" bottom="0.41015625"/>	
 				</Texture>
-				<Texture name="ButtonFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+				<Texture parentKey="ButtonFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
 					<Size x="4" y="21"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-167" y="4"/>
 					</Anchors>
 					<TexCoords left="0.62890625" right="0.64453125" top="0.05859375" bottom="0.14062500"/>	
 				</Texture>
-				<Texture name="ButtonFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+				<Texture parentKey="ButtonFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
 					<Size x="4" y="21"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
 					</Anchors>
 					<TexCoords left="0.65234375" right="0.66796875" top="0.05859375" bottom="0.14062500"/>	
 				</Texture>
-				<Texture name="ButtonBorder-Mid" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
+				<Texture parentKey="ButtonBorder-Mid" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
 					<Size x="100" y="21"/>	
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="ButtonFrame-Left" relativePoint="TOPRIGHT"/>
-						<Ancher point="TOPRIGHT" relativeTo="ButtonFrame-Right" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ButtonFrame-Left" relativePoint="TOPRIGHT"/>
+						<Ancher point="TOPRIGHT" relativeKey="$parent.ButtonFrame-Right" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.17187500"/>	
 				</Texture>
-				<Texture name="GoldBorder-BottomRight" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="GoldBorder-BottomRight" file="Interface\Common\UI-Goldborder">
 					<Size x="66" y="55"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-10" y="79"/>
 					</Anchors>
 					<TexCoords left="0.26171875" right="0.51953125" top="0.00781250" bottom="0.43750000"/>	
 				</Texture>
-				<Texture name="GoldBorder-BottomLeft" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="GoldBorder-BottomLeft" file="Interface\Common\UI-Goldborder">
 					<Size x="66" y="55"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="11" y="79"/>
 					</Anchors>
 					<TexCoords left="0.26171875" right="0.51953125" top="0.45312500" bottom="0.88281250"/>	
 				</Texture>
-				<Texture name="GoldBorder-TopRight" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="GoldBorder-TopRight" file="Interface\Common\UI-Goldborder">
 					<Size x="66" y="55"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-10" y="-64"/>
 					</Anchors>
 					<TexCoords left="0.52734375" right="0.78515625" top="0.00781250" bottom="0.43750000"/>	
 				</Texture>
-				<Texture name="GoldBorder-TopLeft" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="GoldBorder-TopLeft" file="Interface\Common\UI-Goldborder">
 					<Size x="66" y="55"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="11" y="-64"/>
 					</Anchors>
 					<TexCoords left="0.52734375" right="0.78515625" top="0.45312500" bottom="0.88281250"/>	
 				</Texture>
-				<Texture name="GoldBorder-Left" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+				<Texture parentKey="GoldBorder-Left" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
 					<Size x="9" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GoldBorder-TopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="GoldBorder-BottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GoldBorder-TopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GoldBorder-BottomLeft" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.07812500" top="0.00000000" bottom="1.00000000"/>	
 				</Texture>
-				<Texture name="GoldBorder-Right" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+				<Texture parentKey="GoldBorder-Right" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
 					<Size x="9" y="128"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="GoldBorder-TopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="GoldBorder-BottomRight" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GoldBorder-TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GoldBorder-BottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.07812500" top="0.00000000" bottom="1.00000000"/>	
 				</Texture>
-				<Texture name="GoldBorder-Top" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+				<Texture parentKey="GoldBorder-Top" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
 					<Size x="256" y="9"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GoldBorder-TopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="GoldBorder-TopRight" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GoldBorder-TopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GoldBorder-TopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.15625000"/>	
 				</Texture>
-				<Texture name="GoldBorder-Bottom" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+				<Texture parentKey="GoldBorder-Bottom" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
 					<Size x="256" y="9"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="GoldBorder-BottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="GoldBorder-BottomRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GoldBorder-BottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GoldBorder-BottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.15625000"/>	
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="BackgroundColor">
+				<Texture parentKey="BackgroundColor">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-74"/>
 						<Anchor point="BOTTOMRIGHT" x="-20" y="80"/>
 					</Anchors>
 					<Color r="0.078125" g="0.12109375" b="0.21484375" a="0.4"/>
 				</Texture>
-				<Texture name="BackgroundHighlight" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame" virtual="true" >
+				<Texture parentKey="BackgroundHighlight" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame" virtual="true" >
 					<Size x="128" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-74"/>
@@ -290,92 +290,92 @@
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.50390625" top="0.41796875" bottom="0.91796875"/>
 				</Texture>
-				<Texture name="BorderShadow-TopLeftCorner" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="BorderShadow-TopLeftCorner" file="Interface\Common\UI-Goldborder">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-74"/>
 					</Anchors>
 					<TexCoords left="0.12890625" right="0.25390625" top="0.00781250" bottom="0.25781250"/>	
 				</Texture>
-				<Texture name="BorderShadow-TopRightCorner" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="BorderShadow-TopRightCorner" file="Interface\Common\UI-Goldborder">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-20" y="-74"/>
 					</Anchors>
 					<TexCoords left="0.25390625" right="0.12890625" top="0.00781250" bottom="0.25781250"/>	
 				</Texture>
-				<Texture name="BorderShadow-BottomLeftCorner" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="BorderShadow-BottomLeftCorner" file="Interface\Common\UI-Goldborder">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="20" y="88"/>
 					</Anchors>
 					<TexCoords left="0.12890625" right="0.25390625" top="0.25781250" bottom="0.00781250"/>	
 				</Texture>
-				<Texture name="BorderShadow-BottomRightCorner" file="Interface\Common\UI-Goldborder">
+				<Texture parentKey="BorderShadow-BottomRightCorner" file="Interface\Common\UI-Goldborder">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-20" y="88"/>
 					</Anchors>
 					<TexCoords left="0.25390625" right="0.12890625" top="0.25781250" bottom="0.00781250"/>	
 				</Texture>
-				<Texture name="BorderShadow-Top" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+				<Texture parentKey="BorderShadow-Top" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
 					<Size x="256" y="32"/>	
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="BorderShadow-TopLeftCorner" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="BorderShadow-TopRightCorner" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderShadow-TopLeftCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderShadow-TopRightCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.18750000" bottom="0.68750000"/>	
 				</Texture>
-				<Texture name="BorderShadow-Left" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+				<Texture parentKey="BorderShadow-Left" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
 					<Size x="32" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="BorderShadow-TopLeftCorner" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="BorderShadow-BottomLeftCorner" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderShadow-TopLeftCorner" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderShadow-BottomLeftCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.34375000" right="0.59375000" top="0.00000000" bottom="1.00000000"/>	
 				</Texture>
-				<Texture name="BorderShadow-Bottom" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+				<Texture parentKey="BorderShadow-Bottom" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
 					<Size x="256" y="32"/>	
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="BorderShadow-BottomLeftCorner" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="BorderShadow-BottomRightCorner" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderShadow-BottomLeftCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderShadow-BottomRightCorner" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.68750000" bottom="0.18750000"/>	
 				</Texture>
-				<Texture name="BorderShadow-Right" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+				<Texture parentKey="BorderShadow-Right" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
 					<Size x="32" y="128"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="BorderShadow-TopRightCorner" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="BorderShadow-BottomRightCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderShadow-TopRightCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderShadow-BottomRightCorner" relativePoint="TOPRIGHT"/>
 					</Anchors>
 					<TexCoords left="0.59375000" right="0.34375000" top="0.00000000" bottom="1.00000000"/>	
 				</Texture>
-				<Texture name="BottomLeftNub" inherits="NubTemplate">
+				<Texture parentKey="BottomLeftNub" inherits="NubTemplate">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="6" y="20"/>
 					</Anchors>
 				</Texture>
-				<Texture name="BottomRightNub" inherits="NubTemplate">
+				<Texture parentKey="BottomRightNub" inherits="NubTemplate">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="20"/>
 					</Anchors>
 				</Texture>
-				<Texture name="MiddleLeftNub" inherits="NubTemplate">
+				<Texture parentKey="MiddleLeftNub" inherits="NubTemplate">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="6" y="72"/>
 					</Anchors>
 				</Texture>
-				<Texture name="MiddleRightNub" inherits="NubTemplate">
+				<Texture parentKey="MiddleRightNub" inherits="NubTemplate">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="72"/>
 					</Anchors>
 				</Texture>
-				<Texture name="TopLeftNub" inherits="NubTemplate">
+				<Texture parentKey="TopLeftNub" inherits="NubTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-57"/>
 					</Anchors>
 				</Texture>
-				<Texture name="TopRightNub" inherits="NubTemplate">
+				<Texture parentKey="TopRightNub" inherits="NubTemplate">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-5" y="-57"/>
 					</Anchors>
@@ -496,25 +496,25 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
 							<Size x="12" y="22"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
 							<Size x="12" y="22"/>
 							<Anchors>
 								<Anchor point="RIGHT"/>
 							</Anchors>
 							<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
 						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
 							<Size x="12" y="22"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
 							</Anchors>
 							<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875"/>
 						</Texture>
@@ -533,16 +533,16 @@
 					</OnClick>
 					<OnMouseDown>
 						if ( not self.disabled ) then
-							_G[self:GetName().."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-							_G[self:GetName().."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-							_G[self:GetName().."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+							self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 						end
 					</OnMouseDown>
 					<OnMouseUp>
 						if ( not self.disabled ) then
-							_G[self:GetName().."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-							_G[self:GetName().."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-							_G[self:GetName().."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+							self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 						end
 					</OnMouseUp>
 				</Scripts>

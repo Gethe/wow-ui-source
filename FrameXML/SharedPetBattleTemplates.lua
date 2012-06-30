@@ -107,6 +107,12 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 					icon:ClearAllPoints();
 					icon:SetPoint("LEFT", self.strongAgainstTextures[nextStrongIndex - 1], "RIGHT", 2, 0);
 				end
+				if ( nextStrongIndex == 1 ) then
+					self.StrongAgainstType1Label:SetText(_G["BATTLE_PET_NAME_"..i]);
+					self.StrongAgainstType1Label:Show();
+				else
+					self.StrongAgainstType1Label:Hide(); --Don't show any text if there are multiple
+				end
 				icon:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[i]);
 				icon:Show();
 				nextStrongIndex = nextStrongIndex + 1;
@@ -117,6 +123,12 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 					icon = self.weakAgainstTextures[nextWeakIndex];
 					icon:ClearAllPoints();
 					icon:SetPoint("LEFT", self.weakAgainstTextures[nextWeakIndex - 1], "RIGHT", 2, 0);
+				end
+				if ( nextWeakIndex == 1 ) then
+					self.WeakAgainstType1Label:SetText(_G["BATTLE_PET_NAME_"..i]);
+					self.WeakAgainstType1Label:Show();
+				else
+					self.WeakAgainstType1Label:Hide(); --Don't show any text if there are multiple
 				end
 				icon:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[i]);
 				icon:Show();

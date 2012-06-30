@@ -283,6 +283,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_OPENED");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_CLOSED");
 
+	-- Events for Pet Jornal
+	self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
 end
 
 
@@ -755,11 +757,14 @@ function UIParent_OnEvent(self, event, ...)
 		if ( arg2 or arg3 or arg4 ) then
 			StaticPopupSpecial_Show(LFGInvitePopup);
 			LFGInvitePopup_Update(arg1, arg2, arg3, arg4);
+		elseif ( arg5 ) then	--It's a X-realm invite
+			StaticPopup_Show("PARTY_INVITE_XREALM", arg1);
 		else
 			StaticPopup_Show("PARTY_INVITE", arg1);
 		end
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
+		StaticPopup_Hide("PARTY_INVITE_XREALM");
 		StaticPopupSpecial_Hide(LFGInvitePopup);
 	elseif ( event == "GUILD_INVITE_REQUEST" ) then
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
@@ -1291,6 +1296,10 @@ function UIParent_OnEvent(self, event, ...)
 			ItemUpgradeFrame_Hide();
 		end
 
+	-- Events for Pet Journal
+	elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
+		CompanionsMicroButtonAlert:Show();
+		MicroButtonPulse(CompanionsMicroButton);
 	end
 end
 

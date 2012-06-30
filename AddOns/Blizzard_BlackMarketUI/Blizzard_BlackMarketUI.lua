@@ -24,10 +24,12 @@ function BlackMarketFrame_Show()
 	if ( not BlackMarketFrame:IsShown() ) then
 		C_BlackMarket.Close();
 	end
+	PlaySound("AuctionWindowOpen")
 end
 
 function BlackMarketFrame_Hide()
 	HideUIPanel(BlackMarketFrame);
+	PlaySound("AuctionWindowClose");
 end
 
 function BlackMarketFrame_OnLoad(self)
@@ -45,7 +47,9 @@ function BlackMarketFrame_OnEvent(self, event, ...)
 		HybridScrollFrame_CreateButtons(BlackMarketScrollFrame, "BlackMarketItemTemplate", 5, -5);
 		BlackMarketScrollFrame_Update();
 	elseif ( event == "BLACK_MARKET_BID_RESULT" or event == "BLACK_MARKET_OUTBID" ) then
-		BlackMarketScrollFrame_Update();
+		if (self:IsShown()) then
+			C_BlackMarket.RequestItems();
+		end
 	end
 
 	-- do this on any event
@@ -58,10 +62,12 @@ function BlackMarketFrame_OnShow(self)
 	C_BlackMarket.RequestItems();
 	MoneyInputFrame_SetCopper(BlackMarketBidPrice, 0);
 	BlackMarketFrame.BidButton:Disable();
+	PlaySound("AuctionWindowOpen");
 end
 
 function BlackMarketFrame_OnHide(self)
 	C_BlackMarket.Close();
+	PlaySound("AuctionWindowClose");
 end
 
 function BlackMarketFrame_UpdateHotItem(self)
@@ -167,6 +173,7 @@ function BlackMarketScrollFrame_Update()
 				button.youHaveHighBid = youHaveHighBid;
 				button.YourBid:SetShown(youHaveHighBid);
 				
+				button.auctionCompleate = (timeLeft == 0);
 				button.TimeLeft.Text:SetText(_G["AUCTION_TIME_LEFT"..timeLeft]);
 				button.TimeLeft.tooltip = _G["AUCTION_TIME_LEFT"..timeLeft.."_DETAIL"];
 				
@@ -195,10 +202,10 @@ function BlackMarketItem_OnClick(self, button, down)
 		BlackMarketFrame.selectedButton:UnlockHighlight();
 	end
 	BlackMarketFrame.selectedButton = self;
-	if ( not self.youHaveHighBid and GetMoney() >= self.minNextBid ) then
-		BlackMarketFrame.BidButton:Enable();
-	else
+	if ( self.auctionCompleate or self.youHaveHighBid or (GetMoney() < self.minNextBid) ) then
 		BlackMarketFrame.BidButton:Disable();
+	else
+		BlackMarketFrame.BidButton:Enable();
 	end
 end
 

@@ -830,9 +830,7 @@
 							<AbsDimension x="327" y="94"/>
 						</Size>
 						<Anchors>
-							<Anchor point="CENTER">
-								<Offset x="0" y="-5"/>
-							</Anchor>
+							<Anchor point="CENTER" x="0" y="0"/>
 						</Anchors>
 						<Animations>
 							<AnimationGroup name="$parentAnimIn" parentKey="animIn">
@@ -845,7 +843,7 @@
 								</Scripts>
 							</AnimationGroup>
 						</Animations>
-						<TexCoords left="0.12304688" right="0.76171875" top="0.72070313" bottom="0.90429688"/>
+						<TexCoords left="0.12304688" right="0.76171875" top="0.66210938" bottom="0.84570313"/>
 					</Texture>
 				</Layer>
 			</Layers>
@@ -960,9 +958,7 @@
 							<AbsDimension x="327" y="94"/>
 						</Size>
 						<Anchors>
-							<Anchor point="CENTER">
-								<Offset x="0" y="-5"/>
-							</Anchor>
+							<Anchor point="CENTER" x="0" y="0"/>
 						</Anchors>
 						<Animations>
 							<AnimationGroup name="$parentAnimIn" parentKey="animIn">

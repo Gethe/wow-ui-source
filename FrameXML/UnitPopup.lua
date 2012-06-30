@@ -362,12 +362,12 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					end
 				elseif ( strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15)) then
 					if ( isDynamicInstance ) then
-						if ( selectedRaidDifficulty == index + 2) then	-- temp fix
+						if ( selectedRaidDifficulty == index ) then
 							info.checked = 1;
 						end
 					else
 						local dungeonDifficulty = GetRaidDifficulty();
-						if ( dungeonDifficulty == index + 2) then	-- temp fix
+						if ( dungeonDifficulty == index ) then
 							info.checked = 1;
 						end
 					end

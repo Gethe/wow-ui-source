@@ -224,7 +224,8 @@ end
 
 local infinateLoopPolice = false; --design migh make a tier that has no instances at all sigh
 function EncounterJournal_ListInstances()
-	EncounterJournal.instanceSelect.tier:SetText(EJ_GetTierInfo(EJ_GetCurrentTier()));
+	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
+	EncounterJournal.instanceSelect.tier:SetText(tierName);
 	NavBar_Reset(EncounterJournal.navBar);
 	EncounterJournal.encounter:Hide();
 	EncounterJournal.instanceSelect:Show();
@@ -1134,12 +1135,12 @@ function EncounterJournal_OpenJournalLink(tag, jtype, id, difficulty)
 	jtype = tonumber(jtype);
 	id = tonumber(id);
 	difficulty = tonumber(difficulty);
-	local instanceID, encounterID, sectionID = EJ_HandleLinkPath(jtype, id);
-	EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID);
+	local instanceID, encounterID, sectionID, tierIndex = EJ_HandleLinkPath(jtype, id);
+	EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID, nil, nil, tierIndex);
 end
 
 
-function EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID, creatureID, itemID)
+function EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	ShowUIPanel(EncounterJournal);
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
@@ -1172,6 +1173,8 @@ function EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, secti
 				end
 			end
 		end
+	elseif tierIndex then
+		EncounterJournal_TierDropDown_Select(EncounterJournal, tierIndex+1);
 	else
 		EncounterJournal_ListInstances()
 	end

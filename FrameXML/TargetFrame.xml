@@ -198,7 +198,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.9453125" top="0" bottom="0.181640625"/>
 				</Texture>
-				<Texture name="$parentBackground">
+				<Texture name="$parentBackground" parentKey="Background">
 					<Size>
 						<AbsDimension x="119" y="41"/>
 					</Size>
@@ -240,10 +240,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentTextureFrame" setAllPoints="true">
+			<Frame name="$parentTextureFrame" parentKey="textureFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
+						<Texture name="$parentTexture" parentKey="texture"  file="Interface\TargetingFrame\UI-TargetingFrame">
 							<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
 						</Texture>
 						<FontString name="$parentName" inherits="GameFontNormalSmall">

@@ -426,11 +426,13 @@
 				<Scripts>
 					<OnClick function="MountListDragButton_OnClick"/>	
 					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						local spellID = self:GetParent().spellID;
-						GameTooltip:SetSpellByID(spellID); --Note: also called in MountJournal_UpdateMountList
-						self.showingTooltip = true;
-					</OnEnter>
+            GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+            local spellID = self:GetParent().spellID;
+            if (spellID) then
+              GameTooltip:SetSpellByID(spellID); --Note: also called in MountJournal_UpdateMountList
+              self.showingTooltip = true;
+            end
+          </OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 						self.showingTooltip = false;
@@ -1536,7 +1538,7 @@
 		<Scripts>
 			<OnLoad>
 				PetJournalParentTitleText:SetText(MOUNTS_AND_PETS);
-				SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\spell_magic_polymorphrabbit");
+				SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\MountJournalPortrait");
 				PanelTemplates_SetNumTabs(self, 2);
 				PanelTemplates_SetTab(self, 1);
 			</OnLoad>
@@ -1599,7 +1601,15 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-				</Layers>
+          <Layer level="OVERLAY">
+            <FontString parentKey="NoMounts" inherits="GameFontHighlightLarge" JustifyH="CENTER" text="ERR_NO_RIDING_SKILL">
+              <Size x="280" y="80"/>
+              <Anchors>
+                <Anchor point="CENTER" x="0" y="0"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
 					<PlayerModel parentKey="ModelFrame" useParentLevel="true" inherits="ModelWithZoomTemplate">
@@ -1688,7 +1698,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="PetJournal" parent="PetJournalParent" setAllPoints="true">
+	<Frame name="PetJournal" parent="PetJournalParent" setAllPoints="true" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="petCount" text="MAX_BATTLE_PET_TEXT">

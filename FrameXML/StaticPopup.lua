@@ -1291,7 +1291,7 @@ StaticPopupDialogs["DEATH"] = {
 			self.button1:Enable();
 		end
 
-		if( HasSoulstone() ) then
+		if( HasSoulstone() and CanUseSoulstone() ) then
 			self.button2:Enable();
 		else
 			self.button2:Disable();
@@ -1423,6 +1423,31 @@ StaticPopupDialogs["TRADE"] = {
 };
 StaticPopupDialogs["PARTY_INVITE"] = {
 	text = INVITATION,
+	button1 = ACCEPT,
+	button2 = DECLINE,
+	sound = "igPlayerInvite",
+	OnShow = function(self)
+		self.inviteAccepted = nil;
+	end,
+	OnAccept = function(self)
+		AcceptGroup();
+		self.inviteAccepted = 1;
+	end,
+	OnCancel = function(self)
+		DeclineGroup();
+	end,
+	OnHide = function(self)
+		if ( not self.inviteAccepted ) then
+			DeclineGroup();
+			self:Hide();
+		end
+	end,
+	timeout = STATICPOPUP_TIMEOUT,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["PARTY_INVITE_XREALM"] = {
+	text = INVITATION_XREALM,
 	button1 = ACCEPT,
 	button2 = DECLINE,
 	sound = "igPlayerInvite",

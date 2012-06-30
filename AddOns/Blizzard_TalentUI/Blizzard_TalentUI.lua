@@ -469,12 +469,12 @@ function PlayerTalentFrame_OnHide()
 	wipe(talentTabWidthCache);
 	
 	if ( not GetSpecialization() ) then
-		TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_NO_SPEC);
-		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_NO_SPEC);
+		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
 	elseif ( PlayerTalentFrame_GetTalentSelections() ) then
-		TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
-		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
+		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
 		StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
 	end
@@ -738,15 +738,15 @@ PlayerSpecFrame_HelpPlate = {
 	FrameSize = { width = 645, height = 446	},
 	[1] = { ButtonPos = { x = 88,	y = -22 }, HighLightBox = { x = 8, y = -30, width = 204, height = 382 },	ToolTipDir = "UP",		ToolTipText = SPEC_FRAME_HELP_1 },
 	[2] = { ButtonPos = { x = 570,	y = -22 }, HighLightBox = { x = 224, y = -6, width = 414, height = 408 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_2 },
-	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 268, y = -418, width = 109, height = 26 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_3 },
+	[3] = { ButtonPos = { x = 355,	y = -409}, HighLightBox = { x = 268, y = -418, width = 109, height = 26 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_3 },
 }
 
 PlayerTalentFrame_HelpPlate = {
 	FramePos = { x = 0,	y = -22 },
 	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 0, y = -40, width = 645, height = 78 },		ToolTipDir = "UP",		ToolTipText = TALENT_FRAME_HELP_1 },
-	[2] = { ButtonPos = { x = 20,	y = -207 }, HighLightBox = { x = 0, y = -108, width = 645, height = 315 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_2 },
-	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 260, y = -410, width = 125, height = 40 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_3 },
+	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 8, y = -48, width = 627, height = 65 },		ToolTipDir = "UP",		ToolTipText = TALENT_FRAME_HELP_1 },
+	[2] = { ButtonPos = { x = 15,	y = -206 }, HighLightBox = { x = 8, y = -115, width = 627, height = 298 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_2 },
+	[3] = { ButtonPos = { x = 355,	y = -409}, HighLightBox = { x = 268, y = -418, width = 109, height = 26 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_3 },
 }
 
 function PlayerTalentFrame_ToggleTutorial()
@@ -1378,13 +1378,14 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		self.bg:SetDesaturated(true);
 		scrollChild.description:SetTextColor(0.75, 0.75, 0.75);
 		scrollChild.roleName:SetTextColor(0.75, 0.75, 0.75);
-		scrollChild.coreabilities:SetTextColor(0.75, 0.75, 0.75);
+--		scrollChild.coreabilities:SetTextColor(0.75, 0.75, 0.75);
 		scrollChild.specIcon:SetDesaturated(true);
 		scrollChild.roleIcon:SetDesaturated(true);
 		scrollChild.ring:SetDesaturated(true);
 		scrollChild.gradient:SetDesaturated(true);
-		scrollChild.scrollwork_left:SetDesaturated(true);
-		scrollChild.scrollwork_right:SetDesaturated(true);
+--		scrollChild.scrollwork_left:SetDesaturated(true);
+--		scrollChild.scrollwork_right:SetDesaturated(true);
+		scrollChild.Seperator:SetDesaturated(true);
 		scrollChild.scrollwork_topleft:SetDesaturated(true);
 		scrollChild.scrollwork_topright:SetDesaturated(true);
 		scrollChild.scrollwork_bottomleft:SetDesaturated(true);
@@ -1394,13 +1395,14 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		self.bg:SetDesaturated(false);
 		scrollChild.description:SetTextColor(1.0, 1.0, 1.0);
 		scrollChild.roleName:SetTextColor(1.0, 1.0, 1.0);
-		scrollChild.coreabilities:SetTextColor(0.878, 0.714, 0.314);
+--		scrollChild.coreabilities:SetTextColor(0.878, 0.714, 0.314);
 		scrollChild.specIcon:SetDesaturated(false);
 		scrollChild.roleIcon:SetDesaturated(false);
 		scrollChild.ring:SetDesaturated(false);	
 		scrollChild.gradient:SetDesaturated(false);
-		scrollChild.scrollwork_left:SetDesaturated(false);
-		scrollChild.scrollwork_right:SetDesaturated(false);
+--		scrollChild.scrollwork_left:SetDesaturated(false);
+--		scrollChild.scrollwork_right:SetDesaturated(false);
+		scrollChild.Seperator:SetDesaturated(false);
 		scrollChild.scrollwork_topleft:SetDesaturated(false);
 		scrollChild.scrollwork_topright:SetDesaturated(false);
 		scrollChild.scrollwork_bottomleft:SetDesaturated(false);

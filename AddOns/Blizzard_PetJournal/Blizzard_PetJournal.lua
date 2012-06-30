@@ -7,6 +7,7 @@ local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 25;
 local UNLOCK_ACHIEVEMENTS = {"6461", "6566", "6593"};
+local PLAYER_MOUNT_LEVEL = 20;
 
 
 StaticPopupDialogs["BATTLE_PET_RENAME"] = {
@@ -17,12 +18,12 @@ StaticPopupDialogs["BATTLE_PET_RENAME"] = {
 	maxLetters = 16,
 	OnAccept = function(self)
 		local text = self.editBox:GetText();
-		C_PetJournal.SetCustomName(PetJournal.menuPetID, text);
+		C_PetJournal.SetCustomName(self.data, text);
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
 		local text = parent.editBox:GetText();
-		C_PetJournal.SetCustomName(PetJournal.menuPetID, text);
+		C_PetJournal.SetCustomName(parent.data, text);
 		parent:Hide();
 	end,
 	OnShow = function(self)
@@ -43,7 +44,7 @@ StaticPopupDialogs["BATTLE_PET_PUT_IN_CAGE"] = {
 	button2 = CANCEL,
 	maxLetters = 30,
 	OnAccept = function(self)
-		C_PetJournal.CagePetByID(PetJournal.menuPetID);
+		C_PetJournal.CagePetByID(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -56,12 +57,21 @@ StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
 	button2 = CANCEL,
 	maxLetters = 30,
 	OnAccept = function(self)
-		C_PetJournal.ReleasePetByID(PetJournal.menuPetID);
+		C_PetJournal.ReleasePetByID(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
 	hideOnEscape = 1
 };
+
+function PetJournalUtil_GetDisplayName(petID)
+	local speciesID, customName, level, xp, maxXp, displayID, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+	if ( customName ) then
+		return customName;
+	else
+		return petName;
+	end
+end
 
 function PetJournalParent_SetTab(self, tab)
 	PanelTemplates_SetTab(self, tab);
@@ -129,6 +139,10 @@ function PetJournal_OnShow(self)
 			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
 		end
 	end
+
+	CompanionsMicroButtonAlert:Hide();
+	MicroButtonPulseStop(CompanionsMicroButton);
+	SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\PetJournalPortrait");
 end
 
 
@@ -330,6 +344,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.helpFrame.text:SetText(_G["BATTLE_PET_UNLOCK_HELP_"..i]);
 			loadoutPlate.helpFrame:Show();
 			loadoutPlate.emptyslot:Hide();
+			loadoutPlate.isDead:Hide();
 		elseif (petID <= 0) then
 			loadoutPlate.name:Hide();
 			loadoutPlate.subName:Hide();
@@ -348,6 +363,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.achievementButton:Hide();
 			loadoutPlate.emptyslot:Show();
 			loadoutPlate.emptyslot.slot:SetText(format(BATTLE_PET_SLOT, i));
+			loadoutPlate.isDead:Hide();
 		else -- not locked and petID > 0
 			local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
@@ -940,7 +956,7 @@ function PetOptionsMenu_Init(self, level)
 	info.disabled = nil;
 	
 	info.text = BATTLE_PET_RENAME
-	info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME"); end 
+	info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME", nil, nil, PetJournal.menuPetID); end 
 	UIDropDownMenu_AddButton(info, level)
 		
 	info.text = BATTLE_PET_FAVORITE;--BATTLE_PET_UNFAVORITE
@@ -949,11 +965,11 @@ function PetOptionsMenu_Init(self, level)
 	
 	if(PetJournal.menuPetID and C_PetJournal.PetIsTradable(PetJournal.menuPetID)) then
 		info.text = BATTLE_PET_RELEASE;
-		info.func = function() StaticPopup_Show("BATTLE_PET_RELEASE"); end
+		info.func = function() StaticPopup_Show("BATTLE_PET_RELEASE", PetJournalUtil_GetDisplayName(PetJournal.menuPetID), nil, PetJournal.menuPetID); end
 		UIDropDownMenu_AddButton(info, level)
 	
 		info.text = BATTLE_PET_PUT_IN_CAGE;
-		info.func = function() StaticPopup_Show("BATTLE_PET_PUT_IN_CAGE"); end 
+		info.func = function() StaticPopup_Show("BATTLE_PET_PUT_IN_CAGE", nil, nil, PetJournal.menuPetID); end 
 		if (not C_PetJournal.PetIsCagable(PetJournal.menuPetID)) then
 			info.disabled = true;
 		end
@@ -1116,10 +1132,10 @@ end
 PetJournal_HelpPlate = {
 	FramePos = { x = 0,	y = -22 },
 	FrameSize = { width = 700, height = 580	},
-	[1] = { ButtonPos = { x = 26,	y = -72 },	HighLightBox = { x = 0, y = -67, width = 270, height = 60 },	ToolTipDir = "RIGHT",	ToolTipText = PET_JOURNAL_HELP_1 },
-	[2] = { ButtonPos = { x = 105,	y = -300 },	HighLightBox = { x = 0, y = -115, width = 270, height = 444 },	ToolTipDir = "DOWN",	ToolTipText = PET_JOURNAL_HELP_2 },
-	[3] = { ButtonPos = { x = 450,	y = -90 },	HighLightBox = { x = 284, y = -35, width = 414, height = 525 },	ToolTipDir = "DOWN",	ToolTipText = PET_JOURNAL_HELP_3 },
-	[4] = { ButtonPos = { x = 525,	y = -545},	HighLightBox = { x = 550, y = -548, width = 155, height = 40 },	ToolTipDir = "UP",		ToolTipText = PET_JOURNAL_HELP_4 },
+	[1] = { ButtonPos = { x = 26,	y = -75 },	HighLightBox = { x = 10, y = -75, width = 247, height = 50 },	ToolTipDir = "RIGHT",	ToolTipText = PET_JOURNAL_HELP_1 },
+	[2] = { ButtonPos = { x = 105,	y = -300 },	HighLightBox = { x = 10, y = -128, width = 247, height = 425 },	ToolTipDir = "DOWN",	ToolTipText = PET_JOURNAL_HELP_2 },
+	[3] = { ButtonPos = { x = 470,	y = -95 },	HighLightBox = { x = 290, y = -45, width = 400, height = 508 },	ToolTipDir = "DOWN",	ToolTipText = PET_JOURNAL_HELP_3 },
+	[4] = { ButtonPos = { x = 525,	y = -546},	HighLightBox = { x = 550, y = -556, width = 150, height = 26 },	ToolTipDir = "UP",		ToolTipText = PET_JOURNAL_HELP_4 },
 }
 
 function PetJournal_ToggleTutorial()
@@ -1156,6 +1172,7 @@ function MountJournal_OnShow(self)
 		MountJournal_Select(1);
 	end
 	MountJournal_UpdateMountList();
+	SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\MountJournalPortrait");
 end
 
 function MountJournal_UpdateMountList()
@@ -1165,10 +1182,20 @@ function MountJournal_UpdateMountList()
 
 	local numMounts = GetNumCompanions("MOUNT");
 
+	local showMounts = 1;
+	local playerLevel = UnitLevel("player");
+	if  ( numMounts < 1 ) then
+		-- display the no mounts message on the right hand side
+		MountJournal.MountDisplay.NoMounts:Show();
+		showMounts = 0;
+	else
+		MountJournal.MountDisplay.NoMounts:Hide();
+	end
+
 	for i=1, #buttons do
 		local button = buttons[i];
 		local index = i + offset;
-		if ( index <= numMounts ) then
+		if ( index <= numMounts and showMounts == 1) then
 			local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", index);
 			button.name:SetText(creatureName);
 			button.icon:SetTexture(icon);
@@ -1176,7 +1203,7 @@ function MountJournal_UpdateMountList()
 			button.spellID = spellID;
 
 			button.active = active;
-			if ( active ) then
+			if ( active and playerLevel >= PLAYER_MOUNT_LEVEL) then
 				button.DragButton.ActiveTexture:Show();
 			else
 				button.DragButton.ActiveTexture:Hide();
@@ -1194,14 +1221,45 @@ function MountJournal_UpdateMountList()
 				button.selected = false;
 				button.selectedTexture:Hide();
 			end
+			button:SetEnabled(1);
+			if (playerLevel >= PLAYER_MOUNT_LEVEL) then
+				button.DragButton:SetEnabled(1);
+				button.icon:SetDesaturated(0);
+				button.icon:SetAlpha(1.0);
+				button.name:SetFontObject("GameFontNormal");				
+			else
+				button.DragButton:SetEnabled(0);
+				button.icon:SetDesaturated(1);
+				button.icon:SetAlpha(.5);
+				button.name:SetFontObject("GameFontDisable");				
+			end
 		else
-			button:Hide();
+			button.icon:SetTexture("Interface\\PetBattles\\MountJournalEmptyIcon");
+			button.index = index;
+			button.spellID = 0;
+			button.selected = false;
+			button.DragButton.ActiveTexture:Hide();
+			button.selectedTexture:Hide();
+			button:SetEnabled(0);
+			button.DragButton:SetEnabled(0);
+			button.icon:SetDesaturated(1);
+			button.icon:SetAlpha(0.5);
 		end
 	end
+
 	local totalHeight = numMounts * MOUNT_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
-
 	MountJournal.MountCount.Count:SetText(numMounts);
+	if ( showMounts == 0 ) then
+		MountJournal.selectedSpellID = 0;
+		MountJournal_UpdateMountDisplay();
+		MountJournal.MountCount.Count:SetText(0);
+	end
+	if ( playerLevel >= PLAYER_MOUNT_LEVEL and numMounts > 0) then
+		MountJournal.MountButton:SetEnabled(1);
+	else
+		MountJournal.MountButton:SetEnabled(0);
+	end
 end
 
 function MountJournal_UpdateMountDisplay()

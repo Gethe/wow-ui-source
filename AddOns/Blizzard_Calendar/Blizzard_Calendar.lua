@@ -4424,7 +4424,7 @@ function CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...)
 	if ( self:IsShown() and self:GetParent():IsShown() ) then
 		if ( event == "GROUP_ROSTER_UPDATE" ) then
 			CalendarCreateEventRaidInviteButton_Update();
-			if ( IsInParty(LE_PARTY_CATEGORY_HOME) and not IsInRaid(LE_PARTY_CATEGORY_HOME) and self.inviteLostMembers ) then
+			if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInRaid(LE_PARTY_CATEGORY_HOME) and self.inviteLostMembers ) then
 				-- in case we weren't able to convert to a raid when the player clicked the raid invite button
 				-- (which means the player was not in a party), we want to convert to a raid now since he has a party
 				ConvertToRaid();

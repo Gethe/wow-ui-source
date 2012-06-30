@@ -249,15 +249,15 @@ end
 function ItemSocketingSocketButton_Disable()
 	ItemSocketingSocketButton.disabled = 1;
 	ItemSocketingSocketButton:Disable();
-	ItemSocketingSocketButtonLeft:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-	ItemSocketingSocketButtonMiddle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-	ItemSocketingSocketButtonRight:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+	ItemSocketingSocketButton.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+	ItemSocketingSocketButton.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+	ItemSocketingSocketButton.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
 end
 
 function ItemSocketingSocketButton_Enable()
 	ItemSocketingSocketButton.disabled = nil;
 	ItemSocketingSocketButton:Enable();
-	ItemSocketingSocketButtonLeft:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-	ItemSocketingSocketButtonMiddle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-	ItemSocketingSocketButtonRight:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");	
+	ItemSocketingSocketButton.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+	ItemSocketingSocketButton.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+	ItemSocketingSocketButton.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");	
 end

@@ -39,6 +39,7 @@ LFG_RETURN_VALUES = {
 
 LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
 
+LFG_INSTANCE_INVALID_WRONG_FACTION = 10;
 LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g. attunements)
 	"EXPANSION_TOO_LOW",
 	"LEVEL_TOO_LOW",
@@ -1628,12 +1629,44 @@ end
 
 function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
-	local hasHeader = groupID ~= 0;
-	local sufficientExpansion = EXPANSION_LEVEL >= expansionLevel;
 	local level = UnitLevel("player");
-	local sufficientLevel = level >= minLevel and level <= maxLevel;
-	return (hasHeader and sufficientExpansion and sufficientLevel) and
-		( level - maxLevelDiff <= recLevel or (LFGLockList and not LFGLockList[dungeonID]));	--If the server tells us we can join, who are we to complain?
+
+	--Check whether we're initialized yet
+	if ( not LFGLockList ) then
+		return false;
+	end
+
+	--If the server tells us we can join, we won't argue
+	if ( not LFGLockList[dungeonID] ) then
+		return true;
+	end
+
+	--If this doesn't have a header, we won't display it
+	if ( groupID == 0 ) then
+		return false;
+	end
+
+	--If we don't have the right expansion, we won't display it
+	if ( EXPANSION_LEVEL < expansionLevel ) then
+		return false;
+	end
+
+	--If we're too high above the recommended level, we won't display it
+	if ( level - maxLevelDiff > recLevel ) then
+		return false;
+	end
+
+	-- If we're not within the hard level requirements, we won't display it
+	if ( level < minLevel or level > maxLevel ) then
+		return false;
+	end
+
+	--If we're the wrong faction, we won't display it.
+	if ( LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_WRONG_FACTION ) then
+		return false;
+	end
+
+	return true;
 end
 
 function LFG_QueueForInstanceIfEnabled(category, queueID)

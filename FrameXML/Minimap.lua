@@ -400,25 +400,23 @@ function MiniMapInstanceDifficulty_Update()
 		if ( instanceType == "party" and difficulty == 2 ) then
 			isHeroic = true;
 		elseif ( instanceType == "raid" ) then
+			difficulty = difficulty - 2;	-- need to fix this later
 			if ( isDynamicInstance ) then
 				selectedRaidDifficulty = difficulty;
-				--if ( selectedRaidDifficulty > 1 ) then
-				--	isHeroic = true;
-				--end
-				-- if modified difficulty is normal then you are allowed to select heroic, and vice-versa
-				if ( selectedRaidDifficulty == 3 ) then
-					allowedRaidDifficulty = 5;
-				elseif ( selectedRaidDifficulty == 4 ) then
-					allowedRaidDifficulty = 6;
-				elseif ( selectedRaidDifficulty == 5 ) then
-					allowedRaidDifficulty = 3;
-				elseif ( selectedRaidDifficulty == 6 ) then
-					allowedRaidDifficulty = 4;
+				if ( selectedRaidDifficulty >= 3 ) then
+					isHeroic = true;
 				end
-				allowedRaidDifficulty = "RAID_DIFFICULTY"..(allowedRaidDifficulty - 2);	-- TEMP FIX
-			end
-			if ( difficulty == 5 or difficulty == 6 ) then  -- FIX ME REAL
-				isHeroic = true;
+				-- if modified difficulty is normal then you are allowed to select heroic, and vice-versa
+				if ( selectedRaidDifficulty == 1 ) then
+					allowedRaidDifficulty = 3;
+				elseif ( selectedRaidDifficulty == 2 ) then
+					allowedRaidDifficulty = 4;
+				elseif ( selectedRaidDifficulty == 3 ) then
+					allowedRaidDifficulty = 1;
+				elseif ( selectedRaidDifficulty == 4 ) then
+					allowedRaidDifficulty = 2;
+				end
+				allowedRaidDifficulty = "RAID_DIFFICULTY"..(allowedRaidDifficulty);
 			end
 		end
 		if ( IS_GUILD_GROUP ) then
@@ -433,12 +431,15 @@ function MiniMapInstanceDifficulty_Update()
 			end
 			GuildInstanceDifficultyText:ClearAllPoints();
 			if ( isHeroic ) then
-				if ( maxPlayers > 10 ) then
+				if ( maxPlayers < 10 ) then
+					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 11, 7);
+					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
+				elseif ( maxPlayers > 19 ) then
 					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 8, 7);
 					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
 				else
-					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 11, 7);
-					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
+					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 8, 7);
+					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 19, 8);
 				end
 				GuildInstanceDifficultyHeroicTexture:Show();
 			else

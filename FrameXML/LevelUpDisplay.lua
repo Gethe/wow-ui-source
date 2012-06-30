@@ -6,6 +6,7 @@ TOAST_QUEST_BOSS_EMOTE = "questbossemote";
 TOAST_PET_BATTLE_END = "petbattleend";
 CHAT_BATTLE_PET_LEVEL_UP = "battlepet" -- Name used in globalstring BATTLE_PET_LEVEL_UP
 CHAT_BATTLE_PET_CAPTURED = "battlepetcapture";
+TOAST_CHALLENGE_MODE_RECORD = "challengemode";
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
@@ -14,7 +15,11 @@ LEVEL_UP_EVENTS = {
 	[25] = {"Glyphs"},
 	[30] = {"DualSpec"},
 	[50] = {"GlyphSlots"},
+	[70] = {"HeroicBurningCrusade"},
 	[75] = {"GlyphSlots"},
+	[80] = {"HeroicWrathOfTheLichKing"},
+	[85] = {"HeroicCataclysm"},
+	[90] = {"HeroicMistsOfPandaria"},
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
@@ -59,74 +64,110 @@ local levelUpTexCoords = {
 		tint = {1, 0.996, 0.745},
 		textTint = {1, 0.7, 0.25},
 		gLineDelay = 0,
-	}
+	},
+	[TOAST_CHALLENGE_MODE_RECORD] = {
+		gLine = { 0.00195313, 0.81835938, 0.00195313, 0.01562500 },
+		tint = {0.777, 0.698, 0.451},
+		gLineDelay = 0,
+	},	
 }
 
 LEVEL_UP_TYPES = {
-	["TalentPoint"] 		= {	icon="Interface\\Icons\\Ability_Marksmanship",
+	["TalentPoint"] 			=	{	icon="Interface\\Icons\\Ability_Marksmanship",
 										subIcon=SUBICON_TEXCOOR_ARROW,
 										text=LEVEL_UP_TALENT_MAIN,
 										subText=LEVEL_UP_TALENT_SUB,
 										link=LEVEL_UP_TALENTPOINT_LINK;
 									},
 	
-	["PetTalentPoint"] 		= {	icon="Interface\\Icons\\Ability_Marksmanship",
+	["PetTalentPoint"] 			=	{	icon="Interface\\Icons\\Ability_Marksmanship",
 										subIcon=SUBICON_TEXCOOR_ARROW,
 										text=PET_LEVEL_UP_TALENT_MAIN,
 										subText=PET_LEVEL_UP_TALENT_SUB,
 										link=PET_LEVEL_UP_TALENTPOINT_LINK;
 									},
 									
-	["SpecializationUnlocked"] 	= {	icon="Interface\\Icons\\Ability_Marksmanship",
+	["SpecializationUnlocked"] 	= 	{	icon="Interface\\Icons\\Ability_Marksmanship",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=SPECIALIZATION,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_SPECIALIZATION_LINK
 									},
 									
-	["TalentsUnlocked"] 	= {	icon="Interface\\Icons\\Ability_Marksmanship",
+	["TalentsUnlocked"] 		= 	{	icon="Interface\\Icons\\Ability_Marksmanship",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=TALENT_POINTS,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_TALENTS_LINK
 									},
 									
-	["BGsUnlocked"] 		= {	icon="Interface\\Icons\\Ability_DualWield",
+	["BGsUnlocked"] 			= 	{	icon="Interface\\Icons\\Ability_DualWield",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=BATTLEFIELDS,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_BG_LINK
 									},
 
-	["LFDUnlocked"] 		= {	icon="Interface\\Icons\\LevelUpIcon-LFD",
+	["LFDUnlocked"] 			= 	{	icon="Interface\\Icons\\LevelUpIcon-LFD",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=LOOKING_FOR_DUNGEON,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_LFD_LINK
 									},
 
-	["Glyphs"]				= {	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
+	["Glyphs"]					=	{	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=GLYPHS,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_GLYPHSLOT_LINK
 									},
 
-	["GlyphSlots"]			= {	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
+	["GlyphSlots"]				= 	{	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=GLYPH_SLOTS,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_GLYPHSLOT_LINK
 									},
 
-	["DualSpec"] 			= {	icon="Interface\\Icons\\INV_Misc_Coin_01",
+	["DualSpec"] 				=	{	icon="Interface\\Icons\\INV_Misc_Coin_01",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=LEVEL_UP_DUALSPEC,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_DUAL_SPEC_LINK
 									},
-				
 
+	["HeroicBurningCrusade"]	=	{	entryType = "heroicdungeon",
+										tier = 2,
+										icon="Interface\\Icons\\ExpansionIcon_BurningCrusade",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=EXPANSION_NAME1,
+										subText=LEVEL_UP_HEROIC,
+									},
+									
+	["HeroicWrathOfTheLichKing"]= 	{	entryType = "heroicdungeon",
+										tier = 3,
+										icon="Interface\\Icons\\ExpansionIcon_WrathoftheLichKing",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=EXPANSION_NAME2,
+										subText=LEVEL_UP_HEROIC,
+									},
+									
+	["HeroicCataclysm"]			=	{	entryType = "heroicdungeon",
+										tier = 4,
+										icon="Interface\\Icons\\ExpansionIcon_Cataclysm",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=EXPANSION_NAME3,
+										subText=LEVEL_UP_HEROIC,
+									},
+									
+	["HeroicMistsOfPandaria"]	= 	{ 	entryType = "heroicdungeon",
+										tier = 5,
+										icon="Interface\\Icons\\ExpansionIcon_MistsofPandaria",
+										subIcon=SUBICON_TEXCOOR_LOCK,
+										text=EXPANSION_NAME4,
+										subText=LEVEL_UP_HEROIC
+									},
+									
 ------ HACKS BELOW		
  	["Teleports"] 			= {	spellID=109424	},
 	["PortalsHorde"]		= {	spellID=109400	},
@@ -218,6 +259,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
+	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
 	self.currSpell = 0;
 end
 
@@ -247,7 +289,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			LevelUpDisplaySide:Hide();
 		end
 	elseif ( event == "SCENARIO_UPDATE" ) then
-		if ( arg1 ) then
+		if ( arg1 and not C_Scenario.IsChallengeMode() ) then
 			self.type = LEVEL_UP_TYPE_SCENARIO;
 			self:Show();
 		end
@@ -263,6 +305,13 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.bossText = format(str, name, name);
 		self.time = displayTime;
 		self.sound = warningSound;
+		self:Show();
+	elseif ( event == "CHALLENGE_MODE_NEW_RECORD" ) then
+		local mapID, recordTime, medal = ...;
+		self.type = TOAST_CHALLENGE_MODE_RECORD;
+		self.mapID = mapID;
+		self.recordTime = recordTime;
+		self.medal = medal;
 		self:Show();
 	end
 end
@@ -286,7 +335,7 @@ function LevelUpDisplay_BuildCharacterList(self)
 	end	
 	
 	local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
-	local dungeons = {GetCurrentLevelDungeons(self.level)};
+	local dungeons = {GetLevelUpInstances(self.level, false)};
 	for _,dungeon in pairs(dungeons) do
 		name, icon, link = GetDungeonInfo(dungeon);
 		if link then -- link can come back as nil if there's no Dungeon Journal entry
@@ -299,9 +348,23 @@ function LevelUpDisplay_BuildCharacterList(self)
 																	};
 		end
 	end
+	
+	local raids = {GetLevelUpInstances(self.level, true)};
+	for _,raid in pairs(raids) do
+		name, icon, link = GetDungeonInfo(raid);
+		if link then -- link can come back as nil if there's no Dungeon Journal entry
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																		link = LEVEL_UP_RAID2.." "..link
+																	};
+		else
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+																		link = LEVEL_UP_RAID2.." "..name
+																	};
+		end
+	end
 
 
-		-- This loop is LEVEL_UP_CLASS_HACKS
+	-- This loop is LEVEL_UP_CLASS_HACKS
 	local race, raceFile = UnitRace("player");
 	local _, class = UnitClass("player");
 	local factionName = UnitFactionGroup("player");
@@ -441,6 +504,25 @@ function LevelUpDisplay_OnShow(self)
 				LevelUpDisplay:SetPoint("TOP", 0, -250);
 				playAnim = self.scenarioFrame.newStage;
 			end
+		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
+			local medal = self.medal;
+			if ( CHALLENGE_MEDAL_TEXTURES[medal] ) then
+				self.challengeModeFrame.MedalEarned:SetText(_G["CHALLENGE_MODE_MEDALNAME"..medal]);
+				self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
+				self.challengeModeBits.MedalFlare:Show();
+				self.challengeModeBits.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[medal]);
+				self.challengeModeBits.MedalIcon:Show();
+				self.challengeModeBits.BottomFiligree:Show();
+			else
+				-- no medal earned, still a record time for player
+				self.challengeModeFrame.MedalEarned:SetText(CHALLENGE_MODE_NEW_RECORD);
+				self.challengeModeFrame.RecordTime:SetText(GetTimeStringFromSeconds(self.recordTime / 1000));
+				self.challengeModeBits.MedalFlare:Hide();
+				self.challengeModeBits.MedalIcon:Hide();
+				self.challengeModeBits.BottomFiligree:Hide();
+			end
+			LevelUpDisplay:SetPoint("TOP", 0, -190);
+			playAnim = self.challengeModeFrame.challengeComplete;
 		else
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.levelFrame.levelUp;
@@ -519,8 +601,10 @@ function LevelUpDisplay_AnimStep(self, fast)
 		self.spellFrame.subIcon:Hide();
 		self.spellFrame.subIconRight:Hide();
 		
-		if (spellInfo.entryType == "spell" or
-			spellInfo.entryType == "dungeon") then
+		if (not spellInfo.entryType or
+			spellInfo.entryType == "spell" or
+			spellInfo.entryType == "dungeon" or
+			spellInfo.entryType == "heroicdungeon") then
 			self.spellFrame.name:SetText(spellInfo.text);
 			self.spellFrame.flavorText:SetText(spellInfo.subText);
 			self.spellFrame.icon:SetTexture(spellInfo.icon);
@@ -651,6 +735,7 @@ function LevelUpDisplaySide_AnimStep(self)
 		displayFrame.flavorText:SetText(spellInfo.subText);
 		displayFrame.icon:SetTexture(spellInfo.icon);
 		displayFrame.subIcon:SetTexCoord(unpack(spellInfo.subIcon));
+		displayFrame.subIconRight:Hide();
 		displayFrame.sideAnimIn:Play();
 		self.currSpell = self.currSpell+1;
 		self:SetHeight(self:GetHeight()+45);
@@ -716,7 +801,10 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 	end
 	self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 	for _,skill in pairs(chatLevelUP.unlockList) do
-		if skill.entryType ~= "spell" then
+		if skill.entryType == "heroicdungeon" then
+			local name, link = EJ_GetTierInfo(skill.tier);
+			self:AddMessage(LEVEL_UP_HEROIC2..link, info.r, info.g, info.b, info.id);
+		elseif skill.entryType ~= "spell" then
 			self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
 		end
 	end

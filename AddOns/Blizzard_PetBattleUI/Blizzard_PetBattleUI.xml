@@ -327,19 +327,8 @@
 		<Size x="30" y="30"/>
 		<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
 	</Texture>
-	<Frame name="PetBattleUnitTooltipTemplate" inherits="PetBattleUnitFrame" frameStrata="TOOLTIP" virtual="true" hidden="true">
+	<Frame name="PetBattleUnitTooltipTemplate" inherits="PetBattleUnitFrame,TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" virtual="true" hidden="true">
 		<Size x="260" y="190"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
@@ -567,9 +556,21 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
+				<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT" hidden="true">
+					<Size x="36" y="10"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-1" y="-3"/>
+					</Anchors>
+				</FontString>
 				<Texture parentKey="SelectedHighlight" inherits="BattleBar-Button-Highlight" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BetterIcon" file="Interface\PetBattles\BattleBar-AbilityBadge-Weak" hidden="true">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="9" y="-9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -699,6 +700,12 @@
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="TopVersusText" inherits="GameFont_Gigantic" text="PET_BATTLE_UI_VS">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PetBattleFrame" relativePoint="TOP" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>

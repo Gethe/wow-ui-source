@@ -111,7 +111,7 @@
 						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" x="2" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentSubIconRight" parentKey="subIconRight" file="Interface\LevelUp\LevelUpTex">
+				<Texture name="$parentSubIconRight" parentKey="subIconRight" file="Interface\LevelUp\LevelUpTex" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
 					</Anchors>
@@ -309,7 +309,7 @@
 							</Anchors>
 							<Color r="1" g="0.831" b="0.381"/>
 						</FontString>
-						<FontString name="ao" inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="description">
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="description">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-12"/>
@@ -377,6 +377,96 @@
 								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
 							<TexCoords left="0.08007813" right="0.19921875" top="0.05859375" bottom="0.02148438"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentChallengeModeFrame" parentKey="challengeModeFrame" alpha="0">
+				<Animations>
+					<AnimationGroup parentKey="challengeComplete">
+						<Alpha change="1" duration="0.7" endDelay="2.5" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplayGLine.grow:Play();
+								if ( not self.showMedal ) then
+									LevelUpDisplay.challengeModeBits.fadeIn:Play();
+								end
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimOut();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Size x="418" y="72"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="DestinyFontHuge" justifyH="CENTER" parentKey="MedalEarned">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-14"/>
+							</Anchors>
+							<Color r="0.87" g="0.80" b="0.61"/>
+						</FontString>
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="RecordTime">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="8"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="challengeModeBits" alpha="0" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="fadeIn">
+						<Alpha change="1" duration="0.7" startDelay="0.7" endDelay="2.3" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="MedalFlare" file="Interface\Challenges\challenges-main">
+							<Size x="222" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
+							</Anchors>
+							<TexCoords left="0.71972656" right="0.93652344" top="0.00195313" bottom="0.20898438"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+							<TexCoords left="0.12304688" right="0.86914063" top="0.27929688" bottom="0.34765625"/>
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.12304688" right="0.86914063" top="0.34765625" bottom="0.27929688"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BottomFiligree" file="Interface\Scenarios\ScenariosParts">
+							<Size x="61" y="19"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+							<TexCoords left="0.08007813" right="0.19921875" top="0.05859375" bottom="0.02148438"/>
+						</Texture>
+						<Texture parentKey="MedalIcon">
+							<Size x="102" y="102"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-22"/>
+							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>

@@ -388,7 +388,7 @@ function ChallengeModeAlertFrame_ShowAlert()
 		frame.medalIcon:Hide();
 	end
 	frame.time:SetText(GetTimeStringFromSeconds(completionTime, true));
-	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-ZULGURUB");
+	frame.dungeonTexture:SetTexture("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 
 	AlertFrame_AnimateIn(frame)
 	AlertFrame_FixAnchors();

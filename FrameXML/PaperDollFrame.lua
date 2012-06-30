@@ -444,6 +444,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterUnitEvent("UNIT_DAMAGE", "player");
 	self:RegisterUnitEvent("UNIT_ATTACK_SPEED", "player");
 	self:RegisterUnitEvent("UNIT_MAXHEALTH", "player");
+	self:RegisterUnitEvent("UNIT_AURA", "player");
 	-- flyout settings
 	PaperDollItemsFrame.flyoutSettings = {
 		onClickFunc = PaperDollFrameItemFlyoutButton_OnClick,
@@ -501,7 +502,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	if ( unit == "player" ) then
 		if ( event == "UNIT_LEVEL" ) then
 			PaperDollFrame_SetLevel();
-		elseif ( event == "UNIT_DAMAGE" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" or event == "UNIT_RESISTANCES" or event == "UNIT_SPELL_HASTE" or event == "UNIT_MAXHEALTH" ) then
+		elseif ( event == "UNIT_DAMAGE" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" or event == "UNIT_RESISTANCES" or event == "UNIT_SPELL_HASTE" or event == "UNIT_MAXHEALTH" or event == "UNIT_AURA" ) then
 			self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 		end
 	end
@@ -789,12 +790,10 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		-- Intellect
 		elseif ( statIndex == 4 ) then
 			if ( UnitHasMana("player") ) then
-				local baseInt = min(20, effectiveStat);
-				local moreInt = effectiveStat - baseInt
 				if (GetOverrideSpellPowerByAP() ~= nil) then
-					statFrame.tooltip2 = format(STAT4_NOSPELLPOWER_TOOLTIP, BreakUpLargeNumbers(baseInt + moreInt*MANA_PER_INTELLECT), GetSpellCritChanceFromIntellect("player"));
+					statFrame.tooltip2 = format(STAT4_NOSPELLPOWER_TOOLTIP, GetSpellCritChanceFromIntellect("player"));
 				else
-					statFrame.tooltip2 = format(statFrame.tooltip2, BreakUpLargeNumbers(baseInt + moreInt*MANA_PER_INTELLECT), max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
+					statFrame.tooltip2 = format(statFrame.tooltip2, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
 				end
 			else
 				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
@@ -2656,7 +2655,9 @@ end
 
 function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
 	local levelModifier = attackerLevel;
-	if ( levelModifier > 80 ) then
+	if ( levelModifier > 85 ) then
+		levelModifier = levelModifier + (4.5 * (levelModifier-59)) + (20 * (levelModifier - 80)) + (22 * (levelModifier - 85));
+	elseif ( levelModifier > 80 ) then
 		levelModifier = levelModifier + (4.5 * (levelModifier-59)) + (20 * (levelModifier - 80));
 	elseif ( levelModifier > 59 ) then
 		levelModifier = levelModifier + (4.5 * (levelModifier-59));

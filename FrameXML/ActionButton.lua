@@ -13,7 +13,15 @@ RANGE_INDICATOR = "●";
 -- Table of actionbar pages and whether they're viewable or not
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
+local isInPetBattle = C_PetBattles.IsInBattle;
 function ActionButtonDown(id)
+	if ( isInPetBattle() ) then
+		if ( PetBattleFrame ) then
+			PetBattleFrame_ButtonDown(id);
+		end
+		return;
+	end
+
 	local button;
 	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
 		if ( id > NUM_OVERRIDE_BUTTONS ) then
@@ -34,6 +42,13 @@ function ActionButtonDown(id)
 end
 
 function ActionButtonUp(id)
+	if ( isInPetBattle() ) then
+		if ( PetBattleFrame ) then
+			PetBattleFrame_ButtonUp(id);
+		end
+		return;
+	end
+
 	local button;
 	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
 		if ( id > NUM_OVERRIDE_BUTTONS ) then
@@ -287,7 +302,9 @@ function ActionButton_Update (self)
 		icon:SetTexture(texture);
 		icon:Show();
 		self.rangeTimer = -1;
+		ActionButton_UpdateCount(self);	
 	else
+		_G[self:GetName().."Count"]:SetText("");
 		icon:Hide();
 		buttonCooldown:Hide();
 		self.rangeTimer = nil;
@@ -298,7 +315,6 @@ function ActionButton_Update (self)
 			hotkey:SetVertexColor(0.6, 0.6, 0.6);
 		end
 	end
-	ActionButton_UpdateCount(self);	
 	
 	-- Update flyout appearance
 	ActionButton_UpdateFlyout(self);

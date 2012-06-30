@@ -17,11 +17,11 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="ItemUpgradeStatTemplateLeft" inherits="ItemUpgradeStatTemplate" virtual="true">
+	<Frame name="ItemUpgradeStatTemplateLeft" inherits="ItemUpgradeStatTemplate" virtual="true" justifyH="RIGHT">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="RIGHT">
-					<Size x="40" y="12"/>
+					<Size x="50" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
@@ -30,7 +30,7 @@
 				<FontString parentKey="ItemText" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="100" y ="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="4"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="8"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
@@ -39,9 +39,10 @@
 	</Frame>
 
 	<Frame name="ItemUpgradeStatTemplateRight" inherits="ItemUpgradeStatTemplate" virtual="true">
+		<Size x="207" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="ItemIncText" inherits="GameFontNormal" justifyH="RIGHT">
+				<FontString parentKey="ItemIncText" inherits="GameFontNormalSmall" justifyH="RIGHT">
 					<Size x="40" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
@@ -49,16 +50,16 @@
 					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
 				<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="RIGHT">
-					<Size x="40" y="12"/>
+					<Size x="50" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemIncText"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemIncText" x="-4"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
 				<FontString parentKey="ItemText" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="100" y ="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="4"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="8"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
@@ -67,7 +68,7 @@
 	</Frame>
 	
 	<Frame name="ItemUpgradeFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size x="412" y="434"/>
+		<Size x="422" y="434"/>
 
 		<Layers>
 			<Layer level="BORDER">
@@ -79,11 +80,12 @@
 					<TexCoords left="0.00390625" right="0.50390625" top="0.41796875" bottom="0.91796875"/>  
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture  parentKey="HorzBar">
+					<Size x="0" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="23" y="-152"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-25" y="-153"/>
+						<Anchor point="TOPLEFT" x="9" y="-156"/>
+						<Anchor point="TOPRIGHT" x="-11" y="-156"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.2"/>
 				</Texture>
@@ -94,24 +96,26 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="TitleTextLeft" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE_CURRENT">
-					<Size x="130" y="12"/>
+				<FontString parentKey="NoMoreUpgrades" text="ITEM_UPGRADE_NO_MORE_UPGRADES" inherits="GameFontNormalMed3" hidden="true">
+					<Size x="167" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="26" y="-135"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="-20" y="-60" />
+					</Anchors>
+					<Color r="1" g="0.1" b="0.1"/>
+				</FontString>
+				<FontString parentKey="TitleTextLeft" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE_CURRENT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-136"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="TitleTextRight" inherits="GameFontNormalMed3" justifyH="LEFT" text="UPGRADE">
-					<Size x="130" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="215" y="-135"/>
+						<Anchor point="TOPLEFT" x="207" y="-136"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="UpgradeStatus" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="34" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="360" y="-135"/>
+						<Anchor point="TOPRIGHT" x="-17" y="-136"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="1.0"/>
 				</FontString>
@@ -119,24 +123,29 @@
 		</Layers>
 		
 		<Frames>
+			<Frame name="$parentShadows" inherits="ShadowOverlayTemplate" useParentLevel="true">
+				<Size x="404" y="276"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-128"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="LeftItemLevel" hidden="true">
 				<Size x="180" y="24"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="4" y="-10" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="0" y="-7" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
-							<Size x="40" y="22"/>
+							<Size x="50" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="0" y="0"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a="1"/>
 						</FontString>
 						<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="100" y="22"/>
 							<Anchors>
-								<Anchor point="LEFT" x="50"/>
+								<Anchor point="LEFT" relativeKey="$parent.iLvlText" relativePoint="RIGHT" x="8" y="0"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a="1"/>
 						</FontString>
@@ -144,9 +153,9 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="RightItemLevel" hidden="true">
-				<Size x="180" y="24"/>
+				<Size x="207" y="24"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="-10" y="-10" />
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-7" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -160,14 +169,14 @@
 						<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
 							<Size x="40" y="22"/>
 							<Anchors>
-								<Anchor point="LEFT" x="40" y="0"/>
+								<Anchor point="LEFT" x="46" y="0"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a="1"/>
 						</FontString>
 						<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="100" y="22"/>
+							<Size x="0" y="22"/>
 							<Anchors>
-								<Anchor point="LEFT" x="90"/>
+								<Anchor point="LEFT" x="94"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a="1"/>
 						</FontString>
@@ -176,12 +185,12 @@
 			</Frame>
 			<Frame parentArray="LeftStat" inherits="ItemUpgradeStatTemplateLeft">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="-10" y="-40" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="0" y="-38" />
 				</Anchors>
 			</Frame>
 			<Frame parentArray="RightStat" inherits="ItemUpgradeStatTemplateRight">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="10" y="-40" />
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-38" />
 				</Anchors>
 			</Frame>
 			<Button parentKey="ItemButton">
@@ -195,13 +204,13 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString parentKey="ItemName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT">
-							<Size x="240" y="12"/>
+							<Size x="250" y="12"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT" x="18" y="10"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="BoundStatus" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="250" y="12"/>
+							<Size x="260" y="12"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-5"/>
 							</Anchors>
@@ -244,7 +253,7 @@
 						</Anchors>
 						</Texture>
 						<Texture parentKey="TextureFrameMiddle" file="Interface\Common\GreyBorder64-Mid" horizTile="true">
-							<Size x="194" />
+							<Size x="211" />
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.TextureFrameLeft" relativePoint="RIGHT"/>
 							</Anchors>
@@ -294,13 +303,28 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<Frame name="ItemUpgradeFrameMoneyFrame" inherits="SmallAlterateCurrencyFrameTemplate">
+					<Frame name="ItemUpgradeFrameMoneyFrame" inherits="ThinGoldEdgeTemplate">
+						<Size x="253" y="20"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="200" y="7"/>
+							<Anchor point="BOTTOMLEFT" x="5" y="4"/>
 						</Anchors>
+						<Frames>
+							<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="false">
+								<Anchors>
+									<Anchor point="RIGHT" x="-6" y="-2"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetCurrencyByID(self.currencyID);
+									</OnEnter>
+								</Scripts>
+							</Button>
+						</Frames>
 					</Frame>
-			  
+
 					<Button name="ItemUpgradeFrameUpgradeButton" inherits="MagicButtonTemplate, TruncatedButtonTemplate" text="UPGRADE">
+						<Size x="160" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
 						</Anchors>

@@ -3062,9 +3062,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "consolidateBuffs";
 						self.setFunc = function (value)
-							if ( ShouldShowConsolidatedBuffFrame() ) then
-								ConsolidatedBuffs:SetShown(value);
-							end
+							ConsolidatedBuffs:SetShown(value and ShouldShowConsolidatedBuffFrame());
 						end;						
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -3831,7 +3829,7 @@
 					</OnShow>
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
-						CVarBitfield("closedInfoFrames",""); -- reset the help plates too
+						SetCVar("closedInfoFrames",""); -- reset the help plates too
 						ResetTutorials();
 						TutorialFrame_ClearQueue();
 						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "ShowTutorials"];

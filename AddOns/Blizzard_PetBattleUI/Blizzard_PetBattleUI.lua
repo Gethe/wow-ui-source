@@ -28,7 +28,7 @@ local endOfBattleMessages = {};
 -------------Pet Battle Frame---------------
 --------------------------------------------
 function PetBattleFrame_OnLoad(self)
-	self.BottomFrame.actionButtons = {};
+	self.BottomFrame.abilityButtons = {};
 
 	local flowFrame = self.BottomFrame.FlowFrame;
 	FlowContainer_Initialize(flowFrame);
@@ -38,6 +38,7 @@ function PetBattleFrame_OnLoad(self)
 	for i=1, NUM_BATTLE_PETS_IN_BATTLE do
 		PetBattleUnitFrame_SetUnit(self.BottomFrame.PetSelectionFrame["Pet"..i], LE_BATTLE_PET_ALLY, i);
 	end
+	PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 
 	self:RegisterEvent("PET_BATTLE_TURN_STARTED");
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE");
@@ -48,6 +49,9 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PET_BATTLE_CAPTURED");
 	self:RegisterEvent("PET_BATTLE_FINAL_ROUND");
+
+	-- Other events:
+	self:RegisterEvent("UPDATE_BINDINGS");
 end
 
 function PetBattleFrame_OnEvent(self, event, ...)
@@ -82,6 +86,8 @@ function PetBattleFrame_OnEvent(self, event, ...)
 			str = PET_BATTLE_RESULT_WIN;
 		end;
 		table.insert(endOfBattleMessages, 1, {type=END_OF_PET_BATTLE_RESULT, winner=str});
+	elseif ( event == "UPDATE_BINDINGS" ) then
+		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	end
 end
 
@@ -116,8 +122,8 @@ function PetBattleFrame_UpdatePetSelectionFrame(self)
 end
 
 function PetBattleFrame_UpdateAllActionButtons(self)
-	for i=1, #self.BottomFrame.actionButtons do
-		local button = self.BottomFrame.actionButtons[i];
+	for i=1, #self.BottomFrame.abilityButtons do
+		local button = self.BottomFrame.abilityButtons[i];
 		PetBattleAbilityButton_UpdateIcons(button);
 		PetBattleActionButton_UpdateState(button);
 	end
@@ -129,6 +135,13 @@ function PetBattleFrame_UpdateActionButtonLevel(self, actionButton)
 	actionButton:SetFrameLevel(self.BottomFrame.FlowFrame:GetFrameLevel() + 1);
 end
 
+function PetBattleFrame_UpdateAbilityButtonHotKeys(self)
+	for i=1, #self.BottomFrame.abilityButtons do
+		local button = self.BottomFrame.abilityButtons[i];
+		PetBattleAbilityButton_UpdateHotKey(button);
+	end
+end
+
 function PetBattleFrame_UpdateActionBarLayout(self)
 	local flowFrame = self.BottomFrame.FlowFrame;
 	FlowContainer_RemoveAllObjects(flowFrame);
@@ -137,10 +150,10 @@ function PetBattleFrame_UpdateActionBarLayout(self)
 	FlowContainer_SetStartingOffset(flowFrame, 0, -4);
 
 	for i=1, NUM_BATTLE_PET_ABILITIES do
-		local actionButton = self.BottomFrame.actionButtons[i];
+		local actionButton = self.BottomFrame.abilityButtons[i];
 		if ( not actionButton ) then
-			self.BottomFrame.actionButtons[i] = CreateFrame("CheckButton", nil, self.BottomFrame, "PetBattleAbilityButtonTemplate", i);
-			actionButton = self.BottomFrame.actionButtons[i];
+			self.BottomFrame.abilityButtons[i] = CreateFrame("CheckButton", nil, self.BottomFrame, "PetBattleAbilityButtonTemplate", i);
+			actionButton = self.BottomFrame.abilityButtons[i];
 			PetBattleFrame_UpdateActionButtonLevel(PetBattleFrame, actionButton);
 		end
 
@@ -166,9 +179,39 @@ function PetBattleFrame_UpdateActionBarLayout(self)
 	self.BottomFrame:SetWidth(usedX + 260);
 
 	self.BottomFrame.FlowFrame.SelectPetInstruction:ClearAllPoints();
-	self.BottomFrame.FlowFrame.SelectPetInstruction:SetPoint("TOPLEFT", self.BottomFrame.actionButtons[1], "TOPLEFT", 0, 0);
+	self.BottomFrame.FlowFrame.SelectPetInstruction:SetPoint("TOPLEFT", self.BottomFrame.abilityButtons[1], "TOPLEFT", 0, 0);
 	self.BottomFrame.FlowFrame.SelectPetInstruction:SetPoint("BOTTOMRIGHT", self.BottomFrame.SwitchPetButton, "BOTTOMRIGHT", 0, 0);
 
+end
+
+function PetBattleFrame_ButtonDown(id)
+	if ( id > NUM_BATTLE_PET_ABILITIES ) then
+		return;
+	end
+
+	local button = PetBattleFrame.BottomFrame.abilityButtons[id];
+
+	if ( button:GetButtonState() == "NORMAL" ) then
+		button:SetButtonState("PUSHED");
+	end
+	if ( GetCVarBool("ActionButtonUseKeydown") ) then
+		button:Click();
+	end
+end
+
+function PetBattleFrame_ButtonUp(id)
+	if ( id > NUM_BATTLE_PET_ABILITIES ) then
+		return;
+	end
+
+	local button = PetBattleFrame.BottomFrame.abilityButtons[id];
+
+	if ( button:GetButtonState() == "PUSHED" ) then
+		button:SetButtonState("NORMAL");
+		if ( not GetCVarBool("ActionButtonUseKeydown") ) then
+			button:Click();
+		end
+	end
 end
 
 function PetBattleAbilityButton_OnClick(self)
@@ -483,16 +526,18 @@ function PetBattleActionButton_UpdateState(self)
 	end
 end
 
---------------------------------------------
---------Pet Battle Ability Button-----------
---------------------------------------------
+-------------------------------------------------
+-----------Pet Battle Ability Button-------------
+--Only for abilities, not other action buttons---
+-------------------------------------------------
 function PetBattleAbilityButton_OnLoad(self)
 	PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_ABILITY, self:GetID());
+	PetBattleAbilityButton_UpdateHotKey(self);
 end
 
 function PetBattleAbilityButton_UpdateIcons(self)
 	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	local id, name, icon = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
+	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
 	if ( not icon ) then
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark";
 	end
@@ -504,6 +549,21 @@ function PetBattleAbilityButton_UpdateIcons(self)
 		return;
 	end
 	self.Icon:SetTexture(icon);
+
+	-- show Strong/Weak icons on buttons.
+	local enemyPetSlot = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
+	local enemyType = C_PetBattles.GetPetType(LE_BATTLE_PET_ENEMY, enemyPetSlot);
+	local modifier = C_PetBattles.GetAttackModifier(petType, enemyType);
+
+	if (modifier > 1) then
+		self.BetterIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Strong");
+		self.BetterIcon:Show();
+	elseif (modifier < 1) then
+		self.BetterIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Weak");
+		self.BetterIcon:Show();
+	else
+		self.BetterIcon:Hide();
+	end
 end
 
 function PetBattleAbilityButton_OnEnter(self)
@@ -518,6 +578,16 @@ end
 
 function PetBattleAbilityButton_OnLeave(self)
 	PetBattlePrimaryAbilityTooltip:Hide();
+end
+
+function PetBattleAbilityButton_UpdateHotKey(self)
+	local key = GetBindingKey("ACTIONBUTTON"..self:GetID());
+	if ( key ) then
+		self.HotKey:SetText(key);
+		self.HotKey:Show();
+	else
+		self.HotKey:Hide();
+	end
 end
 
 --------------------------------------------
@@ -751,29 +821,6 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		self.XPText:Show();
 		self.Delimiter:SetPoint("TOP", self.XPBG, "BOTTOM", 0, -10);
 		height = height + 18;
-
-		--Show and update abilities
-		self.AbilitiesLabel:Show();
-		for i=1, NUM_BATTLE_PET_ABILITIES do
-			local id, name, texture = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
-			local abilityIcon = self["AbilityIcon"..i];
-			local abilityName = self["AbilityName"..i];
-			abilityIcon:SetTexture(texture);
-			abilityName:SetText(name);
-			abilityIcon:Show();
-			abilityName:Show();
-		end
-
-		--Hide the weak to/resistant to
-		self.WeakToLabel:Hide();
-		self.ResistantToLabel:Hide();
-
-		for _, texture in pairs(self.weakToTextures) do
-			texture:Hide();
-		end
-		for _, texture in pairs(self.resistantToTextures) do
-			texture:Hide();
-		end
 	else
 		--Remove the XP bar
 		self.XPBar:Hide();
@@ -781,6 +828,36 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		self.XPBorder:Hide();
 		self.XPText:Hide();
 		self.Delimiter:SetPoint("TOP", self.HealthBG, "BOTTOM", 0, -10);
+	end
+
+	if ( petOwner == LE_BATTLE_PET_ALLY or C_PetBattles.IsPlayerNPC(petOwner) ) then
+		--Show and update abilities
+		self.AbilitiesLabel:Show();
+		local enemyPetType = C_PetBattles.GetPetType(PetBattleUtil_GetOtherPlayer(petOwner), C_PetBattles.GetActivePet(PetBattleUtil_GetOtherPlayer(petOwner)));
+		for i=1, NUM_BATTLE_PET_ABILITIES do
+			local id, name, icon, maxCooldown, description, numTurns, abilityPetType = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
+
+			local id, name, texture = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
+			local abilityIcon = self["AbilityIcon"..i];
+			local abilityName = self["AbilityName"..i];
+			if ( id ) then
+				local modifier = C_PetBattles.GetAttackModifier(abilityPetType, enemyPetType);
+				if ( modifier < 1 ) then
+					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Weak");
+				elseif ( modifier > 1 ) then
+					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Strong");
+				else
+					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Neutral");
+				end
+				abilityName:SetText(name);
+				abilityIcon:Show();
+				abilityName:Show();
+			else
+				abilityIcon:Hide();
+				abilityName:Hide();
+			end
+		end
+	else
 
 		--Hide abilities
 		self.AbilitiesLabel:Hide();
@@ -788,6 +865,9 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 			self["AbilityIcon"..i]:Hide();
 			self["AbilityName"..i]:Hide();
 		end
+	end
+
+	if ( SHOW_WEAK_AND_RESISTANT ) then
 
 		--Show and update weak to/resistant against
 		self.WeakToLabel:Show();
@@ -830,6 +910,17 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		end
 
 		height = height + 5;
+	else
+		--Hide the weak to/resistant to
+		self.WeakToLabel:Hide();
+		self.ResistantToLabel:Hide();
+
+		for _, texture in pairs(self.weakToTextures) do
+			texture:Hide();
+		end
+		for _, texture in pairs(self.resistantToTextures) do
+			texture:Hide();
+		end
 	end
 
 	self:SetHeight(height);

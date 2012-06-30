@@ -817,6 +817,7 @@
 										<Anchor point="CENTER" relativeTo="$parentRing" x="-1" y="1" />
 									</Anchors>
 								</Texture>
+<!--
 								<FontString name="$parentAbilities" parentKey="coreabilities" inherits="GameFontBlackMedium" justifyH="CENTER" text="CORE_ABILITIES">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="-160"/>
@@ -826,16 +827,24 @@
 								<Texture name="seperator-scrollworkLeft" parentKey="scrollwork_left" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
 									<Size x="104" y="35"/>	
 									<Anchors>
-										<Anchor point="RIGHT" relativeTo="$parentAbilities" relativePoint="LEFT" x="-10" y="3"/>
+										<Anchor point="LEFT" x="60" y="40"/>
 									</Anchors>
 									<TexCoords left="0.00390625" right="0.41015625" top="0.33984375" bottom="0.47656250"/>	
 								</Texture>
 								<Texture name="seperator-scrollworkRight" parentKey="scrollwork_right" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
 									<Size x="104" y="35"/>	
 									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentAbilities" relativePoint="RIGHT" x="10" y="3"/>
+										<Anchor point="RIGHT" x="-60" y="40"/>
 									</Anchors>
 									<TexCoords left="0.41015625" right="0.00390625" top="0.33984375" bottom="0.47656250"/>	
+								</Texture>
+-->
+								<Texture parentKey="Seperator" alpha="0.6">					
+									<Size x="360" y="2"/>
+									<Color r="0.35" g="0.2" b="0.0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-165"/>
+									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>

@@ -853,6 +853,15 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_TOP");
+				GameTooltip:SetText(ACCOUNT_WIDE_ACHIEVEMENT);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
 	</Frame>
 	<Frame name="AchievementAccountIconSmallTemplate" virtual="true" hidden="true">
 		<Size x="20" y="20"/>

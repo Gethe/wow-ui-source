@@ -157,11 +157,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\Challenges\challenges-tempdungeonbg" parentKey="bg">
-							<Size x="560" y="560"/>
+						<Texture file="Interface\Challenges\challenges-background" parentKey="bg">
+							<Size x="332" y="256"/>
 							<Anchors>
-								<Anchor point="TOP" x="112" y="-4" />
+								<Anchor point="TOPLEFT" x="1" y="-3"/>
 							</Anchors>
+							<TexCoords left="0" right="0.6484375" top="0" bottom="0.5"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">

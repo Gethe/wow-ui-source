@@ -296,13 +296,13 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		local level = ...;
 		if (level == SHOW_SPEC_LEVEL) then
 			MicroButtonPulse(self);
-			TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 			TalentMicroButtonAlert:Show();
 		elseif (level == SHOW_TALENT_LEVEL) then
 			MicroButtonPulse(self);
-			TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 			TalentMicroButtonAlert:Show();
 		end
 	elseif ( event == "PLAYER_TALENT_UPDATE") then
@@ -320,3 +320,9 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		self.tooltipText =  MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
 	end
 end
+
+--Micro Button alerts
+function MicroButtonAlert_OnLoad(self)
+	self.Text:SetSpacing(4);
+end
+

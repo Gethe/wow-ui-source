@@ -115,7 +115,7 @@ function TargetFrame_Update (self)
 		end
 		TargetFrame_CheckDead(self);
 		if ( self.showLeader ) then
-			if ( UnitIsGroupLeader(self.unit) and (UnitInParty(self.unit) or UnitInRaid(self.unit)) ) then
+			if ( UnitIsGroupLeader(self.unit) ) then
 				if ( HasLFGRestrictions() ) then
 					self.leaderIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
 					self.leaderIcon:SetTexCoord(0, 0.296875, 0.015625, 0.3125);
@@ -315,16 +315,15 @@ end
 function TargetFrame_CheckBattlePet(self)
 	if ( UnitIsWildBattlePet(self.unit) ) then
 		local petType = UnitBattlePetType(self.unit);
-		TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-NoLevel");
-		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..petType);
+		self.textureFrame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-NoLevel");
+		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.petBattleIcon:Show();
 	elseif ( UnitIsBattlePetCompanion(self.unit) ) then
 		local petType = UnitBattlePetType(self.unit);
-		TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
-		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..petType);
+		self.textureFrame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
+		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.petBattleIcon:Show();
 	else
-		TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
 		self.petBattleIcon:Hide();
 	end
 end
@@ -357,11 +356,11 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	if ( forceNormalTexture ) then
 		self.haveElite = nil;
 		if ( classification == "minus" ) then
-			TargetFrameBackground:SetSize(119,12);
-			TargetFrameBackground:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, 47);
+			self.Background:SetSize(119,12);
+			self.Background:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, 47);
 		else
-			TargetFrameBackground:SetSize(119,25);
-			TargetFrameBackground:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, 35);
+			self.Background:SetSize(119,25);
+			self.Background:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, 35);
 		end
 		if ( self.threatIndicator ) then
 			if ( classification == "minus" ) then
@@ -1188,14 +1187,14 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 			FocusFrame:SetPoint("TOPLEFT", x * SMALL_FOCUS_UPSCALE + 29, (y - GetScreenHeight()) * SMALL_FOCUS_UPSCALE - 13);
 		end
 		FocusFrame:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED");
-		FocusFrame.showClassification = nil;
+		FocusFrame.showClassification = true;
 		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");	
 		FocusFrame.showLeader = nil;
 		FocusFrame.showPVP = nil;
 		FocusFrame.pvpIcon:Hide();
 		FocusFrame.leaderIcon:Hide();
 		FocusFrame.showAuraCount = nil;
-		TargetFrame_CheckClassification(FocusFrame, true);
+--		TargetFrame_CheckClassification(FocusFrame, true);
 		TargetFrame_Update(FocusFrame);
 	elseif ( not smallSize and FocusFrame.smallSize ) then
 		local x = FocusFrame:GetLeft();

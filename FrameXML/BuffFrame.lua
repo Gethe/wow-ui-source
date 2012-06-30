@@ -50,8 +50,8 @@ function BuffFrame_OnEvent(self, event, ...)
 			BuffFrame_Update();
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+		BuffFrame_Update();
 		if ShouldShowConsolidatedBuffFrame() then
-			BuffFrame_Update();
 			ConsolidatedBuffs:Show();
 		else
 			ConsolidatedBuffs:Hide();

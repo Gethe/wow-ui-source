@@ -1226,6 +1226,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad>
+								self:SetMaxBytes(128);
+							</OnLoad>
 							<OnShow>
 								self:SetTextInsets(16, 0, 0, 0);
 								KnowledgeBase_ClearSearch(self)

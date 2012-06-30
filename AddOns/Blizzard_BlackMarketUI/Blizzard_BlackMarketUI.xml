@@ -113,7 +113,7 @@
 					<TexCoords left="0.078125" right="0.75" top="0" bottom="1.0"/>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="187" y="32"/>
+					<Size x="160" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="41" y="0"/>
 					</Anchors>
@@ -223,8 +223,10 @@
 						local parent = self:GetParent();
 						parent:GetHighlightTexture():SetAlpha(1);
 						parent:LockHighlight();
-						GameTooltip:SetOwner(self);
-						GameTooltip:SetText(self.tooltip);
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOP");
+							GameTooltip:SetText(self.tooltip);
+						end
 					</OnEnter>
 					<OnLeave>
 						local parent = self:GetParent();
@@ -725,8 +727,10 @@
 						</Layers>
 						<Scripts>
 							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_TOP");
-								GameTooltip:SetText(self.tooltip);
+								if ( self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_TOP");
+									GameTooltip:SetText(self.tooltip);
+								end
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -875,7 +879,7 @@
 			<Button parentKey="BidButton" inherits="UIPanelButtonTemplate" text="BID">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-255" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="-255" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="BlackMarketBid_OnClick"/>

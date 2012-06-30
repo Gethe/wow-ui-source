@@ -74,7 +74,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentAltCurrencyFrame" inherits="SmallAlterateCurrencyFrameTemplate" hidden="true">
+			<Frame name="$parentAltCurrencyFrame" inherits="SmallAlternateCurrencyFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
 						<Offset>

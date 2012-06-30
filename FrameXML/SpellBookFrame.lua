@@ -1133,7 +1133,7 @@ SPEC_CORE_ABILITY_DISPLAY[253] = {	1978,	34026,	3044,	77767,	53351,			}; --Beast
 SPEC_CORE_ABILITY_DISPLAY[254] = {	1978,	19434,	53209,	3044,	56641,	53351,	}; --Marskmanship
 SPEC_CORE_ABILITY_DISPLAY[255] = {	1978,	3674,	53301,	3044,	77767,	53351,	}; --Survival
 
-SPEC_CORE_ABILITY_DISPLAY[62] = {	11464,	30451,	5143,	44425,	}; --Arcane
+SPEC_CORE_ABILITY_DISPLAY[62] = {	114664,	30451,	5143,	44425,	}; --Arcane
 SPEC_CORE_ABILITY_DISPLAY[63] = {	133,	11129,	108853,	11366,	}; --Fire
 SPEC_CORE_ABILITY_DISPLAY[64] = {	116,	44614,	84714,	30455,	}; --Frost
 
@@ -1364,27 +1364,27 @@ SpellBookFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
 	[1] = { ButtonPos = { x = 250,	y = -50},	HighLightBox = { x = 65, y = -25, width = 460, height = 462 },	ToolTipDir = "DOWN",	ToolTipText = SPELLBOOK_HELP_1 },
-	[2] = { ButtonPos = { x = 515,	y = -30 },	HighLightBox = { x = 530, y = 0, width = 64, height = 110 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
-	[3] = { ButtonPos = { x = 515,	y = -150},	HighLightBox = { x = 530, y = -120, width = 64, height = 205 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_3, MinLevel = 10 },
+	[2] = { ButtonPos = { x = 520,	y = -30 },	HighLightBox = { x = 540, y = -5, width = 46, height = 100 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
+	[3] = { ButtonPos = { x = 520,	y = -150},	HighLightBox = { x = 540, y = -125, width = 46, height = 200 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_3, MinLevel = 10 },
 }
 
 ProfessionsFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 545, height = 500	},
-	[1] = { ButtonPos = { x = 150,	y = -110 }, HighLightBox = { x = 60, y = -35, width = 460, height = 200 }, ToolTipDir = "UP",	ToolTipText = PROFESSIONS_HELP_1 },
+	[1] = { ButtonPos = { x = 150,	y = -110 }, HighLightBox = { x = 60, y = -35, width = 460, height = 195 }, ToolTipDir = "UP",	ToolTipText = PROFESSIONS_HELP_1 },
 	[2] = { ButtonPos = { x = 150,	y = -325}, HighLightBox = { x = 60, y = -235, width = 460, height = 240 }, ToolTipDir = "UP",	ToolTipText = PROFESSIONS_HELP_2 },
 }
 
 CoreAbilitiesFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 450,	y = -50}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
+	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
 }
 
 WhatHasChangedFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 450,	y = -50}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
+	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
 }
 
 function SpellBook_ToggleTutorial()

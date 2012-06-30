@@ -354,7 +354,7 @@
 			<AbsDimension x="0" y="0"/>
 		</PushedTextOffset>
 	</Button>
-	<Frame name="SmallAlterateCurrencyFrameTemplate" virtual="true">
+	<Frame name="SmallAlternateCurrencyFrameTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="128" y="13"/>
 		</Size>

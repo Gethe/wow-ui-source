@@ -10,14 +10,14 @@ WATCHFRAME_ITEM_WIDTH = 33;
 local DASH_NONE = 0;
 local DASH_SHOW = 1;
 local DASH_HIDE = 2;
-local DASH_COMBAT = 3;
-local DASH_CHECK = 4;
+local DASH_ICON = 3;
 local DASH_WIDTH;
 local IS_HEADER = true;
 
 WATCHFRAME_INITIAL_OFFSET = 0;
 WATCHFRAME_TYPE_OFFSET = 10;
 WATCHFRAME_QUEST_OFFSET = 10;
+WATCHFRAME_SCENARIO_LINE_OFFSET = 1;
 
 WATCHFRAMELINES_FONTSPACING = 0;
 WATCHFRAMELINES_FONTHEIGHT = 0;
@@ -210,7 +210,7 @@ local function WatchFrame_ReleaseUnusedQuestLines ()
 end
 
 local scenarioLineIndex = 1;
-local function WatchFrame_GetScenarioLine()
+local function WatchFrame_GetScenarioLine(newParent)
 	local line = WATCHFRAME_SCENARIOLINES[scenarioLineIndex];
 	if ( not line ) then
 		WATCHFRAME_SCENARIOLINES[scenarioLineIndex] = WatchFrame.lineCache:GetFrame();
@@ -218,7 +218,9 @@ local function WatchFrame_GetScenarioLine()
 	end
 
 	line:Reset();
-	line:SetParent(WatchFrameScenarioFrame);
+	if (newParent ) then
+		line:SetParent(newParent);
+	end
 	scenarioLineIndex = scenarioLineIndex + 1;
 	return line;
 end
@@ -232,6 +234,8 @@ local function WatchFrame_ReleaseUnusedScenarioLines()
 	for i = scenarioLineIndex, #WATCHFRAME_SCENARIOLINES do
 		line = WATCHFRAME_SCENARIOLINES[i];
 		line:Hide();
+		line.icon:Hide();
+		line.dash:SetWidth(0);
 		line:SetParent(WatchFrameLines);
 		line.frameCache:ReleaseFrame(line);
 		WATCHFRAME_SCENARIOLINES[i] = nil;
@@ -430,7 +434,6 @@ function WatchFrame_Update (self)
 	WATCHFRAME_NUM_POPUPS = 0;
 	
 	WatchFrame_ResetLinkButtons();
-	
 	for i = 1, #WATCHFRAME_OBJECTIVEHANDLERS do
 		nextAnchor, maxLineWidth, numObjectives, numPopUps = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, nextAnchor, maxHeight, maxFrameWidth);
 		maxWidth = max(maxLineWidth, maxWidth);
@@ -680,12 +683,9 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		line.dash:SetText(QUEST_DASH);
 		line.dash:Hide();
 		usedWidth = DASH_WIDTH;
-	elseif ( dash == DASH_COMBAT ) then
-		line.dash:SetText("|TInterface\\Scenarios\\ScenarioIcon-Combat:16:16:0:1|t");
-		usedWidth = 16;
-	elseif ( dash == DASH_CHECK ) then
-		line.dash:SetText("|TInterface\\Scenarios\\ScenarioIcon-Check:16:16:0:1|t");
-		usedWidth = 16;
+	elseif ( dash == DASH_ICON ) then
+		line.dash:SetWidth(20);
+		usedWidth = 20;
 	end	
 	-- multiple lines
 	if ( hasItem and WATCHFRAME_SETLINES_NUMLINES < 2 ) then
@@ -1754,37 +1754,55 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 	local width = 0;
 	local numObjectives = 0;
 	local numPopups = 0;
-	
+
 	local popupFrame = WatchFrameScenarioPopUpFrame;
 	local name, currentStage, numStages = C_Scenario.GetInfo();
 	if ( currentStage > 0 and currentStage <= numStages ) then
-		popupFrame:SetParent(lineFrame);
-		popupFrame:ClearAllPoints();
-		if (nextAnchor) then
-			popupFrame:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
-		else
-			popupFrame:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET + 4)
-		end
-		popupFrame:Show();
-		local frame = WatchFrameScenarioFrame;
-		nextAnchor = frame;
-		WATCHFRAME_SETLINES_NUMLINES = 0;	-- without a normal header this wouldn't get reset
-		-- step info
 		local stageName, stageDescription, numCriteria = C_Scenario.GetStepInfo();
-		if ( currentStage == numStages ) then
-			frame.stageLevel:SetText(SCENARIO_STAGE_FINAL);
-			frame.finalBg:Show();
+		local inChallengeMode = C_Scenario.IsChallengeMode();
+		local linesParent;		-- if using the scenario header, lines need to be parented to WatchFrameScenarioPopUpFrame
+		if ( not inChallengeMode ) then
+			popupFrame:SetParent(lineFrame);
+			popupFrame:ClearAllPoints();
+			if (nextAnchor) then
+				popupFrame:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+			else
+				popupFrame:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET + 4)
+			end
+			local frame = WatchFrameScenarioFrame;
+			linesParent = WatchFrameScenarioFrame;
+			nextAnchor = frame;
+			-- step info
+			if ( currentStage == numStages ) then
+				frame.stageLevel:SetText(SCENARIO_STAGE_FINAL);
+				frame.finalBg:Show();
+			else
+				frame.stageLevel:SetFormattedText(SCENARIO_STAGE, currentStage);
+				frame.finalBg:Hide();
+			end
+			frame.stageName:SetText(stageName);
+			if ( frame.stageName:GetStringWidth() > frame.stageName:GetWrappedWidth() ) then
+				frame.stageLevel:SetPoint("TOPLEFT", 15, -10);
+			else
+				frame.stageLevel:SetPoint("TOPLEFT", 15, -18);
+			end
+			
+			WATCHFRAME_SETLINES_NUMLINES = 0;	-- have to manually reset this since we're not using a normal header
+			popupFrame:Show();
 		else
-			frame.stageLevel:SetFormattedText(SCENARIO_STAGE, currentStage);
-			frame.finalBg:Hide();
+			local line = WatchFrame_GetScenarioLine();
+			WatchFrame_SetLine(line, _, WATCHFRAMELINES_FONTSPACING - 6, IS_HEADER, stageName, DASH_NONE);
+			line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
+			line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
+			if (nextAnchor) then
+				line:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+			else
+				line:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET);
+			end
+			line:Show();
+			nextAnchor = line;
+			popupFrame:Hide();
 		end
-		frame.stageName:SetText(stageName);
-		if ( frame.stageName:GetStringWidth() > frame.stageName:GetWrappedWidth() ) then
-			frame.stageLevel:SetPoint("TOPLEFT", 15, -10);
-		else
-			frame.stageLevel:SetPoint("TOPLEFT", 15, -18);
-		end
-		WatchFrameScenario_SetProgressDots(currentStage, numStages);
 		-- criteria info
 		local contentHeight = SCENARIO_POPUP_BASE_HEIGHT;
 		local firstLine = true;
@@ -1793,56 +1811,57 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 		for i = 1, numCriteria do
 			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID = C_Scenario.GetCriteriaInfo(i);
 			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-			local line = WatchFrame_GetScenarioLine();
+			local line = WatchFrame_GetScenarioLine(linesParent);
 			if ( not criteriaCompleted ) then
 				if ( firstLine ) then
-					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - 6, not IS_HEADER, criteriaString, DASH_COMBAT);
+					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
 					line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
 					line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
 					firstLine = false;
 				else
-					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, DASH_COMBAT);
+					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
 				end
+				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
 				nextAnchor = line;
 			else
-				WatchFrame_SetLine(line, nextCompleteAnchor, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, DASH_CHECK);
+				WatchFrame_SetLine(line, nextCompleteAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
 				line.text:SetTextColor(0.6, 0.6, 0.6);
 				if ( not firstCompleteAnchor ) then
 					firstCompleteAnchor = line;
 				end
+				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
 				nextCompleteAnchor = line;
 			end
+			line.icon:Show();
 			line:Show();
-			contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING;
+			contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING + WATCHFRAME_SCENARIO_LINE_OFFSET;
 		end
 		-- reanchor completed lines
 		if ( firstCompleteAnchor ) then
 			-- anchor first complete line to last incomplete line
-			local yOffset = WATCHFRAMELINES_FONTSPACING;
-			if ( firstLine ) then
-				yOffset = yOffset - 6;
-			end
-			firstCompleteAnchor:SetPoint("TOP", nextAnchor, "BOTTOM", 0, yOffset);
+			firstCompleteAnchor:SetPoint("TOP", nextAnchor, "BOTTOM", 0, WATCHFRAMELINES_FONTSPACING);
 			firstCompleteAnchor:SetPoint("RIGHT", nextAnchor, "RIGHT", 0, 0);
 			firstCompleteAnchor:SetPoint("LEFT", nextAnchor, "LEFT", 0, 0);
 			-- update what the last anchor frame is
 			nextAnchor = nextCompleteAnchor;
 		end
-
-		WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].height = contentHeight;
-		WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].scrollStart = contentHeight;
-		-- slide in only if new stage
-		if ( popupFrame.stage == currentStage ) then
-			popupFrame:SetHeight(contentHeight);
-		else
-			WatchFrame_SlideInFrame(popupFrame, "SCENARIO");
+		
+		if ( not inChallengeMode ) then
+			WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].height = contentHeight;
+			WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].scrollStart = contentHeight;
+			-- slide in only if new stage
+			if ( popupFrame.stage == currentStage ) then
+				popupFrame:SetHeight(contentHeight);
+			else
+				WatchFrame_SlideInFrame(popupFrame, "SCENARIO");
+			end
+			popupFrame.stage = currentStage;
+			-- set up return values
+			width = frame:GetWidth();
+			numPopups = 1;
+			nextAnchor = popupFrame;
 		end
-		popupFrame.stage = currentStage;
-		-- done
-		width = frame:GetWidth();
 		numObjectives = 1;
-		numPopups = 1;
-		nextAnchor = popupFrame;
 	else
 		popupFrame:Hide();
 		popupFrame.stage = 0;
@@ -1850,51 +1869,6 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 
 	WatchFrame_ReleaseUnusedScenarioLines();
 	return nextAnchor, width, numObjectives, numPopups;
-end
-
-function WatchFrameScenario_SetProgressDots(currentStage, numStages)
-	local frame = WatchFrameScenarioFrame;
-	local xOffset = (numStages - 1) * -9;	-- want the dots centered
-	frame.stage1:SetPoint("CENTER", WatchFrameScenarioFrame, "BOTTOM", xOffset, 3);
-	-- create new stage textures if needed
-	for i = frame.numTexStages + 1, numStages do
-		local texture = frame:CreateTexture(nil, "ARTWORK");
-		texture:SetTexture("Interface\\Scenarios\\ScenariosParts");
-		texture:SetPoint("CENTER", frame["stage"..(i - 1)], "CENTER", 18, 0);
-		frame["stage"..i] = texture;
-	end
-	frame.numTexStages = max(frame.numTexStages, numStages);
-	-- set stages
-	for i = 1, frame.numTexStages do
-		local texture = frame["stage"..i];
-		if ( i > numStages ) then
-			texture:Hide();
-		else
-			local stageState;	--  -1 = past, 0 = current, 1 = future
-			if ( i < currentStage ) then
-				stageState = -1;
-			elseif ( i == currentStage ) then
-				stageState = 0;
-			else
-				stageState = 1;
-			end
-			-- change texture if different stage
-			if ( texture.stage ~= stageState ) then
-				if ( stageState == - 1 ) then
-					texture:SetTexCoord(0.00195313, 0.01757813, 0.00195313, 0.01757813);
-					texture:SetSize(8, 8);
-				elseif ( stageState == 0 ) then
-					texture:SetTexCoord(0.02539063, 0.07617188, 0.02148438, 0.07226563);
-					texture:SetSize(26, 26);
-				else
-					texture:SetTexCoord(0.00195313, 0.02148438, 0.02148438, 0.04101563);
-					texture:SetSize(10, 10);
-				end
-				texture.stage = stageState;
-			end
-			texture:Show();
-		end
-	end
 end
 
 --------------------------------------------------------------------------------------------

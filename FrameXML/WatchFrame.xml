@@ -149,11 +149,11 @@
 		<Size x="150" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" hidden="true">
+				<Texture name="$parentIcon" hidden="true" parentKey="icon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT">
-							<Offset x="-3" y="-1"/>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="-1"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -172,17 +172,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
-					<Size x="26" y="26"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
-				</Texture>
-			</Layer>
+
 		</Layers>
 		<Scripts>
 			<OnLoad>
@@ -506,10 +496,10 @@
 	</Frame>
 
 	<ScrollFrame name="WatchFrameScenarioPopUpFrame" hidden="true">
-		<Size x="201" y="77"/>
+		<Size x="201" y="83"/>
 		<ScrollChild>
 			<Frame name="WatchFrameScenarioFrame" enableMouse="true">
-				<Size x="201" y="77"/>
+				<Size x="201" y="83"/>
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
@@ -518,7 +508,7 @@
 						<Texture file="Interface\Scenarios\ScenariosParts" parentKey="bg">
 							<Size x="201" y="77"/>
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="TOP" x="0" y="0"/>
 							</Anchors>
 							<TexCoords left="0.12304688" right="0.51562500" top="0.35156250" bottom="0.50195313"/>
 						</Texture>
@@ -527,7 +517,7 @@
 						<Texture file="Interface\Scenarios\ScenariosParts" parentKey="finalBg">
 							<Size x="193" y="69"/>
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="TOP" x="0" y="-4"/>
 							</Anchors>
 							<TexCoords left="0.12304688" right="0.50000000" top="0.14062500" bottom="0.27539063"/>
 						</Texture>
@@ -552,13 +542,6 @@
 							</Anchors>
 							<Color r="1" g="0.831" b="0.380"/>
 						</FontString>
-						<Texture file="Interface\Scenarios\ScenariosParts" parentKey="stage1">
-							<Size x="8" y="8"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="3"/>
-							</Anchors>
-							<TexCoords left="0.00195313" right="0.01757813" top="0.00195313" bottom="0.01757813"/>
-						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -569,8 +552,11 @@
 						GameTooltip:SetOwner(self, "ANCHOR_NONE");
 						GameTooltip:ClearAllPoints();
 						GameTooltip:SetPoint("RIGHT", self, "LEFT", 0, 0);
+						local _, currentStage, numStages = C_Scenario.GetInfo();
 						local name, description = C_Scenario.GetStepInfo();
-						GameTooltip:SetText(name, 1, 0.831, 0.380, 1);
+						GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
+						GameTooltip:AddLine(name, 1, 0.831, 0.380, 1);
+						GameTooltip:AddLine(" ");
 						GameTooltip:AddLine(description, 1, 1, 1, 1);
 						GameTooltip:Show();
 					</OnEnter>

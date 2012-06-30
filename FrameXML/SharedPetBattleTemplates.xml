@@ -68,6 +68,11 @@ UI.xsd">
 						<Anchor point="LEFT" relativeKey="$parent.StrongAgainstLabel" relativePoint="RIGHT" x="5" y="-2"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="StrongAgainstType1Label" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StrongAgainstType1" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
 				<Texture parentKey="Delimiter2">
 					<Size x="251" y="2"/>
 					<Anchors>
@@ -91,6 +96,11 @@ UI.xsd">
 						<Anchor point="LEFT" relativeKey="$parent.WeakAgainstLabel" relativePoint="RIGHT" x="5" y="-2"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="WeakAgainstType1Label" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.WeakAgainstType1" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
