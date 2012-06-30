@@ -81,7 +81,7 @@ end
 function LootHistoryFrame_GetPlayerFrame(self)
 	local frame = table.remove(self.unusedPlayerFrames);
 	if ( not frame ) then
-		frame = CreateFrame("FRAME", nil, self.ScrollFrame.ScrollChild, "LootHistoryPlayerTemplate");
+		frame = CreateFrame("BUTTON", nil, self.ScrollFrame.ScrollChild, "LootHistoryPlayerTemplate");
 	end
 	table.insert(self.usedPlayerFrames, frame);
 	return frame;
@@ -120,7 +120,7 @@ function LootHistoryFrame_SetRollExpanded(self, rollID, isExpanded)
 end
 
 function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
-	local rollID, itemLink, numPlayers, isDone, winnerIdx = C_LootHistory.GetItem(itemFrame.itemIdx);
+	local rollID, itemLink, numPlayers, isDone, winnerIdx, isMasterLoot = C_LootHistory.GetItem(itemFrame.itemIdx);
 	local expanded = self.expandedRolls[rollID];
 
 	if ( expanded ) then
@@ -188,9 +188,13 @@ function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
 			itemFrame.WinnerRoll:Hide();
 			itemFrame.WinnerRollType:Show();
 			itemFrame.WinnerName:Hide();
-			itemFrame.WinnerRollType:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
 			itemFrame.WinnerRollType:ClearAllPoints();
 			itemFrame.WinnerRollType:SetPoint("BOTTOMRIGHT", itemFrame.NameBorderRight, "BOTTOMRIGHT", -2, 1);
+			if ( isMasterLoot ) then
+				itemFrame.WinnerRollType:SetTexture("Interface\\RaidFrame\\ReadyCheck-Ready");
+			else
+				itemFrame.WinnerRollType:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+			end
 		end
 	else
 		itemFrame.ItemName:SetPoint("BOTTOMRIGHT", itemFrame.NameBorderRight, "BOTTOMRIGHT", -2, 2);
@@ -288,3 +292,52 @@ function LootHistoryFrame_OpenToRoll(self, requestedRollID, errorTarget)
 	UIErrorsFrame:AddMessage(ERR_LOOT_HISTORY_EXPIRED, 1.0, 0.1, 0.1, 1.0);
 end
 
+function LootHistoryPlayerFrame_OnClick(self, button)
+	if ( C_LootHistory.CanMasterLoot(self.itemIdx, self.playerIdx) ) then
+		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
+		MasterLooterFrame:Hide();
+		LootHistoryDropDown.itemIdx = self.itemIdx;
+		LootHistoryDropDown.playerIdx = self.playerIdx;
+		ToggleDropDownMenu(1, nil, LootHistoryDropDown, "cursor", 0, 0);
+	end
+end
+
+function LootHistoryDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, nil, "MENU");
+	self.initialize = LootHistoryDropDown_Initialize;
+end
+
+function LootHistoryDropDown_Initialize(self)
+	local info = UIDropDownMenu_CreateInfo();
+	info.isTitle = 1;
+	info.text = MASTER_LOOTER;
+	info.fontObject = GameFontNormalLeft;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+	
+	info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = 1;
+	local name, class = C_LootHistory.GetPlayerInfo(self.itemIdx, self.playerIdx);
+	local classColor = RAID_CLASS_COLORS[class];
+	local colorCode = string.format("|cFF%02x%02x%02x",  classColor.r*255,  classColor.g*255,  classColor.b*255);
+	info.text = string.format(MASTER_LOOTER_GIVE_TO, colorCode..name.."|r");
+	info.func = LootHistoryDropDown_OnClick;
+	UIDropDownMenu_AddButton(info);
+end
+
+function LootHistoryDropDown_OnClick()
+	local _, itemLink = C_LootHistory.GetItem(LootHistoryDropDown.itemIdx);
+	if ( itemLink ) then
+		local itemName, itemLink, itemRarity = GetItemInfo(itemLink);
+		if ( itemRarity >= MASTER_LOOT_THREHOLD ) then
+			local playerName = C_LootHistory.GetPlayerInfo(LootHistoryDropDown.itemIdx, LootHistoryDropDown.playerIdx);
+			StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE, playerName, "LootHistory");
+		else
+			LootHistoryDropDown_GiveMasterLoot();
+		end
+	end
+end
+
+function LootHistoryDropDown_GiveMasterLoot()
+	C_LootHistory.GiveMasterLoot(LootHistoryDropDown.itemIdx, LootHistoryDropDown.playerIdx);
+end

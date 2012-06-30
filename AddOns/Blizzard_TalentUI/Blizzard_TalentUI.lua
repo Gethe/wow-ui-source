@@ -82,6 +82,17 @@ StaticPopupDialogs["CONFIRM_LEARN_SPEC"] = {
 	exclusive = 1,
 }
 
+StaticPopupDialogs["CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS"] = {
+	text = CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) HideParentPanel(self.data); end,
+	OnCancel = function (self)
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 0,
+}
 
 
 UIPanelWindows["PlayerTalentFrame"] = { area = "left", pushable = 1, whileDead = 1, width = 666, height = 488 };
@@ -327,6 +338,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self.talentGroup = 1;
 	self.hasBeenShown = false;
 	self.selectedPlayerSpec = DEFAULT_TALENT_SPEC;
+	self.onCloseCallback = PlayerTalentFrame_OnClickClose;
 
 	local _, playerClass = UnitClass("player");
 	if (playerClass == "HUNTER") then
@@ -434,6 +446,19 @@ function PlayerTalentFrame_OnHide()
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
 		StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
+	end
+end
+
+function PlayerTalentFrame_OnClickClose(self)
+	if (GetNumUnspentTalents() > 0) then
+		local dialog = StaticPopup_Show("CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS");
+		if ( dialog ) then
+			dialog.data = self;
+		else
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+		end
+	else
+		HideParentPanel(self);
 	end
 end
 
@@ -680,17 +705,17 @@ end
 PlayerSpecFrame_HelpPlate = {
 	FramePos = { x = 0,	y = -22 },
 	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 88,	y = -22 }, HighLightBox = { x = 0, y = -20, width = 220, height = 400 }, ToolTipDir = "UP",		ToolTipText = "These are the specializations for your class." },
-	[2] = { ButtonPos = { x = 570,	y = -22 }, HighLightBox = { x = 216, y = 2, width = 430, height = 422 }, ToolTipDir = "RIGHT",	ToolTipText = "The specialization you learn affects what base abilities you get." },
-	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 260, y = -410, width = 125, height = 40 }, ToolTipDir = "RIGHT",	ToolTipText = "Clicking \"LEARN\" will finalize your choice.\n|cFFFF0000You can always unlearn at your class trainer.|r" },
+	[1] = { ButtonPos = { x = 88,	y = -22 }, HighLightBox = { x = 0, y = -20, width = 220, height = 400 },	ToolTipDir = "UP",		ToolTipText = SPEC_FRAME_HELP_1 },
+	[2] = { ButtonPos = { x = 570,	y = -22 }, HighLightBox = { x = 216, y = 2, width = 430, height = 422 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_2 },
+	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 260, y = -410, width = 125, height = 40 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_3 },
 }
 
 PlayerTalentFrame_HelpPlate = {
 	FramePos = { x = 0,	y = -22 },
 	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 0, y = -40, width = 645, height = 78 }, ToolTipDir = "UP",		ToolTipText = "You can only choose one talent per row." },
-	[2] = { ButtonPos = { x = 20,	y = -207 }, HighLightBox = { x = 0, y = -108, width = 645, height = 315 }, ToolTipDir = "RIGHT",		ToolTipText = "You willl unlock more talent rows as you gain levels.\n\n|cFFFF0000You can always unlearn them at your class trainer.|r" },
-	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 260, y = -410, width = 125, height = 40 }, ToolTipDir = "RIGHT",	ToolTipText = "Clicking \"LEARN\" will finalize your choice.\n\n|cFFFF0000You can always unlearn at your class trainer.|r" },
+	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 0, y = -40, width = 645, height = 78 },		ToolTipDir = "UP",		ToolTipText = TALENT_FRAME_HELP_1 },
+	[2] = { ButtonPos = { x = 20,	y = -207 }, HighLightBox = { x = 0, y = -108, width = 645, height = 315 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_2 },
+	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 260, y = -410, width = 125, height = 40 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_3 },
 }
 
 function PlayerTalentFrame_ToggleTutorial()
@@ -1199,8 +1224,8 @@ function SpecButton_OnEnter(self)
 	if ( not self.selected ) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
 		GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		if ( self.disabled ) then
-			GameTooltip:AddLine("You can change your sepecialization at your class trainer", RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	if ( self.displayTrainerTooltip ) then
+			GameTooltip:AddLine(TALENT_SPEC_CHANGE_AT_CLASS_TRAINER, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		end
 		GameTooltip:SetMinimumWidth(300, true);
 		GameTooltip:Show();
@@ -1222,7 +1247,8 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	local playerTalentSpec = GetSpecialization(nil, self.isPet, specs[selectedSpec].talentGroup);
 	local shownSpec = spec or playerTalentSpec or 1;
 	local numSpecs = GetNumSpecializations(nil, self.isPet);
-
+	local petNotActive = self.isPet and not IsPetActive();
+	
 	-- do spec buttons
 	for i = 1, numSpecs do
 		local button = self["specButton"..i];
@@ -1245,6 +1271,10 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 			button.bg:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
 			disable = true;
 		end
+		
+		if ( petNotActive ) then
+			disable = true;
+		end
 
 		if ( disable and not button.disabled ) then
 			button.disabled = true;
@@ -1258,6 +1288,16 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 			SetDesaturation(button.roleIcon, false);
 			SetDesaturation(button.ring, false);
 			button.specName:SetFontObject("GameFontNormal");
+		end
+		
+		if ( button.disabled ) then
+			if ( petNotActive) then
+				button.displayTrainerTooltip = false;
+			else
+				button.displayTrainerTooltip = true;
+			end
+		else
+			button.displayTrainerTooltip = false;
 		end
 	end
 	
@@ -1274,7 +1314,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	scrollChild.roleName:SetText(_G[role1]);
 	scrollChild.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
 	-- disable stuff if not in active spec or have picked a specialization and not looking at it
-	local disable = (selectedSpec ~= activeSpec) or ( playerTalentSpec and shownSpec ~= playerTalentSpec );
+	local disable = (selectedSpec ~= activeSpec) or ( playerTalentSpec and shownSpec ~= playerTalentSpec ) or petNotActive;
 	if ( disable and not self.disabled ) then
 		self.disabled = true;
 		self.bg:SetDesaturated(true);

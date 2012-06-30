@@ -112,7 +112,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="LootHistoryPlayerTemplate" virtual="true">
+	<Button name="LootHistoryPlayerTemplate" virtual="true">
 		<Size x="177" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -151,7 +151,13 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("RightButtonUp");
+			</OnLoad>
+			<OnClick function="LootHistoryPlayerFrame_OnClick"/>
+		</Scripts>
+	</Button>
 	<Frame name="LootHistoryFrame" movable="true" resizable="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBorderedFrameTemplate" hidden="true">
 		<Size x="210" y="175"/>
 		<Anchors>
@@ -249,4 +255,12 @@
 			<OnEvent function="LootHistoryFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
+	<Frame name="LootHistoryDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="LootHistoryDropDown_OnLoad"/>
+		</Scripts>
+	</Frame>	
 </Ui>

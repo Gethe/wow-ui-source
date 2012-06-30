@@ -2585,6 +2585,9 @@
 						<Offset x="4" y="5"/>
 					</Anchor>
 				</Anchors>
+				<Scripts>
+					<OnClick function="PortraitFrameCloseButton_OnClick" />
+				</Scripts>
 			</Button>
 		</Frames>
 	</Frame>

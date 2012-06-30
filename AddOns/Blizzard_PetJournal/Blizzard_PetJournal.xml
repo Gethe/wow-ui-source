@@ -508,7 +508,7 @@
 			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetBattlePetAbilityHyperlink(self.abilityID));
+					HandleModifiedItemClick(PetJournal_GetPetAbilityHyperlink(self.abilityID, self.petID));
 				elseif ( self.enabled ) then
 					PetJournal_ShowPetSelect(self);
 				end
@@ -596,7 +596,7 @@
 				<FontString name="$parentAbilitiesLabel" inherits="GameFontNormal" justifyH="CENTER" text="ABILITIES" parentKey="abilitiesLabel">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" x="-55" y="-70"/>
+						<Anchor point="TOP" x="-55" y="-78"/>
 					</Anchors>
 					<Color r="0.902" g="0.788" b="0.671"/>
 				</FontString>
@@ -619,14 +619,14 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString name="$parentSlotInfo" inherits="GameFontNormal" text="BATTLE_PET_SLOT_1" justifyH="LEFT" parentKey="slotinfo">
-							<Size x="210" y="12"/>
+						<FontString name="$parentSlotInfo" inherits="GameFontNormal" text="BATTLE_PET_SLOT" justifyH="LEFT" parentKey="slotinfo">
+							<Size x="343" y="12"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent" x="57" y="-15"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentSlotLocked" inherits="GameFontHighlightLarge" text="PET_STABLE_SLOT_LOCKED" justifyH="LEFT" parentKey="slotlock">
-							<Size x="210" y="12"/>
+							<Size x="343" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentSlotInfo" x="0" y="-2"/>
 							</Anchors>
@@ -673,10 +673,68 @@
 					</Button>
 				</Frames>
 			</PlayerModel>
-			<StatusBar name="$parentStatusBar" parentKey="xpBar">
+			<StatusBar name="$parenthealthStatusBar" parentKey="healthBar">
 				<Size x="165" y="11"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="16" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentRank" inherits="TextStatusBarText" parentKey ="healthRankText" text="0/0">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentLeft" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"  x="9" y="0"/>
+							</Anchors>
+							<Size x="11" y="11"/>
+							<TexCoords left="0.73339844" right="0.74414063" top="0.12402344" bottom="0.13476563"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"  x="-9" y="0"/>
+							</Anchors>
+							<Size x="11" y="11"/>	
+							<TexCoords left="0.98828125" right="0.99902344" top="0.01367188" bottom="0.02441406"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.98828125" right="0.99902344" top="0.00097656" bottom="0.01171875"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBGMiddle" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="2"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="-2"/>
+							</Anchors>
+							<TexCoords left="0.73339844" right="0.74414063" top="0.11132813" bottom="0.12207031"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentHealthBar" file="Interface\TargetingFrame\UI-StatusBar" />
+				<BarColor r="0.1" g="1.0" b="0.1" />
+				<Scripts>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="$parentStatusBar" parentKey="xpBar">
+				<Size x="165" y="11"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parenthealthStatusBar" x="0" y="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -733,7 +791,7 @@
 			</StatusBar>
 			<CheckButton name="$parentSpell1" inherits="CompanionLoadOutSpellTemplate" id="1" parentKey="spell1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-100"/>
+					<Anchor point="TOPLEFT" x="70" y="-108"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentSpell2" inherits="CompanionLoadOutSpellTemplate" id="2" parentKey="spell2">
@@ -800,6 +858,28 @@
 					<OnDragStart function="PetJournalDragButton_OnDragStart"/>
 				</Scripts>
 			</Button>
+			<Frame name="$parentEmptySlot" parentKey="emptyslot">
+				<Size x="401" y="166"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentSlotInfo" inherits="GameFontNormal" parentKey ="slot" text="BATTLE_PET_SLOT" justifyH="LEFT">
+							<Size x="343" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="57" y="-15"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentDragHere" inherits="GameFontHighlight" parentKey ="draghere" text="BATTLE_PET_SLOT_DRAG_HERE" justifyH="LEFT">
+							<Size x="343" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentSlotInfo" relativePoint="BOTTOM" x="0" y="-2" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -852,7 +932,7 @@
 			</OnLeave>			
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetBattlePetAbilityHyperlink(self.abilityID));
+					HandleModifiedItemClick(PetJournal_GetPetAbilityHyperlink(self.abilityID, self.petID));
 				end
 			</OnClick>
 		</Scripts>
@@ -1034,7 +1114,7 @@
 			<Frame parentKey="statsFrame">
 				<Size x="70" y="100"/>	
 				<Anchors>
-					<Anchor point="LEFT" x="10" y="-5"/>
+					<Anchor point="LEFT" x="10" y="-25"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1044,23 +1124,10 @@
 								<Anchor point="TOPLEFT" x="0" y="15"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentHealthTex" file="Interface\PetBattles\PetBattle-StatIcons">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
-						</Texture>
-						<FontString name="$parentHealthValue" inherits="GameFontHighlight" parentKey="healthValue" text="99">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentHealthTex" x="5" y="0"/>
-							</Anchors>
-						</FontString>
 						<Texture name="$parentAttackTex" file="Interface\PetBattles\PetBattle-StatIcons">
 							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHealthTex" x="0" y="-4"/>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.5" top="0.0" bottom="0.5"/>
 						</Texture>
@@ -1109,10 +1176,89 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<StatusBar name="$parentStatusBar" parentKey="xpBar">
+			<StatusBar name="$parentHealthStatusBar" parentKey="healthBar">
 				<Size x="130" y="11"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="14" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\PetBattles\PetJournal">
+							<Size x="7" y="7"/>	
+							<Anchors>
+								<Anchor point="LEFT" x="30" y="0"/>
+							</Anchors>
+							<TexCoords left="0.74609375" right="0.75292969" top="0.11132813" bottom="0.11816406"/>	
+						</Texture>
+						<Texture file="Interface\PetBattles\PetJournal">
+							<Size x="7" y="7"/>	
+							<Anchors>
+								<Anchor point="LEFT" x="60" y="0"/>
+							</Anchors>
+							<TexCoords left="0.74609375" right="0.75292969" top="0.11132813" bottom="0.11816406"/>	
+						</Texture>
+						<Texture file="Interface\PetBattles\PetJournal">
+							<Size x="7" y="7"/>	
+							<Anchors>
+								<Anchor point="LEFT" x="90" y="0"/>
+							</Anchors>
+							<TexCoords left="0.74609375" right="0.75292969" top="0.11132813" bottom="0.11816406"/>	
+						</Texture>
+						<FontString name="$parentHealthRank" inherits="TextStatusBarText" parentKey ="healthRankText" text="0/0">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentLeft" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"  x="9" y="0"/>
+							</Anchors>
+							<Size x="11" y="11"/>
+							<TexCoords left="0.73339844" right="0.74414063" top="0.12402344" bottom="0.13476563"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"  x="-9" y="0"/>
+							</Anchors>
+							<Size x="11" y="11"/>	
+							<TexCoords left="0.98828125" right="0.99902344" top="0.01367188" bottom="0.02441406"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.98828125" right="0.99902344" top="0.00097656" bottom="0.01171875"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBGMiddle" file="Interface\PetBattles\PetJournal">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="2"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="-2"/>
+							</Anchors>
+							<TexCoords left="0.73339844" right="0.74414063" top="0.11132813" bottom="0.12207031"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" file="Interface\TargetingFrame\UI-StatusBar" />
+				<BarColor r="0.1" g="1.0" b="0.1" />
+				<Scripts>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="$parentStatusBar" parentKey="xpBar">
+				<Size x="130" y="11"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHealthStatusBar" x="0" y="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1323,7 +1469,7 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetBattlePetAbilityHyperlink(self.abilityID));
+					HandleModifiedItemClick(PetJournal_GetPetAbilityHyperlink(self.abilityID, self.petID));
 				else
 					C_PetJournal.SetAbility(self.slotIndex, self.abilityIndex, self.abilityID);
 					PetJournal_UpdatePetLoadOut();
@@ -1534,6 +1680,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" x="39" y="20" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PetJournal_ToggleTutorial();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="LeftInset">
 				<Size x="260" y="496"/>
 				<Anchors>

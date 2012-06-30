@@ -380,7 +380,7 @@ end
 function ActionButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
 	local action = self.action;
-	if ( IsConsumableAction(action) or IsStackableAction(action) ) then
+	if ( IsConsumableAction(action) or IsStackableAction(action) or GetActionCount(action) > 0 ) then
 		local count = GetActionCount(action);
 		if ( count > (self.maxDisplayCount or 9999 ) ) then
 			text:SetText("*");

@@ -257,10 +257,13 @@ function TargetFrame_CheckLevel (self)
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
-	elseif ( UnitIsBattlePet(self.unit) ) then
+	elseif ( UnitIsWildBattlePet(self.unit) ) then
+		self.levelText:Hide();
+		self.highLevelTexture:Hide();
+	elseif ( UnitIsBattlePetCompanion(self.unit) ) then
 		local petLevel = UnitBattlePetLevel(self.unit);
 		self.levelText:SetVertexColor(1.0, 0.82, 0.0);
-		self.levelText:SetText( petLevel.."-");
+		self.levelText:SetText( petLevel );
 		self.levelText:Show();
 		self.highLevelTexture:Hide();
 	elseif ( targetLevel > 0 ) then
@@ -310,11 +313,18 @@ function TargetFrame_CheckFaction (self)
 end
 
 function TargetFrame_CheckBattlePet(self)
-	if ( UnitIsBattlePet(self.unit) ) then
+	if ( UnitIsWildBattlePet(self.unit) ) then
 		local petType = UnitBattlePetType(self.unit);
+		TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-NoLevel");
+		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..petType);
+		self.petBattleIcon:Show();
+	elseif ( UnitIsBattlePetCompanion(self.unit) ) then
+		local petType = UnitBattlePetType(self.unit);
+		TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
 		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..petType);
 		self.petBattleIcon:Show();
 	else
+		TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
 		self.petBattleIcon:Hide();
 	end
 end

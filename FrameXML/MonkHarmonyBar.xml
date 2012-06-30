@@ -3,20 +3,20 @@
   <Script file="MonkHarmonyBar.lua"/>
 
 	<Texture name="MonkUI-background-shadow" file="Interface\PlayerFrame\MonkUI" virtual="true" >
-		<Size x="164" y="50"/>
-		<TexCoords left="0.00390625" right="0.64453125" top="0.00781250" bottom="0.39843750"/>
+		<Size x="136" y="43"/>
+		<TexCoords left="0.00390625" right="0.53515625" top="0.00781250" bottom="0.34375000"/>
 	</Texture>
 	<Texture name="MonkUI-background" file="Interface\PlayerFrame\MonkUI" virtual="true" >
-		<Size x="164" y="50"/>
-		<TexCoords left="0.00390625" right="0.64453125" top="0.41406250" bottom="0.80468750"/>
+		<Size x="136" y="43"/>
+		<TexCoords left="0.00390625" right="0.53515625" top="0.35937500" bottom="0.69531250"/>
 	</Texture>
 	<Texture name="MonkUI-LightOrb" file="Interface\PlayerFrame\MonkUI" virtual="true" >
 		<Size x="21" y="21"/>
-		<TexCoords left="0.00390625" right="0.08593750" top="0.82031250" bottom="0.98437500"/>
+		<TexCoords left="0.00390625" right="0.08593750" top="0.71093750" bottom="0.87500000"/>
 	</Texture>
 	<Texture name="MonkUI-OrbOff" file="Interface\PlayerFrame\MonkUI" virtual="true" >
 		<Size x="21" y="21"/>
-		<TexCoords left="0.09375000" right="0.17578125" top="0.82031250" bottom="0.98437500"/>
+		<TexCoords left="0.09375000" right="0.17578125" top="0.71093750" bottom="0.87500000"/>
 	</Texture>
  
 	<Frame name="MonkLightEnergyTemplate" virtual="true">
@@ -86,7 +86,7 @@
 		</Animations>
 		<Size x="1" y="60"/>
 		<Anchors>
-			<Anchor point="TOP" x="50" y="-45"/>
+			<Anchor point="TOP" x="49" y="-46"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -107,22 +107,22 @@
 		<Frames>
 			<Frame name="$parentLightEnergy1" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy1">
 				<Anchors>
-					<Anchor point="LEFT" x="-44" y="-1"/>
+					<Anchor point="LEFT" x="-43" y="1"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentLightEnergy2" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLightEnergy1" relativePoint="RIGHT" x="6" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentLightEnergy1" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentLightEnergy3" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLightEnergy2" relativePoint="RIGHT" x="6" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentLightEnergy2" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentLightEnergy4" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLightEnergy3" relativePoint="RIGHT" x="6" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentLightEnergy3" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentLightEnergy5" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy5" hidden="true">

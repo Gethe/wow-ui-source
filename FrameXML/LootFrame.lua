@@ -84,7 +84,7 @@ function LootFrame_OnEvent(self, event, ...)
 		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0);
 		return;
 	elseif ( event == "UPDATE_MASTER_LOOT_LIST" ) then
-		UIDropDownMenu_Refresh(GroupLootDropDown);
+		MasterLooterFrame_UpdatePlayers();
 	end
 end
 
@@ -246,17 +246,19 @@ function LootFrame_OnHide()
 	CloseLoot();
 	-- Close any loot distribution confirmation windows
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
+	MasterLooterFrame:Hide();
 end
 
 function LootButton_OnClick(self, button)
 	-- Close any loot distribution confirmation windows
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
-	
+	MasterLooterFrame:Hide();
+
 	LootFrame.selectedLootButton = self:GetName();
 	LootFrame.selectedSlot = self.slot;
 	LootFrame.selectedQuality = self.quality;
 	LootFrame.selectedItemName = _G[self:GetName().."Text"]:GetText();
-
+	LootFrame.selectedTexture = _G[self:GetName().."IconTexture"]:GetTexture();
 	LootSlot(self.slot);
 end
 
@@ -365,79 +367,21 @@ function GroupLootDropDown_OnLoad(self)
 end
 
 function GroupLootDropDown_Initialize()
-	local candidate;
 	local info = UIDropDownMenu_CreateInfo();
+	info.isTitle = 1;
+	info.text = MASTER_LOOTER;
+	info.fontObject = GameFontNormalLeft;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
 	
-	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
-		local lastIndex = UIDROPDOWNMENU_MENU_VALUE + 5 - 1;
-		for i=UIDROPDOWNMENU_MENU_VALUE, lastIndex do
-			candidate = GetMasterLootCandidate(LootFrame.selectedSlot, i);
-			if ( candidate ) then
-				-- Add candidate button
-				info.text = candidate;
-				info.fontObject = GameFontNormalLeft;
-				info.value = i;
-				info.notCheckable = 1;
-				info.func = GroupLootDropDown_GiveLoot;
-				UIDropDownMenu_AddButton(info,UIDROPDOWNMENU_MENU_LEVEL);
-			end
-		end
-		return;
-	end
-	
-	if ( IsInRaid() ) then
-		-- In a raid
-		info.isTitle = 1;
-		info.text = GIVE_LOOT;
-		info.fontObject = GameFontNormalLeft;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-
-		for i=1, 40, 5 do
-			for j=i, i+4 do
-				candidate = GetMasterLootCandidate(LootFrame.selectedSlot, j);
-				if ( candidate ) then
-					-- Add raid group
-					info.isTitle = nil;
-					info.text = GROUP.." "..ceil(i/5);
-					info.fontObject = GameFontNormalLeft;
-					info.hasArrow = 1;
-					info.notCheckable = 1;
-					info.value = j;
-					info.func = nil;
-					UIDropDownMenu_AddButton(info);
-					break;
-				end
-			end
-		end
-	else
-		-- In a party
-		for i=1, MAX_PARTY_MEMBERS+1, 1 do
-			candidate = GetMasterLootCandidate(LootFrame.selectedSlot, i);
-			if ( candidate ) then
-				-- Add candidate button
-				info.text = candidate;
-				info.fontObject = GameFontNormalLeft;
-				info.value = i;
-				info.notCheckable = 1;
-				info.value = i;
-				info.func = GroupLootDropDown_GiveLoot;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-	end
-end
-
-function GroupLootDropDown_GiveLoot(self)
-	if ( LootFrame.selectedQuality >= MASTER_LOOT_THREHOLD ) then
-		local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE, self:GetText());
-		if ( dialog ) then
-			dialog.data = self.value;
-		end
-	else
-		GiveMasterLoot(LootFrame.selectedSlot, self.value);
-	end
-	CloseDropDownMenus();
+	info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = 1;	
+	info.text = ASSIGN_LOOT;
+	info.func = MasterLooterFrame_Show;
+	UIDropDownMenu_AddButton(info);	
+	info.text = REQUEST_ROLL;
+	info.func = function() DoMasterLootRoll(LootFrame.selectedSlot); end;
+	UIDropDownMenu_AddButton(info);
 end
 
 function GroupLootFrame_OpenNewFrame(id, rollTime)
@@ -712,4 +656,119 @@ function MissingLootItem_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetMissingLootItem(self:GetID());
 	CursorUpdate(self);
+end
+
+-------------------------------------------------------------------
+-- Master Looter
+-------------------------------------------------------------------
+
+local buttonsToHide = { };
+
+local function MasterLooterPlayerSort(pInfo1, pInfo2)
+	if ( pInfo1.class == pInfo2.class ) then
+		return pInfo1.name < pInfo2.name;
+	else
+		return pInfo1.class < pInfo2.class;
+	end
+end
+
+function MasterLooterFrame_OnHide(self)
+	for playerFrame in pairs(buttonsToHide) do
+		playerFrame:Hide();
+	end
+	wipe(buttonsToHide);
+end
+
+function MasterLooterFrame_Show()
+	local itemFrame = MasterLooterFrame.Item;
+	itemFrame.ItemName:SetText(LootFrame.selectedItemName);
+	itemFrame.Icon:SetTexture(LootFrame.selectedTexture);
+	local colorInfo = ITEM_QUALITY_COLORS[LootFrame.selectedQuality];
+	itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
+	itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
+	
+	MasterLooterFrame_UpdatePlayers();
+	MasterLooterFrame:SetPoint("TOPLEFT", DropDownList1, 0, 0);
+	MasterLooterFrame:Show();
+	CloseDropDownMenus();
+end
+
+function MasterLooterFrame_UpdatePlayers()
+	local playerInfo = { };
+	for i = 1, MAX_RAID_MEMBERS do
+		local name, class, className = GetMasterLootCandidate(LootFrame.selectedSlot, i);
+		if ( name ) then
+			local pInfo = { };
+			pInfo["index"] = i;
+			pInfo["name"] = name;
+			pInfo["class"] = class;
+			pInfo["className"] = className;
+			tinsert(playerInfo, pInfo);
+		end
+	end
+	table.sort(playerInfo, MasterLooterPlayerSort);
+
+	local numColumns = ceil(#playerInfo / 10);
+	numColumns = max(numColumns, 2);
+	local numRows = ceil(#playerInfo / numColumns);
+	local row = 0;
+	local column = 0;
+	local shownButtons = { };
+	for i = 1, MAX_RAID_MEMBERS do
+		if ( playerInfo[i] ) then
+			row = row + 1;
+			if ( row > numRows ) then
+				row = 1;
+				column = column + 1;
+			end
+			local buttonIndex = column * 10 + row;
+			local playerFrame = MasterLooterFrame["player"..buttonIndex];
+			-- create button if needed
+			if ( not playerFrame ) then
+				playerFrame = CreateFrame("BUTTON", nil, MasterLooterFrame, "MasterLooterPlayerTemplate");
+				MasterLooterFrame["player"..buttonIndex] = playerFrame;
+				if ( row == 1 ) then
+					playerFrame:SetPoint("LEFT", MasterLooterFrame["player"..(buttonIndex - 10)], "RIGHT", 4, 0);
+				else
+					playerFrame:SetPoint("TOP", MasterLooterFrame["player"..(buttonIndex - 1)], "BOTTOM", 0, 0);
+				end
+				if ( mod(row, 2) == 0 ) then
+					playerFrame.Bg:SetTexture(0, 0, 0, 0);
+				end
+			end
+			-- set up button
+			playerFrame.id = playerInfo[i].index;
+			playerFrame.Name:SetText(playerInfo[i].name);
+			local color = RAID_CLASS_COLORS[playerInfo[i].className];
+			playerFrame.Name:SetTextColor(color.r, color.g, color.b);
+			playerFrame:Show();
+			if ( buttonsToHide[playerFrame] ) then
+				buttonsToHide[playerFrame] = nil;
+			end
+			shownButtons[playerFrame] = 1;
+		else
+			break;
+		end
+	end
+	MasterLooterFrame:SetWidth(numColumns * 102 + 12);
+	MasterLooterFrame:SetHeight(numRows * 23 + 63);
+	for playerFrame in pairs(buttonsToHide) do
+		playerFrame:Hide();
+	end
+	buttonsToHide = shownButtons;
+end
+
+function MasterLooterPlayerFrame_OnClick(self)
+	MasterLooterFrame.slot = LootFrame.selectedSlot;
+	MasterLooterFrame.candidateId = self.id;
+	if ( LootFrame.selectedQuality >= MASTER_LOOT_THREHOLD ) then
+		StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE, self.Name:GetText(), "LootWindow");
+	else
+		MasterLooterFrame_GiveMasterLoot();
+	end
+end
+
+function MasterLooterFrame_GiveMasterLoot()
+	GiveMasterLoot(MasterLooterFrame.slot, MasterLooterFrame.candidateId);
+	MasterLooterFrame:Hide();
 end

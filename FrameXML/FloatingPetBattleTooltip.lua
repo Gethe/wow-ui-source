@@ -18,22 +18,22 @@ end
 
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetHealth(target)
 	self:EnsureTarget(target);
-	return 100;
+	return self.maxHealth;
 end
 
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetMaxHealth(target)
 	self:EnsureTarget(target);
-	return 100;
+	return self.maxHealth;
 end
 
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetAttackStat(target)
 	self:EnsureTarget(target);
-	return 0;
+	return self.power;
 end
 
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetSpeedStat(target)
 	self:EnsureTarget(target);
-	return 0;
+	return self.speed;
 end
 
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetState(stateID, target)
@@ -49,9 +49,12 @@ function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:EnsureTarget(target)
 	end
 end
 
-function FloatingPetBattleAbility_Show(abilityID)
+function FloatingPetBattleAbility_Show(abilityID, maxHealth, power, speed)
 	if ( abilityID and abilityID > 0 ) then
 		PET_BATTLE_FLOATING_ABILITY_TOOLTIP.abilityID = abilityID;
+		PET_BATTLE_FLOATING_ABILITY_TOOLTIP.maxHealth = maxHealth;
+		PET_BATTLE_FLOATING_ABILITY_TOOLTIP.power = power;
+		PET_BATTLE_FLOATING_ABILITY_TOOLTIP.speed = speed;
 		SharedPetBattleAbilityTooltip_SetAbility(FloatingPetBattleAbilityTooltip, PET_BATTLE_FLOATING_ABILITY_TOOLTIP);
 		FloatingPetBattleAbilityTooltip:Show();
 	end

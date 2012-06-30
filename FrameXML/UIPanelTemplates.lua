@@ -796,6 +796,14 @@ function ButtonFrameTemplate_ShowPortrait(self)
 	self.leftBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT",  8, 0);
 end
 
+-- A bit ugly, we want the talent frame to display a dialog box in certain conditions.
+function PortraitFrameCloseButton_OnClick(self)
+	if ( self:GetParent().onCloseCallback) then
+		self:GetParent().onCloseCallback(self);
+	else
+		HideParentPanel(self);
+	end	
+end
 
 -- SquareButton template code
 SQUARE_BUTTON_TEXCOORDS = {

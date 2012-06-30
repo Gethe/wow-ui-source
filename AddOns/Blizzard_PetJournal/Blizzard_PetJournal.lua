@@ -6,7 +6,7 @@ local MAX_ACTIVE_PETS = 3;
 local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 25;
-local UNLOCK_ACHIEVEMENTS = {"6461", "6554", "6555"};
+local UNLOCK_ACHIEVEMENTS = {"6461", "6566", "6593"};
 
 
 StaticPopupDialogs["BATTLE_PET_RENAME"] = {
@@ -119,12 +119,22 @@ function PetJournal_OnShow(self)
 		numPoints = numPoints + points;
 	end
 	PetJournal.AchievementStatus.SumText:SetText(numPoints);
+	
+	-- check to show the help plate
+	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL) ) then
+		local helpPlate = PetJournal_HelpPlate;
+		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
+			HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
+			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
+		end
+	end
 end
 
 
 function PetJournal_OnHide(self)
 	PlaySound("igCharacterInfoClose");
 	PetJournal.SpellSelect:Hide();
+	HelpPlate_Hide();
 end
 
 
@@ -294,7 +304,47 @@ function PetJournal_UpdatePetLoadOut()
 	for i=1,MAX_ACTIVE_PETS do
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
 		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
-		if (petID > 0) then
+		if (locked) then
+			loadoutPlate.name:Hide();
+			loadoutPlate.subName:Hide();
+			loadoutPlate.level:Hide();
+			loadoutPlate.icon:Hide();
+			loadoutPlate.model:Hide();			
+			loadoutPlate.xpBar:Hide();
+			loadoutPlate.healthBar:Hide();
+			loadoutPlate.spell1:Hide();
+			loadoutPlate.spell2:Hide();
+			loadoutPlate.spell3:Hide();
+			loadoutPlate.shadows:Hide();
+			loadoutPlate.iconBorder:Hide();
+			loadoutPlate.abilitiesLabel:Hide();
+			-- helpFrame & achievementButton are active when the slot is locked
+			loadoutPlate.achievementButton:SetText(GetAchievementLink(UNLOCK_ACHIEVEMENTS[i]));
+			loadoutPlate.achievementButton.achievementID = UNLOCK_ACHIEVEMENTS[i];
+			loadoutPlate.achievementButton:Show();
+			loadoutPlate.helpFrame.slotinfo:SetText(format(BATTLE_PET_SLOT, i));
+			loadoutPlate.helpFrame.text:SetText(_G["BATTLE_PET_UNLOCK_HELP_"..i]);
+			loadoutPlate.helpFrame:Show();
+			loadoutPlate.emptyslot:Hide();
+		elseif (petID <= 0) then
+			loadoutPlate.name:Hide();
+			loadoutPlate.subName:Hide();
+			loadoutPlate.level:Hide();
+			loadoutPlate.icon:Hide();
+			loadoutPlate.model:Hide();			
+			loadoutPlate.xpBar:Hide();
+			loadoutPlate.healthBar:Hide();
+			loadoutPlate.spell1:Hide();
+			loadoutPlate.spell2:Hide();
+			loadoutPlate.spell3:Hide();
+			loadoutPlate.shadows:Hide();
+			loadoutPlate.iconBorder:Hide();
+			loadoutPlate.abilitiesLabel:Hide();
+			loadoutPlate.helpFrame:Hide();
+			loadoutPlate.achievementButton:Hide();
+			loadoutPlate.emptyslot:Show();
+			loadoutPlate.emptyslot.slot:SetText(format(BATTLE_PET_SLOT, i));
+		else -- not locked and petID > 0
 			local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
 
@@ -355,8 +405,6 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.petTypeIcon:SetTexture(GetPetTypeTexture(petType));	
 			loadoutPlate.petID = petID;
 			loadoutPlate.speciesID = speciesID;
-			loadoutPlate.helpFrame:Hide();
-			loadoutPlate.achievementButton:Hide();
 			if(level < MAX_PET_LEVEL) then
 				loadoutPlate.xpBar:Show();
 			else
@@ -366,6 +414,12 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.xpBar:SetMinMaxValues(0, maxXp);
 			loadoutPlate.xpBar:SetValue(xp);
 			loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_VERBOSE, xp, maxXp);
+			
+			local health, maxHealth, _ = C_PetJournal.GetPetStats(petID);
+			loadoutPlate.healthBar:SetMinMaxValues(0, maxHealth);
+			loadoutPlate.healthBar:SetValue(health);
+			loadoutPlate.healthBar.healthRankText:SetFormattedText(PET_BATTLE_CURRENT_HEALTH_FORMAT_VERBOSE, health, maxHealth);
+			loadoutPlate.healthBar:Show();
 			
 			PetJournal_UpdatePetAbility(loadoutPlate.spell1, ability1ID, petID);
 			PetJournal_UpdatePetAbility(loadoutPlate.spell2, ability2ID, petID);
@@ -399,32 +453,11 @@ function PetJournal_UpdatePetLoadOut()
 				loadoutPlate.spell2.FlyoutArrow:Show();
 				loadoutPlate.spell3.FlyoutArrow:Show();
 			end
-		else
-			loadoutPlate.name:Hide();
-			loadoutPlate.subName:Hide();
-			loadoutPlate.level:Hide();
-			loadoutPlate.icon:Hide();
-			loadoutPlate.model:Hide();			
-			loadoutPlate.xpBar:Hide();
-			loadoutPlate.spell1:Hide();
-			loadoutPlate.spell2:Hide();
-			loadoutPlate.spell3:Hide();
-			loadoutPlate.shadows:Hide();
-			loadoutPlate.iconBorder:Hide();
-			loadoutPlate.abilitiesLabel:Hide();
-			if(locked) then
-				loadoutPlate.helpFrame.slotinfo:SetText(format(BATTLE_PET_SLOT, i));
-				loadoutPlate.helpFrame.text:SetText(_G["BATTLE_PET_UNLOCK_HELP_"..i]);
-				loadoutPlate.achievementButton:SetText(GetAchievementLink(UNLOCK_ACHIEVEMENTS[i]));
-				loadoutPlate.achievementButton:Show();
-				loadoutPlate.achievementButton.achievementID = UNLOCK_ACHIEVEMENTS[i];
-				loadoutPlate.helpFrame:Show();
-			else
-				loadoutPlate.helpFrame:Hide();
-				loadoutPlate.achievementButton:Hide();
-			end
+			loadoutPlate.helpFrame:Hide();
+			loadoutPlate.achievementButton:Hide();
+			loadoutPlate.emptyslot:Hide();
 		end
-	end
+	end -- for i=1,MAX_ACTIVE_PETS do
 	
 	PetJournal.Loadout.Pet1.setButton:Hide();
 	PetJournal.Loadout.Pet2.setButton:Hide();
@@ -640,14 +673,22 @@ function PetJournal_UpdatePetCard(self)
 		--Stats
 		self.statsFrame:Show();
 		local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(PetJournal.pcPetID);
-		self.statsFrame.healthValue:SetText(health.."("..maxHealth..")");
+
+		self.healthBar:Show();
+		self.healthBar:SetMinMaxValues(0, maxHealth);
+		self.healthBar:SetValue(health);
+		self.healthBar.healthRankText:SetFormattedText(PET_BATTLE_CURRENT_HEALTH_FORMAT_VERBOSE, health, maxHealth);
+		
 		self.statsFrame.attackValue:SetText(attack);
 		self.statsFrame.speedValue:SetText(speed);
 		self.statsFrame.rarityValue:SetText(_G["BATTLE_PET_BREED_QUALITY"..rarity]);
+		local color = ITEM_QUALITY_COLORS[rarity-1];
+		self.statsFrame.rarityValue:SetVertexColor(color.r, color.g, color.b);
 	else
 		speciesID = PetJournal.pcSpeciesID;
 		name, icon, petType, creatureID, sourceText, description = C_PetJournal.GetPetInfoBySpeciesID(PetJournal.pcSpeciesID);
 		self.level:Hide();
+		self.healthBar:Hide();
 		self.levelBG:Hide();
 		self.xpBar:Hide();
 		self.statsFrame:Hide();
@@ -870,45 +911,45 @@ end
 function PET_JOURNAL_ABILITY_INFO:GetHealth(target)
 	self:EnsureTarget(target);
 	if ( self.petID ) then
-		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return health;
 	else
-		--Do something with self.speciesID.
+		--Do something with self.speciesID?
+		return self:GetMaxHealth(target);
 	end
-	--TODO: return max health
-	return 100;
 end
 
 function PET_JOURNAL_ABILITY_INFO:GetMaxHealth(target)
 	self:EnsureTarget(target);
 	if ( self.petID ) then
-		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return maxHealth;
 	else
-		--Do something with self.speciesID.
+		--Do something with self.speciesID?
+		return 100;
 	end
-	--TODO: return max health
-	return 100;
 end
 
 function PET_JOURNAL_ABILITY_INFO:GetAttackStat(target)
 	self:EnsureTarget(target);
 	if ( self.petID ) then
-		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return power;
 	else
-		--Do something with self.speciesID.
+		--Do something with self.speciesID?
+		return 0;
 	end
-	--TODO: return attack stat
-	return 0;
 end
 
 function PET_JOURNAL_ABILITY_INFO:GetSpeedStat(target)
 	self:EnsureTarget(target);
 	if ( self.petID ) then
-		local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(self.petID);
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return speed;
 	else
-		--Do something with self.speciesID.
+		--Do something with self.speciesID?
+		return 0;
 	end
-	--TODO: return speed stat
-	return 0;
 end
 
 function PET_JOURNAL_ABILITY_INFO:GetState(stateID, target)
@@ -925,18 +966,31 @@ function PET_JOURNAL_ABILITY_INFO:EnsureTarget(target)
 end
 
 
+local journalAbilityInfo = {};
+setmetatable(journalAbilityInfo, {__index = PET_JOURNAL_ABILITY_INFO});
 function PetJournal_ShowAbilityTooltip(self, abilityID, speciesID, petID, additionalText)
 	if ( abilityID and abilityID > 0 ) then
-		PET_JOURNAL_ABILITY_INFO.abilityID = abilityID;
-		PET_JOURNAL_ABILITY_INFO.speciesID = speciesID;
-		PET_JOURNAL_ABILITY_INFO.petID = petID;
+		journalAbilityInfo.abilityID = abilityID;
+		journalAbilityInfo.speciesID = speciesID;
+		journalAbilityInfo.petID = petID;
 		PetJournalPrimaryAbilityTooltip:ClearAllPoints();
 		PetJournalPrimaryAbilityTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 0);
 		PetJournalPrimaryAbilityTooltip.anchoredTo = self;
-		SharedPetBattleAbilityTooltip_SetAbility(PetJournalPrimaryAbilityTooltip, PET_JOURNAL_ABILITY_INFO, additionalText);
+		SharedPetBattleAbilityTooltip_SetAbility(PetJournalPrimaryAbilityTooltip, journalAbilityInfo, additionalText);
 		PetJournalPrimaryAbilityTooltip:Show();
 	end
 end
+
+function PetJournal_GetPetAbilityHyperlink(abilityID, petID)
+	local maxHealth, power, speed, _;
+	if ( petID and petID > 0 ) then
+		_, maxHealth, power, speed, _ = C_PetJournal.GetPetStats(petID);
+	else
+		maxHealth, power, speed = 100, 0, 0;
+	end
+	return GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed);
+end
+		
 
 
 local CompareInfo1 = {};
@@ -971,6 +1025,30 @@ end
 function PetJournal_HideAbilityTooltip(self)
 	if ( PetJournalPrimaryAbilityTooltip.anchoredTo == self or not self ) then
 		PetJournalPrimaryAbilityTooltip:Hide();
+	end
+end
+
+
+---------------------------------------
+-------Help plate stuff-----------
+---------------------------------------
+
+PetJournal_HelpPlate = {
+	FramePos = { x = 0,	y = -22 },
+	FrameSize = { width = 700, height = 580	},
+	[1] = { ButtonPos = { x = 26,	y = -72 },	HighLightBox = { x = 0, y = -67, width = 270, height = 60 },	ToolTipDir = "RIGHT",	ToolTipText = PET_JOURNAL_HELP_1 },
+	[2] = { ButtonPos = { x = 105,	y = -300 },	HighLightBox = { x = 0, y = -115, width = 270, height = 444 },	ToolTipDir = "DOWN",	ToolTipText = PET_JOURNAL_HELP_2 },
+	[3] = { ButtonPos = { x = 450,	y = -90 },	HighLightBox = { x = 284, y = -35, width = 414, height = 525 },	ToolTipDir = "DOWN",	ToolTipText = PET_JOURNAL_HELP_3 },
+	[4] = { ButtonPos = { x = 525,	y = -545},	HighLightBox = { x = 550, y = -548, width = 155, height = 40 },	ToolTipDir = "UP",		ToolTipText = PET_JOURNAL_HELP_4 },
+}
+
+function PetJournal_ToggleTutorial()
+	local helpPlate = PetJournal_HelpPlate;
+	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
+		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
+		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
+	else
+		HelpPlate_Hide();
 	end
 end
 

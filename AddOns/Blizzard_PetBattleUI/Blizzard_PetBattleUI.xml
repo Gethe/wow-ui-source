@@ -1287,7 +1287,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<CheckButton parentKey="SwitchPetButton" inherits="PetBattleActionButtonTemplate">
+					<CheckButton parentKey="SwitchPetButton" motionScriptsWhileDisabled="true" inherits="PetBattleActionButtonTemplate">
 						<!--Anchored in code via the FlowFrame-->
 						<Layers>
 							<Layer level="OVERLAY">
@@ -1315,10 +1315,17 @@
 									PetBattlePetSelectionFrame_Show(selectionFrame);
 								end
 							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(SWITCH_PET, 1, 1, 1, true);
+								GameTooltip:AddLine(SWITCH_PET_DESCRIPTION, nil, nil, nil, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 					</CheckButton>
-					<Button parentKey="CatchButton" inherits="PetBattleActionButtonTemplate">
+					<Button parentKey="CatchButton" motionScriptsWhileDisabled="true" inherits="PetBattleActionButtonTemplate">
 						<!--Anchored in code via the FlowFrame-->
 						<Scripts>
 							<OnLoad>
@@ -1326,6 +1333,13 @@
 								self.Icon:SetTexture("Interface\\Icons\\ABILITY_HUNTER_TRAPLAUNCHER");
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(CATCH_PET, 1, 1, 1, true);
+								GameTooltip:AddLine(CATCH_PET_DESCRIPTION, nil, nil, nil, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick function="PetBattleCatchButton_OnClick"/>
 						</Scripts>
 					</Button>
@@ -1337,6 +1351,13 @@
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
 							<OnClick function="PetBattleForfeitButton_OnClick"/>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(PET_BATTLE_FORFEIT, 1, 1, 1, true);
+								GameTooltip:AddLine(PET_BATTLE_FORFEIT_DESCRIPTION, nil, nil, nil, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 					<Frame parentKey="Delimiter">

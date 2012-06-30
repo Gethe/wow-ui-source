@@ -29,13 +29,13 @@ function MonkHarmonyBar_Update(self)
 	local maxLight = UnitPowerMax( MonkHarmonyBar:GetParent().unit, SPELL_POWER_LIGHT_FORCE );
 	if ( self.maxLight ~= maxLight ) then
 		if ( maxLight == 4 ) then
-			self.lightEnergy1:SetPoint("LEFT", -44, -1);
-			self.lightEnergy2:SetPoint("LEFT", self.lightEnergy1, "RIGHT", 6, 0);
-			self.lightEnergy3:SetPoint("LEFT", self.lightEnergy2, "RIGHT", 6, 0);
-			self.lightEnergy4:SetPoint("LEFT", self.lightEnergy3, "RIGHT", 6, 0);
+			self.lightEnergy1:SetPoint("LEFT", -43, 1);
+			self.lightEnergy2:SetPoint("LEFT", self.lightEnergy1, "RIGHT", 5, 0);
+			self.lightEnergy3:SetPoint("LEFT", self.lightEnergy2, "RIGHT", 5, 0);
+			self.lightEnergy4:SetPoint("LEFT", self.lightEnergy3, "RIGHT", 5, 0);
 			self.lightEnergy5:Hide();
 		else
-			self.lightEnergy1:SetPoint("LEFT", -46, -1);
+			self.lightEnergy1:SetPoint("LEFT", -46, 1);
 			self.lightEnergy2:SetPoint("LEFT", self.lightEnergy1, "RIGHT", 1, 0);
 			self.lightEnergy3:SetPoint("LEFT", self.lightEnergy2, "RIGHT", 1, 0);
 			self.lightEnergy4:SetPoint("LEFT", self.lightEnergy3, "RIGHT", 1, 0);

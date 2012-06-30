@@ -46,7 +46,7 @@ end
 
 function PetFrame_Update (self, override)
 	if ( (not PlayerFrame.animating) or (override) ) then
-		if ( UnitIsVisible(self.unit) and PetUsesPetFrame() ) then
+		if ( UnitIsVisible(self.unit) and PetUsesPetFrame() and not PlayerFrame.vehicleHidesPet ) then
 			if ( self:IsShown() ) then
 				UnitFrame_Update(self);
 			else

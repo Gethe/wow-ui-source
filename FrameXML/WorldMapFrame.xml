@@ -479,6 +479,7 @@
             --self:SetNumSplinePoints(30);
             self:SetBorderScalar(0.5);
           </OnLoad>
+          <OnUpdate function="ScenarioPOIFrame_OnUpdate"/>
         </Scripts>
       </ScenarioPOIFrame>
       <Button name="WorldMapButton">

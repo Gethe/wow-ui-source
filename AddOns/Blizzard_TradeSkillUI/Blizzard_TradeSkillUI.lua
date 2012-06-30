@@ -195,7 +195,7 @@ function TradeSkillFrame_Update()
 	
 	for i=1, diplayedSkills, 1 do
 		skillIndex = i + skillOffset;
-		skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank = GetTradeSkillInfo(skillIndex);
+		skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank = GetTradeSkillInfo(skillIndex);
 
 		if hasFilterBar then
 			buttonIndex = i+1;
@@ -266,7 +266,7 @@ function TradeSkillFrame_Update()
 				--probably only want to show progress bar for categories (headers)
 				if ( showProgressBar ) then
 					skillButtonSubSkillRankBar:Show();
-					skillButtonSubSkillRankBar:SetMinMaxValues(0,maxRank);
+					skillButtonSubSkillRankBar:SetMinMaxValues(startingRank,maxRank);
 					skillButtonSubSkillRankBar:SetValue(currentRank);
 					skillButtonSubSkillRankBar.currentRank = currentRank;
 					skillButtonSubSkillRankBar.maxRank = maxRank;

@@ -72,11 +72,32 @@ function InspectPaperDollFrame_UpdateButtons()
 	InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
 end
 
+local factionLogoTextures = {
+	["Alliance"]	= "Interface\\Timer\\Alliance-Logo",
+	["Horde"]		= "Interface\\Timer\\Horde-Logo",
+	["Neutral"]		= "Interface\\Timer\\Panda-Logo",
+};
+
 function InspectPaperDollFrame_OnShow()
+	InspectModelFrame:Show();
 	ButtonFrameTemplate_HideButtonBar(InspectFrame);
-	InspectModelFrame:SetUnit(InspectFrame.unit);
+	local modelCanDraw = InspectModelFrame:SetUnit(InspectFrame.unit);
 	InspectPaperDollFrame_SetLevel();
 	InspectPaperDollFrame_UpdateButtons();
+	
+	-- If the paperdoll model is not available to draw (out of range), then draw the faction logo
+	if(modelCanDraw ~= true) then
+		local factionGroup = UnitFactionGroup(InspectFrame.unit);
+		if ( factionGroup ) then
+			InspectFaction:SetTexture(factionLogoTextures[factionGroup]);
+			InspectFaction:Show();
+			InspectModelFrame:Hide();
+		else
+			InspectFaction:Hide();
+		end
+	else
+		InspectFaction:Hide();
+	end
 	
 	SetPaperDollBackground(InspectModelFrame, InspectFrame.unit);
 	InspectModelFrameBackgroundTopLeft:SetDesaturated(1);

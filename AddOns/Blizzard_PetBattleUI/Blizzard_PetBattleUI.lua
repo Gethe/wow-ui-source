@@ -4,17 +4,17 @@ NUM_BATTLE_PET_ABILITIES = 3;
 BATTLE_PET_DISPLAY_ROTATION = 3 * math.pi / 8;
 
 PET_BATTLE_WEATHER_TEXTURES = {
-	[54] = "Interface\\PetBattles\\Weather-ArcaneStorm",
-	[58] = "Interface\\PetBattles\\Weather-Blizzard",
-	[53] = "Interface\\PetBattles\\Weather-BurntEarth",
-	[56] = "Interface\\PetBattles\\Weather-Darkness",
-	[62] = "Interface\\PetBattles\\Weather-StaticField",
-	[55] = "Interface\\PetBattles\\Weather-Moonlight",
-	[59] = "Interface\\PetBattles\\Weather-Mud",
-	[60] = "Interface\\PetBattles\\Weather-Rain",
-	[57] = "Interface\\PetBattles\\Weather-Sandstorm",
-	[61] = "Interface\\PetBattles\\Weather-Sunlight",
-	[63] = "Interface\\PetBattles\\Weather-Windy",
+	--[54] = "Interface\\PetBattles\\Weather-ArcaneStorm",
+	[205] = "Interface\\PetBattles\\Weather-Blizzard",
+	[171] = "Interface\\PetBattles\\Weather-BurntEarth",
+	[257] = "Interface\\PetBattles\\Weather-Darkness",
+	[203] = "Interface\\PetBattles\\Weather-StaticField",
+	--[55] = "Interface\\PetBattles\\Weather-Moonlight",
+	--[59] = "Interface\\PetBattles\\Weather-Mud",
+	[229] = "Interface\\PetBattles\\Weather-Rain",
+	[454] = "Interface\\PetBattles\\Weather-Sandstorm",
+	[403] = "Interface\\PetBattles\\Weather-Sunlight",
+	--[63] = "Interface\\PetBattles\\Weather-Windy",
 
 	[235] = "Interface\\PetBattles\\Weather-Rain",
 };
@@ -142,8 +142,13 @@ end
 
 function PetBattleAbilityButton_OnClick(self)
 	if ( IsModifiedClick() ) then
-		local abilityID = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), self:GetID());
-		HandleModifiedItemClick(GetBattlePetAbilityHyperlink(abilityID));
+		local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
+		local abilityID = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
+		local maxHealth = C_PetBattles.GetMaxHealth(LE_BATTLE_PET_ALLY, activePet);
+		local power = C_PetBattles.GetPower(LE_BATTLE_PET_ALLY, activePet);
+		local speed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ALLY, activePet);
+		
+		HandleModifiedItemClick(GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed));
 	else
 		C_PetBattles.UseAbility(self:GetID());
 	end
@@ -338,29 +343,9 @@ function PetBattleActionButton_UpdateState(self)
 		usable = true;
 	end
 
-	if ( isHidden ) then
+	if ( isHidden or isLocked ) then
 		self:Disable();
 		self:SetAlpha(0);
-	elseif ( isLocked ) then
-		if ( self.Icon ) then
-			self.Icon:SetTexture("INTERFACE\\ICONS\\INV_Misc_Key_05");
-			self.Icon:SetVertexColor(0.5, 0.5, 0.5);
-			self.Icon:SetDesaturated(true);
-		end
-		self:Disable();
-		self:SetAlpha(1);
-		if ( self.SelectedHighlight ) then
-			self.SelectedHighlight:Hide();
-		end
-		if ( self.CooldownShadow ) then
-			self.CooldownShadow:Hide();
-		end
-		if ( self.Cooldown ) then
-			self.Cooldown:Hide();
-		end
-		if ( self.AdditionalIcon ) then
-			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
-		end
 	elseif ( cooldown and cooldown > 0 ) then
 		--Set the frame up to look like a cooldown.
 		if ( self.Icon ) then

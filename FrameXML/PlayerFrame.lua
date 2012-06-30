@@ -220,6 +220,9 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			self.inSeat = true;
+			if (UnitInVehicleHidesPetFrame("player")) then
+				self.vehicleHidesPet = true;
+			end
 			PlayerFrame_UpdateArt(self);
 		end
 	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
@@ -229,6 +232,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 			else
 				self.updatePetFrame = true;
 			end
+			self.vehicleHidesPet = false;
 		end
 	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
 		if ( arg1 == "player" ) then

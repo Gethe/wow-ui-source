@@ -102,6 +102,13 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
+				<Texture name="InspectFaction" file="Interface\Timer\Panda-Logo" hidden="true">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-10"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>	
+				</Texture>
             </Layer>
         </Layers>
         <Frames>

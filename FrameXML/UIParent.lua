@@ -162,6 +162,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("DUEL_FINISHED");
 	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED");
 	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSAL_DECLINED");
 	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUEST_CANCEL");
 	self:RegisterEvent("TRADE_REQUEST_CANCEL");
 	self:RegisterEvent("CONFIRM_XP_LOSS");
@@ -857,6 +858,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED");
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" ) then
 		StaticPopup_Show("PET_BATTLE_QUEUE_PROPOSE_MATCH");
+	elseif ( event == "PET_BATTLE_QUEUE_PROPOSAL_DECLINED" ) then
+		StaticPopup_Hide("PET_BATTLE_QUEUE_PROPOSE_MATCH");
 	elseif ( event == "TRADE_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("TRADE");
 	elseif ( event == "CONFIRM_XP_LOSS" ) then

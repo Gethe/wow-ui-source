@@ -158,6 +158,8 @@ function SetItemRef(link, text, button, chatFrame)
 				if ( BNGetConversationInfo(chatTarget) ) then
 					ChatFrame_OpenChat("/"..(chatTarget + MAX_WOW_CHAT_CHANNELS), chatFrame);
 				end
+			elseif ( strupper(chatType) == "PET_BATTLE_COMBAT_LOG" ) then
+				--Don't do anything
 			else
 				ChatFrame_OpenChat("/"..chatType, chatFrame);
 			end
@@ -206,12 +208,12 @@ function SetItemRef(link, text, button, chatFrame)
 		LootHistoryFrame_OpenToRoll(LootHistoryFrame, tonumber(rollID), chatFrame);
 		return;
 	elseif ( strsub(link, 1, 13) == "battlePetAbil" ) then
-		local _, abilityID = strsplit(":", link);
+		local _, abilityID, maxHealth, power, speed = strsplit(":", link);
 		if ( IsModifiedClick() ) then
 			local fixedLink = GetFixedLink(text);
 			HandleModifiedItemClick(fixedLink);
 		else
-			FloatingPetBattleAbility_Show(tonumber(abilityID));
+			FloatingPetBattleAbility_Show(tonumber(abilityID), tonumber(maxHealth), tonumber(power), tonumber(speed));
 		end
 		return;
 	end
@@ -254,10 +256,10 @@ function GetFixedLink(text)
 	return text;
 end
 
-function GetBattlePetAbilityHyperlink(abilityID)
+function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 	local id, name = C_PetBattles.GetAbilityInfoByID(abilityID);
 	if ( name ) then
-		return format("|cff4e96f7|HbattlePetAbil:%d|h[%s]|h|r", abilityID, name);
+		return format("|cff4e96f7|HbattlePetAbil:%d:%d:%d:%d|h[%s]|h|r", abilityID, maxHealth or 100, power or 0, speed or 0, name);
 	else
 		GMError("Attempt to link ability when we don't have record.");
 		return "";

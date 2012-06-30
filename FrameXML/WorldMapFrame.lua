@@ -1727,9 +1727,12 @@ function WorldMapFrame_UpdateMap(questId)
 	end
 end
 
-function ArchaeologyDigSiteFrame_OnUpdate()
+function ScenarioPOIFrame_OnUpdate()
 	ScenarioPOIFrame:DrawNone();
 	ScenarioPOIFrame:DrawAll();
+end
+
+function ArchaeologyDigSiteFrame_OnUpdate()
 	WorldMapArchaeologyDigSites:DrawNone();
 	local numEntries = ArchaeologyMapUpdateAll();
 	for i = 1, numEntries do

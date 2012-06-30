@@ -424,7 +424,7 @@ function SpellButton_OnClick(self, button)
 			SpellFlyout:Toggle(id, self, "RIGHT", 1, false, self.offSpecID, true);
 			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
 		else
-			if ( self.offSpecID == 0 ) then
+			if ( SpellBookFrame.bookType ~= BOOKTYPE_SPELLBOOK or self.offSpecID == 0 ) then
 				CastSpell(slot, SpellBookFrame.bookType);
 			end
 		end
@@ -602,7 +602,17 @@ function SpellButton_UpdateButton(self)
 	local specName, className = IsSpellClassOrSpec(slot, SpellBookFrame.bookType);
 	if ( subSpellName == "" ) then
 		if ( specName ) then
-			subSpellName = specName;
+			if ( isPassive ) then
+				subSpellName = specName .. " " .. SPELL_PASSIVE
+			else
+				subSpellName = specName;
+			end
+		elseif ( IsTalentSpell(slot, SpellBookFrame.bookType) ) then
+			if ( isPassive ) then
+				subSpellName = TALENT_PASSIVE
+			else
+				subSpellName = TALENT
+			end		
 --		elseif ( className ) then
 --			subSpellName = className;
 		elseif ( isPassive ) then
@@ -1269,22 +1279,22 @@ end
 SpellBookFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 250,	y = -50}, HighLightBox = { x = 65, y = -25, width = 460, height = 462 }, ToolTipDir = "DOWN",	ToolTipText = "Drag spells to your action bar from here.  Your active spells are sorted before passive spells." },
-	[2] = { ButtonPos = { x = 515,	y = -30 }, HighLightBox = { x = 530, y = 0, width = 64, height = 110 }, ToolTipDir = "LEFT",		ToolTipText = "These tabs display your current spells." },
-	[3] = { ButtonPos = { x = 515,	y = -150}, HighLightBox = { x = 530, y = -120, width = 64, height = 205 }, ToolTipDir = "LEFT",	MinLevel = 10, ToolTipText = "These tabs display all the spells you would get if you choose a different specialization.\n\nSome spells will be available in multiple specializations." },
+	[1] = { ButtonPos = { x = 250,	y = -50}, HighLightBox = { x = 65, y = -25, width = 460, height = 462 }, ToolTipDir = "DOWN",	ToolTipText = SPELLBOOK_HELP_1 },
+	[2] = { ButtonPos = { x = 515,	y = -30 }, HighLightBox = { x = 530, y = 0, width = 64, height = 110 }, ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
+	[3] = { ButtonPos = { x = 515,	y = -150}, HighLightBox = { x = 530, y = -120, width = 64, height = 205 }, ToolTipDir = "LEFT",	MinLevel = 10, ToolTipText = SPELLBOOK_HELP_3 },
 }
 
 ProfessionsFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 545, height = 500	},
-	[1] = { ButtonPos = { x = 150,	y = -110 }, HighLightBox = { x = 60, y = -35, width = 460, height = 200 }, ToolTipDir = "UP",		ToolTipText = "You can find trainers for professions in a major city.\n\nA gathering profession is recommended for new players" },
-	[2] = { ButtonPos = { x = 150,	y = -325}, HighLightBox = { x = 60, y = -235, width = 460, height = 240 }, ToolTipDir = "UP",	ToolTipText = "You can find trainers for professions in a major city.\n\nFirst Aid is recommended for new players." },
+	[1] = { ButtonPos = { x = 150,	y = -110 }, HighLightBox = { x = 60, y = -35, width = 460, height = 200 }, ToolTipDir = "UP",	ToolTipText = PROFESSIONS_HELP_1 },
+	[2] = { ButtonPos = { x = 150,	y = -325}, HighLightBox = { x = 60, y = -235, width = 460, height = 240 }, ToolTipDir = "UP",	ToolTipText = PROFESSIONS_HELP_2 },
 }
 
 CoreAbilitiesFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 450,	y = -50}, HighLightBox = { x = 65, y = -35, width = 460, height = 452 }, ToolTipDir = "RIGHT",	ToolTipText = "This page gives you information on your most important abilities.\n\nYou should definitely have these abilities on your action bar." },
+	[1] = { ButtonPos = { x = 450,	y = -50}, HighLightBox = { x = 65, y = -35, width = 460, height = 452 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
 }
 
 function SpellBook_ToggleTutorial()

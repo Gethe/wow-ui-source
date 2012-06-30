@@ -259,6 +259,11 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		checked = function () return IsListeningForMessageType("BN_INLINE_TOAST_ALERT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_INLINE_TOAST_ALERT"); end;
 	},
+	[7] = {
+		type = "PET_BATTLE_COMBAT_LOG",
+		checked = function() return IsListeningForMessageType("PET_BATTLE_COMBAT_LOG"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "PET_BATTLE_COMBAT_LOG"); end;
+	},
 }
 
 CHAT_CONFIG_CHANNEL_LIST = {};

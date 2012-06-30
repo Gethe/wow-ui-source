@@ -858,14 +858,14 @@
 				<Texture name="$parentTLCorner" file="Interface\TalentFrame\talent-main">
 					<Size x="64" y="55"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-4"/>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.25390625" top="0.70117188" bottom="0.80859375"/>
 				</Texture>
 				<Texture name="$parentTRCorner" file="Interface\TalentFrame\talent-main">
 					<Size x="64" y="55"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-3" y="-4"/>
+						<Anchor point="TOPRIGHT" x="-3" y="-2"/>
 					</Anchors>
 					<TexCoords left="0.00390625" right="0.25390625" top="0.58984375" bottom="0.69726563"/>
 				</Texture>

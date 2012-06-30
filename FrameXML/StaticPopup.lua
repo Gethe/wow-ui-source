@@ -565,7 +565,11 @@ StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, data)
-		GiveMasterLoot(LootFrame.selectedSlot, data);
+		if ( data == "LootWindow" ) then
+			MasterLooterFrame_GiveMasterLoot();
+		elseif ( data == "LootHistory" ) then
+			LootHistoryDropDown_GiveMasterLoot();
+		end
 	end,
 	timeout = 0,
 	hideOnEscape = 1,

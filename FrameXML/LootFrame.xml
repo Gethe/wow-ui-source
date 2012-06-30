@@ -54,24 +54,25 @@
 		</Scripts>
 	</Button>
 	<Button name="LootRollButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-			<Size x="32" y="32"/>
-			<Scripts>
-				<OnClick>
-					RollOnLoot(self:GetParent().rollID, self:GetID());
-				</OnClick>
-				<OnEnter>
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-					if ( self:IsEnabled() ~= 1 ) then
-						GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-						GameTooltip:Show();
-					end
-				</OnEnter>
-				<OnLeave>
-					GameTooltip:Hide();
-				</OnLeave>
-			</Scripts>
-		</Button>
+		<Size x="32" y="32"/>
+		<Scripts>
+			<OnClick>
+				RollOnLoot(self:GetParent().rollID, self:GetID());
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+				if ( self:IsEnabled() ~= 1 ) then
+					GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
 	<Frame name="LootFrame" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
 		<Size x="170" y="240"/>
 
@@ -748,5 +749,116 @@
 				MissingLootFrame_OnHide(self);
 			</OnHide>
 		</Scripts>
+	</Frame>
+
+	<Button name="MasterLooterPlayerTemplate" virtual="true">
+		<Size x="98" y="23"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true" parentKey="Bg">
+					<Color r="0.2" g="0.2" b="0.2" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormal" parentKey="Name" justifyH="LEFT" justifyV="CENTER">
+					<Size x="78" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				self.Highlight:Show();
+			</OnEnter>
+			<OnLeave>
+				self.Highlight:Hide();
+			</OnLeave>
+			<OnMouseDown>
+				self.Name:SetPoint("LEFT", 11, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Name:SetPoint("LEFT", 10, 0);
+			</OnMouseUp>
+			<OnClick function="MasterLooterPlayerFrame_OnClick"/>
+		</Scripts>
+	</Button>
+	<Frame name="MasterLooterFrame" clampedToScreen="true" parent="UIParent" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Item">
+				<Size x="0" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-9" y="-13"/>
+					<Anchor point="RIGHT" x="-30" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="23" y="0"/>
+							</Anchors>
+						</Texture>
+						<!--SmallItemNameBorder-Left-->
+						<Texture parentKey="NameBorderLeft" file="Interface\LootFrame\LootToast">
+							<Size x="16" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3" y="0"/>
+							</Anchors>
+							<TexCoords left="0.79101563" right="0.80664063" top="0.57421875" bottom="0.69921875"/>
+						</Texture>
+						<Texture parentKey="NameBorderRight" file="Interface\LootFrame\LootToast">
+							<Size x="16" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.73242188" right="0.74804688" top="0.80859375" bottom="0.93359375"/>
+						</Texture>
+						<Texture parentKey="NameBorderMid" file="Interface\LootFrame\LootToast">
+							<Size x="16" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.75" right="0.764648438" top="0.80859375" bottom="0.93359375"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<!--SmallItemIcon-Border-->
+						<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.62792969" right="0.65722656" top="0.87500000" bottom="0.99218750"/>	
+						</Texture>
+						<FontString parentKey="ItemName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="TOPLEFT" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button inherits="MasterLooterPlayerTemplate" parentKey="player1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-53"/>
+				</Anchors>
+			</Button>
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
 	</Frame>
 </Ui>
