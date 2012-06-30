@@ -1,28 +1,4 @@
 
-
-
-StaticPopupDialogs["CONFIRM_LEARN_TALENT"] = {
-	text = "",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function (self)
-		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-		if ( talentGroup == GetActiveSpecGroup() ) then
-			LearnTalent(self.data.id);
-		end
-	end,
-	OnShow = function(self)
-		local name = GetTalentInfo(self.data.id);
-		self.text:SetFormattedText(CONFIRM_LEARN_TALENT, GREEN_FONT_COLOR_CODE..name.."|r");
-	end,
-	OnCancel = function (self)
-	end,
-	hideOnEscape = 1,
-	whileDead = 1,
-	timeout = 0,
-	exclusive = 1,
-}
-
 StaticPopupDialogs["CONFIRM_LEARN_TALENTS"] = {
 	text = CONFIRM_LEARN_PREVIEW_TALENTS,
 	button1 = YES,
@@ -54,7 +30,9 @@ StaticPopupDialogs["CONFIRM_REMOVE_TALENT"] = {
 	OnShow = function(self)
 		local name = GetTalentInfo(self.data.id);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
-		if count >= cost then
+		if cost == 0 then
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH_NO_COST, name);
+		elseif count >= cost then
 			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, GREEN_FONT_COLOR_CODE, cost, resourceName);
 		else
 			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, RED_FONT_COLOR_CODE, cost, resourceName);
@@ -82,7 +60,9 @@ StaticPopupDialogs["CONFIRM_UNLEARN_AND_SWITCH_TALENT"] = {
 		local name = GetTalentInfo(self.data.id);
 		local oldName = GetTalentInfo(self.data.oldID);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
-		if count >= cost then
+		if cost == 0 then
+			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT_NO_COST, name, oldName);
+		elseif count >= cost then
 			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, GREEN_FONT_COLOR_CODE, cost, resourceName);
 		else
 			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, RED_FONT_COLOR_CODE, cost, resourceName);
@@ -262,7 +242,7 @@ function PlayerTalentFrame_Toggle(suggestedTalentGroup)
 		ShowUIPanel(PlayerTalentFrame);
 		if ( not GetSpecialization() ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
-		elseif ( GetNumUnspentTalents() ) then
+		elseif ( GetNumUnspentTalents() > 0 ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 		elseif ( selectedTab ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);
@@ -291,16 +271,16 @@ function PlayerTalentFrame_Open(talentGroup)
 end
 
 function PlayerTalentFrame_Close()
-	if (GetNumUnspentTalents() > 0) then
-		local dialog = StaticPopup_Show("CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS");
-		if ( dialog ) then
-			dialog.data = PlayerTalentFrame;
-		else
-			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
-		end
-	else
+--	if (GetNumUnspentTalents() > 0) then
+--		local dialog = StaticPopup_Show("CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS");
+--		if ( dialog ) then
+--			dialog.data = PlayerTalentFrame;
+--		else
+--			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+--		end
+--	else
 		HideUIPanel(PlayerTalentFrame);
-	end
+--	end
 end
 
 function PlayerTalentFrame_ToggleGlyphFrame(suggestedTalentGroup)
@@ -405,6 +385,7 @@ function PlayerTalentFrame_OnLoad(self)
 	
 	-- initialize active spec
 	PlayerTalentFrame_UpdateActiveSpec(GetActiveSpecGroup(false));
+	selectedSpec = activeSpec;
 
 	-- setup active spec highlight
 	if ( ACTIVESPEC_DISPLAYTYPE == "BLUE" ) then
@@ -461,14 +442,10 @@ function PlayerTalentFrame_OnShow(self)
 	if ( not self.hasBeenShown ) then
 		-- The first time the frame is shown, select your active spec
 		self.hasBeenShown = true;
-		if ( not GetSpecialization() ) then
-			PlayerSpecTab_OnClick(activeSpec and specTabs[activeSpec] or specTabs[DEFAULT_TALENT_SPEC]);
-		else
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
-		end
-	else
-		PlayerTalentFrame_Refresh();
+		PlayerSpecTab_OnClick(specTabs[activeSpec]);
 	end
+
+	PlayerTalentFrame_Refresh();
 
 	-- Set flag
 	if ( not GetCVarBool("talentFrameShown") ) then
@@ -496,6 +473,11 @@ function PlayerTalentFrame_OnHide()
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
 		StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
+	elseif ( GetNumUnspentTalents() > 0 ) then
+		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
+		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+		TalentMicroButtonAlert:Show();
+		StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
 	end
 end
 
@@ -506,11 +488,13 @@ end
 function PlayerTalentFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if (self:IsShown()) then
-		if ( event == "PLAYER_TALENT_UPDATE" ) then
-			PlayerTalentFrame_Refresh();
+		if ( event == "ADDON_LOADED" ) then
+			PlayerTalentFrame_ClearTalentSelections();
 		elseif ( event == "PET_SPECIALIZATION_CHANGED" or
 				 event == "PREVIEW_TALENT_POINTS_CHANGED" or
-				 event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" ) then
+				 event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" or
+				 event == "PLAYER_TALENT_UPDATE" ) then
+			StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
 			PlayerTalentFrame_ClearTalentSelections();
 			PlayerTalentFrame_Refresh();
 		elseif ( event == "UNIT_LEVEL") then
@@ -1334,6 +1318,7 @@ function SpecButton_OnLeave(self)
 end
 
 function SpecButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	self:GetParent().spellsScroll.ScrollBar:SetValue(0);
 	PlayerTalentFrame_UpdateSpecFrame(self:GetParent(), self:GetID());
 	GameTooltip:Hide();

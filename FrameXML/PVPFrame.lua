@@ -725,6 +725,7 @@ function PVPHonor_ButtonClicked(self)
 	if CheckForMapInBlacklist(self.BGMapID) then
 		PVPFrameLeftButton:SetEnabled(0);
 	else
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		PVPFrameLeftButton:SetEnabled(1);
 	end
 end
@@ -809,7 +810,7 @@ function PVPHonor_ThumbsDownClicked(self)
 	if (self:GetParent().isWorldPVP or self:GetParent().status:IsShown() or self:GetParent().isHoliday or self:GetParent().isRandom) then
 		return;
 	end
-	
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	if (BlacklistBGCount > 0) then
 		for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
 			if (self:GetParent().BGMapID == BlacklistIDs[i]) then

@@ -39,6 +39,7 @@
 				QuestLogTitleButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				QuestLogTitleButton_OnClick(self, button, down);
 			</OnClick>
 			<OnEnter>

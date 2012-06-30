@@ -1416,6 +1416,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
+												PlaySound("igMainMenuOptionCheckBoxOn");
 												self:GetParent():Hide();
 											</OnClick>
 										</Scripts>
@@ -1843,6 +1844,7 @@
 						self.text:SetText(BAD_PLAYER_NAME);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						HelpFrame_SetReportPlayerNameSelection(self.reportType);
 					</OnClick>
 				</Scripts>
@@ -1858,6 +1860,7 @@
 						self.text:SetText(BAD_GUILD_NAME);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						HelpFrame_SetReportPlayerNameSelection(self.reportType);
 					</OnClick>
 				</Scripts>
@@ -1873,6 +1876,7 @@
 						self.text:SetText(BAD_ARENA_TEAM_NAME);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						HelpFrame_SetReportPlayerNameSelection(self.reportType);
 					</OnClick>
 				</Scripts>
@@ -1993,26 +1997,28 @@
 					</EditBox>
 				</Frames>
 			</Frame>
-			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="REPORT_PLAYER" parentKey="reportButton">
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="REPORT_PLAYER" parentKey="reportButton">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="30"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						local parent = self:GetParent();
 						ReportPlayer(parent.reportType, parent.target, parent.CommentFrame.EditBox:GetText());
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -2177,25 +2183,27 @@
 					</EditBox>
 				</Frames>
 			</Frame>
-			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate2" text="REPORT_PLAYER" parentKey="reportButton">
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="REPORT_PLAYER" parentKey="reportButton">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="30"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						ReportPlayer(PLAYER_REPORT_TYPE_CHEATING, self:GetParent().target, self:GetParent().CommentFrame.EditBox:GetText());
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate2" text="CANCEL">
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>

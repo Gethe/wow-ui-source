@@ -504,6 +504,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						PVPFrame_JoinClicked(self);
 					</OnClick>
 					<OnEnter>
@@ -528,6 +529,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						PVPFrame_JoinClicked(self, true);
 					</OnClick>
 				</Scripts>
@@ -1007,16 +1009,8 @@
 			</Frame>
 			<Frame name="PVPTeamManagementFrame" enableMouse="true" hidden="true" parentKey="panel3">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-64"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-11" y="28"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="8" y="-64"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="28"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -1040,14 +1034,13 @@
 				</Layers>
 				<Frames>	
 					<Button name="$parentWeeklyToggleRight" parentKey="weeklyToggleRight">
-						<Size>
-							<AbsDimension x="24" y="24"/>
-						</Size>
+						<Size x="24" y="24"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-5" y="-2"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								PVPTeamManagementFrame_ToggleSeasonal(self);
 							</OnClick>
 						</Scripts>
@@ -1057,44 +1050,28 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Frame name="$parentWeeklyDisplay">
-						<Size>
-							<AbsDimension x="140" y="20"/>
-						</Size>
+						<Size x="140" y="20"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentWeeklyToggleRight" relativePoint="LEFT"  x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="8" y="20"/>
-									</Size>
+									<Size x="8" y="20"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="-5" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="-5" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 								</Texture>
 								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="8" y="20"/>
-									</Size>
+									<Size x="8" y="20"/>
 									<Anchors>
-										<Anchor point="RIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="RIGHT" x="0" y="0"/>
 									</Anchors>
 									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 								</Texture>
 								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-									<Size>
-										<AbsDimension x="10" y="20"/>
-									</Size>
+									<Size x="10" y="20"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 										<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
@@ -1112,18 +1089,13 @@
 						</Layers>
 					</Frame>
 					<Button name="$parentWeeklyToggleLeft" parentKey="weeklyToggleLeft">
-						<Size>
-							<AbsDimension x="24" y="24"/>
-						</Size>
+						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="$parentWeeklyDisplay" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="RIGHT" relativeTo="$parentWeeklyDisplay" relativePoint="LEFT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								PVPTeamManagementFrame_ToggleSeasonal(self);
 							</OnClick>
 						</Scripts>

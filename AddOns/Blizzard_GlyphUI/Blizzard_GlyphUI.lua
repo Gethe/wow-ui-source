@@ -506,6 +506,7 @@ end
 
 
 function GlyphFrameHeader_OnClick (self, button)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	ToggleGlyphFilter(self.filter);
 	GlyphFrame_UpdateGlyphList ();
 end

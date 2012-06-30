@@ -24,7 +24,7 @@
 	<Frame name="CinematicFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="UpperBlackBar">
+				<Texture parentKey="UpperBlackBar" name="UpperBlackBar">
 					<Size>
 						<AbsDimension x="1024" y="128"/>
 					</Size>
@@ -33,7 +33,7 @@
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
-				<Texture name="LowerBlackBar">
+				<Texture parentKey="LowerBlackBar" name="LowerBlackBar">
 					<Size>
 						<AbsDimension x="1024" y="128"/>
 					</Size>
@@ -42,6 +42,22 @@
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
+					<Size x="512" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LowerBlackBar" relativePoint="LEFT" x="5" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.LowerBlackBar" relativePoint="RIGHT" x="-5" y="0"/>
+					</Anchors>
+				</FontString>
+				<!--<FontString parentKey="Subtitle2" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="TOP" hidden="true">
+					<Size x="512" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Subtitle1" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Subtitle1" relativePoint="BOTTOMRIGHT" x="0" y="-15"/>
+					</Anchors>
+				</FontString>-->
 			</Layer>
 		</Layers>
 		<Frames>

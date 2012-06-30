@@ -307,9 +307,9 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.winner = arg1;
 		self:Show();
 	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
-		local activePlayer, activePetSlot = ...;
+		local activePlayer, activePetSlot, newLevel = ...;
 		if (activePlayer == LE_BATTLE_PET_ALLY) then
-			LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot);
+			LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot, newLevel);
 		end
 	elseif ( event == "PET_BATTLE_CAPTURED" ) then
 		local fromPlayer, activePetSlot = ...;
@@ -457,13 +457,15 @@ end
 function LevelUpDisplay_BuildPetBattleWinnerList(self)
 	self.unlockList = {};
 	self.winnerString = PET_BATTLE_RESULT_LOSE;
+	self.winnerSoundKitID = 31750; -- UI_PetBattle_Defeat
 	if ( self.winner == LE_BATTLE_PET_ALLY ) then
 		self.winnerString = PET_BATTLE_RESULT_WIN;
+		self.winnerSoundKitID = 31749; -- UI_PetBattle_Victory
 	end;
 	self.currSpell = 1;
 end
 
-function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot)
+function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot, newLevel)
 	if (self.currSpell == 0 or self.type ~= TOAST_PET_BATTLE_WINNER) then
 		return;
 	end
@@ -479,11 +481,11 @@ function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSl
 		{ 
 		entryType = "petlevelup", 
 		text = format(PET_LEVEL_UP_REACHED, customName or name), 
-		subText = format(LEVEL_GAINED,petLevel), 
+		subText = format(LEVEL_GAINED,newLevel), 
 		icon = petIcon, 
 		subIcon = SUBICON_TEXCOOR_ARROW,
 		});
-	local abilityID = PetBattleFrame_GetAbilityAtLevel(speciesID, petLevel);
+	local abilityID = PetBattleFrame_GetAbilityAtLevel(speciesID, newLevel);
 	if (abilityID) then
 		local abName, abIcon = C_PetJournal.GetPetAbilityInfo(abilityID);
 		table.insert(self.unlockList,
@@ -585,6 +587,7 @@ function LevelUpDisplay_OnShow(self)
 			elseif ( self.type == TOAST_PET_BATTLE_WINNER ) then
 				LevelUpDisplay_BuildPetBattleWinnerList(self);
 				self.levelFrame.singleline:SetText(self.winnerString);
+				PlaySoundKitID(self.winnerSoundKitID);
 			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
 				LevelUpDisplay_BuildEmptyList(self);
 				self.levelFrame.blockText:SetText(self.bossText);

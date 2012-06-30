@@ -792,6 +792,7 @@ end
 --
 
 function QuestLogFrameTrackButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	_QuestLog_ToggleQuestWatch(GetQuestLogSelection());
 	QuestLog_Update();
 end

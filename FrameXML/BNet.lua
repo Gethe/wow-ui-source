@@ -343,7 +343,7 @@ function BNToastFrame_OnClick(self)
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local presenceID, givenName, surname = BNGetFriendInfoByID(toastData);
 		if ( givenName ) then	--This player may have been removed from our friends list, so we may not have a name.
-			ChatFrame_SendTell(string.format(BATTLENET_NAME_FORMAT, givenName, surname));
+			ChatFrame_SendSmartTell(string.format(BATTLENET_NAME_FORMAT, givenName, surname));
 		end
 	end
 end

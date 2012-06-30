@@ -41,6 +41,27 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="NoRaidsCover" enableMouse="true" hidden="true" topLevel="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-25"/>
+					<Anchor point="BOTTOMLEFT" x="3" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="320" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame name="$parentRoleInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-26" />

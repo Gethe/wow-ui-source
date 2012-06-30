@@ -731,8 +731,8 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 			WATCHFRAME_SETLINES = table.wipe(WATCHFRAME_SETLINES or { });
 			achievementID = select(i, ...);
 			achievementCategory = GetAchievementCategory(achievementID);
-			_, achievementName, _, completed, _, _, _, description, _, icon = GetAchievementInfo(achievementID);
-			if ( not completed and (not displayOnlyArena) or achievementCategory == WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY ) then			
+			_, achievementName, _, completed, _, _, _, description, _, icon, _, _, wasEarnedByMe = GetAchievementInfo(achievementID);
+			if ( not wasEarnedByMe and (not displayOnlyArena) or achievementCategory == WATCHFRAME_ACHIEVEMENT_ARENA_CATEGORY ) then			
 				-- achievement name
 				line = WatchFrame_GetAchievementLine();
 				achievementTitle = line;

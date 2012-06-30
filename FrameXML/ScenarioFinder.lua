@@ -27,11 +27,57 @@ function ScenarioFinderFrame_OnEvent(self, event, ...)
 		elseif ( queueFrame.Random:IsShown() ) then
 			ScenarioQueueFrameRandom_UpdateFrame();
 		end
+		ScenarioFinderFrame_UpdateAvailability();
 	end
 end
 
 function ScenarioFinderFrame_OnShow(self)
 	--LFDFrame_UpdateBackfill(true);
+	ScenarioFinderFrame_UpdateAvailability();
+end
+
+local allScenarios = GetScenariosChoiceOrder();
+function ScenarioFinderFrame_UpdateAvailability()
+	local available = false;
+	local nextLevel = nil;
+	local level = UnitLevel("player");
+
+	--We have to look through both random scenarios and specific scenarios.
+	for i=1, GetNumRandomScenarios() do
+		local id, name, typeID, subtype, minLevel, maxLevel = GetRandomScenarioInfo(i);
+		if ( level >= minLevel and level <= maxLevel ) then
+			available = true;
+			nextLevel = nil;
+			break;
+		elseif ( level < minLevel and (not nextLevel or minLevel < nextLevel ) ) then
+			nextLevel = minLevel;
+		end
+	end
+	if ( not available ) then
+		for i=1, #allScenarios do
+			local id = allScenarios[i];
+			if ( id > 0 ) then
+				local name, typeID, subtype, minLevel, maxLevel = GetLFGDungeonInfo(id);
+				if ( level >= minLevel and level <= maxLevel ) then
+					available = true;
+					nextLevel = nil;
+					break;
+				elseif ( level < minLevel and (not nextLevel or minLevel < nextLevel ) ) then
+					nextLevel = minLevel;
+				end
+			end
+		end
+	end
+	if ( available ) then
+		ScenarioFinderFrame.NoScenariosCover:Hide();
+	else
+		ScenarioFinderFrame.NoScenariosCover:Show();
+		if ( nextLevel ) then
+			ScenarioFinderFrame.NoScenariosCover.Label:SetFormattedText(NO_SCENARIO_AVAILABLE_WITH_NEXT_LEVEL, nextLevel);
+		else
+			ScenarioFinderFrame.NoScenariosCover.Label:SetText(NO_SCENARIO_AVAILABLE); 
+		end
+	end
 end
 
 -- Specific

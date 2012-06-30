@@ -594,9 +594,11 @@ function GetEnemyDodgeChance(levelOffset)
 	end
 	local chance = BASE_ENEMY_DODGE_CHANCE[levelOffset];
 	local offhandChance = BASE_ENEMY_DODGE_CHANCE[levelOffset];
-	local expertisePct, offhandExpertisePct = GetExpertise();
+	local rangedChance = BASE_ENEMY_DODGE_CHANCE[levelOffset];
+	local expertisePct, offhandExpertisePct, rangedExpertisePct = GetExpertise();
 	chance = chance - expertisePct;
 	offhandChance = offhandChance - offhandExpertisePct;
+	rangedChance = rangedChance - rangedExpertisePct;
 	if (chance < 0) then
 		chance = 0;
 	elseif (chance > 100) then
@@ -607,7 +609,12 @@ function GetEnemyDodgeChance(levelOffset)
 	elseif (offhandChance > 100) then
 		offhandChance = 100;
 	end
-	return chance, offhandChance;
+	if (rangedChance < 0) then
+		rangedChance = 0;
+	elseif (rangedChance > 100) then
+		rangedChance = 100;
+	end
+	return chance, offhandChance, rangedChance;
 end
 
 function GetEnemyParryChance(levelOffset)
@@ -1880,15 +1887,18 @@ function Expertise_OnEnter(statFrame)
 
 	if (MOVING_STAT_CATEGORY) then return; end
 	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
-	local expertise, offhandExpertise = GetExpertise();
+	local expertise, offhandExpertise, rangedExpertise = GetExpertise();
 	expertise = format("%.2F%%", expertise);
 	offhandExpertise = format("%.2F%%", offhandExpertise);
+	rangedExpertise = format("%.2F%%", rangedExpertise);
 	
 	local category = statFrame:GetParent().Category;
 
 	local expertiseDisplay, expertisePercentDisplay;
 	if (category == "MELEE" and IsDualWielding()) then
 		expertiseDisplay = expertise.." / "..offhandExpertise;
+	elseif (category == "RANGED") then
+		expertiseDisplay = rangedExpertise;
 	else
 		expertiseDisplay = expertise;
 	end
@@ -1908,9 +1918,10 @@ function Expertise_OnEnter(statFrame)
 	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, DODGE_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	local playerLevel = UnitLevel("player");
 	for i=0, 3 do
-		local mainhandDodge, offhandDodge = GetEnemyDodgeChance(i);
+		local mainhandDodge, offhandDodge, rangedDodge = GetEnemyDodgeChance(i);
 		mainhandDodge = format("%.2F%%", mainhandDodge);
 		offhandDodge = format("%.2F%%", offhandDodge);
+		rangedDodge = format("%.2F%%", rangedDodge);
 		local level = playerLevel + i;
 		if (i == 3) then
 			level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
@@ -1918,6 +1929,8 @@ function Expertise_OnEnter(statFrame)
 		local dodgeDisplay;
 		if (category == "MELEE" and IsDualWielding() and mainhandDodge ~= offhandDodge) then
 			dodgeDisplay = mainhandDodge.." / "..offhandDodge;
+		elseif (category == "RANGED") then
+			dodgeDisplay = rangedDodge.."  ";
 		else
 			dodgeDisplay = mainhandDodge.."  ";
 		end
@@ -1958,13 +1971,16 @@ function PaperDollFrame_SetExpertise(statFrame, unit)
 	
 	local category = statFrame:GetParent().Category;
 
-	local expertise, offhandExpertise = GetExpertise();
+	local expertise, offhandExpertise, rangedExpertise = GetExpertise();
 	expertise = format("%.2f%%", expertise);
 	offhandExpertise = format("%.2f%%", offhandExpertise);
+	rangedExpertise = format("%.2F%%", rangedExpertise);
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	local text;
 	if( category == "MELEE" and offhandSpeed ) then
 		text = expertise.." / "..offhandExpertise;
+	elseif (category == "RANGED") then
+		text = rangedExpertise;
 	else
 		text = expertise;
 	end
@@ -3029,6 +3045,7 @@ end
 
 function PaperDollFrameItemFlyoutButton_OnClick (self)
 	if ( self.location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		local slot = EquipmentFlyoutFrame.button;
 		EquipmentManagerIgnoreSlotForSave(slot:GetID());
 		slot.ignored = true;
@@ -3036,6 +3053,7 @@ function PaperDollFrameItemFlyoutButton_OnClick (self)
 		EquipmentFlyout_Show(slot);
 		PaperDollEquipmentManagerPaneSaveSet:Enable();
 	elseif ( self.location == EQUIPMENTFLYOUT_UNIGNORESLOT_LOCATION ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		local slot = EquipmentFlyoutFrame.button;
 		EquipmentManagerUnignoreSlotForSave(slot:GetID());
 		slot.ignored = nil;

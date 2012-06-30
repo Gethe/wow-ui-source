@@ -41,6 +41,9 @@ function PetBattleFrame_OnLoad(self)
 	
 	PetBattleFrame_LoadXPTicks(self);
 
+	self:RegisterEvent("PET_BATTLE_OPENING_START");
+	self:RegisterEvent("PET_BATTLE_OPENING_DONE");
+
 	self:RegisterEvent("PET_BATTLE_TURN_STARTED");
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE");
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
@@ -54,14 +57,22 @@ function PetBattleFrame_OnLoad(self)
 end
 
 function PetBattleFrame_OnEvent(self, event, ...)
-	if ( event == "PET_BATTLE_TURN_STARTED" ) then
+	if ( event == "PET_BATTLE_OPENING_START" ) then
+		PetBattleFrame_Display(self);
+	elseif ( event == "PET_BATTLE_OPENING_DONE" ) then
+		StartSplashTexture.splashAnim:Play();
+		PlaySoundKitID(31584); -- UI_PetBattle_Start
+		PetBattleFrame_UpdateSpeedIndicators(self);
+	elseif ( event == "PET_BATTLE_TURN_STARTED" ) then
 		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
 	elseif ( event == "PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE" ) then
 		PetBattleFrame_UpdatePetSelectionFrame(self);
+		PetBattleFrame_UpdateSpeedIndicators(self);
 		PetBattleFrame_UpdateInstructions(self);
 	elseif ( event == "PET_BATTLE_PET_CHANGED" ) then
 		PetBattleFrame_UpdateAssignedUnitFrames(self);
 		PetBattleFrame_UpdateAllActionButtons(self);
+		PetBattleFrame_UpdateSpeedIndicators(self);
 		PetBattleFrame_UpdateXpBar(self);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
@@ -83,12 +94,15 @@ function PetBattleFrame_UpdateInstructions(self)
 end
 
 function PetBattleFrame_Display(self)
+	AddFrameLock("PETBATTLES");		-- FrameLock removed by PetBattleFrame_Remove
 	self:Show();
 	PetBattleFrame_UpdatePetSelectionFrame(self);
 	PetBattleFrame_UpdateAssignedUnitFrames(self);
 	PetBattleFrame_UpdateActionBarLayout(self);
 	PetBattleFrame_UpdateAllActionButtons(self);
+	PetBattleFrame_InitSpeedIndicators(self);
 	PetBattleFrame_UpdateXpBar(self);
+	PetBattleFrame_UpdatePassButtonAndTimer(self);
 	PetBattleFrame_UpdateInstructions(self);
 	PetBattleWeatherFrame_Update(self.WeatherFrame);
 end
@@ -111,6 +125,49 @@ function PetBattleFrame_UpdateAllActionButtons(self)
 	end
 	PetBattleActionButton_UpdateState(self.BottomFrame.SwitchPetButton);
 	PetBattleActionButton_UpdateState(self.BottomFrame.CatchButton);
+end
+
+function PetBattleFrame_InitSpeedIndicators(self)
+	PetBattleFrame.ActiveAlly.Border:SetShown(true);
+	PetBattleFrame.ActiveEnemy.Border2:SetShown(false);
+	PetBattleFrame.ActiveEnemy.SpeedUnderlay:SetShown(false);
+	PetBattleFrame.ActiveEnemy.SpeedIcon:SetShown(false);
+
+	PetBattleFrame.ActiveAlly.Border:SetShown(true);
+	PetBattleFrame.ActiveAlly.Border2:SetShown(false);
+	PetBattleFrame.ActiveAlly.SpeedUnderlay:SetShown(false);
+	PetBattleFrame.ActiveAlly.SpeedIcon:SetShown(false);
+end
+
+function PetBattleFrame_UpdateSpeedIndicators(self)
+	local hadSpeedIcon = nil;
+	if (PetBattleFrame.ActiveEnemy.SpeedIcon:IsShown()) then
+		hadSpeedIcon = LE_BATTLE_PET_ENEMY;
+	elseif (PetBattleFrame.ActiveAlly.SpeedIcon:IsShown()) then
+		hadSpeedIcon = LE_BATTLE_PET_ALLY;
+	end
+	
+	local enemyActive = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
+	local enemySpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ENEMY, enemyActive);
+
+	local allyActive = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
+	local allySpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ALLY, allyActive);
+	
+	PetBattleFrame.ActiveAlly.Border:SetShown(enemySpeed <= allySpeed);
+	PetBattleFrame.ActiveEnemy.Border2:SetShown(enemySpeed > allySpeed);
+	PetBattleFrame.ActiveEnemy.SpeedUnderlay:SetShown(enemySpeed > allySpeed);
+	PetBattleFrame.ActiveEnemy.SpeedIcon:SetShown(enemySpeed > allySpeed);
+
+	PetBattleFrame.ActiveAlly.Border:SetShown(enemySpeed >= allySpeed);
+	PetBattleFrame.ActiveAlly.Border2:SetShown(enemySpeed < allySpeed);
+	PetBattleFrame.ActiveAlly.SpeedUnderlay:SetShown(enemySpeed < allySpeed);
+	PetBattleFrame.ActiveAlly.SpeedIcon:SetShown(enemySpeed < allySpeed);
+	
+	if (enemySpeed > allySpeed and (not hadSpeedIcon or hadSpeedIcon == LE_BATTLE_PET_ALLY)) then
+		PetBattleFrame.ActiveEnemy.SpeedFlash:Play();
+	elseif (enemySpeed < allySpeed and (not hadSpeedIcon or hadSpeedIcon == LE_BATTLE_PET_ENEMY)) then
+		PetBattleFrame.ActiveAlly.SpeedFlash:Play();
+	end
 end
 
 function PetBattleFrame_UpdateXpBar(self)
@@ -154,6 +211,27 @@ function PetBattleFrame_UpdateAbilityButtonHotKeys(self)
 	for i=1, #self.BottomFrame.abilityButtons do
 		local button = self.BottomFrame.abilityButtons[i];
 		PetBattleAbilityButton_UpdateHotKey(button);
+	end
+end
+
+function PetBattleFrame_UpdatePassButtonAndTimer(self)
+	local pveBattle = C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY);
+	
+	-- Timer & Button for PvP
+	self.BottomFrame.TurnTimer.TimerBG:SetShown(not pveBattle);
+	self.BottomFrame.TurnTimer.Bar:SetShown(not pveBattle);
+	self.BottomFrame.TurnTimer.ArtFrame:SetShown(not pveBattle);
+	self.BottomFrame.TurnTimer.TimerText:SetShown(not pveBattle);
+	
+	-- Button Only
+	self.BottomFrame.TurnTimer.ArtFrame2:SetShown(pveBattle);
+
+	-- Move the button!
+	self.BottomFrame.TurnTimer.SkipButton:ClearAllPoints();
+	if (pveBattle) then
+		self.BottomFrame.TurnTimer.SkipButton:SetPoint("CENTER", 0, 0);
+	else
+		self.BottomFrame.TurnTimer.SkipButton:SetPoint("LEFT", 25, 0);
 	end
 end
 
@@ -335,11 +413,37 @@ function PetBattleFrameTurnTimer_UpdateValues(self)
 end
 
 function PetBattleForfeitButton_OnClick(self)
+	PlaySoundKitID(31585); -- UI_Pet_Battle_Exit
 	C_PetBattles.ForfeitGame();
 end
 
 function PetBattleCatchButton_OnClick(self)
 	C_PetBattles.UseTrap();
+end
+
+function PetBattleCatchButton_OnShow(self)
+	local trapAbilityID = C_PetBattles.GetPlayerTrapAbility();
+	if (trapAbilityID and trapAbilityID > 0) then
+		local abID, abName, abIcon, abCooldown, abDescription = C_PetBattles.GetAbilityInfoByID(trapAbilityID);
+		self.name = abName;
+		self.description = abDescription;
+		self.Icon:SetTexture(abIcon);
+	else
+		self.name = CATCH_PET;
+		self.description = CATCH_PET_DESCRIPTION;
+		self.additionalText = PET_BATTLE_TRAP_ERR_2;
+		GameTooltip:Show();
+	end
+end
+
+function PetBattleCatchButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+	GameTooltip:AddLine(self.description, nil, nil, nil, true);
+	if (self.additionalText) then
+		GameTooltip:AddLine(self.additionalText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	end
+	GameTooltip:Show();
 end
 
 function PetBattleFrame_GetAbilityAtLevel(speciesID, targetLevel)
@@ -432,7 +536,14 @@ function PetBattleActionButton_UpdateState(self)
 			isLocked = true;
 		end
 	elseif ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
-		usable = C_PetBattles.IsTrapAvailable();
+		local trapErr;
+		usable, trapErr = C_PetBattles.IsTrapAvailable();
+		if (not usable and trapErr and trapErr > 1) then
+			self.additionalText = _G["PET_BATTLE_TRAP_ERR_"..trapErr];
+			self.Lock:SetShown(trapErr == 2); -- PETBATTLE_TRAPSTATUS_CANT_TRAP_NEWBIE
+		else
+			self.additionalText = nil;
+		end
 	elseif ( actionType == LE_BATTLE_PET_ACTION_SWITCH_PET ) then
 		--If we're being forced to swap pets, hide us
 		if ( C_PetBattles.ShouldShowPetSelect() == true ) then
@@ -640,7 +751,7 @@ function PetBattleAbilityButton_OnEnter(self)
 	local petIndex = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
 	if ( self:GetEffectiveAlpha() > 0 and C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()) ) then
 		PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
-		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
+		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120, self.additionalText);
 	elseif ( self.abilityID ) then
 		PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.RequiredLevel:GetText()));
 		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
@@ -1112,73 +1223,6 @@ function PetBattleAbilityTooltip_SetAbilityByID(petOwner, petIndex, abilityID, a
 	PET_BATTLE_ABILITY_INFO.abilityID = abilityID;
 	PET_BATTLE_ABILITY_INFO.abilityIndex = nil;
 	SharedPetBattleAbilityTooltip_SetAbility(PetBattlePrimaryAbilityTooltip, PET_BATTLE_ABILITY_INFO, additionalText);
-end
-
---------------------------------------------
-----------Pet Battle Opening Frame----------
---------------------------------------------
-function PetBattleOpeningFrame_OnLoad(self)
-	self:RegisterEvent("PET_BATTLE_OPENING_START");
-	self:RegisterEvent("PET_BATTLE_OPENING_DONE");
-	self:RegisterEvent("PET_BATTLE_CLOSE");
-end
-
-function PetBattleOpeningFrame_OnEvent(self, event, ...)
-	local open;
-	local openMainFrame;
-	local close;
-	if ( event == "PET_BATTLE_OPENING_START" ) then
-		open = true;
-		if ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) then
-			-- bypassing intro
-			close = true;
-			openMainFrame = true;
-		else
-			-- play intro
-		end
-	elseif ( event == "PET_BATTLE_OPENING_DONE" ) then
-		-- end intro, open main frame
-		close = true;
-		openMainFrame = true;
-		StartSplashTexture.splashAnim:Play();
-	elseif ( event == "PET_BATTLE_CLOSE" ) then
-		-- end battle all together
-		close = true;
-	end
-	
-	if ( open == true ) then
-		PetBattleOpeningFrame_Display(self);
-	end
-	
-	if ( close == true ) then
-		PetBattleOpeningFrame_Remove(self);
-	end
-	
-	if ( openMainFrame == true ) then
-		PetBattleFrame_Display(PetBattleFrame);	
-	end
-end
-
-function PetBattleOpeningFrame_Display(self)
-	PetBattleOpeningFrame_UpdatePanel(self.MyPet, LE_BATTLE_PET_ALLY, 1);
-	PetBattleOpeningFrame_UpdatePanel(self.EnemyPet, LE_BATTLE_PET_ENEMY, 1);
-	--self:Show();
-	AddFrameLock("PETBATTLES");
-	AddFrameLock("PETBATTLEOPENING");
-end
-
-function PetBattleOpeningFrame_Remove(self)
-	self:Hide();
-	RemoveFrameLock("PETBATTLEOPENING");
-end
-
-function PetBattleOpeningFrame_UpdatePanel(panel, petOwner, petIndex)
-	panel.PetModel:SetDisplayInfo(C_PetBattles.GetDisplayID(petOwner, petIndex));
-	panel.PetModel:SetRotation((petOwner == LE_BATTLE_PET_ALLY and 1 or -1) * BATTLE_PET_DISPLAY_ROTATION);
-	panel.PetModel:SetAnimation(0, 0);	--Only use the first variation of the stand animation to avoid wandering around.
-	panel.PetBanner.Name:SetText(C_PetBattles.GetName(petOwner, petIndex));
-
-	SetPortraitToTexture(panel.PetBanner.Icon, C_PetBattles.GetIcon(petOwner, petIndex));
 end
 
 ----------------------------------------------

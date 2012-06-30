@@ -1188,6 +1188,7 @@ function SpellBook_GetCoreAbilitySpecTab(index)
 end
 
 function SpellBookCoreAbilitiesTab_OnClick(self)
+	PlaySound("igAbiliityPageTurn");
 	SpellBookCoreAbilitiesFrame.selectedSpec = self:GetID();
 	SpellBook_UpdateCoreAbilitiesTab();
 end

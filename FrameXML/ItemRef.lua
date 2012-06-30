@@ -132,7 +132,7 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 			else
 				if ( not BNIsSelf(presenceID) ) then
-					ChatFrame_SendTell(name, chatFrame);
+					ChatFrame_SendSmartTell(name, chatFrame);
 				end
 			end
 		end

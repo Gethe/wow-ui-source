@@ -244,6 +244,7 @@
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						PanelTemplates_SetTab(MacroFrame, self:GetID());
 						MacroFrame_SaveMacro();
 						MacroFrame_SetAccountMacros();
@@ -270,6 +271,7 @@
 						PanelTemplates_TabResize(self, -15, nil, nil, 150);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						PanelTemplates_SetTab(MacroFrame, self:GetID());
 						MacroFrame_SaveMacro();
 						MacroFrame_SetCharacterMacros();
@@ -285,6 +287,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						MacroFrame_DeleteMacro();
 					</OnClick>
 				</Scripts>

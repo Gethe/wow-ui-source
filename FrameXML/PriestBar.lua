@@ -47,14 +47,19 @@ function PriestBarFrame_CheckAndShow(self)
 	local spec = GetSpecialization();
 	if ( spec == SPEC_PRIEST_SHADOW ) then
 		if ( self.hasReqLevel ) then
+			local adjustAttachments;
 			if ( spec ~= self.spec ) then
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("UNIT_DISPLAYPOWER");
 				self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player", "vehicle");
 				self:SetAlpha(0);
 				self.showAnim:Play();
+				adjustAttachments = true;
 			end
 			self:Show();
+			if ( adjustAttachments ) then
+				PlayerFrame_AdjustAttachments();
+			end
 			PriestBar_Update();
 		end
 	else
@@ -64,6 +69,7 @@ function PriestBarFrame_CheckAndShow(self)
 			self:UnregisterEvent("UNIT_DISPLAYPOWER");
 			self:UnregisterEvent("UNIT_POWER_FREQUENT");
 			self:Hide();
+			PlayerFrame_AdjustAttachments();
 		end
 	end
 	self.spec = spec;

@@ -84,7 +84,9 @@ StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	end,
 	OnShow = function(self)
 		local name, count, _, _, cost = GetGlyphClearInfo();
-		if count >= cost then
+		if cost == 0 then
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH_NO_COST, self.data.name);
+		elseif count >= cost then
 			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, GREEN_FONT_COLOR_CODE, cost, name);
 		else
 			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, RED_FONT_COLOR_CODE, cost, name);
@@ -107,7 +109,9 @@ StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	end,
 	OnShow = function(self)
 		local name, count, _, _, cost = GetGlyphClearInfo();
-		if count >= cost then
+		if cost == 0 then
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST);
+		elseif count >= cost then
 			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, GREEN_FONT_COLOR_CODE, cost, name);
 		else
 			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, RED_FONT_COLOR_CODE, cost, name);

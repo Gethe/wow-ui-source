@@ -75,8 +75,8 @@ function GossipFrameAvailableQuestsUpdate(...)
 	local titleButton;
 	local titleIndex = 1;
 	local titleButtonIcon;
-	local isTrivial, isDaily, isRepeatable;
-	for i=1, select("#", ...), 5 do
+	local isTrivial, isDaily, isRepeatable, isLegendary;
+	for i=1, select("#", ...), 6 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
@@ -85,7 +85,10 @@ function GossipFrameAvailableQuestsUpdate(...)
 		isTrivial = select(i+2, ...);
 		isDaily = select(i+3, ...);
 		isRepeatable = select(i+4, ...);
-		if ( isDaily ) then
+		isLegendary = select(i+5, ...);
+		if ( isLegendary ) then
+			titleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
+		elseif ( isDaily ) then
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
 		elseif ( isRepeatable ) then
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
@@ -119,7 +122,7 @@ function GossipFrameActiveQuestsUpdate(...)
 	local titleButtonIcon;
 	local numActiveQuestData = select("#", ...);
 	GossipFrame.hasActiveQuests = (numActiveQuestData > 0);
-	for i=1, numActiveQuestData, 4 do
+	for i=1, numActiveQuestData, 5 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
@@ -136,7 +139,11 @@ function GossipFrameActiveQuestsUpdate(...)
 		titleButton:SetID(titleIndex);
 		titleButton.type="Active";
 		if ( select(i+3, ...) ) then
-			titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+			if ( select(i+5, ...) ) then
+				titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
+			else
+				titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+			end
 		else
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
 		end		

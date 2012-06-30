@@ -942,6 +942,7 @@ function WorldMapZoneButton_OnClick(self)
 end
 
 function WorldMapZoomOutButton_OnClick()
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	WorldMapTooltip:Hide();
 	
 	-- check if code needs to zoom out before going to the continent map

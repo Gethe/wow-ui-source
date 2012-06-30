@@ -290,7 +290,7 @@ function ActionButton_Update (self)
 	-- Update Action Text
 	local actionName = _G[name.."Name"];
 	if actionName then
-		if ( not IsConsumableAction(action) and not IsStackableAction(action) ) then
+		if ( not IsConsumableAction(action) and not IsStackableAction(action) and (IsItemAction(action) or GetActionCount(action) == 0) ) then
 			actionName:SetText(GetActionText(action));
 		else
 			actionName:SetText("");
@@ -396,7 +396,7 @@ end
 function ActionButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
 	local action = self.action;
-	if ( IsConsumableAction(action) or IsStackableAction(action) or GetActionCount(action) > 0 ) then
+	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
 		local count = GetActionCount(action);
 		if ( count > (self.maxDisplayCount or 9999 ) ) then
 			text:SetText("*");

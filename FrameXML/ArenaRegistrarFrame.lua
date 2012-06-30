@@ -21,6 +21,7 @@ function PVPBannerFrame_SetBorderColor ()
 end
 
 function PVPBannerFrame_OnShow (self)
+	PlaySound("igCharacterInfoOpen");
 	SetPortraitToTexture(PVPBannerFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	PVPBannerFrameStandardEmblem.id = random(MAX_TEAM_EMBLEMS);
 	PVPBannerFrameStandardBorder.id = random(MAX_TEAM_BORDERS);

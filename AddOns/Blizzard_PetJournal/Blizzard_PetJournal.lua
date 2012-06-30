@@ -8,6 +8,7 @@ PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 25;
 local UNLOCK_ACHIEVEMENTS = {"6461", "7433", "6566"};
 local PLAYER_MOUNT_LEVEL = 20;
+local HEAL_PET_SPELL = 125439;
 
 
 StaticPopupDialogs["BATTLE_PET_RENAME"] = {
@@ -19,11 +20,13 @@ StaticPopupDialogs["BATTLE_PET_RENAME"] = {
 	OnAccept = function(self)
 		local text = self.editBox:GetText();
 		C_PetJournal.SetCustomName(self.data, text);
+		PetJournal_UpdateAll();
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
 		local text = parent.editBox:GetText();
 		C_PetJournal.SetCustomName(parent.data, text);
+		PetJournal_UpdateAll();
 		parent:Hide();
 	end,
 	OnShow = function(self)
@@ -90,11 +93,13 @@ function PetJournalParent_UpdateSelectedTab(self)
 end
 
 function PetJournalParent_OnShow(self)
+	PlaySound("igCharacterInfoOpen");
 	PetJournalParent_UpdateSelectedTab(self);
 	UpdateMicroButtons();
 end
 
 function PetJournalParent_OnHide(self)
+	PlaySound("igCharacterInfoClose");
 	UpdateMicroButtons();
 end
 
@@ -110,7 +115,6 @@ function PetJournal_OnLoad(self)
 	self.listScroll.update = PetJournal_UpdatePetList;
 	self.listScroll.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.listScroll, "CompanionListButtonTemplate", 44, 0);
-	
 	
 	--PanelTemplates_DeselectTab(PetJournalTab2);
 	PetJournal.isWild = false;
@@ -196,6 +200,43 @@ function PetJournal_UpdateSummonButtonState()
 	end
 end
 
+function PetJournalHealPetButton_OnLoad(self)
+	self.spellID = HEAL_PET_SPELL;
+	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
+	self.texture:SetTexture(spellIcon);
+	self.spellname:SetText(spellName);
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+end
+
+function PetJournalHealPetButton_OnShow(self)
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+end
+
+function PetJournalHealPetButton_OnHide(self)
+	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+end
+
+function PetJournalHealPetButton_OnEvent(self, event, ...)
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		PetJournalHealPetButton_UpdateCooldown(self);
+		-- Update tooltip
+		if ( GameTooltip:GetOwner() == self ) then
+			PetJournalHealPetButton_OnEnter(self);
+		end
+	end
+end
+
+function PetJournalHealPetButton_UpdateCooldown(self)
+	local cooldown = _G[self:GetName().."Cooldown"];
+	local start, duration, enable = GetSpellCooldown(self.spellID);
+	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+end
+
+function PetJournalHealPetButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetSpellByID(self.spellID);
+	self.UpdateTooltip = PetJournalHealPetButton_OnEnter;
+end
 
 function PetJournal_OnTabClick(isWild)
 	PetJournal.isWild = isWild;
@@ -467,7 +508,7 @@ function PetJournal_UpdatePetLoadOut()
 			PetJournal_UpdatePetAbility(loadoutPlate.spell2, ability2ID, petID);
 			PetJournal_UpdatePetAbility(loadoutPlate.spell3, ability3ID, petID);
 
-			--Only show flyouts if the person already has the first 3 abilities.
+			--[[Only show flyouts if the person already has the first 3 abilities.
 			if ( numUsableAbilities < 3 ) then
 				loadoutPlate.spell1.enabled = false;
 				loadoutPlate.spell2.enabled = false;
@@ -481,20 +522,20 @@ function PetJournal_UpdatePetLoadOut()
 				loadoutPlate.spell1.FlyoutArrow:Hide();
 				loadoutPlate.spell2.FlyoutArrow:Hide();
 				loadoutPlate.spell3.FlyoutArrow:Hide();
-			else
-				loadoutPlate.spell1.enabled = true;
-				loadoutPlate.spell2.enabled = true;
-				loadoutPlate.spell3.enabled = true;
-				loadoutPlate.spell1:GetHighlightTexture():SetAlpha(1);
-				loadoutPlate.spell2:GetHighlightTexture():SetAlpha(1);
-				loadoutPlate.spell3:GetHighlightTexture():SetAlpha(1);
-				loadoutPlate.spell1:GetPushedTexture():SetAlpha(1);
-				loadoutPlate.spell2:GetPushedTexture():SetAlpha(1);
-				loadoutPlate.spell3:GetPushedTexture():SetAlpha(1);
-				loadoutPlate.spell1.FlyoutArrow:Show();
-				loadoutPlate.spell2.FlyoutArrow:Show();
-				loadoutPlate.spell3.FlyoutArrow:Show();
-			end
+			else]]
+			loadoutPlate.spell1.enabled = true;
+			loadoutPlate.spell2.enabled = true;
+			loadoutPlate.spell3.enabled = true;
+			loadoutPlate.spell1:GetHighlightTexture():SetAlpha(1);
+			loadoutPlate.spell2:GetHighlightTexture():SetAlpha(1);
+			loadoutPlate.spell3:GetHighlightTexture():SetAlpha(1);
+			loadoutPlate.spell1:GetPushedTexture():SetAlpha(1);
+			loadoutPlate.spell2:GetPushedTexture():SetAlpha(1);
+			loadoutPlate.spell3:GetPushedTexture():SetAlpha(1);
+			loadoutPlate.spell1.FlyoutArrow:Show();
+			loadoutPlate.spell2.FlyoutArrow:Show();
+			loadoutPlate.spell3.FlyoutArrow:Show();
+
 			loadoutPlate.helpFrame:Hide();
 			loadoutPlate.achievementButton:Hide();
 			loadoutPlate.emptyslot:Hide();
@@ -515,6 +556,11 @@ function PetJournal_ShowAchievement(self)
 	AchievementFrame_SelectAchievement(self.achievementID, true);
 end
 
+function PetJournal_UpdateAll()
+	PetJournal_UpdatePetList();
+	PetJournal_UpdatePetLoadOut();
+	PetJournal_UpdatePetCard(PetJournal.PetCardList.MainCard);
+end
 
 function PetJournal_UpdatePetList()
 	local scrollFrame = PetJournal.listScroll;
@@ -678,6 +724,7 @@ end
 
 
 function PetJournal_TogglePetCard(index)
+	PlaySound("igAbiliityPageTurn");
 	if PetJournal.PetCardList:IsShown() and PetJournal.pcIndex == index then
 		PetJournal_HidePetCard()
 	else
@@ -758,17 +805,15 @@ function PetJournal_UpdatePetCard(self)
 			self.isDead:Hide();
 		end
 		
-		self.statsFrame.attackValue:SetText(attack);
-		self.statsFrame.speedValue:SetText(speed);
+		self.powerFrame.attackValue:SetText(attack);
+		self.speedFrame.speedValue:SetText(speed);
 		if ( isWild ) then
-			self.statsFrame.rarityValue:SetText(_G["BATTLE_PET_BREED_QUALITY"..rarity]);
+			self.rarityFrame.rarityValue:SetText(_G["BATTLE_PET_BREED_QUALITY"..rarity]);
 			local color = ITEM_QUALITY_COLORS[rarity-1];
-			self.statsFrame.rarityValue:SetVertexColor(color.r, color.g, color.b);
-			self.statsFrame.rarityValue:Show();
-			self.statsFrame.rarityTex:Show();
+			self.rarityFrame.rarityValue:SetVertexColor(color.r, color.g, color.b);
+			self.rarityFrame:Show();
 		else
-			self.statsFrame.rarityValue:Hide();
-			self.statsFrame.rarityTex:Hide();
+			self.rarityFrame:Hide();
 		end
 	else
 		speciesID = PetJournal.pcSpeciesID;
@@ -838,6 +883,12 @@ function PetJournal_UpdatePetCard(self)
 			spellFrame.name:SetText(name);
 			spellFrame.icon:SetTexture(icon);
 			spellFrame.petTypeIcon:SetTexture(GetPetTypeTexture(petType) );
+			spellFrame.LevelRequirement:SetText(levels[i]);
+			spellFrame.LevelRequirement:SetShown(not level or level < levels[i]);
+			spellFrame.BlackCover:SetShown(not level or level < levels[i]);
+			if (not level or level < levels[i]) then
+				spellFrame.additionalText = format(PET_ABILITY_REQUIRES_LEVEL, levels[i]);
+			end
 			spellFrame.abilityID = abilities[i];
 			spellFrame.petID = PetJournal.pcPetID;
 			spellFrame.speciesID = speciesID;

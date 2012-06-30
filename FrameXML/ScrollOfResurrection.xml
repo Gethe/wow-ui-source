@@ -237,6 +237,9 @@
 			<OnLoad function="ScrollOfResurrectionSelection_OnLoad"/>
 			<OnEvent function="ScrollOfResurrectionSelection_OnEvent"/>
 			<OnShow function="ScrollOfResurrectionSelection_OnShow"/>
+			<OnHide>
+				PlaySound("igSpellBookClose");
+			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="ScrollOfResurrectionFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG">
@@ -480,6 +483,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						StaticPopupSpecial_Hide(ScrollOfResurrectionFrame);
 					</OnClick>
 				</Scripts>

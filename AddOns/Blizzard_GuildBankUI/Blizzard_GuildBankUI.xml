@@ -884,6 +884,7 @@
 								self:SetWidth(_G[self:GetName().."Text"]:GetWidth()+40);
 							</OnLoad>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								if ( GuildBankTabInfoEditBox:GetText() ~= GuildBankTabInfoEditBox.text ) then
 									SetGuildBankText(GetCurrentGuildBankTab(), GuildBankTabInfoEditBox:GetText());
 									GuildBankTabInfoEditBox:ClearFocus();

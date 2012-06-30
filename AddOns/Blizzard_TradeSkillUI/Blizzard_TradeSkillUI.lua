@@ -191,7 +191,7 @@ function TradeSkillFrame_Update()
 	local buttonIndex = 0;
 
 	-- ScrollFrame update
-	FauxScrollFrame_Update(TradeSkillListScrollFrame, numList, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
+	FauxScrollFrame_Update(TradeSkillListScrollFrame, numList, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316, true );
 	
 	for i=1, diplayedSkills, 1 do
 		skillIndex = i + skillOffset;

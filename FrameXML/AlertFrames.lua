@@ -1,6 +1,7 @@
 MAX_ACHIEVEMENT_ALERTS = 2;
 LOOT_WON_ALERT_FRAMES = {};
 MONEY_WON_ALERT_FRAMES = {};
+DELAYED_ACHIEVEMENT_ALERTS = {};
 
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
@@ -10,6 +11,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
 	self:RegisterEvent("LOOT_ITEM_ROLL_WON");
 	self:RegisterEvent("SHOW_LOOT_TOAST");
+	self:RegisterEvent("PET_BATTLE_CLOSE");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -49,6 +51,8 @@ function AlertFrame_OnEvent (self, event, ...)
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		end
+	elseif ( event == "PET_BATTLE_CLOSE" ) then
+		AchievementAlertFrame_FireDelayedAlerts();
 	end
 end
 
@@ -485,11 +489,34 @@ function AchievementAlertFrame_OnLoad (self)
 	self:RegisterForClicks("LeftButtonUp");
 end
 
+function AchievementAlertFrame_IsPaused()
+	return C_PetBattles.IsInBattle();
+end
+
+function AchievementAlertFrame_FireDelayedAlerts()
+	while ( #DELAYED_ACHIEVEMENT_ALERTS > 0 ) do
+		if ( AchievementAlertFrame_ShowAlert(DELAYED_ACHIEVEMENT_ALERTS[1]) ) then
+			table.remove(DELAYED_ACHIEVEMENT_ALERTS, 1);
+		else
+			break;
+		end
+	end
+end
+
 function AchievementAlertFrame_ShowAlert (achievementID)
 	local frame = AchievementAlertFrame_GetAlertFrame();
-	if ( not frame ) then
-		-- We ran out of frames! Bail!
-		return;
+	if ( AchievementAlertFrame_IsPaused() or not frame ) then
+		-- Either we ran out of frames or we've paused alerts, so we have to queue this one.
+		-- Make sure this one isn't already queued.
+		for i=1, #DELAYED_ACHIEVEMENT_ALERTS do
+			if ( DELAYED_ACHIEVEMENT_ALERTS[i] == achievementID ) then
+				return false;
+			end
+		end
+
+		-- Queue this one up.
+		DELAYED_ACHIEVEMENT_ALERTS[#DELAYED_ACHIEVEMENT_ALERTS + 1] = achievementID;
+		return false;
 	end
 	
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch = GetAchievementInfo(achievementID);
@@ -586,6 +613,8 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 	AlertFrame_AnimateIn(frame);
 	
 	AlertFrame_FixAnchors();
+
+	return true;
 end
 
 function AchievementAlertFrame_GetAlertFrame()

@@ -199,15 +199,17 @@ function InspectTalentFrameSpec_OnShow(self)
 		spec = GetInspectSpecialization(inspectedUnit);
 	end
 	if(spec ~= nil and spec > 0) then
-		local id, name, description, icon, background = GetSpecializationInfoByID(spec);
-		self.specIcon:Show();
-		SetPortraitToTexture(self.specIcon, icon);
-		self.specName:SetText(name);
 		local role1 = GetSpecializationRoleByID(spec);
-		self.roleIcon:Show();
-		self.roleName:SetText(_G[role1]);
-		self.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
-		self.tooltip = description;
+		if(role1 ~= nil) then
+			local id, name, description, icon, background = GetSpecializationInfoByID(spec);
+			self.specIcon:Show();
+			SetPortraitToTexture(self.specIcon, icon);
+			self.specName:SetText(name);
+			self.roleIcon:Show();
+			self.roleName:SetText(_G[role1]);
+			self.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
+			self.tooltip = description;
+		end
 	else
 		InspectTalentFrameSpec_OnClear(self);
 	end

@@ -26,6 +26,7 @@ function ScrollOfResurrection_Show(sendType, target, text)
 end
 
 function ScrollOfResurrectionAcceptButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	local comment = ScrollOfResurrectionFrame.noteFrame.scrollFrame.editBox:GetText();
 	if ( ScrollOfResurrectionFrame.type == "bn" ) then
 		BNSendSoR(ScrollOfResurrectionFrame.target, comment);
@@ -59,6 +60,7 @@ function ScrollOfResurrectionSelection_OnEvent(self, event, ...)
 end
 
 function ScrollOfResurrectionSelection_OnShow(self)
+	PlaySound("igSpellBookOpen");
 	ScrollOfResurrectionSelectionFrame.sendType = nil;
 	ScrollOfResurrectionSelectionFrame.target = nil;
 	ScrollOfResurrectionSelectionFrame.text = nil;

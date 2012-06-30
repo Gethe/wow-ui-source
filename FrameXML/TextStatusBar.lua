@@ -41,6 +41,16 @@ end
 function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value, valueMin, valueMax)
 	if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( statusFrame.pauseUpdates ) ) then
 		statusFrame:Show();
+		if ( (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) or statusFrame.forceShow ) then
+			textString:Show();
+		elseif ( statusFrame.lockShow > 0 and (not statusFrame.forceHideText) ) then
+			textString:Show();
+		else
+			textString:SetText("");
+			textString:Hide();
+			return;
+		end
+
 		if ( value and valueMax > 0 and ( GetCVarBool("statusTextPercentage") or statusFrame.showPercentage ) and not statusFrame.showNumeric) then
 			if ( value == 0 and statusFrame.zeroText ) then
 				textString:SetText(statusFrame.zeroText);
@@ -73,14 +83,6 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 			else
 				textString:SetText(value.." / "..valueMax);
 			end
-		end
-		
-		if ( (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) or statusFrame.forceShow ) then
-			textString:Show();
-		elseif ( statusFrame.lockShow > 0 and (not statusFrame.forceHideText) ) then
-			textString:Show();
-		else
-			textString:Hide();
 		end
 	else
 		textString:Hide();

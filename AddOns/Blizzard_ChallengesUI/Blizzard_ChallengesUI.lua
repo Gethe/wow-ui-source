@@ -127,5 +127,6 @@ function ChallengesFrame_OnShow(self)
 end
 
 function ChallengesFrameDungeonButton_OnClick(self, button)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	ChallengesFrame_Update(ChallengesFrame, self.mapID);
 end

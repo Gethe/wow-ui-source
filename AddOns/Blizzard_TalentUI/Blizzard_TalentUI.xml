@@ -121,6 +121,7 @@
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				PlayerTalentFrameTalent_OnClick(self, button);
 			</OnClick>
 			<OnEvent>

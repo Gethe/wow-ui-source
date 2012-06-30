@@ -364,10 +364,12 @@ function GuildRosterButton_OnClick(self, button)
 			if ( GuildMemberDetailFrame:IsShown() and self.guildIndex == GuildFrame.selectedGuildMember ) then
 				SetGuildRosterSelection(0);
 				GuildFrame.selectedGuildMember = 0;
+				PlaySound("igCharacterInfoClose");
 				GuildMemberDetailFrame:Hide();
 			else
 				SetGuildRosterSelection(self.guildIndex);
 				GuildFrame.selectedGuildMember = self.guildIndex;
+				PlaySound("igCharacterInfoOpen");
 				GuildFramePopup_Show(GuildMemberDetailFrame);
 				CloseDropDownMenus();
 			end
@@ -473,6 +475,7 @@ function GuildRoster_UpdateTradeSkills()
 end
 
 function GuildRosterTradeSkillHeader_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	if ( self.collapsed ) then
 		ExpandGuildTradeSkillHeader(self.skillID);
 	else

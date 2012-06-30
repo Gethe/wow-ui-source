@@ -39,6 +39,7 @@ ChatTypeInfo["GUILD"]									= { sticky = 1, flashTab = false, flashTabOnGenera
 ChatTypeInfo["OFFICER"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["YELL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["WHISPER"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
+ChatTypeInfo["SMART_WHISPER"]							= ChatTypeInfo["WHISPER"];
 ChatTypeInfo["WHISPER_INFORM"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["REPLY"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["EMOTE"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -1607,7 +1608,7 @@ end
 
 SlashCmdList["REPLY"] = function(msg, editBox)
 	local lastTell = ChatEdit_GetLastTellTarget();
-	if ( lastTell ~= "" ) then
+	if ( lastTell ) then
 		msg = SubstituteChatMessageBeforeSend(msg);
 		SendChatMessage(msg, "WHISPER", editBox.languageID, lastTell);
 	else
@@ -2819,11 +2820,11 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
 		end
 	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
-		local arg1, activePetSlot = ...;
-		if (arg1 == 1 and activePetSlot > 0) then
+		local arg1, activePetSlot, newLevel = ...;
+		if (arg1 == LE_BATTLE_PET_ALLY and activePetSlot > 0) then
 			local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
 			local speciesID, customName, level, xp, maxXp, displayID, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
-			LevelUpDisplay_ChatPrint(self, level, CHAT_BATTLE_PET_LEVEL_UP, (customName or name), icon);
+			LevelUpDisplay_ChatPrint(self, newLevel, CHAT_BATTLE_PET_LEVEL_UP, (customName or name), icon);
 		end
 	elseif ( event == "PET_BATTLE_CAPTURED" ) then
 		local activePlayer, activePetSlot = ...;
@@ -3233,7 +3234,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
 			end
 			
-			if ( (strlen(arg3) > 0) and (arg3 ~= "Universal") and (arg3 ~= self.defaultLanguage) ) then
+			if ( (strlen(arg3) > 0) and (arg3 ~= self.defaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
 					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink.."["..coloredName.."]".."|h");
@@ -3278,7 +3279,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
  
 		if ( type == "WHISPER" or type == "BN_WHISPER" ) then
 			--BN_WHISPER FIXME
-			ChatEdit_SetLastTellTarget(arg2);
+			ChatEdit_SetLastTellTarget(arg2, type);
 			if ( self.tellTimer and (GetTime() > self.tellTimer) ) then
 				PlaySound("TellMessage");
 			end
@@ -3466,23 +3467,30 @@ function ChatFrame_SendTell(name, chatFrame)
 		editBox:SetText(SLASH_WHISPER1.." "..name.." ");
 	end
 	ChatEdit_ParseText(editBox, 0);
---[[
-	chatFrame.editBox:SetAttribute("chatType", "WHISPER");
-	chatFrame.editBox:SetAttribute("tellTarget", name);
-	ChatEdit_UpdateHeader(chatFrame.editBox);
+end
+
+function ChatFrame_SendSmartTell(name, chatFrame)
+	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
+	
+	--DEBUG FIXME - for now, we're not going to remove spaces from names. We need to make sure X-server still works.
+	-- Remove spaces from the server name for slash command parsing
+	--name = gsub(name, " ", "");
+
 	if ( editBox ~= ChatEdit_GetActiveWindow() ) then
-		ChatFrame_OpenChat("", chatFrame);
+		ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." "..name.." ", chatFrame);
+	else
+		editBox:SetText(SLASH_SMART_WHISPER1.." "..name.." ");
 	end
-]]
+	ChatEdit_ParseText(editBox, 0);
 end
 
 function ChatFrame_ReplyTell(chatFrame)
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
-	local lastTell = ChatEdit_GetLastTellTarget();
-	if ( lastTell ~= "" ) then
+	local lastTell, lastTellType = ChatEdit_GetLastTellTarget();
+	if ( lastTell ) then
 		--BN_WHISPER FIXME
-		editBox:SetAttribute("chatType", "WHISPER");
+		editBox:SetAttribute("chatType", lastTellType);
 		editBox:SetAttribute("tellTarget", lastTell);
 		ChatEdit_UpdateHeader(editBox);
 		if ( editBox ~= ChatEdit_GetActiveWindow() ) then
@@ -3496,10 +3504,10 @@ end
 function ChatFrame_ReplyTell2(chatFrame)
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
-	local lastTold = ChatEdit_GetLastToldTarget();
-	if ( lastTold ~= "" ) then
+	local lastTold, lastToldType = ChatEdit_GetLastToldTarget();
+	if ( lastTold ) then
 		--BN_WHISPER FIXME
-		editBox:SetAttribute("chatType", "WHISPER");
+		editBox:SetAttribute("chatType", lastToldType);
 		editBox:SetAttribute("tellTarget", lastTold);
 		ChatEdit_UpdateHeader(editBox);
 		if ( editBox ~= ChatEdit_GetActiveWindow() ) then
@@ -3644,10 +3652,13 @@ end
 -- ChatEdit functions
 
 local ChatEdit_LastTell = {};
+local ChatEdit_LastTellType = {};
 for i = 1, NUM_REMEMBERED_TELLS, 1 do
 	ChatEdit_LastTell[i] = "";
+	ChatEdit_LastTellType[i] = "";
 end
-local ChatEdit_LastTold = "";
+local ChatEdit_LastTold;
+local ChatEdit_LastToldType;
 
 function ChatEdit_OnLoad(self)
 	self:SetFrameLevel(self.chatFrame:GetFrameLevel()+1);
@@ -3878,55 +3889,61 @@ function ChatEdit_InsertLink(text)
 end
 
 function ChatEdit_GetLastTellTarget()
-	for index, value in ipairs(ChatEdit_LastTell) do
+	for i=1, #ChatEdit_LastTell do
+		local value = ChatEdit_LastTell[i];
 		if ( value ~= "" ) then
-			return value;
+			return value, ChatEdit_LastTellType[i];
 		end
 	end
-	return "";
+	return nil;
 end
 
-function ChatEdit_SetLastTellTarget(target)
+function ChatEdit_SetLastTellTarget(target, chatType)
 	local found = #ChatEdit_LastTell;
-	for index, value in ipairs(ChatEdit_LastTell) do
-		if ( strupper(target) == strupper(value) ) then
-			found = index;
+	for i=1, #ChatEdit_LastTell do
+		local tellTarget, tellChatType = ChatEdit_LastTell[i], ChatEdit_LastTellType[i];
+		if ( strupper(target) == strupper(tellTarget) and strupper(chatType) == strupper(tellChatType) ) then
+			found = i;
 			break;
 		end
 	end
 
 	for i = found, 2, -1 do
 		ChatEdit_LastTell[i] = ChatEdit_LastTell[i-1];
+		ChatEdit_LastTellType[i] = ChatEdit_LastTellType[i-1];
 	end
 	ChatEdit_LastTell[1] = target;
+	ChatEdit_LastTellType[1] = chatType;
 end
 
-function ChatEdit_GetNextTellTarget(target)
+function ChatEdit_GetNextTellTarget(target, chatType)
 	if ( not target or target == "" ) then
-		return ChatEdit_LastTell[1];
+		return ChatEdit_LastTell[1], ChatEdit_LastTellType[1];
 	end
 
 	for i = 1, #ChatEdit_LastTell - 1, 1 do
 		if ( ChatEdit_LastTell[i] == "" ) then
 			break;
-		elseif ( strupper(target) == strupper(ChatEdit_LastTell[i]) ) then
+		elseif ( strupper(target) == strupper(ChatEdit_LastTell[i]) and
+			strupper(chatType) == strupper(ChatEdit_LastTellType[i]) ) then
 			if ( ChatEdit_LastTell[i+1] ~= "" ) then
-				return ChatEdit_LastTell[i+1];
+				return ChatEdit_LastTell[i+1], ChatEdit_LastTellType[i+1];
 			else
 				break;
 			end
 		end
 	end
 
-	return ChatEdit_LastTell[1];
+	return ChatEdit_LastTell[1], ChatEdit_LastTellType[1];
 end
 
 function ChatEdit_GetLastToldTarget()
-	return ChatEdit_LastTold;
+	return ChatEdit_LastTold, ChatEdit_LastToldType;
 end
 
-function ChatEdit_SetLastToldTarget(name)
-	ChatEdit_LastTold = name or "";
+function ChatEdit_SetLastToldTarget(name, chatType)
+	ChatEdit_LastTold = name;
+	ChatEdit_LastToldType = chatType;
 end
 
 function ChatEdit_UpdateHeader(editBox)
@@ -3944,14 +3961,16 @@ function ChatEdit_UpdateHeader(editBox)
 
 	header:SetWidth(0);
 	--BN_WHISPER FIXME
-	if ( type == "WHISPER" ) then
+	if ( type == "SMART_WHISPER" ) then
 		--If we have a BN presence ID for this name, it's a BN whisper.
 		if ( BNet_GetPresenceID(editBox:GetAttribute("tellTarget")) ) then
 			editBox:SetAttribute("chatType", "BN_WHISPER");
-			ChatEdit_UpdateHeader(editBox);
-			return;
+		else
+			editBox:SetAttribute("chatType", "WHISPER");
 		end
-		
+		ChatEdit_UpdateHeader(editBox);
+		return;
+	elseif ( type == "WHISPER" ) then
 		header:SetFormattedText(CHAT_WHISPER_SEND, editBox:GetAttribute("tellTarget"));
 	elseif ( type == "BN_WHISPER" ) then
 		local name = editBox:GetAttribute("tellTarget");
@@ -4030,13 +4049,13 @@ function ChatEdit_SendText(editBox, addHistory)
 		--BN_WHISPER FIXME
 		if ( type == "WHISPER") then
 			local target = editBox:GetAttribute("tellTarget");
-			ChatEdit_SetLastToldTarget(target);
+			ChatEdit_SetLastToldTarget(target, type);
 			SendChatMessage(text, type, editBox.languageID, target);
 		elseif ( type == "BN_WHISPER" ) then
 			local target = editBox:GetAttribute("tellTarget");
 			local presenceID = BNet_GetPresenceID(target);
 			if ( presenceID ) then
-				ChatEdit_SetLastToldTarget(target);
+				ChatEdit_SetLastToldTarget(target, type);
 				BNSendWhisper(presenceID, text);
 			else
 				local info = ChatTypeInfo["SYSTEM"]
@@ -4104,9 +4123,9 @@ local tabCompleteTables = { hash_ChatTypeInfoList, hash_EmoteTokenList };
 function ChatEdit_SecureTabPressed(self)
 	local chatType = self:GetAttribute("chatType");
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
-		local newTarget = ChatEdit_GetNextTellTarget(self:GetAttribute("tellTarget"));
+		local newTarget, newTargetType = ChatEdit_GetNextTellTarget(self:GetAttribute("tellTarget"), chatType);
 		if ( newTarget and newTarget ~= "" ) then
-			self:SetAttribute("chatType", "WHISPER");	--UpdateHeader will change it to BN_WHISPER if needed.
+			self:SetAttribute("chatType", newTargetType);	--UpdateHeader will change it to BN_WHISPER if needed.
 			self:SetAttribute("tellTarget", newTarget);
 			ChatEdit_UpdateHeader(self);
 		end
@@ -4200,16 +4219,21 @@ local function processChatType(editBox, msg, index, send)
 	editBox.autoCompleteParams = AUTOCOMPLETE_LIST[index];
 -- this is a special function for "ChatEdit_HandleChatType"
 	if ( ChatTypeInfo[index] ) then
-		if ( index == "WHISPER" ) then
-			local targetFound = ChatEdit_ExtractTellTarget(editBox, msg);
-			if ( send == 1 and not targetFound) then
+		if ( index == "WHISPER" or index == "SMART_WHISPER" ) then
+			local targetFound, target, chatType, parsedMsg = ChatEdit_ExtractTellTarget(editBox, msg, index);
+			if ( targetFound ) then
+				editBox:SetAttribute("tellTarget", target);
+				editBox:SetAttribute("chatType", chatType);
+				editBox:SetText(parsedMsg);
+				ChatEdit_UpdateHeader(editBox);
+			elseif ( send == 1 ) then
 				ChatEdit_OnEscapePressed(editBox);
 			end	
 		elseif ( index == "REPLY" ) then
-			local lastTell = ChatEdit_GetLastTellTarget();
-			if ( lastTell ~= "" ) then
+			local lastTell, lastTellType = ChatEdit_GetLastTellTarget();
+			if ( lastTell ) then
 				--BN_WHISPER FIXME
-				editBox:SetAttribute("chatType", "WHISPER");
+				editBox:SetAttribute("chatType", lastTellType);
 				editBox:SetAttribute("tellTarget", lastTell);
 				editBox:SetText(msg);
 				ChatEdit_UpdateHeader(editBox);
@@ -4356,8 +4380,14 @@ function SubstituteChatMessageBeforeSend(msg)
 	return msg;
 end
 
-local tellTargetExtractionAutoComplete = AUTOCOMPLETE_LIST.ALL;
-function ChatEdit_ExtractTellTarget(editBox, msg)
+function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
+	local tellTargetExtractionAutoComplete;
+	if ( chatType == "WHISPER" ) then
+		tellTargetExtractionAutoComplete = AUTOCOMPLETE_LIST.WHISPER_EXTRACT;
+	else
+		tellTargetExtractionAutoComplete = AUTOCOMPLETE_LIST.SMART_WHISPER_EXTRACT;
+	end
+
 	-- Grab the string after the slash command
 	local target = strmatch(msg, "%s*(.*)");
 	
@@ -4393,11 +4423,12 @@ function ChatEdit_ExtractTellTarget(editBox, msg)
 		msg = strsub(msg, strlen(target) + 2);
 	end
 	
-	editBox:SetAttribute("tellTarget", target);
-	editBox:SetAttribute("chatType", "WHISPER");
-	editBox:SetText(msg);
-	ChatEdit_UpdateHeader(editBox);
-	return true;
+	if ( chatType ~= "WHISPER" and BNet_GetPresenceID(target) ) then --"WHISPER" forces character whisper
+		chatType = "BN_WHISPER";
+	else
+		chatType = "WHISPER";
+	end
+	return true, target, chatType, msg;
 end
 
 function ChatEdit_ExtractChannel(editBox, msg)
@@ -4470,8 +4501,8 @@ function ChatMenu_Yell(self)
 end
 
 function ChatMenu_Whisper(self)
-	local editBox = ChatFrame_OpenChat(SLASH_WHISPER1.." ", chatFrame);
-	editBox:SetText(SLASH_WHISPER1.." "..editBox:GetText());
+	local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ", chatFrame);
+	editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
 end
 
 function ChatMenu_Emote(self)
@@ -4496,7 +4527,7 @@ function ChatMenu_OnLoad(self)
 	UIMenu_AddButton(self, BATTLEGROUND_MESSAGE, SLASH_BATTLEGROUND1, ChatMenu_Battleground);
 	UIMenu_AddButton(self, GUILD_MESSAGE, SLASH_GUILD1, ChatMenu_Guild);
 	UIMenu_AddButton(self, YELL_MESSAGE, SLASH_YELL1, ChatMenu_Yell);
-	UIMenu_AddButton(self, WHISPER_MESSAGE, SLASH_WHISPER1, ChatMenu_Whisper);
+	UIMenu_AddButton(self, WHISPER_MESSAGE, SLASH_SMART_WHISPER1, ChatMenu_Whisper);
 	UIMenu_AddButton(self, EMOTE_MESSAGE, SLASH_EMOTE1, ChatMenu_Emote, "EmoteMenu");
 	UIMenu_AddButton(self, REPLY_MESSAGE, SLASH_REPLY1, ChatMenu_Reply);
 	UIMenu_AddButton(self, LANGUAGE, nil, nil, "LanguageMenu");

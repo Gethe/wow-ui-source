@@ -302,6 +302,14 @@
 				<AbsValue val="32"/>
 			</EdgeSize>
 		</Backdrop>
+		<Scripts>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+		</Scripts>
 	</Frame>
 	<Button name="BackpackTokenTemplate" hidden="true" virtual="true">
 		<Size>

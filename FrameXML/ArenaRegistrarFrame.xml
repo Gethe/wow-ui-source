@@ -284,15 +284,9 @@
 		</Layers>
 		<Frames>
 			<EditBox name="$parentEditBox" inherits="InputBoxTemplate" letters="23" historyLines="1" autoFocus="false" parentKey="teamName">
-				<Size>
-					<AbsDimension x="140" y="32"/>
-				</Size>
+				<Size x="140" y="32"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentEnterNameText" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="4" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentEnterNameText" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnterPressed>
@@ -304,68 +298,38 @@
 				</Scripts>
 			</EditBox>
 			<Frame name="PVPBannerFrameStandard">
-				<Size>
-					<AbsDimension x="128" y="256"/>
-				</Size>
+				<Size x="128" y="256"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PVPBannerFrame">
-						<Offset>
-							<AbsDimension x="30" y="-60"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PVPBannerFrame" x="30" y="-60"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBanner" file="Interface\PVPFrame\PVP-Banner-2">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
+							<Size x="128" y="256"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentEmblemWatermark">
-							<Size>
-								<AbsDimension x="128" y="128"/>
-							</Size>
+							<Size x="128" y="128"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentBanner" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="20" y="85"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="$parentBanner" relativePoint="RIGHT" x="20" y="85"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
 						<Texture name="$parentBorder">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
+							<Size x="128" y="256"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentEmblem">
-							<Size>
-								<AbsDimension x="70" y="70"/>
-							</Size>
+							<Size x="70" y="70"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeTo="$parentBanner">
-									<Offset>
-										<AbsDimension x="-17" y="55"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" relativeTo="$parentBanner" x="-17" y="55"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -375,15 +339,9 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="PVPBannerFrameCustomizationBorder" file="Interface\TabardFrame\TabardFrameCustomizationFrame">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
+							<Size x="256" y="256"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="PVPBannerFrame">
-									<Offset>
-										<AbsDimension x="27" y="-27"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="PVPBannerFrame" x="27" y="-27"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -391,11 +349,7 @@
 				<Frames>
 					<Frame name="PVPBannerFrameCustomization1" inherits="PVPBannerFrameCustomizeTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameCustomizationBorder" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="48" y="-65"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameCustomizationBorder" relativePoint="TOPLEFT" x="48" y="-65"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -405,11 +359,7 @@
 					</Frame>
 					<Frame name="PVPBannerFrameCustomization2" inherits="PVPBannerFrameCustomizeTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameCustomization1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PVPBannerFrameCustomization1" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -418,66 +368,45 @@
 						</Scripts>
 					</Frame>
 					<Button name="PVPColorPickerButton1" inherits="GameMenuButtonTemplate" text="EMBLEM_SYMBOL_COLOR">
-						<Size>
-							<AbsDimension x="115" y="25"/>
-						</Size>
+						<Size x="115" y="25"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="-7"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM" x="0" y="-7"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardEmblem);
 							</OnClick>
 						</Scripts>
 					</Button>
 					<Button name="PVPColorPickerButton2" inherits="GameMenuButtonTemplate" text="EMBLEM_BORDER_COLOR">
-						<Size>
-							<AbsDimension x="115" y="25"/>
-						</Size>
+						<Size x="115" y="25"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="-31"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM" x="0" y="-31"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardBorder);
 							</OnClick>
 						</Scripts>
 					</Button>
 					<Button name="PVPColorPickerButton3" inherits="GameMenuButtonTemplate" text="EMBLEM_BACKGROUND">
-						<Size>
-							<AbsDimension x="115" y="25"/>
-						</Size>
+						<Size x="115" y="25"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="-55"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="PVPBannerFrameCustomization2" relativePoint="BOTTOM" x="0" y="-55"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								PVPBannerFrame_OpenColorPicker(self, PVPBannerFrameStandardBanner);
 							</OnClick>
 						</Scripts>
 					</Button>
 					<Button name="PVPBannerFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
-						<Size>
-							<AbsDimension x="80" y="22"/>
-						</Size>
+						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="305" y="-422"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="CENTER" relativePoint="TOPLEFT" x="305" y="-422"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="RaiseFrameLevel"/>
@@ -485,15 +414,9 @@
 						</Scripts>
 					</Button>
 					<Button name="PVPBannerFrameSaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
-						<Size>
-							<AbsDimension x="80" y="22"/>
-						</Size>
+						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="305" y="-422"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="CENTER" relativePoint="TOPLEFT" x="305" y="-422"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function=""/>
@@ -502,9 +425,7 @@
 				</Frames>
 			</Frame>
 			<Button name="PVPBannerFrameCancelButton" inherits="MagicButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
+				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
@@ -513,9 +434,7 @@
 				</Scripts>
 			</Button>
 			<Button name="PVPBannerFrameAcceptButton" inherits="MagicButtonTemplate" text="CREATE">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
+				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
 				</Anchors>
@@ -527,6 +446,7 @@
 		<Scripts>
 			<OnShow function="PVPBannerFrame_OnShow"/>
 			<OnHide>
+				PlaySound("igCharacterInfoClose");
 				HideUIPanel(ColorPickerFrame);
 			</OnHide>
 	</Scripts>

@@ -149,6 +149,7 @@ function MacroButton_OnClick(self, button)
 end
 
 function MacroFrameSaveButton_OnClick()
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	MacroFrame_SaveMacro();
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
@@ -156,6 +157,7 @@ function MacroFrameSaveButton_OnClick()
 end
 
 function MacroFrameCancelButton_OnClick()
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();

@@ -411,6 +411,7 @@ end
 
 function GuildRecruitmentApplicant_OnClick(self, button)
 	if ( button == "LeftButton" ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		SetGuildApplicantSelection(self.index);
 		local commentHeight = self.fullComment:GetHeight();
 		if ( commentHeight > GUILD_COMMENT_HEIGHT ) then

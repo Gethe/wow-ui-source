@@ -929,6 +929,18 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="BlackCover" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.6"/>
+				</Texture>
+				<FontString parentKey="LevelRequirement" inherits="GameFontNormalHuge" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon"/>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name" text="Mc Chazeering ton">
 					<Size x="84" y="35"/>
 					<Anchors>
@@ -939,7 +951,7 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				PetJournal_ShowAbilityTooltip(self, self.abilityID, self.speciesID, self.petID);
+				PetJournal_ShowAbilityTooltip(self, self.abilityID, self.speciesID, self.petID, self.additionalText);
 			</OnEnter>
 			<OnLeave>
 				PetJournal_HideAbilityTooltip(self);
@@ -1133,60 +1145,133 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="statsFrame">
-				<Size x="70" y="100"/>	
+			<Frame name="$parentStatsFrame" parentKey="statsFrame">
+				<Size x="70" y="16"/>	
 				<Anchors>
-					<Anchor point="LEFT" x="10" y="-25"/>
+					<Anchor point="LEFT" relativePoint="LEFT" x="10" y="25"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString name="$parentHealthLabel" inherits="GameFontNormal" text="PET_BATTLE_STATS_LABEL">
+						<FontString name="$parentStatsLabel" inherits="GameFontNormal" text="PET_BATTLE_STATS_LABEL">
 							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="15"/>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentPowerFrame" parentKey="powerFrame">
+				<Size x="70" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentStatsFrame" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
 						<Texture name="$parentAttackTex" file="Interface\PetBattles\PetBattle-StatIcons">
 							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="LEFT"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.5" top="0.0" bottom="0.5"/>
 						</Texture>
 						<FontString name="$parentAttackValue" inherits="GameFontHighlight" parentKey="attackValue" text="99">
 							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentAttackTex" x="5" y="0"/>
-							</Anchors>
-						</FontString>
-						<Texture name="$parentSpeedTex" file="Interface\PetBattles\PetBattle-StatIcons">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentAttackTex" x="0" y="-4"/>
-							</Anchors>
-							<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
-						</Texture>
-						<FontString name="$parentSpeedValue" inherits="GameFontHighlight" parentKey="speedValue" text="99">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentSpeedTex" x="5" y="0"/>
-							</Anchors>
-						</FontString>
-						<Texture name="$parentRarityTex" file="Interface\PetBattles\PetBattle-StatIcons" parentKey="rarityTex">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentSpeedTex" x="0" y="-4"/>
-							</Anchors>
-							<TexCoords left="0.5" right="1.0" top="0.0" bottom="0.5"/>
-						</Texture>
-						<FontString name="$parentRarityValue" inherits="GameFontHighlight" parentKey="rarityValue" text="99">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentRarityTex" x="5" y="0"/>
+								<Anchor point="LEFT" x="23" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -54, 0);
+						GameTooltip:SetText(PET_BATTLE_STAT_POWER, 1, 1, 1);
+						GameTooltip:AddLine(PET_BATTLE_TOOLTIP_POWER, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSpeedFrame" parentKey="speedFrame">
+				<Size x="70" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentPowerFrame" x="0" y="-2"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentTextureFrame">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentSpeedTex" file="Interface\PetBattles\PetBattle-StatIcons">
+									<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentSpeedValue" inherits="GameFontHighlight" parentKey="speedValue" text="99">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" x="23" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -54, 0);
+						GameTooltip:SetText(PET_BATTLE_STAT_SPEED, 1, 1, 1);
+						GameTooltip:AddLine(PET_BATTLE_TOOLTIP_SPEED, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentRarityFrame" parentKey="rarityFrame">
+				<Size x="70" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentSpeedFrame" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentRarityTex" file="Interface\PetBattles\PetBattle-StatIcons">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1.0" top="0.0" bottom="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentRarityValue" inherits="GameFontHighlight" parentKey="rarityValue" text="99">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" x="23" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -54, 0);
+						GameTooltip:SetText(PET_BATTLE_STAT_QUALITY, 1, 1, 1);
+						GameTooltip:AddLine(PET_BATTLE_TOOLTIP_RARITY, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -1194,6 +1279,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						PetJournal_HidePetCard()
 					</OnClick>
 				</Scripts>
@@ -1720,6 +1806,52 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="$parentHealPetButton" parentKey="HealPetButton" inherits="SecureFrameTemplate">
+				<Size>
+					<AbsDimension x="33" y="33"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIconTexture" parentKey="texture" file="Interface\Icons\spell_magic_polymorphrabbit" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="">
+							<Size x="75" y="0"/>
+							<Color r="1" g="1" b="1"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+				</Frames>
+				<Scripts>
+					<OnLoad function="PetJournalHealPetButton_OnLoad"/>
+					<OnEvent function="PetJournalHealPetButton_OnEvent"/>
+					<OnClick>
+						CastSpellByID(self.spellID);
+					</OnClick>
+					<OnShow function="PetJournalHealPetButton_OnShow"/>
+					<OnHide function="PetJournalHealPetButton_OnHide"/>
+					<OnEnter function="PetJournalHealPetButton_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>			
 			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="LeftInset">
 				<Size x="260" y="496"/>
 				<Anchors>
@@ -1781,6 +1913,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick> 
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						ToggleDropDownMenu(1, nil, PetJournalFilterDropDown, "PetJournalFilterButton", 74, 15);
 					</OnClick>	
 					<OnLoad>
@@ -1876,6 +2009,7 @@
 						MagicButton_OnLoad(self);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						C_PetJournal.SummonPetByID(PetJournal.pcPetID);
 					</OnClick>
 				</Scripts>

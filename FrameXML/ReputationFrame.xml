@@ -576,6 +576,12 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								HideParentPanel(self);
+							</OnClick>
+						</Scripts>
 					</Button>
 					<CheckButton name="ReputationDetailAtWarCheckBox">
 						<Size>

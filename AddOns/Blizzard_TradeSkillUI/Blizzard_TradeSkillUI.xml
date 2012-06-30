@@ -33,7 +33,7 @@
 						<FontString name="$parentText" inherits="GameFontNormal" parentKey="countText">
 							<Size x="0" y="13"/>
 							<Anchors>
-								<Anchor point="LEFT" x="0" y="1"/>
+								<Anchor point="RIGHT" relativeTo="$parentIcon" relativePoint="LEFT" x="0" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>

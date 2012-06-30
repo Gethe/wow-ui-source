@@ -1080,7 +1080,6 @@
 			<OnClick>
 				if (not HandleModifiedItemClick(self.link)) then
 					EncounterJournal_Loot_OnClick(self);
-					PlaySound("igSpellBookOpen");
 				else
 					PlaySound("igMainMenuOption");
 				end
@@ -1553,6 +1552,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick> 
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								ToggleDropDownMenu(1, nil, EJTierDropDown, self:GetName(), 74, 15);
 							</OnClick>
 						</Scripts>
@@ -2121,6 +2121,7 @@
 														self.texture:SetPoint("TOPLEFT", 0, 0);
 													</OnMouseUp>
 													<OnClick> 
+														PlaySound("igMainMenuOptionCheckBoxOn");
 														EJ_ResetLootFilter();
 														EncounterJournal_LootUpdate();
 														self:GetParent():Hide();

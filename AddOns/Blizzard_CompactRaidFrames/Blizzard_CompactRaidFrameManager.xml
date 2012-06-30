@@ -14,6 +14,7 @@
 		<Size x="58" y="24"/>
 		<Scripts>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				CompactRaidFrameManager_ToggleRoleFilter(self.role);
 			</OnClick>
 		</Scripts>
@@ -22,6 +23,7 @@
 		<Size x="41" y="24"/>
 		<Scripts>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				CompactRaidFrameManager_ToggleGroupFilter(self:GetID());
 			</OnClick>
 		</Scripts>
@@ -43,6 +45,7 @@
 				tex:SetPoint("CENTER", self, "CENTER", 0, 0);
 			</OnLoad>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				SetRaidTarget("target", self:GetID());
 			</OnClick>
 			<OnMouseDown>
@@ -431,6 +434,7 @@
 						<Size x="85" y="20"/>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								SetRaidProfileOption(GetActiveRaidProfile(), "locked", self.lockMode);
 								CompactRaidFrameManager_SetSetting("Locked", self.lockMode);
 							</OnClick>
@@ -440,6 +444,7 @@
 						<Size x="85" y="20"/>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								SetRaidProfileOption(GetActiveRaidProfile(), "shown", self.shownMode);
 								CompactRaidFrameManager_SetSetting("IsShown", self.shownMode);
 							</OnClick>
@@ -449,6 +454,7 @@
 						<Size x="169" y="20"/>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								ConvertToRaid();
 							</OnClick>
 						</Scripts>
@@ -522,6 +528,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										InitiateRolePoll();
 									</OnClick>
 								</Scripts>
@@ -533,6 +540,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										DoReadyCheck();
 									</OnClick>
 								</Scripts>
@@ -571,6 +579,7 @@
 										end
 									</OnMouseUp>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
 									</OnClick>
 								</Scripts>
@@ -605,6 +614,7 @@
 								end
 							</OnEvent>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								SetEveryoneIsAssistant(self:GetChecked());	
 							</OnClick>
 							<OnEnter>

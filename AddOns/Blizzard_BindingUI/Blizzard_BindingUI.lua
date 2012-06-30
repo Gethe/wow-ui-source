@@ -285,6 +285,7 @@ function KeyBindingFrame_OnKeyDown(self, keyOrButton)
 end
 
 function KeyBindingButton_OnClick(self, button)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	if ( KeyBindingFrame.selected ) then
 		-- Code to be able to deselect or select another key to bind
 		if ( button == "LeftButton" or button == "RightButton" ) then

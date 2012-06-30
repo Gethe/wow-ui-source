@@ -95,6 +95,7 @@ end
 ---------------------------------------------------------------
 
 SCENARIOS_SHOW_LEVEL = 85;
+RAID_FINDER_SHOW_LEVEL = 85;
 
 local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "ScenarioFinderFrame" }
 
@@ -107,12 +108,14 @@ function GroupFinderFrame_OnLoad(self)
 	self.groupButton3.name:SetText(SCENARIOS);
 	-- disable
 	if ( UnitLevel("player") < SCENARIOS_SHOW_LEVEL ) then
-		local button = self.groupButton3;
-		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
-		SetDesaturation(button.icon, true);
-		SetDesaturation(button.ring, true);
-		button.name:SetFontObject("GameFontDisableLarge");
-		button:Disable();
+		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
+		self.groupButton3.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SCENARIOS_SHOW_LEVEL);
+		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
+		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
+	end
+	if ( UnitLevel("player") < RAID_FINDER_SHOW_LEVEL ) then
+		GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
+		self.groupButton2.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, RAID_FINDER_SHOW_LEVEL);
 		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
 		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
@@ -121,15 +124,38 @@ function GroupFinderFrame_OnLoad(self)
 	self.update = GroupFinderFrame_Update;
 end
 
+function GroupFinderFrameButton_SetEnabled(button, enabled)
+	if ( enabled ) then
+		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+		button.name:SetFontObject("GameFontNormalLarge");
+	else
+		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
+		button.name:SetFontObject("GameFontDisableLarge");
+	end
+	SetDesaturation(button.icon, not enabled);
+	SetDesaturation(button.ring, not enabled);
+	button:SetEnabled(enabled);
+end
+
 function GroupFinderFrame_OnEvent(self, event, ...)
 	local level = ...;
+	local allAvailable = true;
+
 	if ( level >= SCENARIOS_SHOW_LEVEL ) then
-		local button = self.groupButton3;
-		button.bg:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
-		SetDesaturation(button.icon, false);
-		SetDesaturation(button.ring, false);
-		button.name:SetFontObject("GameFontNormalLarge");
-		button:Enable();
+		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
+		self.groupButton3.tooltip = nil;
+	else
+		allAvailable = false;
+	end
+
+	if ( level >= RAID_FINDER_SHOW_LEVEL ) then
+		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
+		self.groupButton2.tooltip = nil;
+	else
+		allAvailable = false;
+	end
+
+	if ( allAvailable ) then
 		GroupFinderFrame:SetScript("OnEvent", nil);
 		GroupFinderFrame:UnregisterEvent("PLAYER_LEVEL_UP");		
 	end

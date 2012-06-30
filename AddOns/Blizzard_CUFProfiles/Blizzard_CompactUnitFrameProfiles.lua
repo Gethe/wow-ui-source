@@ -518,6 +518,11 @@ function CompactUnitFrameProfilesCheckButton_Update(self)
 end
 
 function CompactUnitFrameProfilesCheckButton_OnClick(self, button)
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName, not not self:GetChecked());
 	CompactUnitFrameProfiles_ApplyCurrentSettings();
 	CompactUnitFrameProfiles_UpdateCurrentPanel();

@@ -1366,7 +1366,11 @@ function UnitPopup_OnClick (self)
 	if ( button == "TRADE" ) then
 		InitiateTrade(unit);
 	elseif ( button == "WHISPER" ) then
-		ChatFrame_SendTell(fullname, dropdownFrame.chatFrame);
+		if ( dropdownFrame.presenceID ) then
+			ChatFrame_SendSmartTell(fullname, dropdownFrame.chatFrame);
+		else
+			ChatFrame_SendTell(fullname, dropdownFrame.chatFrame);
+		end
 	elseif ( button == "CREATE_CONVERSATION_WITH" ) then
 		BNConversationInvite_NewConversation(dropdownFrame.presenceID)
 	elseif ( button == "INSPECT" ) then

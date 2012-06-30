@@ -557,6 +557,12 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						HideParentPanel(self);
+					</OnClick>
+				</Scripts>
 			</Button>
 			<Button name="GuildMemberRemoveButton" inherits="UIPanelButtonTemplate" text="REMOVE">
 				<Size>

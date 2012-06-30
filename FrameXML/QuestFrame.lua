@@ -267,7 +267,11 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButtonIcon:SetVertexColor(1,1,1);
 			end
 			if ( isComplete ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+				if ( IsActiveQuestLegendary(i) ) then
+					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
+				else
+					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+				end
 			else
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
 			end
@@ -296,8 +300,10 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests), 1 do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
-			local isTrivial, isDaily, isRepeatable = GetAvailableQuestInfo(i - numActiveQuests);
-			if ( isDaily ) then
+			local isTrivial, isDaily, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
+			if ( isLegendary ) then
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
+			elseif ( isDaily ) then
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
 			elseif ( isRepeatable ) then
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");

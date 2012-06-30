@@ -12,6 +12,7 @@ end
 
 function RolePollPopup_Show(self)
 	--First, update what roles are usable
+	PlaySound("ReadyCheck");
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
 	if ( canBeTank ) then
 		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonTank);
@@ -82,6 +83,7 @@ function RolePollPopupRoleButtonCheckButton_OnClick(self, button)
 end
 
 function RolePollPopupAccept_OnClick(self, button)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	UnitSetRole("player", self:GetParent().role);
 	StaticPopupSpecial_Hide(self:GetParent());
 end

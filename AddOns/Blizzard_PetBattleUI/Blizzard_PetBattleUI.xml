@@ -579,6 +579,11 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Lock" file="Interface\PetBattles\PetBattle-LockIcon" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="BetterIcon" file="Interface\PetBattles\BattleBar-AbilityBadge-Weak" hidden="true">
 					<Size x="32" y="32"/>
 					<Anchors>
@@ -607,90 +612,6 @@
 			<OnLeave function="PetBattleAbilityButton_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Frame name="PetBattleOpeningFrame" parent="UIParent" setAllPoints="true" hidden="true">
-		<Frames>
-			<Frame parentKey="MyPet">
-				<Size x="120" y="400"/>
-				<Anchors>
-					<Anchor point="LEFT" x="0" y="0"/>
-				</Anchors>
-				<Frames>
-					<Frame parentKey="PetBanner">
-						<Size x="410" y="70"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" inherits="DebugTexture" setAllPoints="true"/>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon">
-									<Size x="70" y="70"/>
-									<Anchors>
-										<Anchor point="LEFT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Name" inherits="GameFontNormalLarge" text="PET NAME HERE">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-					<PlayerModel parentKey="PetModel">
-						<Size x="410" y="1024"/>
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.PetBanner" relativePoint="TOP" x="0" y="40"/>
-						</Anchors>
-					</PlayerModel>
-				</Frames>
-			</Frame>
-			<Frame parentKey="EnemyPet">
-				<Size x="120" y="400"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="0" y="0"/>
-				</Anchors>
-				<Frames>
-					<Frame parentKey="PetBanner">
-						<Size x="410" y="70"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" inherits="DebugTexture" setAllPoints="true"/>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon">
-									<Size x="70" y="70"/>
-									<Anchors>
-										<Anchor point="RIGHT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="RIGHT">
-									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-10" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-					<PlayerModel parentKey="PetModel">
-						<Size x="410" y="1024"/>
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.PetBanner" relativePoint="TOP" x="0" y="40"/>
-						</Anchors>
-					</PlayerModel>
-				</Frames>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="PetBattleOpeningFrame_OnLoad"/>
-			<OnEvent function="PetBattleOpeningFrame_OnEvent"/>
-		</Scripts>
-	</Frame>
 	<Frame name="PetBattleFrame" parent="UIParent" setAllPoints="true" hidden="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -945,9 +866,32 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Border2" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" hidden="true">
+							<Size x="110" y="109"/>	
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="BorderFlash" alphaMode="ADD" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" alpha="0">
+							<Size x="110" y="109"/>	
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="4">
 						<Texture parentKey="LevelUnderlay" inherits="MainPet-LevelBubble">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="-3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SpeedUnderlay" inherits="MainPet-LevelBubble">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="3" y="-3"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="ActualHealthBar" inherits="MainPet-HealthBarFill">
@@ -956,7 +900,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="3">
+					<Layer level="ARTWORK" textureSubLevel="5">
 						<Texture parentKey="HealthBarFrame" inherits="MainPet-HealthBarFrame">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" relativePoint="CENTER" x="1" y="0"/>
@@ -969,6 +913,13 @@
 								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
 							</Anchors>
 						</FontString>
+						<Texture parentKey="SpeedIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.SpeedUnderlay"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
+						</Texture>
 						<FontString parentKey="Level" inherits="GameFontNormalSmall" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.LevelUnderlay"/>
@@ -1016,6 +967,22 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="SpeedFlash">
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
+					</AnimationGroup>
+				</Animations>
 				<Scripts>
 					<OnLoad>
 						self.healthBarWidth = 145;
@@ -1065,9 +1032,32 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Border2" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" hidden="true">
+							<Size x="110" y="109"/>	
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="BorderFlash" alphaMode="ADD" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" alpha="0">
+							<Size x="110" y="109"/>	
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="4">
 						<Texture parentKey="LevelUnderlay" inherits="MainPet-LevelBubble">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SpeedUnderlay" inherits="MainPet-LevelBubble">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="-3" y="-3"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="ActualHealthBar" inherits="MainPet-HealthBarFill">
@@ -1076,7 +1066,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="3">
+					<Layer level="ARTWORK" textureSubLevel="5">
 						<Texture parentKey="HealthBarFrame" inherits="MainPet-HealthBarFrame">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" relativePoint="CENTER" x="1" y="0"/>
@@ -1089,6 +1079,13 @@
 								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
 							</Anchors>
 						</FontString>
+						<Texture parentKey="SpeedIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.SpeedUnderlay"/>
+							</Anchors>
+							<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
+						</Texture>
 						<FontString parentKey="Level" inherits="GameFontNormalSmall" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.LevelUnderlay"/>
@@ -1136,6 +1133,22 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="SpeedFlash">
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
+						<Alpha targetKey="$parent.$parent.BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
+					</AnimationGroup>
+				</Animations>
 				<Scripts>
 					<OnLoad>
 						self.healthBarWidth = 145;
@@ -1311,6 +1324,11 @@
 										<Anchor point="CENTER" x="41" y="0"/>
 									</Anchors>
 								</Texture>
+								<Texture parentKey="ArtFrame2" file="Interface\PetBattles\PassButtonFrame" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-2"/>
+									</Anchors>
+								</Texture>
 								<FontString parentKey="TimerText" inherits="GameFontHighlight">
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="40" y="0"/>
@@ -1416,12 +1434,8 @@
 								self.Icon:SetTexture("Interface\\Icons\\INV_Pet_PetTrap");
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(CATCH_PET, 1, 1, 1, true);
-								GameTooltip:AddLine(CATCH_PET_DESCRIPTION, nil, nil, nil, true);
-								GameTooltip:Show();
-							</OnEnter>
+							<OnShow function="PetBattleCatchButton_OnShow"/>
+							<OnEnter function="PetBattleCatchButton_OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick function="PetBattleCatchButton_OnClick"/>
 						</Scripts>

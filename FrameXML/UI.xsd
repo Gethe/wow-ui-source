@@ -819,7 +819,6 @@
 		<xs:complexContent>
 			<xs:extension base="FrameType">
 				<xs:attribute name="reverse" type="xs:boolean" default="false"/>
-				<xs:attribute name="drawEdge" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

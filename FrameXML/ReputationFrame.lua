@@ -325,9 +325,11 @@ end
 
 function ReputationBar_OnClick(self)
 	if ( ReputationDetailFrame:IsShown() and (GetSelectedFaction() == self.index) ) then
+		PlaySound("igCharacterInfoClose");
 		ReputationDetailFrame:Hide();
 	else
 		if ( self.hasRep ) then
+			PlaySound("igCharacterInfoOpen");
 			SetSelectedFaction(self.index);
 			ReputationDetailFrame:Show();
 			ReputationFrame_Update();

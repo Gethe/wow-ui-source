@@ -406,6 +406,11 @@
 						KeyBindingFrameCharacterButtonText:SetText(HIGHLIGHT_FONT_COLOR_CODE..CHARACTER_SPECIFIC_KEYBINDINGS..FONT_COLOR_CODE_CLOSE);
 					</OnLoad>
 					<OnClick>
+						if (self.enabled) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
 						if ( KeyBindingFrame.bindingsChanged ) then
 							StaticPopup_Show("CONFIRM_LOSE_BINDING_CHANGES");
 						else
@@ -432,6 +437,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						LoadBindings(DEFAULT_BINDINGS);
 						KeyBindingFrameOutputText:SetText("");
 						KeyBindingFrame_SetSelected(nil);
@@ -503,6 +509,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						local key1, key2 = GetBindingKey(KeyBindingFrame.selected, KeyBindingFrame.mode);
 						if ( key1 ) then
 							SetBinding(key1, nil, KeyBindingFrame.mode);

@@ -79,6 +79,7 @@ size=1024,1024
 						self.pushedTex:SetTexCoord(0.27539063, 0.46191406, 0.73437500, 0.85253906);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igCharacterInfoOpen");
 						NeutralPlayerSelectFaction(2);
 						DestinyFrame:Hide()
 					</OnClick>
@@ -93,6 +94,7 @@ size=1024,1024
 						self.label:SetText(JOIN_THE_HORDE);
 					</OnLoad>
 					<OnClick>
+						PlaySound("igCharacterInfoOpen");
 						NeutralPlayerSelectFaction(1);
 						DestinyFrame:Hide()
 					</OnClick>

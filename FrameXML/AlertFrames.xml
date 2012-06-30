@@ -462,6 +462,10 @@
 		<OnClick>
 			AchievementAlertFrame_OnClick(self, button, down);
 		</OnClick>
+		<OnHide>
+			AlertFrame_FixAnchors();
+			AchievementAlertFrame_FireDelayedAlerts();
+		</OnHide>
 	</Scripts>
 </Button>
 

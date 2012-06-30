@@ -912,6 +912,7 @@ end
 
 function EncounterJournal_Loot_OnClick(self)
 	if (EncounterJournal.encounterID ~= self.encounterID) then
+		PlaySound("igSpellBookOpen");
 		EncounterJournal_DisplayEncounter(self.encounterID);
 	end
 end

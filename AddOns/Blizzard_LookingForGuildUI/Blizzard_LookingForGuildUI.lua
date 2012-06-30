@@ -310,6 +310,7 @@ function LookingForGuildGuild_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		local name, level, numMembers, achPoints, comment, cached, requestPending = GetRecruitingGuildInfo(self.index);
 		if ( not requestPending ) then
+			PlaySound("igMainMenuOptionCheckBoxOn");
 			SetRecruitingGuildSelection(self.index);
 			local commentHeight = self.fullComment:GetHeight();
 			if ( commentHeight > GUILD_COMMENT_HEIGHT ) then

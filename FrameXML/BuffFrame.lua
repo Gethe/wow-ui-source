@@ -14,6 +14,8 @@ CONSOLIDATED_BUFF_ROW_HEIGHT = 23;
 NUM_TEMP_ENCHANT_FRAMES = 3;
 BUFF_BUTTON_HEIGHT = 30;
 BUFF_FRAME_BASE_EXTENT = 13;	-- pixels from the top of the screen to the top edge of the buff frame, needed to calculate extent for UIParentManageFramePositions
+BUFF_HORIZ_SPACING = -5;
+
 
 DebuffTypeColor = { };
 DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
@@ -373,12 +375,12 @@ function BuffFrame_UpdateAllBuffAnchors()
 			else
 				if ( numBuffs == 1 ) then
 					if ( BuffFrame.numEnchants > 0 ) then
-						buff:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", -5, 0);
+						buff:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", BUFF_HORIZ_SPACING, 0);
 					else
-						buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPLEFT", -5, 0);
+						buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPLEFT", BUFF_HORIZ_SPACING, 0);
 					end
 				else
-					buff:SetPoint("RIGHT", previousBuff, "LEFT", -5, 0);
+					buff:SetPoint("RIGHT", previousBuff, "LEFT", BUFF_HORIZ_SPACING, 0);
 				end
 			end
 			previousBuff = buff;

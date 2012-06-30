@@ -30,7 +30,7 @@ local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
-ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155};
+ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165};
 ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {4943, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
@@ -1202,8 +1202,8 @@ function AchievementButton_ToggleTracking (id)
 		return;
 	end
 	
-	local _, _, _, completed = GetAchievementInfo(id)
-	if ( completed ) then
+	local _, _, _, _, _, _, _, _, _, _, _, _, wasEarnedByMe = GetAchievementInfo(id)
+	if ( wasEarnedByMe ) then
 		UIErrorsFrame:AddMessage(ERR_ACHIEVEMENT_WATCH_COMPLETED, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
@@ -1217,6 +1217,7 @@ end
 	
 function AchievementButton_DisplayAchievement (button, category, achievement, selectionID)
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, achievement);
+	
 	if ( not id ) then
 		button:Hide();
 		return;
@@ -1319,13 +1320,13 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		achievements.selectionIndex = button.index;
 		button.selected = true;
 		button.highlight:Show();		
-		local height = AchievementButton_DisplayObjectives(button, button.id, button.completed);
+		local height = AchievementButton_DisplayObjectives(button, button.id, wasEarnedByMe);
 		if ( height == ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then
 			button:Collapse();
 		else
 			button:Expand(height);
 		end
-		if ( not completed ) then
+		if ( not completed or not wasEarnedByMe ) then
 			button.tracked:Show();
 		end
 	elseif ( button.selected ) then

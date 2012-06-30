@@ -980,13 +980,14 @@ function FriendsFrameSendMessageButton_OnClick(self)
 	local name;
 	if ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW ) then
 		name = GetFriendInfo(FriendsFrame.selectedFriend);
+		ChatFrame_SendTell(name);
 	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local presenceID, givenName, surname = BNGetFriendInfo(FriendsFrame.selectedFriend);
 		name = string.format(BATTLENET_NAME_FORMAT, givenName, surname);
+		ChatFrame_SendSmartTell(name);
 	end
 	if ( name ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
-		ChatFrame_SendTell(name);
 	end
 end
 

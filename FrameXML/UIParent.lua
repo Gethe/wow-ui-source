@@ -1012,6 +1012,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("INSTANCE_LOCK", nil, nil, false);
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		HideUIPanel(GossipFrame);
+		StaticPopupDialogs["CONFIRM_TALENT_WIPE"].text = _G["CONFIRM_TALENT_WIPE_"..arg2];
 		local dialog = StaticPopup_Show("CONFIRM_TALENT_WIPE");
 		if ( dialog ) then
 			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);

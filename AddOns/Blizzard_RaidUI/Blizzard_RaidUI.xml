@@ -709,44 +709,6 @@
 			</OnMouseUp> 
 		</Scripts>
 	</Button>
-	<CheckButton name="RaidFrameAllAssistCheckButton" parent="RaidFrame" motionScriptsWhileDisabled="true" inherits="UICheckButtonTemplate">
-		<Size x="24" y="24"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="58" y="-23"/>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="-30" top="0" bottom="0"/>
-		</HitRectInsets>
-		<Scripts>
-			<OnLoad>
-				_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL);
-				self:RegisterEvent("GROUP_ROSTER_UPDATE");
-				self:RegisterEvent("PARTY_LEADER_CHANGED");
-			</OnLoad>
-			<OnEvent>
-				self:SetChecked(IsEveryoneAssistant());
-				if ( UnitIsGroupLeader("player") ) then
-					self:Enable();
-					self.text:SetFontObject(GameFontNormalSmall);
-				else
-					self:Disable();
-					self.text:SetFontObject(GameFontDisableSmall);
-				end
-			</OnEvent>
-			<OnClick>
-				SetEveryoneIsAssistant(self:GetChecked());	
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(ALL_ASSIST_DESCRIPTION, nil, nil, nil, nil, true);
-				if ( not self:IsEnabled() ) then
-					GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
-				end
-				GameTooltip:Show();
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
-	</CheckButton>
 	<Button name="RaidClassButton14"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="16"/>

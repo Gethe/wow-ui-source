@@ -3622,6 +3622,7 @@
 				self.I:SetPoint("CENTER", 1, -1);
 			</OnMouseDown>
 			<OnMouseUp>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				self.I:SetPoint("CENTER", 0, 0);
 			</OnMouseUp>
 			<OnHide function="Main_HelpPlate_Button_OnLeave"/>

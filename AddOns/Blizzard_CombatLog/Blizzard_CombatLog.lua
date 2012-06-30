@@ -2223,6 +2223,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local valueIsItem = false;
 	local schoolEnabled = true;
 	local withPoints = false;
+	local forceDestPossessive = false;
 
 	-- Get the initial string
 	local schoolString;
@@ -2680,6 +2681,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				extraSpellEnabled = true;
 				valueEnabled = true;
 			else
+				forceDestPossessive = true;
 				valueEnabled = false;
 			end
 
@@ -2977,7 +2979,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		end
 
 		-- Apply the possessive form to the dest if the dest has a spell
-		if ( ( extraSpellName or itemName ) and destName ) then
+		if ( ( extraSpellName or forceDestPossessive  or itemName ) and destName ) then
 			destNameStr = format(TEXT_MODE_A_STRING_POSSESSIVE, destNameStr);
 		end
 	end

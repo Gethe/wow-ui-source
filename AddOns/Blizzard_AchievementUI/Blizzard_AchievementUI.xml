@@ -2,49 +2,31 @@
 ..\..\FrameXML\UI.xsd">
 
 	<StatusBar name="AchievementFrameSummaryCategoryTemplate" drawLayer="BORDER" virtual="true">
-		<Size>
-			<AbsDimension x="234" y="21"/>
-		</Size>
+		<Size x="234" y="21"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentLabel" inherits="GameFontNormal" text="" parentKey="label">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="6" y="4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="6" y="4"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentText" inherits="GameFontHighlight" parentKey="text">
-					<Size>
-						<AbsDimension x="0" y="14"/>
-					</Size>
+					<Size x="0" y="14"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-5" y="3"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-5" y="3"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size>
-						<AbsDimension x="32" y="48"/>
-					</Size>
+					<Size x="32" y="48"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="-15" y="16"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-15" y="16"/>
 					</Anchors>
 					<TexCoords left="0.423828125" right="0.486" top="0.56640625" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size>
-						<AbsDimension x="32" y="48"/>
-					</Size>
+					<Size x="32" y="48"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset x="15" y="16"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="15" y="16"/>
 					</Anchors>
 					<TexCoords right="0.423828125" left="0.486" bottom="0.75" top="0.56640625"/>
 				</Texture>
@@ -58,9 +40,7 @@
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFillBar">
-					<Size>
-						<AbsDimension x="0" y="15"/>
-					</Size>
+					<Size x="0" y="15"/>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
@@ -76,24 +56,16 @@
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-StatusBar-Highlight" alphaMode="ADD">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="-7" y="8"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="-7" y="8"/>
 									</Anchors>
 									<TexCoords left="0" right="1" top="0" bottom="1"/>
 								</Texture>
 								<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-StatusBar-Highlight" alphaMode="ADD">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPRIGHT">
-											<Offset x="7" y="8"/>
-										</Anchor>
+										<Anchor point="TOPRIGHT" x="7" y="8"/>
 									</Anchors>
 									<TexCoords right="0" left="1" top="0" bottom="1"/>
 								</Texture>
@@ -187,95 +159,67 @@
 	</CheckButton>
 
 	<Button name="AchievementFrameTabButtonTemplate" virtual="true">
-        <Size>
-            <AbsDimension x="115" y="32"/>
-        </Size>
+        <Size x="115" y="32"/>
         <Layers>
         	<Layer level="BACKGROUND">
         		<Texture name="$parentLeftDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
-        			<Size>
-        				<AbsDimension x="21" y="59"/>
-        			</Size>
+        			<Size x="21" y="59"/>
         			<Anchors>
-        				<Anchor point="TOPLEFT">
-        					<Offset>
-        						<AbsDimension x="0" y="5"/>
-        					</Offset>
-        				</Anchor>
+        				<Anchor point="TOPLEFT" x="0" y="5"/>
         			</Anchors>
 					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentMiddleDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
-        			<Size>
-        				<AbsDimension x="88" y="59"/>
-        			</Size>
+        			<Size x="88" y="59"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentRightDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
-        			<Size>
-        				<AbsDimension x="18" y="59"/>
-        			</Size>
+        			<Size x="18" y="59"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
-        			<Size>
-        				<AbsDimension x="21" y="49"/>
-        			</Size>
+        			<Size x="21" y="49"/>
         			<Anchors>
         				<Anchor point="TOPLEFT"/>
         			</Anchors>
 					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-Header">
-        			<Size>
-        				<AbsDimension x="88" y="49"/>
-        			</Size>
+        			<Size x="88" y="49"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
-        			<Size>
-        				<AbsDimension x="18" y="49"/>
-        			</Size>
+        			<Size x="18" y="49"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentLeftHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD" parentKey="leftHighlight">
-        			<Size>
-        				<AbsDimension x="32" y="49"/>
-        			</Size>
+        			<Size x="32" y="49"/>
         			<Anchors>
-        				<Anchor point="TOPLEFT">
-							<Offset x="-3" y="-1"/>
-						</Anchor>
+        				<Anchor point="TOPLEFT" x="-3" y="-1"/>
         			</Anchors>
 					<TexCoords left="0.720703125" right="0.783203125" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentRightHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD" parentKey="rightHighlight">
-        			<Size>
-        				<AbsDimension x="18" y="49"/>
-        			</Size>
+        			<Size x="18" y="49"/>
         			<Anchors>
-        				<Anchor point="TOPRIGHT">
-							<Offset x="-4" y="-1"/>
-						</Anchor>
+        				<Anchor point="TOPRIGHT" x="-4" y="-1"/>
         			</Anchors>
 					<TexCoords left="0.923828125" right="0.986328125" top="0.76953125" bottom="1.0"/>
         		</Texture>
 				<Texture name="$parentMiddleHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD" parentKey="middleHighlight">
-        			<Size>
-        				<AbsDimension x="88" y="49"/>
-        			</Size>
+        			<Size x="88" y="49"/>
         			<Anchors>
         				<Anchor point="LEFT" relativeTo="$parentLeftHighlight" relativePoint="RIGHT"/>
 						<Anchor point="RIGHT" relativeTo="$parentRightHighlight" relativePoint="LEFT"/>
@@ -308,11 +252,7 @@
 		</Scripts>
 		<ButtonText name="$parentText" parentKey="text">
 			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="-3"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="CENTER" x="0" y="-3"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
@@ -363,9 +303,7 @@
 		</Layers>
 	</Frame>
 	<Frame name="MiniAchievementTemplate" virtual="true" parent="AchievementFrame">
-		<Size>
-			<AbsDimension x="42" y="42"/>
-		</Size>
+		<Size x="42" y="42"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -373,16 +311,8 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" parentKey="icon">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="8" y="-8"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-8" y="8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -398,31 +328,17 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-Progressive-Shield">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="12" y="-12"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="12" y="-12"/>
+						<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
 					</Anchors>
 					<TexCoords left="0" right="0.75" top="0" bottom="0.75"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentPoints" inherits="GameFontWhiteSmall" text="10" justifyV="BOTTOM" parentKey="points">
-					<Size>
-						<AbsDimension x="18" y="18"/>
-					</Size>
+					<Size x="18" y="18"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-2" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -450,9 +366,7 @@
 	</Frame>
 
 	<Button name="MetaCriteriaTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="155" y="30"/>
-		</Size>
+		<Size x="155" y="30"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -461,11 +375,7 @@
 				<Texture name="$parentIcon" parentKey="icon">
 					<Size x="17" y="17"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="6" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -480,25 +390,15 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentCheck" file="Interface\AchievementFrame\UI-Achievement-Criteria-Check" parentKey="check">
-					<Size>
-						<AbsDimension x="20" y="16"/>
-					</Size>
+					<Size x="20" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
 				</Texture>
 				<FontString name="$parentLabel" inherits="AchievementCriteriaFont" text="Fake criteria!" parentKey="label">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="34" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="LEFT" x="34" y="2"/>
 					</Anchors>
 					<Size x="125" y="20"/>
 				</FontString>
@@ -517,18 +417,14 @@
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT"/>
-				<Anchor point="BOTTOMRIGHT">
-					<Offset x="0" y="2"/>
-				</Anchor>
+				<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
 			</Anchors>						
 			<Color r="1" g="1" b="1" a=".15"/>
 		</HighlightTexture>
 	</Button>
 	
 	<StatusBar name="AchievementProgressBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="212" y="14"/>
-		</Size>
+		<Size x="212" y="14"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -546,9 +442,7 @@
 				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="700/700" justifyV="TOP" parentKey="text">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</FontString>			
 			</Layer>
@@ -556,32 +450,16 @@
 				<Texture name="$parentBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
 					<Size x="16" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-6" y="5"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="-6" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-6" y="5"/>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
 					</Anchors>
 					<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentBorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
 					<Size x="16" y="0"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="6" y="5"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="6" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="6" y="5"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
 					</Anchors>
 					<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
 				</Texture>
@@ -608,51 +486,33 @@
 
 	<StatusBar name="AchievementHeaderStatusBarTemplate" virtual="true">
 		<Anchors>
-			<Anchor point="TOP">
-				<!-- That's right. -0. -->
-				<Offset x="-0" y="-17"/>
-			</Anchor>
+			<!-- That's right. -0. -->
+			<Anchor point="TOP" x="-0" y="-17"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENTS_COMPLETED" parentKey="title">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="6" y="4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="6" y="4"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentText" inherits="GameFontHighlight" parentKey="text">
-					<Size>
-						<AbsDimension x="0" y="14"/>
-					</Size>
+					<Size x="0" y="14"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-5" y="3"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-5" y="3"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size>
-						<AbsDimension x="32" y="48"/>
-					</Size>
+					<Size x="32" y="48"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="-15" y="16"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-15" y="16"/>
 					</Anchors>
 					<TexCoords left="0.423828125" right="0.486" top="0.56640625" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size>
-						<AbsDimension x="32" y="48"/>
-					</Size>
+					<Size x="32" y="48"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset x="15" y="16"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="15" y="16"/>
 					</Anchors>
 					<TexCoords right="0.423828125" left="0.486" bottom="0.75" top="0.56640625"/>
 				</Texture>
@@ -666,9 +526,7 @@
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFillBar">
-					<Size>
-						<AbsDimension x="0" y="15"/>
-					</Size>
+					<Size x="0" y="15"/>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
@@ -678,9 +536,7 @@
 	</StatusBar>
 	
 	<Button name="AchievementCategoryTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="158" y="24"/>
-		</Size>
+		<Size x="158" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Category-Background" parentKey="background">
@@ -695,12 +551,8 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentLabel" text="This is a Category" inherits="GameFontNormalLeftBottom" wordwrap="false" parentKey="label">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="16" y="4"/> 
-						</Anchor>
-						<Anchor point="TOPRIGHT">
-							<Offset x="-8" y="-4"/> 
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="16" y="4"/>
+						<Anchor point="TOPRIGHT" x="-8" y="-4"/>
 					</Anchors>					
 				</FontString>
 			</Layer>
@@ -724,12 +576,8 @@
 		</Scripts>
 		<HighlightTexture file="Interface\AchievementFrame\UI-Achievement-Category-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT">
-					<Offset x="0" y="0"/>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT">
-					<Offset x="-1" y="-7"/>
-				</Anchor>
+				<Anchor point="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="-1" y="-7"/>
 			</Anchors>
 			<TexCoords left="0" right="0.6640625" top="0" bottom="1"/>
 		</HighlightTexture>
@@ -740,43 +588,25 @@
 			<Layer level="BORDER">
 				<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true" parentKey="bling">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="-1" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="-1" y="1"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="116" y="116"/>
-					</Size>
+					<Size x="116" y="116"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTexture" file="Interface\Icons\Spell_Misc_HellifrePVPHonorHoldFavor" parentKey="texture">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="3"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="50" y="50"/>
-					</Size>
+					<Size x="50" y="50"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="frame">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="-1" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="-1" y="2"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="72" y="72"/>
-					</Size>
+					<Size x="72" y="72"/>
 					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
 				</Texture>
 			</Layer>
@@ -789,21 +619,13 @@
 	</Frame>
 	
 	<Frame name="AchievementCriteriaTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="350" y="15"/>
-		</Size>
+		<Size x="350" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentCheck" file="Interface\AchievementFrame\UI-Achievement-Criteria-Check" parentKey="check">
-					<Size>
-						<AbsDimension x="20" y="16"/>
-					</Size>
+					<Size x="20" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="-3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="-3"/>
 					</Anchors>
 					<TexCoords left="0" right="0.625" top="0" bottom="1"/>
 				</Texture>
@@ -811,11 +633,7 @@
 			<Layer level="OVERLAY">
 				<FontString name="$parentName" inherits="AchievementCriteriaFont" text="Capture the Bone Wastes" parentKey="name">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentCheck" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="5" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentCheck" relativePoint="RIGHT" x="5" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -830,9 +648,7 @@
 	</Frame>	
 
 	<Button name="AchievementTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="434" y="142"/>
-		</Size>
+		<Size x="434" y="142"/>
 		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -842,101 +658,57 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-3"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-3" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 					</Anchors>
 				</Texture>						
 			</Layer>			
 			<Layer level="BORDER">
 				<Texture name="$parentBottomLeftTsunami" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Corners">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="-2" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-2"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".2"/>
 					<TexCoords left="0" right=".5" top="0" bottom="1"/>
 				</Texture>				
 				<Texture name="$parentBottomRightTsunami" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Corners">
-					<Size>	
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="2" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".2"/>
 					<TexCoords left=".5" right="1" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentTopLeftTsunami" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Corners">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-2" y="-20"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-2" y="-20"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".1"/>
 					<TexCoords left="1" right=".5" top="1" bottom="0"/>
 				</Texture>
 				<Texture name="$parentTopRightTsunami" file="Interface\AchievementFrame\UI-Achievement-Tsunami-Corners">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="2" y="-20"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="2" y="-20"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".1"/>
 					<TexCoords left=".5" right="0" top="1" bottom="0"/>
 				</Texture>							
 				<Texture name="$parentBottomTsunami1" file="Interface\AchievementFrame\UI-Achievement-Borders">
-					<Size>
-						<AbsDimension x="370" y="16"/>
-					</Size>
+					<Size x="370" y="16"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftTsunami" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="3"/>
-							</Offset>
-						</Anchor>	
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftTsunami" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTsunami" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".35"/>
 					<TexCoords left="0" right="0.72265" top="0.51953125" bottom="0.58203125"/>
 				</Texture>
 				<Texture name="$parentTopTsunami1" file="Interface\AchievementFrame\UI-Achievement-Borders">
-					<Size>
-						<AbsDimension x="370" y="16"/>
-					</Size>
+					<Size x="370" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTsunami" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-3"/>
-							</Offset>
-						</Anchor>				
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTsunami" relativePoint="TOPRIGHT" x="0" y="-3"/>
 						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTsunami" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.3"/>
@@ -945,53 +717,27 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTitleBackground" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="titleBar">
-					<Size>
-						<AbsDimension x="0" y="24"/>
-					</Size>
+					<Size x="0" y="24"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="5" y="-4"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-5" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="5" y="-4"/>
+						<Anchor point="TOPRIGHT" x="-5" y="-4"/>
 					</Anchors>
 					<TexCoords left="0" right="0.9765625" top="0.66015625" bottom="0.73828125"/>
 					<Color r="1" g="1" b="1" a=".8"/>
 				</Texture>
 				<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="glow">
-					<Size>
-						<AbsDimension x="10" y="64"/>
-					</Size>
+					<Size x="10" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitleBackground" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="4"/>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset x="0" y="4"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitleBackground" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						<Anchor point="RIGHT" x="0" y="4"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.00390625" bottom="0.25390625"/>
 				</Texture>
 				<Texture name="$parentRewardBackground" file="Interface\AchievementFrame\UI-Achievement-Reward-Background" hidden="true" parentKey="rewardBackground">
-					<Size>
-						<AbsDimension x="384" y="24"/>
-					</Size>
+					<Size x="384" y="24"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="5" y="-2"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-5" y="5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="5" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 						<!--<Anchor point="BOTTOMRIGHT"/> -->
 					</Anchors>
 					<TexCoords left="0" right=".69" top="0" bottom=".75"/>
@@ -1013,72 +759,40 @@
 			</Layer>	
 			<Layer level="OVERLAY">
 				<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="For the Alliance!" parentKey="label">
-					<Size>
-						<AbsDimension x="320" y="20"/>
-					</Size>
+					<Size x="320" y="20"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTitleBackground" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentTitleBackground" relativePoint="TOP" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentReward" inherits="GameFontNormalSmall" hidden="true" parentKey="reward">
-					<Size>
-						<AbsDimension x="400" y="20"/>
-					</Size>					
+					<Size x="400" y="20"/>			
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentRewardBackground" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentRewardBackground" relativePoint="TOP" x="0" y="1"/>
 					</Anchors>							
 				</FontString>
 				<FontString name="$parentDescription" inherits="AchievementDescriptionFont" parentKey="description">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>				
+					<Size x="0" y="0"/>		
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-30"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-30"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentHiddenDescription" inherits="AchievementDescriptionFont" hidden="true" parentKey="hiddenDescription">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
+					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-30"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-30"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
-					<Size>
-						<AbsDimension x="20" y="16"/>
-					</Size>
+					<Size x="20" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
-							<Offset x="0" y="-1"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT" x="0" y="-1"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentPlusMinus" file="Interface\AchievementFrame\UI-Achievement-PlusMinus" hidden="true" parentKey="plusMinus">
-					<Size>
-						<AbsDimension x="15" y="15"/>
-					</Size>
+					<Size x="15" y="15"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="72" y="-9"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="72" y="-9"/>
 					</Anchors>
 					<TexCoords left="0" right=".5" top="0" bottom=".25"/>
 				</Texture>				
@@ -1108,54 +822,30 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-1" y="2"/>
 							</Anchors>
 							<TexCoords left="0.06640625" right="0" top="0.4375" bottom="0.65625"/>
 						</Texture>
 						<Texture name="$parentBottomLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="-1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0.06640625" right="0" top="0.65625" bottom="0.4375"/>
 						</Texture>		
 						<Texture name="$parentTopRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="1" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="1" y="2"/>
 							</Anchors>
 							<TexCoords left="0" right="0.06640625" top="0.4375" bottom="0.65625"/>
 						</Texture>
 						<Texture name="$parentBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="1" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0" right="0.06640625" top="0.65625" bottom="0.4375"/>
 						</Texture>			
@@ -1191,49 +881,27 @@
 				</Layers>
 			</Frame>
 			<Frame name="$parentIcon" inherits="AchievementIconFrameTemplate" parentKey="icon">
-				<Size>
-					<AbsDimension x="60" y="60"/>
-				</Size>
+				<Size x="60" y="60"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-9"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="8" y="-9"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentTabard" inherits="AchievementGuildTabardTemplate" parentKey="tabard">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-3" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-3" y="-4"/>
 				</Anchors>
 			</Frame>
 			<Button name="$parentShield" parentKey="shield">
-				<Size>
-					<AbsDimension x="64" y="64"/>
-				</Size>
+				<Size x="64" y="64"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-6" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-6" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Shields" parentKey="icon">
-							<Size>
-								<AbsDimension x="66" y="64"/>
-							</Size>
+							<Size x="66" y="64"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="-6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="0" y="-6"/>
 							</Anchors>
 							<TexCoords left="0" right=".5" top="0" bottom="0.5"/>
 						</Texture>
@@ -1242,15 +910,11 @@
 						<FontString name="$parentPoints" inherits="AchievementPointsFont" parentKey="points">
 							<Size x="42" y="16"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset x="-13" y="-26"/>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="-13" y="-26"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true" justifyH="CENTER" parentKey="dateCompleted">
-							<Size>
-								<AbsDimension x="100" y="14"/>
-							</Size>
+							<Size x="100" y="14"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="6"/>
 							</Anchors>
@@ -1272,33 +936,15 @@
 			</Button>
 			<Frame name="$parentObjectives" parentKey="objectives">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="8" y="0"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="RIGHT" relativeTo="$parentShield" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-10" y="0"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOM" relativeTo="$parentRewardBackground" relativePoint="TOP">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="8" y="0"/>
+					<Anchor point="RIGHT" relativeTo="$parentShield" relativePoint="LEFT" x="-10" y="0"/>
+					<Anchor point="BOTTOM" relativeTo="$parentRewardBackground" relativePoint="TOP" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<CheckButton name="$parentTracked" hidden="true" inherits="AchievementCheckButtonTemplate" parentKey="tracked">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="12" y="-66"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="12" y="-66"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
@@ -1314,51 +960,27 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-3"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-3" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.25"/>
 				</Texture>						
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTitleBackground" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="titleBar">
-					<Size>
-						<AbsDimension x="0" y="20"/>
-					</Size>
+					<Size x="0" y="20"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="5" y="-4"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-5" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="5" y="-4"/>
+						<Anchor point="TOPRIGHT" x="-5" y="-4"/>
 					</Anchors>
 					<TexCoords left="0" right="0.9765625" top="0.66015625" bottom="0.73828125"/>
 					<Color r="1" g="1" b="1" a=".8"/>
 				</Texture>
 				<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="glow">
-					<Size>
-						<AbsDimension x="10" y="64"/>
-					</Size>
+					<Size x="10" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitleBackground" relativePoint="BOTTOMLEFT">
-							<Offset x="0" y="2"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="0" y="4"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitleBackground" relativePoint="BOTTOMLEFT" x="0" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="4"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.00390625" bottom="0.25390625"/>
 				</Texture>			
@@ -1366,39 +988,21 @@
 			<Layer level="OVERLAY">
 				<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="For the Alliance!" parentKey="label">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTitleBackground" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentTitleBackground" relativePoint="TOP" x="0" y="0"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="260" y="20"/>
-					</Size>
+					<Size x="260" y="20"/>
 				</FontString>
 				<FontString name="$parentDateCompleted" inherits="AchievementDateFont" text="5/16/08" hidden="true" parentKey="dateCompleted">
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-63" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-63" y="-8"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="100" y="14"/>
-					</Size>
+					<Size x="100" y="14"/>
 				</FontString>
 				<FontString name="$parentDescription" inherits="AchievementDescriptionFont" parentKey="description">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-30"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-30"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="380" y="13"/>
-					</Size>
+					<Size x="380" y="13"/>
 				</FontString>
 			</Layer>
 		</Layers>		
@@ -1409,57 +1013,33 @@
 		</Scripts>
 		<Frames>
 			<Frame name="$parentIcon" parentKey="icon">
-				<Size>
-					<AbsDimension x="48" y="48"/>
-				</Size>
+				<Size x="48" y="48"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="3" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="3" y="-3"/>
 				</Anchors>
 				<Layers>			
 					<Layer level="BORDER">
 						<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true" parentKey="bling">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-1" y="1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="-1" y="1"/>
 							</Anchors>
-							<Size>
-								<AbsDimension x="84" y="84"/>
-							</Size>
+							<Size x="84" y="84"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentTexture" file="Interface\Icons\Spell_Misc_HellifrePVPHonorHoldFavor" parentKey="texture">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="3"/>
 							</Anchors>
-							<Size>
-								<AbsDimension x="36" y="36"/>
-							</Size>
+							<Size x="36" y="36"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="frame">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-1" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="-1" y="2"/>
 							</Anchors>
-							<Size>
-								<AbsDimension x="46" y="46"/>
-							</Size>
+							<Size x="46" y="46"/>
 							<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
 						</Texture>
 					</Layer>
@@ -1471,28 +1051,16 @@
 				</Scripts>				
 			</Frame>
 			<Frame name="$parentShield" parentKey="shield">
-				<Size>
-					<AbsDimension x="48" y="48"/>
-				</Size>
+				<Size x="48" y="48"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-10" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-10" y="-4"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Shields" parentKey="icon">
-							<Size>
-								<AbsDimension x="48" y="48"/>
-							</Size>
+							<Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right=".5" top="0" bottom="0.5"/>
 						</Texture>
@@ -1500,15 +1068,9 @@
 					<Layer level="OVERLAY">
 						<FontString name="$parentPoints" inherits="GameFontNormal" justifyH="CENTER" text="60" parentKey="points">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="3"/>
 							</Anchors>
-							<Size>
-								<AbsDimension x="40" y="26"/>
-							</Size>
+							<Size x="40" y="26"/>
 						</FontString>
 					</Layer>
 				</Layers>				
@@ -1527,54 +1089,30 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="-1" y="2"/>
 							</Anchors>
 							<TexCoords left="0.06640625" right="0" top="0.4375" bottom="0.65625"/>
 						</Texture>
 						<Texture name="$parentBottomLeft" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="-1" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="-1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0.06640625" right="0" top="0.65625" bottom="0.4375"/>
 						</Texture>		
 						<Texture name="$parentTopRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="1" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="1" y="2"/>
 							</Anchors>
 							<TexCoords left="0" right="0.06640625" top="0.4375" bottom="0.65625"/>
 						</Texture>
 						<Texture name="$parentBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="16" y="16"/>
-							</Size>
+							<Size x="16" y="16"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="1" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0" right="0.06640625" top="0.65625" bottom="0.4375"/>
 						</Texture>			
@@ -1651,51 +1189,27 @@
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal" parentKey="background">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="3" y="-3"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-3" y="3"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="3" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 							</Anchors>
 							<TexCoords left=".2" right=".75" top="0" bottom="1"/>
 						</Texture>						
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentTitleBackground" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="titleBar">
-							<Size>
-								<AbsDimension x="0" y="20"/>
-							</Size>
+							<Size x="0" y="20"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="5" y="-4"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-5" y="-4"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="5" y="-4"/>
+								<Anchor point="TOPRIGHT" x="-5" y="-4"/>
 							</Anchors>
 							<TexCoords left="0.3" right="0.575" top="0.66015625" bottom="0.73828125"/>
 							<Color r="1" g="1" b="1" a=".8"/>
 						</Texture>
 						<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Borders" parentKey="glow">
-							<Size>
-								<AbsDimension x="10" y="64"/>
-							</Size>
+							<Size x="10" y="64"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTitleBackground" relativePoint="BOTTOMLEFT">
-									<Offset x="0" y="2"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="0" y="4"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitleBackground" relativePoint="BOTTOMLEFT" x="0" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="4"/>
 							</Anchors>
 							<TexCoords left="0.2" right="0.86" top="0.00390625" bottom="0.25390625"/>
 						</Texture>			
@@ -1703,66 +1217,40 @@
 					<Layer level="OVERLAY">
 						<FontString name="$parentStatus" inherits="AchievementDateFont" text="Incomplete" parentKey="status">
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset x="20" y="5"/>
-								</Anchor>
+								<Anchor point="BOTTOM" x="20" y="5"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="$parentIcon" parentKey="icon">
-						<Size>
-							<AbsDimension x="48" y="48"/>
-						</Size>
+						<Size x="48" y="48"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="3" y="-3"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
 						</Anchors>
 						<Layers>			
 							<Layer level="BORDER">
 								<Texture name="$parentBling" file="Interface\AchievementFrame\UI-Achievement-Bling" hidden="true" parentKey="bling">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-1" y="1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="-1" y="1"/>
 									</Anchors>
-									<Size>
-										<AbsDimension x="84" y="84"/>
-									</Size>
+									<Size x="84" y="84"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="$parentTexture" file="Interface\Icons\Spell_Misc_HellifrePVPHonorHoldFavor" parentKey="texture">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="0" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="0" y="3"/>
 									</Anchors>
-									<Size>
-										<AbsDimension x="36" y="36"/>
-									</Size>
+									<Size x="36" y="36"/>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="frame">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-1" y="2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="-1" y="2"/>
 									</Anchors>
-									<Size>
-										<AbsDimension x="46" y="46"/>
-									</Size>
+									<Size x="46" y="46"/>
 									<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
 								</Texture>
 							</Layer>
@@ -1772,28 +1260,16 @@
 						</Scripts>				
 					</Frame>
 					<Frame name="$parentShield" parentKey="shield">
-						<Size>
-							<AbsDimension x="40" y="36"/>
-						</Size>
+						<Size x="40" y="36"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-20" y="-2"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" x="-20" y="-2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentIcon" file="Interface\AchievementFrame\UI-Achievement-Shields" parentKey="icon">
-									<Size>
-										<AbsDimension x="40" y="40"/>
-									</Size>
+									<Size x="40" y="40"/>
 									<Anchors>
-										<Anchor point="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPRIGHT" x="0" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right=".5" top="0" bottom=".45"/>
 								</Texture>
@@ -1801,15 +1277,9 @@
 							<Layer level="OVERLAY">
 								<FontString name="$parentPoints" inherits="GameFontNormalSmall" text="60" parentKey="points">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-1" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="-1" y="0"/>
 									</Anchors>
-									<Size>
-										<AbsDimension x="40" y="14"/>
-									</Size>
+									<Size x="40" y="14"/>
 								</FontString>
 							</Layer>
 						</Layers>				
@@ -1833,53 +1303,35 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" setAllPoints="true" hidden="true" parentKey="background"/>
 				<Texture name="$parentHeaderLeft" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="left">
-					<Size>
-						<AbsDimension x="23" y="23"/>
-					</Size>
+					<Size x="23" y="23"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="0" y="-1"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 					<TexCoords left="0" right="0.08984375" top="0" bottom="0.1796875"/>
 				</Texture>
 				<Texture name="$parentHeaderRight" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="right">
-					<Size>
-						<AbsDimension x="23" y="23"/>
-					</Size>
+					<Size x="23" y="23"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="0" y="-1"/>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.91015625" right="1" top="0" bottom="0.1796875"/>
 				</Texture>
 				<Texture name="$parentHeaderMiddle" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="middle">
-					<Size>
-						<AbsDimension x="0" y="23"/>
-					</Size>
+					<Size x="0" y="23"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentHeaderLeft" relativePoint="TOPRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderRight" relativePoint="TOPLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentHeaderLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderRight" relativePoint="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.08984375" right="0.91015625" top="0" bottom="0.1796875"/>
 				</Texture>
 				<FontString name="$parentTitle" inherits="GameFontNormalLarge" parentKey="title">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentValue" inherits="GameFontHighlightRight" parentKey="value">
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-5" y="0"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1895,11 +1347,7 @@
 		<ButtonText parentKey="text">
 			<Size x="400" y="13"/>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="5" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="5" y="0"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontHighlightLeft"/>
@@ -1914,105 +1362,69 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" setAllPoints="true" hidden="true" parentKey="background"/>
 				<Texture name="$parentHeaderLeft" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="left">
-					<Size>
-						<AbsDimension x="23" y="23"/>
-					</Size>
+					<Size x="23" y="23"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="0" y="-1"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 					<TexCoords left="0" right="0.08984375" top="0" bottom="0.1796875"/>
 				</Texture>
 				<Texture name="$parentHeaderRight" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="right">
-					<Size>
-						<AbsDimension x="23" y="23"/>
-					</Size>
+					<Size x="23" y="23"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-135" y="-1"/>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-135" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.91015625" right="1" top="0" bottom="0.1796875"/>
 				</Texture>
 				<Texture name="$parentHeaderMiddle" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="middle">
-					<Size>
-						<AbsDimension x="0" y="23"/>
-					</Size>
+					<Size x="0" y="23"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentHeaderLeft" relativePoint="TOPRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderRight" relativePoint="TOPLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentHeaderLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderRight" relativePoint="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.08984375" right="0.91015625" top="0" bottom="0.1796875"/>
 				</Texture>
 				<Texture name="$parentHeaderLeft2" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="left2">
-					<Size>
-						<AbsDimension x="23" y="23"/>
-					</Size>
+					<Size x="23" y="23"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentHeaderRight" relativePoint="RIGHT">
-							<Offset x="5" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentHeaderRight" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.08984375" top="0" bottom="0.1796875"/>
 				</Texture>
 				<Texture name="$parentHeaderRight2" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="right2">
-					<Size>
-						<AbsDimension x="23" y="23"/>
-					</Size>
+					<Size x="23" y="23"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="4" y="-1"/>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="4" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.91015625" right="1" top="0" bottom="0.1796875"/>
 				</Texture>
 				<Texture name="$parentHeaderMiddle2" file="Interface\AchievementFrame\UI-Achievement-Stat-Buttons" parentKey="middle2">
-					<Size>
-						<AbsDimension x="0" y="23"/>
-					</Size>
+					<Size x="0" y="23"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentHeaderLeft2" relativePoint="TOPRIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
-						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderRight2" relativePoint="TOPLEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentHeaderLeft2" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentHeaderRight2" relativePoint="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.08984375" right="0.91015625" top="0" bottom="0.1796875"/>
 				</Texture>
 				<FontString name="$parentTitle" inherits="GameFontNormalLarge" parentKey="title">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="-67" y="-1"/>
-						</Anchor>
+						<Anchor point="CENTER" x="-67" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="text">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="4" y="0"/>
-						</Anchor>
+						<Anchor point="LEFT" x="4" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentValue" inherits="GameFontHighlightRight" parentKey="value">
 					<Size x="500" y="24"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-150" y="-1"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-150" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentComparisonValue" inherits="GameFontHighlightRight" parentKey="friendValue">
 					<Size x="120" y="24"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-4" y="-1"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-4" y="-1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -2021,9 +1433,7 @@
 			<Frame name="$parentMouseover" enableMouse="true" hidden="true" parentKey="mouseover"> 
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentComparisonValue"/>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-4" y="4"/>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -2057,15 +1467,9 @@
 	</Button>
 
 	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="768" y="500"/>
-		</Size>
+		<Size x="768" y="500"/>
 		<Anchors>	
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
 		<Backdrop edgeFile="Interface\AchievementFrame\UI-Achievement-WoodBorder" tile="true">
 			<EdgeSize>
@@ -2082,231 +1486,125 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\TutorialFrame\TutorialFrameBackground">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-16" y="16"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="16" y="-16"/>
+						<Anchor point="BOTTOMRIGHT" x="-16" y="16"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentMetalBorderLeft" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Left">
-					<Size>
-						<AbsDimension x="16" y="436"/>
-					</Size>
+					<Size x="16" y="436"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="14" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="14" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom=".87"/>
 				</Texture>
 				<Texture name="$parentMetalBorderRight" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Left">
-					<Size>
-						<AbsDimension x="16" y="436"/>
-					</Size>
+					<Size x="16" y="436"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-13" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-13" y="0"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top=".87" bottom="0"/>
 				</Texture>
 				<Texture name="$parentMetalBorderBottom" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Top">
-					<Size>
-						<AbsDimension x="450" y="16"/>
-					</Size>
+					<Size x="450" y="16"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="28" y="13"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-28" y="13"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="28" y="13"/>
+						<Anchor point="BOTTOMRIGHT" x="-28" y="13"/>
 					</Anchors>
 					<TexCoords left="0" right=".87" top="1.0" bottom="0"/>
 				</Texture>
 				<Texture name="$parentMetalBorderTop" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Top">
-					<Size>
-						<AbsDimension x="450" y="16"/>
-					</Size>
+					<Size x="450" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="28" y="-12"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-28" y="-12"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="28" y="-12"/>
+						<Anchor point="TOPRIGHT" x="-28" y="-12"/>
 					</Anchors>
 					<TexCoords left=".87" right="0" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentCategoriesBG" file="Interface\AchievementFrame\UI-Achievement-Parchment">
-					<Size>
-						<AbsDimension x="195" y="0"/>
-					</Size>
+					<Size x="195" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="25" y="-23"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="25" y="23"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="25" y="-23"/>
+						<Anchor point="BOTTOMLEFT" x="25" y="23"/>
 					</Anchors>
 					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentWaterMark" file="Interface\AchievementFrame\UI-Achievement-AchievementWatermark">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentCategoriesBG">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentCategoriesBG" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGuildEmblemLeft" hidden="true">
-					<Size>
-						<AbsDimension x="94" y="188"/>
-					</Size>
+					<Size x="94" y="188"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentCategoriesBG"/>
 					</Anchors>
 					<TexCoords left="0.7" right="0" top="0.15" bottom="0.85"/>
 				</Texture>
 				<Texture name="$parentGuildEmblemRight" hidden="true">
-					<Size>
-						<AbsDimension x="94" y="188"/>
-					</Size>
+					<Size x="94" y="188"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentGuildEmblemLeft" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.7" top="0.15" bottom="0.85"/>
 				</Texture>
 				<Texture name="$parentMetalBorderTopLeft" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Joint">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="9" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="9" y="-7"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="1" bottom="0"/>
 				</Texture>
 				<Texture name="$parentMetalBorderTopRight" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Joint">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-8" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-8" y="-7"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 				</Texture>
 				<Texture name="$parentMetalBorderBottomLeft" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Joint">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="9" y="8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="9" y="8"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>				
 				</Texture>
 				<Texture name="$parentMetalBorderBottomRight" file="Interface\AchievementFrame\UI-Achievement-MetalBorder-Joint">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-8" y="8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1"/>				
 				</Texture>
 				<Texture name="$parentWoodBorderTopLeft" file="Interface\AchievementFrame\UI-Achievement-WoodBorder-Corner">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="4" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="4" y="-2"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentWoodBorderTopRight" file="Interface\AchievementFrame\UI-Achievement-WoodBorder-Corner">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-4" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-4" y="-2"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>		
 				<Texture name="$parentWoodBorderBottomLeft" file="Interface\AchievementFrame\UI-Achievement-WoodBorder-Corner">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="4" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="4" y="3"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 				</Texture>		
 				<Texture name="$parentWoodBorderBottomRight" file="Interface\AchievementFrame\UI-Achievement-WoodBorder-Corner">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-4" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="3"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="1" bottom="0"/>
 				</Texture>						
@@ -2314,63 +1612,45 @@
 		</Layers>
 		<Frames>
 			<Frame name="$parentHeader" enableMouse="true">
-				<Size>
-					<AbsDimension x="726" y="106"/>
-				</Size>
+				<Size x="726" y="106"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="AchievementFrame" relativePoint="TOPLEFT">
-						<Offset x="26" y="-39"/>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="AchievementFrame" relativePoint="TOPLEFT" x="26" y="-38"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
-							<Size>
-								<AbsDimension x="512" y="106"/>
-							</Size>
+							<Size x="512" y="106"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="1" top="0" bottom="0.4140625"/>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
-							<Size>
-								<AbsDimension x="215" y="100"/>
-							</Size>
+							<Size x="215" y="100"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentLeft" relativePoint="BOTTOMRIGHT">
-									<Offset x="0" y="-6"/>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentLeft" relativePoint="BOTTOMRIGHT" x="0" y="-6"/>
 							</Anchors>
 							<TexCoords left="0" right="0.419921875" top="0.4140625" bottom="0.8046875"/>
 						</Texture>
 					</Layer>				
 					<Layer level="BORDER">
 						<Texture name="$parentPointBorder" file="Interface\AchievementFrame\UI-Achievement-Header">
-							<Size>
-								<AbsDimension x="133" y="39"/>
-							</Size>
+							<Size x="133" y="39"/>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="AchievementFrameHeader" relativePoint="BOTTOM">
-									<Offset x="20" y="16"/>
-								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="AchievementFrameHeader" relativePoint="BOTTOM" x="20" y="16"/>
 							</Anchors>
 							<TexCoords left="0.419921875" right="0.6796875" top="0.4140625" bottom="0.56640625"/>
 						</Texture>
 						<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENT_TITLE">
 							<Size x="200" y="12"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
-									<Offset x="0" y="7"/>
-								</Anchor>
+								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP" x="0" y="7"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentRightDDLInset" file="Interface\AchievementFrame\UI-Achievement-RightDDLInset" hidden="true">
 							<Size x="128" y="32"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset x="-76" y="-56"/>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="-76" y="-56"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -2378,19 +1658,13 @@
 						<FontString name="$parentPoints" inherits="GameFontHighlight">
 							<Size x="0" y="12"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP">
-									<Offset x="0" y="-13"/>
-								</Anchor>
+								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP" x="0" y="-13"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-TinyShield">
-							<Size>
-								<AbsDimension x="20" y="20"/>
-							</Size>
+							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
-									<Offset x="3" y="-1"/>
-								</Anchor>
+								<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT" x="3" y="-1"/>
 							</Anchors>
 							<TexCoords left="0" right="0.625" top="0" bottom="0.625"/>
 						</Texture> 	
@@ -2399,20 +1673,10 @@
 			</Frame>
 			<Frame name="$parentCategories">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="21" y="-19"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="21" y="20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="21" y="-19"/>
+					<Anchor point="BOTTOMLEFT" x="21" y="20"/>
 				</Anchors>
-				<Size>
-					<AbsDimension x="175" y="0"/>
-				</Size>
+				<Size x="175" y="0"/>
 				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>
 						<AbsValue val="16"/>
@@ -2431,30 +1695,14 @@
 				<Frames>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="0" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="-14"/>
-										</Offset>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="12"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-14"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="12"/>
 								</Anchors>
 							</Slider>
 						</Frames>
@@ -2462,15 +1710,9 @@
 				</Frames>
 			</Frame>
 			<Frame name="$parentAchievements">
-				<Size>
-					<AbsDimension x="504" y="440"/>
-				</Size>
+				<Size x="504" y="440"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="22" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT" x="22" y="0"/>
 					<Anchor point="BOTTOM" relativeTo="$parentCategories" relativePoint="BOTTOM"/>
 					<!--<Anchor point="BOTTOMRIGHT">
 						<Offset>
@@ -2482,12 +1724,8 @@
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-AchievementBackground">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="3" y="-3"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="-3" y="3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="3" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 							</Anchors>
 							<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 						</Texture>
@@ -2496,22 +1734,14 @@
 						<FontString name="$parentFeatOfStrengthText" inherits="GameFontHighlight" text="FEAT_OF_STRENGTH_DESCRIPTION">
 							<Size x="490" y="0"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset x="0" y="-189"/>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="-189"/>
 							</Anchors>
 						</FontString>
 						<Texture>
-							<Size>
-								<AbsDimension x="0" y="0"/>
-							</Size>
+							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBackground">
-									<Offset x="0" y="0"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentBackground" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 							<Color r="0" g="0" b="0" a="0.75"/>
 						</Texture>
@@ -2529,30 +1759,14 @@
 				<Frames>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="4" y="-3"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="4" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="-16"/>
-										</Offset>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="12"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="12"/>
 								</Anchors>
 							</Slider>
 						</Frames>
@@ -2576,15 +1790,9 @@
 				</Frames>				
 			</Frame>
 			<Frame name="$parentStats" hidden="true">
-				<Size>
-					<AbsDimension x="506" y="440"/>
-				</Size>
+				<Size x="506" y="440"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="22" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT" x="22" y="0"/>
 					<Anchor point="BOTTOM" relativeTo="$parentCategories" relativePoint="BOTTOM"/>
 				</Anchors>
 				<Scripts>
@@ -2596,23 +1804,15 @@
 						<!-- This prevents the BG from being resized with the rest of the frame when the scrollbar pops in and out -->
 						<Size x="526" y="438"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="2" y="0"/>
-							</Anchor>
-							<Anchor point="BOTTOM">
-								<Offset x="0" y="3"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="2" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="3"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture file="Interface\AchievementFrame\UI-Achievement-StatsBackground">
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="0" y="0"/>
-										</Anchor>
-										<Anchor point="BOTTOMRIGHT">
-											<Offset x="0" y="0"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -2623,30 +1823,14 @@
 					</Frame>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="3" y="-3"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="-16"/>
-										</Offset>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="12"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="12"/>
 								</Anchors>
 							</Slider>
 						</Frames>
@@ -2670,27 +1854,17 @@
 				</Frames>				
 			</Frame>
 			<Frame name="$parentSummary" hidden="true">
-				<Size>
-					<AbsDimension x="529" y="461"/>
-				</Size>
+				<Size x="529" y="461"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT" x="0" y="1"/>
 					<Anchor point="BOTTOM" relativeTo="$parentCategories" relativePoint="BOTTOM"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-AchievementBackground">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="3" y="-3"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="-3" y="3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="3" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 							</Anchors>
 							<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 						</Texture>
@@ -2714,24 +1888,16 @@
 						</Scripts>
 					</Frame>
 					<Frame name="$parentAchievements">
-						<Size>
-							<AbsDimension x="0" y="210"/>
-						</Size>
+						<Size x="0" y="210"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="5" y="-20"/>
-							</Anchor>
-							<Anchor point="TOPRIGHT">
-								<Offset x="-5" y="-20"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="5" y="-10"/>
+							<Anchor point="TOPRIGHT" x="-5" y="-10"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="$parentEmptyText" inherits="GameFontHighlight" text="NO_COMPLETED_ACHIEVEMENTS">
 									<Anchors>
-										<Anchor point="TOP">
-											<Offset x="0" y="-30"/>
-										</Anchor>
+										<Anchor point="TOP" x="0" y="-30"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -2740,32 +1906,22 @@
 							<Frame name="$parentHeader">
 								<Size x="0" y="20"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset x="0" y="0"/>
-									</Anchor>
-									<Anchor point="TOPRIGHT">
-										<Offset x="0" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+									<Anchor point="TOPRIGHT" x="0" y="0"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentHeader" file="Interface\AchievementFrame\UI-Achievement-RecentHeader">
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset x="-20" y="0"/>
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset x="20" y="0"/>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="-20" y="0"/>
+												<Anchor point="BOTTOMRIGHT" x="20" y="0"/>
 											</Anchors>
 											<TexCoords left="0" right="1" top="0" bottom="0.71875"/>
 										</Texture>
 										<FontString name="$parentTitle" inherits="GameFontNormal" text="LATEST_UNLOCKED_ACHIEVEMENTS">
 											<Size x="0" y="20"/>
 											<Anchors>
-												<Anchor point="CENTER">
-													<Offset x="0" y="0"/>
-												</Anchor>
+												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -2774,108 +1930,70 @@
 						</Frames>
 					</Frame>
 					<Frame name="$parentCategories">
-						<Size>
-							<AbsDimension x="0" y="164"/>
-						</Size>
+						<Size x="0" y="164"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAchievements" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-8"/>
-							</Anchor>
-							<Anchor point="TOPRIGHT" relativeTo="$parentAchievements" relativePoint="BOTTOMRIGHT">
-								<Offset x="0" y="-8"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentAchievements" relativePoint="BOTTOMLEFT" x="0" y="6"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentAchievements" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
 						</Anchors>								
 						<Frames>
 							<Frame name="$parentHeader">
 								<Size x="0" y="20"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset x="0" y="0"/>
-									</Anchor>
-									<Anchor point="TOPRIGHT">
-										<Offset x="0" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+									<Anchor point="TOPRIGHT" x="0" y="0"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentTexture" file="Interface\AchievementFrame\UI-Achievement-RecentHeader">
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset x="-20" y="0"/>
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset x="20" y="0"/>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="-20" y="0"/>
+												<Anchor point="BOTTOMRIGHT" x="20" y="0"/>
 											</Anchors>
 											<TexCoords left="0" right="1" top="0" bottom="0.71875"/>
 										</Texture>
 										<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENT_CATEGORY_PROGRESS">
 											<Size x="0" y="20"/>
 											<Anchors>
-												<Anchor point="CENTER">
-													<Offset x="0" y="0"/>
-												</Anchor>
+												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
 								</Layers>
 							</Frame>
 							<StatusBar name="$parentStatusBar" drawLayer="BORDER">
-								<Size>
-									<AbsDimension x="488" y="21"/>
-								</Size>
+								<Size x="488" y="21"/>
 								<Anchors>
-									<Anchor point="TOP" relativeTo="$parentHeader" relativePoint="BOTTOM">
-										<Offset x="0" y="-6"/>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="$parentHeader" relativePoint="BOTTOM" x="0" y="-6"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
 										<FontString name="$parentTitle" inherits="GameFontNormal" text="ACHIEVEMENTS_COMPLETED">
 											<Anchors>
-												<Anchor point="LEFT">
-													<Offset>
-														<AbsDimension x="6" y="4"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" x="6" y="4"/>
 											</Anchors>
 										</FontString>
 										<FontString name="$parentText" inherits="GameFontHighlight">
-											<Size>
-												<AbsDimension x="0" y="14"/>
-											</Size>
+											<Size x="0" y="14"/>
 											<Anchors>
-												<Anchor point="RIGHT">
-													<Offset x="-5" y="3"/>
-												</Anchor>
+												<Anchor point="RIGHT" x="-5" y="3"/>
 											</Anchors>
 										</FontString>
 										<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
-											<Size>
-												<AbsDimension x="32" y="48"/>
-											</Size>
+											<Size x="32" y="48"/>
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset x="-15" y="16"/>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="-15" y="16"/>
 											</Anchors>
 											<TexCoords left="0.423828125" right="0.486" top="0.56640625" bottom="0.75"/>
 										</Texture>
 										<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
-											<Size>
-												<AbsDimension x="32" y="48"/>
-											</Size>
+											<Size x="32" y="48"/>
 											<Anchors>
-												<Anchor point="TOPRIGHT">
-													<Offset x="15" y="16"/>
-												</Anchor>
+												<Anchor point="TOPRIGHT" x="15" y="16"/>
 											</Anchors>
 											<TexCoords right="0.423828125" left="0.486" bottom="0.75" top="0.56640625"/>
 										</Texture>
 										<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-Header">
-											<Size>
-												<AbsDimension x="218" y="48"/>
-											</Size>
+											<Size x="218" y="48"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
 												<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
@@ -2885,9 +2003,7 @@
 									</Layer>
 									<Layer level="BACKGROUND">
 										<Texture name="$parentFillBar">
-											<Size>
-												<AbsDimension x="0" y="15"/>
-											</Size>
+											<Size x="0" y="15"/>
 											<Color r="0" g="0" b="0" a="0.5"/>
 										</Texture>
 									</Layer>
@@ -2897,60 +2013,54 @@
 							</StatusBar>							
 							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate" id="92">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentStatusBar" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-24"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentStatusBar" relativePoint="BOTTOMLEFT" x="0" y="-24"/>
 								</Anchors>
 							</StatusBar>
 							<StatusBar name="$parentCategory2" inherits="AchievementFrameSummaryCategoryTemplate" id="96">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="TOPRIGHT">
-										<Offset x="20" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>
 							</StatusBar>
 							<StatusBar name="$parentCategory3" inherits="AchievementFrameSummaryCategoryTemplate" id="97">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-14"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
 								</Anchors>							
 							</StatusBar>
 							<StatusBar name="$parentCategory4" inherits="AchievementFrameSummaryCategoryTemplate" id="95">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="TOPRIGHT">
-										<Offset x="20" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>						
 							</StatusBar>
 							<StatusBar name="$parentCategory5" inherits="AchievementFrameSummaryCategoryTemplate" id="168">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-14"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
 								</Anchors>						
 							</StatusBar>
-							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate" id="169">	
+							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate" id="15165">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="TOPRIGHT">
-										<Offset x="20" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate" id="201">	
+							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate" id="169">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="BOTTOMLEFT">
-										<Offset x="0" y="-14"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate" id="155">	
+							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate" id="201">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="TOPRIGHT">
-										<Offset x="20" y="0"/>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>							
-							</StatusBar>							
+							</StatusBar>
+							<StatusBar name="$parentCategory9" inherits="AchievementFrameSummaryCategoryTemplate" id="155">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
+								</Anchors>							
+							</StatusBar>
+							<StatusBar name="$parentCategory10" inherits="AchievementFrameSummaryCategoryTemplate" id="15117">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="TOPRIGHT" x="20" y="0"/>
+								</Anchors>							
+							</StatusBar>	
 						</Frames>
 					</Frame>
 				</Frames>
@@ -2963,23 +2073,15 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentComparison" hidden="true">
-				<Size>
-					<AbsDimension x="650" y="461"/>
-				</Size>
+				<Size x="650" y="461"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT" x="0" y="0"/>
 					<Anchor point="BOTTOM" relativeTo="$parentCategories" relativePoint="BOTTOM"/>
 				</Anchors>
 				<Frames>
 					<Frame name="$parentHeader">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
-								<Offset x="39" y="-5"/>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="39" y="-5"/>
 						</Anchors>
 						<Size x="190" y="57"/>
 						<Layers>
@@ -2995,9 +2097,7 @@
 							<Layer level="BACKGROUND">
 								<Texture name="$parentPortrait">
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="27" y="-19"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="27" y="-19"/>
 									</Anchors>
 									<Size x="36" y="36"/>
 									<TexCoords left="0.05" right=".95" top="0" bottom=".9"/>
@@ -3016,26 +2116,18 @@
 								<FontString name="$parentName" text="PLAYER" inherits="GameFontNormalLeft">
 									<Size x="78" y="12"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset x="62" y="-25"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="62" y="-25"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentPoints" text="500" inherits="GameFontHighlight">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
-											<Offset x="4" y="-3"/>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="4" y="-3"/>
 									</Anchors>
 								</FontString>
 								<Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-TinyShield">
-									<Size>
-										<AbsDimension x="20" y="20"/>
-									</Size>
+									<Size x="20" y="20"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
-											<Offset x="2" y="-2"/>
-										</Anchor>
+										<Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT" x="2" y="-2"/>
 									</Anchors>
 									<TexCoords left="0" right="0.625" top="0" bottom="0.625"/>
 								</Texture> 	
@@ -3051,11 +2143,7 @@
 					</Frame>
 					<Frame name="$parentSummary" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="4" y="-3"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="4" y="-3"/>
 						</Anchors>
 						<Size x="616" y="50"/>
 						<Frames>
@@ -3073,16 +2161,8 @@
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal">
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="3" y="-3"/>
-													</Offset>
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-3" y="3"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="3" y="-3"/>
+												<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 											</Anchors>
 											<TexCoords left="0" right="1" top="0" bottom="0.25"/>
 										</Texture>						
@@ -3092,12 +2172,8 @@
 									<StatusBar name="$parentStatusBar" inherits="AchievementHeaderStatusBarTemplate" parentKey="statusBar">
 										<Size x="0" y="21"/>
 										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset x="19" y="-17"/>
-											</Anchor>
-											<Anchor point="TOPRIGHT">
-												<Offset x="-19" y="-17"/>
-											</Anchor>
+											<Anchor point="TOPLEFT" x="19" y="-17"/>
+											<Anchor point="TOPRIGHT" x="-19" y="-17"/>
 										</Anchors>
 									</StatusBar>								
 								</Frames>
@@ -3121,16 +2197,8 @@
 									<Layer level="BACKGROUND">
 										<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Parchment-Horizontal">
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="3" y="-3"/>
-													</Offset>
-												</Anchor>
-												<Anchor point="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-3" y="3"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="3" y="-3"/>
+												<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 											</Anchors>
 											<TexCoords left=".2" right=".75" top="0" bottom="1"/>
 										</Texture>						
@@ -3152,28 +2220,14 @@
 					</Frame>
 					<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSummary" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="1"/>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentSummary" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="AchievementFrameComparisonSummary" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="7" y="-16"/>
-										</Offset>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="12"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="AchievementFrameComparisonSummary" relativePoint="TOPRIGHT" x="7" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="12"/>
 								</Anchors>
 							</Slider>
 						</Frames>
@@ -3192,30 +2246,14 @@
 					</ScrollFrame>
 					<ScrollFrame name="$parentStatsContainer" inherits="HybridScrollFrameTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="4" y="-3"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="4" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="-16"/>
-										</Offset>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-										<Offset>
-											<AbsDimension x="1" y="12"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="12"/>
 								</Anchors>
 							</Slider>
 						</Frames>
@@ -3248,40 +2286,26 @@
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-AchievementBackground">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="3" y="-3"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="-3" y="3"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="3" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 							</Anchors>
 							<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentDark">
-							<Size>
-								<AbsDimension x="0" y="0"/>
-							</Size>
+							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBackground">
-									<Offset x="0" y="0"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentBackground" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 							<Color r="0" g="0" b="0" a="0.75"/>
 						</Texture>
 						<Texture name="$parentWatermark" file="Interface\AchievementFrame\UI-Achievement-StatsComparisonBackground">
 							<Size x="160" y="0"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset x="0" y="-3"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="0" y="3"/>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="0" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="3"/>
 							</Anchors>
 							<TexCoords left="0" right=".65" top="0" bottom="1"/>
 						</Texture>
@@ -3296,9 +2320,7 @@
 			</Frame>			
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="AchievementFrame" relativePoint="TOPRIGHT">
-						<Offset x="3" y="4"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="AchievementFrame" relativePoint="TOPRIGHT" x="3" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -3310,11 +2332,7 @@
 			</Button>
 			<Button name="$parentTab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="ACHIEVEMENTS">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="11" y="-30"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="11" y="-30"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -3325,11 +2343,7 @@
 			</Button>
 			<Button name="$parentTab2" inherits="AchievementFrameTabButtonTemplate" id="2" text="ACHIEVEMENTS_GUILD_TAB">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -3340,11 +2354,7 @@
 			</Button>
 			<Button name="$parentTab3" inherits="AchievementFrameTabButtonTemplate" id="3" text="STATISTICS">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-5" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -3356,18 +2366,14 @@
 			<Frame name="$parentFilterDropDown" hidden="true">
 				<Size x="110" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-98" y="10"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-98" y="10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Text">
 							<Size x="0" y="32"/>								
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="0" y="4"/>
-								</Anchor>
+								<Anchor point="LEFT" x="0" y="4"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -3375,9 +2381,7 @@
 						
 				<Frames>
 					<Button name="$parentButton">
-						<Size>
-							<AbsDimension x="24" y="24"/>
-						</Size>
+						<Size x="24" y="24"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT"/>
 						</Anchors>
@@ -3388,33 +2392,25 @@
 							</OnClick>
 						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
+							<Size x="24" y="24"/>
 							<Anchors>
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</NormalTexture>
 						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
+							<Size x="24" y="24"/>
 							<Anchors>
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</PushedTexture>
 						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
+							<Size x="24" y="24"/>
 							<Anchors>
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</DisabledTexture>
 						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
+							<Size x="24" y="24"/>
 							<Anchors>
 								<Anchor point="RIGHT"/>
 							</Anchors>

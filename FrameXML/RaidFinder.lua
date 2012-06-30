@@ -11,7 +11,7 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 			--RaidFinderQueueFrame.raid = GetBestRFChoice();
 			--UIDropDownMenu_SetSelectedValue(RaidFinderQueueFrameSelectionDropDown, RaidFinderQueueFrame.raid);
 		end
-		RaidFinderFrame_UpdateTab();
+		RaidFinderFrame_UpdateAvailability();
 	end
 end
 
@@ -20,12 +20,37 @@ function RaidFinderFrame_OnShow(self)
 	RequestLFDPartyLockInfo();
 	RaidFinderFrameFindRaidButton_Update();
 	RaidFinderFrame_UpdateBackfill(true);
-	RaidFinderFrame_UpdateTab();
+	RaidFinderFrame_UpdateAvailability();
 	PlaySound("igCharacterInfoOpen");
 end
 
 -- unused now, might need this logic for Group Finder
-function RaidFinderFrame_UpdateTab()
+function RaidFinderFrame_UpdateAvailability()
+	--Update the cover panel (specifically for when you hit level 86 and can no longer queue
+	--for any RF raids until you hit level 90).
+	local available = false;
+	local nextLevel = nil;
+	local level = UnitLevel("player");
+	for i=1, GetNumRFDungeons() do
+		local id, name, typeID, subtype, minLevel, maxLevel = GetRFDungeonInfo(i);
+		if ( level >= minLevel and level <= maxLevel ) then
+			available = true;
+			nextLevel = nil;
+			break;
+		elseif ( level < minLevel and (not nextLevel or minLevel < nextLevel ) ) then
+			nextLevel = minLevel;
+		end
+	end
+	if ( available ) then
+		RaidFinderFrame.NoRaidsCover:Hide();
+	else
+		RaidFinderFrame.NoRaidsCover:Show();
+		if ( nextLevel ) then
+			RaidFinderFrame.NoRaidsCover.Label:SetFormattedText(NO_RF_AVAILABLE_WITH_NEXT_LEVEL, nextLevel);
+		else
+			RaidFinderFrame.NoRaidsCover.Label:SetText(NO_RF_AVAILABLE);
+		end
+	end
 	--[[
 	local enableTab = false;
 	local isPlayerEligible = false;
@@ -140,7 +165,7 @@ end
 function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	
-	-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateTab
+	-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateAvailability
 	for i=1, GetNumRFDungeons() do
 		local id, name = GetRFDungeonInfo(i);
 		local isAvailable, isAvailableToPlayer = IsLFGDungeonJoinable(id);

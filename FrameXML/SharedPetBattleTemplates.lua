@@ -285,7 +285,7 @@ do
 					return petType;
 				end,
 		petTypeName = function(petType)
-					return _G["BATTLE_PET_NAME_"..petType]
+					return _G["BATTLE_PET_DAMAGE_NAME_"..petType]
 				end,
 		remainingDuration = function()
 					return parsedAbilityInfo:GetRemainingDuration();
