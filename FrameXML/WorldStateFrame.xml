@@ -1212,24 +1212,6 @@
 					</Anchors>
 					<TexCoords left="0.93847656" right="0.94726563" top="0.00195313" bottom="0.02148438"/>
 				</Texture>
-				<FontString inherits="QuestFont_Shadow_Huge" text="TOTAL">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="53" y="-9"/>
-					</Anchors>
-					<Shadow>
-						<Color r="0" g="0" b="0" />
-					</Shadow>										
-					<Color r="0.87" g="0.80" b="0.61"/>
-				</FontString>
-				<FontString inherits="QuestFont_Shadow_Huge" justifyH="LEFT" parentKey="timeElapsed">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="118" y="-9"/>
-					</Anchors>
-					<Shadow>
-						<Color r="0" g="0" b="0" />
-					</Shadow>					
-					<Color r="0.87" g="0.80" b="0.61"/>
-				</FontString>				
 			</Layer>			
 		</Layers>
 		<Frames>
@@ -1238,18 +1220,18 @@
 					<AbsDimension x="133" y="17"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM" x="22" y="9"/>
+					<Anchor point="CENTER" x="22" y="-2"/>
 				</Anchors>				
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture file="Interface\Challenges\challenges-main">
-							<Size x="140" y="23"/>
+							<Size x="140" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 							<TexCoords left="0.00097656" right="0.13769531" top="0.47265625" bottom="0.51757813"/>	
 						</Texture>
-						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="timeLeft">
+						<FontString inherits="GameFontHighlight" justifyH="LEFT" parentKey="timeLeft">
 							<Anchors>
 								<Anchor point="LEFT" x="42" y="0"/>
 							</Anchors>

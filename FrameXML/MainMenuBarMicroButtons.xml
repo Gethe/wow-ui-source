@@ -326,8 +326,8 @@
 				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
 				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
 				self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
+				self.factionGroup = UnitFactionGroup("player");
 				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
-					self.factionGroup = UnitFactionGroup("player");
 					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
 				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
@@ -344,8 +344,8 @@
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
 				self.factionGroup = nil;
+				self.factionGroup = UnitFactionGroup("player");
 				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
-					self.factionGroup = UnitFactionGroup("player");
 					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
 				end
 				UpdateMicroButtons();

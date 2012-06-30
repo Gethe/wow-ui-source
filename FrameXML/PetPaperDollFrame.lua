@@ -3,11 +3,9 @@ NUM_PET_STATS = 5;
 
 PETPAPERDOLL_STATCATEGORY_DEFAULTORDER = {
 	"GENERAL",
-	--"ATTRIBUTES",  --Not shown as Pet Attributes are now meaningless
 	"MELEE",
 	"SPELL",
 	"DEFENSE",
-	"RESISTANCE",
 };
 
 function PetPaperDollFrame_OnLoad (self)

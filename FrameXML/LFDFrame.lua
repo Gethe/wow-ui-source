@@ -1,4 +1,4 @@
-EXPANSION_LEVEL = GetExpansionLevel(); --This doesn't change while logged in, so we just need to do it once.
+EXPANSION_LEVEL = GetExpansionLevel(); --This can change while logged in, when an expansion releases
 
 LFD_MAX_REWARDS = 2;
 
@@ -32,6 +32,7 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("VOTE_KICK_REASON_NEEDED");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 	self:RegisterEvent("LFG_OPEN_FROM_GOSSIP");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 	
 	ButtonFrameTemplate_HideAttic(self);
 	self.Inset:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 2, 284);
@@ -72,6 +73,8 @@ function LFDFrame_OnEvent(self, event, ...)
 		local dungeonID = ...;
 		PVEFrame_ShowFrame("GroupFinderFrame", LFDParentFrame);
 		LFDQueueFrame_SetType(dungeonID);
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		EXPANSION_LEVEL = GetExpansionLevel();
 	end
 end
 

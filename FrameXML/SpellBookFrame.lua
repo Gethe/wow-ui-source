@@ -108,6 +108,7 @@ function SpellBookFrame_OnLoad(self)
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");	
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	-- Init page nums
@@ -165,6 +166,9 @@ function SpellBookFrame_OnEvent(self, event, ...)
 		else
 			SpellBookFrame_UpdateSkillLineTabs();
 		end
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+		SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
+		SpellBookFrame_Update();
 	end
 end
 
@@ -221,7 +225,6 @@ function SpellBookFrame_Update()
 	local level = UnitLevel("player");
 	
 	if ( level >= 20 ) then
-		-- core abilities is always shown
 		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
 		nextTab:Show();
 		nextTab.bookType = BOOKTYPE_CORE_ABILITIES;
@@ -231,7 +234,6 @@ function SpellBookFrame_Update()
 	end
 	
 	if ( level >= 40 ) then
-		-- What's Changed is always shown
 		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
 		nextTab:Show();
 		nextTab.bookType = BOOKTYPE_WHAT_HAS_CHANGED;

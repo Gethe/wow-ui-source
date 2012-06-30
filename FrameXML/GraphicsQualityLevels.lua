@@ -547,9 +547,9 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				farClip = 1100,
-				wmoLodDist = 550,
-				terrainLodDist = 550,
+				farClip = 1000,
+				wmoLodDist = 500,
+				terrainLodDist = 500,
 				terrainTextureLod = 0,
 			},
 		},
@@ -599,7 +599,7 @@ VideoData["Graphics_GroundClutterDropDown"]={
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				groundEffectDist = 200,
-				groundEffectDensity = 96,
+				groundEffectDensity = 80,
 			},
 		},
 		[5] = {

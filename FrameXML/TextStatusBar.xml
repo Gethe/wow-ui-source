@@ -9,8 +9,8 @@
 				TextStatusBar_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnEnter>
-				TextStatusBar_UpdateTextString(self);
 				ShowTextStatusBarText(self);
+				TextStatusBar_UpdateTextString(self);
 				if ( self.tooltipTitle ) then
 					GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 				elseif ( self:GetParent() == TargetFrame ) then

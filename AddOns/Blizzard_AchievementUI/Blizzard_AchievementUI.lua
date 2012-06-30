@@ -3316,7 +3316,11 @@ function AchievementShield_OnEnter(self)
 	local parent = self:GetParent();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( parent.accountWide ) then
-		GameTooltip:AddLine(ACCOUNT_WIDE_ACHIEVEMENT);
+		if ( parent.completed ) then
+			GameTooltip:AddLine(ACCOUNT_WIDE_ACHIEVEMENT_COMPLETED);
+		else
+			GameTooltip:AddLine(ACCOUNT_WIDE_ACHIEVEMENT);
+		end
 		GameTooltip:Show();
 		return;
 	end

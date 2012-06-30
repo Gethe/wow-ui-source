@@ -257,10 +257,7 @@ function TargetFrame_CheckLevel (self)
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
-	elseif ( UnitIsWildBattlePet(self.unit) ) then
-		self.levelText:Hide();
-		self.highLevelTexture:Hide();
-	elseif ( UnitIsBattlePetCompanion(self.unit) ) then
+	elseif ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
 		local petLevel = UnitBattlePetLevel(self.unit);
 		self.levelText:SetVertexColor(1.0, 0.82, 0.0);
 		self.levelText:SetText( petLevel );
@@ -313,14 +310,8 @@ function TargetFrame_CheckFaction (self)
 end
 
 function TargetFrame_CheckBattlePet(self)
-	if ( UnitIsWildBattlePet(self.unit) ) then
+	if ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
 		local petType = UnitBattlePetType(self.unit);
-		self.textureFrame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-NoLevel");
-		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
-		self.petBattleIcon:Show();
-	elseif ( UnitIsBattlePetCompanion(self.unit) ) then
-		local petType = UnitBattlePetType(self.unit);
-		self.textureFrame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
 		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.petBattleIcon:Show();
 	else
@@ -333,6 +324,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);
 	self.nameBackground:Show();
 	self.manabar:Show();
+	self.manabar.TextString:Show();
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
 
 	if ( forceNormalTexture ) then
@@ -341,6 +333,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Minus");
 		self.nameBackground:Hide();
 		self.manabar:Hide();
+		self.manabar.TextString:Hide();
 		forceNormalTexture = true;
 	elseif ( classification == "worldboss" or classification == "elite" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
@@ -1038,19 +1031,19 @@ function Target_Spellbar_AdjustPosition(self)
 	if ( self.boss ) then
 		self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 10 );
 	elseif ( parentFrame.haveToT ) then
-		if ( self.buffsOnTop or parentFrame.auraRows <= 1 ) then
+		if ( parentFrame.buffsOnTop or parentFrame.auraRows <= 1 ) then
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -21 );
 		else
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		end
 	elseif ( parentFrame.haveElite ) then
-		if ( self.buffsOnTop or parentFrame.auraRows <= 1 ) then
+		if ( parentFrame.buffsOnTop or parentFrame.auraRows <= 1 ) then
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -5 );
 		else
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		end
 	else
-		if ( (not self.buffsOnTop) and parentFrame.auraRows > 0 ) then
+		if ( (not parentFrame.buffsOnTop) and parentFrame.auraRows > 0 ) then
 			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
 		else
 			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 7 );

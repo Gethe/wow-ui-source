@@ -506,13 +506,13 @@ end
 function PlayerTalentFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if (self:IsShown()) then
-		if ( 	event == "PLAYER_TALENT_UPDATE" or 
-				event == "PET_SPECIALIZATION_CHANGED" or
-				event == "PREVIEW_TALENT_POINTS_CHANGED" or
-				event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" ) then
+		if ( event == "PLAYER_TALENT_UPDATE" ) then
+			PlayerTalentFrame_Refresh();
+		elseif ( event == "PET_SPECIALIZATION_CHANGED" or
+				 event == "PREVIEW_TALENT_POINTS_CHANGED" or
+				 event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" ) then
 			PlayerTalentFrame_ClearTalentSelections();
 			PlayerTalentFrame_Refresh();
-			SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
 		elseif ( event == "UNIT_LEVEL") then
 			if ( selectedSpec ) then
 				local arg1 = ...;

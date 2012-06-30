@@ -302,6 +302,16 @@ function GuildBankFrame_UpdateFiltered()
 	end
 end
 
+function GuildBankFrameTab_UpdateFiltered(self)
+	if ( self:IsVisible()) then
+		local _,_,_,_,_,_, filtered = GetGuildBankTabInfo(self:GetParent():GetID());
+		if ( filtered ) then
+			self.searchOverlay:Show();
+		else
+			self.searchOverlay:Hide();
+		end
+	end
+end
 
 function GuildBankFrameTab_OnClick(tab, id, doNotUpdate)
 	PanelTemplates_SetTab(GuildBankFrame, id);

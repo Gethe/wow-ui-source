@@ -5,7 +5,7 @@ local MOUNT_BUTTON_HEIGHT = 46;
 local MAX_ACTIVE_PETS = 3;
 local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
-local MAX_PET_LEVEL = 100;
+local MAX_PET_LEVEL = 25;
 local UNLOCK_ACHIEVEMENTS = {"6461", "7433", "6566"};
 local PLAYER_MOUNT_LEVEL = 20;
 
@@ -291,14 +291,23 @@ function PetJournal_ShowPetSelect(self)
 	PetJournal.SpellSelect.Spell1.petID = slotFrame.petID;
 	PetJournal.SpellSelect.Spell1.speciesID = slotFrame.speciesID;
 	--Setup spell two
-	name, icon, petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex2]);
-	requiredLevel = PetJournalLoadout_GetRequiredLevel(slotFrame, abilities[spellIndex2]);
+	if (abilities[spellIndex2]) then
+		name, icon, petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex2]);
+		requiredLevel = PetJournalLoadout_GetRequiredLevel(slotFrame, abilities[spellIndex2]);
+		PetJournal.SpellSelect.Spell2:SetEnabled(requiredLevel <= level);
+	else
+		name = "";
+		icon = "";
+		petType = "";
+		requiredLevel = 0;
+		PetJournal.SpellSelect.Spell2:SetEnabled(false);
+	end
+
 	if ( requiredLevel > level ) then
 		PetJournal.SpellSelect.Spell2.additionalText = format(PET_ABILITY_REQUIRES_LEVEL, requiredLevel);
 	else
 		PetJournal.SpellSelect.Spell2.additionalText = nil;
 	end
-	PetJournal.SpellSelect.Spell2:SetEnabled(requiredLevel <= level);
 	PetJournal.SpellSelect.Spell2.icon:SetTexture(icon);
 	PetJournal.SpellSelect.Spell2.BlackCover:SetShown(requiredLevel > level);
 	PetJournal.SpellSelect.Spell2.LevelRequirement:SetShown(requiredLevel > level);
@@ -308,7 +317,6 @@ function PetJournal_ShowPetSelect(self)
 	PetJournal.SpellSelect.Spell2.abilityID = abilities[spellIndex2];
 	PetJournal.SpellSelect.Spell2.petID = slotFrame.petID;
 	PetJournal.SpellSelect.Spell2.speciesID = slotFrame.speciesID;
-	
 	
 	PetJournal.SpellSelect.Spell1:SetChecked(self.abilityID == abilities[spellIndex1]);
 	PetJournal.SpellSelect.Spell2:SetChecked(self.abilityID == abilities[spellIndex2]);
@@ -541,9 +549,11 @@ function PetJournal_UpdatePetList()
 			pet.icon:SetTexture(icon);
 			pet.petTypeIcon:SetTexture(GetPetTypeTexture(petType));
 			
-			
-			--TODO: Add favorite checking. Needs Gameplay
-			pet.favorite:Hide();
+			if (favorite) then
+				pet.favorite:Show();
+			else
+				pet.favorite:Hide();
+			end
 			
 			if isOwned then
 				pet.levelBG:Show();
@@ -864,12 +874,30 @@ function PetJournalFilterDropDown_Initialize(self, level)
 		info.text = COLLECTED
 		info.func = 	function(_, _, _, value)
 							C_PetJournal.SetFlagFilter(LE_PET_JOURNAL_FLAG_COLLECTED, value);
+							if (value) then
+								UIDropDownMenu_EnableButton(1, 2);
+							else
+								UIDropDownMenu_DisableButton(1,2 );
+							end;
 						end 
 		info.keepShownOnClick = true;
 		info.checked = not C_PetJournal.IsFlagFiltered(LE_PET_JOURNAL_FLAG_COLLECTED);
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 		
+		info.text = FAVORITES_FILTER
+		info.func = 	function(_, _, _, value)
+							C_PetJournal.SetFlagFilter(LE_PET_JOURNAL_FLAG_FAVORITES, value);
+						end 
+		info.disabled = not info.checked or info.checked ~= true;
+		info.keepShownOnClick = true;
+		info.checked = not C_PetJournal.IsFlagFiltered(LE_PET_JOURNAL_FLAG_FAVORITES);
+		info.isNotRadio = true;
+		info.leftPadding = 16;
+		UIDropDownMenu_AddButton(info, level)
+		info.leftPadding = 0;
+		info.disabled = nil;
+
 		info.text = NOT_COLLECTED
 		info.func = 	function(_, _, _, value)
 							C_PetJournal.SetFlagFilter(LE_PET_JOURNAL_FLAG_NOT_COLLECTED, value);
@@ -878,17 +906,7 @@ function PetJournalFilterDropDown_Initialize(self, level)
 		info.checked = not C_PetJournal.IsFlagFiltered(LE_PET_JOURNAL_FLAG_NOT_COLLECTED);
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
-		
-		
-		info.text = FAVORITES
-		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFlagFilter(LE_PET_JOURNAL_FLAG_FAVORITES, value);
-						end 
-		info.keepShownOnClick = true;
-		--info.checked = not C_PetJournal.IsFlagFiltered(LE_PET_JOURNAL_FLAG_FAVORITES);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-		
+	
 		info.keepShownOnClick = true;
 		info.checked = 	nil;
 		info.isNotRadio = nil;
@@ -987,10 +1005,20 @@ function PetOptionsMenu_Init(self, level)
 	info.text = BATTLE_PET_RENAME
 	info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME", nil, nil, PetJournal.menuPetID); end 
 	UIDropDownMenu_AddButton(info, level)
-		
-	info.text = BATTLE_PET_FAVORITE;--BATTLE_PET_UNFAVORITE
-	info.func = nil
-	UIDropDownMenu_AddButton(info, level)
+
+	if (PetJournal.menuPetID and C_PetJournal.PetIsFavorite(PetJournal.menuPetID)) then
+		info.text = BATTLE_PET_UNFAVORITE;
+		info.func = function() 
+			C_PetJournal.SetFavorite(PetJournal.menuPetID, 0); 
+		end
+		UIDropDownMenu_AddButton(info, level)
+	else
+		info.text = BATTLE_PET_FAVORITE;
+		info.func = function() 
+			C_PetJournal.SetFavorite(PetJournal.menuPetID, 1); 
+		end
+		UIDropDownMenu_AddButton(info, level)
+	end
 	
 	if(PetJournal.menuPetID and C_PetJournal.PetIsTradable(PetJournal.menuPetID)) then
 		info.text = BATTLE_PET_RELEASE;

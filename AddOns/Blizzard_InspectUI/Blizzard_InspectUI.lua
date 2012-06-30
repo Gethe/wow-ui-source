@@ -44,11 +44,13 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" or event == "GROUP_ROSTER_UPDATE" ) then
 		if ( (event == "PLAYER_TARGET_CHANGED" and self.unit == "target") or
 		     (event == "GROUP_ROSTER_UPDATE" and self.unit ~= "target") ) then
-			if ( CanInspect(self.unit) ) then
-				InspectFrame_UnitChanged(self);
-			else
-				HideUIPanel(InspectFrame);
-			end
+			-- Just hide the InspectFrame when the unit changes.  This hides the bug that occurs when you click on targets too quickly and the server drops the inspect data when flooded with inspect requests.
+			--if ( CanInspect(self.unit) ) then
+			--	InspectFrame_UnitChanged(self);
+			--else
+			--	HideUIPanel(InspectFrame);
+			--end
+			HideUIPanel(InspectFrame);
 		end
 		return;
 	elseif ( event == "UNIT_NAME_UPDATE" ) then

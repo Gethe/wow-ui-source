@@ -331,6 +331,12 @@ function BuffButton_OnClick(self)
 	CancelUnitBuff(self.unit, self:GetID(), self.filter);
 end
 
+function ConsolidatedBuffButton_OnClick(self)
+	if ( self.name ) then
+		CancelUnitBuff(PlayerFrame.unit, self.name);
+	end
+end
+
 function BuffFrame_UpdateAllBuffAnchors()
 	local buff, previousBuff, aboveBuff, index;
 	local numBuffs = 0;

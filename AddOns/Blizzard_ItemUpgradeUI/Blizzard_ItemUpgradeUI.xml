@@ -202,41 +202,6 @@
 					<Layer level="BORDER">
 						<Texture parentKey="IconTexture"/>
 					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="ItemName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT">
-							<Size x="250" y="12"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="18" y="10"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="BoundStatus" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="260" y="12"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-5"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-						<FontString parentKey="MissingText" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" text="UPGRADE_MISSING_ITEM">
-							<Size x="250" y="12"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="50" y="0"/>
-							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
-						</FontString>
-						<FontString parentKey="CurrencyAmount" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="30" y="12"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.BoundStatus" relativePoint="RIGHT" x="20" y="-4"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-						<Texture parentKey="CurrencyIcon" file="Interface\Icons\PVECurrency-Valor" hidden="true">
-							<Size x="12" y="12"/> 
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.CurrencyAmount" relativePoint="LEFT" x="-2" y="-1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="ItemFrame" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
 							<Size x="78" y="78"/> 
@@ -261,6 +226,41 @@
 						<Texture parentKey="TextureFrameRight" file="Interface\Common\GreyBorder64-Right">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.TextureFrameMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ItemName" inherits="SystemFont_Shadow_Med3" justifyH="LEFT">
+							<Size x="250" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="18" y="10"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="BoundStatus" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="260" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-5"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<FontString parentKey="MissingText" inherits="SystemFont_Shadow_Med3" justifyH="LEFT" text="UPGRADE_MISSING_ITEM">
+							<Size x="250" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="50" y="0"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
+						</FontString>
+						<FontString parentKey="CurrencyAmount" inherits="GameFontNormal" justifyH="RIGHT">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextureFrameRight" relativePoint="BOTTOMRIGHT" x="-13" y="15"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<Texture parentKey="CurrencyIcon" file="Interface\Icons\PVECurrency-Valor" hidden="true">
+							<Size x="12" y="12"/> 
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrencyAmount" relativePoint="LEFT" x="-2" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -333,6 +333,30 @@
 						</Scripts>
 					</Button>
 				</Frames>
+			</Frame>
+			<Frame parentKey="FinishedGlow" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="FinishedAnim">
+						<Alpha change="1" duration="0.1" order="1" />
+						<Alpha startDelay="0.1" change="-1" duration="0.5" order="2" />
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FinishedFlare" file="Interface\Reforging\Valor-Flare" alphaMode="ADD">
+							<Size x="256" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ItemUpgradeFrame" y="-23"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="ItemUpgradeFrame" y="26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetAlpha(0);
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 		

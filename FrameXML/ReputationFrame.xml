@@ -851,17 +851,18 @@
 				self:RegisterEvent("ENABLE_XP_GAIN");
 				self:RegisterEvent("DISABLE_XP_GAIN");
 				self:RegisterEvent("CVAR_UPDATE");
+				self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 			</OnLoad>
 			<OnEvent>
 				local arg1, arg2 = ...;
 				if( event == "UPDATE_FACTION" ) then
 					if ( self:IsShown() ) then
-					    ReputationFrame_Update();
+						ReputationFrame_Update();
 					end
 					ReputationWatchBar_Update();
-				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" ) then
+				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" ) then
 					ReputationWatchBar_Update(arg1);
-					UIParent_ManageFramePositions()
+					UIParent_ManageFramePositions();
 				elseif( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
 					if( arg2 == "1" ) then
 						ShowWatchedReputationBarText("lock");

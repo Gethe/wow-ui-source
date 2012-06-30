@@ -52,8 +52,11 @@ function ItemUpgradeFrame_OnHide(self)
 end
 
 function ItemUpgradeFrame_OnEvent(self, event, ...)
-	if ( event == "ITEM_UPGRADE_MASTER_SET_ITEM" or event == "ITEM_UPGRADE_MASTER_UPDATE" ) then
+	if ( event == "ITEM_UPGRADE_MASTER_SET_ITEM" ) then
 		ItemUpgradeFrame_Update(self);
+	elseif ( event == "ITEM_UPGRADE_MASTER_UPDATE" ) then
+		ItemUpgradeFrame_Update(self);
+		self.FinishedGlow.FinishedAnim:Play();
 	end
 end
 
@@ -78,7 +81,7 @@ function ItemUpgradeFrame_Update(self)
 
 		local canUpgradeItem = false;
 		if(numCurrUpgrades and numMaxUpgrades) then
-			ItemUpgradeFrame.UpgradeStatus:SetText(numCurrUpgrades.."/"..numMaxUpgrades);
+			ItemUpgradeFrame.UpgradeStatus:SetText(numCurrUpgrades.."/"..numMaxUpgrades.."*");
 			ItemUpgradeFrame.UpgradeStatus:Show();
 			if ( numCurrUpgrades < numMaxUpgrades ) then
 				ItemUpgradeFrame.UpgradeStatus:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -130,6 +133,12 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrameMoneyFrame.Currency.icon:SetTexture("Interface\\Icons\\"..currencyTexture);
 		ItemUpgradeFrameMoneyFrame.Currency.count:SetText(amount);
 		ItemUpgradeFrameMoneyFrame.Currency:Show();
+		if ( cost > amount ) then
+			ItemUpgradeFrameUpgradeButton:Disable();
+			ItemUpgradeFrameMoneyFrame.Currency.count:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		else
+			ItemUpgradeFrameMoneyFrame.Currency.count:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		end
 	else
 		ItemUpgradeFrameMoneyFrame.Currency:Hide();
 	end

@@ -520,11 +520,24 @@ end
 
 function BonusRollFrame_OnEvent(self, event, ...)
 	if ( event == "BONUS_ROLL_FAILED" ) then
-		--Do something?
+		self.state = "finishing";
+		self.rewardType = nil;
+		self.rewardLink = nil;
+		self.rewardQuantity = nil;
+		self.RollingFrame.LootSpinner:Hide();
+		self.RollingFrame.LootSpinnerFinal:Hide();
+		self.FinishRollAnim:Play();
 	elseif ( event == "BONUS_ROLL_STARTED" ) then
 		self.state = "rolling";
 		self.animFrame = 0;
 		self.animTime = 0;
+		PlaySoundKitID(31579);	--UI_BonusLootRoll_Start
+		--Make sure we don't keep playing the sound ad infinitum.
+		if ( self.rollSound ) then
+			StopSound(self.rollSound);
+		end
+		local _, soundHandle = PlaySoundKitID(31580);	--UI_BonusLootRoll_Loop
+		self.rollSound = soundHandle;
 		self.RollingFrame.LootSpinner:Show();
 		self.RollingFrame.LootSpinnerFinal:Hide();
 		self.StartRollAnim:Play();
@@ -563,6 +576,11 @@ function BonusRollFrame_OnUpdate(self, elapsed)
 		self.animTime = self.animTime + elapsed;
 		if ( self.animFrame == finalAnimFrame[self.rewardType] ) then
 			self.state = "finishing";
+			if ( self.rollSound ) then
+				StopSound(self.rollSound);
+			end
+			self.rollSound = nil;
+			PlaySoundKitID(31581);	--UI_BonusLootRoll_End
 			self.RollingFrame.LootSpinner:Hide();
 			self.RollingFrame.LootSpinnerFinal:Show();
 			self.RollingFrame.LootSpinnerFinal:SetTexCoord(unpack(finalTextureTexCoords[self.rewardType]));
@@ -591,6 +609,14 @@ function BonusRollFrame_OnShow(self)
 	end
 end
 
+function BonusRollFrame_OnHide(self)
+	--Make sure we don't keep playing the sound ad infinitum.
+	if ( self.rollSound ) then
+		StopSound(self.rollSound);
+	end
+	self.rollSound = nil;
+end
+
 function BonusRollFrame_FinishedFading(self)
 	if ( self.rewardType == "item" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
@@ -600,6 +626,8 @@ function BonusRollFrame_FinishedFading(self)
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
 		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
 		AlertFrame_AnimateIn(BonusRollMoneyWonFrame);
+	else
+		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 	end
 end
 

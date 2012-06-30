@@ -3,6 +3,7 @@ NUM_BATTLE_PET_ABILITIES = 3;
 END_OF_PET_BATTLE_PET_LEVEL_UP = "petbattlepetlevel";
 END_OF_PET_BATTLE_RESULT = "petbattleresult";
 END_OF_PET_BATTLE_CAPTURE = "petbattlecapture";
+local MAX_PET_LEVEL = 25;
 
 BATTLE_PET_DISPLAY_ROTATION = 3 * math.pi / 8;
 
@@ -12,8 +13,8 @@ PET_BATTLE_WEATHER_TEXTURES = {
 	[171] = "Interface\\PetBattles\\Weather-BurntEarth",
 	[257] = "Interface\\PetBattles\\Weather-Darkness",
 	[203] = "Interface\\PetBattles\\Weather-StaticField",
-	--[55] = "Interface\\PetBattles\\Weather-Moonlight",
-	--[59] = "Interface\\PetBattles\\Weather-Mud",
+	[596] = "Interface\\PetBattles\\Weather-Moonlight",
+	[718] = "Interface\\PetBattles\\Weather-Mud",
 	[229] = "Interface\\PetBattles\\Weather-Rain",
 	[454] = "Interface\\PetBattles\\Weather-Sandstorm",
 	[403] = "Interface\\PetBattles\\Weather-Sunlight",
@@ -37,10 +38,13 @@ function PetBattleFrame_OnLoad(self)
 		PetBattleUnitFrame_SetUnit(self.BottomFrame.PetSelectionFrame["Pet"..i], LE_BATTLE_PET_ALLY, i);
 	end
 	PetBattleFrame_UpdateAbilityButtonHotKeys(self);
+	
+	PetBattleFrame_LoadXPTicks(self);
 
 	self:RegisterEvent("PET_BATTLE_TURN_STARTED");
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE");
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
+	self:RegisterEvent("PET_BATTLE_XP_CHANGED");
 
 	-- End of battle event:
 	self:RegisterEvent("PET_BATTLE_CLOSE");
@@ -58,16 +62,19 @@ function PetBattleFrame_OnEvent(self, event, ...)
 	elseif ( event == "PET_BATTLE_PET_CHANGED" ) then
 		PetBattleFrame_UpdateAssignedUnitFrames(self);
 		PetBattleFrame_UpdateAllActionButtons(self);
+		PetBattleFrame_UpdateXpBar(self);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
+	elseif ( event == "PET_BATTLE_XP_CHANGED" ) then
+		PetBattleFrame_UpdateXpBar(self);
 	end
 end
 
 function PetBattleFrame_UpdateInstructions(self)
 	local battleState = C_PetBattles.GetBattleState();
-	if ( ( ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) ) and 
+	if (( C_PetBattles.ShouldShowPetSelect() == true ) and 
 		( not C_PetBattles.GetSelectedAction() ) ) then
 		self.BottomFrame.FlowFrame.SelectPetInstruction:Show();
 	else
@@ -81,18 +88,19 @@ function PetBattleFrame_Display(self)
 	PetBattleFrame_UpdateAssignedUnitFrames(self);
 	PetBattleFrame_UpdateActionBarLayout(self);
 	PetBattleFrame_UpdateAllActionButtons(self);
+	PetBattleFrame_UpdateXpBar(self);
 	PetBattleFrame_UpdateInstructions(self);
 	PetBattleWeatherFrame_Update(self.WeatherFrame);
 end
 
 function PetBattleFrame_UpdatePetSelectionFrame(self)
 	local battleState = C_PetBattles.GetBattleState();
-	if ( ( ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) ) and
+	if ((C_PetBattles.ShouldShowPetSelect() == true) and
 		( not C_PetBattles.GetSelectedAction() ) ) then
 		PetBattlePetSelectionFrame_Show(PetBattleFrame.BottomFrame.PetSelectionFrame);
 	else
 		PetBattlePetSelectionFrame_Hide(PetBattleFrame.BottomFrame.PetSelectionFrame);
-	end	
+	end
 end
 
 function PetBattleFrame_UpdateAllActionButtons(self)
@@ -103,6 +111,39 @@ function PetBattleFrame_UpdateAllActionButtons(self)
 	end
 	PetBattleActionButton_UpdateState(self.BottomFrame.SwitchPetButton);
 	PetBattleActionButton_UpdateState(self.BottomFrame.CatchButton);
+end
+
+function PetBattleFrame_UpdateXpBar(self)
+	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
+	local level = C_PetBattles.GetLevel(LE_BATTLE_PET_ALLY, activePet);
+	if (level >= MAX_PET_LEVEL) then
+		self.BottomFrame.xpBar:Hide();
+		return;
+	end
+	
+	local xp, maxXp = C_PetBattles.GetXP(LE_BATTLE_PET_ALLY, activePet);
+	self.BottomFrame.xpBar:SetMinMaxValues(0, maxXp);
+	self.BottomFrame.xpBar:SetValue(xp);
+	self.BottomFrame.xpBar:Show();
+end
+
+function PetBattleFrame_LoadXPTicks(self)
+	local width = self.BottomFrame.xpBar:GetWidth();
+	local divWidth = width / 7;
+	local xpos = divWidth;
+	for i = 1, 6 do
+		local texture = _G["PetBattleXPBarDiv"..i];
+		if not texture then
+			texture = self.BottomFrame.xpBar:CreateTexture("MainMenuXPBarDiv"..i, "OVERLAY");
+			texture:SetTexture("Interface\\MainMenuBar\\UI-XP-Bar");
+			texture:SetSize(9,9);
+			texture:SetTexCoord( 0.01562500, 0.15625000, 0.01562500, 0.17187500);
+		end
+		local xalign = floor(xpos);
+		texture:SetPoint("LEFT", xalign, 1);
+		texture:SetVertexColor("0.7450980392156863", "0.6352941176470588", "0.5176470588235294");
+		xpos = xpos + divWidth;
+	end
 end
 
 function PetBattleFrame_UpdateActionButtonLevel(self, actionButton)
@@ -379,8 +420,7 @@ function PetBattleActionButton_UpdateState(self)
 		local _, name, icon = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
 
 		--If we're being forced to swap pets, hide us
-		if ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE or
-			battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) then
+		if ( C_PetBattles.ShouldShowPetSelect() == true ) then
 			isHidden = true;
 		end
 
@@ -395,8 +435,7 @@ function PetBattleActionButton_UpdateState(self)
 		usable = C_PetBattles.IsTrapAvailable();
 	elseif ( actionType == LE_BATTLE_PET_ACTION_SWITCH_PET ) then
 		--If we're being forced to swap pets, hide us
-		if ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE or
-			battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) then
+		if ( C_PetBattles.ShouldShowPetSelect() == true ) then
 			isHidden = true;
 		end
 		for i = 1, NUM_BATTLE_PETS_IN_BATTLE do
@@ -406,9 +445,32 @@ function PetBattleActionButton_UpdateState(self)
 		usable = true;
 	end
 
-	if ( isHidden or isLocked ) then
+	if ( isHidden ) then
 		self:Disable();
 		self:SetAlpha(0);
+	elseif ( isLocked ) then
+		--Set the frame up to look like a cooldown, but with a required level
+		if ( self.Icon ) then
+			self.Icon:SetVertexColor(0.5, 0.5, 0.5);
+			self.Icon:SetDesaturated(true);
+		end
+		self:Disable();
+		self:SetAlpha(1);
+		if ( self.SelectedHighlight ) then
+			self.SelectedHighlight:Hide();
+		end
+		if ( self.CooldownShadow ) then
+			self.CooldownShadow:Show();
+		end
+		if ( self.Cooldown ) then
+			self.Cooldown:Hide();
+		end
+		if ( self.RequiredLevel ) then
+			self.RequiredLevel:Show();
+		end
+		if ( self.AdditionalIcon ) then
+			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
+		end
 	elseif ( cooldown and cooldown > 0 ) then
 		--Set the frame up to look like a cooldown.
 		if ( self.Icon ) then
@@ -426,6 +488,9 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.Cooldown ) then
 			self.Cooldown:SetText(cooldown);
 			self.Cooldown:Show();
+		end
+		if ( self.RequiredLevel ) then
+			self.RequiredLevel:Hide();
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
@@ -447,6 +512,9 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.Cooldown ) then
 			self.Cooldown:Hide();
 		end
+		if ( self.RequiredLevel ) then
+			self.RequiredLevel:Hide();
+		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
 		end
@@ -467,6 +535,9 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.Cooldown ) then
 			self.Cooldown:Hide();
 		end
+		if ( self.RequiredLevel ) then
+			self.RequiredLevel:Hide();
+		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
 		end
@@ -486,6 +557,9 @@ function PetBattleActionButton_UpdateState(self)
 		end
 		if ( self.Cooldown ) then
 			self.Cooldown:Hide();
+		end
+		if ( self.RequiredLevel ) then
+			self.RequiredLevel:Hide();
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
@@ -518,17 +592,33 @@ end
 function PetBattleAbilityButton_UpdateIcons(self)
 	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
 	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
+	self.abilityID = id;
 	if ( not icon ) then
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark";
 	end
 	if ( not name ) then
 		--We don't have an ability here.
-		self.Icon:SetTexture("INTERFACE\\ICONS\\INV_Misc_Key_05");
+		local abilities = {};
+		local abilityLevels = {};
+		local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ALLY, activePet);
+		C_PetJournal.GetPetAbilityList(speciesID, abilities, abilityLevels);	--Read ability/ability levels into the correct tables
+		self.abilityID = abilities[self:GetID()];
+		if ( not self.abilityID ) then
+			self.Icon:SetTexture("INTERFACE\\ICONS\\INV_Misc_Key_05");
+			self:Hide();
+		else
+			name, icon, typeEnum = C_PetJournal.GetPetAbilityInfo(self.abilityID);
+			self.Icon:SetTexture(icon);
+			self.RequiredLevel:SetText(abilityLevels[self:GetID()]);
+			self.RequiredLevel:Show();
+		end
 		self.Icon:SetVertexColor(1, 1, 1);
 		self:Disable();
 		return;
 	end
 	self.Icon:SetTexture(icon);
+	self:Enable();
+	self:Show();
 
 	-- show Strong/Weak icons on buttons.
 	local enemyPetSlot = C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY);
@@ -550,6 +640,9 @@ function PetBattleAbilityButton_OnEnter(self)
 	local petIndex = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
 	if ( self:GetEffectiveAlpha() > 0 and C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()) ) then
 		PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
+		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
+	elseif ( self.abilityID ) then
+		PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.RequiredLevel:GetText()));
 		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
 	else
 		PetBattlePrimaryAbilityTooltip:Hide();
@@ -690,8 +783,7 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 
 	--Updated the indicator that this is the active pet
 	if ( self.SelectedTexture ) then
-		if ( battleState ~= LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE and
-			battleState ~= LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS and
+		if ( C_PetBattles.ShouldShowPetSelect() == false and
 			C_PetBattles.GetActivePet(petOwner) == petIndex ) then
 			self.SelectedTexture:Show();
 		else
@@ -942,6 +1034,9 @@ end
 PET_BATTLE_ABILITY_INFO = {};
 
 function PET_BATTLE_ABILITY_INFO:GetCooldown()
+	if (self.abilityID) then
+		return 0;
+	end
 	local isUsable, currentCooldown = C_PetBattles.GetAbilityState(self.petOwner, self.petIndex, self.abilityIndex);
 	return currentCooldown;
 end
@@ -951,6 +1046,9 @@ function PET_BATTLE_ABILITY_INFO:GetRemainingDuration()
 end
 
 function PET_BATTLE_ABILITY_INFO:GetAbilityID()
+	if (self.abilityID) then
+		return self.abilityID;
+	end
 	local id = C_PetBattles.GetAbilityInfo(self.petOwner, self.petIndex, self.abilityIndex);
 	return id;
 end
@@ -1003,10 +1101,18 @@ end
 function PetBattleAbilityTooltip_SetAbility(petOwner, petIndex, abilityIndex)
 	PET_BATTLE_ABILITY_INFO.petOwner = petOwner;
 	PET_BATTLE_ABILITY_INFO.petIndex = petIndex;
+	PET_BATTLE_ABILITY_INFO.abilityID = nil;
 	PET_BATTLE_ABILITY_INFO.abilityIndex = abilityIndex;
 	SharedPetBattleAbilityTooltip_SetAbility(PetBattlePrimaryAbilityTooltip, PET_BATTLE_ABILITY_INFO);
 end
 
+function PetBattleAbilityTooltip_SetAbilityByID(petOwner, petIndex, abilityID, additionalText)
+	PET_BATTLE_ABILITY_INFO.petOwner = petOwner;
+	PET_BATTLE_ABILITY_INFO.petIndex = petIndex;
+	PET_BATTLE_ABILITY_INFO.abilityID = abilityID;
+	PET_BATTLE_ABILITY_INFO.abilityIndex = nil;
+	SharedPetBattleAbilityTooltip_SetAbility(PetBattlePrimaryAbilityTooltip, PET_BATTLE_ABILITY_INFO, additionalText);
+end
 
 --------------------------------------------
 ----------Pet Battle Opening Frame----------

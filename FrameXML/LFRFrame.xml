@@ -152,16 +152,6 @@
 			<Frame name="LFRParentFrame" setAllPoints="true">
 				<Frames>
 					<Frame name="LFRQueueFrame" useParentLevel="true" setAllPoints="true">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<!-- <Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-MAIN">
-									<Size x="512" y="512"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="0"/>
-									</Anchors>
-								</Texture> -->
-							</Layer>
-						</Layers>
 						<Frames>
 							<Frame name="$parentRoleInset" inherits="InsetFrameTemplate" frameLevel="1">
 								<Anchors>
@@ -448,14 +438,6 @@
 					<Frame name="LFRBrowseFrame" useParentLevel="true" setAllPoints="true" hidden="true">
 						<Layers>
 							<Layer level="BACKGROUND">
-								<!-- <Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-BROWSE">
-									<Size x="512" y="512"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="0"/>
-									</Anchors>
-								</Texture> -->
-							</Layer>
-							<Layer level="BACKGROUND">
 								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size x="29" y="102"/>
 									<Anchors>
@@ -481,6 +463,12 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame name="$parentRoleInset" inherits="InsetFrameTemplate" frameLevel="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="LFRBrowseFrame" x="4" y="-83"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="LFRBrowseFrame" x="-4" y="27"/>
+								</Anchors>
+							</Frame>
 							<Frame name="$parentRaidDropDown" inherits="UIDropDownMenuTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOPLEFT" x="136" y="-25"/>

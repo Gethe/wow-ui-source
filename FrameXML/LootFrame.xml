@@ -401,6 +401,7 @@
 			<OnLoad function="BonusRollFrame_OnLoad"/>
 			<OnEvent function="BonusRollFrame_OnEvent"/>
 			<OnShow function="BonusRollFrame_OnShow"/>
+			<OnHide function="BonusRollFrame_OnHide"/>
 			<OnUpdate function="BonusRollFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>

@@ -90,20 +90,6 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 		manabar.unit = unit;
 	end
 	self:SetAttribute("unit", unit);
-	if ( (self==PlayerFrame or self==PetFrame) and unit=="player") then
-		local _,class = UnitClass("player");
-		if ( class=="DEATHKNIGHT" ) then
-			if ( self==PlayerFrame ) then
-				RuneFrame:SetScale(1)
-				RuneFrame:ClearAllPoints()
-				RuneFrame:SetPoint("TOP", self,"BOTTOM", 52, 34)
-			elseif ( self==PetFrame ) then
-				RuneFrame:SetScale(0.6)
-				RuneFrame:ClearAllPoints()
-				RuneFrame:SetPoint("TOP",self,"BOTTOM",25,20)
-			end
-		end
-	end
 	securecall("UnitFrame_Update", self);
 end
 

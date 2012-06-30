@@ -503,7 +503,7 @@
 				else
 					BossTargetFrame_OnLoad(self, "boss"..id);
 				end
-				TargetFrame_CreateSpellbar(self, nil, true);
+				TargetFrame_CreateSpellbar(self, "INSTANCE_ENCOUNTER_ENGAGE_UNIT", true);
 			</OnLoad>
 		</Scripts>
 	</Button>

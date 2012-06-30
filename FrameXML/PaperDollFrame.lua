@@ -1,7 +1,6 @@
 EQUIPPED_FIRST = 1;
 EQUIPPED_LAST = 19;
 
-NUM_RESISTANCE_TYPES = 5;
 NUM_STATS = 5;
 NUM_SHOPPING_TOOLTIPS = 2;
 MAX_SPELL_SCHOOLS = 7;
@@ -223,9 +222,6 @@ PAPERDOLL_STATINFO = {
 	["SPELL_HITCHANCE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellHitChance(statFrame, unit); end
 	},
-	["SPELL_PENETRATION"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpellPenetration(statFrame, unit); end
-	},
 	["MANAREGEN"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetManaRegen(statFrame, unit); end
 	},
@@ -258,23 +254,6 @@ PAPERDOLL_STATINFO = {
 	["RESILIENCE_CRIT"] = {
 		-- TODO
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetResilience(statFrame, unit); end
-	},
-	
-	-- Resistance
-	["ARCANE"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetResistance(statFrame, unit, 6); end
-	},
-	["FIRE"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetResistance(statFrame, unit, 2); end
-	},
-	["FROST"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetResistance(statFrame, unit, 3); end
-	},
-	["NATURE"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetResistance(statFrame, unit, 4); end
-	},
-	["SHADOW"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetResistance(statFrame, unit, 5); end
 	},
 };
 
@@ -342,7 +321,6 @@ PAPERDOLL_STATCATEGORIES = {
 				"SPELLHEALING",    -- If Damage and Healing are the same, this is hidden
 				"SPELL_HASTE", 
 				"SPELL_HITCHANCE",
-				"SPELL_PENETRATION",
 				"MANAREGEN",
 				"COMBATMANAREGEN",
 				"SPELLCRIT",
@@ -362,17 +340,6 @@ PAPERDOLL_STATCATEGORIES = {
 				--"RESILIENCE_CRIT",
 			}
 	},
-
-	["RESISTANCE"] = {
-			id = 7,
-			stats = {
-				"ARCANE", 
-				"FIRE", 
-				"FROST", 
-				"NATURE", 
-				"SHADOW",
-			}
-	},
 };
 
 PAPERDOLL_STATCATEGORY_DEFAULTORDER = {
@@ -382,7 +349,6 @@ PAPERDOLL_STATCATEGORY_DEFAULTORDER = {
 	"RANGED",
 	"SPELL",
 	"DEFENSE",
-	"RESISTANCE",
 };
 
 BASE_MISS_CHANCE_PHYSICAL = {
@@ -420,7 +386,6 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
-	self:RegisterEvent("UNIT_RESISTANCES");
 	self:RegisterEvent("UNIT_STATS");
 	self:RegisterEvent("UNIT_RANGEDDAMAGE");
 	self:RegisterEvent("UNIT_ATTACK_POWER");
@@ -502,7 +467,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	if ( unit == "player" ) then
 		if ( event == "UNIT_LEVEL" ) then
 			PaperDollFrame_SetLevel();
-		elseif ( event == "UNIT_DAMAGE" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" or event == "UNIT_RESISTANCES" or event == "UNIT_SPELL_HASTE" or event == "UNIT_MAXHEALTH" or event == "UNIT_AURA" ) then
+		elseif ( event == "UNIT_DAMAGE" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" or event == "UNIT_SPELL_HASTE" or event == "UNIT_MAXHEALTH" or event == "UNIT_AURA" ) then
 			self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 		end
 	end
@@ -837,33 +802,6 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 	statFrame:Show();
 end
 
-function PaperDollFrame_SetResistance(statFrame, unit, resistanceIndex)
-	local base, resistance, positive, negative = UnitResistance(unit, resistanceIndex);
-	local resistanceNameShort = _G["SPELL_SCHOOL"..resistanceIndex.."_CAP"];
-	local resistanceName = _G["RESISTANCE"..resistanceIndex.."_NAME"];
-	local resistanceIconCode = "|TInterface\\PaperDollInfoFrame\\SpellSchoolIcon"..(resistanceIndex+1)..":0|t";
-	_G[statFrame:GetName().."Label"]:SetText(resistanceIconCode.." "..format(STAT_FORMAT, resistanceNameShort));
-	local text = _G[statFrame:GetName().."StatText"];
-	PaperDollFormatStat(resistanceName, base, positive, negative, statFrame, text);
-	statFrame.tooltip = resistanceIconCode.." "..HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, resistanceName).." "..resistance..FONT_COLOR_CODE_CLOSE;
-	
-	if ( positive ~= 0 or negative ~= 0 ) then
-		statFrame.tooltip = statFrame.tooltip.. " ( "..HIGHLIGHT_FONT_COLOR_CODE..base;
-		if( positive > 0 ) then
-			statFrame.tooltip = statFrame.tooltip..GREEN_FONT_COLOR_CODE.." +"..positive;
-		end
-		if( negative < 0 ) then
-			statFrame.tooltip = statFrame.tooltip.." "..RED_FONT_COLOR_CODE..negative;
-		end
-		statFrame.tooltip = statFrame.tooltip..FONT_COLOR_CODE_CLOSE.." )";
-	end
-	
-	statFrame.tooltip2 = format(RESISTANCE_TOOLTIP_SUBTEXT, _G["SPELL_SCHOOL"..resistanceIndex.."_CAP"], ResistancePercent(resistance, UnitLevel(unit)));
-	
-	-- TODO: Put this in the tooltip?
-	--local petBonus = ComputePetBonus( "PET_BONUS_RES", resistance );
-end
-
 function PaperDollFrame_SetArmor(statFrame, unit)
 	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
@@ -930,7 +868,7 @@ function PaperDollFrame_SetResilience(statFrame, unit)
 
 	local damageResilience = BreakUpLargeNumbers(GetCombatRating(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN));
 	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageResilience);
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageRatingBonus, 1);
 	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..damageResilience..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, 
@@ -947,7 +885,7 @@ function PaperDollFrame_SetPvpPower(statFrame, unit)
 
 	local pvpPower = BreakUpLargeNumbers(GetCombatRating(CR_PVP_POWER));
 	local pvpPowerBonus = GetCombatRatingBonus(CR_PVP_POWER);
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpPower);
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpPowerBonus, 1);
 	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_PVP_POWER).." "..pvpPower..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(PVP_POWER_TOOLTIP, pvpPowerBonus);
@@ -1862,21 +1800,6 @@ function PaperDollFrame_SetRangedHaste(statFrame, unit)
 	statFrame:Show();
 end
 
-function PaperDollFrame_SetSpellPenetration(statFrame, unit)
-	if ( unit ~= "player" ) then
-		statFrame:Hide();
-		return;
-	end
-	
-	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, SPELL_PENETRATION));
-	local text = _G[statFrame:GetName().."StatText"];
-	local spellPenetration = GetSpellPenetration();
-	text:SetText(spellPenetration);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE ..SPELL_PENETRATION.. FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(SPELL_PENETRATION_TOOLTIP, spellPenetration, spellPenetration);
-	statFrame:Show();
-end
-
 function PaperDollFrame_SetSpellHaste(statFrame, unit)
 	if ( unit ~= "player" ) then
 		statFrame:Hide();
@@ -1961,15 +1884,24 @@ function Expertise_OnEnter(statFrame)
 	expertise = format("%.2F%%", expertise);
 	offhandExpertise = format("%.2F%%", offhandExpertise);
 	
+	local category = statFrame:GetParent().Category;
+
 	local expertiseDisplay, expertisePercentDisplay;
-	if (IsDualWielding()) then
+	if (category == "MELEE" and IsDualWielding()) then
 		expertiseDisplay = expertise.." / "..offhandExpertise;
 	else
 		expertiseDisplay = expertise;
 	end
 	
+	local expertiseTooltip;
+	if (category == "MELEE") then
+		expertiseTooltip = CR_EXPERTISE_TOOLTIP;
+	else
+		expertiseTooltip = CR_RANGED_EXPERTISE_TOOLTIP;
+	end
+
 	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, _G["COMBAT_RATING_NAME"..CR_EXPERTISE]).." "..expertiseDisplay..FONT_COLOR_CODE_CLOSE);
-	GameTooltip:AddLine(format(CR_EXPERTISE_TOOLTIP, expertiseDisplay, BreakUpLargeNumbers(GetCombatRating(CR_EXPERTISE)), GetCombatRatingBonus(CR_EXPERTISE)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	GameTooltip:AddLine(format(expertiseTooltip, expertiseDisplay, BreakUpLargeNumbers(GetCombatRating(CR_EXPERTISE)), GetCombatRatingBonus(CR_EXPERTISE)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 	GameTooltip:AddLine(" ");
 	
 	-- Dodge chance
@@ -1984,7 +1916,7 @@ function Expertise_OnEnter(statFrame)
 			level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
 		end
 		local dodgeDisplay;
-		if (IsDualWielding() and mainhandDodge ~= offhandDodge) then
+		if (category == "MELEE" and IsDualWielding() and mainhandDodge ~= offhandDodge) then
 			dodgeDisplay = mainhandDodge.." / "..offhandDodge;
 		else
 			dodgeDisplay = mainhandDodge.."  ";
@@ -1993,26 +1925,28 @@ function Expertise_OnEnter(statFrame)
 	end
 	
 	-- Parry chance
-	GameTooltip:AddLine(" ");
-	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, PARRY_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	local playerLevel = UnitLevel("player");
-	for i=0, 3 do
-		local mainhandParry, offhandParry = GetEnemyParryChance(i);
-		mainhandParry = format("%.2F%%", mainhandParry);
-		offhandParry = format("%.2F%%", offhandParry);
-		local level = playerLevel + i;
-		if (i == 3) then
-			level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+	if ( category == "MELEE" ) then
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, PARRY_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		local playerLevel = UnitLevel("player");
+		for i=0, 3 do
+			local mainhandParry, offhandParry = GetEnemyParryChance(i);
+			mainhandParry = format("%.2F%%", mainhandParry);
+			offhandParry = format("%.2F%%", offhandParry);
+			local level = playerLevel + i;
+			if (i == 3) then
+				level = level.." / |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t";
+			end
+			local parryDisplay;
+			if (IsDualWielding() and mainhandParry ~= offhandParry) then
+				parryDisplay = mainhandParry.." / "..offhandParry;
+			else
+				parryDisplay = mainhandParry.."  ";
+			end
+			GameTooltip:AddDoubleLine("      "..level, parryDisplay.."  ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		end
-		local parryDisplay;
-		if (IsDualWielding() and mainhandParry ~= offhandParry) then
-			parryDisplay = mainhandParry.." / "..offhandParry;
-		else
-			parryDisplay = mainhandParry.."  ";
-		end
-		GameTooltip:AddDoubleLine("      "..level, parryDisplay.."  ", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
-		
+
 	GameTooltip:Show();
 end
 
@@ -2022,12 +1956,14 @@ function PaperDollFrame_SetExpertise(statFrame, unit)
 		return;
 	end
 	
+	local category = statFrame:GetParent().Category;
+
 	local expertise, offhandExpertise = GetExpertise();
 	expertise = format("%.2f%%", expertise);
 	offhandExpertise = format("%.2f%%", offhandExpertise);
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	local text;
-	if( offhandSpeed ) then
+	if( category == "MELEE" and offhandSpeed ) then
 		text = expertise.." / "..offhandExpertise;
 	else
 		text = expertise;

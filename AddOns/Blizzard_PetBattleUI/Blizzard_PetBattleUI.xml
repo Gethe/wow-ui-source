@@ -560,6 +560,12 @@
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="RequiredLevel" inherits="GameFont_Gigantic" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT" hidden="true">
@@ -1169,7 +1175,7 @@
 					<Anchor point="TOPRIGHT" relativeKey="$parent.Enemy2" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="BottomFrame">
+			<Frame parentKey="BottomFrame" frameStrata="LOW">
 				<Size x="500" y="100"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="0"/>
@@ -1221,10 +1227,72 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Frame parentKey="TurnTimer">
+					<StatusBar name="$parentXPBar" parentKey="xpBar" frameStrata="MIDDLE">
+						<Size x="504" y="11"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="6"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString inherits="TextStatusBarText" parentKey="TextString" text="0/0" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentLeft" file="Interface\MainMenuBar\UI-XP-Bar">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"  x="11" y="0"/>
+									</Anchors>
+									<Size x="14" y="14"/>
+									<TexCoords left="0.18750000" right="0.43750000" top="0.01562500" bottom="0.26562500"/>
+									<Color r="0.7450980392156863" g="0.6352941176470588" b="0.5176470588235294"/>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\MainMenuBar\UI-XP-Bar">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT"  x="-11" y="0"/>
+									</Anchors>
+									<Size x="14" y="14"/>	
+									<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>
+									<Color r="0.7450980392156863" g="0.6352941176470588" b="0.5176470588235294"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\MainMenuBar\UI-XP-Mid" horizTile="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+									<Size x="14" y="14"/>
+									<Color r="0.7450980392156863" g="0.6352941176470588" b="0.5176470588235294"/>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="-1">
+								<Texture>
+									<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
+						<BarColor r="0.45" g="0.45" b="1.0" />
+						<Scripts>
+							<OnLoad>
+								SetTextStatusBarTextPrefix(self, XP);
+							</OnLoad>
+							<OnEnter>
+								ShowTextStatusBarText(self);
+								if ( self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltip);
+								end
+							</OnEnter>
+							<OnLeave>
+								HideTextStatusBarText(self);
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</StatusBar>
+					<Frame parentKey="TurnTimer" frameStrata="HIGH">
 						<Size x="473" y="27"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="0"/>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">

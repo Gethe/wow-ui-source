@@ -207,15 +207,12 @@
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 						self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 					</OnLoad>
+					<OnShow>
+						GuildBankFrameTab_UpdateFiltered(self);
+					</OnShow>
 					<OnEvent>
-						if ( event == "INVENTORY_SEARCH_UPDATE" and self:IsVisible()) then
-							local _,_,_,_,_,_, filtered = GetGuildBankTabInfo(self:GetParent():GetID());
-							if ( filtered ) then
-								self.searchOverlay:Show();
-							else
-								self.searchOverlay:Hide();
-							end
-
+						if ( event == "INVENTORY_SEARCH_UPDATE" ) then
+							GuildBankFrameTab_UpdateFiltered(self);
 						end
 					</OnEvent>
 					<OnClick>

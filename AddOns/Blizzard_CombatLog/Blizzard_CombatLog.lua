@@ -14,7 +14,7 @@
 
 -- Version
 -- Constant -- Incrementing this number will erase saved filter settings!!
-COMBATLOG_FILTER_VERSION = 4.1;
+COMBATLOG_FILTER_VERSION = 4.2;
 -- Saved Variable
 Blizzard_CombatLog_Filter_Version = 0;
 
@@ -447,7 +447,7 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["SPELL_DISPEL_FAILED"] = true,
 					      --["DAMAGE_SHIELD"] = true,
 					      --["DAMAGE_SHIELD_MISSED"] = true,
-					      --["DAMAGE_SPLIT"] = true,
+					      ["DAMAGE_SPLIT"] = true,
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = true,
 					      ["UNIT_DESTROYED"] = true,
@@ -497,7 +497,7 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["SPELL_DISPEL_FAILED"] = true,
 					      --["DAMAGE_SHIELD"] = true,
 					      --["DAMAGE_SHIELD_MISSED"] = true,
-					      --["DAMAGE_SPLIT"] = true,
+					      ["DAMAGE_SPLIT"] = true,
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = true,
 					      ["UNIT_DESTROYED"] = true,
@@ -1901,6 +1901,8 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		return CHI_POWER; -- "Chi"
 	elseif ( powerType == SPELL_POWER_BURNING_EMBERS ) then
 		return BURNING_EMBERS_POWER;
+	elseif ( powerType == SPELL_POWER_SHADOW_ORBS ) then
+		return SHADOW_ORBS_POWER;
 	elseif ( powerType == SPELL_POWER_ALTERNATE_POWER and alternatePowerType ) then
 		local costName = select(12, GetAlternatePowerInfoByID(alternatePowerType));
 		return costName;	--costName could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)

@@ -1217,6 +1217,9 @@ function HelpPlate_Hide(userToggled)
 			local button = HELP_PLATE_BUTTONS[i];
 			button.tooltipDir = "RIGHT";
 			if ( button:IsShown() ) then
+				if ( button.animGroup_Show:IsPlaying() ) then
+					button.animGroup_Show:Stop();
+				end
 				button.animGroup_Show:SetScript("OnFinished", HelpPlate_Button_AnimGroup_Show_OnFinished);
 				button.animGroup_Show.translate:SetDuration(0.3);
 				button.animGroup_Show.alpha:SetDuration(0.3);
@@ -1234,7 +1237,7 @@ function Main_HelpPlate_Button_OnEnter(self)
 	HelpPlateTooltip.ArrowRIGHT:Show();
 	HelpPlateTooltip.ArrowGlowRIGHT:Show();
 	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
-	HelpPlateTooltip.Text:SetText("Click this to toggle on/off the help system for this frame.")
+	HelpPlateTooltip.Text:SetText(MAIN_HELP_BUTTON_TOOLTIP)
 	HelpPlateTooltip:Show();
 end
 

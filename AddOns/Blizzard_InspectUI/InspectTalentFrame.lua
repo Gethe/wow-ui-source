@@ -1,18 +1,29 @@
 
 function InspectTalentFrame_OnLoad(self)
 	self:RegisterEvent("INSPECT_READY");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 end
 
 function InspectTalentFrame_OnEvent(self, event, unit)
 	if (event == "INSPECT_READY") then
 		InspectTalentFrameTalents_OnShow(self.InspectTalents);
-		InspectGlyphFrameGlyph_UpdateGlyphs(self.InspectGlyphs);
+		InspectGlyphFrameGlyph_UpdateGlyphs(self.InspectGlyphs, false);
 		InspectTalentFrameSpec_OnShow(self.InspectSpec);
+	end
+	
+	if ( event == "PLAYER_TARGET_CHANGED" ) then
+		InspectGlyphFrameGlyph_OnClear(self);
 	end
 end
 
 function InspectTalentFrame_OnShow(self)
 	ButtonFrameTemplate_HideButtonBar(InspectFrame);
+end
+
+function InspectGlyphFrameGlyph_OnClear(self)
+	InspectGlyphFrameGlyph_UpdateGlyphs(self.InspectGlyphs, true);
+	InspectTalentFrameSpec_OnClear(self.InspectSpec);
+	TalentFrame_Clear(self.InspectTalents);
 end
 
 --------------------------------------------------------------------------------
@@ -35,16 +46,16 @@ function InspectGlyphFrameGlyph_OnLoad (self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
-function InspectGlyphFrameGlyph_UpdateGlyphs(self)
-	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph1);
-	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph2);
-	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph3);
-	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph4);
-	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph5);
-	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph6);	
+function InspectGlyphFrameGlyph_UpdateGlyphs(self, clearSlots)
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph1, clearSlots);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph2, clearSlots);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph3, clearSlots);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph4, clearSlots);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph5, clearSlots);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph6, clearSlots);	
 end
 
-function InspectGlyphFrameGlyph_UpdateSlot (self)
+function InspectGlyphFrameGlyph_UpdateSlot (self, clear)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup, true, inspectedUnit);
@@ -66,7 +77,7 @@ function InspectGlyphFrameGlyph_UpdateSlot (self)
 	if ( not enabled ) then
 		slotAnimation.glyph = nil;
 		self:Hide();
-	elseif ( not glyphSpell ) then
+	elseif ( not glyphSpell or (clear == true)) then
 		slotAnimation.glyph = nil;
 		self.spell = nil;
 		self.glyph:SetTexture("");
@@ -189,18 +200,24 @@ function InspectTalentFrameSpec_OnShow(self)
 	end
 	if(spec ~= nil and spec > 0) then
 		local id, name, description, icon, background = GetSpecializationInfoByID(spec);
+		self.specIcon:Show();
 		SetPortraitToTexture(self.specIcon, icon);
 		self.specName:SetText(name);
 		local role1 = GetSpecializationRoleByID(spec);
+		self.roleIcon:Show();
 		self.roleName:SetText(_G[role1]);
 		self.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
 		self.tooltip = description;
 	else
-		self.specName:SetText("");
-		self.specIcon:SetTexCoord(0,0,0,0);
-		self.roleName:SetText("");
-		self.roleIcon:SetTexCoord(0,0,0,0);
+		InspectTalentFrameSpec_OnClear(self);
 	end
+end
+
+function InspectTalentFrameSpec_OnClear(self)
+	self.specName:SetText("");
+	self.specIcon:Hide();
+	self.roleName:SetText("");
+	self.roleIcon:Hide();
 end
 
 function InspectTalentFrameSpec_OnEnter(self)

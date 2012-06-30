@@ -1136,7 +1136,6 @@ function WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime)
 end
 
 function WorldStateChallengeModeTimer_UpdateValues(self, elapsedTime)
-	self.timeElapsed:SetText(GetTimeStringFromSeconds(elapsedTime));
 	local statusBar = self.statusBar;
 	if ( statusBar.medalTime ) then
 		local timeLeft = statusBar.medalTime - elapsedTime;

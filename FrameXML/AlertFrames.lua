@@ -724,6 +724,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll)
 	end
 
 	self.hyperlink = itemLink;
+	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 
 -- [[ MoneyWonAlertFrameTemplate ]] --
@@ -750,5 +751,6 @@ end
 
 function MoneyWonAlertFrame_SetUp(self, amount)
 	self.Amount:SetText(GetMoneyString(amount));
+	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 

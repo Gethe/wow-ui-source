@@ -292,47 +292,46 @@ function WorldMap_DrawWorldEffects()
 	-----------------------------------------------------------------
 	-- Draw quest POI world effects
 	-----------------------------------------------------------------
-	local numPOIWorldEffects = GetNumQuestPOIWorldEffects();
+	-- local numPOIWorldEffects = GetNumQuestPOIWorldEffects();
 	
-	--Ensure the button pool is big enough for all the world effect POI's
-	if ( NUM_WORLDMAP_WORLDEFFECT_POIS < numPOIWorldEffects ) then
-		for i=NUM_WORLDMAP_WORLDEFFECT_POIS+1, numPOIWorldEffects do
-			WorldMap_CreateWorldEffectPOI(i);
-		end
-		NUM_WORLDMAP_WORLDEFFECT_POIS = numPOIWorldEffects;
-	end
+	-- --Ensure the button pool is big enough for all the world effect POI's
+	-- if ( NUM_WORLDMAP_WORLDEFFECT_POIS < numPOIWorldEffects ) then
+		-- for i=NUM_WORLDMAP_WORLDEFFECT_POIS+1, numPOIWorldEffects do
+			-- WorldMap_CreateWorldEffectPOI(i);
+		-- end
+		-- NUM_WORLDMAP_WORLDEFFECT_POIS = numPOIWorldEffects;
+	-- end
 	
-	-- Process every button in the world event POI pool
-	for i=1,NUM_WORLDMAP_WORLDEFFECT_POIS do
+	-- -- Process every button in the world event POI pool
+	-- for i=1,NUM_WORLDMAP_WORLDEFFECT_POIS do
 		
-		local worldEventPOIName = "WorldMapFrameWorldEffectPOI"..i;
-		local worldEventPOI = _G[worldEventPOIName];
+		-- local worldEventPOIName = "WorldMapFrameWorldEffectPOI"..i;
+		-- local worldEventPOI = _G[worldEventPOIName];
 		
-		-- Draw if used
-		if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
-			local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);	
-			if (textureIndex) then -- could be outside this map
-				local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
-				_G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-				x = x * WorldMapButton:GetWidth();
-				y = -y * WorldMapButton:GetHeight();
-				worldEventPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
-				worldEventPOI.name = worldEventPOIName;		
-				worldEventPOI:Show();
-				WorldEffectPOITooltips[worldEventPOIName] = name;
-			else
-				worldEventPOI:Hide();
-			end
-		else
-			-- Hide if unused
-			worldEventPOI:Hide();
-		end		
-	end
+		-- -- Draw if used
+		-- if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
+			-- local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);	
+			-- if (textureIndex) then -- could be outside this map
+				-- local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+				-- _G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+				-- x = x * WorldMapButton:GetWidth();
+				-- y = -y * WorldMapButton:GetHeight();
+				-- worldEventPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
+				-- worldEventPOI.name = worldEventPOIName;		
+				-- worldEventPOI:Show();
+				-- WorldEffectPOITooltips[worldEventPOIName] = name;
+			-- else
+				-- worldEventPOI:Hide();
+			-- end
+		-- else
+			-- -- Hide if unused
+			-- worldEventPOI:Hide();
+		-- end		
+	-- end
 	
 	-----------------------------------------------------------------
 	-- Draw scenario POIs
 	-----------------------------------------------------------------
-	--local numScenarioPOIs = C_Scenario.EvaluateScenarioIcons();
 	local scenarioIconInfo = C_Scenario.GetScenarioIconInfo();
 	local numScenarioPOIs = 0;
 	if(scenarioIconInfo ~= nil) then

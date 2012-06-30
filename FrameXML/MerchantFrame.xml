@@ -106,7 +106,7 @@
 			<Layer level="BORDER">
 				 <FontString name="MerchantNameText" inherits="GameFontNormal" text="Merchant Name">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="MerchantFrame" relativePoint="TOP" x="0" y="-7"/>
+						<Anchor point="TOP" relativeTo="MerchantFrame" relativePoint="TOP" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="MerchantPageText" inherits="GameFontNormal" text="Page">

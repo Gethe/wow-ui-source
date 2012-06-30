@@ -27,6 +27,22 @@ function TalentFrame_Load(TalentFrame)
 	end
 end
 
+function TalentFrame_Clear(TalentFrame)
+	if ( not TalentFrame ) then
+		return;
+	end
+
+	for tier=1, 6 do
+		for column=1, 3 do
+			local button = TalentFrame["tier"..tier]["talent"..column];
+			if(button ~= nil) then
+				SetDesaturation(button.icon, true);
+				button.border:Hide();
+			end
+		end
+	end
+end
+
 function TalentFrame_Update(TalentFrame)
 	if ( not TalentFrame ) then
 		return;
