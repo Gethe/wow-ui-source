@@ -81,7 +81,7 @@
 				<Anchors>
 					<Anchor point="LEFT">
 						<Offset>
-							<AbsDimension x="3" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -198,7 +198,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						LootHistoryFrame_Hide(self:GetParent());
+						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
 				<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
@@ -248,11 +248,23 @@
 						<Size x="1" y="1"/>
 					</Frame>
 				</ScrollChild>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ScrollBarBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBar.ScrollUpButton" relativePoint="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar.ScrollDownButton" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="LootHistoryFrame_OnLoad"/>
 			<OnEvent function="LootHistoryFrame_OnEvent"/>
+			<OnHide function="LootHistoryFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LootHistoryDropDown" inherits="UIDropDownMenuTemplate" hidden="true">

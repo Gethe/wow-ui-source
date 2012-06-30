@@ -255,11 +255,27 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>					
-			<CheckButton name="$parentInteractOnLeftClick" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentAutoOpenLootHistory" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoOpenLootHistory";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentInteractOnLeftClick" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoOpenLootHistory" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

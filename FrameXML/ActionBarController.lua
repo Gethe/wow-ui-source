@@ -60,7 +60,9 @@ function ActionBarController_OnEvent(self, event, ...)
 	end
 	
 	--shapeshift
-	if ( event == "UPDATE_SHAPESHIFT_FORM" or event == "UPDATE_SHAPESHIFT_FORMS" ) then
+	if (   event == "UPDATE_SHAPESHIFT_FORM" 
+		or event == "UPDATE_SHAPESHIFT_FORMS" 
+		or event == "UPDATE_SHAPESHIFT_USABLE" ) then
 		StanceBar_Update();
 	end
 	

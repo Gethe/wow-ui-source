@@ -1,3 +1,10 @@
+function ToggleLootHistoryFrame()
+	if ( LootHistoryFrame:IsShown() ) then
+		LootHistoryFrame:Hide();
+	else
+		LootHistoryFrame:Show();
+	end
+end
 
 function LootHistoryFrame_OnLoad(self)
 	self.itemFrames = {};
@@ -22,12 +29,19 @@ function LootHistoryFrame_OnEvent(self, event, ...)
 		local itemIdx, playerIdx = ...;
 		LootHistoryFrame_UpdatePlayerRoll(self, itemIdx, playerIdx);
 	elseif ( event == "LOOT_HISTORY_AUTO_SHOW" ) then
-		LootHistoryFrame:Show();
+		if ( GetCVarBool("autoOpenLootHistory") ) then
+			local rollID = ...;
+			if ( not self:IsShown() ) then
+				LootHistoryFrame_CollapseAll(self);
+			end
+			LootHistoryFrame_SetRollExpanded(self, rollID, true);
+			LootHistoryFrame:Show();
+		end
 	end
 end
 
-function LootHistoryFrame_Hide(self)
-	self:Hide();
+function LootHistoryFrame_OnHide(self)
+	self.openedTo = nil;
 end
 
 function LootHistoryFrame_FullUpdate(self)
@@ -116,6 +130,11 @@ end
 
 function LootHistoryFrame_SetRollExpanded(self, rollID, isExpanded)
 	self.expandedRolls[rollID] = isExpanded;
+	LootHistoryFrame_FullUpdate(self);
+end
+
+function LootHistoryFrame_CollapseAll(self)
+	table.wipe(self.expandedRolls);
 	LootHistoryFrame_FullUpdate(self);
 end
 
@@ -260,11 +279,21 @@ function LootHistoryFrame_UpdatePlayerRoll(self, itemIdx, playerIdx)
 	end
 end
 
+function LootHistoryFrame_ToggleWithRoll(self, requestedRollID, errorTarget)
+	if ( not self:IsShown() or self.openedTo ~= requestedRollID ) then
+		LootHistoryFrame_OpenToRoll(self, requestedRollID, errorTarget);
+	else
+		self:Hide();
+	end
+end
+
 function LootHistoryFrame_OpenToRoll(self, requestedRollID, errorTarget)
 	local numItems = C_LootHistory.GetNumItems();
 	for i=1, numItems do
 		local rollID, itemLink, numPlayers, isDone, winnerIdx = C_LootHistory.GetItem(i);
 		if ( requestedRollID == rollID ) then
+			self.openedTo = requestedRollID;
+
 			--Collapse all other rolls
 			table.wipe(self.expandedRolls);
 			self.expandedRolls[rollID] = true;

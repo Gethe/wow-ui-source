@@ -115,7 +115,7 @@ function TargetFrame_Update (self)
 		end
 		TargetFrame_CheckDead(self);
 		if ( self.showLeader ) then
-			if ( UnitIsGroupLeader(self.unit) ) then
+			if ( UnitLeadsAnyGroup(self.unit) ) then
 				if ( HasLFGRestrictions() ) then
 					self.leaderIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
 					self.leaderIcon:SetTexCoord(0, 0.296875, 0.015625, 0.3125);
@@ -197,7 +197,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		if ( arg1 == self.unit ) then
-			if ( UnitIsGroupLeader(self.unit) ) then
+			if ( UnitLeadsAnyGroup(self.unit) ) then
 				self.leaderIcon:Show();
 			else
 				self.leaderIcon:Hide();

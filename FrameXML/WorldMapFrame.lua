@@ -311,19 +311,22 @@ function WorldMap_DrawWorldEffects()
 		-- Draw if used
 		if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
 			local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);	
-			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
-			_G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-			x = x * WorldMapButton:GetWidth();
-			y = -y * WorldMapButton:GetHeight();
-			worldEventPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
-			worldEventPOI.name = worldEventPOIName;		
-			worldEventPOI:Show();
-			WorldEffectPOITooltips[worldEventPOIName] = name;
+			if (textureIndex) then -- could be outside this map
+				local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+				_G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+				x = x * WorldMapButton:GetWidth();
+				y = -y * WorldMapButton:GetHeight();
+				worldEventPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
+				worldEventPOI.name = worldEventPOIName;		
+				worldEventPOI:Show();
+				WorldEffectPOITooltips[worldEventPOIName] = name;
+			else
+				worldEventPOI:Hide();
+			end
 		else
 			-- Hide if unused
 			worldEventPOI:Hide();
-		end
-		
+		end		
 	end
 	
 	-----------------------------------------------------------------

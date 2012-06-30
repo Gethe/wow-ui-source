@@ -313,7 +313,10 @@ function QuestLog_OnHide(self)
 	QuestLogDetailFrame_DetachFromQuestLog();
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
-			TriggerTutorial(2);
+			local _, raceName  = UnitRace("player");
+			if ( strupper(raceName) ~= "PANDAREN" ) then
+				TriggerTutorial(2);
+			end
 		end
 		if (not IsTutorialFlagged(10) and (TUTORIAL_QUEST_ACCEPTED == TUTORIAL_QUEST_TO_WATCH)) then
 			TriggerTutorial(10);

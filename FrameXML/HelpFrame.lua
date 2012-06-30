@@ -595,7 +595,7 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 		-- ticketOpenTime,   time_t that this ticket was created
 		-- oldestTicketTime, time_t of the oldest unassigned ticket in the region.
 		-- updateTime,       age in seconds (freshness) of our ticket wait time estimates from the GM dept
-		if ( (category or TicketStatusFrame.hasGMSurvey) and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
+		if ( category and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
 			self:Show();
 			self.titleText = TICKET_STATUS;
 			local statusText;
@@ -642,7 +642,11 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 			-- the player does not have a ticket
 			self.haveResponse = false;
 			self.haveTicket = false;
-			self:Hide();
+			if ( TicketStatusFrame.hasGMSurvey ) then
+				self:Show();
+			else
+				self:Hide();
+			end
 		end
 	end
 end

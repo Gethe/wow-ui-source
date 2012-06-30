@@ -18,6 +18,7 @@ StaticPopupDialogs["CONFIRM_LEARN_TALENT"] = {
 	OnCancel = function (self)
 	end,
 	hideOnEscape = 1,
+	whileDead = 1,
 	timeout = 0,
 	exclusive = 1,
 }
@@ -35,6 +36,7 @@ StaticPopupDialogs["CONFIRM_LEARN_TALENTS"] = {
 	OnCancel = function (self)
 	end,
 	hideOnEscape = 1,
+	whileDead = 1,
 	timeout = 0,
 	exclusive = 1,
 }
@@ -106,6 +108,7 @@ StaticPopupDialogs["CONFIRM_LEARN_SPEC"] = {
 	OnCancel = function (self)
 	end,
 	hideOnEscape = 1,
+	whileDead = 1,
 	timeout = 0,
 	exclusive = 1,
 }
@@ -118,6 +121,7 @@ StaticPopupDialogs["CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS"] = {
 	OnCancel = function (self)
 	end,
 	hideOnEscape = 1,
+	whileDead = 1,
 	timeout = 0,
 	exclusive = 0,
 }
@@ -378,6 +382,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("PET_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
+	self:RegisterEvent("BAG_UPDATE");
 	self.inspect = false;
 	self.talentGroup = 1;
 	self.hasBeenShown = false;
@@ -485,6 +490,7 @@ function PlayerTalentFrame_OnHide()
 		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_NO_SPEC);
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
+		StaticPopup_Hide("CONFIRM_LEARN_SPEC");
 	elseif ( PlayerTalentFrame_GetTalentSelections() ) then
 		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
@@ -516,6 +522,8 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 			end
 		elseif (event == "LEARNED_SPELL_IN_TAB") then
 			-- Must update the Mastery bonus if you just learned Mastery
+		elseif (event == "BAG_UPDATE") then
+			PlayerTalentFrame_RefreshClearInfo();
 		end
 	end
 	
@@ -582,7 +590,7 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrame_HideSpecsTab();
 		PlayerTalentFrame_ShowGlyphFrame();
 		PlayerTalentFrame_HidePetSpecTab();
-		name, count, texture, spellID = GetGlyphClearInfo();
+		PlayerTalentFrame_RefreshClearInfo();
 	elseif (selectedTab == TALENTS_TAB) then
 		ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
 		PlayerTalentFrame_HideGlyphFrame();
@@ -591,7 +599,7 @@ function PlayerTalentFrame_Refresh()
 		TalentFrame_Update(PlayerTalentFrameTalents);
 		PlayerTalentFrame_ShowTalentTab();
 		PlayerTalentFrame_HidePetSpecTab();
-		name, count, texture, spellID = GetTalentClearInfo();
+		PlayerTalentFrame_RefreshClearInfo();
 	elseif (selectedTab == SPECIALIZATION_TAB) then
 		ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
 		PlayerTalentFrame_HideGlyphFrame()
@@ -609,16 +617,35 @@ function PlayerTalentFrame_Refresh()
 	end
 	
 	PlayerTalentFrame_Update();
+end
 
-	if (name) then 
-		PlayerTalentFrameTalents.clearInfo.name:SetText(name);
-		PlayerTalentFrameTalents.clearInfo.count:SetText(count);
-		PlayerTalentFrameTalents.clearInfo.icon:SetTexture(texture);
-		PlayerTalentFrameTalents.clearInfo.spellID = spellID
-	else
-		PlayerTalentFrameTalents.clearInfo.name:SetText("");
-		PlayerTalentFrameTalents.clearInfo.count:SetText("");
-		PlayerTalentFrameTalents.clearInfo.icon:SetTexture("");
+function PlayerTalentFrame_RefreshClearInfo()
+	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+	local name, count, texture, spellID;
+	if (selectedTab == GLYPH_TAB) then
+		name, count, texture, spellID = GetGlyphClearInfo();
+		if (name) then
+			GlyphFrame.clearInfo.name:SetText(name);
+			GlyphFrame.clearInfo.count:SetText(count);
+			GlyphFrame.clearInfo.icon:SetTexture(texture);
+			GlyphFrame.clearInfo.spellID = spellID
+		else
+			GlyphFrame.clearInfo.name:SetText("");
+			GlyphFrame.clearInfo.count:SetText("");
+			GlyphFrame.clearInfo.icon:SetTexture("");
+		end
+	elseif (selectedTab == TALENTS_TAB) then
+		name, count, texture, spellID = GetTalentClearInfo();
+		if (name) then
+			PlayerTalentFrameTalents.clearInfo.name:SetText(name);
+			PlayerTalentFrameTalents.clearInfo.count:SetText(count);
+			PlayerTalentFrameTalents.clearInfo.icon:SetTexture(texture);
+			PlayerTalentFrameTalents.clearInfo.spellID = spellID
+		else
+			PlayerTalentFrameTalents.clearInfo.name:SetText("");
+			PlayerTalentFrameTalents.clearInfo.count:SetText("");
+			PlayerTalentFrameTalents.clearInfo.icon:SetTexture("");
+		end
 	end
 end
 
@@ -781,7 +808,11 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 			if ( button == "LeftButton" and not selected ) then
 				PlayerTalentFrame_SelectTalent(self:GetID());
 			elseif ( button == "RightButton" and selected ) then
-				StaticPopup_Show("CONFIRM_REMOVE_TALENT", nil, nil, {id = self:GetID()});
+				if ( UnitIsDeadOrGhost("player") ) then
+					UIErrorsFrame:AddMessage(ERR_PLAYER_DEAD, 1.0, 0.1, 0.1, 1.0);
+				else
+					StaticPopup_Show("CONFIRM_REMOVE_TALENT", nil, nil, {id = self:GetID()});
+				end
 			end
 		else
 			-- if there is something else already learned for this tier, display a dialog about unlearning that one.

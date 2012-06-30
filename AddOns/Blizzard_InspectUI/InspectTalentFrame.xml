@@ -278,5 +278,10 @@
 			</Frame>
 			
 		</Frames>
+	<Scripts>
+			<OnLoad function="InspectTalentFrame_OnLoad"/>
+			<OnEvent function="InspectTalentFrame_OnEvent"/>
+			<OnShow function="InspectTalentFrame_OnShow"/>
+	</Scripts>
 	</Frame>
 </Ui>

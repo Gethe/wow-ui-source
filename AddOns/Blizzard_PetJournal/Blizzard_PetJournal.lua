@@ -6,7 +6,7 @@ local MAX_ACTIVE_PETS = 3;
 local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 100;
-local UNLOCK_ACHIEVEMENTS = {"6461", "6566", "6593"};
+local UNLOCK_ACHIEVEMENTS = {"6461", "7433", "6566"};
 local PLAYER_MOUNT_LEVEL = 20;
 
 
@@ -168,6 +168,7 @@ function PetJournal_OnEvent(self, event, ...)
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetList();
 		PetJournal_UpdatePetLoadOut();
+		PetJournal_UpdatePetCard(PetJournal.PetCardList.MainCard);
 	elseif event == "BATTLE_PET_CURSOR_CLEAR" then
 		PetJournal.Loadout.Pet1.setButton:Hide();
 		PetJournal.Loadout.Pet2.setButton:Hide();
@@ -524,7 +525,7 @@ function PetJournal_UpdatePetList()
 		pet = petButtons[i];
 		index = offset + i;
 		if index <= numPets then
-			local petID, speciesID, isOwned, customName, level, favorite, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByIndex(index, isWild);
+			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByIndex(index, isWild);
 			local health, _ = C_PetJournal.GetPetStats(petID);
 			
 			if customName then
@@ -556,6 +557,13 @@ function PetJournal_UpdatePetList()
 					pet.isDead:Show();
 				else
 					pet.isDead:Hide();
+				end
+				if(isRevoked == true) then
+					pet.levelBG:Hide();
+					pet.level:Hide();
+					pet.icon:SetDesaturated(1);
+					pet.petTypeIcon:SetDesaturated(1);
+					pet.dragButton:Disable();
 				end
 			else
 				pet.levelBG:Hide();
@@ -702,11 +710,20 @@ end
 
 function PetJournal_UpdatePetCard(self)
 	PetJournal.SpellSelect:Hide();
+	
+	if (not PetJournal.pcPetID and not PetJournal.pcSpeciesID) then
+		return;
+	end
 
 	local isDead = false;
 	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, sourceText, description, isWild, _;
 	if PetJournal.pcPetID then
 		speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID, sourceText, description, isWild = C_PetJournal.GetPetInfoByPetID(PetJournal.pcPetID);
+		if ( not speciesID ) then
+			--We no longer have this pet. (We may have just released it.)
+			PetJournal_HidePetCard();
+			return;
+		end
 		self.level:SetText(level);
 		self.level:Show();
 		self.levelBG:Show();

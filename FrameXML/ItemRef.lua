@@ -205,7 +205,7 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 11) == "lootHistory" ) then
 		local _, rollID = strsplit(":", link);
-		LootHistoryFrame_OpenToRoll(LootHistoryFrame, tonumber(rollID), chatFrame);
+		LootHistoryFrame_ToggleWithRoll(LootHistoryFrame, tonumber(rollID), chatFrame);
 		return;
 	elseif ( strsub(link, 1, 13) == "battlePetAbil" ) then
 		local _, abilityID, maxHealth, power, speed = strsplit(":", link);

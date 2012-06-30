@@ -594,32 +594,32 @@ function LevelUpDisplay_OnShow(self)
 				playAnim = self.levelFrame.fastReveal;
 			end
 		end
-	end
 
-	if ( playAnim ) then
-		self.gLine:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
-		self.gLine2:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
-		if (levelUpTexCoords[self.type].tint) then
-			self.gLine:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
-			self.gLine2:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+		if ( playAnim ) then
+			self.gLine:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
+			self.gLine2:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
+			if (levelUpTexCoords[self.type].tint) then
+				self.gLine:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+				self.gLine2:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+			else
+				self.gLine:SetVertexColor(1, 1, 1);
+				self.gLine2:SetVertexColor(1, 1, 1);
+			end
+			if (levelUpTexCoords[self.type].textTint) then
+				self.levelFrame.levelText:SetTextColor(unpack(levelUpTexCoords[self.type].textTint));
+			else
+				self.levelFrame.levelText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			end
+			self.gLine.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
+			self.gLine2.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
+			self.blackBg.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
+			playAnim:Play();
+			if (levelUpTexCoords[self.type].subIcon) then
+				self.battlePetLevelFrame.subIcon:SetTexCoord(unpack(levelUpTexCoords[self.type].subIcon));
+			end
 		else
-			self.gLine:SetVertexColor(1, 1, 1);
-			self.gLine2:SetVertexColor(1, 1, 1);
+			self:Hide();
 		end
-		if (levelUpTexCoords[self.type].textTint) then
-			self.levelFrame.levelText:SetTextColor(unpack(levelUpTexCoords[self.type].textTint));
-		else
-			self.levelFrame.levelText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		end
-		self.gLine.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
-		self.gLine2.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
-		self.blackBg.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
-		playAnim:Play();
-		if (levelUpTexCoords[self.type].subIcon) then
-			self.battlePetLevelFrame.subIcon:SetTexCoord(unpack(levelUpTexCoords[self.type].subIcon));
-		end
-	else
-		self:Hide();
 	end
 end
 

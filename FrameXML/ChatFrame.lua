@@ -2212,10 +2212,10 @@ end
 
 SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
-	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:IsShown() ) then
+	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:Visible() ) then
 		ToggleRaidFrame();
 		RaidInfoFrame:Show();
-	elseif ( not RaidFrame:IsShown() ) then
+	elseif ( not RaidFrame:IsVisible() ) then
 		ToggleRaidFrame();
 	end
 end
@@ -2236,7 +2236,7 @@ SlashCmdList["DUNGEONS"] = function(msg)
 end
 
 SlashCmdList["RAIDBROWSER"] = function(msg)
-	ToggleFriendsFrame(4);
+	ToggleRaidBrowser();
 end
 
 SlashCmdList["BENCHMARK"] = function(msg)
@@ -2424,6 +2424,11 @@ SlashCmdList["TARGET_MARKER"] = function(msg)
 		SetRaidTarget(target, tonumber(marker));	--Using /tm 0 will clear the target marker.
 	end
 end
+
+SlashCmdList["OPEN_LOOT_HISTORY"] = function(msg)
+	ToggleLootHistoryFrame();
+end
+
 
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then

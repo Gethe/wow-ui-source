@@ -20,11 +20,14 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				if ( self:IsEnabled() or self.minLevel or self.disabledTooltip ) then
+				if ( self:IsEnabled() or self.minLevel or self.disabledTooltip or self.factionGroup) then
 					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
 					GameTooltip:AddLine(" ");
 					if ( not self:IsEnabled() ) then
-						if ( self.minLevel ) then
+						if ( self.factionGroup == "Neutral" ) then
+							GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+							GameTooltip:Show();
+						elseif ( self.minLevel ) then
 							GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 							GameTooltip:Show();
 						elseif ( self.disabledTooltip ) then
@@ -323,9 +326,9 @@
 				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
 				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
 				self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
-				local factionGroup = UnitFactionGroup("player");
-				if ( factionGroup and factionGroup ~= "Neutral" ) then
-					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
+					self.factionGroup = UnitFactionGroup("player");
+					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
 				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
@@ -340,9 +343,10 @@
 				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
-				local factionGroup = UnitFactionGroup("player");
-				if ( factionGroup and factionGroup ~= "Neutral" ) then
-					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+				self.factionGroup = nil;
+				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
+					self.factionGroup = UnitFactionGroup("player");
+					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
 				end
 				UpdateMicroButtons();
 			</OnEvent>

@@ -331,12 +331,14 @@ local SPELL_POWER_MANA = SPELL_POWER_MANA
 local SPELL_POWER_RAGE = SPELL_POWER_RAGE
 local SPELL_POWER_FOCUS = SPELL_POWER_FOCUS
 local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
+local SPELL_POWER_CHI = SPELL_POWER_CHI
 local SPELL_POWER_RUNES = SPELL_POWER_RUNES
 local SPELL_POWER_RUNIC_POWER = SPELL_POWER_RUNIC_POWER
 local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS;
 local SPELL_POWER_ECLIPSE = SPELL_POWER_ECLIPSE;
 local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER;
 local SPELL_POWER_ALTERNATE_POWER = SPELL_POWER_ALTERNATE_POWER;
+local SPELL_POWER_BURNING_EMBERS = SPELL_POWER_BURNING_EMBERS;
 local SCHOOL_MASK_NONE = SCHOOL_MASK_NONE
 local SCHOOL_MASK_PHYSICAL = SCHOOL_MASK_PHYSICAL
 local SCHOOL_MASK_HOLY = SCHOOL_MASK_HOLY
@@ -1893,6 +1895,12 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		end
 	elseif ( powerType == SPELL_POWER_HOLY_POWER ) then
 		return HOLY_POWER;
+	elseif ( powerType == SPELL_POWER_CHI ) then --Now called energy for monks... That's not confusing at all.
+		return CHI; -- "Energy"
+	elseif ( powerType == SPELL_POWER_LIGHT_FORCE ) then
+		return CHI_POWER; -- "Chi"
+	elseif ( powerType == SPELL_POWER_BURNING_EMBERS ) then
+		return BURNING_EMBERS_POWER;
 	elseif ( powerType == SPELL_POWER_ALTERNATE_POWER and alternatePowerType ) then
 		local costName = select(12, GetAlternatePowerInfoByID(alternatePowerType));
 		return costName;	--costName could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)

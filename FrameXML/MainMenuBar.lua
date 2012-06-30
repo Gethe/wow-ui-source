@@ -287,7 +287,7 @@ local MovieList = {
   -- Movie sequence 4 = CC
   { 23 },
   -- Movie sequence 5 = MP
-  { 23 },
+  { 115 },
 }
 
 function MainMenu_GetMovieDownloadProgress(id)

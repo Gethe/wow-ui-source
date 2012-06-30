@@ -17,9 +17,9 @@ function QueueStatusMinimapButton_OnLeave(self)
 end
 
 function QueueStatusMinimapButton_OnClick(self, button)
-	if ( button == "RightButton" ) then
+	--if ( button == "RightButton" ) then
 		QueueStatusDropDown_Show(self.DropDown, self:GetName());
-	end
+	--end
 end
 
 function QueueStatusMinimapButton_OnShow(self)
@@ -553,7 +553,7 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 			UIDropDownMenu_AddButton(info);
 
 			info.text = LEAVE_QUEUE;
-			info.func = wrapFunc(LeaveLFG);
+			info.func = wrapFunc(RejectProposal);
 			info.arg1 = category;
 			info.disabled = (submode == "unempowered");
 			UIDropDownMenu_AddButton(info);

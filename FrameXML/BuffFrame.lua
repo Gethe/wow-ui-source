@@ -141,7 +141,7 @@ function RaidBuffTray_Update()
 		end
 		mask = bit.lshift(mask, 1);
 	end
-	ConsolidatedBuffsCount:SetText(numBufs.."/"..buffcount);
+	ConsolidatedBuffsCount:SetText(numBufs.."/"..max(numBufs,buffcount));
 end
 
 function RaidTray_Buff_OnUpdate(self)

@@ -27,11 +27,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnDragStart>
-				if (not self:GetParent().isActionBar or LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
-					if (self.spellID) then
-						PickupSpell(self.spellID);
-					end
-				end
+				SpellFlyoutButton_OnDrag(self);
 			</OnDragStart>
 		</Scripts>
 		<NormalTexture/>

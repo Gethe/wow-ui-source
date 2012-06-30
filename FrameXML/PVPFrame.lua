@@ -565,21 +565,20 @@ function PVPHonor_UpdateBattlegrounds()
 	for i=1,numTypes do
 		frame = _G["PVPHonorFrameBgButton"..currentFrameNum];
 		
-		if  i <=  numWorldPvP then
-			isHoliday = false;
-			_, localizedName, isActive, canQueue, startTime, canEnter = GetWorldPVPAreaInfo(i);
+		if  i <=  numBgs then
 			pvpID = i;
+			localizedName, canEnter, isHoliday, isRandom ,_,_, BGMapID = GetBattlegroundInfo(i);
+			isActive = false;
+			canQueue = true;
+			startTime = -1;
+			isWorldPVP = false
+		else
+			pvpID = i-numBgs;
+			_, localizedName, isActive, canQueue, startTime, canEnter = GetWorldPVPAreaInfo(i-numBgs);
 			isWorldPVP = true;
 			isRandom = false;
 			BGMapID = -1;
 			isHoliday = false;
-		else
-			pvpID = i-numWorldPvP;
-			isActive = false;
-			canQueue = true;
-			startTime = -1;
-			localizedName, canEnter, isHoliday, isRandom ,_,_, BGMapID = GetBattlegroundInfo(i-numWorldPvP);
-			isWorldPVP = false
 		end
 		
 		if ( localizedName and canEnter ) then
@@ -607,7 +606,7 @@ function PVPHonor_UpdateBattlegrounds()
 				if isWorldPVP then
 					frame:SetScript("OnUpdate", PVPHonor_UpdateWorldPVPTimer);
 					frame.timeStep = 0;
-					frame.worldIndex = i;
+					frame.worldIndex = i-numBgs;
 				else
 					frame:SetScript("OnUpdate", nil);
 				end
@@ -616,10 +615,10 @@ function PVPHonor_UpdateBattlegrounds()
 					frame.ThumbsDown.holiday:SetText(" ("..BATTLEGROUND_HOLIDAY..")");
 					-- check if the holiday was changed after we blacklisted the BG. The Holiday BG must be allowed
 					if (BGMapID > 0 and CheckForMapInBlacklist(BGMapID)) then
-						for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
-							if (BGMapID == BlacklistIDs[i]) then
+						for j=1,MAX_BLACKLIST_BATTLEGROUNDS do
+							if (BGMapID == BlacklistIDs[j]) then
 								ClearBlacklistMap(BGMapID);
-								BlacklistIDs[i] = -1;		
+								BlacklistIDs[j] = -1;		
 								BlacklistBGCount = BlacklistBGCount - 1;
 								if IsPvPFrameSelected(frame) then
 									PVPFrameLeftButton:SetEnabled(1);
@@ -627,8 +626,6 @@ function PVPHonor_UpdateBattlegrounds()
 							end
 						end
 					end
-
-
 				else
 					frame.ThumbsDown.holiday:SetText("");
 				end
@@ -645,8 +642,16 @@ function PVPHonor_UpdateBattlegrounds()
 					frame:UnlockHighlight();
 				end
 					
-				PVPHonor_ThumbsDownUpdate(frame.ThumbsDown);
 				frame.title:SetText(tempString);
+				frame.ThumbsDown.texture:SetTexture("Interface\\PVPFrame\\Icon-Combat");
+				frame.ThumbsDown.texture:Show();
+				if ( PVPHonor_ThumbsDownUpdate(frame.ThumbsDown) ) then
+					frame:SetNormalFontObject(GameFontNormalLeftRed);
+					frame:SetHighlightFontObject(GameFontNormalLeftRed);
+				else
+					frame:SetNormalFontObject(GameFontNormalLeft);
+					frame:SetHighlightFontObject(GameFontHighlightLeft);
+				end
 				frame:Show();
 				currentFrameNum = currentFrameNum + 1;
 			end
@@ -722,9 +727,7 @@ function PVPHonor_ButtonClicked(self)
 	else
 		PVPFrameLeftButton:SetEnabled(1);
 	end
-
 end
-
 
 function PVPHonor_ButtonEnter(self)
 	self:LockHighlight();
@@ -733,6 +736,7 @@ function PVPHonor_ButtonEnter(self)
 	if (self.isWorldPVP or self.status:IsShown() or self.isRandom or self.isHoliday ) then
 		return;
 	end
+
 	if CheckForMapInBlacklist(self.BGMapID) then
 		return;
 	end
@@ -762,16 +766,26 @@ end
 
 -- fall through to parent handlers
 function PVPHonor_ThumbsDownEnter(self)
-	PVPHonor_ButtonEnter(self:GetParent());
+	-- world pvp won't display thumbs down, nor will queued, nor will the random, nor holiday (removed restriction on showing if 2 or more are banned)
+	local parent = self:GetParent();
+	if (not parent.isWorldPVP and not parent.status:IsShown() and not parent.isRandom and not parent.isHoliday ) then
+		self:SetHighlightTexture("Interface\\PVPFrame\\bg-down-off", "ADD");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(THUMBS_DOWN_TOOLTIP);
+	end
+
+	PVPHonor_ButtonEnter(parent);
 end
 
 function PVPHonor_ThumbsDownLeave(self)
+	GameTooltip:Hide();
+	self:SetHighlightTexture(nil);
+
 	PVPHonor_ButtonLeave(self:GetParent());
 end
 
 function PVPHonor_ThumbsDownUpdate(self)
 	if (self:GetParent().isWorldPVP or self:GetParent().status:IsShown() or self:GetParent().isRandom or self:GetParent().isHoliday ) then
-		self.texture:Hide();
 		return;
 	end
 
@@ -782,13 +796,12 @@ function PVPHonor_ThumbsDownUpdate(self)
 				self.texture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
 				self.texture:Show();
 				self:Show();
-				return;
+				return true;
 			end
 		end
 	end
 
 	self.texture:Hide();
-
 end
 
 
@@ -806,6 +819,8 @@ function PVPHonor_ThumbsDownClicked(self)
 				if IsPvPFrameSelected(self:GetParent()) then
 					PVPFrameLeftButton:SetEnabled(1);
 				end
+				self:GetParent():SetNormalFontObject(GameFontNormalLeft);
+				self:GetParent():SetHighlightFontObject(GameFontHighlightLeft);
 				PVPHonor_ButtonEnter(self:GetParent()); 
 				return;
 			end
@@ -822,6 +837,8 @@ function PVPHonor_ThumbsDownClicked(self)
 			if (-1 == BlacklistIDs[i] or nil == BlacklistIDs[i]) then
 				BlacklistIDs[i] = self:GetParent().BGMapID;
 				SetBlacklistMap(BlacklistIDs[i]);
+				self:GetParent():SetNormalFontObject(GameFontNormalLeftRed);
+				self:GetParent():SetHighlightFontObject(GameFontNormalLeftRed);
 				if IsPvPFrameSelected(self:GetParent()) then
 					PVPFrameLeftButton:SetEnabled(0);
 				end

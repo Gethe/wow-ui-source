@@ -352,7 +352,10 @@ function QuestFrame_OnHide()
 	CloseQuest();
 	if (TUTORIAL_QUEST_ACCEPTED) then
 		if (not IsTutorialFlagged(2)) then
-			TriggerTutorial(2);
+			local _, raceName  = UnitRace("player");
+			if ( strupper(raceName) ~= "PANDAREN" ) then
+				TriggerTutorial(2);
+			end
 		end
 		if (not IsTutorialFlagged(10) and (TUTORIAL_QUEST_ACCEPTED == TUTORIAL_QUEST_TO_WATCH)) then
 			TriggerTutorial(10);
@@ -451,7 +454,7 @@ function QuestDetailAcceptButton_OnClick()
 end
 
 function QuestDetailDeclineButton_OnClick()
-	DeclineQuest();
+	HideUIPanel(QuestFrame);
 	PlaySound("igQuestCancel");
 end
 

@@ -41,6 +41,7 @@ UnitPopupButtons["TEAM_KICK"] = { text = TEAM_KICK, dist = 0 };
 UnitPopupButtons["TEAM_LEAVE"] = { text = TEAM_LEAVE, dist = 0 };
 UnitPopupButtons["TEAM_DISBAND"] = { text = TEAM_DISBAND, dist = 0 };
 UnitPopupButtons["LEAVE"] = { text = PARTY_LEAVE, dist = 0 };
+UnitPopupButtons["INSTANCE_LEAVE"] = { text = INSTANCE_PARTY_LEAVE, dist = 0 };
 UnitPopupButtons["FOLLOW"] = { text = FOLLOW, dist = 4 };
 UnitPopupButtons["PET_DISMISS"] = { text = PET_DISMISS, dist = 0 };
 UnitPopupButtons["PET_ABANDON"] = { text = PET_ABANDON, dist = 0 };
@@ -170,7 +171,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
+UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "INSTANCE_LEAVE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["OTHERPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
@@ -733,7 +734,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LEAVE" ) then
-			if ( inParty == 0 or (instanceType == "pvp") or (instanceType == "arena") ) then
+			if ( inParty == 0 or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or (instanceType == "pvp") or (instanceType == "arena") ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "INSTANCE_LEAVE" ) then
+			if ( inParty == 0 or not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or instanceType == "pvp" or instanceType == "arena" ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FREE_FOR_ALL" ) then
@@ -1192,6 +1197,10 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( inParty == 0 ) then
 							enable = 0;
 						end
+					elseif ( value == "INSTANCE_LEAVE" ) then
+						if ( inParty == 0 ) then
+							enable = 0;
+						end
 					elseif ( value == "INVITE" ) then
 						if ( inParty == 1 and (isLeader == 0 and isAssistant == 0) ) then
 							enable = 0;
@@ -1475,6 +1484,8 @@ function UnitPopup_OnClick (self)
 			dialog.data = PVP_GetSelectedArenaTeam();
 		end
 	elseif ( button == "LEAVE" ) then
+		LeaveParty();
+	elseif ( button == "INSTANCE_LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "PET_DISMISS" ) then
 		if ( PetCanBeAbandoned() ) then

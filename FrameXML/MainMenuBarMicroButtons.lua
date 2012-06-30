@@ -58,6 +58,17 @@ function UpdateMicroButtons()
 	local playerLevel = UnitLevel("player");
 	local factionGroup = UnitFactionGroup("player");
 
+	if ( factionGroup == "Neutral" ) then
+		PVPMicroButton.factionGroup = factionGroup;
+		GuildMicroButton.factionGroup = factionGroup;
+		LFDMicroButton.factionGroup = factionGroup;
+	else
+		PVPMicroButton.factionGroup = nil;
+		GuildMicroButton.factionGroup = nil;
+		LFDMicroButton.factionGroup = nil;
+	end
+		
+
 	if ( CharacterFrame and CharacterFrame:IsShown() ) then
 		CharacterMicroButton:SetButtonState("PUSHED", 1);
 		CharacterMicroButton_SetPushed();

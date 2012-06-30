@@ -49,7 +49,7 @@ UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1, extraWidth = 32};
 UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["RaidBroswerFrame"] =			{ area = "left",			pushable = 1,	};
+UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 
 
 -- Frames NOT using the new Templates
@@ -588,40 +588,25 @@ function ToggleHelpFrame()
 	end
 end
 
-function ToggleRaidFrame(index)
+function ToggleRaidFrame()
 	local factionGroup = UnitFactionGroup("player");
 	if (IsBlizzCon() or factionGroup == "Neutral") then
 		return;
 	end
 
-	if ( RaidParentFrame:IsShown() ) then
-		if ( index and _G["RaidParentFrameTab"..index] ) then
-			if ( index == RaidParentFrame.selectectTab ) then
-				HideUIPanel(RaidParentFrame);
-			end
-		else
-			HideUIPanel(RaidParentFrame);
-		end
-	else
-		ShowUIPanel(RaidParentFrame);
-	end
-	
-	
-	if ( index and _G["RaidParentFrameTab"..index] ) then
-		_G["RaidParentFrameTab"..index]:Click();
-	end
+	ToggleFriendsFrame(4);
 end
 
-function ToggleRaidBroswer()
+function ToggleRaidBrowser()
 	local factionGroup = UnitFactionGroup("player");
 	if (IsBlizzCon() or factionGroup == "Neutral") then
 		return;
 	end
 
-	if ( RaidBroswerFrame:IsShown() ) then
-			HideUIPanel(RaidBroswerFrame);
+	if ( RaidBrowserFrame:IsShown() ) then
+		HideUIPanel(RaidBrowserFrame);
 	else
-		ShowUIPanel(RaidBroswerFrame);
+		ShowUIPanel(RaidBrowserFrame);
 	end
 
 end

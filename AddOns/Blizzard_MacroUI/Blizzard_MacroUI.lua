@@ -304,7 +304,7 @@ function RefreshPlayerSpellIconInfo()
 				local _, _, numSlots, isKnown = GetFlyoutInfo(ID);
 				if (isKnown and numSlots > 0) then
 					for k = 1, numSlots do 
-						local spellID, isKnown = GetFlyoutSlotInfo(ID, k)
+						local spellID, overrideSpellID, isKnown = GetFlyoutSlotInfo(ID, k)
 						if (isKnown) then
 							MACRO_ICON_FILENAMES[index] = gsub( strupper(GetSpellTexture(spellID)), "INTERFACE\\ICONS\\", ""); 
 							index = index + 1;

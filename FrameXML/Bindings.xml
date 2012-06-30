@@ -719,10 +719,10 @@
 		PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
 	</Binding>
 	<Binding name="TOGGLERAIDTAB">
-		ToggleRaidFrame(1);
+		ToggleRaidFrame();
 	</Binding>
 	<Binding name="TOGGLELFRPARENT">
-		ToggleRaidBroswer();
+		ToggleRaidBrowser();
 	</Binding>
 	<Binding name="TOGGLELFGPARENT"> <!--Keeping the name as the old LFG so that people's bindings aren't reset -->
 		ToggleLFDParentFrame();

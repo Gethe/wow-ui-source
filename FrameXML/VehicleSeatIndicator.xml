@@ -75,7 +75,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Frame name="VehicleSeatIndicator" toplevel="true" enableMouse="false" parent="UIParent" hidden="true">
+	<Frame name="VehicleSeatIndicator" enableMouse="false" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="128" y="128"/>
 		</Size>

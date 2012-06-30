@@ -119,7 +119,7 @@ end
 
 function BattlefieldMinimap_Update()
 	-- Fill in map tiles
-	local mapFileName, textureHeight = GetMapInfo();
+	local mapFileName, textureHeight, _, isMicroDungeon, microDungeonMapName = GetMapInfo();
 	if ( not mapFileName ) then
 		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
 			mapFileName = "Cosmic";
@@ -133,15 +133,21 @@ function BattlefieldMinimap_Update()
 	if (DungeonUsesTerrainMap()) then
 		dungeonLevel = dungeonLevel - 1;
 	end
-	local completeMapFileName;
-	if ( dungeonLevel > 0 ) then
-		completeMapFileName = mapFileName..dungeonLevel.."_";
+
+	local path;
+	if (not isMicroDungeon) then
+		path = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName;
 	else
-		completeMapFileName = mapFileName;
+		path = "Interface\\WorldMap\\MicroDungeon\\"..mapFileName.."\\"..microDungeonMapName.."\\"..microDungeonMapName;
 	end
+	
+	if ( dungeonLevel > 0 ) then
+		path = path..dungeonLevel.."_";
+	end
+
 	local numDetailTiles = GetNumberOfDetailTiles();
 	for i=1, numDetailTiles do
-		texName = "Interface\\WorldMap\\"..mapFileName.."\\"..completeMapFileName..i;
+		texName = path..i;
 		_G["BattlefieldMinimap"..i]:SetTexture(texName);
 	end
 

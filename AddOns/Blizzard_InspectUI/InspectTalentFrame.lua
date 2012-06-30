@@ -1,4 +1,20 @@
 
+function InspectTalentFrame_OnLoad(self)
+	self:RegisterEvent("INSPECT_READY");
+end
+
+function InspectTalentFrame_OnEvent(self, event, unit)
+	if (event == "INSPECT_READY") then
+		InspectTalentFrameTalents_OnShow(self.InspectTalents);
+		InspectGlyphFrameGlyph_UpdateGlyphs(self.InspectGlyphs);
+		InspectTalentFrameSpec_OnShow(self.InspectSpec);
+	end
+end
+
+function InspectTalentFrame_OnShow(self)
+	ButtonFrameTemplate_HideButtonBar(InspectFrame);
+end
+
 --------------------------------------------------------------------------------
 ------------------  Glyph Button Functions     ---------------------------
 --------------------------------------------------------------------------------
@@ -19,6 +35,14 @@ function InspectGlyphFrameGlyph_OnLoad (self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
+function InspectGlyphFrameGlyph_UpdateGlyphs(self)
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph1);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph2);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph3);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph4);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph5);
+	InspectGlyphFrameGlyph_UpdateSlot(self.Glyph6);	
+end
 
 function InspectGlyphFrameGlyph_UpdateSlot (self)
 	local id = self:GetID();
@@ -163,7 +187,6 @@ function InspectTalentFrameSpec_OnShow(self)
 	if(inspectedUnit ~= nil) then
 		spec = GetInspectSpecialization(inspectedUnit);
 	end
-	
 	if(spec ~= nil and spec > 0) then
 		local id, name, description, icon, background = GetSpecializationInfoByID(spec);
 		SetPortraitToTexture(self.specIcon, icon);
@@ -204,8 +227,8 @@ function InspectTalentFrameTalents_OnShow(self)
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
+	local classDisplayName, class, classID = UnitClass(inspectedUnit);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
-	GameTooltip:SetTalent(self:GetID(),
-		true, self.talentGroup);
+	GameTooltip:SetTalent(self:GetID(),true, self.talentGroup, inspectedUnit, classID);
 end
 

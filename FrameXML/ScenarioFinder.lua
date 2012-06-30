@@ -240,7 +240,7 @@ function ScenarioQueueFrame_SetType(value)	--"specific" for the list or the reco
 		ScenarioQueueFrame_SetTypeSpecific();
 	else
 		ScenarioQueueFrame_SetTypeRandom();
-
+		ScenarioQueueFrameRandom_UpdateFrame();
 	end
 end
 

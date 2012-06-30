@@ -415,8 +415,13 @@ function MiniMapInstanceDifficulty_Update()
 					allowedRaidDifficulty = 1;
 				elseif ( selectedRaidDifficulty == 4 ) then
 					allowedRaidDifficulty = 2;
+				elseif (selectedRaidDifficulty == 5 ) then -- Temporary fix. 5 here means LFR and we don't want to allow any other raid difficulty in that case. It's also not heroic (it's a 25 normal). -Should fix in 5.1.0 cleanup.
+					allowedRaidDifficulty = nil;
+					isHeroic = false;
 				end
-				allowedRaidDifficulty = "RAID_DIFFICULTY"..(allowedRaidDifficulty);
+				if (allowedRaidDifficulty) then 
+					allowedRaidDifficulty = "RAID_DIFFICULTY"..(allowedRaidDifficulty);
+				end
 			end
 		end
 		if ( IS_GUILD_GROUP ) then

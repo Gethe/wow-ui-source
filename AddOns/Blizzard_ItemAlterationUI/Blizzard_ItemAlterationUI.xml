@@ -383,6 +383,11 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="TransmogrifyArtFrameBottomEdge" relativePoint="TOP" x="0" y="-3"/>
 				</Anchors>
 			</Button>
+			<Button name="$parentRangedSlot" inherits="TransmogrifyBottomSlotButtonTemplate" parentKey="ranged">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TransmogrifyArtFrameBottomEdge" relativePoint="TOP" x="0" y="-3"/>
+				</Anchors>
+			</Button>
 			<Button name="$parentSecondaryHandSlot" inherits="TransmogrifyBottomSlotButtonTemplate" parentKey="offHand">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentMainHandSlot" relativePoint="RIGHT" x="14" y="0"/>

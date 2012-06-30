@@ -1258,13 +1258,10 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		end
 
 		if ( isGuild ) then
-			button.shield.BNicon:Hide();
 			button.shield.points:Show();
 			button.shield.wasEarnedByMe = nil;
 			button.shield.earnedBy = nil;
 		else
-			button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
-			button.shield.points:SetShown(not (completed and not wasEarnedByMe));
 			button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
 			button.shield.earnedBy = earnedBy;
 		end

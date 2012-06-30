@@ -172,7 +172,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-					ToggleRaidBroswer();
+					ToggleRaidBrowser();
 					</OnClick>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>

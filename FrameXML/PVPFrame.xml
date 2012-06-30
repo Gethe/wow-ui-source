@@ -570,9 +570,9 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
-              <OnEnter function="PVPHonor_ButtonEnter"/>
-              <OnLeave function="PVPHonor_ButtonLeave"/>
-            </Scripts>
+							<OnEnter function="PVPHonor_ButtonEnter"/>
+							<OnLeave function="PVPHonor_ButtonLeave"/>
+						</Scripts>
 					</Button>
 					<Button name="$parentBgButton2" inherits="PVPBattlegroundButtonTemplate" id="2">
 						<Anchors>
@@ -584,9 +584,9 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
-              <OnEnter function="PVPHonor_ButtonEnter"/>
-              <OnLeave function="PVPHonor_ButtonLeave"/>
-            </Scripts>
+						  <OnEnter function="PVPHonor_ButtonEnter"/>
+						  <OnLeave function="PVPHonor_ButtonLeave"/>
+						</Scripts>
 					</Button>
 					<Button name="$parentBgButton3" inherits="PVPBattlegroundButtonTemplate" id="3">
 						<Anchors>
@@ -598,9 +598,9 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
-              <OnEnter function="PVPHonor_ButtonEnter"/>
-              <OnLeave function="PVPHonor_ButtonLeave"/>
-            </Scripts>
+							<OnEnter function="PVPHonor_ButtonEnter"/>
+							<OnLeave function="PVPHonor_ButtonLeave"/>
+						</Scripts>
 					</Button>
 					<Button name="$parentBgButton4" inherits="PVPBattlegroundButtonTemplate" id="4">
 						<Anchors>
@@ -612,9 +612,9 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
-              <OnEnter function="PVPHonor_ButtonEnter"/>
-              <OnLeave function="PVPHonor_ButtonLeave"/>
-            </Scripts>
+							<OnEnter function="PVPHonor_ButtonEnter"/>
+							<OnLeave function="PVPHonor_ButtonLeave"/>
+					</Scripts>
 					</Button>
 					<Button name="$parentBgButton5" inherits="PVPBattlegroundButtonTemplate" id="5">
 						<Anchors>
@@ -626,8 +626,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
-              <OnEnter function="PVPHonor_ButtonEnter"/>
-              <OnLeave function="PVPHonor_ButtonLeave"/>
+							<OnEnter function="PVPHonor_ButtonEnter"/>
+							<OnLeave function="PVPHonor_ButtonLeave"/>
 						</Scripts>
 					</Button>
 					<ScrollFrame name="$parentTypeScrollFrame" inherits="FauxScrollFrameTemplate" parentKey="bgTypeScrollFrame">
@@ -688,7 +688,6 @@
 							</Anchor>
 						</Anchors>
 					</ScrollFrame>
-					
 				</Frames>
 				<Scripts>
 					<OnLoad  function="PVPHonorFrame_OnLoad"/>

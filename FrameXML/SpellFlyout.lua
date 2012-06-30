@@ -11,6 +11,14 @@ function SpellFlyoutButton_OnClick(self)
 	end
 end
 
+function SpellFlyoutButton_OnDrag(self)
+	if (not self:GetParent().isActionBar or LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
+		if (self.spellID) then
+			PickupSpell(self.spellID);
+		end
+	end
+end
+
 function SpellFlyoutButton_SetTooltip(self)
 	if ( GetCVar("UberTooltips") == "1" or self.showFullTooltip ) then
 		if (SpellFlyout.isActionBar) then
@@ -166,7 +174,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	local prevButton = nil;
 	local numButtons = 0;
 	for i=1, numSlots do
-		local spellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
+		local spellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
 		local visible = true;
 		
 		-- Ignore Call Pet spells if there isn't a pet in that slot
@@ -211,7 +219,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			button:Show();
 			button.showFullTooltip = showFullTooltip;
 			
-			_G[button:GetName().."Icon"]:SetTexture(GetSpellTexture(spellID));
+			_G[button:GetName().."Icon"]:SetTexture(GetSpellTexture(overrideSpellID));
 			_G[button:GetName().."Icon"]:SetDesaturated(offSpec);
 			button.offSpec = offSpec;
 			button.spellID = spellID;

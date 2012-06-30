@@ -636,6 +636,10 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 		return;
 	end
 
+	if ( petIndex > C_PetBattles.GetNumPets(petOwner) ) then
+		return;
+	end
+
 	local battleState = C_PetBattles.GetBattleState();
 
 	--Update the pet species icon

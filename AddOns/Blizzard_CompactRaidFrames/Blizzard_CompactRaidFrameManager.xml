@@ -56,7 +56,7 @@
 		</Scripts>
 		<NormalTexture file="Interface\TargetingFrame\UI-RaidTargetingIcons"/>
 	</Button>
-	<Frame name="CompactRaidFrameManager" hidden="true" parent="UIParent">
+	<Frame name="CompactRaidFrameManager" enableMouse="true" hidden="true" parent="UIParent">
 		<Size x="200" y="140"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="7" y="-140"/>

@@ -1244,35 +1244,30 @@
 										<Anchor point="LEFT" x="-7" y="0"/>
 										<Anchor point="BOTTOM" x="0" y="-5"/>
 									</Anchors>
-									<Color r="0.5" g="0.5" b="0.5" a="1"/>
 								</Texture>
 								<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
 									<Anchors>
 										<Anchor point="BOTTOM" relativeTo="$parentBotLeftCorner" x="0" y="0"/>
 										<Anchor point="RIGHT" x="4" y="0"/>
 									</Anchors>
-									<Color r="0.5" g="0.5" b="0.5" a="1"/>
 								</Texture>
 								<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 									</Anchors>
-									<Color r="0.5" g="0.5" b="0.5" a="1"/>
 								</Texture>
 								<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="1" />
 										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
 									</Anchors>
-									<Color r="0.5" g="0.5" b="0.5" a="1"/>
 								</Texture>
 								<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="1" />
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
 									</Anchors>
-									<Color r="0.5" g="0.5" b="0.5" a="1"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -1367,34 +1362,29 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="4"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 						<Texture name="$parentTopRightCorner" inherits="UI-Frame-TopCornerRightSimple">
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="4" y="4"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 						<Texture name="$parentTopBorder" inherits="_UI-Frame-Top">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="TOPRIGHT" y="0"/>
 								<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT" y="0"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 						<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="0" />
 								<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 						<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="0" />
 								<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="-1">
@@ -1410,20 +1400,17 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="-20"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 						<Texture name="$parentTopRightCorner2" inherits="UI-Frame-TopCornerRightSimple">
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="4" y="-20"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 						<Texture name="$parentTopBorder2" inherits="_UI-Frame-Top">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner2" relativePoint="TOPRIGHT" y="0"/>
 								<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner2" relativePoint="TOPLEFT" y="0"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -1825,7 +1812,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-									<Texture name="$parentBG" file="Interface\EncounterJournal\UI-EJ-JournalBG">
+								<Texture name="$parentBG" file="Interface\EncounterJournal\UI-EJ-JournalBG">
 									<Size x="785" y="425"/>
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
@@ -1844,7 +1831,7 @@
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentEncounterTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="encounterTitle">
-									<Size x="0" y="12"/>
+									<Size x="230" y="12"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-350" y="-36"/>
 									</Anchors>

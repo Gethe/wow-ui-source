@@ -143,7 +143,7 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	
-	<Frame name="RaidBroswerFrame" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true" >
+	<Frame name="RaidBrowserFrame" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true" >
 		<Size x="350" y="450"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="-0"/>

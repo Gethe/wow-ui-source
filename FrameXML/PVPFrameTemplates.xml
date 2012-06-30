@@ -496,45 +496,38 @@
 		</HighlightTexture>
 	</Button>	
 	<Button name="PVPBattlegroundButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="295" y="16"/>
-		</Size>
+		<Size x="295" y="16"/>
 		<Frames>
-      <Button name="ThumbsDown" parentKey="ThumbsDown" frameStrata="HIGH" virtual="true">
-        <Size x="16" y="16"/>
-        <Anchors>
-          <Anchor point="RIGHT">
-            <Offset>
-              <AbsDimension x="0" y="0"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Layers>
-          <Layer level="ARTWORK">
-            <Texture parentKey="texture">
-              <Size x="16" y="16"/>
-              <Anchors>
-                <Anchor point="CENTER"/>
-              </Anchors>
-            </Texture>
-          </Layer>
-          <Layer level="OVERLAY">
-            <FontString name="$holiday" inherits="GameFontNormalLeft" justifyH="RIGHT" parentKey="holiday">
-              <Size x="98" y="14"/>
-              <Anchors>
-                <Anchor point="RIGHT" relativeKey="$parent.texture" relativePoint="LEFT" x="-2">
-                </Anchor>               
-              </Anchors>
-            </FontString>
-          </Layer>
-        </Layers>
-        <Scripts>
-          <OnClick function="PVPHonor_ThumbsDownClicked"/>
-          <OnEnter function="PVPHonor_ThumbsDownEnter"/>
-          <OnLeave function="PVPHonor_ThumbsDownLeave"/>
-        </Scripts>    
-      </Button>
-       <Frame parentKey="status">
+			<Button name="ThumbsDown" parentKey="ThumbsDown" frameStrata="HIGH" virtual="true">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="texture">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$holiday" inherits="GameFontNormalLeft" justifyH="RIGHT" parentKey="holiday">
+							<Size x="98" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.texture" relativePoint="LEFT" x="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick function="PVPHonor_ThumbsDownClicked"/>
+					<OnEnter function="PVPHonor_ThumbsDownEnter"/>
+					<OnLeave function="PVPHonor_ThumbsDownLeave"/>
+				</Scripts>    
+			</Button>
+			<Frame parentKey="status">
 				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="LEFT">
@@ -570,7 +563,7 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-    <NormalFont style="GameFontNormalLeft"/>
+		<NormalFont style="GameFontNormalLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
 	</Button>
 	<Button name="PVPArenaTeamFlagTemplate" virtual="true">

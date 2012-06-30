@@ -58,7 +58,7 @@ local tremove = tremove;
 
 function ToggleSpellBook(bookType)
 	HelpPlate_Hide();
-	if ( not HasPetSpells() and bookType == BOOKTYPE_PET ) then
+	if ( (not HasPetSpells() or not PetHasSpellbook()) and bookType == BOOKTYPE_PET ) then
 		return;
 	end
 	
@@ -144,6 +144,7 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			SpellBookFrame_Update();
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+		SpellBookFrame_Update();
 		local spellID, tabNum = ...;
 		local flashFrame = _G["SpellBookSkillLineTab"..tabNum.."Flash"];
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
@@ -205,7 +206,7 @@ function SpellBookFrame_Update()
 	-- check to see if we have a pet
 	local hasPetSpells, petToken = HasPetSpells();
 	SpellBookFrame.petTitle = nil;
-	if ( hasPetSpells ) then
+	if ( hasPetSpells and PetHasSpellbook() ) then
 		SpellBookFrame.petTitle = _G["PET_TYPE_"..petToken];
 		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
 		nextTab:Show();
@@ -1090,8 +1091,8 @@ SPEC_CORE_ABILITY_TEXT[63] = "MAGE_FIRE";
 SPEC_CORE_ABILITY_TEXT[64] = "MAGE_FROST";
 
 SPEC_CORE_ABILITY_TEXT[268] = "MONK_BREW";
-SPEC_CORE_ABILITY_TEXT[269] = "MONK_MIST";
-SPEC_CORE_ABILITY_TEXT[270] = "MONK_WIND";
+SPEC_CORE_ABILITY_TEXT[270] = "MONK_MIST";
+SPEC_CORE_ABILITY_TEXT[269] = "MONK_WIND";
 
 SPEC_CORE_ABILITY_TEXT[65] = "PALADIN_HOLY";
 SPEC_CORE_ABILITY_TEXT[66] = "PALADIN_PROT";
@@ -1137,8 +1138,8 @@ SPEC_CORE_ABILITY_DISPLAY[63] = {	133,	11129,	108853,	11366,	}; --Fire
 SPEC_CORE_ABILITY_DISPLAY[64] = {	116,	44614,	84714,	30455,	}; --Frost
 
 SPEC_CORE_ABILITY_DISPLAY[268] = {	100780,	115295,	100784,	115180,	115181, }; --Brewmaster
-SPEC_CORE_ABILITY_DISPLAY[269] = {	116694,	115151,	116670,	115175,	115460, }; --Mistweaver
-SPEC_CORE_ABILITY_DISPLAY[270] = {	100780,	100787,	100784,	107428,	115072,	113656,	}; --Windwalker
+SPEC_CORE_ABILITY_DISPLAY[270] = {	116694,	115151,	116670,	115175,	115460, }; --Mistweaver
+SPEC_CORE_ABILITY_DISPLAY[269] = {	100780,	100787,	100784,	107428,	115072,	113656,	}; --Windwalker
 
 SPEC_CORE_ABILITY_DISPLAY[65] = {	20473,	19750,	635,	82326,	85673,	53563,	}; --Holy
 SPEC_CORE_ABILITY_DISPLAY[66] = {	31935,	20271,	35395,	26573,	119072,	53600,	}; --Protection
@@ -1315,7 +1316,7 @@ WHAT_HAS_CHANGED_DISPLAY = {}
 WHAT_HAS_CHANGED_DISPLAY["HUNTER"]	= { WHC_WARRIOR_1,	WHC_HUNTER_2,	WHC_HUNTER_3,	WHC_HUNTER_4	};
 WHAT_HAS_CHANGED_DISPLAY["WARLOCK"]	= { WHC_WARRIOR_1,	WHC_WARLOCK_2,	WHC_WARLOCK_3,	WHC_WARLOCK_4	};
 WHAT_HAS_CHANGED_DISPLAY["PRIEST"]	= { WHC_WARRIOR_1,	WHC_PRIEST_2,	WHC_PRIEST_3,	WHC_PRIEST_4	};
-WHAT_HAS_CHANGED_DISPLAY["PALADIN"]	= { WHC_WARRIOR_1,	WHC_PALADIN_2,	WHC_PALADIN_2,	};
+WHAT_HAS_CHANGED_DISPLAY["PALADIN"]	= { WHC_WARRIOR_1,	WHC_PALADIN_2,	WHC_PALADIN_3,	};
 WHAT_HAS_CHANGED_DISPLAY["MAGE"]	= { WHC_WARRIOR_1,	WHC_MAGE_2,		WHC_MAGE_3,		WHC_MAGE_4 };
 WHAT_HAS_CHANGED_DISPLAY["ROGUE"]	= { WHC_WARRIOR_1,	WHC_ROGUE_2,	WHC_ROGUE_3,	};
 WHAT_HAS_CHANGED_DISPLAY["DRUID"]	= { WHC_WARRIOR_1,	WHC_DRUID_2,	WHC_DRUID_3,	WHC_DRUID_4		};
