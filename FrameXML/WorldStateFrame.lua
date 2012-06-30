@@ -979,7 +979,17 @@ function ToggleWorldStateScoreFrame()
 	if ( WorldStateScoreFrame:IsShown() ) then
 		HideUIPanel(WorldStateScoreFrame);
 	else
-		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() ) and MiniMapBattlefieldFrame.status == "active" ) then
+		--Make sure we're in an active BG
+		local inBattlefield = false;
+		for i=1, GetMaxBattlefieldID() do
+			local status = GetBattlefieldStatus(i);
+			if ( status == "active" ) then
+				inBattlefield = true;
+				break;
+			end
+		end
+
+		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() ) and inBattlefield ) then
 			ShowUIPanel(WorldStateScoreFrame);
 		end
 	end

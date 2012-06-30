@@ -192,9 +192,9 @@ end
 
 function RaidFinderQueueFrame_Join()
 	if ( RaidFinderQueueFrame.raid ) then
-		ClearAllLFGDungeons();
-		SetLFGDungeon(RaidFinderQueueFrame.raid);
-		JoinLFG();
+		ClearAllLFGDungeons(LE_LFG_CATEGORY_RF);
+		SetLFGDungeon(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
+		JoinLFG(LE_LFG_CATEGORY_RF);
 	end
 end
 
@@ -220,9 +220,8 @@ function RaidFinderQueueFrameRewards_UpdateFrame()
 end
 
 function RaidFinderFrameFindRaidButton_Update()
-	local mode, subMode = GetLFGMode();
-	local queueType = GetLFGModeType();
-	if ( queueType == "raid" and ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) ) then
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF);
+	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		RaidFinderFrameFindRaidButton:SetText(LEAVE_QUEUE);
 	else
 		if ( IsInGroup() ) then
@@ -232,17 +231,7 @@ function RaidFinderFrameFindRaidButton_Update()
 		end
 	end
 	
-	local otherQueue = false;
-	if ( queueType ~= "raid" and ( mode == "listed" or mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) ) then
-		if ( mode == "listed" ) then
-			otherQueue = "lfr";
-		else
-			otherQueue = "lfd";
-		end
-	end
-	if ( RaidFinderQueueFrameIneligibleFrame_SetQueueRestriction(otherQueue) ) then
-		RaidFinderFrameFindRaidButton:Disable();
-	elseif ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
 		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
 			or (not RaidFinderQueueFramePartyBackfill:IsVisible() and not LFDQueueFrameCooldownFrame:IsVisible()) ) then
 			RaidFinderFrameFindRaidButton:Enable();
@@ -267,7 +256,7 @@ function RaidFinderFrame_UpdateBackfill(forceUpdate)
 		if ( currentSubtypeID == LFG_SUBTYPEID_RAID ) then
 			local name, lfgID, typeID = GetPartyLFGBackfillInfo();
 			RaidFinderQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
-			local mode, subMode = GetLFGMode();
+			local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF);
 			if ( (forceUpdate or not RaidFinderQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
 				RaidFinderQueueFramePartyBackfill:Show();
 			end

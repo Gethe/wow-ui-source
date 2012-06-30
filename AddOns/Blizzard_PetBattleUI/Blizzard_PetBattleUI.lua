@@ -385,7 +385,9 @@ function PetBattleActionButton_UpdateState(self)
 			battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) then
 			isHidden = true;
 		end
-		usable = true;
+		for i = 1, NUM_BATTLE_PETS_IN_BATTLE do
+			usable = usable or C_PetBattles.IsPetSwapAvailable(i);
+		end
 	else
 		usable = true;
 	end
@@ -475,6 +477,7 @@ function PetBattleActionButton_UpdateState(self)
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
 		end
 		if ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
+			PlaySoundKitID(28814);
 			ActionButton_ShowOverlayGlow(self);
 		end
 	end

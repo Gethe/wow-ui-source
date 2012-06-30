@@ -1,4 +1,6 @@
 TIMER_MINUTES_DISPLAY = "%d:%02d"
+TIMER_TYPE_PVP = 1;
+TIMER_TYPE_CHALLENGE_MODE = 2;
 
 local TIMER_DATA = {
 	[1] = { mediumMarker = 11, largeMarker = 6, updateInterval = 10 },
@@ -63,16 +65,6 @@ function TimerTracker_OnEvent(self, event, ...)
 			if not timer.startNumbers:IsPlaying() then
 				timer.time = timeSeconds;
 			end
-			
-			local factionGroup = GetPlayerFactionGroup();
-
-			if ( factionGroup ~= "Neutral" ) then
-				if ( not timer.factionGroup or (timer.factionGroup ~= factionGroup) ) then
-					timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
-					timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
-					timer.factionGroup = factionGroup;
-				end
-			end
 		else
 			for a,b in pairs(self.timerList) do
 				if not timer and b.isFree then
@@ -82,12 +74,10 @@ function TimerTracker_OnEvent(self, event, ...)
 				end
 			end
 			
-			
 			if not timer then
 				timer = CreateFrame("FRAME", self:GetName().."Timer"..(#self.timerList+1), UIParent, "StartTimerBar");
 				self.timerList[#self.timerList+1] = timer;
 			end
-			
 			
 			timer:ClearAllPoints();
 			timer:SetPoint("TOP", 0, -155 - (24*numTimers));
@@ -111,16 +101,11 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer.glow1:SetTexture(timer.style.texture.."Glow");
 			timer.glow2:SetTexture(timer.style.texture.."Glow");
 			
-			local factionGroup = GetPlayerFactionGroup();
-			if ( factionGroup and factionGroup ~= "Neutral" ) then
-				timer.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
-				timer.factionGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
-			end
-			timer.factionGroup = factionGroup;
 			timer.updateTime = TIMER_DATA[timer.type].updateInterval;
 			timer:SetScript("OnUpdate", StartTimer_BigNumberOnUpdate);
 			timer:Show();
 		end
+		StartTimer_SetGoTexture(timer);
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
 			timer.time = nil;
@@ -130,7 +115,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer.fadeBarOut:Stop();
 			timer.fadeBarIn:Stop();
 			timer.startNumbers:Stop();
-			timer.factionAnim:Stop();
+			timer.GoTextureAnim:Stop();
 			timer.bar:SetAlpha(0);
 		end
 	end
@@ -242,7 +227,18 @@ function StartTimer_SetTexNumbers(self, ...)
 	end
 end
 
-
+function StartTimer_SetGoTexture(timer)
+	if ( timer.type == TIMER_TYPE_PVP ) then
+		local factionGroup = GetPlayerFactionGroup();
+		if ( factionGroup and factionGroup ~= "Neutral" ) then
+			timer.GoTexture:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
+			timer.GoTextureGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
+		end
+	elseif ( timer.type == TIMER_TYPE_CHALLENGE_MODE ) then
+		timer.GoTexture:SetTexture("Interface\\Timer\\Challenges-Logo");
+		timer.GoTextureGlow:SetTexture("Interface\\Timer\\ChallengesGlow-Logo");
+	end
+end
 
 function StartTimer_NumberAnimOnFinished(self)
 	self.time = self.time - 1;
@@ -255,7 +251,7 @@ function StartTimer_NumberAnimOnFinished(self)
 		self.anchorCenter = false;
 		self.isFree = true;
 		PlaySoundKitID(25478);
-		self.factionAnim:Play();
+		self.GoTextureAnim:Play();
 	end
 end
 

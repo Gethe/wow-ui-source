@@ -169,6 +169,7 @@ PriestBar.xml
 SharedPetBattleTemplates.xml
 LootHistory.xml
 FloatingPetBattleTooltip.xml
+QueueStatusFrame.xml
 
 ## add new modules above here
 LocalizationPost.xml

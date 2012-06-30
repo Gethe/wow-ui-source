@@ -43,7 +43,7 @@ function LFRFrame_OnEvent(self, event, ...)
 			LFRBrowseFrameList_Update();
 		end
 	elseif ( event == "LFG_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
-		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
+		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer(LE_LFG_CATEGORY_LFR);
 		local inGroup = IsInGroup();
 		if ( inGroup ~= self.lastInGroup ) then
 			self.lastInGroup = inGroup;
@@ -67,7 +67,7 @@ function LFRFrame_OnEvent(self, event, ...)
 end
 
 function LFRQueueFrameFindGroupButton_Update()
-	local mode, subMode = GetLFGMode();
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFR);
 	if ( mode == "listed" ) then
 		if ( IsInGroup() ) then
 			LFRQueueFrameFindGroupButton:SetText(UNLIST_MY_GROUP);
@@ -84,25 +84,12 @@ function LFRQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	local queueType = GetLFGModeType();
-	if ( RaidBrowser_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "rolecheck" and mode ~= "suspended" and (not LFRRaidList or LFRRaidList[1])) then --During the proposal, they must use the proposal buttons to leave the queue.
-		LFRQueueFrameFindGroupButton:Enable();
-		LFRQueueFrameAcceptCommentButton:Enable();
-		LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Enable();
-	elseif ( queueType == "raid" ) then
-		LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:SetText(LEAVE_QUEUE);
-		LFRQueueFrameFindGroupButton:Disable();
-		if ( LFD_IsEmpowered() ) then
-			LFRQueueFrameAcceptCommentButton:Enable();
-			LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Enable();
-		else
-			LFRQueueFrameAcceptCommentButton:Disable();
-			LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Disable();
-		end	
-	else
+	if ( not RaidBrowser_IsEmpowered() or (LFRRaidList and not LFRRaidList[1]) ) then --Not group leader or no eligible raids
 		LFRQueueFrameFindGroupButton:Disable();
 		LFRQueueFrameAcceptCommentButton:Disable();
-		LFDQueueFrameNoLFDWhileLFRLeaveQueueButton:Disable();
+	else
+		LFRQueueFrameFindGroupButton:Enable();
+		LFRQueueFrameAcceptCommentButton:Enable();
 	end
 end
 
@@ -132,7 +119,7 @@ function LFRFrameRoleCheckButton_OnClick(self)
 end
 
 function LFRQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
-	LFGDungeonListCheckButton_OnClick(self, LFRRaidList, LFRHiddenByCollapseList);
+	LFGDungeonListCheckButton_OnClick(self, LE_LFG_CATEGORY_LFR, LFRRaidList, LFRHiddenByCollapseList);
 	LFRQueueFrameSpecificList_Update();
 end
 
@@ -217,7 +204,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 	
 	local enableState;
 	if ( mode == "queued" or mode == "listed" or mode == "suspended" ) then
-		enableState = LFGQueuedForList[dungeonID];
+		enableState = LFGQueuedForList[LE_LFG_CATEGORY_LFR][dungeonID];
 	elseif ( not LFR_CanQueueForMultiple() ) then
 		enableState = dungeonID == LFRQueueFrame.selectedLFM;
 	else
@@ -255,7 +242,7 @@ function LFRQueueFrameSpecificList_Update()
 	
 	local areButtonsBig = not LFRQueueFrameSpecificListScrollFrame:IsShown();
 	
-	local mode, subMode = GetLFGMode();
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFR);
 	
 	for i = 1, NUM_LFR_CHOICE_BUTTONS do
 		local button = _G["LFRQueueFrameSpecificListButton"..i];
@@ -283,14 +270,14 @@ end
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and
 		(not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
-		SetLFGDungeon(queueID);
+		SetLFGDungeon(LE_LFG_CATEGORY_LFR, queueID);
 		return true;
 	end
 	return false;
 end
 
 function LFRQueueFrame_Join()
-	ClearAllLFGDungeons();
+	ClearAllLFGDungeons(LE_LFG_CATEGORY_LFR);
 	
 	if ( LFR_CanQueueForMultiple() ) then
 		for _, queueID in pairs(LFRRaidList) do
@@ -301,7 +288,7 @@ function LFRQueueFrame_Join()
 		end
 	else
 		if ( LFRQueueFrame.selectedLFM ) then
-			SetLFGDungeon(LFRQueueFrame.selectedLFM);
+			SetLFGDungeon(LE_LFG_CATEGORY_LFR, LFRQueueFrame.selectedLFM);
 		end
 	end
 	
@@ -310,23 +297,23 @@ function LFRQueueFrame_Join()
 	else
 		SetLFGComment(LFRQueueFrameComment:GetText());
 	end
-	JoinLFG();
+	JoinLFG(LE_LFG_CATEGORY_LFR);
 end
 
 LFRHiddenByCollapseList = {};
 function LFRQueueFrame_Update()
-	local useLFGQueuedForList;
-	
-	local mode, submode = GetLFGMode();
+	local mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFR);
+
+	local checkedList;
 	if ( RaidBrowser_IsEmpowered() and mode ~= "listed") then
-		useLFGQueuedForList = false;
+		checkedList = LFGEnabledList;
 	else
-		useLFGQueuedForList = true;
+		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFR];
 	end
 	
 	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
 		
-	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, useLFGQueuedForList, LFR_CURRENT_FILTER, LFR_MAX_SHOWN_LEVEL_DIFF);
+	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFR_CURRENT_FILTER, LFR_MAX_SHOWN_LEVEL_DIFF);
 	
 	LFRQueueFrameSpecificList_Update();
 end

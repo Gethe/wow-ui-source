@@ -37,10 +37,11 @@
 		<Size x="339" y="17"/>	
 		<TexCoords left="0.00097656" right="0.33203125" top="0.93359375" bottom="0.96679688"/>	
 	</Texture>
+	<!--This is now a separate texture so that we don't have to load up this entire patchwerk for the Pet Journal
 	<Texture name="BattleBar-SwapPetFrame-DeadIcon" file="Interface\PetBattles\PetBattleHud" virtual="true" >
 		<Size x="33" y="33"/>	
 		<TexCoords left="0.33398438" right="0.36621094" top="0.93359375" bottom="0.99804688"/>	
-	</Texture>
+	</Texture>-->
 	<Texture name="BattleBar-SwapPetFrame" file="Interface\PetBattles\PetBattleHud" virtual="true" >
 		<Size x="192" y="86"/>	
 		<TexCoords left="0.37402344" right="0.56152344" top="0.55273438" bottom="0.72070313"/>	

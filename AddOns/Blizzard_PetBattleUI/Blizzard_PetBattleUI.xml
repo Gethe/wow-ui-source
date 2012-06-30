@@ -137,7 +137,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="3">
-				<Texture parentKey="BorderDead" inherits="BattleBar-SwapPetFrame-DeadIcon">
+				<Texture parentKey="BorderDead" file="Interface\PetBattles\DeadPetIcon">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>

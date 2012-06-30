@@ -2,6 +2,7 @@ LEVEL_UP_TYPE_CHARACTER = "character";	--Name used in globalstring LEVEL_UP
 LEVEL_UP_TYPE_GUILD = "guild";	--Name used in globalstring GUILD_LEVEL_UP
 LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
 LEVEL_UP_TYPE_SCENARIO = "scenario";
+TOAST_QUEST_BOSS_EMOTE = "questbossemote";
 TOAST_PET_BATTLE_END = "petbattleend";
 CHAT_BATTLE_PET_LEVEL_UP = "battlepet" -- Name used in globalstring BATTLE_PET_LEVEL_UP
 CHAT_BATTLE_PET_CAPTURED = "battlepetcapture";
@@ -53,6 +54,12 @@ local levelUpTexCoords = {
 		tint = {1, 0.996, 0.745},
 		gLineDelay = 0,
 	},
+	[TOAST_QUEST_BOSS_EMOTE] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.996, 0.745},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 0,
+	}
 }
 
 LEVEL_UP_TYPES = {
@@ -210,6 +217,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
+	self:RegisterEvent("QUEST_BOSS_EMOTE");
 	self.currSpell = 0;
 end
 
@@ -248,6 +256,13 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		LevelUpDisplay_OnShow(self);
 	elseif ( event == "PET_BATTLE_CLOSE") then
 		self.type = TOAST_PET_BATTLE_END;
+		self:Show();
+	elseif ( event == "QUEST_BOSS_EMOTE" ) then
+		local str, name, displayTime, warningSound = ...;
+		self.type = TOAST_QUEST_BOSS_EMOTE;
+		self.bossText = format(str, name, name);
+		self.time = displayTime;
+		self.sound = warningSound;
 		self:Show();
 	end
 end
@@ -339,13 +354,12 @@ function LevelUpDisplay_BuildBattlePetList(self)
 	self.currSpell = 1;
 end
 
-function LevelUpDisplay_BuildBattlePetCapturedList(self)
+function LevelUpDisplay_BuildEmptyList(self)
 	self.unlockList = {};
 	self.currSpell = 1;
 end
 
 function LevelUpDisplay_BuildGuildList(self)
-	local name, icon = "", "";
 	self.unlockList = {};
 	
 	for i=1, GetNumGuildPerks() do
@@ -428,31 +442,37 @@ function LevelUpDisplay_OnShow(self)
 				playAnim = self.scenarioFrame.newStage;
 			end
 		else
+			LevelUpDisplay:SetPoint("TOP", 0, -190);
+			playAnim = self.levelFrame.levelUp;
+			self.levelFrame.reachedText:SetText("");
+			self.levelFrame.levelText:SetText("");
+			self.levelFrame.singleline:SetText("");
+			self.levelFrame.blockText:SetText("");
 			if ( self.type == LEVEL_UP_TYPE_CHARACTER ) then
 				LevelUpDisplay_BuildCharacterList(self);
 				self.levelFrame.reachedText:SetText(LEVEL_UP_YOU_REACHED)
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
-				self.levelFrame.singleline:SetText("");
 			elseif ( self.type == LEVEL_UP_TYPE_PET ) then
 				LevelUpDisplay_BuildPetList(self);
 				local petName = UnitName("pet");
 				self.levelFrame.reachedText:SetFormattedText(PET_LEVEL_UP_REACHED, petName or "");
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
-				self.levelFrame.singleline:SetText("");
 			elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
 				LevelUpDisplay_BuildGuildList(self);
 				local guildName = GetGuildInfo("player");
 				self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
-				self.levelFrame.singleline:SetText("");
 			elseif ( self.type == TOAST_PET_BATTLE_END ) then
 				LevelUpDisplay_BuildPetBattleList(self);
-				self.levelFrame.reachedText:SetText("");
-				self.levelFrame.levelText:SetText("");
 				self.levelFrame.singleline:SetText(self.winnerString);
+			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
+				LevelUpDisplay_BuildEmptyList(self);
+				self.levelFrame.blockText:SetText(self.bossText);
+				if (self.sound and self.sound == true) then
+					PlaySound("RaidBossEmoteWarning");
+				end
+				playAnim = self.levelFrame.fastReveal;
 			end
-			LevelUpDisplay:SetPoint("TOP", 0, -190);
-			playAnim = self.levelFrame.levelUp;
 		end
 	end
 
@@ -484,9 +504,9 @@ function LevelUpDisplay_OnShow(self)
 end
 
 
-function LevelUpDisplay_AnimStep(self)
+function LevelUpDisplay_AnimStep(self, fast)
 	if self.currSpell > #self.unlockList then
-		LevelUpDisplay_AnimOut(self);
+		LevelUpDisplay_AnimOut(self, fast);
 	else
 		local spellInfo = self.unlockList[self.currSpell];
 		self.currSpell = self.currSpell+1;
@@ -527,10 +547,14 @@ function LevelUpDisplay_AnimStep(self)
 	end
 end
 
-function LevelUpDisplay_AnimOut(self)
+function LevelUpDisplay_AnimOut(self, fast)
 	self = self or LevelUpDisplay;
 	self.currSpell = 0;
-	self.hideAnim:Play();
+	if (fast) then
+		self.fastHideAnim:Play();
+	else
+		self.hideAnim:Play();
+	end
 end
 
 --Side display Functions
@@ -675,7 +699,7 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 		end
 		info = ChatTypeInfo["SYSTEM"];
 	elseif ( levelUpType == CHAT_BATTLE_PET_CAPTURED ) then
-		LevelUpDisplay_BuildBattlePetCapturedList(chatLevelUP);
+		LevelUpDisplay_BuildEmptyList(chatLevelUP);
 		local activePlayer, activePetSlot = ...;
 		local petname = C_PetBattles.GetName(activePlayer, activePetSlot);
 		local icon = C_PetBattles.GetIcon(activePlayer, activePetSlot);

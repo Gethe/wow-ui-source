@@ -154,13 +154,12 @@ function RaidBossEmoteFrame_OnLoad(self)
 	self.timings["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.4;
 	
 	self:RegisterEvent("RAID_BOSS_EMOTE");
-	self:RegisterEvent("QUEST_BOSS_EMOTE");
 	self:RegisterEvent("RAID_BOSS_WHISPER");
 	self:RegisterEvent("CLEAR_BOSS_EMOTES");
 end
 
 function RaidBossEmoteFrame_OnEvent(self, event, ...)
-	if (event == "RAID_BOSS_EMOTE" or event == "RAID_BOSS_WHISPER" or event == "QUEST_BOSS_EMOTE") then
+	if (event == "RAID_BOSS_EMOTE" or event == "RAID_BOSS_WHISPER") then
 		local text, playerName, displayTime, playSound = ...;
 		local body = format(text, playerName, playerName);	--No need for pflag, monsters can't be afk, dnd, or GMs.
 		local info = ChatTypeInfo[event];

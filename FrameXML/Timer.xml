@@ -66,21 +66,21 @@
 				</Scripts>
 			</AnimationGroup>
 			
-			<AnimationGroup parentKey="factionAnim">
-				<Scale target="$parentFaction" 		scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
-				<Scale target="$parentFactionGlow" 	scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+			<AnimationGroup parentKey="GoTextureAnim">
+				<Scale target="$parentGoTexture" 		scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
+				<Scale target="$parentGoTextureGlow" 	scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
 				
-				<Alpha target="$parentFaction" 		change="1" 					duration="0.0" order="2"/>
-				<Alpha target="$parentFactionGlow" 	change="1" 					duration="0.0" order="2"/>
-				
-				
-				<Scale target="$parentFaction" 		scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
-				<Scale target="$parentFactionGlow" 	scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
-				<Alpha target="$parentFactionGlow" 	change="-1.0" 			duration="0.4" smoothing="IN" order="3"/>
+				<Alpha target="$parentGoTexture" 		change="1" 					duration="0.0" order="2"/>
+				<Alpha target="$parentGoTextureGlow" 	change="1" 					duration="0.0" order="2"/>
 				
 				
-				<Scale target="$parentFaction" startDelay="0.6" scaleX="1.4" scaleY="1.4"	duration="0.2" smoothing="OUT" order="4"/>
-				<Alpha target="$parentFaction" startDelay="0.6" change="-1.0" 				duration="0.2" smoothing="OUT" order="4"/>
+				<Scale target="$parentGoTexture" 		scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
+				<Scale target="$parentGoTextureGlow" 	scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
+				<Alpha target="$parentGoTextureGlow" 	change="-1.0" 			duration="0.4" smoothing="IN" order="3"/>
+				
+				
+				<Scale target="$parentGoTexture" startDelay="0.6" scaleX="1.4" scaleY="1.4"	duration="0.2" smoothing="OUT" order="4"/>
+				<Alpha target="$parentGoTexture" startDelay="0.6" change="-1.0" 				duration="0.2" smoothing="OUT" order="4"/>
 			</AnimationGroup>
 		</Animations>
 		<Size x="206" y="26"/>
@@ -88,7 +88,7 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentDigit1" parentKey="digit1" alpha="0"/>
 				<Texture name="$parentDigit2" parentKey="digit2" alpha="0"/>
-				<Texture name="$parentFaction" parentKey="faction" alpha="0">
+				<Texture name="$parentGoTexture" parentKey="GoTexture" alpha="0">
 					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="UIParent" x="0" y="0"/>
@@ -108,10 +108,10 @@
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDigit2" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentFactionGlow" parentKey="factionGlow" alpha="0">
+				<Texture name="$parentGoTextureGlow" parentKey="GoTextureGlow" alpha="0">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentFaction" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentFaction" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentGoTexture" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGoTexture" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

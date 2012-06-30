@@ -73,6 +73,11 @@ PVPWORLD_DESCRIPTIONS[21] = TOL_BARAD_DESCRIPTION;
 
 ARENABANNER_SMALLFONT = "GameFontNormalSmall"
 
+RANDOM_BG_ID = 32;
+MAX_BLACKLIST_BATTLEGROUNDS = 2;
+
+local BlacklistBGCount = 0;
+local BlacklistIDs = {};
 
 ---- NEW PVP FRAME FUNCTIONS
 ---- NEW PVP FRAME FUNCTIONS
@@ -113,6 +118,16 @@ end
 
 
 function PVPFrame_OnShow(self)
+	
+	-- reload the blacklist BGS
+	BlacklistBGCount = 0;
+	for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
+		BlacklistIDs[i] = GetBlacklistMap(i);
+		if (BlacklistIDs[i] > 0) then
+			BlacklistBGCount = BlacklistBGCount + 1;
+		end		
+	end
+	
 	PVPMicroButton_SetPushed();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
@@ -179,7 +194,6 @@ function PVPFrame_OnEvent(self, event, ...)
 	if  event == "PLAYER_ENTERING_WORLD" then
 		FauxScrollFrame_SetOffset(PVPHonorFrameTypeScrollFrame, 0);
 		FauxScrollFrame_OnVerticalScroll(PVPHonorFrameTypeScrollFrame, 0, 16, PVPHonor_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
-		MiniMapBattlefieldDropDown_OnLoad();
 		PVP_UpdateStatus(false, nil);
 	elseif event == "CURRENCY_DISPLAY_UPDATE" then
 		PVPFrame_UpdateCurrency(self);
@@ -536,7 +550,7 @@ end
 
 function PVPHonor_UpdateBattlegrounds()
 	local frame, _;
-	local localizedName, canEnter, isHoliday;
+	local localizedName, canEnter, isHoliday, isRandom, BGMapID;
 	local pvpID, isActive, canQueue, startTime;
 	local tempString, isBig, isWorldPVP;
 	
@@ -556,12 +570,15 @@ function PVPHonor_UpdateBattlegrounds()
 			_, localizedName, isActive, canQueue, startTime, canEnter = GetWorldPVPAreaInfo(i);
 			pvpID = i;
 			isWorldPVP = true;
+			isRandom = false;
+			BGMapID = -1;
+			isHoliday = false;
 		else
 			pvpID = i-numWorldPvP;
 			isActive = false;
 			canQueue = true;
 			startTime = -1;
-			localizedName, canEnter, isHoliday = GetBattlegroundInfo(i-numWorldPvP);
+			localizedName, canEnter, isHoliday, isRandom ,_,_, BGMapID = GetBattlegroundInfo(i-numWorldPvP);
 			isWorldPVP = false
 		end
 		
@@ -572,7 +589,10 @@ function PVPHonor_UpdateBattlegrounds()
 				frame.pvpID = pvpID;
 				frame.localizedName = localizedName;
 				frame.isWorldPVP = isWorldPVP;
-				
+				frame.isRandom = isRandom;
+				frame.BGMapID = BGMapID;
+				frame.isHoliday = isHoliday;
+
 				if canQueue then
 					frame:Enable();
 					if ( not PVPHonorFrame.selectedButtonIndex ) then
@@ -593,7 +613,24 @@ function PVPHonor_UpdateBattlegrounds()
 				end
 				
 				if ( isHoliday ) then
-					tempString = tempString.." ("..BATTLEGROUND_HOLIDAY..")";
+					frame.ThumbsDown.holiday:SetText(" ("..BATTLEGROUND_HOLIDAY..")");
+					-- check if the holiday was changed after we blacklisted the BG. The Holiday BG must be allowed
+					if (BGMapID > 0 and CheckForMapInBlacklist(BGMapID)) then
+						for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
+							if (BGMapID == BlacklistIDs[i]) then
+								ClearBlacklistMap(BGMapID);
+								BlacklistIDs[i] = -1;		
+								BlacklistBGCount = BlacklistBGCount - 1;
+								if IsPvPFrameSelected(frame) then
+									PVPFrameLeftButton:SetEnabled(1);
+								end
+							end
+						end
+					end
+
+
+				else
+					frame.ThumbsDown.holiday:SetText("");
 				end
 				
 				if ( isActive ) then
@@ -608,6 +645,7 @@ function PVPHonor_UpdateBattlegrounds()
 					frame:UnlockHighlight();
 				end
 					
+				PVPHonor_ThumbsDownUpdate(frame.ThumbsDown);
 				frame.title:SetText(tempString);
 				frame:Show();
 				currentFrameNum = currentFrameNum + 1;
@@ -640,6 +678,24 @@ function PVPHonor_UpdateBattlegrounds()
 	FauxScrollFrame_Update(PVPHonorFrameTypeScrollFrame, availableBGs, NUM_DISPLAYED_BATTLEGROUNDS, 16);
 end
 
+-- helper functions since this logic was being run a bit
+function CheckForMapInBlacklist(mapID)
+	if (BlacklistBGCount > 0) then
+		for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
+			if (mapID == BlacklistIDs[i]) then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
+function IsPvPFrameSelected(self)
+	if (self:GetParent().selectedPvpID == self.pvpID and self:GetParent().selectedIsWorldPvp == self.isWorldPVP) then 
+		return true;
+	end
+	return false;
+end
 
 function PVPHonor_ButtonClicked(self)
 	local id = self:GetID();
@@ -659,6 +715,123 @@ function PVPHonor_ButtonClicked(self)
 	self:GetParent().selectedPvpID = self.pvpID;
 	PVPHonorFrame_ResetInfo();
 	PVPHonorFrame_UpdateGroupAvailable();
+
+	-- did we blacklist this map
+	if CheckForMapInBlacklist(self.BGMapID) then
+		PVPFrameLeftButton:SetEnabled(0);
+	else
+		PVPFrameLeftButton:SetEnabled(1);
+	end
+
+end
+
+
+function PVPHonor_ButtonEnter(self)
+	self:LockHighlight();
+
+	-- world pvp won't display thumbs down, nor will queued, nor will the random, nor holiday (removed restriction on showing if 2 or more are banned)
+	if (self.isWorldPVP or self.status:IsShown() or self.isRandom or self.isHoliday ) then
+		return;
+	end
+	if CheckForMapInBlacklist(self.BGMapID) then
+		return;
+	end
+
+	self.ThumbsDown.texture:SetTexture("Interface\\PVPFrame\\bg-down-off");
+	self.ThumbsDown.texture:Show();
+end
+
+function PVPHonor_ButtonLeave(self)
+	-- check the index and world flag to make sure we dont unhighlight the selected button
+
+	if IsPvPFrameSelected(self) == false then
+		self:UnlockHighlight();
+	end
+
+	-- world pvp won't display thumbs down, nor will queued, nor will the random
+	if (self.isWorldPVP or self.status:IsShown() or self.isRandom or self.isHoliday) then
+		return;
+	end
+
+	if CheckForMapInBlacklist(self.BGMapID) then
+		return;
+	end
+
+	self.ThumbsDown.texture:Hide();
+end
+
+-- fall through to parent handlers
+function PVPHonor_ThumbsDownEnter(self)
+	PVPHonor_ButtonEnter(self:GetParent());
+end
+
+function PVPHonor_ThumbsDownLeave(self)
+	PVPHonor_ButtonLeave(self:GetParent());
+end
+
+function PVPHonor_ThumbsDownUpdate(self)
+	if (self:GetParent().isWorldPVP or self:GetParent().status:IsShown() or self:GetParent().isRandom or self:GetParent().isHoliday ) then
+		self.texture:Hide();
+		return;
+	end
+
+	if (BlacklistBGCount > 0) then
+		for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
+			if (self:GetParent().BGMapID == BlacklistIDs[i]) then
+				self.texture:SetTexture("Interface\\PVPFrame\\bg-down-on");
+				self.texture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
+				self.texture:Show();
+				self:Show();
+				return;
+			end
+		end
+	end
+
+	self.texture:Hide();
+
+end
+
+
+function PVPHonor_ThumbsDownClicked(self)
+	if (self:GetParent().isWorldPVP or self:GetParent().status:IsShown() or self:GetParent().isHoliday or self:GetParent().isRandom) then
+		return;
+	end
+	
+	if (BlacklistBGCount > 0) then
+		for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
+			if (self:GetParent().BGMapID == BlacklistIDs[i]) then
+				ClearBlacklistMap(BlacklistIDs[i]);
+				BlacklistIDs[i] = -1;		
+				BlacklistBGCount = BlacklistBGCount - 1;
+				if IsPvPFrameSelected(self:GetParent()) then
+					PVPFrameLeftButton:SetEnabled(1);
+				end
+				PVPHonor_ButtonEnter(self:GetParent()); 
+				return;
+			end
+		end
+	end
+
+	if ( BlacklistBGCount < MAX_BLACKLIST_BATTLEGROUNDS ) then
+		self.texture:SetTexture("Interface\\PVPFrame\\bg-down-on");
+		self.texture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
+		self.texture:Show();
+		self:Show();
+		BlacklistBGCount = BlacklistBGCount + 1;		
+		for i=1,MAX_BLACKLIST_BATTLEGROUNDS do
+			if (-1 == BlacklistIDs[i] or nil == BlacklistIDs[i]) then
+				BlacklistIDs[i] = self:GetParent().BGMapID;
+				SetBlacklistMap(BlacklistIDs[i]);
+				if IsPvPFrameSelected(self:GetParent()) then
+					PVPFrameLeftButton:SetEnabled(0);
+				end
+				return;
+			end
+		end
+	else
+		-- error report, trying to add more than 2
+		UIErrorsFrame:AddMessage(ERR_PVP_BLACKLIST_CAP , 1.0, 0.1, 0.1, 1.0);
+	end
 end
 
 
@@ -1453,25 +1626,11 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	local keepUpdating = false;
 	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
 		keepUpdating = true;
-		BattlefieldIconText:Hide();
 	else
-		local lowestExpiration = 0;
 		for i = 1, GetMaxBattlefieldID() do
-			local expiration = GetBattlefieldPortExpiration(i);
-			if ( expiration > 0 ) then
-				if( expiration < lowestExpiration or lowestExpiration == 0 ) then
-					lowestExpiration = expiration;
-				end
-	
+			if ( GetBattlefieldPortExpiration(i) > 0 ) then
 				keepUpdating = true;
 			end
-		end
-
-		if( lowestExpiration > 0 and lowestExpiration <= 10 ) then
-			BattlefieldIconText:SetText(lowestExpiration);
-			BattlefieldIconText:Show();
-		else
-			BattlefieldIconText:Hide();
 		end
 	end
 	
@@ -1481,11 +1640,13 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 		return;
 	end
 	
-	local frame = PVPFrame
+	local frame = PVPFrame;
 	
 	BATTLEFIELD_SHUTDOWN_TIMER = BATTLEFIELD_SHUTDOWN_TIMER - elapsed;
+
 	-- Set the time for the score frame
 	WorldStateScoreFrameTimer:SetFormattedText(SecondsToTimeAbbrev(BATTLEFIELD_SHUTDOWN_TIMER));
+
 	-- Check if I should send a message only once every 3 seconds (BATTLEFIELD_TIMER_DELAY)
 	frame.timerDelay = frame.timerDelay + elapsed;
 	if ( frame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then
@@ -1592,198 +1753,6 @@ function PVPQueue_UpdateRandomInfo(base, infoFunc)
 end
 
 
-
-function MiniMapBattlefieldDropDown_OnLoad()
-	UIDropDownMenu_Initialize(MiniMapBattlefieldDropDown, MiniMapBattlefieldDropDown_Initialize, "MENU");
-end
-
-function MiniMapBattlefieldDropDown_Initialize()
-	local info;
-	local status, mapName, instanceID, queueID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
-	local numQueued = 0;
-	local numShown = 0;
-	
-	local shownHearthAndRes;
-	
-	for i=1, GetMaxBattlefieldID() do
-		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(i);
-
-		-- Inserts a spacer if it's not the first option... to make it look nice.
-		if ( status ~= "none" ) then
-			numShown = numShown + 1;
-			if ( numShown > 1 ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.isTitle = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-
-		if ( status == "queued" or status == "confirm" ) then
-			numQueued = numQueued + 1;
-			-- Add a spacer if there were dropdown items before this
-
-			info = UIDropDownMenu_CreateInfo();
-			if ( teamSize ~= 0 ) then
-				if ( registeredMatch ) then
-					info.text = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
-				else
-					info.text = ARENA_CASUAL.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
-				end
-			else
-				info.text = mapName;
-			end
-			info.isTitle = 1;
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);			
-
-			if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes and GetRealZoneText() == mapName ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = format(LEAVE_ZONE, GetRealZoneText());			
-				
-				info.func = HearthAndResurrectFromArea;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				shownHearthAndRes = true;
-			end
-			
-			if ( status == "queued" ) then
-
-				info = UIDropDownMenu_CreateInfo();
-				info.text = LEAVE_QUEUE;
-				info.func = function (self, ...) AcceptBattlefieldPort(...) end;
-				info.arg1 = i;
-				info.notCheckable = 1;
-				info.disabled = registeredMatch and not UnitIsGroupLeader("player");
-				UIDropDownMenu_AddButton(info);
-
-			elseif ( status == "confirm" ) then
-
-				info = UIDropDownMenu_CreateInfo();
-				info.text = ENTER_BATTLE;
-				info.func = function (self, ...) AcceptBattlefieldPort(...) end;
-				info.arg1 = i;
-				info.arg2 = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-
-				if ( teamSize == 0 ) then
-					info = UIDropDownMenu_CreateInfo();
-					info.text = LEAVE_QUEUE;
-					info.func = function (self, ...) AcceptBattlefieldPort(...) end;
-					info.arg1 = i;
-					info.notCheckable = 1;
-					UIDropDownMenu_AddButton(info);
-				end
-
-			end			
-
-		elseif ( status == "active" ) then
-
-			info = UIDropDownMenu_CreateInfo();
-			if ( teamSize ~= 0 ) then
-				info.text = mapName.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
-			else
-				info.text = mapName;
-			end
-			info.isTitle = 1;
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-
-			info = UIDropDownMenu_CreateInfo();
-			if ( IsActiveBattlefieldArena() ) then
-				info.text = LEAVE_ARENA;
-			else
-				info.text = LEAVE_BATTLEGROUND;				
-			end
-			info.func = function (self, ...) LeaveBattlefield(...) end;
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-
-		end
-	end
-	
-	for i=1, MAX_WORLD_PVP_QUEUES do
-		status, mapName, queueID = GetWorldPVPQueueStatus(i);
-
-		-- Inserts a spacer if it's not the first option... to make it look nice.
-		if ( status ~= "none" ) then
-			numShown = numShown + 1;
-			if ( numShown > 1 ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.isTitle = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-		
-		if ( status == "queued" or status == "confirm" ) then
-			numQueued = numQueued + 1;
-			-- Add a spacer if there were dropdown items before this
-			
-			info = UIDropDownMenu_CreateInfo();
-			info.text = mapName;
-			info.isTitle = 1;
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);			
-			
-			if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes and GetRealZoneText() == mapName ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = format(LEAVE_ZONE, GetRealZoneText());			
-				
-				info.func = HearthAndResurrectFromArea;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				shownHearthAndRes = true;
-			end
-			
-			if ( status == "queued" ) then
-			
-				info = UIDropDownMenu_CreateInfo();
-				info.text = LEAVE_QUEUE;
-				info.func = function (self, ...) BattlefieldMgrExitRequest(...) end;
-				info.arg1 = queueID;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				
-			elseif ( status == "confirm" ) then
-			
-				info = UIDropDownMenu_CreateInfo();
-				info.text = ENTER_BATTLE;
-				info.func = function (self, ...) BattlefieldMgrEntryInviteResponse(...) end;
-				info.arg1 = queueID;
-				info.arg2 = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				
-				info = UIDropDownMenu_CreateInfo();
-				info.text = LEAVE_QUEUE;
-				info.func = function (self, ...) BattlefieldMgrEntryInviteResponse(...) end;
-				info.arg1 = i;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-	end
-	
-	if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes ) then
-		numShown = numShown + 1;
-		info = UIDropDownMenu_CreateInfo();
-		info.text = GetRealZoneText();
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-
-		info = UIDropDownMenu_CreateInfo();
-		info.text = format(LEAVE_ZONE, GetRealZoneText());			
-		
-		info.func = HearthAndResurrectFromArea;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-	end
-
-end
-
 function IsAlreadyInQueue(mapName)
 	local inQueue = nil;
 	for index,value in pairs(PREVIOUS_BATTLEFIELD_QUEUES) do
@@ -1815,35 +1784,11 @@ end
 function PVP_UpdateStatus(tooltipOnly, mapIndex)
 	local status, mapName, instanceID, queueID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
 	local numberQueues = 0;
-	local waitTime, timeInQueue;
+	local timeInQueue;
 	local tooltip;
 	local showRightClickText;
 	BATTLEFIELD_SHUTDOWN_TIMER = 0;
 
-	-- Reset tooltip
-	MiniMapBattlefieldFrame.tooltip = nil;
-	MiniMapBattlefieldFrame.waitTime = {};
-	MiniMapBattlefieldFrame.status = nil;
-	
-	-- Copy current queues into previous queues
-	if ( not tooltipOnly ) then
-		PREVIOUS_BATTLEFIELD_QUEUES = {};
-		for index, value in pairs(CURRENT_BATTLEFIELD_QUEUES) do
-			tinsert(PREVIOUS_BATTLEFIELD_QUEUES, value);
-		end
-		CURRENT_BATTLEFIELD_QUEUES = {};
-	end
-
-	if ( CanHearthAndResurrectFromArea() ) then
-		if ( not MiniMapBattlefieldFrame.inWorldPVPArea ) then
-			MiniMapBattlefieldFrame.inWorldPVPArea = true;
-			UIFrameFadeIn(MiniMapBattlefieldFrame, BATTLEFIELD_FRAME_FADE_TIME);
-			BattlegroundShineFadeIn();
-		end
-	else
-		MiniMapBattlefieldFrame.inWorldPVPArea = false;
-	end
-	
 	for i=1, GetMaxBattlefieldID() do
 		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue, waitingOnOtherActivity = GetBattlefieldStatus(i);
 		if ( mapName ) then
@@ -1865,56 +1810,16 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 
 		if ( status ~= "none" ) then
 			numberQueues = numberQueues+1;
-			if ( status == "queued" ) then
-				-- Update queue info show button on minimap
-				waitTime = GetBattlefieldEstimatedWaitTime(i);
-				timeInQueue = GetBattlefieldTimeWaited(i)/1000;
-				if ( waitTime == 0 ) then
-					waitTime = QUEUE_TIME_UNAVAILABLE;
-				elseif ( waitTime < 60000 ) then 
-					waitTime = LESS_THAN_ONE_MINUTE;
-				else
-					waitTime = SecondsToTime(waitTime/1000, 1);
-				end
-				MiniMapBattlefieldFrame.waitTime[i] = waitTime;
-				if( registeredMatch and teamSize == 0 ) then
-					tooltip = format(BATTLEFIELD_IN_QUEUE_RATED, mapName, waitTime, SecondsToTime(timeInQueue));
-				else
-					tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue));
-				end
-				
-				if ( not tooltipOnly ) then
-					if ( not IsAlreadyInQueue(mapName) ) then
-						UIFrameFadeIn(MiniMapBattlefieldFrame, BATTLEFIELD_FRAME_FADE_TIME);
-						BattlegroundShineFadeIn();
-						PlaySound("PVPENTERQUEUE");
-					end
-					tinsert(CURRENT_BATTLEFIELD_QUEUES, mapName);
-				end
-				showRightClickText = 1;
-			elseif ( status == "confirm" ) then
+			if ( status == "confirm" ) then
 				-- Have been accepted show enter battleground dialog
-				local seconds = SecondsToTime(GetBattlefieldPortExpiration(i));
-				if ( seconds ~= "" ) then
-					tooltip = format(BATTLEFIELD_QUEUE_CONFIRM, mapName, seconds);
-				else
-					tooltip = format(BATTLEFIELD_QUEUE_PENDING_REMOVAL, mapName);
-				end
 				if ( (i==mapIndex) and (not tooltipOnly) ) then
 					local dialog = StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
 					PlaySound("PVPTHROUGHQUEUE");
-					MiniMapBattlefieldFrame:Show();
 				end
-				showRightClickText = 1;
 				PVPTimerFrame:SetScript("OnUpdate", PVPTimerFrame_OnUpdate);
 				PVPTimerFrame.updating = true;
 			elseif ( status == "active" ) then
 				-- In the battleground
-				if ( teamSize ~= 0 ) then
-					tooltip = mapName;			
-				else
-					tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
-				end
 				BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
 				if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 and not PVPTimerFrame.updating ) then
 					PVPTimerFrame:SetScript("OnUpdate", PVPTimerFrame_OnUpdate);
@@ -1922,62 +1827,11 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 					BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
 					PREVIOUS_BATTLEFIELD_MOD = 0;
 				end
-				MiniMapBattlefieldFrame.status = status;
 			elseif ( status == "error" ) then
 				-- Should never happen haha
 			end
-			if ( tooltip ) then
-				if ( MiniMapBattlefieldFrame.tooltip ) then
-					MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..tooltip;
-				else
-					MiniMapBattlefieldFrame.tooltip = tooltip;
-				end
-				
-				if ( not eligibleInQueue and status ~= "active" and status ~= "confirm" ) then
-					if ( waitingOnOtherActivity ) then
-						MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..PVP_SUSPENDED_QUEUE_STATUS;
-					else
-						MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..PVP_INVALID_QUEUE_STATUS;
-					end
-				end
-			end
 		end
 	end
-	
-	for i=1, MAX_WORLD_PVP_QUEUES do
-		status, mapName, queueID = GetWorldPVPQueueStatus(i);
-		if ( status ~= "none" ) then
-			numberQueues = numberQueues + 1;
-		end
-		if ( status == "queued" or status == "confirm" ) then
-			if ( status == "queued" ) then
-				tooltip = format(BATTLEFIELD_IN_QUEUE_SIMPLE, mapName);
-			elseif ( status == "confirm" ) then
-				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM_SIMPLE, mapName);
-			end
-			
-			if ( MiniMapBattlefieldFrame.tooltip ) then
-				MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..tooltip;
-			else
-				MiniMapBattlefieldFrame.tooltip = tooltip;
-			end
-		end
-	end
-	
-	-- See if should add right click message
-	if ( MiniMapBattlefieldFrame.tooltip and showRightClickText ) then
-		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
-	end
-	
-	if ( not tooltipOnly ) then
-		if ( numberQueues == 0 and (not CanHearthAndResurrectFromArea()) ) then
-			-- Clear everything out
-			MiniMapBattlefieldFrame:Hide();
-		else
-			MiniMapBattlefieldFrame:Show();
-		end
-	end
-	PVPFrame.numQueues = numberQueues;
 end
 
 --

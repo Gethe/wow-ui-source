@@ -37,19 +37,18 @@ end
 -- Specific
 ScenariosHiddenByCollapseList = { };
 function ScenarioQueueFrame_Update()
-	local useLFGQueuedForList;
+	local mode, submode = GetLFGMode(LE_LFG_CATEGORY_SCENARIO);
 
-	local mode, submode = GetLFGMode();
-
+	local checkedList;
 	if ( LFD_IsEmpowered() and mode ~= "queued" and mode ~= "suspended") then
-		useLFGQueuedForList = false;
+		checkedList = LFGEnabledList;
 	else
-		useLFGQueuedForList = true;
+		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_SCENARIO];
 	end
 
 	ScenariosList = GetScenariosChoiceOrder(ScenariosList);
 
-	LFGQueueFrame_UpdateLFGDungeonList(ScenariosList, ScenariosHiddenByCollapseList, useLFGQueuedForList, SCENARIOS_CURRENT_FILTER, SCENARIO_MAX_SHOWN_LEVEL_DIFF);
+	LFGQueueFrame_UpdateLFGDungeonList(ScenariosList, ScenariosHiddenByCollapseList, checkedList, SCENARIOS_CURRENT_FILTER, SCENARIO_MAX_SHOWN_LEVEL_DIFF);
 
 	ScenarioQueueFrameSpecific_Update();
 end
@@ -65,7 +64,14 @@ function ScenarioQueueFrameSpecific_Update()
 
 	local areButtonsBig = not scrollFrame:IsShown();
 
-	LFGDungeonList_EvaluateListState();
+	local enabled, queued = LFGDungeonList_EvaluateListState(LE_LFG_CATEGORY_SCENARIO);
+	
+	local checkedList;
+	if ( queued ) then
+		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_SCENARIO];
+	else
+		checkedList = LFGEnabledList;
+	end
 
 	local buttonsFrame = ScenarioQueueFrame.Specific;
 	for i = 1, NUM_SCENARIO_CHOICE_BUTTONS do
@@ -83,7 +89,7 @@ function ScenarioQueueFrameSpecific_Update()
 			else
 				button:SetWidth(295);
 			end
-			LFGDungeonListButton_SetDungeon(button, dungeonID);
+			LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList);
 		elseif ( button ) then
 			button:Hide();
 		end
@@ -136,13 +142,12 @@ end
 
 -- Join button
 function ScenarioQueueFrame_Join()
-	LFG_JoinDungeon(ScenarioQueueFrame.type, ScenariosList, ScenariosHiddenByCollapseList);
+	LFG_JoinDungeon(LE_LFG_CATEGORY_SCENARIO, ScenarioQueueFrame.type, ScenariosList, ScenariosHiddenByCollapseList);
 end
 
 function ScenarioQueueFrameFindGroupButton_Update()
-	local mode, subMode = GetLFGMode();
-	local queueType = GetLFGModeType();
-	if ( queueType == "default" and ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) ) then
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_SCENARIO);
+	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		ScenarioQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
 		if ( IsInGroup() ) then
@@ -152,40 +157,16 @@ function ScenarioQueueFrameFindGroupButton_Update()
 		end
 	end
 
-	if ( queueType == "raid" and mode ) then	-- if queued for raid finder
-		if ( mode == "proposal" or mode == "queued" or mode == "rolecheck" or mode == "suspended" ) then
-			LFDQueueFrameFindGroupButton:Disable();
-			if ( LFD_IsEmpowered() ) then
-				LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
-			else
-				LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
-			end
-		else
-			LFDQueueFrameFindGroupButton:Enable();
-		end
-	elseif ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
-			or (not LFDQueueFramePartyBackfill:IsVisible() and not LFDQueueFrameCooldownFrame:IsVisible()) ) then
-			LFDQueueFrameFindGroupButton:Enable();
-		else
-			LFDQueueFrameFindGroupButton:Disable();
-		end
-		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
+		LFDQueueFrameFindGroupButton:Enable();
 	else
 		LFDQueueFrameFindGroupButton:Disable();
-		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
-	end
-
-	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" and mode ~= "rolecheck" ) then
-		LFDQueueFramePartyBackfillBackfillButton:Enable();
-	else
-		LFDQueueFramePartyBackfillBackfillButton:Disable();
 	end
 end
 
 -- List buttons
 function ScenarioQueueFrameChoiceEnableButton_OnClick(self)
-	LFGDungeonListCheckButton_OnClick(self, ScenariosList, ScenariosHiddenByCollapseList);
+	LFGDungeonListCheckButton_OnClick(self, LE_LFG_CATEGORY_SCENARIO, ScenariosList, ScenariosHiddenByCollapseList);
 	ScenarioQueueFrameSpecific_Update();
 end
 

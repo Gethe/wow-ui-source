@@ -1,4 +1,5 @@
 NUM_WORLDMAP_POIS = 0;
+NUM_WORLDMAP_WORLDEFFECT_POIS = 0;
 NUM_WORLDMAP_GRAVEYARDS = 0;
 NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
@@ -90,6 +91,8 @@ WORLDMAP_SETTINGS = {
 	selectedQuestId = 0,
 	size = WORLDMAP_QUESTLIST_SIZE
 };
+
+local WorldEffectPOITooltips = {};
 
 function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -183,6 +186,8 @@ function WorldMapFrame_OnHide(self)
 		OpacityFrame.saveOpacityFunc = nil;
 		OpacityFrame:Hide();
 	end
+	
+	self.fromJournal = false;
 	
 	UpdateMicroButtons();
 	CloseDropDownMenus();
@@ -404,6 +409,46 @@ function WorldMapFrame_Update()
 		end
 	end
 	
+	-----------------------------------------------------------------
+	-- Draw quest POI world effects
+	-----------------------------------------------------------------
+	local numPOIWorldEffects = GetNumQuestPOIWorldEffects();
+	
+	--Ensure the button pool is big enough for all the world effect POI's
+	if ( NUM_WORLDMAP_WORLDEFFECT_POIS < numPOIWorldEffects ) then
+		for i=NUM_WORLDMAP_WORLDEFFECT_POIS+1, numPOIWorldEffects do
+			WorldMap_CreateWorldEffectPOI(i);
+		end
+		NUM_WORLDMAP_WORLDEFFECT_POIS = numPOIWorldEffects;
+	end
+	
+	-- Process every button in the world event POI pool
+	for i=1,NUM_WORLDMAP_WORLDEFFECT_POIS do
+		
+		local worldEventPOIName = "WorldMapFrameWorldEffectPOI"..i;
+		local worldEventPOI = _G[worldEventPOIName];
+		
+		-- Draw if used
+		if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
+			local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);	
+			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+			_G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+			x = x * WorldMapButton:GetWidth();
+			y = -y * WorldMapButton:GetHeight();
+			worldEventPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
+			worldEventPOI.name = worldEventPOIName;		
+			worldEventPOI:Show();
+			WorldEffectPOITooltips[worldEventPOIName] = name;
+		else
+			-- Hide if unused
+			worldEventPOI:Hide();
+		end
+		
+	end
+	-----------------------------------------------------------------
+	-- End quest POI world effects
+	-----------------------------------------------------------------
+	
 
 	-- Setup the overlays
 	local textureCount = 0;
@@ -591,6 +636,23 @@ function WorldMapPOI_OnLeave()
 	WorldMapTooltip:Hide();
 end
 
+function WorldEffectPOI_OnEnter(self)
+	if(WorldEffectPOITooltips[self.name] ~= nil) then
+		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		WorldMapTooltip:SetText(WorldEffectPOITooltips[self.name]);
+		WorldMapTooltip:Show();
+		WorldMapTooltip.WE_using = true;
+	end
+end
+
+function WorldEffectPOI_OnLeave()
+	WorldMapFrame.poiHighlight = nil;
+	WorldMapFrameAreaLabel:SetText(WorldMapFrame.areaName);
+	WorldMapFrameAreaDescription:SetText("");
+	WorldMapTooltip:Hide();
+	WorldMapTooltip.WE_using = false;
+end
+
 function WorldMapPOI_OnClick(self, button)
 	if ( self.mapLinkID ) then
 		ClickLandmark(self.mapLinkID);
@@ -616,6 +678,20 @@ function WorldMap_CreatePOI(index)
 	texture:SetHeight(16);
 	texture:SetPoint("CENTER", 0, 0);
 	texture:SetTexture("Interface\\Minimap\\POIIcons");
+end
+
+function WorldMap_CreateWorldEffectPOI(index)
+	local button = CreateFrame("Button", "WorldMapFrameWorldEffectPOI"..index, WorldMapButton);
+	button:SetWidth(32);
+	button:SetHeight(32);
+	button:SetScript("OnEnter", WorldEffectPOI_OnEnter);
+	button:SetScript("OnLeave", WorldEffectPOI_OnLeave);
+	
+	local texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
+	texture:SetWidth(16);
+	texture:SetHeight(16);
+	texture:SetPoint("CENTER", 0, 0);
+	texture:SetTexture("Interface\\Minimap\\OBJECTICONS");
 end
 
 function WorldMap_GetGraveyardButton(index)
@@ -1646,6 +1722,7 @@ function WorldMapQuestShowObjectives_Toggle()
 		WatchFrame_Update();
 		QuestLogFrameShowMapButton:Hide();	
 	end
+	WorldMapFrame_Update();
 end
 
 function WorldMapQuestShowObjectives_AdjustPosition()
@@ -2159,7 +2236,7 @@ function WorldMapBlobFrame_OnUpdate(self)
 	if(numObjectives) then
 		WorldMapTooltip:SetOwner(WorldMapFrame, "ANCHOR_CURSOR");
 		WorldMapQuestPOI_SetTooltip(nil, questLogIndex, numObjectives);
-	elseif(not WorldMapTooltip.EJ_using) then
+	elseif(not WorldMapTooltip.EJ_using) and (not WorldMapTooltip.WE_using)then
 		WorldMapTooltip:Hide();
 	end
 end
@@ -2403,7 +2480,7 @@ function EncounterJournal_AddMapButtons()
 
 	local bossButton, questPOI, displayInfo, _;
 	local index = 1;
-	local x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index);
+	local x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
 	while name do
 		bossButton = _G["EJMapButton"..index];
 		if not bossButton then -- create button
@@ -2424,7 +2501,7 @@ function EncounterJournal_AddMapButtons()
 		end
 		bossButton:Show();
 		index = index + 1;
-		x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index);
+		x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
 	end
 	
 	if (index == 1) then --not looking at dungeon map

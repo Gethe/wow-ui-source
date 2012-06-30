@@ -475,9 +475,9 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								local mode, subMode = GetLFGMode();
+								local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_SCENARIO);
 								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
-									LeaveLFG();
+									LeaveLFG(LE_LFG_CATEGORY_SCENARIO);
 								else
 									ScenarioQueueFrame_Join();
 								end

@@ -2327,27 +2327,27 @@
 		<Size x="100" y="100"/>	
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="TopLeft" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+				<Texture parentKey="TopLeft" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
 					<Size x="8" y="8"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-3" y="3"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="TopRight" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+				<Texture parentKey="TopRight" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
 					<Size x="8" y="8"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="3" y="3"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
-				<Texture parentKey="BottomLeft" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+				<Texture parentKey="BottomLeft" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
 					<Size x="8" y="8"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-3" y="-3"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 				</Texture>
-				<Texture parentKey="BottomRight" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+				<Texture parentKey="BottomRight" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
 					<Size x="8" y="8"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
@@ -2355,13 +2355,13 @@
 					<TexCoords left="1" right="0" top="1" bottom="0"/>
 				</Texture>
 				
-				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\ThinBorder-Top">
+				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\ThinBorder2-Top">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\ThinBorder-Top">
+				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\ThinBorder2-Top">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
@@ -2369,13 +2369,13 @@
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 				</Texture>
 
-				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\ThinBorder-Left">
+				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\ThinBorder2-Left">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\ThinBorder-Left">
+				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\ThinBorder2-Left">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>

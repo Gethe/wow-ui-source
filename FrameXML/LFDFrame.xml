@@ -607,9 +607,9 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								local mode, subMode = GetLFGMode();
+								local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
 								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
-									LeaveLFG();
+									LeaveLFG(LE_LFG_CATEGORY_LFD);
 								else
 									LFDQueueFrame_Join();
 								end
@@ -892,7 +892,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-											LeaveLFG();
+											LeaveLFG(LE_LFG_CATEGORY_LFR);
 									</OnClick>
 								</Scripts>
 							</Button>

@@ -299,7 +299,7 @@
 					<TexCoords left="0.68457031" right="0.70898438" top="0.11132813" bottom="0.13574219"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
 					<Size x="147" y="25"/>
 					<Anchors>
@@ -320,7 +320,13 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
+			<Layer level="OVERLAY">
+				<Texture parentKey="isDead" file="Interface\PetBattles\DeadPetIcon" hidden="true">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 				<Texture file="Interface\PetBattles\PetJournal" parentKey="selectedTexture" hidden="true">
 					<TexCoords left="0.39453125" right="0.59765625" top="0.908203125" bottom="0.951171875"/>
 				</Texture>
@@ -572,8 +578,6 @@
 					<Size x="53" y="54"/>
 					<TexCoords left="0.94238281" right="0.99414063" top="0.06152344" bottom="0.11425781"/>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
 					<Size x="210" y="25"/>
 					<Anchors>
@@ -600,6 +604,14 @@
 					</Anchors>
 					<Color r="0.902" g="0.788" b="0.671"/>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="isDead" file="Interface\PetBattles\DeadPetIcon" hidden="true">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1040,7 +1052,7 @@
 					<TexCoords left="0.00000000" right="1.00000000" top="0.13671875" bottom="0.26171875"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
 					<Size x="210" y="25"/>
 					<Anchors>
@@ -1078,6 +1090,14 @@
 						<Anchor point="BOTTOM" x="0" y="134"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="isDead" file="Interface\PetBattles\DeadPetIcon" hidden="true">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1150,7 +1170,7 @@
 								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentSpeedTex" x="5" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentRarityTex" file="Interface\PetBattles\PetBattle-StatIcons">
+						<Texture name="$parentRarityTex" file="Interface\PetBattles\PetBattle-StatIcons" parentKey="rarityTex">
 							<Size x="16" y="16"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentSpeedTex" x="0" y="-4"/>

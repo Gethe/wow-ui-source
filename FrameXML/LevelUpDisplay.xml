@@ -59,7 +59,7 @@
 				<Alpha change="-1" duration="0.5" startDelay="1.8" order="2"/>
 				<Scripts>
 					<OnFinished>
-						LevelUpDisplay_AnimStep(LevelUpDisplay);
+						LevelUpDisplay_AnimStep(LevelUpDisplay, false);
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -126,6 +126,19 @@
 		<Animations>
 			<AnimationGroup parentKey="hideAnim">
 				<Alpha change="-1" duration="1.0" order="1" />
+				<Scripts>
+					<OnFinished>
+						local parent = LevelUpDisplay;
+						if ( parent.extraFrame ) then
+							parent.extraFrame:Hide();
+							parent.extraFrame = nil;
+						end
+						parent:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="fastHideAnim">
+				<Alpha change="-1" duration="0.5" order="1" />
 				<Scripts>
 					<OnFinished>
 						local parent = LevelUpDisplay;
@@ -211,7 +224,19 @@
 								LevelUpDisplayGLine.grow:Play();
 							</OnPlay>
 							<OnFinished>
-								LevelUpDisplay_AnimStep(LevelUpDisplay);
+								LevelUpDisplay_AnimStep(LevelUpDisplay, false);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="fastReveal">
+						<Alpha change="1" duration="0.7" startDelay="0.5" order="1" />
+						<Alpha change="-1" duration="0.5" startDelay="1.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplayGLine.grow:Play();
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimStep(LevelUpDisplay, true);
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
@@ -235,6 +260,11 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentTextLine" inherits="GameFont_Gigantic" parentKey="singleline" text="">
+							<Anchors>
+								<Anchor point="CENTER" y="-4"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentBlockText" inherits="GameFontNormalHuge" parentKey="blockText">
 							<Anchors>
 								<Anchor point="CENTER" y="-4"/>
 							</Anchors>

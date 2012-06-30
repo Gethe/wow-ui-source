@@ -278,6 +278,11 @@ function UIParent_OnLoad(self)
 	-- Events for black market
 	self:RegisterEvent("BLACK_MARKET_OPEN");
 	self:RegisterEvent("BLACK_MARKET_CLOSE");
+
+	-- Events for item upgrades
+	self:RegisterEvent("ITEM_UPGRADE_MASTER_OPENED");
+	self:RegisterEvent("ITEM_UPGRADE_MASTER_CLOSED");
+
 end
 
 
@@ -426,9 +431,9 @@ function BlackMarket_LoadUI()
 	UIParentLoadAddOn("Blizzard_BlackMarketUI");
 end
 
-
-
-
+function ItemUpgrade_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
+end
 
 --[[
 function MovePad_LoadUI()
@@ -1273,6 +1278,17 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "BLACK_MARKET_CLOSE" ) then
 		if ( BlackMarketFrame_Hide ) then
 			BlackMarketFrame_Hide();
+		end
+
+	-- Events for Item Upgrading
+	elseif ( event == "ITEM_UPGRADE_MASTER_OPENED" ) then
+		ItemUpgrade_LoadUI();
+		if ( ItemUpgradeFrame_Show ) then
+			ItemUpgradeFrame_Show();
+		end
+	elseif ( event == "ITEM_UPGRADE_MASTER_CLOSED" ) then
+		if ( ItemUpgradeFrame_Hide ) then
+			ItemUpgradeFrame_Hide();
 		end
 
 	end
@@ -3786,50 +3802,37 @@ function RaidBrowser_IsEmpowered()
 	return (not IsInGroup()) or UnitIsGroupLeader("player");
 end
 
-function GetLFGModeType()
-	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, isRaidFinder = GetLFGInfoServer();
-	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
+function GetLFGMode(category)
+	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, isHoliday, proposalCategory = GetLFGProposal();
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer(category);
+	local roleCheckInProgress, slots, members, roleUpdateCategory = GetLFGRoleUpdate();
 
-	if ( proposalExists ) then
-		return (subtypeID == LFG_SUBTYPEID_RAID) and "raid" or "default";
-	elseif ( queued ) then
-		return isRaidFinder and "raid" or "default";
-	elseif ( roleCheckInProgress ) then
-		local _, _, subtypeID = GetLFGRoleUpdateSlot(1);
-		return (subtypeID == LFG_SUBTYPEID_RAID) and "raid" or "default";
-	elseif ( IsListedInLFR() ) then
-		return "default";
-	elseif ( joined ) then
-		return isRaidFinder and "raid" or "default";
-	elseif ( IsPartyLFG() ) then
-		local subtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(GetPartyLFGID()));
-		return (subtypeID == LFG_SUBTYPEID_RAID) and "raid" or "default";
-	else
-		return "unknown"
+	local partyCategory = nil;
+	local partySlot = GetPartyLFGID();
+	if ( partySlot ) then
+		partyCategory = GetLFGCategoryForID(partySlot);
 	end
-end
 
-function GetLFGMode()
-	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers = GetLFGProposal();
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer();
-	local roleCheckInProgress, slots, members = GetLFGRoleUpdate();
 	
-	if ( proposalExists and not hasResponded ) then
+	local empoweredFunc = LFD_IsEmpowered;
+	if ( category == LE_LFG_CATEGORY_LFR ) then
+		empoweredFunc = RaidBrowser_IsEmpowered;
+	end
+	if ( proposalExists and not hasResponded and proposalCategory == category ) then
 		return "proposal", "unaccepted";
-	elseif ( proposalExists ) then
+	elseif ( proposalExists and proposalCategory == category ) then
 		return "proposal", "accepted";
 	elseif ( queued ) then
-		return "queued", (LFD_IsEmpowered() and "empowered" or "unempowered");
-	elseif ( roleCheckInProgress ) then
+		return "queued", (empoweredFunc() and "empowered" or "unempowered");
+	elseif ( roleCheckInProgress and roleUpdateCategory == category ) then
 		return "rolecheck";
-	elseif ( IsListedInLFR() ) then
-		return "listed", (RaidBrowser_IsEmpowered() and "empowered" or "unempowered");
+	elseif ( category == LE_LFG_CATEGORY_LFR and joined ) then
+		return "listed", (empoweredFunc() and "empowered" or "unempowered");
 	elseif ( joined ) then
-		return "suspended", (LFD_IsEmpowered() and "empowered" or "unempowered");	--We are "joined" to LFG, but not actually queued right now.
-	elseif ( IsInGroup() and IsPartyLFG() ) then
+		return "suspended", (empoweredFunc() and "empowered" or "unempowered");	--We are "joined" to LFG, but not actually queued right now.
+	elseif ( IsInGroup() and IsPartyLFG() and partyCategory == category ) then
 		return "lfgparty";
-	elseif ( IsPartyLFG() and IsInLFGDungeon() ) then
+	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category ) then
 		return "abandonedInDungeon";
 	end
 end

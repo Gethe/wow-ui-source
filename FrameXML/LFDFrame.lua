@@ -86,7 +86,7 @@ function LFDFrame_UpdateBackfill(forceUpdate)
 		if ( currentSubtypeID ~= LFG_SUBTYPEID_RAID ) then
 			local name, lfgID, typeID = GetPartyLFGBackfillInfo();
 			LFDQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
-			local mode, subMode = GetLFGMode();
+			local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
 			if ( (forceUpdate or not LFDQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
 				LFDQueueFramePartyBackfill:Show();
 			end
@@ -166,7 +166,7 @@ end
 function LFDRoleCheckPopup_Update()
 	LFGDungeonList_Setup();
 	
-	LFG_UpdateRoleCheckboxes();
+	LFG_UpdateAllRoleCheckboxes();
 	
 	local inProgress, slots, members = GetLFGRoleUpdate();
 	
@@ -223,8 +223,15 @@ function LFDQueueFrameSpecificList_Update()
 	
 	local areButtonsBig = not LFDQueueFrameSpecificListScrollFrame:IsShown();
 	
-	LFGDungeonList_EvaluateListState();
+	local enabled, queued = LFGDungeonList_EvaluateListState(LE_LFG_CATEGORY_LFD);
 	
+	local checkedList;
+	if ( queued ) then
+		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFD];
+	else
+		checkedList = LFGEnabledList;
+	end
+
 	for i = 1, NUM_LFD_CHOICE_BUTTONS do
 		local button = _G["LFDQueueFrameSpecificListButton"..i];
 		local dungeonID = LFDDungeonList[i+offset];
@@ -235,7 +242,7 @@ function LFDQueueFrameSpecificList_Update()
 			else
 				button:SetWidth(295);
 			end
-			LFGDungeonListButton_SetDungeon(button, dungeonID);
+			LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList);
 		else
 			button:Hide();
 		end
@@ -243,11 +250,11 @@ function LFDQueueFrameSpecificList_Update()
 end
 
 function LFDQueueFrame_Join()
-	LFG_JoinDungeon(LFDQueueFrame.type, LFDDungeonList, LFDHiddenByCollapseList);
+	LFG_JoinDungeon(LE_LFG_CATEGORY_LFD, LFDQueueFrame.type, LFDDungeonList, LFDHiddenByCollapseList);
 end
 
 function LFDQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
-	LFGDungeonListCheckButton_OnClick(self, LFDDungeonList, LFDHiddenByCollapseList);
+	LFGDungeonListCheckButton_OnClick(self, LE_LFG_CATEGORY_LFD, LFDDungeonList, LFDHiddenByCollapseList);
 	LFDQueueFrameSpecificList_Update();
 end
 
@@ -497,9 +504,8 @@ function LFDQueueFrameRandomCooldownFrame_OnUpdate(self, elapsed)
 end
 
 function LFDQueueFrameFindGroupButton_Update()
-	local mode, subMode = GetLFGMode();
-	local queueType = GetLFGModeType();
-	if ( queueType == "default" and ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) ) then
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
+	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		LFDQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
 		if ( IsInGroup() ) then
@@ -509,18 +515,7 @@ function LFDQueueFrameFindGroupButton_Update()
 		end
 	end
 	
-	if ( queueType == "raid" and mode ) then	-- if queued for raid finder
-		if ( mode == "proposal" or mode == "queued" or mode == "rolecheck" or mode == "suspended" ) then
-			LFDQueueFrameFindGroupButton:Disable();
-			if ( LFD_IsEmpowered() ) then
-				LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
-			else
-				LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
-			end
-		else
-			LFDQueueFrameFindGroupButton:Enable();
-		end
-	elseif ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
 		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
 			or (not LFDQueueFramePartyBackfill:IsVisible() and not LFDQueueFrameCooldownFrame:IsVisible()) ) then
 			LFDQueueFrameFindGroupButton:Enable();
@@ -530,7 +525,6 @@ function LFDQueueFrameFindGroupButton_Update()
 		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
 	else
 		LFDQueueFrameFindGroupButton:Disable();
-		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Disable();
 	end
 	
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" and mode ~= "rolecheck" ) then
@@ -542,19 +536,18 @@ end
 
 LFDHiddenByCollapseList = {};
 function LFDQueueFrame_Update()
-	local useLFGQueuedForList;
+	local mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFD);
 	
-	local mode, submode = GetLFGMode();
-	
+	local checkedList;
 	if ( LFD_IsEmpowered() and mode ~= "queued" and mode ~= "suspended") then
-		useLFGQueuedForList = false;
+		checkedList = LFGEnabledList;
 	else
-		useLFGQueuedForList = true;
+		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFD];
 	end
 	
 	LFDDungeonList = GetLFDChoiceOrder(LFDDungeonList);
 	
-	LFGQueueFrame_UpdateLFGDungeonList(LFDDungeonList, LFDHiddenByCollapseList, useLFGQueuedForList, LFD_CURRENT_FILTER, LFD_MAX_SHOWN_LEVEL_DIFF);
+	LFGQueueFrame_UpdateLFGDungeonList(LFDDungeonList, LFDHiddenByCollapseList, checkedList, LFD_CURRENT_FILTER, LFD_MAX_SHOWN_LEVEL_DIFF);
 	
 	LFDQueueFrameSpecificList_Update();
 end

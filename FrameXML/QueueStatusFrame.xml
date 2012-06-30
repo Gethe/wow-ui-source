@@ -1,0 +1,175 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="QueueStatusFrame.lua"/>
+	<Frame name="QueueStatusRoleCountTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="Texture"/>
+				<FontString name="$parentCount" inherits="GameFontHighlight" parentKey="Count">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="Cover" alpha="0.3" hidden="true">
+					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="QueueStatusEntryTemplate" virtual="true">
+		<Size x="275" y="150"/> <!--Height changed dynamically-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontHighlight" justifyH="RIGHT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-11"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="RoleIcon1" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-7" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RoleIcon2" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RoleIcon1" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RoleIcon3" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RoleIcon2" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TimeInQueue" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AverageWait" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.TimeInQueue" relativePoint="TOPLEFT" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="EntrySeparator"> <!--Hidden on the first entry-->
+					<Size x="275" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4"/>
+						<Anchor point="TOPRIGHT" x="-4"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="HealersFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-35"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Texture:SetTexCoord(GetTexCoordsForRole("HEALER"));
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="TanksFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HealersFound" relativePoint="LEFT" x="-10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Texture:SetTexCoord(GetTexCoordsForRole("TANK"));
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="DamagersFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HealersFound" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Texture:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Button name="QueueStatusMinimapButton" parent="MinimapBackdrop" inherits="MiniMapButtonTemplate" hidden="true">
+		<Size>
+			<AbsDimension x="33" y="33"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="22" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size>
+						<AbsDimension x="52" y="52"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="1" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentGroupSize" inherits="NumberFontNormalYellow" hidden="true" parentKey="groupSize">
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIcon" inherits="EyeTemplate" hidden="false" parentKey="Eye">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DropDown" name="$parentDropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, QueueStatusDropDown_Update, "MENU");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="QueueStatusMinimapButton_OnLoad"/>
+			<OnEnter function="QueueStatusMinimapButton_OnEnter"/>
+			<OnLeave function="QueueStatusMinimapButton_OnLeave"/>
+			<OnClick function="QueueStatusMinimapButton_OnClick"/>
+			<OnShow function="QueueStatusMinimapButton_OnShow"/>
+		</Scripts>						
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>	
+	<Frame name="QueueStatusFrame" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="QueueStatusMinimapButton" inherits="TooltipBorderedFrameTemplate">
+		<Size x="275" y="150"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="QueueStatusMinimapButton" relativePoint="TOPLEFT" x="0" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="QueueStatusFrame_OnLoad"/>
+			<OnEvent function="QueueStatusFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>
