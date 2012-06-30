@@ -64,6 +64,18 @@ VEHICLE_TEXTURES["Carriage"] = {
 	width=64,
 	height=64,
 };
+VEHICLE_TEXTURES["Mogu"] = {
+	"Interface\\Minimap\\Vehicle-Mogu",
+	"Interface\\Minimap\\Vehicle-Mogu",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Grummle Convoy"] = {
+	"Interface\\Minimap\\Vehicle-GrummleConvoy",
+	"Interface\\Minimap\\Vehicle-GrummleConvoy",
+	width=64,
+	height=64,
+};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };

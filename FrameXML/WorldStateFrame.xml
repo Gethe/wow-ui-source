@@ -1199,11 +1199,18 @@
 				</Texture>			
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\Challenges\challenges-silver" parentKey="medalIcon">
+				<Texture parentKey="medalIcon">
 					<Size x="48" y="48"/>
 					<Anchors>
 						<Anchor point="LEFT" x="5" y="-2"/>
 					</Anchors>
+				</Texture>
+				<Texture parentKey="noMedal" file="Interface\Challenges\challenges-main" hidden="true">
+					<Size x="9" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" x="24" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.93847656" right="0.94726563" top="0.00195313" bottom="0.02148438"/>
 				</Texture>
 				<FontString inherits="QuestFont_Shadow_Huge" text="TOTAL">
 					<Anchors>

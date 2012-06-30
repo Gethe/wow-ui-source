@@ -4027,36 +4027,6 @@ function BreakUpLargeNumbers(value)
 	return retString;
 end
 
-function SetChallengeModeMedalTexture(icon, medal, size, leftOffset, yOffset)
-	if ( not medal or medal == CHALLENGE_MEDAL_NONE ) then
-		icon:SetTexture("Interface\\Challenges\\challenges-main");
-		icon:SetTexCoord(0.93847656, 0.94726563, 0.00195313, 0.02148438);
-		icon:SetSize(9, 10);
-		if ( size and leftOffset ) then
-			-- since this texture is smaller, it needs to be set further in to be centered relative to normal medal
-			local diff = (size - 9) / 2;
-			icon:SetPoint("LEFT", leftOffset + diff, yOffset);
-		end
-	else
-		local texture;
-		if ( medal == CHALLENGE_MEDAL_COPPER ) then
-			texture = "Interface\\Challenges\\challenges-copper";
-		elseif ( medal == CHALLENGE_MEDAL_SILVER ) then
-			texture = "Interface\\Challenges\\challenges-silver";
-		elseif ( medal == CHALLENGE_MEDAL_GOLD ) then
-			texture = "Interface\\Challenges\\challenges-gold";
-		end
-		icon:SetTexture(texture);
-		icon:SetTexCoord(0, 1, 0, 1);
-		if ( size ) then
-			icon:SetSize(size, size);
-		end
-		if ( leftOffset ) then
-			icon:SetPoint("LEFT", leftOffset, yOffset);
-		end
-	end
-end
-
 function GetTimeStringFromSeconds(timeAmount, hasMS)
 	local seconds, ms;
 	-- milliseconds

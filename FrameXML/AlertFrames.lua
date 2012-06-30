@@ -380,13 +380,12 @@ function ChallengeModeAlertFrame_ShowAlert()
 			_G["ChallengeModeAlertFrame1Reward"..i]:SetPoint("CENTER", "ChallengeModeAlertFrame1Reward"..(i - 1), "CENTER", spacing, 0);
 		end
 	end
-
 	--Set up the text and icon
-	if ( not medal or medal == CHALLENGE_MEDAL_NONE ) then
-		frame.medalIcon:Hide();
-	else
-		SetChallengeModeMedalTexture(frame.medalIcon, medal);
+	if ( CHALLENGE_MEDAL_TEXTURES[medal] ) then
+		frame.medalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[medal]);
 		frame.medalIcon:Show();
+	else
+		frame.medalIcon:Hide();
 	end
 	frame.time:SetText(GetTimeStringFromSeconds(completionTime, true));
 	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-ZULGURUB");

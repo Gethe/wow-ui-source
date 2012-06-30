@@ -94,7 +94,7 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
-SCENARIOS_SHOW_LEVEL = 90;
+SCENARIOS_SHOW_LEVEL = 85;
 
 local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "ScenarioFinderFrame" }
 

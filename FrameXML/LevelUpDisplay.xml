@@ -75,6 +75,7 @@
 						<Anchor point="TOPLEFT" x="8" y="0"/>
 					</Anchors>
 				</Texture>
+				
 				<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"  relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="10" y="2"/>
@@ -86,6 +87,22 @@
 					</Anchors>
 					<Color r="0.0" g="1.0" b="0.0"/>
 				</FontString>
+
+				<FontString name="$parentUpperWhite" parentKey="upperwhite" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="10" y="6"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBottomHuge" parentKey="bottomHuge" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBottomGiant" parentKey="bottomGiant" inherits="GameFont_Gigantic" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-6"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSubIcon" parentKey="subIcon" file="Interface\LevelUp\LevelUpTex">
@@ -93,6 +110,12 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" x="2" y="2"/>
 					</Anchors>
+				</Texture>
+				<Texture name="$parentSubIconRight" parentKey="subIconRight" file="Interface\LevelUp\LevelUpTex">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Size x="22" y="22"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -211,94 +234,9 @@
 								<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
 							</Anchors>
 						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame  name="$parentBattlePetLevelFrame" parentKey="battlePetLevelFrame" alpha="0">
-				<Animations>
-					<AnimationGroup parentKey="battlePetLevelUp">
-						<Alpha change="1" duration="0.7" startDelay="1.5" order="1" />
-						<Alpha change="-1" duration="0.5" startDelay="1.5" order="2"/>
-						<Scripts>
-							<OnPlay>
-								LevelUpDisplayGLine.grow:Play();
-							</OnPlay>
-							<OnFinished>
-								LevelUpDisplay_AnimStep(LevelUpDisplay);
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
-				<Size x="418" y="72"/>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Icon" name="$parentMainIcon" parentKey="mainIcon">
+						<FontString name="$parentTextLine" inherits="GameFont_Gigantic" parentKey="singleline" text="">
 							<Anchors>
-								<Anchor point="LEFT" x="90" y="-2"/>
-							</Anchors>
-							<Size x="48" y="48"/>
-						</Texture>
-						<FontString name="$parentBattlePetReachedText" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP" parentKey="battlePetReachedText">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentMainIcon" x="10" y="0"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentBattlePetLevel" inherits="GameFont_Gigantic" justifyH="LEFT" justifyV="TOP" parentKey="battlePetLevelText">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBattlePetReachedText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\LevelUp\LevelUpTex" name="$parentSubIcon" parentKey="subIcon">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentMainIcon" relativePoint="BOTTOMRIGHT" x="-15" y="20"/>
-							</Anchors>
-							<Size x="20" y="22"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame  name="$parentBattlePetCapturedFrame" parentKey="battlePetCaptureFrame" alpha="0">
-				<Animations>
-					<AnimationGroup parentKey="battlePetLevelUp">
-						<Alpha change="1" duration="0.7" startDelay="1.5" order="1" />
-						<Alpha change="-1" duration="0.5" startDelay="1.5" order="2"/>
-						<Scripts>
-							<OnPlay>
-								LevelUpDisplayGLine.grow:Play();
-							</OnPlay>
-							<OnFinished>
-								LevelUpDisplay_AnimStep(LevelUpDisplay);
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
-				<Size x="418" y="72"/>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Icon" name="$parentMainIcon" parentKey="mainIcon">
-							<Anchors>
-								<Anchor point="LEFT" x="90" y="-2"/>
-							</Anchors>
-							<Size x="48" y="48"/>
-						</Texture>
-						<FontString name="$parentBattlePetReachedText" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP" parentKey="battlePetReachedText">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentMainIcon" x="10" y="0"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentBattlePetLevel" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM" parentKey="battlePetLevelText">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentMainIcon" x="10" y="0"/>
+								<Anchor point="CENTER" y="-4"/>
 							</Anchors>
 						</FontString>
 					</Layer>

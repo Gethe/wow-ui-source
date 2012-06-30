@@ -2319,6 +2319,137 @@
 	
 <!--
 *******************************************************************************
+    ThinBorderTemplate
+	Thin box to highlight areas with. Just add color!
+*******************************************************************************
+-->
+	<Frame name="ThinBorderTemplate" virtual="true">
+		<Size x="100" y="100"/>	
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="TopLeft" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRight" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="3" y="3"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BottomLeft" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-3" y="-3"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BottomRight" parentArray="Textures" file="Interface\Common\ThinBorder-Corner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+				</Texture>
+				
+				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\ThinBorder-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\ThinBorder-Top">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+
+				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\ThinBorder-Left">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\ThinBorder-Left">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GlowBorderTemplate" virtual="true">
+		<Size x="100" y="100"/>	
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="TopLeft" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRight" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="8" y="8"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BottomLeft" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-8" y="-8"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BottomRight" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+				</Texture>
+				
+				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\GlowBorder-Top" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\GlowBorder-Top" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+
+				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\GlowBorder-Left" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\GlowBorder-Left" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+<!--
+*******************************************************************************
     BasicFrameTemplate
 	This is an empty frame with a titlebar and a close button.
 *******************************************************************************
@@ -3604,7 +3735,9 @@
 		<Size x="46" y="46"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="I" name="$parentI" setallpoints="true" file="Interface\common\help-i"/>
+				<Texture parentKey="I" file="Interface\common\help-i" setallpoints="true"/>
+				<Texture parentKey="BigI" file="Interface\common\help-i" setallpoints="true" alphaMode="ADD" hidden="true"/>
+				<Texture parentKey="Ring" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight" setallpoints="true" alphaMode="ADD" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -3619,52 +3752,34 @@
 				<Anchor point="CENTER" x="-1" y="-1"/>
 			</Anchors>
 		</HighlightTexture>
-	</Button>
-	
-	<Frame name="HelpPlateButtonFlare" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true">
-		<Size x="55" y="55"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBigI" file="Interface\common\help-i" alphaMode="ADD">
-					<Size x="55" y="55"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRing" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight" alphaMode="ADD">
-					<Size x="55" y="55"/>
-					<Anchors>
-						<Anchor point="CENTER" x="-1" y="-1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
-				<Alpha target="$parentBigI" change="-0.8" duration="0.25"/>
-				<Alpha target="$parentRing" change="-0.8" duration="0.25"/>
+				<Alpha targetKey="$parent.$parent.BigI" change="-0.8" duration="0.5"/>
+				<Alpha targetKey="$parent.$parent.Ring" change="-0.8" duration="0.5"/>
 			</AnimationGroup>
 		</Animations>
-	</Frame>
+	</Button>
 
-	<Frame name="HelpPlateBox" virtual="true" hidden="true">
+	<Frame name="HelpPlateBox" inherits="ThinBorderTemplate" virtual="true" hidden="true">
 		<Size x="200" y="200"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BG">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-10"/>
-						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.7"/>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-		</Backdrop>
+		<Scripts>
+			<OnLoad function="HelpPlateBox_OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="HelpPlateBoxHighlight" inherits="GlowBorderTemplate" virtual="true" hidden="true">
+		<Size x="200" y="200"/>
 	</Frame>
 
 </Ui>

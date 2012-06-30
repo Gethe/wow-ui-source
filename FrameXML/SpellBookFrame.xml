@@ -876,41 +876,39 @@
 	</CheckButton>
 	
 	<SimpleHTML name="WhatHasChangedEntryTemplate" virtual="true">
-		<Size x="360" y="50"/>
+		<Size x="360" y="20"/>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="Ring" file="Interface\Minimap\MiniMap-TrackingBorder">
-					<Size x="48" y="48"/>
+					<Size x="32" y="33"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-35" y="4"/>
+						<Anchor point="TOPLEFT" x="-35" y="25"/>
 					</Anchors>
+					<TexCoords left="0" right="0.666" top="0" bottom="0.64"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\LFGFrame\WaitAnim">
-					<Size x="16" y="16"/>
+					<Size x="18" y="18"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="-10" y="10"/>
+						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="-3" y="2"/>
 					</Anchors>
 					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Number" inherits="SystemFont_Med1" justifyH="CENTER" justifyV="MIDDLE">
+				<FontString parentKey="Number" inherits="SystemFont_Med2" justifyH="CENTER" justifyV="MIDDLE">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="-10" y="10"/>
+						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="-2" y="1"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-<!--
-				<FontString parentKey="InfoText" inherits="SystemFont_Med1" justifyH="LEFT" justifyV="MIDDLE">
-					<Size x="360" y="0"/>
+				<FontString parentKey="Title" inherits="SystemFont_Large" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="-10" y="10"/>
+						<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="2" y="2"/>
 					</Anchors>
 					<Color r="0.1" g="0.1" b="0.1"/>
 				</FontString>
--->
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -1448,7 +1446,7 @@
 				<Frames>				
 					<SimpleHTML parentArray="ChangedItems" inherits="WhatHasChangedEntryTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="130" y="-90"/>
+							<Anchor point="TOPLEFT" x="130" y="-110"/>
 						</Anchors>
 					</SimpleHTML>
 				</Frames>

@@ -111,8 +111,8 @@ function GuildBankFrame_OnLoad(self)
 	GuildBankFrame.maxTabWidth = 128;
 	GuildBankFrame_UpdateTabs();
 	GuildBankFrame_UpdateTabard();
-	GuildBankFrameTopTileStreaks:Hide();
-	GuildBankFrameBg:Hide();
+	GuildBankFrame.TopTileStreaks:Hide();
+	GuildBankFrame.Bg:Hide();
 end
 
 function GuildBankFrame_OnEvent(self, event, ...)

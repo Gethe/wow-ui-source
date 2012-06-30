@@ -1,5 +1,8 @@
 NUM_BATTLE_PETS_IN_BATTLE = 3;
 NUM_BATTLE_PET_ABILITIES = 3;
+END_OF_PET_BATTLE_PET_LEVEL_UP = "petbattlepetlevel";
+END_OF_PET_BATTLE_RESULT = "petbattleresult";
+END_OF_PET_BATTLE_CAPTURE = "petbattlecapture";
 
 BATTLE_PET_DISPLAY_ROTATION = 3 * math.pi / 8;
 
@@ -19,6 +22,8 @@ PET_BATTLE_WEATHER_TEXTURES = {
 	[235] = "Interface\\PetBattles\\Weather-Rain",
 };
 
+local endOfBattleMessages = {};
+
 --------------------------------------------
 -------------Pet Battle Frame---------------
 --------------------------------------------
@@ -37,7 +42,12 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_TURN_STARTED");
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE");
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
+
+	-- End of battle events:
 	self:RegisterEvent("PET_BATTLE_CLOSE");
+	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
+	self:RegisterEvent("PET_BATTLE_CAPTURED");
+	self:RegisterEvent("PET_BATTLE_FINAL_ROUND");
 end
 
 function PetBattleFrame_OnEvent(self, event, ...)
@@ -51,6 +61,27 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdateAllActionButtons(self);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
+	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
+		local activePlayer, activePetSlot = ...;
+		if ( activePlayer == 1 ) then
+			local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
+			local speciesID, customName, petLevel, xp, maxXp, displayID, name, petIcon = C_PetJournal.GetPetInfoByPetID(petID);
+			table.insert(endOfBattleMessages, {type=END_OF_PET_BATTLE_PET_LEVEL_UP, name = customName or name, level = petLevel, icon = petIcon, speciesID = speciesID});
+		end
+	elseif ( event == "PET_BATTLE_CAPTURED") then
+		local fromPlayer, activePetSlot = ...;
+		if (fromPlayer == 2) then
+			local petName = C_PetBattles.GetName(fromPlayer, activePetSlot);
+			local petIcon = C_PetBattles.GetIcon(fromPlayer, activePetSlot);
+			table.insert(endOfBattleMessages, {type=END_OF_PET_BATTLE_CAPTURE, name = petName, icon = petIcon});
+		end
+	elseif ( event == "PET_BATTLE_FINAL_ROUND") then
+		local str = PET_BATTLE_RESULT_LOSE;
+		local winningPlayer = ...;
+		if ( winningPlayer == 1 ) then
+			str = PET_BATTLE_RESULT_WIN;
+		end;
+		table.insert(endOfBattleMessages, 1, {type=END_OF_PET_BATTLE_RESULT, winner=str});
 	end
 end
 
@@ -250,6 +281,21 @@ end
 
 function PetBattleCatchButton_OnClick(self)
 	C_PetBattles.UseTrap();
+end
+
+function PetBattleFrame_GetBattleResults()
+	return endOfBattleMessages;
+end
+
+function PetBattleFrame_GetAbilityAtLevel(speciesID, targetLevel)
+	local abilities, levels = C_PetJournal.GetPetAbilityList(speciesID);
+	for i, level in pairs(levels) do
+		if level == targetLevel then
+			return abilities[i];
+		end
+	end
+
+	return nil;
 end
 
 --------------------------------------------
@@ -879,6 +925,7 @@ function PetBattleOpeningFrame_OnEvent(self, event, ...)
 	local openMainFrame;
 	local close;
 	if ( event == "PET_BATTLE_OPENING_START" ) then
+		endOfBattleMessages = {};
 		open = true;
 		if ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) then
 			-- bypassing intro

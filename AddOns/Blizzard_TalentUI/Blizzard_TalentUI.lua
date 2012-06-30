@@ -736,9 +736,9 @@ end
 PlayerSpecFrame_HelpPlate = {
 	FramePos = { x = 0,	y = -22 },
 	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 88,	y = -22 }, HighLightBox = { x = 0, y = -20, width = 220, height = 400 },	ToolTipDir = "UP",		ToolTipText = SPEC_FRAME_HELP_1 },
-	[2] = { ButtonPos = { x = 570,	y = -22 }, HighLightBox = { x = 216, y = 2, width = 430, height = 422 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_2 },
-	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 260, y = -410, width = 125, height = 40 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_3 },
+	[1] = { ButtonPos = { x = 88,	y = -22 }, HighLightBox = { x = 8, y = -30, width = 204, height = 382 },	ToolTipDir = "UP",		ToolTipText = SPEC_FRAME_HELP_1 },
+	[2] = { ButtonPos = { x = 570,	y = -22 }, HighLightBox = { x = 224, y = -6, width = 414, height = 408 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_2 },
+	[3] = { ButtonPos = { x = 370,	y = -410}, HighLightBox = { x = 268, y = -418, width = 109, height = 26 },	ToolTipDir = "RIGHT",	ToolTipText = SPEC_FRAME_HELP_3 },
 }
 
 PlayerTalentFrame_HelpPlate = {

@@ -1,9 +1,10 @@
 LEVEL_UP_TYPE_CHARACTER = "character";	--Name used in globalstring LEVEL_UP
 LEVEL_UP_TYPE_GUILD = "guild";	--Name used in globalstring GUILD_LEVEL_UP
 LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
-LEVEL_UP_TYPE_BATTLE_PET = "battlepet" -- Name used in globalstring BATTLE_PET_LEVEL_UP
 LEVEL_UP_TYPE_SCENARIO = "scenario";
-LEVEL_UP_TYPE_BATTLE_PET_CAPTURED = "battlepetcapture";
+TOAST_PET_BATTLE_END = "petbattleend";
+CHAT_BATTLE_PET_LEVEL_UP = "battlepet" -- Name used in globalstring BATTLE_PET_LEVEL_UP
+CHAT_BATTLE_PET_CAPTURED = "battlepetcapture";
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
@@ -16,7 +17,7 @@ LEVEL_UP_EVENTS = {
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
-SUBICON_TEXCOOR_LOCK		= {0.64257813, 0.70117188, 0.11523438, 0.18359375};
+SUBICON_TEXCOOR_LOCK	= {0.64257813, 0.70117188, 0.11523438, 0.18359375};
 SUBICON_TEXCOOR_ARROW 	= {0.72460938, 0.78320313, 0.03710938, 0.10351563};
 
 local levelUpTexCoords = {
@@ -41,14 +42,7 @@ local levelUpTexCoords = {
 		textTint = {1, 0.7, 0.25},
 		gLineDelay = 1.5,
 	},
-	[LEVEL_UP_TYPE_BATTLE_PET] = {
-		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
-		tint = {1, 0.5, 0.25},
-		textTint = {1, 0.7, 0.25},
-		gLineDelay = 1.5,
-		subIcon = {0.72460938, 0.78320313, 0.03710938, 0.10351563},
-	},
-	[LEVEL_UP_TYPE_BATTLE_PET_CAPTURED] = {
+	[TOAST_PET_BATTLE_END] = {
 		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
 		tint = {1, 0.5, 0.25},
 		textTint = {1, 0.7, 0.25},
@@ -127,9 +121,6 @@ LEVEL_UP_TYPES = {
 				
 
 ------ HACKS BELOW		
- ------ HACKS BELOW		
- ------ HACKS BELOW
- 
  	["Teleports"] 			= {	spellID=109424	},
 	["PortalsHorde"]		= {	spellID=109400	},
 	["PortalsAlliance"]		= {	spellID=109401	},
@@ -138,35 +129,24 @@ LEVEL_UP_TYPES = {
  	["LockMount2"] 			= {	spellID=23161	},
  	["PaliMount1"] 			= {	spellID=34769	},
  	["PaliMount2"] 			= {	spellID=34767	},
- 	["PaliMountTauren1"] 			= {	spellID=69820	},
- 	["PaliMountTauren2"] 			= {	spellID=69826	},
- 	["PaliMountDraenei1"] 			= {	spellID=73629	},
- 	["PaliMountDraenei2"] 			= {	spellID=73630	},
+ 	["PaliMountTauren1"] 	= {	spellID=69820	},
+ 	["PaliMountTauren2"] 	= {	spellID=69826	},
+ 	["PaliMountDraenei1"] 	= {	spellID=73629	},
+ 	["PaliMountDraenei2"] 	= {	spellID=73630	},
  	
-	
-	
-	["Plate"] 			= {	spellID=750, feature=true},
-	["Mail"] 			= {	spellID=8737, feature=true	},
-	
-	
-	
-	
+	["Plate"]	 			= {	spellID=750, feature=true},
+	["Mail"] 				= {	spellID=8737, feature=true	},
 	
 	["TrackBeast"] 			= {	spellID=1494  },
-	["TrackHumanoid"] 			= {	spellID=19883  },
-	["TrackUndead"] 			= {	spellID=19884  },
-	["TrackHidden"] 			= {	spellID=19885  },
-	["TrackElemental"] 			= {	spellID=19880  },
-	["TrackDemons"] 			= {	spellID=19878 },
-	["TrackGiants"] 			= {	spellID=19882  },
-	["TrackDragonkin"] 			= {	spellID=19879  },
-	
- 
-
- ------ END HACKS
+	["TrackHumanoid"] 		= {	spellID=19883  },
+	["TrackUndead"] 		= {	spellID=19884  },
+	["TrackHidden"] 		= {	spellID=19885  },
+	["TrackElemental"] 		= {	spellID=19880  },
+	["TrackDemons"] 		= {	spellID=19878 },
+	["TrackGiants"] 		= {	spellID=19882  },
+	["TrackDragonkin"] 		= {	spellID=19879  },
+------ END HACKS
 }
-
-
 
 
 LEVEL_UP_CLASS_HACKS = {
@@ -181,20 +161,15 @@ LEVEL_UP_CLASS_HACKS = {
 								[24] = {"Teleports"},
 								[42] = {"PortalsAlliance"},
 							},
-
-
 	["WARLOCK"] 		= {
 							--  Level  = {unlock}
 								[20] = {"LockMount1"},
 								[40] = {"LockMount2"},
 							},
-
 	["SHAMAN"] 		= {
 							--  Level  = {unlock}
 								[40] = {"Mail"},
 							},
-
-
 	["HUNTER"] 		= {
 							--  Level  = {unlock}
 								[4] = {"TrackBeast"},
@@ -207,13 +182,10 @@ LEVEL_UP_CLASS_HACKS = {
 								[46] = {"TrackGiants"},
 								[52] = {"TrackDragonkin"},
 							},
-							
-
 	["WARRIOR"] 		= {
 							--  Level  = {unlock}
 								[40] = {"Plate"},
 							},
-							
 	["PALADIN"] 		= {
 							--  Level  = {unlock}
 								[20] = {"PaliMount1"},
@@ -236,9 +208,8 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self:RegisterEvent("UNIT_LEVEL");
-	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("SCENARIO_UPDATE");
-	self:RegisterEvent("PET_BATTLE_CAPTURED");
+	self:RegisterEvent("PET_BATTLE_CLOSE");
 	self.currSpell = 0;
 end
 
@@ -275,26 +246,9 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
 		LevelUpDisplay_OnShow(self);
-	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
-		if ( arg1 == 1 ) then
-			local _, activePetSlot = ...;
-			local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
-			local speciesID, customName, level, xp, maxXp, displayID, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
-			self.level = level;
-			self.icon = icon;
-			self.type = LEVEL_UP_TYPE_BATTLE_PET;
-			self.battlePetName = customName or name;
-			self:Show();
-			LevelUpDisplaySide:Hide();
-		end
-	elseif ( event == "PET_BATTLE_CAPTURED" ) then
-		if ( arg1 == 2 ) then
-			local activePlayer, activePetSlot = ...;
-			self.name = C_PetBattles.GetName(activePlayer, activePetSlot);
-			self.icon = C_PetBattles.GetIcon(activePlayer, activePetSlot);
-			self.type = LEVEL_UP_TYPE_BATTLE_PET_CAPTURED;
-			self:Show();
-		end
+	elseif ( event == "PET_BATTLE_CLOSE") then
+		self.type = TOAST_PET_BATTLE_END;
+		self:Show();
 	end
 end
 
@@ -302,18 +256,11 @@ function LevelUpDisplay_BuildCharacterList(self)
 	local name, icon = "","";
 	self.unlockList = {};
 
-
 	if LEVEL_UP_EVENTS[self.level] then
 		for _, unlockType in pairs(LEVEL_UP_EVENTS[self.level]) do
 			self.unlockList[#self.unlockList +1] = LEVEL_UP_TYPES[unlockType];
 		end
 	end
-	
-	
-	--if  self.level == GetNextTalentLevel(self.level-1)  then
-	--	self.unlockList[#self.unlockList +1] = 	LEVEL_UP_TYPES["TalentPoint"]
-	--end
-	
 	
 	local spells = {GetCurrentLevelSpells(self.level)};
 	for _,spell in pairs(spells) do		
@@ -413,6 +360,49 @@ function LevelUpDisplay_BuildGuildList(self)
 	self.currSpell = 1;
 end
 
+function LevelUpDisplay_BuildPetBattleList(self)
+	self.unlockList = {};
+	local battleResults = PetBattleFrame_GetBattleResults();
+	
+	self.winnerStr = PET_BATTLE_RESULT_LOSE;
+	
+	for _,message in pairs(battleResults) do
+		if message.type == END_OF_PET_BATTLE_RESULT then
+			self.winnerString = message.winner;
+		elseif message.type == END_OF_PET_BATTLE_CAPTURE then
+			table.insert(self.unlockList, 
+				{ 
+				entryType = "petcapture", 
+				text = BATTLE_PET_CAPTURED, 
+				subText = message.name, 
+				icon = message.icon
+				});
+		elseif message.type == END_OF_PET_BATTLE_PET_LEVEL_UP then
+			table.insert(self.unlockList, 
+				{ 
+				entryType = "petlevelup", 
+				text = format(PET_LEVEL_UP_REACHED, message.name), 
+				subText = format(LEVEL_GAINED,message.level), 
+				icon = message.icon, 
+				subIcon = SUBICON_TEXCOOR_ARROW,
+				});
+			local abilityID = PetBattleFrame_GetAbilityAtLevel(message.speciesID, message.level);
+			if (abilityID) then
+				local name, icon, typeEnum = C_PetJournal.GetPetAbilityInfo(abilityID);
+				table.insert(self.unlockList,
+					{
+					entryType = "spell",
+					text = name,
+					subText = LEVEL_UP_ABILITY,
+					icon = icon,
+					subIcon = nil,
+					});
+			end
+		end
+	end
+	
+	self.currSpell = 1;
+end
 
 function LevelUpDisplay_OnShow(self)
 	if ( not IsPlayerInWorld() ) then
@@ -437,35 +427,29 @@ function LevelUpDisplay_OnShow(self)
 				LevelUpDisplay:SetPoint("TOP", 0, -250);
 				playAnim = self.scenarioFrame.newStage;
 			end
-		elseif ( self.type == LEVEL_UP_TYPE_BATTLE_PET ) then
-			LevelUpDisplay_BuildBattlePetList(self);
-			self.battlePetLevelFrame.mainIcon:SetTexture(self.icon);
-			self.battlePetLevelFrame.battlePetReachedText:SetFormattedText(PET_LEVEL_UP_REACHED, self.battlePetName or BATTLE_PET_YOUR);
-			self.battlePetLevelFrame.battlePetLevelText:SetFormattedText(LEVEL_GAINED,self.level);
-			LevelUpDisplay:SetPoint("TOP", 0, -190);
-			playAnim = self.battlePetLevelFrame.battlePetLevelUp;
-		elseif ( self.type == LEVEL_UP_TYPE_BATTLE_PET_CAPTURED ) then
-			LevelUpDisplay_BuildBattlePetCapturedList(self);
-			self.battlePetCaptureFrame.mainIcon:SetTexture(self.icon);
-			self.battlePetCaptureFrame.battlePetReachedText:SetText(BATTLE_PET_CAPTURED);
-			self.battlePetCaptureFrame.battlePetLevelText:SetText(self.name);
-			LevelUpDisplay:SetPoint("TOP", 0, -190);
-			playAnim = self.battlePetCaptureFrame.battlePetLevelUp;
 		else
 			if ( self.type == LEVEL_UP_TYPE_CHARACTER ) then
 				LevelUpDisplay_BuildCharacterList(self);
 				self.levelFrame.reachedText:SetText(LEVEL_UP_YOU_REACHED)
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+				self.levelFrame.singleline:SetText("");
 			elseif ( self.type == LEVEL_UP_TYPE_PET ) then
 				LevelUpDisplay_BuildPetList(self);
 				local petName = UnitName("pet");
 				self.levelFrame.reachedText:SetFormattedText(PET_LEVEL_UP_REACHED, petName or "");
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+				self.levelFrame.singleline:SetText("");
 			elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
 				LevelUpDisplay_BuildGuildList(self);
 				local guildName = GetGuildInfo("player");
 				self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+				self.levelFrame.singleline:SetText("");
+			elseif ( self.type == TOAST_PET_BATTLE_END ) then
+				LevelUpDisplay_BuildPetBattleList(self);
+				self.levelFrame.reachedText:SetText("");
+				self.levelFrame.levelText:SetText("");
+				self.levelFrame.singleline:SetText(self.winnerString);
 			end
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.levelFrame.levelUp;
@@ -506,11 +490,40 @@ function LevelUpDisplay_AnimStep(self)
 	else
 		local spellInfo = self.unlockList[self.currSpell];
 		self.currSpell = self.currSpell+1;
-		self.spellFrame.name:SetText(spellInfo.text);
-		self.spellFrame.flavorText:SetText(spellInfo.subText);
-		self.spellFrame.icon:SetTexture(spellInfo.icon);
-		self.spellFrame.subIcon:SetTexCoord(unpack(spellInfo.subIcon));
-		self.spellFrame.showAnim:Play();
+
+		self.spellFrame.name:SetText("");
+		self.spellFrame.flavorText:SetText("");
+		self.spellFrame.upperwhite:SetText("");
+		self.spellFrame.bottomHuge:SetText("");
+		self.spellFrame.bottomGiant:SetText("");
+		self.spellFrame.subIcon:Hide();
+		self.spellFrame.subIconRight:Hide();
+		
+		if (spellInfo.entryType == "spell" or
+			spellInfo.entryType == "dungeon") then
+			self.spellFrame.name:SetText(spellInfo.text);
+			self.spellFrame.flavorText:SetText(spellInfo.subText);
+			self.spellFrame.icon:SetTexture(spellInfo.icon);
+			if (spellInfo.subIcon) then
+				self.spellFrame.subIcon:Show();
+				self.spellFrame.subIcon:SetTexCoord(unpack(spellInfo.subIcon));
+			end
+			self.spellFrame.showAnim:Play();
+		elseif (spellInfo.entryType == "petlevelup") then
+			if (spellInfo.subIcon) then
+				self.spellFrame.subIconRight:Show();
+				self.spellFrame.subIconRight:SetTexCoord(unpack(spellInfo.subIcon));
+			end
+			self.spellFrame.icon:SetTexture(spellInfo.icon);
+			self.spellFrame.upperwhite:SetText(spellInfo.text);
+			self.spellFrame.bottomGiant:SetText(spellInfo.subText);
+			self.spellFrame.showAnim:Play();
+		elseif (spellInfo.entryType == "petcapture") then
+			self.spellFrame.icon:SetTexture(spellInfo.icon);
+			self.spellFrame.upperwhite:SetText(spellInfo.text);
+			self.spellFrame.bottomHuge:SetText(spellInfo.subText);
+			self.spellFrame.showAnim:Play();
+		end
 	end
 end
 
@@ -648,7 +661,7 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 		local guildName = GetGuildInfo("player");
 		levelstring = format(GUILD_LEVEL_UP, guildName, level, level);
 		info = ChatTypeInfo["GUILD"];
-	elseif ( levelUpType == LEVEL_UP_TYPE_BATTLE_PET ) then
+	elseif ( levelUpType == CHAT_BATTLE_PET_LEVEL_UP ) then
 		LevelUpDisplay_BuildBattlePetList(chatLevelUP);
 		local petName, icon  = ...;
 		if (petName) then
@@ -661,7 +674,7 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 			levelstring = "";
 		end
 		info = ChatTypeInfo["SYSTEM"];
-	elseif ( levelUpType == LEVEL_UP_TYPE_BATTLE_PET_CAPTURED ) then
+	elseif ( levelUpType == CHAT_BATTLE_PET_CAPTURED ) then
 		LevelUpDisplay_BuildBattlePetCapturedList(chatLevelUP);
 		local activePlayer, activePetSlot = ...;
 		local petname = C_PetBattles.GetName(activePlayer, activePetSlot);

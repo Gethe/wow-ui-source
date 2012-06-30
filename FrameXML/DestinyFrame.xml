@@ -167,7 +167,7 @@ size=1024,1024
 					</Anchors>
 					<Color r="0.10" g="0.10" b="0.10"/>
 				</FontString>
-				<FontString name="foo" inherits="GameFontBlackMedium" text="HORDE_CHEER">
+				<FontString name="$parentHordeFinalText" inherits="GameFontBlackMedium" text="HORDE_CHEER">
 					<Size x="180" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentAllianceFinalText" relativePoint="RIGHT" x="124" y="0"/>

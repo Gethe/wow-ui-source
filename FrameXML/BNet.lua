@@ -65,7 +65,9 @@ function BNToastFrame_OnEvent(self, event, arg1)
 	if ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then	
 		BNToastFrame_AddToast(BN_TOAST_TYPE_ONLINE, arg1);
 	elseif ( event == "BN_FRIEND_ACCOUNT_OFFLINE" ) then
-		BNToastFrame_AddToast(BN_TOAST_TYPE_OFFLINE, arg1);
+		if ( BNet_ShouldProcessOfflineEvents() ) then
+			BNToastFrame_AddToast(BN_TOAST_TYPE_OFFLINE, arg1);
+		end
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		if ( arg1 ) then
 			BNToastFrame_AddToast(BN_TOAST_TYPE_BROADCAST, arg1);
@@ -462,5 +464,29 @@ function TimeAlert_OnUpdate(self, elapsed)
 	end
 end
 
-
-
+function BNet_ShouldProcessOfflineEvents()
+	-- can process if we're not logging out
+	if ( not IsLoggingOut() ) then
+		return true;
+	end
+	-- if the logout timer is up, we should only process if there is more than 1 second left
+	local frameName = StaticPopup_Visible("CAMP");
+	if ( frameName ) then
+		if ( _G[frameName].timeleft ) > 1 then
+			return true;
+		else
+			return false;
+		end
+	end
+	-- ugh, why are there 2 of these?
+	frameName = StaticPopup_Visible("QUIT");
+	if ( frameName ) then
+		if ( _G[frameName].timeleft ) > 1 then
+			return true;
+		else
+			return false;
+		end
+	end
+	-- no logout timers up, must be instant logout
+	return false;
+end

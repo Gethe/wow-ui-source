@@ -587,6 +587,10 @@ function PetJournalDragButton_OnClick(self, button)
 end
 
 function PetJournalDragButton_OnDragStart(self)
+	if (not self:GetParent().petID or self:GetParent().petID == 0) then
+		return;
+	end
+	
 	C_PetJournal.PickupPet(self:GetParent().petID, PetJournal.isWild);
 
 	for i=1,MAX_ACTIVE_PETS do
@@ -887,6 +891,7 @@ function PetOptionsMenu_Init(self, level)
 	end
 	
 	info.text = CANCEL
+	info.func = nil
 	UIDropDownMenu_AddButton(info, level)
 end
 

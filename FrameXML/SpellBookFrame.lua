@@ -217,21 +217,26 @@ function SpellBookFrame_Update()
 		SpellBookFrame.bookType = _G["SpellBookFrameTabButton"..tabIndex-1].bookType;
 	end
 	
-	-- core abilities is always shown
-	local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
-	nextTab:Show();
-	nextTab.bookType = BOOKTYPE_CORE_ABILITIES;
-	nextTab.binding = "TOGGLECOREABILITIESBOOK";
-	nextTab:SetText(SpellBookInfo[BOOKTYPE_CORE_ABILITIES].title);
-	tabIndex = tabIndex+1;
+	local level = UnitLevel("player");
 	
-	-- What's Changed is always shown
-	local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
-	nextTab:Show();
-	nextTab.bookType = BOOKTYPE_WHAT_HAS_CHANGED;
-	nextTab.binding = "TOGGLEWHATHASCHANGEDBOOK";
-	nextTab:SetText(SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED].title);
+	if ( level >= 20 ) then
+		-- core abilities is always shown
+		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
+		nextTab:Show();
+		nextTab.bookType = BOOKTYPE_CORE_ABILITIES;
+		nextTab.binding = "TOGGLECOREABILITIESBOOK";
+		nextTab:SetText(SpellBookInfo[BOOKTYPE_CORE_ABILITIES].title);
+		tabIndex = tabIndex+1;
+	end
 	
+	if ( level >= 40 ) then
+		-- What's Changed is always shown
+		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
+		nextTab:Show();
+		nextTab.bookType = BOOKTYPE_WHAT_HAS_CHANGED;
+		nextTab.binding = "TOGGLEWHATHASCHANGEDBOOK";
+		nextTab:SetText(SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED].title);
+	end
 	
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
@@ -1140,8 +1145,8 @@ SPEC_CORE_ABILITY_DISPLAY[65] = {	20473,	19750,	635,	82326,	85673,	53563,	}; --H
 SPEC_CORE_ABILITY_DISPLAY[66] = {	31935,	20271,	35395,	26573,	119072,	53600,	}; --Protection
 SPEC_CORE_ABILITY_DISPLAY[70] = {	20271,	35395,	879,	84963,	85256,	24275,	}; --Retribution
 
-SPEC_CORE_ABILITY_DISPLAY[256] = {	33076,	47540,	2061,	2050,	109964,	17		}; --Discipline
-SPEC_CORE_ABILITY_DISPLAY[257] = {	33076,	139,	2061,	2050,	2060,			}; --Holy
+SPEC_CORE_ABILITY_DISPLAY[256] = {	33076,	47540,	2061,	2050,	2060,	17		}; --Discipline
+SPEC_CORE_ABILITY_DISPLAY[257] = {	33076,	139,	2061,	2050,	2060,	126172	}; --Holy
 SPEC_CORE_ABILITY_DISPLAY[258] = {	589,	34914,	8092,	15407,	2944,	32379,	}; --Shadow
 
 SPEC_CORE_ABILITY_DISPLAY[259] = {	1329,	1943,	5171,	32645,	111240,	}; --Assassination
@@ -1293,26 +1298,39 @@ function CoreAbility_OnEnter(self)
 end
 
 -- *************************************************************************************
+WHAT_HAS_CHANGED_TITLE = {}
+WHAT_HAS_CHANGED_TITLE["HUNTER"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_HUNTER_2,		WHC_TITLE_HUNTER_3,		WHC_TITLE_HUNTER_4};
+WHAT_HAS_CHANGED_TITLE["WARLOCK"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_WARLOCK_2,	WHC_TITLE_WARLOCK_3,	WHC_TITLE_WARLOCK_4};
+WHAT_HAS_CHANGED_TITLE["PRIEST"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_PRIEST_2,		WHC_TITLE_PRIEST_3,		WHC_TITLE_PRIEST_4};
+WHAT_HAS_CHANGED_TITLE["PALADIN"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_PALADIN_2		};
+WHAT_HAS_CHANGED_TITLE["MAGE"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_MAGE_2,		WHC_TITLE_MAGE_3,		WHC_TITLE_MAGE_4};
+WHAT_HAS_CHANGED_TITLE["ROGUE"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_ROGUE_2		};
+WHAT_HAS_CHANGED_TITLE["DRUID"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_DRUID_2		};
+WHAT_HAS_CHANGED_TITLE["SHAMAN"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_SHAMAN_2		};
+WHAT_HAS_CHANGED_TITLE["WARRIOR"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_WARRIOR_2,	WHC_TITLE_WARRIOR_3,	WHC_TITLE_WARRIOR_4};
+WHAT_HAS_CHANGED_TITLE["MONK"]		= { WHC_TITLE_MONK_1		};
+WHAT_HAS_CHANGED_TITLE["DEATHKNIGHT"] = { WHC_TITLE_WARRIOR_1,	WHC_TITLE_DK_2			};
+
 
 WHAT_HAS_CHANGED_DISPLAY = {}
-WHAT_HAS_CHANGED_DISPLAY["HUNTER"]	= { WHC_WARRIOR_1,  WHC_HUNTER_2, WHC_HUNTER_3, WHC_HUNTER_4};
-WHAT_HAS_CHANGED_DISPLAY["WARLOCK"]	= { WHC_WARRIOR_1, WHC_WARLOCK_2, WHC_WARLOCK_3, WHC_WARLOCK_4};
-WHAT_HAS_CHANGED_DISPLAY["PRIEST"]	= { WHC_WARRIOR_1, WHC_PRIEST_2, WHC_PRIEST_3, WHC_PRIEST_4};
-WHAT_HAS_CHANGED_DISPLAY["PALADIN"]	= { WHC_WARRIOR_1, WHC_PALADIN_2 };
-WHAT_HAS_CHANGED_DISPLAY["MAGE"]	= { WHC_WARRIOR_1, WHC_MAGE_2, WHC_MAGE_3, WHC_MAGE_4};
-WHAT_HAS_CHANGED_DISPLAY["ROGUE"]	= { WHC_WARRIOR_1, WHC_ROGUE_2};
-WHAT_HAS_CHANGED_DISPLAY["DRUID"]	= { WHC_WARRIOR_1, WHC_DRUID_2};
-WHAT_HAS_CHANGED_DISPLAY["SHAMAN"]	= { WHC_WARRIOR_1, WHC_SHAMAN_2};
-WHAT_HAS_CHANGED_DISPLAY["WARRIOR"]	= { WHC_WARRIOR_1, WHC_WARRIOR_2, WHC_WARRIOR_3, WHC_WARRIOR_4 };
-WHAT_HAS_CHANGED_DISPLAY["MONK"]	= { WHC_MONK_1 };
-WHAT_HAS_CHANGED_DISPLAY["DEATHKNIGHT"] = { WHC_WARRIOR_1, WHC_DK_2};
+WHAT_HAS_CHANGED_DISPLAY["HUNTER"]	= { WHC_WARRIOR_1,	WHC_HUNTER_2,	WHC_HUNTER_3,	WHC_HUNTER_4	};
+WHAT_HAS_CHANGED_DISPLAY["WARLOCK"]	= { WHC_WARRIOR_1,	WHC_WARLOCK_2,	WHC_WARLOCK_3,	WHC_WARLOCK_4	};
+WHAT_HAS_CHANGED_DISPLAY["PRIEST"]	= { WHC_WARRIOR_1,	WHC_PRIEST_2,	WHC_PRIEST_3,	WHC_PRIEST_4	};
+WHAT_HAS_CHANGED_DISPLAY["PALADIN"]	= { WHC_WARRIOR_1,	WHC_PALADIN_2	};
+WHAT_HAS_CHANGED_DISPLAY["MAGE"]	= { WHC_WARRIOR_1,	WHC_MAGE_2,		WHC_MAGE_3,		WHC_MAGE_4 };
+WHAT_HAS_CHANGED_DISPLAY["ROGUE"]	= { WHC_WARRIOR_1,	WHC_ROGUE_2		};
+WHAT_HAS_CHANGED_DISPLAY["DRUID"]	= { WHC_WARRIOR_1,	WHC_DRUID_2		};
+WHAT_HAS_CHANGED_DISPLAY["SHAMAN"]	= { WHC_WARRIOR_1,	WHC_SHAMAN_2	};
+WHAT_HAS_CHANGED_DISPLAY["WARRIOR"]	= { WHC_WARRIOR_1,	WHC_WARRIOR_2,	WHC_WARRIOR_3,	WHC_WARRIOR_4 };
+WHAT_HAS_CHANGED_DISPLAY["MONK"]	= { WHC_MONK_1		};
+WHAT_HAS_CHANGED_DISPLAY["DEATHKNIGHT"] = { WHC_WARRIOR_1,	WHC_DK_2	};
 
 function SpellBook_GetWhatChangedItem(index)
 	local frame = SpellBookWhatHasChanged.ChangedItems[index];
 	if ( not frame ) then
 		SpellBookWhatHasChanged.ChangedItems[index] = CreateFrame("SimpleHTML", nil, SpellBookWhatHasChanged, "WhatHasChangedEntryTemplate");
 		frame = SpellBookWhatHasChanged.ChangedItems[index];
-		frame:SetPoint("TOP", SpellBookWhatHasChanged.ChangedItems[index-1], "BOTTOM", 0, -10);
+		frame:SetPoint("TOP", SpellBookWhatHasChanged.ChangedItems[index-1], "BOTTOM", 0, -80);
 	end
 	return frame;
 end
@@ -1320,6 +1338,7 @@ end
 function SpellBook_UpdateWhatHasChangedTab()
 	local displayName, class = UnitClass("player");
 	local changedList = WHAT_HAS_CHANGED_DISPLAY[class];
+	local changedTitle = WHAT_HAS_CHANGED_TITLE[class];
 
 	SpellBookWhatHasChanged.ClassName:SetText(displayName);
 
@@ -1327,12 +1346,15 @@ function SpellBook_UpdateWhatHasChangedTab()
 		for i=1, #changedList do
 			local frame = SpellBook_GetWhatChangedItem(i);
 			frame.Number:SetText(i);
+			frame.Title:SetText(changedTitle[i]);
 			frame:SetText(changedList[i], true);
 		end
 	end
 	for i = #changedList + 1, #SpellBookWhatHasChanged.ChangedItems do
 		SpellBook_GetWhatChangedItem(i):Hide();
 	end
+	SpellBookPage1:SetDesaturated(false);
+	SpellBookPage2:SetDesaturated(false);
 end
 
 

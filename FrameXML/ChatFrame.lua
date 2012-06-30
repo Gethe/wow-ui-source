@@ -2818,12 +2818,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		if (arg1 == 1 and activePetSlot > 0) then
 			local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
 			local speciesID, customName, level, xp, maxXp, displayID, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
-			LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_BATTLE_PET, (customName or name), icon);
+			LevelUpDisplay_ChatPrint(self, level, CHAT_BATTLE_PET_LEVEL_UP, (customName or name), icon);
 		end
 	elseif ( event == "PET_BATTLE_CAPTURED" ) then
 		local activePlayer, activePetSlot = ...;
 		if (activePlayer == 2 and activePetSlot > 0) then
-			LevelUpDisplay_ChatPrint(self, 0, LEVEL_UP_TYPE_BATTLE_PET_CAPTURED, activePlayer, activePetSlot);
+			LevelUpDisplay_ChatPrint(self, 0, CHAT_BATTLE_PET_CAPTURED, activePlayer, activePetSlot);
 		end
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;
@@ -3097,7 +3097,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			local channelLink = format(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
 			local message = format(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);
 			self:AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
-		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
+		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then	
+			if ( arg1 == "FRIEND_OFFLINE" and not BNet_ShouldProcessOfflineEvents() ) then
+				return true;
+			end
 			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
 			local message;
 			if ( arg1 == "FRIEND_REQUEST" ) then
@@ -3110,7 +3113,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(arg13);
 				if (toonName and toonName ~= "" and client and client ~= "") then
 					local toonNameText = toonName;
-					
 					if ( client == BNET_CLIENT_WOW ) then
 						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-WOW:14|t"..toonNameText;
 					elseif ( client == BNET_CLIENT_SC2 ) then

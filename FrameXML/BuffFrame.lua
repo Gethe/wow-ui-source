@@ -38,6 +38,7 @@ function BuffFrame_OnLoad(self)
 	self.BuffAlphaValue = 1;
 	self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self.numEnchants = 0;
 	self.bottomEdgeExtent = 0;
 end
@@ -48,8 +49,9 @@ function BuffFrame_OnEvent(self, event, ...)
 		if ( unit == PlayerFrame.unit ) then
 			BuffFrame_Update();
 		end
-	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" ) then
 		if ShouldShowConsolidatedBuffFrame() then
+			BuffFrame_Update();
 			ConsolidatedBuffs:Show();
 		else
 			ConsolidatedBuffs:Hide();
@@ -111,6 +113,8 @@ end
 
 function RaidBuffTray_Update()
 	local numBufs = 0
+	local buffmask, buffcount = GetRaidBuffInfo();
+	mask = 1;
 	for i=1,NUM_LE_RAID_BUFF_TYPES do
 		local name, rank, texture, duration, expiration, spellId, slot = GetRaidBuffTrayAuraInfo(i);
 		local buff = ConsolidatedBuffsTooltip["Buff"..i];
@@ -124,12 +128,16 @@ function RaidBuffTray_Update()
 			buff.index = nil;
 			buff.name = nil;
 			buff.icon:SetTexture("Interface\\Common\\buff-bg");
-			buff.label:SetFontObject(GameFontDisableSmall);			
+			if (bit.band(buffmask, mask ) > 0) then
+				buff.label:SetFontObject(GameFontHighlightSmall);			
+			else
+				buff.label:SetFontObject(GameFontDisableSmall);			
+			end
 			buff.label:SetText(buff.labelString);
 		end
+		mask = bit.lshift(mask, 1);
 	end
-	
-	ConsolidatedBuffsCount:SetText(numBufs.."/"..NUM_LE_RAID_BUFF_TYPES);
+	ConsolidatedBuffsCount:SetText(numBufs.."/"..buffcount);
 end
 
 function RaidTray_Buff_OnUpdate(self)

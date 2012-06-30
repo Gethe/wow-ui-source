@@ -1100,7 +1100,6 @@ function WorldStateChallengeMode_HideTimer(timerID)
 end
 
 function WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime)
-	local medalIcon = self.medalIcon;
 	-- find best medal for current time
 	local prevMedalTime = 0;
 	for i = #self.medalTimes, 1, -1 do
@@ -1108,7 +1107,11 @@ function WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime)
 		if ( elapsedTime < currentMedalTime ) then
 			self.statusBar:SetMinMaxValues(0, currentMedalTime - prevMedalTime);
 			self.statusBar.medalTime = currentMedalTime;
-			SetChallengeModeMedalTexture(medalIcon, i, 48, 5, -2);
+			if ( CHALLENGE_MEDAL_TEXTURES[i] ) then
+				self.medalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[i]);
+				self.medalIcon:Show();
+			end
+			self.noMedal:Hide();
 			return;
 		else
 			prevMedalTime = currentMedalTime;
@@ -1118,7 +1121,8 @@ function WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime)
 	self.statusBar.timeLeft:SetText(CHALLENGES_TIMER_NO_MEDAL);
 	self.statusBar:SetValue(0);
 	self.statusBar.medalTime = nil;
-	SetChallengeModeMedalTexture(medalIcon, nil, 48, 5, -2);
+	self.noMedal:Show();
+	self.medalIcon:Hide();
 end
 
 function WorldStateChallengeModeTimer_UpdateValues(self, elapsedTime)

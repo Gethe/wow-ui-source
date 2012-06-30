@@ -26,6 +26,13 @@ function ChallengesFrame_OnLoad(self)
 		button.mapID = mapID;
 		lastButton = button;
 	end
+	-- reward row colors
+	self.RewardRow1.Bg:SetTexture(0.859, 0.545, 0.204);				-- bronze
+	self.RewardRow1.MedalName:SetTextColor(0.859, 0.545, 0.204);
+	self.RewardRow2.Bg:SetTexture(0.780, 0.722, 0.741);				-- silver
+	self.RewardRow2.MedalName:SetTextColor(0.780, 0.722, 0.741);
+	self.RewardRow3.Bg:SetTexture(0.945, 0.882, 0.337);				-- gold
+	self.RewardRow3.MedalName:SetTextColor(0.945, 0.882, 0.337);
 end
 
 function ChallengesFrame_OnEvent(self, event)
@@ -38,11 +45,17 @@ end
 
 function ChallengesFrame_Update(self, mapID)
 	mapID = mapID or self.selectedMapID or ChallengesFrameDungeonButton1.mapID;
-	local times = { };
 	for i = 1, self.numMaps do
 		local button = self["button"..i];
 		local lastTime, bestTime, medal = GetChallengeModeMapPlayerStats(button.id);
-		SetChallengeModeMedalTexture(button.medal, medal, 35, 7, 0);
+		if ( CHALLENGE_MEDAL_TEXTURES_SMALL[medal] ) then
+			button.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES_SMALL[medal]);
+			button.MedalIcon:Show();
+			button.NoMedal:Hide();
+		else
+			button.MedalIcon:Hide();
+			button.NoMedal:Show();
+		end
 		if ( button.mapID == mapID ) then
 			button.selectedTex:Show();
 			button.text:SetFontObject("GameFontHighlight");
@@ -50,75 +63,56 @@ function ChallengesFrame_Update(self, mapID)
 			-- update selection details
 			-- TODO: update dungeon background
 			local details = self.details;
-			details.mapName:SetText(button.text:GetText());
-			if ( not medal or medal == CHALLENGE_MEDAL_NONE ) then
-				details.noMedal:Show();
-				details.bestMedal:Hide();
+			details.MapName:SetText(button.text:GetText());
+			if ( CHALLENGE_MEDAL_TEXTURES[medal] ) then
+				details.NoMedalLabel:Hide();
+				details.BestMedal:Show();
+				details.BestMedal:SetTexture(CHALLENGE_MEDAL_TEXTURES[medal]);
 			else
-				details.noMedal:Hide();
-				details.bestMedal:Show();
-				SetChallengeModeMedalTexture(details.bestMedal, medal);
+				details.NoMedalLabel:Show();
+				details.BestMedal:Hide();
 			end
 			if ( lastTime ) then
 				bestTime = ceil(bestTime / 1000);
-				details.recordTime:SetText(GetTimeStringFromSeconds(bestTime));
-				details.recordTime:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				details.RecordTime:SetText(GetTimeStringFromSeconds(bestTime));
+				details.RecordTime:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				lastTime = ceil(lastTime / 1000);
-				details.lastRunTime:SetText(GetTimeStringFromSeconds(lastTime));
-				details.lastRunTime:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				details.LastRunTime:SetText(GetTimeStringFromSeconds(lastTime));
+				details.LastRunTime:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			else
-				details.recordTime:SetText(CHALLENGES_NO_TIME);
-				details.recordTime:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-				details.lastRunTime:SetText(CHALLENGES_NO_TIME);
-				details.lastRunTime:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				details.RecordTime:SetText(CHALLENGES_NO_TIME);
+				details.RecordTime:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				details.LastRunTime:SetText(CHALLENGES_NO_TIME);
+				details.LastRunTime:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			end
-			times = { GetChallengeModeMapTimes(mapID) };
-			for i = 1, NUM_CHALLENGE_MEDALS do
-				details["time"..i]:SetText(GetTimeStringFromSeconds(times[i]));
-				if ( medal and medal >= i ) then
-					details["medal"..i]:SetAlpha(1);
-					details["time"..i]:SetFontObject("GameFontHighlight");
-				else
-					details["medal"..i]:SetAlpha(0.5);
-					details["time"..i]:SetFontObject("GameFontDisable");
-				end
-			end
-			-- rewards
+			
+			local times = { GetChallengeModeMapTimes(mapID) };
 			local rewardRowIndex = 0;
-			for medalIndex = NUM_CHALLENGE_MEDALS, 1, -1 do
-				local numRewards = GetNumChallengeMapRewards(mapID, medalIndex);
-				-- only do work if there are rewards for a medal
-				if ( numRewards > 0 ) then
-					-- show and set the medal
-					rewardRowIndex = rewardRowIndex + 1;
-					local rewardsRow = ChallengesFrame["rewardRow"..rewardRowIndex];
-					rewardsRow:Show();
-					SetChallengeModeMedalTexture(rewardsRow.medalIcon, medalIndex);
-					-- go through the rewards
-					for rewardIndex = 1, NUM_REWARDS_PER_MEDAL do
-						local itemID, itemName, iconTexture, quantity, isCurrency = GetChallengeMapRewardInfo(mapID, medalIndex, rewardIndex);
-						local rewardButton = rewardsRow["item"..rewardIndex];
-						if ( itemID ) then
-							-- set the reward and show the reward button
-							rewardButton:Show();
-							rewardButton.name:SetText(itemName);
-							rewardButton.icon:SetTexture(iconTexture);
-							if ( quantity > 1 ) then
-								rewardButton.count:SetText(quantity);
-							else
-								rewardButton.count:SetText();
-							end
-							rewardButton.itemID = itemID;
-							rewardButton.isCurrency = isCurrency;
+			for medal = NUM_CHALLENGE_MEDALS, 1, -1 do
+				local rewardsRow = ChallengesFrame["RewardRow"..medal];
+				rewardsRow.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES_SMALL[medal]);
+				rewardsRow.MedalName:SetText(_G["CHALLENGE_MODE_MEDAL"..medal]);
+				rewardsRow.TimeLimit:SetText(GetTimeStringFromSeconds(times[medal]));
+				-- go through the rewards
+				-- want rewards to be right-justified
+				local rewardIndexOffset = GetNumChallengeMapRewards(mapID, medal) - NUM_REWARDS_PER_MEDAL;
+				for rewardIndex = 1, NUM_REWARDS_PER_MEDAL do
+					local itemID, itemName, iconTexture, quantity, isCurrency = GetChallengeMapRewardInfo(mapID, medal, rewardIndex + rewardIndexOffset);
+					local rewardButton = rewardsRow["Reward"..rewardIndex];
+					if ( itemID ) then
+						rewardButton:Show();
+						rewardButton.Icon:SetTexture(iconTexture);
+						if ( quantity > 1 ) then
+							rewardButton.Count:SetText(quantity);
 						else
-							rewardButton:Hide();
+							rewardButton.Count:SetText();
 						end
+						rewardButton.itemID = itemID;
+						rewardButton.isCurrency = isCurrency;
+					else
+						rewardButton:Hide();
 					end
 				end
-			end
-			-- hide entire rows of unused rewards
-			for row = rewardRowIndex + 1, NUM_CHALLENGE_MEDALS do
-				ChallengesFrame["rewardRow"..row]:Hide();
 			end
 		else
 			button.selectedTex:Hide();

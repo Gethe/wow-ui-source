@@ -10,6 +10,8 @@ WATCHFRAME_ITEM_WIDTH = 33;
 local DASH_NONE = 0;
 local DASH_SHOW = 1;
 local DASH_HIDE = 2;
+local DASH_COMBAT = 3;
+local DASH_CHECK = 4;
 local DASH_WIDTH;
 local IS_HEADER = true;
 
@@ -678,6 +680,12 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		line.dash:SetText(QUEST_DASH);
 		line.dash:Hide();
 		usedWidth = DASH_WIDTH;
+	elseif ( dash == DASH_COMBAT ) then
+		line.dash:SetText("|TInterface\\Scenarios\\ScenarioIcon-Combat:16:16:0:1|t");
+		usedWidth = 16;
+	elseif ( dash == DASH_CHECK ) then
+		line.dash:SetText("|TInterface\\Scenarios\\ScenarioIcon-Check:16:16:0:1|t");
+		usedWidth = 16;
 	end	
 	-- multiple lines
 	if ( hasItem and WATCHFRAME_SETLINES_NUMLINES < 2 ) then
@@ -1779,23 +1787,48 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 		WatchFrameScenario_SetProgressDots(currentStage, numStages);
 		-- criteria info
 		local contentHeight = SCENARIO_POPUP_BASE_HEIGHT;
+		local firstLine = true;
+		local nextCompleteAnchor;
+		local firstCompleteAnchor;
 		for i = 1, numCriteria do
 			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID = C_Scenario.GetCriteriaInfo(i);
+			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
+			local line = WatchFrame_GetScenarioLine();
 			if ( not criteriaCompleted ) then
-				criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-				local line = WatchFrame_GetScenarioLine();
-				if ( i == 1 ) then
-					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - 6, not IS_HEADER, criteriaString, DASH_SHOW);
+				if ( firstLine ) then
+					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - 6, not IS_HEADER, criteriaString, DASH_COMBAT);
 					line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
 					line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
+					firstLine = false;
 				else
-					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, DASH_SHOW);
+					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, DASH_COMBAT);
 				end
-				line:Show();
-				contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING;
 				nextAnchor = line;
+			else
+				WatchFrame_SetLine(line, nextCompleteAnchor, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, criteriaString, DASH_CHECK);
+				line.text:SetTextColor(0.6, 0.6, 0.6);
+				if ( not firstCompleteAnchor ) then
+					firstCompleteAnchor = line;
+				end
+				nextCompleteAnchor = line;
 			end
+			line:Show();
+			contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING;
 		end
+		-- reanchor completed lines
+		if ( firstCompleteAnchor ) then
+			-- anchor first complete line to last incomplete line
+			local yOffset = WATCHFRAMELINES_FONTSPACING;
+			if ( firstLine ) then
+				yOffset = yOffset - 6;
+			end
+			firstCompleteAnchor:SetPoint("TOP", nextAnchor, "BOTTOM", 0, yOffset);
+			firstCompleteAnchor:SetPoint("RIGHT", nextAnchor, "RIGHT", 0, 0);
+			firstCompleteAnchor:SetPoint("LEFT", nextAnchor, "LEFT", 0, 0);
+			-- update what the last anchor frame is
+			nextAnchor = nextCompleteAnchor;
+		end
+
 		WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].height = contentHeight;
 		WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].scrollStart = contentHeight;
 		-- slide in only if new stage
