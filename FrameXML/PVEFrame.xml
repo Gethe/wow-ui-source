@@ -50,7 +50,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PVEFrame" inherits="PortraitFrameTemplate" enableMouse="true" parent="UIParent" hidden="true">
+	<Frame name="PVEFrame" inherits="PortraitFrameTemplate" enableMouse="true" parent="UIParent" hidden="true" toplevel="true">
 		<Size x="563" y="428"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="100" y="-84"/>
@@ -170,7 +170,7 @@
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>			
-			<Frame name="GroupFinderFrame" setAllPoints="true">
+			<Frame name="GroupFinderFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
 					<Button name="$parentGroupButton1" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton1" id="1">
 						<Anchors>

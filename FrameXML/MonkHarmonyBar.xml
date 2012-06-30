@@ -69,6 +69,17 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnEnter>
+				GameTooltip_SetDefaultAnchor(GameTooltip, self);
+				GameTooltip:SetText(CHI_POWER, 1, 1, 1);
+				GameTooltip:AddLine(CHI_TOOLTIP, nil, nil, nil, true);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
 	</Frame>
   
   

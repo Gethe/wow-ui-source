@@ -557,22 +557,20 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentPhasingIcon" parentKey="phasingIcon" forceAlpha="true" hidden="true">
+			<Frame name="$parentNotPresentIcon" parentKey="notPresentIcon" forceAlpha="true" hidden="true">
 				<Size x="25" y="25"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-7" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\TargetingFrame\UI-PhasingIcon" setAllPoints="true">
-							<TexCoords left="0.15625" right="0.84375" top="0.15625" bottom="0.84375"/>
-						</Texture>
+						<Texture parentKey="texture" setAllPoints="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(PARTY_PHASED_MESSAGE, nil, nil, nil, nil, true);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -632,7 +630,7 @@
 			</OnLoad>
 			<OnShow>
 				self:SetFrameLevel(2);
-				PartyMemberFrame_UpdatePhasingDisplay(self);
+				PartyMemberFrame_UpdateNotPresentIcon(self);
 			</OnShow>
 			<OnEvent>
 				PartyMemberFrame_OnEvent(self, event, ...);

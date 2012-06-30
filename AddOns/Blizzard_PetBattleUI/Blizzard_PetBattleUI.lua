@@ -22,8 +22,6 @@ PET_BATTLE_WEATHER_TEXTURES = {
 	[235] = "Interface\\PetBattles\\Weather-Rain",
 };
 
-local endOfBattleMessages = {};
-
 --------------------------------------------
 -------------Pet Battle Frame---------------
 --------------------------------------------
@@ -44,11 +42,8 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE");
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
 
-	-- End of battle events:
+	-- End of battle event:
 	self:RegisterEvent("PET_BATTLE_CLOSE");
-	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
-	self:RegisterEvent("PET_BATTLE_CAPTURED");
-	self:RegisterEvent("PET_BATTLE_FINAL_ROUND");
 
 	-- Other events:
 	self:RegisterEvent("UPDATE_BINDINGS");
@@ -65,27 +60,6 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdateAllActionButtons(self);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
-	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
-		local activePlayer, activePetSlot = ...;
-		if ( activePlayer == 1 ) then
-			local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
-			local speciesID, customName, petLevel, xp, maxXp, displayID, name, petIcon = C_PetJournal.GetPetInfoByPetID(petID);
-			table.insert(endOfBattleMessages, {type=END_OF_PET_BATTLE_PET_LEVEL_UP, name = customName or name, level = petLevel, icon = petIcon, speciesID = speciesID});
-		end
-	elseif ( event == "PET_BATTLE_CAPTURED") then
-		local fromPlayer, activePetSlot = ...;
-		if (fromPlayer == 2) then
-			local petName = C_PetBattles.GetName(fromPlayer, activePetSlot);
-			local petIcon = C_PetBattles.GetIcon(fromPlayer, activePetSlot);
-			table.insert(endOfBattleMessages, {type=END_OF_PET_BATTLE_CAPTURE, name = petName, icon = petIcon});
-		end
-	elseif ( event == "PET_BATTLE_FINAL_ROUND") then
-		local str = PET_BATTLE_RESULT_LOSE;
-		local winningPlayer = ...;
-		if ( winningPlayer == 1 ) then
-			str = PET_BATTLE_RESULT_WIN;
-		end;
-		table.insert(endOfBattleMessages, 1, {type=END_OF_PET_BATTLE_RESULT, winner=str});
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	end
@@ -262,6 +236,7 @@ end
 
 function PetBattleFrame_Remove(self)
 	ActionButton_HideOverlayGlow(PetBattleFrame.BottomFrame.CatchButton);
+	PetBattleFrame.BottomFrame.CatchButton.playedSound = false;
 	self:Hide();
 	RemoveFrameLock("PETBATTLES");
 end
@@ -324,10 +299,6 @@ end
 
 function PetBattleCatchButton_OnClick(self)
 	C_PetBattles.UseTrap();
-end
-
-function PetBattleFrame_GetBattleResults()
-	return endOfBattleMessages;
 end
 
 function PetBattleFrame_GetAbilityAtLevel(speciesID, targetLevel)
@@ -519,9 +490,18 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
 		end
-		if ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
-			PlaySoundKitID(28814);
+	end
+
+	if ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
+		if ( usable ) then
+			if ( not self.playedSound ) then
+				PlaySoundKitID(28814);
+				self.playedSound = true;
+			end
 			ActionButton_ShowOverlayGlow(self);
+		else
+			self.playedSound = false;
+			ActionButton_HideOverlayGlow(self);
 		end
 	end
 end
@@ -537,7 +517,7 @@ end
 
 function PetBattleAbilityButton_UpdateIcons(self)
 	local activePet = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
+	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, activePet, self:GetID());
 	if ( not icon ) then
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark";
 	end
@@ -555,14 +535,14 @@ function PetBattleAbilityButton_UpdateIcons(self)
 	local enemyType = C_PetBattles.GetPetType(LE_BATTLE_PET_ENEMY, enemyPetSlot);
 	local modifier = C_PetBattles.GetAttackModifier(petType, enemyType);
 
-	if (modifier > 1) then
+	if ( noStrongWeakHints or modifier == 1 ) then
+		self.BetterIcon:Hide();
+	elseif (modifier > 1) then
 		self.BetterIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Strong");
 		self.BetterIcon:Show();
 	elseif (modifier < 1) then
 		self.BetterIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Weak");
 		self.BetterIcon:Show();
-	else
-		self.BetterIcon:Hide();
 	end
 end
 
@@ -601,6 +581,21 @@ function PetBattleUnitFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_AURA_APPLIED");
 	self:RegisterEvent("PET_BATTLE_AURA_CANCELED");
 	self:RegisterEvent("PET_BATTLE_AURA_CHANGED");
+end
+
+function PetBattleUnitFrame_OnClick(self, button)
+	if ( button == "RightButton" ) then
+		PetBattleUnitFrame_ShowDropdown(self);
+	end
+end
+
+function PetBattleUnitFrame_ShowDropdown(self)
+	HideDropDownMenu(1);		
+	PetBattleUnitFrameDropDown.initialize = PetBattleUnitFrameDropDown_Initialize;
+	PetBattleUnitFrameDropDown.displayMode = "MENU";
+	local name, speciesName = C_PetBattles.GetName(LE_BATTLE_PET_ENEMY, lastSelectedPetIndex);
+	PetBattleUnitFrameDropDown.name = name;	
+	ToggleDropDownMenu(1, nil, PetBattleUnitFrameDropDown, "cursor");
 end
 
 function PetBattleUnitFrame_OnEvent(self, event, ...)
@@ -732,7 +727,7 @@ function PetBattleUnitFrame_UpdateHealthInstant(self)
 		else
 			self.ActualHealthBar:Show();
 		end
-		self.ActualHealthBar:SetWidth((health / maxHealth) * self.healthBarWidth);
+		self.ActualHealthBar:SetWidth((health / max(maxHealth,1)) * self.healthBarWidth);
 	end
 	if ( self.BorderAlive ) then
 		if ( health == 0 ) then
@@ -804,6 +799,11 @@ function PetBattleUnitTooltip_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
+function PetBattleUnitFrameDropDown_Initialize (self)
+	C_PetBattles.SetPendingReportTargetFromBattlePetOwner(LE_BATTLE_PET_ENEMY);
+	UnitPopup_ShowMenu(PetBattleUnitFrameDropDown, "BATTLEPET", nil, PetBattleUnitFrameDropDown.name);
+end
+
 function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	PetBattleUnitFrame_SetUnit(self, petOwner, petIndex);
 
@@ -835,19 +835,18 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		self.AbilitiesLabel:Show();
 		local enemyPetType = C_PetBattles.GetPetType(PetBattleUtil_GetOtherPlayer(petOwner), C_PetBattles.GetActivePet(PetBattleUtil_GetOtherPlayer(petOwner)));
 		for i=1, NUM_BATTLE_PET_ABILITIES do
-			local id, name, icon, maxCooldown, description, numTurns, abilityPetType = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
+			local id, name, icon, maxCooldown, description, numTurns, abilityPetType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
 
-			local id, name, texture = C_PetBattles.GetAbilityInfo(petOwner, petIndex, i);
 			local abilityIcon = self["AbilityIcon"..i];
 			local abilityName = self["AbilityName"..i];
 			if ( id ) then
 				local modifier = C_PetBattles.GetAttackModifier(abilityPetType, enemyPetType);
-				if ( modifier < 1 ) then
+				if ( noStrongWeakHints or modifier == 1 ) then
+					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Neutral");
+				elseif ( modifier < 1 ) then
 					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Weak");
 				elseif ( modifier > 1 ) then
 					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Strong");
-				else
-					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Neutral");
 				end
 				abilityName:SetText(name);
 				abilityIcon:Show();
@@ -1019,7 +1018,6 @@ function PetBattleOpeningFrame_OnEvent(self, event, ...)
 	local openMainFrame;
 	local close;
 	if ( event == "PET_BATTLE_OPENING_START" ) then
-		endOfBattleMessages = {};
 		open = true;
 		if ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) then
 			-- bypassing intro

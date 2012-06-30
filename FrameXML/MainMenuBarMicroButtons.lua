@@ -17,6 +17,7 @@ MICRO_BUTTONS = {
 function LoadMicroButtonTextures(self, name)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	local prefix = "Interface\\Buttons\\UI-MicroButton-";
 	self:SetNormalTexture(prefix..name.."-Up");
 	self:SetPushedTexture(prefix..name.."-Down");
@@ -207,7 +208,7 @@ function GuildMicroButton_OnEvent(self, event, ...)
 		else
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
 		end
-	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
+	elseif ( event == "PLAYER_GUILD_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		GuildMicroButtonTabard.needsUpdate = true;
 		UpdateMicroButtons();
 	end
@@ -305,7 +306,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 			TalentMicroButtonAlert:Show();
 		end
-	elseif ( event == "PLAYER_TALENT_UPDATE") then
+	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		UpdateMicroButtons();
 		
 		-- On the first update from the server, flash the button if there are unspent points

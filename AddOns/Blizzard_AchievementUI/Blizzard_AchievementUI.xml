@@ -828,67 +828,6 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>	
-	<Frame name="AchievementAccountIconTemplate" virtual="true" hidden="true">
-		<Size x="24" y="24"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\LFGFrame\WaitAnim" setAllPoints="true">
-					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\FriendsFrame\PlusManz-BattleNet">
-					<Size x="19" y="19"/>
-					<Anchors>
-						<Anchor point="CENTER" x="1" y="-1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
-					<Size x="56" y="56"/>
-					<Anchors>
-						<Anchor point="CENTER" x="13" y="-13"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_TOP");
-				GameTooltip:SetText(ACCOUNT_WIDE_ACHIEVEMENT);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Frame name="AchievementAccountIconSmallTemplate" virtual="true" hidden="true">
-		<Size x="20" y="20"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\LFGFrame\WaitAnim" setAllPoints="true">
-					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\FriendsFrame\PlusManz-BattleNet">
-					<Size x="15" y="19"/>
-					<Anchors>
-						<Anchor point="CENTER" x="1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
-					<Size x="45" y="45"/>
-					<Anchors>
-						<Anchor point="CENTER" x="10" y="-10"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
 
 	<Button name="AchievementTemplate" virtual="true">
 		<Size>
@@ -1263,11 +1202,6 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame inherits="AchievementAccountIconTemplate" parentKey="accountIcon">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="0" y="4"/>
-				</Anchors>
-			</Frame>
 			<Frame name="$parentTabard" inherits="AchievementGuildTabardTemplate" parentKey="tabard">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
@@ -1305,12 +1239,6 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="$parentBNIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" parentKey="BNicon" hidden="true">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="$parentIcon" x="-2" y="-4"/>
-							</Anchors>
-						</Texture>
 						<FontString name="$parentPoints" inherits="AchievementPointsFont" parentKey="points">
 							<Size x="42" y="16"/>
 							<Anchors>
@@ -1570,17 +1498,11 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="$parentBNIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" parentKey="BNicon" hidden="true">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="$parentIcon" x="-1" y="1"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentPoints" inherits="GameFontNormal" text="60" parentKey="points">
+						<FontString name="$parentPoints" inherits="GameFontNormal" justifyH="CENTER" text="60" parentKey="points">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
-										<AbsDimension x="-1" y="3"/>
+										<AbsDimension x="0" y="3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1601,16 +1523,6 @@
 	<Frame name="SummaryAchievementTemplate" inherits="ComparisonPlayerTemplate" virtual="true">
 		<Size x="100" y="48"/>
 		<Frames>
-			<Frame inherits="AchievementAccountIconSmallTemplate" parentKey="accountIcon">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="2" y="8"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent().icon:GetFrameLevel() + 2);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentHighlight" setAllPoints="true" hidden="true" enableMouse="false" parentKey="highlight">
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1723,11 +1635,6 @@
 			<Frame name="$parentPlayer" inherits="ComparisonPlayerTemplate" parentKey="player">
 				<Anchors>
 					<Anchor point="LEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame inherits="AchievementAccountIconSmallTemplate" parentKey="accountIcon">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.player" x="33" y="6"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentFriend" parentKey="friend">
@@ -1892,12 +1799,6 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture name="$parentBNIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" parentKey="BNicon" hidden="true">
-									<Size x="18" y="18"/>
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="$parentIcon" x="-2" y="-4"/>
-									</Anchors>
-								</Texture>
 								<FontString name="$parentPoints" inherits="GameFontNormalSmall" text="60" parentKey="points">
 									<Anchors>
 										<Anchor point="CENTER">

@@ -825,6 +825,9 @@ function TargetFrameDropDown_Initialize (self)
 		menu = "VEHICLE";
 	elseif ( UnitIsUnit("target", "pet") ) then
 		menu = "PET";
+	elseif ( UnitIsOtherPlayersPet("target") ) then
+		SetPendingReportTarget("target");
+		menu = "OTHERPET";	
 	elseif ( UnitIsPlayer("target") ) then
 		id = UnitInRaid("target");
 		if ( id ) then

@@ -26,9 +26,9 @@ end
 function VoidStorageFrame_OnLoad(self)
 	-- The close button comes from the BasicFrameTemplate but VoidStorageBorderFrame is not the main
 	-- frame, so click function must change to close the proper frame
-	VoidStorageBorderFrameCloseButton:SetScript("OnClick", function () VoidStorageFrame_Hide(); end);
-	VoidStorageBorderFrameTopTileStreaks:Hide();
-	VoidStorageBorderFrameBg:SetTexture(nil);
+	VoidStorageBorderFrame.CloseButton:SetScript("OnClick", function () VoidStorageFrame_Hide(); end);
+	VoidStorageBorderFrame.TopTileStreaks:Hide();
+	VoidStorageBorderFrame.Bg:SetTexture(nil);
 	local button, lastButton, texture;
 	-- create deposit buttons
 	VoidStorageDepositFrame.Bg:SetTexture(0.1451, 0.0941, 0.1373, 0.8);
@@ -134,11 +134,9 @@ function VoidStorageFrame_Update()
 			if ( VoidStorageBorderFrameMouseBlockFrame:IsShown() ) then
 				VoidStorageBorderFrameMouseBlockFrame:Hide();
 				VoidStoragePurchaseFrame:Hide();
-				VoidStorageBorderFrameBg:Hide();
+				VoidStorageBorderFrame.Bg:Hide();
 				VoidStorageHelpBox:Hide();
 			end
-			IsVoidStorageReady();
-			VoidStorage_ItemsUpdate(true, true);
 		else
 			local tutorial = voidStorageTutorials[lastTutorial + 1];
 			local height = 58;	-- button height + top and bottom padding + spacing between text and button
@@ -158,6 +156,8 @@ function VoidStorageFrame_Update()
 			VoidStoragePurchaseFrame:Hide();
 			VoidStorageHelpBox:Show();
 		end
+		IsVoidStorageReady();
+		VoidStorage_ItemsUpdate(true, true);
 	else
 		local voidStorageUnlockCost = GetVoidUnlockCost();
 		if ( voidStorageUnlockCost > GetMoney() ) then
@@ -185,8 +185,8 @@ end
 
 function VoidStorageFrame_SetUpBlockingFrame(frame)
 	if ( not VoidStorageBorderFrameMouseBlockFrame:IsShown() ) then
-		VoidStorageBorderFrameBg:Show();
-		VoidStorageBorderFrameBg:SetTexture(0, 0, 0, 0.5);
+		VoidStorageBorderFrame.Bg:Show();
+		VoidStorageBorderFrame.Bg:SetTexture(0, 0, 0, 0.5);
 		VoidStorageBorderFrame:SetFrameLevel(100);
 		VoidStorageBorderFrameMouseBlockFrame:Show();
 	end

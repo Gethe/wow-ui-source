@@ -99,6 +99,7 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("UNIT_PHASE");
+	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
 	local id = self:GetID();
 	self:RegisterUnitEvent("UNIT_AURA", "party"..id, "partypet"..id);
 	self:RegisterUnitEvent("UNIT_PET",  "party"..id, "partypet"..id);
@@ -140,7 +141,7 @@ function PartyMemberFrame_UpdateMember (self)
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
 	PartyMemberFrame_UpdateOnlineStatus(self);
-	PartyMemberFrame_UpdatePhasingDisplay(self);
+	PartyMemberFrame_UpdateNotPresentIcon(self);
 	UpdatePartyMemberBackground();
 end
 
@@ -299,18 +300,27 @@ function PartyMemberFrame_UpdateReadyCheck (self)
 	end
 end
 
-function PartyMemberFrame_UpdatePhasingDisplay(self)
+function PartyMemberFrame_UpdateNotPresentIcon(self)
 	local id = self:GetID();
 	local partyID = "party"..id;
 	
 	local inPhase = UnitInPhase(partyID);
 	
-	if ( inPhase or not UnitExists(partyID) ) then
-		self:SetAlpha(1);
-		self.phasingIcon:Hide();
-	else
+	if ( UnitInOtherParty(partyID) ) then
 		self:SetAlpha(0.6);
-		self.phasingIcon:Show();
+		self.notPresentIcon.texture:SetTexture("Interface\\PlayerFrame\\whisper-only");
+		self.notPresentIcon.texture:SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
+		self.notPresentIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
+		self.notPresentIcon:Show();
+	elseif ( not inPhase and UnitExists(partyID) ) then
+		self:SetAlpha(0.6);
+		self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
+		self.notPresentIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+		self.notPresentIcon.tooltip = PARTY_PHASED_MESSAGE;
+		self.notPresentIcon:Show();
+	else
+		self:SetAlpha(1);
+		self.notPresentIcon:Hide();
 	end
 end
 
@@ -415,8 +425,10 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		PartyMemberFrame_UpdateOnlineStatus(self);
 	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
 		if ( event ~= "UNIT_PHASE" or arg1 == unit ) then
-			PartyMemberFrame_UpdatePhasingDisplay(self);
+			PartyMemberFrame_UpdateNotPresentIcon(self);
 		end
+	elseif ( event == "UNIT_OTHER_PARTY_CHANGED" and arg1 == unit ) then
+		PartyMemberFrame_UpdateNotPresentIcon(self);
 	end
 end
 

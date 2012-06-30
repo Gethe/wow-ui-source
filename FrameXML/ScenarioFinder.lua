@@ -158,9 +158,9 @@ function ScenarioQueueFrameFindGroupButton_Update()
 	end
 
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		LFDQueueFrameFindGroupButton:Enable();
+		ScenarioQueueFrameFindGroupButton:Enable();
 	else
-		LFDQueueFrameFindGroupButton:Disable();
+		ScenarioQueueFrameFindGroupButton:Disable();
 	end
 end
 

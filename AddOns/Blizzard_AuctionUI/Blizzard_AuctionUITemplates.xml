@@ -259,7 +259,11 @@
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetAuctionItemLink("list", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							if ( not HandleModifiedItemClick(GetAuctionItemLink("list", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame))) ) then
+								if ( IsModifiedClick("DRESSUP") ) then
+									DressUpBattlePet(GetAuctionItemBattlePetInfo("list", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+								end
+							end
 						else
 							BrowseButton_OnClick(self:GetParent());
 						end
@@ -404,7 +408,11 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetAuctionItemLink("list", self:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+					if ( not HandleModifiedItemClick(GetAuctionItemLink("list", self:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame))) ) then
+						if ( IsModifiedClick("DRESSUP") ) then
+							DressUpBattlePet(GetAuctionItemBattlePetInfo("list", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+						end
+					end
 				else
 					BrowseButton_OnClick(self);
 				end
@@ -564,7 +572,11 @@
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+							if ( not HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))) ) then
+								if ( IsModifiedClick("DRESSUP") ) then
+									DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+								end
+							end
 						else
 							BidButton_OnClick(self:GetParent());
 						end
@@ -664,7 +676,11 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+					if ( not HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))) ) then
+						if ( IsModifiedClick("DRESSUP") ) then
+							DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+						end
+					end
 				else
 					BidButton_OnClick(self);
 				end
@@ -812,7 +828,11 @@
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+							if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame))) ) then
+								if ( IsModifiedClick("DRESSUP") ) then
+									DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+								end
+							end
 						else
 							AuctionsButton_OnClick(self:GetParent());
 						end
@@ -950,7 +970,11 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+					if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame))) ) then
+						if ( IsModifiedClick("DRESSUP") ) then
+							DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+						end
+					end
 				else
 					AuctionsButton_OnClick(self);
 				end

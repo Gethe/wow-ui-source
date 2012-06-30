@@ -358,7 +358,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="106" y="16"/>
+									<AbsDimension x="130" y="16"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -383,9 +383,9 @@
 					</Button>
 					<Button name="InspectRangedSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="InspectSecondaryHandSlot" relativePoint="TOPRIGHT">
+							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="5" y="0"/>
+									<AbsDimension x="130" y="16"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

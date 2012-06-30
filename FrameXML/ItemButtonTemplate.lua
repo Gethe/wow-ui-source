@@ -96,7 +96,7 @@ end
 
 function HandleModifiedItemClick(link)
 	if ( not link ) then
-		return;
+		return false;
 	end
 	if ( IsModifiedClick("CHATLINK") ) then
 		local linkType = string.match(link, "|H([^:]+)");
@@ -111,8 +111,7 @@ function HandleModifiedItemClick(link)
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then
-		DressUpItemLink(link);
-		return true;
+		return DressUpItemLink(link);
 	end
 	return false;
 end

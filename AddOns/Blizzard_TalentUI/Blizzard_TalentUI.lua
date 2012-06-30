@@ -114,7 +114,7 @@ StaticPopupDialogs["CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS"] = {
 	text = CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) HideParentPanel(self.data); end,
+	OnAccept = function (self) HideUIPanel(self.data); end,
 	OnCancel = function (self)
 	end,
 	hideOnEscape = 1,
@@ -245,9 +245,9 @@ SPEC_SPELLS_DISPLAY[265] = { 172,10, 980,10, 30108,10, 103103,10, 1120,10, 48181
 SPEC_SPELLS_DISPLAY[266] = { 103958,10, 104315,10, 105174,10,  30146,10, 122351,10, 114592,10 }; --Demonology
 SPEC_SPELLS_DISPLAY[267] = { 348,10, 17962,10, 29722,10, 116858,10, 111546,10, 108647,10,  }; --Destruction
 
-SPEC_SPELLS_DISPLAY[268] = { 115307,10, 115180,10, 115181,10, 115295,10 }; --Brewmaster
+SPEC_SPELLS_DISPLAY[268] = { 100784,10, 115180,10, 115181,10, 115295,10 }; --Brewmaster
 SPEC_SPELLS_DISPLAY[269] = { 100780,10, 100787,10, 100784,10, 113656,10  }; --Windwalker
-SPEC_SPELLS_DISPLAY[270] = { 115175,10, 115098,10, 116694,10, 116670,10 }; --Mistweaver
+SPEC_SPELLS_DISPLAY[270] = { 115175,10, 115151,10, 116694,10, 116670,10 }; --Mistweaver
 
 
 -- PlayerTalentFrame
@@ -267,7 +267,7 @@ function PlayerTalentFrame_Toggle(suggestedTalentGroup)
 		end
 		TalentMicroButtonAlert:Hide();
 	else
-		HideUIPanel(PlayerTalentFrame);
+		PlayerTalentFrame_Close();
 	end
 end
 
@@ -283,6 +283,19 @@ function PlayerTalentFrame_Open(talentGroup)
 			PlayerSpecTab_OnClick(specTabs[index]);
 			break;
 		end
+	end
+end
+
+function PlayerTalentFrame_Close()
+	if (GetNumUnspentTalents() > 0) then
+		local dialog = StaticPopup_Show("CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS");
+		if ( dialog ) then
+			dialog.data = PlayerTalentFrame;
+		else
+			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+		end
+	else
+		HideUIPanel(PlayerTalentFrame);
 	end
 end
 
@@ -481,16 +494,7 @@ function PlayerTalentFrame_OnHide()
 end
 
 function PlayerTalentFrame_OnClickClose(self)
-	if (GetNumUnspentTalents() > 0) then
-		local dialog = StaticPopup_Show("CONFIRM_EXIT_WITH_UNSPENT_TALENT_POINTS");
-		if ( dialog ) then
-			dialog.data = self;
-		else
-			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
-		end
-	else
-		HideParentPanel(self);
-	end
+	PlayerTalentFrame_Close();
 end
 
 function PlayerTalentFrame_OnEvent(self, event, ...)
@@ -571,11 +575,14 @@ function PlayerTalentFrame_Refresh()
 	selectedSpec = PlayerTalentFrame.selectedPlayerSpec;
 	PlayerTalentFrame.talentGroup = specs[selectedSpec].talentGroup;
 
+	local name, count, texture, spellID;
+	
 	if ( selectedTab == GLYPH_TAB ) then
 		PlayerTalentFrame_HideTalentTab();
 		PlayerTalentFrame_HideSpecsTab();
 		PlayerTalentFrame_ShowGlyphFrame();
 		PlayerTalentFrame_HidePetSpecTab();
+		name, count, texture, spellID = GetGlyphClearInfo();
 	elseif (selectedTab == TALENTS_TAB) then
 		ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
 		PlayerTalentFrame_HideGlyphFrame();
@@ -584,6 +591,7 @@ function PlayerTalentFrame_Refresh()
 		TalentFrame_Update(PlayerTalentFrameTalents);
 		PlayerTalentFrame_ShowTalentTab();
 		PlayerTalentFrame_HidePetSpecTab();
+		name, count, texture, spellID = GetTalentClearInfo();
 	elseif (selectedTab == SPECIALIZATION_TAB) then
 		ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
 		PlayerTalentFrame_HideGlyphFrame()
@@ -602,8 +610,7 @@ function PlayerTalentFrame_Refresh()
 	
 	PlayerTalentFrame_Update();
 
-	local name, count, texture, spellID = GetGlyphClearInfo();
-	if name then 
+	if (name) then 
 		PlayerTalentFrameTalents.clearInfo.name:SetText(name);
 		PlayerTalentFrameTalents.clearInfo.count:SetText(count);
 		PlayerTalentFrameTalents.clearInfo.icon:SetTexture(texture);

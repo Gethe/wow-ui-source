@@ -17,7 +17,7 @@ local IS_HEADER = true;
 WATCHFRAME_INITIAL_OFFSET = 0;
 WATCHFRAME_TYPE_OFFSET = 10;
 WATCHFRAME_QUEST_OFFSET = 10;
-WATCHFRAME_SCENARIO_LINE_OFFSET = 1;
+WATCHFRAME_SCENARIO_LINE_OFFSET = 10;
 
 WATCHFRAMELINES_FONTSPACING = 0;
 WATCHFRAMELINES_FONTHEIGHT = 0;
@@ -1758,6 +1758,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 	local popupFrame = WatchFrameScenarioPopUpFrame;
 	local name, currentStage, numStages = C_Scenario.GetInfo();
 	if ( currentStage > 0 and currentStage <= numStages ) then
+		local initialCriteriaOffset;
 		local stageName, stageDescription, numCriteria = C_Scenario.GetStepInfo();
 		local inChallengeMode = C_Scenario.IsChallengeMode();
 		local linesParent;		-- if using the scenario header, lines need to be parented to WatchFrameScenarioPopUpFrame
@@ -1765,9 +1766,9 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 			popupFrame:SetParent(lineFrame);
 			popupFrame:ClearAllPoints();
 			if (nextAnchor) then
-				popupFrame:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+				popupFrame:SetPoint("TOPLEFT", nextAnchor, "BOTTOMLEFT", 0, -WATCHFRAME_TYPE_OFFSET);
 			else
-				popupFrame:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET + 4)
+				popupFrame:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, -WATCHFRAME_INITIAL_OFFSET + 4)
 			end
 			local frame = WatchFrameScenarioFrame;
 			linesParent = WatchFrameScenarioFrame;
@@ -1789,6 +1790,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 			
 			WATCHFRAME_SETLINES_NUMLINES = 0;	-- have to manually reset this since we're not using a normal header
 			popupFrame:Show();
+			initialCriteriaOffset = 0;
 		else
 			local line = WatchFrame_GetScenarioLine();
 			WatchFrame_SetLine(line, _, WATCHFRAMELINES_FONTSPACING - 6, IS_HEADER, stageName, DASH_NONE);
@@ -1802,6 +1804,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 			line:Show();
 			nextAnchor = line;
 			popupFrame:Hide();
+			initialCriteriaOffset = WATCHFRAME_SCENARIO_LINE_OFFSET;
 		end
 		-- criteria info
 		local contentHeight = SCENARIO_POPUP_BASE_HEIGHT;
@@ -1814,7 +1817,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 			local line = WatchFrame_GetScenarioLine(linesParent);
 			if ( not criteriaCompleted ) then
 				if ( firstLine ) then
-					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
+					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - initialCriteriaOffset, not IS_HEADER, criteriaString, DASH_ICON);
 					line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
 					line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
 					firstLine = false;
@@ -1839,7 +1842,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 		-- reanchor completed lines
 		if ( firstCompleteAnchor ) then
 			-- anchor first complete line to last incomplete line
-			firstCompleteAnchor:SetPoint("TOP", nextAnchor, "BOTTOM", 0, WATCHFRAMELINES_FONTSPACING);
+			firstCompleteAnchor:SetPoint("TOP", nextAnchor, "BOTTOM", 0, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET);
 			firstCompleteAnchor:SetPoint("RIGHT", nextAnchor, "RIGHT", 0, 0);
 			firstCompleteAnchor:SetPoint("LEFT", nextAnchor, "LEFT", 0, 0);
 			-- update what the last anchor frame is
@@ -1857,7 +1860,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 			end
 			popupFrame.stage = currentStage;
 			-- set up return values
-			width = frame:GetWidth();
+			width = WatchFrameScenarioFrame:GetWidth();
 			numPopups = 1;
 			nextAnchor = popupFrame;
 		end

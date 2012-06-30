@@ -12,7 +12,11 @@
 		<Scripts>
 			<OnLoad function="PetBattleUnitFrame_OnLoad"/>
 			<OnEvent function="PetBattleUnitFrame_OnEvent"/>
+			<OnClick function="PetBattleUnitFrame_OnClick"/>
 		</Scripts>
+		<Frames>
+			<Frame name="PetBattleUnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true"/>			
+		</Frames>
 	</Frame>
 	<Frame name="PetBattleAuraTemplate" virtual="true">
 		<Size x="60" y="49"/>
@@ -310,11 +314,13 @@
 				self.healthBarWidth = 38;
 				PetBattleUnitFrame_OnLoad(self);
 				self.hideWhenDeadList = { self.HealthBarBG, self.HealthDivider };
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter>
 				PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPRIGHT", self, "TOPLEFT", 0, 0);
 				PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
 				PetBattlePrimaryUnitTooltip:Show();
+				lastSelectedPetIndex = self.petIndex;
 			</OnEnter>
 			<OnLeave>
 				if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
@@ -709,7 +715,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="WeatherFrame" frameStrata="BACKGROUND" hidden="true">
+			<Frame parentKey="WeatherFrame" frameStrata="LOW" hidden="true">
 				<Size x="170" y="40"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOP" x="-70" y="-60"/>
@@ -1128,11 +1134,13 @@
 					<OnLoad>
 						self.healthBarWidth = 145;
 						PetBattleUnitFrame_OnLoad(self);
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnEnter>
 						PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
 						PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
 						PetBattlePrimaryUnitTooltip:Show();
+						lastSelectedPetIndex = self.petIndex;
 					</OnEnter>
 					<OnLeave>
 						if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
@@ -1297,18 +1305,18 @@
 					<CheckButton parentKey="SwitchPetButton" motionScriptsWhileDisabled="true" inherits="PetBattleActionButtonTemplate">
 						<!--Anchored in code via the FlowFrame-->
 						<Layers>
-							<Layer level="OVERLAY">
+							<!--Layer level="OVERLAY">
 								<Texture parentKey="AdditionalIcon" inherits="BattleBar-SwapPetIcon">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
-							</Layer>
+							</Layer-->
 						</Layers>
 						<Scripts>
 							<OnLoad>
 								PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SWITCH_PET);
-								self.Icon:SetTexture("Interface\\Icons\\INV_BOX_BIRDCAGE_01");
+								self.Icon:SetTexture("Interface\\Icons\\INV_Pet_SwapPet");
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
 							<OnClick>
@@ -1337,7 +1345,7 @@
 						<Scripts>
 							<OnLoad>
 								PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_TRAP);
-								self.Icon:SetTexture("Interface\\Icons\\ABILITY_HUNTER_TRAPLAUNCHER");
+								self.Icon:SetTexture("Interface\\Icons\\INV_Pet_PetTrap");
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
 							<OnEnter>
@@ -1354,7 +1362,7 @@
 						<!--Anchored in code via the FlowFrame-->
 						<Scripts>
 							<OnLoad>
-								self.Icon:SetTexture("Interface\\Icons\\ACHIEVEMENT_BG_GETXFLAGS_NO_DIE");
+								self.Icon:SetTexture("Interface\\Icons\\INV_Pet_ExitBattle");
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
 							<OnClick function="PetBattleForfeitButton_OnClick"/>

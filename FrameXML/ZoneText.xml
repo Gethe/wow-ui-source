@@ -75,7 +75,7 @@
 			<OnUpdate function="FadingFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	<Frame name="AutoFollowStatus" parent="UIParent" setAllPoints="true" frameStrata="BACKGROUND" hidden="true">
+	<Frame name="AutoFollowStatus" parent="UIParent" setAllPoints="true" frameStrata="BACKGROUND" frameLevel="10" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="AutoFollowStatusText" inherits="GameFontNormal">

@@ -1230,11 +1230,9 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 	if ( button.id ~= id ) then
 		local saturatedStyle;
 		if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
-			button.accountIcon:Show();
 			button.accountWide = true;
 			saturatedStyle = "account";
 		else
-			button.accountIcon:Hide();
 			button.accountWide = nil;
 			if ( IN_GUILD_VIEW ) then
 				saturatedStyle = "guild";
@@ -1422,7 +1420,7 @@ function AchievementShield_SetPoints(points, pointString, normalFont, smallFont)
 		pointString:SetText("");
 		return;
 	end
-	if ( points <= 100 ) then
+	if ( points < 100 ) then
 		pointString:SetFontObject(normalFont);
 	else
 		pointString:SetFontObject(smallFont);
@@ -2178,11 +2176,9 @@ function AchievementFrameSummary_UpdateAchievements(...)
 
 			local saturatedStyle;
 			if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
-				button.accountIcon:Show();
 				button.accountWide = true;
 				saturatedStyle = "account";
 			else
-				button.accountIcon:Hide();
 				button.accountWide = nil;
 				if ( IN_GUILD_VIEW ) then
 					saturatedStyle = "guild";
@@ -2201,13 +2197,9 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			end
 
 			if ( isGuild ) then
-				button.shield.BNicon:Hide();
-				button.shield.points:Show();
 				button.shield.wasEarnedByMe = nil;
 				button.shield.earnedBy = nil;
 			else
-				button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
-				button.shield.points:SetShown(not (completed and not wasEarnedByMe));
 				button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
 				button.shield.earnedBy = earnedBy;
 			end
@@ -2250,8 +2242,6 @@ function AchievementFrameSummary_UpdateAchievements(...)
 					else
 						button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 					end
-					button.shield.BNicon:SetShown(completed and not wasEarnedByMe);
-					button.shield.points:SetShown(not (completed and not wasEarnedByMe));
 					button.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
 					button.shield.earnedBy = earnedBy;
 					button.icon.texture:SetTexture(icon);
@@ -2838,12 +2828,10 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 
 		local saturatedStyle = "normal";
 		if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
-			button.accountIcon:Show();
 			player.accountWide = true;
 			friend.accountWide = true;
 			saturatedStyle = "account";
 		else
-			button.accountIcon:Hide();
 			player.accountWide = nil;
 			friend.accountWide = nil;
 		end
@@ -2866,8 +2854,6 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		AchievementShield_SetPoints(points, player.shield.points, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT1, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT2);
 		AchievementShield_SetPoints(points, friend.shield.points, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT2);
 
-		player.shield.BNicon:SetShown(completed and not wasEarnedByMe);
-		player.shield.points:SetShown(not (completed and not wasEarnedByMe));
 		player.shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
 		player.shield.earnedBy = earnedBy;
 		
@@ -3330,19 +3316,24 @@ function AchievementMeta_OnLeave(self)
 end
 
 function AchievementShield_OnEnter(self)
-	if ( self.earnedBy and not self.wasEarnedByMe ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(format(ACHIEVEMENT_EARNED_BY,self.earnedBy));
+	local parent = self:GetParent();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( parent.accountWide ) then
+		GameTooltip:AddLine(ACCOUNT_WIDE_ACHIEVEMENT);
+		GameTooltip:Show();
+		return;
+	end
+	if ( self.earnedBy ) then
+		GameTooltip:AddLine(format(ACHIEVEMENT_EARNED_BY,self.earnedBy));
+		GameTooltip:Show();
 		return;
 	end
 	-- pass-through to the achievement button
-	local parent = self:GetParent();
 	local func = parent:GetScript("OnEnter");
 	if ( func ) then
 		func(parent);
 	end
 
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	AchievementFrameAchievements_CheckGuildMembersTooltip(self);
 	GameTooltip:Show();
 end

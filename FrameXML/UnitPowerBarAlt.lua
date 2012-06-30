@@ -7,6 +7,8 @@ ALT_POWER_TYPE_PILL				= 3;
 --Counter bar uses a different frame
 ALT_POWER_TYPE_COUNTER			= 4;
 
+DOUBLE_SIZE_FIST_BAR = 199;
+
 local altPowerBarTextures = {
 	frame = 0,
 	background = 1,
@@ -26,7 +28,8 @@ ALT_POWER_BAR_PLAYER_SIZES = {	--Everything else is scaled off of this
 	[ALT_POWER_TYPE_VERTICAL]		= {x = 64, y = 128},
 	[ALT_POWER_TYPE_CIRCULAR]		= {x = 128, y = 128},
 	[ALT_POWER_TYPE_PILL]			= {x = 32, y = 64},	--This is the size of a single pill.
-	[ALT_POWER_TYPE_COUNTER]			= {x = 32, y = 32},
+	[ALT_POWER_TYPE_COUNTER]		= {x = 32, y = 32},
+	doubleCircular					= {x = 256, y = 256}, --Override for task 55676
 }
 
 function UnitPowerBarAlt_Initialize(self, unit, scale, updateAllEvent)
@@ -155,11 +158,11 @@ function UnitPowerBarAlt_HidePills(self)
 end
 
 function UnitPowerBarAlt_SetUp(self, barID)
-	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip;
+	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip, costString;
 	if ( barID ) then
-		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = GetAlternatePowerInfoByID(barID);
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip, costString = GetAlternatePowerInfoByID(barID);
 	else
-		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(self.unit);
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip, costString, barID = UnitAlternatePowerInfo(self.unit);
 	end
 	
 	self.startInset = startInset;
@@ -169,6 +172,9 @@ function UnitPowerBarAlt_SetUp(self, barID)
 	self.powerTooltip = powerTooltip;
 	
 	local sizeInfo = ALT_POWER_BAR_PLAYER_SIZES[barType];
+	if ( barID == DOUBLE_SIZE_FIST_BAR and self.scale == 1 ) then --Double the player's own power bar for task 55676
+		sizeInfo = ALT_POWER_BAR_PLAYER_SIZES.doubleCircular;
+	end
 	self:SetSize(sizeInfo.x * self.scale, sizeInfo.y * self.scale);
 	
 	UnitPowerBarAlt_HideTextures(self);	--It's up to the SetUp functions to show textures they need.

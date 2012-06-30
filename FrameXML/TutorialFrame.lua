@@ -66,6 +66,7 @@ local TUTORIAL_QUEST_ARRAY = {
 	["BLOODELF"] = nil,
 	["WORGEN"] = nil,
 	["GOBLIN"] = nil,
+	["PANDAREN"] = nil,
 };
 CURRENT_TUTORIAL_QUEST_INFO = nil;
 
@@ -482,7 +483,7 @@ local DISPLAY_DATA = {
 	
 	[56] = { --TUTORIAL_PLAYER_HEALTH_MANA
 		tileHeight = 19, 
-		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
+		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
 		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 100, yOff = -33, width = 135, height = 40},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -125, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-DudeFull", align = "TOP", xOff = 10, yOff = -35},

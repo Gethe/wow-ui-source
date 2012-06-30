@@ -10,7 +10,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="ScenarioFinderFrame" toplevel="true" hidden="true" parent="GroupFinderFrame">
+	<Frame name="ScenarioFinderFrame" useParentLevel="true" hidden="true" parent="GroupFinderFrame">
 		<Size x="338" y="428"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="224" y="0"/>

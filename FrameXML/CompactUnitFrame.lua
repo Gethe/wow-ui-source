@@ -28,6 +28,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("INCOMING_RESURRECT_CHANGED");
+	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
 	-- also see CompactUnitFrame_UpdateUnitEvents for more events
 	
 	self.maxBuffs = 0;
@@ -96,7 +97,9 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "READY_CHECK_CONFIRM" ) then
 			CompactUnitFrame_UpdateReadyCheck(self);
 		elseif ( event == "INCOMING_RESURRECT_CHANGED" ) then
-			CompactUnitFrame_UpdateIncomingResurrectIcon(self);
+			CompactUnitFrame_UpdateCenterStatusIcon(self);
+		elseif ( event == "UNIT_OTHER_PARTY_CHANGED" ) then
+			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		end
 	end
 end
@@ -245,7 +248,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateRoleIcon(frame);
 		CompactUnitFrame_UpdateReadyCheck(frame);
 		CompactUnitFrame_UpdateAuras(frame);
-		CompactUnitFrame_UpdateIncomingResurrectIcon(frame);
+		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 	end
 end
 
@@ -557,13 +560,19 @@ function CompactUnitFrame_CheckReadyCheckDecay(frame, elapsed)
 	end
 end
 
-function CompactUnitFrame_UpdateIncomingResurrectIcon(frame)
-	local incomingResurrect = UnitHasIncomingResurrection(frame.unit);
-	
-	if ( frame.optionTable.displayIncomingResurrect and incomingResurrect ) then
-		frame.incomingResurrectIcon:Show();
+function CompactUnitFrame_UpdateCenterStatusIcon(frame)
+	if ( frame.optionTable.displayInOtherGroup and UnitInOtherParty(frame.unit) ) then
+		frame.centerStatusIcon.texture:SetTexture("Interface\\TargetFrame\\whisper-only");
+		frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+		frame.centerStatusIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
+		frame.centerStatusIcon:Show();
+	elseif ( frame.optionTable.displayIncomingResurrect and UnitHasIncomingResurrection(frame.unit) ) then
+		frame.centerStatusIcon.texture:SetTexture("Interface\\RaidFrame\\Raid-Icon-Rez");
+		frame.centerStatusIcon.texture:SetTexCoord(0, 1, 0, 1);
+		frame.centerStatusIcon.tooltip = nil;
+		frame.centerStatusIcon:Show();
 	else
-		frame.incomingResurrectIcon:Hide();
+		frame.centerStatusIcon:Hide();
 	end
 end
 
@@ -926,6 +935,7 @@ DefaultCompactUnitFrameOptions = {
 	displayNonBossDebuffs = true,
 	healthText = "none",
 	displayIncomingResurrect = true,
+	displayInOtherGroup = true,
 }
 
 local NATIVE_UNIT_FRAME_HEIGHT = 36;
@@ -1055,10 +1065,9 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.aggroHighlight:SetTexCoord(unpack(texCoords["Raid-AggroFrame"]));
 	frame.aggroHighlight:SetAllPoints(frame);
 	
-	frame.incomingResurrectIcon:ClearAllPoints();
-	frame.incomingResurrectIcon:SetPoint("CENTER", frame, "BOTTOM", 0, options.height / 3 + 2);
-	frame.incomingResurrectIcon:SetSize(buffSize * 2, buffSize * 2);
-	frame.incomingResurrectIcon:SetTexture("Interface\\RaidFrame\\Raid-Icon-Rez");
+	frame.centerStatusIcon:ClearAllPoints();
+	frame.centerStatusIcon:SetPoint("CENTER", frame, "BOTTOM", 0, options.height / 3 + 2);
+	frame.centerStatusIcon:SetSize(buffSize * 2, buffSize * 2);
 	
 	if ( options.displayBorder ) then
 		frame.horizTopBorder:ClearAllPoints();

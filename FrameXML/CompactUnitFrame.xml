@@ -160,7 +160,6 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight" forceAlpha="true"/>
 				<Texture name="$parentReadyCheckIcon" parentKey="readyCheckIcon" forceAlpha="true"/>
-				<Texture name="$parentIncomingResurrectIcon" parentKey="incomingResurrectIcon" hidden="true" forceAlpha="true"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -189,6 +188,34 @@
 			<Button name="$parentDispelDebuff1" inherits="CompactDispelDebuffTemplate"/>
 			<Button name="$parentDispelDebuff2" inherits="CompactDispelDebuffTemplate"/>
 			<Button name="$parentDispelDebuff3" inherits="CompactDispelDebuffTemplate"/>
+			<Button name="$parentCenterStatusIcon" parentKey="centerStatusIcon">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture setAllPoints="true" parentKey="texture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						self:GetParent():GetScript("OnClick")(self:GetParent(), button);
+					</OnClick>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						else
+							self:GetParent():GetScript("OnEnter")(self:GetParent(), motion);
+						end
+					</OnEnter>
+					<OnLeave>
+						if ( self.tooltip ) then
+							GameTooltip:Hide();
+						else
+							self:GetParent():GetScript("OnLeave")(self:GetParent(), motion);
+						end
+					</OnLeave>
+				</Scripts>
+			</Button>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown" hidden="true">
 				<Size>
 					<AbsDimension x="10" y="10"/>

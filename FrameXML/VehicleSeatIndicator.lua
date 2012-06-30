@@ -101,7 +101,7 @@ function VehicleSeatIndicator_OnEvent(self, event, ...)
 	elseif ( event == "VEHICLE_PASSENGERS_CHANGED" ) then
 		VehicleSeatIndicator_Update();
 	elseif ( (event == "UNIT_EXITED_VEHICLE" and arg1 == "player") or
-	(event == "PLAYER_ENTERING_WORLD") or
+	(event == "PLAYER_ENTERING_WORLD" and VehicleSeatIndicator.currSkin and UnitVehicleSeatCount("player") == 0 ) or
 	(event == "PLAYER_LOSES_VEHICLE_DATA" and arg1 == "player") ) then
 		VehicleSeatIndicator_UnloadTextures();
 	end

@@ -1752,7 +1752,7 @@ function PaperDollFrame_SetEnergyRegen(statFrame, unit)
 	end
 	
 	local powerType, powerToken = UnitPowerType(unit);
-	if (powerToken ~= "ENERGY") then
+	if (powerToken ~= "ENERGY" and powerToken ~= "CHI") then
 		statFrame:Hide();
 		return;
 	end

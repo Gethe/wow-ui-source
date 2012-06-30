@@ -1,5 +1,6 @@
 NUM_WORLDMAP_POIS = 0;
 NUM_WORLDMAP_WORLDEFFECT_POIS = 0;
+NUM_WORLDMAP_SCENARIO_POIS = 0;
 NUM_WORLDMAP_GRAVEYARDS = 0;
 NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 2;
@@ -93,6 +94,7 @@ WORLDMAP_SETTINGS = {
 };
 
 local WorldEffectPOITooltips = {};
+local ScenarioPOITooltips = {};
 
 function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -286,6 +288,98 @@ function WorldMapFrame_OnKeyDown(self, key)
 	end
 end
 
+function WorldMap_DrawWorldEffects()
+	-----------------------------------------------------------------
+	-- Draw quest POI world effects
+	-----------------------------------------------------------------
+	local numPOIWorldEffects = GetNumQuestPOIWorldEffects();
+	
+	--Ensure the button pool is big enough for all the world effect POI's
+	if ( NUM_WORLDMAP_WORLDEFFECT_POIS < numPOIWorldEffects ) then
+		for i=NUM_WORLDMAP_WORLDEFFECT_POIS+1, numPOIWorldEffects do
+			WorldMap_CreateWorldEffectPOI(i);
+		end
+		NUM_WORLDMAP_WORLDEFFECT_POIS = numPOIWorldEffects;
+	end
+	
+	-- Process every button in the world event POI pool
+	for i=1,NUM_WORLDMAP_WORLDEFFECT_POIS do
+		
+		local worldEventPOIName = "WorldMapFrameWorldEffectPOI"..i;
+		local worldEventPOI = _G[worldEventPOIName];
+		
+		-- Draw if used
+		if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
+			local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);	
+			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+			_G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+			x = x * WorldMapButton:GetWidth();
+			y = -y * WorldMapButton:GetHeight();
+			worldEventPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
+			worldEventPOI.name = worldEventPOIName;		
+			worldEventPOI:Show();
+			WorldEffectPOITooltips[worldEventPOIName] = name;
+		else
+			-- Hide if unused
+			worldEventPOI:Hide();
+		end
+		
+	end
+	
+	-----------------------------------------------------------------
+	-- Draw scenario POIs
+	-----------------------------------------------------------------
+	--local numScenarioPOIs = C_Scenario.EvaluateScenarioIcons();
+	local scenarioIconInfo = C_Scenario.GetScenarioIconInfo();
+	local numScenarioPOIs = 0;
+	if(scenarioIconInfo ~= nil) then
+		numScenarioPOIs = #scenarioIconInfo;
+	end
+	
+	--Ensure the button pool is big enough for all the world effect POI's
+	if ( NUM_WORLDMAP_SCENARIO_POIS < numScenarioPOIs ) then
+		for i=NUM_WORLDMAP_SCENARIO_POIS+1, numScenarioPOIs do
+			WorldMap_CreateScenarioPOI(i);
+		end
+		NUM_WORLDMAP_SCENARIO_POIS = numScenarioPOIs;
+	end
+	
+	-- Draw scenario icons
+	local scenarioIconCount = 1;
+	if((WatchFrame.showObjectives == true) and (scenarioIconInfo ~= nil))then
+		for _, info  in next, scenarioIconInfo do
+		
+			--textureIndex, x, y, name
+			local textureIndex = info.index;
+			local x = info.x;
+			local y = info.y;
+			local name = info.description;
+			
+			local scenarioPOIName = "WorldMapFrameScenarioPOI"..scenarioIconCount;
+			local scenarioPOI = _G[scenarioPOIName];
+			
+			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+			_G[scenarioPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+			x = x * WorldMapButton:GetWidth();
+			y = -y * WorldMapButton:GetHeight();
+			scenarioPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
+			scenarioPOI.name = scenarioPOIName;		
+			scenarioPOI:Show();
+			ScenarioPOITooltips[scenarioPOIName] = name;
+				
+			scenarioIconCount = scenarioIconCount + 1;
+		end
+	end
+	
+	-- Hide unused icons in the pool
+	for i=scenarioIconCount, NUM_WORLDMAP_SCENARIO_POIS do
+		local scenarioPOIName = "WorldMapFrameScenarioPOI"..scenarioIconCount;
+		local scenarioPOI = _G[scenarioPOIName];
+		scenarioPOI:Hide();
+	end
+	
+end
+
 function WorldMapFrame_Update()
 	local mapName, textureHeight, _, isMicroDungeon, microDungeonMapName = GetMapInfo();
 	if ( not mapName ) then
@@ -409,46 +503,7 @@ function WorldMapFrame_Update()
 		end
 	end
 	
-	-----------------------------------------------------------------
-	-- Draw quest POI world effects
-	-----------------------------------------------------------------
-	local numPOIWorldEffects = GetNumQuestPOIWorldEffects();
-	
-	--Ensure the button pool is big enough for all the world effect POI's
-	if ( NUM_WORLDMAP_WORLDEFFECT_POIS < numPOIWorldEffects ) then
-		for i=NUM_WORLDMAP_WORLDEFFECT_POIS+1, numPOIWorldEffects do
-			WorldMap_CreateWorldEffectPOI(i);
-		end
-		NUM_WORLDMAP_WORLDEFFECT_POIS = numPOIWorldEffects;
-	end
-	
-	-- Process every button in the world event POI pool
-	for i=1,NUM_WORLDMAP_WORLDEFFECT_POIS do
-		
-		local worldEventPOIName = "WorldMapFrameWorldEffectPOI"..i;
-		local worldEventPOI = _G[worldEventPOIName];
-		
-		-- Draw if used
-		if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
-			local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);	
-			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
-			_G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-			x = x * WorldMapButton:GetWidth();
-			y = -y * WorldMapButton:GetHeight();
-			worldEventPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y );
-			worldEventPOI.name = worldEventPOIName;		
-			worldEventPOI:Show();
-			WorldEffectPOITooltips[worldEventPOIName] = name;
-		else
-			-- Hide if unused
-			worldEventPOI:Hide();
-		end
-		
-	end
-	-----------------------------------------------------------------
-	-- End quest POI world effects
-	-----------------------------------------------------------------
-	
+	WorldMap_DrawWorldEffects();
 
 	-- Setup the overlays
 	local textureCount = 0;
@@ -653,6 +708,23 @@ function WorldEffectPOI_OnLeave()
 	WorldMapTooltip.WE_using = false;
 end
 
+function ScenarioPOI_OnEnter(self)
+	if(ScenarioPOITooltips[self.name] ~= nil) then
+		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		WorldMapTooltip:SetText(ScenarioPOITooltips[self.name]);
+		WorldMapTooltip:Show();
+		WorldMapTooltip.WE_using = true;
+	end
+end
+
+function ScenarioPOI_OnLeave()
+	WorldMapFrame.poiHighlight = nil;
+	WorldMapFrameAreaLabel:SetText(WorldMapFrame.areaName);
+	WorldMapFrameAreaDescription:SetText("");
+	WorldMapTooltip:Hide();
+	WorldMapTooltip.WE_using = false;
+end
+
 function WorldMapPOI_OnClick(self, button)
 	if ( self.mapLinkID ) then
 		ClickLandmark(self.mapLinkID);
@@ -686,6 +758,20 @@ function WorldMap_CreateWorldEffectPOI(index)
 	button:SetHeight(32);
 	button:SetScript("OnEnter", WorldEffectPOI_OnEnter);
 	button:SetScript("OnLeave", WorldEffectPOI_OnLeave);
+	
+	local texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
+	texture:SetWidth(16);
+	texture:SetHeight(16);
+	texture:SetPoint("CENTER", 0, 0);
+	texture:SetTexture("Interface\\Minimap\\OBJECTICONS");
+end
+
+function WorldMap_CreateScenarioPOI(index)
+	local button = CreateFrame("Button", "WorldMapFrameScenarioPOI"..index, WorldMapButton);
+	button:SetWidth(32);
+	button:SetHeight(32);
+	button:SetScript("OnEnter", ScenarioPOI_OnEnter);
+	button:SetScript("OnLeave", ScenarioPOI_OnLeave);
 	
 	local texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
 	texture:SetWidth(16);
@@ -1553,13 +1639,6 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 end
 
 function WorldMapFrame_ToggleWindowSize()
-	local continentID, dungeonLevel;
-	local mapID = GetCurrentMapAreaID();
-	if ( mapID < 0 ) then
-		continentID = GetCurrentMapContinent();
-	else
-		dungeonLevel = GetCurrentMapDungeonLevel();
-	end
 	-- close the frame first so the UI panel system can do its thing	
 	ToggleFrame(WorldMapFrame);
 	-- apply magic
@@ -1569,18 +1648,10 @@ function WorldMapFrame_ToggleWindowSize()
 	else
 		SetCVar("miniWorldMap", 1);
 		WorldMap_ToggleSizeDown();
-	end
+	end	
 	-- reopen the frame
 	WorldMapFrame.blockWorldMapUpdate = true;
 	ToggleFrame(WorldMapFrame);
-	if ( continentID ) then
-		SetMapZoom(continentID);
-	else
-		SetMapByID(mapID);
-		if ( dungeonLevel > 0 ) then
-			SetDungeonMapLevel(dungeonLevel);
-		end
-	end
 	WorldMapFrame.blockWorldMapUpdate = nil;
 	WorldMapFrame_UpdateMap();
 end
@@ -1821,7 +1892,9 @@ end
 
 function ScenarioPOIFrame_OnUpdate()
 	ScenarioPOIFrame:DrawNone();
-	ScenarioPOIFrame:DrawAll();
+	if(WatchFrame.showObjectives == true) then
+		ScenarioPOIFrame:DrawAll();
+	end
 end
 
 function ArchaeologyDigSiteFrame_OnUpdate()
@@ -2004,6 +2077,8 @@ function WorldMapFrame_SelectQuestFrame(questFrame)
 	else
 		WorldMapBlobFrame:DrawBlob(questFrame.questId, true);
 	end
+	
+	WorldMap_DrawWorldEffects();
 end
 
 local numCompletedQuests = 0;

@@ -48,7 +48,7 @@
 			</OnMouseUp>
 		</Scripts>
 	</Button>
-	<Frame name="MinimapCluster" frameStrata="BACKGROUND" enableMouse="true" parent="UIParent">
+	<Frame name="MinimapCluster" frameStrata="BACKGROUND" toplevel="true" enableMouse="true" parent="UIParent">
 		<Size>
 			<AbsDimension x="192" y="192"/>
 		</Size>

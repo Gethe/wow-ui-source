@@ -120,14 +120,14 @@ function GuildFrame_OnEvent(self, event, ...)
 end
 
 function GuildFrame_UpdateLevel()
-	local guildLevel = GetGuildLevel();
+	local guildLevel, maxGuildLevel = GetGuildLevel();
 	GuildLevelFrameText:SetText(guildLevel);
 	if ( GetGuildFactionGroup() == 0 ) then
 		GuildXPFrameLevelText:SetFormattedText(GUILD_LEVEL_AND_FACTION, guildLevel, FACTION_HORDE);
 	else
 		GuildXPFrameLevelText:SetFormattedText(GUILD_LEVEL_AND_FACTION, guildLevel, FACTION_ALLIANCE);
 	end
-	if ( guildLevel == MAX_GUILD_LEVEL ) then
+	if ( guildLevel == maxGuildLevel ) then
 		GuildXPBar:Hide();
 		GuildXPFrameLevelText:SetPoint("BOTTOM", GuildXPFrame, "TOP", 0, -8);
 	else

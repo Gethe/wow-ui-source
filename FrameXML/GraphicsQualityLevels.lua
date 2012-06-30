@@ -521,6 +521,7 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				farClip = 200,
+				wmoLodDist = 100,
 				terrainLodDist = 200,
 				terrainTextureLod = 1,
 			},
@@ -529,6 +530,7 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
 				farClip = 600,
+				wmoLodDist = 300,
 				terrainLodDist = 300,
 				terrainTextureLod = 1,
 			},
@@ -537,6 +539,7 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
 				farClip = 800,
+				wmoLodDist = 400,
 				terrainLodDist = 450,
 				terrainTextureLod = 1,
 			},
@@ -545,6 +548,7 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				farClip = 1100,
+				wmoLodDist = 550,
 				terrainLodDist = 550,
 				terrainTextureLod = 0,
 			},
@@ -553,6 +557,7 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
 				farClip = 1300,
+				wmoLodDist = 650,
 				terrainLodDist = 650,
 				terrainTextureLod = 0,
 			},

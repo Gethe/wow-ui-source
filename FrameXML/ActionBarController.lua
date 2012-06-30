@@ -122,8 +122,6 @@ function ActionBarController_UpdateAll()
 		-- Otherwise, display the normal action bar
 		ActionBarController_ResetToDefault();
 	end
-	MultiActionBar_Update();
-	UIParent_ManageFramePositions();
 	
 	ValidateActionBarTransition();
 end
@@ -159,6 +157,7 @@ function ValidateActionBarTransition()
 		return; --Don't evluate and action bar state durring animations
 	end
 	
+	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
 	
 	if CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_MAIN then

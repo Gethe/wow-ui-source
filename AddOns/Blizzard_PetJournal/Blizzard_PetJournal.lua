@@ -5,7 +5,7 @@ local MOUNT_BUTTON_HEIGHT = 46;
 local MAX_ACTIVE_PETS = 3;
 local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
-local MAX_PET_LEVEL = 25;
+local MAX_PET_LEVEL = 100;
 local UNLOCK_ACHIEVEMENTS = {"6461", "6566", "6593"};
 local PLAYER_MOUNT_LEVEL = 20;
 
@@ -414,12 +414,18 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.icon:SetTexture(icon);
 			
 			loadoutPlate.model:Show();
-			if displayID ~= 0 and displayID ~= loadoutPlate.displayID then
-				loadoutPlate.displayID = displayID;
-				loadoutPlate.model:SetDisplayInfo(displayID);
-			elseif creatureID ~= 0 and creatureID ~= loadoutPlate.creatureID then
-				loadoutPlate.creatureID = creatureID;
-				loadoutPlate.model:SetCreature(creatureID);
+			if ( displayID ~= 0 ) then
+				if ( displayID ~= loadoutPlate.displayID ) then
+					loadoutPlate.creatureID = nil;
+					loadoutPlate.displayID = displayID;
+					loadoutPlate.model:SetDisplayInfo(displayID);
+				end
+			elseif ( creatureID ~= 0 ) then
+				if ( creatureID ~= loadoutPlate.creatureID ) then
+					loadoutPlate.creatureID = creatureID;
+					loadoutPlate.displayID = nil;
+					loadoutPlate.model:SetCreature(creatureID);
+				end
 			end
 				
 			loadoutPlate.petTypeIcon:SetTexture(GetPetTypeTexture(petType));	
@@ -775,12 +781,18 @@ function PetJournal_UpdatePetCard(self)
 	self.Location.speciesName = name;
 	
 	self.model:Show();
-	if displayID and displayID ~= 0 and displayID ~= self.displayID then
-		self.displayID = displayID;
-		self.model:SetDisplayInfo(displayID);
-	elseif creatureID ~= 0 and creatureID ~= self.creatureID then
-		self.creatureID = creatureID;
-		self.model:SetCreature(creatureID);
+	if ( displayID and displayID ~= 0 ) then
+		if ( displayID ~= self.displayID ) then
+			self.creatureID = nil;
+			self.displayID = displayID;
+			self.model:SetDisplayInfo(displayID);
+		end
+	elseif ( creatureID ~= 0 ) then
+		if ( creatureID ~= self.creatureID ) then
+			self.creatureID = creatureID;
+			self.displayID = nil;
+			self.model:SetCreature(creatureID);
+		end
 	end
 	if (isDead) then
 		self.model:SetAnimation(6,0);

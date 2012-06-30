@@ -15,9 +15,6 @@ local textureList =  {
 	"ButtonBGL",
 	"ButtonBGR",
 	"_ButtonBGMid",
-	"_XpMid",
-	"XpL",
-	"XpR",
 	"PitchOverlay",
 	"PitchButtonBG",
 	"PitchBG",
@@ -36,22 +33,26 @@ local textureList =  {
 	"PowerBarBG",
 	"PowerBarOverlay",
 };
+local xpBarTextureList = {
+	"XpMid",
+	"XpL",
+	"XpR",
+}
 
 local MAX_ALT_SPELLBUTTONS = 6;
 
 function OverrideActionBar_OnLoad(self)
 
 	--Setup the XP bar
-	local divWidth = self._XpMid:GetWidth()/19;
+	local divWidth = self.xpBar.XpMid:GetWidth()/19;
 	local xpos = 6;	
 	for i=1,19 do
-		local texture = self:CreateTexture("OverrideActionBarXpDiv"..i, "BACKGROUND", nil, 2);
+		local texture = self.xpBar:CreateTexture("OverrideActionBarXpDiv"..i, "BACKGROUND", nil, 2);
 		texture:SetSize(7, 14);
 		texture:SetTexCoord(0.2773438, 0.2910156, 0.390625, 0.4179688);
-		self["XpDiv"..i] = texture;
-		textureList[#textureList + 1] = "XpDiv"..i;
-		texture:SetPoint("LEFT", self.XpMid, "LEFT", floor(xpos), 10);
-		xpos = xpos + divWidth
+		self.xpBar["XpDiv"..i] = texture;
+		xpBarTextureList[#xpBarTextureList + 1] = "XpDiv"..i;
+		xpos = xpos + divWidth;
 	end
 	
 	--Add Leave Button Textures
@@ -69,6 +70,7 @@ function OverrideActionBar_OnLoad(self)
 	self["PitchDownDown"] = self.PitchDownButton:GetPushedTexture();
 	self["PitchDownHighlight"] = self.PitchDownButton:GetHighlightTexture();
 	self:RegisterEvent("VEHICLE_ANGLE_UPDATE");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 end
 
 
@@ -76,6 +78,12 @@ function OverrideActionBar_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "VEHICLE_ANGLE_UPDATE" ) then
 		OverrideActionBar_SetPitchValue(arg1);
+	elseif ( event == "PLAYER_LEVEL_UP" ) then
+		OverrideActionBar_UpdateXpBar(arg1);
+	elseif ( event == "PLAYER_XP_UPDATE" ) then
+		OverrideActionBar_UpdateXpBar();
+	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
+		OverrideActionBar_CalcSize();
 	end
 end
 
@@ -84,6 +92,9 @@ function OverrideActionBar_SetSkin(skin)
 	for _,tex in pairs(textureList) do
 		OverrideActionBar[tex]:SetTexture(textureFile, strsub(tex, 1, 1) == "_", strsub(tex, 1, 1) == "|");
 	end
+	for _,tex in pairs(xpBarTextureList) do
+		OverrideActionBar.xpBar[tex]:SetTexture(textureFile, strsub(tex, 1, 1) == "_", strsub(tex, 1, 1) == "|");
+	end	
 end
 
 
@@ -93,7 +104,6 @@ function OverrideActionBar_CalcSize()
 	local hasExit =  CanExitVehicle();
 	OverrideActionBar.pitchFrame:Hide();
 	OverrideActionBar.leaveFrame:Hide();
-	
 	if hasExit and hasPitch then
 		width, xpWidth, anchor, buttonAnchor = 1020, 580, 103, -234;
 		OverrideActionBar.pitchFrame:Show();
@@ -109,20 +119,20 @@ function OverrideActionBar_CalcSize()
 	end
 	
 	OverrideActionBar:SetWidth(width);
-	OverrideActionBar._XpMid:SetWidth(xpWidth);
+	OverrideActionBar.xpBar.XpMid:SetWidth(xpWidth);
 	OverrideActionBar.xpBar:SetWidth(xpWidth+16);
 	OverrideActionBar.Divider2:SetPoint("BOTTOM", anchor, 0);
 	OverrideActionBar.SpellButton1:SetPoint("BOTTOM", buttonAnchor, 17);
 
 	
-	local divWidth = OverrideActionBar._XpMid:GetWidth()/19;
+	local divWidth = OverrideActionBar.xpBar.XpMid:GetWidth()/19;
 	local xpos = divWidth-15;	
 	for i=1,19 do
-		local texture = OverrideActionBar["XpDiv"..i];
-		texture:SetPoint("LEFT", OverrideActionBar._XpMid, "LEFT", floor(xpos), 10);
+		local texture = OverrideActionBar.xpBar["XpDiv"..i];
+		texture:SetPoint("LEFT", OverrideActionBar.xpBar.XpMid, "LEFT", floor(xpos), 10);
 		xpos = xpos + divWidth;
 	end
-	ExpBar_Update();
+	OverrideActionBar_UpdateXpBar();
 	
 	UnitFrameHealthBar_Update(OverrideActionBarHealthBar, "vehicle");
 	UnitFrameManaBar_Update(OverrideActionBarPowerBar, "vehicle");
@@ -144,6 +154,8 @@ end
 
 
 function OverrideActionBar_Leave(self)
+	self:UnregisterEvent("PLAYER_LEVEL_UP");
+	self:UnregisterEvent("PLAYER_XP_UPDATE");
 	VehicleExit();
 end
 
@@ -195,7 +207,22 @@ function OverrideActionBar_Setup(skin, barIndex)
 		OverrideActionBarHealthBar:Hide();
 		OverrideActionBarPowerBar:Hide();
 	end
+
+	OverrideActionBar:RegisterEvent("PLAYER_LEVEL_UP");	
+	OverrideActionBar:RegisterEvent("PLAYER_XP_UPDATE");
 	
-	ExpBar_Update();
+	OverrideActionBar_UpdateXpBar();
 end
 
+function OverrideActionBar_UpdateXpBar(newLevel)
+	local level = newLevel or UnitLevel("player");
+	if ( level == MAX_PLAYER_LEVEL or IsXPUserDisabled() ) then
+		OverrideActionBar.xpBar:Hide();
+	else
+		local currXP = UnitXP("player");
+		local nextXP = UnitXPMax("player");
+		OverrideActionBar.xpBar:Show();
+		OverrideActionBar.xpBar:SetMinMaxValues(min(0, currXP), nextXP);
+		OverrideActionBar.xpBar:SetValue(currXP);
+	end
+end

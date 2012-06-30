@@ -32,7 +32,7 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 		return;
 	end
 
-	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType = C_PetBattles.GetAbilityInfoByID(abilityID);
+	local id, name, icon, maxCooldown, unparsedDescription, numTurns, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfoByID(abilityID);
 
 	local bottom = self.AbilityPetType;
 
@@ -87,7 +87,7 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 	end
 
 	--Update weaknesses/strengths
-	if ( petType ) then --TODO: change this once we have flag to disable display of this
+	if ( petType and not noStrongWeakHints ) then
 		bottom = self.WeakAgainstIcon;
 		self.StrongAgainstIcon:Show();
 		self.StrongAgainstLabel:Show();
@@ -145,9 +145,11 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 	else
 		self.StrongAgainstIcon:Hide();
 		self.StrongAgainstLabel:Hide();
+		self.StrongAgainstType1Label:Hide();
 		self.Delimiter1:Hide();
 		self.WeakAgainstIcon:Hide();
 		self.WeakAgainstLabel:Hide();
+		self.WeakAgainstType1Label:Hide();
 		self.Delimiter2:Hide();
 		for _, texture in pairs(self.strongAgainstTextures) do
 			texture:Hide();

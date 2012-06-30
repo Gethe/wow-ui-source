@@ -271,7 +271,8 @@
 					GameTooltip:AddLine(" ")
 					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, 1, 1);
 					GameTooltip:AddLine(" ")
-					if ( GetGuildLevel() == MAX_GUILD_LEVEL ) then
+					local guildLevel, maxGuildLevel = GetGuildLevel();
+					if ( guildLevel == maxGuildLevel ) then
 						local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
 						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, 1, 1);
 					else

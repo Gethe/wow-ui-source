@@ -158,7 +158,7 @@
 		</Anchors>
 	</HighlightTexture>
 </Button>
-<Frame name="BattlefieldMinimap" parent="UIParent" frameStrata="BACKGROUND" hidden="true">
+<Frame name="BattlefieldMinimap" parent="UIParent" frameStrata="BACKGROUND" frameLevel="10" hidden="true">
 	<Size>
 		<AbsDimension x="225" y="150"/>
 	</Size>

@@ -5,6 +5,17 @@ function InspectPaperDollFrame_OnLoad(self)
 	self:RegisterEvent("INSPECT_READY");
 end
 
+
+function InspectUpdateRangedMainHandTrickery()
+	if (GetInventoryItemID("target",INVSLOT_RANGED) ~= nil) then
+		InspectRangedSlot:Show();
+		InspectMainHandSlot:Hide();
+	else
+		InspectRangedSlot:Hide();
+		InspectMainHandSlot:Show();
+	end
+end
+
 function InspectPaperDollFrame_OnEvent(self, event, unit)
 	if (InspectFrame:IsShown()) then
 		if ( unit and unit == InspectFrame.unit ) then
@@ -18,6 +29,10 @@ function InspectPaperDollFrame_OnEvent(self, event, unit)
 		if (event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
 			InspectPaperDollFrame_SetLevel();
 			InspectPaperDollFrame_UpdateButtons();
+		end
+		
+		if (event == "INSPECT_READY" or event == "UNIT_MODEL_CHANGED") then
+			InspectUpdateRangedMainHandTrickery();
 		end
 	end
 end
@@ -104,6 +119,7 @@ function InspectPaperDollFrame_OnShow()
 	InspectModelFrameBackgroundTopRight:SetDesaturated(1);
 	InspectModelFrameBackgroundBotLeft:SetDesaturated(1);
 	InspectModelFrameBackgroundBotRight:SetDesaturated(1);
+	InspectUpdateRangedMainHandTrickery();
 end
 
 function InspectPaperDollItemSlotButton_OnLoad(self)

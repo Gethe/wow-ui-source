@@ -1042,9 +1042,9 @@ function WorldStateChallengeMode_DisplayTimers(lineFrame, nextAnchor, maxHeight,
 	if ( self.timerID ) then
 		self:SetParent(lineFrame);
 		if (nextAnchor) then
-			self:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
+			self:SetPoint("TOPLEFT", nextAnchor, "BOTTOMLEFT", 0, -WATCHFRAME_TYPE_OFFSET);
 		else
-			self:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET)
+			self:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, -WATCHFRAME_INITIAL_OFFSET)
 		end
 		local _, elapsedTime = GetWorldElapsedTime(self.timerID);
 		self.baseTime = elapsedTime;

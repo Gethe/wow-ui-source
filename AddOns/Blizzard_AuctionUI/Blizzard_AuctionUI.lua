@@ -413,7 +413,9 @@ function BrowseButton_OnClick(button)
 	assert(button);
 	
 	if ( GetCVarBool("auctionDisplayOnCharacter") ) then
-		DressUpItemLink(GetAuctionItemLink("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+		if ( not DressUpItemLink(GetAuctionItemLink("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame))) ) then
+			DressUpBattlePet(GetAuctionItemBattlePetInfo("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+		end
 	end
 	SetSelectedAuctionItem("list", button:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
 	-- Close any auction related popups
@@ -1117,7 +1119,9 @@ function BidButton_OnClick(button)
 	assert(button)
 	
 	if ( GetCVarBool("auctionDisplayOnCharacter") ) then
-		DressUpItemLink(GetAuctionItemLink("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+		if ( not DressUpItemLink(GetAuctionItemLink("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))) ) then
+			DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
+		end
 	end
 	SetSelectedAuctionItem("bidder", button:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame));
 	-- Close any auction related popups
@@ -1386,7 +1390,9 @@ function AuctionsButton_OnClick(button)
 	assert(button);
 	
 	if ( GetCVarBool("auctionDisplayOnCharacter") ) then
-		DressUpItemLink(GetAuctionItemLink("owner", button:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+		if ( not DressUpItemLink(GetAuctionItemLink("owner", button:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame))) ) then
+			DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", button:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame)));
+		end
 	end
 	SetSelectedAuctionItem("owner", button:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
 	-- Close any auction related popups

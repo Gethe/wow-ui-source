@@ -1422,7 +1422,7 @@ function LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, index, id, name, 
 end
 
 function LFGRewardsFrame_EstimateRemainingCompletions(dungeonID)
-	local currencyID, currencyQuantity, specificQuantity, specificLimit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit, isWeekly = GetLFGDungeonRewardCapInfo(dungeonID);
+	local currencyID, currencyQuantity, specificQuantity, specificLimit, overallQuantity, overallLimit, periodPurseQuantity, periodPurseLimit, purseQuantity, purseLimit, isWeekly = GetLFGDungeonRewardCapInfo(dungeonID);
 	if(not currencyID) then
 		return 0, false;
 	end

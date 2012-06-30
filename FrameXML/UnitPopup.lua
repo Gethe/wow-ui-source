@@ -62,6 +62,9 @@ UnitPopupButtons["REPORT_SPAM"]	= { text = REPORT_SPAMMING, dist = 0 };
 UnitPopupButtons["REPORT_BAD_LANGUAGE"] = { text = REPORT_BAD_LANGUAGE, dist = 0};
 UnitPopupButtons["REPORT_BAD_NAME"] = { text = REPORT_BAD_NAME, dist = 0 };
 UnitPopupButtons["REPORT_CHEATING"] = { text = REPORT_CHEATING, dist = 0 };
+UnitPopupButtons["REPORT_BATTLE_PET"] = { text = REPORT_PET_NAME, dist = 0 };
+UnitPopupButtons["REPORT_PET"] = { text = REPORT_PET_NAME, dist = 0 };
+
 
 UnitPopupButtons["DUNGEON_DIFFICULTY"] = { text = DUNGEON_DIFFICULTY, dist = 0,  nested = 1 };
 UnitPopupButtons["DUNGEON_DIFFICULTY1"] = { text = DUNGEON_DIFFICULTY1, dist = 0, checkable = 1, difficultyID = 1 };
@@ -169,6 +172,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 UnitPopupMenus = { };
 UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["OTHERPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
@@ -186,6 +190,7 @@ UnitPopupMenus["TARGET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME
 UnitPopupMenus["ARENAENEMY"] = { "SET_FOCUS", "CANCEL" };
 UnitPopupMenus["FOCUS"] = { "CLEAR_FOCUS", "MOVE_FOCUS_FRAME", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["BOSS"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
+UnitPopupMenus["BATTLEPET"] = { "REPORT_BATTLE_PET", "CANCEL" };
 
 -- Second level menus
 UnitPopupMenus["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"};
@@ -221,7 +226,8 @@ UnitPopupFrames = {
 	"PartyMemberFrame2DropDown",
 	"PartyMemberFrame3DropDown",
 	"PartyMemberFrame4DropDown",
-	"FriendsDropDown"
+	"FriendsDropDown",
+	"PetBattleUnitFrameDropDown",
 };
 
 function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
@@ -1384,6 +1390,10 @@ function UnitPopup_OnClick (self)
 				DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
 			end
 		end
+	elseif ( button == "REPORT_BATTLE_PET" ) then
+		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", name);
+	elseif ( button == "REPORT_PET" ) then
+		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", name);		
 	elseif ( button == "REPORT_CHEATING" ) then
 		if ( GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled() ) then
 			HelpFrame_ShowReportCheatingDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));

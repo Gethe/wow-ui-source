@@ -275,6 +275,7 @@
 				self.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
+				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 				GuildMicroButton_UpdateTabard(true);
 				if ( IsTrialAccount() ) then
 					self:Disable();
@@ -317,6 +318,7 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("UPDATE_BINDINGS");
+				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 				
 				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
 				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
@@ -338,6 +340,11 @@
 				end
 				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
 				self.newbieText = NEWBIE_TOOLTIP_PVP;
+				local factionGroup = UnitFactionGroup("player");
+				if ( factionGroup and factionGroup ~= "Neutral" ) then
+					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+				end
+				UpdateMicroButtons();
 			</OnEvent>
 			<OnMouseDown>
 				if ( self:IsEnabled() ~= 0 ) then
@@ -404,6 +411,7 @@
 				end
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+				UpdateMicroButtons();
 			</OnEvent>
 			<OnClick>
 				PVEFrame_ToggleFrame();
@@ -428,6 +436,7 @@
 			<OnEvent>
 				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLECOMPANIONJOURNAL");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
+				UpdateMicroButtons();
 			</OnEvent>
 			<OnClick>
 				TogglePetJournal();
@@ -459,6 +468,7 @@
 				if (IsBlizzCon()) then
 					return;
 				end
+				UpdateMicroButtons();
 			</OnEvent>
 			<OnClick>
 				ToggleEncounterJournal();

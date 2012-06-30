@@ -962,6 +962,32 @@ StaticPopupDialogs["CONFIRM_REPORT_SPAM_CHAT"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
+	text = REPORT_BATTLEPET_NAME_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);		
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
+	text = REPORT_PET_NAME_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);		
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_REPORT_BAD_LANGUAGE_CHAT"] = {
 	text = REPORT_BAD_LANGUAGE_CONFIRMATION,
 	button1 = ACCEPT,

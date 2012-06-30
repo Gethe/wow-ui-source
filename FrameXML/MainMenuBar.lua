@@ -7,11 +7,6 @@ function ExpBar_Update()
 	local nextXP = UnitXPMax("player");
 	MainMenuExpBar:SetMinMaxValues(min(0, currXP), nextXP);
 	MainMenuExpBar:SetValue(currXP);
-	if OverrideActionBar then
---Chaz move this
-		OverrideActionBar.xpBar:SetMinMaxValues(min(0, currXP), nextXP);
-		OverrideActionBar.xpBar:SetValue(currXP);
-	end
 end
 
 

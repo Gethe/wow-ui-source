@@ -3,7 +3,7 @@ LEVEL_UP_TYPE_GUILD = "guild";	--Name used in globalstring GUILD_LEVEL_UP
 LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
 LEVEL_UP_TYPE_SCENARIO = "scenario";
 TOAST_QUEST_BOSS_EMOTE = "questbossemote";
-TOAST_PET_BATTLE_END = "petbattleend";
+TOAST_PET_BATTLE_WINNER = "petbattlewinner";
 CHAT_BATTLE_PET_LEVEL_UP = "battlepet" -- Name used in globalstring BATTLE_PET_LEVEL_UP
 CHAT_BATTLE_PET_CAPTURED = "battlepetcapture";
 TOAST_CHALLENGE_MODE_RECORD = "challengemode";
@@ -48,7 +48,7 @@ local levelUpTexCoords = {
 		textTint = {1, 0.7, 0.25},
 		gLineDelay = 1.5,
 	},
-	[TOAST_PET_BATTLE_END] = {
+	[TOAST_PET_BATTLE_WINNER] = {
 		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
 		tint = {1, 0.5, 0.25},
 		textTint = {1, 0.7, 0.25},
@@ -257,7 +257,8 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("SCENARIO_UPDATE");
-	self:RegisterEvent("PET_BATTLE_CLOSE");
+	self:RegisterEvent("PET_BATTLE_FINAL_ROUND"); -- display winner, start listening for additional results
+	self:RegisterEvent("PET_BATTLE_CLOSE");        -- stop listening for additional results
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
 	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
 	self.currSpell = 0;
@@ -296,9 +297,25 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
 		LevelUpDisplay_OnShow(self);
-	elseif ( event == "PET_BATTLE_CLOSE") then
-		self.type = TOAST_PET_BATTLE_END;
+	elseif ( event == "PET_BATTLE_CLOSE" ) then
+		self:UnregisterEvent("PET_BATTLE_LEVEL_CHANGED");
+		self:UnregisterEvent("PET_BATTLE_CAPTURED");
+	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
+		self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
+		self:RegisterEvent("PET_BATTLE_CAPTURED");
+		self.type = TOAST_PET_BATTLE_WINNER;
+		self.winner = arg1;
 		self:Show();
+	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
+		local activePlayer, activePetSlot = ...;
+		if (activePlayer == LE_BATTLE_PET_ALLY) then
+			LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot);
+		end
+	elseif ( event == "PET_BATTLE_CAPTURED" ) then
+		local fromPlayer, activePetSlot = ...;
+		if (fromPlayer == 2) then
+			LevelUpDisplay_AddBattlePetCaptureEvent(self, fromPlayer, activePetSlot);
+		end
 	elseif ( event == "QUEST_BOSS_EMOTE" ) then
 		local str, name, displayTime, warningSound = ...;
 		self.type = TOAST_QUEST_BOSS_EMOTE;
@@ -437,48 +454,69 @@ function LevelUpDisplay_BuildGuildList(self)
 	self.currSpell = 1;
 end
 
-function LevelUpDisplay_BuildPetBattleList(self)
+function LevelUpDisplay_BuildPetBattleWinnerList(self)
 	self.unlockList = {};
-	local battleResults = PetBattleFrame_GetBattleResults();
-	
-	self.winnerStr = PET_BATTLE_RESULT_LOSE;
-	
-	for _,message in pairs(battleResults) do
-		if message.type == END_OF_PET_BATTLE_RESULT then
-			self.winnerString = message.winner;
-		elseif message.type == END_OF_PET_BATTLE_CAPTURE then
-			table.insert(self.unlockList, 
-				{ 
-				entryType = "petcapture", 
-				text = BATTLE_PET_CAPTURED, 
-				subText = message.name, 
-				icon = message.icon
-				});
-		elseif message.type == END_OF_PET_BATTLE_PET_LEVEL_UP then
-			table.insert(self.unlockList, 
-				{ 
-				entryType = "petlevelup", 
-				text = format(PET_LEVEL_UP_REACHED, message.name), 
-				subText = format(LEVEL_GAINED,message.level), 
-				icon = message.icon, 
-				subIcon = SUBICON_TEXCOOR_ARROW,
-				});
-			local abilityID = PetBattleFrame_GetAbilityAtLevel(message.speciesID, message.level);
-			if (abilityID) then
-				local name, icon, typeEnum = C_PetJournal.GetPetAbilityInfo(abilityID);
-				table.insert(self.unlockList,
-					{
-					entryType = "spell",
-					text = name,
-					subText = LEVEL_UP_ABILITY,
-					icon = icon,
-					subIcon = nil,
-					});
-			end
-		end
+	self.winnerString = PET_BATTLE_RESULT_LOSE;
+	if ( self.winner == LE_BATTLE_PET_ALLY ) then
+		self.winnerString = PET_BATTLE_RESULT_WIN;
+	end;
+	self.currSpell = 1;
+end
+
+function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot)
+	if (self.currSpell == 0 or self.type ~= TOAST_PET_BATTLE_WINNER) then
+		return;
+	end
+
+	if (activePlayer ~= LE_BATTLE_PET_ALLY) then
+		return;
+	end
+
+	local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
+	local speciesID, customName, petLevel, xp, maxXp, displayID, name, petIcon = C_PetJournal.GetPetInfoByPetID(petID);
+
+	table.insert(self.unlockList, 
+		{ 
+		entryType = "petlevelup", 
+		text = format(PET_LEVEL_UP_REACHED, customName or name), 
+		subText = format(LEVEL_GAINED,petLevel), 
+		icon = petIcon, 
+		subIcon = SUBICON_TEXCOOR_ARROW,
+		});
+	local abilityID = PetBattleFrame_GetAbilityAtLevel(speciesID, petLevel);
+	if (abilityID) then
+		local abName, abIcon = C_PetJournal.GetPetAbilityInfo(abilityID);
+		table.insert(self.unlockList,
+			{
+			entryType = "spell",
+			text = abName,
+			subText = LEVEL_UP_ABILITY,
+			icon = abIcon,
+			subIcon = nil,
+			});
+	end
+end
+
+function LevelUpDisplay_AddBattlePetCaptureEvent(self, fromPlayer, activePetSlot)
+	if (self.currSpell == 0 or self.type ~= TOAST_PET_BATTLE_WINNER) then
+		return;
 	end
 	
-	self.currSpell = 1;
+	if (fromPlayer ~= LE_BATTLE_PET_ENEMY) then
+		return;
+	end
+
+	local petName = C_PetBattles.GetName(fromPlayer, activePetSlot);
+	local petIcon = C_PetBattles.GetIcon(fromPlayer, activePetSlot);
+
+	table.insert(self.unlockList, 
+		{ 
+		entryType = "petcapture", 
+		text = BATTLE_PET_CAPTURED, 
+		subText = petName, 
+		icon = petIcon
+		});
+
 end
 
 function LevelUpDisplay_OnShow(self)
@@ -544,8 +582,8 @@ function LevelUpDisplay_OnShow(self)
 				local guildName = GetGuildInfo("player");
 				self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
-			elseif ( self.type == TOAST_PET_BATTLE_END ) then
-				LevelUpDisplay_BuildPetBattleList(self);
+			elseif ( self.type == TOAST_PET_BATTLE_WINNER ) then
+				LevelUpDisplay_BuildPetBattleWinnerList(self);
 				self.levelFrame.singleline:SetText(self.winnerString);
 			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
 				LevelUpDisplay_BuildEmptyList(self);
