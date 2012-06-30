@@ -273,7 +273,7 @@
 					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
-			<Button name="TradeSkillCreateButton" inherits="MagicButtonTemplate" text="CREATE">
+			<Button name="TradeSkillCreateButton" inherits="MagicButtonTemplate" text="CREATE_PROFESSION">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="TradeSkillCancelButton" relativePoint="TOPLEFT" />

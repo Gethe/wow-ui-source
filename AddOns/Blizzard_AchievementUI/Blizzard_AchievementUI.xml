@@ -2377,8 +2377,7 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-				</Layers>
-						
+				</Layers>	
 				<Frames>
 					<Button name="$parentButton">
 						<Size x="24" y="24"/>
@@ -2416,6 +2415,18 @@
 							</Anchors>
 						</HighlightTexture>
 					</Button>
+					<Frame name="$parentMouseOver" enableMouse="true">
+						<Size x="125" y="32"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-3"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter function="AchievementFrameFilterDropDown_OnEnter"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="AchievementFrameFilterDropDown_OnLoad"/>

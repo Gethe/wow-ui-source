@@ -625,12 +625,15 @@ function ToggleEncounterJournal()
 end
 
 
-function TogglePetJournal()
+function TogglePetJournal(whichFrame)
 	if ( not PetJournalParent ) then
 		PetJournal_LoadUI();
 	end
 	if ( PetJournalParent ) then
 		ToggleFrame(PetJournalParent);
+	end
+	if (whichFrame and PetJournalParent:IsShown()) then
+		PetJournalParent_SetTab(PetJournalParent, whichFrame);
 	end
 end
 

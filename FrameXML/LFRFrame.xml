@@ -696,7 +696,13 @@
 	<Scripts>
 		<OnLoad>
 			SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
-		</OnLoad>			
+		</OnLoad>
+		<OnShow>
+			PlaySound("igCharacterInfoTab");
+		</OnShow>
+		<OnHide>
+			PlaySound("igMainMenuClose");
+		</OnHide>
 	</Scripts>
 	</Frame>
 </Ui>

@@ -789,6 +789,7 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialogRoleIcon:Show();
 			LFGDungeonReadyDialogYourRoleDescription:Show();
 			LFGDungeonReadyDialogRoleLabel:SetText(_G[role]);
+			LFGDungeonReadyDialogRoleIconTexture:SetTexCoord(GetTexCoordsForRole(role));
 			if ( isLeader ) then
 				LFGDungeonReadyDialogRoleIconLeaderIcon:Show();
 			else

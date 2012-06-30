@@ -751,12 +751,15 @@
 	<Binding name="TOGGLEENCOUNTERJOURNAL">
 		ToggleEncounterJournal();
 	</Binding>
+	<Binding name="TOGGLEMOUNTJOURNAL">
+		TogglePetJournal(1);
+	</Binding>
 	<Binding name="TOGGLECOMPANIONJOURNAL">
-		TogglePetJournal();
+		TogglePetJournal(2);
 	</Binding>
 
 
-	<!-- Misc -->
+  <!-- Misc -->
 	<Binding name="STOPCASTING" header="MISC">
 		SpellStopCasting();
 	</Binding>
@@ -1347,18 +1350,24 @@
 
 	<!-- Movie Recording Bindings -->
 	<Binding name="MOVIE_RECORDING_STARTSTOP" header="MOVIE_RECORDING_SECTION" platform="mac">
-		MovieRecording_Toggle();
+		if (MovieRecording_IsSupported()) then
+			MovieRecording_Toggle();
+		end
 	</Binding>
 	<Binding name="MOVIE_RECORDING_CANCEL" platform="mac">
-		if(MovieRecording_IsRecording() or MovieRecording_IsCompressing()) then
+		if(MovieRecording_IsSupported() and (MovieRecording_IsRecording() or MovieRecording_IsCompressing())) then
 			MacOptionsCancelFrame:Show();
 		end
 	</Binding>
 	<Binding name="MOVIE_RECORDING_COMPRESS" platform="mac">
-		MovieRecording_SearchUncompressedMovie(true);
+		if (MovieRecording_IsSupported()) then
+			MovieRecording_SearchUncompressedMovie(true);
+		end
 	</Binding>
 	<Binding name="MOVIE_RECORDING_GUI" platform="mac">
-		MovieRecording_ToggleGUI();
+		if (MovieRecording_IsSupported()) then
+			MovieRecording_ToggleGUI();
+		end
 	</Binding>
 
 	<!-- Modified Click Actions -->

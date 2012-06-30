@@ -2,6 +2,8 @@ MAX_ACHIEVEMENT_ALERTS = 2;
 LOOT_WON_ALERT_FRAMES = {};
 MONEY_WON_ALERT_FRAMES = {};
 DELAYED_ACHIEVEMENT_ALERTS = {};
+ACHIEVEMENT_ID_INDEX = 1;
+OLD_ACHIEVEMENT_INDEX = 2;
 
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
@@ -16,13 +18,13 @@ end
 
 function AlertFrame_OnEvent (self, event, ...)
 	if ( event == "ACHIEVEMENT_EARNED" ) then
-		local id = ...;
+		local id, alreadyEarned = ...;
 		
 		if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI();
 		end
 		
-		AchievementAlertFrame_ShowAlert(id);
+		AchievementAlertFrame_ShowAlert(id, alreadyEarned);
 	elseif ( event == "CRITERIA_EARNED" ) then
 		local id, criteria = ...;
 		
@@ -495,7 +497,7 @@ end
 
 function AchievementAlertFrame_FireDelayedAlerts()
 	while ( #DELAYED_ACHIEVEMENT_ALERTS > 0 ) do
-		if ( AchievementAlertFrame_ShowAlert(DELAYED_ACHIEVEMENT_ALERTS[1]) ) then
+		if ( AchievementAlertFrame_ShowAlert(DELAYED_ACHIEVEMENT_ALERTS[1][ACHIEVEMENT_ID_INDEX], DELAYED_ACHIEVEMENT_ALERTS[1][OLD_ACHIEVEMENT_INDEX]) ) then
 			table.remove(DELAYED_ACHIEVEMENT_ALERTS, 1);
 		else
 			break;
@@ -503,37 +505,45 @@ function AchievementAlertFrame_FireDelayedAlerts()
 	end
 end
 
-function AchievementAlertFrame_ShowAlert (achievementID)
+function AchievementAlertFrame_ShowAlert (achievementID, alreadyEarned)
 	local frame = AchievementAlertFrame_GetAlertFrame();
 	if ( AchievementAlertFrame_IsPaused() or not frame ) then
 		-- Either we ran out of frames or we've paused alerts, so we have to queue this one.
 		-- Make sure this one isn't already queued.
 		for i=1, #DELAYED_ACHIEVEMENT_ALERTS do
-			if ( DELAYED_ACHIEVEMENT_ALERTS[i] == achievementID ) then
+			if ( DELAYED_ACHIEVEMENT_ALERTS[i][ACHIEVEMENT_ID_INDEX] == achievementID ) then
 				return false;
 			end
 		end
 
 		-- Queue this one up.
-		DELAYED_ACHIEVEMENT_ALERTS[#DELAYED_ACHIEVEMENT_ALERTS + 1] = achievementID;
+		DELAYED_ACHIEVEMENT_ALERTS[#DELAYED_ACHIEVEMENT_ALERTS + 1] = {achievementID, alreadyEarned};
 		return false;
 	end
 	
-	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch = GetAchievementInfo(achievementID);
+	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
+	
 	
 	local frameName = frame:GetName();
 	local displayName = _G[frameName.."Name"];
 	local shieldPoints = _G[frameName.."ShieldPoints"];
 	local shieldIcon = _G[frameName.."ShieldIcon"];
+	local unlocked = _G[frameName.."Unlocked"];
+	local oldCheevo = _G[frameName.."OldAchievement"];
 	
 	displayName:SetText(name);
+
 	AchievementShield_SetPoints(points, shieldPoints, GameFontNormal, GameFontNormalSmall);
 	
 	if ( isGuildAch ) then
 		local guildName = _G[frameName.."GuildName"];
 		local guildBorder = _G[frameName.."GuildBorder"];
 		local guildBanner = _G[frameName.."GuildBanner"];
-		if ( not frame.guildDisplay ) then
+		if ( not frame.guildDisplay or frame.oldCheevo) then
+			frame.oldCheevo = nil
+			shieldPoints:Show();
+			shieldIcon:Show();
+			oldCheevo:Hide();
 			frame.guildDisplay = true;
 			frame:SetHeight(104);
 			local background = _G[frameName.."Background"];
@@ -552,7 +562,6 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 			shieldPoints:SetPoint("CENTER", 7, 5);
 			shieldPoints:SetVertexColor(0, 1, 0);
 			shieldIcon:SetTexCoord(0, 0.5, 0.5, 1);
-			local unlocked = _G[frameName.."Unlocked"];
 			unlocked:SetPoint("TOP", -1, -36);
 			unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
 			guildName:Show();
@@ -567,7 +576,11 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 		guildName:SetText(GetGuildInfo("player"));
 		SetSmallGuildTabardTextures("player", nil, guildBanner, guildBorder);
 	else
-		if ( frame.guildDisplay ) then
+		if ( frame.guildDisplay  or frame.oldCheevo) then
+			frame.oldCheevo = nil
+			shieldPoints:Show();
+			shieldIcon:Show();
+			oldCheevo:Hide();
 			frame.guildDisplay = nil;
 			frame:SetHeight(88);
 			local background = _G[frameName.."Background"];
@@ -586,7 +599,6 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 			shieldPoints:SetPoint("CENTER", 7, 2);
 			shieldPoints:SetVertexColor(1, 1, 1);
 			shieldIcon:SetTexCoord(0, 0.5, 0, 0.45);
-			local unlocked = _G[frameName.."Unlocked"];
 			unlocked:SetPoint("TOP", 7, -23);
 			unlocked:SetText(ACHIEVEMENT_UNLOCKED);
 			_G[frameName.."GuildName"]:Hide();
@@ -598,6 +610,16 @@ function AchievementAlertFrame_ShowAlert (achievementID)
 			frame.shine:SetTexCoord(0.78125, 0.912109375, 0, 0.28125);
 			frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
 		end
+		
+		if (alreadyEarned) then
+			frame.oldCheevo = true;
+			shieldPoints:Hide();
+			shieldIcon:Hide();
+			oldCheevo:Show();
+			displayName:SetPoint("BOTTOMLEFT", 72, 37);
+			displayName:SetPoint("BOTTOMRIGHT", -25, 37);
+			unlocked:SetPoint("TOP", 21, -23);
+		end	
 	end
 	
 	if ( points == 0 ) then

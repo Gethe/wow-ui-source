@@ -50,7 +50,7 @@
 			<OnEnter>
 				if ( self.spellID ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetSpellByID(self.spellID);
+					GameTooltip:SetSpellByID(self.spellID, false, false, true);
 					if ( self.extraTooltip ) then
 						GameTooltip:AddLine(self.extraTooltip);
 					end

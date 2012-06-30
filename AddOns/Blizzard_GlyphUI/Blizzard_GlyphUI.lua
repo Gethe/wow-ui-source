@@ -444,8 +444,8 @@ function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
 		glyph.highlight:SetHeight(info.highlight.size);
 		glyph.highlight:SetTexCoord(info.highlight.left, info.highlight.right, info.highlight.top, info.highlight.bottom);
 		
-		glyph.glyph:SetWidth(info.ring.size - 4);
-		glyph.glyph:SetHeight(info.ring.size - 4);
+		glyph.glyph:SetWidth(info.ring.size - 6);
+		glyph.glyph:SetHeight(info.ring.size - 6);
 		glyph.glyph:SetAlpha(0.75);
 	end
 end

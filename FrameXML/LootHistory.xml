@@ -2,16 +2,26 @@
 ..\FrameXML\UI.xsd">
 	<Script file="LootHistory.lua"/>
 	<Button name="LootHistoryItemTemplate" virtual="true">
-		<Size x="177" y="32"/>
+		<Size x="177" y="36"/>
 		<HitRectInsets>
 			<AbsInset left="20" right="0" top="0" bottom="0"/>
 		</HitRectInsets>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<!--RollWindow-ItemDivider-->
+				<Texture parentKey="Divider" file="Interface\LootFrame\LootToast">
+					<Size x="181" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="1"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.17773438" top="0.74218750" bottom="0.89062500"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
 				<Texture parentKey="Icon">
 					<Size x="28" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT" x="23" y="0"/>
+						<Anchor point="LEFT" x="23" y="-2"/>
 					</Anchors>
 				</Texture>
 				<!--SmallItemNameBorder-Left-->
@@ -25,7 +35,7 @@
 				<Texture parentKey="NameBorderRight" file="Interface\LootFrame\LootToast">
 					<Size x="16" y="32"/>	
 					<Anchors>
-						<Anchor point="RIGHT" x="0" y="0"/>
+						<Anchor point="RIGHT" x="0" y="-2"/>
 					</Anchors>
 					<TexCoords left="0.73242188" right="0.74804688" top="0.80859375" bottom="0.93359375"/>	
 				</Texture>
@@ -71,6 +81,14 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.WinnerRollType" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="ActiveHighlight" file="Interface\LootFrame\LootHistory-NewItemGlow" alpha="0.7">
+					<Size x="128" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.NameBorderMid" relativePoint="BOTTOM" x="2" y="-12"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -131,16 +149,11 @@
 						<Anchor point="RIGHT" x="-2" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="RollIcon">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.RollText" relativePoint="LEFT" x="2" y="-1"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="PlayerName" inherits="GameFontNormalSmall" justifyH="LEFT" text="PLAYERNAME">
 					<Anchors>
 						<Anchor point="LEFT" x="25" y="0"/>
-						<Anchor point="RIGHT" relativeKey="$parent.RollIcon" relativePoint="LEFT" x="-2" y="0"/>
+						<!--Anchored in OnLoad because the RollIcon frame isn't loaded yet.
+						<Anchor point="RIGHT" relativeKey="$parent.RollIcon" relativePoint="LEFT" x="-2" y="0"/>-->
 					</Anchors>
 				</FontString>
 				<Texture parentKey="WinMark" file="Interface\Buttons\UI-CheckBox-Check">
@@ -151,8 +164,32 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="RollIcon">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RollText" relativePoint="LEFT" x="2" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
+				self.PlayerName:SetPoint("RIGHT", self.RollIcon, "LEFT", -2, 0);
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>
 			<OnClick function="LootHistoryPlayerFrame_OnClick"/>

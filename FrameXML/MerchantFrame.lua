@@ -778,6 +778,8 @@ function MerchantFrame_UpdateFilterString()
 		name = UnitClass("player");
 	elseif currFilter == LE_LOOT_FILTER_BOE then
 		name = ITEM_BIND_ON_EQUIP;
+	elseif currFilter == LE_LOOT_FILTER_ALL then
+		name = ALL;
 	else -- Spec
 		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1);
 		name = specName;
@@ -791,20 +793,12 @@ function MerchantFrame_InitFilter()
 	local currFilter = GetMerchantFilter();
 	local className = UnitClass("player");
 
---[[
-	info.text = ALL;
-	info.checked = currFilter == LE_LOOT_FILTER_ALL;
-	info.arg1 = LE_LOOT_FILTER_ALL;
-	info.func = MerchantFrame_SetFilter;
-	UIDropDownMenu_AddButton(info);
-]]
 	info.func = MerchantFrame_SetFilter;
 	
 	info.text = className;
-	info.checked = (currFilter ~= LE_LOOT_FILTER_BOE);
+	info.checked = (currFilter ~= LE_LOOT_FILTER_BOE and currFilter ~= LE_LOOT_FILTER_ALL);
 	info.arg1 = LE_LOOT_FILTER_CLASS;
 	UIDropDownMenu_AddButton(info);
-	
 	
 	local numSpecs = GetNumSpecializations();
 	for i = 1, numSpecs do
@@ -826,6 +820,12 @@ function MerchantFrame_InitFilter()
 	info.text = ITEM_BIND_ON_EQUIP;
 	info.checked = currFilter == LE_LOOT_FILTER_BOE;
 	info.arg1 = LE_LOOT_FILTER_BOE;
+	UIDropDownMenu_AddButton(info);
+	
+	info.leftPadding = nil;
+	info.text = ALL;
+	info.checked = currFilter == LE_LOOT_FILTER_ALL;
+	info.arg1 = LE_LOOT_FILTER_ALL;
 	UIDropDownMenu_AddButton(info);
 end
 

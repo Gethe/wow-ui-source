@@ -54,17 +54,17 @@ MATERIAL_TITLETEXT_COLOR_TABLE = {
 };
 
 RAID_CLASS_COLORS = {
-	["HUNTER"] = { r = 0.67, g = 0.83, b = 0.45 },
-	["WARLOCK"] = { r = 0.58, g = 0.51, b = 0.79 },
-	["PRIEST"] = { r = 1.0, g = 1.0, b = 1.0 },
-	["PALADIN"] = { r = 0.96, g = 0.55, b = 0.73 },
-	["MAGE"] = { r = 0.41, g = 0.8, b = 0.94 },
-	["ROGUE"] = { r = 1.0, g = 0.96, b = 0.41 },
-	["DRUID"] = { r = 1.0, g = 0.49, b = 0.04 },
-	["SHAMAN"] = { r = 0.0, g = 0.44, b = 0.87 },
-	["WARRIOR"] = { r = 0.78, g = 0.61, b = 0.43 },
-	["DEATHKNIGHT"] = { r = 0.77, g = 0.12 , b = 0.23 },
-	["MONK"] = { r = 0.0, g = 1.00 , b = 0.59 },
+	["HUNTER"] = { r = 0.67, g = 0.83, b = 0.45, colorStr = "ffabd473" },
+	["WARLOCK"] = { r = 0.58, g = 0.51, b = 0.79, colorStr = "ff9482c9" },
+	["PRIEST"] = { r = 1.0, g = 1.0, b = 1.0, colorStr = "ffffffff" },
+	["PALADIN"] = { r = 0.96, g = 0.55, b = 0.73, colorStr = "fff58cba" },
+	["MAGE"] = { r = 0.41, g = 0.8, b = 0.94, colorStr = "ff69ccf0" },
+	["ROGUE"] = { r = 1.0, g = 0.96, b = 0.41, colorStr = "fffff569" },
+	["DRUID"] = { r = 1.0, g = 0.49, b = 0.04, colorStr = "ffff7d0a" },
+	["SHAMAN"] = { r = 0.0, g = 0.44, b = 0.87, colorStr = "ff0070de" },
+	["WARRIOR"] = { r = 0.78, g = 0.61, b = 0.43, colorStr = "ffc79c6e" },
+	["DEATHKNIGHT"] = { r = 0.77, g = 0.12 , b = 0.23, colorStr = "ffc41f3b" },
+	["MONK"] = { r = 0.0, g = 1.00 , b = 0.59, colorStr = "ff00ff96" },
 };
 
 
@@ -119,7 +119,7 @@ SPELL_POWER_MANA = 0;
 SPELL_POWER_RAGE = 1;
 SPELL_POWER_FOCUS = 2;
 SPELL_POWER_ENERGY = 3;
-SPELL_POWER_CHI = 4;
+--SPELL_POWER_CHI = 4; This is obsolete now.
 SPELL_POWER_RUNES = 5;
 SPELL_POWER_RUNIC_POWER = 6;
 SPELL_POWER_SOUL_SHARDS = 7;

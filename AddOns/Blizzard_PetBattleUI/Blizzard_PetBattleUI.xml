@@ -516,6 +516,19 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" x="0" y="0"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="SpeedAdvantageIcon" file="Interface\PetBattles\PetBattle-StatIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="32"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
+				</Texture>
+				<FontString parentKey="SpeedAdvantage" inherits="GameFontNormal" justifyH="LEFT" text="PET_BATTLE_TOOLTIP_SPEED_ADVANTAGE" hidden="true">
+					<Size x="226" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="26" y="32"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -553,18 +566,19 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentCooldownFlash" parentKey="CooldownFlash" file="interface\cooldown\star4" alphaMode="ADD" alpha="0">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.31373" g="0.627451" b="1.0"/>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Cooldown" inherits="GameFont_Gigantic" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-				</FontString>
-				<FontString parentKey="RequiredLevel" inherits="GameFont_Gigantic" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<Color r="1" g="0" b="0"/>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -603,6 +617,13 @@
 		<Scripts>
 			<OnEvent function="PetBattleActionButton_OnEvent"/>
 		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="CooldownFlashAnim">
+				<Rotation targetKey="$parent.$parent.CooldownFlash" degrees="-90" duration="0.5" order="1"/>
+				<Alpha targetKey="$parent.$parent.CooldownFlash" change="0.50" duration="0.1667" order="1"/>
+				<Alpha targetKey="$parent.$parent.CooldownFlash" change="-0.50" duration="0.3333" order="2"/>
+			</AnimationGroup>
+		</Animations>
 	</Button>
 	<Button name="PetBattleAbilityButtonTemplate" inherits="PetBattleActionButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Scripts>
@@ -1553,6 +1574,7 @@
 								frame:SetAlpha(0);
 								frame:SetScale(1.0,1.0);
 								parentFrame:Hide();
+								PetBattleFrame_ShowMultiWildNotification(PetBattleFrame);
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>

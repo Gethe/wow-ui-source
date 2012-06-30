@@ -14,7 +14,7 @@
 
 -- Version
 -- Constant -- Incrementing this number will erase saved filter settings!!
-COMBATLOG_FILTER_VERSION = 4.2;
+COMBATLOG_FILTER_VERSION = 4.3;
 -- Saved Variable
 Blizzard_CombatLog_Filter_Version = 0;
 
@@ -68,7 +68,7 @@ COMBATLOG_DEFAULT_COLORS = {
 };
 COMBATLOG_DEFAULT_SETTINGS = {
 	-- Settings
-	fullText = true;
+	fullText = false;
 	textMode = TEXT_MODE_A;
 	timestamp = false;
 	timestampFormat = TEXT_MODE_A_TIMESTAMP;
@@ -331,7 +331,6 @@ local SPELL_POWER_MANA = SPELL_POWER_MANA
 local SPELL_POWER_RAGE = SPELL_POWER_RAGE
 local SPELL_POWER_FOCUS = SPELL_POWER_FOCUS
 local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
-local SPELL_POWER_CHI = SPELL_POWER_CHI
 local SPELL_POWER_RUNES = SPELL_POWER_RUNES
 local SPELL_POWER_RUNIC_POWER = SPELL_POWER_RUNIC_POWER
 local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS;
@@ -388,15 +387,15 @@ Blizzard_CombatLog_Filter_Defaults = {
 	filters = {
 		[1] = {
 			-- Descriptive Information
-			name = QUICKBUTTON_NAME_SELF;
+			name = QUICKBUTTON_NAME_MY_ACTIONS;
 			hasQuickButton = true;
-			quickButtonName = QUICKBUTTON_NAME_SELF;
+			quickButtonName = QUICKBUTTON_NAME_MY_ACTIONS;
 			quickButtonDisplay = {
 				solo = true;
 				party = true;
 				raid = true;
 			};
-			tooltip = QUICKBUTTON_NAME_SELF_TOOLTIP;
+			tooltip = QUICKBUTTON_NAME_MY_ACTIONS_TOOLTIP;
 
 			-- Default Color and Formatting Options
 			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
@@ -408,54 +407,53 @@ Blizzard_CombatLog_Filter_Defaults = {
 			filters = {
 				[1] = {
 					eventList = {
-					      ["ENVIRONMENTAL_DAMAGE"] = true,
+					      ["ENVIRONMENTAL_DAMAGE"] = false,
 					      ["SWING_DAMAGE"] = true,
-					      ["SWING_MISSED"] = true,
+					      ["SWING_MISSED"] = false,
 					      ["RANGE_DAMAGE"] = true,
-					      ["RANGE_MISSED"] = true,
+					      ["RANGE_MISSED"] = false,
 					      --["SPELL_CAST_START"] = true,
 					      --["SPELL_CAST_SUCCESS"] = true,
 					      --["SPELL_CAST_FAILED"] = true,
-					      ["SPELL_MISSED"] = true,
+					      ["SPELL_MISSED"] = false,
 					      ["SPELL_DAMAGE"] = true,
 					      ["SPELL_HEAL"] = true,
-					      ["SPELL_ENERGIZE"] = true,
-					      ["SPELL_DRAIN"] = true,
-					      ["SPELL_LEECH"] = true,
-					      ["SPELL_INSTAKILL"] = true,
-					      ["SPELL_INTERRUPT"] = true,
-					      ["SPELL_EXTRA_ATTACKS"] = true,
+					      ["SPELL_ENERGIZE"] = false,
+					      ["SPELL_DRAIN"] = false,
+					      ["SPELL_LEECH"] = false,
+					      ["SPELL_INSTAKILL"] = false,
+					      ["SPELL_INTERRUPT"] = false,
+					      ["SPELL_EXTRA_ATTACKS"] = false,
 					      --["SPELL_DURABILITY_DAMAGE"] = true,
 					      --["SPELL_DURABILITY_DAMAGE_ALL"] = true,
-					      ["SPELL_AURA_APPLIED"] = true,
-					      ["SPELL_AURA_APPLIED_DOSE"] = true,
-					      ["SPELL_AURA_REMOVED"] = true,
-					      ["SPELL_AURA_REMOVED_DOSE"] = true,
-					      ["SPELL_AURA_BROKEN"] = true,
-						  ["SPELL_AURA_BROKEN_SPELL"] = true,
-						  ["SPELL_AURA_REFRESH"] = true,
-					      ["SPELL_DISPEL"] = true,
-					      ["SPELL_STOLEN"] = true,
-					      ["ENCHANT_APPLIED"] = true,
-					      ["ENCHANT_REMOVED"] = true,
-					      ["SPELL_PERIODIC_MISSED"] = true,
+					      ["SPELL_AURA_APPLIED"] = false,
+					      ["SPELL_AURA_APPLIED_DOSE"] = false,
+					      ["SPELL_AURA_REMOVED"] = false,
+					      ["SPELL_AURA_REMOVED_DOSE"] = false,
+					      ["SPELL_AURA_BROKEN"] = false,
+						  ["SPELL_AURA_BROKEN_SPELL"] = false,
+						  ["SPELL_AURA_REFRESH"] = false,
+					      ["SPELL_DISPEL"] = false,
+					      ["SPELL_STOLEN"] = false,
+					      ["ENCHANT_APPLIED"] = false,
+					      ["ENCHANT_REMOVED"] = false,
+					      ["SPELL_PERIODIC_MISSED"] = false,
 					      ["SPELL_PERIODIC_DAMAGE"] = true,
 					      ["SPELL_PERIODIC_HEAL"] = true,
-					      ["SPELL_PERIODIC_ENERGIZE"] = true,
-					      ["SPELL_PERIODIC_DRAIN"] = true,
-					      ["SPELL_PERIODIC_LEECH"] = true,
-					      ["SPELL_DISPEL_FAILED"] = true,
+					      ["SPELL_PERIODIC_ENERGIZE"] = false,
+					      ["SPELL_PERIODIC_DRAIN"] = false,
+					      ["SPELL_PERIODIC_LEECH"] = false,
+					      ["SPELL_DISPEL_FAILED"] = false,
 					      --["DAMAGE_SHIELD"] = true,
 					      --["DAMAGE_SHIELD_MISSED"] = true,
 					      ["DAMAGE_SPLIT"] = true,
 					      ["PARTY_KILL"] = true,
-					      ["UNIT_DIED"] = true,
+					      ["UNIT_DIED"] = false,
 					      ["UNIT_DESTROYED"] = true,
 					      ["UNIT_DISSIPATES"] = true
 					};
 					sourceFlags = {
-						[COMBATLOG_FILTER_MINE] = true,
-						[COMBATLOG_FILTER_MY_PET] = true;
+						[COMBATLOG_FILTER_MINE] = true
 					};
 					destFlags = nil;
 				};
@@ -504,46 +502,14 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["UNIT_DISSIPATES"] = true
 					};
 					sourceFlags = nil;
-					destFlags = {
-						[COMBATLOG_FILTER_MINE] = true,
-						[COMBATLOG_FILTER_MY_PET] = true;
+					destFlags =  {
+						[COMBATLOG_FILTER_MINE] = false,
+						[COMBATLOG_FILTER_MY_PET] = false;
 					};
 				};
 			};
 		};
 		[2] = {
-			-- Descriptive Information
-			name = QUICKBUTTON_NAME_EVERYTHING;
-			hasQuickButton = true;
-			quickButtonName = QUICKBUTTON_NAME_EVERYTHING;
-			quickButtonDisplay = {
-				solo = true;
-				party = true;
-				raid = true;
-			};
-			tooltip = QUICKBUTTON_NAME_EVERYTHING_TOOLTIP;
-
-			-- Settings
-			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
-
-			-- Coloring
-			colors = CopyTable(COMBATLOG_DEFAULT_COLORS);
-
-			-- The actual client filters
-			filters = {
-				[1] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
-					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
-					destFlags = nil;
-				};
-				[2] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
-					sourceFlags = nil;
-					destFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
-				};
-			};
-		};
-		[3] = {
 			-- Descriptive Information
 			name = QUICKBUTTON_NAME_ME;
 			hasQuickButton = true;
@@ -564,7 +530,19 @@ Blizzard_CombatLog_Filter_Defaults = {
 			-- The actual client filters
 			filters = {
 				[1] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
+					eventList = {
+					      ["ENVIRONMENTAL_DAMAGE"] = true,
+					      ["SWING_DAMAGE"] = true,
+					      ["RANGE_DAMAGE"] = true,
+					      ["SPELL_DAMAGE"] = true,
+					      ["SPELL_HEAL"] = true,
+					      ["SPELL_PERIODIC_DAMAGE"] = true,
+					      ["SPELL_PERIODIC_HEAL"] = true,
+					      ["DAMAGE_SPLIT"] = true,
+					      ["UNIT_DIED"] = true,
+					      ["UNIT_DESTROYED"] = true,
+					      ["UNIT_DISSIPATES"] = true
+					};
 					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(false);
 					destFlags = nil;
 				};
@@ -573,50 +551,8 @@ Blizzard_CombatLog_Filter_Defaults = {
 					sourceFlags = nil;
 					destFlags =  {
 						[COMBATLOG_FILTER_MINE] = true,
-						[COMBATLOG_FILTER_MY_PET] = true;
+						[COMBATLOG_FILTER_MY_PET] = false;
 					};
-				};
-			};
-		};
-		[4] = {
-			-- Descriptive Information
-			name = QUICKBUTTON_NAME_KILLS;
-			hasQuickButton = false;
-			quickButtonName = QUICKBUTTON_NAME_KILLS;
-			quickButtonDisplay = {
-				solo = true;
-				party = true;
-				raid = true;
-			};
-			tooltip = QUICKBUTTON_NAME_KILLS_TOOLTIP;
-
-			-- Settings
-			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS);
-
-			-- Coloring
-			colors = CopyTable(COMBATLOG_DEFAULT_COLORS);
-
-			-- The actual client filters
-			filters = {
-				[1] = {
-					eventList = {
-						["PARTY_KILL"] = true,
-						["UNIT_DIED"] = true,
-						["UNIT_DESTROYED"] = true,
-						["UNIT_DISSIPATES"] = true
-					};
-					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
-					destFlags = nil;
-				};
-				[2] = {
-					eventList = {
-						["PARTY_KILL"] = true,
-						["UNIT_DIED"] = true,
-						["UNIT_DESTROYED"] = true,
-						["UNIT_DISSIPATES"] = true
-					};
-					sourceFlags = nil;
-					destFlags = Blizzard_CombatLog_GenerateFullFlagList(true);
 				};
 			};
 		};
@@ -1895,8 +1831,6 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		end
 	elseif ( powerType == SPELL_POWER_HOLY_POWER ) then
 		return HOLY_POWER;
-	elseif ( powerType == SPELL_POWER_CHI ) then --Now called energy for monks... That's not confusing at all.
-		return CHI; -- "Energy"
 	elseif ( powerType == SPELL_POWER_LIGHT_FORCE ) then
 		return CHI_POWER; -- "Chi"
 	elseif ( powerType == SPELL_POWER_BURNING_EMBERS ) then

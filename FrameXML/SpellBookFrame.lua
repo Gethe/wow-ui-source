@@ -628,7 +628,7 @@ function SpellButton_UpdateButton(self)
 	if ( subSpellName == "" ) then
 		if ( specName and specName ~= "" ) then
 			if ( isPassive ) then
-				subSpellName = specName .. " " .. SPELL_PASSIVE
+				subSpellName = specName .. ", " .. SPELL_PASSIVE_SECOND
 			else
 				subSpellName = specName;
 			end
@@ -1387,7 +1387,7 @@ CoreAbilitiesFrame_HelpPlate = {
 WhatHasChangedFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
+	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "BOTTOM",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
 }
 
 function SpellBook_ToggleTutorial()

@@ -129,32 +129,34 @@ end
 function VoidStorageFrame_Update()
 	if ( CanUseVoidStorage() ) then
 		local lastTutorial = tonumber(GetCVar("lastVoidStorageTutorial"));
-		if ( lastTutorial >= #voidStorageTutorials ) then
-			-- hide blocking frame if necessary
-			if ( VoidStorageBorderFrameMouseBlockFrame:IsShown() ) then
-				VoidStorageBorderFrameMouseBlockFrame:Hide();
-				VoidStoragePurchaseFrame:Hide();
-				VoidStorageBorderFrame.Bg:Hide();
-				VoidStorageHelpBox:Hide();
-			end
-		else
-			local tutorial = voidStorageTutorials[lastTutorial + 1];
-			local height = 58;	-- button height + top and bottom padding + spacing between text and button
-			VoidStorageHelpBoxBigText:SetText(tutorial.text1);
-			height = height + VoidStorageHelpBoxBigText:GetHeight();
-			if ( tutorial.text2 ) then
-				VoidStorageHelpBoxSmallText:SetText(tutorial.text2);
-				height = height + 12 + VoidStorageHelpBoxSmallText:GetHeight();
-				VoidStorageHelpBoxSmallText:Show();
+		if ( lastTutorial ) then
+			if ( lastTutorial >= #voidStorageTutorials ) then
+				-- hide blocking frame if necessary
+				if ( VoidStorageBorderFrameMouseBlockFrame:IsShown() ) then
+					VoidStorageBorderFrameMouseBlockFrame:Hide();
+					VoidStoragePurchaseFrame:Hide();
+					VoidStorageBorderFrame.Bg:Hide();
+					VoidStorageHelpBox:Hide();
+				end
 			else
-				VoidStorageHelpBoxSmallText:Hide();
+				local tutorial = voidStorageTutorials[lastTutorial + 1];
+				local height = 58;	-- button height + top and bottom padding + spacing between text and button
+				VoidStorageHelpBoxBigText:SetText(tutorial.text1);
+				height = height + VoidStorageHelpBoxBigText:GetHeight();
+				if ( tutorial.text2 ) then
+					VoidStorageHelpBoxSmallText:SetText(tutorial.text2);
+					height = height + 12 + VoidStorageHelpBoxSmallText:GetHeight();
+					VoidStorageHelpBoxSmallText:Show();
+				else
+					VoidStorageHelpBoxSmallText:Hide();
+				end
+				VoidStorageHelpBox:SetHeight(height);
+				VoidStorageHelpBox:SetPoint("BOTTOMLEFT", 12, tutorial.yOffset);
+				VoidStorageHelpBoxButton.currentTutorial = lastTutorial + 1;
+				VoidStorageFrame_SetUpBlockingFrame();
+				VoidStoragePurchaseFrame:Hide();
+				VoidStorageHelpBox:Show();
 			end
-			VoidStorageHelpBox:SetHeight(height);
-			VoidStorageHelpBox:SetPoint("BOTTOMLEFT", 12, tutorial.yOffset);
-			VoidStorageHelpBoxButton.currentTutorial = lastTutorial + 1;
-			VoidStorageFrame_SetUpBlockingFrame();
-			VoidStoragePurchaseFrame:Hide();
-			VoidStorageHelpBox:Show();
 		end
 		IsVoidStorageReady();
 		VoidStorage_ItemsUpdate(true, true);

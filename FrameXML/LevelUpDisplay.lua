@@ -4,8 +4,6 @@ LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
 LEVEL_UP_TYPE_SCENARIO = "scenario";
 TOAST_QUEST_BOSS_EMOTE = "questbossemote";
 TOAST_PET_BATTLE_WINNER = "petbattlewinner";
-CHAT_BATTLE_PET_LEVEL_UP = "battlepet" -- Name used in globalstring BATTLE_PET_LEVEL_UP
-CHAT_BATTLE_PET_CAPTURED = "battlepetcapture";
 TOAST_CHALLENGE_MODE_RECORD = "challengemode";
 
 LEVEL_UP_EVENTS = {
@@ -251,6 +249,7 @@ LEVEL_UP_CLASS_HACKS = {
 							},	
 }
 
+LEVEL_UP_TRAP_LEVELS = {427, 77, 135}
 
 function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
@@ -261,6 +260,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_CLOSE");        -- stop listening for additional results
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
 	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
+	self:RegisterEvent("PET_JOURNAL_TRAP_LEVEL_SET");
 	self.currSpell = 0;
 end
 
@@ -306,6 +306,11 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.type = TOAST_PET_BATTLE_WINNER;
 		self.winner = arg1;
 		self:Show();
+	elseif ( event == "PET_JOURNAL_TRAP_LEVEL_SET" ) then
+		local trapLevel = ...;
+		if (trapLevel >= 1 and trapLevel <= #LEVEL_UP_TRAP_LEVELS) then
+			LevelUpDisplay_AddBattlePetTrapUpgradeEvent(self, trapLevel);
+		end
 	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
 		local activePlayer, activePetSlot, newLevel = ...;
 		if (activePlayer == LE_BATTLE_PET_ALLY) then
@@ -465,6 +470,25 @@ function LevelUpDisplay_BuildPetBattleWinnerList(self)
 	self.currSpell = 1;
 end
 
+function LevelUpDisplay_AddBattlePetTrapUpgradeEvent(self, trapLevel)
+	if ( trapLevel < 1 or trapLevel > #LEVEL_UP_TRAP_LEVELS ) then
+		return;
+	end
+
+	local name, icon, typeEnum = C_PetJournal.GetPetAbilityInfo(LEVEL_UP_TRAP_LEVELS[trapLevel]);
+
+	if (name and self.unlockList) then
+		table.insert(self.unlockList,
+			{
+			entryType = "spell",
+			text = name,
+			subText = PET_BATTLE_TRAP_UPGRADE,
+			icon = icon,
+			subIcon = nil
+			});
+	end
+end
+
 function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot, newLevel)
 	if (self.currSpell == 0 or self.type ~= TOAST_PET_BATTLE_WINNER) then
 		return;
@@ -510,13 +534,15 @@ function LevelUpDisplay_AddBattlePetCaptureEvent(self, fromPlayer, activePetSlot
 
 	local petName = C_PetBattles.GetName(fromPlayer, activePetSlot);
 	local petIcon = C_PetBattles.GetIcon(fromPlayer, activePetSlot);
-
+	local quality = C_PetBattles.GetBreedQuality(fromPlayer, activePetSlot);
+	
 	table.insert(self.unlockList, 
 		{ 
 		entryType = "petcapture", 
 		text = BATTLE_PET_CAPTURED, 
 		subText = petName, 
-		icon = petIcon
+		icon = petIcon,
+		quality = quality
 		});
 
 end
@@ -588,6 +614,7 @@ function LevelUpDisplay_OnShow(self)
 				LevelUpDisplay_BuildPetBattleWinnerList(self);
 				self.levelFrame.singleline:SetText(self.winnerString);
 				PlaySoundKitID(self.winnerSoundKitID);
+				playAnim = self.levelFrame.fastReveal;
 			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
 				LevelUpDisplay_BuildEmptyList(self);
 				self.levelFrame.blockText:SetText(self.bossText);
@@ -637,10 +664,13 @@ function LevelUpDisplay_AnimStep(self, fast)
 		self.spellFrame.name:SetText("");
 		self.spellFrame.flavorText:SetText("");
 		self.spellFrame.upperwhite:SetText("");
-		self.spellFrame.bottomHuge:SetText("");
 		self.spellFrame.bottomGiant:SetText("");
 		self.spellFrame.subIcon:Hide();
 		self.spellFrame.subIconRight:Hide();
+		self.spellFrame.rarityUpperwhite:SetText("");
+		self.spellFrame.rarityMiddleHuge:SetText("");
+		self.spellFrame.rarityIcon:Hide();
+		self.spellFrame.rarityValue:SetText("");
 		
 		if (not spellInfo.entryType or
 			spellInfo.entryType == "spell" or
@@ -665,8 +695,15 @@ function LevelUpDisplay_AnimStep(self, fast)
 			self.spellFrame.showAnim:Play();
 		elseif (spellInfo.entryType == "petcapture") then
 			self.spellFrame.icon:SetTexture(spellInfo.icon);
-			self.spellFrame.upperwhite:SetText(spellInfo.text);
-			self.spellFrame.bottomHuge:SetText(spellInfo.subText);
+			self.spellFrame.rarityUpperwhite:SetText(spellInfo.text);
+			self.spellFrame.rarityMiddleHuge:SetText(spellInfo.subText);
+			if (spellInfo.quality) then
+				self.spellFrame.iconBorder:Show();
+				self.spellFrame.iconBorder:SetVertexColor(ITEM_QUALITY_COLORS[spellInfo.quality-1].r, ITEM_QUALITY_COLORS[spellInfo.quality-1].g, ITEM_QUALITY_COLORS[spellInfo.quality-1].b);
+				self.spellFrame.rarityIcon:Show();
+				self.spellFrame.rarityValue:SetText(_G["BATTLE_PET_BREED_QUALITY"..spellInfo.quality]);
+				self.spellFrame.rarityValue:SetTextColor(ITEM_QUALITY_COLORS[spellInfo.quality-1].r, ITEM_QUALITY_COLORS[spellInfo.quality-1].g, ITEM_QUALITY_COLORS[spellInfo.quality-1].b);
+			end
 			self.spellFrame.showAnim:Play();
 		end
 	end
@@ -811,34 +848,6 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 		local guildName = GetGuildInfo("player");
 		levelstring = format(GUILD_LEVEL_UP, guildName, level, level);
 		info = ChatTypeInfo["GUILD"];
-	elseif ( levelUpType == CHAT_BATTLE_PET_LEVEL_UP ) then
-		LevelUpDisplay_BuildBattlePetList(chatLevelUP);
-		local petName, icon  = ...;
-		if (petName) then
-			if (icon) then
-				levelstring = format(BATTLE_PET_LEVEL_UP_ICON, icon, petName, level);
-			else
-				levelstring = format(BATTLE_PET_LEVEL_UP, petName, level);
-			end
-		else
-			levelstring = "";
-		end
-		info = ChatTypeInfo["SYSTEM"];
-	elseif ( levelUpType == CHAT_BATTLE_PET_CAPTURED ) then
-		LevelUpDisplay_BuildEmptyList(chatLevelUP);
-		local activePlayer, activePetSlot = ...;
-		local petname = C_PetBattles.GetName(activePlayer, activePetSlot);
-		local icon = C_PetBattles.GetIcon(activePlayer, activePetSlot);
-		if (petname) then
-			if (icon) then
-				levelstring = format(BATTLE_PET_CAPTURED_ICON_LINK, icon, petname);
-			else
-				levelstring = format(BATTLE_PET_CAPTURED_LINK, petname);
-			end
-		else
-			levelstring = "";
-		end
-		info = ChatTypeInfo["SYSTEM"];
 	end
 	self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 	for _,skill in pairs(chatLevelUP.unlockList) do

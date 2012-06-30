@@ -2,6 +2,8 @@ function ToggleLootHistoryFrame()
 	if ( LootHistoryFrame:IsShown() ) then
 		LootHistoryFrame:Hide();
 	else
+		LootHistoryFrame_ResetHighlights(LootHistoryFrame);
+		LootHistoryFrame_FullUpdate(LootHistoryFrame);
 		LootHistoryFrame:Show();
 	end
 end
@@ -11,6 +13,7 @@ function LootHistoryFrame_OnLoad(self)
 	self.expandedRolls = {};
 	self.usedPlayerFrames = {};
 	self.unusedPlayerFrames = {};
+	self.highlightedRolls = {};
 
 	self:RegisterEvent("LOOT_HISTORY_FULL_UPDATE");
 	self:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE");
@@ -32,8 +35,11 @@ function LootHistoryFrame_OnEvent(self, event, ...)
 		if ( GetCVarBool("autoOpenLootHistory") ) then
 			local rollID = ...;
 			if ( not self:IsShown() ) then
+				LootHistoryFrame_ResetHighlights(self);
 				LootHistoryFrame_CollapseAll(self);
+				self.ScrollFrame:SetVerticalScroll(0);
 			end
+			self.highlightedRolls[rollID] = true;
 			LootHistoryFrame_SetRollExpanded(self, rollID, true);
 			LootHistoryFrame:Show();
 		end
@@ -110,7 +116,7 @@ function LootHistoryFrame_UpdatePlayerFrames(self, itemIdx)
 
 	local firstFrame, lastFrame;
 
-	if ( not isDone or winnerIdx ) then
+	if ( not isDone or winnerIdx or isMasterLoot ) then
 		for i=1, numPlayers do
 			if ( LootHistoryFrameUtil_ShouldDisplayPlayer(itemIdx, i) ) then
 				local frame = LootHistoryFrame_GetPlayerFrame(self);
@@ -161,6 +167,10 @@ function LootHistoryFrame_CollapseAll(self)
 	LootHistoryFrame_FullUpdate(self);
 end
 
+function LootHistoryFrame_ResetHighlights(self)
+	table.wipe(self.highlightedRolls);
+end
+
 function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
 	local rollID, itemLink, numPlayers, isDone, winnerIdx, isMasterLoot = C_LootHistory.GetItem(itemFrame.itemIdx);
 	local expanded = self.expandedRolls[rollID];
@@ -187,6 +197,12 @@ function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
 		itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
 		itemFrame.ItemName:SetText(itemName);
 		itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
+	end
+
+	if ( self.highlightedRolls[rollID] ) then
+		itemFrame.ActiveHighlight:Show();
+	else
+		itemFrame.ActiveHighlight:Hide();
 	end
 
 	if ( isDone and not expanded ) then
@@ -229,15 +245,16 @@ function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
 			--Everyone passed
 			itemFrame.WinnerRoll:Hide();
 			itemFrame.WinnerRollType:Show();
-			itemFrame.WinnerName:SetText(LOOT_HISTORY_ALL_PASSED);
-			itemFrame.WinnerName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			itemFrame.WinnerName:Show();
 			itemFrame.WinnerRollType:ClearAllPoints();
 			itemFrame.WinnerRollType:SetPoint("BOTTOMRIGHT", itemFrame.NameBorderRight, "BOTTOMRIGHT", -2, 1);
 			if ( isMasterLoot ) then
 				itemFrame.WinnerRollType:SetTexture("Interface\\RaidFrame\\ReadyCheck-Ready");
+				itemFrame.WinnerName:Hide();
 			else
 				itemFrame.WinnerRollType:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+				itemFrame.WinnerName:SetText(LOOT_HISTORY_ALL_PASSED);
+				itemFrame.WinnerName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				itemFrame.WinnerName:Show();
 			end
 		end
 	else
@@ -267,15 +284,20 @@ function LootHistoryFrame_UpdatePlayerFrame(self, playerFrame)
 		end
 
 		if ( rollType == LOOT_ROLL_TYPE_NEED ) then
-			playerFrame.RollIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up");
+			playerFrame.RollIcon.Texture:SetTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up");
+			playerFrame.RollIcon.tooltip = NEED;
 		elseif ( rollType == LOOT_ROLL_TYPE_GREED ) then
-			playerFrame.RollIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Coin-Up");
+			playerFrame.RollIcon.Texture:SetTexture("Interface\\Buttons\\UI-GroupLoot-Coin-Up");
+			playerFrame.RollIcon.tooltip = GREED;
 		elseif ( rollType == LOOT_ROLL_TYPE_DISENCHANT ) then
-			playerFrame.RollIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-DE-Up");
+			playerFrame.RollIcon.Texture:SetTexture("Interface\\Buttons\\UI-GroupLoot-DE-Up");
+			playerFrame.RollIcon.tooltip = ROLL_DISENCHANT;
 		elseif ( rollType == LOOT_ROLL_TYPE_PASS ) then
-			playerFrame.RollIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+			playerFrame.RollIcon.Texture:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+			playerFrame.RollIcon.tooltip = PASS;
 		else
-			playerFrame.RollIcon:SetTexture(nil); --TODO: Use unknown icon once created
+			playerFrame.RollIcon.Texture:SetTexture(nil); --TODO: Use unknown icon once created
+			playerFrame.RollIcon.tooltip = nil;
 		end
 
 		if ( not rollType ) then
@@ -297,7 +319,8 @@ function LootHistoryFrame_UpdatePlayerFrame(self, playerFrame)
 		playerFrame.AlternatingBG:Show();
 		playerFrame.PlayerName:SetText(LOOT_HISTORY_ALL_PASSED);
 		playerFrame.PlayerName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		playerFrame.RollIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+		playerFrame.RollIcon.Texture:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+		playerFrame.RollIcon.tooltip = PASS;
 		playerFrame.RollText:SetText("");
 		playerFrame.RollIcon:SetPoint("RIGHT", playerFrame, "RIGHT", -2, -1);
 		playerFrame.WinMark:Hide();
@@ -333,6 +356,10 @@ function LootHistoryFrame_OpenToRoll(self, requestedRollID, errorTarget)
 			table.wipe(self.expandedRolls);
 			self.expandedRolls[rollID] = true;
 
+			--Remove all other highlights
+			LootHistoryFrame_ResetHighlights(self);
+			self.highlightedRolls[rollID] = true;
+
 			--Update the frame
 			LootHistoryFrame_FullUpdate(self);
 
@@ -341,7 +368,7 @@ function LootHistoryFrame_OpenToRoll(self, requestedRollID, errorTarget)
 			self.ScrollFrame:UpdateScrollChildRect();
 
 			--Scroll to the correct item
-			local offset = 2 + 37 * (i - 1);
+			local offset = 2 + 41 * (i - 1);
 			offset = min(offset, self.ScrollFrame:GetVerticalScrollRange());
 			self.ScrollFrame:SetVerticalScroll(offset);
 			return;
@@ -407,8 +434,8 @@ function LootHistoryDropDown_GiveMasterLoot()
 end
 
 function LootHistoryFrameUtil_ShouldDisplayPlayer(itemIdx, playerIdx)
-	local rollID, itemLink, numPlayers, isDone, winnerIdx = C_LootHistory.GetItem(itemIdx);
+	local rollID, itemLink, numPlayers, isDone, winnerIdx, isMasterLoot = C_LootHistory.GetItem(itemIdx);
 	local name, class, rollType, roll, isWinner, isMe = C_LootHistory.GetPlayerInfo(itemIdx, playerIdx);
 
-	return isMe or roll or (not isDone);
+	return isMe or roll or (not isDone) or isMasterLoot;
 end

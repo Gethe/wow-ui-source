@@ -562,7 +562,7 @@ end
 
 function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 	if ( frame.optionTable.displayInOtherGroup and UnitInOtherParty(frame.unit) ) then
-		frame.centerStatusIcon.texture:SetTexture("Interface\\TargetFrame\\whisper-only");
+		frame.centerStatusIcon.texture:SetTexture("Interface\\PlayerFrame\\whisper-only");
 		frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
 		frame.centerStatusIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		frame.centerStatusIcon:Show();

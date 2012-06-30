@@ -78,6 +78,30 @@ VEHICLE_TEXTURES["Grummle Convoy"] = {
 	width=64,
 	height=64,
 };
+VEHICLE_TEXTURES["Minecart"] = {
+	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCart",
+	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCart",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Minecart Red"] = {
+	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartRed",
+	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartRed",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Minecart Blue"] = {
+	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartBlue",
+	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartBlue",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Arrow"] = {
+	"Interface\\Minimap\\Vehicle-SilvershardMines-Arrow",
+	"Interface\\Minimap\\Vehicle-SilvershardMines-Arrow",
+	width=64,
+	height=64,
+};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
@@ -1229,6 +1253,10 @@ function WorldMapButton_OnUpdate(self, elapsed)
 				end
 				partyMemberFrame:Show();
 			end
+		end
+		for i=1, MAX_RAID_MEMBERS do
+			local partyMemberFrame = _G["WorldMapRaid"..i];
+			partyMemberFrame:Hide();
 		end
 	end
 

@@ -69,5 +69,6 @@ function CancelAnimations(frame)
 		for k, v in pairs(anims) do
 			anims[k] = 0;
 		end
+		frame.animating = false;
 	end
 end

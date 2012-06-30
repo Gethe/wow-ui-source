@@ -75,7 +75,7 @@
 						<Anchor point="TOPLEFT" x="8" y="0"/>
 					</Anchors>
 				</Texture>
-				
+			
 				<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"  relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="10" y="2"/>
@@ -93,18 +93,44 @@
 						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="10" y="6"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentBottomHuge" parentKey="bottomHuge" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-2"/>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentBottomGiant" parentKey="bottomGiant" inherits="GameFont_Gigantic" justifyH="LEFT" justifyV="BOTTOM">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-6"/>
 					</Anchors>
 				</FontString>
+
+				<!-- Pet Battle Capture with Rarity -->
+				<FontString name="$parentRarityUpperWhite" parentKey="rarityUpperwhite" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="10" y="12"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRarityBottomHuge" parentKey="rarityMiddleHuge" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="10" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentRarityIcon" parentKey="rarityIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-8"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0.0" bottom="0.5"/>
+				</Texture>
+				<FontString name="$parentRarityValue" inherits="GameFontHighlight" parentKey="rarityValue" text="99">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRarityIcon" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture name="$parentIconBorder" parentKey="iconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentSubIcon" parentKey="subIcon" file="Interface\LevelUp\LevelUpTex">
 					<Size x="22" y="22"/>
 					<Anchors>

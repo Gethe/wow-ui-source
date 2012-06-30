@@ -290,6 +290,13 @@
 				</Anchors>
 				<TexCoords left="0.76171875" right="0.88671875" top="0.00195313" bottom="0.12695313"/>	
 			</Texture>
+			<Texture name="$parentOldAchievement" file="Interface\AchievementFrame\UI-Achievement-Borders" hidden="true">
+				<Size x="193" y="19"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="93" y="-34"/>
+				</Anchors>
+				<TexCoords left="0.185546875" right="0.623046875" top="0.65625" bottom="0.734375"/>	
+			</Texture>
 		</Layer>
 		<Layer level="BORDER">
 			<Texture name="$parentGuildBorder" file="Interface\AchievementFrame\UI-Achievement-Guild" hidden="true">

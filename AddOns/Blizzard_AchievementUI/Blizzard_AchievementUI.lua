@@ -53,6 +53,10 @@ ACHIEVEMENT_FILTER_ALL = 1;
 ACHIEVEMENT_FILTER_COMPLETE = 2;
 ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
+
+AchievementFrameFilterStrings = {ACHIEVEMENT_FILTER_ALL_EXPLANATION, 
+ACHIEVEMENT_FILTER_COMPLETE_EXPLANATION, ACHIEVEMENT_FILTER_INCOMPLETE_EXPLANATION};
+
 local FEAT_OF_STRENGTH_ID = 81;
 local GUILD_FEAT_OF_STRENGTH_ID = 15093;
 local GUILD_CATEGORY_ID = 15076;
@@ -1603,21 +1607,21 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 end
 
 function AchievementFrame_GetCategoryNumAchievements_All (categoryID)
-	local numAchievements, numCompleted = GetCategoryNumAchievements(categoryID);
+	local numAchievements, numCompleted, numIncomplete = GetCategoryNumAchievements(categoryID);
 	
 	return numAchievements, numCompleted, 0;
 end
 
 function AchievementFrame_GetCategoryNumAchievements_Complete (categoryID)
-	local numAchievements, numCompleted = GetCategoryNumAchievements(categoryID);
+	local numAchievements, numCompleted, numIncomplete = GetCategoryNumAchievements(categoryID);
 	
 	return numCompleted, numCompleted, 0;
 end
 
 function AchievementFrame_GetCategoryNumAchievements_Incomplete (categoryID)
-	local numAchievements, numCompleted = GetCategoryNumAchievements(categoryID);
+	local numAchievements, numCompleted, numIncomplete = GetCategoryNumAchievements(categoryID);
 	
-	return numAchievements - numCompleted, 0, numCompleted
+	return numIncomplete, 0, numAchievements-numIncomplete;
 end
 
 ACHIEVEMENTUI_SELECTEDFILTER = AchievementFrame_GetCategoryNumAchievements_All;
@@ -1639,9 +1643,13 @@ function AchievementFrameFilterDropDown_Initialize (self)
 		info.text = filter.text;
 		info.value = i;
 		info.func = AchievementFrameFilterDropDownButton_OnClick;
+		info.tooltipOnButton = 1;
+		info.tooltipTitle = ACHIEVEMENT_FILTER_TITLE;
+		info.tooltipText = AchievementFrameFilterStrings[i];
 		if ( filter.func == ACHIEVEMENTUI_SELECTEDFILTER ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(self, filter.text);
+			self.value =  i;
 		else
 			info.checked = nil;
 		end
@@ -1660,6 +1668,7 @@ function AchievementFrame_SetFilter(value)
 		UIDropDownMenu_SetText(AchievementFrameFilterDropDown, AchievementFrameFilters[value].text)
 		AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 		AchievementFrameAchievements_ForceUpdate();
+		AchievementFrameFilterDropDown.value = value;
 	end
 end
 
@@ -3327,6 +3336,12 @@ function AchievementShield_OnEnter(self)
 	end
 	if ( self.earnedBy ) then
 		GameTooltip:AddLine(format(ACHIEVEMENT_EARNED_BY,self.earnedBy));
+		local me = UnitName("player")
+		if ( not self.wasEarnedByMe ) then
+			GameTooltip:AddLine(format(ACHIEVEMENT_NOT_COMPLETED_BY, me));
+		elseif ( me ~= self.earnedBy ) then
+			GameTooltip:AddLine(format(ACHIEVEMENT_COMPLETED_BY, me));
+		end
 		GameTooltip:Show();
 		return;
 	end
@@ -3349,6 +3364,14 @@ function AchievementShield_OnLeave(self)
 	end
 	GameTooltip:Hide();
 	guildMemberRequestFrame = nil;
+end
+
+
+function AchievementFrameFilterDropDown_OnEnter(self)
+	currentFilter = AchievementFrameFilterDropDown.value;
+	GameTooltip:SetOwner(AchievementFrameFilterDropDown, "ANCHOR_RIGHT", -18, 0);
+	GameTooltip:AddLine(AchievementFrameFilterStrings[currentFilter]);
+	GameTooltip:Show();
 end
 
 function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)

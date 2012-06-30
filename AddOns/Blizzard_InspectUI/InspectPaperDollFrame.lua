@@ -46,8 +46,7 @@ function InspectPaperDollFrame_SetLevel()
 	local primaryTalentTree = GetSpecialization(true);
 	
 	local classDisplayName, class = UnitClass(InspectFrame.unit); 
-	local classColor = RAID_CLASS_COLORS[class];
-	local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
+	local classColorString = RAID_CLASS_COLORS[class].colorStr;
 	local specName, _;
 	
 	if (primaryTalentTree) then

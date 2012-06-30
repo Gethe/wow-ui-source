@@ -106,7 +106,7 @@ function QuestFrameRewardPanel_OnShow()
 end
 
 function QuestRewardCancelButton_OnClick()
-	DeclineQuest();
+	HideUIPanel(QuestFrame);
 	PlaySound("igQuestCancel");
 end
 
@@ -135,7 +135,7 @@ function QuestProgressCompleteButton_OnClick()
 end
 
 function QuestGoodbyeButton_OnClick()
-	DeclineQuest();
+	HideUIPanel(QuestFrame);
 	PlaySound("igQuestCancel");
 end
 

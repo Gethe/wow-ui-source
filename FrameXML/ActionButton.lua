@@ -405,7 +405,7 @@ function ActionButton_UpdateCount (self)
 		end
 	else
 		local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(action);
-		if (maxCharges > 0) then
+		if (maxCharges > 1) then
 			text:SetText(charges);
 		else
 			text:SetText("");

@@ -340,6 +340,12 @@
 							<Anchor point="TOPRIGHT" x="-48" y="-16"/>
 						</Anchors>
 						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(ROLL);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
 								AcceptSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
 							</OnClick>
@@ -354,6 +360,12 @@
 							<Anchor point="LEFT" relativeKey="$parent.RollButton" relativePoint="RIGHT" x="5" y="3"/>
 						</Anchors>
 						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(PASS);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
 								DeclineSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
 							</OnClick>

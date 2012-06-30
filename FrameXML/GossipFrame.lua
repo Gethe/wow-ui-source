@@ -139,7 +139,7 @@ function GossipFrameActiveQuestsUpdate(...)
 		titleButton:SetID(titleIndex);
 		titleButton.type="Active";
 		if ( select(i+3, ...) ) then
-			if ( select(i+5, ...) ) then
+			if ( select(i+4, ...) ) then
 				titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
 			else
 				titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");

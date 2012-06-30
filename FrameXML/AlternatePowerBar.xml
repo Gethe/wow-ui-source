@@ -62,6 +62,57 @@
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="0" g="0" b="1.0"/>
 	</StatusBar>
+	<StatusBar name="PlayerFrameMonkManaBar" inherits="TextStatusBar" parent="PlayerFrame" frameLevel="100" hidden="true">
+		<Size>
+			<AbsDimension x="94" y="12"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="118" y="4"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\PlayerFrame\MonkManaBar">
+					<Size>
+						<AbsDimension x="128" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-17" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\PlayerFrame\MonkManaBar">
+					<Size>
+						<AbsDimension x="128" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-17" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+				</Texture>
+				<FontString name="$parentText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEvent>
+				AlternatePowerBar_OnEvent(self, event, ...);
+				TextStatusBar_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				AlternatePowerBar_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnMouseUp>
+				self:GetParent():Click(button);
+			</OnMouseUp>
+		</Scripts>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="0" g="0" b="1.0"/>
+	</StatusBar>
 	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--Primarily for Druids in forms (at the moment)-->
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">

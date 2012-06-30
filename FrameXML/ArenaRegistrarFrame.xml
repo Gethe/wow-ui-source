@@ -433,7 +433,7 @@
 					<OnClick function="HideParentPanel"/>	
 				</Scripts>
 			</Button>
-			<Button name="PVPBannerFrameAcceptButton" inherits="MagicButtonTemplate" text="CREATE">
+			<Button name="PVPBannerFrameAcceptButton" inherits="MagicButtonTemplate" text="CREATE_ARENA_TEAM">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>

@@ -156,8 +156,6 @@ function TargetFrame_OnEvent (self, event, ...)
 				PlaySound("igCreatureAggroSelect");
 			elseif ( UnitIsFriend("player", self.unit) ) then
 				PlaySound("igCharacterNPCSelect");
-			elseif ( UnitIsWildBattlePet(self.unit) ) then
-				PlaySoundKitID(31751); -- UI_PetBattles_InitiateBattle
 			else
 				PlaySound("igCreatureNeutralSelect");
 			end

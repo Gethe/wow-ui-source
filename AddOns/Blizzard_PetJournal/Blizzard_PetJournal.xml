@@ -283,6 +283,14 @@
 					<TexCoords left="0.00781250" right="0.71093750" top="0.74609375" bottom="0.91796875"/>	
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture name="$parentIconBorder" parentKey="iconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentLevelBG" file="Interface\PetBattles\PetJournal" parentKey="levelBG">
 					<Anchors>
@@ -369,6 +377,7 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnClick>
 				if button == "RightButton" then
@@ -376,9 +385,18 @@
 						PetJournal_ShowPetDropdown(self.index, self, 80, 20);
 					end
 				else
-					PetJournal_TogglePetCard(self.index);
+					local type, petID = GetCursorInfo();
+					if type == "battlepet" then
+						PetJournal_UpdatePetLoadOut();
+						ClearCursor();
+					else
+						PetJournal_TogglePetCard(self.index);
+					end
 				end
 			</OnClick>	
+			<OnDragStart>
+				PetJournalDragButton_OnDragStart(self.dragButton);
+			</OnDragStart>
 		</Scripts>
 	</Button>
 	<Button name="MountListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
@@ -495,6 +513,7 @@
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+					<Color r="1.0" g="0.1" b="0.1"/> <!-- RED_FONT_COLOR -->
 				</FontString>
 				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow">
 					<Size x="23" y="11"/>	
@@ -653,16 +672,17 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button name="$parentAchievementButton" parentKey="achievementButton">
+			<Button name="$parentRequirementButton" parentKey="requirementButton">
 				<Size x="371" y="20"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentHelpFrameText" relativePoint="BOTTOM" x="0" y="-2"/>
 				</Anchors>
 				<NormalFont style="GameFontNormalLarge"/>
 				<Scripts>
-					<OnClick>
-						PetJournal_ShowAchievement(self)
-					</OnClick>
+					<OnEnter function="PetJournalRequirementButton_ShowRequirementToolTip"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<PlayerModel name="$parentModelFrame" useParentLevel="true" parentKey="model">
@@ -940,6 +960,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentIcon"/>
 					</Anchors>
+					<Color r="1.0" g="0.1" b="0.1"/> <!-- RED_FONT_COLOR -->
 				</FontString>
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name" text="Mc Chazeering ton">
 					<Size x="84" y="35"/>
@@ -1568,6 +1589,7 @@
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+					<Color r="1.0" g="0.1" b="0.1"/> <!-- RED_FONT_COLOR -->
 				</FontString>
 			</Layer>
 		</Layers>
@@ -1785,17 +1807,35 @@
 	</Frame>
 
 	<Frame name="PetJournal" parent="PetJournalParent" setAllPoints="true" hidden="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="petCount" text="MAX_BATTLE_PET_TEXT">
-					<Size x="0" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="65" y="-42"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Frame parentKey="PetCount" useParentLevel="true" inherits="InsetFrameTemplate3">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-35"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" x="-10" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Label" inherits="GameFontNormalSmall" text="BATTLE_PETS_TOTAL_PETS" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" x="10" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Count" relativePoint="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="PetJournalPetCount_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				
+			</Frame>
 			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" x="39" y="20" />
@@ -1818,6 +1858,11 @@
 						<Texture name="$parentIconTexture" parentKey="texture" file="Interface\Icons\spell_magic_polymorphrabbit" setAllPoints="true"/>
 					</Layer>
 					<Layer level="OVERLAY">
+						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.6"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
 							<Size x="35" y="35"/>
 							<Anchors>
@@ -1842,6 +1887,7 @@
 					<OnClick>
 						CastSpellByID(self.spellID);
 					</OnClick>
+					<OnDragStart function="PetJournalHealPetButton_OnDragStart"/>
 					<OnShow function="PetJournalHealPetButton_OnShow"/>
 					<OnHide function="PetJournalHealPetButton_OnHide"/>
 					<OnEnter function="PetJournalHealPetButton_OnEnter"/>
@@ -1994,8 +2040,13 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						C_PetBattles.StartPVPMatchmaking();
 					</OnClick>
+					<OnEnter function="PetJournalFindBattle_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON" disabled="true">
@@ -2012,6 +2063,10 @@
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						C_PetJournal.SummonPetByID(PetJournal.pcPetID);
 					</OnClick>
+					<OnEnter function="PetJournalSummonButton_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button name="$parentAchievementStatus" parentKey="AchievementStatus">
@@ -2027,7 +2082,16 @@
 							</Anchors>
 							<Size x="210" y="40"/>	
 							<TexCoords left="0.75683594" right="0.98632813" top="0.00097656" bottom="0.04882813"/>
-							<Color r="1" g="1" b="1" a="0.5"/>
+							<Color r="1" g="1" b="1" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="highlight" file="Interface\PetBattles\PetJournal" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Size x="210" y="40"/>	
+							<TexCoords left="0.76953125" right="0.998046875" top="0.443359375" bottom="0.490234375"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -2062,6 +2126,11 @@
 							button = _G["AchievementFrameCategoriesContainerButton"..i];
 						end
 					</OnClick>
+					<OnEnter function="PetJournalAchievementStatus_OnEnter"/>
+					<OnLeave>
+						PetJournal.AchievementStatus.highlight:Hide();
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Frame name="$parentSpellSelect" parentKey="SpellSelect" hidden="true">

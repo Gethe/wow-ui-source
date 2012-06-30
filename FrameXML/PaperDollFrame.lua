@@ -392,6 +392,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_RANGED_ATTACK_POWER");
 	self:RegisterEvent("UNIT_ATTACK");
 	self:RegisterEvent("UNIT_SPELL_HASTE");
+	self:RegisterEvent("UNIT_RESISTANCES");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
@@ -467,7 +468,16 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	if ( unit == "player" ) then
 		if ( event == "UNIT_LEVEL" ) then
 			PaperDollFrame_SetLevel();
-		elseif ( event == "UNIT_DAMAGE" or event == "UNIT_ATTACK_SPEED" or event == "UNIT_RANGEDDAMAGE" or event == "UNIT_ATTACK" or event == "UNIT_STATS" or event == "UNIT_RANGED_ATTACK_POWER" or event == "UNIT_SPELL_HASTE" or event == "UNIT_MAXHEALTH" or event == "UNIT_AURA" ) then
+		elseif ( event == "UNIT_DAMAGE" or 
+				event == "UNIT_ATTACK_SPEED" or 
+				event == "UNIT_RANGEDDAMAGE" or 
+				event == "UNIT_ATTACK" or 
+				event == "UNIT_STATS" or 
+				event == "UNIT_RANGED_ATTACK_POWER" or 
+				event == "UNIT_SPELL_HASTE" or 
+				event == "UNIT_MAXHEALTH" or 
+				event == "UNIT_AURA" or
+				event == "UNIT_RESISTANCES") then
 			self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 		end
 	end
@@ -510,8 +520,7 @@ end
 function PaperDollFrame_SetLevel()
 	local primaryTalentTree = GetSpecialization();
 	local classDisplayName, class = UnitClass("player"); 
-	local classColor = RAID_CLASS_COLORS[class];
-	local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
+	local classColorString = RAID_CLASS_COLORS[class].colorStr;
 	local specName, _;
 	
 	if (primaryTalentTree) then
@@ -624,18 +633,31 @@ function GetEnemyParryChance(levelOffset)
 	local chance = BASE_ENEMY_PARRY_CHANCE[levelOffset];
 	local offhandChance = BASE_ENEMY_PARRY_CHANCE[levelOffset];
 	local expertisePct, offhandExpertisePct = GetExpertise();
+	local mainhandDodge = BASE_ENEMY_DODGE_CHANCE[levelOffset];
+	local offhandDodge = BASE_ENEMY_DODGE_CHANCE[levelOffset];
+	
+	expertisePct = expertisePct - mainhandDodge;
+	if ( expertisePct < 0 ) then 
+		expertisePct = 0;
+	end
 	chance = chance - expertisePct;
-	offhandChance = offhandChance - offhandExpertisePct;
 	if (chance < 0) then
 		chance = 0;
 	elseif (chance > 100) then
 		chance = 100;
 	end
+	
+	offhandExpertisePct = offhandExpertisePct - offhandDodge;
+	if ( offhandExpertisePct < 0 ) then
+		offhandExpertisePct = 0;
+	end
+	offhandChance = offhandChance - offhandExpertisePct;
 	if (offhandChance < 0) then
 		offhandChance = 0;
 	elseif (offhandChance > 100) then
 		offhandChance = 100;
 	end
+	
 	return chance, offhandChance;
 end
 
@@ -877,10 +899,9 @@ function PaperDollFrame_SetResilience(statFrame, unit)
 	local damageRatingBonus = GetCombatRatingBonus(COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN);
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, damageRatingBonus, 1);
 	
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..damageResilience..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, 
-								damageRatingBonus 
-								);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_RESILIENCE).." "..format("%.2F%%", damageRatingBonus)..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = RESILIENCE_TOOLTIP .. format(STAT_RESILIENCE_BASE_TOOLTIP, damageResilience, 
+									damageRatingBonus);
 	statFrame:Show();
 end
 
@@ -894,8 +915,8 @@ function PaperDollFrame_SetPvpPower(statFrame, unit)
 	local pvpPowerBonus = GetCombatRatingBonus(CR_PVP_POWER);
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpPowerBonus, 1);
 	
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_PVP_POWER).." "..pvpPower..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(PVP_POWER_TOOLTIP, pvpPowerBonus);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_PVP_POWER).." "..format("%.2F%%", pvpPowerBonus)..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = PVP_POWER_TOOLTIP .. format(PVP_POWER_BASE_TOOLTIP, pvpPower, pvpPowerBonus);
 	statFrame:Show();
 end
 
@@ -1697,7 +1718,7 @@ function PaperDollFrame_SetEnergyRegen(statFrame, unit)
 	end
 	
 	local powerType, powerToken = UnitPowerType(unit);
-	if (powerToken ~= "ENERGY" and powerToken ~= "CHI") then
+	if (powerToken ~= "ENERGY") then
 		statFrame:Hide();
 		return;
 	end
@@ -3343,7 +3364,7 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
 			if ( dialog ) then
 				dialog.data = popup.name;
-				dialog.selectedIcon = popup.selectedIcon;
+				dialog.selectedIcon = GetEquipmentSetIconInfo(popup.selectedIcon);
 			else
 				UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 			end

@@ -10,6 +10,14 @@ function AlternatePowerBar_OnLoad(self)
 end
 
 function AlternatePowerBar_Initialize(self)
+	local _, class = UnitClass("player");
+	if ( class == "MONK" ) then
+		-- ninja!
+		self = PlayerFrameMonkManaBar;
+		self.specRestriction = SPEC_MONK_MISTWEAVER;
+		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	end
+	
 	if ( not self.powerName ) then
 		self.powerName = ADDITIONAL_POWER_BAR_NAME;
 		self.powerIndex = ADDITIONAL_POWER_BAR_INDEX;
@@ -24,13 +32,6 @@ function AlternatePowerBar_Initialize(self)
 	
 	local info = PowerBarColor[self.powerName];
 	self:SetStatusBarColor(info.r, info.g, info.b);
-
-	local _, class = UnitClass("player");
-	if ( class == "MONK" ) then
-		self:SetPoint("BOTTOMLEFT", 128, 1);
-		self.specRestriction = SPEC_MONK_MISTWEAVER;
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-	end
 end
 
 function AlternatePowerBar_OnEvent(self, event, arg1)

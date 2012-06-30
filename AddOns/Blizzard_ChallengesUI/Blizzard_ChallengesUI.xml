@@ -179,6 +179,26 @@
 							</Anchors>
 							<Color r="0.74" g="0.52" b="0.06"/>
 						</Texture>
+						<FontString name="$parentGuildBest" inherits="GameFontNormal" text="CHALLENGE_MODE_GUILD_BEST">
+							<Anchors>
+								<Anchor relativeTo="$parentLine1" point="TOPLEFT" x="14" y="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentGuildTime" parentKey="GuildTime" inherits="GameFontHighlight">
+							<Anchors>
+								<Anchor relativeTo="$parentGuildBest" point="LEFT" relativePoint="RIGHT" x="15" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentRealmBest" inherits="GameFontNormal" text="CHALLENGE_MODE_REALM_BEST">
+							<Anchors>
+								<Anchor relativeTo="$parentLine1" point="TOPLEFT" x="185" y="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentRealmTime" parentKey="RealmTime" inherits="GameFontHighlight">
+							<Anchors>
+								<Anchor relativeTo="$parentRealmBest" relativePoint="RIGHT" point="LEFT" x="15" y="0"/>
+							</Anchors>
+						</FontString>
 						<Texture name="$parentLine2">
 							<Size x="339" y="1"/>
 							<Anchors>
@@ -296,12 +316,35 @@
 						-->
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame enableMouse="true">
+						<Anchors>
+							<Anchor relativeTo="$parentGuildBest" point="TOPLEFT" />
+							<Anchor relativeTo="$parentGuildTime" point="BOTTOMRIGHT" />
+						</Anchors>
+						<Scripts>
+							<OnEnter function="ChallengesFrameGuild_OnEnter" />
+							<OnLeave function="GameTooltip_Hide" />
+						</Scripts>
+					</Frame>
+					<Frame enableMouse="true">
+						<Anchors>
+							<Anchor relativeTo="$parentRealmBest" point="TOPLEFT" />
+							<Anchor relativeTo="$parentRealmTime" point="BOTTOMRIGHT" />
+						</Anchors>
+						<Scripts>
+							<OnEnter function="ChallengesFrameRealm_OnEnter" />
+							<OnLeave function="GameTooltip_Hide" />
+						</Scripts>
+					</Frame>
+				</Frames>
 			</Frame>
 			<Button name="$parentDungeonButton1" inherits="ChallengesDungeonButtonTemplate" parentKey="button1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="8" y="-64"/>
 				</Anchors>
 			</Button>
+			
 			<Frame name="$parentRewardRow3" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDetails" x="0" y="-246"/>

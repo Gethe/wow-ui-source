@@ -781,6 +781,8 @@ function PlayerFrame_AdjustAttachments()
 			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -2);
 		elseif ( class == "DEATHKNIGHT" or class == "WARLOCK" ) then
 			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 4);
+		elseif ( class == "MONK" ) then
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -1);
 		else
 			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
 		end

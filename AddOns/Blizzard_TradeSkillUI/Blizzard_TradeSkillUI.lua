@@ -114,8 +114,6 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 			TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
 		else
 			TradeSkillFrame_SetSelection(GetFirstTradeSkill());
-			FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
-			TradeSkillListScrollFrameScrollBar:SetValue(0);
 		end
 		TradeSkillFrame_Update();
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
@@ -561,7 +559,7 @@ function TradeSkillFrame_SetSelection(id)
 			else
 				TradeSkillLinkButton:Hide();
 			end
-			TradeSkillCreateButton:SetText(altVerb or CREATE);
+			TradeSkillCreateButton:SetText(altVerb or CREATE_PROFESSION);
 			TradeSkillCreateButton:Show();
 		end
 	end

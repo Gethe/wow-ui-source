@@ -119,10 +119,8 @@ ChatTypeGroup["SYSTEM"] = {
 	"TIME_PLAYED_MSG",
 	"PLAYER_LEVEL_UP",
 	"UNIT_LEVEL",
-	"PET_BATTLE_LEVEL_CHANGED",
 	"CHARACTER_POINTS_CHANGED",
 	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
-	"PET_BATTLE_CAPTURED",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -2430,6 +2428,9 @@ SlashCmdList["OPEN_LOOT_HISTORY"] = function(msg)
 	ToggleLootHistoryFrame();
 end
 
+SlashCmdList["RAIDFINDER"] = function(msg)
+	PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+end
 
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then
@@ -2818,18 +2819,6 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local arg1 = ...;
 		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
 			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
-		end
-	elseif ( event == "PET_BATTLE_LEVEL_CHANGED" ) then
-		local arg1, activePetSlot, newLevel = ...;
-		if (arg1 == LE_BATTLE_PET_ALLY and activePetSlot > 0) then
-			local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
-			local speciesID, customName, level, xp, maxXp, displayID, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
-			LevelUpDisplay_ChatPrint(self, newLevel, CHAT_BATTLE_PET_LEVEL_UP, (customName or name), icon);
-		end
-	elseif ( event == "PET_BATTLE_CAPTURED" ) then
-		local activePlayer, activePetSlot = ...;
-		if (activePlayer == 2 and activePetSlot > 0) then
-			LevelUpDisplay_ChatPrint(self, 0, CHAT_BATTLE_PET_CAPTURED, activePlayer, activePetSlot);
 		end
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;

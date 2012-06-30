@@ -49,6 +49,9 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
 	self:RegisterEvent("PET_BATTLE_XP_CHANGED");
 
+	-- Transitioning out of battle event
+	self:RegisterEvent("PET_BATTLE_OVER");
+
 	-- End of battle event:
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 
@@ -58,6 +61,7 @@ end
 
 function PetBattleFrame_OnEvent(self, event, ...)
 	if ( event == "PET_BATTLE_OPENING_START" ) then
+		PlaySoundKitID(32047); -- UI_PetBattle_Camera_Move_In
 		PetBattleFrame_Display(self);
 	elseif ( event == "PET_BATTLE_OPENING_DONE" ) then
 		StartSplashTexture.splashAnim:Play();
@@ -74,6 +78,8 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdateAllActionButtons(self);
 		PetBattleFrame_UpdateSpeedIndicators(self);
 		PetBattleFrame_UpdateXpBar(self);
+	elseif ( event == "PET_BATTLE_OVER" ) then
+		PlaySoundKitID(32052); -- UI_PetBattle_Camera_Move_Out
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
 	elseif ( event == "UPDATE_BINDINGS" ) then
@@ -277,6 +283,22 @@ function PetBattleFrame_UpdateActionBarLayout(self)
 
 end
 
+function PetBattleFrame_ShowMultiWildNotification(self)
+	if (C_PetBattles.IsWildBattle() == true) then
+		local numOpponentPets = C_PetBattles.GetNumPets(LE_BATTLE_PET_ENEMY);
+		local text = nil;
+		if (numOpponentPets == 2) then
+			text = PET_BATTLE_ANOTHER_PET_JOINED;
+		elseif (numOpponentPets == 3) then
+			text = PET_BATTLE_TWO_PETS_JOINED;
+		end
+		
+		if (text) then
+			RaidNotice_AddMessage(RaidWarningFrame, text, ChatTypeInfo["RAID_BOSS_EMOTE"], 5.0 );
+		end
+	end
+end
+
 function PetBattleFrame_ButtonDown(id)
 	if ( id > NUM_BATTLE_PET_ABILITIES ) then
 		return;
@@ -413,7 +435,6 @@ function PetBattleFrameTurnTimer_UpdateValues(self)
 end
 
 function PetBattleForfeitButton_OnClick(self)
-	PlaySoundKitID(31585); -- UI_Pet_Battle_Exit
 	C_PetBattles.ForfeitGame();
 end
 
@@ -576,8 +597,8 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.Cooldown ) then
 			self.Cooldown:Hide();
 		end
-		if ( self.RequiredLevel ) then
-			self.RequiredLevel:Show();
+		if ( self.Lock ) then
+			self.Lock:Show();
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
@@ -600,8 +621,8 @@ function PetBattleActionButton_UpdateState(self)
 			self.Cooldown:SetText(cooldown);
 			self.Cooldown:Show();
 		end
-		if ( self.RequiredLevel ) then
-			self.RequiredLevel:Hide();
+		if ( self.Lock ) then
+			self.Lock:Hide();
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
@@ -623,8 +644,8 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.Cooldown ) then
 			self.Cooldown:Hide();
 		end
-		if ( self.RequiredLevel ) then
-			self.RequiredLevel:Hide();
+		if ( self.Lock ) then
+			self.Lock:Hide();
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
@@ -646,8 +667,8 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.Cooldown ) then
 			self.Cooldown:Hide();
 		end
-		if ( self.RequiredLevel ) then
-			self.RequiredLevel:Hide();
+		if ( self.Lock ) then
+			self.Lock:Hide();
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
@@ -669,11 +690,14 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.Cooldown ) then
 			self.Cooldown:Hide();
 		end
-		if ( self.RequiredLevel ) then
-			self.RequiredLevel:Hide();
+		if ( self.Lock ) then
+			self.Lock:Hide();
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
+		end
+		if (self.CooldownFlash and actionType ~= LE_BATTLE_PET_ACTION_TRAP) then
+			self.CooldownFlashAnim:Play();
 		end
 	end
 
@@ -720,8 +744,8 @@ function PetBattleAbilityButton_UpdateIcons(self)
 		else
 			name, icon, typeEnum = C_PetJournal.GetPetAbilityInfo(self.abilityID);
 			self.Icon:SetTexture(icon);
-			self.RequiredLevel:SetText(abilityLevels[self:GetID()]);
-			self.RequiredLevel:Show();
+			self.Lock:Show();
+			self.requiredLevel = abilityLevels[self:GetID()];
 		end
 		self.Icon:SetVertexColor(1, 1, 1);
 		self:Disable();
@@ -753,7 +777,7 @@ function PetBattleAbilityButton_OnEnter(self)
 		PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
 		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120, self.additionalText);
 	elseif ( self.abilityID ) then
-		PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.RequiredLevel:GetText()));
+		PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.requiredLevel));
 		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
 	else
 		PetBattlePrimaryAbilityTooltip:Hide();
@@ -1017,6 +1041,21 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	local height = 193;
 	local attack = C_PetBattles.GetPower(petOwner, petIndex);
 	local speed = C_PetBattles.GetSpeed(petOwner, petIndex);
+	local opponentSpeed = 0;
+	if ( petOwner == LE_BATTLE_PET_ALLY ) then
+		opponentSpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ENEMY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY));
+	else
+		opponentSpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY));
+	end
+	if (speed > opponentSpeed) then
+		height = height + 36;
+		self.SpeedAdvantage:Show();
+		self.SpeedAdvantageIcon:Show();
+	else
+		self.SpeedAdvantage:Hide();
+		self.SpeedAdvantageIcon:Hide();
+	end
+	
 	self.AttackAmount:SetText(attack);
 	self.SpeedAmount:SetText(speed);
 

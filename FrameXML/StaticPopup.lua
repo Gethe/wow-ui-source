@@ -2324,10 +2324,10 @@ StaticPopupDialogs["PET_BATTLE_QUEUE_PROPOSE_MATCH"] = {
 	button2 = DECLINE,
 	sound = "igPlayerInvite",
 	OnAccept = function(self)
-		C_PetBattles.AcceptPVPMatchmaking();
+		C_PetBattles.AcceptPVPMatch();
 	end,
 	OnCancel = function(self)
-		C_PetBattles.CancelPVPMatchmaking();
+		C_PetBattles.DeclinePVPMatch();
 	end,
 	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
