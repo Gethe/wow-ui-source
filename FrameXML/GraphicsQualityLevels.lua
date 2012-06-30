@@ -701,7 +701,7 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_SSAODropDown"]={
-	name = "SSAO_Tooltip";
+	name = SSAO_LABEL;
 	description = OPTION_TOOLTIP_SSAO,
 
 	data = {

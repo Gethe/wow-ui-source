@@ -24,7 +24,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT"  relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
-					<Color r="0.4" g="0.7" b="1"/>
+					<Color r="1" g="1" b="0.6"/>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -242,9 +242,9 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentSpecIcon" parentKey="specIcon" alpha="0.5" ALPHAMODE="ADD">
-					<Size x="64" y="64"/>
+					<Size x="79" y="79"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentSpecRing" x="0" y="0"/>
+						<Anchor point="CENTER" relativeTo="$parentSpecRing" x="1" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -118,6 +118,7 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnClick>
 				PlayerTalentFrameTalent_OnClick(self, button);
@@ -131,6 +132,12 @@
 			<OnLeave>
 				GameTooltip_Hide();
 			</OnLeave>
+			<OnDragStart>
+				PlayerTalentFrameTalent_OnDrag(self);
+			</OnDragStart>
+			<OnReceiveDrag>
+				PlayerTalentFrameTalent_OnDrag(self);
+			</OnReceiveDrag>
 		</Scripts>
 	</Button>
 	
@@ -191,6 +198,20 @@
 						<Anchor point="CENTER" relativeTo="$parentLeftCap" relativePoint="RIGHT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="TopLine" hidden="true">					
+					<Size x="627" y = "1"/>
+					<Color r="1.0" g="0.823" b="0.0" a="0.3"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomLine" hidden="true">					
+					<Size x="627" y = "1"/>
+					<Color r="1.0" g="0.823" b="0.0" a="0.3"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

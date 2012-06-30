@@ -216,6 +216,12 @@ function SetItemRef(link, text, button, chatFrame)
 			FloatingPetBattleAbility_Show(tonumber(abilityID), tonumber(maxHealth), tonumber(power), tonumber(speed));
 		end
 		return;
+	elseif ( strsub(link, 1, 9) == "battlepet" ) then
+		TogglePetJournal();
+		if ( PetJournalParent ) then
+			PetJournalParent_SetTab(PetJournalParent, PetJournalParentTab2:GetID());
+		end
+		return;
 	end
     
 	if ( IsModifiedClick() ) then

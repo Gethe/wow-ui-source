@@ -156,7 +156,7 @@
 			<Button name="RaidFrameConvertToRaidButton" inherits="UIPanelButtonTemplate" text="CONVERT_TO_RAID">
 				<Size x="115" y="21"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="58" y="-24"/>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="ConvertToRaid"/>
@@ -165,10 +165,24 @@
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
-			<Button name="RaidFrameRaidInfoButton" inherits="UIPanelButtonTemplate" text="RAID_INFO">
+			<Button name="RaidFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" text="LOOKING_FOR_RAID" >
+				<Size x="100" y="21"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-100" y="-24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					ToggleRaidBroswer();
+					</OnClick>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+			</Button>
+			<Button name="RaidFrameRaidInfoButton" inherits="UIPanelButtonTemplate" text="RAID_INFO" >
 				<Size x="90" y="21"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="RaidFrameConvertToRaidButton" relativePoint="RIGHT" x="67" y="0"/>
+					<Anchor point="TOPRIGHT" x="-7" y="-24"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

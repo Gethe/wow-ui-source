@@ -7,6 +7,7 @@ BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PROFESSION = "professions";
 BOOKTYPE_PET = "pet";
 BOOKTYPE_CORE_ABILITIES = "core";
+BOOKTYPE_WHAT_HAS_CHANGED = "changed"
 
 local MaxSpellBookTypes = 5;
 local SpellBookInfo = {};
@@ -25,12 +26,16 @@ SpellBookInfo[BOOKTYPE_PET] 		= { 	showFrames = {"SpellBookSpellIconsFrame", "Sp
 											updateFunc =  function() SpellBook_UpdatePetTab(); end
 										};										
 SpellBookInfo[BOOKTYPE_CORE_ABILITIES]= { 	showFrames = {"SpellBookCoreAbilitiesFrame", "SpellBookPageNavigationFrame"}, 		
-											title = "Core Abilities",
+											title = CORE_ABILITIES,
 											updateFunc =  function() SpellBook_UpdateCoreAbilitiesTab(); end
+										};										
+SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED]= { showFrames = {"SpellBookWhatHasChanged"}, 		
+											title = WHAT_HAS_CHANGED,
+											updateFunc =  function() SpellBook_UpdateWhatHasChangedTab(); end
 										};										
 SPELLBOOK_PAGENUMBERS = {};
 
-SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame", "SpellBookCoreAbilitiesFrame"};
+SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame", "SpellBookCoreAbilitiesFrame", "SpellBookWhatHasChanged"};
 
 PROFESSION_RANKS =  {};
 PROFESSION_RANKS[1] = {75,  APPRENTICE};
@@ -91,6 +96,9 @@ function SpellBookFrame_GetTutorialEnum()
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_CORE_ABILITIES ) then
 		helpPlate = CoreAbilitiesFrame_HelpPlate;
 		tutorial = LE_FRAME_TUTORIAL_CORE_ABILITITES;
+	elseif ( SpellBookFrame.bookType == BOOKTYPE_WHAT_HAS_CHANGED ) then
+		helpPlate = WhatHasChangedFrame_HelpPlate;
+		tutorial = LE_FRAME_TUTORIAL_WHAT_HAS_CHANGED;
 	end
 	return tutorial, helpPlate;
 end
@@ -215,6 +223,14 @@ function SpellBookFrame_Update()
 	nextTab.bookType = BOOKTYPE_CORE_ABILITIES;
 	nextTab.binding = "TOGGLECOREABILITIESBOOK";
 	nextTab:SetText(SpellBookInfo[BOOKTYPE_CORE_ABILITIES].title);
+	tabIndex = tabIndex+1;
+	
+	-- What's Changed is always shown
+	local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
+	nextTab:Show();
+	nextTab.bookType = BOOKTYPE_WHAT_HAS_CHANGED;
+	nextTab.binding = "TOGGLEWHATHASCHANGEDBOOK";
+	nextTab:SetText(SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED].title);
 	
 	
 	-- Make sure the correct tab is selected
@@ -1216,11 +1232,13 @@ function SpellBook_UpdateCoreAbilitiesTab()
 	
 	local currentSpec = GetSpecialization();
 	local desaturate = currentSpec and (currentSpec ~= SpellBookCoreAbilitiesFrame.selectedSpec);
-	local specID = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec);
+	local specID, displayName = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec);
 	local draggable = false;
 	if ( GetSpecialization() == SpellBookCoreAbilitiesFrame.selectedSpec ) then
 		draggable = true;
 	end
+	
+	SpellBookCoreAbilitiesFrame.SpecName:SetText(displayName);
 	
 	local abilityList = SPEC_CORE_ABILITY_DISPLAY[specID];
 	if ( abilityList ) then
@@ -1276,12 +1294,56 @@ end
 
 -- *************************************************************************************
 
+WHAT_HAS_CHANGED_DISPLAY = {}
+WHAT_HAS_CHANGED_DISPLAY["HUNTER"]	= { WHC_WARRIOR_1,  WHC_HUNTER_2, WHC_HUNTER_3, WHC_HUNTER_4};
+WHAT_HAS_CHANGED_DISPLAY["WARLOCK"]	= { WHC_WARRIOR_1, WHC_WARLOCK_2, WHC_WARLOCK_3, WHC_WARLOCK_4};
+WHAT_HAS_CHANGED_DISPLAY["PRIEST"]	= { WHC_WARRIOR_1, WHC_PRIEST_2, WHC_PRIEST_3, WHC_PRIEST_4};
+WHAT_HAS_CHANGED_DISPLAY["PALADIN"]	= { WHC_WARRIOR_1, WHC_PALADIN_2 };
+WHAT_HAS_CHANGED_DISPLAY["MAGE"]	= { WHC_WARRIOR_1, WHC_MAGE_2, WHC_MAGE_3, WHC_MAGE_4};
+WHAT_HAS_CHANGED_DISPLAY["ROGUE"]	= { WHC_WARRIOR_1, WHC_ROGUE_2};
+WHAT_HAS_CHANGED_DISPLAY["DRUID"]	= { WHC_WARRIOR_1, WHC_DRUID_2};
+WHAT_HAS_CHANGED_DISPLAY["SHAMAN"]	= { WHC_WARRIOR_1, WHC_SHAMAN_2};
+WHAT_HAS_CHANGED_DISPLAY["WARRIOR"]	= { WHC_WARRIOR_1, WHC_WARRIOR_2, WHC_WARRIOR_3, WHC_WARRIOR_4 };
+WHAT_HAS_CHANGED_DISPLAY["MONK"]	= { WHC_MONK_1 };
+WHAT_HAS_CHANGED_DISPLAY["DEATHKNIGHT"] = { WHC_WARRIOR_1, WHC_DK_2};
+
+function SpellBook_GetWhatChangedItem(index)
+	local frame = SpellBookWhatHasChanged.ChangedItems[index];
+	if ( not frame ) then
+		SpellBookWhatHasChanged.ChangedItems[index] = CreateFrame("SimpleHTML", nil, SpellBookWhatHasChanged, "WhatHasChangedEntryTemplate");
+		frame = SpellBookWhatHasChanged.ChangedItems[index];
+		frame:SetPoint("TOP", SpellBookWhatHasChanged.ChangedItems[index-1], "BOTTOM", 0, -10);
+	end
+	return frame;
+end
+
+function SpellBook_UpdateWhatHasChangedTab()
+	local displayName, class = UnitClass("player");
+	local changedList = WHAT_HAS_CHANGED_DISPLAY[class];
+
+	SpellBookWhatHasChanged.ClassName:SetText(displayName);
+
+	if ( changedList ) then
+		for i=1, #changedList do
+			local frame = SpellBook_GetWhatChangedItem(i);
+			frame.Number:SetText(i);
+			frame:SetText(changedList[i], true);
+		end
+	end
+	for i = #changedList + 1, #SpellBookWhatHasChanged.ChangedItems do
+		SpellBook_GetWhatChangedItem(i):Hide();
+	end
+end
+
+
+-- *************************************************************************************
+
 SpellBookFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 250,	y = -50}, HighLightBox = { x = 65, y = -25, width = 460, height = 462 }, ToolTipDir = "DOWN",	ToolTipText = SPELLBOOK_HELP_1 },
-	[2] = { ButtonPos = { x = 515,	y = -30 }, HighLightBox = { x = 530, y = 0, width = 64, height = 110 }, ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
-	[3] = { ButtonPos = { x = 515,	y = -150}, HighLightBox = { x = 530, y = -120, width = 64, height = 205 }, ToolTipDir = "LEFT",	MinLevel = 10, ToolTipText = SPELLBOOK_HELP_3 },
+	[1] = { ButtonPos = { x = 250,	y = -50},	HighLightBox = { x = 65, y = -25, width = 460, height = 462 },	ToolTipDir = "DOWN",	ToolTipText = SPELLBOOK_HELP_1 },
+	[2] = { ButtonPos = { x = 515,	y = -30 },	HighLightBox = { x = 530, y = 0, width = 64, height = 110 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_2 },
+	[3] = { ButtonPos = { x = 515,	y = -150},	HighLightBox = { x = 530, y = -120, width = 64, height = 205 },	ToolTipDir = "LEFT",	ToolTipText = SPELLBOOK_HELP_3, MinLevel = 10 },
 }
 
 ProfessionsFrame_HelpPlate = {
@@ -1294,15 +1356,21 @@ ProfessionsFrame_HelpPlate = {
 CoreAbilitiesFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 450,	y = -50}, HighLightBox = { x = 65, y = -35, width = 460, height = 452 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
+	[1] = { ButtonPos = { x = 450,	y = -50}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
+}
+
+WhatHasChangedFrame_HelpPlate = {
+	FramePos = { x = 5,	y = -22 },
+	FrameSize = { width = 580, height = 500	},
+	[1] = { ButtonPos = { x = 450,	y = -50}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
 }
 
 function SpellBook_ToggleTutorial()
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum();
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );
+		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton, true );
 		SetCVarBitfield( "closedInfoFrames", tutorial, true );
 	else
-		HelpPlate_Hide();
+		HelpPlate_Hide(true);
 	end
 end

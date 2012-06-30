@@ -180,7 +180,6 @@ function RaidGroupFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_PET" or event == "UNIT_NAME_UPDATE" ) then
 		RaidClassButton_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		RaidFrameReadyCheckButton_Update();
 		RaidPullout_RenewFrames();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		RaidFrame.showRange = GetCVarBool("showRaidRange");
@@ -236,7 +235,6 @@ function RaidGroupFrame_Update()
 		for i=1, MAX_RAID_CLASS_BUTTONS do
 			classes[i]:Hide();
 		end
-		RaidFrameReadyCheckButton:Hide();
 	else
 		for i=1, NUM_RAID_GROUPS do
 			raid_groupFrames[i]:Show();
@@ -244,11 +242,6 @@ function RaidGroupFrame_Update()
 		for i=1, MAX_RAID_CLASS_BUTTONS do
 			--classes[i]:Show();
 		end
-	end
-
-	RaidFrameReadyCheckButton_Update();
-	if ( RaidFrameReadyCheckButton:IsShown() ) then
-		RaidFrameRaidInfoButton:SetPoint("LEFT", "RaidFrameReadyCheckButton", "RIGHT", 2, 0);
 	end
 
 
@@ -1502,11 +1495,4 @@ function RaidPulloutDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function RaidFrameReadyCheckButton_Update()
-	if ( IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
-		RaidFrameReadyCheckButton:Show();
-	else
-		RaidFrameReadyCheckButton:Hide();
-	end
-end
 

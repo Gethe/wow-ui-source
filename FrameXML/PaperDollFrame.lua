@@ -478,8 +478,8 @@ end
 
 -- This makes sure the update only happens once at the end of the frame
 function PaperDollFrame_QueuedUpdate(self)
-	PaperDollFrame_UpdateStats();
 	self:SetScript("OnUpdate", nil);
+	PaperDollFrame_UpdateStats();
 end
 
 function PaperDollFrame_OnEvent (self, event, ...)

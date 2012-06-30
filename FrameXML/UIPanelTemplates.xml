@@ -3445,6 +3445,11 @@
 		</Layers>
 	</Frame>
 	
+<!--
+*******************************************************************************
+    Help Plate System
+*******************************************************************************
+-->
 	<Button name="MainHelpPlateButton" virtual="true">
 		<Size x="64" y="64"/>
 		<Layers>
@@ -3651,7 +3656,7 @@
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.5"/>
+					<Color r="0" g="0" b="0" a="0.7"/>
 				</Texture>
 			</Layer>
 		</Layers>

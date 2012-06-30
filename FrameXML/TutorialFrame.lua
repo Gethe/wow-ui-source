@@ -1118,6 +1118,10 @@ function TutorialFrame_ClearQueue()
 end
 
 
+-- *************************************************************************************
+HELP_BUTTON_NORMAL_SIZE = 46;
+HELP_BUTTON_LARGE_SIZE = 55;
+
 HELP_PLATE_BUTTONS = {};
 function HelpPlate_GetButton()
 	local frame;
@@ -1136,6 +1140,7 @@ function HelpPlate_GetButton()
 		table.insert( HELP_PLATE_BUTTONS, frame );
 	end
 	frame.tooltipDir = "RIGHT";
+	frame:SetSize(HELP_BUTTON_NORMAL_SIZE, HELP_BUTTON_NORMAL_SIZE);
 	return frame;
 end
 
@@ -1143,18 +1148,18 @@ function HelpPlate_FindNextButton(prevButton)
 	local found = false;
 	for i=1, #HELP_PLATE_BUTTONS do
 		local button = HELP_PLATE_BUTTONS[i];
-		if ( found ) then
+		if ( found and button:IsShown() and not button.viewed ) then
 			return button;
 		end
 
-		if ( button:IsShown() and button == prevButton ) then
+		if ( button == prevButton ) then
 			found = true;
 		end
 	end
 end
 
 HELP_PLATE_CURRENT_PLATE = nil;
-function HelpPlate_Show( self, parent, mainHelpButton )
+function HelpPlate_Show( self, parent, mainHelpButton, userToggled )
 	if ( HELP_PLATE_CURRENT_PLATE ) then
 		HelpPlate_Hide();
 	end
@@ -1168,6 +1173,7 @@ function HelpPlate_Show( self, parent, mainHelpButton )
 			button:SetPoint( "TOPLEFT", HelpPlate, "TOPLEFT", self[i].ButtonPos.x, self[i].ButtonPos.y );
 			button.tooltipDir = self[i].ToolTipDir;
 			button.toolTipText = self[i].ToolTipText;
+			button.viewed = false;
 			button:Show();
 			
 			button.box:ClearAllPoints();
@@ -1176,30 +1182,66 @@ function HelpPlate_Show( self, parent, mainHelpButton )
 			button.box.BG:Show();
 			button.box:Show();
 			
-			if ( not HelpPlateButtonFlare.button ) then
+			if ( not HelpPlateButtonFlare.button and not userToggled ) then
 				HelpPlateButtonFlare.button = button;
 			end
 		end
 	end
 	HelpPlate:SetPoint( "TOPLEFT", parent, "TOPLEFT", self.FramePos.x, self.FramePos.y );
 	HelpPlate:SetSize( self.FrameSize.width, self.FrameSize.height );
+	HelpPlate.userToggled = userToggled;
 	HelpPlate:Show();
 end
 
-function HelpPlate_Hide()
+function HelpPlate_Hide(userToggled)
+	HelpPlateButtonFlare.button = nil;
+	HelpPlateButtonFlare.Pulse:Stop();
+	HelpPlateButtonFlare:Hide();
+
+	if (not userToggled) then
+		for i = 1, #HELP_PLATE_BUTTONS do
+			local button = HELP_PLATE_BUTTONS[i];
+			button.tooltipDir = "RIGHT";
+			button.box:Hide();
+			button:Hide();
+		end
+		HELP_PLATE_CURRENT_PLATE = nil;
+		HelpPlate:Hide();
+		return
+	end
+
+	-- else animate out
 	if ( HELP_PLATE_CURRENT_PLATE ) then
 		for i = 1, #HELP_PLATE_BUTTONS do
 			local button = HELP_PLATE_BUTTONS[i];
 			button.tooltipDir = "RIGHT";
-			button:Hide();
-			button.box:Hide();
+			if ( button:IsShown() ) then
+				button.animGroup_Show.translate:SetDuration(0.3);
+				button.animGroup_Show:Play();
+			end
 		end
-		HelpPlate:Hide();
+		HelpPlate:SetScript("OnUpdate", HelpPlate_OnUpdate);
 	end
+end
+
+function HelpPlate_OnUpdate(self)
+	for i = 1, #HELP_PLATE_BUTTONS do
+		local button = HELP_PLATE_BUTTONS[i];
+		if ( button:IsShown() and button.animGroup_Show:IsPlaying() ) then
+			return;
+		end
+	end
+
+	-- we are done animating. lets hide everything
+	for i = 1, #HELP_PLATE_BUTTONS do
+		local button = HELP_PLATE_BUTTONS[i];
+		button:Hide();
+		button.box:Hide();
+	end
+
 	HELP_PLATE_CURRENT_PLATE = nil;
-	HelpPlateButtonFlare.button = nil;
-	HelpPlateButtonFlare.Pulse:Stop();
-	HelpPlateButtonFlare:Hide();
+	HelpPlate:SetScript("OnUpdate", nil);
+	HelpPlate:Hide();
 end
 
 function HelpPlate_IsShowing(plate)
@@ -1212,6 +1254,17 @@ function Main_HelpPlate_Button_OnEnter(self)
 	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
 	HelpPlateTooltip.Text:SetText("Click this to toggle on/off the help system for this frame.")
 	HelpPlateTooltip:Show();
+--	self:SetScript("OnUpdate", Main_HelpPlate_Button_OnUpdate);
+end
+
+MAIN_HELP_BUTTON_TOOLTIP_INTERVAL = 3;
+function Main_HelpPlate_Button_OnUpdate(self, elapsed)
+	self.timesinceshown = (self.timesinceshown or 0) + elapsed;
+	if ( self.timesinceshown >= MAIN_HELP_BUTTON_TOOLTIP_INTERVAL ) then
+		Main_HelpPlate_Button_OnLeave(self);
+		self:SetScript("OnUpdate", nil);
+		self.timesinceshown = 0;
+	end
 end
 
 function Main_HelpPlate_Button_OnLeave(self)
@@ -1273,12 +1326,13 @@ function HelpPlate_Button_OnEnter(self)
 	HelpPlateTooltip:Show();
 	self.box.BG:Hide();
 	HelpPlate_ButtonFlareOff(self);
+	self.viewed = true;
 end
 
 function HelpPlate_Button_OnLeave(self)
 	HelpPlate_TooltipHide();
 	self.box.BG:Show();
-	if ( HelpPlateButtonFlare.button == self or not HelpPlateButtonFlare.button ) then
+	if ( HelpPlateButtonFlare.button == self or not HelpPlateButtonFlare.button and not HelpPlate.userToggled ) then
 		HelpPlate_ButtonFlareOn( HelpPlate_FindNextButton(HelpPlateButtonFlare.button) );
 	end
 end
@@ -1298,13 +1352,13 @@ end
 
 function HelpPlate_ButtonFlareOn(button)
 	if( HelpPlateButtonFlare.button ) then
-		HelpPlateButtonFlare.button:SetSize(46,46);
+		HelpPlateButtonFlare.button:SetSize(HELP_BUTTON_NORMAL_SIZE, HELP_BUTTON_NORMAL_SIZE);
 	end
 
 	HelpPlateButtonFlare.button = button;
 	HelpPlateButtonFlare:ClearAllPoints();
 	if ( button ) then
-		button:SetSize(55,55);
+		button:SetSize(HELP_BUTTON_LARGE_SIZE, HELP_BUTTON_LARGE_SIZE);
 		HelpPlateButtonFlare:SetPoint("CENTER", button);
 		HelpPlateButtonFlare:Show();
 		HelpPlateButtonFlare.Pulse:Play();

@@ -1422,4 +1422,79 @@
 			<Anchor point="BOTTOMRIGHT" x="-5" y="120"/>
 		</Anchors>
 	</Frame>
+	
+	<Frame name="StartSplash" parent="UIParent" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Size x="212" y="219" />
+		<Frames>
+			<Frame name="$parentTexture" parentKey="SplashTexture" alpha="0">
+				<Size x="212" y="219" />
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="splashAnim">
+						<Alpha change="1" duration="0.1" startDelay="0" order="1" />
+						<Scale scaleX="2.0" scaleY="2.0" duration="0.15" startDelay="0" order="1" />
+										
+						<Scale scaleX="0.67" scaleY="0.67" duration="0.3" startDelay="0.0" order="2" />
+						
+						<Alpha change="-1" duration="0.3" startDelay="0.5" order="3"/>
+						
+						<Scripts>
+							<OnPlay>
+								local frame = self:GetParent();
+								local parentFrame = frame:GetParent();
+								frame:SetScale(0.75, 0.75);
+								parentFrame:Show();
+							</OnPlay>
+							<OnFinished>
+								local frame = self:GetParent();
+								local parentFrame = frame:GetParent();
+								frame:SetAlpha(0);
+								frame:SetScale(1.0,1.0);
+								parentFrame:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture inherits="Start-VersusSplash"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentBattleText" parentKey="SplashText">
+				<Size x="212" y="219" />
+				<Anchors>
+					<Anchor point="CENTER" x="15" y="28"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="TextAnim">
+						<Alpha change="1" duration="0.3" startDelay="0.1" order="1"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent():SetAlpha(0);
+							</OnPlay>
+							<OnFinished>
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentBattlePetReachedText" inherits="GameFont_Gigantic" justifyH="CENTER" justifyV="MIDDLE" parentKey="battlePetReachedText" text="PET_BATTLE_START"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.TextAnim:Play();
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
 </Ui>

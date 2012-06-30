@@ -747,21 +747,6 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</CheckButton>
-	<Button name="RaidFrameReadyCheckButton" inherits="UIPanelButtonTemplate" parent="RaidFrame" text="READY_CHECK">
-		<Size x="90" y="21"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="RaidFrameAllAssistCheckButton" relativePoint="TOPRIGHT" x="60" y="-1"/>
-		</Anchors>
-		<Scripts>
-			<OnClick>
-				DoReadyCheck();
-				PlaySound("UChatScrollButton");
-			</OnClick>
-		</Scripts>
-		<NormalFont style="GameFontNormalSmall"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisableSmall"/>
-	</Button>
 	<Button name="RaidClassButton14"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="16"/>

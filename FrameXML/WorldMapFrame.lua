@@ -208,6 +208,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMap_ToggleSizeDown();
 		else
 			WorldMapBlobFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
+			ScenarioPOIFrame:SetScale(WORLDMAP_FULLMAP_SIZE);	--If we ever need to add objectives on the map itself we should adjust this value
 		end
 		WorldMapQuestShowObjectives:SetChecked(GetCVarBool("questPOI"));
 		WorldMapQuestShowObjectives_Toggle();
@@ -1516,6 +1517,7 @@ function WorldMap_ToggleSizeUp()
 	WorldMapFrameAreaFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
 	WorldMapBlobFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
 	WorldMapBlobFrame.xRatio = nil;		-- force hit recalculations
+	ScenarioPOIFrame:SetScale(WORLDMAP_FULLMAP_SIZE);	--If we ever need to add objectives on the map itself we should adjust this value
 	-- show big window elements
 	BlackoutWorld:Show();
 	WorldMapZoneMinimapDropDown:Show();
@@ -1563,6 +1565,7 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrameAreaFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
 	WorldMapBlobFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
 	WorldMapBlobFrame.xRatio = nil;		-- force hit recalculations
+	ScenarioPOIFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
 	-- hide big window elements
 	BlackoutWorld:Hide();
 	WorldMapZoneMinimapDropDown:Hide();
@@ -1758,6 +1761,7 @@ function WorldMapFrame_UpdateQuests()
 	local numEntries = QuestMapUpdateAllQuests();
 	WorldMapFrame_ClearQuestPOIs();
 	QuestPOIUpdateIcons();
+
 	if ( WorldMapQuestScrollFrame.highlightedFrame ) then
 		WorldMapQuestScrollFrame.highlightedFrame.ownPOI:UnlockHighlight();
 	end

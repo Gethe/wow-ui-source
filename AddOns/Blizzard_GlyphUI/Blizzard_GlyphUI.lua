@@ -173,7 +173,7 @@ function GlyphFrame_Update (self)
 	-- spec icon
 	local specialization = GetSpecialization(_, _, PlayerTalentFrame.talentGroup);
 	if ( specialization ) then
-		local _, _, _, icon = GetSpecializationInfo(specialization, nil, PlayerTalentFrame.talentGroup);
+		local _, _, _, icon = GetSpecializationInfo(specialization, false, self.isPet);
 		local specIcon = GlyphFrame.specIcon;
 		GlyphFrame.specRing:Show();
 		specIcon:Show();
@@ -213,7 +213,7 @@ function GlyphFrame_UpdateGlyphList ()
 		local button = buttons[i];
 		local index = offset + i;
 		if index <= numGlyphs  then
-			local name, glyphType, isKnown, icon, glyphID = GetGlyphInfo(index);
+			local name, glyphType, isKnown, icon, glyphID, link, subText = GetGlyphInfo(index);
 			if name == "header" then
 				button:Hide();
 				header = _G["GlyphFrameHeader"..currentHeader];
@@ -243,10 +243,16 @@ function GlyphFrame_UpdateGlyphList ()
 				button.icon:SetTexture(icon);
 				button.tooltipName = name;
 				button.glyphID = glyphID;
+				local glyphSubText;
+				if(subText ~= nil) then
+					glyphSubText = subText;
+				else
+					glyphSubText = "";
+				end
 				if isKnown then
 					button.icon:SetDesaturated(0);
 					button.name:SetText(name);
-					button.typeName:SetText(GLYPH_STRING[glyphType]);
+					button.typeName:SetText(glyphSubText);
 					button.disabledBG:Hide();
 					if selectedIndex and selectedIndex == index then
 						button.selectedTex:Show();
@@ -257,7 +263,7 @@ function GlyphFrame_UpdateGlyphList ()
 					button.selectedTex:Hide();
 					button.icon:SetDesaturated(1);
 					button.name:SetText(GRAY_FONT_COLOR_CODE..name);
-					button.typeName:SetText(GRAY_FONT_COLOR_CODE..GLYPH_STRING[glyphType]);
+					button.typeName:SetText(GRAY_FONT_COLOR_CODE..glyphSubText);
 					button.disabledBG:Show();
 				end
 				

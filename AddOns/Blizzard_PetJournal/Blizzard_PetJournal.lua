@@ -92,6 +92,7 @@ function PetJournal_OnLoad(self)
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
 	self:RegisterEvent("PET_JOURNAL_PET_DELETED");
+	self:RegisterEvent("PET_JOURNAL_PETS_HEALED");
 	self:RegisterEvent("BATTLE_PET_CURSOR_CLEAR");
 	self:RegisterEvent("COMPANION_UPDATE");
 	
@@ -147,9 +148,12 @@ function PetJournal_OnEvent(self, event, ...)
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetList();
 		PetJournal_UpdatePetLoadOut();
+	elseif event == "PET_JOURNAL_PETS_HEALED" then
+		PetJournal_UpdatePetLoadOut();
 	elseif event == "PET_JOURNAL_LIST_UPDATE" then
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetList();
+		PetJournal_UpdatePetLoadOut();
 	elseif event == "BATTLE_PET_CURSOR_CLEAR" then
 		PetJournal.Loadout.Pet1.setButton:Hide();
 		PetJournal.Loadout.Pet2.setButton:Hide();
@@ -1045,10 +1049,10 @@ PetJournal_HelpPlate = {
 function PetJournal_ToggleTutorial()
 	local helpPlate = PetJournal_HelpPlate;
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
+		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton, true );
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
 	else
-		HelpPlate_Hide();
+		HelpPlate_Hide(true);
 	end
 end
 

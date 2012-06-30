@@ -52,8 +52,8 @@ end
 
 -- This makes sure the update only happens once at the end of the frame
 function PetPaperDollFrame_QueuedUpdate(self)
-	PetPaperDollFrame_Update();
 	self:SetScript("OnUpdate", nil);
+	PetPaperDollFrame_Update();
 end
 
 function PetPaperDollFrame_OnEvent (self, event, ...)

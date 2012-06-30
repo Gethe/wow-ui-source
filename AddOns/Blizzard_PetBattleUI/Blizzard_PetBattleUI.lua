@@ -187,6 +187,7 @@ function PetBattleFrame_UpdateAssignedUnitFrames(self)
 end
 
 function PetBattleFrame_Remove(self)
+	ActionButton_HideOverlayGlow(PetBattleFrame.BottomFrame.CatchButton);
 	self:Hide();
 	RemoveFrameLock("PETBATTLES");
 end
@@ -426,6 +427,9 @@ function PetBattleActionButton_UpdateState(self)
 		end
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(1, 1, 1);
+		end
+		if ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
+			ActionButton_ShowOverlayGlow(self);
 		end
 	end
 end
@@ -887,6 +891,7 @@ function PetBattleOpeningFrame_OnEvent(self, event, ...)
 		-- end intro, open main frame
 		close = true;
 		openMainFrame = true;
+		StartSplashTexture.splashAnim:Play();
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		-- end battle all together
 		close = true;
@@ -953,7 +958,11 @@ function PetBattleWeatherFrame_Update(self)
 		local id, name, icon, maxCooldown, description = C_PetBattles.GetAbilityInfoByID(auraID);
 		self.Icon:SetTexture(icon);
 		self.Name:SetText(name);
-		self.Duration:SetText(turnsRemaining);
+		if ( turnsRemaining < 0 ) then
+			self.Duration:SetText("");
+		else
+			self.Duration:SetText(turnsRemaining);
+		end
 
 		local backgroundTexture = PET_BATTLE_WEATHER_TEXTURES[auraID];
 		if ( backgroundTexture ) then
@@ -1046,7 +1055,11 @@ function PetBattleAuraHolder_Update(self)
 			end
 
 			frame.Icon:SetTexture(icon);
-			frame.Duration:SetFormattedText(PET_BATTLE_AURA_TURNS_REMAINING, turnsRemaining);
+			if ( turnsRemaining < 0 ) then
+				frame.Duration:SetText("");
+			else
+				frame.Duration:SetFormattedText(PET_BATTLE_AURA_TURNS_REMAINING, turnsRemaining);
+			end
 			frame.auraIndex = i;
 			frame:Show();
 

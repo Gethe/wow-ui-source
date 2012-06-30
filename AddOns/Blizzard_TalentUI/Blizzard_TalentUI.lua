@@ -66,6 +66,34 @@ StaticPopupDialogs["CONFIRM_REMOVE_TALENT"] = {
 	exclusive = 1,
 }
 
+StaticPopupDialogs["CONFIRM_UNLEARN_AND_SWITCH_TALENT"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self)
+		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
+		if ( talentGroup == GetActiveSpecGroup() ) then
+			RemoveTalent(self.data.oldID);
+		end
+	end,
+	OnShow = function(self)
+		local name = GetTalentInfo(self.data.id);
+		local oldName = GetTalentInfo(self.data.oldID);
+		local resourceName, count, _, _, cost = GetTalentClearInfo();
+		if count >= cost then
+			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, GREEN_FONT_COLOR_CODE, cost, resourceName);
+		else
+			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, RED_FONT_COLOR_CODE, cost, resourceName);
+			self.button1:Disable();
+		end
+	end,
+	OnCancel = function (self)
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+}
+
 
 StaticPopupDialogs["CONFIRM_LEARN_SPEC"] = {
 	text = CONFIRM_LEARN_SPEC,
@@ -107,6 +135,9 @@ NUM_TALENT_FRAME_TABS = 3;
 local THREE_SPEC_LGBUTTON_HEIGHT = 95;
 local SPEC_SCROLL_HEIGHT = 282;
 local SPEC_SCROLL_PREVIEW_HEIGHT = 228;
+
+local lastTopLineHighlight = nil;
+local lastBottomLineHighlight = nil;
 
 -- speed references
 local next = next;
@@ -722,10 +753,10 @@ function PlayerTalentFrame_ToggleTutorial()
 	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
 		
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, PlayerTalentFrame, mainHelpButton );
+		HelpPlate_Show( helpPlate, PlayerTalentFrame, mainHelpButton, true );
 		SetCVarBitfield( "closedInfoFrames", tutorial, true );
 	else
-		HelpPlate_Hide();
+		HelpPlate_Hide(true);
 	end
 end
 
@@ -745,8 +776,21 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 			elseif ( button == "RightButton" and selected ) then
 				StaticPopup_Show("CONFIRM_REMOVE_TALENT", nil, nil, {id = self:GetID()});
 			end
+		else
+			-- if there is something else already learned for this tier, display a dialog about unlearning that one.
+			if ( button == "LeftButton" and not selected ) then
+				local tier = floor((self:GetID() - 1) / NUM_TALENT_COLUMNS) + 1;
+				local isRowFree, prevSelected = GetTalentRowSelectionInfo(tier);
+				if (not isRowFree) then					
+					StaticPopup_Show("CONFIRM_UNLEARN_AND_SWITCH_TALENT", nil, nil, {oldID = prevSelected, id = self:GetID()});					
+				end
+			end
 		end
 	end
+end
+
+function PlayerTalentFrameTalent_OnDrag(self, button)
+	PickupTalent(self:GetID());
 end
 
 function PlayerTalentFrameTalent_OnEvent(self, event, ...)
@@ -757,6 +801,20 @@ function PlayerTalentFrameTalent_OnEvent(self, event, ...)
 end
 
 function PlayerTalentFrameTalent_OnEnter(self)
+	
+	-- Highlight the whole row to give the idea that you can only select one talent per row.
+	if(lastTopLineHighlight ~= nil and lastTopLineHighlight ~= self:GetParent().TopLine) then
+		lastTopLineHighlight:Hide();
+	end
+	if(lastBottomLineHighlight ~= nil and lastBottomLineHighlight ~= self:GetParent().BottomLine) then
+		lastBottomLineHighlight:Hide();
+	end
+		
+	self:GetParent().TopLine:Show();
+	self:GetParent().BottomLine:Show();
+	lastTopLineHighlight = self:GetParent().TopLine;
+	lastBottomLineHighlight = self:GetParent().BottomLine;
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
 	GameTooltip:SetTalent(self:GetID(),
 		PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);

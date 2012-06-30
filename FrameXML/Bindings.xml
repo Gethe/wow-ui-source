@@ -665,6 +665,9 @@
 	<Binding name="TOGGLECOREABILITIESBOOK">
 		ToggleSpellBook(BOOKTYPE_CORE_ABILITIES);
 	</Binding>
+	<Binding name="TOGGLEWHATHASCHANGEDBOOK">
+		ToggleSpellBook(BOOKTYPE_WHAT_HAS_CHANGED);
+	</Binding>
 	<Binding name="TOGGLEINSCRIPTION">
 		ToggleGlyphFrame();
 	</Binding>
@@ -719,7 +722,7 @@
 		ToggleRaidFrame(1);
 	</Binding>
 	<Binding name="TOGGLELFRPARENT">
-		ToggleRaidFrame(2);
+		ToggleRaidBroswer();
 	</Binding>
 	<Binding name="TOGGLELFGPARENT"> <!--Keeping the name as the old LFG so that people's bindings aren't reset -->
 		ToggleLFDParentFrame();

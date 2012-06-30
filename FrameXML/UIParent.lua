@@ -49,6 +49,7 @@ UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1, extraWidth = 32};
 UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["RaidBroswerFrame"] =			{ area = "left",			pushable = 1,	};
 
 
 -- Frames NOT using the new Templates
@@ -602,6 +603,20 @@ function ToggleRaidFrame(index)
 	if ( index and _G["RaidParentFrameTab"..index] ) then
 		_G["RaidParentFrameTab"..index]:Click();
 	end
+end
+
+function ToggleRaidBroswer()
+	local factionGroup = UnitFactionGroup("player");
+	if (IsBlizzCon() or factionGroup == "Neutral") then
+		return;
+	end
+
+	if ( RaidBroswerFrame:IsShown() ) then
+			HideUIPanel(RaidBroswerFrame);
+	else
+		ShowUIPanel(RaidBroswerFrame);
+	end
+
 end
 
 function ToggleEncounterJournal()

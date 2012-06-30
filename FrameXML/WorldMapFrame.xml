@@ -460,29 +460,28 @@
 					<OnUpdate function="ArchaeologyDigSiteFrame_OnUpdate"/>
 				</Scripts>
 			</ArchaeologyDigSiteFrame>
-      <ScenarioPOIFrame name="ScenarioPOIFrame">
-        <Size x="1002" y="668"/>
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
-        </Anchors>
-        <Layers>
-          <Layer level="ARTWORK">
-            <Texture name="WorldMapBlobFrameTexture" setAllPoints="true" />
-          </Layer>
-        </Layers>
-        <Scripts>
-          <OnLoad>
-            self:SetFillAlpha(128);
-            self:SetFillTexture("Interface\\WorldMap\\UI-ArchaeologyBlob-Inside");
-            self:SetBorderTexture("Interface\\WorldMap\\UI-ArchaeologyBlob-Outside");
-            self:EnableSmoothing(true);
-            --self:SetNumSplinePoints(30);
-            self:SetBorderScalar(0.5);
-          </OnLoad>
-          <OnUpdate function="ScenarioPOIFrame_OnUpdate"/>
-        </Scripts>
-      </ScenarioPOIFrame>
-      <Button name="WorldMapButton">
+			<ScenarioPOIFrame name="ScenarioPOIFrame">
+				<Size x="1002" y="668"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
+				</Anchors>				
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="WorldMapBlobFrameTexture" setAllPoints="true" />
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFillTexture("Interface\\WorldMap\\UI-QuestBlob-Inside");
+						self:SetBorderTexture("Interface\\WorldMap\\UI-QuestBlob-Outside");
+						self:SetFillAlpha(128);
+						self:SetBorderAlpha(192);
+						self:SetBorderScalar(1.0);
+					</OnLoad>
+					<OnUpdate function="ScenarioPOIFrame_OnUpdate"/>
+				</Scripts>
+			</ScenarioPOIFrame>
+			<Button name="WorldMapButton">
 				<Size x="1002" y="668"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>

@@ -143,458 +143,330 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	
-	<Frame name="LFRParentFrame" toplevel="true" hidden="true" enableMouse="true" useParentLevel="true" parent="RaidParentFrame" setAllPoints="true">
+	<Frame name="RaidBroswerFrame" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true" >
+		<Size x="350" y="450"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="-0"/>
+		</Anchors>	
 		<Frames>
-			<Frame name="LFRQueueFrame" useParentLevel="true" setAllPoints="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<!-- <Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-MAIN">
-							<Size x="512" y="512"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture> -->
-					</Layer>
-				</Layers>
+			<Frame name="LFRParentFrame" setAllPoints="true">
 				<Frames>
-					<Frame name="$parentRoleInset" inherits="InsetFrameTemplate" frameLevel="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="LFRQueueFrame" x="4" y="-20"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="LFRQueueFrame" relativePoint="TOPRIGHT" x="-4" y="-110"/>
-						</Anchors>
-					</Frame>
-					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="65" y="-45"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("TANK"));
-								self.background:SetAlpha(0.6);
-								self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundTemplate" id="3">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="45" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("HEALER"));
-								self.background:SetAlpha(0.4);
-								self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundTemplate" id="1">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="43" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGER"));
-								self.background:SetAlpha(0.6);
-								self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Frame name="$parentCommentInset" inherits="InsetFrameTemplate" frameLevel="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="LFRQueueFrame" relativePoint="BOTTOMLEFT" x="4" y="76"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="LFRQueueFrame" relativePoint="BOTTOMRIGHT" x="-4" y="25"/>
-						</Anchors>
-					</Frame>
-					<ScrollFrame name="LFRQueueFrameCommentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
-						<Size x="313" y="36"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="13" y="70"/>
-						</Anchors>
-						<ScrollChild>
-							<EditBox name="LFRQueueFrameComment" multiLine="true" letters="64" autoFocus="false" countInvisibleLetters="true">
-								<Size x="313" y="1"/>
+					<Frame name="LFRQueueFrame" useParentLevel="true" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<!-- <Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-MAIN">
+									<Size x="512" y="512"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture> -->
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentRoleInset" inherits="InsetFrameTemplate" frameLevel="1">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="0" y="0"/>
+									<Anchor point="TOPLEFT" relativeTo="LFRQueueFrame" x="4" y="-20"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="LFRQueueFrame" relativePoint="TOPRIGHT" x="-4" y="-110"/>
 								</Anchors>
+							</Frame>
+							<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="65" y="-45"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+										self.background:SetTexCoord(GetBackgroundTexCoordsForRole("TANK"));
+										self.background:SetAlpha(0.6);
+										self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundTemplate" id="3">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="45" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+										self.background:SetTexCoord(GetBackgroundTexCoordsForRole("HEALER"));
+										self.background:SetAlpha(0.4);
+										self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundTemplate" id="1">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="43" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+										self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGER"));
+										self.background:SetAlpha(0.6);
+										self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Frame name="$parentCommentInset" inherits="InsetFrameTemplate" frameLevel="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="LFRQueueFrame" relativePoint="BOTTOMLEFT" x="4" y="76"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="LFRQueueFrame" relativePoint="BOTTOMRIGHT" x="-4" y="25"/>
+								</Anchors>
+							</Frame>
+							<ScrollFrame name="LFRQueueFrameCommentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+								<Size x="313" y="36"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="13" y="70"/>
+								</Anchors>
+								<ScrollChild>
+									<EditBox name="LFRQueueFrameComment" multiLine="true" letters="64" autoFocus="false" countInvisibleLetters="true">
+										<Size x="313" y="1"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="0"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parentExplanation" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" text="TYPE_LFR_COMMENT_HERE">
+													<Size x="313" y="36"/>
+													<Anchors>
+														<Anchor point="TOPLEFT"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												self.cursorOffset = 0;
+											</OnLoad>
+											<OnTextChanged>
+												ScrollingEdit_OnTextChanged(self, self:GetParent());
+											</OnTextChanged>
+											<OnUpdate>
+												ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+											</OnUpdate>
+											<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+											<OnEditFocusGained>
+												if ( RaidBrowser_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
+													LFRQueueFrameCommentExplanation:Hide();
+												else
+													self:ClearFocus();
+												end
+											</OnEditFocusGained>
+											<OnEditFocusLost>
+												if ( strtrim(self:GetText()) == "" ) then
+													LFRQueueFrameCommentExplanation:Show();
+												end
+												SetLFGComment(self:GetText());
+												PlaySound("UChatScrollButton");
+											</OnEditFocusLost>
+											<OnEscapePressed function="EditBox_ClearFocus"/>
+											<OnEnterPressed function="EditBox_ClearFocus"/>
+										</Scripts>
+										<FontString inherits="GameFontHighlight"/>
+									</EditBox>
+								</ScrollChild>
+								<Frames>
+									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-16"/>
+											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="13"/>
+										</Anchors>
+										<Scripts>
+											<OnShow>
+												LFRQueueFrameCommentScrollFrame:SetWidth(295);
+												LFRQueueFrameComment:SetWidth(295);
+											</OnShow>
+											<OnHide>
+												LFRQueueFrameCommentScrollFrame:SetWidth(313);
+												LFRQueueFrameComment:SetWidth(313);
+											</OnHide>
+										</Scripts>
+									</Slider>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										self.scrollBarHideable = true;
+										self.noScrollThumb = true;
+										ScrollFrame_OnLoad(self);
+										self.ScrollBar.trackBG:Hide();
+									</OnLoad>
+								</Scripts>
+							</ScrollFrame>
+							<Button name="$parentCommentTextButton">
+								<Size x="313" y="42"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentComment" relativePoint="TOPLEFT"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										if ( RaidBrowser_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
+											LFRQueueFrameComment:SetFocus();
+										end
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame name="$parentListInset" inherits="InsetFrameTemplate" frameLevel="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="LFRQueueFrame" x="4" y="-110"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="LFRQueueFrame" relativePoint="BOTTOMRIGHT" x="-4" y="76"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentSpecific" setAllPoints="true">
 								<Layers>
-									<Layer level="OVERLAY">
-										<FontString name="$parentExplanation" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" text="TYPE_LFR_COMMENT_HERE">
-											<Size x="313" y="36"/>
+									<Layer level="ARTWORK">
+										<FontString name="$parentNoRaidsAvailable" inherits="GameFontNormal" text="NO_RAIDS_AVAILABLE" justifyH="CENTER">
+											<Size x="300" y="0"/>
 											<Anchors>
-												<Anchor point="TOPLEFT"/>
+												<Anchor point="TOP" x="0" y="-220"/>
 											</Anchors>
 										</FontString>
 									</Layer>
 								</Layers>
-								<Scripts>
-									<OnTextChanged>
-										ScrollingEdit_OnTextChanged(self, self:GetParent());
-									</OnTextChanged>
-									<OnUpdate>
-										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
-									</OnUpdate>
-									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-									<OnEditFocusGained>
-										if ( RaidBrowser_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
-											LFRQueueFrameCommentExplanation:Hide();
-										else
-											self:ClearFocus();
-										end
-									</OnEditFocusGained>
-									<OnEditFocusLost>
-										if ( strtrim(self:GetText()) == "" ) then
-											LFRQueueFrameCommentExplanation:Show();
-										end
-										SetLFGComment(self:GetText());
-										PlaySound("UChatScrollButton");
-									</OnEditFocusLost>
-									<OnEscapePressed function="EditBox_ClearFocus"/>
-									<OnEnterPressed function="EditBox_ClearFocus"/>
-								</Scripts>
-								<FontString inherits="GameFontHighlight"/>
-							</EditBox>
-						</ScrollChild>
-						<Frames>
-							<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-16"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="13"/>
-								</Anchors>
+								<Frames>
+									<Frame name="$parentListButton1" inherits="LFRFrameDungeonChoiceTemplate" id="1">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="10" y="-118"/>
+										</Anchors>
+									</Frame>
+									<!-- Other 13 ListButtons are made in LFRFrame_OnLoad -->
+									<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
+										<Size x="295" y="230"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="2"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture name="$parentScrollBackgroundTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+													<Size x="31" y="200"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+													</Anchors>
+													<TexCoords left="0" right="0.484375" top="0" bottom="0.78125"/>
+												</Texture>
+												<Texture name="$parentScrollBackgroundBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+													<Size x="31" y="106"/>
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+													</Anchors>
+													<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnVerticalScroll>
+												FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRQueueFrameSpecificList_Update);
+											</OnVerticalScroll>
+										</Scripts>
+									</ScrollFrame>
+								</Frames>
 								<Scripts>
 									<OnShow>
-										LFRQueueFrameCommentScrollFrame:SetWidth(295);
-										LFRQueueFrameComment:SetWidth(295);
+										LFRQueueFrame_Update();
 									</OnShow>
-									<OnHide>
-										LFRQueueFrameCommentScrollFrame:SetWidth(313);
-										LFRQueueFrameComment:SetWidth(313);
-									</OnHide>
 								</Scripts>
-							</Slider>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = true;
-								self.noScrollThumb = true;
-								ScrollFrame_OnLoad(self);
-								self.ScrollBar.trackBG:Hide();
-							</OnLoad>
-						</Scripts>
-					</ScrollFrame>
-					<Button name="$parentCommentTextButton">
-						<Size x="313" y="42"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentComment" relativePoint="TOPLEFT"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if ( RaidBrowser_IsEmpowered() and (not LFRRaidList or LFRRaidList[1])) then
-									LFRQueueFrameComment:SetFocus();
-								end
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="$parentListInset" inherits="InsetFrameTemplate" frameLevel="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="LFRQueueFrame" x="4" y="-110"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="LFRQueueFrame" relativePoint="BOTTOMRIGHT" x="-4" y="76"/>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentSpecific" setAllPoints="true">
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="$parentNoRaidsAvailable" inherits="GameFontNormal" text="NO_RAIDS_AVAILABLE" justifyH="CENTER">
-									<Size x="300" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-220"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentListButton1" inherits="LFRFrameDungeonChoiceTemplate" id="1">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="10" y="-118"/>
-								</Anchors>
 							</Frame>
-							<!-- Other 13 ListButtons are made in LFRFrame_OnLoad -->
-							<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
-								<Size x="295" y="230"/>
+							<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate" text="LIST_ME">
+								<Size x="125" y="22"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="2"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentScrollBackgroundTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size x="31" y="200"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-											</Anchors>
-											<TexCoords left="0" right="0.484375" top="0" bottom="0.78125"/>
-										</Texture>
-										<Texture name="$parentScrollBackgroundBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size x="31" y="106"/>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-											</Anchors>
-											<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRQueueFrameSpecificList_Update);
-									</OnVerticalScroll>
-								</Scripts>
-							</ScrollFrame>
-						</Frames>
-						<Scripts>
-							<OnShow>
-								LFRQueueFrame_Update();
-							</OnShow>
-						</Scripts>
-					</Frame>
-					<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate" text="LIST_ME">
-						<Size x="125" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="5" y="4"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								local mode, subMode = GetLFGMode();
-								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
-									LeaveLFG();
-								else
-									LFRQueueFrame_Join();
-								end
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentAcceptCommentButton" inherits="UIPanelButtonTemplate" text="ACCEPT_COMMENT">
-						<Size x="115" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if ( LFRQueueFrameComment:HasFocus() ) then
-									LFRQueueFrameComment:ClearFocus();
-								else
-									--The comment is already set, so they didn't need to click this... we'll give some feedback anyway.
-									PlaySound("UChatScrollButton");
-								end
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="$parentNoLFRWhileLFD" hidden="true" enableMouse="true">
-						<Size x="327" y="282"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-7" y="33"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFR_WHILE_LFD" justifyH="CENTER">
-									<Size x="300" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" x="-0" y="-70"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE">
-								<Size x="153" y="22"/>
-								<Anchors>
-									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
+									<Anchor point="BOTTOMLEFT" x="5" y="4"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
+										local mode, subMode = GetLFGMode();
+										if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
 											LeaveLFG();
+										else
+											LFRQueueFrame_Join();
+										end
 									</OnClick>
 								</Scripts>
 							</Button>
+							<Button name="$parentAcceptCommentButton" inherits="UIPanelButtonTemplate" text="ACCEPT_COMMENT">
+								<Size x="115" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										if ( LFRQueueFrameComment:HasFocus() ) then
+											LFRQueueFrameComment:ClearFocus();
+										else
+											--The comment is already set, so they didn't need to click this... we'll give some feedback anyway.
+											PlaySound("UChatScrollButton");
+										end
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame name="$parentNoLFRWhileLFD" hidden="true" enableMouse="true">
+								<Size x="327" y="282"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-7" y="33"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture name="$parentBlackFilter" setAllPoints="true">
+											<Color r="0" b="0" g="0" a="0.93"/>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFR_WHILE_LFD" justifyH="CENTER">
+											<Size x="300" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" x="-0" y="-70"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE">
+										<Size x="153" y="22"/>
+										<Anchors>
+											<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+													LeaveLFG();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										self:SetFrameLevel(10);
+									</OnLoad>
+								</Scripts>
+							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad>
-								self:SetFrameLevel(10);
-							</OnLoad>
+							<OnShow>
+								RequestLFDPlayerLockInfo();
+								RequestLFDPartyLockInfo();
+							</OnShow>
 						</Scripts>
 					</Frame>
-				</Frames>
-				<Scripts>
-					<OnShow>
-						RequestLFDPlayerLockInfo();
-						RequestLFDPartyLockInfo();
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="LFRBrowseFrame" useParentLevel="true" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<!-- <Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-BROWSE">
-							<Size x="512" y="512"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture> -->
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="102"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-33" y="-82"/>
-							</Anchors>
-							<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
-						</Texture>
-						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="106"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-33" y="27"/>
-							</Anchors>
-							<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="1"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-							</Anchors>
-							<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="$parentRaidDropDown" inherits="UIDropDownMenuTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="136" y="-25"/>
-						</Anchors>
+					<Frame name="LFRBrowseFrame" useParentLevel="true" setAllPoints="true" hidden="true">
 						<Layers>
-							<Layer level="OVERLAY">
-								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="BROWSING">
-									<Size x="90" y="12"/>
+							<Layer level="BACKGROUND">
+								<!-- <Texture name="$parentLayout" file="Interface\LFGFrame\UI-LFR-FRAME-BROWSE">
+									<Size x="512" y="512"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" x="10" y="2"/>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
-								</FontString>
+								</Texture> -->
 							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow function="LFRBrowseFrameRaidDropDown_SetUp"/>
-						</Scripts>
-					</Frame>
-					<Button name="$parentColumnHeader1" inherits="LFRBrowseFrameColumnHeaderTemplate" text="NAME">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-59"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 97);
-								self.sortType = "name";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentColumnHeader2" inherits="LFRBrowseFrameColumnHeaderTemplate" text="LEVEL_ABBR">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentColumnHeader1" relativePoint="RIGHT" x="-2" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 34);
-								self.sortType = "level";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentColumnHeader3" inherits="LFRBrowseFrameColumnHeaderTemplate" text="CLASS">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentColumnHeader2" relativePoint="RIGHT" x="-2" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 80);
-								self.sortType = "class";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentColumnHeader4" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentColumnHeader3" relativePoint="RIGHT" x="-2" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.icon:SetTexCoord(0.5, 0.75, 0, 1);
-								WhoFrameColumn_SetWidth(self, 25);
-								self.sortType = "tank";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentColumnHeader5" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentColumnHeader4" relativePoint="RIGHT" x="-2" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.icon:SetTexCoord(0.75, 1, 0, 1);
-								WhoFrameColumn_SetWidth(self, 25);
-								self.sortType = "healer";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentColumnHeader6" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentColumnHeader5" relativePoint="RIGHT" x="-2" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.icon:SetTexCoord(0.25, 0.5, 0, 1);
-								WhoFrameColumn_SetWidth(self, 25);
-								self.sortType = "damage";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentColumnHeader7" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentColumnHeader6" relativePoint="RIGHT" x="-2" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.icon:SetTexCoord(0, 0.25, 0, 1);
-								WhoFrameColumn_SetWidth(self, 25);
-								self.sortType = "group";
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="$parentListButton1" inherits="LFRBrowseButtonTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="3" y="-86"/>
-						</Anchors>
-					</Button>
-					<!-- Other 18 ListButtons are made in LFRFrame_OnLoad -->
-					<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
-						<Size x="295" y="308"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="12" y="-87"/>
-						</Anchors>
-						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size x="29" y="102"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="LFRBrowseFrame" relativePoint="TOPRIGHT" x="-33" y="-82"/>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-33" y="-82"/>
 									</Anchors>
 									<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
 								</Texture>
 								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size x="29" y="106"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="LFRBrowseFrame" relativePoint="BOTTOMRIGHT" x="-33" y="27"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-33" y="27"/>
 									</Anchors>
 									<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
 								</Texture>
@@ -608,91 +480,235 @@
 								</Texture>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame name="$parentRaidDropDown" inherits="UIDropDownMenuTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="136" y="-25"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="BROWSING">
+											<Size x="90" y="12"/>
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="LEFT" x="10" y="2"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow function="LFRBrowseFrameRaidDropDown_SetUp"/>
+								</Scripts>
+							</Frame>
+							<Button name="$parentColumnHeader1" inherits="LFRBrowseFrameColumnHeaderTemplate" text="NAME">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="10" y="-59"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(self, 97);
+										self.sortType = "name";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentColumnHeader2" inherits="LFRBrowseFrameColumnHeaderTemplate" text="LEVEL_ABBR">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentColumnHeader1" relativePoint="RIGHT" x="-2" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(self, 34);
+										self.sortType = "level";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentColumnHeader3" inherits="LFRBrowseFrameColumnHeaderTemplate" text="CLASS">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentColumnHeader2" relativePoint="RIGHT" x="-2" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(self, 80);
+										self.sortType = "class";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentColumnHeader4" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentColumnHeader3" relativePoint="RIGHT" x="-2" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.icon:SetTexCoord(0.5, 0.75, 0, 1);
+										WhoFrameColumn_SetWidth(self, 25);
+										self.sortType = "tank";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentColumnHeader5" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentColumnHeader4" relativePoint="RIGHT" x="-2" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.icon:SetTexCoord(0.75, 1, 0, 1);
+										WhoFrameColumn_SetWidth(self, 25);
+										self.sortType = "healer";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentColumnHeader6" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentColumnHeader5" relativePoint="RIGHT" x="-2" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.icon:SetTexCoord(0.25, 0.5, 0, 1);
+										WhoFrameColumn_SetWidth(self, 25);
+										self.sortType = "damage";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentColumnHeader7" inherits="LFRBrowseFrameColumnHeaderRoleTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentColumnHeader6" relativePoint="RIGHT" x="-2" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.icon:SetTexCoord(0, 0.25, 0, 1);
+										WhoFrameColumn_SetWidth(self, 25);
+										self.sortType = "group";
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button name="$parentListButton1" inherits="LFRBrowseButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="3" y="-86"/>
+								</Anchors>
+							</Button>
+							<!-- Other 18 ListButtons are made in LFRFrame_OnLoad -->
+							<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Size x="295" y="308"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="12" y="-87"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size x="29" y="102"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="LFRBrowseFrame" relativePoint="TOPRIGHT" x="-33" y="-82"/>
+											</Anchors>
+											<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
+										</Texture>
+										<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size x="29" y="106"/>
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativeTo="LFRBrowseFrame" relativePoint="BOTTOMRIGHT" x="-33" y="27"/>
+											</Anchors>
+											<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
+										</Texture>
+										<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+											<Size x="29" y="1"/>
+											<Anchors>
+												<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+												<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+											</Anchors>
+											<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnVerticalScroll>
+										FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRBrowseFrameList_Update);
+									</OnVerticalScroll>
+									<OnShow function="RefreshLFGList"/>
+								</Scripts>
+							</ScrollFrame>
+							<Button name="$parentSendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
+								<Size x="113" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="5" y="4"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("UChatScrollButton");
+										ChatFrame_SendTell(LFRBrowseFrame.selectedName);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentInviteButton" inherits="UIPanelButtonTemplate" text="INVITE">
+								<Size x="100" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentSendMessageButton" relativePoint="RIGHT" x="3" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("UChatScrollButton");
+										InviteToGroup(LFRBrowseFrame.selectedName);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentRefreshButton" inherits="UIPanelButtonTemplate" text="REFRESH">
+								<Size x="104" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentInviteButton" relativePoint="RIGHT" x="3" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("UChatScrollButton");
+										RefreshLFGList();
+									</OnClick>
+									<OnUpdate function="LFRBrowseFrameRefreshButton_OnUpdate"/>
+								</Scripts>
+							</Button>
+						</Frames>
 						<Scripts>
-							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRBrowseFrameList_Update);
-							</OnVerticalScroll>
-							<OnShow function="RefreshLFGList"/>
-						</Scripts>
-					</ScrollFrame>
-					<Button name="$parentSendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
-						<Size x="113" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="5" y="4"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound("UChatScrollButton");
-								ChatFrame_SendTell(LFRBrowseFrame.selectedName);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentInviteButton" inherits="UIPanelButtonTemplate" text="INVITE">
-						<Size x="100" y="22"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSendMessageButton" relativePoint="RIGHT" x="3" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound("UChatScrollButton");
-								InviteToGroup(LFRBrowseFrame.selectedName);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentRefreshButton" inherits="UIPanelButtonTemplate" text="REFRESH">
-						<Size x="104" y="22"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentInviteButton" relativePoint="RIGHT" x="3" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound("UChatScrollButton");
+							<OnLoad function="LFRBrowseFrame_OnLoad"/>
+							<OnShow>
 								RefreshLFGList();
-							</OnClick>
-							<OnUpdate function="LFRBrowseFrameRefreshButton_OnUpdate"/>
+							</OnShow>
 						</Scripts>
-					</Button>
+					</Frame>
+					<CheckButton name="$parentSideTab1" inherits="LFRFrameSideTabTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-35"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltip = CHOOSE_RAID;
+								self:SetNormalTexture("Interface\\Icons\\INV_Misc_FrostEmblem_01");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentSideTab2" inherits="LFRFrameSideTabTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSideTab1" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tooltip = BROWSE;
+								self:SetNormalTexture("Interface\\Icons\\INV_Enchant_FormulaSuperior_01");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 				</Frames>
 				<Scripts>
-					<OnLoad function="LFRBrowseFrame_OnLoad"/>
+					<OnLoad function="LFRFrame_OnLoad"/>
+					<OnEvent function="LFRFrame_OnEvent"/>
 					<OnShow>
-						RefreshLFGList();
+						LFRBrowseFrame.timeToClear = nil;	--Never clear browsing while shown.
+						RaidParentFrame.TitleText:SetText(LOOKING_FOR_RAID);
 					</OnShow>
+					<OnHide>
+						LFRBrowseFrame.timeToClear = 40;	--Clear all browsing after 40 seconds of being hidden.
+					</OnHide>
 				</Scripts>
 			</Frame>
-			<CheckButton name="$parentSideTab1" inherits="LFRFrameSideTabTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-35"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.tooltip = CHOOSE_RAID;
-						self:SetNormalTexture("Interface\\Icons\\INV_Misc_FrostEmblem_01");
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentSideTab2" inherits="LFRFrameSideTabTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSideTab1" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.tooltip = BROWSE;
-						self:SetNormalTexture("Interface\\Icons\\INV_Enchant_FormulaSuperior_01");
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 		</Frames>
-		<Scripts>
-			<OnLoad function="LFRFrame_OnLoad"/>
-			<OnEvent function="LFRFrame_OnEvent"/>
-			<OnShow>
-				LFRBrowseFrame.timeToClear = nil;	--Never clear browsing while shown.
-				RaidParentFrame.TitleText:SetText(LOOKING_FOR_RAID);
-			</OnShow>
-			<OnHide>
-				LFRBrowseFrame.timeToClear = 40;	--Clear all browsing after 40 seconds of being hidden.
-			</OnHide>
-		</Scripts>
+	<Scripts>
+		<OnLoad>
+			SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+		</OnLoad>			
+	</Scripts>
 	</Frame>
 </Ui>
