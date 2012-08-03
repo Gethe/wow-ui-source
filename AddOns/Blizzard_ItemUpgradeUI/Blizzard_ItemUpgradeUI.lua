@@ -147,6 +147,7 @@ end
 function ItemUpgradeFrame_UpgradeClick(self)
 	ItemUpgradeFrameUpgradeButton:Disable();
 	UpgradeItem();
+	PlaySoundKitID(23291);
 end
 
 function ItemUpgradeFrame_AddItemClick(self, button)

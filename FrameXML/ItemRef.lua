@@ -217,10 +217,8 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1, 9) == "battlepet" ) then
-		TogglePetJournal();
-		if ( PetJournalParent ) then
-			PetJournalParent_SetTab(PetJournalParent, PetJournalParentTab2:GetID());
-		end
+		local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link);
+		FloatingBattlePet_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""));
 		return;
 	end
     
@@ -256,6 +254,8 @@ function GetFixedLink(text)
 			return (gsub(text, "(|H.+|h.+|h)", "|cff66bbff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 14) == "battlePetAbil" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cff4e96f7%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 10) == "battlepet" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffd200%1|r", 1)); -- s_defaultColorString (yellow)
 		end
 	end
 	--Nothing to change.

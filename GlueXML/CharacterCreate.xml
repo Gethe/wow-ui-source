@@ -937,27 +937,27 @@
 							<OnClick function="CharacterCreate_Back"/>
 						</Scripts>
 					</Button>
-					<Button name="CharCreateOkayButton" inherits="CharCreateNavButtonTemplate" text="NEXT">
+					<Button name="CharCreateOkayButton" inherits="CharCreateNavButtonTemplate" text="CUSTOMIZE">
 						<Anchors>
 							<Anchor point="BOTTOM" x="137" y="-6"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture name="$parentTopGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+								<Texture name="$parentTopGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="TopGlow">
 									<Size x="117" y="32"/>
 									<Anchors>
 										<Anchor point="TOP" x="0" y="18"/>
 									</Anchors>
 									<TexCoords left="0.18750000" right="0.41601563" top="0.89257813" bottom="0.92382813"/>
 								</Texture>
-								<Texture name="$parentBottomGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+								<Texture name="$parentBottomGlow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="BottomGlow">
 									<Size x="117" y="32"/>
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="-13"/>
 									</Anchors>
 									<TexCoords left="0.18750000" right="0.41601563" top="0.92382813" bottom="0.89257813"/>
 								</Texture>
-								<Texture name="$parentArrow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+								<Texture name="$parentArrow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" parentKey="Arrow">
 									<Size x="33" y="44"/>
 									<Anchors>
 										<Anchor point="RIGHT" x="10" y="3"/>
@@ -1187,6 +1187,43 @@
 										</Anchors>
 									</CheckButton>
 								</Frames>
+							</Frame>
+							<Frame name="CharCreatePandarenFactionFrame" enableMouse="true">
+								<Size x="243" y="104"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="-570"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\Glues\CharacterCreate\Race-Change-BannerCover">
+											<Size x="256" y="128"/>
+											<Anchors>
+												<Anchor point="BOTTOM" x="0" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<CheckButton name="$parentAllianceButton" inherits="CharCreateRaceButtonTemplate" parentKey="AllianceButton">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton6" relativePoint="BOTTOMLEFT" x="0" y="-42"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="PandarenFactionButton_OnClick"/>
+										</Scripts>
+									</CheckButton>
+									<CheckButton name="$parentHordeButton" inherits="CharCreateRaceButtonTemplate" parentKey="HordeButton">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton11" relativePoint="BOTTOMLEFT" x="0" y="-42"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="PandarenFactionButton_OnClick"/>
+										</Scripts>
+									</CheckButton>
+								</Frames>
+								<Scripts>
+									<OnLoad function="PandarenFactionButtons_OnLoad"/>
+								</Scripts>
 							</Frame>
 							<Frame inherits="CharCreatePanelTemplate" setAllPoints="true">		<!-- top filigree box -->
 								<Scripts>

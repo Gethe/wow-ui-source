@@ -110,14 +110,14 @@
 						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="10" y="1"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentRarityIcon" parentKey="rarityIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+				<Texture name="$parentRarityIcon" parentKey="rarityIcon" file="Interface\PetBattles\PetBattle-StatIcons" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-8"/>
 					</Anchors>
 					<TexCoords left="0.5" right="1.0" top="0.0" bottom="0.5"/>
 				</Texture>
-				<FontString name="$parentRarityValue" inherits="GameFontHighlight" parentKey="rarityValue" text="99">
+				<FontString name="$parentRarityValue" inherits="GameFontHighlight" parentKey="rarityValue" text="" hidden="true">
 					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRarityIcon" relativePoint="RIGHT" x="2" y="0"/>

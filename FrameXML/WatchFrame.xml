@@ -499,7 +499,7 @@
 	</Frame>
 
 	<ScrollFrame name="WatchFrameScenarioPopUpFrame" hidden="true">
-		<Size x="201" y="83"/>
+		<Size x="204" y="83"/>
 		<ScrollChild>
 			<Frame name="WatchFrameScenarioFrame" enableMouse="true">
 				<Size x="201" y="83"/>

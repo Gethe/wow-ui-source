@@ -1,15 +1,7 @@
-local PET_BATTLE_FLOATING_ABILITY_TOOLTIP = {};
+local PET_BATTLE_FLOATING_ABILITY_TOOLTIP = SharedPetBattleAbilityTooltip_GetInfoTable();
 
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetAbilityID()
 	return self.abilityID;
-end
-
-function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetCooldown()
-	return 0;
-end
-
-function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetRemainingDuration()
-	return 0;
 end
 
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:IsInBattle()
@@ -36,17 +28,11 @@ function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetSpeedStat(target)
 	return self.speed;
 end
 
-function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:GetState(stateID, target)
-	return 0;
-end
-
 function PET_BATTLE_FLOATING_ABILITY_TOOLTIP:EnsureTarget(target)
-	if ( target == "default" ) then
-		target = "self";
-	end
-	if ( target ~= "self" ) then
-		GMError("Only \"self\" unit supported out of combat");
-	end
+	--We support both abilities and auras in floating tooltips, so we have
+	--to support all tokens, but we don't actually do anything with them.
+	--
+	--If we ever do anything with the targets, we'll have to put code in this function.
 end
 
 function FloatingPetBattleAbility_Show(abilityID, maxHealth, power, speed)
@@ -60,3 +46,61 @@ function FloatingPetBattleAbility_Show(abilityID, maxHealth, power, speed)
 	end
 end
 
+-------------------------------------------
+local BATTLE_PET_FLOATING_TOOLTIP = {};
+
+function FloatingBattlePet_Show(speciesID, level, breedQuality, maxHealth, power, speed, customName)
+	if (speciesID and speciesID > 0) then
+		local name, icon, petType = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+		BATTLE_PET_FLOATING_TOOLTIP.speciesID = speciesID;
+		BATTLE_PET_FLOATING_TOOLTIP.name = name;
+		BATTLE_PET_FLOATING_TOOLTIP.level = level;
+		BATTLE_PET_FLOATING_TOOLTIP.breedQuality = breedQuality;
+		BATTLE_PET_FLOATING_TOOLTIP.petType = petType;
+		BATTLE_PET_FLOATING_TOOLTIP.maxHealth = maxHealth;
+		BATTLE_PET_FLOATING_TOOLTIP.power = power;
+		BATTLE_PET_FLOATING_TOOLTIP.speed = speed;
+		if (customName ~= BATTLE_PET_FLOATING_TOOLTIP.name) then
+			BATTLE_PET_FLOATING_TOOLTIP.customName = customName;
+		else
+			BATTLE_PET_FLOATING_TOOLTIP.customName = nil;
+		end
+
+		BattlePetTooltipTemplate_SetBattlePet(FloatingBattlePetTooltip, BATTLE_PET_FLOATING_TOOLTIP);
+		FloatingBattlePetTooltip:Show();
+	end
+end
+
+function BattlePetTooltip_OnLoad(self)
+	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+end
+
+function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
+	tooltipFrame.speciesID = data.speciesID; -- For the button
+	tooltipFrame.Name:SetText(data.name);
+	if (data.breedQuality ~= -1) then
+		tooltipFrame.Name:SetTextColor(ITEM_QUALITY_COLORS[data.breedQuality].r, ITEM_QUALITY_COLORS[data.breedQuality].g, ITEM_QUALITY_COLORS[data.breedQuality].b);
+	else
+		tooltipFrame.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	tooltipFrame.PetType:SetText(_G["BATTLE_PET_NAME_"..data.petType]);
+	tooltipFrame.Level:SetFormattedText(BATTLE_PET_CAGE_TOOLTIP_LEVEL, data.level);
+	tooltipFrame.Health:SetText(data.maxHealth);
+	tooltipFrame.Power:SetText(data.power);
+	tooltipFrame.Speed:SetText(data.speed);
+	tooltipFrame.PetTypeTexture:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[data.petType]);
+end
+
+function BattlePetTooltipJournalClick_OnClick(self)
+	if (not PetJournalParent) then
+		PetJournal_LoadUI();
+	end
+	if (not PetJournalParent:IsShown()) then
+		ShowUIPanel(PetJournalParent);
+	end
+	PetJournalParent_SetTab(PetJournalParent, 2);
+	if (self:GetParent().speciesID and self:GetParent().speciesID > 0) then
+		PetJournal_SelectSpecies(PetJournal, self:GetParent().speciesID);
+	end
+end

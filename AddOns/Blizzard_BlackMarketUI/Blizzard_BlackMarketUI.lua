@@ -53,7 +53,8 @@ function BlackMarketFrame_OnEvent(self, event, ...)
 	end
 
 	-- do this on any event
-	self.Inset.NoItems:SetShown(C_BlackMarket.GetNumItems() <= 0);
+	local numItems = C_BlackMarket.GetNumItems();
+	self.Inset.NoItems:SetShown(not numItems or numItems <= 0);
 	BlackMarketFrame_UpdateHotItem(self);
 end
 

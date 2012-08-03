@@ -7,6 +7,7 @@ CHARACTER_CREATE_ROTATION_START_X = nil;
 CHARACTER_CREATE_INITIAL_FACING = nil;
 NUM_PREVIEW_FRAMES = 14;
 WORGEN_RACE_ID = 6;
+PANDAREN_RACE_ID = 13;
 
 PAID_CHARACTER_CUSTOMIZATION = 1;
 PAID_RACE_CHANGE = 2;
@@ -173,6 +174,13 @@ function CharacterCreate_OnShow()
 		CharCreateRandomizeButton:Show();
 	end
 
+	-- Pandarens doing paid faction change
+	if ( PAID_SERVICE_TYPE == PAID_FACTION_CHANGE and GetSelectedRace() == PANDAREN_RACE_ID ) then
+		PandarenFactionButtons_Show();
+	else
+		PandarenFactionButtons_Hide();
+	end
+	
 	CharacterCreateEnumerateRaces(GetAvailableRaces());
 	SetCharacterRace(GetSelectedRace());
 	
@@ -421,8 +429,38 @@ function SetCharacterRace(id)
 
 	local name, faction = GetFactionForRace(CharacterCreate.selectedRace);
 
+	-- during a paid service we have to set alliance/horde for neutral races
+	-- hard-coded for Pandaren because of alliance/horde pseudo buttons
+	local canProceed = true;
+	if ( id == PANDAREN_RACE_ID and PAID_SERVICE_TYPE ) then
+		local currentFaction = PaidChange_GetCurrentFaction();
+		if ( PaidChange_GetCurrentRaceIndex() == PANDAREN_RACE_ID and PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
+			-- this is an original pandaren staying or becoming selected
+			-- check the pseudo-buttons
+			faction = PandarenFactionButtons_GetSelectedFaction();
+			if ( faction == currentFaction ) then
+				canProceed = false;
+			end
+		else
+			-- for faction change use the opposite faction of current character
+			if ( PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
+				if ( currentFaction == "Horde" ) then
+					faction = "Alliance";
+				elseif ( currentFaction == "Alliance" ) then
+					faction = "Horde";
+				end
+			-- for race change and customization use the same faction as current character
+			else
+				faction = currentFaction;
+			end
+		end
+	else
+		PandarenFactionButtons_ClearSelection();
+	end
+	CharCreate_EnableNextButton(canProceed);
+
 	-- Set background
-	local backgroundFilename = GetCreateBackgroundModel();
+	local backgroundFilename = GetCreateBackgroundModel(faction);
 	SetBackgroundModel(CharacterCreate, backgroundFilename);
 
 	-- Set backdrop colors based on faction
@@ -708,10 +746,10 @@ function CharacterClass_OnClick(self, id)
 	end
 end
 
-function CharacterRace_OnClick(self, id)
+function CharacterRace_OnClick(self, id, forceSelect)
 	if( self:IsEnabled() ) then
 		PlaySound("gsCharacterCreationClass");
-		if ( GetSelectedRace() ~= id ) then
+		if ( GetSelectedRace() ~= id or forceSelect ) then
 			SetSelectedRace(id);
 			SetCharacterRace(id);
 			SetCharacterGender(GetSelectedSex());
@@ -720,6 +758,7 @@ function CharacterRace_OnClick(self, id)
 			local _,_,classIndex = GetSelectedClass();
 			if ( PAID_SERVICE_TYPE ) then
 				classIndex = PaidChange_GetCurrentClassIndex();
+				SetSelectedClass(classIndex);	-- selecting a race would have changed class to default
 			end
 			SetCharacterClass(classIndex);
 			
@@ -757,6 +796,7 @@ function SetCharacterGender(sex)
 	local _,_,classIndex = GetSelectedClass();
 	if ( PAID_SERVICE_TYPE ) then
 		classIndex = PaidChange_GetCurrentClassIndex();
+		PandarenFactionButtons_SetTextures();
 	end
 	SetCharacterClass(classIndex);
 
@@ -1185,4 +1225,76 @@ function CharacterCreateWhileMouseDown_Update(elapsed)
 			TotalTime = 0;
 		end
 	end
+end
+
+-- pandaren stuff related to faction change
+function CharCreate_EnableNextButton(enabled)
+	local button = CharCreateOkayButton;
+	button:SetEnabled(enabled);
+	button.Arrow:SetDesaturated(not enabled);
+	button.TopGlow:SetShown(enabled);
+	button.BottomGlow:SetShown(enabled);
+end
+
+function PandarenFactionButtons_OnLoad(self)
+	self.PandarenButton = CharCreateRaceButton13;
+end
+
+function PandarenFactionButtons_Show()
+	local frame = CharCreatePandarenFactionFrame;
+	-- set the name
+	local raceName = GetNameForRace();
+	frame.AllianceButton.nameFrame.text:SetText(raceName);
+	frame.AllianceButton.tooltip = raceName;
+	frame.HordeButton.nameFrame.text:SetText(raceName);
+	frame.HordeButton.tooltip = raceName;
+	-- set the texture
+	PandarenFactionButtons_SetTextures();
+	-- set selected button
+	local faction = PaidChange_GetCurrentFaction();
+	-- deselect first in case of multiple pandaren faction changes
+	PandarenFactionButtons_ClearSelection();
+	frame[faction.."Button"]:SetChecked(1);
+	-- show the frame on top of the normal pandaren button
+	frame:Show();
+	frame:SetFrameLevel(frame.PandarenButton:GetFrameLevel() + 2);
+	CharCreate_EnableNextButton(false);
+end
+
+function PandarenFactionButtons_Hide()
+	CharCreatePandarenFactionFrame:Hide();
+	CharCreate_EnableNextButton(true);
+end
+
+function PandarenFactionButtons_SetTextures()
+	local gender;
+	if ( GetSelectedSex() == SEX_MALE ) then
+		gender = "MALE";
+	else
+		gender = "FEMALE";
+	end
+	local coords = RACE_ICON_TCOORDS["PANDAREN_"..gender];
+	CharCreatePandarenFactionFrameAllianceButtonNormalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	CharCreatePandarenFactionFrameAllianceButtonPushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	CharCreatePandarenFactionFrameHordeButtonNormalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	CharCreatePandarenFactionFrameHordeButtonPushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);	
+end
+
+function PandarenFactionButtons_ClearSelection()
+	CharCreatePandarenFactionFrame.AllianceButton:SetChecked(0);
+	CharCreatePandarenFactionFrame.HordeButton:SetChecked(0);
+end
+
+function PandarenFactionButtons_GetSelectedFaction()
+	if ( CharCreatePandarenFactionFrame.AllianceButton:GetChecked() ) then
+		return "Alliance";
+	elseif ( CharCreatePandarenFactionFrame.HordeButton:GetChecked() ) then
+		return "Horde";
+	end
+end
+
+function PandarenFactionButton_OnClick(self)
+	PandarenFactionButtons_ClearSelection();
+	self:SetChecked(1);
+	CharacterRace_OnClick(CharCreatePandarenFactionFrame.PandarenButton, CharCreatePandarenFactionFrame.PandarenButton:GetID(), true);
 end

@@ -535,7 +535,7 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_UpdateState(self);
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
 		ActionButton_UpdateUsable(self);
-	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
+	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then	--Not actually registered for default action bars. Cooldowns are changed in C-code.
 		ActionButton_UpdateCooldown(self);
 		-- Update tooltip
 		if ( GameTooltip:GetOwner() == self ) then

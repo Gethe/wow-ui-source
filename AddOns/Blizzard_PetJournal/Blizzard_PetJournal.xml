@@ -243,28 +243,6 @@ size=64,128
 					<TexCoords left="0.49804688" right="0.90625000" top="0.22167969" bottom="0.26660156"/>	
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="$parentLevelBG" file="Interface\PetBattles\PetJournal" parentKey="levelBG">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="3" y="-3"/>
-					</Anchors>
-					<Size x="21" y="21"/>	
-					<TexCoords left="0.06835938" right="0.10937500" top="0.02246094" bottom="0.04296875"/>	
-				</Texture>
-				<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER" parentKey="level">
-					<Size x="0" y="12"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentLevelBG" x="1" y="-1"/>
-					</Anchors>
-				</FontString>
-				<Texture name="$parentFavorite" file="Interface\PetBattles\PetJournal" parentKey="favorite">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="8"/>
-					</Anchors>
-					<Size x="25" y="25"/>	
-					<TexCoords left="0.11328125" right="0.16210938" top="0.02246094" bottom="0.04687500"/>	
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="dragButton">
@@ -276,19 +254,32 @@ size=64,128
 					<Layer level="OVERLAY">
 						<Texture file="Interface\Buttons\CheckButtonHilight" parentKey="ActiveTexture" alphaMode="ADD"/>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture name="$parentLevelBG" file="Interface\PetBattles\PetJournal" parentKey="levelBG">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="3" y="-3"/>
+							</Anchors>
+							<Size x="21" y="21"/>	
+							<TexCoords left="0.06835938" right="0.10937500" top="0.02246094" bottom="0.04296875"/>	
+						</Texture>
+						<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER" parentKey="level">
+							<Size x="0" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentLevelBG" x="1" y="-1"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentFavorite" file="Interface\PetBattles\PetJournal" parentKey="favorite">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="8"/>
+							</Anchors>
+							<Size x="25" y="25"/>	
+							<TexCoords left="0.11328125" right="0.16210938" top="0.02246094" bottom="0.04687500"/>	
+						</Texture>
+					</Layer>
 				</Layers>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick function="PetJournalDragButton_OnClick"/>	
-					<OnEnter>
-						--GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						--GameTooltip:SetItemByID(self.itemID);
-						self.showingTooltip = true;
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-						self.showingTooltip = false;
-					</OnLeave>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -305,21 +296,7 @@ size=64,128
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick>
-				if button == "RightButton" then
-					if self.owned then
-						PetJournal_ShowPetDropdown(self.index, self, 80, 20);
-					end
-				else
-					local type, petID = GetCursorInfo();
-					if type == "battlepet" then
-						PetJournal_UpdatePetLoadOut();
-						ClearCursor();
-					else
-						PetJournal_ShowPetCard(self.index);
-					end
-				end
-			</OnClick>	
+			<OnClick function="PetJournalListItem_OnClick"/>
 			<OnDragStart>
 				PetJournalDragButton_OnDragStart(self.dragButton);
 			</OnDragStart>
@@ -373,7 +350,7 @@ size=64,128
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						local spellID = self:GetParent().spellID;
 						if (spellID) then
-							GameTooltip:SetSpellByID(spellID); --Note: also called in MountJournal_UpdateMountList
+							MountJournalMountButton_UpdateTooltip(self:GetParent());
 							self.showingTooltip = true;
 						end
 					</OnEnter>
@@ -684,19 +661,23 @@ size=64,128
 			</Frame>
 			
 			
-			<Button name="$parentRequirementButton" parentKey="requirementButton">
+			<Frame name="$parentRequirement" parentKey="requirement">
 				<Size x="371" y="20"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentHelpFrameText" relativePoint="BOTTOM" x="0" y="-2"/>
 				</Anchors>
-				<NormalFont style="GameFontNormalLarge"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentStr" parentKey="str" inherits="GameFontNormalLarge" setAllPoints="true"/>
+					</Layer>
+				</Layers>
 				<Scripts>
-					<OnEnter function="PetJournalRequirementButton_ShowRequirementToolTip"/>
+					<OnEnter function="PetJournalRequirement_ShowRequirementToolTip"/>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-			</Button>
+			</Frame>
 			
 			
 			<StatusBar name="$parentXPBar" parentKey="xpBar">
@@ -872,7 +853,7 @@ size=64,128
 				</Anchors>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
-					<OnClick function="PetJournalDragButton_OnDragStart"/>	
+					<OnClick function="PetJournalPetLoadoutDragButton_OnClick"/>	
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 					</OnLoad>
@@ -1663,21 +1644,7 @@ size=64,128
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnClick>
-								local type, petID = GetCursorInfo();
-								if type == "battlepet" then
-									ClearCursor();
-									return;
-								end
-
-								if button == "RightButton" then
-									if ( PetJournalPetCard.petID ) then
-										PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0);
-									end
-								else
-									PetJournalDragButton_OnDragStart(self);
-								end
-							</OnClick>
+							<OnClick function="PetJournalPetCard_OnClick"/>
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 								self:RegisterForDrag("LeftButton");

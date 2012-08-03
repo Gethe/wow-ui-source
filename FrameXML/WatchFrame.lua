@@ -4,7 +4,7 @@ WATCHFRAME_COLLAPSEDWIDTH = 0;		-- set in WatchFrame_OnLoad
 WATCHFRAME_EXPANDEDWIDTH = 204;
 WATCHFRAME_LINEHEIGHT = 16;
 WATCHFRAME_MAXLINEWIDTH = 0;		-- set in WatchFrame_SetWidth
-WATCHFRAME_MULTIPLE_LINEHEIGHT = 29;
+WATCHFRAME_MULTIPLE_LINEHEIGHT = 0;	-- set in WatchFrame_SetWidth
 WATCHFRAME_ITEM_WIDTH = 33;
 
 local DASH_NONE = 0;
@@ -268,6 +268,7 @@ function WatchFrame_OnLoad (self)
 	DASH_WIDTH = watchFrameTestLine.dash:GetWidth();
 	WATCHFRAMELINES_FONTHEIGHT = fontHeight;
 	WATCHFRAMELINES_FONTSPACING = (WATCHFRAME_LINEHEIGHT - WATCHFRAMELINES_FONTHEIGHT) / 2;
+	WATCHFRAME_MULTIPLE_LINEHEIGHT = WATCHFRAMELINES_FONTHEIGHT * 2 + 5;
 	WatchFrame_AddObjectiveHandler(WatchFrameScenario_DisplayScenario);
 	WatchFrame_AddObjectiveHandler(WatchFrameAutoQuest_DisplayAutoQuestPopUps);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
@@ -1481,6 +1482,7 @@ function WatchFrame_SetWidth(width)
 		WATCHFRAME_EXPANDEDWIDTH = 306;
 		WATCHFRAME_MAXLINEWIDTH = 294;
 	end
+	WatchFrameScenarioPopUpFrame:SetWidth(WATCHFRAME_EXPANDEDWIDTH);
 	if ( WatchFrame:IsShown() and not WatchFrame.collapsed ) then
 		WatchFrame:SetWidth(WATCHFRAME_EXPANDEDWIDTH);
 		WatchFrame_Update();

@@ -103,7 +103,7 @@ function ActionBarController_UpdateAll()
 		
 		CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_OVERRIDE;
 	-- If we have a non-skinned override bar of some sort, use the MainMenuBarArtFrame
-	elseif ( HasBonusActionBar() or HasOverrideActionBar() or HasVehicleActionBar() or HasTempShapeshiftActionBar() ) then
+	elseif ( HasBonusActionBar() or HasOverrideActionBar() or HasVehicleActionBar() or HasTempShapeshiftActionBar() or C_PetBattles.IsInBattle() ) then
 		if (HasVehicleActionBar()) then
 			MainMenuBarArtFrame:SetAttribute("actionpage", GetVehicleBarIndex());
 		elseif (HasOverrideActionBar()) then
@@ -154,9 +154,8 @@ end
 
 
 function ValidateActionBarTransition()
-	if MainMenuBar.slideOut:IsPlaying() or
-	  OverrideActionBar.slideOut:IsPlaying() then
-		return; --Don't evluate and action bar state durring animations
+	if MainMenuBar.slideOut:IsPlaying() or OverrideActionBar.slideOut:IsPlaying() or C_PetBattles.IsInBattle() then
+		return; --Don't evluate and action bar state durring animations or while in Pet Battles
 	end
 	
 	MultiActionBar_Update();

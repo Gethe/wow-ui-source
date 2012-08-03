@@ -32,8 +32,8 @@ function LootHistoryFrame_OnEvent(self, event, ...)
 		local itemIdx, playerIdx = ...;
 		LootHistoryFrame_UpdatePlayerRoll(self, itemIdx, playerIdx);
 	elseif ( event == "LOOT_HISTORY_AUTO_SHOW" ) then
-		if ( GetCVarBool("autoOpenLootHistory") ) then
-			local rollID = ...;
+		local rollID, isMasterLoot = ...;
+		if ( GetCVarBool("autoOpenLootHistory") or (isMasterLoot and IsMasterLooter()) ) then
 			if ( not self:IsShown() ) then
 				LootHistoryFrame_ResetHighlights(self);
 				LootHistoryFrame_CollapseAll(self);

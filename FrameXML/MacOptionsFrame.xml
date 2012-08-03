@@ -3,7 +3,7 @@
 	<Script file="MacOptionsFrame.lua"/>
 	<Frame name="MacOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="426" y="530"/>
+			<AbsDimension x="426" y="555"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -446,7 +446,7 @@
 			
 			<Frame name="MacOptionsFrameMisc" inherits="OptionsBoxTemplate">
 				<Size>
-					<AbsDimension x="400" y="70"/>
+					<AbsDimension x="400" y="95"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacOptionsITunesRemote" relativePoint="BOTTOMLEFT">
@@ -475,6 +475,15 @@
 					<CheckButton name="MacOptionsFrameCheckButton10" inherits="OptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton9" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MacOptionsFrameCheckButton11" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameCheckButton10" relativePoint="TOPLEFT">
 								<Offset>
 									<AbsDimension x="0" y="-25"/>
 								</Offset>

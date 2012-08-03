@@ -27,7 +27,7 @@
 					<TexCoords left="0.63867188" right="0.69238281" top="0.60351563" bottom="0.73242188"/>	
 				</Texture>
 				<Texture name="$parentDivider" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider">
-					<Size x="270" y="0"/>
+					<Size x="270" y="1"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentBG" x="40" y="0"/>
 					</Anchors>
@@ -35,48 +35,28 @@
 				</Texture>
 				<FontString name="$parentRatedBattlegroundsLabel" inherits="GameFontNormalLarge" text="PVP_RATED_BATTLEGROUNDS">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentDivider" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="24" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentDivider" relativePoint="TOPLEFT" x="24" y="4"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
 				<FontString name="$parentRatingLabel" inherits="GameFontNormal" text="PVP_RATING">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentRatedBattlegroundsLabel" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="8" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentRatedBattlegroundsLabel" relativePoint="BOTTOMLEFT" x="8" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentRating" inherits="GameFontHighlight" text="0" parentKey="bgRating">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentRatingLabel" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="4" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentRatingLabel" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentRecordLabel" inherits="GameFontNormal" text="PVP_RECORD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentRatedBattlegroundsLabel" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="110" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentRatedBattlegroundsLabel" relativePoint="BOTTOMLEFT" x="110" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentRecord" inherits="GameFontHighlight" text="0" parentKey="bgRecord">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentRecordLabel" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="4" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentRecordLabel" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -85,39 +65,25 @@
 		<!-- Arena Teams -->
 			<Frame name="InspectPVPTeam1Standard" inherits="PVPTeamStandardTemplate">
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="14" y="-8"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" x="14" y="-8"/>
 				</Anchors>
 			</Frame>
 			<Button name="InspectPVPTeam1" inherits="PVPTeamBorderTemplate" id="1">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="InspectPVPTeam1Standard">
-						<Offset>
-							<AbsDimension x="33" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="InspectPVPTeam1Standard" x="33" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-8" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="-8" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
-						<Size>
-							<AbsDimension x="280" y="70"/>
-						</Size>
+						<Size x="280" y="70"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -131,30 +97,20 @@
 			</Frame>
 			<Button name="InspectPVPTeam2" inherits="PVPTeamBorderTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="InspectPVPTeam2Standard">
-						<Offset>
-							<AbsDimension x="33" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="InspectPVPTeam2Standard" x="33" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-8" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="-8" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
-						<Size>
-							<AbsDimension x="280" y="70"/>
-						</Size>
+						<Size x="280" y="70"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -168,30 +124,20 @@
 			</Frame>
 			<Button name="InspectPVPTeam3" inherits="PVPTeamBorderTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="InspectPVPTeam3Standard">
-						<Offset>
-							<AbsDimension x="33" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="InspectPVPTeam3Standard" x="33" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="-8" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="-8" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
-						<Size>
-							<AbsDimension x="280" y="70"/>
-						</Size>
+						<Size x="280" y="70"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>

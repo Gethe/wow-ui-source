@@ -406,6 +406,7 @@ CSTATUS_NEGOTIATION_COMPLETE = "Security negotiation complete";
 CSTATUS_NEGOTIATION_FAILED = "Security negotiation failed";
 CURRENT_SETTINGS = "These Settings";
 CUSTOM = "Custom";
+CUSTOMIZE = "Customize";
 CUSTOMIZE_CHARACTER = "Customize character:";
 CUSTOMIZE_OPTIONS = "Customization";
 DAYS_ABBR = "|4Day:Days;";

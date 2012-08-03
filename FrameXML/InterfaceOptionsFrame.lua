@@ -308,7 +308,7 @@ end
 uvarInfo = {
 	["REMOVE_CHAT_DELAY"] = { default = "0", cvar = "removeChatDelay", event = "REMOVE_CHAT_DELAY_TEXT" },
 	["LOCK_ACTIONBAR"] = { default = "0", cvar = "lockActionBars", event = "LOCK_ACTIONBAR_TEXT" },
-	["SHOW_BUFF_DURATIONS"] = { default = "0", cvar = "buffDurations", event = "SHOW_BUFF_DURATION_TEXT" },
+	["SHOW_BUFF_DURATIONS"] = { default = "1", cvar = "buffDurations", event = "SHOW_BUFF_DURATION_TEXT", func = function () SHOW_BUFF_DURATIONS = GetCVar("buffDurations") end},
 	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", event = "ALWAYS_SHOW_MULTIBARS_TEXT" },
 	["SHOW_PARTY_PETS"] = { default = "1", cvar = "showPartyPets", event = "SHOW_PARTY_PETS_TEXT" },
 	["SHOW_PARTY_BACKGROUND"] = { default = "0", cvar = "showPartyBackground", event = "SHOW_PARTY_BACKGROUND_TEXT" },

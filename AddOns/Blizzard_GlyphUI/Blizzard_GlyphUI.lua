@@ -482,7 +482,9 @@ function GlyphFrameGlyph_OnClick (self, button)
 			end
 		elseif  GlyphMatchesSocket(id)  then
 			if glyphSpell then
-				local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, id);
+				local glyphIndex = GetSelectedGlyphSpellIndex();
+				local glyphName = GetGlyphInfo(glyphIndex);
+				local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = glyphName, id = id});
 			else
 				PlaceGlyphInSocket(id);
 			end
@@ -523,6 +525,7 @@ function GlyphFrameSpell_OnClick (self, button)
 			return;
 		end
 		CastGlyph(self.glyphIndex);
+		StaticPopup_Hide("CONFIRM_GLYPH_PLACEMENT");
 	end
 end
 

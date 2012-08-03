@@ -10,7 +10,7 @@ FRAMELOCK_STATES = {
 		GeneralDockManager	= "hidden",
 		FriendsMicroButton	= "hidden",
 		ChatFrameMenuButton	= "hidden",
-		CombatLogQuickButtonFrame = "hidden";
+		CombatLogQuickButtonFrame = "hidden",
 		ChatFrame1			= "hidden",
 		--Additional chat frames are added to this list as they are created.
 	},
@@ -18,6 +18,8 @@ FRAMELOCK_STATES = {
 		MinimapCluster		= "hidden",
 		PlayerFrame			= "hidden",
 		TargetFrame			= "hidden",
+		WatchFrame 			= "hidden",
+		RuneFrame			= "hidden",
 		MainMenuBar			= "hidden",
 		DurabilityFrame 	= "hidden",
 		CompactRaidFrameManager = "hidden",

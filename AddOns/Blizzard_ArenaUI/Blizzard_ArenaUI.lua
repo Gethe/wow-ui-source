@@ -142,14 +142,19 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 	local id = self:GetID();
 	if ( UnitGUID(self.unit) ) then	--Use UnitGUID instead of UnitExists in case the unit is a remote update.
 		self:Show();
+		_G["ArenaPrepFrame"..id]:Hide();
 		UnitFrame_Update(self);
 	end
 		
 	local _, class = UnitClass(self.unit);
-	
 	if( class ) then
 		self.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 		self.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
+	end
+	local specID = GetArenaOpponentSpec(id);
+	if (specID and specID > 0) then 
+		local _, _, _, specIcon = GetSpecializationInfoByID(specID);
+		SetPortraitToTexture(_G["ArenaEnemyFrame"..id.."SpecPortrait"], specIcon);
 	end
 	
 	-- When not in an arena, show their faction icon (these are really flag carriers, not arena opponents)
@@ -200,7 +205,6 @@ end
 
 function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 	if ( event == "ARENA_OPPONENT_UPDATE" and arg1 == self.unit ) then
-		ArenaPrepFrames:Hide();
 		if ( arg2 == "seen" or arg2 == "destroyed") then
 			ArenaEnemyFrame_Unlock(self);
 			ArenaEnemyFrame_UpdatePlayer(self);
@@ -421,10 +425,10 @@ function UpdatePrepFrames()
 					prepFrame.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
 				end
 				SetPortraitToTexture(prepFrame.specPortrait, specIcon);
+				prepFrame:Show();
 			else
-				
+				prepFrame:Hide();
 			end
-			prepFrame:Show();
 		else
 			prepFrame:Hide();
 		end

@@ -104,17 +104,17 @@ StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) PlaceGlyphInSocket(self.data); end,
+	OnAccept = function (self) PlaceGlyphInSocket(self.data.id); end,
 	OnCancel = function (self)
 	end,
 	OnShow = function(self)
 		local name, count, _, _, cost = GetGlyphClearInfo();
 		if cost == 0 then
-			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST);
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name);
 		elseif count >= cost then
-			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, GREEN_FONT_COLOR_CODE, cost, name);
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, self.data.name, GREEN_FONT_COLOR_CODE, cost, name);
 		else
-			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, RED_FONT_COLOR_CODE, cost, name);
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, self.data.name, RED_FONT_COLOR_CODE, cost, name);
 			self.button1:Disable();
 		end
 	end,

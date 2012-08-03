@@ -65,13 +65,13 @@ function MonkHarmonyBar_OnLoad (self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterUnitEvent("UNIT_POWER", "player", "vehicle");
+	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player", "vehicle");
 end
 
 
 
 function MonkHarmonyBar_OnEvent (self, event, arg1, arg2)
-	if ( event == "UNIT_POWER" ) then
+	if ( event == "UNIT_POWER_FREQUENT" ) then
 		if ( arg1 == self:GetParent().unit and (arg2 == "LIGHT_FORCE" or arg2 == "DARK_FORCE") ) then
 			MonkHarmonyBar_Update(self);
 		end

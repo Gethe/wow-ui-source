@@ -1230,6 +1230,7 @@ function PVPConquestFrame_ButtonClicked(button)
 		PVPConquestFrame.topRatingText:Show();
 	end
 	PVPConquestFrame_Update(PVPConquestFrame);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 
@@ -2000,6 +2001,7 @@ function WarGameButtonHeader_OnClick(self)
 	end
 	WarGamesFrame.otherHeaderIndex = nil;	-- header location probably changed;
 	WarGamesFrame_Update();
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function WarGameButton_OnEnter(self)
@@ -2018,6 +2020,7 @@ function WarGameButton_OnClick(self)
 	local index = self:GetParent().index;
 	SetSelectedWarGameType(index);
 	WarGamesFrame_Update();
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function WarGameStartButton_Update()

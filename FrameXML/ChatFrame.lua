@@ -1110,7 +1110,7 @@ SecureCmdList["USERANDOM"] = SecureCmdList["CASTRANDOM"];
 
 SecureCmdList["CASTSEQUENCE"] = function(msg)
 	local sequence, target = SecureCmdOptionParse(msg);
-	if ( sequence ) then
+	if ( sequence and sequence ~= "" ) then
 		ExecuteCastSequence(sequence, target);
 	end
 end
@@ -4768,6 +4768,11 @@ function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
 		if ( chatType == "CHANNEL" ) then
 			frame.editBox:SetAttribute("channelTarget", chatTarget);
 			ChatFrame_AddChannel(frame, Chat_GetChannelShortcutName(chatTarget));
+		end
+		
+		if ( chatType == "PET_BATTLE_COMBAT_LOG" ) then
+			frame.editBox:SetAttribute("chatType", "SAY");
+			frame.editBox:SetAttribute("stickyType", "SAY");
 		end
 		
 		--Remove the things popped out from the source chat frame.

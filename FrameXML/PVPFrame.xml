@@ -65,61 +65,33 @@
 
 	
 	<ScrollFrame name="PVPQueueInfoScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="298" y="230"/>
-		</Size>
+		<Size x="298" y="230"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="scrollBarBackground">
-					<Size>
-						<AbsDimension x="25" y="84"/>
-					</Size>
+					<Size x="25" y="84"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="5"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.7"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
-					<Size>
-						<AbsDimension x="30" y="128"/>
-					</Size>
+					<Size x="30" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-3" y="5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="5"/>
 					</Anchors>
 					<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
 				</Texture>
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
-					<Size>
-						<AbsDimension x="30" y="128"/>
-					</Size>
+					<Size x="30" y="128"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-3" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-2"/>
 					</Anchors>
 					<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
 				</Texture>
@@ -152,33 +124,23 @@
 		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentChildFrame">
-				<Size>
-					<AbsDimension x="1" y="1"/>
-				</Size>
+				<Size x="1" y="1"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentDescription" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP" text="">
-							<Size>
-								<AbsDimension x="275" y="0"/>
-							</Size>
+							<Size x="275" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="15" y="-15"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="15" y="-15"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="$parentRewardsInfo">
-						<Size>
-							<AbsDimension x="298" y="232"/>
-						</Size>
+						<Size x="298" y="232"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -186,47 +148,27 @@
 							<Layer level="ARTWORK">
 								<FontString name="$parentTitle" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="title" text="RANDOM_BATTLEGROUND">
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="20" y="-15"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="20" y="-15"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentDescription" inherits="QuestFont" justifyH="LEFT" parentKey="description" text="RANDOM_BATTLEGROUND_EXPLANATION">
-									<Size>
-										<AbsDimension x="280" y="0"/>
-									</Size>
+									<Size x="280" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Frame name="$parentWinReward" parentKey="winReward">
-								<Size>
-									<AbsDimension x="319" y="40"/>
-								</Size>
+								<Size x="319" y="40"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="-19" y="-15"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="-19" y="-15"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
@@ -238,51 +180,31 @@
 										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="WIN" justifyH="CENTER">
 											<Size x="90" y="10"/>
 											<Anchors>
-												<Anchor point="LEFT">
-													<Offset>
-														<AbsDimension x="5" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" x="5" y="0"/>
 											</Anchors>
 										</FontString>
 										<Texture name="$parentHonorSymbol" parentKey="honorSymbol">
 											<Size x="48" y="48"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="5" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT" x="5" y="0"/>
 											</Anchors>
 										</Texture>
 										<FontString name="$parentHonorAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="honorAmount">
 											<Size x="55" y="12"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="3" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT" x="3" y="0"/>
 											</Anchors>
 										</FontString>
 										<Texture name="$parentArenaSymbol" parentKey="arenaSymbol">
 											<Size x="48" y="48"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="5" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT" x="5" y="0"/>
 											</Anchors>
 										</Texture>
 										<FontString name="$parentArenaAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="arenaAmount">
 											<Size x="65" y="12"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentArenaSymbol" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="3" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentArenaSymbol" relativePoint="RIGHT" x="3" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -294,9 +216,7 @@
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentWinReward" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-2"/>
-										</Offset>
+										<Offset x="0" y="-2"/>
 									</Anchor>
 								</Anchors>
 								<Layers>
@@ -309,51 +229,31 @@
 										<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="LOSS" justifyH="CENTER">
 											<Size x="90" y="10"/>
 											<Anchors>
-												<Anchor point="LEFT">
-													<Offset>
-														<AbsDimension x="5" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" x="5" y="0"/>
 											</Anchors>
 										</FontString>
 										<Texture name="$parentHonorSymbol" parentKey="honorSymbol">
 											<Size x="48" y="48"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="5" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT" x="5" y="0"/>
 											</Anchors>
 										</Texture>
 										<FontString name="$parentHonorAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="honorAmount">
 											<Size x="55" y="12"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="3" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentHonorSymbol" relativePoint="RIGHT" x="3" y="0"/>
 											</Anchors>
 										</FontString>
 										<Texture name="$parentArenaSymbol" parentKey="arenaSymbol">
 											<Size x="48" y="48"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="5" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentHonorAmount" relativePoint="RIGHT" x="5" y="0"/>
 											</Anchors>
 										</Texture>
 										<FontString name="$parentArenaAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="arenaAmount">
 											<Size x="65" y="12"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentArenaSymbol" relativePoint="RIGHT">
-													<Offset>
-														<AbsDimension x="3" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="LEFT" relativeTo="$parentArenaSymbol" relativePoint="RIGHT" x="3" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -472,9 +372,7 @@
                 </Scripts>
             </Button>
 			<Frame name="$parentConquestBar" inherits="CapProgressBarTemplate">
-				<Size>
-					<AbsDimension x="254" y="20"/>
-				</Size>
+				<Size x="254" y="20"/>
 				<Anchors>
 					<Anchor point="TOP" x="20" y="-38"/>
 				</Anchors>
@@ -538,16 +436,8 @@
 			<!-- main frames -->
 			<Frame name="PVPHonorFrame" enableMouse="true" hidden="true" parentKey="panel1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-64"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-11" y="28"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="8" y="-64"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="28"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -564,11 +454,7 @@
 				<Frames>
 					<Button name="$parentBgButton1" inherits="PVPBattlegroundButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-2"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="0" y="-2"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
@@ -578,11 +464,7 @@
 					</Button>
 					<Button name="$parentBgButton2" inherits="PVPBattlegroundButtonTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentBgButton1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentBgButton1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
@@ -592,11 +474,7 @@
 					</Button>
 					<Button name="$parentBgButton3" inherits="PVPBattlegroundButtonTemplate" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentBgButton2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentBgButton2" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
@@ -606,11 +484,7 @@
 					</Button>
 					<Button name="$parentBgButton4" inherits="PVPBattlegroundButtonTemplate" id="4">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentBgButton3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentBgButton3" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
@@ -620,11 +494,7 @@
 					</Button>
 					<Button name="$parentBgButton5" inherits="PVPBattlegroundButtonTemplate" id="5">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentBgButton4" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentBgButton4" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPHonor_ButtonClicked"/>
@@ -634,42 +504,22 @@
 					</Button>
 					<ScrollFrame name="$parentTypeScrollFrame" inherits="FauxScrollFrameTemplate" parentKey="bgTypeScrollFrame">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentBgButton1">
-								<Offset>
-									<AbsDimension x="0" y="2"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parentBgButton5">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentBgButton1" x="0" y="2"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentBgButton5" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-									<Size>
-										<AbsDimension x="30" y="84"/>
-									</Size>
+									<Size x="30" y="84"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-3" y="5"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="5"/>
 									</Anchors>
 									<TexCoords left="0" right="0.46875" top="0.0" bottom="0.65625"/>
 								</Texture>
 								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-									<Size>
-										<AbsDimension x="30" y="84"/>
-									</Size>
+									<Size x="30" y="84"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-3" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-2"/>
 									</Anchors>
 									<TexCoords left="0.53125" right="1.0" top="0.34375" bottom="1.0"/>
 								</Texture>
@@ -683,11 +533,7 @@
 					</ScrollFrame>		
 					<ScrollFrame name="$parentInfoScrollFrame" inherits="PVPQueueInfoScrollFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOM" x="0" y="0"/>
 						</Anchors>
 					</ScrollFrame>
 				</Frames>
@@ -699,16 +545,8 @@
 			</Frame>
 			<Frame name="PVPConquestFrame" enableMouse="true" hidden="true" parentKey="panel2">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-64"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-11" y="29"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="8" y="-64"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="29"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -720,9 +558,7 @@
 							<TexCoords left="0.00097656" right="0.31445313" top="0.33789063" bottom="0.88476563"/>
 						</Texture>
 						<Texture name="$parentBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-							<Size>
-								<AbsDimension x="256" y="16"/>
-							</Size>
+							<Size x="256" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" x="-7" y="0"/>
 								<Anchor point="RIGHT" x="-69" y="0"/>
@@ -731,9 +567,7 @@
 							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 						</Texture>
 						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-							<Size>
-								<AbsDimension x="75" y="16"/>
-							</Size>
+							<Size x="75" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentBarLeft" relativePoint="RIGHT"/>
 							</Anchors>
@@ -762,44 +596,26 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentTopRatingText" inherits="GameFontHighlight" justifyH="RIGHT" parentKey="topRatingText" text="RATING">
-							<Size>
-								<AbsDimension x="120" y="0"/>
-							</Size>
+							<Size x="120" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBG1" relativePoint="TOPRIGHT" x="-10" y="-35"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentDescription" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" parentKey="description" text="PVP_ARENA_EXPLANATION">
-							<Size>
-								<AbsDimension x="290" y="0"/>
-							</Size>
+							<Size x="290" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-8"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentRewardLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardLabel" text="LFD_REWARDS">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-85"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-85"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentRewardDescription" inherits="GameFontHighlight" justifyH="LEFT" parentKey="rewardDescription" text="PVP_REWARD_EXPLANATION">
-							<Size>
-								<AbsDimension x="290" y="0"/>
-							</Size>
+							<Size x="290" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentRewardLabel" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-5"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentRewardLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -826,11 +642,7 @@
 					</Frame>
 					<Button name="$parentConquestButtonArena" inherits="PVPBattlegroundButtonTemplate" parentKey="arenaButton" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="PVPConquestFrame_ButtonClicked"/>
@@ -845,9 +657,7 @@
 						</Scripts>
 					</Button>
 					<Frame name="$parentWinReward" parentKey="winReward">
-						<Size>
-							<AbsDimension x="316" y="40"/>
-						</Size>
+						<Size x="316" y="40"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRewardDescription" relativePoint="TOPLEFT" x="-8" y="-22"/>
 						</Anchors>
@@ -861,11 +671,7 @@
 								<FontString name="$parentLabel" inherits="GameFontHighlightMedium" text="WIN" justifyH="LEFT">
 									<Size x="90" y="10"/>
 									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="25" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="LEFT" x="25" y="0"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentArenaAmount" inherits="GameFontHighlightMedium" justifyH="RIGHT" parentKey="winAmount" text="200">
@@ -900,9 +706,7 @@
 						</Layers>
 					</Frame>
 					<Frame name="$parentInfoButton" parentKey="infoButton">
-						<Size>
-							<AbsDimension x="314" y="60"/>
-						</Size>
+						<Size x="314" y="60"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentWinReward" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
@@ -1130,11 +934,7 @@
 					</Button>			
 					<Button name="$parentHeader1" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="NAME">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentInfoBG" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="8" y="1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentInfoBG" relativePoint="BOTTOMLEFT" x="8" y="1"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1145,11 +945,7 @@
 					</Button>
 					<Button name="$parentHeader2" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="PLAYED">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentHeader1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="$parentHeader1" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1160,11 +956,7 @@
 					</Button>
 					<Button name="$parentHeader3" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="WIN_LOSS">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentHeader2" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="$parentHeader2" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1176,11 +968,7 @@
 					</Button>
 					<Button name="$parentHeader4" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" text="RATING">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentHeader3" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="$parentHeader3" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1191,96 +979,52 @@
 					</Button>	
 					<Button name="$parentTeamMemberButton1" inherits="PVPTeamMemberButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHeader1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="-4" y="-2"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentHeader1" relativePoint="BOTTOMLEFT" x="-4" y="-2"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentTeamMemberButton2" inherits="PVPTeamMemberButtonTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentTeamMemberButton3" inherits="PVPTeamMemberButtonTemplate" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton2" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentTeamMemberButton4" inherits="PVPTeamMemberButtonTemplate" id="4">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton3" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentTeamMemberButton5" inherits="PVPTeamMemberButtonTemplate" id="5">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton4" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton4" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentTeamMemberButton6" inherits="PVPTeamMemberButtonTemplate" id="6">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton5" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-1"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton5" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
 					<ScrollFrame name="$parentTeamScrollFrame" inherits="FauxScrollFrameTemplate" parentKey="teamMemberScrollFrame">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton1">
-								<Offset>
-									<AbsDimension x="0" y="-0"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parentTeamMemberButton6">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentTeamMemberButton1" x="0" y="-0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentTeamMemberButton6" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-									<Size>
-										<AbsDimension x="30" y="84"/>
-									</Size>
+									<Size x="30" y="84"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-3" y="5"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="5"/>
 									</Anchors>
 									<TexCoords left="0" right="0.46875" top="0.0" bottom="0.65625"/>
 								</Texture>
 								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-									<Size>
-										<AbsDimension x="30" y="84"/>
-									</Size>
+									<Size x="30" y="84"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-3" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-2"/>
 									</Anchors>
 									<TexCoords left="0.53125" right="1.0" top="0.34375" bottom="1.0"/>
 								</Texture>
@@ -1356,16 +1100,8 @@
 			</Frame>
 			<Frame name="WarGamesFrame" enableMouse="true" hidden="true" parentKey="panel4">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-64"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-11" y="28"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="8" y="-64"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="28"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -1380,9 +1116,7 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="$parentBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-							<Size>
-								<AbsDimension x="256" y="16"/>
-							</Size>
+							<Size x="256" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" x="-7" y="0"/>
 								<Anchor point="RIGHT" x="-69" y="0"/>
@@ -1391,9 +1125,7 @@
 							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 						</Texture>
 						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-							<Size>
-								<AbsDimension x="75" y="16"/>
-							</Size>
+							<Size x="75" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentBarLeft" relativePoint="RIGHT"/>
 							</Anchors>
@@ -1430,57 +1162,31 @@
 					<ScrollFrame name="$parentInfoScrollFrame" inherits="UIPanelScrollFrameTemplate">
 						<Size x="298" y="120"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="2"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" x="0" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="scrollBarBackground">
-									<Size>
-										<AbsDimension x="25" y="84"/>
-									</Size>
+									<Size x="25" y="84"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="5"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
 									</Anchors>
 									<Color r="0" g="0" b="0" a="0.7"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
-									<Size>
-										<AbsDimension x="30" y="128"/>
-									</Size>
+									<Size x="30" y="128"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-3" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="3"/>
 									</Anchors>
 									<TexCoords left="0" right="0.46875" top="0.0" bottom="1.0"/>
 								</Texture>
 								<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
-									<Size>
-										<AbsDimension x="30" y="128"/>
-									</Size>
+									<Size x="30" y="128"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-3" y="-4"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-4"/>
 									</Anchors>
 									<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
 								</Texture>
@@ -1514,30 +1220,20 @@
 						</Scripts>
 						<ScrollChild>
 							<Frame name="$parentChildFrame">
-								<Size>
-									<AbsDimension x="1" y="1"/>
-								</Size>
+								<Size x="1" y="1"/>
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString name="WarGamesFrameDescription" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP" text="WARGAME_TOOLTIP">
-											<Size>
-												<AbsDimension x="275" y="0"/>
-											</Size>
+											<Size x="275" y="0"/>
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="15" y="-15"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="15" y="-15"/>
 											</Anchors>
 										</FontString>
 										<Texture name="$parentSpacer">
-											<Size>
-												<AbsDimension x="15" y="15"/>
-											</Size>
+											<Size x="15" y="15"/>
 											<Anchors>
 												<Anchor point="TOP" relativeTo="WarGamesFrameDescription" relativePoint="BOTTOM" x="0" y="0"/>
 											</Anchors>
@@ -1636,39 +1332,23 @@
 					<TexCoords left="0.92675781" right="0.99511719" top="0.12304688" bottom="0.26171875"/>
 				</Texture>
 				<FontString name="$parentTitle" parentKey="title" inherits="GameFontHighlight" justifyH="CENTER" justifyV="CENTER">
-					<Size>
-						<AbsDimension x="240" y="48"/>
-					</Size>
+					<Size x="240" y="48"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-24"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-24"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentTimer" inherits="GameFontHighlightExtraSmall" parentKey="timer">
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-40" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-40" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentMinimizeButton" parentKey="minimizeButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-4" y="-6"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-4" y="-6"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -1681,15 +1361,9 @@
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
-				<Size>
-					<AbsDimension x="115" y="22"/>
-				</Size>
+				<Size x="115" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-7" y="25"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -1699,15 +1373,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
-				<Size>
-					<AbsDimension x="115" y="22"/>
-				</Size>
+				<Size x="115" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="7" y="25"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="25"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

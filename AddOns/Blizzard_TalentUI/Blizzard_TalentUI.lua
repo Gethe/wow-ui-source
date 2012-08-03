@@ -770,7 +770,7 @@ PlayerTalentFrame_HelpPlate = {
 function PlayerTalentFrame_ToggleTutorial()
 	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
 		
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
+	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and PlayerTalentFrame:IsShown()) then
 		HelpPlate_Show( helpPlate, PlayerTalentFrame, mainHelpButton, true );
 		SetCVarBitfield( "closedInfoFrames", tutorial, true );
 	else
@@ -1028,7 +1028,8 @@ function PlayerTalentFrameTab_OnClick(self)
 	
 	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) and GetCVarBool("showTutorials")) then
+		if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) 
+			and GetCVarBool("showTutorials") and PlayerTalentFrame:IsShown()) then
 			HelpPlate_Show( helpPlate, PlayerTalentFrame, mainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", tutorial, true );
 		else
