@@ -3,7 +3,6 @@ local WARLOCK_POWER_FILLBAR = {
 	DemonologyActivated	= { left = 0.03906250, right = 0.55468750, top = 0.00390625, bottom = 0.09765625, width = 132, fileWidth = 256 };
 	Destruction			= { left = 0.30078125, right = 0.37890625, top = 0.32812500, bottom = 0.67187500, height = 22, fileHeight = 64 };
 };
-local MAX_POWER_PER_EMBER = 10;
 
 -- GENERAL WARLOCK
 function WarlockPowerFrame_OnLoad(self)

@@ -42,7 +42,7 @@
 			<Frame name="RealmWizardUI" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="RealmWizardLogo" file="Interface\Glues\Common\Glues-WoW-CCLogo">
+						<Texture name="RealmWizardLogo" file="Interface\Glues\Common\Glues-WoW-MPLogo">
 							<Size>
 								<AbsDimension x="256" y="128"/>
 							</Size>

@@ -1368,6 +1368,7 @@
 										PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SKIP);
 									</OnLoad>
 									<OnClick>
+										StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
 										C_PetBattles.SkipTurn();
 									</OnClick>
 								</Scripts>
@@ -1409,7 +1410,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<CheckButton parentKey="SwitchPetButton" motionScriptsWhileDisabled="true" inherits="PetBattleActionButtonTemplate">
+					<CheckButton parentKey="SwitchPetButton" motionScriptsWhileDisabled="true" inherits="PetBattleActionButtonTemplate" id="4">
 						<!--Anchored in code via the FlowFrame-->
 						<Layers>
 							<!--Layer level="OVERLAY">
@@ -1427,6 +1428,7 @@
 								self:SetFrameLevel(self:GetParent().FlowFrame:GetFrameLevel() + 1);
 							</OnLoad>
 							<OnClick>
+								StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
 								local selectionFrame = self:GetParent().PetSelectionFrame;
 								local battleState = C_PetBattles.GetBattleState();
 								local selectedActionType = C_PetBattles.GetSelectedAction();
@@ -1447,7 +1449,7 @@
 						</Scripts>
 						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 					</CheckButton>
-					<Button parentKey="CatchButton" motionScriptsWhileDisabled="true" inherits="PetBattleActionButtonTemplate">
+					<Button parentKey="CatchButton" motionScriptsWhileDisabled="true" inherits="PetBattleActionButtonTemplate" id="5">
 						<!--Anchored in code via the FlowFrame-->
 						<Scripts>
 							<OnLoad>

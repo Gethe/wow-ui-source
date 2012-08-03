@@ -49,7 +49,7 @@
 
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="PatchDownloadLogo" file="Interface\Glues\Common\Glues-WoW-CCLogo">
+						<Texture name="PatchDownloadLogo" file="Interface\Glues\Common\Glues-WoW-MPLogo">
 							<Size>
 								<AbsDimension x="256" y="128"/>
 							</Size>

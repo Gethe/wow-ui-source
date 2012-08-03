@@ -27,24 +27,16 @@
 		</Scripts>
 	</Button>
 	<Button name="CharSelectCharacterButtonTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="256" y="70"/>
-		</Size>
+		<Size x="256" y="70"/>
 		<HitRectInsets>
-			<AbsInset left="0" right="0" top="0" bottom="15"/>
+			<AbsInset left="-10" right="30" top="0" bottom="15"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Highlight" alphaMode="ADD" parentKey="selection" hidden="true">
-					<Size>
-						<AbsDimension x="256" y="74"/>
-					</Size>
+					<Size x="256" y="74"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-20" y="8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-20" y="8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -55,35 +47,19 @@
 					<Layer level="BORDER">
 						<FontString name="$parentName" inherits="GlueFontNormal" justifyH="LEFT" parentKey="name">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-5"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="-5"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentInfo" inherits="GlueFontHighlightSmall" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="217" y="12"/>
-							</Size>
+							<Size x="217" y="12"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentLocation" inherits="GlueFontDisableSmall" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="217" y="16"/>
-							</Size>
+							<Size x="217" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -105,6 +81,7 @@
 				</HighlightTexture>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						local index = self:GetParent().index;
 						MoveCharacter(index, index - 1);
 					</OnClick>
@@ -126,6 +103,7 @@
 				</HighlightTexture>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						local index = self:GetParent().index;
 						MoveCharacter(index, index + 1);
 					</OnClick>
@@ -168,24 +146,16 @@
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Hover" alphaMode="ADD">
-			<Size>
-				<AbsDimension x="256" y="74"/>
-			</Size>
+			<Size x="256" y="74"/>
 			<Anchors>
-				<Anchor point="TOPLEFT">
-					<Offset>
-						<AbsDimension x="-20" y="8"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" x="-20" y="8"/>
 			</Anchors>
 		</HighlightTexture>
 		<NormalFont style="GlueFontNormal"/>
 		<HighlightFont style="GlueFontHighlight"/>
 	</Button>
 	<Button name="CharSelectPaidServiceTemplate" virtual="true" hidden="true" motionScriptsWhileDisabled="true">
-		<Size>
-			<AbsDimension x="64" y="64"/>
-		</Size>
+		<Size x="64" y="64"/>
 		<Scripts>
 			<OnClick>
 				CharacterSelect_PaidServiceOnClick(self, button, down, self.serviceType);
@@ -320,11 +290,7 @@
 					<Layer level="ARTWORK">
 						<FontString name="CharSelectCharacterName" inherits="GlueFontNormalHuge">
 							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="100"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOM" x="0" y="100"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -338,15 +304,9 @@
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="CharacterSelectLogo">
-									<Size>
-										<AbsDimension x="256" y="128"/>
-									</Size>
+									<Size x="256" y="128"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="3" y="-7"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="3" y="-7"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -403,6 +363,7 @@
 								</Layers>
 								<Scripts>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										AccountUpgradePanel_ToggleExpandState();
 									</OnClick>
 								</Scripts>
@@ -522,11 +483,7 @@
 							<AbsDimension x="200" y="60"/>
 						</Size>
 						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="30"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOM" x="0" y="30"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -538,15 +495,9 @@
 						</Scripts>
 					</Button>
 					<Button name="CharacterSelectRotateLeft">
-						<Size>
-							<AbsDimension x="50" y="50"/>
-						</Size>
+						<Size x="50" y="50"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="-15" y="19"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="CharSelectEnterWorldButton" relativePoint="BOTTOM" x="-15" y="19"/>
 						</Anchors>
 						<HitRectInsets>
 							<AbsInset left="13" right="13" top="10" bottom="13"/>
@@ -569,28 +520,16 @@
 							<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 						</PushedTexture>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="30" y="30"/>
-							</Size>
+							<Size x="30" y="30"/>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</HighlightTexture>
 					</Button>
 					<Button name="CharacterSelectRotateRight">
-						<Size>
-							<AbsDimension x="50" y="50"/>
-						</Size>
+						<Size x="50" y="50"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterSelectRotateLeft" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-19" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="CharacterSelectRotateLeft" relativePoint="RIGHT" x="-19" y="0"/>
 						</Anchors>
 						<HitRectInsets>
 							<AbsInset left="13" right="13" top="10" bottom="13"/>
@@ -609,28 +548,16 @@
 						<NormalTexture file="Interface\Glues\CharacterCreate\UI-RotationRight-Big-Up"/>
 						<PushedTexture file="Interface\Glues\CharacterCreate\UI-RotationRight-Big-Down"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="30" y="30"/>
-							</Size>
+							<Size x="30" y="30"/>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</HighlightTexture>
 					</Button>
 					<Button name="CharacterSelectBackButton" inherits="GlueButtonSmallTemplate" text="BACK">
-						<Size>
-							<AbsDimension x="100" y="35"/>
-						</Size>
+						<Size x="100" y="35"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-30" y="25"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="10"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -642,15 +569,9 @@
 						</Scripts>
 					</Button>
 					<Button name="CharacterSelectAddonsButton" inherits="GlueButtonSmallTemplate" hidden="true" text="ADDONS">
-						<Size>
-							<AbsDimension x="150" y="35"/>
-						</Size>
+						<Size x="150" y="35"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="30" y="25"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" x="30" y="25"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -661,6 +582,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
+								PlaySound("gsCharacterSelectionDelCharacter");
 								AddonList:Show();
 							</OnClick>
 							<OnUpdate>
@@ -670,15 +592,9 @@
 						</Scripts>
 					</Button>
 					<Button name="CharacterSelectRealmSplitButton" inherits="GlueButtonTemplate" hidden="true" text="SERVER_SPLIT_BUTTON">
-						<Size>
-							<AbsDimension x="150" y="55"/>
-						</Size>
+						<Size x="150" y="55"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -688,27 +604,15 @@
 							</Layer>
 							<Layer level="BACKGROUND">
 								<FontString name="RealmSplitCurrentChoice" inherits="GlueFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="256" y="0"/>
-									</Size>
+									<Size x="256" y="0"/>
 									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 									</Anchors>
 								</FontString>
 								<FontString name="RealmSplitPending" inherits="GlueFontNormal" justifyH="CENTER" text="SERVER_SPLIT_PENDING">
-									<Size>
-										<AbsDimension x="256" y="0"/>
-									</Size>
+									<Size x="256" y="0"/>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="RealmSplitCurrentChoice" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativeTo="RealmSplitCurrentChoice" relativePoint="BOTTOM" x="0" y="-10"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -724,15 +628,9 @@
 						<NormalFont style="GlueFontHighlight"/>
 					</Button>
 					<Button name="CharacterSelectDeleteButton" inherits="GlueButtonSmallTemplate" text="DELETE_CHARACTER">
-						<Size>
-							<AbsDimension x="165" y="35"/>
-						</Size>
+						<Size x="165" y="35"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="CharacterSelectBackButton" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="RIGHT" relativeTo="CharacterSelectBackButton" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -744,53 +642,65 @@
 						</Scripts>
 					</Button>
 					<Frame name="CharacterSelectCharacterFrame">
-						<Size>
-							<AbsDimension x="260" y="642"/>
-						</Size>
+						<Size x="260" y="710"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-5" y="-15"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPRIGHT" x="-5" y="-15"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="CharSelectRealmName" inherits="GlueFontDisableLarge">
-									<Size>
-										<AbsDimension x="1" y="13"/>
-									</Size>
+									<Size x="1" y="13"/>
 									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="8" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="RIGHT">
-											<Offset>
-												<AbsDimension x="-8" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" x="0" y="-10"/>
+										<Anchor point="LEFT" x="8" y="0"/>
+										<Anchor point="RIGHT" x="-8" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="CharSelectChangeRealmButton" inherits="GlueButtonSmallTemplate" text="CHANGE_REALM">
-								<Size>
-									<AbsDimension x="135" y="33"/>
-								</Size>
+							<Slider name="$parentScrollBar" frameStrata="DIALOG" parentKey="scrollBar" inherits="GlueScrollBarTemplate" hidden="true">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectRealmName" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPRIGHT" x="-6" y="-20"/>
+									<Anchor point="BOTTOMRIGHT" x="-6" y="24"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-2" y="0"/>
+												<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
+											</Anchors>
+											<Color r="0" g="0" b="0"/>
+										</Texture>
+									</Layer>
+									<Layer level="BORDER">
+										<Texture file="Interface\Glues\CharacterCreate\Frame-Sides">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-11" y="15"/>
+												<Anchor point="BOTTOMLEFT" x="-11" y="-15"/>
+											</Anchors>
+											<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										self:SetValueStep(1);
+										CharacterSelectCharacterFrameScrollBarScrollUpButton:SetPoint("BOTTOM", self, "TOP", 0, -3);
+										CharacterSelectCharacterFrameScrollBarScrollDownButton:SetPoint("TOP", self, "BOTTOM", 0, 3);
+									</OnLoad>
+									<OnValueChanged>
+										GlueScrollFrame_OnVerticalScroll(self:GetParent(), value);
+										CharacterSelect_ScrollList(self, value);
+									</OnValueChanged>
+								</Scripts>
+							</Slider>
+							<Button name="CharSelectChangeRealmButton" inherits="GlueButtonSmallTemplate" text="CHANGE_REALM">
+								<Size x="135" y="33"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharSelectRealmName" relativePoint="BOTTOM" x="0" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -864,16 +774,16 @@
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCreateCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
-								<Size>
-									<AbsDimension x="200" y="45"/>
-								</Size>
+								<Button name="CharSelectCharacterButton11" inherits="CharSelectCharacterButtonTemplate" id="11">
 								<Anchors>
-									<Anchor point="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="15"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton10" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="CharSelectCreateCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
+								<Size x="200" y="45"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="15"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -948,6 +858,12 @@
 									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
+							<Button name="CharSelectPaidService11" inherits="CharSelectPaidServiceTemplate" id="11">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton11" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
+								</Anchors>
+							</Button>
 						</Frames>
 						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
 							<BackgroundInsets>
@@ -960,49 +876,16 @@
 								<AbsValue val="16"/>
 							</EdgeSize>
 						</Backdrop>
+						<Scripts>
+							<OnMouseWheel>
+								self.scrollBar:SetValue(self.scrollBar:GetValue() - delta);
+							</OnMouseWheel>
+						</Scripts>
 					</Frame>
-					<Button name="ScrollDownButton" hidden="true">
-						<Size x="50" y="50"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOMRIGHT">
-								<Offset x="5" y="10"/>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterSelectScrollDown_OnClick()
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
-						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
-					<Button name="ScrollDownUp" hidden="true">
-						<Size x="50" y="50"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOMLEFT">
-								<Offset x="2" y="10"/>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterSelectScrollUp_OnClick()
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
-						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
-						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
 					<Button name="CreateCharacterButtonSpecial" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
-						<Size>
-							<AbsDimension x="200" y="45"/>
-						</Size>
+						<Size x="200" y="45"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOM">
-								<Offset x="4" y="5"/>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOM" x="-220" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1017,6 +900,60 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
+					<Frame name="CharacterTemplatesFrame" hidden="true">
+						<Size x="220" y="150"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="32" y="86"/>
+						</Anchors>
+						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="10" right="5" top="4" bottom="9"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GlueFontNormal" text="TEMPLATE_CHARACTER">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-12"/>
+									</Anchors>	
+								</FontString>
+								<FontString inherits="GlueFontHighlightSmall" text="TEMPLATE_CHARACTER_LABEL">	
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-38"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentDropDown" inherits="GlueDropDownMenuTemplate" enableMouse="true" parentKey="dropDown">
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-54"/>
+								</Anchors>
+							</Frame>
+							<Button inherits="GlueButtonSmallTemplate" text="CREATE_CHARACTER">
+								<Size x="200" y="45"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="10"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:SetWidth(self:GetTextWidth() + 50);
+									</OnLoad>
+									<OnClick>
+										PlaySound("gsCharacterSelectionCreateNew");
+										SetCharacterTemplate(GlueDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
+										SetGlueScreen("charcreate");
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnMouseDown>
@@ -1034,15 +971,9 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="BillingWarningText" inherits="GlueFontHighlight">
-							<Size>
-								<AbsDimension x="300" y="0"/>
-							</Size>
+							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="200" y="120"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT" x="200" y="120"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1050,11 +981,7 @@
 				<Frames>
 					<Button name="BillingWarningButton" inherits="GlueButtonTemplate" text="MANAGE_ACCOUNT">
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="200" y="50"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT" x="200" y="50"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -1065,28 +992,16 @@
 				</Frames>
 			</Frame>
 			<Frame name="GameRoomBillingFrame" hidden="true">
-				<Size>
-					<AbsDimension x="255" y="60"/>
-				</Size>
+				<Size x="255" y="60"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-50"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-50"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="GameRoomBillingFrameText" inherits="GlueFontNormalSmall" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="235" y="0"/>
-							</Size>
+							<Size x="235" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="13" y="-10"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="13" y="-10"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1127,15 +1042,9 @@
 	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame name="CharacterDeleteBackground">
-				<Size>
-					<AbsDimension x="512" y="256"/>
-				</Size>
+				<Size x="512" y="256"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 					<BackgroundInsets>
@@ -1151,39 +1060,21 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterDeleteText1" inherits="GlueFontNormalLarge">
-							<Size>
-								<AbsDimension x="400" y="0"/>
-							</Size>
+							<Size x="400" y="0"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="-16"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="-16"/>
 							</Anchors>
 						</FontString>
 						<FontString name="CharacterDeleteText2" inherits="GlueFontNormalSmall" text="CONFIRM_CHAR_DELETE_INSTRUCTIONS">
-							<Size>
-								<AbsDimension x="400" y="0"/>
-							</Size>
+							<Size x="400" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="CharacterDeleteText1" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="-20"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" relativeTo="CharacterDeleteText1" relativePoint="BOTTOM" x="0" y="-20"/>
 							</Anchors>
 						</FontString>
 						<Texture name="CharacterDeleteAlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-							<Size>
-								<AbsDimension x="48" y="48"/>
-							</Size>
+							<Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="24" y="10"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="24" y="10"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -1192,9 +1083,7 @@
 					<Button name="CharacterDeleteButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterDeleteBackground" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="-6" y="16"/>
-								</Offset>
+								<Offset x="-6" y="16"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
@@ -1210,11 +1099,7 @@
 					</Button>
 					<Button name="CharacterDeleteButton2" inherits="GlueDialogButtonTemplate" id="2" text="CANCEL">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterDeleteButton1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="13" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="CharacterDeleteButton1" relativePoint="RIGHT" x="13" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -1229,41 +1114,23 @@
 				</Frames>
 			</Frame>
 			<EditBox name="CharacterDeleteEditBox" letters="32" historyLines="1">
-				<Size>
-					<AbsDimension x="130" y="32"/>
-				</Size>
+				<Size x="130" y="32"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterDeleteText2" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="CharacterDeleteText2" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size>
-								<AbsDimension x="75" y="32"/>
-							</Size>
+							<Size x="75" y="32"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="-10" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="-10" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
 						</Texture>
 						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-							<Size>
-								<AbsDimension x="75" y="32"/>
-							</Size>
+							<Size x="75" y="32"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="10" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="RIGHT" x="10" y="0"/>
 							</Anchors>
 							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
 						</Texture>
@@ -1303,15 +1170,9 @@
 	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame name="CharacterRenameBackground">
-				<Size>
-					<AbsDimension x="512" y="256"/>
-				</Size>
+				<Size x="512" y="256"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 					<BackgroundInsets>
@@ -1327,39 +1188,21 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharacterRenameText1" inherits="GlueFontNormalLarge" text="CHAR_RENAME_DESCRIPTION">
-							<Size>
-								<AbsDimension x="400" y="0"/>
-							</Size>
+							<Size x="400" y="0"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="-16"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="-16"/>
 							</Anchors>
 						</FontString>
 						<FontString name="CharacterRenameText2" inherits="GlueFontNormalSmall" text="CHAR_RENAME_INSTRUCTIONS">
-							<Size>
-								<AbsDimension x="400" y="0"/>
-							</Size>
+							<Size x="400" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="CharacterRenameText1" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="-20"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" relativeTo="CharacterRenameText1" relativePoint="BOTTOM" x="0" y="-20"/>
 							</Anchors>
 						</FontString>
 						<Texture name="CharacterRenameAlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-							<Size>
-								<AbsDimension x="48" y="48"/>
-							</Size>
+							<Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="24" y="10"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="24" y="10"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -1367,11 +1210,7 @@
 				<Frames>
 					<Button name="CharacterRenameButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterRenameBackground" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="-6" y="16"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterRenameBackground" relativePoint="BOTTOM" x="-6" y="16"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -1386,11 +1225,7 @@
 					</Button>
 					<Button name="CharacterRenameButton2" inherits="GlueDialogButtonTemplate" id="2" text="CANCEL">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterRenameButton1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="13" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="CharacterRenameButton1" relativePoint="RIGHT" x="13" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -1404,41 +1239,23 @@
 				</Frames>
 			</Frame>
 			<EditBox name="CharacterRenameEditBox" letters="12" historyLines="1">
-				<Size>
-					<AbsDimension x="130" y="32"/>
-				</Size>
+				<Size x="130" y="32"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterRenameText2" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="CharacterRenameText2" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size>
-								<AbsDimension x="75" y="32"/>
-							</Size>
+							<Size x="75" y="32"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="-10" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="-10" y="0"/>
 							</Anchors>
 							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
 						</Texture>
 						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-							<Size>
-								<AbsDimension x="75" y="32"/>
-							</Size>
+							<Size x="75" y="32"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="10" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="RIGHT" x="10" y="0"/>
 							</Anchors>
 							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
 						</Texture>

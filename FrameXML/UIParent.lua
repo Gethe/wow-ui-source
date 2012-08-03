@@ -164,6 +164,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED");
 	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH");
 	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSAL_DECLINED");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED");
 	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUEST_CANCEL");
 	self:RegisterEvent("TRADE_REQUEST_CANCEL");
 	self:RegisterEvent("CONFIRM_XP_LOSS");
@@ -871,7 +872,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED");
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" ) then
 		StaticPopup_Show("PET_BATTLE_QUEUE_PROPOSE_MATCH");
-	elseif ( event == "PET_BATTLE_QUEUE_PROPOSAL_DECLINED" ) then
+	elseif ( event == "PET_BATTLE_QUEUE_PROPOSAL_DECLINED" or event == "PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED" ) then
 		StaticPopup_Hide("PET_BATTLE_QUEUE_PROPOSE_MATCH");
 	elseif ( event == "TRADE_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("TRADE");
@@ -2113,6 +2114,11 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ArenaEnemyFrames:ClearAllPoints();
 		ArenaEnemyFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
+	
+	if ( ArenaPrepFrames ) then
+		ArenaPrepFrames:ClearAllPoints();
+		ArenaPrepFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	end
 
 	-- Watch frame - needs to move below buffs/debuffs if at least 1 right action bar is showing
 	if ( rightActionBars > 0 ) then
@@ -2122,6 +2128,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if ( not WatchFrame:IsUserPlaced() and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
 		WatchFrame:ClearAllPoints();
 		WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+	elseif (  not WatchFrame:IsUserPlaced() and ArenaPrepFrames and ArenaPrepFrames:IsShown() and (numArenaOpponents > 0) ) then
+		WatchFrame:ClearAllPoints();
+		WatchFrame:SetPoint("TOPRIGHT", "ArenaPrepFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
 	elseif ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
 		WatchFrame:ClearAllPoints();
 		-- move up if only the minimap cluster is above, move down a little otherwise

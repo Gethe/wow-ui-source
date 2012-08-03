@@ -5,7 +5,11 @@ function InspectTalentFrame_OnLoad(self)
 end
 
 function InspectTalentFrame_OnEvent(self, event, unit)
-	if (event == "INSPECT_READY") then
+	if ( not InspectFrame:IsShown() ) then
+		return;
+	end
+
+	if (event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
 		InspectTalentFrameTalents_OnShow(self.InspectTalents);
 		InspectGlyphFrameGlyph_UpdateGlyphs(self.InspectGlyphs, false);
 		InspectTalentFrameSpec_OnShow(self.InspectSpec);

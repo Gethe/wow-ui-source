@@ -139,10 +139,17 @@
 				end
 				_G[self:GetName().."Highlight"]:Show();
 				GlueDropDownMenu_StopCounting(self:GetParent());
+				if ( self.tooltipTitle ) then
+					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GlueTooltip:AddLine(self.tooltipTitle, 1.0, 1.0, 1.0);
+					GlueTooltip:AddLine(self.tooltipText, nil, nil, nil, 1, 1);
+					GlueTooltip:Show();
+				end
 			</OnEnter>
 			<OnLeave>
 				_G[self:GetName().."Highlight"]:Hide();
 				GlueDropDownMenu_StartCounting(self:GetParent());
+				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<ButtonText name="$parentNormalText"/>

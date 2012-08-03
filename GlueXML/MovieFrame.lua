@@ -11,6 +11,8 @@ MovieList = {
   { 18 },
   -- Movie sequence 4 = CC
   { 23 },
+  -- Movie sequence 5 = MP
+  { 115 },
 }
 
 function MovieFrame_OnLoad(self)

@@ -253,7 +253,8 @@ function CombatText_OnEvent(self, event, ...)
 			or arg3 == "FOCUS"
 			or arg3 == "ENERGY"
 			or arg3 == "RUNIC_POWER"
-			or arg3 == "SOUL_SHARDS" ) then
+			or arg3 == "SOUL_SHARDS"
+			or arg3 == "LIGHT_FORCE") then
 			message = data.." ".._G[arg3];
 			info = PowerBarColor[arg3];
 		elseif ( arg3 == "HOLY_POWER" and PaladinPowerBar:IsShown() and PaladinPowerBar:GetAlpha() > 0.5 ) then

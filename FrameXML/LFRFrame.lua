@@ -119,7 +119,11 @@ function LFRFrameRoleCheckButton_OnClick(self)
 end
 
 function LFRQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
-	LFGDungeonListCheckButton_OnClick(self, LE_LFG_CATEGORY_LFR, LFRRaidList, LFRHiddenByCollapseList);
+	if ( LFR_CanQueueForMultiple() ) then
+		LFGDungeonListCheckButton_OnClick(self, LE_LFG_CATEGORY_LFR, LFRRaidList, LFRHiddenByCollapseList);
+	else
+		LFRQueueFrame.selectedLFM = self:GetParent().id;
+	end
 	LFRQueueFrameSpecificList_Update();
 end
 

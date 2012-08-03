@@ -1,5 +1,8 @@
 NUM_BATTLE_PETS_IN_BATTLE = 3;
 NUM_BATTLE_PET_ABILITIES = 3;
+BATTLE_PET_ABILITY_SWITCH = 4;
+BATTLE_PET_ABILITY_CATCH = 5;
+NUM_BATTLE_PET_HOTKEYS = BATTLE_PET_ABILITY_CATCH;
 END_OF_PET_BATTLE_PET_LEVEL_UP = "petbattlepetlevel";
 END_OF_PET_BATTLE_RESULT = "petbattleresult";
 END_OF_PET_BATTLE_CAPTURE = "petbattlecapture";
@@ -21,6 +24,19 @@ PET_BATTLE_WEATHER_TEXTURES = {
 	--[63] = "Interface\\PetBattles\\Weather-Windy",
 
 	[235] = "Interface\\PetBattles\\Weather-Rain",
+};
+
+StaticPopupDialogs["PET_BATTLE_FORFEIT"] = {
+	text = PET_BATTLE_FORFEIT_CONFIRMATION,
+	button1 = OKAY,
+	button2 = CANCEL,
+	maxLetters = 30,
+	OnAccept = function(self)
+		C_PetBattles.ForfeitGame();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
 };
 
 --------------------------------------------
@@ -218,6 +234,8 @@ function PetBattleFrame_UpdateAbilityButtonHotKeys(self)
 		local button = self.BottomFrame.abilityButtons[i];
 		PetBattleAbilityButton_UpdateHotKey(button);
 	end
+	PetBattleAbilityButton_UpdateHotKey(self.BottomFrame.SwitchPetButton);
+	PetBattleAbilityButton_UpdateHotKey(self.BottomFrame.CatchButton);
 end
 
 function PetBattleFrame_UpdatePassButtonAndTimer(self)
@@ -300,12 +318,22 @@ function PetBattleFrame_ShowMultiWildNotification(self)
 end
 
 function PetBattleFrame_ButtonDown(id)
-	if ( id > NUM_BATTLE_PET_ABILITIES ) then
+	if ( id > NUM_BATTLE_PET_HOTKEYS ) then
 		return;
 	end
 
 	local button = PetBattleFrame.BottomFrame.abilityButtons[id];
+	if (id == BATTLE_PET_ABILITY_SWITCH) then
+		button = PetBattleFrame.BottomFrame.SwitchPetButton;
+	elseif (id == BATTLE_PET_ABILITY_CATCH) then
+		button = PetBattleFrame.BottomFrame.CatchButton;
+	end
+	
+	if (not button) then
+		return;
+	end
 
+	StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
@@ -339,6 +367,7 @@ function PetBattleAbilityButton_OnClick(self)
 		
 		HandleModifiedItemClick(GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed));
 	else
+		StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
 		C_PetBattles.UseAbility(self:GetID());
 	end
 end
@@ -435,10 +464,11 @@ function PetBattleFrameTurnTimer_UpdateValues(self)
 end
 
 function PetBattleForfeitButton_OnClick(self)
-	C_PetBattles.ForfeitGame();
+	StaticPopup_Show("PET_BATTLE_FORFEIT", nil, nil, nil)
 end
 
 function PetBattleCatchButton_OnClick(self)
+	StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
 	C_PetBattles.UseTrap();
 end
 
@@ -1120,7 +1150,7 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		
 		local nextWeakIndex, nextResistIndex = 1, 1;
 		local currentPetType = C_PetBattles.GetPetType(petOwner, petIndex);
-		for i=1, C_PetBattles.GetNumPetTypes() do
+		for i=1, C_PetJournal.GetNumPetTypes() do
 			local modifier = C_PetBattles.GetAttackModifier(i, currentPetType);
 			if ( modifier > 1 ) then
 				local icon = self.weakToTextures[nextWeakIndex];

@@ -5,6 +5,8 @@ function RealmWizard_OnLoad(self)
 end
 
 function RealmWizard_OnShow(self)
+	RealmWizardLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
+
 	self:SetSequence(0);
 	RealmWizardGameTypeButton1:Click(1);
 	if ( not RealmWizard.selectedCategory ) then

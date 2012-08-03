@@ -1,10 +1,9 @@
-CurrentGlueMusic = "GS_Cataclysm";
-
 GlueCreditsSoundKits = { };
 GlueCreditsSoundKits[1] = "Menu-Credits01";
 GlueCreditsSoundKits[2] = "Menu-Credits02";
 GlueCreditsSoundKits[3] = "Menu-Credits03";
 GlueCreditsSoundKits[4] = "Menu-Credits04";
+GlueCreditsSoundKits[5] = "Menu-Credits05";
 
 
 GlueScreenInfo = { };
@@ -51,61 +50,11 @@ GlueAmbienceTracks["WORGEN"] = "AMB_GlueScreen_Worgen";
 GlueAmbienceTracks["DARKPORTAL"] = "GlueScreenIntro";
 GlueAmbienceTracks["DEATHKNIGHT"] = "GlueScreenIntro";
 GlueAmbienceTracks["CHARACTERSELECT"] = "GlueScreenIntro";
-
--- RaceLights[] duplicates the 3.2.2 color values in the models. Henceforth, the models no longer contain directional lights
-RaceLights = {
-    HUMAN =  {
-        {1,     0,  0.000000,       0.000000,       -1.000000,   1.0,   0.27,       0.27,       .27,        1.0,    0,          0,          0},
-        {1,     0,  -0.45756075,    -0.58900136,    -0.66611975, 1.0,   0.000000,   0.000000,   0.000000,   1.0,    0.19882353, 0.34921569, 0.43588236 },
-        {1,     0,  -0.64623469,    0.57582057,     -0.50081086, 1.0,   0.000000,   0.000000,   0.000000,   2.0,    0.52196085, 0.44,       0.29764709 },
-    },
-    ORC = {         
-        {1,     0,  0.00000,        0.00000,        -1.00000,   1.0,    0.15000,    0.15000,    0.15000,    1.0,    0.00000,    0.00000,    0.00000},
-        {1,     0,  -0.74919,       0.35208,        -0.56103,   1.0,    0.00000,    0.00000,    0.00000,    1.0,    0.44706,    0.54510,    0.73725},
-        {1,     0,  0.53162,        -0.84340,       0.07780,    1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.55,       0.338625,   0.148825},
-    },
-    TROLL = {         
-        {1,     0,  0.00000,        0.00000,        -1.00000,   1.0,    0.15000,    0.15000,    0.15000,    1.0,    0.00000,    0.00000,    0.00000},
-        {1,     0,  -0.74919,       0.35208,        -0.56103,   1.0,    0.00000,    0.00000,    0.00000,    1.0,    0.44706,    0.54510,    0.73725},
-        {1,     0,  0.53162,        -0.84340,       0.07780,    1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.55,       0.338625,   0.148825},
-    },
-    DWARF = {
-        {1,     0,  -0.00000,       -0.00000,       -1.00000,   1.0,    0.30000,    0.30000,    0.30000,    0.0,    0.00000,    0.00000,    0.00000},
-        {1,     0,  -0.88314,       0.42916,        -0.18945,   1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.44706,    0.67451,    0.760785},
-    },
-    GNOME = {
-        {1,     0,  -0.00000,       -0.00000,       -1.00000,   1.0,    0.30000,    0.30000,    0.30000,    0.0,    0.00000,    0.00000,    0.00000},
-        {1,     0,  -0.88314,       0.42916,        -0.18945,   1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.44706,    0.67451,    0.760785},
-    },
-    TAUREN = {
-        {1,     0,  -0.48073,       0.71827,        -0.50297,   1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.65,       0.397645,   0.2727},
-        {1,     0,  -0.49767,       -0.78677,       0.36513,    1.0,    0.00000,    0.00000,    0.00000,    1.0,    0.60000,    0.47059,    0.32471},
-    },
-    SCOURGE = {
-        {1,     0,  0.00000,        0.00000,        -1.00000,   1.0,    0.20000,    0.20000,    0.20000,    1.0,    0.00000,    0.00000,    0.00000},
-    },
-    NIGHTELF = {
-        {1,     0,  -0.00000,       -0.00000,       -1.00000,   1.0,    0.09020,    0.09020,    0.17020,    1.0,    0.00000,    0.00000,    0.00000},
-    },
-    DRAENEI = {
-        {1,     0,  0.61185,        0.62942,        -0.47903,   1.0,    0.00000,    0.00000,    0.00000,    1.0,    0.56941,    0.52000,    0.60000},
-        {1,     0,  -0.64345,       -0.31052,       -0.69968,   1.0,    0.00000,    0.00000,    0.00000,    1.0,    0.60941,    0.60392,    0.70000},
-        {1,     0,  -0.46481,       -0.14320,       0.87376,    1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.5835,     0.48941,    0.60000},
-    },
-    BLOODELF = {
-        {1,     0,  -0.82249,       -0.54912,       -0.14822,   1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.581175,   0.50588,    0.42588},
-        {1,     0,  0.00000,        -0.00000,       -1.00000,   1.0,    0.60392,    0.61490,    0.70000,    1.0,    0.00000,    0.00000,    0.00000},
-        {1,     0,  0.02575,        0.86518,        -0.50081,   1.0,    0.00000,    0.00000,    0.00000,    1.0,    0.59137,    0.51745,    0.63471},
-    },
-    DEATHKNIGHT = {
-        {1,     0,  0.00000,        0.00000,        -1.00000,   1.0,    0.38824,    0.66353,    0.76941,    1.0,    0.00000,    0.00000,    0.00000},
-    },
-    CHARACTERSELECT =  {
-        {1,     0,  0.00000,        0.00000,        -1.00000,   1.0,    0.15000,    0.15000,    0.15000,    1.0,    0.00000,    0.00000,    0.00000},
-        {1,     0,  -0.74919,       0.35208,        -0.56103,   1.0,    0.00000,    0.00000,    0.00000,    1.0,    0.44706,    0.54510,    0.73725},
-        {1,     0,  0.53162,        -0.84340,       0.07780,    1.0,    0.00000,    0.00000,    0.00000,    2.0,    0.55,       0.338625,   0.148825},
-    },
-}
+GlueAmbienceTracks["PANDAREN"] = "AMB_GlueScreen_Pandaren";
+GlueAmbienceTracks["HORDE"] = "AMB_50_GlueScreen_HORDE";
+GlueAmbienceTracks["ALLIANCE"] = "AMB_50_GlueScreen_ALLIANCE";
+GlueAmbienceTracks["NEUTRAL"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL";
+GlueAmbienceTracks["PANDARENCHARACTERSELECT"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL";
 
 -- indicies for adding lights ModelFFX:Add*Light
 LIGHT_LIVE  = 0;
@@ -140,6 +89,51 @@ SEX_NONE = 1;
 SEX_MALE = 2;
 SEX_FEMALE = 3;
 
+--Logos
+EXPANSION_LOGOS = {
+	TRIAL = "Interface\\Glues\\Common\\Glues-WoW-StarterLogo",
+	[1] = "Interface\\Glues\\Common\\Glues-WoW-ClassicLogo",
+	[2] = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
+	[3] = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
+	[4] = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
+	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
+};
+
+--Music
+EXPANSION_GLUE_MUSIC = {
+	TRIAL = "GS_Cataclysm",
+	[1] = "GS_Cataclysm",
+	[2] = "GS_Cataclysm",
+	[3] = "GS_Cataclysm",
+	[4] = "MUS_50_HeartofPandaria_MainTitle",
+}
+
+--Backgrounds
+EXPANSION_HIGH_RES_BG = {
+	TRIAL = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	[1] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	[2] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	[3] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	[4] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
+}
+
+EXPANSION_LOW_RES_BG = {
+	TRIAL =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[1] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[4] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
+}
+
+--Credits titles
+CREDITS_TITLES = { --Note: These are off by 1 from the other expansion tables
+	CREDITS_WOW_CLASSIC,
+	CREDITS_WOW_BC,
+	CREDITS_WOW_LK,
+	CREDITS_WOW_CC,
+	CREDITS_WOW_MOP,
+}
+
 -- replace the C functions with local lua versions
 function getglobal(varr)
 	return _G[varr];
@@ -170,7 +164,7 @@ function SetGlueScreen(name)
 			PlayCreditsMusic( GlueCreditsSoundKits[CreditsFrame.creditsType] );
 			StopGlueAmbience();
 		elseif ( name ~= "movie" ) then
-			PlayGlueMusic(CurrentGlueMusic);
+			PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
 			if (name == "login") then
 				PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
 			end
@@ -223,13 +217,15 @@ function GlueParent_OnEvent(event, arg1, arg2, arg3)
 	elseif ( event == "SET_GLUE_SCREEN" ) then
 		GlueScreenExit(GetCurrentGlueScreenName(), arg1);
 	elseif ( event == "START_GLUE_MUSIC" ) then
-		PlayGlueMusic(CurrentGlueMusic);
+		PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
 		PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
 	elseif ( event == "DISCONNECTED_FROM_SERVER" ) then
 		TokenEntry_Cancel(TokenEnterDialog);
 		SetGlueScreen("login");
 		if ( arg1 == 4 ) then
 			GlueDialog_Show("PARENTAL_CONTROL");
+		elseif ( arg1 == 5 ) then
+			GlueDialog_Show("STREAMING_ERROR");
 		else
 			GlueDialog_Show("DISCONNECTED");
 		end
@@ -367,42 +363,24 @@ function SetLighting(model, race)
     end
 
     model:ResetLights();
-	--[[ 
-	ResetLights() sets all 6 light sets to default for the background. The six sets are:
+end
 
-		background - live
-		background - ghost
-		character - live
-		character - ghost
-		pet - live
-		pet - ghost
-
-	If you add a light to any one of these, NONE of the default lights are used for that set (most backgrounds have 3).
-
-	You can add up to four lights per light set in the current version. They are merged in the engine.
-
-    The current version only supports setting directional lights, and pulls the default point lights from the models.
-	]]
-	local LightValues = RaceLights[race];
-	if(LightValues) then 
-		for index, Array in pairs (LightValues) do
-			if (Array[1]==1) then	-- is this light enabled?
-				for j, f in pairs ({model.AddCharacterLight, model.AddLight, model.AddPetLight }) do
-					f(model, LIGHT_LIVE, unpack(Array));
-				end
-			end
-		end
+-- Function to get the background tag from a full path ( '..\UI_tagName.m2' )
+function GetBackgroundModelTag(path)
+	local pathUpper = strupper(path);
+	local matchStart;
+	local matchEnd;
+	local tag;
+	matchStart, matchEnd, tag = string.find(pathUpper, 'UI_(%a+).M2');
+	if ( not tag ) then
+		tag = "CHARACTERSELECT"; -- default
 	end
+	return tag;
 end
 
 -- Function to set the background model for character select and create screens
-function SetBackgroundModel(model, name)
-    local nameupper = strupper(name);
-    local path = "Interface\\Glues\\Models\\UI_"..name.."\\UI_"..name..".m2";
-	local overridePath = _G["BACKGROUND_MODEL_"..nameupper];
-	if (overridePath) then
-		path = overridePath;
-	end
+function SetBackgroundModel(model, path)
+	local nameupper = GetBackgroundModelTag(path);
 	if ( model == CharacterCreate ) then
 		SetCharCustomizeBackground(path);
 	else
@@ -412,6 +390,7 @@ function SetBackgroundModel(model, name)
 		PlayGlueAmbience(GlueAmbienceTracks[nameupper], 4.0);
 	end
 	SetLighting(model, nameupper)
+	return nameupper;
 end
 
 function SecondsToTime(seconds, noSeconds)
@@ -510,9 +489,10 @@ function SetLoginScreenModel(model)
 	model:SetCamera(0);
 	model:SetSequence(0);
 	
-	local lowResBG = "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2";
-	local highResBG = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2";
+	local expansionLevel = GetClientDisplayExpansionLevel();
+	local lowResBG = EXPANSION_LOW_RES_BG[expansionLevel];
+	local highResBG = EXPANSION_HIGH_RES_BG[expansionLevel];
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 							
-	model:SetModel(background);	
+	model:SetModel(background, 1);	
 end

@@ -12,6 +12,7 @@ local DASH_SHOW = 1;
 local DASH_HIDE = 2;
 local DASH_ICON = 3;
 local DASH_WIDTH;
+DASH_ICON_WIDTH = 20;
 local IS_HEADER = true;
 
 WATCHFRAME_INITIAL_OFFSET = 0;
@@ -255,6 +256,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:RegisterEvent("SCENARIO_UPDATE");
+	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
@@ -319,6 +321,11 @@ function WatchFrame_OnEvent (self, event, ...)
 		else
 			WatchFrame_Update();
 		end
+	elseif ( event == "SCENARIO_CRITERIA_UPDATE" ) then
+		if ( not self.collapsed and self:IsShown() ) then
+			WatchFrameScenario_ReadyCriteriaAnimation(...);
+		end
+		WatchFrame_Update();
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		if ( not WorldMapFrame:IsShown() and WatchFrame.showObjectives ) then
 			SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
@@ -366,6 +373,7 @@ function WatchFrame_Collapse (self)
 	texture:SetTexCoord(0, 0.5, 0, 0.5);
 	texture = button:GetPushedTexture();	
 	texture:SetTexCoord(0.5, 1, 0, 0.5);
+	WatchFrameScenario_StopCriteriaAnimation();
 end
 
 function WatchFrame_Expand (self)
@@ -684,8 +692,8 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		line.dash:Hide();
 		usedWidth = DASH_WIDTH;
 	elseif ( dash == DASH_ICON ) then
-		line.dash:SetWidth(20);
-		usedWidth = 20;
+		line.dash:SetWidth(DASH_ICON_WIDTH);
+		usedWidth = DASH_ICON_WIDTH;
 	end	
 	-- multiple lines
 	if ( hasItem and WATCHFRAME_SETLINES_NUMLINES < 2 ) then
@@ -1755,6 +1763,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 	local numObjectives = 0;
 	local numPopups = 0;
 
+	local animationCriteriaID = ScenarioCriteriaAnimationLine.criteriaID;
 	local popupFrame = WatchFrameScenarioPopUpFrame;
 	local name, currentStage, numStages = C_Scenario.GetInfo();
 	if ( currentStage > 0 and currentStage <= numStages ) then
@@ -1809,44 +1818,33 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 		-- criteria info
 		local contentHeight = SCENARIO_POPUP_BASE_HEIGHT;
 		local firstLine = true;
-		local nextCompleteAnchor;
-		local firstCompleteAnchor;
 		for i = 1, numCriteria do
 			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID = C_Scenario.GetCriteriaInfo(i);
 			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
 			local line = WatchFrame_GetScenarioLine(linesParent);
-			if ( not criteriaCompleted ) then
-				if ( firstLine ) then
-					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - initialCriteriaOffset, not IS_HEADER, criteriaString, DASH_ICON);
-					line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
-					line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
-					firstLine = false;
-				else
-					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
-				end
-				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
-				nextAnchor = line;
+			if ( firstLine ) then
+				WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - initialCriteriaOffset, not IS_HEADER, criteriaString, DASH_ICON);
+				line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
+				line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
+				firstLine = false;
 			else
-				WatchFrame_SetLine(line, nextCompleteAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
-				line.text:SetTextColor(0.6, 0.6, 0.6);
-				if ( not firstCompleteAnchor ) then
-					firstCompleteAnchor = line;
-				end
-				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
-				nextCompleteAnchor = line;
+				WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
 			end
+			if ( criteriaCompleted ) then
+				line.text:SetTextColor(0.6, 0.6, 0.6);
+				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
+			else
+				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
+			end
+			-- animation
+			if ( criteriaID == animationCriteriaID ) then
+				WatchFrameScenario_PlayCriteriaAnimation(line);
+			end
+
+			nextAnchor = line;
 			line.icon:Show();
 			line:Show();
 			contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING + WATCHFRAME_SCENARIO_LINE_OFFSET;
-		end
-		-- reanchor completed lines
-		if ( firstCompleteAnchor ) then
-			-- anchor first complete line to last incomplete line
-			firstCompleteAnchor:SetPoint("TOP", nextAnchor, "BOTTOM", 0, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET);
-			firstCompleteAnchor:SetPoint("RIGHT", nextAnchor, "RIGHT", 0, 0);
-			firstCompleteAnchor:SetPoint("LEFT", nextAnchor, "LEFT", 0, 0);
-			-- update what the last anchor frame is
-			nextAnchor = nextCompleteAnchor;
 		end
 		
 		if ( not inChallengeMode ) then
@@ -1872,6 +1870,44 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 
 	WatchFrame_ReleaseUnusedScenarioLines();
 	return nextAnchor, width, numObjectives, numPopups;
+end
+
+function WatchFrameScenario_ReadyCriteriaAnimation(criteriaID)
+	local animationLine = ScenarioCriteriaAnimationLine;
+	if ( animationLine.playState == "playing" ) then
+		WatchFrameScenario_StopCriteriaAnimation();
+	end
+	animationLine.playState = "ready";
+	animationLine.criteriaID = criteriaID;
+end
+
+function WatchFrameScenario_PlayCriteriaAnimation(targetLine)
+	local animationLine = ScenarioCriteriaAnimationLine;
+	-- always reparent in case lines got shuffled
+	animationLine:SetParent(targetLine);
+	animationLine:SetAllPoints(targetLine);
+	-- start animations if in the ready state
+	if ( animationLine.playState == "ready" ) then
+		animationLine.playState = "playing";
+		animationLine.Glow.ScaleAnim:Play();
+		animationLine.Glow.AlphaAnim:Play();
+		animationLine.Sheen.MoveAnim:Play();
+		animationLine.Sheen.AlphaAnim:Play();
+		animationLine.Check.Anim:Play();
+	end
+end
+
+function WatchFrameScenario_StopCriteriaAnimation()
+	local animationLine = ScenarioCriteriaAnimationLine;
+	if ( animationLine.playState ) then
+		animationLine.Glow.ScaleAnim:Stop();
+		animationLine.Glow.AlphaAnim:Stop();
+		animationLine.Sheen.MoveAnim:Stop();
+		animationLine.Sheen.AlphaAnim:Stop();
+		animationLine.Check.Anim:Stop();
+		animationLine.playState = nil;
+		animationLine.criteriaID = nil;
+	end
 end
 
 --------------------------------------------------------------------------------------------

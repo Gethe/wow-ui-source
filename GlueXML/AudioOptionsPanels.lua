@@ -102,6 +102,7 @@ SoundPanelOptions = {
 	Sound_EnableEmoteSounds = { text = "ENABLE_EMOTE_SOUNDS" },
 	Sound_EnablePetSounds = { text = "ENABLE_PET_SOUNDS" },
 	Sound_ZoneMusicNoDelay = { text = "ENABLE_MUSIC_LOOPING" },
+	Sound_EnablePetBattleMusic = { text = "ENABLE_PET_BATTLE_MUSIC" },
 	Sound_EnableSoundWhenGameIsInBG = { text = "ENABLE_BGSOUND" },
 	Sound_EnableReverb = { text = "ENABLE_REVERB" },
 	Sound_EnableHardware = { text = "ENABLE_HARDWARE" },

@@ -299,7 +299,7 @@
                             </Anchors>
                         </Texture>	
                     </Layer>
-                    <Layer level="ARTWORK">
+                    <Layer level="OVERLAY">
                         <Texture name="WorldMapHighlight" alphaMode="ADD" hidden="true">
                             <Size x="128" y="128"/>
                             <Anchors>
@@ -307,7 +307,7 @@
                             </Anchors>
                         </Texture>
                     </Layer>
-                    <Layer level="OVERLAY">
+                    <Layer level="ARTWORK">
                         <FontString name="WorldMapZoneInfo" inherits="SubZoneTextFont" justifyH="CENTER" hidden="true">
                             <Anchors>
                                 <Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="20"/>

@@ -391,7 +391,8 @@ end
 
 function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
-	if ( instanceType == "party" and GetChallengeMode() ) then
+	local isChallengeMode = GetChallengeMode();
+	if ( not IS_GUILD_GROUP and instanceType == "party" and isChallengeMode ) then
 		MiniMapChallengeMode:Show();
 		MiniMapInstanceDifficulty:Hide();
 		GuildInstanceDifficulty:Hide();	
@@ -435,20 +436,29 @@ function MiniMapInstanceDifficulty_Update()
 				GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
 			end
 			GuildInstanceDifficultyText:ClearAllPoints();
-			if ( isHeroic ) then
+			if ( isHeroic or isChallengeMode ) then
+				local symbolTexture;
+				if ( isChallengeMode ) then
+					symbolTexture = GuildInstanceDifficultyChallengeModeTexture;
+					GuildInstanceDifficultyHeroicTexture:Hide();
+				else
+					symbolTexture = GuildInstanceDifficultyHeroicTexture;
+					GuildInstanceDifficultyChallengeModeTexture:Hide();
+				end
 				if ( maxPlayers < 10 ) then
-					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 11, 7);
+					symbolTexture:SetPoint("BOTTOMLEFT", 11, 7);
 					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
 				elseif ( maxPlayers > 19 ) then
-					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 8, 7);
+					symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
 					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
 				else
-					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 8, 7);
+					symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
 					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 19, 8);
 				end
-				GuildInstanceDifficultyHeroicTexture:Show();
+				symbolTexture:Show();
 			else
 				GuildInstanceDifficultyHeroicTexture:Hide();
+				GuildInstanceDifficultyChallengeModeTexture:Hide();
 				GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
 			end
 			MiniMapInstanceDifficulty:Hide();

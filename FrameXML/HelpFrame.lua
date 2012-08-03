@@ -77,7 +77,7 @@ HelpFrameNavTbl[16] = {	text = HELPFRAME_SUBMIT_SUGGESTION_TITLE,
 					};					
 HelpFrameNavTbl[17]	= { text = HELPFRAME_ITEM_RESTORATION,
 						icon ="Interface\\HelpFrame\\HelpIcon-ItemRestoration",
-						func = function() StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, 3) end,
+						func = function() StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index=3}) end,
 						noSelection = true,
 					};
 

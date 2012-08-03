@@ -3213,7 +3213,7 @@ StaticPopupDialogs["CONFIRM_LAUNCH_URL"] = {
 	text = CONFIRM_LAUNCH_URL,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self, data) LoadURLIndex(data); end,
+	OnAccept = function(self, data) LoadURLIndex(data.index, data.mapID); end,
 	hideOnEscape = 1,
 	timeout = 0,
 }

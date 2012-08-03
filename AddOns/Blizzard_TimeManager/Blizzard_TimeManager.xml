@@ -130,15 +130,18 @@
 					</EditBox>
 				</Frames>
 			</Frame>
-			<Button name="TimeManagerAlarmEnabledButton" inherits="UIPanelButtonTemplate">
-				<Size x="160" y="20"/>
+			<CheckButton name="TimeManagerAlarmEnabledButton" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="CENTER" x="0" y="-45"/>
+					<Anchor point="LEFT" x="12" y="-45"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(TIMEMANAGER_ALARM_ENABLED);
+					</OnLoad>
 					<OnClick function="TimeManagerAlarmEnabledButton_OnClick"/>
 				</Scripts>
-			</Button>
+			</CheckButton>
 			<CheckButton name="TimeManagerMilitaryTimeCheck" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>

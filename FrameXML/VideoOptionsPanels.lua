@@ -868,6 +868,7 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 				self.RestartNeeded:Hide();
 			end
 			VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+			self.oldValue = value;
 		end
 	self.GetValue =
 		function (self)
@@ -906,6 +907,7 @@ LanguageRegions["esMX"] = 10;
 LanguageRegions["ruRU"] = 11;
 LanguageRegions["ptBR"] = 12;
 LanguageRegions["ptPT"] = 13;
+LanguageRegions["itIT"] = 14;
 
 LANGUAGE_TEXT_HEIGHT = 22/512;
 

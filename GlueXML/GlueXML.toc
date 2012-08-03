@@ -5,6 +5,7 @@ GlueFontStyles.xml
 GlueLocalization.xml
 ## add new files after here
 
+..\FrameXML\Util.lua
 GlueBasicControls.xml
 GlueParent.xml
 GlueButtons.xml
@@ -17,6 +18,8 @@ RealmList.xml
 AddonList.xml
 AccountLogin.xml
 DesignerMenu.xml
+OptionsFrameTemplates.xml
+OptionsPanelTemplates.xml
 CharacterSelect.xml
 CharacterCreate.xml
 PatchDownload.xml
@@ -24,15 +27,13 @@ MovieFrame.xml
 RealmWizard.xml
 CreditsFrame.xml
 SecurityMatrix.xml
-OptionsFrameTemplates.xml
-OptionsPanelTemplates.xml
 TrialConvert.xml
 GlueOptions.xml
 VideoOptionsFrame.xml
 ..\FrameXML\VideoOptionsPanels.xml
 AudioOptionsFrame.xml
 AudioOptionsPanels.xml
-##CameraSelect.xml
+StarterEditionPopUp.xml
 
 ## This Always Runs Last, Add New Items above it.
 GlueLocalizationPost.xml

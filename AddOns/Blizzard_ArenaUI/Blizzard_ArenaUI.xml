@@ -2,9 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ArenaUI.lua"/>
 	<StatusBar name="ArenaCastingBarFrameTemplate" drawLayer="BORDER" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="80" y="14"/>
-		</Size>
+		<Size x="80" y="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true">
@@ -13,61 +11,35 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Arena-Shield" hidden="true">
-					<Size>
-						<AbsDimension x="42" y="42"/>
-					</Size>
+					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="-25" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="-25" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentText" inherits="GameFontHighlightSmall">
-					<Size>
-						<AbsDimension x="80" y="16"/>
-					</Size>
+					<Size x="80" y="16"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentIcon" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="-5" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentFlash" file="" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="256" y="64"/>
-					</Size>
+					<Size x="256" y="64"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="28"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="28"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -91,40 +63,22 @@
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
 	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="77" y="31"/>
-		</Size>
+		<Size x="77" y="31"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="15" y="-25"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="15" y="-25"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size>
-						<AbsDimension x="64" y="32"/>
-					</Size>
+					<Size x="64" y="32"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="1" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="1" y="1"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentPortrait">
-					<Size>
-						<AbsDimension x="22" y="22"/>
-					</Size>
+					<Size x="22" y="22"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-3" y="-3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -136,25 +90,15 @@
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
-									<Size>
-										<AbsDimension x="77" y="39"/>
-									</Size>
+									<Size x="77" y="39"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="9"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="9"/>
 									</Anchors>
 									<TexCoords left="1.0" right="0" top="1.0" bottom="0.0"/>
 								</Texture>
-								<FontString name="$parentName" inherits="GameFontNormalSmall">
+								<FontString name="$parentName" inherits="GameFontNormalSmall" parentKey="name">
 									<Anchors>
-										<Anchor point="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-25" y="21"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMRIGHT" x="-25" y="21"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -163,15 +107,9 @@
 				</Frames>
 			</Frame>
 			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="42" y="4"/>
-				</Size>
+				<Size x="42" y="4"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-28" y="-14"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-28" y="-14"/>
 				</Anchors>
 				<Scripts>
 					<OnValueChanged>
@@ -184,15 +122,9 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="42" y="4"/>
-				</Size>
+				<Size x="42" y="4"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-28" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-28" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnMouseUp>
@@ -202,15 +134,9 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true" parentKey="DropDown">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-20" y="-10"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="-20" y="-10"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -232,46 +158,26 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="ArenaEnemyFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="102" y="32"/>
-		</Size>
+	<Button name="ArenaPrepFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
+		<Size x="102" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size>
-						<AbsDimension x="128" y="64"/>
-					</Size>
+					<Size x="128" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-3" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-3" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentClassPortrait" file="Interface\TargetingFrame\UI-Classes-Circles">
-					<Size>
-						<AbsDimension x="30" y="30"/>
-					</Size>
+				<Texture name="$parentClassPortrait" file="Interface\TargetingFrame\UI-Classes-Circles" parentKey="classPortrait">
+					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-1" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-1" y="-4"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentBackground">
-					<Size>
-						<AbsDimension x="72" y="17"/>
-					</Size>
+					<Size x="72" y="17"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="2" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="2" y="-10"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
@@ -279,82 +185,64 @@
 		</Layers>
 		<Frames>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true" parentKey="DropDown">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-20" y="-10"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="-20" y="-10"/>
 				</Anchors>
 			</Frame>
-			<Frame setAllPoints="true">
+			<Frame setAllPoints="true"> <!-- These silly nested frames make it so the health/mana bars are underneath the frame borders like they're supposed to be-->
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentTexture" file="Interface\ArenaEnemyFrame\UI-ArenaTargetingFrame">
-									<Size>
-										<AbsDimension x="102" y="32"/>
-									</Size>
+									<Size x="102" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="-2"/>
 									</Anchors>
 									<TexCoords left="0.0" right="0.796" top="0.0" bottom="0.5"/>
 								</Texture>
 								<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="3" y="24"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" x="3" y="24"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-20" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="-20" y="3"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentManaBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-20" y="-6"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="-20" y="-6"/>
 									</Anchors>
 								</FontString>
 							</Layer>
+							<Layer level="BORDER">	
+								<Texture name="$parentSpecPortrait" >
+									<Size x="15" y="15"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="4" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="$parentStatus" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
-									<Size>
-										<AbsDimension x="36" y="36"/>
-									</Size>
+									<Size x="36" y="36"/>
 									<TexCoords left="0.0" right="0.2734375" top="0.0" bottom="0.5625"/>
+								</Texture>
+								<Texture name="$parentSpecBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size x="25" y="25"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="4" y="0"/>
+									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentDisconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="-7" y="-1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="LEFT" x="-7" y="-1"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentPVPIcon" hidden="true">
@@ -369,15 +257,9 @@
 				</Frames>
 			</Frame>
 			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="70" y="8"/>
-				</Size>
+				<Size x="70" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="2" y="-12"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="2" y="-12"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -396,15 +278,9 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="70" y="8"/>
-				</Size>
+				<Size x="70" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="2" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="2" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -420,16 +296,21 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate" parentKey="petFrame"/>
 			<StatusBar name="$parentCastingBar" inherits="ArenaCastingBarFrameTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-15" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-15" y="-3"/>
 				</Anchors>
 			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				self:SetFrameLevel(2);
+			</OnShow>
+		</Scripts>
+	</Button>
+	<Button name="ArenaEnemyFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="ArenaPrepFrameTemplate" virtual="true">
+		<Frames>
+			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate" parentKey="petFrame"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -459,16 +340,93 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Frame name="ArenaEnemyFrames" hidden="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="1" y="1"/>
-		</Size>
+	<Frame name="ArenaPrepFrames" hidden="true" parent="UIParent">
+		<Size x="1" y="1"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-100" y="-25"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT" x="-100" y="-25"/>
+		</Anchors>
+		<Frames>
+			<Button name="ArenaPrepFrame1" inherits="ArenaPrepFrameTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="RIGHT" x="-2"/>
+				</Anchors>
+			</Button>
+			<Button name="ArenaPrepFrame2" inherits="ArenaPrepFrameTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ArenaPrepFrame1" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
+				</Anchors>
+			</Button>
+			<Button name="ArenaPrepFrame3" inherits="ArenaPrepFrameTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ArenaPrepFrame2" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
+				</Anchors>
+			</Button>
+			<Button name="ArenaPrepFrame4" inherits="ArenaPrepFrameTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ArenaPrepFrame3" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
+				</Anchors>
+			</Button>
+			<Button name="ArenaPrepFrame5" inherits="ArenaPrepFrameTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ArenaPrepFrame4" relativePoint="BOTTOM" y="-20" />
+					<Anchor point="RIGHT" x="-2"/>
+				</Anchors>
+			</Button>
+			<Frame name="ArenaPrepBackground" frameStrata="LOW" enableMouse="true" hidden="true">
+				<Size x="125" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ArenaPrepFrame1" x="-15" y="6"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\CharacterFrame\UI-Party-Background" edgeFile="Interface\ArenaEnemyFrame\UI-Arena-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="32" right="32" top="32" bottom="32"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop> 
+				<Scripts>
+					<OnLoad>
+						self:RegisterEvent("SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS");
+						UpdateArenaPrepBackground();
+					</OnLoad>
+					<OnShow>
+						self:SetFrameLevel(1);
+					</OnShow>
+					<OnEvent>
+						if ( event == "SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS" ) then
+							UpdateArenaPrepBackground();
+							OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
+							ArenaPrepBackground_SetOpacity();
+						end
+					</OnEvent>
+					<OnMouseUp>
+						if ( button == "RightButton" ) then
+							PartyMemberBackground_ToggleOpacity(self);
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ArenaPrepFrames_OnLoad"/>
+			<OnEvent function="ArenaPrepFrames_OnEvent"/>
+			<OnShow function="ArenaPrepFrames_OnShow"/>
+			<OnHide function="ArenaPrepFrames_OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="ArenaEnemyFrames" hidden="true" parent="UIParent">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT" x="-100" y="-25"/>
 		</Anchors>
 		<Frames>
 			<Button name="ArenaEnemyFrame1" inherits="ArenaEnemyFrameTemplate" id="1">
@@ -502,20 +460,10 @@
 				</Anchors>
 			</Button>
 			<Frame name="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true">
-				<Size>
-					<AbsDimension x="125" y="10"/>
-				</Size>
+				<Size x="125" y="10"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ArenaEnemyFrame1">
-						<Offset>
-							<AbsDimension x="-15" y="6"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="ArenaEnemyFrame1" x="-15" y="6"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\CharacterFrame\UI-Party-Background" edgeFile="Interface\ArenaEnemyFrame\UI-Arena-Border" tile="true">
 					<BackgroundInsets>

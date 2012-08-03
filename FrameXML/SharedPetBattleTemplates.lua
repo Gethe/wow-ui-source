@@ -38,10 +38,19 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 
 	--Update name
 	self.Name:SetText(name);
-
+	
+	if ( numTurns > 1 ) then
+		self.Duration:SetFormattedText(BATTLE_PET_ABILITY_MULTIROUND, numTurns);
+		self.Duration:Show();
+		bottom = self.Duration;
+	else
+		self.Duration:Hide();
+	end
+	
 	--Update cooldown
 	if ( maxCooldown > 0 ) then
 		self.MaxCooldown:SetFormattedText(PET_BATTLE_TURN_COOLDOWN, maxCooldown);
+		self.MaxCooldown:SetPoint("TOPLEFT", bottom, "BOTTOMLEFT", 0, -5);
 		self.MaxCooldown:Show();
 		bottom = self.MaxCooldown;
 	else
@@ -97,7 +106,7 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 		self.Delimiter2:Show();
 
 		local nextStrongIndex, nextWeakIndex = 1, 1;
-		for i=1, C_PetBattles.GetNumPetTypes() do
+		for i=1, C_PetJournal.GetNumPetTypes() do
 			local modifier = C_PetBattles.GetAttackModifier(petType, i);
 			if ( modifier > 1 ) then
 				local icon = self.strongAgainstTextures[nextStrongIndex];
@@ -204,54 +213,32 @@ do
 		cond = function(conditional, onTrue, onFalse) if ( conditional ) then return onTrue; else return onFalse; end end,
 		clamp = function(value, minClamp, maxClamp) return min(max(value, minClamp), maxClamp); end,
 
-
 		--Data fetching functions
-		points = function(turnIndex, effectIndex, abilityID)
-					if ( not abilityID ) then
-						abilityID = parsedAbilityInfo:GetAbilityID();
-					end
-					local points, accuracy, duration = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex);
-					return points;
-				end,
-		accuracy = function(turnIndex, effectIndex, abilityID)
-					if ( not abilityID ) then
-						abilityID = parsedAbilityInfo:GetAbilityID();
-					end
-					local points, accuracy, duration = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex);
-					return accuracy;
-				end,
-		duration = function(turnIndex, effectIndex, abilityID)
-					if ( not abilityID ) then
-						abilityID = parsedAbilityInfo:GetAbilityID();
-					end
-					local points, accuracy, duration = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex);
-					return duration;
-				end,
-		state = function(stateID, target)
+		unitState = function(stateID, target)
 					if ( not target ) then
 						target = "default";
 					end
 					return parsedAbilityInfo:GetState(stateID, target);
 				end,
-		power = function(target)
+		unitPower = function(target)
 					if ( not target ) then
 						target = "default";
 					end
 					return parsedAbilityInfo:GetAttackStat(target);
 				end,
-		speed = function(target)
+		unitSpeed = function(target)
 					if ( not target ) then
 						target = "default";
 					end
 					return parsedAbilityInfo:GetSpeedStat(target);
 				end,
-		maxHealth = function(target)
+		unitMaxHealth = function(target)
 					if ( not target ) then
 						target = "default";
 					end
 					return parsedAbilityInfo:GetMaxHealth(target);
 				end,
-		health = function(target)
+		unitHealth = function(target)
 					if ( not target ) then
 						target = "default";
 					end
@@ -302,14 +289,80 @@ do
 				end,
 	};
 	
+	-- Dynamic fetching functions
+	local effectParamStrings = {C_PetBattles.GetAllEffectNames()};
+	for i = 1, #effectParamStrings do
+		parserEnv[effectParamStrings[i]] = 
+			function(turnIndex, effectIndex, abilityID)
+				if ( not abilityID ) then
+					abilityID = parsedAbilityInfo:GetAbilityID();
+				end
+				local value = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex, effectParamStrings[i]);
+				if ( not value ) then
+					error("No such attribute: "..effectParamStrings[i]);
+				end
+				return value;
+			end;
+	end
+		
+	
 	--Aliases
-	parserEnv.AttackBonus = function() return (1 + 0.05 * parserEnv.power()); end;
-	parserEnv.HealingBonus = function() return (1 + 0.05 * parserEnv.power()); end;
+	parserEnv.AttackBonus = function() return (1 + 0.05 * parserEnv.unitPower()); end;
+	parserEnv.HealingBonus = function() return (1 + 0.05 * parserEnv.unitPower()); end;
 	parserEnv.StandardDamage = function(...) return parserEnv.floor(parserEnv.points(...) * parserEnv.AttackBonus()); end;
 	parserEnv.StandardHealing = function(...) return parserEnv.floor(parserEnv.points(...) * parserEnv.HealingBonus()); end;
 	parserEnv.OnlyInBattle = function(text) if ( parserEnv.isInBattle() ) then return text else return ""; end end;
 	parserEnv.School = function(abilityID) return parserEnv.petTypeName(parserEnv.abilityPetType(abilityID)); end;
 
+	parserEnv.FormatDamageResult = function(baseDamage, attackType, defenderType)
+		local output = "";
+		local multi = C_PetBattles.GetAttackModifier(attackType, defenderType);
+
+		if ( multi > 1 ) then 
+			output = GREEN_FONT_COLOR_CODE..parserEnv.floor(baseDamage * multi)..FONT_COLOR_CODE_CLOSE;
+			if (ENABLE_COLORBLIND_MODE == 1) then
+				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-strong-small:0|t";
+			end
+			return output;
+		elseif ( multi < 1 ) then 
+			output = RED_FONT_COLOR_CODE..parserEnv.floor(baseDamage * multi)..FONT_COLOR_CODE_CLOSE;
+			if (ENABLE_COLORBLIND_MODE == 1) then
+				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-weak-small:0|t";
+			end
+			return output;
+		end
+		
+		return baseDamage;
+	end
+	
+	parserEnv.FormatHealingResult = function ( baseHeal, healingDone, healingTaken )
+		local output = "";
+
+		local doneMulti = 1 + (healingDone / 100)
+		local takenMulti = 1 + (healingTaken / 100);
+		
+		local finalHeal = baseHeal + baseHeal * doneMulti;
+		finalHeal = finalHeal + finalHeal * takenMulti;
+
+		local finalMulti = finalHeal / baseHeal;
+
+		if ( finalMulti > 1 ) then 
+			output = GREEN_FONT_COLOR_CODE..(baseHeal * finalMulti)..FONT_COLOR_CODE_CLOSE;
+			if (ENABLE_COLORBLIND_MODE == 1) then
+				output = output.."|Tinterface\petbattles\battlebar-abilitybadge-strong-small:0|t";
+			end
+			return output;
+		elseif( finalMulti < 1 ) then 
+			output = RED_FONT_COLOR_CODE..(baseHeal * finalMulti)..FONT_COLOR_CODE_CLOSE;
+			if (ENABLE_COLORBLIND_MODE == 1) then
+				output = output.."|Tinterface\petbattles\battlebar-abilitybadge-weak-small:0|t";
+			end
+			return output;
+		end
+
+		return baseHeal;
+	end;
+	
 	--Don't allow designers to accidentally change the environment
 	local safeEnv = {};
 	setmetatable(safeEnv, { __index = parserEnv, __newindex = function() end });

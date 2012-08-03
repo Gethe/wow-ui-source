@@ -239,7 +239,77 @@ CreditsArtInfo[4][54] = { file="Tol Barad07", w=1024, h=512, offsetx=0, offsety=
 CreditsArtInfo[4][55] = { file="Tol Barad02", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 CreditsArtInfo[4][56] = { file="Tol Barad Details01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 CreditsArtInfo[4][57] = { file="Tol Barad Gun01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-
+CreditsArtInfo[5] = { path="Pandaria\\" };
+CreditsArtInfo[5][1] = {  file="Mogu_Monk_Concept", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][2] = {  file="MoguRaid_InteriorColor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][3] = {  file="Mushan_concept", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][4] = {  file="SkyTown", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][5] = {  file="interior_temple_color", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][6] = {  file="Library03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][7] = {  file="Bamboo House01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][8] = {  file="challenge_rogue", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][9] = {  file="Chiming Tower01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][10] = { file="foodog_002b", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][11] = { file="challenge_rogue_notused", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][12] = { file="crane01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][13] = { file="Dragon Bridge01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][14] = { file="Tier13_Shaman01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][15] = { file="dragon_bridge", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][16] = { file="DruidChallenge", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][17] = { file="East Temple Ext01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][18] = { file="ENV_004_BambooForest", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][19] = { file="Rabbit", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][20] = { file="easttemple_paintover2a", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][21] = { file="ENV_015_ValleyEternal01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][22] = { file="Female_Pandaren", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][23] = { file="foodog_creature", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][24] = { file="forestsprite02", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][25] = { file="Goat", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][26] = { file="horde Pandaren", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][27] = { file="koi_03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][28] = { file="Landscape_02Color", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][29] = { file="Library02", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][30] = { file="koiman01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][31] = { file="LionMan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][32] = { file="Shadow Pan01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][33] = { file="Mantid Knife_colour01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][34] = { file="Tier14_DeathKnight01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][35] = { file="Mantid_Raid_Interior", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][36] = { file="Pandaren Flying Mount03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][37] = { file="Mantis_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][38] = { file="Mogu_MainTemple", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][39] = { file="Mantis_03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][40] = { file="MoguRaid_Dungeon", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][41] = { file="Pandaren Monastery01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][42] = { file="easttemple_paintover1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][43] = { file="Monkey_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][44] = { file="Mountains_Colors", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][45] = { file="panda01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][46] = { file="Sha_misc_02a", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][47] = { file="PandaClass1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][48] = { file="Tier14_Monk01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][49] = { file="Pandaren Clans01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][50] = { file="Mantid Tree Fortress03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][51] = { file="Pandaren Lamp Post01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][52] = { file="Mogu_BossConcept_New", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][53] = { file="Panderan_Brewery", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][54] = { file="Panderan_StreetMart", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][55] = { file="Mantis_04", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][56] = { file="Quilin_concept", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][57] = { file="Tier13_Priest01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][58] = { file="Salamander", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][59] = { file="Pandaren Turtle01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][60] = { file="Sha Brethren01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][61] = { file="Panderan_lantern_house", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][62] = { file="Sha_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][63] = { file="Shadow Pan Sanctum01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][64] = { file="Tier13_DeathKnight01a", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][65] = { file="Panderan_GhostBrewery", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][66] = { file="Tier14_Rogue01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][67] = { file="trip_turtle_city", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][68] = { file="waterdragon_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][69] = { file="Pandaria", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[5][70] = { file="YaunkaConcept1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 
 
 function CreditsFrame_OnShow(self)
@@ -247,6 +317,8 @@ function CreditsFrame_OnShow(self)
 end
 
 function CreditsFrame_Update(self)
+	CreditsLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
+
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 	CreditsScrollFrame:SetVerticalScroll(0);
 	CreditsScrollFrame.scroll = 0;
@@ -272,28 +344,21 @@ function CreditsFrame_Update(self)
 
 	-- Set Credits Text
 	CreditsText:SetText(GetCreditsText(CreditsFrame.creditsType));
-	
-	CreditsFrameSwitchButton1:Show();
-	CreditsFrameSwitchButton2:Show();
 
 	-- Set Switch Button Text
-	if ( CreditsFrame.creditsType == 4 ) then
-		CreditsFrameSwitchButton1:Hide();
-		CreditsFrameSwitchButton2:SetText(CREDITS_WOW_LK);
-		CreditsFrameSwitchButton2:SetID(3);
-	elseif ( CreditsFrame.creditsType == 3 ) then
-		CreditsFrameSwitchButton1:SetText(CREDITS_WOW_CC);
-		CreditsFrameSwitchButton1:SetID(4);
-		CreditsFrameSwitchButton2:SetText(CREDITS_WOW_BC);
-		CreditsFrameSwitchButton2:SetID(2);
-	elseif ( CreditsFrame.creditsType == 2 ) then
-		CreditsFrameSwitchButton1:SetText(CREDITS_WOW_LK);
-		CreditsFrameSwitchButton1:SetID(3);
-		CreditsFrameSwitchButton2:SetText(CREDITS_WOW_CLASSIC);
-		CreditsFrameSwitchButton2:SetID(1);
+	local creditsType = CreditsFrame.creditsType;
+	if ( creditsType < CreditsFrame.maxCreditsType ) then
+		CreditsFrameSwitchButton1:Show();
+		CreditsFrameSwitchButton1:SetText(CREDITS_TITLES[creditsType + 1]);
+		CreditsFrameSwitchButton1:SetID(creditsType + 1);
 	else
-		CreditsFrameSwitchButton1:SetText(CREDITS_WOW_BC);
-		CreditsFrameSwitchButton1:SetID(2);
+		CreditsFrameSwitchButton1:Hide();
+	end
+	if ( creditsType > 1 ) then
+		CreditsFrameSwitchButton2:Show();
+		CreditsFrameSwitchButton2:SetText(CREDITS_TITLES[creditsType - 1]);
+		CreditsFrameSwitchButton2:SetID(creditsType - 1);
+	else
 		CreditsFrameSwitchButton2:Hide();
 	end
 end
@@ -434,6 +499,7 @@ function CreditsFrame_UpdateArt(self, index, elapsed)
 end
 
 function CreditsFrame_SetSpeed(speed)
+	PlaySound("igMainMenuOptionCheckBoxOff");
 	CREDITS_SCROLL_RATE = speed;
 	CreditsFrame_UpdateSpeedButtons();
 end

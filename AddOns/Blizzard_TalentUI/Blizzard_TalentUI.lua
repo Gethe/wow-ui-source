@@ -1304,7 +1304,7 @@ function SpecButton_OnEnter(self)
 	if ( not self.selected ) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
 		GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	if ( self.displayTrainerTooltip ) then
+		if ( self.displayTrainerTooltip and not self:GetParent().isPet ) then
 			GameTooltip:AddLine(TALENT_SPEC_CHANGE_AT_CLASS_TRAINER, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		end
 		GameTooltip:SetMinimumWidth(300, true);
@@ -1432,7 +1432,10 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		scrollChild.scrollwork_bottomright:SetDesaturated(false);
 	end
 	-- disable Learn button
-	if ( playerTalentSpec or disable or UnitLevel("player") < SHOW_SPEC_LEVEL ) then
+	if ( self.isPet and disable ) then
+		self.learnButton:Enable();
+		UIFrameFlash(self.learnButton.Flash, 0.7, 0.7, -1);
+	elseif ( playerTalentSpec or disable or UnitLevel("player") < SHOW_SPEC_LEVEL ) then
 		self.learnButton:Disable();
 		UIFrameFlashStop(self.learnButton.Flash);
 	else

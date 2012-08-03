@@ -676,6 +676,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	itemCount =  (itemCount or 0) * quantity;
 	local itemsString;
 	
+	if ( money > 0 ) then
+		itemsString = "|W"..GetMoneyString(money).."|w";
+	end
+	
 	local maxQuality = 0;
 	for i=1, itemCount, 1 do
 		local itemTexture, itemQuantity, itemLink = GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
@@ -704,7 +708,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	if(itemsString == nil) then
 		itemsString = "";
 	end
-	MerchantFrame.price = money;
+	MerchantFrame.price = 0;
 	MerchantFrame.refundBag = bag;
 	MerchantFrame.refundSlot = slot;
 	MerchantFrame.honorPoints = honorPoints;
@@ -723,7 +727,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	if (hasEnchants) then
 		textLine2 = "\n\n"..CONFIRM_REFUND_ITEM_ENHANCEMENTS_LOST;
 	end
-	StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"].hasMoneyFrame = (money ~= 0) and 1 or nil;
+	StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"].hasMoneyFrame = nil;
 	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, textLine2, {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = index, ["count"] = count * quantity});
 	return true;
 end

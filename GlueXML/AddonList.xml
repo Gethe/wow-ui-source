@@ -405,8 +405,10 @@
 							</OnShow>
 							<OnClick>
 								if ( self:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
 									SetAddonVersionCheck(0);
 								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
 									SetAddonVersionCheck(1);
 								end
 								AddonList_Update();
@@ -666,6 +668,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								local character = GlueDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
 								if ( character == ALL ) then
 									character = nil;
@@ -688,6 +691,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								local character = GlueDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
 								if ( character == ALL ) then
 									character = nil;

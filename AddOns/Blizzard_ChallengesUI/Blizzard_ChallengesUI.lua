@@ -168,6 +168,10 @@ function ChallengesFrameDungeonButton_OnClick(self, button)
 	ChallengesFrameBestTimes_Update(ChallengesFrame, self.mapID);
 end
 
+function ChallengesFrameLeaderboard_OnClick(self)
+	local id = self.selectedMapID or ChallengesFrameDungeonButton1.mapID;
+	StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index=4, mapID=id});
+end
 
 function ChallengesFrameGuild_OnEnter(self)
 	guildTime = ChallengesFrame.details.GuildTime;

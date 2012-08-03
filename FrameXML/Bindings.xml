@@ -757,6 +757,10 @@
 	<Binding name="TOGGLECOMPANIONJOURNAL">
 		TogglePetJournal(2);
 	</Binding>
+	<Binding name="TOGGLEPETJOURNAL">
+		TogglePetJournal();
+	</Binding>
+
 
 
   <!-- Misc -->

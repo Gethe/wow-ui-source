@@ -434,11 +434,11 @@
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Mounts");
 				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLEMOUNTJOURNAL");
+				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLEPETJOURNAL");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 			</OnLoad>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLEMOUNTJOURNAL");
+				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLEPETJOURNAL");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 				UpdateMicroButtons();
 			</OnEvent>

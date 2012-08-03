@@ -1276,7 +1276,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		button.hiddenDescription:SetText(description);
 		button.numLines = ceil(button.hiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
 		button.icon.texture:SetTexture(icon);
-		if ( completed ) then
+		if ( completed or wasEarnedByMe ) then
 			button.completed = true;
 			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
 			button.dateCompleted:Show();
@@ -1323,8 +1323,8 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		achievements.selection = button.id;
 		achievements.selectionIndex = button.index;
 		button.selected = true;
-		button.highlight:Show();		
-		local height = AchievementButton_DisplayObjectives(button, button.id, wasEarnedByMe);
+		button.highlight:Show();
+		local height = AchievementButton_DisplayObjectives(button, button.id, button.completed);
 		if ( height == ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then
 			button:Collapse();
 		else

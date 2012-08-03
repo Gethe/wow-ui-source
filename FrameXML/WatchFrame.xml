@@ -270,6 +270,9 @@
 			<OnLoad function="WatchFrame_OnLoad"/>
 			<OnEvent function="WatchFrame_OnEvent"/>
 			<OnUpdate function="WatchFrame_OnUpdate"/>
+			<OnHide>
+				WatchFrameScenario_StopCriteriaAnimation();
+			</OnHide>
 		</Scripts>
 	</Frame>
 	
@@ -567,4 +570,65 @@
 			</Frame>
 		</ScrollChild>
 	</ScrollFrame>
+	<Frame name="ScenarioCriteriaAnimationLine" inherits="WatchFrameLineTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Glow" file="Interface\Scenarios\Objective-Lineglow" alpha="0" alphaMode="ADD">
+					<Size x="80" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.text" x="-2" y="0"/>
+						<Anchor point="TOP" x="0" y="-3"/>
+						<Anchor point="BOTTOM" x="0" y="-3"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="ScaleAnim">
+							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="2" scaleY="1" duration="0.533" order="1"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="AlphaAnim">
+							<Alpha startDelay="0.067" change="1.0" duration="0.1" order="1"/>
+							<Alpha startDelay="0.3" change="-1.0" duration="0.267" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="Check" file="Interface\Scenarios\ScenarioIcon-Check" alphaMode="ADD" alpha="0">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Alpha change="1.0" duration="0.067" order="1"/>
+							<Scale scaleX="1.25" scaleY="1.25" duration="0.2" order="2"/>
+							<Alpha change="-1.0" startDelay="0.167" duration="0.23" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Sheen" file="Interface\Scenarios\Objective-Sheen" alpha="0">
+					<Size x="32" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Glow"/>
+						<Anchor point="TOP" x="0" y="2"/>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="MoveAnim">
+							<Translation startDelay="0.067" offsetX="175" offsetY="0" duration="0.467" order="1"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="AlphaAnim">
+							<Alpha startDelay="0.067" change="1.0" duration="0.133" order="1"/>
+							<Alpha startDelay="0.133" change="-1.0" duration="0.033" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.dash:SetWidth(DASH_ICON_WIDTH);
+				self.Glow.ScaleAnim.ScaleGlow:SetOrigin("LEFT", 0, 0);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

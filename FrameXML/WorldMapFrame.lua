@@ -3,7 +3,7 @@ NUM_WORLDMAP_WORLDEFFECT_POIS = 0;
 NUM_WORLDMAP_SCENARIO_POIS = 0;
 NUM_WORLDMAP_GRAVEYARDS = 0;
 NUM_WORLDMAP_OVERLAYS = 0;
-NUM_WORLDMAP_FLAGS = 2;
+NUM_WORLDMAP_FLAGS = 4;
 NUM_WORLDMAP_DEBUG_ZONEMAP = 0;
 NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
@@ -235,6 +235,13 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" ) then
 		if ( not self.blockWorldMapUpdate and self:IsShown() ) then
+			-- if we are exiting a micro dungeon we should update the world map
+			if (event == "REQUEST_CEMETERY_LIST_RESPONSE") then
+				local _, _, _, isMicroDungeon = GetMapInfo();
+				if (isMicroDungeon) then
+					SetMapToCurrentZone();
+				end
+			end
 			WorldMapFrame_UpdateMap();
 		end
 	elseif ( event == "ARTIFACT_DIG_SITE_UPDATED" ) then

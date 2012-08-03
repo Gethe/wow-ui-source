@@ -301,8 +301,12 @@ end
 function TimeManager_Update()
 	TimeManager_UpdateTimeTicker();
 	TimeManager_UpdateAlarmTime();
-	TimeManagerAlarmEnabledButton_Update();
 	TimeManagerAlarmMessageEditBox:SetText(Settings.alarmMessage);
+	if ( Settings.alarmEnabled ) then
+		TimeManagerAlarmEnabledButton:SetChecked(true);
+	else
+		TimeManagerAlarmEnabledButton:SetChecked(false);
+	end
 	TimeManagerMilitaryTimeCheck:SetChecked(Settings.militaryTime);
 	TimeManagerLocalTimeCheck:SetChecked(Settings.localTime);
 end
@@ -343,20 +347,6 @@ function TimeManagerAlarmMessageEditBox_OnEditFocusLost(self)
 	_TimeManager_Setting_Set(CVAR_ALARM_MESSAGE, "alarmMessage", TimeManagerAlarmMessageEditBox:GetText());
 end
 
-function TimeManagerAlarmEnabledButton_Update()
-	if ( Settings.alarmEnabled ) then
-		TimeManagerAlarmEnabledButton:SetText(TIMEMANAGER_ALARM_ENABLED);
-		TimeManagerAlarmEnabledButton:SetNormalFontObject(GameFontNormal);
-		TimeManagerAlarmEnabledButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-		TimeManagerAlarmEnabledButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-	else
-		TimeManagerAlarmEnabledButton:SetText(TIMEMANAGER_ALARM_DISABLED);
-		TimeManagerAlarmEnabledButton:SetNormalFontObject(GameFontHighlight);
-		TimeManagerAlarmEnabledButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-		TimeManagerAlarmEnabledButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Disabled-Down");
-	end
-end
-
 function TimeManagerAlarmEnabledButton_OnClick(self)
 	_TimeManager_Setting_SetBool(CVAR_ALARM_ENABLED, "alarmEnabled", not Settings.alarmEnabled);
 	if ( Settings.alarmEnabled ) then
@@ -368,7 +358,6 @@ function TimeManagerAlarmEnabledButton_OnClick(self)
 			TimeManager_TurnOffAlarm();
 		end
 	end
-	TimeManagerAlarmEnabledButton_Update();
 end
 
 function TimeManagerMilitaryTimeCheck_OnClick(self)

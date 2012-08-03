@@ -157,6 +157,23 @@ GlueDialogTypes["PARENTAL_CONTROL"] = {
 	end,
 }
 
+GlueDialogTypes["STREAMING_ERROR"] = {
+	text = DISCONNECTED,
+	button1 = DIALOG_HELP_MORE_INFO,
+	button2 = OKAY,
+	OnShow = function()
+		VirtualKeypadFrame:Hide();
+		SecurityMatrixLoginFrame:Hide();
+		StatusDialogClick();
+	end,
+	OnAccept = function()
+		LaunchURL(DISCONNECT_STREAMING_ERROR_URL);
+	end,
+	OnCancel = function()
+		StatusDialogClick();
+	end,
+}
+
 GlueDialogTypes["INVALID_NAME"] = {
 	text = CHAR_CREATE_INVALID_NAME,
 	button1 = OKAY,

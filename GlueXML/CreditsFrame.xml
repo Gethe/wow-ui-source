@@ -8,82 +8,56 @@
 	<Frame name="CreditsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="CreditsLogo" file="Interface\Glues\Common\Glues-WoW-CCLogo">
-					<Size>
-						<AbsDimension x="256" y="128"/>
-					</Size>
+				<Texture name="CreditsLogo" file="Interface\Glues\Common\Glues-WoW-MPLogo">
+					<Size x="256" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="3" y="-7"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt1">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-128"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt2">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArt1" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt3">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArt2" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt4">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArt3" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt5">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CreditsArt1" relativePoint="BOTTOM"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt6">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArt5" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt7">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArt6" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArt8">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArt7" relativePoint="RIGHT"/>
 					</Anchors>
@@ -91,141 +65,99 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="CreditsBackground1" file="Interface\Glues\Credits\Parchment1">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-128"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground2" file="Interface\Glues\Credits\Parchment2">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground1" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground3" file="Interface\Glues\Credits\Parchment3">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground2" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground4" file="Interface\Glues\Credits\Parchment4">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground3" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground5" file="Interface\Glues\Credits\Parchment5">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CreditsBackground1" relativePoint="BOTTOM"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground6" file="Interface\Glues\Credits\Parchment6">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground5" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground7" file="Interface\Glues\Credits\Parchment7">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground6" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground8" file="Interface\Glues\Credits\Parchment8">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground7" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsBackground9" file="Interface\Glues\Credits\Parchment4">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground4" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture name="CreditsBackground10" file="Interface\Glues\Credits\Parchment3">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground9" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture name="CreditsBackground11" file="Interface\Glues\Credits\Parchment8">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground8" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture name="CreditsBackground12" file="Interface\Glues\Credits\Parchment7">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsBackground11" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture name="CreditsBorder1" file="Interface\Glues\Credits\Border1">
-					<Size>
-						<AbsDimension x="1408" y="64"/>
-					</Size>
+					<Size x="1408" y="64"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="CreditsBackground1" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativeTo="CreditsBackground1" relativePoint="TOPLEFT" x="0" y="-10"/>
 					</Anchors>
 					<TexCoords left="0" right="11" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture name="CreditsBorder9" file="Interface\Glues\Credits\Border1">
-					<Size>
-						<AbsDimension x="1408" y="64"/>
-					</Size>
+					<Size x="1408" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CreditsBackground5" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CreditsBackground5" relativePoint="BOTTOMLEFT" x="0" y="15"/>
 					</Anchors>
 					<TexCoords left="0" right="11" top="0" bottom="1.0"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="UpperBlackBar">
-					<Size>
-						<AbsDimension x="1024" y="128"/>
-					</Size>
+					<Size x="1024" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="TOPRIGHT"/>
@@ -233,9 +165,7 @@
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 				<Texture name="LowerBlackBar">
-					<Size>
-						<AbsDimension x="1024" y="126"/>
-					</Size>
+					<Size x="1024" y="126"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -245,137 +175,97 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="CreditsArtAlt1">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-128"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtAlt2">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtAlt1" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtAlt3">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtAlt2" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtAlt4">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtAlt3" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtAlt5">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CreditsArtAlt1" relativePoint="BOTTOM"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtAlt6">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtAlt5" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtAlt7">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtAlt6" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtAlt8">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtAlt7" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache1">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-128"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="-128"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache2">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtCache1" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache3">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtCache2" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache4">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtCache3" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache5">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="CreditsArtCache1" relativePoint="BOTTOM"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache6">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtCache5" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache7">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtCache6" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="CreditsArtCache8">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="CreditsArtCache7" relativePoint="RIGHT"/>
 					</Anchors>
@@ -384,30 +274,18 @@
 		</Layers>
 		<Frames>
 			<ScrollFrame name="CreditsScrollFrame">
-				<Size>
-					<AbsDimension x="250" y="740"/>
-				</Size>
+				<Size x="250" y="740"/>
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="-50" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" x="-50" y="0"/>
 				</Anchors>
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture>
-									<Size>
-										<AbsDimension x="250" y="128"/>
-									</Size>
+									<Size x="250" y="128"/>
 									<Anchors>
-										<Anchor point="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOM" x="0" y="-10"/>
 									</Anchors>
 									<Color r="0" g="0" b="0"/>
 									<Gradient orientation="VERTICAL">
@@ -416,15 +294,9 @@
 									</Gradient>
 								</Texture>
 								<Texture>
-									<Size>
-										<AbsDimension x="250" y="128"/>
-									</Size>
+									<Size x="250" y="128"/>
 									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="10"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" x="0" y="10"/>
 									</Anchors>
 									<Color r="0" g="0" b="0"/>
 									<Gradient orientation="VERTICAL">
@@ -443,9 +315,7 @@
 				</Scripts>
 				<ScrollChild>
 					<SimpleHTML name="CreditsText" file="credits.html">
-						<Size>
-							<AbsDimension x="250" y="740"/>
-						</Size>
+						<Size x="250" y="740"/>
 						<FontString inherits="GlueFontHighlightSmall" spacing="2"/>
 						<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>
 						<FontStringHeader2 inherits="GlueFontHighlight" spacing="4"/>
@@ -453,15 +323,9 @@
 				</ScrollChild>
 			</ScrollFrame>
 			<Button name="CreditsFrameSwitchButton1" inherits="GlueButtonSmallTemplateBlue" id="1">
-				<Size>
-					<AbsDimension x="260" y="35"/>
-				</Size>
+				<Size x="260" y="35"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame">
-						<Offset>
-							<AbsDimension x="25" y="45"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="25" y="45"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -470,15 +334,9 @@
 				</Scripts>
 			</Button>
 			<Button name="CreditsFrameSwitchButton2" inherits="GlueButtonSmallTemplateBlue" id="2">
-				<Size>
-					<AbsDimension x="260" y="35"/>
-				</Size>
+				<Size x="260" y="35"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame">
-						<Offset>
-							<AbsDimension x="25" y="10"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="25" y="10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

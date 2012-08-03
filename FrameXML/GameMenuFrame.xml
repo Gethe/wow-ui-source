@@ -1,9 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
-		<Size>
-			<AbsDimension x="195" y="235"/>
-		</Size>
+		<Size x="195" y="250"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -21,24 +19,14 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="256" y="64"/>
-					</Size>
+					<Size x="256" y="64"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="12"/>
 					</Anchors>
 				</Texture>
 				<FontString inherits="GameFontNormal" text="MAINMENU_BUTTON">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="GameMenuFrameHeader">
-							<Offset>
-								<AbsDimension x="0" y="-14"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="GameMenuFrameHeader" x="0" y="-14"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -46,11 +34,7 @@
 		<Frames>
 			<Button name="GameMenuButtonHelp" inherits="GameMenuButtonTemplate" text="GAMEMENU_HELP">
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOP">
-						<Offset>
-							<AbsDimension x="0" y="-37"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-37"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -61,11 +45,7 @@
 			</Button>
 			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="SYSTEMOPTIONS_MENU">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonHelp" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonHelp" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -100,11 +80,7 @@
 			</Button>
 			<Button name="GameMenuButtonMacOptions" inherits="GameMenuButtonTemplate" text="MAC_OPTIONS">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -126,11 +102,7 @@
 			</Button>
 			<Button name="GameMenuButtonKeybindings" inherits="GameMenuButtonTemplate" text="KEY_BINDINGS">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonUIOptions" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonUIOptions" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -143,11 +115,7 @@
 			</Button>
 			<Button name="GameMenuButtonMacros" inherits="GameMenuButtonTemplate" text="MACROS">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonKeybindings" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonKeybindings" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -159,11 +127,7 @@
 			</Button>
 			<Button name="GameMenuButtonRatings" inherits="GameMenuButtonTemplate" hidden="true" text="RATINGS_MENU">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonMacros" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonMacros" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -175,11 +139,7 @@
 			</Button>
 			<Button name="GameMenuButtonLogout" inherits="GameMenuButtonTemplate" text="LOGOUT">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonMacros" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonMacros" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -201,11 +161,7 @@
 			</Button>
 			<Button name="GameMenuButtonQuit" inherits="GameMenuButtonTemplate" text="EXIT_GAME">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonLogout" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonLogout" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -224,11 +180,7 @@
 			</Button>
 			<Button name="GameMenuButtonContinue" inherits="GameMenuButtonTemplate" text="RETURN_TO_GAME">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonQuit" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonQuit" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

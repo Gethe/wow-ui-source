@@ -9,6 +9,7 @@ function PatchDownload_OnLoad(self)
 end
 
 function PatchDownload_OnShow()
+	PatchDownloadLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
 	PatchDownload_UpdateProgress();
 	PatchDownload_UpdateButtons();
 	PatchDownloadRestartButton:Enable();

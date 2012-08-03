@@ -91,7 +91,7 @@
 				</Scripts>
 			</CheckButton>	
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="316"/>
+				<Size x="186" y="336"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -192,10 +192,25 @@
 						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelMusic, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
-			<CheckButton name="$parentAmbientSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
+			</CheckButton>
+			<CheckButton name="$parentPetBattleMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLoopMusic" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnablePetBattleMusic";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelMusic, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAmbientSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPetBattleMusic" relativePoint="BOTTOMLEFT">
 						<Offset x="-8" y="2"/>
 					</Anchor>
 				</Anchors>

@@ -7,7 +7,7 @@
 		<Frames>
 			<EditBox parentKey="gold" name="$parentGold" letters="6" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
-					<AbsDimension x="78" y="20"/>
+					<AbsDimension x="70" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -106,7 +106,7 @@
 			</EditBox>
 			<EditBox parentKey="silver" name="$parentSilver" letters="2" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
-					<AbsDimension x="44" y="20"/>
+					<AbsDimension x="48" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentGold" relativePoint="RIGHT">
@@ -206,7 +206,7 @@
 			</EditBox>
 			<EditBox parentKey="copper" name="$parentCopper" letters="2" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
-					<AbsDimension x="44" y="20"/>
+					<AbsDimension x="48" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSilver" relativePoint="RIGHT">

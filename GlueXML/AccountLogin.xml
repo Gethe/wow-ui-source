@@ -127,7 +127,7 @@
 						</FontString>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="AccountLoginLogo" file="Interface\Glues\Common\Glues-WoW-CCLogo">
+						<Texture name="AccountLoginLogo">
 							<Size>
 								<AbsDimension x="256" y="128"/>
 							</Size>
@@ -488,8 +488,8 @@
 						</Anchors>
 						<Scripts>
 							<OnShow>
-								if (tonumber(GetCVar("blizzcon")) == 1) then
-								  self:Disable();
+								if (IsBlizzCon()) then
+									self:Disable();
 								else
 									self:Enable();
 								end
@@ -1206,6 +1206,9 @@
 							<OnShow>
 								TokenEntryOkayButton_OnShow();
 							</OnShow>
+							<OnHide>
+								TokenEntryOkayButton_OnHide();
+							</OnHide>
 							<OnKeyDown>
 								TokenEntryOkayButton_OnKeyDown(self, key);
 							</OnKeyDown>
@@ -2570,7 +2573,7 @@
 	<Frame name="CinematicsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Size x="262" y="512"/>
 		<Anchors>
-			<Anchor point="CENTER" y="-58"/>
+			<Anchor point="CENTER"/>
 		</Anchors>
 		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<EdgeSize>
@@ -2613,10 +2616,22 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="CinematicsButton1" inherits="CinematicsButtonTemplate" text="CATACLYSM" hidden="true" id="4">
+			<Button name="CinematicsButton1" inherits="CinematicsButtonTemplate" text="MISTS_OF_PANDARIA" hidden="true" id="5">
 				<Size x="176" y="78"/>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-44"/>
+				</Anchors>
+				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.34960938" right="0.69335938" top="0.63281250" bottom="0.78515625"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
+					<TexCoords left="0.34960938" right="0.69335938" top="0.47656250" bottom="0.62890625"/>
+				</PushedTexture>
+			</Button>
+			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="CATACLYSM" hidden="true" id="4">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
 				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.34960938" right="0.69335938" top="0.16406250" bottom="0.31640625"/>
@@ -2625,10 +2640,10 @@
 					<TexCoords left="0.00195313" right="0.34570313" top="0.16406250" bottom="0.31640625"/>
 				</PushedTexture>
 			</Button>
-			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
+			<Button name="CinematicsButton3" inherits="CinematicsButtonTemplate" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
 				<Size x="176" y="78"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
 				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.34960938" right="0.69335938" top="0.32031250" bottom="0.47265625"/>
@@ -2637,10 +2652,10 @@
 					<TexCoords left="0.00195313" right="0.34570313" top="0.78906250" bottom="0.94140625"/>
 				</PushedTexture>
 			</Button>
-			<Button name="CinematicsButton3" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
+			<Button name="CinematicsButton4" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
 				<Size x="176" y="78"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
 				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.34960938" right="0.69335938" top="0.00781250" bottom="0.16015625"/>	
@@ -2649,10 +2664,10 @@
 					<TexCoords left="0.00195313" right="0.34570313" top="0.00781250" bottom="0.16015625"/>
 				</PushedTexture>
 			</Button>
-			<Button name="CinematicsButton4" inherits="CinematicsButtonTemplate" text="WORLD_OF_WARCRAFT" hidden="true" id="1">
+			<Button name="CinematicsButton5" inherits="CinematicsButtonTemplate" text="WORLD_OF_WARCRAFT" hidden="true" id="1">
 				<Size x="176" y="78"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="TOP" relativeTo="CinematicsButton4" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
 				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
 					<TexCoords left="0.00195313" right="0.34570313" top="0.47656250" bottom="0.62890625"/>

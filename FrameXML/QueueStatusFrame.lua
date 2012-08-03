@@ -61,6 +61,9 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
 	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
 
+	--For Pet Battles
+	self:RegisterEvent("PET_BATTLE_QUEUE_STATUS");
+
 	self.StatusEntries = {};
 end
 
@@ -152,6 +155,21 @@ function QueueStatusFrame_Update(self)
 		showMinimapButton = true;
 	end
 
+	--Pet Battle PvP Queue
+	local pbStatus = C_PetBattles.GetPVPMatchmakingInfo();
+	if ( pbStatus ) then
+		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
+		QueueStatusEntry_SetUpPetBattlePvP(entry);
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+
+		showMinimapButton = true;
+		if ( pbStatus == "queued" ) then
+			animateEye = true;
+		end
+	end
+
 	--Hide all remaining entries.
 	for i=nextEntry, #self.StatusEntries do
 		self.StatusEntries[i]:Hide();
@@ -232,6 +250,21 @@ end
 
 function QueueStatusEntry_SetUpActiveWorldPVP(entry)
 	QueueStatusEntry_SetMinimalDisplay(entry, GetRealZoneText(), QUEUED_STATUS_IN_PROGRESS);
+end
+
+function QueueStatusEntry_SetUpPetBattlePvP(entry)
+	local status = C_PetBattles.GetPVPMatchmakingInfo();
+	if ( status == "queued" ) then
+		QueueStatusEntry_SetMinimalDisplay(entry, PET_BATTLE_PVP_QUEUE, QUEUED_STATUS_QUEUED);
+	elseif ( status == "proposal" ) then
+		QueueStatusEntry_SetMinimalDisplay(entry, PET_BATTLE_PVP_QUEUE, QUEUED_STATUS_PROPOSAL);
+	elseif ( status == "suspended" ) then
+		QueueStatusEntry_SetMinimalDisplay(entry, PET_BATTLE_PVP_QUEUE, QUEUED_STATUS_SUSPENDED);
+	elseif ( status == "entry" ) then
+		QueueStatusEntry_SetMinimalDisplay(entry, PET_BATTLE_PVP_QUEUE, QUEUED_STATUS_WAITING);
+	else
+		QueueStatusEntry_SetMinimalDisplay(entry, PET_BATTLE_PVP_QUEUE, QUEUED_STATUS_UNKNOWN);
+	end
 end
 
 function QueueStatusEntry_SetMinimalDisplay(entry, title, description)
@@ -390,6 +423,10 @@ function QueueStatusDropDown_Update()
 		info.disabled = false;
 		info.func = wrapFunc(HearthAndResurrectFromArea);
 		UIDropDownMenu_AddButton(info);
+	end
+
+	if ( C_PetBattles.GetPVPMatchmakingInfo() ) then
+		QueueStatusDropDown_AddPetBattleButtons(info);
 	end
 end
 
@@ -577,5 +614,39 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 			info.disabled = false;
 			UIDropDownMenu_AddButton(info);
 		end
+	end
+end
+
+function QueueStatusDropDown_AddPetBattleButtons(info)
+	wipe(info);
+
+	local status = C_PetBattles.GetPVPMatchmakingInfo();
+
+	info.text = PET_BATTLE_PVP_QUEUE;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+
+	info.disabled = false;
+	info.isTitle = nil;
+	info.leftPadding = 10;
+
+	if ( status == "queued" or status == "suspended" ) then
+		info.text = LEAVE_QUEUE;
+		info.func = wrapFunc(C_PetBattles.StopPVPMatchmaking);
+		UIDropDownMenu_AddButton(info);
+	elseif ( status == "proposal" ) then
+		info.text = ENTER_PET_BATTLE;
+		info.func = wrapFunc(C_PetBattles.AcceptPVPMatch);
+		UIDropDownMenu_AddButton(info);
+
+		info.text = LEAVE_QUEUE;
+		info.func = wrapFunc(C_PetBattles.DeclinePVPMatch);
+		UIDropDownMenu_AddButton(info);
+	elseif ( status == "entry" ) then
+		info.text = ENTER_PET_BATTLE;
+		info.func = nil;
+		info.disabled = true;
+		UIDropDownMenu_AddButton(info);
 	end
 end

@@ -21,7 +21,7 @@ function MerchantFrame_OnLoad(self)
 end
 
 function MerchantFrame_OnEvent(self, event, ...)
-	if ( event == "MERCHANT_UPDATE" ) then
+	if ( event == "MERCHANT_UPDATE" and "MERCHANT_FILTER_ITEM_UPDATE" ) then
 		self.update = true;
 	elseif ( event == "MERCHANT_CLOSED" ) then
 		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");

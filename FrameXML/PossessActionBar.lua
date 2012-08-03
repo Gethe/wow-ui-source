@@ -3,13 +3,21 @@ POSSESS_CANCEL_SLOT = 2;
 
 function PossessBar_Update ()
 	if ( not MainMenuBar.busy and not UnitHasVehicleUI("player") ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
+		local needFrameMgrUpdate = false;
 		if ( IsPossessBarVisible() ) then
-			PossessBarFrame:Show();
+			if ( not PossessBarFrame:IsShown() ) then
+				PossessBarFrame:Show();
+				needFrameMgrUpdate = true;
+			end
 			PossessBar_UpdateState();
-		else
+		elseif ( PossessBarFrame:IsShown() ) then
 			PossessBarFrame:Hide();
+			needFrameMgrUpdate = true;
 		end
-		UIParent_ManageFramePositions();
+		
+		if ( needFrameMgrUpdate ) then
+			UIParent_ManageFramePositions();
+		end
 	end
 end
 

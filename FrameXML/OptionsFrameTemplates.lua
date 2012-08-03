@@ -108,6 +108,7 @@ end
 
 function OptionsList_ClearSelection (listFrame, buttons)
 	for _, button in SecureNext, buttons do
+		button.highlight:SetVertexColor(.196, .388, .8);
 		button:UnlockHighlight();
 	end
 
@@ -115,6 +116,7 @@ function OptionsList_ClearSelection (listFrame, buttons)
 end
 
 function OptionsList_SelectButton (listFrame, button)
+	button.highlight:SetVertexColor(1, 1, 0);
 	button:LockHighlight()
 
 	listFrame.selection = button.element;

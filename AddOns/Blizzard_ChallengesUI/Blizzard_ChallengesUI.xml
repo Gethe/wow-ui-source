@@ -360,13 +360,14 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow2" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
 				</Anchors>
 			</Frame>
-			<Button inherits="UIGoldBorderButtonTemplate" text="LEADERBOARD" hidden="true">
+			<Button name="$parentLeaderboard" inherits="UIGoldBorderButtonTemplate" text="LEADERBOARD">
 				<Size x="105" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-13" y="-32"/>
+					<Anchor point="BOTTOM" relativeTo="$parentDetails" x="0" y="5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="RaiseFrameLevel"/>
+					<OnClick function="ChallengesFrameLeaderboard_OnClick" />
 				</Scripts>
 			</Button>
 		</Frames>

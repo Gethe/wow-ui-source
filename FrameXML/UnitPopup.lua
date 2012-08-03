@@ -115,6 +115,7 @@ UnitPopupButtons["VEHICLE_LEAVE"] = { text = VEHICLE_LEAVE, dist = 0 };
 
 UnitPopupButtons["SET_FOCUS"] = { text = SET_FOCUS, dist = 0 };
 UnitPopupButtons["CLEAR_FOCUS"] = { text = CLEAR_FOCUS, dist = 0 };
+UnitPopupButtons["LARGE_FOCUS"] = { text = FULL_SIZE_FOCUS_FRAME_TEXT, dist = 0, checkable = 1, isNotRadio = 1 };
 UnitPopupButtons["LOCK_FOCUS_FRAME"] = { text = LOCK_FOCUS_FRAME, dist = 0 };
 UnitPopupButtons["UNLOCK_FOCUS_FRAME"] = { text = UNLOCK_FOCUS_FRAME, dist = 0 };
 UnitPopupButtons["MOVE_FOCUS_FRAME"] = { text = MOVE_FRAME, dist = 0, nested = 1 };
@@ -189,7 +190,7 @@ UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_S
 UnitPopupMenus["VEHICLE"] = { "SET_FOCUS", "RAID_TARGET_ICON", "VEHICLE_LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["TARGET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["ARENAENEMY"] = { "SET_FOCUS", "CANCEL" };
-UnitPopupMenus["FOCUS"] = { "CLEAR_FOCUS", "MOVE_FOCUS_FRAME", "RAID_TARGET_ICON", "CANCEL" };
+UnitPopupMenus["FOCUS"] = { "CLEAR_FOCUS", "LARGE_FOCUS", "MOVE_FOCUS_FRAME", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["BOSS"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["BATTLEPET"] = { "REPORT_BATTLE_PET", "CANCEL" };
 
@@ -503,12 +504,21 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				if ( raidTargetIndex == index ) then
 					info.checked = 1;
 				end
+			elseif ( value == "LARGE_FOCUS" ) then
+				if (GetCVarBool("fullSizeFocusFrame")) then
+					info.checked = 1;
+				end
 			end
 
 			if ( UnitPopupButtons[value].nested ) then
 				info.hasArrow = 1;
 			else
 				info.hasArrow = nil;
+			end
+			if ( UnitPopupButtons[value].isNotRadio ) then
+				info.isNotRadio = 1
+			else
+				info.isNotRadio = nil;
 			end
 			
 			-- Setup newbie tooltips
@@ -1634,6 +1644,11 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "FOCUS_FRAME_BUFFS_ON_TOP" ) then
 		FOCUS_FRAME_BUFFS_ON_TOP = not FOCUS_FRAME_BUFFS_ON_TOP;
 		FocusFrame_UpdateBuffsOnTop();
+	elseif ( button == "LARGE_FOCUS" ) then
+		local setting = GetCVarBool("fullSizeFocusFrame");
+		setting = not setting;
+		SetCVar("fullSizeFocusFrame", setting and "1" or "0" )
+		FocusFrame_SetSmallSize(not setting, true);
 	elseif ( button == "PLAYER_FRAME_SHOW_CASTBARS" ) then
 		PLAYER_FRAME_CASTBARS_SHOWN = not PLAYER_FRAME_CASTBARS_SHOWN;
 		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then

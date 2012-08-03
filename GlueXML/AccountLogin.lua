@@ -29,9 +29,19 @@ function AccountLogin_OnLoad(self)
 	SetLoginScreenModel(AccountLogin);
 end
 
-function AccountLogin_OnShow(self)
+function AccountLogin_OnShow(self)	
+	AccountLoginLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
+
+	-- special code for BlizzCon
+	if (IsBlizzCon()) then
+		local account = GetCVar("accountName");
+		DefaultServerLogin(account, "blizzcon11");
+		AccountLoginUI:Hide();
+		return;
+	end
+
 	self:SetSequence(0);
-	PlayGlueMusic(CurrentGlueMusic);
+	PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
 	PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
 
 	-- Try to show the EULA or the TOS
@@ -193,7 +203,8 @@ function AccountLogin_LaunchCommunitySite()
 end
 
 function AccountLogin_Credits()
-	CreditsFrame.creditsType = 4;
+	CreditsFrame.creditsType = GetClientDisplayExpansionLevel() + 1;	--Expansion levels are off by one from credits indices.
+	CreditsFrame.maxCreditsType = GetClientDisplayExpansionLevel() + 1;
 	PlaySound("gsTitleCredits");
 	SetGlueScreen("credits");
 	CinematicsFrame:Hide();
@@ -485,6 +496,14 @@ function TokenEntryOkayButton_OnShow()
 	TokenEnterDialogBackgroundEdit:SetFocus();
 end
 
+function TokenEntryOkayButton_OnHide()
+	if ( accountName == "" ) then
+		AccountLogin_FocusAccountName();
+	else
+		AccountLogin_FocusPassword();
+	end
+end
+
 function TokenEntryOkayButton_OnKeyDown(self, key)
 	if ( key == "ENTER" ) then
 		TokenEntry_Okay(self);
@@ -684,7 +703,7 @@ function AccountLogin_SetupAccountListDDL()
 end
 
 function CinematicsFrame_OnLoad(self)
-	CinematicsFrame.numMovies = 4;
+	CinematicsFrame.numMovies = 5;
 	local button;
 	local height = 80;
 	for i = 1, CinematicsFrame.numMovies do

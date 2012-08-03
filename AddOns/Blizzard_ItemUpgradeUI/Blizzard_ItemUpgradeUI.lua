@@ -177,7 +177,6 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 
 	for i = 1, #statsLeft, 2 do
 		leftStat, rightStat = ItemUpgradeFrame_GetStatRow(index, true);
-		
 		-- Update the left stat text field.
 		local name, value = statsLeft[i], statsLeft[i + 1];
 		leftStat.ItemLevelText:SetText(value);
@@ -198,10 +197,10 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 		
 		index = index + 1;
 	end
-	for i = #statsLeft + 1, #ItemUpgradeFrame.LeftStat do
+	for i = index, #ItemUpgradeFrame.LeftStat do
 		ItemUpgradeFrame.LeftStat[i]:Hide();
 	end
-	for i = #statsRight + 1, #ItemUpgradeFrame.RightStat do
+	for i = index, #ItemUpgradeFrame.RightStat do
 		ItemUpgradeFrame.RightStat[i]:Hide();
 	end	
 end

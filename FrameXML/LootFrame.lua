@@ -677,6 +677,7 @@ function MissingLootFrame_Show()
 end
 
 function MissingLootFrame_OnHide(self)
+	ClearMissingLootDisplay();
 	AlertFrame_FixAnchors();
 end
 

@@ -4,6 +4,7 @@ MONEY_WON_ALERT_FRAMES = {};
 DELAYED_ACHIEVEMENT_ALERTS = {};
 ACHIEVEMENT_ID_INDEX = 1;
 OLD_ACHIEVEMENT_INDEX = 2;
+MAX_QUEUED_ACHIEVEMENT_TOASTS = 6;
 
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
@@ -509,6 +510,12 @@ function AchievementAlertFrame_ShowAlert (achievementID, alreadyEarned)
 	local frame = AchievementAlertFrame_GetAlertFrame();
 	if ( AchievementAlertFrame_IsPaused() or not frame ) then
 		-- Either we ran out of frames or we've paused alerts, so we have to queue this one.
+		
+		-- Make sure we haven't hit the cap for the number of queued achievemnts
+		if ( #DELAYED_ACHIEVEMENT_ALERTS >= MAX_QUEUED_ACHIEVEMENT_TOASTS ) then
+			return false;
+		end
+		
 		-- Make sure this one isn't already queued.
 		for i=1, #DELAYED_ACHIEVEMENT_ALERTS do
 			if ( DELAYED_ACHIEVEMENT_ALERTS[i][ACHIEVEMENT_ID_INDEX] == achievementID ) then

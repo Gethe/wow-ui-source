@@ -163,8 +163,10 @@ function AddonList_Enable(index, enabled)
 		character = nil;
 	end
 	if ( enabled ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		EnableAddOn(character, index);
 	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
 		DisableAddOn(character, index);
 	end
 	AddonList_Update();

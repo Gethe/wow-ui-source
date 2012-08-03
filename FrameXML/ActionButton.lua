@@ -246,9 +246,9 @@ function ActionButton_Update (self)
 	local name = self:GetName();
 
 	local action = self.action;
-	local icon = _G[name.."Icon"];
-	local buttonCooldown = _G[name.."Cooldown"];
-	local texture = GetActionTexture(action);	
+	local icon = self.icon;
+	local buttonCooldown = self.cooldown;
+	local texture = GetActionTexture(action);
 
 	if ( HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
@@ -414,8 +414,8 @@ function ActionButton_UpdateCount (self)
 end
 
 function ActionButton_UpdateCooldown (self)
-	local start, duration, enable = GetActionCooldown(self.action);
-	CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
+	local start, duration, enable, charges, maxCharges = GetActionCooldown(self.action);
+	CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
 end
 
 --Overlay stuff
@@ -499,9 +499,17 @@ function ActionButton_OnEvent (self, event, ...)
 		end
 		return;
 	end
-	if ( event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_SHAPESHIFT_FORM" ) then
-		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		ActionButton_Update(self);
+		return;
+	end
+	if ( event == "UPDATE_SHAPESHIFT_FORM" ) then
+		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
+		-- This is NOT intended to update everything about shapeshifting; most stuff should be handled by ActionBar-specific events such as UPDATE_BONUS_ACTIONBAR, UPDATE_USABLE, etc.
+		local texture = GetActionTexture(self.action);
+		if (texture) then
+			self.icon:SetTexture(texture);
+		end
 		return;
 	end
 	if ( event == "ACTIONBAR_SHOWGRID" ) then

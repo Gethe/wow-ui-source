@@ -23,9 +23,14 @@ UI.xsd">
 						<Anchor point="LEFT" relativeKey="$parent.AbilityPetType" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="MaxCooldown" inherits="GameFontHighlight" text="MAX_COOLDOWN">
+				<FontString parentKey="Duration" inherits="GameFontHighlight" text="BATTLE_PET_ABILITY_MULTIROUND">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.AbilityPetType" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MaxCooldown" inherits="GameFontHighlight" text="MAX_COOLDOWN">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Duration" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="CurrentCooldown" inherits="GameFontHighlight">

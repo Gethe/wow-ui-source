@@ -166,6 +166,18 @@
 		</FontHeight>
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="FactionName_Shadow_Large" font="Fonts\MORPHEUS.ttf" outline="NORMAL" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>		
 	<Font name="FactionName_Shadow_Huge" font="Fonts\MORPHEUS.ttf" outline="NORMAL" virtual="true">
 		<Shadow>
 			<Offset>
@@ -181,6 +193,11 @@
 	<Font name="QuestFont_Large" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<FontHeight>
 			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	<Font name="QuestFont_Huge" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="18"/>
 		</FontHeight>
 	</Font>
 </Ui>

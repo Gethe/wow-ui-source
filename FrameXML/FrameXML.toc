@@ -12,7 +12,6 @@ Util.lua
 FlowContainer.lua
 FrameLocks.lua
 
-PetBattleStubs.lua
 ## add new modules below here
 
 BasicControls.xml
